@@ -1,0 +1,90 @@
+{
+  "format": "joypro-device-layout",
+  "version": 1,
+  "model": "moza-mhg",
+  "photo": {"kind": "vendor", "url": "https://us.mozaracing.com/cdn/shop/files/MOZAMHGFLightstick-4_065e4c0d-13b5-486f-97af-44ae57e1a114.png", "sha256": "bbc69daafac5d6b14efe3a8417908916b98926f9125a59d656c1213428a554bf", "view": "three-quarter"},
+  "markers": {
+    "stick.gimbal": [0.45, 0.74],
+    "stick.trigger": [0.567, 0.372]
+  },
+  "parts": {
+    "stick.hat.trim": {
+      "type": "hat",
+      "name": "Trim hat",
+      "inputs": [
+        {"input": "", "control": "stick.hat.trim.up"},
+        {"input": "", "control": "stick.hat.trim.down"},
+        {"input": "", "control": "stick.hat.trim.left"},
+        {"input": "", "control": "stick.hat.trim.right"}
+      ],
+      "mapping": "low"
+    },
+    "stick.trigger": {
+      "type": "trigger",
+      "name": "Trigger",
+      "inputs": [
+        {"input": "", "control": "stick.trigger.stage1"},
+        {"input": "", "control": "stick.trigger.stage2"}
+      ],
+      "mapping": "medium",
+      "confidence": "high",
+      "note": "red two-stage trigger at the front"
+    },
+    "stick.gimbal": {
+      "type": "gimbal",
+      "name": "Stick (roll / pitch)",
+      "inputs": [
+        {"input": "JOY_X", "control": "stick.axis.roll"},
+        {"input": "JOY_Y", "control": "stick.axis.pitch"}
+      ],
+      "mapping": "medium",
+      "confidence": "medium",
+      "note": "grip foot on the base mount, the grip moves the base's roll and pitch"
+    },
+    "stick.button.thumb.1": {
+      "type": "button",
+      "name": "Button thumb 1",
+      "inputs": [
+        {"input": "", "control": "stick.button.thumb.1"}
+      ],
+      "mapping": "low"
+    },
+    "stick.button.thumb.2": {
+      "type": "button",
+      "name": "Button thumb 2",
+      "inputs": [
+        {"input": "", "control": "stick.button.thumb.2"}
+      ],
+      "mapping": "medium"
+    }
+  },
+  "unplaced": {
+    "stick.hat.trim": "cross-shaped switch on the thumb face; which hat is the trim hat is not documented",
+    "stick.button.thumb.1": "red button on the thumb face; which button is \"thumb 1\" is not documented",
+    "stick.button.thumb.2": "which button is \"thumb 2\" is not documented"
+  },
+  "candidates": {
+    "stick.button.thumb.1": [0.423, 0.188],
+    "stick.hat.trim": [0.552, 0.214]
+  },
+  "source": "JoyPro curated on the maker's photo (2026-10-11), three-quarter view from behind on the left: thumb face (red button, POV hat, cross switch, REV button, side wheel), TGL button on the right, trigger, base mount",
+  "mappingSource": "catalog (us.mozaracing.com/products/mhg-flightstick, \"Numbering unpublished.\"): the parts carry no button numbers. Retailer listings (e.g. simufy.com/en/products/moza-flightstick-mhg) describe 4 buttons, three 5-way switches, one 3-way switch, a Hall hat (axis or buttons), a two-stage trigger and a lockable Z twist; no public manual names a trim hat or numbers the thumb buttons.",
+  "confidence": "medium",
+  "note": "Only the trigger (two-stage, the only trigger) and the gimbal are certain. Which hat is the catalog's \"trim hat\" and which buttons are \"thumb 1/2\" is not documented, so those stay hidden candidates. The grip has many more controls than the catalog lists (POV Hall hat, 5-way switches, 3-way switch, side wheel, TGL, REV, DEF lever, twist axis).",
+  "callouts": {
+    "version": 1,
+    "width": 1426,
+    "height": 1038,
+    "picture": [407, 19, 1000, 1000],
+    "rowHeight": 24,
+    "mainWidth": 204,
+    "modWidth": 132,
+    "otherY": -1,
+    "tables": [
+      {"id": "stick.gimbal", "title": "Stick (roll / pitch)", "parts": ["stick.gimbal"], "side": "left", "x": 19, "y": 730, "width": 360, "modifier": true, "spot": [0.45, 0.74], "rows": [{"input": "JOY_X", "label": "roll (X)", "icon": "axis", "part": "stick.gimbal"}, {"input": "JOY_Y", "label": "pitch (Y)", "icon": "axis", "part": "stick.gimbal"}]}
+    ],
+    "lines": [
+      {"table": "stick.gimbal", "points": [[857, 759], [379, 759]]}
+    ]
+  }
+}

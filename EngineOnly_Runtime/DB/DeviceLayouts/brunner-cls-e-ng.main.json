@@ -1,0 +1,44 @@
+{
+  "format": "joypro-device-layout",
+  "version": 1,
+  "model": "brunner-cls-e-ng",
+  "photo": {"kind": "vendor", "url": "https://brunner-innovation.swiss/wp-content/uploads/2026/07/FFBG_Joystick-300x300.png", "sha256": "9df273290621c9bb7a168b98ce6519d09edbdaf4cc5a533ddeb8eb68ae0d6e13", "view": "main"},
+  "markers": {
+    "stick.gimbal": [0.41, 0.26]
+  },
+  "parts": {
+    "stick.gimbal": {
+      "type": "gimbal",
+      "name": "Stick (roll / pitch)",
+      "inputs": [
+        {"input": "JOY_X", "control": "stick.axis.roll"},
+        {"input": "JOY_Y", "control": "stick.axis.pitch"}
+      ],
+      "mapping": "medium",
+      "confidence": "medium",
+      "note": "gimbal boot/shaft exit on top of the base (grip connector above it)"
+    }
+  },
+  "unplaced": {},
+  "candidates": {},
+  "source": "JoyPro curated on the maker's photo (2026-10-11), the FFB-G joystick base alone (no grip) seen from the front left, slightly from above, grip connector on top",
+  "mappingSource": "catalog brunner.json (source https://brunner-innovation.swiss/product/ffb-g-joystick/): JOY_X roll, JOY_Y pitch; the catalog note says the base is not a DirectInput joystick by itself (the grip's own USB device carries the buttons, FFB via CLS2Sim), Brunner publishes no axis map",
+  "confidence": "high",
+  "note": "The photo shows the base without a grip; the gimbal is marked at the boot where the grip shaft leaves the base.",
+  "callouts": {
+    "version": 1,
+    "width": 656,
+    "height": 332,
+    "picture": [340, 16, 300, 300],
+    "rowHeight": 20,
+    "mainWidth": 170,
+    "modWidth": 110,
+    "otherY": -1,
+    "tables": [
+      {"id": "stick.gimbal", "title": "Stick (roll / pitch)", "parts": ["stick.gimbal"], "side": "left", "x": 16, "y": 70, "width": 300, "modifier": true, "spot": [0.41, 0.26], "rows": [{"input": "JOY_X", "label": "roll (X)", "icon": "axis", "part": "stick.gimbal"}, {"input": "JOY_Y", "label": "pitch (Y)", "icon": "axis", "part": "stick.gimbal"}]}
+    ],
+    "lines": [
+      {"table": "stick.gimbal", "points": [[463, 94], [316, 94]]}
+    ]
+  }
+}

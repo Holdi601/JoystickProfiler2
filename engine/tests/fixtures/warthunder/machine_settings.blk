@@ -1,0 +1,114 @@
+version:i=16
+
+content{
+  machineId:t=""
+
+  controls{
+    version:i=5
+    appliedFallbacksVer:i=3
+
+    basePresetPaths{
+      default:t="wt/config/hotkeys/hotkey.thrustmaster_warthog.blk"
+    }
+
+    hotkeys{
+      ID_GEAR{
+        joyButton:i=29
+      }
+    }
+
+    axes{
+      ailerons{
+        axisId:i=7
+      }
+
+      elevator{
+        axisId:i=8
+        inverse:b=yes
+        nonlinearity:r=2
+        kMul:r=1.5
+        kAdd:r=0.28
+      }
+
+      rudder{
+        axisId:i=9
+        innerDeadzone:r=0.1
+        keepDisabledValue:b=yes
+      }
+
+      throttle{
+        axisId:i=12
+        relative:b=yes
+        relSens:r=0.64
+        relStep:r=0.3
+        rangeMin:r=0
+      }
+
+      gm_throttle{
+        axisId:i=13
+        kMul:r=0.02
+      }
+    }
+
+    params{
+      holdThrottleForWEP:b=no
+      trackIrZoom:b=no
+    }
+
+    deviceMapping{
+      joystick{
+        connected:b=yes
+        devId:t="1234:5678"
+        axesOffset:i=7
+        name:t="Smoke Stick"
+        buttonsOffset:i=28
+        buttonsCount:i=16
+        axesCount:i=5
+      }
+
+      joystick{
+        connected:b=yes
+        devId:t="ABCD:0001"
+        axesOffset:i=12
+        name:t="Smoke Throttle"
+        buttonsOffset:i=44
+        buttonsCount:i=20
+        axesCount:i=5
+      }
+    }
+  }
+
+  settings{
+    aileronsMultiplier:r=0.79
+    elevatorMultiplier:r=0.64
+    rudderMultiplier:r=0.43
+    helicopterCyclicRollMultiplier:r=0.79
+    helicopterCyclicPitchMultiplier:r=0.64
+    helicopterPedalsMultiplier:r=0.43
+    invertY:b=no
+    invertX:b=no
+    invertT:b=no
+    invertYHelicopter:b=no
+    forceGain:r=1
+    cameraShakeMultiplier:r=1
+  }
+
+  gui_options{
+    OPTIONS_MODE_GAMEPLAY{
+      USEROPT_JOYFX:b=yes
+      USEROPT_HELPERS_MODE:i=2
+      USEROPT_AUTOTRIM:b=yes
+    }
+
+    OPTIONS_MODE_TRAINING{
+      USEROPT_JOYFX:b=yes
+    }
+  }
+
+  custom{}
+  config{
+    __allowedConfigOverrides{
+      invertY:b=no
+    }
+  }
+}

@@ -1,0 +1,69 @@
+{
+  "format": "joypro-device-layout",
+  "version": 1,
+  "model": "virpil-ace-flight-pedals",
+  "photo": {"kind": "vendor", "url": "https://virpil-controls.eu/media/catalog/product/cache/f8e7ca8059fef1dc7d5708cf2af44b2f/v/p/vpc-pedals_flig01_1.jpg", "sha256": "4195f04837f8e51c2688b48a6a3bb9a3f66ec19b10f71bbd6a8308854fd75bab", "view": "main"},
+  "markers": {
+    "pedals.axis.brake_left": [0.15, 0.4],
+    "pedals.axis.brake_right": [0.9, 0.27],
+    "pedals.axis.rudder": [0.47, 0.42]
+  },
+  "parts": {
+    "pedals.axis.rudder": {
+      "type": "rudder",
+      "name": "Rudder",
+      "inputs": [
+        {"input": "JOY_Z", "control": "pedals.axis.rudder"}
+      ],
+      "mapping": "medium",
+      "confidence": "medium",
+      "note": "rudder axis at the central pivot of the rocker arms"
+    },
+    "pedals.axis.brake_left": {
+      "type": "brake",
+      "name": "Toe brake left (V)",
+      "inputs": [
+        {"input": "JOY_SLIDER2", "control": "pedals.axis.brake_left"}
+      ],
+      "mapping": "medium",
+      "confidence": "medium",
+      "note": "left foot plate (toe brake)"
+    },
+    "pedals.axis.brake_right": {
+      "type": "brake",
+      "name": "Toe brake right (U)",
+      "inputs": [
+        {"input": "JOY_SLIDER1", "control": "pedals.axis.brake_right"}
+      ],
+      "mapping": "medium",
+      "confidence": "medium",
+      "note": "right foot plate (toe brake)"
+    }
+  },
+  "unplaced": {},
+  "candidates": {},
+  "source": "JoyPro curated on the maker's photo (2026-10-12), ACE Flight pedal set seen from the pilot's side and above: left pedal on the left, heel rests toward the viewer, central rudder mechanism with spring and VIRPIL plate in the middle",
+  "mappingSource": "catalog source EDCD EliteCustomButtonNames 334401F8.buttonMap (https://github.com/EDCD/EliteCustomButtonNames/blob/main/files/INTO%20Bindings/DeviceButtonMaps/334401F8.buttonMap): rudder Z, right toe brake U (SLIDER1), left toe brake V (SLIDER2); no Virpil sheet for this model",
+  "confidence": "medium",
+  "note": "the toe brakes are the hinged upper foot plates; markers sit on the foot plates (axis spot). Left/right taken from the heel rests facing the viewer (pilot's side).",
+  "callouts": {
+    "version": 1,
+    "width": 1814,
+    "height": 1038,
+    "picture": [407, 19, 1000, 1000],
+    "rowHeight": 24,
+    "mainWidth": 204,
+    "modWidth": 132,
+    "otherY": -1,
+    "tables": [
+      {"id": "pedals.axis.rudder", "title": "Rudder", "parts": ["pedals.axis.rudder"], "side": "left", "x": 19, "y": 424, "width": 360, "modifier": true, "spot": [0.47, 0.42], "rows": [{"input": "JOY_Z", "label": "Z", "icon": "axis", "part": "pedals.axis.rudder"}]},
+      {"id": "pedals.axis.brake_left", "title": "Toe brake left (V)", "parts": ["pedals.axis.brake_left"], "side": "left", "x": 19, "y": 376, "width": 360, "modifier": true, "spot": [0.15, 0.4], "rows": [{"input": "JOY_SLIDER2", "label": "SLIDER2", "icon": "axis", "part": "pedals.axis.brake_left"}]},
+      {"id": "pedals.axis.brake_right", "title": "Toe brake right (U)", "parts": ["pedals.axis.brake_right"], "side": "right", "x": 1435, "y": 260, "width": 360, "modifier": true, "spot": [0.9, 0.27], "rows": [{"input": "JOY_SLIDER1", "label": "SLIDER1", "icon": "axis", "part": "pedals.axis.brake_right"}]}
+    ],
+    "lines": [
+      {"table": "pedals.axis.brake_left", "points": [[557, 419], [393, 419], [393, 405], [379, 405]]},
+      {"table": "pedals.axis.rudder", "points": [[877, 439], [393, 439], [393, 453], [379, 453]]},
+      {"table": "pedals.axis.brake_right", "points": [[1307, 289], [1435, 289]]}
+    ]
+  }
+}

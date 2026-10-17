@@ -1,0 +1,267 @@
+{
+  "format": "joypro-device-layout",
+  "version": 1,
+  "model": "virpil-vfx-grip",
+  "photo": {"kind": "vendor", "url": "https://virpil-controls.eu/media/catalog/product/cache/f8e7ca8059fef1dc7d5708cf2af44b2f/v/p/vpc-008_2024-001.jpg", "sha256": "8c81940d8a4ea7f7b2be2ddea47422aa587d36743b0e3e9400d68b569eaf903f", "view": "main"},
+  "markers": {
+    "stick.axis.brake_lever": [0.385, 0.56],
+    "stick.axis.rotary.1": [0.457, 0.484],
+    "stick.axis.twist": [0.61, 0.64],
+    "stick.button.thumb.1": [0.413, 0.667],
+    "stick.button.thumb.10": [0.482, 0.592],
+    "stick.button.thumb.11": [0.585, 0.85],
+    "stick.button.thumb.12": [0.525, 0.85],
+    "stick.button.thumb.2": [0.558, 0.248],
+    "stick.button.thumb.3": [0.398, 0.352],
+    "stick.button.thumb.4": [0.39, 0.345],
+    "stick.button.thumb.5": [0.405, 0.345],
+    "stick.button.thumb.6": [0.39, 0.362],
+    "stick.button.thumb.7": [0.405, 0.362],
+    "stick.button.thumb.8": [0.45, 0.481],
+    "stick.button.thumb.9": [0.464, 0.488],
+    "stick.gimbal": [0.555, 0.93],
+    "stick.hat.tms": [0.527, 0.225],
+    "stick.pinky.button": [0.392, 0.61],
+    "stick.trigger": [0.383, 0.46]
+  },
+  "parts": {
+    "stick.hat.tms": {
+      "type": "hat",
+      "name": "POV hat push",
+      "inputs": [
+        {"input": "JOY_BTN11", "control": "stick.hat.tms.press"},
+        {"input": "JOY_BTN_POV1_U", "control": "stick.hat.tms.up"},
+        {"input": "JOY_BTN_POV1_R", "control": "stick.hat.tms.right"},
+        {"input": "JOY_BTN_POV1_D", "control": "stick.hat.tms.down"},
+        {"input": "JOY_BTN_POV1_L", "control": "stick.hat.tms.left"}
+      ],
+      "mapping": "high",
+      "confidence": "high",
+      "note": "top hat 11 + U/R/D/L"
+    },
+    "stick.trigger": {
+      "type": "trigger",
+      "name": "Trigger stage",
+      "inputs": [
+        {"input": "JOY_BTN1", "control": "stick.trigger.stage1"},
+        {"input": "JOY_BTN6", "control": "stick.trigger.stage2"}
+      ],
+      "mapping": "high",
+      "confidence": "medium",
+      "note": "red trigger 1 / 6 (two stages), partly hidden behind the head"
+    },
+    "stick.pinky.button": {
+      "type": "button",
+      "name": "Pinky button",
+      "inputs": [
+        {"input": "JOY_BTN4", "control": "stick.pinky.button"}
+      ],
+      "mapping": "high",
+      "confidence": "medium",
+      "note": "button 4 = end of the lever S travel (sheet), catalog calls it pinky button"
+    },
+    "stick.axis.twist": {
+      "type": "twist",
+      "name": "Twist (Z)",
+      "inputs": [
+        {"input": "JOY_Z", "control": "stick.axis.twist"}
+      ],
+      "mapping": "high",
+      "confidence": "medium",
+      "note": "twist of the handle (Z)"
+    },
+    "stick.gimbal": {
+      "type": "gimbal",
+      "name": "Base",
+      "inputs": [
+        {"input": "JOY_X", "control": "stick.axis.roll"},
+        {"input": "JOY_Y", "control": "stick.axis.pitch"}
+      ],
+      "mapping": "high",
+      "confidence": "medium",
+      "note": "grip-to-base joint (knurled nut; base not in the photo)"
+    },
+    "stick.axis.brake_lever": {
+      "type": "brake",
+      "name": "Lever (S)",
+      "inputs": [
+        {"input": "JOY_SLIDER1", "control": "stick.axis.brake_lever"}
+      ],
+      "mapping": "high",
+      "confidence": "medium",
+      "note": "black lever S in front of the grip"
+    },
+    "stick.axis.rotary.1": {
+      "type": "knob",
+      "name": "Dial (D)",
+      "inputs": [
+        {"input": "JOY_SLIDER2", "control": "stick.axis.rotary.1"}
+      ],
+      "mapping": "high",
+      "confidence": "high",
+      "note": "notched wheel D at the top of the side plate"
+    },
+    "stick.button.thumb.1": {
+      "type": "button",
+      "name": "Button thumb 1",
+      "inputs": [
+        {"input": "JOY_BTN3", "control": "stick.button.thumb.1"}
+      ],
+      "mapping": "high",
+      "confidence": "medium",
+      "note": "button 3 at the lever root (sheet right-hand view)"
+    },
+    "stick.button.thumb.2": {
+      "type": "button",
+      "name": "Button thumb 2",
+      "inputs": [
+        {"input": "JOY_BTN5", "control": "stick.button.thumb.2"}
+      ],
+      "mapping": "high",
+      "confidence": "high",
+      "note": "red button 5 right of the hat"
+    },
+    "stick.button.thumb.3": {
+      "type": "button",
+      "name": "Mode switch (SP/PH - GUN)",
+      "inputs": [
+        {"input": "JOY_BTN2", "control": "stick.button.thumb.3"}
+      ],
+      "mapping": "high",
+      "confidence": "high",
+      "note": "mode switch knob (SP/PH - GUN), button 2"
+    },
+    "stick.button.thumb.4": {
+      "type": "button",
+      "name": "Mode switch",
+      "inputs": [
+        {"input": "JOY_BTN7", "control": "stick.button.thumb.4"}
+      ],
+      "mapping": "medium",
+      "confidence": "medium",
+      "note": "mode switch position 7, same knob"
+    },
+    "stick.button.thumb.5": {
+      "type": "button",
+      "name": "Mode switch",
+      "inputs": [
+        {"input": "JOY_BTN8", "control": "stick.button.thumb.5"}
+      ],
+      "mapping": "medium",
+      "confidence": "medium",
+      "note": "mode switch position 8, same knob"
+    },
+    "stick.button.thumb.6": {
+      "type": "button",
+      "name": "Mode switch",
+      "inputs": [
+        {"input": "JOY_BTN9", "control": "stick.button.thumb.6"}
+      ],
+      "mapping": "medium",
+      "confidence": "medium",
+      "note": "mode switch position 9, same knob"
+    },
+    "stick.button.thumb.7": {
+      "type": "button",
+      "name": "Mode switch",
+      "inputs": [
+        {"input": "JOY_BTN10", "control": "stick.button.thumb.7"}
+      ],
+      "mapping": "medium",
+      "confidence": "medium",
+      "note": "mode switch position 10, same knob"
+    },
+    "stick.button.thumb.8": {
+      "type": "button",
+      "name": "Wheel up",
+      "inputs": [
+        {"input": "JOY_BTN14", "control": "stick.button.thumb.8"}
+      ],
+      "mapping": "high",
+      "confidence": "medium",
+      "note": "wheel D up (14)"
+    },
+    "stick.button.thumb.9": {
+      "type": "button",
+      "name": "Wheel down",
+      "inputs": [
+        {"input": "JOY_BTN12", "control": "stick.button.thumb.9"}
+      ],
+      "mapping": "high",
+      "confidence": "medium",
+      "note": "wheel D down (12)"
+    },
+    "stick.button.thumb.10": {
+      "type": "button",
+      "name": "Button thumb 10",
+      "inputs": [
+        {"input": "JOY_BTN16", "control": "stick.button.thumb.10"}
+      ],
+      "mapping": "high",
+      "confidence": "high",
+      "note": "grey button 16 on the side plate"
+    },
+    "stick.button.thumb.11": {
+      "type": "button",
+      "name": "Twist-end button",
+      "inputs": [
+        {"input": "JOY_BTN13", "control": "stick.button.thumb.11"}
+      ],
+      "mapping": "high",
+      "confidence": "medium",
+      "note": "twist end right (13), at the twist collar"
+    },
+    "stick.button.thumb.12": {
+      "type": "button",
+      "name": "Twist-end button",
+      "inputs": [
+        {"input": "JOY_BTN15", "control": "stick.button.thumb.12"}
+      ],
+      "mapping": "high",
+      "confidence": "medium",
+      "note": "twist end left (15), at the twist collar"
+    }
+  },
+  "unplaced": {},
+  "candidates": {},
+  "source": "JoyPro curated on the maker's photo (2026-10-11), grip seen from its left (thumb) side, front (gunsight tube, trigger, lever) to the left; base not in the photo",
+  "mappingSource": "Virpil support sheet \"VPC V.F.X Grip\" (https://support.virpil.com/en/support/solutions/articles/47001250821-vpc-v-f-x-grip, attachment 47246733476), the catalog's source",
+  "confidence": "medium",
+  "note": "the sheet groups 7/8/9/10 with 2 at the SP/PH - GUN mode switch on the gunsight tube; which position gives which number is positional (catalog note), so 7-10 are map=medium and sit on the same red knob. the sheet groups button 4 with the lever axis S (end-of-travel button of the lever); the catalog names it \"Pinky button\" - marked on the lever. twist-end buttons 13/15 have no own control (end stops of the Z twist); marked at the twist collar the sheet points to (15 left end, 13 right end).",
+  "callouts": {
+    "version": 1,
+    "width": 2414,
+    "height": 1559,
+    "picture": [722, 223, 1200, 1200],
+    "rowHeight": 29,
+    "mainWidth": 246,
+    "modWidth": 160,
+    "otherY": -1,
+    "tables": [
+      {"id": "grid:stick.button.thumb.4", "title": "Buttons Mode switch", "parts": ["stick.button.thumb.4", "stick.button.thumb.6", "stick.button.thumb.3", "stick.button.thumb.5", "stick.button.thumb.7"], "side": "left", "x": 23, "y": 611.3, "width": 665, "grid": true, "columns": 5, "modifier": false, "spot": [0.3976, 0.3532], "rows": [{"input": "JOY_BTN7", "label": "Mode switc", "icon": "button", "part": "stick.button.thumb.4", "cell": [0, 0, 0]}, {"input": "JOY_BTN9", "label": "Mode switc", "icon": "button", "part": "stick.button.thumb.6", "cell": [0, 1, 0]}, {"input": "JOY_BTN2", "label": "Mode switc", "icon": "button", "part": "stick.button.thumb.3", "cell": [0, 2, 0]}, {"input": "JOY_BTN8", "label": "Mode switc", "icon": "button", "part": "stick.button.thumb.5", "cell": [0, 3, 0]}, {"input": "JOY_BTN10", "label": "Mode switc", "icon": "button", "part": "stick.button.thumb.7", "cell": [0, 4, 0]}]},
+      {"id": "grid:stick.button.thumb.8", "title": "Buttons Wheel up - Button thu", "parts": ["stick.button.thumb.8", "stick.button.thumb.9", "stick.pinky.button", "stick.button.thumb.1", "stick.button.thumb.10"], "side": "left", "x": 422, "y": 904.7, "width": 266, "grid": true, "columns": 2, "modifier": false, "spot": [0.4402, 0.5676], "rows": [{"input": "JOY_BTN14", "label": "Wheel up", "icon": "button", "part": "stick.button.thumb.8", "cell": [0, 0, 0]}, {"input": "JOY_BTN12", "label": "Wheel down", "icon": "button", "part": "stick.button.thumb.9", "cell": [0, 1, 0]}, {"input": "JOY_BTN4", "label": "Pinky butt", "icon": "button", "part": "stick.pinky.button", "cell": [1, 0, 0]}, {"input": "JOY_BTN3", "label": "Button thu", "icon": "button", "part": "stick.button.thumb.1", "cell": [2, 0, 0]}, {"input": "JOY_BTN16", "label": "Button thu", "icon": "button", "part": "stick.button.thumb.10", "cell": [2, 1, 0]}]},
+      {"id": "stick.hat.tms", "title": "POV hat push", "parts": ["stick.hat.tms"], "side": "top", "x": 1136.9, "y": 23, "width": 435, "modifier": true, "spot": [0.527, 0.225], "rows": [{"input": "JOY_BTN11", "label": "Press", "icon": "button", "part": "stick.hat.tms"}, {"input": "JOY_BTN_POV1_U", "label": "Up", "icon": "up", "part": "stick.hat.tms"}, {"input": "JOY_BTN_POV1_R", "label": "Right", "icon": "right", "part": "stick.hat.tms"}, {"input": "JOY_BTN_POV1_L", "label": "Left", "icon": "left", "part": "stick.hat.tms"}, {"input": "JOY_BTN_POV1_D", "label": "Down", "icon": "down", "part": "stick.hat.tms"}]},
+      {"id": "stick.trigger", "title": "Trigger stage", "parts": ["stick.trigger"], "side": "left", "x": 253, "y": 698.7, "width": 435, "modifier": true, "spot": [0.383, 0.46], "rows": [{"input": "JOY_BTN1", "label": "First stage", "icon": "button", "part": "stick.trigger"}, {"input": "JOY_BTN6", "label": "Second stage", "icon": "button", "part": "stick.trigger"}]},
+      {"id": "stick.axis.twist", "title": "Twist (Z)", "parts": ["stick.axis.twist"], "side": "right", "x": 1956, "y": 955.5, "width": 435, "modifier": true, "spot": [0.61, 0.64], "rows": [{"input": "JOY_Z", "label": "Z", "icon": "axis", "part": "stick.axis.twist"}]},
+      {"id": "stick.gimbal", "title": "Base", "parts": ["stick.gimbal"], "side": "bottom", "x": 1374.5, "y": 1457, "width": 435, "modifier": true, "spot": [0.555, 0.93], "rows": [{"input": "JOY_X", "label": "roll (X)", "icon": "axis", "part": "stick.gimbal"}, {"input": "JOY_Y", "label": "pitch (Y)", "icon": "axis", "part": "stick.gimbal"}]},
+      {"id": "stick.axis.brake_lever", "title": "Lever (S)", "parts": ["stick.axis.brake_lever"], "side": "left", "x": 253, "y": 845.7, "width": 435, "modifier": true, "spot": [0.385, 0.56], "rows": [{"input": "JOY_SLIDER1", "label": "SLIDER1", "icon": "axis", "part": "stick.axis.brake_lever"}]},
+      {"id": "stick.axis.rotary.1", "title": "Dial (D)", "parts": ["stick.axis.rotary.1"], "side": "left", "x": 253, "y": 786.7, "width": 435, "modifier": true, "spot": [0.457, 0.484], "rows": [{"input": "JOY_SLIDER2", "label": "SLIDER2", "icon": "axis", "part": "stick.axis.rotary.1"}]},
+      {"id": "stick.button.thumb.2", "title": "Button thumb 2", "parts": ["stick.button.thumb.2"], "side": "right", "x": 1956, "y": 485.1, "width": 435, "modifier": true, "spot": [0.558, 0.248], "rows": [{"input": "JOY_BTN5", "label": "Press", "icon": "button", "part": "stick.button.thumb.2"}]},
+      {"id": "stick.button.thumb.11", "title": "Twist-end button", "parts": ["stick.button.thumb.11"], "side": "right", "x": 1956, "y": 1207.5, "width": 435, "modifier": true, "spot": [0.585, 0.85], "rows": [{"input": "JOY_BTN13", "label": "Press", "icon": "button", "part": "stick.button.thumb.11"}]},
+      {"id": "stick.button.thumb.12", "title": "Twist-end button", "parts": ["stick.button.thumb.12"], "side": "bottom", "x": 930.5, "y": 1457, "width": 435, "modifier": true, "spot": [0.525, 0.85], "rows": [{"input": "JOY_BTN15", "label": "Press", "icon": "button", "part": "stick.button.thumb.12"}]}
+    ],
+    "lines": [
+      {"table": "grid:stick.button.thumb.4", "points": [[1199.1, 646.8], [688, 646.8]]},
+      {"table": "stick.trigger", "points": [[1181.6, 775], [705, 775], [705, 734.2], [688, 734.2]]},
+      {"table": "stick.axis.rotary.1", "points": [[1270.4, 803.8], [705, 803.8], [705, 822.2], [688, 822.2]]},
+      {"table": "stick.axis.brake_lever", "points": [[1184, 895], [1184, 881.2], [688, 881.2]]},
+      {"table": "grid:stick.button.thumb.8", "points": [[1250.2, 904.1], [1250.2, 940.2], [688, 940.2]]},
+      {"table": "stick.button.thumb.2", "points": [[1391.6, 520.6], [1956, 520.6]]},
+      {"table": "stick.axis.twist", "points": [[1454, 991], [1956, 991]]},
+      {"table": "stick.button.thumb.11", "points": [[1424, 1243], [1956, 1243]]},
+      {"table": "stick.hat.tms", "points": [[1354.4, 493], [1354.4, 189]]},
+      {"table": "stick.button.thumb.12", "points": [[1352, 1243], [1352, 1440], [1148, 1440], [1148, 1457]]},
+      {"table": "stick.gimbal", "points": [[1388, 1339], [1388, 1440], [1592, 1440], [1592, 1457]]}
+    ]
+  }
+}

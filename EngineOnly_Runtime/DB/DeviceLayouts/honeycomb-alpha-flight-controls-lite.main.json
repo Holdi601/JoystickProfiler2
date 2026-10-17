@@ -1,0 +1,136 @@
+{
+  "format": "joypro-device-layout",
+  "version": 1,
+  "model": "honeycomb-alpha-flight-controls-lite",
+  "photo": {"kind": "vendor", "url": "https://flyhoneycomb.com/cdn/shop/files/HC003851_AlphaFlightControlsLite_2.jpg", "sha256": "a5ae6570f81f5d12ec9c3a98a544839d039e54a18c1ab8ddb4cb9ef18a1e5f93", "view": "main"},
+  "markers": {
+    "yoke.button.2": [0.236, 0.29],
+    "yoke.button.3": [0.762, 0.295],
+    "yoke.button.4": [0.8, 0.278],
+    "yoke.column": [0.5, 0.53],
+    "yoke.hat.1": [0.198, 0.268],
+    "yoke.rocker.1": [0.19, 0.318],
+    "yoke.switch.2": [0.808, 0.32]
+  },
+  "parts": {
+    "yoke.column": {
+      "type": "gimbal",
+      "name": "Yoke (roll / pitch)",
+      "inputs": [
+        {"input": "", "control": "yoke.axis.roll"},
+        {"input": "", "control": "yoke.axis.pitch"}
+      ],
+      "mapping": "medium",
+      "confidence": "medium",
+      "note": "yoke shaft entering the base (roll/pitch)"
+    },
+    "yoke.hat.1": {
+      "type": "hat",
+      "name": "8-way POV hat",
+      "inputs": [
+        {"input": "JOY_BTN_POV1_U", "control": "yoke.hat.1.up"},
+        {"input": "JOY_BTN_POV1_R", "control": "yoke.hat.1.right"},
+        {"input": "JOY_BTN_POV1_D", "control": "yoke.hat.1.down"},
+        {"input": "JOY_BTN_POV1_L", "control": "yoke.hat.1.left"}
+      ],
+      "mapping": "medium",
+      "confidence": "high",
+      "note": "8-way POV hat on top of the left handle"
+    },
+    "yoke.rocker.1": {
+      "type": "rocker",
+      "name": "Left momentary rocker",
+      "inputs": [
+        {"input": "JOY_BTN6", "control": "yoke.rocker.1.up"},
+        {"input": "JOY_BTN5", "control": "yoke.rocker.1.down"}
+      ],
+      "mapping": "medium",
+      "confidence": "high",
+      "note": "rocker below the hat on the left handle (pilot-facing side)"
+    },
+    "yoke.button.1": {
+      "type": "button",
+      "name": "PTT",
+      "inputs": [
+        {"input": "JOY_BTN1", "control": "yoke.button.1"}
+      ],
+      "mapping": "medium"
+    },
+    "yoke.button.2": {
+      "type": "button",
+      "name": "White left button",
+      "inputs": [
+        {"input": "JOY_BTN2", "control": "yoke.button.2"}
+      ],
+      "mapping": "medium",
+      "confidence": "high",
+      "note": "white button next to the hat (left handle)"
+    },
+    "yoke.button.3": {
+      "type": "button",
+      "name": "White right button",
+      "inputs": [
+        {"input": "JOY_BTN3", "control": "yoke.button.3"}
+      ],
+      "mapping": "medium",
+      "confidence": "high",
+      "note": "white button on the right handle"
+    },
+    "yoke.button.4": {
+      "type": "button",
+      "name": "AP disconnect",
+      "inputs": [
+        {"input": "JOY_BTN4", "control": "yoke.button.4"}
+      ],
+      "mapping": "medium",
+      "confidence": "high",
+      "note": "red AP disconnect button on the right handle"
+    },
+    "yoke.switch.2": {
+      "type": "switch",
+      "name": "Right momentary rocker",
+      "inputs": [
+        {"input": "JOY_BTN9", "control": "yoke.switch.2.left"},
+        {"input": "JOY_BTN10", "control": "yoke.switch.2.right"}
+      ],
+      "mapping": "medium",
+      "confidence": "high",
+      "note": "horizontal rocker below the red button (right handle)"
+    }
+  },
+  "unplaced": {
+    "yoke.button.1": "PTT trigger on the back of the handle, not visible from the front"
+  },
+  "candidates": {},
+  "source": "JoyPro curated on the maker's photo (2026-10-11), the yoke seen from the pilot's seat, slightly from above",
+  "mappingSource": "catalog honeycomb.json (numbering from a local game configuration file, not publicly documented; https://flyhoneycomb.com/products/alpha-flight-controls-lite); same button scheme as the Alpha (left white 2, right white 3, red 4, left rocker 5/6, right rocker 9/10)",
+  "confidence": "medium",
+  "note": "Each handle has one rocker on this Lite model (gallery-3/-4 close-ups confirm a single rocker per handle). The PTT trigger sits on the back of the handle and is not visible from this angle.",
+  "callouts": {
+    "version": 1,
+    "width": 3632,
+    "height": 2246,
+    "picture": [816, 38, 2000, 2000],
+    "rowHeight": 48,
+    "mainWidth": 408,
+    "modWidth": 264,
+    "otherY": 2076,
+    "tables": [
+      {"id": "yoke.hat.1", "title": "8-way POV hat", "parts": ["yoke.hat.1"], "side": "left", "x": 38, "y": 370, "width": 720, "modifier": true, "spot": [0.198, 0.268], "rows": [{"input": "JOY_BTN_POV1_U", "label": "Up", "icon": "up", "part": "yoke.hat.1"}, {"input": "JOY_BTN_POV1_R", "label": "Right", "icon": "right", "part": "yoke.hat.1"}, {"input": "JOY_BTN_POV1_L", "label": "Left", "icon": "left", "part": "yoke.hat.1"}, {"input": "JOY_BTN_POV1_D", "label": "Down", "icon": "down", "part": "yoke.hat.1"}]},
+      {"id": "yoke.rocker.1", "title": "Left momentary rocker", "parts": ["yoke.rocker.1"], "side": "left", "x": 38, "y": 708, "width": 720, "modifier": true, "spot": [0.19, 0.318], "rows": [{"input": "JOY_BTN6", "label": "Up", "icon": "up", "part": "yoke.rocker.1"}, {"input": "JOY_BTN5", "label": "Down", "icon": "down", "part": "yoke.rocker.1"}]},
+      {"id": "yoke.button.1", "title": "PTT", "parts": ["yoke.button.1"], "side": "other", "x": 38, "y": 2125, "width": 720, "modifier": true, "rows": [{"input": "JOY_BTN1", "label": "Press", "icon": "button", "part": "yoke.button.1"}]},
+      {"id": "yoke.button.2", "title": "White left button", "parts": ["yoke.button.2"], "side": "left", "x": 38, "y": 611, "width": 720, "modifier": true, "spot": [0.236, 0.29], "rows": [{"input": "JOY_BTN2", "label": "Press", "icon": "button", "part": "yoke.button.2"}]},
+      {"id": "yoke.button.3", "title": "White right button", "parts": ["yoke.button.3"], "side": "right", "x": 2874, "y": 574.3, "width": 720, "modifier": true, "spot": [0.762, 0.295], "rows": [{"input": "JOY_BTN3", "label": "Press", "icon": "button", "part": "yoke.button.3"}]},
+      {"id": "yoke.button.4", "title": "AP disconnect", "parts": ["yoke.button.4"], "side": "right", "x": 2874, "y": 477.3, "width": 720, "modifier": true, "spot": [0.8, 0.278], "rows": [{"input": "JOY_BTN4", "label": "Press", "icon": "button", "part": "yoke.button.4"}]},
+      {"id": "yoke.switch.2", "title": "Right momentary rocker", "parts": ["yoke.switch.2"], "side": "right", "x": 2874, "y": 671.3, "width": 720, "modifier": true, "spot": [0.808, 0.32], "rows": [{"input": "JOY_BTN10", "label": "Right", "icon": "right", "part": "yoke.switch.2"}, {"input": "JOY_BTN9", "label": "Left", "icon": "left", "part": "yoke.switch.2"}]}
+    ],
+    "lines": [
+      {"table": "yoke.hat.1", "points": [[1212, 574], [787, 574], [787, 429], [758, 429]]},
+      {"table": "yoke.button.2", "points": [[1288, 618], [787, 618], [787, 670], [758, 670]]},
+      {"table": "yoke.rocker.1", "points": [[1196, 674], [787, 674], [787, 767], [758, 767]]},
+      {"table": "yoke.button.4", "points": [[2416, 594], [2845, 594], [2845, 536.3], [2874, 536.3]]},
+      {"table": "yoke.button.3", "points": [[2340, 628], [2845, 628], [2845, 633.3], [2874, 633.3]]},
+      {"table": "yoke.switch.2", "points": [[2432, 678], [2845, 678], [2845, 730.3], [2874, 730.3]]}
+    ]
+  }
+}

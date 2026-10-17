@@ -1,0 +1,107 @@
+{
+  "format": "joypro-device-layout",
+  "version": 1,
+  "model": "thrustmaster-tflight-stick-x",
+  "photo": {"kind": "vendor", "url": "https://support.thrustmaster.com/wp-content/uploads/TflightStickX.jpg", "sha256": "0b93e085a43cf2e1a4d1f466d32f21921e90daad503faa40d1ee3f36ae0c6213", "view": "main"},
+  "markers": {
+    "stick.axis.slider": [0.47, 0.71],
+    "stick.axis.twist": [0.44, 0.25],
+    "stick.gimbal": [0.5, 0.5],
+    "stick.hat.trim": [0.33, 0.08]
+  },
+  "parts": {
+    "stick.hat.trim": {
+      "type": "hat",
+      "name": "Trim hat",
+      "inputs": [
+        {"input": "JOY_BTN_POV1_U", "control": "stick.hat.trim.up"},
+        {"input": "JOY_BTN_POV1_R", "control": "stick.hat.trim.right"},
+        {"input": "JOY_BTN_POV1_D", "control": "stick.hat.trim.down"},
+        {"input": "JOY_BTN_POV1_L", "control": "stick.hat.trim.left"}
+      ],
+      "mapping": "medium",
+      "confidence": "high",
+      "note": "ribbed hat on the left of the head"
+    },
+    "stick.trigger": {
+      "type": "trigger",
+      "name": "Trigger",
+      "inputs": [
+        {"input": "JOY_BTN1", "control": "stick.trigger.stage1"}
+      ],
+      "mapping": "medium"
+    },
+    "stick.button.index_lower": {
+      "type": "button",
+      "name": "secondary trigger",
+      "inputs": [
+        {"input": "JOY_BTN2", "control": "stick.button.index_lower"}
+      ],
+      "mapping": "medium"
+    },
+    "stick.axis.twist": {
+      "type": "twist",
+      "name": "Twist",
+      "inputs": [
+        {"input": "JOY_RZ", "control": "stick.axis.twist"}
+      ],
+      "mapping": "medium",
+      "confidence": "medium",
+      "note": "twist of the handle"
+    },
+    "stick.gimbal": {
+      "type": "gimbal",
+      "name": "Stick (roll / pitch)",
+      "inputs": [
+        {"input": "JOY_X", "control": "stick.axis.roll"},
+        {"input": "JOY_Y", "control": "stick.axis.pitch"}
+      ],
+      "mapping": "medium",
+      "confidence": "medium",
+      "note": "stick base joint inside the silver ring"
+    },
+    "stick.axis.slider": {
+      "type": "slider",
+      "name": "Slider",
+      "inputs": [
+        {"input": "JOY_SLIDER1", "control": "stick.axis.slider"}
+      ],
+      "mapping": "medium",
+      "confidence": "medium",
+      "note": "thumb throttle slider at the front of the base"
+    }
+  },
+  "unplaced": {
+    "stick.trigger": "on the front of the grip below the head, faces away from the camera",
+    "stick.button.index_lower": "key under the front of the head (manual 3), faces away from the camera; catalog maps it to button 2, the manual's 2 is the centre thumb key"
+  },
+  "candidates": {},
+  "source": "JoyPro curated on the maker's photo (2026-10-11), seen from the pilot side front-left and above: head keys facing the camera, grip front to the left, thumb throttle slider at the front of the base",
+  "mappingSource": "T.Flight Stick X user manual (https://ts.thrustmaster.com/download/accessories/pc/joysticks/manuals/tflightstickx/tfsx_user_manual.pdf) p.3 \"Automatic preset\" PC diagram: D-pad hat, 1 trigger, 2 centre head key, 3 key under the front of the head, 4 right flank key, 5-10 base left, 11/12 base right, X/Y handle, RZ twist, Slider 0 throttle; catalog cites EDRefCard (1 trigger, 2 secondary trigger)",
+  "confidence": "medium",
+  "note": "Catalog discrepancy: the catalog maps \"secondary trigger\" (stick.button.index_lower) to button 2 per EDRefCard; the vendor diagram puts 2 on the centre thumb key of the head and the second index-finger key (under the front of the head) is 3. The trigger and the key under the head's front face away from the camera on this photo.",
+  "callouts": {
+    "version": 1,
+    "width": 1156,
+    "height": 878,
+    "picture": [340, 134, 800, 600],
+    "rowHeight": 20,
+    "mainWidth": 170,
+    "modWidth": 110,
+    "otherY": 808,
+    "tables": [
+      {"id": "stick.hat.trim", "title": "Trim hat", "parts": ["stick.hat.trim"], "side": "top", "x": 345, "y": 16, "width": 300, "modifier": true, "spot": [0.33, 0.08], "rows": [{"input": "JOY_BTN_POV1_U", "label": "Up", "icon": "up", "part": "stick.hat.trim"}, {"input": "JOY_BTN_POV1_R", "label": "Right", "icon": "right", "part": "stick.hat.trim"}, {"input": "JOY_BTN_POV1_L", "label": "Left", "icon": "left", "part": "stick.hat.trim"}, {"input": "JOY_BTN_POV1_D", "label": "Down", "icon": "down", "part": "stick.hat.trim"}]},
+      {"id": "stick.trigger", "title": "Trigger", "parts": ["stick.trigger"], "side": "other", "x": 16, "y": 828, "width": 300, "modifier": true, "rows": [{"input": "JOY_BTN1", "label": "First stage", "icon": "button", "part": "stick.trigger"}]},
+      {"id": "stick.button.index_lower", "title": "secondary trigger", "parts": ["stick.button.index_lower"], "side": "other", "x": 322, "y": 828, "width": 300, "modifier": true, "rows": [{"input": "JOY_BTN2", "label": "Press", "icon": "button", "part": "stick.button.index_lower"}]},
+      {"id": "stick.axis.twist", "title": "Twist", "parts": ["stick.axis.twist"], "side": "top", "x": 651, "y": 76, "width": 300, "modifier": true, "spot": [0.44, 0.25], "rows": [{"input": "JOY_RZ", "label": "RZ", "icon": "axis", "part": "stick.axis.twist"}]},
+      {"id": "stick.gimbal", "title": "Stick (roll / pitch)", "parts": ["stick.gimbal"], "side": "left", "x": 16, "y": 410, "width": 300, "modifier": true, "spot": [0.5, 0.5], "rows": [{"input": "JOY_X", "label": "roll (X)", "icon": "axis", "part": "stick.gimbal"}, {"input": "JOY_Y", "label": "pitch (Y)", "icon": "axis", "part": "stick.gimbal"}]},
+      {"id": "stick.axis.slider", "title": "Slider", "parts": ["stick.axis.slider"], "side": "bottom", "x": 566, "y": 758, "width": 300, "modifier": true, "spot": [0.47, 0.71], "rows": [{"input": "JOY_SLIDER1", "label": "SLIDER1", "icon": "axis", "part": "stick.axis.slider"}]}
+    ],
+    "lines": [
+      {"table": "stick.gimbal", "points": [[740, 434], [316, 434]]},
+      {"table": "stick.hat.trim", "points": [[604, 182], [604, 122], [495, 122], [495, 110]]},
+      {"table": "stick.axis.twist", "points": [[692, 284], [692, 122], [801, 122], [801, 110]]},
+      {"table": "stick.axis.slider", "points": [[716, 560], [716, 758]]}
+    ]
+  }
+}

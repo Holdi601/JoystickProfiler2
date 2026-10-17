@@ -1,0 +1,115 @@
+{
+  "format": "joypro-device-layout",
+  "version": 1,
+  "model": "vpforce-rhino-winwing-fa18",
+  "photo": {"kind": "vendor", "url": "https://eu.winctrl.com/static/ipfs/QmSjWgThT1cMzea5DfYiwPuPq5EihvrSc2X3VpqCAVyrft", "sha256": "6bc086cce37d4e8601174729783a91919d8934748b2833189ec1a91653a719b8", "view": "main"},
+  "markers": {
+    "stick.hat.dms": [0.46, 0.455],
+    "stick.hat.tms": [0.42, 0.15],
+    "stick.hat.trim": [0.52, 0.12],
+    "stick.trigger": [0.37, 0.355],
+    "stick.weapon_release": [0.315, 0.225]
+  },
+  "parts": {
+    "stick.hat.trim": {
+      "type": "hat",
+      "name": "Trim hat",
+      "inputs": [
+        {"input": "", "control": "stick.hat.trim.up"},
+        {"input": "", "control": "stick.hat.trim.down"},
+        {"input": "", "control": "stick.hat.trim.left"},
+        {"input": "", "control": "stick.hat.trim.right"}
+      ],
+      "mapping": "medium",
+      "confidence": "high",
+      "note": "trim hat on the top right of the head (NOSE UP marking)"
+    },
+    "stick.weapon_release": {
+      "type": "release",
+      "name": "Weapon release",
+      "inputs": [
+        {"input": "", "control": "stick.weapon_release"}
+      ],
+      "mapping": "medium",
+      "confidence": "high",
+      "note": "red weapon release button on the top left of the head"
+    },
+    "stick.hat.tms": {
+      "type": "hat",
+      "name": "TMS hat",
+      "inputs": [
+        {"input": "", "control": "stick.hat.tms.up"},
+        {"input": "", "control": "stick.hat.tms.down"},
+        {"input": "", "control": "stick.hat.tms.left"},
+        {"input": "", "control": "stick.hat.tms.right"}
+      ],
+      "mapping": "medium",
+      "confidence": "high",
+      "note": "sensor control 4-way switch in the centre of the head"
+    },
+    "stick.hat.dms": {
+      "type": "hat",
+      "name": "DMS hat",
+      "inputs": [
+        {"input": "", "control": "stick.hat.dms.up"},
+        {"input": "", "control": "stick.hat.dms.down"},
+        {"input": "", "control": "stick.hat.dms.left"},
+        {"input": "", "control": "stick.hat.dms.right"}
+      ],
+      "mapping": "medium",
+      "confidence": "high",
+      "note": "weapon select castle switch on the left front of the grip"
+    },
+    "stick.trigger": {
+      "type": "trigger",
+      "name": "Trigger",
+      "inputs": [
+        {"input": "", "control": "stick.trigger.stage1"},
+        {"input": "", "control": "stick.trigger.stage2"}
+      ],
+      "mapping": "high",
+      "confidence": "high",
+      "note": "red trigger under the head (two stages)"
+    },
+    "stick.pinky.lever": {
+      "type": "paddle",
+      "name": "Pinky lever",
+      "inputs": [
+        {"input": "", "control": "stick.pinky.lever"}
+      ],
+      "mapping": "medium"
+    },
+    "stick.gimbal": {
+      "type": "gimbal",
+      "name": "Stick (roll / pitch)",
+      "inputs": [
+        {"input": "JOY_X", "control": "stick.axis.roll"},
+        {"input": "JOY_Y", "control": "stick.axis.pitch"}
+      ],
+      "mapping": "medium"
+    }
+  },
+  "unplaced": {
+    "stick.pinky.lever": "paddle on the lower front of the grip, not visible from this side",
+    "stick.gimbal": "the photo shows the grip only; the gimbal is in the Rhino base"
+  },
+  "candidates": {},
+  "source": "JoyPro curated on the maker's photo (2026-10-11), the WinWing F/A-18 grip alone (no base) seen from the pilot's left side, slightly from above; front of the grip to the left",
+  "mappingSource": "catalog vpforce.json (source https://docs.vpforce.eu/products/grip-adapters/): control names only, no input numbers (Rhino numbering set by the Configurator); identities by the F/A-18 stick layout as in the Thrustmaster F/A-18C grip manual (https://ts.thrustmaster.com/download/accessories/Manuals/FA18C/FA-18C_Hornet_Add-On_user_manual.pdf): TMS = sensor control switch (centre of the head), DMS = weapon select castle switch (left front), trim hat with NOSE UP marking, red weapon release top left",
+  "confidence": "medium",
+  "note": "The paddle (autopilot / NWS disengage lever) is on the lower front of the grip and is not visible from this side; the red button low on the front is the lower (undesignate/NWS) button, not a catalog part. The small round button below the trim is not a catalog part. The photo shows the grip only, so the gimbal is not marked.",
+  "callouts": {
+    "version": 1,
+    "width": 1660,
+    "height": 1831,
+    "picture": [30, 30, 1600, 1600],
+    "rowHeight": 38,
+    "mainWidth": 323,
+    "modWidth": 209,
+    "otherY": 1660,
+    "tables": [
+      {"id": "stick.gimbal", "title": "Stick (roll / pitch)", "parts": ["stick.gimbal"], "side": "other", "x": 30, "y": 1698, "width": 570, "modifier": true, "rows": [{"input": "JOY_X", "label": "roll (X)", "icon": "axis", "part": "stick.gimbal"}, {"input": "JOY_Y", "label": "pitch (Y)", "icon": "axis", "part": "stick.gimbal"}]}
+    ],
+    "lines": []
+  }
+}

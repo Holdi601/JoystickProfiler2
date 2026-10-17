@@ -1,0 +1,67 @@
+{
+  "format": "joypro-device-layout",
+  "version": 1,
+  "model": "winwing-cyber-taurus-pedals-32",
+  "photo": {"kind": "vendor", "url": "https://eu.winctrl.com/static/ipfs/QmaYwv3B2mueLqGov18AWYeydLX7sC89SQNX8UF98ve7qV", "sha256": "797fb5000a721d047689565a47e687d98458e92eff07768f2fb384bab7cbaba3", "view": "main"},
+  "markers": {
+    "pedals.axis.brake_left": [0.225, 0.29],
+    "pedals.axis.brake_right": [0.755, 0.56],
+    "pedals.axis.rudder": [0.46, 0.57]
+  },
+  "parts": {
+    "pedals.axis.rudder": {
+      "type": "rudder",
+      "name": "Rudder",
+      "inputs": [
+        {"input": "", "control": "pedals.axis.rudder"}
+      ],
+      "mapping": "medium",
+      "confidence": "medium",
+      "note": "rocker arm over the main shaft; rudder axis has no axis letter in the manual (no input)"
+    },
+    "pedals.axis.brake_left": {
+      "type": "brake",
+      "name": "Left toe brake",
+      "inputs": [
+        {"input": "JOY_RY", "control": "pedals.axis.brake_left"}
+      ],
+      "mapping": "high",
+      "confidence": "high",
+      "note": "left pedal plate (upper left), manual Ry"
+    },
+    "pedals.axis.brake_right": {
+      "type": "brake",
+      "name": "Right toe brake",
+      "inputs": [
+        {"input": "JOY_RX", "control": "pedals.axis.brake_right"}
+      ],
+      "mapping": "high",
+      "confidence": "high",
+      "note": "right pedal plate (lower right), manual Rx"
+    }
+  },
+  "unplaced": {},
+  "candidates": {},
+  "source": "JoyPro curated on the maker's photo (2026-10-11), Cyber Taurus 32 (EB530, airline plates) FFB pedals seen from the pilot's side, front-left and above: left pedal at the upper left, right pedal at the lower right, FFB drive motor at the far right, rocker arm with HALL sensor in the middle",
+  "mappingSource": "WinCtrl \"Cyber Taurus 32 / Combat Rudder Pedals (CT.*.R) User Manual\" section 3.2 Key positions drawing, page 8 (https://eu.winctrl.com/static/ipfs/QmNu2Koz6sDJ5YGgUVWx1fKTm4f85RW7kMBTQS9jdkFkwt): left toe brake = Ry, right toe brake = Rx (0-65535); main shaft 0-65535 drawn without an axis letter, so the rudder has no input in the catalog",
+  "confidence": "high",
+  "note": "Toe brakes are the pedal plates tilting on their lower hinges; markers sit on the upper (toe) half of each plate. The rudder marker sits on the rocker arm above the main shaft bearings.",
+  "callouts": {
+    "version": 1,
+    "width": 2892,
+    "height": 1660,
+    "picture": [646, 30, 1600, 1600],
+    "rowHeight": 38,
+    "mainWidth": 323,
+    "modWidth": 209,
+    "otherY": -1,
+    "tables": [
+      {"id": "pedals.axis.brake_left", "title": "Left toe brake", "parts": ["pedals.axis.brake_left"], "side": "left", "x": 30, "y": 448, "width": 570, "modifier": true, "spot": [0.225, 0.29], "rows": [{"input": "JOY_RY", "label": "RY", "icon": "axis", "part": "pedals.axis.brake_left"}]},
+      {"id": "pedals.axis.brake_right", "title": "Right toe brake", "parts": ["pedals.axis.brake_right"], "side": "right", "x": 2292, "y": 880, "width": 570, "modifier": true, "spot": [0.755, 0.56], "rows": [{"input": "JOY_RX", "label": "RX", "icon": "axis", "part": "pedals.axis.brake_right"}]}
+    ],
+    "lines": [
+      {"table": "pedals.axis.brake_left", "points": [[1006, 494], [600, 494]]},
+      {"table": "pedals.axis.brake_right", "points": [[1854, 926], [2292, 926]]}
+    ]
+  }
+}

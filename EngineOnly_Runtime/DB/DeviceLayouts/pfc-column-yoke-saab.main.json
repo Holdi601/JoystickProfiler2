@@ -1,0 +1,108 @@
+{
+  "format": "joypro-device-layout",
+  "version": 1,
+  "model": "pfc-column-yoke-saab",
+  "photo": {"kind": "vendor", "url": "https://flypfc.com/wp-content/uploads/2020/05/Saab-Column-Yoke-3-close.png", "sha256": "cdff281f0d1f3b21056018ec3256510ab5e191b02399c54c9d8d07620e622967", "view": "main"},
+  "markers": {
+    "yoke.column": [0.5, 0.161]
+  },
+  "parts": {
+    "yoke.column": {
+      "type": "gimbal",
+      "name": "Yoke (roll / pitch)",
+      "inputs": [
+        {"input": "JOY_X", "control": "yoke.axis.roll"},
+        {"input": "JOY_Y", "control": "yoke.axis.pitch"}
+      ],
+      "mapping": "medium",
+      "confidence": "medium",
+      "note": "wheel hub on the column (roll and pitch)"
+    },
+    "yoke.hat.1": {
+      "type": "hat",
+      "name": "Rocker switch 1",
+      "inputs": [
+        {"input": "", "control": "yoke.hat.1.up"},
+        {"input": "", "control": "yoke.hat.1.right"},
+        {"input": "", "control": "yoke.hat.1.down"},
+        {"input": "", "control": "yoke.hat.1.left"}
+      ],
+      "mapping": "low"
+    },
+    "yoke.hat.2": {
+      "type": "hat",
+      "name": "Rocker switch 2",
+      "inputs": [
+        {"input": "", "control": "yoke.hat.2.up"},
+        {"input": "", "control": "yoke.hat.2.right"},
+        {"input": "", "control": "yoke.hat.2.down"},
+        {"input": "", "control": "yoke.hat.2.left"}
+      ],
+      "mapping": "low"
+    },
+    "yoke.button.1": {
+      "type": "button",
+      "name": "Button 1",
+      "inputs": [
+        {"input": "", "control": "yoke.button.1"}
+      ],
+      "mapping": "medium"
+    },
+    "yoke.button.2": {
+      "type": "button",
+      "name": "Button 2",
+      "inputs": [
+        {"input": "", "control": "yoke.button.2"}
+      ],
+      "mapping": "medium"
+    },
+    "yoke.button.3": {
+      "type": "button",
+      "name": "Button 3",
+      "inputs": [
+        {"input": "", "control": "yoke.button.3"}
+      ],
+      "mapping": "medium"
+    },
+    "yoke.button.4": {
+      "type": "button",
+      "name": "Button 4",
+      "inputs": [
+        {"input": "", "control": "yoke.button.4"}
+      ],
+      "mapping": "medium"
+    }
+  },
+  "unplaced": {
+    "yoke.hat.1": "small switch on the left grip top; which rocker is 1 is a guess",
+    "yoke.hat.2": "small switch on the right grip top; which rocker is 2 is a guess",
+    "yoke.button.1": "not identifiable on this small photo (no diagram in the PFC guide)",
+    "yoke.button.2": "not identifiable on this small photo (no diagram in the PFC guide)",
+    "yoke.button.3": "not identifiable on this small photo (no diagram in the PFC guide)",
+    "yoke.button.4": "not identifiable on this small photo (no diagram in the PFC guide)"
+  },
+  "candidates": {
+    "yoke.hat.1": [0.216, 0.039],
+    "yoke.hat.2": [0.733, 0.039]
+  },
+  "source": "JoyPro curated on the maker's photo (2026-10-11), the floor column with the Saab-style wheel from the front-left; small (216x440) and blurry",
+  "mappingSource": "catalog (flypfc.com 2020_USB_Jetliner_Column_Yoke_Book.pdf, 2017_USB_Yoke_Book.pdf): \"PFC Cirrus Yoke\", X = roll, Y = pitch; the Saab wheel has two 4-position rocker switches and four single-function buttons. The guide (checked 2026-10-12, 12 pages) has no switch diagram and no button numbers.",
+  "confidence": "low",
+  "note": "Only the yoke axes are placed (at the wheel hub on the column). The grip tops each carry small switches (a red button on the left grip), but at this resolution neither rocker 1 vs 2 nor buttons 1-4 can be told apart; the rockers are kept as low candidates (left grip = 1 is a guess), the buttons are not placed.",
+  "callouts": {
+    "version": 1,
+    "width": 572,
+    "height": 472,
+    "picture": [340, 16, 216, 440],
+    "rowHeight": 20,
+    "mainWidth": 170,
+    "modWidth": 110,
+    "otherY": -1,
+    "tables": [
+      {"id": "yoke.column", "title": "Yoke (roll / pitch)", "parts": ["yoke.column"], "side": "left", "x": 16, "y": 62.8, "width": 300, "modifier": true, "spot": [0.5, 0.161], "rows": [{"input": "JOY_X", "label": "roll (X)", "icon": "axis", "part": "yoke.column"}, {"input": "JOY_Y", "label": "pitch (Y)", "icon": "axis", "part": "yoke.column"}]}
+    ],
+    "lines": [
+      {"table": "yoke.column", "points": [[448, 86.8], [316, 86.8]]}
+    ]
+  }
+}

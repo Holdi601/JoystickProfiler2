@@ -1,0 +1,190 @@
+{
+  "format": "joypro-device-layout",
+  "version": 1,
+  "model": "winwing-carrierace-joystick-grip",
+  "photo": {"kind": "vendor", "url": "https://eu.winctrl.com/static/ipfs/QmWWSzfXYPiwmK4fgyNjntejY71CeAmED81oPyuNLbEVH8", "sha256": "18a7964c3d65b20fffd3509ab7bf90ca0a5b753c0e008c04dd304129b1b872d7", "view": "main"},
+  "markers": {
+    "stick.axis.brake_lever": [0.585, 0.68],
+    "stick.gimbal": [0.415, 0.905],
+    "stick.hat.1": [0.517, 0.235],
+    "stick.hat.cms": [0.488, 0.115],
+    "stick.hat.dms": [0.33, 0.345],
+    "stick.hat.trim": [0.594, 0.172],
+    "stick.pinky.lever": [0.588, 0.64],
+    "stick.trigger": [0.608, 0.365],
+    "stick.weapon_release": [0.413, 0.103]
+  },
+  "parts": {
+    "stick.hat.trim": {
+      "type": "hat",
+      "name": "Trim hat",
+      "inputs": [
+        {"input": "JOY_BTN_POV1_U", "control": "stick.hat.trim.up"},
+        {"input": "JOY_BTN_POV1_UR", "control": "stick.hat.trim.upright"},
+        {"input": "JOY_BTN_POV1_R", "control": "stick.hat.trim.right"},
+        {"input": "JOY_BTN_POV1_DR", "control": "stick.hat.trim.downright"},
+        {"input": "JOY_BTN_POV1_D", "control": "stick.hat.trim.down"},
+        {"input": "JOY_BTN_POV1_DL", "control": "stick.hat.trim.downleft"},
+        {"input": "JOY_BTN_POV1_L", "control": "stick.hat.trim.left"},
+        {"input": "JOY_BTN_POV1_UL", "control": "stick.hat.trim.upleft"},
+        {"input": "JOY_BTN19", "control": "stick.hat.trim.press"}
+      ],
+      "mapping": "high",
+      "confidence": "high",
+      "note": "silver trim hat with NOSE DOWN/UP print, manual 19 (+ HAT directions)"
+    },
+    "stick.weapon_release": {
+      "type": "release",
+      "name": "Weapon release",
+      "inputs": [
+        {"input": "JOY_BTN20", "control": "stick.weapon_release"}
+      ],
+      "mapping": "high",
+      "confidence": "high",
+      "note": "red button top-left, manual 20"
+    },
+    "stick.hat.dms": {
+      "type": "hat",
+      "name": "DMS hat",
+      "inputs": [
+        {"input": "JOY_BTN9", "control": "stick.hat.dms.press"},
+        {"input": "JOY_BTN10", "control": "stick.hat.dms.up"},
+        {"input": "JOY_BTN11", "control": "stick.hat.dms.right"},
+        {"input": "JOY_BTN12", "control": "stick.hat.dms.down"},
+        {"input": "JOY_BTN13", "control": "stick.hat.dms.left"}
+      ],
+      "mapping": "high",
+      "confidence": "high",
+      "note": "tall 5-way on the left post, manual 9-13"
+    },
+    "stick.hat.cms": {
+      "type": "hat",
+      "name": "CMS hat",
+      "inputs": [
+        {"input": "JOY_BTN21", "control": "stick.hat.cms.press"},
+        {"input": "JOY_BTN22", "control": "stick.hat.cms.up"},
+        {"input": "JOY_BTN23", "control": "stick.hat.cms.right"},
+        {"input": "JOY_BTN24", "control": "stick.hat.cms.down"},
+        {"input": "JOY_BTN25", "control": "stick.hat.cms.left"}
+      ],
+      "mapping": "high",
+      "confidence": "high",
+      "note": "castle 5-way with arrows on top, manual 21-25"
+    },
+    "stick.trigger": {
+      "type": "trigger",
+      "name": "Trigger",
+      "inputs": [
+        {"input": "JOY_BTN4", "control": "stick.trigger.stage1"},
+        {"input": "JOY_BTN5", "control": "stick.trigger.stage2"}
+      ],
+      "mapping": "high",
+      "confidence": "high",
+      "note": "red trigger tip, manual 4 (1st) / 5 (2nd stage)"
+    },
+    "stick.pinky.lever": {
+      "type": "paddle",
+      "name": "Pinky lever",
+      "inputs": [
+        {"input": "JOY_BTN8", "control": "stick.pinky.lever"}
+      ],
+      "mapping": "high",
+      "confidence": "high",
+      "note": "lower paddle, end switch manual 8"
+    },
+    "stick.pinky.button": {
+      "type": "button",
+      "name": "Pinky button",
+      "inputs": [
+        {"input": "JOY_BTN6", "control": "stick.pinky.button"}
+      ],
+      "mapping": "high"
+    },
+    "stick.axis.twist": {
+      "type": "twist",
+      "name": "Twist",
+      "inputs": [
+        {"input": "JOY_Z", "control": "stick.axis.twist"}
+      ],
+      "mapping": "high"
+    },
+    "stick.gimbal": {
+      "type": "gimbal",
+      "name": "Stick (roll / pitch)",
+      "inputs": [
+        {"input": "JOY_X", "control": "stick.axis.roll"},
+        {"input": "JOY_Y", "control": "stick.axis.pitch"}
+      ],
+      "mapping": "medium",
+      "confidence": "medium",
+      "note": "grip's threaded base joint; X/Y from the Orion 2 base (catalog)"
+    },
+    "stick.axis.brake_lever": {
+      "type": "brake",
+      "name": "Brake lever",
+      "inputs": [
+        {"input": "JOY_SLIDER1", "control": "stick.axis.brake_lever"}
+      ],
+      "mapping": "high",
+      "confidence": "high",
+      "note": "same lower paddle, Slider 0..65535 per manual"
+    },
+    "stick.hat.1": {
+      "type": "hat",
+      "name": "Hat 1",
+      "inputs": [
+        {"input": "JOY_BTN14", "control": "stick.hat.1.press"},
+        {"input": "JOY_BTN15", "control": "stick.hat.1.up"},
+        {"input": "JOY_BTN16", "control": "stick.hat.1.right"},
+        {"input": "JOY_BTN17", "control": "stick.hat.1.down"},
+        {"input": "JOY_BTN18", "control": "stick.hat.1.left"}
+      ],
+      "mapping": "high",
+      "confidence": "high",
+      "note": "5-way under the thumb, manual 14-18"
+    }
+  },
+  "unplaced": {
+    "stick.pinky.button": "lower side button 6 is on the far (right) side of the grip, hidden",
+    "stick.axis.twist": "no twist on this grip per manual; Z would come from the base's Z module"
+  },
+  "candidates": {},
+  "source": "JoyPro curated on the maker's photo (2026-10-11), F/A-18 stick grip alone (no base) seen from behind and the left (pilot's thumb side), head with trim hat facing the viewer, trigger tip and lower paddle on the right",
+  "mappingSource": "WinCtrl \"CarrierAce Joystick Grip R.Metal 2.0 User Manual V1.0 2025.11.18\" section 3.2 Buttons drawing, page 15 (https://eu.winctrl.com/static/ipfs/QmZPAZez5Jc22RgvWKVPgq1hTGqbrK4Kr4uhfyGtbXjno3): 19 = 9-way trim HAT, 20 = red top-left button, 21-25 = top castle 5-way, 14-18 = 5-way under the thumb, 9-13 = tall 5-way on the left post, 4/5 = trigger stages, 6 = lower side button, 7/8 + Slider = lower paddle; matches the catalog note exactly",
+  "confidence": "high",
+  "note": "The thumb wheel (manual 1, 2, 26, 27, 3) is between the castle and the thumb 5-way but has no catalog part. X/Y (and an optional Z twist module) come from the Orion 2 base; gimbal marker at the grip's threaded base joint. The lower paddle carries both the Slider axis (brake lever part) and its end switch 8 (pinky lever part), so both markers sit on the same paddle.",
+  "callouts": {
+    "version": 1,
+    "width": 2892,
+    "height": 2205,
+    "picture": [646, 293, 1600, 1600],
+    "rowHeight": 38,
+    "mainWidth": 323,
+    "modWidth": 209,
+    "otherY": 2072,
+    "tables": [
+      {"id": "stick.hat.trim", "title": "Trim hat", "parts": ["stick.hat.trim"], "side": "right", "x": 2292, "y": 329.4, "width": 570, "modifier": true, "spot": [0.594, 0.172], "rows": [{"input": "JOY_BTN19", "label": "Press", "icon": "button", "part": "stick.hat.trim"}, {"input": "JOY_BTN_POV1_U", "label": "Up", "icon": "up", "part": "stick.hat.trim"}, {"input": "JOY_BTN_POV1_R", "label": "Right", "icon": "right", "part": "stick.hat.trim"}, {"input": "JOY_BTN_POV1_L", "label": "Left", "icon": "left", "part": "stick.hat.trim"}, {"input": "JOY_BTN_POV1_D", "label": "Down", "icon": "down", "part": "stick.hat.trim"}, {"input": "JOY_BTN_POV1_UR", "label": "Up-right", "icon": "upright", "part": "stick.hat.trim"}, {"input": "JOY_BTN_POV1_UL", "label": "Up-left", "icon": "upleft", "part": "stick.hat.trim"}, {"input": "JOY_BTN_POV1_DR", "label": "Down-right", "icon": "downright", "part": "stick.hat.trim"}, {"input": "JOY_BTN_POV1_DL", "label": "Down-left", "icon": "downleft", "part": "stick.hat.trim"}]},
+      {"id": "stick.weapon_release", "title": "Weapon release", "parts": ["stick.weapon_release"], "side": "top", "x": 791.3, "y": 182, "width": 570, "modifier": true, "spot": [0.413, 0.103], "rows": [{"input": "JOY_BTN20", "label": "Press", "icon": "button", "part": "stick.weapon_release"}]},
+      {"id": "stick.hat.dms", "title": "DMS hat", "parts": ["stick.hat.dms"], "side": "left", "x": 30, "y": 799, "width": 570, "modifier": true, "spot": [0.33, 0.345], "rows": [{"input": "JOY_BTN9", "label": "Press", "icon": "button", "part": "stick.hat.dms"}, {"input": "JOY_BTN10", "label": "Up", "icon": "up", "part": "stick.hat.dms"}, {"input": "JOY_BTN11", "label": "Right", "icon": "right", "part": "stick.hat.dms"}, {"input": "JOY_BTN13", "label": "Left", "icon": "left", "part": "stick.hat.dms"}, {"input": "JOY_BTN12", "label": "Down", "icon": "down", "part": "stick.hat.dms"}]},
+      {"id": "stick.hat.cms", "title": "CMS hat", "parts": ["stick.hat.cms"], "side": "top", "x": 1372.3, "y": 30, "width": 570, "modifier": true, "spot": [0.488, 0.115], "rows": [{"input": "JOY_BTN21", "label": "Press", "icon": "button", "part": "stick.hat.cms"}, {"input": "JOY_BTN22", "label": "Up", "icon": "up", "part": "stick.hat.cms"}, {"input": "JOY_BTN23", "label": "Right", "icon": "right", "part": "stick.hat.cms"}, {"input": "JOY_BTN25", "label": "Left", "icon": "left", "part": "stick.hat.cms"}, {"input": "JOY_BTN24", "label": "Down", "icon": "down", "part": "stick.hat.cms"}]},
+      {"id": "stick.trigger", "title": "Trigger", "parts": ["stick.trigger"], "side": "right", "x": 2292, "y": 937.4, "width": 570, "modifier": true, "spot": [0.608, 0.365], "rows": [{"input": "JOY_BTN4", "label": "First stage", "icon": "button", "part": "stick.trigger"}, {"input": "JOY_BTN5", "label": "Second stage", "icon": "button", "part": "stick.trigger"}]},
+      {"id": "stick.pinky.lever", "title": "Pinky lever", "parts": ["stick.pinky.lever"], "side": "right", "x": 2292, "y": 1265, "width": 570, "modifier": true, "spot": [0.588, 0.64], "rows": [{"input": "JOY_BTN8", "label": "Press", "icon": "button", "part": "stick.pinky.lever"}]},
+      {"id": "stick.pinky.button", "title": "Pinky button", "parts": ["stick.pinky.button"], "side": "other", "x": 30, "y": 2110, "width": 570, "modifier": true, "rows": [{"input": "JOY_BTN6", "label": "Press", "icon": "button", "part": "stick.pinky.button"}]},
+      {"id": "stick.axis.twist", "title": "Twist", "parts": ["stick.axis.twist"], "side": "other", "x": 611, "y": 2110, "width": 570, "modifier": true, "rows": [{"input": "JOY_Z", "label": "Z", "icon": "axis", "part": "stick.axis.twist"}]},
+      {"id": "stick.gimbal", "title": "Stick (roll / pitch)", "parts": ["stick.gimbal"], "side": "bottom", "x": 1025, "y": 1939, "width": 570, "modifier": true, "spot": [0.415, 0.905], "rows": [{"input": "JOY_X", "label": "roll (X)", "icon": "axis", "part": "stick.gimbal"}, {"input": "JOY_Y", "label": "pitch (Y)", "icon": "axis", "part": "stick.gimbal"}]},
+      {"id": "stick.axis.brake_lever", "title": "Brake lever", "parts": ["stick.axis.brake_lever"], "side": "right", "x": 2292, "y": 1341, "width": 570, "modifier": true, "spot": [0.585, 0.68], "rows": [{"input": "JOY_SLIDER1", "label": "SLIDER1", "icon": "axis", "part": "stick.axis.brake_lever"}]},
+      {"id": "stick.hat.1", "title": "Hat 1", "parts": ["stick.hat.1"], "side": "right", "x": 2292, "y": 709.4, "width": 570, "modifier": true, "spot": [0.517, 0.235], "rows": [{"input": "JOY_BTN14", "label": "Press", "icon": "button", "part": "stick.hat.1"}, {"input": "JOY_BTN15", "label": "Up", "icon": "up", "part": "stick.hat.1"}, {"input": "JOY_BTN16", "label": "Right", "icon": "right", "part": "stick.hat.1"}, {"input": "JOY_BTN18", "label": "Left", "icon": "left", "part": "stick.hat.1"}, {"input": "JOY_BTN17", "label": "Down", "icon": "down", "part": "stick.hat.1"}]}
+    ],
+    "lines": [
+      {"table": "stick.hat.dms", "points": [[1174, 845], [600, 845]]},
+      {"table": "stick.hat.trim", "points": [[1596.4, 568.2], [2269, 568.2], [2269, 375.4], [2292, 375.4]]},
+      {"table": "stick.hat.1", "points": [[1473.2, 669], [2269, 669], [2269, 755.4], [2292, 755.4]]},
+      {"table": "stick.trigger", "points": [[1618.8, 877], [2269, 877], [2269, 983.4], [2292, 983.4]]},
+      {"table": "stick.pinky.lever", "points": [[1586.8, 1317], [2269, 1317], [2269, 1311], [2292, 1311]]},
+      {"table": "stick.axis.brake_lever", "points": [[1582, 1381], [2269, 1381], [2269, 1387], [2292, 1387]]},
+      {"table": "stick.weapon_release", "points": [[1306.8, 457.8], [1306.8, 270], [1076.3, 270], [1076.3, 247]]},
+      {"table": "stick.hat.cms", "points": [[1426.8, 477], [1426.8, 270], [1657.3, 270], [1657.3, 247]]},
+      {"table": "stick.gimbal", "points": [[1310, 1741], [1310, 1939]]}
+    ]
+  }
+}

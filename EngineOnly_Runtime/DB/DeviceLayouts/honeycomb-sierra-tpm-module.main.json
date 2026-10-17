@@ -1,0 +1,119 @@
+{
+  "format": "joypro-device-layout",
+  "version": 1,
+  "model": "honeycomb-sierra-tpm-module",
+  "photo": {"kind": "vendor", "url": "https://flyhoneycomb.com/cdn/shop/files/HC003998_SIERRATPMMODULE_Thumbnails_1_54ea60b6-1390-4afe-981c-a2ee2e8f6905.webp", "sha256": "ade306005fa091670c832b6e02dbca01c63efbd83b83692268a095a59de4ca3d", "view": "main"},
+  "markers": {
+    "panel.lever.flaps": [0.719, 0.45],
+    "panel.lever.gear": [0.875, 0.71],
+    "panel.rotary.1": [0.146, 0.52],
+    "panel.toggle.1": [0.723, 0.607],
+    "quadrant.axis.lever.1": [0.424, 0.565],
+    "quadrant.axis.lever.2": [0.273, 0.563],
+    "quadrant.axis.lever.3": [0.577, 0.565]
+  },
+  "parts": {
+    "quadrant.axis.lever.1": {
+      "type": "lever",
+      "name": "Propeller",
+      "inputs": [
+        {"input": "", "control": "quadrant.axis.lever.1"}
+      ],
+      "mapping": "medium",
+      "confidence": "high",
+      "note": "blue PROPELLER knob"
+    },
+    "quadrant.axis.lever.2": {
+      "type": "lever",
+      "name": "Throttle",
+      "inputs": [
+        {"input": "", "control": "quadrant.axis.lever.2"}
+      ],
+      "mapping": "medium",
+      "confidence": "high",
+      "note": "black THROTTLE knob"
+    },
+    "quadrant.axis.lever.3": {
+      "type": "lever",
+      "name": "Mixture",
+      "inputs": [
+        {"input": "", "control": "quadrant.axis.lever.3"}
+      ],
+      "mapping": "medium",
+      "confidence": "high",
+      "note": "red MIXTURE knob"
+    },
+    "panel.toggle.1": {
+      "type": "switch",
+      "name": "Parking brake",
+      "inputs": [
+        {"input": "JOY_BTN5", "control": "panel.toggle.1.up"},
+        {"input": "JOY_BTN6", "control": "panel.toggle.1.down"}
+      ],
+      "mapping": "medium",
+      "confidence": "high",
+      "note": "PARKING brake knob"
+    },
+    "panel.rotary.1": {
+      "type": "encoder",
+      "name": "Trim nose",
+      "inputs": [
+        {"input": "JOY_BTN1", "control": "panel.rotary.1.ccw"},
+        {"input": "JOY_BTN2", "control": "panel.rotary.1.cw"}
+      ],
+      "mapping": "medium",
+      "confidence": "high",
+      "note": "vertical TRIM wheel (NOSE DOWN / NOSE UP)"
+    },
+    "panel.lever.flaps": {
+      "type": "lever",
+      "name": "Flaps",
+      "inputs": [
+        {"input": "JOY_BTN3", "control": "panel.lever.flaps.up"},
+        {"input": "JOY_BTN4", "control": "panel.lever.flaps.down"}
+      ],
+      "mapping": "medium",
+      "confidence": "high",
+      "note": "white FLAP lever"
+    },
+    "panel.lever.gear": {
+      "type": "lever",
+      "name": "Gear",
+      "inputs": [
+        {"input": "JOY_BTN7", "control": "panel.lever.gear.up"},
+        {"input": "JOY_BTN8", "control": "panel.lever.gear.down"}
+      ],
+      "mapping": "medium",
+      "confidence": "high",
+      "note": "GEAR lever knob (UP/DOWN)"
+    }
+  },
+  "unplaced": {},
+  "candidates": {},
+  "source": "JoyPro curated on the maker's photo (2026-10-11), the module seen straight from the front",
+  "mappingSource": "catalog honeycomb.json (numbering from a local game configuration file, not publicly documented; https://flyhoneycomb.com/products/sierra-tpm-module); lever parts are named (propeller, throttle, mixture) but have no DirectInput axis names",
+  "confidence": "high",
+  "note": "The push-pull levers are marked on their knobs (labels THROTTLE, PROPELLER, MIXTURE above them). The PARKING control is a knob; the catalog lists it as a 2-way switch.",
+  "callouts": {
+    "version": 1,
+    "width": 3632,
+    "height": 2076,
+    "picture": [816, 38, 2000, 2000],
+    "rowHeight": 48,
+    "mainWidth": 408,
+    "modWidth": 264,
+    "otherY": -1,
+    "tables": [
+      {"id": "panel.toggle.1", "title": "Parking brake", "parts": ["panel.toggle.1"], "side": "right", "x": 2874, "y": 1193, "width": 720, "modifier": true, "spot": [0.723, 0.607], "rows": [{"input": "JOY_BTN5", "label": "Up", "icon": "up", "part": "panel.toggle.1"}, {"input": "JOY_BTN6", "label": "Down", "icon": "down", "part": "panel.toggle.1"}]},
+      {"id": "panel.rotary.1", "title": "Trim nose", "parts": ["panel.rotary.1"], "side": "left", "x": 38, "y": 1019, "width": 720, "modifier": true, "spot": [0.146, 0.52], "rows": [{"input": "JOY_BTN2", "label": "Clockwise", "icon": "right", "part": "panel.rotary.1"}, {"input": "JOY_BTN1", "label": "Counter-clockwise", "icon": "left", "part": "panel.rotary.1"}]},
+      {"id": "panel.lever.flaps", "title": "Flaps", "parts": ["panel.lever.flaps"], "side": "right", "x": 2874, "y": 879, "width": 720, "modifier": true, "spot": [0.719, 0.45], "rows": [{"input": "JOY_BTN3", "label": "Up", "icon": "up", "part": "panel.lever.flaps"}, {"input": "JOY_BTN4", "label": "Down", "icon": "down", "part": "panel.lever.flaps"}]},
+      {"id": "panel.lever.gear", "title": "Gear", "parts": ["panel.lever.gear"], "side": "right", "x": 2874, "y": 1399, "width": 720, "modifier": true, "spot": [0.875, 0.71], "rows": [{"input": "JOY_BTN7", "label": "Up", "icon": "up", "part": "panel.lever.gear"}, {"input": "JOY_BTN8", "label": "Down", "icon": "down", "part": "panel.lever.gear"}]}
+    ],
+    "lines": [
+      {"table": "panel.rotary.1", "points": [[1108, 1078], [758, 1078]]},
+      {"table": "panel.lever.flaps", "points": [[2254, 938], [2874, 938]]},
+      {"table": "panel.toggle.1", "points": [[2262, 1252], [2874, 1252]]},
+      {"table": "panel.lever.gear", "points": [[2566, 1458], [2874, 1458]]}
+    ]
+  }
+}

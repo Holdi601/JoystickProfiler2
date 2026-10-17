@@ -1,0 +1,150 @@
+{
+  "format": "joypro-device-layout",
+  "version": 1,
+  "model": "thrustmaster-top-gun-fox-2-pro-shock",
+  "photo": {"kind": "vendor", "url": "https://support.thrustmaster.com/wp-content/uploads/topgun-fox2-shock.jpg", "sha256": "da0fa386a306c3e0683a83cf2ceb50ef55298cdc116a4dd63346b73108cc55f0", "view": "main"},
+  "markers": {
+    "stick.axis.twist": [0.47, 0.3],
+    "stick.button.thumb.1": [0.455, 0.085],
+    "stick.button.thumb.2": [0.545, 0.09],
+    "stick.gimbal": [0.53, 0.56],
+    "stick.hat.1": [0.4, 0.1]
+  },
+  "parts": {
+    "stick.trigger": {
+      "type": "trigger",
+      "name": "Trigger",
+      "inputs": [
+        {"input": "", "control": "stick.trigger.stage1"}
+      ],
+      "mapping": "medium"
+    },
+    "stick.axis.twist": {
+      "type": "twist",
+      "name": "Twist",
+      "inputs": [
+        {"input": "", "control": "stick.axis.twist"}
+      ],
+      "mapping": "medium",
+      "confidence": "medium",
+      "note": "twist of the handle"
+    },
+    "stick.gimbal": {
+      "type": "gimbal",
+      "name": "Stick (roll / pitch)",
+      "inputs": [
+        {"input": "JOY_X", "control": "stick.axis.roll"},
+        {"input": "JOY_Y", "control": "stick.axis.pitch"}
+      ],
+      "mapping": "medium",
+      "confidence": "medium",
+      "note": "stick boot inside the silver base ring"
+    },
+    "stick.axis.slider": {
+      "type": "slider",
+      "name": "Throttle slider",
+      "inputs": [
+        {"input": "", "control": "stick.axis.slider"}
+      ],
+      "mapping": "medium"
+    },
+    "stick.hat.1": {
+      "type": "hat",
+      "name": "8-way POV hat",
+      "inputs": [
+        {"input": "", "control": "stick.hat.1.up"},
+        {"input": "", "control": "stick.hat.1.right"},
+        {"input": "", "control": "stick.hat.1.down"},
+        {"input": "", "control": "stick.hat.1.left"}
+      ],
+      "mapping": "medium",
+      "confidence": "high",
+      "note": "round 8-way hat on the left of the head"
+    },
+    "stick.button.thumb.1": {
+      "type": "button",
+      "name": "Head button",
+      "inputs": [
+        {"input": "", "control": "stick.button.thumb.1"}
+      ],
+      "mapping": "medium",
+      "confidence": "high",
+      "note": "orange/black striped button in the middle of the head"
+    },
+    "stick.button.thumb.2": {
+      "type": "button",
+      "name": "Head button",
+      "inputs": [
+        {"input": "", "control": "stick.button.thumb.2"}
+      ],
+      "mapping": "medium",
+      "confidence": "high",
+      "note": "dark wedge button on the right of the head"
+    },
+    "stick.button.thumb.3": {
+      "type": "button",
+      "name": "Head button",
+      "inputs": [
+        {"input": "", "control": "stick.button.thumb.3"}
+      ],
+      "mapping": "medium"
+    },
+    "stick.base.button.1": {
+      "type": "button",
+      "name": "Base button",
+      "inputs": [
+        {"input": "", "control": "stick.base.button.1"}
+      ],
+      "mapping": "medium"
+    },
+    "stick.base.button.2": {
+      "type": "button",
+      "name": "Base button",
+      "inputs": [
+        {"input": "", "control": "stick.base.button.2"}
+      ],
+      "mapping": "medium"
+    },
+    "stick.base.button.3": {
+      "type": "button",
+      "name": "Base button",
+      "inputs": [
+        {"input": "", "control": "stick.base.button.3"}
+      ],
+      "mapping": "medium"
+    }
+  },
+  "unplaced": {
+    "stick.trigger": "on the front of the grip below the head, faces away from the camera",
+    "stick.axis.slider": "throttle slider not identifiable on this photo",
+    "stick.button.thumb.3": "side button above the trigger, on the front of the grip, not visible",
+    "stick.base.button.1": "left dark recess under the scale at the base front (likely a base button)",
+    "stick.base.button.2": "middle dark recess under the scale at the base front (likely a base button)",
+    "stick.base.button.3": "right dark recess under the scale at the base front (likely a base button)"
+  },
+  "candidates": {
+    "stick.base.button.1": [0.365, 0.712],
+    "stick.base.button.2": [0.452, 0.735],
+    "stick.base.button.3": [0.55, 0.715]
+  },
+  "source": "JoyPro curated on the maker's photo (2026-10-11), the stick seen from behind-left (pilot's view) and above, head buttons toward the camera, palm rest to the right",
+  "mappingSource": "catalog (thrustmaster.json, confidence low: \"Vibration version of the Fox 2 Pro (same shell); numbering not published -> controls without input\"). Same shell as the Fox 2 Pro, whose FlightGear map comments (https://gitlab.com/flightgear/fgdata/-/blob/next/Input/Joysticks/ThrustMaster/Top-Gun-Fox2-Pro-USB.xml) place: trigger, striped button, side button above the trigger, right button next to the striped one, three bottom (base) buttons; Thrustmaster's support page has no manual",
+  "confidence": "medium",
+  "note": "The three \"Head button\" parts are interchangeable in the catalog (no input numbers); thumb.1 = striped button, thumb.2 = right wedge, thumb.3 = side button above the trigger, assigned by JoyPro only. Base buttons and throttle slider not identifiable for certain: dark recesses under the orange/white scale at the base front are kept as hidden candidates for the base buttons; the throttle slider is not identified on this photo. Caution: the orange-to-white scale with the recesses under it may instead be the throttle slider running in an arc slot (the scale reads like a throttle gauge), so a reviewer should check a real device or another photo before showing any of these.",
+  "callouts": {
+    "version": 1,
+    "width": 796,
+    "height": 606,
+    "picture": [16, 16, 440, 574],
+    "rowHeight": 20,
+    "mainWidth": 170,
+    "modWidth": 110,
+    "otherY": -1,
+    "tables": [
+      {"id": "stick.gimbal", "title": "Stick (roll / pitch)", "parts": ["stick.gimbal"], "side": "right", "x": 480, "y": 313.4, "width": 300, "modifier": true, "spot": [0.53, 0.56], "rows": [{"input": "JOY_X", "label": "roll (X)", "icon": "axis", "part": "stick.gimbal"}, {"input": "JOY_Y", "label": "pitch (Y)", "icon": "axis", "part": "stick.gimbal"}]}
+    ],
+    "lines": [
+      {"table": "stick.gimbal", "points": [[249.2, 337.4], [480, 337.4]]}
+    ]
+  }
+}

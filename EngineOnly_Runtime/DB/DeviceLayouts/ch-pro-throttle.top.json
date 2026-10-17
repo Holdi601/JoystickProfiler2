@@ -1,0 +1,153 @@
+{
+  "format": "joypro-device-layout",
+  "version": 1,
+  "model": "ch-pro-throttle",
+  "photo": {"kind": "vendor", "url": "https://www.chproducts.com/Pro-Throttle-v13-p-186.html-!do=ZG89dGh1bWJuYWlsZXIuZ2V0JnNyYz1pbWFnZXMlMkZjaHByb2R1Y3RzJTJGcHJvZHVjdHMlMkZTaW11bGF0aW9uJTJGUFQuanBnJnZlcnNpb249cHJvZHVjdHMubGlnaHQ=.jpeg", "sha256": "d78578da93f11e83d8960f8959f8f191c9f991f5fb69f74ca13c3beae336fc17", "view": "top"},
+  "markers": {
+    "throttle.axis.main": [0.45, 0.52],
+    "throttle.button.1": [0.591, 0.263],
+    "throttle.button.2": [0.488, 0.306],
+    "throttle.button.3": [0.386, 0.354],
+    "throttle.hat.2": [0.747, 0.213]
+  },
+  "parts": {
+    "throttle.ministick": {
+      "type": "ministick",
+      "name": "Microstick button (mode switch with Control Manager)",
+      "inputs": [
+        {"input": "JOY_X", "control": "throttle.axis.ministick.x"},
+        {"input": "JOY_Y", "control": "throttle.axis.ministick.y"},
+        {"input": "JOY_BTN1", "control": "throttle.ministick.press"}
+      ],
+      "mapping": "high"
+    },
+    "throttle.axis.main": {
+      "type": "lever",
+      "name": "Throttle",
+      "inputs": [
+        {"input": "JOY_Z", "control": "throttle.axis.main"}
+      ],
+      "mapping": "high",
+      "confidence": "medium",
+      "note": "throttle handle (slides on the base)"
+    },
+    "throttle.hat.1": {
+      "type": "hat",
+      "name": "Throttle hat 1",
+      "inputs": [
+        {"input": "JOY_BTN_POV1_U", "control": "throttle.hat.1.up"},
+        {"input": "JOY_BTN_POV1_R", "control": "throttle.hat.1.right"},
+        {"input": "JOY_BTN_POV1_D", "control": "throttle.hat.1.down"},
+        {"input": "JOY_BTN_POV1_L", "control": "throttle.hat.1.left"}
+      ],
+      "mapping": "high"
+    },
+    "throttle.hat.2": {
+      "type": "hat",
+      "name": "4-way hat Back (buttons 5-8)",
+      "inputs": [
+        {"input": "JOY_BTN7", "control": "throttle.hat.2.up"},
+        {"input": "JOY_BTN6", "control": "throttle.hat.2.right"},
+        {"input": "JOY_BTN5", "control": "throttle.hat.2.down"},
+        {"input": "JOY_BTN8", "control": "throttle.hat.2.left"}
+      ],
+      "mapping": "high",
+      "confidence": "high",
+      "note": "ribbed gray hat on the back edge next to the head (5-8, \"Back\")"
+    },
+    "throttle.hat.3": {
+      "type": "hat",
+      "name": "4-way hat Top (buttons 9-12)",
+      "inputs": [
+        {"input": "JOY_BTN12", "control": "throttle.hat.3.up"},
+        {"input": "JOY_BTN9", "control": "throttle.hat.3.right"},
+        {"input": "JOY_BTN10", "control": "throttle.hat.3.down"},
+        {"input": "JOY_BTN11", "control": "throttle.hat.3.left"}
+      ],
+      "mapping": "high"
+    },
+    "throttle.hat.4": {
+      "type": "hat",
+      "name": "4-way hat Bottom (buttons 13-16)",
+      "inputs": [
+        {"input": "JOY_BTN16", "control": "throttle.hat.4.up"},
+        {"input": "JOY_BTN13", "control": "throttle.hat.4.right"},
+        {"input": "JOY_BTN14", "control": "throttle.hat.4.down"},
+        {"input": "JOY_BTN15", "control": "throttle.hat.4.left"}
+      ],
+      "mapping": "high"
+    },
+    "throttle.button.1": {
+      "type": "button",
+      "name": "Back right gray button",
+      "inputs": [
+        {"input": "JOY_BTN2", "control": "throttle.button.1"}
+      ],
+      "mapping": "high",
+      "confidence": "high",
+      "note": "back gray button nearest the head (2, back right)"
+    },
+    "throttle.button.2": {
+      "type": "button",
+      "name": "Back middle gray button",
+      "inputs": [
+        {"input": "JOY_BTN3", "control": "throttle.button.2"}
+      ],
+      "mapping": "high",
+      "confidence": "high",
+      "note": "middle back gray button (3)"
+    },
+    "throttle.button.3": {
+      "type": "button",
+      "name": "Back left gray button",
+      "inputs": [
+        {"input": "JOY_BTN4", "control": "throttle.button.3"}
+      ],
+      "mapping": "high",
+      "confidence": "high",
+      "note": "back gray button nearest the flared end (4, back left)"
+    }
+  },
+  "unplaced": {
+    "throttle.ministick": "microstick on the lower part of the control face, not visible from above",
+    "throttle.hat.1": "the ribbed gray part at the lower right edge of the face may be the POV hat; seen edge-on, not identifiable for sure",
+    "throttle.hat.3": "the gray castle protruding at the right end may be the top 4-way hat (9-12); seen edge-on",
+    "throttle.hat.4": "bottom 4-way hat (13-16) on the lower part of the face, not visible from above"
+  },
+  "candidates": {
+    "throttle.hat.1": [0.76, 0.49],
+    "throttle.hat.3": [0.835, 0.44]
+  },
+  "source": "JoyPro curated on the maker's photo (2026-10-11), seen from straight above, the handle lies left to right with its control face at the right end (seen edge-on)",
+  "mappingSource": "CH quick start 300-122 \"Pro Throttle Button Assignments\" (https://www.chproducts.com/files/chproducts/Retail-Quickstarts/300-122%20Pro%20Throttle%20-%20FS2020.pdf): numbered arrows on a three-quarter photo; 1 microstick push (also mode switch), 2/3/4 back right/middle/left gray buttons (2 nearest the head), 5-8 hat \"Back\", 9-12 hat \"Top\", 13-16 hat \"Bottom\", POV hat, Z = slide, X/Y = microstick",
+  "confidence": "medium",
+  "note": "Direct mode (no Control Manager). Four-way hat directions come from the number crosses drawn in the quick start (catalog note). The control face (POV, top/bottom 4-way hats, microstick) is seen edge-on from above at the right end; those parts are only candidates or not placed. The quick start's three-quarter photo shows the face; there is no maker photo of it in the catalog.",
+  "callouts": {
+    "version": 1,
+    "width": 1239,
+    "height": 812,
+    "picture": [340, 16, 559, 550],
+    "rowHeight": 20,
+    "mainWidth": 170,
+    "modWidth": 110,
+    "otherY": 582,
+    "tables": [
+      {"id": "throttle.ministick", "title": "Microstick button (mode switch with Control Manager)", "parts": ["throttle.ministick"], "side": "other", "x": 16, "y": 602, "width": 300, "modifier": true, "rows": [{"input": "JOY_BTN1", "label": "Press", "icon": "button", "part": "throttle.ministick"}, {"input": "JOY_X", "label": "X (X)", "icon": "axis", "part": "throttle.ministick"}, {"input": "JOY_Y", "label": "Y (Y)", "icon": "axis", "part": "throttle.ministick"}]},
+      {"id": "throttle.axis.main", "title": "Throttle", "parts": ["throttle.axis.main"], "side": "left", "x": 16, "y": 278, "width": 300, "modifier": true, "spot": [0.45, 0.52], "rows": [{"input": "JOY_Z", "label": "Z", "icon": "axis", "part": "throttle.axis.main"}]},
+      {"id": "throttle.hat.1", "title": "Throttle hat 1", "parts": ["throttle.hat.1"], "side": "other", "x": 322, "y": 602, "width": 300, "modifier": true, "rows": [{"input": "JOY_BTN_POV1_U", "label": "Up", "icon": "up", "part": "throttle.hat.1"}, {"input": "JOY_BTN_POV1_R", "label": "Right", "icon": "right", "part": "throttle.hat.1"}, {"input": "JOY_BTN_POV1_L", "label": "Left", "icon": "left", "part": "throttle.hat.1"}, {"input": "JOY_BTN_POV1_D", "label": "Down", "icon": "down", "part": "throttle.hat.1"}]},
+      {"id": "throttle.hat.2", "title": "4-way hat Back (buttons 5-8)", "parts": ["throttle.hat.2"], "side": "right", "x": 923, "y": 72.9, "width": 300, "modifier": true, "spot": [0.747, 0.213], "rows": [{"input": "JOY_BTN7", "label": "Up", "icon": "up", "part": "throttle.hat.2"}, {"input": "JOY_BTN6", "label": "Right", "icon": "right", "part": "throttle.hat.2"}, {"input": "JOY_BTN8", "label": "Left", "icon": "left", "part": "throttle.hat.2"}, {"input": "JOY_BTN5", "label": "Down", "icon": "down", "part": "throttle.hat.2"}]},
+      {"id": "throttle.hat.3", "title": "4-way hat Top (buttons 9-12)", "parts": ["throttle.hat.3"], "side": "other", "x": 628, "y": 602, "width": 300, "modifier": true, "rows": [{"input": "JOY_BTN12", "label": "Up", "icon": "up", "part": "throttle.hat.3"}, {"input": "JOY_BTN9", "label": "Right", "icon": "right", "part": "throttle.hat.3"}, {"input": "JOY_BTN11", "label": "Left", "icon": "left", "part": "throttle.hat.3"}, {"input": "JOY_BTN10", "label": "Down", "icon": "down", "part": "throttle.hat.3"}]},
+      {"id": "throttle.hat.4", "title": "4-way hat Bottom (buttons 13-16)", "parts": ["throttle.hat.4"], "side": "other", "x": 16, "y": 702, "width": 300, "modifier": true, "rows": [{"input": "JOY_BTN16", "label": "Up", "icon": "up", "part": "throttle.hat.4"}, {"input": "JOY_BTN13", "label": "Right", "icon": "right", "part": "throttle.hat.4"}, {"input": "JOY_BTN15", "label": "Left", "icon": "left", "part": "throttle.hat.4"}, {"input": "JOY_BTN14", "label": "Down", "icon": "down", "part": "throttle.hat.4"}]},
+      {"id": "throttle.button.1", "title": "Back right gray button", "parts": ["throttle.button.1"], "side": "right", "x": 923, "y": 172.9, "width": 300, "modifier": true, "spot": [0.591, 0.263], "rows": [{"input": "JOY_BTN2", "label": "Press", "icon": "button", "part": "throttle.button.1"}]},
+      {"id": "throttle.button.2", "title": "Back middle gray button", "parts": ["throttle.button.2"], "side": "left", "x": 16, "y": 153.5, "width": 300, "modifier": true, "spot": [0.488, 0.306], "rows": [{"input": "JOY_BTN3", "label": "Press", "icon": "button", "part": "throttle.button.2"}]},
+      {"id": "throttle.button.3", "title": "Back left gray button", "parts": ["throttle.button.3"], "side": "left", "x": 16, "y": 193.5, "width": 300, "modifier": true, "spot": [0.386, 0.354], "rows": [{"input": "JOY_BTN4", "label": "Press", "icon": "button", "part": "throttle.button.3"}]}
+    ],
+    "lines": [
+      {"table": "throttle.button.2", "points": [[612.8, 184.3], [328, 184.3], [328, 177.5], [316, 177.5]]},
+      {"table": "throttle.button.3", "points": [[555.8, 210.7], [328, 210.7], [328, 217.5], [316, 217.5]]},
+      {"table": "throttle.axis.main", "points": [[591.6, 302], [316, 302]]},
+      {"table": "throttle.hat.2", "points": [[757.6, 133.1], [911, 133.1], [911, 96.9], [923, 96.9]]},
+      {"table": "throttle.button.1", "points": [[670.4, 160.6], [911, 160.6], [911, 196.9], [923, 196.9]]}
+    ]
+  }
+}

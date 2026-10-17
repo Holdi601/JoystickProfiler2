@@ -1,0 +1,334 @@
+{
+  "format": "joypro-device-layout",
+  "version": 1,
+  "model": "vkb-stecs-mts-standard",
+  "photo": {"kind": "vendor", "url": "https://vkbsimcontrollers.com/cdn/shop/files/STECS_Standard_Mk2_1200_05.webp", "sha256": "5a455457378d8b64ecb907add5aaeb88b99847db5c44ada3bbc9ad89f139c868", "view": "three-quarter"},
+  "markers": {
+    "throttle.axis": [0.58, 0.29],
+    "throttle.base.button.1": [0.39, 0.603],
+    "throttle.base.button.2": [0.49, 0.652],
+    "throttle.base.button.3": [0.44, 0.618],
+    "throttle.base.button.4": [0.44, 0.618],
+    "throttle.base.button.5": [0.44, 0.618],
+    "throttle.base.button.6": [0.44, 0.618],
+    "throttle.base.button.7": [0.44, 0.618],
+    "throttle.base.rotary.1": [0.645, 0.4],
+    "throttle.base.rotary.2": [0.69, 0.3],
+    "throttle.button.2": [0.7, 0.43],
+    "throttle.button.5": [0.698, 0.362],
+    "throttle.button.6": [0.655, 0.33],
+    "throttle.button.7": [0.6, 0.365],
+    "throttle.button.8": [0.455, 0.49],
+    "throttle.hat.1": [0.45, 0.455],
+    "throttle.hat.2": [0.425, 0.385],
+    "throttle.hat.3": [0.62, 0.425],
+    "throttle.hat.4": [0.46, 0.39]
+  },
+  "parts": {
+    "throttle.ministick": {
+      "type": "ministick",
+      "name": "MB1 mini-stick click",
+      "inputs": [
+        {"input": "JOY_RX", "control": "throttle.axis.ministick.x"},
+        {"input": "JOY_RY", "control": "throttle.axis.ministick.y"},
+        {"input": "JOY_BTN21", "control": "throttle.ministick.press"}
+      ],
+      "mapping": "medium"
+    },
+    "throttle.hat.1": {
+      "type": "hat",
+      "name": "BRK",
+      "inputs": [
+        {"input": "JOY_BTN20", "control": "throttle.hat.1.press"},
+        {"input": "JOY_BTN25", "control": "throttle.hat.1.up"},
+        {"input": "JOY_BTN26", "control": "throttle.hat.1.down"},
+        {"input": "JOY_BTN27", "control": "throttle.hat.1.right"},
+        {"input": "JOY_BTN28", "control": "throttle.hat.1.left"}
+      ],
+      "mapping": "medium",
+      "confidence": "medium",
+      "note": "BRK, black 4-way below OTS (template line; BRK label right of it)"
+    },
+    "throttle.hat.2": {
+      "type": "hat",
+      "name": "RADIO",
+      "inputs": [
+        {"input": "JOY_BTN22", "control": "throttle.hat.2.press"},
+        {"input": "JOY_BTN29", "control": "throttle.hat.2.down"},
+        {"input": "JOY_BTN30", "control": "throttle.hat.2.up"}
+      ],
+      "mapping": "medium",
+      "confidence": "medium",
+      "note": "RADIO rocker left of OTS, seen edge-on under the RADIO label"
+    },
+    "throttle.hat.3": {
+      "type": "hat",
+      "name": "MB2",
+      "inputs": [
+        {"input": "JOY_BTN23", "control": "throttle.hat.3.press"},
+        {"input": "JOY_BTN31", "control": "throttle.hat.3.left"},
+        {"input": "JOY_BTN32", "control": "throttle.hat.3.right"},
+        {"input": "JOY_BTN33", "control": "throttle.hat.3.down"},
+        {"input": "JOY_BTN34", "control": "throttle.hat.3.up"}
+      ],
+      "mapping": "medium",
+      "confidence": "medium",
+      "note": "MB2 grey cap under ENT (template line)"
+    },
+    "throttle.hat.4": {
+      "type": "hat",
+      "name": "OTS",
+      "inputs": [
+        {"input": "JOY_BTN19", "control": "throttle.hat.4.press"},
+        {"input": "JOY_BTN35", "control": "throttle.hat.4.down"},
+        {"input": "JOY_BTN36", "control": "throttle.hat.4.left"},
+        {"input": "JOY_BTN37", "control": "throttle.hat.4.up"},
+        {"input": "JOY_BTN38", "control": "throttle.hat.4.right"}
+      ],
+      "mapping": "medium",
+      "confidence": "high",
+      "note": "OTS, large 4-way on the thumb end face (OTS label above)"
+    },
+    "throttle.axis.wheel.1": {
+      "type": "wheel",
+      "name": "Wheel 1",
+      "inputs": [
+        {"input": "JOY_Z", "control": "throttle.axis.wheel.1"}
+      ],
+      "mapping": "medium"
+    },
+    "throttle.axis": {
+      "type": "button",
+      "name": "throttle.axis",
+      "inputs": [
+        {"input": "JOY_X", "control": "throttle.axis.left"},
+        {"input": "JOY_Y", "control": "throttle.axis.right"}
+      ],
+      "mapping": "medium",
+      "confidence": "medium",
+      "note": "both throttle levers (X = left, Y = right), marker on the grip tops"
+    },
+    "throttle.button.1": {
+      "type": "button",
+      "name": "Back trigger L",
+      "inputs": [
+        {"input": "JOY_BTN8", "control": "throttle.button.1"}
+      ],
+      "mapping": "medium"
+    },
+    "throttle.button.2": {
+      "type": "button",
+      "name": "Front trigger L",
+      "inputs": [
+        {"input": "JOY_BTN9", "control": "throttle.button.2"}
+      ],
+      "mapping": "medium",
+      "confidence": "medium",
+      "note": "forward trigger lever under the left grip's front (template 'Forward Triggers' line); L/R by grip side"
+    },
+    "throttle.button.3": {
+      "type": "button",
+      "name": "Back trigger R",
+      "inputs": [
+        {"input": "JOY_BTN16", "control": "throttle.button.3"}
+      ],
+      "mapping": "medium"
+    },
+    "throttle.button.4": {
+      "type": "button",
+      "name": "Front trigger R",
+      "inputs": [
+        {"input": "JOY_BTN17", "control": "throttle.button.4"}
+      ],
+      "mapping": "medium"
+    },
+    "throttle.button.5": {
+      "type": "button",
+      "name": "Weapon Select",
+      "inputs": [
+        {"input": "JOY_BTN10", "control": "throttle.button.5"}
+      ],
+      "mapping": "medium",
+      "confidence": "high",
+      "note": "red weapon select (WEP)"
+    },
+    "throttle.button.6": {
+      "type": "button",
+      "name": "RST",
+      "inputs": [
+        {"input": "JOY_BTN11", "control": "throttle.button.6"}
+      ],
+      "mapping": "medium",
+      "confidence": "high",
+      "note": "RST (label next to it)"
+    },
+    "throttle.button.7": {
+      "type": "button",
+      "name": "ENT",
+      "inputs": [
+        {"input": "JOY_BTN18", "control": "throttle.button.7"}
+      ],
+      "mapping": "medium",
+      "confidence": "high",
+      "note": "ENT (label next to it)"
+    },
+    "throttle.button.8": {
+      "type": "button",
+      "name": "OP EXEC (large 5-way) click",
+      "inputs": [
+        {"input": "JOY_BTN24", "control": "throttle.button.8"}
+      ],
+      "mapping": "medium",
+      "confidence": "high",
+      "note": "OP EXEC grey cap (OP EXEC label right of it)"
+    },
+    "throttle.base.rotary.1": {
+      "type": "encoder",
+      "name": "ENC WH",
+      "inputs": [
+        {"input": "JOY_BTN12", "control": "throttle.base.rotary.1.cw"},
+        {"input": "JOY_BTN13", "control": "throttle.base.rotary.1.ccw"}
+      ],
+      "mapping": "medium",
+      "confidence": "medium",
+      "note": "ENC WH = ring finger encoder (template); EDCD only says 'ENC WH', matched by elimination"
+    },
+    "throttle.base.rotary.2": {
+      "type": "encoder",
+      "name": "ENC WH-side",
+      "inputs": [
+        {"input": "JOY_BTN14", "control": "throttle.base.rotary.2.cw"},
+        {"input": "JOY_BTN15", "control": "throttle.base.rotary.2.ccw"}
+      ],
+      "mapping": "medium",
+      "confidence": "high",
+      "note": "ENC WH-side = big grey side encoder end cap (template 'Side Encoder')"
+    },
+    "throttle.base.button.1": {
+      "type": "button",
+      "name": "SYS",
+      "inputs": [
+        {"input": "JOY_BTN1", "control": "throttle.base.button.1"}
+      ],
+      "mapping": "medium",
+      "confidence": "medium",
+      "note": "SYS: the round base button (base has 2 buttons + 5-position rotary; red one is START)"
+    },
+    "throttle.base.button.2": {
+      "type": "button",
+      "name": "START",
+      "inputs": [
+        {"input": "JOY_BTN2", "control": "throttle.base.button.2"}
+      ],
+      "mapping": "medium",
+      "confidence": "high",
+      "note": "START red base button (START label)"
+    },
+    "throttle.base.button.3": {
+      "type": "button",
+      "name": "MODE 1",
+      "inputs": [
+        {"input": "JOY_BTN3", "control": "throttle.base.button.3"}
+      ],
+      "mapping": "medium",
+      "confidence": "medium",
+      "note": "MODE 1: position of the white 5-position rotary mode knob"
+    },
+    "throttle.base.button.4": {
+      "type": "button",
+      "name": "MODE 2",
+      "inputs": [
+        {"input": "JOY_BTN4", "control": "throttle.base.button.4"}
+      ],
+      "mapping": "medium",
+      "confidence": "medium",
+      "note": "MODE 2: position of the white rotary mode knob"
+    },
+    "throttle.base.button.5": {
+      "type": "button",
+      "name": "MODE 3",
+      "inputs": [
+        {"input": "JOY_BTN5", "control": "throttle.base.button.5"}
+      ],
+      "mapping": "medium",
+      "confidence": "medium",
+      "note": "MODE 3: position of the white rotary mode knob"
+    },
+    "throttle.base.button.6": {
+      "type": "button",
+      "name": "MODE 4",
+      "inputs": [
+        {"input": "JOY_BTN6", "control": "throttle.base.button.6"}
+      ],
+      "mapping": "medium",
+      "confidence": "medium",
+      "note": "MODE 4: position of the white rotary mode knob"
+    },
+    "throttle.base.button.7": {
+      "type": "button",
+      "name": "MODE 5",
+      "inputs": [
+        {"input": "JOY_BTN7", "control": "throttle.base.button.7"}
+      ],
+      "mapping": "medium",
+      "confidence": "medium",
+      "note": "MODE 5: position of the white rotary mode knob"
+    }
+  },
+  "unplaced": {
+    "throttle.ministick": "MB1: dark 4-way under ENT, too dark/small to pin down on this photo (template places MB1 there)",
+    "throttle.axis.wheel.1": "Thumb wheel (JOY_Z): by elimination the ribbed knob on the thumb end face next to BRK; VKB template draws no line to it",
+    "throttle.button.1": "back trigger L is on the pilot-facing side of the left grip, hidden",
+    "throttle.button.3": "back trigger R is on the pilot-facing side of the right grip, hidden",
+    "throttle.button.4": "front trigger R not identifiable on this photo (template draws one line for both forward triggers)"
+  },
+  "candidates": {
+    "throttle.axis.wheel.1": [0.418, 0.455],
+    "throttle.ministick": [0.58, 0.445]
+  },
+  "source": "JoyPro curated on the maker's photo (2026-10-11), seen from the front right and above: front (finger) faces of both grips, the right grip's thumb end face (OTS/RADIO/BRK/OP EXEC), STEM module behind on the left, base buttons",
+  "mappingSource": "EDCD DeviceButtonMap 231D012D (VKB factory profile) https://github.com/EDCD/EliteCustomButtonNames/blob/main/files/INTO%20Bindings/DeviceButtonMaps/231D012D.buttonMap ; control names and spots checked against VKB STECS Mk1 & Mk2 template v1.1 https://cdn.shopify.com/s/files/1/0808/7827/2731/files/VKB-STECS-v1.1.pdf (leader lines on a photo of the same angle)",
+  "confidence": "medium",
+  "note": "STEM module controls (EDCD BTN39-62) are not catalog parts and are not marked. Pilot's right grip = the one with OTS end face, ENT, MB1, MB2; pilot's left grip = RST, red weapon select, ring-finger encoder, big grey side-encoder end cap. Aft (back) triggers sit on the pilot-facing side (TRIG L / TRIG R labels on gallery-2) and are hidden here.",
+  "callouts": {
+    "version": 1,
+    "width": 1354,
+    "height": 782,
+    "picture": [408, 16, 600, 600],
+    "rowHeight": 20,
+    "mainWidth": 170,
+    "modWidth": 110,
+    "otherY": 632,
+    "tables": [
+      {"id": "grid:throttle.button.6", "title": "Buttons RST - Front trig", "parts": ["throttle.button.6", "throttle.button.5", "throttle.button.7", "throttle.button.2"], "side": "right", "x": 1038, "y": 206.4, "width": 276, "grid": true, "columns": 3, "modifier": false, "spot": [0.6632, 0.3718], "rows": [{"input": "JOY_BTN11", "label": "RST", "icon": "button", "part": "throttle.button.6", "cell": [0, 1, 0]}, {"input": "JOY_BTN10", "label": "Weapon Sel", "icon": "button", "part": "throttle.button.5", "cell": [0, 2, 0]}, {"input": "JOY_BTN18", "label": "ENT", "icon": "button", "part": "throttle.button.7", "cell": [1, 0, 0]}, {"input": "JOY_BTN9", "label": "Front trig", "icon": "button", "part": "throttle.button.2", "cell": [1, 2, 0]}]},
+      {"id": "grid:throttle.base.button.1", "title": "Buttons SYS - MODE 2", "parts": ["throttle.base.button.1", "throttle.base.button.3", "throttle.base.button.4"], "side": "left", "x": 108, "y": 421.3, "width": 276, "grid": true, "columns": 3, "modifier": false, "spot": [0.4233, 0.613], "rows": [{"input": "JOY_BTN1", "label": "SYS", "icon": "button", "part": "throttle.base.button.1", "cell": [0, 0, 0]}, {"input": "JOY_BTN3", "label": "MODE 1", "icon": "button", "part": "throttle.base.button.3", "cell": [0, 1, 0]}, {"input": "JOY_BTN4", "label": "MODE 2", "icon": "button", "part": "throttle.base.button.4", "cell": [0, 2, 0]}]},
+      {"id": "grid:throttle.base.button.5", "title": "Buttons MODE 3 - START", "parts": ["throttle.base.button.5", "throttle.base.button.6", "throttle.base.button.7", "throttle.base.button.2"], "side": "left", "x": 16, "y": 461.3, "width": 368, "grid": true, "columns": 4, "modifier": false, "spot": [0.4525, 0.6265], "rows": [{"input": "JOY_BTN5", "label": "MODE 3", "icon": "button", "part": "throttle.base.button.5", "cell": [0, 0, 0]}, {"input": "JOY_BTN6", "label": "MODE 4", "icon": "button", "part": "throttle.base.button.6", "cell": [0, 1, 0]}, {"input": "JOY_BTN7", "label": "MODE 5", "icon": "button", "part": "throttle.base.button.7", "cell": [0, 2, 0]}, {"input": "JOY_BTN2", "label": "START", "icon": "button", "part": "throttle.base.button.2", "cell": [0, 3, 0]}]},
+      {"id": "throttle.ministick", "title": "MB1 mini-stick click", "parts": ["throttle.ministick"], "side": "other", "x": 16, "y": 652, "width": 300, "modifier": true, "rows": [{"input": "JOY_BTN21", "label": "Press", "icon": "button", "part": "throttle.ministick"}, {"input": "JOY_RX", "label": "X (RX)", "icon": "axis", "part": "throttle.ministick"}, {"input": "JOY_RY", "label": "Y (RY)", "icon": "axis", "part": "throttle.ministick"}]},
+      {"id": "throttle.hat.1", "title": "BRK", "parts": ["throttle.hat.1"], "side": "left", "x": 84, "y": 261.3, "width": 300, "modifier": true, "spot": [0.45, 0.455], "rows": [{"input": "JOY_BTN20", "label": "Press", "icon": "button", "part": "throttle.hat.1"}, {"input": "JOY_BTN25", "label": "Up", "icon": "up", "part": "throttle.hat.1"}, {"input": "JOY_BTN27", "label": "Right", "icon": "right", "part": "throttle.hat.1"}, {"input": "JOY_BTN28", "label": "Left", "icon": "left", "part": "throttle.hat.1"}, {"input": "JOY_BTN26", "label": "Down", "icon": "down", "part": "throttle.hat.1"}]},
+      {"id": "throttle.hat.2", "title": "RADIO", "parts": ["throttle.hat.2"], "side": "left", "x": 84, "y": 61.3, "width": 300, "modifier": true, "spot": [0.425, 0.385], "rows": [{"input": "JOY_BTN22", "label": "Press", "icon": "button", "part": "throttle.hat.2"}, {"input": "JOY_BTN30", "label": "Up", "icon": "up", "part": "throttle.hat.2"}, {"input": "JOY_BTN29", "label": "Down", "icon": "down", "part": "throttle.hat.2"}]},
+      {"id": "throttle.hat.3", "title": "MB2", "parts": ["throttle.hat.3"], "side": "right", "x": 1038, "y": 326.4, "width": 300, "modifier": true, "spot": [0.62, 0.425], "rows": [{"input": "JOY_BTN23", "label": "Press", "icon": "button", "part": "throttle.hat.3"}, {"input": "JOY_BTN34", "label": "Up", "icon": "up", "part": "throttle.hat.3"}, {"input": "JOY_BTN32", "label": "Right", "icon": "right", "part": "throttle.hat.3"}, {"input": "JOY_BTN31", "label": "Left", "icon": "left", "part": "throttle.hat.3"}, {"input": "JOY_BTN33", "label": "Down", "icon": "down", "part": "throttle.hat.3"}]},
+      {"id": "throttle.hat.4", "title": "OTS", "parts": ["throttle.hat.4"], "side": "left", "x": 84, "y": 141.3, "width": 300, "modifier": true, "spot": [0.46, 0.39], "rows": [{"input": "JOY_BTN19", "label": "Press", "icon": "button", "part": "throttle.hat.4"}, {"input": "JOY_BTN37", "label": "Up", "icon": "up", "part": "throttle.hat.4"}, {"input": "JOY_BTN38", "label": "Right", "icon": "right", "part": "throttle.hat.4"}, {"input": "JOY_BTN36", "label": "Left", "icon": "left", "part": "throttle.hat.4"}, {"input": "JOY_BTN35", "label": "Down", "icon": "down", "part": "throttle.hat.4"}]},
+      {"id": "throttle.axis.wheel.1", "title": "Wheel 1", "parts": ["throttle.axis.wheel.1"], "side": "other", "x": 322, "y": 652, "width": 300, "modifier": true, "rows": [{"input": "JOY_Z", "label": "Z", "icon": "axis", "part": "throttle.axis.wheel.1"}]},
+      {"id": "throttle.axis", "title": "Throttle axis", "parts": ["throttle.axis"], "side": "right", "x": 1038, "y": 146.4, "width": 300, "modifier": true, "spot": [0.58, 0.29], "rows": [{"input": "JOY_Y", "label": "right (Y)", "icon": "axis", "part": "throttle.axis"}, {"input": "JOY_X", "label": "left (X)", "icon": "axis", "part": "throttle.axis"}]},
+      {"id": "throttle.button.1", "title": "Back trigger L", "parts": ["throttle.button.1"], "side": "other", "x": 628, "y": 652, "width": 300, "modifier": true, "rows": [{"input": "JOY_BTN8", "label": "Press", "icon": "button", "part": "throttle.button.1"}]},
+      {"id": "throttle.button.3", "title": "Back trigger R", "parts": ["throttle.button.3"], "side": "other", "x": 934, "y": 652, "width": 300, "modifier": true, "rows": [{"input": "JOY_BTN16", "label": "Press", "icon": "button", "part": "throttle.button.3"}]},
+      {"id": "throttle.button.4", "title": "Front trigger R", "parts": ["throttle.button.4"], "side": "other", "x": 16, "y": 732, "width": 300, "modifier": true, "rows": [{"input": "JOY_BTN17", "label": "Press", "icon": "button", "part": "throttle.button.4"}]},
+      {"id": "throttle.button.8", "title": "OP EXEC (large 5-way) click", "parts": ["throttle.button.8"], "side": "left", "x": 84, "y": 381.3, "width": 300, "modifier": true, "spot": [0.455, 0.49], "rows": [{"input": "JOY_BTN24", "label": "Press", "icon": "button", "part": "throttle.button.8"}]},
+      {"id": "throttle.base.rotary.1", "title": "ENC WH", "parts": ["throttle.base.rotary.1"], "side": "right", "x": 1038, "y": 266.4, "width": 300, "modifier": true, "spot": [0.645, 0.4], "rows": [{"input": "JOY_BTN12", "label": "Clockwise", "icon": "right", "part": "throttle.base.rotary.1"}, {"input": "JOY_BTN13", "label": "Counter-clockwise", "icon": "left", "part": "throttle.base.rotary.1"}]},
+      {"id": "throttle.base.rotary.2", "title": "ENC WH-side", "parts": ["throttle.base.rotary.2"], "side": "right", "x": 1038, "y": 86.4, "width": 300, "modifier": true, "spot": [0.69, 0.3], "rows": [{"input": "JOY_BTN14", "label": "Clockwise", "icon": "right", "part": "throttle.base.rotary.2"}, {"input": "JOY_BTN15", "label": "Counter-clockwise", "icon": "left", "part": "throttle.base.rotary.2"}]}
+    ],
+    "lines": [
+      {"table": "throttle.hat.2", "points": [[663, 247], [663, 85.3], [384, 85.3]]},
+      {"table": "throttle.hat.4", "points": [[684, 250], [684, 165.3], [384, 165.3]]},
+      {"table": "throttle.hat.1", "points": [[678, 289], [396, 289], [396, 285.3], [384, 285.3]]},
+      {"table": "throttle.button.8", "points": [[681, 310], [396, 310], [396, 405.3], [384, 405.3]]},
+      {"table": "grid:throttle.base.button.1", "points": [[662, 383.8], [662, 445.3], [384, 445.3]]},
+      {"table": "grid:throttle.base.button.5", "points": [[679.5, 391.9], [679.5, 485.3], [384, 485.3]]},
+      {"table": "throttle.base.rotary.2", "points": [[822, 196], [822, 110.4], [1038, 110.4]]},
+      {"table": "throttle.axis", "points": [[756, 190], [756, 170.4], [1038, 170.4]]},
+      {"table": "grid:throttle.button.6", "points": [[805.9, 239.1], [1020, 239.1], [1020, 230.4], [1038, 230.4]]},
+      {"table": "throttle.base.rotary.1", "points": [[795, 256], [1026, 256], [1026, 290.4], [1038, 290.4]]},
+      {"table": "throttle.hat.3", "points": [[780, 271], [1020, 271], [1020, 350.4], [1038, 350.4]]}
+    ]
+  }
+}

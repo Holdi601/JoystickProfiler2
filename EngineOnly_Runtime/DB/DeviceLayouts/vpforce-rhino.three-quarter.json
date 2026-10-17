@@ -1,0 +1,44 @@
+{
+  "format": "joypro-device-layout",
+  "version": 1,
+  "model": "vpforce-rhino",
+  "photo": {"kind": "vendor", "url": "https://docs.vpforce.eu/rhino/images/index/tech-specs.webp", "sha256": "1997b57b02b9d0384c925aafb5e97a852c79546d979a3a2f991941c3e46b455c", "view": "three-quarter"},
+  "markers": {
+    "stick.gimbal": [0.448, 0.15]
+  },
+  "parts": {
+    "stick.gimbal": {
+      "type": "gimbal",
+      "name": "Stick (roll / pitch)",
+      "inputs": [
+        {"input": "JOY_X", "control": "stick.axis.roll"},
+        {"input": "JOY_Y", "control": "stick.axis.pitch"}
+      ],
+      "mapping": "medium",
+      "confidence": "medium",
+      "note": "gimbal under the leather boot on top of the base"
+    }
+  },
+  "unplaced": {},
+  "candidates": {},
+  "source": "JoyPro curated on the maker's photo (2026-10-12), moved from the earlier photo",
+  "mappingSource": "catalog vpforce.json (sources https://docs.vpforce.eu/rhino/getting-started/, https://docs.vpforce.eu/products/grip-adapters/, https://github.com/walmis/VPforce-TelemFFB): roll = JOY_X, pitch = JOY_Y; VID:PID and HID name read from the user's own Rhino",
+  "confidence": "high",
+  "note": "The photo shows the base without a grip, cut out on white (same unit as the cockpit shot, seen from the front left): leather boot and grip connector on top, the two motor covers in front. The gimbal marker sits at the leather boot above the base (the shaft exit). Grip buttons/hats and the other axes depend on the mounted grip and the VPforce Configurator.",
+  "callouts": {
+    "version": 1,
+    "width": 1364,
+    "height": 1966,
+    "picture": [34, 198, 1296, 1734],
+    "rowHeight": 42,
+    "mainWidth": 357,
+    "modWidth": 231,
+    "otherY": -1,
+    "tables": [
+      {"id": "stick.gimbal", "title": "Stick (roll / pitch)", "parts": ["stick.gimbal"], "side": "top", "x": 299.6, "y": 34, "width": 630, "modifier": true, "spot": [0.448, 0.15], "rows": [{"input": "JOY_X", "label": "roll (X)", "icon": "axis", "part": "stick.gimbal"}, {"input": "JOY_Y", "label": "pitch (Y)", "icon": "axis", "part": "stick.gimbal"}]}
+    ],
+    "lines": [
+      {"table": "stick.gimbal", "points": [[614.6, 458.1], [614.6, 148]]}
+    ]
+  }
+}

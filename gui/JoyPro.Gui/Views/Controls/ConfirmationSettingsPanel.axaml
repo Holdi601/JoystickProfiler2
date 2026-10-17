@@ -1,0 +1,17 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:l="using:JoyPro.Gui.Localization"
+             xmlns:vm="using:JoyPro.Gui.ViewModels"
+             x:Class="JoyPro.Gui.Views.Controls.ConfirmationSettingsPanel"
+             x:DataType="vm:MainWindowViewModel">
+    <!-- Settings > Confirmations (ViewModels/MainWindowViewModel.Confirmations.cs): the questions "Do not ask again"
+         switched off, switched on again here. A block of its own for the Settings page. -->
+    <StackPanel Spacing="6">
+        <TextBlock Classes="caption" TextWrapping="Wrap"
+                   Text="{l:T 'Questions JoyPro asks before a change. \'Do not ask again\' in a question switches it off; tick it here to be asked again.'}" />
+        <CheckBox Content="{l:T 'Ask before removing an action from a relation (the x on the Relations page)'}" IsChecked="{Binding AskBeforeRemovingAction}"
+                  ToolTip.Tip="{l:T 'On: the x of an action asks \'Remove this action?\' first. Off: it is removed at once (Ctrl+Z undoes it).'}" />
+        <Button Classes="small" Content="{l:T 'Ask everything again'}" Command="{Binding AskAllConfirmationsAgainCommand}" HorizontalAlignment="Left"
+                IsEnabled="{Binding HasSwitchedOffConfirmations}" ToolTip.Tip="{l:T 'Every question you switched off is asked again'}" />
+    </StackPanel>
+</UserControl>

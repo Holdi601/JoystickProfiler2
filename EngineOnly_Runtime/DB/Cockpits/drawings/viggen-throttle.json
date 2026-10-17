@@ -1,0 +1,30 @@
+{
+  "format": "joypro-cockpit-drawing",
+  "version": 1,
+  "id": "viggen-throttle",
+  "kind": "throttle",
+  "aircraft": ["viggen"],
+  "variants": [],
+  "except": [],
+  "name": "Saab 37 Viggen throttle handle",
+  "view": "the throttle from the inboard side, as the pilot sees it; forward is left, the thumb controls on top, the finger button on the front face",
+  "origin": "JoyPro's own vector drawing: the handle's outline and the control layout reconstructed from the public description of the DCS AJS 37 Viggen manual and public photos looked at for proportions; not traced from a photo.",
+  "width": 800,
+  "height": 1000,
+  "shapes": [
+    { "kind": "ellipse", "role": "shadow", "x": 420, "y": 968, "w": 330, "h": 20 },
+    { "kind": "rect", "role": "bodyAlt", "x": 120, "y": 770, "w": 600, "h": 180, "r": 26 },
+    { "kind": "rect", "role": "screen", "x": 170, "y": 800, "w": 500, "h": 22, "r": 11 },
+    { "kind": "path", "role": "body", "path": "M404,810 L414,560 L486,560 L478,810 Z" },
+    { "kind": "path", "role": "body", "path": "M262,262 C262,198 316,168 392,168 L560,168 C626,168 660,208 656,270 L644,440 C640,520 600,570 532,570 L372,570 C318,570 286,540 284,494 C282,456 298,438 296,410 C294,370 262,330 262,262 Z" },
+    { "kind": "path", "role": "face", "path": "M308,230 C314,210 334,200 362,200 L586,200 C610,200 622,214 620,238 L616,300 C614,318 602,328 584,328 L330,328 C314,328 304,318 304,302 Z" },
+    { "kind": "path", "role": "line", "path": "M300,470 C316,500 344,520 380,526" }
+  ],
+  "parts": [
+    { "id": "throttle.speedbrake", "type": "switch2", "x": 360, "y": 262, "r": 22 },
+    { "id": "throttle.button.cm_release", "type": "button", "x": 466, "y": 262, "r": 19 },
+    { "id": "throttle.button.uncage", "type": "button", "x": 566, "y": 262, "r": 19 },
+    { "id": "throttle.button.afk_ir", "type": "button", "x": 286, "y": 380, "r": 19 },
+    { "id": "throttle.axis.main", "type": "axis", "x": 420, "y": 884, "r": 62, "angle": 90 }
+  ]
+}

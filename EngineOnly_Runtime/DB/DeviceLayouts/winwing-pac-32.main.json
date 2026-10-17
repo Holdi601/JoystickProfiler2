@@ -1,0 +1,213 @@
+{
+  "format": "joypro-device-layout",
+  "version": 1,
+  "model": "winwing-pac-32",
+  "photo": {"kind": "vendor", "url": "https://eu.winctrl.com/static/ipfs/QmNZ9TnZX7w93xLADAS4uc525yiMoD4AWXfoZqFjtDRtJP", "sha256": "6d414f45ebd4e47f198f73f0a16ab42cc3411aec9a991af9fbb82e02a1af9a1a", "view": "main"},
+  "markers": {
+    "panel.button.1": [0.401, 0.449],
+    "panel.button.2": [0.592, 0.517],
+    "panel.lever.flaps": [0.694, 0.54],
+    "panel.rotary.1": [0.573, 0.455],
+    "panel.toggle.1": [0.405, 0.497],
+    "quadrant.axis.lever.1": [0.419, 0.23],
+    "quadrant.axis.lever.2": [0.713, 0.406],
+    "quadrant.detent.1": [0.405, 0.36],
+    "quadrant.detent.2": [0.394, 0.378],
+    "quadrant.detent.3": [0.325, 0.42],
+    "quadrant.detent.4": [0.247, 0.462],
+    "quadrant.detent.5": [0.794, 0.558],
+    "quadrant.detent.6": [0.756, 0.581],
+    "quadrant.detent.7": [0.719, 0.618]
+  },
+  "parts": {
+    "panel.lever.flaps": {
+      "type": "lever",
+      "name": "FLAPS",
+      "inputs": [
+        {"input": "JOY_BTN35", "control": "panel.lever.flaps.up"},
+        {"input": "JOY_BTN31", "control": "panel.lever.flaps.down"}
+      ],
+      "mapping": "high",
+      "confidence": "medium",
+      "note": "flaps lever stem, 35 = flaps 0 (lever up) / 31 = FULL (lever down)"
+    },
+    "quadrant.axis.lever.1": {
+      "type": "lever",
+      "name": "SPEED BRAKE",
+      "inputs": [
+        {"input": "JOY_SLIDER1", "control": "quadrant.axis.lever.1"}
+      ],
+      "mapping": "high",
+      "confidence": "medium",
+      "note": "speed brake lever handle (Slider)"
+    },
+    "quadrant.axis.lever.2": {
+      "type": "lever",
+      "name": "FLAPS",
+      "inputs": [
+        {"input": "JOY_SLIDER2", "control": "quadrant.axis.lever.2"}
+      ],
+      "mapping": "high",
+      "confidence": "medium",
+      "note": "flaps lever handle (Dial)"
+    },
+    "panel.toggle.1": {
+      "type": "switch",
+      "name": "PARK BRK O",
+      "inputs": [
+        {"input": "JOY_BTN29", "control": "panel.toggle.1.up"},
+        {"input": "JOY_BTN30", "control": "panel.toggle.1.down"}
+      ],
+      "mapping": "medium",
+      "confidence": "high",
+      "note": "PARK BRK handle, manual 29 (OFF) / 30 (ON)"
+    },
+    "panel.rotary.1": {
+      "type": "encoder",
+      "name": "RUD TRIM NOSE",
+      "inputs": [
+        {"input": "JOY_BTN26", "control": "panel.rotary.1.ccw"},
+        {"input": "JOY_BTN28", "control": "panel.rotary.1.cw"}
+      ],
+      "mapping": "high",
+      "confidence": "medium",
+      "note": "RUD TRIM knob, 26 NOSE L / 28 NOSE R (partly hidden behind the flaps lever)"
+    },
+    "panel.button.1": {
+      "type": "button",
+      "name": "RUD TRIM RESET",
+      "inputs": [
+        {"input": "JOY_BTN25", "control": "panel.button.1"}
+      ],
+      "mapping": "high",
+      "confidence": "high",
+      "note": "RESET button"
+    },
+    "panel.button.2": {
+      "type": "button",
+      "name": "RUD TRIM CENTER",
+      "inputs": [
+        {"input": "JOY_BTN27", "control": "panel.button.2"}
+      ],
+      "mapping": "high",
+      "confidence": "medium",
+      "note": "RUD TRIM knob centre position (27), on the knob's pointer"
+    },
+    "quadrant.detent.1": {
+      "type": "detent",
+      "name": "SPEED BRAKE ARMED",
+      "inputs": [
+        {"input": "JOY_BTN39", "control": "quadrant.detent.1"}
+      ],
+      "mapping": "high",
+      "confidence": "medium",
+      "note": "speed brake gate top (GND SPLR ARMED label)"
+    },
+    "quadrant.detent.2": {
+      "type": "detent",
+      "name": "SPEED BRAKE RET",
+      "inputs": [
+        {"input": "JOY_BTN38", "control": "quadrant.detent.2"}
+      ],
+      "mapping": "high",
+      "confidence": "medium",
+      "note": "speed brake gate RET mark"
+    },
+    "quadrant.detent.3": {
+      "type": "detent",
+      "name": "SPEED BRAKE 1/2",
+      "inputs": [
+        {"input": "JOY_BTN37", "control": "quadrant.detent.3"}
+      ],
+      "mapping": "high",
+      "confidence": "medium",
+      "note": "speed brake gate 1/2 mark"
+    },
+    "quadrant.detent.4": {
+      "type": "detent",
+      "name": "SPEED BRAKE FULL",
+      "inputs": [
+        {"input": "JOY_BTN36", "control": "quadrant.detent.4"}
+      ],
+      "mapping": "high",
+      "confidence": "medium",
+      "note": "speed brake gate FULL mark"
+    },
+    "quadrant.detent.5": {
+      "type": "detent",
+      "name": "FLAPS 1",
+      "inputs": [
+        {"input": "JOY_BTN34", "control": "quadrant.detent.5"}
+      ],
+      "mapping": "high",
+      "confidence": "medium",
+      "note": "flaps gate 1 mark"
+    },
+    "quadrant.detent.6": {
+      "type": "detent",
+      "name": "FLAPS 2",
+      "inputs": [
+        {"input": "JOY_BTN33", "control": "quadrant.detent.6"}
+      ],
+      "mapping": "high",
+      "confidence": "medium",
+      "note": "flaps gate 2 mark"
+    },
+    "quadrant.detent.7": {
+      "type": "detent",
+      "name": "FLAPS 3",
+      "inputs": [
+        {"input": "JOY_BTN32", "control": "quadrant.detent.7"}
+      ],
+      "mapping": "high",
+      "confidence": "medium",
+      "note": "flaps gate 3 mark"
+    }
+  },
+  "unplaced": {},
+  "candidates": {},
+  "source": "JoyPro curated on the maker's photo (2026-10-11), 32 PAC seen from above and the front-left; speed brake lever left, flaps lever right, park brake and rudder trim in the middle",
+  "mappingSource": "WinWing 32.PAC.MET.1 manual section 3.2 \"Buttons\" drawing (page 6/33, https://eu.winctrl.com/static/ipfs/QmVrk3UKELySkVn4UjK9XrzVBn32Mtih2LCtKMocgVnFAt), checked: matches the catalog (25 RESET, 26/27/28 RUD TRIM NOSE L / center / NOSE R, 29/30 PARK BRK, speed brake 39 armed / 38 RET / 37 1/2 / 36 FULL + Slider, flaps 35 = 0 / 34 = 1 / 33 = 2 / 32 = 3 / 31 = FULL + Dial)",
+  "confidence": "medium",
+  "note": "The panel has no USB of its own; it reports through the URSA MINOR 32 Throttle Metal (catalog note). Detent parts are positions of a lever, not controls of their own: they are placed on the printed gate marks of that lever (medium). The rudder trim knob is partly hidden behind the flaps lever. PARK BRK 29/30: the drawing's leader lines point 29 at OFF and 30 at ON; the catalog calls them up/down, so that part is map=medium.",
+  "callouts": {
+    "version": 1,
+    "width": 2914,
+    "height": 1660,
+    "picture": [646, 30, 1600, 1600],
+    "rowHeight": 38,
+    "mainWidth": 323,
+    "modWidth": 209,
+    "otherY": -1,
+    "tables": [
+      {"id": "stack:quadrant.detent.1", "title": "SPEED BRAKE ARMED / SPEED BRAKE RET", "parts": ["quadrant.detent.1", "quadrant.detent.2"], "side": "left", "x": 30, "y": 504.6, "width": 570, "modifier": true, "spot": [0.3995, 0.369], "rows": [{"input": "JOY_BTN39", "label": "SPEED BRAKE ARMED Press", "icon": "button", "part": "quadrant.detent.1"}, {"input": "JOY_BTN38", "label": "SPEED BRAKE RET Press", "icon": "button", "part": "quadrant.detent.2"}]},
+      {"id": "panel.lever.flaps", "title": "FLAPS", "parts": ["panel.lever.flaps"], "side": "right", "x": 2314, "y": 818.6, "width": 570, "modifier": true, "spot": [0.694, 0.54], "rows": [{"input": "JOY_BTN35", "label": "Up", "icon": "up", "part": "panel.lever.flaps"}, {"input": "JOY_BTN31", "label": "Down", "icon": "down", "part": "panel.lever.flaps"}]},
+      {"id": "quadrant.axis.lever.1", "title": "SPEED BRAKE", "parts": ["quadrant.axis.lever.1"], "side": "left", "x": 30, "y": 352, "width": 570, "modifier": true, "spot": [0.419, 0.23], "rows": [{"input": "JOY_SLIDER1", "label": "SLIDER1", "icon": "axis", "part": "quadrant.axis.lever.1"}]},
+      {"id": "quadrant.axis.lever.2", "title": "FLAPS", "parts": ["quadrant.axis.lever.2"], "side": "right", "x": 2314, "y": 552.6, "width": 570, "modifier": true, "spot": [0.713, 0.406], "rows": [{"input": "JOY_SLIDER2", "label": "SLIDER2", "icon": "axis", "part": "quadrant.axis.lever.2"}]},
+      {"id": "panel.toggle.1", "title": "PARK BRK O", "parts": ["panel.toggle.1"], "side": "left", "x": 30, "y": 846.6, "width": 570, "modifier": true, "spot": [0.405, 0.497], "rows": [{"input": "JOY_BTN29", "label": "Up", "icon": "up", "part": "panel.toggle.1"}, {"input": "JOY_BTN30", "label": "Down", "icon": "down", "part": "panel.toggle.1"}]},
+      {"id": "panel.rotary.1", "title": "RUD TRIM NOSE", "parts": ["panel.rotary.1"], "side": "right", "x": 2314, "y": 628.6, "width": 570, "modifier": true, "spot": [0.573, 0.455], "rows": [{"input": "JOY_BTN28", "label": "Clockwise", "icon": "right", "part": "panel.rotary.1"}, {"input": "JOY_BTN26", "label": "Counter-clockwise", "icon": "left", "part": "panel.rotary.1"}]},
+      {"id": "panel.button.1", "title": "RUD TRIM RESET", "parts": ["panel.button.1"], "side": "left", "x": 30, "y": 694.6, "width": 570, "modifier": true, "spot": [0.401, 0.449], "rows": [{"input": "JOY_BTN25", "label": "Press", "icon": "button", "part": "panel.button.1"}]},
+      {"id": "panel.button.2", "title": "RUD TRIM CENTER", "parts": ["panel.button.2"], "side": "right", "x": 2314, "y": 742.6, "width": 570, "modifier": true, "spot": [0.592, 0.517], "rows": [{"input": "JOY_BTN27", "label": "Press", "icon": "button", "part": "panel.button.2"}]},
+      {"id": "quadrant.detent.3", "title": "SPEED BRAKE 1/2", "parts": ["quadrant.detent.3"], "side": "left", "x": 30, "y": 618.6, "width": 570, "modifier": true, "spot": [0.325, 0.42], "rows": [{"input": "JOY_BTN37", "label": "Press", "icon": "button", "part": "quadrant.detent.3"}]},
+      {"id": "quadrant.detent.4", "title": "SPEED BRAKE FULL", "parts": ["quadrant.detent.4"], "side": "left", "x": 30, "y": 770.6, "width": 570, "modifier": true, "spot": [0.247, 0.462], "rows": [{"input": "JOY_BTN36", "label": "Press", "icon": "button", "part": "quadrant.detent.4"}]},
+      {"id": "quadrant.detent.5", "title": "FLAPS 1", "parts": ["quadrant.detent.5"], "side": "right", "x": 2314, "y": 932.6, "width": 570, "modifier": true, "spot": [0.794, 0.558], "rows": [{"input": "JOY_BTN34", "label": "Press", "icon": "button", "part": "quadrant.detent.5"}]},
+      {"id": "quadrant.detent.6", "title": "FLAPS 2", "parts": ["quadrant.detent.6"], "side": "right", "x": 2314, "y": 1008.6, "width": 570, "modifier": true, "spot": [0.756, 0.581], "rows": [{"input": "JOY_BTN33", "label": "Press", "icon": "button", "part": "quadrant.detent.6"}]},
+      {"id": "quadrant.detent.7", "title": "FLAPS 3", "parts": ["quadrant.detent.7"], "side": "right", "x": 2314, "y": 1084.6, "width": 570, "modifier": true, "spot": [0.719, 0.618], "rows": [{"input": "JOY_BTN32", "label": "Press", "icon": "button", "part": "quadrant.detent.7"}]}
+    ],
+    "lines": [
+      {"table": "quadrant.axis.lever.1", "points": [[1316.4, 398], [600, 398]]},
+      {"table": "stack:quadrant.detent.1", "points": [[1285.2, 620.4], [623, 620.4], [623, 550.6], [600, 550.6]]},
+      {"table": "quadrant.detent.3", "points": [[1166, 702], [623, 702], [623, 664.6], [600, 664.6]]},
+      {"table": "panel.button.1", "points": [[1287.6, 748.4], [623, 748.4], [623, 740.6], [600, 740.6]]},
+      {"table": "quadrant.detent.4", "points": [[1041.2, 769.2], [623, 769.2], [623, 816.6], [600, 816.6]]},
+      {"table": "panel.toggle.1", "points": [[1294, 825.2], [623, 825.2], [623, 892.6], [600, 892.6]]},
+      {"table": "quadrant.axis.lever.2", "points": [[1786.8, 679.6], [2269, 679.6], [2269, 598.6], [2314, 598.6]]},
+      {"table": "panel.rotary.1", "points": [[1562.8, 758], [2280, 758], [2280, 674.6], [2314, 674.6]]},
+      {"table": "panel.button.2", "points": [[1593.2, 857.2], [2269, 857.2], [2269, 788.6], [2314, 788.6]]},
+      {"table": "panel.lever.flaps", "points": [[1756.4, 894], [2269, 894], [2269, 864.6], [2314, 864.6]]},
+      {"table": "quadrant.detent.5", "points": [[1916.4, 922.8], [2291, 922.8], [2291, 978.6], [2314, 978.6]]},
+      {"table": "quadrant.detent.6", "points": [[1855.6, 959.6], [2280, 959.6], [2280, 1054.6], [2314, 1054.6]]},
+      {"table": "quadrant.detent.7", "points": [[1796.4, 1018.8], [2269, 1018.8], [2269, 1130.6], [2314, 1130.6]]}
+    ]
+  }
+}

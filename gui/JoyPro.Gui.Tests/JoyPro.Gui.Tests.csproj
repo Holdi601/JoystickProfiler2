@@ -1,0 +1,40 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework>net9.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <IsPackable>false</IsPackable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.11.1" />
+    <PackageReference Include="xunit" Version="2.9.2" />
+    <PackageReference Include="xunit.runner.visualstudio" Version="2.8.2">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
+    <PackageReference Include="coverlet.collector" Version="6.0.2">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\JoyPro.Gui\JoyPro.Gui.csproj" />
+  </ItemGroup>
+
+  <!-- The virtual joystick forwarder's table (pure code of the net9.0-windows JoyPro.VJoy exe) for its unit tests. -->
+  <ItemGroup>
+    <Compile Include="..\JoyPro.VJoy\ForwardingTable.cs" Link="VJoy\ForwardingTable.cs" />
+    <!-- The localization tool's string scanner and file checks (tools/loc, docs/localization.md). -->
+    <Compile Include="..\..\tools\loc\JoyPro.LocTool\LocExtractor.cs" Link="Loc\LocExtractor.cs" />
+    <Compile Include="..\..\tools\loc\JoyPro.LocTool\LocFiles.cs" Link="Loc\LocFiles.cs" />
+    <Compile Include="..\..\tools\loc\JoyPro.LocTool\AxamlWrapper.cs" Link="Loc\AxamlWrapper.cs" />
+    <Compile Include="..\..\tools\loc\JoyPro.LocTool\CsWrapper.cs" Link="Loc\CsWrapper.cs" />
+  </ItemGroup>
+
+  <!-- The engine's cockpit picture generator (plain C# 7.3, engine-only code) for its unit tests. -->
+  <ItemGroup>
+    <Compile Include="..\..\engine\CockpitPictures\*.cs" Link="CockpitPictures\%(Filename)%(Extension)" />
+  </ItemGroup>
+
+</Project>

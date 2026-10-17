@@ -1,0 +1,55 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:l="using:JoyPro.Gui.Localization"
+             xmlns:vm="using:JoyPro.Gui.ViewModels"
+             x:Class="JoyPro.Gui.Views.Controls.BusyProgressPanel"
+             x:DataType="vm:BusyProgressViewModel">
+    <!-- The busy area of a running engine command (ViewModels/BusyProgressViewModel.cs): title and batch, a determinate
+         bar when the engine reports progress, the step and "23 / 59", elapsed and remaining time, Cancel where the engine
+         allows it, the last status lines under "Details". Every text has its own row or column and is trimmed, so nothing
+         draws over anything else at any width. -->
+    <Grid RowDefinitions="Auto,Auto,Auto,Auto,Auto" RowSpacing="6">
+        <Grid ColumnDefinitions="Auto,*,Auto" ColumnSpacing="10">
+            <PathIcon Data="{StaticResource Icon.Sync}" Width="18" Height="18" Classes="info" VerticalAlignment="Center" />
+            <StackPanel Grid.Column="1" VerticalAlignment="Center" Spacing="1">
+                <TextBlock Text="{Binding Title}" FontWeight="SemiBold" TextTrimming="CharacterEllipsis" TextWrapping="NoWrap"
+                           ToolTip.Tip="{Binding Title}" />
+                <TextBlock Text="{Binding BatchText}" Classes="caption" TextTrimming="CharacterEllipsis" TextWrapping="NoWrap"
+                           IsVisible="{Binding BatchText, Converter={x:Static StringConverters.IsNotNullOrEmpty}}" />
+            </StackPanel>
+            <Button Grid.Column="2" Classes="small" Content="{Binding CancelLabel}" Command="{Binding CancelCommand}"
+                    IsVisible="{Binding ShowCancel}" IsEnabled="{Binding CanCancel}" VerticalAlignment="Center"
+                    ToolTip.Tip="{l:T 'Stops the command before it writes anything (JoyPro offers this only while it reads)'}" />
+        </Grid>
+
+        <Panel Grid.Row="1">
+            <ProgressBar Minimum="0" Maximum="100" Value="{Binding Percent}" Height="8" MinWidth="0" HorizontalAlignment="Stretch"
+                         IsIndeterminate="{Binding !IsDeterminate}" />
+        </Panel>
+
+        <Grid Grid.Row="2" ColumnDefinitions="Auto,*,Auto" ColumnSpacing="8">
+            <Border Classes="chip game" IsVisible="{Binding GameText, Converter={x:Static StringConverters.IsNotNullOrEmpty}}" VerticalAlignment="Center">
+                <TextBlock Text="{Binding GameText}" />
+            </Border>
+            <TextBlock Grid.Column="1" Text="{Binding StepText}" VerticalAlignment="Center" TextTrimming="CharacterEllipsis" TextWrapping="NoWrap"
+                       ToolTip.Tip="{Binding StepText}" />
+            <TextBlock Grid.Column="2" Text="{Binding CountText}" Classes="mono" FontWeight="SemiBold" VerticalAlignment="Center" Margin="4,0,0,0"
+                       IsVisible="{Binding CountText, Converter={x:Static StringConverters.IsNotNullOrEmpty}}" />
+        </Grid>
+
+        <TextBlock Grid.Row="3" Text="{Binding TimeText}" Classes="caption" TextTrimming="CharacterEllipsis" TextWrapping="NoWrap" />
+
+        <Expander Grid.Row="4" Header="{l:T 'Details'}" IsExpanded="{Binding DetailsExpanded}" HorizontalAlignment="Stretch"
+                  IsVisible="{Binding HasDetails}">
+            <ScrollViewer MaxHeight="180" HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Auto">
+                <ItemsControl ItemsSource="{Binding DetailLines}">
+                    <ItemsControl.ItemTemplate>
+                        <DataTemplate x:DataType="x:String">
+                            <TextBlock Text="{Binding}" Classes="mono" FontSize="12" TextWrapping="NoWrap" />
+                        </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+                </ItemsControl>
+            </ScrollViewer>
+        </Expander>
+    </Grid>
+</UserControl>

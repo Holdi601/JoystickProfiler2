@@ -1,0 +1,339 @@
+{
+  "format": "joypro-device-layout",
+  "version": 1,
+  "model": "turtlebeach-velocityone-flightstick",
+  "photo": {"kind": "vendor", "url": "https://cdn.shopify.com/s/files/1/0556/5795/5430/files/9-VelocityOneFlightstick.png", "sha256": "e2f608e9055946545fbe0034ffc06ca865a57764224be46c5415963016252083", "view": "three-quarter"},
+  "markers": {
+    "stick.axis.twist": [0.495, 0.4],
+    "stick.base.button.1": [0.582, 0.541],
+    "stick.base.button.11": [0.605, 0.632],
+    "stick.base.button.12": [0.572, 0.584],
+    "stick.base.button.13": [0.443, 0.727],
+    "stick.base.button.14": [0.421, 0.671],
+    "stick.base.button.2": [0.57, 0.524],
+    "stick.base.button.3": [0.558, 0.507],
+    "stick.base.button.4": [0.545, 0.492],
+    "stick.base.button.5": [0.365, 0.661],
+    "stick.base.button.6": [0.362, 0.637],
+    "stick.base.button.7": [0.352, 0.618],
+    "stick.base.button.8": [0.343, 0.6],
+    "stick.gimbal": [0.49, 0.64],
+    "stick.trigger": [0.535, 0.33]
+  },
+  "parts": {
+    "stick.hat.tms": {
+      "type": "hat",
+      "name": "TMS hat",
+      "inputs": [
+        {"input": "JOY_BTN_POV1_U", "control": "stick.hat.tms.up"},
+        {"input": "JOY_BTN_POV1_UR", "control": "stick.hat.tms.upright"},
+        {"input": "JOY_BTN_POV1_R", "control": "stick.hat.tms.right"},
+        {"input": "JOY_BTN_POV1_DR", "control": "stick.hat.tms.downright"},
+        {"input": "JOY_BTN_POV1_D", "control": "stick.hat.tms.down"},
+        {"input": "JOY_BTN_POV1_DL", "control": "stick.hat.tms.downleft"},
+        {"input": "JOY_BTN_POV1_L", "control": "stick.hat.tms.left"},
+        {"input": "JOY_BTN_POV1_UL", "control": "stick.hat.tms.upleft"}
+      ],
+      "mapping": "medium"
+    },
+    "stick.ministick": {
+      "type": "ministick",
+      "name": "H2 analog mini-stick click",
+      "inputs": [
+        {"input": "JOY_RX", "control": "stick.axis.ministick.x"},
+        {"input": "JOY_RY", "control": "stick.axis.ministick.y"},
+        {"input": "JOY_BTN19", "control": "stick.ministick.press"}
+      ],
+      "mapping": "medium"
+    },
+    "stick.trigger": {
+      "type": "trigger",
+      "name": "Trigger",
+      "inputs": [
+        {"input": "JOY_BTN18", "control": "stick.trigger.stage1"}
+      ],
+      "mapping": "medium",
+      "confidence": "high",
+      "note": "trigger on the front of the grip (printed B18)"
+    },
+    "stick.axis.twist": {
+      "type": "twist",
+      "name": "Twist",
+      "inputs": [
+        {"input": "JOY_Z", "control": "stick.axis.twist"}
+      ],
+      "mapping": "medium",
+      "confidence": "medium",
+      "note": "twist of the grip"
+    },
+    "stick.gimbal": {
+      "type": "gimbal",
+      "name": "Stick (roll / pitch)",
+      "inputs": [
+        {"input": "JOY_X", "control": "stick.axis.roll"},
+        {"input": "JOY_Y", "control": "stick.axis.pitch"}
+      ],
+      "mapping": "medium",
+      "confidence": "medium",
+      "note": "stick boot in the ring on the base"
+    },
+    "stick.axis.slider": {
+      "type": "slider",
+      "name": "Slider",
+      "inputs": [
+        {"input": "JOY_RZ", "control": "stick.axis.slider"}
+      ],
+      "mapping": "medium"
+    },
+    "stick.button.thumb.1": {
+      "type": "button",
+      "name": "B16 (left plate behind the hats)",
+      "inputs": [
+        {"input": "JOY_BTN16", "control": "stick.button.thumb.1"}
+      ],
+      "mapping": "medium"
+    },
+    "stick.button.thumb.2": {
+      "type": "button",
+      "name": "B17 (right plate behind the hats)",
+      "inputs": [
+        {"input": "JOY_BTN17", "control": "stick.button.thumb.2"}
+      ],
+      "mapping": "medium"
+    },
+    "stick.base.button.1": {
+      "type": "button",
+      "name": "B1 (left side of the base, top to bottom)",
+      "inputs": [
+        {"input": "JOY_BTN1", "control": "stick.base.button.1"}
+      ],
+      "mapping": "medium",
+      "confidence": "high",
+      "note": "left (cyan) key column, A key printed B1"
+    },
+    "stick.base.button.2": {
+      "type": "button",
+      "name": "B2 (left side of the base, top to bottom)",
+      "inputs": [
+        {"input": "JOY_BTN2", "control": "stick.base.button.2"}
+      ],
+      "mapping": "medium",
+      "confidence": "high",
+      "note": "left (cyan) key column, B key printed B2"
+    },
+    "stick.base.button.3": {
+      "type": "button",
+      "name": "B3 (left side of the base, top to bottom)",
+      "inputs": [
+        {"input": "JOY_BTN3", "control": "stick.base.button.3"}
+      ],
+      "mapping": "medium",
+      "confidence": "high",
+      "note": "left (cyan) key column, X key printed B3"
+    },
+    "stick.base.button.4": {
+      "type": "button",
+      "name": "B4 (left side of the base, top to bottom)",
+      "inputs": [
+        {"input": "JOY_BTN4", "control": "stick.base.button.4"}
+      ],
+      "mapping": "medium",
+      "confidence": "high",
+      "note": "left (cyan) key column, Y key printed B4"
+    },
+    "stick.base.button.5": {
+      "type": "button",
+      "name": "B5 (right side of the base, top to bottom)",
+      "inputs": [
+        {"input": "JOY_BTN5", "control": "stick.base.button.5"}
+      ],
+      "mapping": "medium",
+      "confidence": "medium",
+      "note": "right (orange) key column, A key printed B5, partly behind the lever"
+    },
+    "stick.base.button.6": {
+      "type": "button",
+      "name": "B6 (right side of the base, top to bottom)",
+      "inputs": [
+        {"input": "JOY_BTN6", "control": "stick.base.button.6"}
+      ],
+      "mapping": "medium",
+      "confidence": "high",
+      "note": "right (orange) key column, B key printed B6"
+    },
+    "stick.base.button.7": {
+      "type": "button",
+      "name": "B7 (right side of the base, top to bottom)",
+      "inputs": [
+        {"input": "JOY_BTN7", "control": "stick.base.button.7"}
+      ],
+      "mapping": "medium",
+      "confidence": "high",
+      "note": "right (orange) key column, X key printed B7"
+    },
+    "stick.base.button.8": {
+      "type": "button",
+      "name": "B8 (right side of the base, top to bottom)",
+      "inputs": [
+        {"input": "JOY_BTN8", "control": "stick.base.button.8"}
+      ],
+      "mapping": "medium",
+      "confidence": "high",
+      "note": "right (orange) key column, Y key printed B8"
+    },
+    "stick.base.button.11": {
+      "type": "button",
+      "name": "Left lever back (L TOGA)",
+      "inputs": [
+        {"input": "JOY_BTN9", "control": "stick.base.button.11"}
+      ],
+      "mapping": "medium",
+      "confidence": "medium",
+      "note": "left (cyan) lever, TOGA end of the slot (printed B9/B11)"
+    },
+    "stick.base.button.12": {
+      "type": "button",
+      "name": "Left lever forward (L FULL REV)",
+      "inputs": [
+        {"input": "JOY_BTN10", "control": "stick.base.button.12"}
+      ],
+      "mapping": "medium",
+      "confidence": "medium",
+      "note": "left (cyan) lever, FULL REV end of the slot (printed B10/B12)"
+    },
+    "stick.base.button.13": {
+      "type": "button",
+      "name": "Right lever back (R TOGA)",
+      "inputs": [
+        {"input": "JOY_BTN11", "control": "stick.base.button.13"}
+      ],
+      "mapping": "medium",
+      "confidence": "medium",
+      "note": "right (orange) lever, TOGA end of the slot (printed B9/B11)"
+    },
+    "stick.base.button.14": {
+      "type": "button",
+      "name": "Right lever forward (R FULL REV)",
+      "inputs": [
+        {"input": "JOY_BTN12", "control": "stick.base.button.14"}
+      ],
+      "mapping": "medium",
+      "confidence": "medium",
+      "note": "right (orange) lever, FULL REV end of the slot (printed B10/B12)"
+    },
+    "stick.base.button.15": {
+      "type": "button",
+      "name": "Scroll wheel up",
+      "inputs": [
+        {"input": "JOY_BTN13", "control": "stick.base.button.15"}
+      ],
+      "mapping": "medium"
+    },
+    "stick.base.button.16": {
+      "type": "button",
+      "name": "Scroll wheel down",
+      "inputs": [
+        {"input": "JOY_BTN14", "control": "stick.base.button.16"}
+      ],
+      "mapping": "medium"
+    },
+    "stick.base.button.17": {
+      "type": "button",
+      "name": "Scroll wheel click",
+      "inputs": [
+        {"input": "JOY_BTN15", "control": "stick.base.button.17"}
+      ],
+      "mapping": "medium"
+    },
+    "stick.base.button.18": {
+      "type": "button",
+      "name": "Xbox",
+      "inputs": [
+        {"input": "JOY_BTN20", "control": "stick.base.button.18"}
+      ],
+      "mapping": "medium"
+    },
+    "stick.base.button.19": {
+      "type": "button",
+      "name": "View/Back",
+      "inputs": [
+        {"input": "JOY_BTN21", "control": "stick.base.button.19"}
+      ],
+      "mapping": "medium"
+    },
+    "stick.base.button.20": {
+      "type": "button",
+      "name": "Menu/Start",
+      "inputs": [
+        {"input": "JOY_BTN22", "control": "stick.base.button.20"}
+      ],
+      "mapping": "medium"
+    }
+  },
+  "unplaced": {
+    "stick.hat.tms": "far hat cap behind the display, seen edge-on (H1 by its place, not certain)",
+    "stick.ministick": "near hat cap behind the display, seen edge-on (H2 by its place, not certain)",
+    "stick.axis.slider": "MIN-MAX scale with a slot on the grip neck; which control the RZ slider is is not certain",
+    "stick.button.thumb.1": "plate behind the hats on the back of the head, faces away from the camera",
+    "stick.button.thumb.2": "plate behind the hats on the back of the head, faces away from the camera",
+    "stick.base.button.15": "knurled wheel at the foot of the grip, maybe the scroll wheel",
+    "stick.base.button.16": "knurled wheel at the foot of the grip, maybe the scroll wheel",
+    "stick.base.button.17": "knurled wheel at the foot of the grip, maybe the scroll wheel",
+    "stick.base.button.18": "front-edge button under the View/Xbox icon",
+    "stick.base.button.19": "front-edge button under the View/Xbox icon",
+    "stick.base.button.20": "no front-edge button carries a Menu mark (the two right ones sit under a \"+\" bracket)"
+  },
+  "candidates": {
+    "stick.axis.slider": [0.508, 0.48],
+    "stick.base.button.15": [0.515, 0.525],
+    "stick.base.button.16": [0.515, 0.525],
+    "stick.base.button.17": [0.515, 0.525],
+    "stick.base.button.18": [0.513, 0.766],
+    "stick.base.button.19": [0.513, 0.766],
+    "stick.hat.tms": [0.54, 0.15],
+    "stick.ministick": [0.495, 0.175]
+  },
+  "source": "JoyPro curated on the maker's photo (2026-10-12), moved from the earlier photo",
+  "mappingSource": "catalog turtlebeach.json from the EDCD EliteCustomButtonNames map 10F57055 (https://github.com/EDCD/EliteCustomButtonNames/tree/main/files/INTO%20Bindings/DeviceButtonMaps/10F57055.buttonMap) and apollomaniacs (https://www.apollomaniacs.com/flight_msfs_flightstick_en.htm): H1 = POV1, H2 = analog mini-stick Rx/Ry with click 19, B16/B17 = thumb plates",
+  "confidence": "medium",
+  "note": "The whole flightstick from the front right: the trigger (printed B18) faces the lower right, the base text (FLIGHTSTICK, TOGA, FLX MCT) reads from the upper left, so the pilot sits at the upper left and his left side is the photo's upper right (cyan-lit keys and lever), his right side the lower left (orange-lit keys and lever). Both key columns carry the same printed pairs (A = B1/B5 ... Y = B4/B8) and both levers TOGA = B9/B11, FULL REV = B10/B12; the catalog's left side = B1-B4 / B9-B10, right side = B5-B8 / B11-B12. TOGA is the forward end of the slots here (the catalog names it \"back\"). The head is seen from the front: the two hat caps behind the display are only edge-on and the B16/B17 plates behind them are hidden. The scroll wheel, slider and Xbox/View/Menu are not clearly identifiable (low candidates only).",
+  "callouts": {
+    "version": 1,
+    "width": 4756,
+    "height": 2640,
+    "picture": [953, 209, 2400, 1350],
+    "rowHeight": 56,
+    "mainWidth": 476,
+    "modWidth": 308,
+    "otherY": 1824,
+    "tables": [
+      {"id": "grid:stick.base.button.4", "title": "Buttons B4 (left s - Left lever", "parts": ["stick.base.button.4", "stick.base.button.3", "stick.base.button.2", "stick.base.button.1", "stick.base.button.12", "stick.base.button.11"], "side": "right", "x": 3421, "y": 879, "width": 1290, "grid": true, "columns": 5, "modifier": false, "spot": [0.572, 0.5467], "rows": [{"input": "JOY_BTN4", "label": "B4 (left s", "icon": "button", "part": "stick.base.button.4", "cell": [0, 0, 0]}, {"input": "JOY_BTN3", "label": "B3 (left s", "icon": "button", "part": "stick.base.button.3", "cell": [0, 1, 0]}, {"input": "JOY_BTN2", "label": "B2 (left s", "icon": "button", "part": "stick.base.button.2", "cell": [0, 2, 0]}, {"input": "JOY_BTN1", "label": "B1 (left s", "icon": "button", "part": "stick.base.button.1", "cell": [0, 3, 0]}, {"input": "JOY_BTN10", "label": "Left lever", "icon": "button", "part": "stick.base.button.12", "cell": [1, 2, 0]}, {"input": "JOY_BTN9", "label": "Left lever", "icon": "button", "part": "stick.base.button.11", "cell": [1, 4, 0]}]},
+      {"id": "grid:stick.base.button.8", "title": "Buttons B8 (right - B5 (right", "parts": ["stick.base.button.8", "stick.base.button.7", "stick.base.button.6", "stick.base.button.5"], "side": "left", "x": 627, "y": 878, "width": 258, "grid": true, "modifier": false, "spot": [0.3555, 0.629], "rows": [{"input": "JOY_BTN8", "label": "B8 (right", "icon": "button", "part": "stick.base.button.8", "cell": [0, 0, 0]}, {"input": "JOY_BTN7", "label": "B7 (right", "icon": "button", "part": "stick.base.button.7", "cell": [1, 0, 0]}, {"input": "JOY_BTN6", "label": "B6 (right", "icon": "button", "part": "stick.base.button.6", "cell": [2, 0, 0]}, {"input": "JOY_BTN5", "label": "B5 (right", "icon": "button", "part": "stick.base.button.5", "cell": [3, 0, 0]}]},
+      {"id": "stick.hat.tms", "title": "TMS hat", "parts": ["stick.hat.tms"], "side": "other", "x": 45, "y": 1881, "width": 840, "modifier": true, "rows": [{"input": "JOY_BTN_POV1_U", "label": "Up", "icon": "up", "part": "stick.hat.tms"}, {"input": "JOY_BTN_POV1_R", "label": "Right", "icon": "right", "part": "stick.hat.tms"}, {"input": "JOY_BTN_POV1_L", "label": "Left", "icon": "left", "part": "stick.hat.tms"}, {"input": "JOY_BTN_POV1_D", "label": "Down", "icon": "down", "part": "stick.hat.tms"}, {"input": "JOY_BTN_POV1_UR", "label": "Up-right", "icon": "upright", "part": "stick.hat.tms"}, {"input": "JOY_BTN_POV1_UL", "label": "Up-left", "icon": "upleft", "part": "stick.hat.tms"}, {"input": "JOY_BTN_POV1_DR", "label": "Down-right", "icon": "downright", "part": "stick.hat.tms"}, {"input": "JOY_BTN_POV1_DL", "label": "Down-left", "icon": "downleft", "part": "stick.hat.tms"}]},
+      {"id": "stick.ministick", "title": "H2 analog mini-stick click", "parts": ["stick.ministick"], "side": "other", "x": 902, "y": 1881, "width": 840, "modifier": true, "rows": [{"input": "JOY_BTN19", "label": "Press", "icon": "button", "part": "stick.ministick"}, {"input": "JOY_RX", "label": "X (RX)", "icon": "axis", "part": "stick.ministick"}, {"input": "JOY_RY", "label": "Y (RY)", "icon": "axis", "part": "stick.ministick"}]},
+      {"id": "stick.trigger", "title": "Trigger", "parts": ["stick.trigger"], "side": "top", "x": 2197.5, "y": 45, "width": 840, "modifier": true, "spot": [0.535, 0.33], "rows": [{"input": "JOY_BTN18", "label": "First stage", "icon": "button", "part": "stick.trigger"}]},
+      {"id": "stick.axis.twist", "title": "Twist", "parts": ["stick.axis.twist"], "side": "top", "x": 1340.5, "y": 45, "width": 840, "modifier": true, "spot": [0.495, 0.4], "rows": [{"input": "JOY_Z", "label": "Z", "icon": "axis", "part": "stick.axis.twist"}]},
+      {"id": "stick.gimbal", "title": "Stick (roll / pitch)", "parts": ["stick.gimbal"], "side": "bottom", "x": 2081.1, "y": 1627, "width": 840, "modifier": true, "spot": [0.49, 0.64], "rows": [{"input": "JOY_X", "label": "roll (X)", "icon": "axis", "part": "stick.gimbal"}, {"input": "JOY_Y", "label": "pitch (Y)", "icon": "axis", "part": "stick.gimbal"}]},
+      {"id": "stick.axis.slider", "title": "Slider", "parts": ["stick.axis.slider"], "side": "other", "x": 1759, "y": 1881, "width": 840, "modifier": true, "rows": [{"input": "JOY_RZ", "label": "RZ", "icon": "axis", "part": "stick.axis.slider"}]},
+      {"id": "stick.button.thumb.1", "title": "B16 (left plate behind the hats)", "parts": ["stick.button.thumb.1"], "side": "other", "x": 2616, "y": 1881, "width": 840, "modifier": true, "rows": [{"input": "JOY_BTN16", "label": "Press", "icon": "button", "part": "stick.button.thumb.1"}]},
+      {"id": "stick.button.thumb.2", "title": "B17 (right plate behind the hats)", "parts": ["stick.button.thumb.2"], "side": "other", "x": 3473, "y": 1881, "width": 840, "modifier": true, "rows": [{"input": "JOY_BTN17", "label": "Press", "icon": "button", "part": "stick.button.thumb.2"}]},
+      {"id": "stick.base.button.13", "title": "Right lever back (R TOGA)", "parts": ["stick.base.button.13"], "side": "bottom", "x": 1224.1, "y": 1627, "width": 840, "modifier": true, "spot": [0.443, 0.727], "rows": [{"input": "JOY_BTN11", "label": "Press", "icon": "button", "part": "stick.base.button.13"}]},
+      {"id": "stick.base.button.14", "title": "Right lever forward (R FULL REV)", "parts": ["stick.base.button.14"], "side": "left", "x": 45, "y": 1159, "width": 840, "modifier": true, "spot": [0.421, 0.671], "rows": [{"input": "JOY_BTN12", "label": "Press", "icon": "button", "part": "stick.base.button.14"}]},
+      {"id": "stick.base.button.15", "title": "Scroll wheel up", "parts": ["stick.base.button.15"], "side": "other", "x": 45, "y": 2386, "width": 840, "modifier": true, "rows": [{"input": "JOY_BTN13", "label": "Press", "icon": "button", "part": "stick.base.button.15"}]},
+      {"id": "stick.base.button.16", "title": "Scroll wheel down", "parts": ["stick.base.button.16"], "side": "other", "x": 902, "y": 2386, "width": 840, "modifier": true, "rows": [{"input": "JOY_BTN14", "label": "Press", "icon": "button", "part": "stick.base.button.16"}]},
+      {"id": "stick.base.button.17", "title": "Scroll wheel click", "parts": ["stick.base.button.17"], "side": "other", "x": 1759, "y": 2386, "width": 840, "modifier": true, "rows": [{"input": "JOY_BTN15", "label": "Press", "icon": "button", "part": "stick.base.button.17"}]},
+      {"id": "stick.base.button.18", "title": "Xbox", "parts": ["stick.base.button.18"], "side": "other", "x": 2616, "y": 2386, "width": 840, "modifier": true, "rows": [{"input": "JOY_BTN20", "label": "Press", "icon": "button", "part": "stick.base.button.18"}]},
+      {"id": "stick.base.button.19", "title": "View/Back", "parts": ["stick.base.button.19"], "side": "other", "x": 3473, "y": 2386, "width": 840, "modifier": true, "rows": [{"input": "JOY_BTN21", "label": "Press", "icon": "button", "part": "stick.base.button.19"}]},
+      {"id": "stick.base.button.20", "title": "Menu/Start", "parts": ["stick.base.button.20"], "side": "other", "x": 45, "y": 2499, "width": 840, "modifier": true, "rows": [{"input": "JOY_BTN22", "label": "Press", "icon": "button", "part": "stick.base.button.20"}]}
+    ],
+    "lines": [
+      {"table": "grid:stick.base.button.8", "points": [[1806.2, 1058.2], [919, 1058.2], [919, 946], [885, 946]]},
+      {"table": "stick.base.button.14", "points": [[1963.4, 1114.8], [919, 1114.8], [919, 1227], [885, 1227]]},
+      {"table": "grid:stick.base.button.4", "points": [[2325.8, 947], [3421, 947]]},
+      {"table": "stick.axis.twist", "points": [[2141, 749], [2141, 175], [1760.5, 175], [1760.5, 141]]},
+      {"table": "stick.trigger", "points": [[2237, 654.5], [2237, 175], [2617.5, 175], [2617.5, 141]]},
+      {"table": "stick.base.button.13", "points": [[2016.2, 1190.4], [2016.2, 1593], [1644.1, 1593], [1644.1, 1627]]},
+      {"table": "stick.gimbal", "points": [[2129, 1073], [2129, 1593], [2501.1, 1593], [2501.1, 1627]]}
+    ]
+  }
+}

@@ -1,0 +1,257 @@
+{
+  "format": "joypro-device-layout",
+  "version": 1,
+  "model": "moza-mtlp",
+  "photo": {"kind": "vendor", "url": "https://us.mozaracing.com/cdn/shop/files/moza_mtlp_1_baabd9e2-8a14-425d-96a3-18610676a0dd.png", "sha256": "7c6126a8960b789c5d67bf95d7e6fd05421316bbdd0d504c9e4e2043593e4729", "view": "front"},
+  "markers": {
+    "panel.button.1": [0.6, 0.388],
+    "panel.button.10": [0.545, 0.535],
+    "panel.button.9": [0.545, 0.535],
+    "panel.lever.flaps": [0.448, 0.355],
+    "panel.lever.gear": [0.24, 0.49],
+    "panel.rotary.1": [0.545, 0.535],
+    "panel.selector.1": [0.572, 0.35],
+    "panel.toggle.1": [0.345, 0.348],
+    "panel.toggle.2": [0.345, 0.478],
+    "panel.toggle.3": [0.448, 0.485],
+    "panel.toggle3.1": [0.24, 0.49],
+    "panel.toggle3.2": [0.775, 0.435]
+  },
+  "parts": {
+    "panel.lever.flaps": {
+      "type": "lever",
+      "name": "FLAP",
+      "inputs": [
+        {"input": "JOY_BTN7", "control": "panel.lever.flaps.up"},
+        {"input": "JOY_BTN8", "control": "panel.lever.flaps.mid"},
+        {"input": "JOY_BTN9", "control": "panel.lever.flaps.down"}
+      ],
+      "mapping": "medium",
+      "confidence": "high",
+      "note": "FLAP switch (AUTO / HALF / FULL)"
+    },
+    "panel.lever.gear": {
+      "type": "lever",
+      "name": "Gear lever",
+      "inputs": [
+        {"input": "JOY_BTN1", "control": "panel.lever.gear.up"},
+        {"input": "JOY_BTN2", "control": "panel.lever.gear.down"}
+      ],
+      "mapping": "medium",
+      "confidence": "high",
+      "note": "red gear wheel lever (UP / DN)"
+    },
+    "panel.toggle.1": {
+      "type": "switch",
+      "name": "LAUNCH BAR",
+      "inputs": [
+        {"input": "JOY_BTN3", "control": "panel.toggle.1.up"},
+        {"input": "JOY_BTN4", "control": "panel.toggle.1.down"}
+      ],
+      "mapping": "medium",
+      "confidence": "high",
+      "note": "LAUNCH BAR switch (RETRACT / EXTEND)"
+    },
+    "panel.toggle.2": {
+      "type": "switch",
+      "name": "LDG/TAXI LIGHT O",
+      "inputs": [
+        {"input": "JOY_BTN5", "control": "panel.toggle.2.up"},
+        {"input": "JOY_BTN6", "control": "panel.toggle.2.down"}
+      ],
+      "mapping": "medium",
+      "confidence": "high",
+      "note": "LDG/TAXI LIGHT switch (ON / OFF)"
+    },
+    "panel.toggle.3": {
+      "type": "switch",
+      "name": "ANTI SKID O",
+      "inputs": [
+        {"input": "JOY_BTN10", "control": "panel.toggle.3.up"},
+        {"input": "JOY_BTN11", "control": "panel.toggle.3.down"}
+      ],
+      "mapping": "medium",
+      "confidence": "high",
+      "note": "ANTI SKID switch (ON / OFF)"
+    },
+    "panel.toggle3.1": {
+      "type": "switch",
+      "name": "Gear lever center",
+      "inputs": [
+        {"input": "JOY_BTN25", "control": "panel.toggle3.1.center"}
+      ],
+      "mapping": "medium",
+      "confidence": "medium",
+      "note": "middle position of the gear lever (catalog: \"Gear lever center\")"
+    },
+    "panel.toggle3.2": {
+      "type": "switch",
+      "name": "HOOK",
+      "inputs": [
+        {"input": "JOY_BTN22", "control": "panel.toggle3.2.up"},
+        {"input": "JOY_BTN24", "control": "panel.toggle3.2.center"},
+        {"input": "JOY_BTN23", "control": "panel.toggle3.2.down"}
+      ],
+      "mapping": "medium",
+      "confidence": "high",
+      "note": "HOOK lever"
+    },
+    "panel.selector.1": {
+      "type": "selector",
+      "name": "SELECT JETT",
+      "inputs": [
+        {"input": "JOY_BTN13", "control": "panel.selector.1.pos.1"},
+        {"input": "JOY_BTN14", "control": "panel.selector.1.pos.2"},
+        {"input": "JOY_BTN15", "control": "panel.selector.1.pos.3"},
+        {"input": "JOY_BTN16", "control": "panel.selector.1.pos.4"},
+        {"input": "JOY_BTN17", "control": "panel.selector.1.pos.5"}
+      ],
+      "mapping": "medium",
+      "confidence": "high",
+      "note": "SELECT JETT knob (ring around the JETT button)"
+    },
+    "panel.rotary.1": {
+      "type": "encoder",
+      "name": "PARK BRK turn",
+      "inputs": [
+        {"input": "JOY_BTN19", "control": "panel.rotary.1.ccw"},
+        {"input": "JOY_BTN21", "control": "panel.rotary.1.cw"}
+      ],
+      "mapping": "medium",
+      "confidence": "high",
+      "note": "yellow EMERG/PARK BRK handle (turn)"
+    },
+    "panel.button.1": {
+      "type": "button",
+      "name": "PRESS JETT",
+      "inputs": [
+        {"input": "JOY_BTN12", "control": "panel.button.1"}
+      ],
+      "mapping": "medium",
+      "confidence": "high",
+      "note": "red JETT button in the middle of the SELECT JETT knob"
+    },
+    "panel.button.2": {
+      "type": "button",
+      "name": "Button 2",
+      "inputs": [
+        {"input": "", "control": "panel.button.2"}
+      ],
+      "mapping": "medium"
+    },
+    "panel.button.3": {
+      "type": "button",
+      "name": "Button 3",
+      "inputs": [
+        {"input": "", "control": "panel.button.3"}
+      ],
+      "mapping": "medium"
+    },
+    "panel.button.4": {
+      "type": "button",
+      "name": "Button 4",
+      "inputs": [
+        {"input": "", "control": "panel.button.4"}
+      ],
+      "mapping": "medium"
+    },
+    "panel.button.5": {
+      "type": "button",
+      "name": "Button 5",
+      "inputs": [
+        {"input": "", "control": "panel.button.5"}
+      ],
+      "mapping": "medium"
+    },
+    "panel.button.6": {
+      "type": "button",
+      "name": "Button 6",
+      "inputs": [
+        {"input": "", "control": "panel.button.6"}
+      ],
+      "mapping": "medium"
+    },
+    "panel.button.7": {
+      "type": "button",
+      "name": "Button 7",
+      "inputs": [
+        {"input": "", "control": "panel.button.7"}
+      ],
+      "mapping": "medium"
+    },
+    "panel.button.8": {
+      "type": "button",
+      "name": "Button 8",
+      "inputs": [
+        {"input": "", "control": "panel.button.8"}
+      ],
+      "mapping": "medium"
+    },
+    "panel.button.9": {
+      "type": "button",
+      "name": "PARK BRK pull",
+      "inputs": [
+        {"input": "JOY_BTN18", "control": "panel.button.9"}
+      ],
+      "mapping": "medium",
+      "confidence": "high",
+      "note": "yellow EMERG/PARK BRK handle (pull)"
+    },
+    "panel.button.10": {
+      "type": "button",
+      "name": "PARK BRK push",
+      "inputs": [
+        {"input": "JOY_BTN20", "control": "panel.button.10"}
+      ],
+      "mapping": "medium",
+      "confidence": "high",
+      "note": "yellow EMERG/PARK BRK handle (push)"
+    }
+  },
+  "unplaced": {
+    "panel.button.2": "placeholder without input (catalog)",
+    "panel.button.3": "placeholder without input (catalog)",
+    "panel.button.4": "placeholder without input (catalog)",
+    "panel.button.5": "placeholder without input (catalog)",
+    "panel.button.6": "placeholder without input (catalog)",
+    "panel.button.7": "placeholder without input (catalog)",
+    "panel.button.8": "placeholder without input (catalog)"
+  },
+  "candidates": {},
+  "source": "JoyPro curated on the maker's photo (2026-10-11), the panel straight from the front: gear lever on the left, LAUNCH BAR / FLAP / LDG/TAXI LIGHT / ANTI SKID switches, SELECT JETT knob with JETT button, EMERG/PARK BRK handle, HOOK lever on the right",
+  "mappingSource": "the controls are named by the panel's printed labels; the button numbers are the catalog's (from a local game configuration; the MOZA MTLP user manual, cdn.shopify.com/s/files/1/0795/3727/5194/files/MOZA_MTLP_User_Manual.docx, lists 25 switch signals but no numbers)",
+  "confidence": "medium",
+  "note": "panel.button.2-8 are old placeholders without input (catalog note) and are not placed. PARK BRK turn / pull / push are all the yellow EMERG/PARK BRK handle, so they share one spot.",
+  "callouts": {
+    "version": 1,
+    "width": 3632,
+    "height": 2076,
+    "picture": [816, 38, 2000, 2000],
+    "rowHeight": 48,
+    "mainWidth": 408,
+    "modWidth": 264,
+    "otherY": -1,
+    "tables": [
+      {"id": "stack:panel.lever.gear", "title": "Gear lever / Gear lever center", "parts": ["panel.lever.gear", "panel.toggle3.1"], "side": "left", "x": 38, "y": 1150.6, "width": 720, "modifier": true, "spot": [0.24, 0.49], "rows": [{"input": "JOY_BTN1", "label": "Gear lever Up", "icon": "up", "part": "panel.lever.gear"}, {"input": "JOY_BTN2", "label": "Gear lever Down", "icon": "down", "part": "panel.lever.gear"}, {"input": "JOY_BTN25", "label": "Gear lever center Center", "icon": "mid", "part": "panel.toggle3.1"}]},
+      {"id": "stack:panel.rotary.1", "title": "PARK BRK turn / PARK BRK pull / PARK BRK push", "parts": ["panel.rotary.1", "panel.button.9", "panel.button.10"], "side": "right", "x": 2874, "y": 1098.5, "width": 720, "modifier": true, "spot": [0.545, 0.535], "rows": [{"input": "JOY_BTN21", "label": "PARK BRK turn Clockwise", "icon": "right", "part": "panel.rotary.1"}, {"input": "JOY_BTN19", "label": "PARK BRK turn Counter-clockwise", "icon": "left", "part": "panel.rotary.1"}, {"input": "JOY_BTN18", "label": "PARK BRK pull Press", "icon": "button", "part": "panel.button.9"}, {"input": "JOY_BTN20", "label": "PARK BRK push Press", "icon": "button", "part": "panel.button.10"}]},
+      {"id": "panel.lever.flaps", "title": "FLAP", "parts": ["panel.lever.flaps"], "side": "left", "x": 38, "y": 667.6, "width": 720, "modifier": true, "spot": [0.448, 0.355], "rows": [{"input": "JOY_BTN7", "label": "Up", "icon": "up", "part": "panel.lever.flaps"}, {"input": "JOY_BTN8", "label": "Mid", "icon": "mid", "part": "panel.lever.flaps"}, {"input": "JOY_BTN9", "label": "Down", "icon": "down", "part": "panel.lever.flaps"}]},
+      {"id": "panel.toggle.1", "title": "LAUNCH BAR", "parts": ["panel.toggle.1"], "side": "left", "x": 38, "y": 522.6, "width": 720, "modifier": true, "spot": [0.345, 0.348], "rows": [{"input": "JOY_BTN3", "label": "Up", "icon": "up", "part": "panel.toggle.1"}, {"input": "JOY_BTN4", "label": "Down", "icon": "down", "part": "panel.toggle.1"}]},
+      {"id": "panel.toggle.2", "title": "LDG/TAXI LIGHT O", "parts": ["panel.toggle.2"], "side": "left", "x": 38, "y": 860.6, "width": 720, "modifier": true, "spot": [0.345, 0.478], "rows": [{"input": "JOY_BTN5", "label": "Up", "icon": "up", "part": "panel.toggle.2"}, {"input": "JOY_BTN6", "label": "Down", "icon": "down", "part": "panel.toggle.2"}]},
+      {"id": "panel.toggle.3", "title": "ANTI SKID O", "parts": ["panel.toggle.3"], "side": "left", "x": 38, "y": 1005.6, "width": 720, "modifier": true, "spot": [0.448, 0.485], "rows": [{"input": "JOY_BTN10", "label": "Up", "icon": "up", "part": "panel.toggle.3"}, {"input": "JOY_BTN11", "label": "Down", "icon": "down", "part": "panel.toggle.3"}]},
+      {"id": "panel.toggle3.2", "title": "HOOK", "parts": ["panel.toggle3.2"], "side": "right", "x": 2874, "y": 905.5, "width": 720, "modifier": true, "spot": [0.775, 0.435], "rows": [{"input": "JOY_BTN22", "label": "Up", "icon": "up", "part": "panel.toggle3.2"}, {"input": "JOY_BTN24", "label": "Center", "icon": "mid", "part": "panel.toggle3.2"}, {"input": "JOY_BTN23", "label": "Down", "icon": "down", "part": "panel.toggle3.2"}]},
+      {"id": "panel.selector.1", "title": "SELECT JETT", "parts": ["panel.selector.1"], "side": "right", "x": 2874, "y": 519.5, "width": 720, "modifier": true, "spot": [0.572, 0.35], "rows": [{"input": "JOY_BTN13", "label": "1", "icon": "pos", "part": "panel.selector.1"}, {"input": "JOY_BTN14", "label": "2", "icon": "pos", "part": "panel.selector.1"}, {"input": "JOY_BTN15", "label": "3", "icon": "pos", "part": "panel.selector.1"}, {"input": "JOY_BTN16", "label": "4", "icon": "pos", "part": "panel.selector.1"}, {"input": "JOY_BTN17", "label": "5", "icon": "pos", "part": "panel.selector.1"}]},
+      {"id": "panel.button.1", "title": "PRESS JETT", "parts": ["panel.button.1"], "side": "right", "x": 2874, "y": 808.5, "width": 720, "modifier": true, "spot": [0.6, 0.388], "rows": [{"input": "JOY_BTN12", "label": "Press", "icon": "button", "part": "panel.button.1"}]}
+    ],
+    "lines": [
+      {"table": "panel.toggle.1", "points": [[1506, 734], [1506, 581.6], [758, 581.6]]},
+      {"table": "panel.lever.flaps", "points": [[1712, 748], [1712, 734], [787, 734], [787, 726.6], [758, 726.6]]},
+      {"table": "panel.toggle.2", "points": [[1506, 994], [1506, 919.6], [758, 919.6]]},
+      {"table": "panel.toggle.3", "points": [[1712, 1008], [1712, 1064.6], [758, 1064.6]]},
+      {"table": "stack:panel.lever.gear", "points": [[1296, 1018], [787, 1018], [787, 1209.6], [758, 1209.6]]},
+      {"table": "panel.selector.1", "points": [[1960, 738], [2845, 738], [2845, 578.5], [2874, 578.5]]},
+      {"table": "panel.button.1", "points": [[2016, 814], [2845, 814], [2845, 867.5], [2874, 867.5]]},
+      {"table": "panel.toggle3.2", "points": [[2366, 908], [2845, 908], [2845, 964.5], [2874, 964.5]]},
+      {"table": "stack:panel.rotary.1", "points": [[1906, 1108], [2845, 1108], [2845, 1157.5], [2874, 1157.5]]}
+    ]
+  }
+}

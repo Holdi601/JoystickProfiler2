@@ -1,0 +1,27 @@
+{
+  "format": "joypro-cockpit-drawing",
+  "version": 1,
+  "id": "apollo-rhc",
+  "kind": "rhc",
+  "aircraft": ["apollo"],
+  "variants": [],
+  "except": ["apollo-lm"],
+  "name": "Apollo Command Module rotation hand controller",
+  "view": "the CM RHC from behind, as the crew member on the couch sees it: the symmetrical handle (usable with either hand) with its push-to-talk button on top, on the gimbal housing at the end of the couch armrest",
+  "origin": "JoyPro's own vector drawing: the handle and housing reconstructed from the public Apollo Command Module descriptions (NASA Apollo Operations Handbook overview, Apollo Flight Journal) and public museum photos looked at for proportions; not traced from a photo.",
+  "width": 800,
+  "height": 1000,
+  "shapes": [
+    { "kind": "ellipse", "role": "shadow", "x": 400, "y": 950, "w": 290, "h": 18 },
+    { "kind": "rect", "role": "bodyAlt", "x": 180, "y": 770, "w": 440, "h": 160, "r": 26 },
+    { "kind": "rect", "role": "bodyAlt", "x": 290, "y": 640, "w": 220, "h": 140, "r": 22 },
+    { "kind": "path", "role": "line", "path": "M300,700 L500,700" },
+    { "kind": "path", "role": "body", "path": "M288,250 C288,206 334,182 400,182 C466,182 512,206 512,250 L506,300 C502,334 476,346 462,372 L452,648 L348,648 L338,372 C324,346 298,334 294,300 Z" },
+    { "kind": "path", "role": "face", "path": "M314,248 C316,220 350,204 400,204 C450,204 484,220 486,248 L482,286 C440,300 360,300 318,286 Z" },
+    { "kind": "path", "role": "line", "path": "M360,420 C368,480 370,560 368,620 M440,420 C432,480 430,560 432,620" }
+  ],
+  "parts": [
+    { "id": "rhc.button.ptt", "type": "button", "x": 400, "y": 248, "r": 20 },
+    { "id": "rhc.gimbal", "type": "gimbal", "x": 400, "y": 852, "r": 56 }
+  ]
+}

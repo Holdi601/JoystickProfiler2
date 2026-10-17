@@ -1,0 +1,439 @@
+{
+  "format": "joypro-device-layout",
+  "version": 1,
+  "model": "winwing-viperace-throttle-grip",
+  "photo": {"kind": "vendor", "url": "https://eu.winctrl.com/static/ipfs/QmQbZURKosh89qWSrpAVTeBocFdiKTfVJ4TVsoP35zq8FV", "sha256": "2448205dabff26307edc7ad46e6e8605d25ab9dbd6a2af34a70da3a63cf1871f", "view": "main"},
+  "markers": {
+    "throttle.axis": [0.64, 0.3],
+    "throttle.axis.rotary.2": [0.655, 0.068],
+    "throttle.button.3": [0.638, 0.072],
+    "throttle.button.4": [0.68, 0.07],
+    "throttle.dogfight": [0.775, 0.1],
+    "throttle.hat.1": [0.662, 0.045],
+    "throttle.hat.2": [0.585, 0.113],
+    "throttle.ministick": [0.786, 0.225]
+  },
+  "parts": {
+    "throttle.speedbrake": {
+      "type": "switch",
+      "name": "Speed brake",
+      "inputs": [
+        {"input": "JOY_BTN10", "control": "throttle.speedbrake.fwd"},
+        {"input": "JOY_BTN11", "control": "throttle.speedbrake.center"},
+        {"input": "JOY_BTN12", "control": "throttle.speedbrake.aft"}
+      ],
+      "mapping": "high"
+    },
+    "throttle.dogfight": {
+      "type": "switch",
+      "name": "Dogfight switch",
+      "inputs": [
+        {"input": "JOY_BTN13", "control": "throttle.dogfight.fwd"},
+        {"input": "JOY_BTN14", "control": "throttle.dogfight.center"},
+        {"input": "JOY_BTN15", "control": "throttle.dogfight.aft"}
+      ],
+      "mapping": "medium",
+      "confidence": "medium",
+      "note": "slide block next to the printed DOG FIGHT label; 13-15 = dogfight is the catalog's inference from the drawing"
+    },
+    "throttle.ministick": {
+      "type": "ministick",
+      "name": "Thumb stick",
+      "inputs": [
+        {"input": "JOY_X", "control": "throttle.axis.ministick.x"},
+        {"input": "JOY_Y", "control": "throttle.axis.ministick.y"},
+        {"input": "JOY_BTN5", "control": "throttle.ministick.press"},
+        {"input": "JOY_BTN6", "control": "throttle.ministick.left"},
+        {"input": "JOY_BTN7", "control": "throttle.ministick.up"},
+        {"input": "JOY_BTN8", "control": "throttle.ministick.right"},
+        {"input": "JOY_BTN9", "control": "throttle.ministick.down"}
+      ],
+      "mapping": "high",
+      "confidence": "medium",
+      "note": "ministick housing seen edge-on next to the CURSOR/ENABLE label; the cap faces inboard (5 press, X/Y, 6-9)"
+    },
+    "throttle.hat.1": {
+      "type": "hat",
+      "name": "Throttle hat 1",
+      "inputs": [
+        {"input": "JOY_BTN18", "control": "throttle.hat.1.press"},
+        {"input": "JOY_BTN19", "control": "throttle.hat.1.upright"},
+        {"input": "JOY_BTN20", "control": "throttle.hat.1.downright"},
+        {"input": "JOY_BTN21", "control": "throttle.hat.1.downleft"},
+        {"input": "JOY_BTN22", "control": "throttle.hat.1.upleft"}
+      ],
+      "mapping": "high",
+      "confidence": "high",
+      "note": "cap of the MAN RNG/UNCAGE top knob, diagonal 4-way + press 18-22"
+    },
+    "throttle.hat.2": {
+      "type": "hat",
+      "name": "Throttle hat 2",
+      "inputs": [
+        {"input": "JOY_BTN23", "control": "throttle.hat.2.press"},
+        {"input": "JOY_BTN24", "control": "throttle.hat.2.up"},
+        {"input": "JOY_BTN25", "control": "throttle.hat.2.right"},
+        {"input": "JOY_BTN26", "control": "throttle.hat.2.down"},
+        {"input": "JOY_BTN27", "control": "throttle.hat.2.left"}
+      ],
+      "mapping": "high",
+      "confidence": "high",
+      "note": "knurled rocker hat, cross 23-27 (handle labels VHF/UHF/IFF IN/IFF OUT)"
+    },
+    "throttle.axis.rotary.1": {
+      "type": "knob",
+      "name": "Rotary 1",
+      "inputs": [
+        {"input": "JOY_Z", "control": "throttle.axis.rotary.1"},
+        {"input": "JOY_SLIDER2", "control": "throttle.axis.rotary.1"}
+      ],
+      "mapping": "high"
+    },
+    "throttle.axis.rotary.2": {
+      "type": "knob",
+      "name": "Rotary 2",
+      "inputs": [
+        {"input": "JOY_RZ", "control": "throttle.axis.rotary.2"}
+      ],
+      "mapping": "high",
+      "confidence": "high",
+      "note": "rotation of the MAN RNG/UNCAGE top knob (Rz)"
+    },
+    "throttle.axis.slider.1": {
+      "type": "slider",
+      "name": "Slider 1",
+      "inputs": [
+        {"input": "JOY_SLIDER1", "control": "throttle.axis.slider.1"}
+      ],
+      "mapping": "high"
+    },
+    "throttle.axis": {
+      "type": "button",
+      "name": "throttle.axis",
+      "inputs": [
+        {"input": "JOY_RY", "control": "throttle.axis.left"},
+        {"input": "JOY_RX", "control": "throttle.axis.right"}
+      ],
+      "mapping": "medium",
+      "confidence": "medium",
+      "note": "the handle is the throttle lever (Ry/Rx on the base)"
+    },
+    "throttle.button.1": {
+      "type": "button",
+      "name": "Throttle button 1",
+      "inputs": [
+        {"input": "JOY_BTN3", "control": "throttle.button.1"}
+      ],
+      "mapping": "high"
+    },
+    "throttle.button.2": {
+      "type": "button",
+      "name": "Throttle button 2",
+      "inputs": [
+        {"input": "JOY_BTN4", "control": "throttle.button.2"}
+      ],
+      "mapping": "high"
+    },
+    "throttle.button.3": {
+      "type": "button",
+      "name": "Throttle button 3",
+      "inputs": [
+        {"input": "JOY_BTN16", "control": "throttle.button.3"}
+      ],
+      "mapping": "high",
+      "confidence": "medium",
+      "note": "16 = top knob turned to the Rz 0 end (same knob as Rz)"
+    },
+    "throttle.button.4": {
+      "type": "button",
+      "name": "Throttle button 4",
+      "inputs": [
+        {"input": "JOY_BTN17", "control": "throttle.button.4"}
+      ],
+      "mapping": "high",
+      "confidence": "medium",
+      "note": "17 = top knob turned to the Rz 65535 end (same knob as Rz)"
+    },
+    "throttle.base.toggle.1": {
+      "type": "switch",
+      "name": "LAUNCH BAR",
+      "inputs": [
+        {"input": "JOY_BTN65", "control": "throttle.base.toggle.1.up"},
+        {"input": "JOY_BTN66", "control": "throttle.base.toggle.1.down"}
+      ],
+      "mapping": "high"
+    },
+    "throttle.base.toggle.2": {
+      "type": "switch",
+      "name": "HOOK",
+      "inputs": [
+        {"input": "JOY_BTN67", "control": "throttle.base.toggle.2.up"},
+        {"input": "JOY_BTN68", "control": "throttle.base.toggle.2.down"}
+      ],
+      "mapping": "high"
+    },
+    "throttle.base.toggle.3": {
+      "type": "switch",
+      "name": "WING FOLD",
+      "inputs": [
+        {"input": "JOY_BTN69", "control": "throttle.base.toggle.3.up"},
+        {"input": "JOY_BTN70", "control": "throttle.base.toggle.3.center"},
+        {"input": "JOY_BTN71", "control": "throttle.base.toggle.3.down"}
+      ],
+      "mapping": "high"
+    },
+    "throttle.base.toggle.4": {
+      "type": "switch",
+      "name": "LDG GEAR",
+      "inputs": [
+        {"input": "JOY_BTN73", "control": "throttle.base.toggle.4.up"},
+        {"input": "JOY_BTN74", "control": "throttle.base.toggle.4.down"}
+      ],
+      "mapping": "high"
+    },
+    "throttle.base.toggle.5": {
+      "type": "switch",
+      "name": "PARK BRK",
+      "inputs": [
+        {"input": "JOY_BTN75", "control": "throttle.base.toggle.5.up"},
+        {"input": "JOY_BTN76", "control": "throttle.base.toggle.5.down"}
+      ],
+      "mapping": "high"
+    },
+    "throttle.base.toggle.6": {
+      "type": "switch",
+      "name": "FLAP",
+      "inputs": [
+        {"input": "JOY_BTN77", "control": "throttle.base.toggle.6.up"},
+        {"input": "JOY_BTN78", "control": "throttle.base.toggle.6.center"},
+        {"input": "JOY_BTN79", "control": "throttle.base.toggle.6.down"}
+      ],
+      "mapping": "high"
+    },
+    "throttle.base.toggle.7": {
+      "type": "switch",
+      "name": "ROLL",
+      "inputs": [
+        {"input": "JOY_BTN86", "control": "throttle.base.toggle.7.up"},
+        {"input": "JOY_BTN87", "control": "throttle.base.toggle.7.center"},
+        {"input": "JOY_BTN88", "control": "throttle.base.toggle.7.down"}
+      ],
+      "mapping": "high"
+    },
+    "throttle.base.toggle.8": {
+      "type": "switch",
+      "name": "A/P",
+      "inputs": [
+        {"input": "JOY_BTN89", "control": "throttle.base.toggle.8.up"},
+        {"input": "JOY_BTN90", "control": "throttle.base.toggle.8.center"},
+        {"input": "JOY_BTN91", "control": "throttle.base.toggle.8.down"}
+      ],
+      "mapping": "high"
+    },
+    "throttle.base.toggle.9": {
+      "type": "switch",
+      "name": "MASTER",
+      "inputs": [
+        {"input": "JOY_BTN93", "control": "throttle.base.toggle.9.up"},
+        {"input": "JOY_BTN94", "control": "throttle.base.toggle.9.center"},
+        {"input": "JOY_BTN95", "control": "throttle.base.toggle.9.down"}
+      ],
+      "mapping": "high"
+    },
+    "throttle.base.toggle.10": {
+      "type": "switch",
+      "name": "SLIDER",
+      "inputs": [
+        {"input": "JOY_BTN106", "control": "throttle.base.toggle.10.up"},
+        {"input": "JOY_BTN107", "control": "throttle.base.toggle.10.center"},
+        {"input": "JOY_BTN108", "control": "throttle.base.toggle.10.down"}
+      ],
+      "mapping": "high"
+    },
+    "throttle.base.toggle.11": {
+      "type": "switch",
+      "name": "DIAL",
+      "inputs": [
+        {"input": "JOY_BTN109", "control": "throttle.base.toggle.11.up"},
+        {"input": "JOY_BTN110", "control": "throttle.base.toggle.11.center"},
+        {"input": "JOY_BTN111", "control": "throttle.base.toggle.11.down"}
+      ],
+      "mapping": "high"
+    },
+    "throttle.base.encoder.1": {
+      "type": "encoder",
+      "name": "HMD",
+      "inputs": [
+        {"input": "JOY_BTN83", "control": "throttle.base.encoder.1.ccw"},
+        {"input": "JOY_BTN84", "control": "throttle.base.encoder.1.cw"},
+        {"input": "JOY_BTN85", "control": "throttle.base.encoder.1.press"}
+      ],
+      "mapping": "high"
+    },
+    "throttle.base.encoder.2": {
+      "type": "encoder",
+      "name": "HDG",
+      "inputs": [
+        {"input": "JOY_BTN97", "control": "throttle.base.encoder.2.ccw"},
+        {"input": "JOY_BTN98", "control": "throttle.base.encoder.2.cw"},
+        {"input": "JOY_BTN99", "control": "throttle.base.encoder.2.press"}
+      ],
+      "mapping": "high"
+    },
+    "throttle.base.encoder.3": {
+      "type": "encoder",
+      "name": "CRS",
+      "inputs": [
+        {"input": "JOY_BTN100", "control": "throttle.base.encoder.3.ccw"},
+        {"input": "JOY_BTN101", "control": "throttle.base.encoder.3.cw"},
+        {"input": "JOY_BTN102", "control": "throttle.base.encoder.3.press"}
+      ],
+      "mapping": "high"
+    },
+    "throttle.base.encoder.4": {
+      "type": "encoder",
+      "name": "PANEL LTS",
+      "inputs": [
+        {"input": "JOY_BTN103", "control": "throttle.base.encoder.4.ccw"},
+        {"input": "JOY_BTN104", "control": "throttle.base.encoder.4.cw"},
+        {"input": "JOY_BTN105", "control": "throttle.base.encoder.4.press"}
+      ],
+      "mapping": "high"
+    },
+    "throttle.base.button.1": {
+      "type": "button",
+      "name": "WING FOLD PUSH",
+      "inputs": [
+        {"input": "JOY_BTN72", "control": "throttle.base.button.1"}
+      ],
+      "mapping": "high"
+    },
+    "throttle.base.button.2": {
+      "type": "button",
+      "name": "FRONT RED BUTTON",
+      "inputs": [
+        {"input": "JOY_BTN80", "control": "throttle.base.button.2"}
+      ],
+      "mapping": "high"
+    },
+    "throttle.base.button.3": {
+      "type": "button",
+      "name": "A/G",
+      "inputs": [
+        {"input": "JOY_BTN81", "control": "throttle.base.button.3"}
+      ],
+      "mapping": "high"
+    },
+    "throttle.base.button.4": {
+      "type": "button",
+      "name": "A/A",
+      "inputs": [
+        {"input": "JOY_BTN82", "control": "throttle.base.button.4"}
+      ],
+      "mapping": "high"
+    },
+    "throttle.base.button.5": {
+      "type": "button",
+      "name": "ADV MODE",
+      "inputs": [
+        {"input": "JOY_BTN92", "control": "throttle.base.button.5"}
+      ],
+      "mapping": "high"
+    },
+    "throttle.base.button.6": {
+      "type": "button",
+      "name": "JETT",
+      "inputs": [
+        {"input": "JOY_BTN96", "control": "throttle.base.button.6"}
+      ],
+      "mapping": "high"
+    }
+  },
+  "unplaced": {
+    "throttle.speedbrake": "speed brake (10-12) is on the inboard side, facing away",
+    "throttle.axis.rotary.1": "Z wheel at the front of the handle is not identifiable on this angle",
+    "throttle.axis.slider.1": "no slider on the handle (SLIDER1 belongs to the base)",
+    "throttle.button.1": "underside button 3, hidden",
+    "throttle.button.2": "underside button 4, hidden",
+    "throttle.base.toggle.1": "Orion 2 base control, not on this grip photo",
+    "throttle.base.toggle.2": "Orion 2 base control, not on this grip photo",
+    "throttle.base.toggle.3": "Orion 2 base control, not on this grip photo",
+    "throttle.base.toggle.4": "Orion 2 base control, not on this grip photo",
+    "throttle.base.toggle.5": "Orion 2 base control, not on this grip photo",
+    "throttle.base.toggle.6": "Orion 2 base control, not on this grip photo",
+    "throttle.base.toggle.7": "Orion 2 base control, not on this grip photo",
+    "throttle.base.toggle.8": "Orion 2 base control, not on this grip photo",
+    "throttle.base.toggle.9": "Orion 2 base control, not on this grip photo",
+    "throttle.base.toggle.10": "Orion 2 base control, not on this grip photo",
+    "throttle.base.toggle.11": "Orion 2 base control, not on this grip photo",
+    "throttle.base.encoder.1": "Orion 2 base control, not on this grip photo",
+    "throttle.base.encoder.2": "Orion 2 base control, not on this grip photo",
+    "throttle.base.encoder.3": "Orion 2 base control, not on this grip photo",
+    "throttle.base.encoder.4": "Orion 2 base control, not on this grip photo",
+    "throttle.base.button.1": "Orion 2 base control, not on this grip photo",
+    "throttle.base.button.2": "Orion 2 base control, not on this grip photo",
+    "throttle.base.button.3": "Orion 2 base control, not on this grip photo",
+    "throttle.base.button.4": "Orion 2 base control, not on this grip photo",
+    "throttle.base.button.5": "Orion 2 base control, not on this grip photo",
+    "throttle.base.button.6": "Orion 2 base control, not on this grip photo"
+  },
+  "candidates": {},
+  "source": "JoyPro curated on the maker's photo (2026-10-11), F-16EX throttle handle alone on its mounting frame, seen from the outboard (left) side, front of the handle to the right; no throttle base on the photo",
+  "mappingSource": "WinWing \"THROTTLE HANDLE OF F-16 H.O.T.A.S User Manual EN V2.0\" section 2.1 button drawing (https://en.winwing.cn/static/file/THROTTLE%20HANDLE%20OF%20F-16%20H.O.T.A.S-User%20MANUAL%20EN%20V%202.0.pdf): 23-27 = knurled rocker hat on the top-rear, 18-22 = cap of the top knob, Rz/16/17 = rotation of that top knob, 5 + X/Y = ministick; printed labels on the handle (MAN RNG/UNCAGE, VHF/UHF/IFF, DOG FIGHT, CURSOR/ENABLE)",
+  "confidence": "medium",
+  "note": "All throttle.base.* parts belong to the Orion 2 base and are not on this photo. The inboard (thumb) side with the speed brake switch, the ministick cap and the underside buttons 3/4 faces away. The finger lift at the rear of the handle is not a catalog grip part. Dogfight = 13-15 is the catalog's inference; the drawing shows 13-15 as the flat rocker at the top front, which is where the DOG FIGHT label sits on the photo.",
+  "callouts": {
+    "version": 1,
+    "width": 2287,
+    "height": 3158,
+    "picture": [30, 293, 1600, 1600],
+    "rowHeight": 38,
+    "mainWidth": 323,
+    "modWidth": 209,
+    "otherY": 1923,
+    "tables": [
+      {"id": "stack:throttle.axis.rotary.2", "title": "Rotary 2 / Throttle button 3", "parts": ["throttle.axis.rotary.2", "throttle.button.3"], "side": "top", "x": 479, "y": 144, "width": 570, "modifier": true, "spot": [0.6465, 0.07], "rows": [{"input": "JOY_RZ", "label": "Rotary 2 RZ", "icon": "axis", "part": "throttle.axis.rotary.2"}, {"input": "JOY_BTN16", "label": "Throttle button 3 Press", "icon": "button", "part": "throttle.button.3"}]},
+      {"id": "throttle.speedbrake", "title": "Speed brake", "parts": ["throttle.speedbrake"], "side": "other", "x": 30, "y": 1961, "width": 570, "modifier": true, "rows": [{"input": "JOY_BTN10", "label": "Forward", "icon": "up", "part": "throttle.speedbrake"}, {"input": "JOY_BTN11", "label": "Center", "icon": "mid", "part": "throttle.speedbrake"}, {"input": "JOY_BTN12", "label": "Back", "icon": "down", "part": "throttle.speedbrake"}]},
+      {"id": "throttle.dogfight", "title": "Dogfight switch", "parts": ["throttle.dogfight"], "side": "right", "x": 1687, "y": 277.6, "width": 570, "modifier": true, "spot": [0.775, 0.1], "rows": [{"input": "JOY_BTN13", "label": "Forward", "icon": "up", "part": "throttle.dogfight"}, {"input": "JOY_BTN14", "label": "Center", "icon": "mid", "part": "throttle.dogfight"}, {"input": "JOY_BTN15", "label": "Back", "icon": "down", "part": "throttle.dogfight"}]},
+      {"id": "throttle.ministick", "title": "Thumb stick", "parts": ["throttle.ministick"], "side": "right", "x": 1687, "y": 657.6, "width": 570, "modifier": true, "spot": [0.786, 0.225], "rows": [{"input": "JOY_BTN5", "label": "Press", "icon": "button", "part": "throttle.ministick"}, {"input": "JOY_BTN7", "label": "Up", "icon": "up", "part": "throttle.ministick"}, {"input": "JOY_X", "label": "X (X)", "icon": "axis", "part": "throttle.ministick"}, {"input": "JOY_BTN8", "label": "Right", "icon": "right", "part": "throttle.ministick"}, {"input": "JOY_Y", "label": "Y (Y)", "icon": "axis", "part": "throttle.ministick"}, {"input": "JOY_BTN6", "label": "Left", "icon": "left", "part": "throttle.ministick"}, {"input": "JOY_BTN9", "label": "Down", "icon": "down", "part": "throttle.ministick"}]},
+      {"id": "throttle.hat.1", "title": "Throttle hat 1", "parts": ["throttle.hat.1"], "side": "top", "x": 1060, "y": 30, "width": 570, "modifier": true, "spot": [0.662, 0.045], "rows": [{"input": "JOY_BTN18", "label": "Press", "icon": "button", "part": "throttle.hat.1"}, {"input": "JOY_BTN19", "label": "Up-right", "icon": "upright", "part": "throttle.hat.1"}, {"input": "JOY_BTN22", "label": "Up-left", "icon": "upleft", "part": "throttle.hat.1"}, {"input": "JOY_BTN20", "label": "Down-right", "icon": "downright", "part": "throttle.hat.1"}, {"input": "JOY_BTN21", "label": "Down-left", "icon": "downleft", "part": "throttle.hat.1"}]},
+      {"id": "throttle.hat.2", "title": "Throttle hat 2", "parts": ["throttle.hat.2"], "side": "right", "x": 1687, "y": 429.6, "width": 570, "modifier": true, "spot": [0.585, 0.113], "rows": [{"input": "JOY_BTN23", "label": "Press", "icon": "button", "part": "throttle.hat.2"}, {"input": "JOY_BTN24", "label": "Up", "icon": "up", "part": "throttle.hat.2"}, {"input": "JOY_BTN25", "label": "Right", "icon": "right", "part": "throttle.hat.2"}, {"input": "JOY_BTN27", "label": "Left", "icon": "left", "part": "throttle.hat.2"}, {"input": "JOY_BTN26", "label": "Down", "icon": "down", "part": "throttle.hat.2"}]},
+      {"id": "throttle.axis.rotary.1", "title": "Rotary 1", "parts": ["throttle.axis.rotary.1"], "side": "other", "x": 611, "y": 1961, "width": 570, "modifier": true, "rows": [{"input": "JOY_SLIDER2", "label": "SLIDER2", "icon": "axis", "part": "throttle.axis.rotary.1"}, {"input": "JOY_Z", "label": "Z", "icon": "axis", "part": "throttle.axis.rotary.1"}]},
+      {"id": "throttle.axis.slider.1", "title": "Slider 1", "parts": ["throttle.axis.slider.1"], "side": "other", "x": 1192, "y": 1961, "width": 570, "modifier": true, "rows": [{"input": "JOY_SLIDER1", "label": "SLIDER1", "icon": "axis", "part": "throttle.axis.slider.1"}]},
+      {"id": "throttle.axis", "title": "Throttle axis", "parts": ["throttle.axis"], "side": "right", "x": 1687, "y": 961.6, "width": 570, "modifier": true, "spot": [0.64, 0.3], "rows": [{"input": "JOY_RX", "label": "right (RX)", "icon": "axis", "part": "throttle.axis"}, {"input": "JOY_RY", "label": "left (RY)", "icon": "axis", "part": "throttle.axis"}]},
+      {"id": "throttle.button.1", "title": "Throttle button 1", "parts": ["throttle.button.1"], "side": "other", "x": 30, "y": 2113, "width": 570, "modifier": true, "rows": [{"input": "JOY_BTN3", "label": "Press", "icon": "button", "part": "throttle.button.1"}]},
+      {"id": "throttle.button.2", "title": "Throttle button 2", "parts": ["throttle.button.2"], "side": "other", "x": 611, "y": 2113, "width": 570, "modifier": true, "rows": [{"input": "JOY_BTN4", "label": "Press", "icon": "button", "part": "throttle.button.2"}]},
+      {"id": "throttle.button.4", "title": "Throttle button 4", "parts": ["throttle.button.4"], "side": "right", "x": 1687, "y": 201.6, "width": 570, "modifier": true, "spot": [0.68, 0.07], "rows": [{"input": "JOY_BTN17", "label": "Press", "icon": "button", "part": "throttle.button.4"}]},
+      {"id": "throttle.base.toggle.1", "title": "LAUNCH BAR", "parts": ["throttle.base.toggle.1"], "side": "other", "x": 1192, "y": 2113, "width": 570, "modifier": true, "rows": [{"input": "JOY_BTN65", "label": "Up", "icon": "up", "part": "throttle.base.toggle.1"}, {"input": "JOY_BTN66", "label": "Down", "icon": "down", "part": "throttle.base.toggle.1"}]},
+      {"id": "throttle.base.toggle.2", "title": "HOOK", "parts": ["throttle.base.toggle.2"], "side": "other", "x": 30, "y": 2227, "width": 570, "modifier": true, "rows": [{"input": "JOY_BTN67", "label": "Up", "icon": "up", "part": "throttle.base.toggle.2"}, {"input": "JOY_BTN68", "label": "Down", "icon": "down", "part": "throttle.base.toggle.2"}]},
+      {"id": "throttle.base.toggle.3", "title": "WING FOLD", "parts": ["throttle.base.toggle.3"], "side": "other", "x": 611, "y": 2227, "width": 570, "modifier": true, "rows": [{"input": "JOY_BTN69", "label": "Up", "icon": "up", "part": "throttle.base.toggle.3"}, {"input": "JOY_BTN70", "label": "Center", "icon": "mid", "part": "throttle.base.toggle.3"}, {"input": "JOY_BTN71", "label": "Down", "icon": "down", "part": "throttle.base.toggle.3"}]},
+      {"id": "throttle.base.toggle.4", "title": "LDG GEAR", "parts": ["throttle.base.toggle.4"], "side": "other", "x": 1192, "y": 2227, "width": 570, "modifier": true, "rows": [{"input": "JOY_BTN73", "label": "Up", "icon": "up", "part": "throttle.base.toggle.4"}, {"input": "JOY_BTN74", "label": "Down", "icon": "down", "part": "throttle.base.toggle.4"}]},
+      {"id": "throttle.base.toggle.5", "title": "PARK BRK", "parts": ["throttle.base.toggle.5"], "side": "other", "x": 30, "y": 2379, "width": 570, "modifier": true, "rows": [{"input": "JOY_BTN75", "label": "Up", "icon": "up", "part": "throttle.base.toggle.5"}, {"input": "JOY_BTN76", "label": "Down", "icon": "down", "part": "throttle.base.toggle.5"}]},
+      {"id": "throttle.base.toggle.6", "title": "FLAP", "parts": ["throttle.base.toggle.6"], "side": "other", "x": 611, "y": 2379, "width": 570, "modifier": true, "rows": [{"input": "JOY_BTN77", "label": "Up", "icon": "up", "part": "throttle.base.toggle.6"}, {"input": "JOY_BTN78", "label": "Center", "icon": "mid", "part": "throttle.base.toggle.6"}, {"input": "JOY_BTN79", "label": "Down", "icon": "down", "part": "throttle.base.toggle.6"}]},
+      {"id": "throttle.base.toggle.7", "title": "ROLL", "parts": ["throttle.base.toggle.7"], "side": "other", "x": 1192, "y": 2379, "width": 570, "modifier": true, "rows": [{"input": "JOY_BTN86", "label": "Up", "icon": "up", "part": "throttle.base.toggle.7"}, {"input": "JOY_BTN87", "label": "Center", "icon": "mid", "part": "throttle.base.toggle.7"}, {"input": "JOY_BTN88", "label": "Down", "icon": "down", "part": "throttle.base.toggle.7"}]},
+      {"id": "throttle.base.toggle.8", "title": "A/P", "parts": ["throttle.base.toggle.8"], "side": "other", "x": 30, "y": 2531, "width": 570, "modifier": true, "rows": [{"input": "JOY_BTN89", "label": "Up", "icon": "up", "part": "throttle.base.toggle.8"}, {"input": "JOY_BTN90", "label": "Center", "icon": "mid", "part": "throttle.base.toggle.8"}, {"input": "JOY_BTN91", "label": "Down", "icon": "down", "part": "throttle.base.toggle.8"}]},
+      {"id": "throttle.base.toggle.9", "title": "MASTER", "parts": ["throttle.base.toggle.9"], "side": "other", "x": 611, "y": 2531, "width": 570, "modifier": true, "rows": [{"input": "JOY_BTN93", "label": "Up", "icon": "up", "part": "throttle.base.toggle.9"}, {"input": "JOY_BTN94", "label": "Center", "icon": "mid", "part": "throttle.base.toggle.9"}, {"input": "JOY_BTN95", "label": "Down", "icon": "down", "part": "throttle.base.toggle.9"}]},
+      {"id": "throttle.base.toggle.10", "title": "SLIDER", "parts": ["throttle.base.toggle.10"], "side": "other", "x": 1192, "y": 2531, "width": 570, "modifier": true, "rows": [{"input": "JOY_BTN106", "label": "Up", "icon": "up", "part": "throttle.base.toggle.10"}, {"input": "JOY_BTN107", "label": "Center", "icon": "mid", "part": "throttle.base.toggle.10"}, {"input": "JOY_BTN108", "label": "Down", "icon": "down", "part": "throttle.base.toggle.10"}]},
+      {"id": "throttle.base.toggle.11", "title": "DIAL", "parts": ["throttle.base.toggle.11"], "side": "other", "x": 30, "y": 2683, "width": 570, "modifier": true, "rows": [{"input": "JOY_BTN109", "label": "Up", "icon": "up", "part": "throttle.base.toggle.11"}, {"input": "JOY_BTN110", "label": "Center", "icon": "mid", "part": "throttle.base.toggle.11"}, {"input": "JOY_BTN111", "label": "Down", "icon": "down", "part": "throttle.base.toggle.11"}]},
+      {"id": "throttle.base.encoder.1", "title": "HMD", "parts": ["throttle.base.encoder.1"], "side": "other", "x": 611, "y": 2683, "width": 570, "modifier": true, "rows": [{"input": "JOY_BTN85", "label": "Press", "icon": "button", "part": "throttle.base.encoder.1"}, {"input": "JOY_BTN84", "label": "Clockwise", "icon": "right", "part": "throttle.base.encoder.1"}, {"input": "JOY_BTN83", "label": "Counter-clockwise", "icon": "left", "part": "throttle.base.encoder.1"}]},
+      {"id": "throttle.base.encoder.2", "title": "HDG", "parts": ["throttle.base.encoder.2"], "side": "other", "x": 1192, "y": 2683, "width": 570, "modifier": true, "rows": [{"input": "JOY_BTN99", "label": "Press", "icon": "button", "part": "throttle.base.encoder.2"}, {"input": "JOY_BTN98", "label": "Clockwise", "icon": "right", "part": "throttle.base.encoder.2"}, {"input": "JOY_BTN97", "label": "Counter-clockwise", "icon": "left", "part": "throttle.base.encoder.2"}]},
+      {"id": "throttle.base.encoder.3", "title": "CRS", "parts": ["throttle.base.encoder.3"], "side": "other", "x": 30, "y": 2835, "width": 570, "modifier": true, "rows": [{"input": "JOY_BTN102", "label": "Press", "icon": "button", "part": "throttle.base.encoder.3"}, {"input": "JOY_BTN101", "label": "Clockwise", "icon": "right", "part": "throttle.base.encoder.3"}, {"input": "JOY_BTN100", "label": "Counter-clockwise", "icon": "left", "part": "throttle.base.encoder.3"}]},
+      {"id": "throttle.base.encoder.4", "title": "PANEL LTS", "parts": ["throttle.base.encoder.4"], "side": "other", "x": 611, "y": 2835, "width": 570, "modifier": true, "rows": [{"input": "JOY_BTN105", "label": "Press", "icon": "button", "part": "throttle.base.encoder.4"}, {"input": "JOY_BTN104", "label": "Clockwise", "icon": "right", "part": "throttle.base.encoder.4"}, {"input": "JOY_BTN103", "label": "Counter-clockwise", "icon": "left", "part": "throttle.base.encoder.4"}]},
+      {"id": "throttle.base.button.1", "title": "WING FOLD PUSH", "parts": ["throttle.base.button.1"], "side": "other", "x": 1192, "y": 2835, "width": 570, "modifier": true, "rows": [{"input": "JOY_BTN72", "label": "Press", "icon": "button", "part": "throttle.base.button.1"}]},
+      {"id": "throttle.base.button.2", "title": "FRONT RED BUTTON", "parts": ["throttle.base.button.2"], "side": "other", "x": 30, "y": 2987, "width": 570, "modifier": true, "rows": [{"input": "JOY_BTN80", "label": "Press", "icon": "button", "part": "throttle.base.button.2"}]},
+      {"id": "throttle.base.button.3", "title": "A/G", "parts": ["throttle.base.button.3"], "side": "other", "x": 611, "y": 2987, "width": 570, "modifier": true, "rows": [{"input": "JOY_BTN81", "label": "Press", "icon": "button", "part": "throttle.base.button.3"}]},
+      {"id": "throttle.base.button.4", "title": "A/A", "parts": ["throttle.base.button.4"], "side": "other", "x": 1192, "y": 2987, "width": 570, "modifier": true, "rows": [{"input": "JOY_BTN82", "label": "Press", "icon": "button", "part": "throttle.base.button.4"}]},
+      {"id": "throttle.base.button.5", "title": "ADV MODE", "parts": ["throttle.base.button.5"], "side": "other", "x": 30, "y": 3063, "width": 570, "modifier": true, "rows": [{"input": "JOY_BTN92", "label": "Press", "icon": "button", "part": "throttle.base.button.5"}]},
+      {"id": "throttle.base.button.6", "title": "JETT", "parts": ["throttle.base.button.6"], "side": "other", "x": 611, "y": 3063, "width": 570, "modifier": true, "rows": [{"input": "JOY_BTN96", "label": "Press", "icon": "button", "part": "throttle.base.button.6"}]}
+    ],
+    "lines": [
+      {"table": "throttle.button.4", "points": [[1118, 405], [1653, 405], [1653, 247.6], [1687, 247.6]]},
+      {"table": "throttle.dogfight", "points": [[1270, 453], [1664, 453], [1664, 323.6], [1687, 323.6]]},
+      {"table": "throttle.hat.2", "points": [[966, 473.8], [1653, 473.8], [1653, 475.6], [1687, 475.6]]},
+      {"table": "throttle.ministick", "points": [[1287.6, 653], [1653, 653], [1653, 703.6], [1687, 703.6]]},
+      {"table": "throttle.axis", "points": [[1054, 773], [1653, 773], [1653, 1007.6], [1687, 1007.6]]},
+      {"table": "stack:throttle.axis.rotary.2", "points": [[1064.4, 405], [1064.4, 270], [764, 270], [764, 247]]},
+      {"table": "throttle.hat.1", "points": [[1089.2, 365], [1089.2, 270], [1345, 270], [1345, 247]]}
+    ]
+  }
+}

@@ -1,0 +1,461 @@
+{
+  "format": "joypro-device-layout",
+  "version": 1,
+  "model": "thrustmaster-sol-r-flightstick",
+  "photo": {"kind": "vendor", "url": "https://www.thrustmaster.com/wp-content/uploads/2025/03/Website_ProductPageListing_SolR1_800x800_1.webp", "sha256": "a8af09e316eade73857915f694caf0c7b158352aefec651ad08f030430e06c44", "view": "main"},
+  "markers": {
+    "panel.axis.1": [0.501, 0.779],
+    "panel.button.1": [0.24, 0.648],
+    "panel.button.12": [0.762, 0.648],
+    "panel.button.13": [0.762, 0.664],
+    "panel.button.14": [0.687, 0.648],
+    "panel.button.15": [0.687, 0.664],
+    "panel.button.16": [0.768, 0.709],
+    "panel.button.17": [0.69, 0.709],
+    "panel.button.18": [0.77, 0.746],
+    "panel.button.19": [0.688, 0.743],
+    "panel.button.2": [0.24, 0.664],
+    "panel.button.20": [0.718, 0.786],
+    "panel.button.21": [0.726, 0.786],
+    "panel.button.22": [0.734, 0.786],
+    "panel.button.23": [0.742, 0.786],
+    "panel.button.3": [0.318, 0.648],
+    "panel.button.4": [0.318, 0.664],
+    "panel.button.5": [0.234, 0.709],
+    "panel.button.6": [0.313, 0.709],
+    "panel.button.7": [0.222, 0.743],
+    "panel.button.8": [0.312, 0.743],
+    "panel.encoder.1": [0.261, 0.77],
+    "stick.axis.twist": [0.5, 0.38],
+    "stick.button.thumb.1": [0.438, 0.136],
+    "stick.button.thumb.2": [0.556, 0.135],
+    "stick.button.thumb.5": [0.498, 0.191],
+    "stick.gimbal": [0.5, 0.7],
+    "stick.hat.2": [0.412, 0.076],
+    "stick.hat.trim": [0.582, 0.074],
+    "stick.ministick": [0.495, 0.063]
+  },
+  "parts": {
+    "stick.hat.trim": {
+      "type": "hat",
+      "name": "Trim hat",
+      "inputs": [
+        {"input": "JOY_BTN_POV1_U", "control": "stick.hat.trim.up"},
+        {"input": "JOY_BTN_POV1_R", "control": "stick.hat.trim.right"},
+        {"input": "JOY_BTN_POV1_D", "control": "stick.hat.trim.down"},
+        {"input": "JOY_BTN_POV1_L", "control": "stick.hat.trim.left"}
+      ],
+      "mapping": "high",
+      "confidence": "high",
+      "note": "right hat (\"40\" label), POV by default"
+    },
+    "stick.ministick": {
+      "type": "ministick",
+      "name": "mini-stick push",
+      "inputs": [
+        {"input": "JOY_BTN29", "control": "stick.ministick.press"}
+      ],
+      "mapping": "high",
+      "confidence": "high",
+      "note": "centre mini-stick with the Thrustmaster logo (push = 29)"
+    },
+    "stick.trigger": {
+      "type": "trigger",
+      "name": "Trigger",
+      "inputs": [
+        {"input": "JOY_BTN24", "control": "stick.trigger.stage1"},
+        {"input": "JOY_BTN25", "control": "stick.trigger.stage2"}
+      ],
+      "mapping": "high"
+    },
+    "stick.pinky.button": {
+      "type": "button",
+      "name": "Pinky button",
+      "inputs": [
+        {"input": "JOY_BTN28", "control": "stick.pinky.button"}
+      ],
+      "mapping": "high"
+    },
+    "stick.axis.twist": {
+      "type": "twist",
+      "name": "Twist",
+      "inputs": [
+        {"input": "JOY_RZ", "control": "stick.axis.twist"}
+      ],
+      "mapping": "high",
+      "confidence": "medium",
+      "note": "twist of the handle (RZ)"
+    },
+    "stick.gimbal": {
+      "type": "gimbal",
+      "name": "Stick (roll / pitch)",
+      "inputs": [
+        {"input": "JOY_X", "control": "stick.axis.roll"},
+        {"input": "JOY_Y", "control": "stick.axis.pitch"}
+      ],
+      "mapping": "high",
+      "confidence": "medium",
+      "note": "gimbal shaft in the base below the locking ring of the grip"
+    },
+    "stick.hat.2": {
+      "type": "hat",
+      "name": "Hat 2",
+      "inputs": [
+        {"input": "JOY_BTN31", "control": "stick.hat.2.left"},
+        {"input": "JOY_BTN32", "control": "stick.hat.2.up"},
+        {"input": "JOY_BTN33", "control": "stick.hat.2.right"},
+        {"input": "JOY_BTN34", "control": "stick.hat.2.down"},
+        {"input": "JOY_BTN30", "control": "stick.hat.2.press"}
+      ],
+      "mapping": "high",
+      "confidence": "high",
+      "note": "left hat (\"30\" label), 31-34 + push 30"
+    },
+    "stick.button.thumb.1": {
+      "type": "button",
+      "name": "Button thumb 1",
+      "inputs": [
+        {"input": "JOY_BTN35", "control": "stick.button.thumb.1"}
+      ],
+      "mapping": "high",
+      "confidence": "high",
+      "note": "left orange button (\"35\" label)"
+    },
+    "stick.button.thumb.2": {
+      "type": "button",
+      "name": "Button thumb 2",
+      "inputs": [
+        {"input": "JOY_BTN39", "control": "stick.button.thumb.2"}
+      ],
+      "mapping": "high",
+      "confidence": "high",
+      "note": "right orange button (\"39\" label)"
+    },
+    "stick.button.thumb.3": {
+      "type": "button",
+      "name": "thumb wheel up",
+      "inputs": [
+        {"input": "JOY_BTN36", "control": "stick.button.thumb.3"}
+      ],
+      "mapping": "low"
+    },
+    "stick.button.thumb.4": {
+      "type": "button",
+      "name": "thumb wheel push",
+      "inputs": [
+        {"input": "JOY_BTN37", "control": "stick.button.thumb.4"}
+      ],
+      "mapping": "low"
+    },
+    "stick.button.thumb.5": {
+      "type": "button",
+      "name": "thumb wheel down",
+      "inputs": [
+        {"input": "JOY_BTN38", "control": "stick.button.thumb.5"}
+      ],
+      "mapping": "high",
+      "confidence": "high",
+      "note": "scroll wheel down (38, bottom of the manual figure)"
+    },
+    "stick.button.index.1": {
+      "type": "button",
+      "name": "front head lever pos 1",
+      "inputs": [
+        {"input": "JOY_BTN26", "control": "stick.button.index.1"}
+      ],
+      "mapping": "high"
+    },
+    "stick.button.index.2": {
+      "type": "button",
+      "name": "front head lever pos 2",
+      "inputs": [
+        {"input": "JOY_BTN27", "control": "stick.button.index.2"}
+      ],
+      "mapping": "high"
+    },
+    "panel.encoder.1": {
+      "type": "encoder",
+      "name": "left encoder",
+      "inputs": [
+        {"input": "JOY_BTN9", "control": "panel.encoder.1.cw"},
+        {"input": "JOY_BTN10", "control": "panel.encoder.1.ccw"},
+        {"input": "JOY_BTN11", "control": "panel.encoder.1.press"}
+      ],
+      "mapping": "high",
+      "confidence": "high",
+      "note": "left encoder knob (9 / 10 turn, 11 push)"
+    },
+    "panel.axis.1": {
+      "type": "knob",
+      "name": "Axis 1",
+      "inputs": [
+        {"input": "JOY_SLIDER1", "control": "panel.axis.1"}
+      ],
+      "mapping": "high",
+      "confidence": "high",
+      "note": "centre THRUST slider handle (Slider0)"
+    },
+    "panel.button.1": {
+      "type": "button",
+      "name": "backlit button",
+      "inputs": [
+        {"input": "JOY_BTN1", "control": "panel.button.1"}
+      ],
+      "mapping": "medium",
+      "confidence": "high",
+      "note": "left outer switch (\"2\"), up position (1)"
+    },
+    "panel.button.2": {
+      "type": "button",
+      "name": "backlit button",
+      "inputs": [
+        {"input": "JOY_BTN2", "control": "panel.button.2"}
+      ],
+      "mapping": "medium",
+      "confidence": "high",
+      "note": "left outer switch (\"2\"), down position (2)"
+    },
+    "panel.button.3": {
+      "type": "button",
+      "name": "backlit button",
+      "inputs": [
+        {"input": "JOY_BTN3", "control": "panel.button.3"}
+      ],
+      "mapping": "medium",
+      "confidence": "high",
+      "note": "left inner switch (\"4\"), up position (3)"
+    },
+    "panel.button.4": {
+      "type": "button",
+      "name": "backlit button",
+      "inputs": [
+        {"input": "JOY_BTN4", "control": "panel.button.4"}
+      ],
+      "mapping": "medium",
+      "confidence": "high",
+      "note": "left inner switch (\"4\"), down position (4)"
+    },
+    "panel.button.5": {
+      "type": "button",
+      "name": "backlit button",
+      "inputs": [
+        {"input": "JOY_BTN5", "control": "panel.button.5"}
+      ],
+      "mapping": "high",
+      "confidence": "high",
+      "note": "backlit button labelled 5"
+    },
+    "panel.button.6": {
+      "type": "button",
+      "name": "backlit button",
+      "inputs": [
+        {"input": "JOY_BTN6", "control": "panel.button.6"}
+      ],
+      "mapping": "high",
+      "confidence": "high",
+      "note": "backlit button labelled 6"
+    },
+    "panel.button.7": {
+      "type": "button",
+      "name": "backlit button",
+      "inputs": [
+        {"input": "JOY_BTN7", "control": "panel.button.7"}
+      ],
+      "mapping": "high",
+      "confidence": "medium",
+      "note": "backlit button 7, partly hidden behind the encoder knob"
+    },
+    "panel.button.8": {
+      "type": "button",
+      "name": "backlit button",
+      "inputs": [
+        {"input": "JOY_BTN8", "control": "panel.button.8"}
+      ],
+      "mapping": "high",
+      "confidence": "high",
+      "note": "backlit button labelled 8"
+    },
+    "panel.button.12": {
+      "type": "button",
+      "name": "backlit button",
+      "inputs": [
+        {"input": "JOY_BTN12", "control": "panel.button.12"}
+      ],
+      "mapping": "medium",
+      "confidence": "high",
+      "note": "right outer switch (\"13\"), up position (12)"
+    },
+    "panel.button.13": {
+      "type": "button",
+      "name": "backlit button",
+      "inputs": [
+        {"input": "JOY_BTN13", "control": "panel.button.13"}
+      ],
+      "mapping": "medium",
+      "confidence": "high",
+      "note": "right outer switch (\"13\"), down position (13)"
+    },
+    "panel.button.14": {
+      "type": "button",
+      "name": "backlit button",
+      "inputs": [
+        {"input": "JOY_BTN14", "control": "panel.button.14"}
+      ],
+      "mapping": "medium",
+      "confidence": "high",
+      "note": "right inner switch (\"15\"), up position (14)"
+    },
+    "panel.button.15": {
+      "type": "button",
+      "name": "backlit button",
+      "inputs": [
+        {"input": "JOY_BTN15", "control": "panel.button.15"}
+      ],
+      "mapping": "medium",
+      "confidence": "high",
+      "note": "right inner switch (\"15\"), down position (15)"
+    },
+    "panel.button.16": {
+      "type": "button",
+      "name": "backlit button",
+      "inputs": [
+        {"input": "JOY_BTN16", "control": "panel.button.16"}
+      ],
+      "mapping": "high",
+      "confidence": "high",
+      "note": "backlit button labelled 16"
+    },
+    "panel.button.17": {
+      "type": "button",
+      "name": "backlit button",
+      "inputs": [
+        {"input": "JOY_BTN17", "control": "panel.button.17"}
+      ],
+      "mapping": "high",
+      "confidence": "high",
+      "note": "backlit button labelled 17"
+    },
+    "panel.button.18": {
+      "type": "button",
+      "name": "backlit button",
+      "inputs": [
+        {"input": "JOY_BTN18", "control": "panel.button.18"}
+      ],
+      "mapping": "high",
+      "confidence": "high",
+      "note": "backlit button labelled 18"
+    },
+    "panel.button.19": {
+      "type": "button",
+      "name": "backlit button",
+      "inputs": [
+        {"input": "JOY_BTN19", "control": "panel.button.19"}
+      ],
+      "mapping": "high",
+      "confidence": "medium",
+      "note": "backlit button 19, partly hidden behind the rotary knob"
+    },
+    "panel.button.20": {
+      "type": "button",
+      "name": "right encoder (see manual)",
+      "inputs": [
+        {"input": "JOY_BTN20", "control": "panel.button.20"}
+      ],
+      "mapping": "high",
+      "confidence": "high",
+      "note": "right rotary selector, position 20 (leftmost)"
+    },
+    "panel.button.21": {
+      "type": "button",
+      "name": "right encoder (see manual)",
+      "inputs": [
+        {"input": "JOY_BTN21", "control": "panel.button.21"}
+      ],
+      "mapping": "high",
+      "confidence": "high",
+      "note": "right rotary selector, position 21"
+    },
+    "panel.button.22": {
+      "type": "button",
+      "name": "right encoder (see manual)",
+      "inputs": [
+        {"input": "JOY_BTN22", "control": "panel.button.22"}
+      ],
+      "mapping": "high",
+      "confidence": "high",
+      "note": "right rotary selector, position 22"
+    },
+    "panel.button.23": {
+      "type": "button",
+      "name": "right encoder (see manual)",
+      "inputs": [
+        {"input": "JOY_BTN23", "control": "panel.button.23"}
+      ],
+      "mapping": "high",
+      "confidence": "high",
+      "note": "right rotary selector, position 23 (rightmost)"
+    }
+  },
+  "unplaced": {
+    "stick.trigger": "front of the grip, faces away from the camera",
+    "stick.pinky.button": "button 28 at the lower front of the grip, faces away from the camera",
+    "stick.button.thumb.3": "scroll wheel; catalog says \"up\" = 36 (manual figure suggests 36 = push)",
+    "stick.button.thumb.4": "scroll wheel; catalog says \"push\" = 37 (manual figure suggests 37 = up)",
+    "stick.button.index.1": "front head lever (26), faces away from the camera",
+    "stick.button.index.2": "front head lever (27), faces away from the camera"
+  },
+  "candidates": {
+    "stick.button.thumb.3": [0.498, 0.163],
+    "stick.button.thumb.4": [0.498, 0.177]
+  },
+  "source": "JoyPro curated on the maker's photo (2026-10-11), Sol-R 1 flightstick (white grip on the Sol-R 5 base) seen from behind (pilot's view) and slightly above, right-handed",
+  "mappingSource": "Sol-R FlightStick user manual p.20-21 (https://ts.thrustmaster.com/download/accessories/Manuals/SOL-R/Sol-R_FlightStick_user-manual_21L.pdf), the identical grip page in the Sol-R 3 manual p.13 (https://ts.thrustmaster.com/download/accessories/Manuals/SOL-R/Sol-R_3_AVA_Add-On_Grip_user_manual.pdf) and the Sol-R 5 base manual p.18 (https://ts.thrustmaster.com/download/accessories/Manuals/SOL-R/Sol-R_5_BASE_User_Manual.pdf); the numbers printed on grip and base (30 40 35 39, 2 4 15 13, 5-8, 16-19, 9 10 11, 20-23) confirm them",
+  "confidence": "high",
+  "note": "Encoder 9 / 10: the manual and the printed double arrow do not say which turn direction is 9; the catalog cw = 9 / ccw = 10 is not confirmed (press 11 is). Catalog discrepancy: panel.button.1-4 and 12-15 (\"backlit button\") are the positions of the four 2-way switches (see the sol-r-base draft); 20-23 are the 4 positions of the right rotary selector. Possible catalog discrepancy on the scroll wheel: the manual figure stacks 37 / 36 / 38 with 36 in the middle (the wheel line points to 36), so 36 = push, 37 = up, 38 = down; the catalog has 36 = \"thumb wheel up\" and 37 = \"thumb wheel push\". The Sol-R 3 AVA manual p.15 draws the same wheel as 13 (top) / 14 (middle) / 15 (bottom); with the +23 offset between the two numberings (12 -> 35, 16 -> 39) that is 36 top / 37 middle, i.e. the catalog reading. The two Thrustmaster manuals contradict each other, so the two disputed wheel parts are set map=low until checked on a device. Handed: right-handed mode (0422). In left-handed mode (042A) the POV moves to the left hat (Sol-R 3 manual p.14), so trim hat / hat 2 swap. Trigger, front head lever (26/27) and pinky button (28) are on the front of the grip and hidden; the side lever on the left of the grip has no number.",
+  "callouts": {
+    "version": 1,
+    "width": 1554,
+    "height": 1138,
+    "picture": [346, 134, 800, 800],
+    "rowHeight": 20,
+    "mainWidth": 170,
+    "modWidth": 110,
+    "otherY": 1008,
+    "tables": [
+      {"id": "grid:panel.button.1", "title": "Buttons backlit button", "parts": ["panel.button.1", "panel.button.2", "panel.button.5", "panel.button.7"], "side": "left", "x": 224, "y": 625.4, "width": 92, "grid": true, "modifier": false, "spot": [0.234, 0.691], "rows": [{"input": "JOY_BTN1", "label": "backlit bu", "icon": "button", "part": "panel.button.1", "cell": [0, 0, 0]}, {"input": "JOY_BTN2", "label": "backlit bu", "icon": "button", "part": "panel.button.2", "cell": [1, 0, 0]}, {"input": "JOY_BTN5", "label": "backlit bu", "icon": "button", "part": "panel.button.5", "cell": [2, 0, 0]}, {"input": "JOY_BTN7", "label": "backlit bu", "icon": "button", "part": "panel.button.7", "cell": [3, 0, 0]}]},
+      {"id": "grid:panel.button.3", "title": "Buttons backlit button", "parts": ["panel.button.3", "panel.button.4", "panel.button.6", "panel.button.8"], "side": "left", "x": 132, "y": 725.4, "width": 184, "grid": true, "columns": 2, "modifier": false, "spot": [0.3153, 0.691], "rows": [{"input": "JOY_BTN3", "label": "backlit bu", "icon": "button", "part": "panel.button.3", "cell": [0, 0, 0]}, {"input": "JOY_BTN4", "label": "backlit bu", "icon": "button", "part": "panel.button.4", "cell": [0, 1, 0]}, {"input": "JOY_BTN6", "label": "backlit bu", "icon": "button", "part": "panel.button.6", "cell": [1, 0, 0]}, {"input": "JOY_BTN8", "label": "backlit bu", "icon": "button", "part": "panel.button.8", "cell": [2, 0, 0]}]},
+      {"id": "grid:panel.button.15", "title": "Buttons backlit bu - right enco", "parts": ["panel.button.15", "panel.button.14", "panel.button.13", "panel.button.12", "panel.button.17", "panel.button.16", "panel.button.19", "panel.button.18", "panel.button.20", "panel.button.21", "panel.button.22", "panel.button.23"], "side": "right", "x": 1170, "y": 688.3, "width": 368, "grid": true, "columns": 4, "modifier": false, "spot": [0.7278, 0.7229], "rows": [{"input": "JOY_BTN15", "label": "backlit bu", "icon": "button", "part": "panel.button.15", "cell": [0, 0, 0]}, {"input": "JOY_BTN14", "label": "backlit bu", "icon": "button", "part": "panel.button.14", "cell": [0, 1, 0]}, {"input": "JOY_BTN13", "label": "backlit bu", "icon": "button", "part": "panel.button.13", "cell": [0, 2, 0]}, {"input": "JOY_BTN12", "label": "backlit bu", "icon": "button", "part": "panel.button.12", "cell": [0, 3, 0]}, {"input": "JOY_BTN17", "label": "backlit bu", "icon": "button", "part": "panel.button.17", "cell": [1, 0, 0]}, {"input": "JOY_BTN16", "label": "backlit bu", "icon": "button", "part": "panel.button.16", "cell": [1, 1, 0]}, {"input": "JOY_BTN19", "label": "backlit bu", "icon": "button", "part": "panel.button.19", "cell": [2, 0, 0]}, {"input": "JOY_BTN18", "label": "backlit bu", "icon": "button", "part": "panel.button.18", "cell": [2, 1, 0]}, {"input": "JOY_BTN20", "label": "right enco", "icon": "button", "part": "panel.button.20", "cell": [3, 0, 0]}, {"input": "JOY_BTN21", "label": "right enco", "icon": "button", "part": "panel.button.21", "cell": [3, 1, 0]}, {"input": "JOY_BTN22", "label": "right enco", "icon": "button", "part": "panel.button.22", "cell": [3, 2, 0]}, {"input": "JOY_BTN23", "label": "right enco", "icon": "button", "part": "panel.button.23", "cell": [3, 3, 0]}]},
+      {"id": "stick.hat.trim", "title": "Trim hat", "parts": ["stick.hat.trim"], "side": "top", "x": 779.8, "y": 16, "width": 300, "modifier": true, "spot": [0.582, 0.074], "rows": [{"input": "JOY_BTN_POV1_U", "label": "Up", "icon": "up", "part": "stick.hat.trim"}, {"input": "JOY_BTN_POV1_R", "label": "Right", "icon": "right", "part": "stick.hat.trim"}, {"input": "JOY_BTN_POV1_L", "label": "Left", "icon": "left", "part": "stick.hat.trim"}, {"input": "JOY_BTN_POV1_D", "label": "Down", "icon": "down", "part": "stick.hat.trim"}]},
+      {"id": "stick.ministick", "title": "mini-stick push", "parts": ["stick.ministick"], "side": "top", "x": 473.8, "y": 76, "width": 300, "modifier": true, "spot": [0.495, 0.063], "rows": [{"input": "JOY_BTN29", "label": "Press", "icon": "button", "part": "stick.ministick"}]},
+      {"id": "stick.trigger", "title": "Trigger", "parts": ["stick.trigger"], "side": "other", "x": 16, "y": 1028, "width": 300, "modifier": true, "rows": [{"input": "JOY_BTN24", "label": "First stage", "icon": "button", "part": "stick.trigger"}, {"input": "JOY_BTN25", "label": "Second stage", "icon": "button", "part": "stick.trigger"}]},
+      {"id": "stick.pinky.button", "title": "Pinky button", "parts": ["stick.pinky.button"], "side": "other", "x": 322, "y": 1028, "width": 300, "modifier": true, "rows": [{"input": "JOY_BTN28", "label": "Press", "icon": "button", "part": "stick.pinky.button"}]},
+      {"id": "stick.axis.twist", "title": "Twist", "parts": ["stick.axis.twist"], "side": "left", "x": 16, "y": 414, "width": 300, "modifier": true, "spot": [0.5, 0.38], "rows": [{"input": "JOY_RZ", "label": "RZ", "icon": "axis", "part": "stick.axis.twist"}]},
+      {"id": "stick.gimbal", "title": "Stick (roll / pitch)", "parts": ["stick.gimbal"], "side": "left", "x": 16, "y": 565.4, "width": 300, "modifier": true, "spot": [0.5, 0.7], "rows": [{"input": "JOY_X", "label": "roll (X)", "icon": "axis", "part": "stick.gimbal"}, {"input": "JOY_Y", "label": "pitch (Y)", "icon": "axis", "part": "stick.gimbal"}]},
+      {"id": "stick.hat.2", "title": "Hat 2", "parts": ["stick.hat.2"], "side": "left", "x": 16, "y": 124.1, "width": 300, "modifier": true, "spot": [0.412, 0.076], "rows": [{"input": "JOY_BTN30", "label": "Press", "icon": "button", "part": "stick.hat.2"}, {"input": "JOY_BTN32", "label": "Up", "icon": "up", "part": "stick.hat.2"}, {"input": "JOY_BTN33", "label": "Right", "icon": "right", "part": "stick.hat.2"}, {"input": "JOY_BTN31", "label": "Left", "icon": "left", "part": "stick.hat.2"}, {"input": "JOY_BTN34", "label": "Down", "icon": "down", "part": "stick.hat.2"}]},
+      {"id": "stick.button.thumb.1", "title": "Button thumb 1", "parts": ["stick.button.thumb.1"], "side": "left", "x": 16, "y": 244.1, "width": 300, "modifier": true, "spot": [0.438, 0.136], "rows": [{"input": "JOY_BTN35", "label": "Press", "icon": "button", "part": "stick.button.thumb.1"}]},
+      {"id": "stick.button.thumb.2", "title": "Button thumb 2", "parts": ["stick.button.thumb.2"], "side": "right", "x": 1170, "y": 218, "width": 300, "modifier": true, "spot": [0.556, 0.135], "rows": [{"input": "JOY_BTN39", "label": "Press", "icon": "button", "part": "stick.button.thumb.2"}]},
+      {"id": "stick.button.thumb.3", "title": "thumb wheel up", "parts": ["stick.button.thumb.3"], "side": "other", "x": 628, "y": 1028, "width": 300, "modifier": true, "rows": [{"input": "JOY_BTN36", "label": "Press", "icon": "button", "part": "stick.button.thumb.3"}]},
+      {"id": "stick.button.thumb.4", "title": "thumb wheel push", "parts": ["stick.button.thumb.4"], "side": "other", "x": 934, "y": 1028, "width": 300, "modifier": true, "rows": [{"input": "JOY_BTN37", "label": "Press", "icon": "button", "part": "stick.button.thumb.4"}]},
+      {"id": "stick.button.thumb.5", "title": "thumb wheel down", "parts": ["stick.button.thumb.5"], "side": "left", "x": 16, "y": 284.1, "width": 300, "modifier": true, "spot": [0.498, 0.191], "rows": [{"input": "JOY_BTN38", "label": "Press", "icon": "button", "part": "stick.button.thumb.5"}]},
+      {"id": "stick.button.index.1", "title": "front head lever pos 1", "parts": ["stick.button.index.1"], "side": "other", "x": 16, "y": 1088, "width": 300, "modifier": true, "rows": [{"input": "JOY_BTN26", "label": "Press", "icon": "button", "part": "stick.button.index.1"}]},
+      {"id": "stick.button.index.2", "title": "front head lever pos 2", "parts": ["stick.button.index.2"], "side": "other", "x": 322, "y": 1088, "width": 300, "modifier": true, "rows": [{"input": "JOY_BTN27", "label": "Press", "icon": "button", "part": "stick.button.index.2"}]},
+      {"id": "panel.encoder.1", "title": "left encoder", "parts": ["panel.encoder.1"], "side": "left", "x": 16, "y": 805.4, "width": 300, "modifier": true, "spot": [0.261, 0.77], "rows": [{"input": "JOY_BTN11", "label": "Press", "icon": "button", "part": "panel.encoder.1"}, {"input": "JOY_BTN9", "label": "Clockwise", "icon": "right", "part": "panel.encoder.1"}, {"input": "JOY_BTN10", "label": "Counter-clockwise", "icon": "left", "part": "panel.encoder.1"}]},
+      {"id": "panel.axis.1", "title": "Axis 1", "parts": ["panel.axis.1"], "side": "bottom", "x": 596.8, "y": 958, "width": 300, "modifier": true, "spot": [0.501, 0.779], "rows": [{"input": "JOY_SLIDER1", "label": "SLIDER1", "icon": "axis", "part": "panel.axis.1"}]}
+    ],
+    "lines": [
+      {"table": "stick.hat.2", "points": [[675.6, 194.8], [334, 194.8], [334, 148.1], [316, 148.1]]},
+      {"table": "stick.button.thumb.1", "points": [[696.4, 242.8], [334, 242.8], [334, 268.1], [316, 268.1]]},
+      {"table": "stick.button.thumb.5", "points": [[744.4, 286.8], [334, 286.8], [334, 308.1], [316, 308.1]]},
+      {"table": "stick.axis.twist", "points": [[746, 438], [316, 438]]},
+      {"table": "stick.gimbal", "points": [[746, 694], [746, 589.4], [316, 589.4]]},
+      {"table": "grid:panel.button.1", "points": [[533.2, 686.8], [533.2, 649.4], [316, 649.4]]},
+      {"table": "grid:panel.button.3", "points": [[598.2, 686.8], [598.2, 692.8], [328, 692.8], [328, 749.4], [316, 749.4]]},
+      {"table": "panel.encoder.1", "points": [[554.8, 750], [334, 750], [334, 829.4], [316, 829.4]]},
+      {"table": "stick.button.thumb.2", "points": [[790.8, 242], [1170, 242]]},
+      {"table": "grid:panel.button.15", "points": [[928.2, 712.3], [1170, 712.3]]},
+      {"table": "stick.ministick", "points": [[742, 184.4], [742, 122], [623.8, 122], [623.8, 110]]},
+      {"table": "stick.hat.trim", "points": [[811.6, 193.2], [811.6, 122], [929.8, 122], [929.8, 110]]},
+      {"table": "panel.axis.1", "points": [[746.8, 757.2], [746.8, 958]]}
+    ]
+  }
+}

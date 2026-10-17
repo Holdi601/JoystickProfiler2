@@ -1,0 +1,373 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:l="using:JoyPro.Gui.Localization"
+        xmlns:vm="using:JoyPro.Gui.ViewModels"
+        xmlns:models="using:JoyPro.Gui.Models"
+        x:Class="JoyPro.Gui.Views.SetupWizardWindow"
+        x:DataType="vm:SetupWizardViewModel"
+        Title="{l:T 'JoyPro2 - Set up my controls'}"
+        Icon="/Assets/joypro2_gui.ico"
+        Width="1240"
+        Height="860"
+        MinWidth="900"
+        MinHeight="600"
+        WindowStartupLocation="CenterOwner">
+    <!-- The Setup wizard (SetupWizardViewModel, docs/setup-wizard.md): games, devices and roles, priorities, plan,
+         review. Nothing is written to the profile before Apply. -->
+    <Window.Styles>
+        <!-- Steps: the shared round number (Border.step, IconStyles.axaml); the steps still to come are grey. -->
+        <Style Selector="Border.step.todo">
+            <Setter Property="Background" Value="#475569" />
+        </Style>
+        <Style Selector="TextBlock.stepTitle.current">
+            <Setter Property="FontWeight" Value="Bold" />
+        </Style>
+        <Style Selector="TextBlock.stepTitle.todo">
+            <Setter Property="Opacity" Value="0.6" />
+        </Style>
+        <Style Selector="Border.card">
+            <Setter Property="BorderBrush" Value="#334155" />
+            <Setter Property="BorderThickness" Value="1" />
+            <Setter Property="CornerRadius" Value="8" />
+            <Setter Property="Padding" Value="10" />
+        </Style>
+    </Window.Styles>
+
+    <Grid x:Name="WizardRoot" RowDefinitions="Auto,*,Auto" Margin="16">
+        <!-- Header: the step and the five steps -->
+        <StackPanel Spacing="10" Margin="0,0,0,12">
+            <TextBlock Text="{Binding StepHeading}" FontSize="22" FontWeight="Bold" />
+            <ItemsControl ItemsSource="{Binding Steps}">
+                <ItemsControl.ItemsPanel>
+                    <ItemsPanelTemplate>
+                        <StackPanel Orientation="Horizontal" Spacing="18" />
+                    </ItemsPanelTemplate>
+                </ItemsControl.ItemsPanel>
+                <ItemsControl.ItemTemplate>
+                    <DataTemplate x:DataType="models:SetupStepItem">
+                        <StackPanel Orientation="Horizontal" Spacing="8">
+                            <Border Classes="step" Classes.done="{Binding IsDone}" Classes.todo="{Binding IsTodo}">
+                                <TextBlock Text="{Binding Number}" />
+                            </Border>
+                            <TextBlock Classes="stepTitle" Classes.current="{Binding IsCurrent}" Classes.todo="{Binding IsTodo}" Text="{Binding Title}" VerticalAlignment="Center" />
+                        </StackPanel>
+                    </DataTemplate>
+                </ItemsControl.ItemTemplate>
+            </ItemsControl>
+        </StackPanel>
+
+        <Panel Grid.Row="1">
+            <!-- 1 Games -->
+            <ScrollViewer IsVisible="{Binding IsGamesStep}" VerticalScrollBarVisibility="Auto">
+                <StackPanel Spacing="10">
+                    <TextBlock TextWrapping="Wrap" Opacity="0.85"
+                               Text="{l:T 'JoyPro makes relations for the important functions of these games, binds them to your devices and groups them. The games you watch on the Start page are ticked; change it here for this setup (the watching stays as it is).'}" />
+                    <TextBlock IsVisible="{Binding !HasGames}" TextWrapping="Wrap" Classes="warnText"
+                               Text="{l:T 'JoyPro found no installed game. Run Settings &gt; Games &gt; Run setup again first.'}" />
+                    <ItemsControl ItemsSource="{Binding Games}">
+                        <ItemsControl.ItemsPanel>
+                            <ItemsPanelTemplate>
+                                <WrapPanel ItemSpacing="10" LineSpacing="10" />
+                            </ItemsPanelTemplate>
+                        </ItemsControl.ItemsPanel>
+                        <ItemsControl.ItemTemplate>
+                            <DataTemplate x:DataType="models:SetupGameChoice">
+                                <Border Classes="card" MinWidth="260">
+                                    <StackPanel Spacing="2">
+                                        <CheckBox IsChecked="{Binding IsChosen}">
+                                            <TextBlock Text="{Binding Name}" FontWeight="SemiBold" />
+                                        </CheckBox>
+                                        <TextBlock Text="{Binding Hint}" Classes="muted" Margin="28,0,0,0" />
+                                    </StackPanel>
+                                </Border>
+                            </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                    </ItemsControl>
+                </StackPanel>
+            </ScrollViewer>
+
+            <!-- 2 Devices and roles -->
+            <Grid IsVisible="{Binding IsDevicesStep}" ColumnDefinitions="3*,2*" ColumnSpacing="16">
+                <DockPanel>
+                    <StackPanel DockPanel.Dock="Top" Orientation="Horizontal" Spacing="8" Margin="0,0,0,8">
+                        <TextBlock VerticalAlignment="Center" TextWrapping="Wrap" Opacity="0.85" MaxWidth="560"
+                                   Text="{l:T 'JoyPro recognised your devices and proposes a role for each. One device per hand: change a role in the list.'}" />
+                        <Button Content="{l:T 'Detect again'}" Command="{Binding DetectDevicesCommand}" IsEnabled="{Binding !IsWorking}" />
+                    </StackPanel>
+                    <ScrollViewer VerticalScrollBarVisibility="Auto">
+                        <ItemsControl ItemsSource="{Binding Devices}">
+                            <ItemsControl.ItemTemplate>
+                                <DataTemplate x:DataType="models:SetupDeviceItem">
+                                    <Border Classes="card" Margin="0,0,0,8">
+                                        <Grid ColumnDefinitions="*,Auto" ColumnSpacing="12" RowDefinitions="Auto,Auto,Auto">
+                                            <StackPanel Spacing="2">
+                                                <TextBlock Text="{Binding Name}" FontWeight="SemiBold" TextWrapping="Wrap" />
+                                                <TextBlock Text="{Binding Details}" Classes="muted" />
+                                            </StackPanel>
+                                            <ComboBox Grid.Column="1" Width="240" ItemsSource="{Binding Roles}" SelectedItem="{Binding SelectedRole}" VerticalAlignment="Top"
+                                                      ToolTip.Tip="{l:T 'What this device is for'}" />
+                                            <TextBlock Grid.Row="1" Grid.ColumnSpan="2" Text="{Binding Reason}" TextWrapping="Wrap" Opacity="0.8" Margin="0,4,0,0" />
+                                            <StackPanel Grid.Row="2" Grid.ColumnSpan="2" Orientation="Horizontal" Spacing="8" Margin="0,6,0,0" IsVisible="{Binding HasGrips}">
+                                                <TextBlock Text="{l:T 'Grip:'}" VerticalAlignment="Center" />
+                                                <ComboBox Width="420" ItemsSource="{Binding Grips}" SelectedItem="{Binding SelectedGrip}" PlaceholderText="{l:T 'Pick the grip on this base'}" />
+                                                <TextBlock Text="{l:T 'pick the grip to use this device'}" Classes="warnText" VerticalAlignment="Center" IsVisible="{Binding NeedsGrip}" />
+                                            </StackPanel>
+                                        </Grid>
+                                    </Border>
+                                </DataTemplate>
+                            </ItemsControl.ItemTemplate>
+                        </ItemsControl>
+                    </ScrollViewer>
+                </DockPanel>
+                <Border Grid.Column="1" Classes="surface" VerticalAlignment="Top">
+                    <StackPanel Spacing="8">
+                        <TextBlock Classes="h2" Text="{l:T 'How JoyPro will use them'}" />
+                        <ItemsControl ItemsSource="{Binding Rules}">
+                            <ItemsControl.ItemTemplate>
+                                <DataTemplate x:DataType="x:String">
+                                    <TextBlock Text="{Binding}" TextWrapping="Wrap" Margin="0,0,0,6" />
+                                </DataTemplate>
+                            </ItemsControl.ItemTemplate>
+                        </ItemsControl>
+                    </StackPanel>
+                </Border>
+            </Grid>
+
+            <!-- 3 Priorities, modifiers, realism -->
+            <Grid IsVisible="{Binding IsPrioritiesStep}" ColumnDefinitions="*,*,*" ColumnSpacing="16">
+                <DockPanel>
+                    <TextBlock DockPanel.Dock="Top" Classes="h2" Text="{l:T 'Your aircraft'}" Margin="0,0,0,6" />
+                    <TextBox DockPanel.Dock="Top" Text="{Binding AircraftFilter}" Watermark="{l:T 'Search, e.g. F-16, helicopter, Star Citizen'}" Margin="0,0,0,6" />
+                    <StackPanel DockPanel.Dock="Bottom" Orientation="Horizontal" Spacing="8" Margin="0,8,0,0">
+                        <Button Content="{l:T 'Add as next priority'}" Command="{Binding AddAsNewPriorityCommand}" ToolTip.Tip="{l:T 'A new row at the end of the priority list'}" />
+                        <Button Content="{l:T 'Add as equal'}" Command="{Binding AddToSelectedPriorityCommand}" ToolTip.Tip="{l:T 'Into the selected row: counts the same as the aircraft there'}" />
+                    </StackPanel>
+                    <ListBox x:Name="AircraftList" ItemsSource="{Binding Aircraft}" SelectedItem="{Binding SelectedAircraft}">
+                        <ListBox.ItemTemplate>
+                            <DataTemplate x:DataType="models:SetupAircraftItem">
+                                <StackPanel Spacing="0" Background="Transparent" PointerPressed="AircraftPointerPressed">
+                                    <TextBlock Text="{Binding Display}" FontWeight="SemiBold" />
+                                    <TextBlock Text="{Binding Details}" Classes="muted" />
+                                </StackPanel>
+                            </DataTemplate>
+                        </ListBox.ItemTemplate>
+                    </ListBox>
+                </DockPanel>
+
+                <DockPanel Grid.Column="1">
+                    <TextBlock DockPanel.Dock="Top" Classes="h2" Text="{l:T 'Priority (top = most important)'}" Margin="0,0,0,6" />
+                    <TextBlock DockPanel.Dock="Top" TextWrapping="Wrap" Opacity="0.8" Margin="0,0,0,6"
+                               Text="{l:T 'The higher an aircraft, the more its binds get the best places. Aircraft in one row count the same; aircraft you do not list count least. Drag aircraft onto a row or drag rows to reorder.'}" />
+                    <StackPanel DockPanel.Dock="Bottom" Spacing="6" Margin="0,8,0,0">
+                        <StackPanel Orientation="Horizontal" Spacing="6">
+                            <Button Content="{l:T 'Up'}" Command="{Binding PriorityUpCommand}" />
+                            <Button Content="{l:T 'Down'}" Command="{Binding PriorityDownCommand}" />
+                            <Button Content="{l:T 'Equal with above'}" Command="{Binding MergeWithAboveCommand}" />
+                        </StackPanel>
+                        <StackPanel Orientation="Horizontal" Spacing="6">
+                            <Button Content="{l:T 'Own row'}" Command="{Binding SplitFromRowCommand}" ToolTip.Tip="{l:T 'The selected aircraft gets a row of its own below'}" />
+                            <Button Content="{l:T 'Remove'}" Command="{Binding RemovePriorityCommand}" />
+                        </StackPanel>
+                        <ListBox ItemsSource="{Binding SelectedTier.Aircraft, FallbackValue={x:Null}}" SelectedItem="{Binding SelectedTierAircraft}" MaxHeight="120"
+                                 IsVisible="{Binding HasTiers}" />
+                    </StackPanel>
+                    <Border x:Name="NewTierDrop" DockPanel.Dock="Bottom" Classes="card" Margin="0,8,0,0" DragDrop.AllowDrop="True">
+                        <TextBlock Text="{l:T 'Drop here for a new row at the end'}" Opacity="0.7" HorizontalAlignment="Center" />
+                    </Border>
+                    <ListBox x:Name="TierList" ItemsSource="{Binding Tiers}" SelectedItem="{Binding SelectedTier}">
+                        <ListBox.ItemTemplate>
+                            <DataTemplate x:DataType="models:SetupTierItem">
+                                <Border Background="Transparent" DragDrop.AllowDrop="True" PointerPressed="TierPointerPressed">
+                                    <StackPanel Spacing="4">
+                                        <TextBlock Text="{Binding Title}" FontWeight="SemiBold" />
+                                        <ItemsControl ItemsSource="{Binding Aircraft}">
+                                            <ItemsControl.ItemsPanel>
+                                                <ItemsPanelTemplate>
+                                                    <WrapPanel ItemSpacing="6" LineSpacing="6" />
+                                                </ItemsPanelTemplate>
+                                            </ItemsControl.ItemsPanel>
+                                            <ItemsControl.ItemTemplate>
+                                                <DataTemplate x:DataType="models:SetupAircraftItem">
+                                                    <Border Classes="chip aircraft" PointerPressed="AircraftPointerPressed">
+                                                        <TextBlock Text="{Binding Display}" />
+                                                    </Border>
+                                                </DataTemplate>
+                                            </ItemsControl.ItemTemplate>
+                                        </ItemsControl>
+                                    </StackPanel>
+                                </Border>
+                            </DataTemplate>
+                        </ListBox.ItemTemplate>
+                    </ListBox>
+                </DockPanel>
+
+                <ScrollViewer Grid.Column="2" VerticalScrollBarVisibility="Auto">
+                    <StackPanel Spacing="14">
+                        <Border Classes="surface">
+                            <StackPanel Spacing="8">
+                                <TextBlock Classes="h2" Text="{l:T 'Modifiers'}" />
+                                <TextBlock TextWrapping="Wrap" Opacity="0.85" Text="{l:T 'A modifier is a button you hold (like Shift) so every other button does a second thing. How many do you want?'}" />
+                                <StackPanel Orientation="Horizontal" Spacing="10">
+                                    <ComboBox ItemsSource="{Binding ModifierChoices}" SelectedItem="{Binding Modifiers}" Width="90" />
+                                    <CheckBox Content="{l:T 'As few as possible'}" IsChecked="{Binding PreferFewer}" />
+                                </StackPanel>
+                                <TextBlock Text="{Binding ModifierText}" TextWrapping="Wrap" Opacity="0.8" />
+                            </StackPanel>
+                        </Border>
+                        <Border Classes="surface">
+                            <StackPanel Spacing="8">
+                                <TextBlock Classes="h2" Text="{l:T 'Like the real aircraft?'}" />
+                                <TextBlock TextWrapping="Wrap" Opacity="0.85" Text="{l:T 'How much should your stick work like the real aircraft\'s stick?'}" />
+                                <Slider Minimum="0" Maximum="100" Value="{Binding Realism}" TickFrequency="10" IsSnapToTickEnabled="True" />
+                                <Grid ColumnDefinitions="*,*">
+                                    <TextBlock Text="{l:T 'Group by function'}" Classes="caption" />
+                                    <TextBlock Grid.Column="1" Text="{l:T 'Like the real aircraft'}" Classes="caption" HorizontalAlignment="Right" />
+                                </Grid>
+                                <TextBlock Text="{Binding Realism, StringFormat='{}{0:0} %'}" FontWeight="SemiBold" />
+                                <TextBlock Text="{Binding RealismText}" TextWrapping="Wrap" Opacity="0.85" />
+                            </StackPanel>
+                        </Border>
+                    </StackPanel>
+                </ScrollViewer>
+            </Grid>
+
+            <!-- 4 Plan -->
+            <Grid IsVisible="{Binding IsPlanStep}" ColumnDefinitions="3*,2*" ColumnSpacing="16">
+                <DockPanel>
+                    <StackPanel DockPanel.Dock="Top" Spacing="6" Margin="0,0,0,10">
+                        <TextBlock Text="{Binding PlanHeadline}" FontSize="16" FontWeight="SemiBold" TextWrapping="Wrap" />
+                        <Button Content="{l:T 'Make the plan again'}" Command="{Binding MakePlanCommand}" IsEnabled="{Binding !IsWorking}" />
+                    </StackPanel>
+                    <TextBlock DockPanel.Dock="Top" Classes="h2" Text="{l:T 'Quality per aircraft'}" Margin="0,0,0,6" />
+                    <ScrollViewer VerticalScrollBarVisibility="Auto">
+                        <ItemsControl ItemsSource="{Binding Quality}">
+                            <ItemsControl.ItemTemplate>
+                                <DataTemplate x:DataType="models:SetupQualityRow">
+                                    <Grid ColumnDefinitions="2*,*,3*,*,2*" ColumnSpacing="8" Margin="0,0,0,4">
+                                        <TextBlock Text="{Binding Aircraft}" FontWeight="SemiBold" TextTrimming="CharacterEllipsis" />
+                                        <TextBlock Grid.Column="1" Text="{Binding Priority}" Classes="muted" />
+                                        <ProgressBar Grid.Column="2" Minimum="0" Maximum="100" Value="{Binding ScoreValue}" VerticalAlignment="Center" />
+                                        <TextBlock Grid.Column="3" Text="{Binding Score}" />
+                                        <TextBlock Grid.Column="4" Text="{Binding Essential}" Classes="muted" />
+                                    </Grid>
+                                </DataTemplate>
+                            </ItemsControl.ItemTemplate>
+                        </ItemsControl>
+                    </ScrollViewer>
+                </DockPanel>
+                <ScrollViewer Grid.Column="1" VerticalScrollBarVisibility="Auto">
+                    <StackPanel Spacing="12">
+                        <Border Classes="surface">
+                            <StackPanel Spacing="6">
+                                <TextBlock Classes="h2" Text="{l:T 'How JoyPro did it'}" />
+                                <ItemsControl ItemsSource="{Binding PlanNotes}">
+                                    <ItemsControl.ItemTemplate>
+                                        <DataTemplate x:DataType="x:String">
+                                            <TextBlock Text="{Binding}" TextWrapping="Wrap" Margin="0,0,0,6" />
+                                        </DataTemplate>
+                                    </ItemsControl.ItemTemplate>
+                                </ItemsControl>
+                                <ItemsControl ItemsSource="{Binding PlanRules}">
+                                    <ItemsControl.ItemTemplate>
+                                        <DataTemplate x:DataType="x:String">
+                                            <TextBlock Text="{Binding}" TextWrapping="Wrap" Opacity="0.8" Margin="0,0,0,4" />
+                                        </DataTemplate>
+                                    </ItemsControl.ItemTemplate>
+                                </ItemsControl>
+                            </StackPanel>
+                        </Border>
+                        <Border Classes="surface">
+                            <StackPanel Spacing="6">
+                                <TextBlock Classes="h2" Text="{l:T 'Modifiers created'}" />
+                                <TextBlock Text="{l:T 'None.'}" IsVisible="{Binding HasNoPlanModifiers}" Opacity="0.8" />
+                                <ItemsControl ItemsSource="{Binding PlanModifiers}">
+                                    <ItemsControl.ItemTemplate>
+                                        <DataTemplate x:DataType="x:String">
+                                            <TextBlock Text="{Binding}" TextWrapping="Wrap" />
+                                        </DataTemplate>
+                                    </ItemsControl.ItemTemplate>
+                                </ItemsControl>
+                            </StackPanel>
+                        </Border>
+                    </StackPanel>
+                </ScrollViewer>
+            </Grid>
+
+            <!-- 5 Review -->
+            <Grid IsVisible="{Binding IsReviewStep}" RowDefinitions="Auto,*" ColumnDefinitions="3*,2*" ColumnSpacing="16" RowSpacing="8">
+                <StackPanel Grid.ColumnSpan="2" Orientation="Horizontal" Spacing="10">
+                    <TextBlock Text="{l:T 'Device:'}" VerticalAlignment="Center" />
+                    <ComboBox Width="380" ItemsSource="{Binding ReviewDevices}" SelectedItem="{Binding SelectedReviewDevice}" />
+                    <TextBlock Text="{l:T 'Aircraft:'}" VerticalAlignment="Center" />
+                    <ComboBox Width="300" ItemsSource="{Binding ReviewAircraft}" SelectedItem="{Binding SelectedReviewAircraft}" />
+                    <Button Content="{l:T 'Open the sheet'}" Command="{Binding OpenSheetCommand}" IsEnabled="{Binding HasSheet}" ToolTip.Tip="{l:T 'The sheet full size in your picture viewer (to print it)'}" />
+                </StackPanel>
+                <Border Grid.Row="1" Classes="sunken">
+                    <Panel>
+                        <Image Source="{Binding SheetImage}" Stretch="Uniform" IsVisible="{Binding HasSheet}" Margin="4" />
+                        <TextBlock Text="{Binding SheetNote}" Margin="12" TextWrapping="Wrap" IsVisible="{Binding !HasSheet}" />
+                    </Panel>
+                </Border>
+                <Grid Grid.Row="1" Grid.Column="1" RowDefinitions="2*,Auto,*">
+                    <ListBox ItemsSource="{Binding ReviewRows}" SelectedItem="{Binding SelectedRow}">
+                        <ListBox.ItemTemplate>
+                            <DataTemplate x:DataType="models:SetupReviewRow">
+                                <Grid ColumnDefinitions="110,*" ColumnSpacing="8">
+                                    <TextBlock Text="{Binding Input}" Classes="mono" TextWrapping="Wrap" />
+                                    <StackPanel Grid.Column="1">
+                                        <TextBlock Text="{Binding Name}" FontWeight="SemiBold" TextWrapping="Wrap" />
+                                        <TextBlock Text="{Binding Control}" Classes="muted" TextWrapping="Wrap" />
+                                        <TextBlock Text="{Binding Reason}" Opacity="0.75" TextWrapping="Wrap" />
+                                    </StackPanel>
+                                </Grid>
+                            </DataTemplate>
+                        </ListBox.ItemTemplate>
+                    </ListBox>
+                    <Border Grid.Row="1" Classes="surface tight" Margin="0,8">
+                        <StackPanel Spacing="6">
+                            <TextBlock Text="{l:T 'Change the selected function'}" FontWeight="SemiBold" />
+                            <StackPanel Orientation="Horizontal" Spacing="6">
+                                <ComboBox Width="300" ItemsSource="{Binding MoveTargets}" SelectedItem="{Binding SelectedMoveTarget}" PlaceholderText="{l:T 'Move to a free input'}" />
+                                <Button Content="{l:T 'Move'}" Command="{Binding MoveSelectedCommand}" />
+                            </StackPanel>
+                            <StackPanel Orientation="Horizontal" Spacing="6">
+                                <ComboBox Width="300" ItemsSource="{Binding SwapCandidates}" SelectedItem="{Binding SelectedSwapRow}" PlaceholderText="{l:T 'Swap with'}" />
+                                <Button Content="{l:T 'Swap'}" Command="{Binding SwapSelectedCommand}" />
+                            </StackPanel>
+                            <StackPanel Orientation="Horizontal" Spacing="6">
+                                <Button Content="{l:T 'Remove from the plan'}" Command="{Binding RemoveSelectedCommand}" />
+                                <Button Content="{l:T 'Put back'}" Command="{Binding RestoreSelectedCommand}" />
+                            </StackPanel>
+                        </StackPanel>
+                    </Border>
+                    <DockPanel Grid.Row="2">
+                        <TextBlock DockPanel.Dock="Top" Classes="h3" Text="{l:T 'Not placed (most important first)'}" Margin="0,0,0,4" />
+                        <ListBox ItemsSource="{Binding NotPlaced}" SelectedItem="{Binding SelectedNotPlaced}">
+                            <ListBox.ItemTemplate>
+                                <DataTemplate x:DataType="models:SetupNotPlacedRow">
+                                    <StackPanel>
+                                        <TextBlock Text="{Binding Name}" FontWeight="SemiBold" TextWrapping="Wrap" />
+                                        <TextBlock Text="{Binding Reason}" Opacity="0.8" TextWrapping="Wrap" />
+                                    </StackPanel>
+                                </DataTemplate>
+                            </ListBox.ItemTemplate>
+                        </ListBox>
+                    </DockPanel>
+                </Grid>
+            </Grid>
+        </Panel>
+
+        <!-- Status and navigation -->
+        <Grid Grid.Row="2" ColumnDefinitions="*,Auto" Margin="0,12,0,0">
+            <TextBlock Text="{Binding Status}" TextWrapping="Wrap" VerticalAlignment="Center" Margin="0,0,12,0" />
+            <StackPanel Grid.Column="1" Orientation="Horizontal" Spacing="8">
+                <Button Content="{l:T 'Back'}" Command="{Binding BackCommand}" IsEnabled="{Binding CanGoBack}" />
+                <Button Content="{Binding NextText}" Command="{Binding NextCommand}" IsEnabled="{Binding CanGoNext}" IsVisible="{Binding !IsReviewStep}" Classes="accent" />
+                <Button Content="{l:T 'Apply to my profile'}" Command="{Binding ApplyCommand}" IsVisible="{Binding IsReviewStep}" IsEnabled="{Binding !IsWorking}" Classes="accent"
+                        ToolTip.Tip="{l:T 'Writes the relations and binds into your profile in one step (Undo takes all of it back)'}" />
+                <Button Content="{l:T 'Export to my games'}" Command="{Binding ExportCommand}" IsVisible="{Binding Applied}" />
+                <Button Content="{l:T 'Close'}" Click="CloseClicked" />
+            </StackPanel>
+        </Grid>
+    </Grid>
+</Window>

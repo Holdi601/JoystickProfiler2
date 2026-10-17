@@ -1,0 +1,186 @@
+{
+  "format": "joypro-device-layout",
+  "version": 1,
+  "model": "realsim-f18cgrh",
+  "photo": {"kind": "vendor", "url": "https://realsimulator.com/wp-content/uploads/2020/06/F18CGRH_3.jpg", "sha256": "1d2d61ee964c49a14f943a384b8e34c366c8dd35cd635d3de50cf6b9a86b1368", "view": "three-quarter"},
+  "markers": {
+    "stick.axis.twist": [0.66, 0.55],
+    "stick.button.thumb.1": [0.488, 0.594],
+    "stick.gimbal": [0.645, 0.9],
+    "stick.hat.1": [0.395, 0.205],
+    "stick.hat.2": [0.498, 0.585],
+    "stick.hat.cms": [0.53, 0.42],
+    "stick.hat.dms": [0.572, 0.234],
+    "stick.hat.tms": [0.48, 0.175],
+    "stick.hat.trim": [0.585, 0.17],
+    "stick.trigger": [0.455, 0.375],
+    "stick.weapon_release": [0.375, 0.215]
+  },
+  "parts": {
+    "stick.hat.trim": {
+      "type": "hat",
+      "name": "Trim",
+      "inputs": [
+        {"input": "JOY_BTN28", "control": "stick.hat.trim.down"},
+        {"input": "JOY_BTN29", "control": "stick.hat.trim.left"},
+        {"input": "JOY_BTN30", "control": "stick.hat.trim.up"},
+        {"input": "JOY_BTN31", "control": "stick.hat.trim.right"},
+        {"input": "JOY_BTN32", "control": "stick.hat.trim.press"}
+      ],
+      "mapping": "high",
+      "confidence": "high"
+    },
+    "stick.weapon_release": {
+      "type": "release",
+      "name": "WR Weapon release",
+      "inputs": [
+        {"input": "JOY_BTN2", "control": "stick.weapon_release"}
+      ],
+      "mapping": "high",
+      "confidence": "high"
+    },
+    "stick.hat.tms": {
+      "type": "hat",
+      "name": "TMS (Sensor Control)",
+      "inputs": [
+        {"input": "JOY_BTN7", "control": "stick.hat.tms.up"},
+        {"input": "JOY_BTN8", "control": "stick.hat.tms.right"},
+        {"input": "JOY_BTN9", "control": "stick.hat.tms.down"},
+        {"input": "JOY_BTN10", "control": "stick.hat.tms.left"},
+        {"input": "JOY_BTN63", "control": "stick.hat.tms.press"}
+      ],
+      "mapping": "high",
+      "confidence": "high"
+    },
+    "stick.hat.dms": {
+      "type": "hat",
+      "name": "DMS (Recce)",
+      "inputs": [
+        {"input": "JOY_BTN11", "control": "stick.hat.dms.up"},
+        {"input": "JOY_BTN12", "control": "stick.hat.dms.right"},
+        {"input": "JOY_BTN13", "control": "stick.hat.dms.down"},
+        {"input": "JOY_BTN14", "control": "stick.hat.dms.left"},
+        {"input": "JOY_BTN62", "control": "stick.hat.dms.press"}
+      ],
+      "mapping": "high",
+      "confidence": "medium"
+    },
+    "stick.hat.cms": {
+      "type": "hat",
+      "name": "CMS (Weapon Select)",
+      "inputs": [
+        {"input": "JOY_BTN15", "control": "stick.hat.cms.up"},
+        {"input": "JOY_BTN16", "control": "stick.hat.cms.right"},
+        {"input": "JOY_BTN17", "control": "stick.hat.cms.down"},
+        {"input": "JOY_BTN18", "control": "stick.hat.cms.left"},
+        {"input": "JOY_BTN19", "control": "stick.hat.cms.press"}
+      ],
+      "mapping": "high",
+      "confidence": "high"
+    },
+    "stick.trigger": {
+      "type": "trigger",
+      "name": "Trigger",
+      "inputs": [
+        {"input": "JOY_BTN1", "control": "stick.trigger.stage1"},
+        {"input": "JOY_BTN6", "control": "stick.trigger.stage2"}
+      ],
+      "mapping": "high",
+      "confidence": "high"
+    },
+    "stick.axis.twist": {
+      "type": "twist",
+      "name": "Twist",
+      "inputs": [
+        {"input": "JOY_RZ", "control": "stick.axis.twist"}
+      ],
+      "mapping": "high",
+      "confidence": "medium"
+    },
+    "stick.gimbal": {
+      "type": "gimbal",
+      "name": "Stick (roll / pitch)",
+      "inputs": [
+        {"input": "JOY_X", "control": "stick.axis.roll"},
+        {"input": "JOY_Y", "control": "stick.axis.pitch"}
+      ],
+      "mapping": "high",
+      "confidence": "medium"
+    },
+    "stick.hat.1": {
+      "type": "hat",
+      "name": "WR hat",
+      "inputs": [
+        {"input": "JOY_BTN20", "control": "stick.hat.1.up"},
+        {"input": "JOY_BTN21", "control": "stick.hat.1.right"},
+        {"input": "JOY_BTN22", "control": "stick.hat.1.down"},
+        {"input": "JOY_BTN23", "control": "stick.hat.1.left"}
+      ],
+      "mapping": "high",
+      "confidence": "medium",
+      "note": "same physical button as the weapon release (its 4 extra directions)"
+    },
+    "stick.hat.2": {
+      "type": "hat",
+      "name": "NWS hat",
+      "inputs": [
+        {"input": "JOY_BTN24", "control": "stick.hat.2.up"},
+        {"input": "JOY_BTN25", "control": "stick.hat.2.right"},
+        {"input": "JOY_BTN26", "control": "stick.hat.2.down"},
+        {"input": "JOY_BTN27", "control": "stick.hat.2.left"}
+      ],
+      "mapping": "high",
+      "confidence": "medium",
+      "note": "same physical button as NWS (its 4 extra directions)"
+    },
+    "stick.button.thumb.1": {
+      "type": "button",
+      "name": "NWS Nosewheel Steering",
+      "inputs": [
+        {"input": "JOY_BTN5", "control": "stick.button.thumb.1"}
+      ],
+      "mapping": "high",
+      "confidence": "high"
+    }
+  },
+  "unplaced": {},
+  "candidates": {},
+  "source": "JoyPro curated on the maker's photo (2026-10-11), F/A-18 centre grip seen from the left-front, stick head top tilted toward the camera, base connector visible",
+  "mappingSource": "F18CGRH User Guide EN v1.00 (https://www.realsimulator.com/download/F18CGRH_User_Guide_EN.pdf): p.7 labeled figure (Sensor Control/TMS, Trim, Rotary, Weapon Release, Recce/DMS, Weapon Select/CMS, Trigger, NWS) and p.54 DX table (JoyPro JOY_BTN = DX+1), as cited by the catalog",
+  "confidence": "high",
+  "note": "stick.hat.1 (WR hat) and stick.hat.2 (NWS hat) are the extra directions of the same physical Weapon Release and NWS buttons, so they sit on those controls. Recce (DMS) is the small ridged lever below between the Sensor Control hat and the trim hat (vendor figure p.7). The gimbal and twist axes are sensed by the FSSB-R3 base; the gimbal marker is at the grip's base connector.",
+  "callouts": {
+    "version": 1,
+    "width": 1380,
+    "height": 948,
+    "picture": [340, 154, 700, 700],
+    "rowHeight": 20,
+    "mainWidth": 170,
+    "modWidth": 110,
+    "otherY": -1,
+    "tables": [
+      {"id": "stack:stick.hat.2", "title": "NWS hat / NWS Nosewheel Steering", "parts": ["stick.hat.2", "stick.button.thumb.1"], "side": "left", "x": 16, "y": 542.7, "width": 300, "modifier": true, "spot": [0.493, 0.5895], "rows": [{"input": "JOY_BTN24", "label": "NWS hat Up", "icon": "up", "part": "stick.hat.2"}, {"input": "JOY_BTN25", "label": "NWS hat Right", "icon": "right", "part": "stick.hat.2"}, {"input": "JOY_BTN27", "label": "NWS hat Left", "icon": "left", "part": "stick.hat.2"}, {"input": "JOY_BTN26", "label": "NWS hat Down", "icon": "down", "part": "stick.hat.2"}, {"input": "JOY_BTN5", "label": "NWS Nosewheel Steering Press", "icon": "button", "part": "stick.button.thumb.1"}]},
+      {"id": "stick.hat.trim", "title": "Trim", "parts": ["stick.hat.trim"], "side": "top", "x": 715.8, "y": 16, "width": 300, "modifier": true, "spot": [0.585, 0.17], "rows": [{"input": "JOY_BTN32", "label": "Press", "icon": "button", "part": "stick.hat.trim"}, {"input": "JOY_BTN30", "label": "Up", "icon": "up", "part": "stick.hat.trim"}, {"input": "JOY_BTN31", "label": "Right", "icon": "right", "part": "stick.hat.trim"}, {"input": "JOY_BTN29", "label": "Left", "icon": "left", "part": "stick.hat.trim"}, {"input": "JOY_BTN28", "label": "Down", "icon": "down", "part": "stick.hat.trim"}]},
+      {"id": "stick.weapon_release", "title": "WR Weapon release", "parts": ["stick.weapon_release"], "side": "left", "x": 16, "y": 255.5, "width": 300, "modifier": true, "spot": [0.375, 0.215], "rows": [{"input": "JOY_BTN2", "label": "Press", "icon": "button", "part": "stick.weapon_release"}]},
+      {"id": "stick.hat.tms", "title": "TMS (Sensor Control)", "parts": ["stick.hat.tms"], "side": "top", "x": 409.8, "y": 16, "width": 300, "modifier": true, "spot": [0.48, 0.175], "rows": [{"input": "JOY_BTN63", "label": "Press", "icon": "button", "part": "stick.hat.tms"}, {"input": "JOY_BTN7", "label": "Up", "icon": "up", "part": "stick.hat.tms"}, {"input": "JOY_BTN8", "label": "Right", "icon": "right", "part": "stick.hat.tms"}, {"input": "JOY_BTN10", "label": "Left", "icon": "left", "part": "stick.hat.tms"}, {"input": "JOY_BTN9", "label": "Down", "icon": "down", "part": "stick.hat.tms"}]},
+      {"id": "stick.hat.dms", "title": "DMS (Recce)", "parts": ["stick.hat.dms"], "side": "right", "x": 1064, "y": 290.9, "width": 300, "modifier": true, "spot": [0.572, 0.234], "rows": [{"input": "JOY_BTN62", "label": "Press", "icon": "button", "part": "stick.hat.dms"}, {"input": "JOY_BTN11", "label": "Up", "icon": "up", "part": "stick.hat.dms"}, {"input": "JOY_BTN12", "label": "Right", "icon": "right", "part": "stick.hat.dms"}, {"input": "JOY_BTN14", "label": "Left", "icon": "left", "part": "stick.hat.dms"}, {"input": "JOY_BTN13", "label": "Down", "icon": "down", "part": "stick.hat.dms"}]},
+      {"id": "stick.hat.cms", "title": "CMS (Weapon Select)", "parts": ["stick.hat.cms"], "side": "right", "x": 1064, "y": 410.9, "width": 300, "modifier": true, "spot": [0.53, 0.42], "rows": [{"input": "JOY_BTN19", "label": "Press", "icon": "button", "part": "stick.hat.cms"}, {"input": "JOY_BTN15", "label": "Up", "icon": "up", "part": "stick.hat.cms"}, {"input": "JOY_BTN16", "label": "Right", "icon": "right", "part": "stick.hat.cms"}, {"input": "JOY_BTN18", "label": "Left", "icon": "left", "part": "stick.hat.cms"}, {"input": "JOY_BTN17", "label": "Down", "icon": "down", "part": "stick.hat.cms"}]},
+      {"id": "stick.trigger", "title": "Trigger", "parts": ["stick.trigger"], "side": "left", "x": 16, "y": 395.5, "width": 300, "modifier": true, "spot": [0.455, 0.375], "rows": [{"input": "JOY_BTN1", "label": "First stage", "icon": "button", "part": "stick.trigger"}, {"input": "JOY_BTN6", "label": "Second stage", "icon": "button", "part": "stick.trigger"}]},
+      {"id": "stick.axis.twist", "title": "Twist", "parts": ["stick.axis.twist"], "side": "right", "x": 1064, "y": 530.9, "width": 300, "modifier": true, "spot": [0.66, 0.55], "rows": [{"input": "JOY_RZ", "label": "RZ", "icon": "axis", "part": "stick.axis.twist"}]},
+      {"id": "stick.gimbal", "title": "Stick (roll / pitch)", "parts": ["stick.gimbal"], "side": "bottom", "x": 641.5, "y": 878, "width": 300, "modifier": true, "spot": [0.645, 0.9], "rows": [{"input": "JOY_X", "label": "roll (X)", "icon": "axis", "part": "stick.gimbal"}, {"input": "JOY_Y", "label": "pitch (Y)", "icon": "axis", "part": "stick.gimbal"}]},
+      {"id": "stick.hat.1", "title": "WR hat", "parts": ["stick.hat.1"], "side": "left", "x": 16, "y": 295.5, "width": 300, "modifier": true, "spot": [0.395, 0.205], "rows": [{"input": "JOY_BTN20", "label": "Up", "icon": "up", "part": "stick.hat.1"}, {"input": "JOY_BTN21", "label": "Right", "icon": "right", "part": "stick.hat.1"}, {"input": "JOY_BTN23", "label": "Left", "icon": "left", "part": "stick.hat.1"}, {"input": "JOY_BTN22", "label": "Down", "icon": "down", "part": "stick.hat.1"}]}
+    ],
+    "lines": [
+      {"table": "stick.weapon_release", "points": [[602.5, 304.5], [602.5, 279.5], [316, 279.5]]},
+      {"table": "stick.hat.1", "points": [[616.5, 297.5], [616.5, 319.5], [316, 319.5]]},
+      {"table": "stick.trigger", "points": [[658.5, 416.5], [328, 416.5], [328, 419.5], [316, 419.5]]},
+      {"table": "stack:stick.hat.2", "points": [[685.1, 566.7], [316, 566.7]]},
+      {"table": "stick.hat.dms", "points": [[740.4, 317.8], [1052, 317.8], [1052, 314.9], [1064, 314.9]]},
+      {"table": "stick.hat.cms", "points": [[711, 448], [1052, 448], [1052, 434.9], [1064, 434.9]]},
+      {"table": "stick.axis.twist", "points": [[802, 539], [1052, 539], [1052, 554.9], [1064, 554.9]]},
+      {"table": "stick.hat.tms", "points": [[676, 276.5], [676, 142], [559.8, 142], [559.8, 130]]},
+      {"table": "stick.hat.trim", "points": [[749.5, 273], [749.5, 142], [865.8, 142], [865.8, 130]]},
+      {"table": "stick.gimbal", "points": [[791.5, 784], [791.5, 878]]}
+    ]
+  }
+}

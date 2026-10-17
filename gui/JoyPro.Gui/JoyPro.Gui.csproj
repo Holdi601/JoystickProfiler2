@@ -1,0 +1,262 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <Version>2.0.0</Version>
+    <TargetFramework>net9.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ApplicationManifest>app.manifest</ApplicationManifest>
+    <ApplicationIcon>Assets\joypro2_gui.ico</ApplicationIcon>
+    <AvaloniaUseCompiledBindingsByDefault>true</AvaloniaUseCompiledBindingsByDefault>
+    <EngineProjectPath>$(MSBuildThisFileDirectory)..\..\engine\engine.csproj</EngineProjectPath>
+    <EngineOutputPath>$(MSBuildThisFileDirectory)..\..\engine\bin\x64\$(Configuration)\</EngineOutputPath>
+    <AutoStopRunningJoyProGuiOnBuild>true</AutoStopRunningJoyProGuiOnBuild>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Remove="obj\**\*.cs" />
+    <Compile Remove=".tmp_build\**\*.cs" />
+    <Folder Include="Models\" />
+    <AvaloniaResource Include="Assets\**" />
+    <!-- Third-party notices for an About / Licenses view (Services\ThirdPartyNotices.cs, THIRD_PARTY_NOTICES.md). -->
+    <EmbeddedResource Include="Resources\ThirdPartyNotices.txt" LogicalName="JoyPro.Gui.ThirdPartyNotices.txt" />
+    <!-- The GUI's texts per language (docs/localization.md): Localization\Strings\<code>.json, English is the key. -->
+    <EmbeddedResource Include="Localization\Strings\*.json" LogicalName="JoyPro.Gui.Localization.%(Filename).json" />
+    <!-- The engine's axis response models (plain C# 7.3 math) for the curve manager's live preview. -->
+    <Compile Include="..\..\engine\AxisTuning.cs" Link="Axis\AxisTuning.cs" />
+    <!-- Detent mode's curve math (engine\AxisDetents.cs, "#nullable disable" for NET) for the previews and tests. -->
+    <Compile Include="..\..\engine\AxisDetents.cs" Link="Axis\AxisDetents.cs" />
+    <!-- Game models of their own (engine\AxisModels\<Game>.cs, registered by [GameAxisModel]); each starts with
+         "#if NET / #nullable disable / #endif" because they are C# 7.3 files without nullable annotations. -->
+    <Compile Include="..\..\engine\AxisModels\*.cs" Link="Axis\Models\%(Filename)%(Extension)" />
+    <!-- Virtual joystick mode: the engine's HidHide session journal and state machine (plain C# 7.3, "#nullable
+         disable" for NET), so the GUI can see at start whether an earlier JoyPro left a HidHide session behind. -->
+    <Compile Include="..\..\engine\VJoy\HidHideSession.cs" Link="VJoy\HidHideSession.cs" />
+    <!-- Virtual functions: the engine's model, catalog and evaluation (plain C# 7.3, "#nullable disable" for NET), so
+         the editor previews a function with the forwarder's own code (docs/virtual-joystick.md "Virtual functions"). -->
+    <Compile Include="..\..\engine\VJoy\VirtualFunctions.cs" Link="VJoy\VirtualFunctions.cs" />
+    <Compile Include="..\..\engine\VJoy\VirtualFunctionRuntime.cs" Link="VJoy\VirtualFunctionRuntime.cs" />
+    <!-- Device reference pictures (docs/device-reference.md): the engine's catalog reader, identification and schematic
+         builder (plain C# 7.3, "#nullable disable" for NET), so the layout pages draw a device without an engine call. -->
+    <Compile Include="..\..\engine\DeviceReference\*.cs" Link="DeviceReference\%(Filename)%(Extension)" />
+    <!-- Profile history (docs/profile-history.md): the engine's version store (plain C# 7.3, "#nullable disable" for
+         NET), so the GUI lists, compares, restores, undoes and cleans up without an engine call. -->
+    <Compile Include="..\..\engine\ProfileHistory.cs" Link="History\ProfileHistory.cs" />
+    <!-- Setup wizard (docs/setup-wizard.md): the engine's planner, plan file and edit rules (plain C# 7.3, "#nullable
+         disable" for NET), so the review step reads and changes the plan the engine made and the tests run the planner. -->
+    <Compile Include="..\..\engine\SetupWizard\*.cs" Link="SetupWizard\%(Filename)%(Extension)" />
+  </ItemGroup>
+
+  <!-- The day of the build for Settings > About and the corner of the window (AppInfo.BuildDate); the commit comes with
+       the informational version (+<sha>). -->
+  <ItemGroup>
+    <AssemblyMetadata Include="BuildDate" Value="$([System.DateTime]::UtcNow.ToString('yyyy-MM-dd'))" />
+  </ItemGroup>
+
+  <!-- T("...") and Plural(...) everywhere in the GUI (Localization\Loc.cs). -->
+  <ItemGroup>
+    <Using Include="JoyPro.Gui.Localization.Loc" Static="true" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Avalonia" Version="11.3.12" />
+    <PackageReference Include="Avalonia.Controls.DataGrid" Version="11.3.12" />
+    <PackageReference Include="Avalonia.Desktop" Version="11.3.12" />
+    <PackageReference Include="Avalonia.Themes.Fluent" Version="11.3.12" />
+    <!--Condition below is needed to remove Avalonia.Diagnostics package from build output in Release configuration.-->
+    <PackageReference Include="Avalonia.Diagnostics" Version="11.3.12">
+      <IncludeAssets Condition="'$(Configuration)' != 'Debug'">None</IncludeAssets>
+      <PrivateAssets Condition="'$(Configuration)' != 'Debug'">All</PrivateAssets>
+    </PackageReference>
+    <PackageReference Include="CommunityToolkit.Mvvm" Version="8.2.1" />
+  </ItemGroup>
+
+  <!-- Telemetry force feedback: the graph model, persistence and protocol for the editor page (net9.0, like the GUI). -->
+  <ItemGroup>
+    <ProjectReference Include="..\JoyPro.Ffb.Core\JoyPro.Ffb.Core.csproj" />
+    <!-- The game config watcher, shared with the tray host (JoyPro.Tray, bundled into <output>\tray\ below). -->
+    <ProjectReference Include="..\JoyPro.Watch\JoyPro.Watch.csproj" />
+    <ProjectReference Include="..\JoyPro.Logging\JoyPro.Logging.csproj" />
+  </ItemGroup>
+
+  <!-- The linked engine file is C# 7.3 without nullable annotations: a generated analyzer config (it needs the file's
+       absolute path; '#' escaped, as this repo lives under "c#") marks it as generated code, which turns its nullable
+       context off without touching the engine. -->
+  <Target Name="MarkLinkedEngineFilesAsGenerated" BeforeTargets="CoreCompile">
+    <PropertyGroup>
+      <LinkedEngineAxisFile>$([System.IO.Path]::GetFullPath('$(MSBuildThisFileDirectory)..\..\engine\AxisTuning.cs').Replace('\','/').Replace('#','\#'))</LinkedEngineAxisFile>
+      <LinkedEngineConfigPath>$(IntermediateOutputPath)LinkedEngineFiles.globalconfig</LinkedEngineConfigPath>
+    </PropertyGroup>
+    <WriteLinesToFile File="$(LinkedEngineConfigPath)"
+                      Lines="is_global = true;[$(LinkedEngineAxisFile)];generated_code = true"
+                      Overwrite="true"
+                      WriteOnlyWhenDifferent="true" />
+    <ItemGroup>
+      <EditorConfigFiles Include="$(LinkedEngineConfigPath)" />
+    </ItemGroup>
+  </Target>
+
+  <Target Name="BuildAndBundleEngine" AfterTargets="Build">
+    <MSBuild Projects="$(EngineProjectPath)"
+             Targets="Build"
+             Properties="Configuration=$(Configuration);Platform=x64;CodeAnalysisRuleSet=" />
+    <PropertyGroup>
+      <BundledEnginePath>$(TargetDir)engine\</BundledEnginePath>
+    </PropertyGroup>
+    <ItemGroup>
+      <BundledEngineFiles Include="$(EngineOutputPath)**\*" />
+    </ItemGroup>
+    <MakeDir Directories="$(BundledEnginePath)" />
+    <Copy SourceFiles="@(BundledEngineFiles)"
+          DestinationFiles="@(BundledEngineFiles->'$(BundledEnginePath)%(RecursiveDir)%(Filename)%(Extension)')"
+          SkipUnchangedFiles="true" />
+  </Target>
+
+  <!-- dotnet publish: the engine goes next to the published GUI as well (tools/publish_release.ps1). -->
+  <Target Name="BundleEngineIntoPublish" AfterTargets="Publish">
+    <ItemGroup>
+      <PublishedEngineFiles Include="$(EngineOutputPath)**\*" />
+    </ItemGroup>
+    <Copy SourceFiles="@(PublishedEngineFiles)"
+          DestinationFiles="@(PublishedEngineFiles->'$(PublishDir)engine\%(RecursiveDir)%(Filename)%(Extension)')"
+          SkipUnchangedFiles="true" />
+  </Target>
+
+  <!-- The telemetry force feedback process (JoyPro.Ffb.exe, net9.0-windows) goes to <output>\ffb\. Built through the
+       MSBuild task instead of a ProjectReference: the GUI targets net9.0 and must not reference a -windows exe. It is
+       not part of the GUI's restore graph either, so it is restored here first (a separate evaluation, as restore
+       needs; a no-op when nothing changed). -->
+  <PropertyGroup>
+    <FfbProcessProjectPath>$(MSBuildThisFileDirectory)..\JoyPro.Ffb\JoyPro.Ffb.csproj</FfbProcessProjectPath>
+  </PropertyGroup>
+
+  <Target Name="BuildAndBundleFfbProcess" AfterTargets="Build">
+    <MSBuild Projects="$(FfbProcessProjectPath)"
+             Targets="Restore"
+             Properties="Configuration=$(Configuration);MSBuildRestoreSessionId=$([System.Guid]::NewGuid())" />
+    <MSBuild Projects="$(FfbProcessProjectPath)"
+             Targets="Build"
+             Properties="Configuration=$(Configuration)">
+      <Output TaskParameter="TargetOutputs" ItemName="FfbProcessAssembly" />
+    </MSBuild>
+    <PropertyGroup>
+      <FfbProcessOutputPath>@(FfbProcessAssembly->'%(RootDir)%(Directory)')</FfbProcessOutputPath>
+      <BundledFfbProcessPath>$(TargetDir)ffb\</BundledFfbProcessPath>
+    </PropertyGroup>
+    <ItemGroup>
+      <BundledFfbProcessFiles Include="$(FfbProcessOutputPath)**\*" />
+    </ItemGroup>
+    <MakeDir Directories="$(BundledFfbProcessPath)" />
+    <Copy SourceFiles="@(BundledFfbProcessFiles)"
+          DestinationFiles="@(BundledFfbProcessFiles->'$(BundledFfbProcessPath)%(RecursiveDir)%(Filename)%(Extension)')"
+          SkipUnchangedFiles="true" />
+  </Target>
+
+  <!-- dotnet publish: JoyPro.Ffb is published with the GUI's runtime identifier and self-contained setting into
+       <publish>\ffb\ (a self-contained GUI must not leave the process depending on an installed .NET 9). -->
+  <Target Name="BundleFfbProcessIntoPublish" AfterTargets="Publish">
+    <PropertyGroup>
+      <FfbProcessPublishProperties>Configuration=$(Configuration);PublishDir=$(PublishDir)ffb\</FfbProcessPublishProperties>
+      <FfbProcessPublishProperties Condition="'$(RuntimeIdentifier)' != ''">$(FfbProcessPublishProperties);RuntimeIdentifier=$(RuntimeIdentifier)</FfbProcessPublishProperties>
+      <FfbProcessPublishProperties Condition="'$(SelfContained)' != ''">$(FfbProcessPublishProperties);SelfContained=$(SelfContained)</FfbProcessPublishProperties>
+    </PropertyGroup>
+    <MSBuild Projects="$(FfbProcessProjectPath)"
+             Targets="Restore"
+             Properties="$(FfbProcessPublishProperties);MSBuildRestoreSessionId=$([System.Guid]::NewGuid())" />
+    <MSBuild Projects="$(FfbProcessProjectPath)"
+             Targets="Publish"
+             Properties="$(FfbProcessPublishProperties)" />
+  </Target>
+
+  <!-- The tray host (JoyPro.Tray.exe, net9.0-windows WinForms) goes to <output>\tray\, built like JoyPro.Ffb through the
+       MSBuild task (the GUI targets net9.0 and must not reference a -windows exe). -->
+  <PropertyGroup>
+    <TrayHostProjectPath>$(MSBuildThisFileDirectory)..\JoyPro.Tray\JoyPro.Tray.csproj</TrayHostProjectPath>
+  </PropertyGroup>
+
+  <Target Name="BuildAndBundleTrayHost" AfterTargets="Build">
+    <MSBuild Projects="$(TrayHostProjectPath)"
+             Targets="Restore"
+             Properties="Configuration=$(Configuration);MSBuildRestoreSessionId=$([System.Guid]::NewGuid())" />
+    <MSBuild Projects="$(TrayHostProjectPath)"
+             Targets="Build"
+             Properties="Configuration=$(Configuration)">
+      <Output TaskParameter="TargetOutputs" ItemName="TrayHostAssembly" />
+    </MSBuild>
+    <PropertyGroup>
+      <TrayHostOutputPath>@(TrayHostAssembly->'%(RootDir)%(Directory)')</TrayHostOutputPath>
+      <BundledTrayHostPath>$(TargetDir)tray\</BundledTrayHostPath>
+    </PropertyGroup>
+    <ItemGroup>
+      <BundledTrayHostFiles Include="$(TrayHostOutputPath)**\*" />
+    </ItemGroup>
+    <MakeDir Directories="$(BundledTrayHostPath)" />
+    <Copy SourceFiles="@(BundledTrayHostFiles)"
+          DestinationFiles="@(BundledTrayHostFiles->'$(BundledTrayHostPath)%(RecursiveDir)%(Filename)%(Extension)')"
+          SkipUnchangedFiles="true" />
+  </Target>
+
+  <!-- dotnet publish: the tray host with the GUI's runtime identifier and self-contained setting into <publish>\tray\. -->
+  <Target Name="BundleTrayHostIntoPublish" AfterTargets="Publish">
+    <PropertyGroup>
+      <TrayHostPublishProperties>Configuration=$(Configuration);PublishDir=$(PublishDir)tray\</TrayHostPublishProperties>
+      <TrayHostPublishProperties Condition="'$(RuntimeIdentifier)' != ''">$(TrayHostPublishProperties);RuntimeIdentifier=$(RuntimeIdentifier)</TrayHostPublishProperties>
+      <TrayHostPublishProperties Condition="'$(SelfContained)' != ''">$(TrayHostPublishProperties);SelfContained=$(SelfContained)</TrayHostPublishProperties>
+    </PropertyGroup>
+    <MSBuild Projects="$(TrayHostProjectPath)"
+             Targets="Restore"
+             Properties="$(TrayHostPublishProperties);MSBuildRestoreSessionId=$([System.Guid]::NewGuid())" />
+    <MSBuild Projects="$(TrayHostProjectPath)"
+             Targets="Publish"
+             Properties="$(TrayHostPublishProperties)" />
+  </Target>
+
+  <!-- The virtual joystick forwarder (JoyPro.VJoy.exe, net9.0-windows) goes to <output>\vjoy\, built like JoyPro.Ffb
+       (MSBuild task, own restore) and published with the GUI's runtime identifier and self-contained setting. -->
+  <PropertyGroup>
+    <VJoyProcessProjectPath>$(MSBuildThisFileDirectory)..\JoyPro.VJoy\JoyPro.VJoy.csproj</VJoyProcessProjectPath>
+  </PropertyGroup>
+
+  <Target Name="BuildAndBundleVJoyProcess" AfterTargets="Build">
+    <MSBuild Projects="$(VJoyProcessProjectPath)"
+             Targets="Restore"
+             Properties="Configuration=$(Configuration);MSBuildRestoreSessionId=$([System.Guid]::NewGuid())" />
+    <MSBuild Projects="$(VJoyProcessProjectPath)"
+             Targets="Build"
+             Properties="Configuration=$(Configuration)">
+      <Output TaskParameter="TargetOutputs" ItemName="VJoyProcessAssembly" />
+    </MSBuild>
+    <PropertyGroup>
+      <VJoyProcessOutputPath>@(VJoyProcessAssembly->'%(RootDir)%(Directory)')</VJoyProcessOutputPath>
+      <BundledVJoyProcessPath>$(TargetDir)vjoy\</BundledVJoyProcessPath>
+    </PropertyGroup>
+    <ItemGroup>
+      <BundledVJoyProcessFiles Include="$(VJoyProcessOutputPath)**\*" />
+    </ItemGroup>
+    <MakeDir Directories="$(BundledVJoyProcessPath)" />
+    <Copy SourceFiles="@(BundledVJoyProcessFiles)"
+          DestinationFiles="@(BundledVJoyProcessFiles->'$(BundledVJoyProcessPath)%(RecursiveDir)%(Filename)%(Extension)')"
+          SkipUnchangedFiles="true" />
+  </Target>
+
+  <Target Name="BundleVJoyProcessIntoPublish" AfterTargets="Publish">
+    <PropertyGroup>
+      <VJoyProcessPublishProperties>Configuration=$(Configuration);PublishDir=$(PublishDir)vjoy\</VJoyProcessPublishProperties>
+      <VJoyProcessPublishProperties Condition="'$(RuntimeIdentifier)' != ''">$(VJoyProcessPublishProperties);RuntimeIdentifier=$(RuntimeIdentifier)</VJoyProcessPublishProperties>
+      <VJoyProcessPublishProperties Condition="'$(SelfContained)' != ''">$(VJoyProcessPublishProperties);SelfContained=$(SelfContained)</VJoyProcessPublishProperties>
+    </PropertyGroup>
+    <MSBuild Projects="$(VJoyProcessProjectPath)"
+             Targets="Restore"
+             Properties="$(VJoyProcessPublishProperties);MSBuildRestoreSessionId=$([System.Guid]::NewGuid())" />
+    <MSBuild Projects="$(VJoyProcessProjectPath)"
+             Targets="Publish"
+             Properties="$(VJoyProcessPublishProperties)" />
+  </Target>
+
+  <Target Name="StopRunningJoyProGuiBeforeBuild"
+          BeforeTargets="CoreCompile;CopyFilesToOutputDirectory;Build"
+          Condition="'$(AutoStopRunningJoyProGuiOnBuild)' == 'true'">
+    <!-- Only the copy that runs from this build's output folder; a test copy elsewhere (tools/build_local.ps1) keeps running. -->
+    <Message Text="JoyPro.Gui pre-build: stopping JoyPro.Gui and JoyPro.Tray running from $(TargetDir) (if any)." Importance="high" />
+    <Exec Command="powershell -NoProfile -ExecutionPolicy Bypass -Command &quot;$ErrorActionPreference='SilentlyContinue'; $dir=[System.IO.Path]::GetFullPath('$(TargetDir)'); $p=Get-Process -Name 'JoyPro.Gui','JoyPro.Tray' -ErrorAction SilentlyContinue | Where-Object { $_.Path -and $_.Path.StartsWith($dir, [StringComparison]::OrdinalIgnoreCase) }; if($p){ $p | Stop-Process -Force -ErrorAction SilentlyContinue }; exit 0&quot;" />
+  </Target>
+</Project>

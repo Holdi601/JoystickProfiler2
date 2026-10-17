@@ -1,0 +1,408 @@
+{
+  "format": "joypro-device-layout",
+  "version": 1,
+  "model": "winwing-f16-icp",
+  "photo": {"kind": "vendor", "url": "https://eu.winctrl.com/static/ipfs/QmZLCq6pvPsVLQx8HUpCJta2RpcWnRCbXhx6eKXjRfxgtu", "sha256": "facd10203d0ae462699f12415a23e9a5f15a56a8eedd6a9e35f4ee9b0fffa6ee", "view": "main"},
+  "markers": {
+    "panel.axis.1": [0.165, 0.412],
+    "panel.axis.2": [0.602, 0.585],
+    "panel.axis.3": [0.147, 0.585],
+    "panel.axis.4": [0.57, 0.766],
+    "panel.button.1": [0.224, 0.366],
+    "panel.button.10": [0.434, 0.532],
+    "panel.button.11": [0.222, 0.519],
+    "panel.button.12": [0.277, 0.544],
+    "panel.button.13": [0.34, 0.571],
+    "panel.button.14": [0.411, 0.607],
+    "panel.button.15": [0.213, 0.587],
+    "panel.button.16": [0.268, 0.612],
+    "panel.button.17": [0.329, 0.641],
+    "panel.button.18": [0.388, 0.669],
+    "panel.button.19": [0.277, 0.705],
+    "panel.button.2": [0.279, 0.391],
+    "panel.button.20": [0.293, 0.676],
+    "panel.button.21": [0.315, 0.716],
+    "panel.button.22": [0.279, 0.73],
+    "panel.button.23": [0.256, 0.694],
+    "panel.button.24": [0.527, 0.587],
+    "panel.button.3": [0.343, 0.414],
+    "panel.button.4": [0.404, 0.439],
+    "panel.button.5": [0.47, 0.462],
+    "panel.button.6": [0.54, 0.487],
+    "panel.button.7": [0.231, 0.45],
+    "panel.button.8": [0.293, 0.473],
+    "panel.button.9": [0.35, 0.503],
+    "panel.toggle.1": [0.204, 0.666],
+    "panel.toggle.2": [0.509, 0.666],
+    "panel.toggle3.1": [0.361, 0.757],
+    "panel.toggle3.2": [0.47, 0.785]
+  },
+  "parts": {
+    "panel.toggle.1": {
+      "type": "switch",
+      "name": "Toggle 1",
+      "inputs": [
+        {"input": "JOY_BTN19", "control": "panel.toggle.1.up"},
+        {"input": "JOY_BTN20", "control": "panel.toggle.1.down"}
+      ],
+      "mapping": "high",
+      "confidence": "high",
+      "note": "lower-left rocker (unlabeled, below BRT/OFF), manual 19/20"
+    },
+    "panel.toggle.2": {
+      "type": "switch",
+      "name": "FLIR",
+      "inputs": [
+        {"input": "JOY_BTN30", "control": "panel.toggle.2.up"},
+        {"input": "JOY_BTN31", "control": "panel.toggle.2.down"}
+      ],
+      "mapping": "high",
+      "confidence": "high",
+      "note": "FLIR up/down rocker, manual 30/31"
+    },
+    "panel.toggle3.1": {
+      "type": "switch",
+      "name": "3-way toggle 1",
+      "inputs": [
+        {"input": "JOY_BTN26", "control": "panel.toggle3.1.up"},
+        {"input": "JOY_BTN27", "control": "panel.toggle3.1.center"},
+        {"input": "JOY_BTN28", "control": "panel.toggle3.1.down"}
+      ],
+      "mapping": "high",
+      "confidence": "high",
+      "note": "DRIFT C/O / NORM / WARN RESET toggle, manual 26/27/28"
+    },
+    "panel.toggle3.2": {
+      "type": "switch",
+      "name": "FLIR",
+      "inputs": [
+        {"input": "JOY_BTN32", "control": "panel.toggle3.2.up"},
+        {"input": "JOY_BTN33", "control": "panel.toggle3.2.center"},
+        {"input": "JOY_BTN34", "control": "panel.toggle3.2.down"}
+      ],
+      "mapping": "high",
+      "confidence": "high",
+      "note": "GAIN / LVL / AUTO toggle (catalog label FLIR), manual 32/33/34"
+    },
+    "panel.axis.1": {
+      "type": "knob",
+      "name": "SYM",
+      "inputs": [
+        {"input": "JOY_Y", "control": "panel.axis.1"}
+      ],
+      "mapping": "high",
+      "confidence": "high",
+      "note": "SYM wheel, Y"
+    },
+    "panel.axis.2": {
+      "type": "knob",
+      "name": "RET DEPR",
+      "inputs": [
+        {"input": "JOY_X", "control": "panel.axis.2"}
+      ],
+      "mapping": "high",
+      "confidence": "high",
+      "note": "RET DEPR wheel, X"
+    },
+    "panel.axis.3": {
+      "type": "knob",
+      "name": "BRT",
+      "inputs": [
+        {"input": "JOY_RY", "control": "panel.axis.3"}
+      ],
+      "mapping": "high",
+      "confidence": "high",
+      "note": "BRT wheel, Ry"
+    },
+    "panel.axis.4": {
+      "type": "knob",
+      "name": "CONT",
+      "inputs": [
+        {"input": "JOY_RX", "control": "panel.axis.4"}
+      ],
+      "mapping": "high",
+      "confidence": "high",
+      "note": "CONT wheel, Rx"
+    },
+    "panel.button.1": {
+      "type": "button",
+      "name": "COM1",
+      "inputs": [
+        {"input": "JOY_BTN1", "control": "panel.button.1"}
+      ],
+      "mapping": "high",
+      "confidence": "high",
+      "note": "COM 1"
+    },
+    "panel.button.2": {
+      "type": "button",
+      "name": "COM2",
+      "inputs": [
+        {"input": "JOY_BTN2", "control": "panel.button.2"}
+      ],
+      "mapping": "high",
+      "confidence": "high",
+      "note": "COM 2"
+    },
+    "panel.button.3": {
+      "type": "button",
+      "name": "IFF",
+      "inputs": [
+        {"input": "JOY_BTN3", "control": "panel.button.3"}
+      ],
+      "mapping": "high",
+      "confidence": "high",
+      "note": "IFF"
+    },
+    "panel.button.4": {
+      "type": "button",
+      "name": "LIST",
+      "inputs": [
+        {"input": "JOY_BTN4", "control": "panel.button.4"}
+      ],
+      "mapping": "high",
+      "confidence": "high",
+      "note": "LIST"
+    },
+    "panel.button.5": {
+      "type": "button",
+      "name": "A-A",
+      "inputs": [
+        {"input": "JOY_BTN5", "control": "panel.button.5"}
+      ],
+      "mapping": "high",
+      "confidence": "high",
+      "note": "A-A"
+    },
+    "panel.button.6": {
+      "type": "button",
+      "name": "A-G",
+      "inputs": [
+        {"input": "JOY_BTN6", "control": "panel.button.6"}
+      ],
+      "mapping": "high",
+      "confidence": "high",
+      "note": "A-G"
+    },
+    "panel.button.7": {
+      "type": "button",
+      "name": "1 T-ILS",
+      "inputs": [
+        {"input": "JOY_BTN7", "control": "panel.button.7"}
+      ],
+      "mapping": "high",
+      "confidence": "high",
+      "note": "1 T-ILS"
+    },
+    "panel.button.8": {
+      "type": "button",
+      "name": "2 ALOW",
+      "inputs": [
+        {"input": "JOY_BTN8", "control": "panel.button.8"}
+      ],
+      "mapping": "high",
+      "confidence": "high",
+      "note": "2 ALOW"
+    },
+    "panel.button.9": {
+      "type": "button",
+      "name": "3",
+      "inputs": [
+        {"input": "JOY_BTN9", "control": "panel.button.9"}
+      ],
+      "mapping": "high",
+      "confidence": "high",
+      "note": "3"
+    },
+    "panel.button.10": {
+      "type": "button",
+      "name": "RCL",
+      "inputs": [
+        {"input": "JOY_BTN10", "control": "panel.button.10"}
+      ],
+      "mapping": "high",
+      "confidence": "high",
+      "note": "RCL"
+    },
+    "panel.button.11": {
+      "type": "button",
+      "name": "4 STPT",
+      "inputs": [
+        {"input": "JOY_BTN11", "control": "panel.button.11"}
+      ],
+      "mapping": "high",
+      "confidence": "high",
+      "note": "4 STPT"
+    },
+    "panel.button.12": {
+      "type": "button",
+      "name": "5 CRUS",
+      "inputs": [
+        {"input": "JOY_BTN12", "control": "panel.button.12"}
+      ],
+      "mapping": "high",
+      "confidence": "high",
+      "note": "5 CRUS"
+    },
+    "panel.button.13": {
+      "type": "button",
+      "name": "6 TIME",
+      "inputs": [
+        {"input": "JOY_BTN13", "control": "panel.button.13"}
+      ],
+      "mapping": "high",
+      "confidence": "high",
+      "note": "6 TIME"
+    },
+    "panel.button.14": {
+      "type": "button",
+      "name": "ENTR",
+      "inputs": [
+        {"input": "JOY_BTN14", "control": "panel.button.14"}
+      ],
+      "mapping": "high",
+      "confidence": "high",
+      "note": "ENTR"
+    },
+    "panel.button.15": {
+      "type": "button",
+      "name": "7 MARK",
+      "inputs": [
+        {"input": "JOY_BTN15", "control": "panel.button.15"}
+      ],
+      "mapping": "high",
+      "confidence": "high",
+      "note": "7 MARK"
+    },
+    "panel.button.16": {
+      "type": "button",
+      "name": "8 FIX",
+      "inputs": [
+        {"input": "JOY_BTN16", "control": "panel.button.16"}
+      ],
+      "mapping": "high",
+      "confidence": "high",
+      "note": "8 FIX"
+    },
+    "panel.button.17": {
+      "type": "button",
+      "name": "9 A-CAL",
+      "inputs": [
+        {"input": "JOY_BTN17", "control": "panel.button.17"}
+      ],
+      "mapping": "high",
+      "confidence": "high",
+      "note": "9 A-CAL"
+    },
+    "panel.button.18": {
+      "type": "button",
+      "name": "0 M-SEL",
+      "inputs": [
+        {"input": "JOY_BTN18", "control": "panel.button.18"}
+      ],
+      "mapping": "high",
+      "confidence": "high",
+      "note": "0 M-SEL"
+    },
+    "panel.button.19": {
+      "type": "button",
+      "name": "DCS PRESS",
+      "inputs": [
+        {"input": "JOY_BTN21", "control": "panel.button.19"}
+      ],
+      "mapping": "high",
+      "confidence": "medium",
+      "note": "DCS lever press, manual 21"
+    },
+    "panel.button.20": {
+      "type": "button",
+      "name": "DCS UP",
+      "inputs": [
+        {"input": "JOY_BTN22", "control": "panel.button.20"}
+      ],
+      "mapping": "high",
+      "confidence": "medium",
+      "note": "DCS lever up, manual 22"
+    },
+    "panel.button.21": {
+      "type": "button",
+      "name": "DCS SEQ",
+      "inputs": [
+        {"input": "JOY_BTN23", "control": "panel.button.21"}
+      ],
+      "mapping": "high",
+      "confidence": "medium",
+      "note": "DCS lever right (SEQ), manual 23"
+    },
+    "panel.button.22": {
+      "type": "button",
+      "name": "DCS DN",
+      "inputs": [
+        {"input": "JOY_BTN24", "control": "panel.button.22"}
+      ],
+      "mapping": "high",
+      "confidence": "medium",
+      "note": "DCS lever down, manual 24"
+    },
+    "panel.button.23": {
+      "type": "button",
+      "name": "DCS RTN",
+      "inputs": [
+        {"input": "JOY_BTN25", "control": "panel.button.23"}
+      ],
+      "mapping": "high",
+      "confidence": "medium",
+      "note": "DCS lever left (RTN), manual 25"
+    },
+    "panel.button.24": {
+      "type": "button",
+      "name": "Button 24",
+      "inputs": [
+        {"input": "JOY_BTN29", "control": "panel.button.24"}
+      ],
+      "mapping": "high",
+      "confidence": "high",
+      "note": "WX key next to RET DEPR, manual 29"
+    }
+  },
+  "unplaced": {},
+  "candidates": {},
+  "source": "JoyPro curated on the maker's photo (2026-10-11), ICP seen from the front-left, slightly from above; DED display on top, all front controls visible",
+  "mappingSource": "WinWing \"ICP User Manual V1.0 2023.11\" section 2.2 Buttons drawing, page 6 (https://eu.winctrl.com/static/ipfs/QmVUekeGd37nnGiFxhEufKT7Mjtw5zkySFZPLSTgVmFYHN): 1-6 top row, 7-18 keypad, 19/20 lower-left rocker, 21-25 DCS (21 centre, 22 up, 23 SEQ, 24 down, 25 RTN), 26-28 DRIFT C/O toggle, 29 button next to RET DEPR (WX on the photo), 30/31 FLIR rocker, 32-34 GAIN/LVL/AUTO toggle; wheels Y = SYM, Ry = BRT, X = RET DEPR, Rx = CONT",
+  "confidence": "high",
+  "note": "The five DCS parts (buttons 19-23 = manual 21-25) are the directions and press of the one DCS lever; their markers sit on that lever toward the printed arrow/RTN/SEQ side. panel.toggle3.2 (manual 32-34) is the GAIN/LVL/AUTO toggle although the catalog names it FLIR; button.24 (manual 29) is the WX key.",
+  "callouts": {
+    "version": 1,
+    "width": 3372,
+    "height": 1847,
+    "picture": [1126, 30, 1600, 1600],
+    "rowHeight": 38,
+    "mainWidth": 323,
+    "modWidth": 209,
+    "otherY": -1,
+    "tables": [
+      {"id": "grid:panel.button.1", "title": "Buttons COM1 - DCS SEQ", "parts": ["panel.button.1", "panel.button.2", "panel.button.3", "panel.button.4", "panel.button.5", "panel.button.6", "panel.button.7", "panel.button.8", "panel.button.9", "panel.button.10", "panel.button.11", "panel.button.12", "panel.button.13", "panel.button.14", "panel.button.15", "panel.button.16", "panel.button.17", "panel.button.18", "panel.button.23", "panel.button.19", "panel.button.22", "panel.button.20", "panel.button.21"], "side": "left", "x": 30, "y": 770.4, "width": 1050, "grid": true, "columns": 6, "modifier": false, "spot": [0.3233, 0.556], "rows": [{"input": "JOY_BTN1", "label": "COM1", "icon": "button", "part": "panel.button.1", "cell": [0, 0, 0]}, {"input": "JOY_BTN2", "label": "COM2", "icon": "button", "part": "panel.button.2", "cell": [0, 1, 0]}, {"input": "JOY_BTN3", "label": "IFF", "icon": "button", "part": "panel.button.3", "cell": [0, 2, 0]}, {"input": "JOY_BTN4", "label": "LIST", "icon": "button", "part": "panel.button.4", "cell": [0, 3, 0]}, {"input": "JOY_BTN5", "label": "A-A", "icon": "button", "part": "panel.button.5", "cell": [0, 4, 0]}, {"input": "JOY_BTN6", "label": "A-G", "icon": "button", "part": "panel.button.6", "cell": [0, 5, 0]}, {"input": "JOY_BTN7", "label": "1 T-ILS", "icon": "button", "part": "panel.button.7", "cell": [1, 0, 0]}, {"input": "JOY_BTN8", "label": "2 ALOW", "icon": "button", "part": "panel.button.8", "cell": [1, 1, 0]}, {"input": "JOY_BTN9", "label": "3", "icon": "button", "part": "panel.button.9", "cell": [1, 2, 0]}, {"input": "JOY_BTN10", "label": "RCL", "icon": "button", "part": "panel.button.10", "cell": [1, 3, 0]}, {"input": "JOY_BTN11", "label": "4 STPT", "icon": "button", "part": "panel.button.11", "cell": [2, 0, 0]}, {"input": "JOY_BTN12", "label": "5 CRUS", "icon": "button", "part": "panel.button.12", "cell": [2, 1, 0]}, {"input": "JOY_BTN13", "label": "6 TIME", "icon": "button", "part": "panel.button.13", "cell": [2, 2, 0]}, {"input": "JOY_BTN14", "label": "ENTR", "icon": "button", "part": "panel.button.14", "cell": [2, 3, 0]}, {"input": "JOY_BTN15", "label": "7 MARK", "icon": "button", "part": "panel.button.15", "cell": [3, 0, 0]}, {"input": "JOY_BTN16", "label": "8 FIX", "icon": "button", "part": "panel.button.16", "cell": [3, 1, 0]}, {"input": "JOY_BTN17", "label": "9 A-CAL", "icon": "button", "part": "panel.button.17", "cell": [3, 2, 0]}, {"input": "JOY_BTN18", "label": "0 M-SEL", "icon": "button", "part": "panel.button.18", "cell": [3, 3, 0]}, {"input": "JOY_BTN25", "label": "DCS RTN", "icon": "button", "part": "panel.button.23", "cell": [4, 0, 0]}, {"input": "JOY_BTN21", "label": "DCS PRESS", "icon": "button", "part": "panel.button.19", "cell": [4, 1, 0]}, {"input": "JOY_BTN24", "label": "DCS DN", "icon": "button", "part": "panel.button.22", "cell": [4, 2, 0]}, {"input": "JOY_BTN22", "label": "DCS UP", "icon": "button", "part": "panel.button.20", "cell": [4, 3, 0]}, {"input": "JOY_BTN23", "label": "DCS SEQ", "icon": "button", "part": "panel.button.21", "cell": [4, 4, 0]}]},
+      {"id": "panel.toggle.1", "title": "Toggle 1", "parts": ["panel.toggle.1"], "side": "left", "x": 510, "y": 1074.4, "width": 570, "modifier": true, "spot": [0.204, 0.666], "rows": [{"input": "JOY_BTN19", "label": "Up", "icon": "up", "part": "panel.toggle.1"}, {"input": "JOY_BTN20", "label": "Down", "icon": "down", "part": "panel.toggle.1"}]},
+      {"id": "panel.toggle.2", "title": "FLIR", "parts": ["panel.toggle.2"], "side": "right", "x": 2772, "y": 1049.6, "width": 570, "modifier": true, "spot": [0.509, 0.666], "rows": [{"input": "JOY_BTN30", "label": "Up", "icon": "up", "part": "panel.toggle.2"}, {"input": "JOY_BTN31", "label": "Down", "icon": "down", "part": "panel.toggle.2"}]},
+      {"id": "panel.toggle3.1", "title": "3-way toggle 1", "parts": ["panel.toggle3.1"], "side": "left", "x": 510, "y": 1195.2, "width": 570, "modifier": true, "spot": [0.361, 0.757], "rows": [{"input": "JOY_BTN26", "label": "Up", "icon": "up", "part": "panel.toggle3.1"}, {"input": "JOY_BTN27", "label": "Center", "icon": "mid", "part": "panel.toggle3.1"}, {"input": "JOY_BTN28", "label": "Down", "icon": "down", "part": "panel.toggle3.1"}]},
+      {"id": "panel.toggle3.2", "title": "FLIR", "parts": ["panel.toggle3.2"], "side": "bottom", "x": 1593, "y": 1676, "width": 570, "modifier": true, "spot": [0.47, 0.785], "rows": [{"input": "JOY_BTN32", "label": "Up", "icon": "up", "part": "panel.toggle3.2"}, {"input": "JOY_BTN33", "label": "Center", "icon": "mid", "part": "panel.toggle3.2"}, {"input": "JOY_BTN34", "label": "Down", "icon": "down", "part": "panel.toggle3.2"}]},
+      {"id": "panel.axis.1", "title": "SYM", "parts": ["panel.axis.1"], "side": "left", "x": 510, "y": 643.2, "width": 570, "modifier": true, "spot": [0.165, 0.412], "rows": [{"input": "JOY_Y", "label": "Y", "icon": "axis", "part": "panel.axis.1"}]},
+      {"id": "panel.axis.2", "title": "RET DEPR", "parts": ["panel.axis.2"], "side": "right", "x": 2772, "y": 883.6, "width": 570, "modifier": true, "spot": [0.602, 0.585], "rows": [{"input": "JOY_X", "label": "X", "icon": "axis", "part": "panel.axis.2"}]},
+      {"id": "panel.axis.3", "title": "BRT", "parts": ["panel.axis.3"], "side": "left", "x": 510, "y": 998.4, "width": 570, "modifier": true, "spot": [0.147, 0.585], "rows": [{"input": "JOY_RY", "label": "RY", "icon": "axis", "part": "panel.axis.3"}]},
+      {"id": "panel.axis.4", "title": "CONT", "parts": ["panel.axis.4"], "side": "right", "x": 2772, "y": 1209.6, "width": 570, "modifier": true, "spot": [0.57, 0.766], "rows": [{"input": "JOY_RX", "label": "RX", "icon": "axis", "part": "panel.axis.4"}]},
+      {"id": "panel.button.24", "title": "Button 24", "parts": ["panel.button.24"], "side": "right", "x": 2772, "y": 959.6, "width": 570, "modifier": true, "spot": [0.527, 0.587], "rows": [{"input": "JOY_BTN29", "label": "Press", "icon": "button", "part": "panel.button.24"}]}
+    ],
+    "lines": [
+      {"table": "panel.axis.1", "points": [[1390, 689.2], [1080, 689.2]]},
+      {"table": "grid:panel.button.1", "points": [[1643.3, 919.6], [1103, 919.6], [1103, 816.4], [1080, 816.4]]},
+      {"table": "panel.axis.3", "points": [[1361.2, 966], [1103, 966], [1103, 1044.4], [1080, 1044.4]]},
+      {"table": "panel.toggle.1", "points": [[1452.4, 1095.6], [1103, 1095.6], [1103, 1120.4], [1080, 1120.4]]},
+      {"table": "panel.toggle3.1", "points": [[1703.6, 1241.2], [1080, 1241.2]]},
+      {"table": "panel.axis.2", "points": [[2089.2, 966], [2089.2, 929.6], [2772, 929.6]]},
+      {"table": "panel.button.24", "points": [[1969.2, 969.2], [1969.2, 1005.6], [2772, 1005.6]]},
+      {"table": "panel.toggle.2", "points": [[1940.4, 1095.6], [2772, 1095.6]]},
+      {"table": "panel.axis.4", "points": [[2038, 1255.6], [2772, 1255.6]]},
+      {"table": "panel.toggle3.2", "points": [[1878, 1286], [1878, 1676]]}
+    ]
+  }
+}

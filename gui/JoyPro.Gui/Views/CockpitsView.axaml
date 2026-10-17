@@ -1,0 +1,246 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:l="using:JoyPro.Gui.Localization"
+             xmlns:vm="using:JoyPro.Gui.ViewModels"
+             xmlns:controls="using:JoyPro.Gui.Views.Controls"
+             x:Class="JoyPro.Gui.Views.CockpitsView"
+             x:DataType="vm:CockpitsViewModel">
+    <UserControl.Resources>
+        <!-- The filters' values are English ("All", "Fixed-wing"): shown in the user's language. -->
+        <DataTemplate x:Key="CockpitFilterText" x:DataType="x:String">
+            <TextBlock Text="{Binding Converter={x:Static l:TConverter.Instance}}" />
+        </DataTemplate>
+    </UserControl.Resources>
+    <!-- The cockpit reference (docs/cockpits.md, CockpitsViewModel.cs): picker on the left, the variant as a manual
+         (overview, grips with their HOTAS tables, panels), photos (after consent) and sources. -->
+    <Border CornerRadius="12" Padding="10">
+        <Grid ColumnDefinitions="300,*" ColumnSpacing="12">
+            <!-- Picker -->
+            <!-- The two lists share the height left under the filters (no overlap on a 1280x800 window). -->
+            <Grid RowDefinitions="Auto,Auto,Auto,2*,Auto,*" RowSpacing="8">
+                <StackPanel Orientation="Horizontal" Spacing="8">
+                    <PathIcon Data="{StaticResource Icon.Airplane}" Width="24" Height="24" />
+                    <TextBlock Text="{l:T 'Cockpits'}" FontSize="22" FontWeight="Bold" VerticalAlignment="Center" />
+                </StackPanel>
+                <TextBox Grid.Row="1" x:Name="CockpitSearch" Text="{Binding SearchText}" Watermark="{l:T 'Search: aircraft, version, game, control (TMS)...'}" />
+                <Grid Grid.Row="2" ColumnDefinitions="Auto,*" RowDefinitions="Auto,Auto,Auto,Auto,Auto,Auto" ColumnSpacing="8" RowSpacing="4">
+                    <TextBlock Text="{l:T 'Kind'}" VerticalAlignment="Center" />
+                    <ComboBox Grid.Column="1" HorizontalAlignment="Stretch" ItemsSource="{Binding KindOptions}" SelectedItem="{Binding SelectedKind}" ItemTemplate="{StaticResource CockpitFilterText}" />
+                    <TextBlock Grid.Row="1" Text="{l:T 'Game'}" VerticalAlignment="Center" />
+                    <ComboBox Grid.Row="1" Grid.Column="1" HorizontalAlignment="Stretch" ItemsSource="{Binding GameOptions}" SelectedItem="{Binding SelectedGame}" ItemTemplate="{StaticResource CockpitFilterText}" />
+                    <TextBlock Grid.Row="2" Text="{l:T 'Era'}" VerticalAlignment="Center" />
+                    <ComboBox Grid.Row="2" Grid.Column="1" HorizontalAlignment="Stretch" ItemsSource="{Binding EraOptions}" SelectedItem="{Binding SelectedEra}" ItemTemplate="{StaticResource CockpitFilterText}" />
+                    <TextBlock Grid.Row="3" Text="{l:T 'Role'}" VerticalAlignment="Center" />
+                    <ComboBox Grid.Row="3" Grid.Column="1" HorizontalAlignment="Stretch" ItemsSource="{Binding RoleOptions}" SelectedItem="{Binding SelectedRole}" ItemTemplate="{StaticResource CockpitFilterText}" />
+                    <TextBlock Grid.Row="4" Text="{l:T 'Nation'}" VerticalAlignment="Center" />
+                    <ComboBox Grid.Row="4" Grid.Column="1" HorizontalAlignment="Stretch" ItemsSource="{Binding NationOptions}" SelectedItem="{Binding SelectedNation}" ItemTemplate="{StaticResource CockpitFilterText}" />
+                    <StackPanel Grid.Row="5" Grid.ColumnSpan="2" Orientation="Horizontal" Spacing="8">
+                        <TextBlock Text="{Binding CountText}" VerticalAlignment="Center" Opacity="0.75" />
+                        <Button Classes="small" Content="{l:T 'Clear filters'}" Command="{Binding ClearFiltersCommand}" />
+                    </StackPanel>
+                </Grid>
+                <ListBox Grid.Row="3" ItemsSource="{Binding AircraftList}" SelectedItem="{Binding SelectedAircraft}" MinHeight="60">
+                    <ListBox.ItemTemplate>
+                        <DataTemplate x:DataType="vm:CockpitAircraftItem">
+                            <StackPanel Spacing="1">
+                                <TextBlock Text="{Binding Name}" FontWeight="SemiBold" TextTrimming="CharacterEllipsis" />
+                                <TextBlock Text="{Binding Subtitle}" FontSize="12" Opacity="0.7" TextTrimming="CharacterEllipsis" />
+                            </StackPanel>
+                        </DataTemplate>
+                    </ListBox.ItemTemplate>
+                </ListBox>
+                <TextBlock Grid.Row="4" Text="{l:T 'Version / block / tranche'}" FontWeight="SemiBold" />
+                <ListBox Grid.Row="5" ItemsSource="{Binding Variants}" SelectedItem="{Binding SelectedVariant}" MinHeight="44" MaxHeight="230">
+                    <ListBox.ItemTemplate>
+                        <DataTemplate x:DataType="vm:CockpitVariantItem">
+                            <StackPanel Spacing="1">
+                                <TextBlock Text="{Binding Name}" FontWeight="SemiBold" TextTrimming="CharacterEllipsis" />
+                                <TextBlock Text="{Binding Subtitle}" FontSize="12" Opacity="0.7" TextTrimming="CharacterEllipsis" />
+                            </StackPanel>
+                        </DataTemplate>
+                    </ListBox.ItemTemplate>
+                </ListBox>
+            </Grid>
+
+            <!-- The variant -->
+            <ScrollViewer Grid.Column="1" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
+                <StackPanel Spacing="12" Margin="0,0,10,0">
+                    <TextBlock Text="{Binding Status}" Opacity="0.7" IsVisible="{Binding HasNoVariant}" TextWrapping="Wrap" />
+                    <Grid ColumnDefinitions="*,Auto" ColumnSpacing="12" IsVisible="{Binding HasVariant}">
+                        <StackPanel Spacing="4">
+                            <TextBlock Text="{Binding Title}" FontSize="22" FontWeight="Bold" TextWrapping="Wrap" />
+                            <TextBlock Text="{Binding Facts}" Opacity="0.8" TextWrapping="Wrap" />
+                            <TextBlock Text="{Binding Summary}" TextWrapping="Wrap" />
+                        </StackPanel>
+                        <StackPanel Grid.Column="1" Spacing="6" VerticalAlignment="Top">
+                            <Button Content="{l:T 'Compare with my setup'}" Command="{Binding CompareCommand}" IsEnabled="{Binding !IsComparing}" HorizontalAlignment="Stretch"
+                                    ToolTip.Tip="{l:T 'Marks every function your open profile has a relation for (in the games and aircraft of this variant)'}" />
+                            <Button Content="{l:T 'Use this layout'}" Command="{Binding UseLayoutCommand}" HorizontalAlignment="Stretch"
+                                    ToolTip.Tip="{l:T 'Hands this aircraft\'s stick and throttle layout to the setup wizard (engine cockpits get ... --json)'}" />
+                            <StackPanel Orientation="Horizontal" Spacing="6">
+                                <Button Classes="small" Content="{l:T 'Export page (PNG)'}" Command="{Binding ExportPageCommand}" ToolTip.Tip="{l:T 'This page as a picture in your drawing style (Settings &gt; Drawings)'}" />
+                                <Button Classes="small" Content="{l:T 'All pages (PDF)'}" Command="{Binding ExportAllPagesCommand}" ToolTip.Tip="{l:T 'Every page of this variant as one PDF'}" />
+                            </StackPanel>
+                        </StackPanel>
+                    </Grid>
+                    <!-- Pictures from the user's own games (made on this PC, never shipped) -->
+                    <Border BorderBrush="#334155" BorderThickness="1" CornerRadius="8" Padding="10,6">
+                        <Grid ColumnDefinitions="*,Auto,Auto" ColumnSpacing="8" RowDefinitions="Auto,Auto" RowSpacing="4">
+                            <TextBlock Text="{Binding PicturesStatus}" TextWrapping="Wrap" VerticalAlignment="Center" Opacity="0.85" />
+                            <ComboBox Grid.Column="1" ItemsSource="{Binding PictureModes}" SelectedIndex="{Binding PictureModeIndex}" MinWidth="200"
+                                      IsVisible="{Binding HasGamePictures}" VerticalAlignment="Center"
+                                      ToolTip.Tip="{l:T 'How the game\'s cockpit is shown: the picture made from the game, or JoyPro\'s line drawing of it in your drawing style (Settings &gt; Drawings)'}" />
+                            <Button Grid.Column="2" Content="{l:T 'Build pictures from my games'}" Command="{Binding BuildPicturesCommand}" IsEnabled="{Binding !IsBuildingPictures}"
+                                    VerticalAlignment="Center"
+                                    ToolTip.Tip="{l:T 'Renders the cockpits of your installed games (DCS World, X-Plane 12) with every clickable control numbered and named as the game names it. Made on this PC only, kept with your game data.'}" />
+                            <TextBlock Grid.Row="1" Grid.ColumnSpan="3" Text="{Binding GamePicturesText}" FontSize="12" Opacity="0.7" IsVisible="{Binding HasGamePictures}" />
+                        </Grid>
+                    </Border>
+                    <StackPanel Orientation="Horizontal" Spacing="8" IsVisible="{Binding HasSeats}">
+                        <TextBlock Text="{l:T 'Seat'}" VerticalAlignment="Center" FontWeight="SemiBold" />
+                        <ComboBox ItemsSource="{Binding Seats}" SelectedItem="{Binding SelectedSeat}" MinWidth="260" />
+                    </StackPanel>
+                    <StackPanel Orientation="Horizontal" Spacing="8" IsVisible="{Binding ExportStatus, Converter={x:Static StringConverters.IsNotNullOrEmpty}}">
+                        <TextBlock Text="{Binding ExportStatus}" TextWrapping="Wrap" VerticalAlignment="Center" Opacity="0.8" />
+                        <Button Classes="small" Content="{l:T 'Open folder'}" Command="{Binding OpenExportFolderCommand}" />
+                    </StackPanel>
+                    <StackPanel Orientation="Horizontal" Spacing="8" IsVisible="{Binding CompareStatus, Converter={x:Static StringConverters.IsNotNullOrEmpty}}">
+                        <TextBlock Text="{Binding CompareStatus}" TextWrapping="Wrap" VerticalAlignment="Center" FontWeight="SemiBold" />
+                        <Button Classes="small" Content="{l:T 'Hide'}" Command="{Binding ClearCompareCommand}" />
+                    </StackPanel>
+                    <Border IsVisible="{Binding IsFiction}" Background="#1A38BDF8" BorderBrush="#38BDF8" BorderThickness="1" CornerRadius="8" Padding="10,6">
+                        <TextBlock Text="{Binding FictionNote}" TextWrapping="Wrap" />
+                    </Border>
+
+                    <!-- The manual: Overview, the grips (drawing with numbered callouts and the HOTAS table per mode), one
+                         page per panel (drawing and numbered list); a search over every control and function. -->
+                    <Border IsVisible="{Binding HasVariant}" BorderBrush="#334155" BorderThickness="1" CornerRadius="8" Padding="8">
+                        <Grid ColumnDefinitions="*,Auto" RowDefinitions="Auto,Auto" ColumnSpacing="10" RowSpacing="6">
+                            <ListBox ItemsSource="{Binding MainPages}" SelectedItem="{Binding SelectedMainPage}" Background="Transparent">
+                                <ListBox.ItemsPanel>
+                                    <ItemsPanelTemplate>
+                                        <WrapPanel />
+                                    </ItemsPanelTemplate>
+                                </ListBox.ItemsPanel>
+                                <ListBox.ItemTemplate>
+                                    <DataTemplate x:DataType="vm:CockpitPageItem">
+                                        <TextBlock Text="{Binding Title}" FontWeight="SemiBold" Margin="4,0" />
+                                    </DataTemplate>
+                                </ListBox.ItemTemplate>
+                            </ListBox>
+                            <StackPanel Grid.Column="1" Orientation="Horizontal" Spacing="6" VerticalAlignment="Center">
+                                <Button Classes="small" Content="◀" Command="{Binding PreviousPageCommand}" ToolTip.Tip="{l:T 'Previous page'}" />
+                                <TextBlock Text="{Binding PageNumberText}" VerticalAlignment="Center" Opacity="0.75" />
+                                <Button Classes="small" Content="▶" Command="{Binding NextPageCommand}" ToolTip.Tip="{l:T 'Next page'}" />
+                            </StackPanel>
+                            <Grid Grid.Row="1" Grid.ColumnSpan="2" ColumnDefinitions="Auto,*,*" ColumnSpacing="8">
+                                <TextBlock Text="{l:T 'Panels'}" VerticalAlignment="Center" FontWeight="SemiBold" IsVisible="{Binding HasPanelPages}" />
+                                <ComboBox Grid.Column="1" ItemsSource="{Binding PanelPages}" SelectedItem="{Binding SelectedPanelPage}" HorizontalAlignment="Stretch"
+                                          PlaceholderText="{l:T 'Pick a panel...'}" IsVisible="{Binding HasPanelPages}" MaxDropDownHeight="520" />
+                                <TextBox Grid.Column="2" Text="{Binding PageSearchText}" Watermark="{l:T 'Search this cockpit: a control or a function (TMS, gear, laser)...'}" />
+                            </Grid>
+                        </Grid>
+                    </Border>
+                    <ItemsControl ItemsSource="{Binding PageHits}" IsVisible="{Binding HasPageHits}">
+                        <ItemsControl.ItemsPanel>
+                            <ItemsPanelTemplate>
+                                <WrapPanel />
+                            </ItemsPanelTemplate>
+                        </ItemsControl.ItemsPanel>
+                        <ItemsControl.ItemTemplate>
+                            <DataTemplate x:DataType="vm:CockpitPageHit">
+                                <Button Classes="small" Margin="0,0,6,6" Command="{Binding $parent[ItemsControl].((vm:CockpitsViewModel)DataContext).OpenHitCommand}" CommandParameter="{Binding}">
+                                    <TextBlock MaxWidth="420" TextTrimming="CharacterEllipsis">
+                                        <Run Text="{Binding Where, Mode=OneWay}" FontWeight="SemiBold" />
+                                        <Run Text=": " />
+                                        <Run Text="{Binding Text, Mode=OneWay}" />
+                                    </TextBlock>
+                                </Button>
+                            </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                    </ItemsControl>
+                    <controls:ManualPageView x:Name="PageView" Page="{Binding CurrentPage}" DrawingStyle="{Binding PageStyle}" IsVisible="{Binding HasPage}"
+                                             HorizontalAlignment="Stretch" />
+                    <StackPanel Spacing="4" IsVisible="{Binding HasNotes}">
+                        <TextBlock Text="{l:T 'Notes'}" FontWeight="SemiBold" />
+                        <TextBlock Text="{Binding Notes}" TextWrapping="Wrap" />
+                    </StackPanel>
+
+                    <!-- JoyPro's own drawings of the aircraft's grips (shipped, no download), before the photo links -->
+                    <Expander Header="{l:T 'JoyPro\'s drawings'}" IsExpanded="True" HorizontalAlignment="Stretch" IsVisible="{Binding HasCockpitDrawings}">
+                        <ItemsControl ItemsSource="{Binding CockpitDrawings}">
+                            <ItemsControl.ItemsPanel>
+                                <ItemsPanelTemplate>
+                                    <WrapPanel />
+                                </ItemsPanelTemplate>
+                            </ItemsControl.ItemsPanel>
+                            <ItemsControl.ItemTemplate>
+                                <DataTemplate x:DataType="controls:LineArtImage">
+                                    <Image Source="{Binding}" Height="260" Margin="0,0,8,8" Stretch="Uniform" />
+                                </DataTemplate>
+                            </ItemsControl.ItemTemplate>
+                        </ItemsControl>
+                    </Expander>
+
+                    <!-- Real photos: only links, loaded after the user's yes -->
+                    <Expander Header="{Binding PhotoHeader}" IsExpanded="True" HorizontalAlignment="Stretch" IsVisible="{Binding HasPhotos}">
+                        <StackPanel Spacing="8">
+                            <Border IsVisible="{Binding AskPhotos}" Background="#1A38BDF8" BorderBrush="#38BDF8" BorderThickness="1" CornerRadius="8" Padding="10,8">
+                                <StackPanel Spacing="8">
+                                    <TextBlock Text="{Binding PhotoQuestion}" TextWrapping="Wrap" />
+                                    <StackPanel Orientation="Horizontal" Spacing="8">
+                                        <Button Content="{l:T 'Yes'}" Command="{Binding PhotoAnswerCommand}" CommandParameter="yes" />
+                                        <Button Content="{l:T 'No'}" Command="{Binding PhotoAnswerCommand}" CommandParameter="no" />
+                                        <Button Content="{l:T 'Always for cockpits'}" Command="{Binding PhotoAnswerCommand}" CommandParameter="always" />
+                                        <Button Content="{l:T 'Never'}" Command="{Binding PhotoAnswerCommand}" CommandParameter="never" />
+                                    </StackPanel>
+                                </StackPanel>
+                            </Border>
+                            <StackPanel Orientation="Horizontal" Spacing="8" IsVisible="{Binding PhotosDenied}">
+                                <Button Classes="small" Content="{l:T 'Show the photos of this aircraft'}" Command="{Binding PhotoAnswerCommand}" CommandParameter="yes" />
+                            </StackPanel>
+                            <TextBlock Text="{Binding PhotoStatus}" Opacity="0.75" TextWrapping="Wrap" IsVisible="{Binding PhotoStatus, Converter={x:Static StringConverters.IsNotNullOrEmpty}}" />
+                            <ItemsControl ItemsSource="{Binding Photos}">
+                                <ItemsControl.ItemsPanel>
+                                    <ItemsPanelTemplate>
+                                        <WrapPanel />
+                                    </ItemsPanelTemplate>
+                                </ItemsControl.ItemsPanel>
+                                <ItemsControl.ItemTemplate>
+                                    <DataTemplate x:DataType="vm:CockpitPhotoItem">
+                                        <Border Width="330" Margin="0,0,8,8" CornerRadius="8" BorderThickness="1" BorderBrush="#334155" Padding="6">
+                                            <StackPanel Spacing="4">
+                                                <Image Source="{Binding Image}" MaxHeight="220" Stretch="Uniform" IsVisible="{Binding Image, Converter={x:Static ObjectConverters.IsNotNull}}" />
+                                                <TextBlock Text="{Binding Caption}" FontWeight="SemiBold" TextWrapping="Wrap" />
+                                                <TextBlock Text="{Binding Credit}" FontSize="12" Opacity="0.75" TextWrapping="Wrap" />
+                                                <TextBlock Text="{Binding Status}" FontSize="12" Opacity="0.75" TextWrapping="Wrap" IsVisible="{Binding Status, Converter={x:Static StringConverters.IsNotNullOrEmpty}}" />
+                                                <Button Classes="small" Content="{l:T 'Open the page'}" Command="{Binding OpenPageCommand}" />
+                                            </StackPanel>
+                                        </Border>
+                                    </DataTemplate>
+                                </ItemsControl.ItemTemplate>
+                            </ItemsControl>
+                        </StackPanel>
+                    </Expander>
+
+                    <!-- Sources -->
+                    <Expander Header="{l:T 'Sources'}" IsExpanded="True" HorizontalAlignment="Stretch" IsVisible="{Binding HasVariant}">
+                        <ItemsControl ItemsSource="{Binding Sources}">
+                            <ItemsControl.ItemTemplate>
+                                <DataTemplate x:DataType="vm:CockpitLinkItem">
+                                    <Grid ColumnDefinitions="*,Auto" ColumnSpacing="8" Margin="0,0,0,4">
+                                        <StackPanel>
+                                            <TextBlock Text="{Binding Title}" TextWrapping="Wrap" />
+                                            <TextBlock Text="{Binding Detail}" FontSize="12" Opacity="0.7" />
+                                        </StackPanel>
+                                        <Button Grid.Column="1" Classes="small" Content="{l:T 'Open'}" Command="{Binding OpenCommand}" IsVisible="{Binding HasUrl}" ToolTip.Tip="{Binding Url}" VerticalAlignment="Center" />
+                                    </Grid>
+                                </DataTemplate>
+                            </ItemsControl.ItemTemplate>
+                        </ItemsControl>
+                    </Expander>
+                </StackPanel>
+            </ScrollViewer>
+        </Grid>
+    </Border>
+</UserControl>

@@ -1,0 +1,33 @@
+{
+  "format": "joypro-cockpit-drawing",
+  "version": 1,
+  "id": "mig21-throttle",
+  "kind": "throttle",
+  "aircraft": ["mig-21"],
+  "variants": [],
+  "except": [],
+  "name": "MiG-21 throttle (RUD)",
+  "view": "the throttle from the inboard side, as the pilot sees it; forward is left, the rotating grip on top of the lever, the quadrant on the left console below",
+  "origin": "JoyPro's own vector drawing: the lever's outline and the control layout reconstructed from the throttle description in the DCS MiG-21bis manual and public cockpit photos looked at for proportions; not traced from a photo.",
+  "width": 800,
+  "height": 1000,
+  "shapes": [
+    { "kind": "ellipse", "role": "shadow", "x": 410, "y": 968, "w": 320, "h": 20 },
+    { "kind": "path", "role": "bodyAlt", "path": "M130,950 L130,812 C210,740 610,740 690,812 L690,950 Z" },
+    { "kind": "path", "role": "screen", "path": "M200,806 C300,770 520,770 620,806 L616,820 C520,786 300,786 204,820 Z" },
+    { "kind": "path", "role": "body", "path": "M398,804 L432,804 L392,560 L360,560 Z" },
+    { "kind": "path", "role": "body", "path": "M288,330 C288,290 324,268 368,268 C412,268 448,290 448,330 L452,540 C452,566 432,584 404,584 L332,584 C304,584 286,566 286,540 Z" },
+    { "kind": "ellipse", "role": "bodyAlt", "x": 368, "y": 278, "w": 72, "h": 18 },
+    { "kind": "path", "role": "line", "path": "M290,384 C340,398 400,398 450,384" },
+    { "kind": "path", "role": "line", "path": "M290,474 C340,488 400,488 450,474" },
+    { "kind": "path", "role": "face", "path": "M300,398 C340,410 400,410 440,398 L442,466 C400,478 340,478 300,466 Z" }
+  ],
+  "parts": [
+    { "id": "throttle.hat.mic", "type": "button", "x": 330, "y": 334, "r": 17 },
+    { "id": "throttle.speedbrake", "type": "switch2", "x": 404, "y": 336, "r": 22 },
+    { "id": "throttle.twist.range", "type": "twist", "x": 370, "y": 436, "r": 30 },
+    { "id": "throttle.button.cms", "type": "button", "x": 370, "y": 532, "r": 17 },
+    { "id": "throttle.lever.stop", "type": "lever", "x": 610, "y": 860, "r": 22, "angle": 90 },
+    { "id": "throttle.axis.main", "type": "axis", "x": 400, "y": 880, "r": 62, "angle": 90 }
+  ]
+}

@@ -1,0 +1,65 @@
+{
+  "format": "joypro-device-layout",
+  "version": 1,
+  "model": "virpil-r1-falcon-pedals",
+  "photo": {"kind": "vendor", "url": "https://virpil-controls.eu/media/catalog/product/cache/f8e7ca8059fef1dc7d5708cf2af44b2f/v/p/vpc-305-001_04.jpg", "sha256": "bfd4bd71916a483ca2cd952133a3433fa5c1c3fd395e57dd83d7bd56abba1697", "view": "main"},
+  "markers": {
+    "pedals.axis.brake_left": [0.2, 0.42],
+    "pedals.axis.brake_right": [0.79, 0.35],
+    "pedals.axis.rudder": [0.5, 0.52]
+  },
+  "parts": {
+    "pedals.axis.rudder": {
+      "type": "rudder",
+      "name": "Rudder (Z)",
+      "inputs": [
+        {"input": "JOY_Z", "control": "pedals.axis.rudder"}
+      ],
+      "mapping": "medium",
+      "confidence": "medium",
+      "note": "centre linkage of the rudder mechanism"
+    },
+    "pedals.axis.brake_left": {
+      "type": "brake",
+      "name": "Left toe brake",
+      "inputs": [
+        {"input": "", "control": "pedals.axis.brake_left"}
+      ],
+      "mapping": "high",
+      "confidence": "medium",
+      "note": "toe part of the left footplate (no input set in the catalog)"
+    },
+    "pedals.axis.brake_right": {
+      "type": "brake",
+      "name": "Right toe brake",
+      "inputs": [
+        {"input": "", "control": "pedals.axis.brake_right"}
+      ],
+      "mapping": "high",
+      "confidence": "medium",
+      "note": "toe part of the right footplate (no input set in the catalog)"
+    }
+  },
+  "unplaced": {},
+  "candidates": {},
+  "source": "JoyPro curated on the maker's photo (2026-10-11), pedals seen from the pilot's seat and above: left pedal to the left, right pedal to the right, heel bars at the bottom, centre linkage on the base plate",
+  "mappingSource": "catalog: rudder on Z from the sc-mapper community template (hamlet2k/sc-mapper deviceTemplates.ts, as cited in the catalog) and the EDCD map of the older ACE pedals; toe brakes without input because the community sources disagree on left/right (Slider vs Dial)",
+  "confidence": "high",
+  "note": "the toe-brake markers sit on the upper (toe) part of each footplate; which axis each brake reports is open in the catalog.",
+  "callouts": {
+    "version": 1,
+    "width": 1426,
+    "height": 1038,
+    "picture": [407, 19, 1000, 1000],
+    "rowHeight": 24,
+    "mainWidth": 204,
+    "modWidth": 132,
+    "otherY": -1,
+    "tables": [
+      {"id": "pedals.axis.rudder", "title": "Rudder (Z)", "parts": ["pedals.axis.rudder"], "side": "left", "x": 19, "y": 510, "width": 360, "modifier": true, "spot": [0.5, 0.52], "rows": [{"input": "JOY_Z", "label": "Z", "icon": "axis", "part": "pedals.axis.rudder"}]}
+    ],
+    "lines": [
+      {"table": "pedals.axis.rudder", "points": [[907, 539], [379, 539]]}
+    ]
+  }
+}

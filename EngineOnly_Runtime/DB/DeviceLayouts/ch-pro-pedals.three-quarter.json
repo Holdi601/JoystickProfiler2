@@ -1,0 +1,69 @@
+{
+  "format": "joypro-device-layout",
+  "version": 1,
+  "model": "ch-pro-pedals",
+  "photo": {"kind": "vendor", "url": "https://www.chproducts.com/Pro-Pedals-v13-p-179.html-!do=ZG89dGh1bWJuYWlsZXIuZ2V0JnNyYz1pbWFnZXMlMkZjaHByb2R1Y3RzJTJGcHJvZHVjdHMlMkZTaW11bGF0aW9uJTJGUFAuanBnJnZlcnNpb249cHJvZHVjdHMubGlnaHQ=.jpeg", "sha256": "a71af4b9ce4762b695d0b2dc5ecd1cce0cfa11fafb28c7ade65ab53e802cbc9f", "view": "three-quarter"},
+  "markers": {
+    "pedals.axis.brake_left": [0.48, 0.17],
+    "pedals.axis.brake_right": [0.65, 0.38],
+    "pedals.axis.rudder": [0.34, 0.53]
+  },
+  "parts": {
+    "pedals.axis.rudder": {
+      "type": "rudder",
+      "name": "Rudder",
+      "inputs": [
+        {"input": "JOY_Z", "control": "pedals.axis.rudder"}
+      ],
+      "mapping": "high",
+      "confidence": "medium",
+      "note": "base between the pedal heels (pedals slide back and forth)"
+    },
+    "pedals.axis.brake_left": {
+      "type": "brake",
+      "name": "Left toe brake",
+      "inputs": [
+        {"input": "JOY_X", "control": "pedals.axis.brake_left"}
+      ],
+      "mapping": "high",
+      "confidence": "high",
+      "note": "toe of the far (left) pedal"
+    },
+    "pedals.axis.brake_right": {
+      "type": "brake",
+      "name": "Right toe brake",
+      "inputs": [
+        {"input": "JOY_Y", "control": "pedals.axis.brake_right"}
+      ],
+      "mapping": "high",
+      "confidence": "high",
+      "note": "toe of the near (right) pedal"
+    }
+  },
+  "unplaced": {},
+  "candidates": {},
+  "source": "JoyPro curated on the maker's photo (2026-10-11), seen from the pilot's left rear (heels to the lower left, toes to the upper right); the far pedal is the left pedal",
+  "mappingSource": "CH quick start 300-111 \"Pro Pedals Axis Assignments\" (https://www.chproducts.com/files/chproducts/Retail-Quickstarts/300-111%20Pro%20Pedals%20-%20FS2020.pdf): X = pushing the left pedal (left brake), Y = pushing the right pedal (right brake), Z = sliding back and forth (rudder)",
+  "confidence": "high",
+  "note": "Left/right identified from the heel direction and the PRO PEDALS label (left of centre on the pilot side, as on the quick start's front photo). The rudder is the sliding motion of both pedals; its marker sits on the base between the pedals.",
+  "callouts": {
+    "version": 1,
+    "width": 1360,
+    "height": 542,
+    "picture": [340, 74, 680, 452],
+    "rowHeight": 20,
+    "mainWidth": 170,
+    "modWidth": 110,
+    "otherY": -1,
+    "tables": [
+      {"id": "pedals.axis.rudder", "title": "Rudder", "parts": ["pedals.axis.rudder"], "side": "left", "x": 16, "y": 289.6, "width": 300, "modifier": true, "spot": [0.34, 0.53], "rows": [{"input": "JOY_Z", "label": "Z", "icon": "axis", "part": "pedals.axis.rudder"}]},
+      {"id": "pedals.axis.brake_left", "title": "Left toe brake", "parts": ["pedals.axis.brake_left"], "side": "top", "x": 516.4, "y": 16, "width": 300, "modifier": true, "spot": [0.48, 0.17], "rows": [{"input": "JOY_X", "label": "X", "icon": "axis", "part": "pedals.axis.brake_left"}]},
+      {"id": "pedals.axis.brake_right", "title": "Right toe brake", "parts": ["pedals.axis.brake_right"], "side": "right", "x": 1044, "y": 221.8, "width": 300, "modifier": true, "spot": [0.65, 0.38], "rows": [{"input": "JOY_Y", "label": "Y", "icon": "axis", "part": "pedals.axis.brake_right"}]}
+    ],
+    "lines": [
+      {"table": "pedals.axis.rudder", "points": [[571.2, 313.6], [316, 313.6]]},
+      {"table": "pedals.axis.brake_right", "points": [[782, 245.8], [1044, 245.8]]},
+      {"table": "pedals.axis.brake_left", "points": [[666.4, 150.8], [666.4, 50]]}
+    ]
+  }
+}

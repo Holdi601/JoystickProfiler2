@@ -1,0 +1,115 @@
+{
+  "format": "joypro-device-layout",
+  "version": 1,
+  "model": "brunner-cls-e-mk2-yoke",
+  "photo": {"kind": "vendor", "url": "https://shop.brunner-simulation.ch/wp-content/uploads/2023/04/CLS-E-MK-II-Yoke-1.png", "sha256": "ac541fa40f21f195974698ec9eade20e0733cbabef5e0c5aadcf084d04617e04", "view": "main"},
+  "markers": {
+    "yoke.column": [0.415, 0.545],
+    "yoke.hat.1": [0.456, 0.499]
+  },
+  "parts": {
+    "yoke.column": {
+      "type": "gimbal",
+      "name": "Yoke (roll / pitch)",
+      "inputs": [
+        {"input": "JOY_X", "control": "yoke.axis.roll"},
+        {"input": "JOY_Y", "control": "yoke.axis.pitch"}
+      ],
+      "mapping": "high",
+      "confidence": "medium",
+      "note": "yoke shaft between the handle centre and the motor housing (roll/pitch)"
+    },
+    "yoke.hat.1": {
+      "type": "hat",
+      "name": "Coolie hat",
+      "inputs": [
+        {"input": "", "control": "yoke.hat.1.up"},
+        {"input": "", "control": "yoke.hat.1.right"},
+        {"input": "", "control": "yoke.hat.1.down"},
+        {"input": "", "control": "yoke.hat.1.left"}
+      ],
+      "mapping": "medium",
+      "confidence": "high",
+      "note": "ribbed coolie hat on top of the right horn"
+    },
+    "yoke.button.1": {
+      "type": "button",
+      "name": "Button 1 (trim reset in standalone mode)",
+      "inputs": [
+        {"input": "JOY_BTN1", "control": "yoke.button.1"}
+      ],
+      "mapping": "low"
+    },
+    "yoke.button.2": {
+      "type": "button",
+      "name": "Button 2 (free)",
+      "inputs": [
+        {"input": "JOY_BTN2", "control": "yoke.button.2"}
+      ],
+      "mapping": "low"
+    },
+    "yoke.button.3": {
+      "type": "button",
+      "name": "Button 3 (free)",
+      "inputs": [
+        {"input": "JOY_BTN3", "control": "yoke.button.3"}
+      ],
+      "mapping": "low"
+    },
+    "yoke.button.4": {
+      "type": "button",
+      "name": "Button 4 (trim in standalone mode)",
+      "inputs": [
+        {"input": "JOY_BTN4", "control": "yoke.button.4"}
+      ],
+      "mapping": "low"
+    },
+    "yoke.button.5": {
+      "type": "button",
+      "name": "Button 5 (trim in standalone mode)",
+      "inputs": [
+        {"input": "JOY_BTN5", "control": "yoke.button.5"}
+      ],
+      "mapping": "low"
+    }
+  },
+  "unplaced": {
+    "yoke.button.1": "upper red push button on the left horn; number not documented",
+    "yoke.button.2": "lower red push button on the left horn; number not documented",
+    "yoke.button.3": "small oval button below the coolie hat on the right horn; number not documented",
+    "yoke.button.4": "black rocker on the left horn (one direction, likely trim); direction/number not documented",
+    "yoke.button.5": "black rocker on the left horn (other direction, likely trim); direction/number not documented"
+  },
+  "candidates": {
+    "yoke.button.1": [0.172, 0.424],
+    "yoke.button.2": [0.193, 0.44],
+    "yoke.button.3": [0.452, 0.524],
+    "yoke.button.4": [0.146, 0.447],
+    "yoke.button.5": [0.15, 0.46]
+  },
+  "source": "JoyPro curated on the maker's photo (2026-10-11), the CLS-E MK II yoke seen from the pilot's seat, front left, slightly from above: handle with display in front, silver motor housing behind; left horn with two red push buttons and a black rocker, right horn with a ribbed coolie hat and a small oval button below it",
+  "mappingSource": "catalog brunner.json (quick install guide https://shop.brunner-simulation.ch/wp-content/uploads/2023/05/BRUNNER_QuickInstallGuide_CLS-EMKYoke2-1.pdf, product page https://brunner-innovation.swiss/product/cls-e-mk-ii-yoke/): USB X = roll, Y = pitch; 5 buttons and a coolie hat, standalone default button 1 = trim reset, 4/5 = trim, 2/3 and the hat free. Which physical button is which number is not documented.",
+  "confidence": "medium",
+  "note": "The handle shows exactly 5 button inputs if the black rocker counts as two (2 red buttons + rocker up/down on the left horn, 1 oval button on the right horn) plus the coolie hat, matching the catalog. The button numbers per spot are guesses (trim 4/5 on the rocker, 1-3 on the push buttons), so all five buttons are hidden candidates (map=low).",
+  "callouts": {
+    "version": 1,
+    "width": 1426,
+    "height": 1170,
+    "picture": [407, 19, 1000, 1000],
+    "rowHeight": 24,
+    "mainWidth": 204,
+    "modWidth": 132,
+    "otherY": 1038,
+    "tables": [
+      {"id": "yoke.column", "title": "Yoke (roll / pitch)", "parts": ["yoke.column"], "side": "left", "x": 19, "y": 535, "width": 360, "modifier": true, "spot": [0.415, 0.545], "rows": [{"input": "JOY_X", "label": "roll (X)", "icon": "axis", "part": "yoke.column"}, {"input": "JOY_Y", "label": "pitch (Y)", "icon": "axis", "part": "yoke.column"}]},
+      {"id": "yoke.button.1", "title": "Button 1 (trim reset in standalone mode)", "parts": ["yoke.button.1"], "side": "other", "x": 19, "y": 1062, "width": 360, "modifier": true, "rows": [{"input": "JOY_BTN1", "label": "Press", "icon": "button", "part": "yoke.button.1"}]},
+      {"id": "yoke.button.2", "title": "Button 2 (free)", "parts": ["yoke.button.2"], "side": "other", "x": 386, "y": 1062, "width": 360, "modifier": true, "rows": [{"input": "JOY_BTN2", "label": "Press", "icon": "button", "part": "yoke.button.2"}]},
+      {"id": "yoke.button.3", "title": "Button 3 (free)", "parts": ["yoke.button.3"], "side": "other", "x": 753, "y": 1062, "width": 360, "modifier": true, "rows": [{"input": "JOY_BTN3", "label": "Press", "icon": "button", "part": "yoke.button.3"}]},
+      {"id": "yoke.button.4", "title": "Button 4 (trim in standalone mode)", "parts": ["yoke.button.4"], "side": "other", "x": 19, "y": 1110, "width": 360, "modifier": true, "rows": [{"input": "JOY_BTN4", "label": "Press", "icon": "button", "part": "yoke.button.4"}]},
+      {"id": "yoke.button.5", "title": "Button 5 (trim in standalone mode)", "parts": ["yoke.button.5"], "side": "other", "x": 386, "y": 1110, "width": 360, "modifier": true, "rows": [{"input": "JOY_BTN5", "label": "Press", "icon": "button", "part": "yoke.button.5"}]}
+    ],
+    "lines": [
+      {"table": "yoke.column", "points": [[822, 564], [379, 564]]}
+    ]
+  }
+}

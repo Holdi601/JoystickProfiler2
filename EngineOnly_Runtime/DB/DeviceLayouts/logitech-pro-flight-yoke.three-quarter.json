@@ -1,0 +1,275 @@
+{
+  "format": "joypro-device-layout",
+  "version": 1,
+  "model": "logitech-pro-flight-yoke",
+  "photo": {"kind": "vendor", "url": "https://resource.logitechg.com/content/dam/gaming/en/products/flight-yoke-system/yoke-gallery-1.png", "sha256": "5599de2fc2c89df89e73fc3d9a47cce0ac56b4a08e071773cea4677af6fde74e", "view": "three-quarter"},
+  "markers": {
+    "quadrant.axis.lever.1": [0.706, 0.408],
+    "quadrant.axis.lever.2": [0.762, 0.427],
+    "quadrant.axis.lever.3": [0.828, 0.438],
+    "quadrant.button.1": [0.626, 0.843],
+    "quadrant.button.2": [0.626, 0.888],
+    "quadrant.button.3": [0.682, 0.861],
+    "quadrant.button.4": [0.682, 0.908],
+    "quadrant.button.5": [0.74, 0.883],
+    "quadrant.button.6": [0.74, 0.93],
+    "yoke.button.2": [0.527, 0.092],
+    "yoke.button.3": [0.078, 0.067],
+    "yoke.button.4": [0.059, 0.087],
+    "yoke.button.5": [0.498, 0.097],
+    "yoke.button.6": [0.485, 0.112],
+    "yoke.button.7": [0.491, 0.142],
+    "yoke.button.8": [0.503, 0.14],
+    "yoke.column": [0.409, 0.346],
+    "yoke.hat.1": [0.104, 0.041]
+  },
+  "parts": {
+    "yoke.column": {
+      "type": "gimbal",
+      "name": "Yoke (roll / pitch)",
+      "inputs": [
+        {"input": "JOY_X", "control": "yoke.axis.roll"},
+        {"input": "JOY_Y", "control": "yoke.axis.pitch"}
+      ],
+      "mapping": "high",
+      "confidence": "medium",
+      "note": "yoke shaft (roll and pitch)"
+    },
+    "yoke.hat.1": {
+      "type": "hat",
+      "name": "Yoke hat 1",
+      "inputs": [
+        {"input": "JOY_BTN_POV1_U", "control": "yoke.hat.1.up"},
+        {"input": "JOY_BTN_POV1_UR", "control": "yoke.hat.1.upright"},
+        {"input": "JOY_BTN_POV1_R", "control": "yoke.hat.1.right"},
+        {"input": "JOY_BTN_POV1_DR", "control": "yoke.hat.1.downright"},
+        {"input": "JOY_BTN_POV1_D", "control": "yoke.hat.1.down"},
+        {"input": "JOY_BTN_POV1_DL", "control": "yoke.hat.1.downleft"},
+        {"input": "JOY_BTN_POV1_L", "control": "yoke.hat.1.left"},
+        {"input": "JOY_BTN_POV1_UL", "control": "yoke.hat.1.upleft"}
+      ],
+      "mapping": "high",
+      "confidence": "high",
+      "note": "POV hat on top of the left handle"
+    },
+    "yoke.button.1": {
+      "type": "button",
+      "name": "Button 1 (handle)",
+      "inputs": [
+        {"input": "JOY_BTN1", "control": "yoke.button.1"}
+      ],
+      "mapping": "high"
+    },
+    "yoke.button.2": {
+      "type": "button",
+      "name": "Button 2 (handle)",
+      "inputs": [
+        {"input": "JOY_BTN2", "control": "yoke.button.2"}
+      ],
+      "mapping": "high",
+      "confidence": "high",
+      "note": "red round button on the right handle"
+    },
+    "yoke.button.3": {
+      "type": "button",
+      "name": "T1 rocker",
+      "inputs": [
+        {"input": "JOY_BTN3", "control": "yoke.button.3"}
+      ],
+      "mapping": "medium",
+      "confidence": "high",
+      "note": "T1, upper end of the left-handle rocker"
+    },
+    "yoke.button.4": {
+      "type": "button",
+      "name": "T2 rocker",
+      "inputs": [
+        {"input": "JOY_BTN4", "control": "yoke.button.4"}
+      ],
+      "mapping": "medium",
+      "confidence": "high",
+      "note": "T2, lower end of the left-handle rocker (T2 printed under it)"
+    },
+    "yoke.button.5": {
+      "type": "button",
+      "name": "T3 rocker",
+      "inputs": [
+        {"input": "JOY_BTN5", "control": "yoke.button.5"}
+      ],
+      "mapping": "medium",
+      "confidence": "medium",
+      "note": "T3, upper end of the upper right-handle rocker"
+    },
+    "yoke.button.6": {
+      "type": "button",
+      "name": "T4 rocker",
+      "inputs": [
+        {"input": "JOY_BTN6", "control": "yoke.button.6"}
+      ],
+      "mapping": "medium",
+      "confidence": "medium",
+      "note": "T4, lower end of the upper right-handle rocker (T4 printed beside it)"
+    },
+    "yoke.button.7": {
+      "type": "button",
+      "name": "T5 rocker",
+      "inputs": [
+        {"input": "JOY_BTN7", "control": "yoke.button.7"}
+      ],
+      "mapping": "high",
+      "confidence": "medium",
+      "note": "T5/T6 rocker (lower right-handle rocker); which end is T5 not readable"
+    },
+    "yoke.button.8": {
+      "type": "button",
+      "name": "T6 rocker",
+      "inputs": [
+        {"input": "JOY_BTN8", "control": "yoke.button.8"}
+      ],
+      "mapping": "high",
+      "confidence": "medium",
+      "note": "T5/T6 rocker (lower right-handle rocker); which end is T6 not readable"
+    },
+    "quadrant.axis.lever.1": {
+      "type": "lever",
+      "name": "Z axis lever (throttle)",
+      "inputs": [
+        {"input": "JOY_Z", "control": "quadrant.axis.lever.1"}
+      ],
+      "mapping": "high",
+      "confidence": "medium",
+      "note": "left (black) lever cap, partly hidden behind the blue one"
+    },
+    "quadrant.axis.lever.2": {
+      "type": "lever",
+      "name": "Rx axis lever (flaps)",
+      "inputs": [
+        {"input": "JOY_RX", "control": "quadrant.axis.lever.2"}
+      ],
+      "mapping": "high",
+      "confidence": "medium",
+      "note": "middle (blue) lever cap"
+    },
+    "quadrant.axis.lever.3": {
+      "type": "lever",
+      "name": "Ry axis lever (spoiler)",
+      "inputs": [
+        {"input": "JOY_RY", "control": "quadrant.axis.lever.3"}
+      ],
+      "mapping": "high",
+      "confidence": "medium",
+      "note": "right (red) lever cap"
+    },
+    "quadrant.button.1": {
+      "type": "button",
+      "name": "Quadrant T1",
+      "inputs": [
+        {"input": "JOY_BTN15", "control": "quadrant.button.1"}
+      ],
+      "mapping": "high",
+      "confidence": "high",
+      "note": "T1, upper end of the left quadrant rocker"
+    },
+    "quadrant.button.2": {
+      "type": "button",
+      "name": "Quadrant T2",
+      "inputs": [
+        {"input": "JOY_BTN16", "control": "quadrant.button.2"}
+      ],
+      "mapping": "high",
+      "confidence": "high",
+      "note": "T2, lower end of the left quadrant rocker"
+    },
+    "quadrant.button.3": {
+      "type": "button",
+      "name": "Quadrant T3",
+      "inputs": [
+        {"input": "JOY_BTN17", "control": "quadrant.button.3"}
+      ],
+      "mapping": "high",
+      "confidence": "high",
+      "note": "T3, upper end of the middle quadrant rocker"
+    },
+    "quadrant.button.4": {
+      "type": "button",
+      "name": "Quadrant T4",
+      "inputs": [
+        {"input": "JOY_BTN18", "control": "quadrant.button.4"}
+      ],
+      "mapping": "high",
+      "confidence": "high",
+      "note": "T4, lower end of the middle quadrant rocker"
+    },
+    "quadrant.button.5": {
+      "type": "button",
+      "name": "Quadrant T5",
+      "inputs": [
+        {"input": "JOY_BTN19", "control": "quadrant.button.5"}
+      ],
+      "mapping": "high",
+      "confidence": "high",
+      "note": "T5, upper end of the right quadrant rocker"
+    },
+    "quadrant.button.6": {
+      "type": "button",
+      "name": "Quadrant T6",
+      "inputs": [
+        {"input": "JOY_BTN20", "control": "quadrant.button.6"}
+      ],
+      "mapping": "high",
+      "confidence": "high",
+      "note": "T6, lower end of the right quadrant rocker"
+    }
+  },
+  "unplaced": {
+    "yoke.button.1": "Button 1 is on the back of the left handle (manual p.4/p.11), facing away"
+  },
+  "candidates": {},
+  "source": "JoyPro curated on the maker's photo (2026-10-11), yoke seen from the front left with the throttle quadrant on its right (levers black/blue/red left to right)",
+  "mappingSource": "Logitech G Flight Yoke System user guide https://www.logitech.com/assets/65148/3/flight-yoke-system.pdf p.11 (yoke function overview: POV + T1/T2 on the left handle, Button 1 on the back of the left handle, Button 2 = round button on the right handle, T3/T4 and T5/T6 rockers on the right handle, T1-T6 = buttons 3-8) and p.13 (quadrant: Z/Rx/Ry = left/middle/right lever, T1-T6 = buttons 15-20)",
+  "confidence": "medium",
+  "note": "The yoke handles are small on this photo (each grip about 120 px); the front photo shows them larger but not the quadrant. Rocker ends: the yoke prints T2 under the left rocker and T4 under the upper right rocker (front photo), so T1/T3 = upper end, T2/T4 = lower end. The T5/T6 rocker lies sideways; which end is T5 is not readable, so both markers sit on the rocker body. The 3-position mode switch (back of the right handle) and the quadrant detent buttons (manual p.13 shows Z/RX/RY BUTTON without numbers) have no catalog parts.",
+  "callouts": {
+    "version": 1,
+    "width": 1447,
+    "height": 838,
+    "picture": [346, 137.2, 755, 556],
+    "rowHeight": 20,
+    "mainWidth": 170,
+    "modWidth": 110,
+    "otherY": 768,
+    "tables": [
+      {"id": "grid:yoke.button.2", "title": "Buttons Button 2 ( - T5 rocker", "parts": ["yoke.button.2", "yoke.button.5", "yoke.button.6", "yoke.button.8", "yoke.button.7"], "side": "top", "x": 586.1, "y": 19.2, "width": 276, "grid": true, "columns": 3, "modifier": false, "spot": [0.5008, 0.1166], "rows": [{"input": "JOY_BTN2", "label": "Button 2 (", "icon": "button", "part": "yoke.button.2", "cell": [0, 2, 0]}, {"input": "JOY_BTN5", "label": "T3 rocker", "icon": "button", "part": "yoke.button.5", "cell": [1, 1, 0]}, {"input": "JOY_BTN6", "label": "T4 rocker", "icon": "button", "part": "yoke.button.6", "cell": [2, 0, 0]}, {"input": "JOY_BTN8", "label": "T6 rocker", "icon": "button", "part": "yoke.button.8", "cell": [2, 1, 0]}, {"input": "JOY_BTN7", "label": "T5 rocker", "icon": "button", "part": "yoke.button.7", "cell": [3, 0, 0]}]},
+      {"id": "yoke.column", "title": "Yoke (roll / pitch)", "parts": ["yoke.column"], "side": "left", "x": 16, "y": 305.6, "width": 300, "modifier": true, "spot": [0.409, 0.346], "rows": [{"input": "JOY_X", "label": "roll (X)", "icon": "axis", "part": "yoke.column"}, {"input": "JOY_Y", "label": "pitch (Y)", "icon": "axis", "part": "yoke.column"}]},
+      {"id": "yoke.hat.1", "title": "Yoke hat 1", "parts": ["yoke.hat.1"], "side": "left", "x": 16, "y": 16, "width": 300, "modifier": true, "spot": [0.104, 0.041], "rows": [{"input": "JOY_BTN_POV1_U", "label": "Up", "icon": "up", "part": "yoke.hat.1"}, {"input": "JOY_BTN_POV1_R", "label": "Right", "icon": "right", "part": "yoke.hat.1"}, {"input": "JOY_BTN_POV1_L", "label": "Left", "icon": "left", "part": "yoke.hat.1"}, {"input": "JOY_BTN_POV1_D", "label": "Down", "icon": "down", "part": "yoke.hat.1"}, {"input": "JOY_BTN_POV1_UR", "label": "Up-right", "icon": "upright", "part": "yoke.hat.1"}, {"input": "JOY_BTN_POV1_UL", "label": "Up-left", "icon": "upleft", "part": "yoke.hat.1"}, {"input": "JOY_BTN_POV1_DR", "label": "Down-right", "icon": "downright", "part": "yoke.hat.1"}, {"input": "JOY_BTN_POV1_DL", "label": "Down-left", "icon": "downleft", "part": "yoke.hat.1"}]},
+      {"id": "yoke.button.1", "title": "Button 1 (handle)", "parts": ["yoke.button.1"], "side": "other", "x": 16, "y": 788, "width": 300, "modifier": true, "rows": [{"input": "JOY_BTN1", "label": "Press", "icon": "button", "part": "yoke.button.1"}]},
+      {"id": "yoke.button.3", "title": "T1 rocker", "parts": ["yoke.button.3"], "side": "left", "x": 16, "y": 196, "width": 300, "modifier": true, "spot": [0.078, 0.067], "rows": [{"input": "JOY_BTN3", "label": "Press", "icon": "button", "part": "yoke.button.3"}]},
+      {"id": "yoke.button.4", "title": "T2 rocker", "parts": ["yoke.button.4"], "side": "left", "x": 16, "y": 236, "width": 300, "modifier": true, "spot": [0.059, 0.087], "rows": [{"input": "JOY_BTN4", "label": "Press", "icon": "button", "part": "yoke.button.4"}]},
+      {"id": "quadrant.axis.lever.1", "title": "Z axis lever (throttle)", "parts": ["quadrant.axis.lever.1"], "side": "right", "x": 1131, "y": 309.1, "width": 300, "modifier": true, "spot": [0.706, 0.408], "rows": [{"input": "JOY_Z", "label": "Z", "icon": "axis", "part": "quadrant.axis.lever.1"}]},
+      {"id": "quadrant.axis.lever.2", "title": "Rx axis lever (flaps)", "parts": ["quadrant.axis.lever.2"], "side": "right", "x": 1131, "y": 389.1, "width": 300, "modifier": true, "spot": [0.762, 0.427], "rows": [{"input": "JOY_RX", "label": "RX", "icon": "axis", "part": "quadrant.axis.lever.2"}]},
+      {"id": "quadrant.axis.lever.3", "title": "Ry axis lever (spoiler)", "parts": ["quadrant.axis.lever.3"], "side": "right", "x": 1131, "y": 349.1, "width": 300, "modifier": true, "spot": [0.828, 0.438], "rows": [{"input": "JOY_RY", "label": "RY", "icon": "axis", "part": "quadrant.axis.lever.3"}]},
+      {"id": "quadrant.button.1", "title": "Quadrant T1", "parts": ["quadrant.button.1"], "side": "right", "x": 1131, "y": 542.1, "width": 300, "modifier": true, "spot": [0.626, 0.843], "rows": [{"input": "JOY_BTN15", "label": "Press", "icon": "button", "part": "quadrant.button.1"}]},
+      {"id": "quadrant.button.2", "title": "Quadrant T2", "parts": ["quadrant.button.2"], "side": "bottom", "x": 495, "y": 717.2, "width": 300, "modifier": true, "spot": [0.626, 0.888], "rows": [{"input": "JOY_BTN16", "label": "Press", "icon": "button", "part": "quadrant.button.2"}]},
+      {"id": "quadrant.button.3", "title": "Quadrant T3", "parts": ["quadrant.button.3"], "side": "right", "x": 1131, "y": 582.1, "width": 300, "modifier": true, "spot": [0.682, 0.861], "rows": [{"input": "JOY_BTN17", "label": "Press", "icon": "button", "part": "quadrant.button.3"}]},
+      {"id": "quadrant.button.4", "title": "Quadrant T4", "parts": ["quadrant.button.4"], "side": "bottom", "x": 801, "y": 717.2, "width": 300, "modifier": true, "spot": [0.682, 0.908], "rows": [{"input": "JOY_BTN18", "label": "Press", "icon": "button", "part": "quadrant.button.4"}]},
+      {"id": "quadrant.button.5", "title": "Quadrant T5", "parts": ["quadrant.button.5"], "side": "right", "x": 1131, "y": 622.1, "width": 300, "modifier": true, "spot": [0.74, 0.883], "rows": [{"input": "JOY_BTN19", "label": "Press", "icon": "button", "part": "quadrant.button.5"}]},
+      {"id": "quadrant.button.6", "title": "Quadrant T6", "parts": ["quadrant.button.6"], "side": "right", "x": 1131, "y": 662.1, "width": 300, "modifier": true, "spot": [0.74, 0.93], "rows": [{"input": "JOY_BTN20", "label": "Press", "icon": "button", "part": "quadrant.button.6"}]}
+    ],
+    "lines": [
+      {"table": "yoke.hat.1", "points": [[424.5, 160], [334, 160], [334, 40], [316, 40]]},
+      {"table": "yoke.button.3", "points": [[404.9, 174.4], [328, 174.4], [328, 220], [316, 220]]},
+      {"table": "yoke.button.4", "points": [[390.5, 185.6], [334, 185.6], [334, 260], [316, 260]]},
+      {"table": "yoke.column", "points": [[654.8, 329.6], [316, 329.6]]},
+      {"table": "quadrant.axis.lever.1", "points": [[879, 364], [1113, 364], [1113, 333.1], [1131, 333.1]]},
+      {"table": "quadrant.axis.lever.3", "points": [[971.1, 380.7], [971.1, 373.1], [1131, 373.1]]},
+      {"table": "quadrant.axis.lever.2", "points": [[921.3, 374.6], [921.3, 413.1], [1131, 413.1]]},
+      {"table": "quadrant.button.1", "points": [[818.6, 605.9], [1113, 605.9], [1113, 566.1], [1131, 566.1]]},
+      {"table": "quadrant.button.3", "points": [[860.9, 615.9], [1119, 615.9], [1119, 606.1], [1131, 606.1]]},
+      {"table": "quadrant.button.5", "points": [[904.7, 628.1], [1113, 628.1], [1113, 646.1], [1131, 646.1]]},
+      {"table": "quadrant.button.6", "points": [[904.7, 654.3], [1113, 654.3], [1113, 686.1], [1131, 686.1]]},
+      {"table": "grid:yoke.button.2", "points": [[724.1, 202], [724.1, 113.2]]},
+      {"table": "quadrant.button.2", "points": [[818.6, 630.9], [818.6, 705.2], [645, 705.2], [645, 717.2]]},
+      {"table": "quadrant.button.4", "points": [[860.9, 642], [860.9, 705.2], [951, 705.2], [951, 717.2]]}
+    ]
+  }
+}

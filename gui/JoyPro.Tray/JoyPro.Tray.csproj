@@ -1,0 +1,33 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <!-- The tray host (docs/sync-watcher.md#tray-host): a WinForms NotifyIcon that runs the game config watcher while the
+       GUI is closed. Started by the Windows Run entry (and by the GUI when it closes in tray mode); no Avalonia, no
+       render loop, so it costs nothing while it waits. Bundled into <GUI>\tray\ by JoyPro.Gui.csproj. -->
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <TargetFramework>net9.0-windows</TargetFramework>
+    <UseWindowsForms>true</UseWindowsForms>
+    <Nullable>enable</Nullable>
+    <RootNamespace>JoyPro.Tray</RootNamespace>
+    <AssemblyName>JoyPro.Tray</AssemblyName>
+    <Version>2.0.0</Version>
+    <!-- Windows names the sender of the tray notification after the file description: "JoyPro2", not "JoyPro.Tray". -->
+    <AssemblyTitle>JoyPro2</AssemblyTitle>
+    <Product>JoyPro2</Product>
+    <IsPackable>false</IsPackable>
+    <ApplicationIcon>..\JoyPro.Gui\Assets\joypro2_gui.ico</ApplicationIcon>
+    <ApplicationHighDpiMode>PerMonitorV2</ApplicationHighDpiMode>
+    <!-- Small and quiet: workstation GC without the background GC thread, no PGO instrumentation. -->
+    <ServerGarbageCollector>false</ServerGarbageCollector>
+    <ConcurrentGarbageCollection>false</ConcurrentGarbageCollection>
+    <TieredPGO>false</TieredPGO>
+    <SatelliteResourceLanguages>en</SatelliteResourceLanguages>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Include="..\JoyPro.Gui\Assets\joypro2_gui.ico" LogicalName="JoyPro.Tray.icon.ico" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\JoyPro.Watch\JoyPro.Watch.csproj" />
+  </ItemGroup>
+</Project>

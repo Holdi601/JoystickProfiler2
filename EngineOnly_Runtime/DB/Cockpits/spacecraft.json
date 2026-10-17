@@ -1,0 +1,4333 @@
+{
+  "format": "joypro-cockpits",
+  "version": 2,
+  "aircraft": [
+    {
+      "id": "mercury",
+      "name": "Mercury spacecraft",
+      "aliases": [
+        "Project Mercury",
+        "Friendship 7",
+        "Mercury capsule"
+      ],
+      "category": "space",
+      "fiction": false,
+      "franchise": "",
+      "maker": "McDonnell Aircraft",
+      "nations": [
+        "US"
+      ],
+      "role": "spacecraft",
+      "era": "cold-war-early",
+      "summary": "America's first crewed capsule (1961-1963): one astronaut, automatic attitude control with a three-axis hand controller as the manual backup.",
+      "variants": [
+        {
+          "id": "mercury-capsule",
+          "name": "Mercury capsule",
+          "aliases": [
+            "Mercury-Atlas",
+            "Mercury-Redstone"
+          ],
+          "years": "1961-1963",
+          "games": [],
+          "controls": [
+            {
+              "id": "rhc.gimbal",
+              "device": "rhc",
+              "name": "Three-axis hand controller",
+              "type": "gimbal",
+              "where": "pistol-type handle at the right armrest of the couch, right hand",
+              "functions": [
+                {
+                  "dir": "pitch",
+                  "text": "Pitch (fore/aft)",
+                  "fn": "pitch",
+                  "note": "Manual proportional mode moved thruster valves through linkages; fly-by-wire mode used limit switches."
+                },
+                {
+                  "dir": "roll",
+                  "text": "Roll (left/right)",
+                  "fn": "roll"
+                },
+                {
+                  "dir": "yaw",
+                  "text": "Yaw (twist)",
+                  "fn": "space_yaw",
+                  "note": "Rudder pedals were planned for yaw but dropped; the handle twists instead."
+                }
+              ],
+              "n": 1,
+              "src": "s1"
+            },
+            {
+              "id": "throttle.handle.abort",
+              "device": "throttle",
+              "name": "Abort handle",
+              "type": "lever",
+              "where": "handle near the astronaut's left hand",
+              "functions": [
+                {
+                  "dir": "pull",
+                  "text": "Manual abort: fire the escape tower",
+                  "fn": "",
+                  "note": "Backup to the automatic abort before and during lift-off. Not a throttle: Mercury had no translation control."
+                }
+              ],
+              "n": 2,
+              "src": "s1"
+            }
+          ],
+          "panels": [
+            {
+              "id": "main-panel",
+              "name": "Main instrument panel",
+              "area": "front-center",
+              "text": "Flight and navigation displays in front of the astronaut.",
+              "src": "s1",
+              "confidence": "medium",
+              "items": [
+                {
+                  "n": 1,
+                  "name": "Attitude indicator",
+                  "type": "gauge",
+                  "text": "Pitch, roll and yaw attitude"
+                },
+                {
+                  "n": 2,
+                  "name": "Rate indicators",
+                  "type": "gauge",
+                  "text": "Attitude rates for manual flying"
+                },
+                {
+                  "n": 3,
+                  "name": "Earth path indicator",
+                  "type": "display",
+                  "text": "Small globe that turns to show the position over the ground"
+                },
+                {
+                  "n": 4,
+                  "name": "Satellite clock and retro timer",
+                  "type": "display",
+                  "text": "Elapsed time and time to retrofire"
+                },
+                {
+                  "n": 5,
+                  "name": "Periscope screen",
+                  "type": "display",
+                  "text": "Outside view through the periscope (centre of the panel)"
+                },
+                {
+                  "n": 6,
+                  "name": "Altimeter",
+                  "type": "gauge",
+                  "text": "Cabin altitude for the descent"
+                }
+              ]
+            },
+            {
+              "id": "sequence-panel",
+              "name": "Left console (sequence panel)",
+              "area": "left-console",
+              "text": "Mission sequence lights and the abort handle.",
+              "src": "s1",
+              "confidence": "medium",
+              "items": [
+                {
+                  "n": 1,
+                  "name": "Sequence telelights",
+                  "type": "light",
+                  "text": "One light per event: tower jettison, separation, retro, drogue, main chute, landing bag"
+                },
+                {
+                  "n": 2,
+                  "name": "Manual override switches",
+                  "type": "switch",
+                  "text": "Beside each light: fire the event by hand if the automatic sequence fails"
+                },
+                {
+                  "n": 3,
+                  "name": "Abort handle",
+                  "type": "handle",
+                  "text": "Fires the escape tower (manual abort)"
+                }
+              ]
+            },
+            {
+              "id": "right-console",
+              "name": "Right console",
+              "area": "right-console",
+              "text": "Hand controller and system panels.",
+              "src": "s1",
+              "confidence": "medium",
+              "items": [
+                {
+                  "n": 1,
+                  "name": "Three-axis hand controller",
+                  "type": "other",
+                  "text": "Pitch, roll and yaw (right hand)"
+                },
+                {
+                  "n": 2,
+                  "name": "Control mode handles",
+                  "type": "handle",
+                  "text": "Pull handles that switch between automatic and manual attitude control"
+                },
+                {
+                  "n": 3,
+                  "name": "Environment gauges",
+                  "type": "gauge",
+                  "text": "Suit and cabin pressure and temperature"
+                },
+                {
+                  "n": 4,
+                  "name": "Fuse and switch panel",
+                  "type": "switch",
+                  "text": "Electrical fuses and system switches"
+                }
+              ]
+            },
+            {
+              "id": "window",
+              "name": "Window and periscope",
+              "area": "glareshield",
+              "text": "Outside view.",
+              "src": "s1",
+              "confidence": "medium",
+              "items": [
+                {
+                  "n": 1,
+                  "name": "Window",
+                  "type": "other",
+                  "text": "Trapezoidal window above the panel (from MA-6 on)"
+                },
+                {
+                  "n": 2,
+                  "name": "Periscope",
+                  "type": "other",
+                  "text": "Optical periscope with the screen on the main panel"
+                }
+              ]
+            }
+          ],
+          "cockpit": "The astronaut lay on a contoured couch facing the instrument panel with the hand controller at the right hand. Attitude control modes: automatic (ASCS), manual proportional, fly-by-wire and rate stabilisation.",
+          "notes": "Layout from the hand controller sources and NASA crew-station reports; panel contents summarised from public NASA material, no numbered NASA panel list used (medium).",
+          "sources": [
+            {
+              "title": "Apollo Experience Report: Crew Station Integration Vol. III, Spacecraft Hand Controller Development (NASA TN D-7884)",
+              "url": "https://ntrs.nasa.gov/citations/19750010202",
+              "kind": "manual",
+              "covers": "hand controllers Mercury to Apollo",
+              "id": "s1"
+            },
+            {
+              "title": "The Friendship 7 Hand Controller (Ohio State University Libraries)",
+              "url": "https://library.osu.edu/site/friendship7/the-friendship-7-hand-controller/",
+              "kind": "reference",
+              "covers": "hand controller, abort handle",
+              "id": "s2"
+            },
+            {
+              "title": "Project Mercury (Wikipedia)",
+              "url": "https://en.wikipedia.org/wiki/Project_Mercury",
+              "kind": "wikipedia",
+              "covers": "overview",
+              "id": "s3"
+            }
+          ],
+          "confidence": "medium",
+          "overview": {
+            "text": "One astronaut on a contour couch: main panel in front with the periscope screen, sequence panel at the left, hand controller and system panels at the right, window above the panel.",
+            "areas": [
+              {
+                "n": 1,
+                "name": "Main instrument panel",
+                "area": "front-center",
+                "panels": [
+                  "main-panel"
+                ],
+                "src": "s1"
+              },
+              {
+                "n": 2,
+                "name": "Left console (sequence panel)",
+                "area": "left-console",
+                "panels": [
+                  "sequence-panel"
+                ],
+                "src": "s1"
+              },
+              {
+                "n": 3,
+                "name": "Right console",
+                "area": "right-console",
+                "panels": [
+                  "right-console"
+                ],
+                "src": "s1"
+              },
+              {
+                "n": 4,
+                "name": "Window and periscope",
+                "area": "glareshield",
+                "panels": [
+                  "window"
+                ],
+                "src": "s1"
+              }
+            ],
+            "src": "s1"
+          }
+        }
+      ],
+      "photos": [
+        {
+          "url": "https://upload.wikimedia.org/wikipedia/commons/c/c6/Mercury%2C_MA-6%2C_Friendship_7_-_Cockpit_2.jpg",
+          "page": "https://commons.wikimedia.org/wiki/File:Mercury,_MA-6,_Friendship_7_-_Cockpit_2.jpg",
+          "view": "cockpit",
+          "credit": "Smithsonian Institution",
+          "license": "cc0",
+          "variant": "mercury-capsule",
+          "caption": "Panoramic view of the Mercury Friendship 7 capsule cockpit (Smithsonian museum artefact)",
+          "confidence": "high"
+        },
+        {
+          "url": "https://upload.wikimedia.org/wikipedia/commons/4/47/View_of_Mercury_Spacecraft_instrument_control_panels_%28s61-03257%29.jpg",
+          "page": "https://commons.wikimedia.org/wiki/File:View_of_Mercury_Spacecraft_instrument_control_panels_(s61-03257).jpg",
+          "view": "front-panel",
+          "credit": "NASA Johnson Space Center",
+          "license": "public-domain",
+          "variant": "mercury-capsule",
+          "caption": "Mercury spacecraft instrument and control panels, 1961 (NASA photo)",
+          "confidence": "high"
+        },
+        {
+          "url": "https://upload.wikimedia.org/wikipedia/commons/d/d0/Hand_Controller_inside_the_Mercury_Freedom_7_capsule_%2852743686613%29.jpg",
+          "page": "https://commons.wikimedia.org/wiki/File:Hand_Controller_inside_the_Mercury_Freedom_7_capsule_(52743686613).jpg",
+          "view": "stick",
+          "credit": "jurvetson",
+          "license": "cc-by-2.0",
+          "variant": "mercury-capsule",
+          "caption": "Three-axis hand controller inside the Mercury Freedom 7 capsule (museum artefact)",
+          "confidence": "high"
+        },
+        {
+          "url": "https://upload.wikimedia.org/wikipedia/commons/d/d3/Mercury%2C_MA-6%2C_Friendship_7_-_Cockpit.jpg",
+          "page": "https://commons.wikimedia.org/wiki/File:Mercury,_MA-6,_Friendship_7_-_Cockpit.jpg",
+          "view": "cockpit",
+          "credit": "Smithsonian Institut",
+          "license": "cc0",
+          "variant": "mercury-capsule",
+          "caption": "Mercury Friendship 7 capsule interior with left console and periscope screen (Smithsonian museum artefact)",
+          "confidence": "high"
+        },
+        {
+          "url": "https://upload.wikimedia.org/wikipedia/commons/0/07/Mercury%2C_MA-6%2C_Friendship_7_-_Cockpit_3.jpg",
+          "page": "https://commons.wikimedia.org/wiki/File:Mercury,_MA-6,_Friendship_7_-_Cockpit_3.jpg",
+          "view": "stick",
+          "credit": "Smithsonian National Air and Space Museum (CC0)",
+          "license": "cc0",
+          "caption": "Mercury Friendship 7 capsule: three-axis hand controller grip with its mesh cover, after conservation",
+          "confidence": "high"
+        }
+      ]
+    },
+    {
+      "id": "gemini",
+      "name": "Gemini spacecraft",
+      "aliases": [
+        "Project Gemini"
+      ],
+      "category": "space",
+      "fiction": false,
+      "franchise": "",
+      "maker": "McDonnell Aircraft",
+      "nations": [
+        "US"
+      ],
+      "role": "spacecraft",
+      "era": "cold-war-early",
+      "summary": "Two-seat capsule (1965-1966) that added translation control, rendezvous and docking: one attitude hand controller between the seats and a maneuver hand controller on each side.",
+      "variants": [
+        {
+          "id": "gemini-command-pilot",
+          "name": "Gemini (command pilot)",
+          "aliases": [
+            "Gemini 3-12"
+          ],
+          "years": "1965-1966",
+          "seat": "pilot",
+          "games": [],
+          "controls": [
+            {
+              "id": "rhc.gimbal",
+              "device": "rhc",
+              "name": "Attitude hand controller",
+              "type": "gimbal",
+              "where": "pistol-grip handle between the two seats, usable by either pilot",
+              "functions": [
+                {
+                  "dir": "pitch",
+                  "text": "Pitch (fore/aft)",
+                  "fn": "pitch",
+                  "note": "Rate, pulse or direct commands depending on the control mode."
+                },
+                {
+                  "dir": "roll",
+                  "text": "Roll (side to side)",
+                  "fn": "roll"
+                },
+                {
+                  "dir": "yaw",
+                  "text": "Yaw (twist)",
+                  "fn": "space_yaw"
+                }
+              ],
+              "n": 1,
+              "src": "s1"
+            },
+            {
+              "id": "thc.gimbal",
+              "device": "thc",
+              "name": "Maneuver hand controller",
+              "type": "gimbal",
+              "where": "handle beneath the left instrument panel (command pilot); a second one on the right side",
+              "functions": [
+                {
+                  "dir": "fwd",
+                  "text": "Translate forward",
+                  "fn": "space_strafe_fwdaft",
+                  "note": "Each of the six directions fires the matching OAMS thrusters directly."
+                },
+                {
+                  "dir": "aft",
+                  "text": "Translate aft",
+                  "fn": "space_strafe_fwdaft"
+                },
+                {
+                  "dir": "left",
+                  "text": "Translate left",
+                  "fn": "space_strafe_hor"
+                },
+                {
+                  "dir": "right",
+                  "text": "Translate right",
+                  "fn": "space_strafe_hor"
+                },
+                {
+                  "dir": "up",
+                  "text": "Translate up",
+                  "fn": "space_strafe_ver"
+                },
+                {
+                  "dir": "down",
+                  "text": "Translate down",
+                  "fn": "space_strafe_ver"
+                }
+              ],
+              "n": 2,
+              "src": "s1"
+            }
+          ],
+          "panels": [
+            {
+              "id": "cp-panel",
+              "name": "Command pilot's panel",
+              "area": "front-left",
+              "text": "Flight instruments of the command pilot.",
+              "src": "s1",
+              "confidence": "medium",
+              "items": [
+                {
+                  "n": 1,
+                  "name": "Flight director attitude indicator (FDAI)",
+                  "type": "gauge",
+                  "text": "Attitude ball with rate needles"
+                },
+                {
+                  "n": 2,
+                  "name": "Incremental velocity indicator (IVI)",
+                  "type": "display",
+                  "text": "Velocity change fwd/aft, left/right, up/down for manoeuvres"
+                },
+                {
+                  "n": 3,
+                  "name": "Altimeter and rate of climb",
+                  "type": "gauge",
+                  "text": "For ascent and descent"
+                },
+                {
+                  "n": 4,
+                  "name": "Event timer",
+                  "type": "display",
+                  "text": "Counts burn and event times"
+                },
+                {
+                  "n": 5,
+                  "name": "Ejection seat D-ring",
+                  "type": "handle",
+                  "text": "On the seat between the knees; ejection is the low-altitude abort"
+                }
+              ]
+            },
+            {
+              "id": "centre",
+              "name": "Centre console and pedestal",
+              "area": "center-pedestal",
+              "text": "Attitude controller, control modes and the computer.",
+              "src": "s1",
+              "confidence": "medium",
+              "items": [
+                {
+                  "n": 1,
+                  "name": "Attitude hand controller",
+                  "type": "other",
+                  "text": "Pitch, roll, yaw for either crewman"
+                },
+                {
+                  "n": 2,
+                  "name": "Attitude control mode selector",
+                  "type": "selector",
+                  "text": "Modes such as DIRECT, PULSE, RATE CMD, RE-ENT, HOR SCAN"
+                },
+                {
+                  "n": 3,
+                  "name": "Manual data insertion unit (MDIU)",
+                  "type": "keypad",
+                  "text": "Keyboard and readout for computer addresses and values"
+                },
+                {
+                  "n": 4,
+                  "name": "Computer mode selector",
+                  "type": "selector",
+                  "text": "PRE-LAUNCH, ASCENT, CATCH-UP, RENDEZVOUS, RE-ENTRY"
+                },
+                {
+                  "n": 5,
+                  "name": "OAMS / radar switches",
+                  "type": "switch",
+                  "text": "Manoeuvring thrusters and rendezvous radar power"
+                }
+              ]
+            },
+            {
+              "id": "pilot-panel",
+              "name": "Pilot's panel",
+              "area": "front-right",
+              "text": "Second crewman's instruments and systems.",
+              "src": "s1",
+              "confidence": "medium",
+              "items": [
+                {
+                  "n": 1,
+                  "name": "Pilot's FDAI",
+                  "type": "gauge",
+                  "text": "Attitude ball"
+                },
+                {
+                  "n": 2,
+                  "name": "Fuel cell and ECS gauges",
+                  "type": "gauge",
+                  "text": "Electrical and environmental system"
+                },
+                {
+                  "n": 3,
+                  "name": "Second maneuver hand controller",
+                  "type": "other",
+                  "text": "Translation handle on the pilot's side"
+                },
+                {
+                  "n": 4,
+                  "name": "Clocks",
+                  "type": "display",
+                  "text": "Elapsed time"
+                }
+              ]
+            },
+            {
+              "id": "overhead",
+              "name": "Overhead and side circuit-breaker panels",
+              "area": "overhead",
+              "text": "Circuit breakers above and beside the seats.",
+              "src": "s1",
+              "confidence": "medium",
+              "items": [
+                {
+                  "n": 1,
+                  "name": "Circuit breakers",
+                  "type": "switch",
+                  "text": "System power"
+                },
+                {
+                  "n": 2,
+                  "name": "Switch panels",
+                  "type": "switch",
+                  "text": "Further system switches"
+                }
+              ]
+            }
+          ],
+          "cockpit": "Two ejection seats side by side, the command pilot on the left. The attitude controller sits between them; each seat has a maneuver hand controller for translation with the OAMS thrusters.",
+          "notes": "From the Gemini Familiarization Manual (McDonnell) and the NASM controller pages; mode names as recalled from that manual (medium).",
+          "sources": [
+            {
+              "title": "Gemini Familiarization Manual, Vol. 2 Sec. 2 (McDonnell SEDR 300)",
+              "url": "https://www.ibiblio.org/apollo/Documents/GeminiManualVol2Sec2.pdf",
+              "kind": "manual",
+              "covers": "attitude and maneuver control",
+              "id": "s1"
+            },
+            {
+              "title": "Hand Controller, Maneuver, Gemini 10 (Smithsonian NASM)",
+              "url": "https://airandspace.si.edu/collection-objects/hand-controller-maneuver-gemini-10/nasm_A19731051000",
+              "kind": "reference",
+              "covers": "maneuver controller",
+              "id": "s2"
+            },
+            {
+              "title": "Maneuver Hand Controller, Gemini (Smithsonian NASM)",
+              "url": "https://airandspace.si.edu/collection-objects/maneuver-hand-controller-gemini/nasm_A19711593000",
+              "kind": "reference",
+              "covers": "controller position",
+              "id": "s3"
+            },
+            {
+              "title": "Apollo Experience Report: Spacecraft Hand Controller Development (NASA TN D-7884)",
+              "url": "https://ntrs.nasa.gov/citations/19750010202",
+              "kind": "manual",
+              "covers": "Gemini controllers",
+              "id": "s4"
+            }
+          ],
+          "confidence": "medium",
+          "overview": {
+            "text": "Two crew side by side: command pilot's flight panel left, centre console with the attitude controller and the computer keyboard, pilot's panel right, circuit breakers overhead; ejection seats instead of an escape tower.",
+            "areas": [
+              {
+                "n": 1,
+                "name": "Command pilot's panel",
+                "area": "front-left",
+                "panels": [
+                  "cp-panel"
+                ],
+                "src": "s1"
+              },
+              {
+                "n": 2,
+                "name": "Centre console and pedestal",
+                "area": "center-pedestal",
+                "panels": [
+                  "centre"
+                ],
+                "src": "s1"
+              },
+              {
+                "n": 3,
+                "name": "Pilot's panel",
+                "area": "front-right",
+                "panels": [
+                  "pilot-panel"
+                ],
+                "src": "s1"
+              },
+              {
+                "n": 4,
+                "name": "Overhead and side circuit-breaker panels",
+                "area": "overhead",
+                "panels": [
+                  "overhead"
+                ],
+                "src": "s1"
+              }
+            ],
+            "src": "s1"
+          }
+        }
+      ],
+      "photos": [
+        {
+          "url": "https://upload.wikimedia.org/wikipedia/commons/0/04/Cockpit_of_the_Gemini_spacecraft.jpg",
+          "page": "https://commons.wikimedia.org/wiki/File:Cockpit_of_the_Gemini_spacecraft.jpg",
+          "view": "cockpit",
+          "credit": "NASA",
+          "license": "public-domain",
+          "caption": "Gemini flight article forward displays and controls, fish-eye view, 1965 (NASA photo)",
+          "confidence": "high"
+        },
+        {
+          "url": "https://upload.wikimedia.org/wikipedia/commons/7/7c/S65-18695_%281965%29_---_View_of_the_cockpit_of_the_Gemini_spacecraft.jpg",
+          "page": "https://commons.wikimedia.org/wiki/File:S65-18695_(1965)_---_View_of_the_cockpit_of_the_Gemini_spacecraft.jpg",
+          "view": "cockpit",
+          "credit": "NASA Johnson Space Center",
+          "license": "public-domain",
+          "caption": "View into the Gemini spacecraft cockpit, 1965 (NASA photo)",
+          "confidence": "high"
+        },
+        {
+          "url": "https://upload.wikimedia.org/wikipedia/commons/6/67/Gemini_VI_Stafford_capsule.jpg",
+          "page": "https://commons.wikimedia.org/wiki/File:Gemini_VI_Stafford_capsule.jpg",
+          "view": "cockpit",
+          "credit": "NASA",
+          "license": "public-domain",
+          "caption": "Thomas Stafford seated in Gemini VI before hatch closing, controls visible (NASA photo)",
+          "confidence": "medium"
+        }
+      ]
+    },
+    {
+      "id": "apollo",
+      "name": "Apollo spacecraft",
+      "aliases": [
+        "Apollo CSM",
+        "Apollo LM",
+        "Command Module",
+        "Lunar Module"
+      ],
+      "category": "space",
+      "fiction": false,
+      "franchise": "",
+      "maker": "North American Rockwell (CSM) / Grumman (LM)",
+      "nations": [
+        "US"
+      ],
+      "role": "spacecraft",
+      "era": "cold-war-late",
+      "summary": "The lunar spacecraft (1968-1975): the Command Module with a rotation and a translation hand controller, the Lunar Module with the attitude controller (ACA) and the thrust/translation controller (TTCA).",
+      "variants": [
+        {
+          "id": "apollo-cm",
+          "name": "Apollo Command Module (Block II)",
+          "aliases": [
+            "CSM",
+            "Command Module",
+            "CM"
+          ],
+          "years": "1968-1975",
+          "seat": "pilot",
+          "games": [],
+          "controls": [
+            {
+              "id": "rhc.gimbal",
+              "device": "rhc",
+              "name": "Rotation hand controller (RHC)",
+              "type": "gimbal",
+              "where": "pistol grip on the right armrest of the couch, right hand; duplicates at the other couches",
+              "functions": [
+                {
+                  "dir": "pitch",
+                  "text": "Pitch (rate command)",
+                  "fn": "pitch",
+                  "note": "Beyond the soft stop direct switches fire the RCS jets directly."
+                },
+                {
+                  "dir": "roll",
+                  "text": "Roll",
+                  "fn": "roll"
+                },
+                {
+                  "dir": "yaw",
+                  "text": "Yaw",
+                  "fn": "space_yaw",
+                  "note": "Also steers the SPS engine gimbal during manual thrust vector control."
+                }
+              ],
+              "n": 1,
+              "src": "s1"
+            },
+            {
+              "id": "rhc.button.ptt",
+              "device": "rhc",
+              "name": "Push-to-talk switch",
+              "type": "button",
+              "where": "on the symmetrical RHC handle, usable left or right handed",
+              "functions": [
+                {
+                  "dir": "",
+                  "text": "Transmit (intercom / radio)",
+                  "fn": "comm1_up"
+                }
+              ],
+              "n": 2,
+              "src": "s1"
+            },
+            {
+              "id": "thc.gimbal",
+              "device": "thc",
+              "name": "Translation hand controller (THC)",
+              "type": "gimbal",
+              "where": "T-handle on the left armrest of the commander's couch, left hand",
+              "functions": [
+                {
+                  "dir": "fwd",
+                  "text": "Translate +X (push the handle in)",
+                  "fn": "space_strafe_fwdaft",
+                  "note": "X axis is a push/pull of about 1.3 cm."
+                },
+                {
+                  "dir": "aft",
+                  "text": "Translate -X (pull the handle out)",
+                  "fn": "space_strafe_fwdaft"
+                },
+                {
+                  "dir": "left",
+                  "text": "Translate left (Y)",
+                  "fn": "space_strafe_hor"
+                },
+                {
+                  "dir": "right",
+                  "text": "Translate right (Y)",
+                  "fn": "space_strafe_hor"
+                },
+                {
+                  "dir": "up",
+                  "text": "Translate up (Z)",
+                  "fn": "space_strafe_ver"
+                },
+                {
+                  "dir": "down",
+                  "text": "Translate down (Z)",
+                  "fn": "space_strafe_ver"
+                }
+              ],
+              "n": 3,
+              "src": "s1"
+            },
+            {
+              "id": "thc.twist",
+              "device": "thc",
+              "name": "THC handle rotation",
+              "type": "twist",
+              "where": "rotating the THC T-handle about its shaft",
+              "functions": [
+                {
+                  "dir": "cw",
+                  "text": "Computer off: control to SCS / manual TVC",
+                  "fn": "",
+                  "note": "Clockwise transfers control from the CMC to the SCS backup (or SCS auto TVC to manual TVC)."
+                },
+                {
+                  "dir": "ccw",
+                  "text": "Launch abort",
+                  "fn": "",
+                  "note": "Counterclockwise rotation initiates an abort during the launch phase."
+                }
+              ],
+              "n": 4,
+              "src": "s1"
+            }
+          ],
+          "panels": [
+            {
+              "id": "mdc-1",
+              "name": "Main display console, panel 1 (commander)",
+              "area": "front-left",
+              "text": "Flight controls side of the console in front of the commander.",
+              "src": "s1",
+              "confidence": "medium",
+              "items": [
+                {
+                  "n": 1,
+                  "name": "FDAI 1",
+                  "type": "gauge",
+                  "text": "Attitude ball with rate and error needles"
+                },
+                {
+                  "n": 2,
+                  "name": "Entry monitor system (EMS)",
+                  "type": "display",
+                  "text": "Delta-V counter and entry g / velocity scroll"
+                },
+                {
+                  "n": 3,
+                  "name": "Launch vehicle and abort lights",
+                  "type": "light",
+                  "text": "Engine and EDS lights for the abort decision"
+                },
+                {
+                  "n": 4,
+                  "name": "SCS attitude and control switches",
+                  "type": "switch",
+                  "text": "Attitude set, rate and deadband, SCS / G&N selection"
+                },
+                {
+                  "n": 5,
+                  "name": "Master alarm (CDR)",
+                  "type": "light",
+                  "text": "Push to reset"
+                },
+                {
+                  "n": 6,
+                  "name": "Event timer",
+                  "type": "display",
+                  "text": "Burn and event times"
+                }
+              ]
+            },
+            {
+              "id": "mdc-2",
+              "name": "Main display console, panel 2 (centre)",
+              "area": "front-center",
+              "text": "Systems and guidance in the centre.",
+              "src": "s1",
+              "confidence": "medium",
+              "items": [
+                {
+                  "n": 1,
+                  "name": "Caution and warning matrix",
+                  "type": "light",
+                  "text": "One light per failed system"
+                },
+                {
+                  "n": 2,
+                  "name": "SPS and RCS propellant indicators",
+                  "type": "gauge",
+                  "text": "Quantities and pressures"
+                },
+                {
+                  "n": 3,
+                  "name": "DSKY",
+                  "type": "keypad",
+                  "text": "Keyboard and display of the guidance computer"
+                },
+                {
+                  "n": 4,
+                  "name": "Mission timer",
+                  "type": "display",
+                  "text": "Elapsed time"
+                },
+                {
+                  "n": 5,
+                  "name": "Sequential and earth landing system switches",
+                  "type": "switch",
+                  "text": "Separation, docking, parachute sequence"
+                }
+              ]
+            },
+            {
+              "id": "mdc-3",
+              "name": "Main display console, panel 3 (LM pilot)",
+              "area": "front-right",
+              "text": "Electrical power, environment, communications.",
+              "src": "s1",
+              "confidence": "medium",
+              "items": [
+                {
+                  "n": 1,
+                  "name": "Fuel cell controls and meters",
+                  "type": "switch",
+                  "text": "Fuel cell output and purge"
+                },
+                {
+                  "n": 2,
+                  "name": "DC and AC bus meters",
+                  "type": "gauge",
+                  "text": "Electrical buses"
+                },
+                {
+                  "n": 3,
+                  "name": "Environmental control switches",
+                  "type": "switch",
+                  "text": "Glycol loops, radiators, cabin"
+                },
+                {
+                  "n": 4,
+                  "name": "S-band communications",
+                  "type": "switch",
+                  "text": "Telecommunications"
+                },
+                {
+                  "n": 5,
+                  "name": "SPS propellant pressure meters",
+                  "type": "gauge",
+                  "text": "Fuel and oxidizer tank pressures (upper part of panel 3)"
+                }
+              ]
+            },
+            {
+              "id": "leb",
+              "name": "Lower equipment bay (panel 122)",
+              "area": "floor",
+              "text": "Navigation station below the couches.",
+              "src": "s1",
+              "confidence": "medium",
+              "items": [
+                {
+                  "n": 1,
+                  "name": "LEB DSKY",
+                  "type": "keypad",
+                  "text": "Second keyboard and display of the guidance computer"
+                },
+                {
+                  "n": 2,
+                  "name": "Sextant and scanning telescope",
+                  "type": "other",
+                  "text": "Star sightings for the platform alignment"
+                },
+                {
+                  "n": 3,
+                  "name": "Optics controls",
+                  "type": "switch",
+                  "text": "Optics mode, zero and drive"
+                },
+                {
+                  "n": 4,
+                  "name": "Minimum impulse controller",
+                  "type": "other",
+                  "text": "Extra rotation controller for fine attitude"
+                }
+              ]
+            },
+            {
+              "id": "side-panels",
+              "name": "Side panels and circuit breakers",
+              "area": "left-side",
+              "text": "Circuit breakers and system switches on the side walls.",
+              "src": "s1",
+              "confidence": "medium",
+              "items": [
+                {
+                  "n": 1,
+                  "name": "Panel 8 (left side)",
+                  "type": "switch",
+                  "text": "Circuit breakers, SCS power, floodlights"
+                },
+                {
+                  "n": 2,
+                  "name": "Panel 5 (right side)",
+                  "type": "switch",
+                  "text": "Further system switches"
+                },
+                {
+                  "n": 3,
+                  "name": "Panels 225-229 (right equipment bay)",
+                  "type": "switch",
+                  "text": "Circuit breakers"
+                },
+                {
+                  "n": 4,
+                  "name": "Audio control panels",
+                  "type": "switch",
+                  "text": "One per crewman (panels 9, 10 and 6)"
+                }
+              ]
+            }
+          ],
+          "cockpit": "Three couches side by side facing the main display console. The commander on the left has the RHC at the right hand and the THC at the left; the centre and right couches have their own RHCs.",
+          "notes": "Panel numbers 2, 3, 5, 8, 122, 225-230 are confirmed by the Apollo 15 launch checklist index (AFJ); contents and panels 1, 6, 9, 10 from the Apollo Operations Handbook numbering as known, not page-checked (medium). Block I had a right-hand-only RHC.",
+          "sources": [
+            {
+              "title": "Apollo Experience Report: Spacecraft Hand Controller Development (NASA TN D-7884)",
+              "url": "https://ntrs.nasa.gov/citations/19750010202",
+              "kind": "manual",
+              "covers": "RHC, THC",
+              "id": "s1"
+            },
+            {
+              "title": "Translation Hand Controller (NASSP, Project Apollo for Orbiter)",
+              "url": "https://nassp.space/index.php/THC",
+              "kind": "tutorial",
+              "covers": "THC rotation functions",
+              "id": "s2"
+            },
+            {
+              "title": "Rotation Hand Controller (NASSP)",
+              "url": "https://nassp.space/index.php/RHC",
+              "kind": "tutorial",
+              "covers": "RHC switches",
+              "id": "s3"
+            },
+            {
+              "title": "Apollo command and service module (Wikipedia)",
+              "url": "https://en.wikipedia.org/wiki/Apollo_command_and_service_module",
+              "kind": "wikipedia",
+              "covers": "controller locations",
+              "id": "s4"
+            },
+            {
+              "title": "Apollo 15 CSM Launch Checklist, index of panels (Apollo Flight Journal, NASA)",
+              "url": "https://www.nasa.gov/history/afj/ap15fj/csmlcindex.html",
+              "kind": "reference",
+              "covers": "CM panel numbers (2, 3, 5, 8, 100, 122, 225-230)",
+              "id": "s5"
+            },
+            {
+              "title": "Apollo Operations Handbook panel numbering (general knowledge, not page-checked)",
+              "kind": "reference",
+              "covers": "panel numbers and contents not in the fetched sources",
+              "id": "s6"
+            }
+          ],
+          "confidence": "medium",
+          "overview": {
+            "text": "Three couches facing the main display console (panels 1-3); side panels with circuit breakers, lower equipment bay with the navigation station below the couches.",
+            "areas": [
+              {
+                "n": 1,
+                "name": "Main display console, panel 1 (commander)",
+                "area": "front-left",
+                "panels": [
+                  "mdc-1"
+                ],
+                "src": "s1"
+              },
+              {
+                "n": 2,
+                "name": "Main display console, panel 2 (centre)",
+                "area": "front-center",
+                "panels": [
+                  "mdc-2"
+                ],
+                "src": "s1"
+              },
+              {
+                "n": 3,
+                "name": "Main display console, panel 3 (LM pilot)",
+                "area": "front-right",
+                "panels": [
+                  "mdc-3"
+                ],
+                "src": "s1"
+              },
+              {
+                "n": 4,
+                "name": "Lower equipment bay (panel 122)",
+                "area": "floor",
+                "panels": [
+                  "leb"
+                ],
+                "src": "s1"
+              },
+              {
+                "n": 5,
+                "name": "Side panels and circuit breakers",
+                "area": "left-side",
+                "panels": [
+                  "side-panels"
+                ],
+                "src": "s1"
+              }
+            ],
+            "src": "s1"
+          }
+        },
+        {
+          "id": "apollo-lm",
+          "name": "Apollo Lunar Module (commander)",
+          "aliases": [
+            "LM",
+            "LEM",
+            "Lunar Excursion Module"
+          ],
+          "years": "1969-1972",
+          "seat": "pilot",
+          "games": [],
+          "controls": [
+            {
+              "id": "rhc.gimbal",
+              "device": "rhc",
+              "name": "Attitude controller assembly (ACA)",
+              "type": "gimbal",
+              "where": "pistol grip at the right hand of the standing commander; a second one at the LM pilot's station",
+              "functions": [
+                {
+                  "dir": "pitch",
+                  "text": "Pitch",
+                  "fn": "pitch",
+                  "note": "Small deflection: rate or pulse commands; beyond the soft stop (about 10 degrees) all four jets fire directly."
+                },
+                {
+                  "dir": "roll",
+                  "text": "Roll",
+                  "fn": "roll"
+                },
+                {
+                  "dir": "yaw",
+                  "text": "Yaw (twist)",
+                  "fn": "space_yaw"
+                }
+              ],
+              "n": 1,
+              "src": "s1"
+            },
+            {
+              "id": "rhc.trigger",
+              "device": "rhc",
+              "name": "Push-to-talk trigger",
+              "type": "trigger",
+              "where": "trigger switch on the front of the ACA grip, index finger",
+              "functions": [
+                {
+                  "dir": "",
+                  "text": "Transmit (push to talk)",
+                  "fn": "comm1_up"
+                }
+              ],
+              "n": 2,
+              "src": "s1"
+            },
+            {
+              "id": "thc.gimbal",
+              "device": "thc",
+              "name": "Thrust/translation controller (TTCA)",
+              "type": "gimbal",
+              "where": "T-handle for the left hand of each crewman",
+              "functions": [
+                {
+                  "dir": "up",
+                  "text": "Translate up (+X) / more thrust",
+                  "fn": "space_strafe_ver",
+                  "note": "In JETS mode the X axis fires RCS jets; in THROTTLE mode it sets descent engine thrust."
+                },
+                {
+                  "dir": "down",
+                  "text": "Translate down (-X) / less thrust",
+                  "fn": "space_strafe_ver"
+                },
+                {
+                  "dir": "left",
+                  "text": "Translate left (Y)",
+                  "fn": "space_strafe_hor"
+                },
+                {
+                  "dir": "right",
+                  "text": "Translate right (Y)",
+                  "fn": "space_strafe_hor"
+                },
+                {
+                  "dir": "fwd",
+                  "text": "Translate forward (Z)",
+                  "fn": "space_strafe_fwdaft"
+                },
+                {
+                  "dir": "aft",
+                  "text": "Translate aft (Z)",
+                  "fn": "space_strafe_fwdaft"
+                }
+              ],
+              "n": 3,
+              "src": "s1"
+            },
+            {
+              "id": "thc.axis.throttle",
+              "device": "thc",
+              "name": "TTCA in throttle mode",
+              "type": "axis",
+              "where": "the TTCA X axis when the mode lever is at THROTTLE",
+              "functions": [
+                {
+                  "dir": "axis",
+                  "text": "Descent engine thrust",
+                  "fn": "throttleright",
+                  "note": "Soft stop at 53 degrees of handle travel (0-53 % thrust for fine control); the last 10 degrees command 53-100 %."
+                }
+              ],
+              "n": 4,
+              "src": "s1"
+            },
+            {
+              "id": "thc.switch.mode",
+              "device": "thc",
+              "name": "THROTTLE / JETS mode lever",
+              "type": "switch2",
+              "where": "sliding lever on the side of the TTCA",
+              "functions": [
+                {
+                  "dir": "up",
+                  "text": "THROTTLE: X axis controls the descent engine",
+                  "fn": ""
+                },
+                {
+                  "dir": "down",
+                  "text": "JETS: X axis fires RCS jets",
+                  "fn": ""
+                }
+              ],
+              "n": 5,
+              "src": "s1"
+            },
+            {
+              "id": "thc.knob.friction",
+              "device": "thc",
+              "name": "Throttle friction knob",
+              "type": "knob",
+              "where": "external knob on the lower left side of the TTCA",
+              "functions": [
+                {
+                  "dir": "cw",
+                  "text": "More handle friction (throttle mode)",
+                  "fn": ""
+                },
+                {
+                  "dir": "ccw",
+                  "text": "Less handle friction",
+                  "fn": ""
+                }
+              ],
+              "n": 6,
+              "src": "s1"
+            }
+          ],
+          "panels": [
+            {
+              "id": "p1",
+              "name": "Panel 1 (commander's flight displays)",
+              "area": "front-left",
+              "text": "Commander's flight instruments.",
+              "src": "s1",
+              "confidence": "medium",
+              "items": [
+                {
+                  "n": 1,
+                  "name": "FDAI",
+                  "type": "gauge",
+                  "text": "Attitude ball with rate and error needles"
+                },
+                {
+                  "n": 2,
+                  "name": "X-pointer",
+                  "type": "gauge",
+                  "text": "Forward and lateral velocity for the landing"
+                },
+                {
+                  "n": 3,
+                  "name": "Altitude and altitude-rate tapes",
+                  "type": "gauge",
+                  "text": "From the landing radar or guidance computer"
+                },
+                {
+                  "n": 4,
+                  "name": "Thrust and thrust/weight indicators",
+                  "type": "gauge",
+                  "text": "Descent engine thrust"
+                },
+                {
+                  "n": 5,
+                  "name": "ABORT and ABORT STAGE pushbuttons",
+                  "type": "pushbutton",
+                  "text": "Abort on the descent engine, or stage and abort on the ascent engine"
+                },
+                {
+                  "n": 6,
+                  "name": "Master alarm",
+                  "type": "light",
+                  "text": "Push to reset"
+                }
+              ]
+            },
+            {
+              "id": "p2",
+              "name": "Panel 2 (LM pilot's flight displays)",
+              "area": "front-right",
+              "text": "LM pilot's flight and RCS displays.",
+              "src": "s1",
+              "confidence": "medium",
+              "items": [
+                {
+                  "n": 1,
+                  "name": "FDAI",
+                  "type": "gauge",
+                  "text": "Second attitude ball"
+                },
+                {
+                  "n": 2,
+                  "name": "X-pointer",
+                  "type": "gauge",
+                  "text": "Second velocity display"
+                },
+                {
+                  "n": 3,
+                  "name": "RCS indicators",
+                  "type": "gauge",
+                  "text": "Thruster quantities and pressures"
+                },
+                {
+                  "n": 4,
+                  "name": "Caution and warning lights",
+                  "type": "light",
+                  "text": "System failure lights"
+                }
+              ]
+            },
+            {
+              "id": "p3",
+              "name": "Panel 3 (centre: engine, guidance, radar)",
+              "area": "front-center",
+              "text": "Shared controls between the crew.",
+              "src": "s1",
+              "confidence": "medium",
+              "items": [
+                {
+                  "n": 1,
+                  "name": "Engine arm switch",
+                  "type": "switch3",
+                  "text": "Arms the ascent or descent engine",
+                  "positions": [
+                    "ASC",
+                    "OFF",
+                    "DES"
+                  ]
+                },
+                {
+                  "n": 2,
+                  "name": "Guidance control",
+                  "type": "switch2",
+                  "text": "Primary or abort guidance flies the LM",
+                  "positions": [
+                    "PGNS",
+                    "AGS"
+                  ]
+                },
+                {
+                  "n": 3,
+                  "name": "Engine thrust control",
+                  "type": "switch",
+                  "text": "Automatic or manual throttle"
+                },
+                {
+                  "n": 4,
+                  "name": "Attitude control mode switches",
+                  "type": "switch",
+                  "text": "Per axis: mode and deadband"
+                },
+                {
+                  "n": 5,
+                  "name": "Radar mode selectors",
+                  "type": "selector",
+                  "text": "Rendezvous and landing radar"
+                }
+              ]
+            },
+            {
+              "id": "p4",
+              "name": "Panel 4 (DSKY)",
+              "area": "center-pedestal",
+              "text": "Guidance computer keyboard between the crewmen.",
+              "src": "s1",
+              "confidence": "medium",
+              "items": [
+                {
+                  "n": 1,
+                  "name": "DSKY",
+                  "type": "keypad",
+                  "text": "Keyboard and display of the LM guidance computer"
+                }
+              ]
+            },
+            {
+              "id": "p5",
+              "name": "Panel 5 (commander's lower panel)",
+              "area": "front-left",
+              "text": "Engine start/stop and lighting at the commander's left.",
+              "src": "s1",
+              "confidence": "medium",
+              "items": [
+                {
+                  "n": 1,
+                  "name": "ENGINE START / STOP pushbuttons",
+                  "type": "pushbutton",
+                  "text": "Manual engine start and stop"
+                },
+                {
+                  "n": 2,
+                  "name": "+X translation button",
+                  "type": "pushbutton",
+                  "text": "Four-jet +X translation for ullage"
+                },
+                {
+                  "n": 3,
+                  "name": "Lighting controls",
+                  "type": "knob",
+                  "text": "Panel and flood lighting"
+                }
+              ]
+            },
+            {
+              "id": "p6",
+              "name": "Panel 6 (LM pilot's lower panel)",
+              "area": "front-right",
+              "text": "Abort guidance data entry.",
+              "src": "s1",
+              "confidence": "medium",
+              "items": [
+                {
+                  "n": 1,
+                  "name": "DEDA",
+                  "type": "keypad",
+                  "text": "Data entry and display for the abort guidance section"
+                }
+              ]
+            },
+            {
+              "id": "side",
+              "name": "Side panels 8, 11, 12, 14 and 16",
+              "area": "left-side",
+              "text": "Circuit breakers and system panels on the side walls.",
+              "src": "s1",
+              "confidence": "medium",
+              "items": [
+                {
+                  "n": 1,
+                  "name": "Panel 8 (left)",
+                  "type": "switch",
+                  "text": "Explosive devices (gear deploy, staging) and commander's audio"
+                },
+                {
+                  "n": 2,
+                  "name": "Panel 11 (upper left)",
+                  "type": "switch",
+                  "text": "Commander's circuit breakers"
+                },
+                {
+                  "n": 3,
+                  "name": "Panel 12 (right)",
+                  "type": "switch",
+                  "text": "LM pilot's audio and communications"
+                },
+                {
+                  "n": 4,
+                  "name": "Panel 14 (right)",
+                  "type": "switch",
+                  "text": "Electrical power: batteries and buses"
+                },
+                {
+                  "n": 5,
+                  "name": "Panel 16 (upper right)",
+                  "type": "switch",
+                  "text": "LM pilot's circuit breakers"
+                }
+              ]
+            },
+            {
+              "id": "windows",
+              "name": "Triangular windows and LPD scribe",
+              "area": "glareshield",
+              "text": "Forward windows and the overhead docking window.",
+              "src": "s1",
+              "confidence": "medium",
+              "items": [
+                {
+                  "n": 1,
+                  "name": "Forward windows with LPD scribe marks",
+                  "type": "other",
+                  "text": "Landing point designator angles for the descent"
+                },
+                {
+                  "n": 2,
+                  "name": "Overhead docking window",
+                  "type": "other",
+                  "text": "With the alignment sight for docking"
+                }
+              ]
+            }
+          ],
+          "cockpit": "Two crewmen stood side by side in restraints, the commander on the left with the ACA at the right hand and the TTCA at the left. Two sets of controllers made either crewman able to fly.",
+          "notes": "Panel numbers and contents from the LM Apollo Operations Handbook numbering as known (not page-checked against a fetched document): medium. The rate-of-descent switch used in P66 is not placed.",
+          "sources": [
+            {
+              "title": "Apollo Experience Report: Spacecraft Hand Controller Development (NASA TN D-7884)",
+              "url": "https://ntrs.nasa.gov/citations/19750010202",
+              "kind": "manual",
+              "covers": "ACA, TTCA",
+              "id": "s1"
+            },
+            {
+              "title": "Apollo Lunar Module (Wikipedia)",
+              "url": "https://en.wikipedia.org/wiki/Apollo_Lunar_Module",
+              "kind": "wikipedia",
+              "covers": "crew roles",
+              "id": "s2"
+            },
+            {
+              "title": "Apollo Operations Handbook panel numbering (general knowledge, not page-checked)",
+              "kind": "reference",
+              "covers": "panel numbers and contents not in the fetched sources",
+              "id": "s3"
+            }
+          ],
+          "confidence": "medium",
+          "overview": {
+            "text": "Two crewmen standing at the forward panels: commander left (panel 1, 5), LM pilot right (panel 2, 6), centre panels 3 and 4 between them, circuit breakers on panels 11 and 16, side panels 8, 12 and 14.",
+            "areas": [
+              {
+                "n": 1,
+                "name": "Commander's panels 1 and 5",
+                "area": "front-left",
+                "panels": [
+                  "p1",
+                  "p5"
+                ],
+                "src": "s1"
+              },
+              {
+                "n": 2,
+                "name": "LM pilot's panels 2 and 6",
+                "area": "front-right",
+                "panels": [
+                  "p2",
+                  "p6"
+                ],
+                "src": "s1"
+              },
+              {
+                "n": 3,
+                "name": "Panel 3 (centre: engine, guidance, radar)",
+                "area": "front-center",
+                "panels": [
+                  "p3"
+                ],
+                "src": "s1"
+              },
+              {
+                "n": 4,
+                "name": "Panel 4 (DSKY)",
+                "area": "center-pedestal",
+                "panels": [
+                  "p4"
+                ],
+                "src": "s1"
+              },
+              {
+                "n": 5,
+                "name": "Side panels 8, 11, 12, 14 and 16",
+                "area": "left-side",
+                "panels": [
+                  "side"
+                ],
+                "src": "s1"
+              },
+              {
+                "n": 6,
+                "name": "Triangular windows and LPD scribe",
+                "area": "glareshield",
+                "panels": [
+                  "windows"
+                ],
+                "src": "s1"
+              }
+            ],
+            "src": "s1"
+          }
+        }
+      ],
+      "photos": [
+        {
+          "url": "https://upload.wikimedia.org/wikipedia/commons/d/dc/NASM-NASM2013-02663.jpg",
+          "page": "https://commons.wikimedia.org/wiki/File:NASM-NASM2013-02663.jpg",
+          "view": "cockpit",
+          "credit": "Smithsonian Institution/Eric Long",
+          "license": "cc0",
+          "variant": "apollo-cm",
+          "caption": "Interior of the Apollo 11 Command Module Columbia with main display console and couches (Smithsonian museum artefact)",
+          "confidence": "high"
+        },
+        {
+          "url": "https://upload.wikimedia.org/wikipedia/commons/6/6a/Apollo_11_Command_Module_Columbia_instrument_panel_%28NASM-SI-98-16043%29.jpg",
+          "page": "https://commons.wikimedia.org/wiki/File:Apollo_11_Command_Module_Columbia_instrument_panel_(NASM-SI-98-16043).jpg",
+          "view": "front-panel",
+          "credit": "Smithsonian Institution/Eric F. Long",
+          "license": "cc0",
+          "variant": "apollo-cm",
+          "caption": "Apollo 11 Command Module Columbia main display console (Smithsonian museum artefact)",
+          "confidence": "high"
+        },
+        {
+          "url": "https://upload.wikimedia.org/wikipedia/commons/d/d3/AS11-36-5389_%2821078671954%29_%28cropped%29.jpg",
+          "page": "https://commons.wikimedia.org/wiki/File:AS11-36-5389_(21078671954)_(cropped).jpg",
+          "view": "front-panel",
+          "credit": "Project Apollo Archive",
+          "license": "public-domain",
+          "variant": "apollo-lm",
+          "caption": "Apollo 11 Lunar Module Eagle main panel with two FDAI attitude indicators, photographed in flight (NASA)",
+          "confidence": "high"
+        },
+        {
+          "url": "https://upload.wikimedia.org/wikipedia/commons/3/35/AS11-36-5392_%2821689906112%29.jpg",
+          "page": "https://commons.wikimedia.org/wiki/File:AS11-36-5392_(21689906112).jpg",
+          "view": "stick",
+          "credit": "Project Apollo Archive",
+          "license": "public-domain",
+          "variant": "apollo-lm",
+          "caption": "Apollo 11 Lunar Module right window station with translation hand controller and abort guidance keypad (NASA)",
+          "confidence": "medium"
+        }
+      ]
+    },
+    {
+      "id": "space-shuttle",
+      "name": "Space Shuttle orbiter",
+      "aliases": [
+        "Space Shuttle",
+        "STS",
+        "Orbiter",
+        "Columbia",
+        "Challenger",
+        "Discovery",
+        "Atlantis",
+        "Endeavour"
+      ],
+      "category": "space",
+      "fiction": false,
+      "franchise": "",
+      "maker": "Rockwell International",
+      "nations": [
+        "US"
+      ],
+      "role": "spacecraft",
+      "era": "cold-war-late",
+      "summary": "Reusable winged orbiter (1981-2011): commander and pilot each with a rotational hand controller, speed brake/thrust controller and rudder pedals; translation controllers at the commander's seat and the aft station.",
+      "variants": [
+        {
+          "id": "space-shuttle-cdr",
+          "name": "Space Shuttle, commander's station",
+          "aliases": [
+            "CDR",
+            "Commander"
+          ],
+          "years": "1981-2011",
+          "seat": "pilot",
+          "games": [],
+          "controls": [
+            {
+              "id": "rhc.gimbal",
+              "device": "rhc",
+              "name": "Rotational hand controller (RHC)",
+              "type": "gimbal",
+              "where": "pistol grip in front of the seat between the knees, adjustable in height and pitch",
+              "functions": [
+                {
+                  "dir": "pitch",
+                  "text": "Pitch",
+                  "fn": "pitch",
+                  "note": "Rate commands to SRB/SSME/OMS gimbals and RCS in ascent and orbit, to the elevons in entry."
+                },
+                {
+                  "dir": "roll",
+                  "text": "Roll",
+                  "fn": "roll"
+                },
+                {
+                  "dir": "yaw",
+                  "text": "Yaw (ascent and orbit only)",
+                  "fn": "space_yaw",
+                  "note": "During entry and landing the RHC has only roll and pitch; the autopilot handles sideslip."
+                }
+              ],
+              "n": 1,
+              "src": "s1"
+            },
+            {
+              "id": "rhc.hat.trim",
+              "device": "rhc",
+              "name": "RHC trim switch",
+              "type": "hat4",
+              "where": "4-way switch on top of the RHC grip, thumb",
+              "functions": [
+                {
+                  "dir": "up",
+                  "text": "Pitch trim rate (forward)",
+                  "fn": "trim_nosedown",
+                  "note": "Active in entry and RTLS when TRIM RHC/PANEL is enabled on panel F3."
+                },
+                {
+                  "dir": "down",
+                  "text": "Pitch trim rate (aft)",
+                  "fn": "trimnoseup"
+                },
+                {
+                  "dir": "left",
+                  "text": "Roll trim left",
+                  "fn": "trimleft"
+                },
+                {
+                  "dir": "right",
+                  "text": "Roll trim right",
+                  "fn": "trimright"
+                }
+              ],
+              "n": 2,
+              "src": "s1"
+            },
+            {
+              "id": "rhc.button.bfs",
+              "device": "rhc",
+              "name": "BFS engage button",
+              "type": "button",
+              "where": "red push button on the RHC",
+              "functions": [
+                {
+                  "dir": "",
+                  "text": "Engage the backup flight system",
+                  "fn": ""
+                }
+              ],
+              "n": 3,
+              "src": "s1"
+            },
+            {
+              "id": "rhc.button.ptt",
+              "device": "rhc",
+              "name": "Communications switch",
+              "type": "button",
+              "where": "push-to-talk switch on the RHC grip",
+              "functions": [
+                {
+                  "dir": "",
+                  "text": "Transmit (push to talk)",
+                  "fn": "comm1_up"
+                }
+              ],
+              "n": 4,
+              "src": "s1"
+            },
+            {
+              "id": "throttle.axis.main",
+              "device": "throttle",
+              "name": "Speed brake/thrust controller (SBTC), left",
+              "type": "axis",
+              "where": "lever on the left side console of the commander, left hand",
+              "functions": [
+                {
+                  "dir": "axis",
+                  "text": "Speed brake: aft = open, forward = closed",
+                  "fn": "",
+                  "note": "The commander's SBTC commands only the speed brake (entry); manual throttling is on the pilot's side."
+                }
+              ],
+              "n": 5,
+              "src": "s1"
+            },
+            {
+              "id": "throttle.button.takeover",
+              "device": "throttle",
+              "name": "SBTC takeover switch",
+              "type": "button",
+              "where": "momentary push button on the SBTC handle",
+              "functions": [
+                {
+                  "dir": "",
+                  "text": "Take manual speed brake control",
+                  "fn": ""
+                }
+              ],
+              "n": 6,
+              "src": "s1"
+            },
+            {
+              "id": "thc.gimbal",
+              "device": "thc",
+              "name": "Translational hand controller (THC)",
+              "type": "gimbal",
+              "where": "T-handle at the left of the commander's seat (panel area left of F2)",
+              "functions": [
+                {
+                  "dir": "fwd",
+                  "text": "Translate +X (forward)",
+                  "fn": "space_strafe_fwdaft",
+                  "note": "RCS translation during insertion, on orbit and deorbit."
+                },
+                {
+                  "dir": "aft",
+                  "text": "Translate -X (aft)",
+                  "fn": "space_strafe_fwdaft"
+                },
+                {
+                  "dir": "left",
+                  "text": "Translate -Y (left)",
+                  "fn": "space_strafe_hor"
+                },
+                {
+                  "dir": "right",
+                  "text": "Translate +Y (right)",
+                  "fn": "space_strafe_hor"
+                },
+                {
+                  "dir": "up",
+                  "text": "Translate -Z (up)",
+                  "fn": "space_strafe_ver"
+                },
+                {
+                  "dir": "down",
+                  "text": "Translate +Z (down)",
+                  "fn": "space_strafe_ver"
+                }
+              ],
+              "n": 7,
+              "src": "s1"
+            },
+            {
+              "id": "pedals.axis.rudder",
+              "device": "pedals",
+              "name": "Rudder pedals (RPTA)",
+              "type": "axis",
+              "where": "pedals, adjustable 3.25 in fore/aft",
+              "functions": [
+                {
+                  "dir": "axis",
+                  "text": "Rudder and nose wheel steering",
+                  "fn": "rudder"
+                }
+              ],
+              "n": 8,
+              "src": "s1"
+            },
+            {
+              "id": "pedals.axis.brake_left",
+              "device": "pedals",
+              "name": "Left toe brake",
+              "type": "axis",
+              "where": "top of the left pedal",
+              "functions": [
+                {
+                  "dir": "axis",
+                  "text": "Left main wheel brakes",
+                  "fn": "wheelbrakeleftanalog"
+                }
+              ],
+              "n": 9,
+              "src": "s1"
+            },
+            {
+              "id": "pedals.axis.brake_right",
+              "device": "pedals",
+              "name": "Right toe brake",
+              "type": "axis",
+              "where": "top of the right pedal",
+              "functions": [
+                {
+                  "dir": "axis",
+                  "text": "Right main wheel brakes",
+                  "fn": "wheelbrakerightanalog"
+                }
+              ],
+              "n": 10,
+              "src": "s1"
+            }
+          ],
+          "panels": [
+            {
+              "id": "f2",
+              "name": "Glareshield panel F2 (flight control mode PBIs)",
+              "area": "glareshield",
+              "text": "Commander's mode push-button indicators.",
+              "src": "s1",
+              "confidence": "medium",
+              "items": [
+                {
+                  "n": 1,
+                  "name": "PITCH AUTO / CSS",
+                  "type": "pushbutton",
+                  "text": "Automatic or control-stick steering in pitch"
+                },
+                {
+                  "n": 2,
+                  "name": "ROLL/YAW AUTO / CSS",
+                  "type": "pushbutton",
+                  "text": "Same for roll and yaw"
+                },
+                {
+                  "n": 3,
+                  "name": "SPD BK/THROT AUTO / MAN",
+                  "type": "pushbutton",
+                  "text": "Speed brake or throttle by guidance or by hand"
+                },
+                {
+                  "n": 4,
+                  "name": "BODY FLAP AUTO / MAN",
+                  "type": "pushbutton",
+                  "text": "Body flap by guidance or by hand"
+                },
+                {
+                  "n": 5,
+                  "name": "Master alarm",
+                  "type": "light",
+                  "text": "Push to reset"
+                }
+              ]
+            },
+            {
+              "id": "f6-f8",
+              "name": "Forward panels F6-F8 (MEDS displays)",
+              "area": "front-center",
+              "text": "Glass cockpit displays and the commander's flight panel F6.",
+              "src": "s1",
+              "confidence": "medium",
+              "items": [
+                {
+                  "n": 1,
+                  "name": "Commander's MDUs (CDR1, CDR2)",
+                  "type": "display",
+                  "text": "PFD with ADI, HSI and tapes, or systems formats"
+                },
+                {
+                  "n": 2,
+                  "name": "Centre MDUs on F7",
+                  "type": "display",
+                  "text": "Shared displays (CRT 1-3 and MFDs)"
+                },
+                {
+                  "n": 3,
+                  "name": "Caution and warning matrix (F7)",
+                  "type": "light",
+                  "text": "Annunciators per system"
+                },
+                {
+                  "n": 4,
+                  "name": "Abort mode rotary switch and ABORT PBI (F6)",
+                  "type": "selector",
+                  "text": "Selects and starts the ascent abort",
+                  "positions": [
+                    "RTLS",
+                    "TAL",
+                    "ATO"
+                  ]
+                },
+                {
+                  "n": 5,
+                  "name": "Landing gear ARM and DN PBIs (F6)",
+                  "type": "pushbutton",
+                  "text": "Arm and lower the landing gear"
+                }
+              ]
+            },
+            {
+              "id": "l2",
+              "name": "Left panel L2 (trim, body flap, entry mode)",
+              "area": "left-console",
+              "text": "Commander's panel trim and entry switches.",
+              "src": "s1",
+              "confidence": "medium",
+              "items": [
+                {
+                  "n": 1,
+                  "name": "Panel trim switches",
+                  "type": "switch",
+                  "text": "Roll and yaw trim of the aerosurfaces"
+                },
+                {
+                  "n": 2,
+                  "name": "Body flap switch",
+                  "type": "switch",
+                  "text": "Manual body flap up / down"
+                },
+                {
+                  "n": 3,
+                  "name": "Entry mode switch",
+                  "type": "switch3",
+                  "text": "Entry flight control with or without yaw jets",
+                  "positions": [
+                    "AUTO",
+                    "LO GAIN",
+                    "NO Y JET"
+                  ]
+                }
+              ]
+            },
+            {
+              "id": "c3",
+              "name": "Centre console C3 (OMS, FCS channels)",
+              "area": "center-pedestal",
+              "text": "Between the seats.",
+              "src": "s1",
+              "confidence": "medium",
+              "items": [
+                {
+                  "n": 1,
+                  "name": "OMS engine switches",
+                  "type": "switch3",
+                  "text": "Arm the orbital manoeuvring engines",
+                  "positions": [
+                    "ARM-PRESS",
+                    "ARM",
+                    "OFF"
+                  ]
+                },
+                {
+                  "n": 2,
+                  "name": "FCS channel switches",
+                  "type": "switch3",
+                  "text": "Flight control channels",
+                  "positions": [
+                    "AUTO",
+                    "OFF",
+                    "OVERRIDE"
+                  ]
+                },
+                {
+                  "n": 3,
+                  "name": "DAP pushbuttons",
+                  "type": "pushbutton",
+                  "text": "Digital autopilot modes on orbit"
+                },
+                {
+                  "n": 4,
+                  "name": "Air data probe switches",
+                  "type": "switch",
+                  "text": "Deploy the air data probes"
+                },
+                {
+                  "n": 5,
+                  "name": "Pilot's panel trim and body flap",
+                  "type": "switch",
+                  "text": "Second trim switches"
+                }
+              ]
+            },
+            {
+              "id": "overhead",
+              "name": "Overhead panels O1-O17",
+              "area": "overhead",
+              "text": "Power, computers and circuit breakers.",
+              "src": "s1",
+              "confidence": "medium",
+              "items": [
+                {
+                  "n": 1,
+                  "name": "GPC mode switches (O6)",
+                  "type": "switch3",
+                  "text": "General purpose computer mode",
+                  "positions": [
+                    "HALT",
+                    "STBY",
+                    "RUN"
+                  ]
+                },
+                {
+                  "n": 2,
+                  "name": "Circuit breakers (O14-O16)",
+                  "type": "switch",
+                  "text": "Power distribution"
+                }
+              ]
+            },
+            {
+              "id": "f3",
+              "name": "Panel F3 (trim enable, drag chute)",
+              "area": "front-center",
+              "text": "Between the commander's and pilot's panels.",
+              "src": "s1",
+              "confidence": "medium",
+              "items": [
+                {
+                  "n": 1,
+                  "name": "Trim RHC/PNL enable-inhibit",
+                  "type": "switch2",
+                  "text": "Allows RHC and panel trim",
+                  "positions": [
+                    "ENABLE",
+                    "INHIBIT"
+                  ]
+                },
+                {
+                  "n": 2,
+                  "name": "Trim panel on/off",
+                  "type": "switch2",
+                  "text": "Panel trim power",
+                  "positions": [
+                    "ON",
+                    "OFF"
+                  ]
+                },
+                {
+                  "n": 3,
+                  "name": "Drag chute ARM / DEPLOY / JETT PBIs",
+                  "type": "pushbutton",
+                  "text": "Landing drag chute (added in 1992)"
+                }
+              ]
+            }
+          ],
+          "cockpit": "The commander sits on the left of the flight deck with the RHC in front of the seat, the SBTC and the THC to the left and rudder pedals. The pilot's station on the right mirrors it without a THC.",
+          "notes": "Controls and trim from the Controllers Workbook (text without figures); panel numbers of F2, F3, F6-F8, C3, O6 and the PBI names as known from the shuttle crew documents (medium).",
+          "sources": [
+            {
+              "title": "Space Shuttle Controllers Workbook CONT 21002 (NASA/USA)",
+              "url": "https://ibiblio.org/apollo/Shuttle/383442main_controllers_workbook_21002.pdf",
+              "kind": "manual",
+              "covers": "RHC, THC, SBTC, RPTA, trim, BFS",
+              "id": "s1"
+            },
+            {
+              "title": "NSTS 1988 News Reference: Rotational hand controllers (GlobalSecurity mirror)",
+              "url": "https://www.globalsecurity.org/space/library/report/1988/sts-rhc.html",
+              "kind": "manual",
+              "covers": "RHC switches",
+              "id": "s2"
+            },
+            {
+              "title": "Space Shuttle orbiter (Wikipedia)",
+              "url": "https://en.wikipedia.org/wiki/Space_Shuttle_orbiter",
+              "kind": "wikipedia",
+              "covers": "overview",
+              "id": "s3"
+            },
+            {
+              "title": "Apollo Operations Handbook panel numbering (general knowledge, not page-checked)",
+              "kind": "reference",
+              "covers": "panel numbers and contents not in the fetched sources",
+              "id": "s4"
+            }
+          ],
+          "confidence": "medium",
+          "overview": {
+            "text": "Commander on the left of the forward flight deck: glareshield F2, forward panels F6-F8, left panels L1-L2, centre console C2-C3 between the seats, overhead panels O1-O17.",
+            "areas": [
+              {
+                "n": 1,
+                "name": "Glareshield panel F2 (flight control mode PBIs)",
+                "area": "glareshield",
+                "panels": [
+                  "f2"
+                ],
+                "src": "s1"
+              },
+              {
+                "n": 2,
+                "name": "Forward panels F3, F6-F8",
+                "area": "front-center",
+                "panels": [
+                  "f6-f8",
+                  "f3"
+                ],
+                "src": "s1"
+              },
+              {
+                "n": 3,
+                "name": "Left panel L2 (trim, body flap, entry mode)",
+                "area": "left-console",
+                "panels": [
+                  "l2"
+                ],
+                "src": "s1"
+              },
+              {
+                "n": 4,
+                "name": "Centre console C3 (OMS, FCS channels)",
+                "area": "center-pedestal",
+                "panels": [
+                  "c3"
+                ],
+                "src": "s1"
+              },
+              {
+                "n": 5,
+                "name": "Overhead panels O1-O17",
+                "area": "overhead",
+                "panels": [
+                  "overhead"
+                ],
+                "src": "s1"
+              }
+            ],
+            "src": "s1"
+          }
+        },
+        {
+          "id": "space-shuttle-plt",
+          "name": "Space Shuttle, pilot's station",
+          "aliases": [
+            "PLT",
+            "Pilot"
+          ],
+          "years": "1981-2011",
+          "seat": "pilot",
+          "inherits": "space-shuttle-cdr",
+          "removeControls": [
+            "thc.gimbal"
+          ],
+          "games": [],
+          "controls": [
+            {
+              "id": "throttle.axis.main",
+              "device": "throttle",
+              "name": "Speed brake/thrust controller (SBTC), right",
+              "type": "axis",
+              "where": "lever on the right side of the pilot's seat (console C3 side)",
+              "functions": [
+                {
+                  "dir": "axis",
+                  "text": "Ascent: SSME thrust / entry: speed brake",
+                  "fn": "throttleright",
+                  "note": "Only the right SBTC throttles the main engines (forward stop = maximum); in entry it commands the speed brake."
+                }
+              ],
+              "n": 5,
+              "src": "s1"
+            },
+            {
+              "id": "throttle.button.takeover",
+              "device": "throttle",
+              "name": "SBTC takeover switch",
+              "type": "button",
+              "where": "momentary push button on the SBTC handle",
+              "functions": [
+                {
+                  "dir": "",
+                  "text": "Manual throttle / speed brake takeover",
+                  "fn": "",
+                  "note": "Hold, match the frozen computer throttle setting within 4 %, then release."
+                }
+              ],
+              "n": 6,
+              "src": "s1"
+            }
+          ],
+          "panels": [
+            {
+              "id": "f4",
+              "name": "Glareshield panel F4",
+              "area": "glareshield",
+              "text": "Pilot's mode push-button indicators.",
+              "src": "s1",
+              "confidence": "medium",
+              "items": [
+                {
+                  "n": 1,
+                  "name": "PITCH AUTO / CSS",
+                  "type": "pushbutton",
+                  "text": "Pitch mode"
+                },
+                {
+                  "n": 2,
+                  "name": "ROLL/YAW AUTO / CSS",
+                  "type": "pushbutton",
+                  "text": "Roll and yaw mode"
+                },
+                {
+                  "n": 3,
+                  "name": "SPD BK/THROT AUTO / MAN",
+                  "type": "pushbutton",
+                  "text": "Speed brake / throttle mode"
+                },
+                {
+                  "n": 4,
+                  "name": "Master alarm",
+                  "type": "light",
+                  "text": "Push to reset"
+                }
+              ]
+            },
+            {
+              "id": "f7-f9",
+              "name": "Forward panels F7-F9 (MEDS displays)",
+              "area": "front-center",
+              "text": "Multifunction displays and the pilot's PFD.",
+              "src": "s1",
+              "confidence": "medium",
+              "items": [
+                {
+                  "n": 1,
+                  "name": "Pilot's MDUs (PLT1, PLT2)",
+                  "type": "display",
+                  "text": "PFD or systems formats"
+                },
+                {
+                  "n": 2,
+                  "name": "Landing gear ARM and DN PBIs (F8)",
+                  "type": "pushbutton",
+                  "text": "Second set of gear controls"
+                }
+              ]
+            },
+            {
+              "id": "c3",
+              "name": "Centre console C3",
+              "area": "center-pedestal",
+              "text": "Pilot's trim, body flap, FCS channels.",
+              "src": "s1",
+              "confidence": "medium",
+              "items": [
+                {
+                  "n": 1,
+                  "name": "Pilot's panel trim switches",
+                  "type": "switch",
+                  "text": "Aerosurface trim"
+                },
+                {
+                  "n": 2,
+                  "name": "Body flap switch",
+                  "type": "switch",
+                  "text": "Manual body flap"
+                },
+                {
+                  "n": 3,
+                  "name": "FCS channel switches",
+                  "type": "switch3",
+                  "text": "Flight control channels",
+                  "positions": [
+                    "AUTO",
+                    "OFF",
+                    "OVERRIDE"
+                  ]
+                }
+              ]
+            },
+            {
+              "id": "r1-r2",
+              "name": "Right panels R1-R2",
+              "area": "right-console",
+              "text": "Electrical power, hydraulics and APU controls.",
+              "src": "s1",
+              "confidence": "medium",
+              "items": [
+                {
+                  "n": 1,
+                  "name": "Power distribution (R1)",
+                  "type": "switch",
+                  "text": "Fuel cells and main buses"
+                },
+                {
+                  "n": 2,
+                  "name": "APU controls (R2)",
+                  "type": "switch",
+                  "text": "Start and run the three APUs"
+                },
+                {
+                  "n": 3,
+                  "name": "Hydraulic main pump switches (R2)",
+                  "type": "switch",
+                  "text": "Hydraulic pressure"
+                }
+              ]
+            },
+            {
+              "id": "overhead",
+              "name": "Overhead panels",
+              "area": "overhead",
+              "text": "Circuit breakers and power distribution.",
+              "src": "s1",
+              "confidence": "medium",
+              "items": [
+                {
+                  "n": 1,
+                  "name": "Circuit breakers",
+                  "type": "switch",
+                  "text": "Power distribution"
+                }
+              ]
+            }
+          ],
+          "cockpit": "The pilot sits on the right with the RHC in front, the SBTC on the right and rudder pedals; no forward THC.",
+          "notes": "Same RHC and pedals as the commander; manual SSME throttling during ascent is possible only from this SBTC. Panel contents as known from shuttle crew documents (medium).",
+          "sources": [
+            {
+              "title": "Space Shuttle Controllers Workbook CONT 21002 (NASA/USA)",
+              "url": "https://ibiblio.org/apollo/Shuttle/383442main_controllers_workbook_21002.pdf",
+              "kind": "manual",
+              "covers": "RHC, THC, SBTC, RPTA, trim, BFS",
+              "id": "s1"
+            },
+            {
+              "title": "NSTS 1988 News Reference: Rotational hand controllers (GlobalSecurity mirror)",
+              "url": "https://www.globalsecurity.org/space/library/report/1988/sts-rhc.html",
+              "kind": "manual",
+              "covers": "RHC switches",
+              "id": "s2"
+            },
+            {
+              "title": "Space Shuttle orbiter (Wikipedia)",
+              "url": "https://en.wikipedia.org/wiki/Space_Shuttle_orbiter",
+              "kind": "wikipedia",
+              "covers": "overview",
+              "id": "s3"
+            }
+          ],
+          "confidence": "medium",
+          "overview": {
+            "text": "Pilot on the right: glareshield F4, forward panels F7-F9, centre console C3, right panels R1-R2 for power, hydraulics and APUs.",
+            "areas": [
+              {
+                "n": 1,
+                "name": "Glareshield panel F4",
+                "area": "glareshield",
+                "panels": [
+                  "f4"
+                ],
+                "src": "s1"
+              },
+              {
+                "n": 2,
+                "name": "Forward panels F7-F9 (MEDS displays)",
+                "area": "front-center",
+                "panels": [
+                  "f7-f9"
+                ],
+                "src": "s1"
+              },
+              {
+                "n": 3,
+                "name": "Centre console C3",
+                "area": "center-pedestal",
+                "panels": [
+                  "c3"
+                ],
+                "src": "s1"
+              },
+              {
+                "n": 4,
+                "name": "Right panels R1-R2",
+                "area": "right-console",
+                "panels": [
+                  "r1-r2"
+                ],
+                "src": "s1"
+              },
+              {
+                "n": 5,
+                "name": "Overhead panels",
+                "area": "overhead",
+                "panels": [
+                  "overhead"
+                ],
+                "src": "s1"
+              }
+            ],
+            "src": "s1"
+          }
+        },
+        {
+          "id": "space-shuttle-aft",
+          "name": "Space Shuttle, aft flight deck station",
+          "aliases": [
+            "Aft station",
+            "Rendezvous station"
+          ],
+          "years": "1981-2011",
+          "seat": "operator",
+          "games": [],
+          "controls": [
+            {
+              "id": "rhc.gimbal",
+              "device": "rhc",
+              "name": "Aft rotational hand controller",
+              "type": "gimbal",
+              "where": "RHC at the aft station facing the payload bay and overhead windows",
+              "functions": [
+                {
+                  "dir": "pitch",
+                  "text": "Pitch (per aft sense switch)",
+                  "fn": "pitch",
+                  "note": "Commands are transformed for the -X (aft windows) or -Z (overhead windows) line of sight."
+                },
+                {
+                  "dir": "roll",
+                  "text": "Roll",
+                  "fn": "roll"
+                },
+                {
+                  "dir": "yaw",
+                  "text": "Yaw",
+                  "fn": "space_yaw"
+                }
+              ],
+              "n": 1,
+              "src": "s1"
+            },
+            {
+              "id": "rhc.button.ptt",
+              "device": "rhc",
+              "name": "Communications switch",
+              "type": "button",
+              "where": "push-to-talk switch on the RHC grip",
+              "functions": [
+                {
+                  "dir": "",
+                  "text": "Transmit (push to talk)",
+                  "fn": "comm1_up"
+                }
+              ],
+              "n": 2,
+              "src": "s1"
+            },
+            {
+              "id": "thc.gimbal",
+              "device": "thc",
+              "name": "Aft translational hand controller",
+              "type": "gimbal",
+              "where": "T-handle at the aft station; push it the way the orbiter should move",
+              "functions": [
+                {
+                  "dir": "fwd",
+                  "text": "Translate toward the view",
+                  "fn": "space_strafe_fwdaft",
+                  "note": "Used for rendezvous, docking and payload operations on orbit (OPS 2 and 8)."
+                },
+                {
+                  "dir": "aft",
+                  "text": "Translate away from the view",
+                  "fn": "space_strafe_fwdaft"
+                },
+                {
+                  "dir": "left",
+                  "text": "Translate left",
+                  "fn": "space_strafe_hor"
+                },
+                {
+                  "dir": "right",
+                  "text": "Translate right",
+                  "fn": "space_strafe_hor"
+                },
+                {
+                  "dir": "up",
+                  "text": "Translate up",
+                  "fn": "space_strafe_ver"
+                },
+                {
+                  "dir": "down",
+                  "text": "Translate down",
+                  "fn": "space_strafe_ver"
+                }
+              ],
+              "n": 3,
+              "src": "s1"
+            },
+            {
+              "id": "panel.switch.aft_sense",
+              "device": "panel",
+              "name": "Aft sense switch",
+              "type": "switch2",
+              "where": "panel A6U",
+              "functions": [
+                {
+                  "dir": "up",
+                  "text": "-Z: overhead windows reference",
+                  "fn": ""
+                },
+                {
+                  "dir": "down",
+                  "text": "-X: aft windows reference",
+                  "fn": ""
+                }
+              ],
+              "n": 4,
+              "src": "s1"
+            }
+          ],
+          "panels": [
+            {
+              "id": "a6u",
+              "name": "Panel A6U",
+              "area": "rear",
+              "text": "Aft station flight controls.",
+              "src": "s1",
+              "confidence": "medium",
+              "items": [
+                {
+                  "n": 1,
+                  "name": "Aft sense switch",
+                  "type": "switch2",
+                  "text": "Reference for the aft controllers",
+                  "positions": [
+                    "-Z",
+                    "-X"
+                  ]
+                },
+                {
+                  "n": 2,
+                  "name": "DAP pushbuttons",
+                  "type": "pushbutton",
+                  "text": "Digital autopilot modes for the aft station"
+                }
+              ]
+            },
+            {
+              "id": "windows",
+              "name": "Aft and overhead windows",
+              "area": "overhead",
+              "text": "Views into the payload bay and above.",
+              "src": "s1",
+              "confidence": "medium",
+              "items": [
+                {
+                  "n": 1,
+                  "name": "Aft windows",
+                  "type": "other",
+                  "text": "Two windows into the payload bay"
+                },
+                {
+                  "n": 2,
+                  "name": "Overhead windows",
+                  "type": "other",
+                  "text": "Two windows above"
+                }
+              ]
+            },
+            {
+              "id": "rms",
+              "name": "Remote manipulator controls",
+              "area": "rear",
+              "text": "Robot arm station (not flight controls).",
+              "src": "s1",
+              "confidence": "medium",
+              "items": [
+                {
+                  "n": 1,
+                  "name": "RMS rotational hand controller",
+                  "type": "other",
+                  "text": "Rotates the arm's end effector"
+                },
+                {
+                  "n": 2,
+                  "name": "RMS translational hand controller",
+                  "type": "other",
+                  "text": "Moves the end effector"
+                },
+                {
+                  "n": 3,
+                  "name": "RMS display and control panel",
+                  "type": "switch",
+                  "text": "Arm modes and joint readouts"
+                }
+              ]
+            },
+            {
+              "id": "aft-displays",
+              "name": "Aft displays",
+              "area": "front-center",
+              "text": "Displays at the aft station.",
+              "src": "s1",
+              "confidence": "medium",
+              "items": [
+                {
+                  "n": 1,
+                  "name": "Aft display",
+                  "type": "display",
+                  "text": "Repeats attitude and rendezvous data"
+                },
+                {
+                  "n": 2,
+                  "name": "Rendezvous radar readouts",
+                  "type": "display",
+                  "text": "Range and range rate"
+                }
+              ]
+            }
+          ],
+          "cockpit": "A standing station at the back of the flight deck for on-orbit flying while looking out of the aft or overhead windows.",
+          "notes": "The aft RHC's trim switch is inactive and it has no BFS button; on orbit only. Panel contents as known from shuttle crew documents (medium).",
+          "sources": [
+            {
+              "title": "Space Shuttle Controllers Workbook CONT 21002 (NASA/USA)",
+              "url": "https://ibiblio.org/apollo/Shuttle/383442main_controllers_workbook_21002.pdf",
+              "kind": "manual",
+              "covers": "aft station",
+              "id": "s1"
+            },
+            {
+              "title": "NSTS 1988 News Reference: Rotational hand controllers (GlobalSecurity mirror)",
+              "url": "https://www.globalsecurity.org/space/library/report/1988/sts-rhc.html",
+              "kind": "manual",
+              "covers": "aft RHC",
+              "id": "s2"
+            }
+          ],
+          "confidence": "medium",
+          "overview": {
+            "text": "Aft flight deck facing the payload bay: RHC and THC with panel A6U, aft and overhead windows, robot arm station, displays.",
+            "areas": [
+              {
+                "n": 1,
+                "name": "Aft station panels",
+                "area": "rear",
+                "panels": [
+                  "a6u",
+                  "rms"
+                ],
+                "src": "s1"
+              },
+              {
+                "n": 2,
+                "name": "Aft and overhead windows",
+                "area": "overhead",
+                "panels": [
+                  "windows"
+                ],
+                "src": "s1"
+              },
+              {
+                "n": 3,
+                "name": "Aft displays",
+                "area": "front-center",
+                "panels": [
+                  "aft-displays"
+                ],
+                "src": "s1"
+              }
+            ],
+            "src": "s1"
+          }
+        }
+      ],
+      "photos": [
+        {
+          "url": "https://upload.wikimedia.org/wikipedia/commons/a/ab/Space_Shuttle_Endeavour%27s_Flight_Deck.jpg",
+          "page": "https://commons.wikimedia.org/wiki/File:Space_Shuttle_Endeavour%27s_Flight_Deck.jpg",
+          "view": "cockpit",
+          "credit": "Steve Jurvetson",
+          "license": "cc-by-2.0",
+          "caption": "Space Shuttle Endeavour forward flight deck with commander and pilot stations",
+          "confidence": "high"
+        },
+        {
+          "url": "https://upload.wikimedia.org/wikipedia/commons/6/6b/Astronaut_Eileen_Collins_at_the_Pilot%27s_Station_on_Shuttle_Discovery.jpg",
+          "page": "https://commons.wikimedia.org/wiki/File:Astronaut_Eileen_Collins_at_the_Pilot%27s_Station_on_Shuttle_Discovery.jpg",
+          "view": "cockpit",
+          "credit": "NASA astronaut",
+          "license": "public-domain",
+          "variant": "space-shuttle-plt",
+          "caption": "Eileen Collins at the pilot's station on Shuttle Discovery, 1995 (NASA photo)",
+          "confidence": "high"
+        },
+        {
+          "url": "https://upload.wikimedia.org/wikipedia/commons/8/8e/Columbia_Commander_John_Young_-_GPN-2000-001314.jpg",
+          "page": "https://commons.wikimedia.org/wiki/File:Columbia_Commander_John_Young_-_GPN-2000-001314.jpg",
+          "view": "cockpit",
+          "credit": "NASA / Robert L. Crippen",
+          "license": "public-domain",
+          "variant": "space-shuttle-cdr",
+          "caption": "STS-1 commander John Young at the commander's station of Columbia, panels and hand controller visible (NASA photo)",
+          "confidence": "medium"
+        },
+        {
+          "url": "https://upload.wikimedia.org/wikipedia/commons/e/e0/STS-118_Tracy_Caldwell_works_the_controls_on_the_aft_flight_deck_of_Space_Shuttle_Endeavour.jpg",
+          "page": "https://commons.wikimedia.org/wiki/File:STS-118_Tracy_Caldwell_works_the_controls_on_the_aft_flight_deck_of_Space_Shuttle_Endeavour.jpg",
+          "view": "panel",
+          "credit": "NASA",
+          "license": "public-domain",
+          "variant": "space-shuttle-aft",
+          "caption": "Aft flight deck control stations of Space Shuttle Endeavour in orbit, STS-118 (NASA photo)",
+          "confidence": "high"
+        },
+        {
+          "url": "https://upload.wikimedia.org/wikipedia/commons/4/43/Armstrong_in_Atlantis.jpg",
+          "page": "https://commons.wikimedia.org/wiki/File:Armstrong_in_Atlantis.jpg",
+          "view": "stick",
+          "credit": "NASA / Dimitri Gerondidakis",
+          "license": "public-domain",
+          "caption": "Space Shuttle Atlantis commander's rotational hand controller (RHC), held by Neil Armstrong",
+          "confidence": "medium"
+        }
+      ]
+    },
+    {
+      "id": "soyuz",
+      "name": "Soyuz spacecraft",
+      "aliases": [
+        "Союз",
+        "Soyuz TM",
+        "Soyuz TMA",
+        "Soyuz MS"
+      ],
+      "category": "space",
+      "fiction": false,
+      "franchise": "",
+      "maker": "Energia (OKB-1)",
+      "nations": [
+        "SU",
+        "RU"
+      ],
+      "role": "spacecraft",
+      "era": "cold-war-late",
+      "summary": "Three-seat crew transport flown since 1967; the commander in the centre seat flies manual approaches with two hand controllers: rotation (RUO) at the right hand, translation (RUD) at the left.",
+      "variants": [
+        {
+          "id": "soyuz-tm",
+          "name": "Soyuz-TM",
+          "aliases": [
+            "7K-STM"
+          ],
+          "years": "1986-2002",
+          "seat": "pilot",
+          "games": [],
+          "controls": [
+            {
+              "id": "rhc.gimbal",
+              "device": "rhc",
+              "name": "RUO orientation hand controller",
+              "type": "gimbal",
+              "where": "handle at the commander's right hand",
+              "functions": [
+                {
+                  "dir": "pitch",
+                  "text": "Pitch",
+                  "fn": "pitch"
+                },
+                {
+                  "dir": "roll",
+                  "text": "Roll",
+                  "fn": "roll"
+                },
+                {
+                  "dir": "yaw",
+                  "text": "Yaw",
+                  "fn": "space_yaw"
+                }
+              ],
+              "n": 1,
+              "src": "s1"
+            },
+            {
+              "id": "thc.gimbal",
+              "device": "thc",
+              "name": "RUD motion (translation) hand controller",
+              "type": "gimbal",
+              "where": "handle at the commander's left hand",
+              "functions": [
+                {
+                  "dir": "fwd",
+                  "text": "Translate forward",
+                  "fn": "space_strafe_fwdaft",
+                  "note": "Manual approach and docking backup to the automatic Kurs system."
+                },
+                {
+                  "dir": "aft",
+                  "text": "Translate back",
+                  "fn": "space_strafe_fwdaft"
+                },
+                {
+                  "dir": "left",
+                  "text": "Translate left",
+                  "fn": "space_strafe_hor"
+                },
+                {
+                  "dir": "right",
+                  "text": "Translate right",
+                  "fn": "space_strafe_hor"
+                },
+                {
+                  "dir": "up",
+                  "text": "Translate up",
+                  "fn": "space_strafe_ver"
+                },
+                {
+                  "dir": "down",
+                  "text": "Translate down",
+                  "fn": "space_strafe_ver"
+                }
+              ],
+              "n": 2,
+              "src": "s1"
+            }
+          ],
+          "panels": [
+            {
+              "id": "neptun",
+              "name": "Neptun control panel",
+              "area": "front-center",
+              "text": "Main display and command panel.",
+              "src": "s1",
+              "confidence": "medium",
+              "items": [
+                {
+                  "n": 1,
+                  "name": "Display screens",
+                  "type": "display",
+                  "text": "Systems and approach data"
+                },
+                {
+                  "n": 2,
+                  "name": "Command keys",
+                  "type": "keypad",
+                  "text": "Pressed with a pointer stick while strapped in"
+                },
+                {
+                  "n": 3,
+                  "name": "Globus navigation globe",
+                  "type": "display",
+                  "text": "Turning globe showing the position over the Earth"
+                },
+                {
+                  "n": 4,
+                  "name": "Clocks",
+                  "type": "display",
+                  "text": "Time and event timers"
+                }
+              ]
+            },
+            {
+              "id": "sight",
+              "name": "Periscope / optical sight (VSK)",
+              "area": "floor",
+              "text": "Viewing device for the manual approach.",
+              "src": "s1",
+              "confidence": "medium",
+              "items": [
+                {
+                  "n": 1,
+                  "name": "Optical sight",
+                  "type": "display",
+                  "text": "Aims at the docking target"
+                }
+              ]
+            },
+            {
+              "id": "seats",
+              "name": "Left and right crew seats",
+              "area": "floor",
+              "text": "Flight engineer left, third crew member right.",
+              "src": "s1",
+              "confidence": "medium",
+              "items": [
+                {
+                  "n": 1,
+                  "name": "Side panels",
+                  "type": "switch",
+                  "text": "Each seat has its own side panels"
+                }
+              ]
+            },
+            {
+              "id": "descent-handle",
+              "name": "Descent control handle",
+              "area": "right-console",
+              "text": "Manual re-entry lift control.",
+              "src": "s1",
+              "confidence": "low",
+              "items": [
+                {
+                  "n": 1,
+                  "name": "Descent control handle",
+                  "type": "handle",
+                  "text": "Manual lift control in off-nominal descents (low)"
+                }
+              ]
+            }
+          ],
+          "cockpit": "Three Kazbek couches in the descent module; the commander in the centre faces the panel with the rotation controller at the right and the translation controller at the left hand.",
+          "notes": "RUO/RUD layout matches the station's TORU set (left translation, right rotation). Grip buttons not listed; panel contents summarised from public sources (medium).",
+          "sources": [
+            {
+              "title": "TORU (Wikipedia)",
+              "url": "https://en.wikipedia.org/wiki/TORU",
+              "kind": "wikipedia",
+              "covers": "two-joystick layout",
+              "id": "s1"
+            },
+            {
+              "title": "Soyuz-TM (Wikipedia)",
+              "url": "https://en.wikipedia.org/wiki/Soyuz-TM",
+              "kind": "wikipedia",
+              "covers": "variant",
+              "id": "s2"
+            },
+            {
+              "title": "Soyuz spacecraft manual hand controller (steve.blog)",
+              "url": "https://steve.blog/2017/03/12/soyuz-spacecraft-manual-hand-controller/",
+              "kind": "reference",
+              "covers": "descent controller",
+              "id": "s3"
+            }
+          ],
+          "confidence": "medium",
+          "overview": {
+            "text": "Three couches in the descent module: commander in the centre at the Neptun panel, rotation controller at the right hand, translation controller at the left, periscope sight below the panel.",
+            "areas": [
+              {
+                "n": 1,
+                "name": "Neptun control panel",
+                "area": "front-center",
+                "panels": [
+                  "neptun"
+                ],
+                "src": "s1"
+              },
+              {
+                "n": 2,
+                "name": "Seat and floor",
+                "area": "floor",
+                "panels": [
+                  "sight",
+                  "seats"
+                ],
+                "src": "s1"
+              },
+              {
+                "n": 3,
+                "name": "Descent control handle",
+                "area": "right-console",
+                "panels": [
+                  "descent-handle"
+                ],
+                "src": "s1"
+              }
+            ],
+            "src": "s1"
+          }
+        },
+        {
+          "id": "soyuz-ms",
+          "name": "Soyuz-MS",
+          "aliases": [
+            "Soyuz TMA-M",
+            "Soyuz TMA"
+          ],
+          "years": "2016-",
+          "seat": "pilot",
+          "inherits": "soyuz-tm",
+          "games": [],
+          "panels": [
+            {
+              "id": "neptun-me",
+              "name": "Neptun-ME digital panel",
+              "area": "front-center",
+              "text": "Glass panel introduced on TMA-M.",
+              "src": "s1",
+              "confidence": "medium",
+              "items": [
+                {
+                  "n": 1,
+                  "name": "Two displays",
+                  "type": "display",
+                  "text": "Systems and approach formats"
+                },
+                {
+                  "n": 2,
+                  "name": "Command keys",
+                  "type": "keypad",
+                  "text": "Panel keys reached with a pointer stick"
+                }
+              ]
+            },
+            {
+              "id": "sight",
+              "name": "Periscope / optical sight",
+              "area": "floor",
+              "text": "Viewing device for manual approach.",
+              "src": "s1",
+              "confidence": "medium",
+              "items": [
+                {
+                  "n": 1,
+                  "name": "Optical sight",
+                  "type": "display",
+                  "text": "Aims at the docking target"
+                }
+              ]
+            },
+            {
+              "id": "seats",
+              "name": "Crew seats",
+              "area": "floor",
+              "text": "Three seats; the commander in the centre.",
+              "src": "s1",
+              "confidence": "medium",
+              "items": [
+                {
+                  "n": 1,
+                  "name": "Commander's seat",
+                  "type": "other",
+                  "text": "Centre seat at the panel"
+                },
+                {
+                  "n": 2,
+                  "name": "Side seats",
+                  "type": "other",
+                  "text": "Flight engineer and third crew member"
+                }
+              ]
+            },
+            {
+              "id": "descent-handle",
+              "name": "Descent control handle",
+              "area": "right-console",
+              "text": "Manual re-entry lift control.",
+              "src": "s1",
+              "confidence": "low",
+              "items": [
+                {
+                  "n": 1,
+                  "name": "Descent control handle",
+                  "type": "handle",
+                  "text": "Off-nominal descents (low)"
+                }
+              ]
+            }
+          ],
+          "cockpit": "Same hand-controller layout as Soyuz-TM with the digital Neptun-ME panel and the Kurs-NA docking system.",
+          "notes": "Hand controllers assumed unchanged from Soyuz-TM.",
+          "sources": [
+            {
+              "title": "TORU (Wikipedia)",
+              "url": "https://en.wikipedia.org/wiki/TORU",
+              "kind": "wikipedia",
+              "covers": "two-joystick layout",
+              "id": "s1"
+            },
+            {
+              "title": "Soyuz-TM (Wikipedia)",
+              "url": "https://en.wikipedia.org/wiki/Soyuz-TM",
+              "kind": "wikipedia",
+              "covers": "variant",
+              "id": "s2"
+            },
+            {
+              "title": "Soyuz spacecraft manual hand controller (steve.blog)",
+              "url": "https://steve.blog/2017/03/12/soyuz-spacecraft-manual-hand-controller/",
+              "kind": "reference",
+              "covers": "descent controller",
+              "id": "s3"
+            },
+            {
+              "title": "Soyuz MS (Wikipedia)",
+              "url": "https://en.wikipedia.org/wiki/Soyuz_MS",
+              "kind": "wikipedia",
+              "covers": "variant",
+              "id": "v1"
+            }
+          ],
+          "confidence": "medium",
+          "overview": {
+            "text": "Soyuz-TM layout with the digital Neptun-ME panel and two displays in front of the commander.",
+            "areas": [
+              {
+                "n": 1,
+                "name": "Neptun-ME digital panel",
+                "area": "front-center",
+                "panels": [
+                  "neptun-me"
+                ],
+                "src": "s1"
+              },
+              {
+                "n": 2,
+                "name": "Seat and floor",
+                "area": "floor",
+                "panels": [
+                  "sight",
+                  "seats"
+                ],
+                "src": "s1"
+              },
+              {
+                "n": 3,
+                "name": "Descent control handle",
+                "area": "right-console",
+                "panels": [
+                  "descent-handle"
+                ],
+                "src": "s1"
+              }
+            ],
+            "src": "s1"
+          }
+        }
+      ],
+      "photos": [
+        {
+          "url": "https://upload.wikimedia.org/wikipedia/commons/8/8e/Inside_of_Soyuz_Descent_Module_%28Soyuz_MS-20%29.jpg",
+          "page": "https://commons.wikimedia.org/wiki/File:Inside_of_Soyuz_Descent_Module_(Soyuz_MS-20).jpg",
+          "view": "cockpit",
+          "credit": "SuFlyer",
+          "license": "cc0",
+          "variant": "soyuz-ms",
+          "caption": "Soyuz MS-20 descent module interior with Neptune control panel and three seats (flown capsule on exhibit, Tokyo)",
+          "confidence": "high"
+        },
+        {
+          "url": "https://upload.wikimedia.org/wikipedia/commons/e/e5/ISS-03_Frank_L._Culbertson_in_the_Soyuz_TM-32_spacecraft.jpg",
+          "page": "https://commons.wikimedia.org/wiki/File:ISS-03_Frank_L._Culbertson_in_the_Soyuz_TM-32_spacecraft.jpg",
+          "view": "cockpit",
+          "credit": "NASA",
+          "license": "public-domain",
+          "variant": "soyuz-tm",
+          "caption": "Frank Culbertson seated in the Soyuz TM-32 descent module, control panel at left (NASA photo)",
+          "confidence": "medium"
+        },
+        {
+          "url": "https://upload.wikimedia.org/wikipedia/commons/8/8f/Soyuz_30_capsule_interior_%2810996471763%29.jpg",
+          "page": "https://commons.wikimedia.org/wiki/File:Soyuz_30_capsule_interior_(10996471763).jpg",
+          "view": "cockpit",
+          "credit": "Alan Wilson from Stilton, Peterborough, Cambs, UK",
+          "license": "cc-by-sa-2.0",
+          "caption": "Soyuz 30 descent module interior with seat and panels (museum artefact, Polish Army Museum)",
+          "confidence": "medium"
+        }
+      ]
+    },
+    {
+      "id": "x-15",
+      "name": "North American X-15",
+      "aliases": [
+        "X-15A-2",
+        "X-15-3"
+      ],
+      "category": "space",
+      "fiction": false,
+      "franchise": "",
+      "maker": "North American Aviation",
+      "nations": [
+        "US"
+      ],
+      "role": "spacecraft",
+      "era": "cold-war-early",
+      "summary": "Rocket-powered research aircraft (1959-1968) that flew above 100 km: aerodynamic controls plus reaction control thrusters, each with its own stick.",
+      "variants": [
+        {
+          "id": "x-15-three-stick",
+          "name": "X-15 (three-stick cockpit)",
+          "aliases": [
+            "X-15-1",
+            "X-15-2",
+            "X-15A-2"
+          ],
+          "years": "1959-1968",
+          "games": [],
+          "controls": [
+            {
+              "id": "stick.gimbal",
+              "device": "stick",
+              "name": "Centre stick",
+              "type": "gimbal",
+              "where": "conventional centre stick",
+              "functions": [
+                {
+                  "dir": "pitch",
+                  "text": "Pitch",
+                  "fn": "pitch"
+                },
+                {
+                  "dir": "roll",
+                  "text": "Roll",
+                  "fn": "roll"
+                }
+              ],
+              "n": 1,
+              "src": "s1"
+            },
+            {
+              "id": "rhc.gimbal",
+              "device": "rhc",
+              "name": "Ballistic control stick (RCS)",
+              "type": "gimbal",
+              "where": "three-axis stick at the left hand",
+              "functions": [
+                {
+                  "dir": "pitch",
+                  "text": "Pitch thrusters (move up/down)",
+                  "fn": "",
+                  "note": "Fires the nose reaction control thrusters when the ballistic control rockets are armed."
+                },
+                {
+                  "dir": "roll",
+                  "text": "Roll thrusters (rotate the stick)",
+                  "fn": ""
+                },
+                {
+                  "dir": "yaw",
+                  "text": "Yaw thrusters (move left/right)",
+                  "fn": "space_yaw"
+                }
+              ],
+              "n": 2,
+              "src": "s1"
+            },
+            {
+              "id": "sidestick.gimbal",
+              "device": "sidestick",
+              "name": "Right console side stick",
+              "type": "gimbal",
+              "where": "side stick on the right console, right hand; coupled to the centre stick",
+              "functions": [
+                {
+                  "dir": "pitch",
+                  "text": "Pitch (under high g)",
+                  "fn": "pitch",
+                  "note": "Used when g loads made the centre stick hard to use."
+                },
+                {
+                  "dir": "roll",
+                  "text": "Roll (under high g)",
+                  "fn": "roll"
+                }
+              ],
+              "n": 3,
+              "src": "s1"
+            },
+            {
+              "id": "throttle.axis.main",
+              "device": "throttle",
+              "name": "XLR99 throttle",
+              "type": "axis",
+              "where": "lever on the left-side panel",
+              "functions": [
+                {
+                  "dir": "axis",
+                  "text": "Rocket thrust: OFF or 50-100 %",
+                  "fn": "throttlerightnonab",
+                  "note": "Early flights could throttle down to 30 %."
+                }
+              ],
+              "n": 4,
+              "src": "s1"
+            },
+            {
+              "id": "throttle.speedbrake",
+              "device": "throttle",
+              "name": "Speed brake lever",
+              "type": "lever",
+              "where": "lever on the left-side panel next to the throttle",
+              "functions": [
+                {
+                  "dir": "",
+                  "text": "Speed brakes in / out",
+                  "fn": "airbrake_toggle"
+                }
+              ],
+              "n": 5,
+              "src": "s1"
+            },
+            {
+              "id": "pedals.axis.rudder",
+              "device": "pedals",
+              "name": "Rudder pedals",
+              "type": "axis",
+              "where": "pedals",
+              "functions": [
+                {
+                  "dir": "axis",
+                  "text": "Rudder",
+                  "fn": "rudder"
+                }
+              ],
+              "n": 6,
+              "src": "s1"
+            }
+          ],
+          "panels": [
+            {
+              "id": "main-panel",
+              "name": "Main instrument panel",
+              "area": "front-center",
+              "text": "Flight instruments for rocket flight and glide.",
+              "src": "s1",
+              "confidence": "medium",
+              "items": [
+                {
+                  "n": 1,
+                  "name": "Attitude indicator",
+                  "type": "gauge",
+                  "text": "Attitude ball"
+                },
+                {
+                  "n": 2,
+                  "name": "Altimeter",
+                  "type": "gauge",
+                  "text": "Altitude"
+                },
+                {
+                  "n": 3,
+                  "name": "Airspeed / Mach indicator",
+                  "type": "gauge",
+                  "text": "Speed"
+                },
+                {
+                  "n": 4,
+                  "name": "Angle of attack and sideslip",
+                  "type": "gauge",
+                  "text": "From the ball nose"
+                },
+                {
+                  "n": 5,
+                  "name": "Accelerometer",
+                  "type": "gauge",
+                  "text": "Normal g"
+                },
+                {
+                  "n": 6,
+                  "name": "Inertial flight data",
+                  "type": "display",
+                  "text": "Inertial velocity, altitude and climb rate"
+                }
+              ]
+            },
+            {
+              "id": "left-panel",
+              "name": "Left-side panel",
+              "area": "left-console",
+              "text": "Throttle, speed brake lever and the ballistic control stick.",
+              "src": "s1",
+              "confidence": "medium",
+              "items": [
+                {
+                  "n": 1,
+                  "name": "XLR99 throttle",
+                  "type": "lever",
+                  "text": "OFF or 50-100 %"
+                },
+                {
+                  "n": 2,
+                  "name": "Speed brake lever",
+                  "type": "lever",
+                  "text": "Speed brakes in / out"
+                },
+                {
+                  "n": 3,
+                  "name": "Ballistic control stick",
+                  "type": "other",
+                  "text": "Reaction thrusters above the atmosphere"
+                }
+              ]
+            },
+            {
+              "id": "right-console",
+              "name": "Right console",
+              "area": "right-console",
+              "text": "Side stick and stabilizer indicator.",
+              "src": "s1",
+              "confidence": "medium",
+              "items": [
+                {
+                  "n": 1,
+                  "name": "Side stick",
+                  "type": "other",
+                  "text": "Pitch and roll under high g"
+                },
+                {
+                  "n": 2,
+                  "name": "Stabilizer position indicator",
+                  "type": "gauge",
+                  "text": "On the wall next to the side stick"
+                }
+              ]
+            },
+            {
+              "id": "engine-panel",
+              "name": "Engine and launch panel",
+              "area": "front-left",
+              "text": "Engine prime and start before the drop.",
+              "src": "s1",
+              "confidence": "medium",
+              "items": [
+                {
+                  "n": 1,
+                  "name": "Engine prime and precool switches",
+                  "type": "switch",
+                  "text": "Before the drop from the B-52"
+                },
+                {
+                  "n": 2,
+                  "name": "Engine start and reset",
+                  "type": "switch",
+                  "text": "Rocket engine start"
+                }
+              ]
+            },
+            {
+              "id": "ventral",
+              "name": "Ventral fin jettison",
+              "area": "front-right",
+              "text": "Lower fin release.",
+              "src": "s1",
+              "confidence": "medium",
+              "items": [
+                {
+                  "n": 1,
+                  "name": "Ventral jettison",
+                  "type": "button",
+                  "text": "Drops the lower fin before landing"
+                }
+              ]
+            }
+          ],
+          "cockpit": "About 130 gauges, switches and controls around an ejection seat: a centre stick and pedals, a right console stick for high-g flight and a left stick for the reaction controls in thin air.",
+          "notes": "SAS mixed its inputs with the stick inputs; the RAS did the same for the thrusters. Instruments summarised from the cockpit-check pilot report (medium).",
+          "sources": [
+            {
+              "title": "X-15 Pilot Report, Part 2: X-15 Cockpit Check (Paul Raveling)",
+              "url": "https://www.sierrafoot.org/x-15/pirep2.html",
+              "kind": "reference",
+              "covers": "sticks, throttle, speed brake",
+              "id": "s1"
+            },
+            {
+              "title": "North American X-15 (Wikipedia)",
+              "url": "https://en.wikipedia.org/wiki/North_American_X-15",
+              "kind": "wikipedia",
+              "covers": "control setups",
+              "id": "s2"
+            }
+          ],
+          "confidence": "medium",
+          "overview": {
+            "text": "Single seat: centre stick, right side stick, left console with throttle, speed brake and the ballistic control stick, main instrument panel in front.",
+            "areas": [
+              {
+                "n": 1,
+                "name": "Main instrument panel",
+                "area": "front-center",
+                "panels": [
+                  "main-panel"
+                ],
+                "src": "s1"
+              },
+              {
+                "n": 2,
+                "name": "Left-side panel",
+                "area": "left-console",
+                "panels": [
+                  "left-panel"
+                ],
+                "src": "s1"
+              },
+              {
+                "n": 3,
+                "name": "Right console",
+                "area": "right-console",
+                "panels": [
+                  "right-console"
+                ],
+                "src": "s1"
+              },
+              {
+                "n": 4,
+                "name": "Engine and launch panel",
+                "area": "front-left",
+                "panels": [
+                  "engine-panel"
+                ],
+                "src": "s1"
+              },
+              {
+                "n": 5,
+                "name": "Ventral fin jettison",
+                "area": "front-right",
+                "panels": [
+                  "ventral"
+                ],
+                "src": "s1"
+              }
+            ],
+            "src": "s1"
+          }
+        },
+        {
+          "id": "x-15-3-mh96",
+          "name": "X-15-3 (MH-96 adaptive control)",
+          "aliases": [
+            "X-15-3",
+            "MH-96"
+          ],
+          "years": "1961-1967",
+          "inherits": "x-15-three-stick",
+          "games": [],
+          "cockpit": "Same cockpit; the MH-96 adaptive flight control system blended aerodynamic and reaction controls so one stick could fly the whole flight.",
+          "notes": "Which stick the pilots used with the MH-96 and whether the ballistic stick stayed as a backup is not clear in these sources; controls are inherited unchanged (low confidence).",
+          "sources": [
+            {
+              "title": "X-15 Pilot Report, Part 2: X-15 Cockpit Check (Paul Raveling)",
+              "url": "https://www.sierrafoot.org/x-15/pirep2.html",
+              "kind": "reference",
+              "covers": "sticks, throttle, speed brake",
+              "id": "s1"
+            },
+            {
+              "title": "North American X-15 (Wikipedia)",
+              "url": "https://en.wikipedia.org/wiki/North_American_X-15",
+              "kind": "wikipedia",
+              "covers": "control setups",
+              "id": "s2"
+            },
+            {
+              "title": "North American X-15 (Wikipedia), MH-96 section",
+              "url": "https://en.wikipedia.org/wiki/North_American_X-15",
+              "kind": "wikipedia",
+              "covers": "MH-96",
+              "id": "v1"
+            }
+          ],
+          "confidence": "low",
+          "overview": {
+            "text": "X-15-3 with the MH-96 adaptive flight control system; cockpit layout as the other X-15s.",
+            "areas": [
+              {
+                "n": 1,
+                "name": "Main instrument panel",
+                "area": "front-center",
+                "panels": [
+                  "main-panel"
+                ],
+                "src": "s1"
+              },
+              {
+                "n": 2,
+                "name": "Left-side panel",
+                "area": "left-console",
+                "panels": [
+                  "left-panel"
+                ],
+                "src": "s1"
+              },
+              {
+                "n": 3,
+                "name": "Right console",
+                "area": "right-console",
+                "panels": [
+                  "right-console"
+                ],
+                "src": "s1"
+              },
+              {
+                "n": 4,
+                "name": "Engine and launch panel",
+                "area": "front-left",
+                "panels": [
+                  "engine-panel"
+                ],
+                "src": "s1"
+              },
+              {
+                "n": 5,
+                "name": "Ventral fin jettison",
+                "area": "front-right",
+                "panels": [
+                  "ventral"
+                ],
+                "src": "s1"
+              }
+            ],
+            "src": "s1"
+          }
+        }
+      ],
+      "photos": [
+        {
+          "url": "https://upload.wikimedia.org/wikipedia/commons/4/49/North_American_X-15A-2_cockpit_3_USAF.jpg",
+          "page": "https://commons.wikimedia.org/wiki/File:North_American_X-15A-2_cockpit_3_USAF.jpg",
+          "view": "cockpit",
+          "credit": "author and license on the file page",
+          "license": "public-domain",
+          "caption": "X-15A-2 cockpit instrument panel with centre stick (US Air Force photo)",
+          "confidence": "high"
+        },
+        {
+          "url": "https://upload.wikimedia.org/wikipedia/commons/5/5a/North_American_X-15A-2_cockpit_2_USAF.jpg",
+          "page": "https://commons.wikimedia.org/wiki/File:North_American_X-15A-2_cockpit_2_USAF.jpg",
+          "view": "cockpit",
+          "credit": "author and license on the file page",
+          "license": "public-domain",
+          "caption": "X-15A-2 cockpit seen from the left with instrument panel and right side-stick console (US Air Force photo)",
+          "confidence": "high"
+        },
+        {
+          "url": "https://upload.wikimedia.org/wikipedia/commons/6/6b/North_American_X-15A-2_cockpit_USAF.jpg",
+          "page": "https://commons.wikimedia.org/wiki/File:North_American_X-15A-2_cockpit_USAF.jpg",
+          "view": "side-console",
+          "credit": "author and license on the file page",
+          "license": "public-domain",
+          "caption": "X-15A-2 cockpit left side console with throttle and reaction control stick (US Air Force photo)",
+          "confidence": "medium"
+        }
+      ]
+    },
+    {
+      "id": "crew-dragon",
+      "name": "SpaceX Crew Dragon",
+      "aliases": [
+        "Dragon 2",
+        "Crew Dragon",
+        "Endeavour",
+        "Resilience"
+      ],
+      "category": "space",
+      "fiction": false,
+      "franchise": "",
+      "maker": "SpaceX",
+      "nations": [
+        "US"
+      ],
+      "role": "spacecraft",
+      "era": "modern",
+      "summary": "Crew capsule flying since 2020 with touchscreen controls instead of hand controllers; a few physical buttons back up critical commands.",
+      "variants": [
+        {
+          "id": "crew-dragon-c2",
+          "name": "Crew Dragon",
+          "aliases": [
+            "C206",
+            "C207",
+            "C210",
+            "C212"
+          ],
+          "years": "2020-",
+          "seat": "pilot",
+          "games": [],
+          "controls": [
+            {
+              "id": "rhc.touch.rotation",
+              "device": "rhc",
+              "name": "Rotation controls (touchscreen)",
+              "type": "button",
+              "where": "on-screen buttons on the flight displays, gloved finger",
+              "functions": [
+                {
+                  "dir": "pitch",
+                  "text": "Pitch command (touch)",
+                  "fn": "pitch",
+                  "note": "Manual attitude commands are built on the touchscreen; there is no stick."
+                },
+                {
+                  "dir": "roll",
+                  "text": "Roll command (touch)",
+                  "fn": "roll"
+                },
+                {
+                  "dir": "yaw",
+                  "text": "Yaw command (touch)",
+                  "fn": "space_yaw"
+                }
+              ],
+              "n": 1,
+              "src": "s1"
+            },
+            {
+              "id": "thc.touch.translation",
+              "device": "thc",
+              "name": "Translation controls (touchscreen)",
+              "type": "button",
+              "where": "on-screen buttons next to the docking camera view",
+              "functions": [
+                {
+                  "dir": "fwd",
+                  "text": "Translate forward (touch)",
+                  "fn": "space_strafe_fwdaft"
+                },
+                {
+                  "dir": "aft",
+                  "text": "Translate back (touch)",
+                  "fn": "space_strafe_fwdaft"
+                },
+                {
+                  "dir": "left",
+                  "text": "Translate left (touch)",
+                  "fn": "space_strafe_hor"
+                },
+                {
+                  "dir": "right",
+                  "text": "Translate right (touch)",
+                  "fn": "space_strafe_hor"
+                },
+                {
+                  "dir": "up",
+                  "text": "Translate up (touch)",
+                  "fn": "space_strafe_ver"
+                },
+                {
+                  "dir": "down",
+                  "text": "Translate down (touch)",
+                  "fn": "space_strafe_ver"
+                }
+              ],
+              "n": 2,
+              "src": "s1"
+            },
+            {
+              "id": "panel.button.deorbit",
+              "device": "panel",
+              "name": "Deorbit button",
+              "type": "button",
+              "where": "physical button on the control panel below the displays",
+              "functions": [
+                {
+                  "dir": "",
+                  "text": "Start the emergency deorbit sequence",
+                  "fn": ""
+                }
+              ],
+              "n": 3,
+              "src": "s1"
+            },
+            {
+              "id": "panel.button.fire_suppression",
+              "device": "panel",
+              "name": "Fire suppression button",
+              "type": "button",
+              "where": "physical button on the control panel below the displays",
+              "functions": [
+                {
+                  "dir": "",
+                  "text": "Cabin fire suppression",
+                  "fn": ""
+                }
+              ],
+              "n": 4,
+              "src": "s1"
+            },
+            {
+              "id": "panel.button.parachutes",
+              "device": "panel",
+              "name": "Parachute deploy button",
+              "type": "button",
+              "where": "physical button on the control panel below the displays",
+              "functions": [
+                {
+                  "dir": "",
+                  "text": "Deploy the parachutes",
+                  "fn": ""
+                }
+              ],
+              "n": 5,
+              "src": "s1"
+            }
+          ],
+          "panels": [
+            {
+              "id": "displays",
+              "name": "Three flight displays",
+              "area": "front-center",
+              "text": "Large touchscreens used with touch-capable gloves.",
+              "src": "s1",
+              "confidence": "medium",
+              "items": [
+                {
+                  "n": 1,
+                  "name": "Left display",
+                  "type": "display",
+                  "text": "Flight, systems and camera pages"
+                },
+                {
+                  "n": 2,
+                  "name": "Centre display",
+                  "type": "display",
+                  "text": "Flight and systems pages"
+                },
+                {
+                  "n": 3,
+                  "name": "Right display",
+                  "type": "display",
+                  "text": "Systems and camera pages"
+                },
+                {
+                  "n": 4,
+                  "name": "Touch flight controls",
+                  "type": "other",
+                  "text": "On-screen rotation and translation buttons"
+                }
+              ]
+            },
+            {
+              "id": "buttons",
+              "name": "Physical button panel",
+              "area": "center-pedestal",
+              "text": "Guarded buttons for critical commands.",
+              "src": "s1",
+              "confidence": "low",
+              "items": [
+                {
+                  "n": 1,
+                  "name": "Emergency deorbit",
+                  "type": "button",
+                  "text": "Starts the deorbit sequence"
+                },
+                {
+                  "n": 2,
+                  "name": "Fire suppression",
+                  "type": "button",
+                  "text": "Cabin fire suppression"
+                },
+                {
+                  "n": 3,
+                  "name": "Parachute deploy",
+                  "type": "button",
+                  "text": "Deploys the parachutes"
+                }
+              ]
+            },
+            {
+              "id": "seats",
+              "name": "Crew seats",
+              "area": "floor",
+              "text": "Up to four seats.",
+              "src": "s1",
+              "confidence": "low",
+              "items": [
+                {
+                  "n": 1,
+                  "name": "Commander and pilot seats",
+                  "type": "other",
+                  "text": "Facing the displays"
+                },
+                {
+                  "n": 2,
+                  "name": "Mission specialist seats",
+                  "type": "other",
+                  "text": "Two further seats"
+                }
+              ]
+            }
+          ],
+          "cockpit": "Commander and pilot sit in front of three touchscreen displays hanging from the panel; flight is automatic, manual attitude and translation commands are entered on the screens with the docking camera shown on the same display.",
+          "notes": "Touchscreen controls, not physical hand controllers; physical button labels beyond the three listed are not public (low).",
+          "sources": [
+            {
+              "title": "Dragon astronauts name their spacecraft Endeavour, complete first manual flight test (Spaceflight Now)",
+              "url": "https://spaceflightnow.com/2020/05/30/dragon-astronauts-name-their-spacecraft-endeavour-complete-first-manual-flight-test/",
+              "kind": "reference",
+              "covers": "touchscreen manual control, physical buttons",
+              "id": "s1"
+            },
+            {
+              "title": "Space as a Service: NASA and SpaceX find a new way of putting people into orbit (Nextgov)",
+              "url": "https://www.nextgov.com/digital-government/2018/08/space-service-nasa-and-spacex-find-new-way-putting-people-orbit/150617/",
+              "kind": "reference",
+              "covers": "emergency buttons",
+              "id": "s2"
+            },
+            {
+              "title": "SpaceX Dragon 2 (Wikipedia)",
+              "url": "https://en.wikipedia.org/wiki/SpaceX_Dragon_2",
+              "kind": "wikipedia",
+              "covers": "overview",
+              "id": "s3"
+            }
+          ],
+          "confidence": "low",
+          "overview": {
+            "text": "Up to four seats; commander and pilot face three large touchscreens with a short row of physical buttons below them.",
+            "areas": [
+              {
+                "n": 1,
+                "name": "Three flight displays",
+                "area": "front-center",
+                "panels": [
+                  "displays"
+                ],
+                "src": "s1"
+              },
+              {
+                "n": 2,
+                "name": "Physical button panel",
+                "area": "center-pedestal",
+                "panels": [
+                  "buttons"
+                ],
+                "src": "s1"
+              },
+              {
+                "n": 3,
+                "name": "Crew seats",
+                "area": "floor",
+                "panels": [
+                  "seats"
+                ],
+                "src": "s1"
+              }
+            ],
+            "src": "s1"
+          }
+        }
+      ],
+      "photos": [
+        {
+          "url": "https://upload.wikimedia.org/wikipedia/commons/a/a6/KSC-20180517-PH_SPX01_0002_%2828557696438%29.jpg",
+          "page": "https://commons.wikimedia.org/wiki/File:KSC-20180517-PH_SPX01_0002_(28557696438).jpg",
+          "view": "panel",
+          "credit": "SpaceXNASA Kennedy from United States",
+          "license": "cc0",
+          "caption": "Astronaut Suni Williams using the touchscreen display panel in a Crew Dragon mock-up, 2018 (SpaceX photo)",
+          "confidence": "medium"
+        },
+        {
+          "url": "https://upload.wikimedia.org/wikipedia/commons/4/43/KSC-20180517-PH_SPX01_0001_%2840622920410%29.jpg",
+          "page": "https://commons.wikimedia.org/wiki/File:KSC-20180517-PH_SPX01_0001_(40622920410).jpg",
+          "view": "panel",
+          "credit": "SpaceXNASA Kennedy from United States",
+          "license": "cc-by-sa-2.0",
+          "caption": "Astronaut Doug Hurley at the display panel of a Crew Dragon mock-up, 2018 (SpaceX photo)",
+          "confidence": "medium"
+        },
+        {
+          "url": "https://upload.wikimedia.org/wikipedia/commons/0/03/Crew_Dragon_Demo-2_Bob_and_Doug.jpg",
+          "page": "https://commons.wikimedia.org/wiki/File:Crew_Dragon_Demo-2_Bob_and_Doug.jpg",
+          "view": "cockpit",
+          "credit": "SpaceX",
+          "license": "cc0",
+          "caption": "Behnken and Hurley seated in Crew Dragon for the Demo-2 mission (SpaceX photo)",
+          "confidence": "medium"
+        }
+      ]
+    },
+    {
+      "id": "buran",
+      "name": "Buran orbiter",
+      "aliases": [
+        "Буран",
+        "OK-1K1",
+        "Energia-Buran"
+      ],
+      "category": "space",
+      "fiction": false,
+      "franchise": "",
+      "maker": "NPO Molniya",
+      "nations": [
+        "SU"
+      ],
+      "role": "spacecraft",
+      "era": "cold-war-late",
+      "summary": "Soviet reusable orbiter that flew once, uncrewed and fully automatic, in November 1988; the cockpit was laid out for a commander and a pilot with sticks, pedals and a translation controller.",
+      "variants": [
+        {
+          "id": "buran-commander",
+          "name": "Buran, commander's station (PM1)",
+          "aliases": [
+            "Buran 1.01"
+          ],
+          "years": "1988",
+          "seat": "pilot",
+          "games": [],
+          "controls": [
+            {
+              "id": "rhc.gimbal",
+              "device": "rhc",
+              "name": "Control stick",
+              "type": "gimbal",
+              "where": "stick in front of the seat",
+              "functions": [
+                {
+                  "dir": "pitch",
+                  "text": "Pitch",
+                  "fn": "pitch"
+                },
+                {
+                  "dir": "roll",
+                  "text": "Roll",
+                  "fn": "roll"
+                }
+              ],
+              "n": 1,
+              "src": "s1"
+            },
+            {
+              "id": "thc.gimbal",
+              "device": "thc",
+              "name": "Translation controller (controller block)",
+              "type": "gimbal",
+              "where": "controller block next to the seat",
+              "functions": [
+                {
+                  "dir": "fwd",
+                  "text": "Translate forward",
+                  "fn": "space_strafe_fwdaft"
+                },
+                {
+                  "dir": "aft",
+                  "text": "Translate back",
+                  "fn": "space_strafe_fwdaft"
+                },
+                {
+                  "dir": "left",
+                  "text": "Translate left",
+                  "fn": "space_strafe_hor"
+                },
+                {
+                  "dir": "right",
+                  "text": "Translate right",
+                  "fn": "space_strafe_hor"
+                },
+                {
+                  "dir": "up",
+                  "text": "Translate up",
+                  "fn": "space_strafe_ver"
+                },
+                {
+                  "dir": "down",
+                  "text": "Translate down",
+                  "fn": "space_strafe_ver"
+                }
+              ],
+              "n": 2,
+              "src": "s1"
+            },
+            {
+              "id": "pedals.axis.rudder",
+              "device": "pedals",
+              "name": "Pedals",
+              "type": "axis",
+              "where": "pedals",
+              "functions": [
+                {
+                  "dir": "axis",
+                  "text": "Rudder (landing)",
+                  "fn": "rudder"
+                }
+              ],
+              "n": 3,
+              "src": "s1"
+            }
+          ],
+          "panels": [
+            {
+              "id": "dashboard",
+              "name": "Dashboard with three CRT displays",
+              "area": "front-center",
+              "text": "Information display system.",
+              "src": "s1",
+              "confidence": "low",
+              "items": [
+                {
+                  "n": 1,
+                  "name": "CRT displays",
+                  "type": "display",
+                  "text": "Three screens for flight and systems"
+                },
+                {
+                  "n": 2,
+                  "name": "Flight instruments",
+                  "type": "gauge",
+                  "text": "Attitude and speed"
+                }
+              ]
+            },
+            {
+              "id": "side-desks",
+              "name": "Left and right desks",
+              "area": "left-console",
+              "text": "Side desks of commander and pilot.",
+              "src": "s1",
+              "confidence": "low",
+              "items": [
+                {
+                  "n": 1,
+                  "name": "Commander's side desk",
+                  "type": "switch",
+                  "text": "Systems switches"
+                },
+                {
+                  "n": 2,
+                  "name": "Pilot's side desk",
+                  "type": "switch",
+                  "text": "Systems switches"
+                }
+              ]
+            },
+            {
+              "id": "central-desk",
+              "name": "Central desk",
+              "area": "center-pedestal",
+              "text": "Shared controls.",
+              "src": "s1",
+              "confidence": "low",
+              "items": [
+                {
+                  "n": 1,
+                  "name": "Shared controls",
+                  "type": "switch",
+                  "text": "Between the seats"
+                }
+              ]
+            },
+            {
+              "id": "rear",
+              "name": "Flight engineer and RMS stations",
+              "area": "rear",
+              "text": "Further stations behind.",
+              "src": "s1",
+              "confidence": "low",
+              "items": [
+                {
+                  "n": 1,
+                  "name": "Flight engineer station",
+                  "type": "other",
+                  "text": "Systems"
+                },
+                {
+                  "n": 2,
+                  "name": "Manipulator desk",
+                  "type": "other",
+                  "text": "Robot arm controls"
+                }
+              ]
+            }
+          ],
+          "cockpit": "Flight deck with commander (PM1) and pilot (PM2) seats side by side, three CRT displays, side desks and stations for engineer and payload operators behind.",
+          "notes": "Never flown with a crew; inferred from the cockpit diagram labels (low).",
+          "sources": [
+            {
+              "title": "Buran composition (buran.fr, Vassili Petrovitch)",
+              "url": "https://buran.fr/en/bourane-buran/bourane-consti.php",
+              "kind": "reference",
+              "covers": "cockpit diagram labels",
+              "id": "s1"
+            },
+            {
+              "title": "Buran (spacecraft) (Wikipedia)",
+              "url": "https://en.wikipedia.org/wiki/Buran_(spacecraft)",
+              "kind": "wikipedia",
+              "covers": "cockpit layout, CRT displays",
+              "id": "s2"
+            }
+          ],
+          "confidence": "low",
+          "overview": {
+            "text": "Commander on the left of the flight deck: dashboard with three CRT displays, side desks, central desk, more stations behind.",
+            "areas": [
+              {
+                "n": 1,
+                "name": "Dashboard with three CRT displays",
+                "area": "front-center",
+                "panels": [
+                  "dashboard"
+                ],
+                "src": "s1"
+              },
+              {
+                "n": 2,
+                "name": "Left and right desks",
+                "area": "left-console",
+                "panels": [
+                  "side-desks"
+                ],
+                "src": "s1"
+              },
+              {
+                "n": 3,
+                "name": "Central desk",
+                "area": "center-pedestal",
+                "panels": [
+                  "central-desk"
+                ],
+                "src": "s1"
+              },
+              {
+                "n": 4,
+                "name": "Flight engineer and RMS stations",
+                "area": "rear",
+                "panels": [
+                  "rear"
+                ],
+                "src": "s1"
+              }
+            ],
+            "src": "s1"
+          }
+        }
+      ],
+      "photos": [
+        {
+          "url": "https://upload.wikimedia.org/wikipedia/commons/7/7e/Cabine_de_la_navette_Bourane.jpg",
+          "page": "https://commons.wikimedia.org/wiki/File:Cabine_de_la_navette_Bourane.jpg",
+          "view": "cockpit",
+          "credit": "Gytizzz",
+          "license": "cc-by-sa-2.0",
+          "caption": "Buran-programme orbiter flight deck with commander and pilot stations (museum vehicle)",
+          "confidence": "medium"
+        },
+        {
+          "url": "https://upload.wikimedia.org/wikipedia/commons/9/99/%D0%92%D0%BD%D1%83%D1%82%D1%80%D0%B8_%D0%BA%D0%B0%D0%B1%D0%B8%D0%BD%D1%8B_%D0%BC%D0%B0%D0%BA%D0%B5%D1%82%D0%B0_%D0%BA%D0%BE%D1%80%D0%B0%D0%B1%D0%BB%D1%8F_%D0%91%D1%83%D1%80%D0%B0%D0%BD_%D0%B2_%D0%BC%D1%83%D0%B7%D0%B5%D0%B5_%D0%BA%D0%BE%D1%81%D0%BC%D0%BE%D0%BD%D0%B0%D0%B2%D1%82%D0%B8%D0%BA%D0%B8_%28%D0%91%D0%B0%D0%B9%D0%BA%D0%BE%D0%BD%D1%83%D1%80%29.jpg",
+          "page": "https://commons.wikimedia.org/wiki/File:%D0%92%D0%BD%D1%83%D1%82%D1%80%D0%B8_%D0%BA%D0%B0%D0%B1%D0%B8%D0%BD%D1%8B_%D0%BC%D0%B0%D0%BA%D0%B5%D1%82%D0%B0_%D0%BA%D0%BE%D1%80%D0%B0%D0%B1%D0%BB%D1%8F_%D0%91%D1%83%D1%80%D0%B0%D0%BD_%D0%B2_%D0%BC%D1%83%D0%B7%D0%B5%D0%B5_%D0%BA%D0%BE%D1%81%D0%BC%D0%BE%D0%BD%D0%B0%D0%B2%D1%82%D0%B8%D0%BA%D0%B8_(%D0%91%D0%B0%D0%B9%D0%BA%D0%BE%D0%BD%D1%83%D1%80).jpg",
+          "view": "cockpit",
+          "credit": "Linar Khalitov",
+          "license": "cc-by-sa-2.0",
+          "caption": "Buran flight deck in a full-size mock-up, Baikonur Museum of Cosmonautics",
+          "confidence": "high"
+        },
+        {
+          "url": "https://upload.wikimedia.org/wikipedia/commons/f/fc/BURAN_Cockpit-Instrumente_0%2C_Gesamtansicht.jpg",
+          "page": "https://commons.wikimedia.org/wiki/File:BURAN_Cockpit-Instrumente_0,_Gesamtansicht.jpg",
+          "view": "front-panel",
+          "credit": "Claus Ableiter",
+          "license": "cc-by-sa-3.0",
+          "caption": "Buran cockpit instrument panels on display, Technik Museum Speyer",
+          "confidence": "medium"
+        }
+      ]
+    }
+  ]
+}

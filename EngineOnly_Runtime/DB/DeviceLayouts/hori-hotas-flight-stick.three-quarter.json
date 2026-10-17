@@ -1,0 +1,89 @@
+{
+  "format": "joypro-device-layout",
+  "version": 1,
+  "model": "hori-hotas-flight-stick",
+  "photo": {"kind": "vendor", "url": "https://horieurope.com/cdn/shop/files/PS4-144E_1.png", "sha256": "c6fdb57252304ce4ea66f992abb392d07ece6fef0ac7d45ef279cf6578c19f95", "view": "three-quarter"},
+  "markers": {
+    "stick.axis.twist": [0.67, 0.38],
+    "stick.gimbal": [0.66, 0.57],
+    "stick.trigger": [0.763, 0.274],
+    "throttle.axis.main": [0.21, 0.3]
+  },
+  "parts": {
+    "stick.hat.tms": {
+      "type": "hat",
+      "name": "TMS hat",
+      "inputs": [
+        {"input": "", "control": "stick.hat.tms.up"}
+      ],
+      "mapping": "low"
+    },
+    "stick.trigger": {
+      "type": "trigger",
+      "name": "Trigger",
+      "inputs": [
+        {"input": "", "control": "stick.trigger.stage1"}
+      ],
+      "mapping": "medium",
+      "confidence": "medium",
+      "note": "red trigger at the grip front, partly hidden"
+    },
+    "stick.axis.twist": {
+      "type": "twist",
+      "name": "Twist",
+      "inputs": [
+        {"input": "", "control": "stick.axis.twist"}
+      ],
+      "mapping": "medium",
+      "confidence": "medium",
+      "note": "stick grip (twist per catalog)"
+    },
+    "throttle.axis.main": {
+      "type": "lever",
+      "name": "Throttle",
+      "inputs": [
+        {"input": "", "control": "throttle.axis.main"}
+      ],
+      "mapping": "medium",
+      "confidence": "medium",
+      "note": "throttle handle body"
+    },
+    "stick.gimbal": {
+      "type": "gimbal",
+      "name": "Stick (roll / pitch)",
+      "inputs": [
+        {"input": "JOY_X", "control": "stick.axis.roll"},
+        {"input": "JOY_Y", "control": "stick.axis.pitch"}
+      ],
+      "mapping": "medium",
+      "confidence": "medium",
+      "note": "stick base joint (boot)"
+    }
+  },
+  "unplaced": {
+    "stick.hat.tms": "castle hat at the left of the stick head; catalog \"TMS hat\" is a placeholder"
+  },
+  "candidates": {
+    "stick.hat.tms": [0.621, 0.161]
+  },
+  "source": "JoyPro curated on the maker's photo (2026-10-11), throttle (left) and stick (right) seen from the front right and above; stick head face with hat, ministick, triangle/circle/square buttons",
+  "mappingSource": "catalog only (others_massmarket.json, confidence low: \"layout not verified\", PIDs not found); maker page https://horieurope.com/products/ps4-144 has no layout. Control identity by shape: red trigger, grip (twist per catalog), throttle handle, stick base.",
+  "confidence": "medium",
+  "note": "The catalog's \"TMS hat\" (only an \"up\" input) is a placeholder; the castle hat at the left of the head is the only hat-like control on the stick, kept as a hidden candidate. The head also has a ministick, triangle/circle/square buttons and two side buttons that are not in the catalog. HORI's product text does not mention a twist axis; the catalog's twist is kept on the grip as stated by the catalog.",
+  "callouts": {
+    "version": 1,
+    "width": 2854,
+    "height": 2076,
+    "picture": [38, 38, 2000, 2000],
+    "rowHeight": 48,
+    "mainWidth": 408,
+    "modWidth": 264,
+    "otherY": -1,
+    "tables": [
+      {"id": "stick.gimbal", "title": "Stick (roll / pitch)", "parts": ["stick.gimbal"], "side": "right", "x": 2096, "y": 1119, "width": 720, "modifier": true, "spot": [0.66, 0.57], "rows": [{"input": "JOY_X", "label": "roll (X)", "icon": "axis", "part": "stick.gimbal"}, {"input": "JOY_Y", "label": "pitch (Y)", "icon": "axis", "part": "stick.gimbal"}]}
+    ],
+    "lines": [
+      {"table": "stick.gimbal", "points": [[1358, 1178], [2096, 1178]]}
+    ]
+  }
+}

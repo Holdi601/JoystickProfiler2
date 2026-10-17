@@ -1,0 +1,309 @@
+{
+  "format": "joypro-device-layout",
+  "version": 1,
+  "model": "winwing-fcu",
+  "photo": {"kind": "vendor", "url": "https://eu.winctrl.com/static/ipfs/QmdUtYTBr9WyssgZ32KpyKbhq3NpFZWcrr9uSZ8B7HUYzA", "sha256": "80d5efbdcf5d32c1d8f8309f87aa884ce1a976dc9922137c12a879385f11b58c", "view": "main"},
+  "markers": {
+    "panel.axis.1": [0.152, 0.381],
+    "panel.axis.2": [0.237, 0.408],
+    "panel.axis.3": [0.439, 0.503],
+    "panel.axis.4": [0.622, 0.56],
+    "panel.button.1": [0.129, 0.331],
+    "panel.button.11": [0.111, 0.383],
+    "panel.button.12": [0.208, 0.416],
+    "panel.button.13": [0.385, 0.512],
+    "panel.button.14": [0.572, 0.57],
+    "panel.button.2": [0.231, 0.481],
+    "panel.button.3": [0.359, 0.413],
+    "panel.button.4": [0.325, 0.45],
+    "panel.button.5": [0.375, 0.466],
+    "panel.button.6": [0.334, 0.525],
+    "panel.button.7": [0.432, 0.582],
+    "panel.button.8": [0.54, 0.486],
+    "panel.button.9": [0.581, 0.653],
+    "panel.encoder.1": [0.122, 0.375],
+    "panel.encoder.2": [0.222, 0.412],
+    "panel.encoder.3": [0.4, 0.5],
+    "panel.encoder.4": [0.597, 0.563],
+    "panel.selector.1": [0.478, 0.505]
+  },
+  "parts": {
+    "panel.selector.1": {
+      "type": "selector",
+      "name": "ALT 100",
+      "inputs": [
+        {"input": "JOY_BTN26", "control": "panel.selector.1.pos.1"},
+        {"input": "JOY_BTN27", "control": "panel.selector.1.pos.2"}
+      ],
+      "mapping": "high",
+      "confidence": "high",
+      "note": "ALT 100 / 1000 outer ring of the ALT knob, manual 26/27"
+    },
+    "panel.encoder.1": {
+      "type": "encoder",
+      "name": "SPD",
+      "inputs": [
+        {"input": "JOY_BTN10", "control": "panel.encoder.1.ccw"},
+        {"input": "JOY_BTN11", "control": "panel.encoder.1.cw"},
+        {"input": "JOY_BTN12", "control": "panel.encoder.1.press"}
+      ],
+      "mapping": "high",
+      "confidence": "high",
+      "note": "SPD knob turn 10/11, push 12"
+    },
+    "panel.encoder.2": {
+      "type": "encoder",
+      "name": "HDG",
+      "inputs": [
+        {"input": "JOY_BTN14", "control": "panel.encoder.2.ccw"},
+        {"input": "JOY_BTN15", "control": "panel.encoder.2.cw"},
+        {"input": "JOY_BTN16", "control": "panel.encoder.2.press"}
+      ],
+      "mapping": "high",
+      "confidence": "high",
+      "note": "HDG knob turn 14/15, push 16"
+    },
+    "panel.encoder.3": {
+      "type": "encoder",
+      "name": "ALT",
+      "inputs": [
+        {"input": "JOY_BTN18", "control": "panel.encoder.3.ccw"},
+        {"input": "JOY_BTN19", "control": "panel.encoder.3.cw"},
+        {"input": "JOY_BTN20", "control": "panel.encoder.3.press"}
+      ],
+      "mapping": "high",
+      "confidence": "high",
+      "note": "ALT knob turn 18/19, push 20"
+    },
+    "panel.encoder.4": {
+      "type": "encoder",
+      "name": "V/S",
+      "inputs": [
+        {"input": "JOY_BTN22", "control": "panel.encoder.4.ccw"},
+        {"input": "JOY_BTN23", "control": "panel.encoder.4.cw"},
+        {"input": "JOY_BTN24", "control": "panel.encoder.4.press"}
+      ],
+      "mapping": "high",
+      "confidence": "high",
+      "note": "V/S knob turn 22/23, push 24"
+    },
+    "panel.axis.1": {
+      "type": "knob",
+      "name": "SPD knob (axis mode)",
+      "inputs": [
+        {"input": "JOY_X", "control": "panel.axis.1"}
+      ],
+      "mapping": "high",
+      "confidence": "medium",
+      "note": "SPD knob in axis mode (X), on the knob shaft"
+    },
+    "panel.axis.2": {
+      "type": "knob",
+      "name": "HDG knob (axis mode)",
+      "inputs": [
+        {"input": "JOY_Y", "control": "panel.axis.2"}
+      ],
+      "mapping": "high",
+      "confidence": "medium",
+      "note": "HDG knob in axis mode (Y), on the knob shaft"
+    },
+    "panel.axis.3": {
+      "type": "knob",
+      "name": "ALT knob (axis mode)",
+      "inputs": [
+        {"input": "JOY_Z", "control": "panel.axis.3"}
+      ],
+      "mapping": "high",
+      "confidence": "medium",
+      "note": "ALT knob in axis mode (Z), on the knob shaft"
+    },
+    "panel.axis.4": {
+      "type": "knob",
+      "name": "V/S knob (axis mode)",
+      "inputs": [
+        {"input": "JOY_RX", "control": "panel.axis.4"}
+      ],
+      "mapping": "high",
+      "confidence": "medium",
+      "note": "V/S knob in axis mode (Rx), on the knob shaft"
+    },
+    "panel.button.1": {
+      "type": "button",
+      "name": "SPD/MACH",
+      "inputs": [
+        {"input": "JOY_BTN1", "control": "panel.button.1"}
+      ],
+      "mapping": "medium",
+      "confidence": "high",
+      "note": "SPD/MACH (not numbered in the manual drawing)"
+    },
+    "panel.button.2": {
+      "type": "button",
+      "name": "LOC",
+      "inputs": [
+        {"input": "JOY_BTN2", "control": "panel.button.2"}
+      ],
+      "mapping": "high",
+      "confidence": "high",
+      "note": "LOC"
+    },
+    "panel.button.3": {
+      "type": "button",
+      "name": "HDG-TRK / V/S-FPA",
+      "inputs": [
+        {"input": "JOY_BTN3", "control": "panel.button.3"}
+      ],
+      "mapping": "high",
+      "confidence": "high",
+      "note": "HDG-TRK / V/S-FPA"
+    },
+    "panel.button.4": {
+      "type": "button",
+      "name": "AP1",
+      "inputs": [
+        {"input": "JOY_BTN4", "control": "panel.button.4"}
+      ],
+      "mapping": "high",
+      "confidence": "high",
+      "note": "AP1"
+    },
+    "panel.button.5": {
+      "type": "button",
+      "name": "AP2",
+      "inputs": [
+        {"input": "JOY_BTN5", "control": "panel.button.5"}
+      ],
+      "mapping": "high",
+      "confidence": "high",
+      "note": "AP2"
+    },
+    "panel.button.6": {
+      "type": "button",
+      "name": "A/THR",
+      "inputs": [
+        {"input": "JOY_BTN6", "control": "panel.button.6"}
+      ],
+      "mapping": "high",
+      "confidence": "high",
+      "note": "A/THR"
+    },
+    "panel.button.7": {
+      "type": "button",
+      "name": "EXPED",
+      "inputs": [
+        {"input": "JOY_BTN7", "control": "panel.button.7"}
+      ],
+      "mapping": "high",
+      "confidence": "high",
+      "note": "EXPED"
+    },
+    "panel.button.8": {
+      "type": "button",
+      "name": "METRIC ALT",
+      "inputs": [
+        {"input": "JOY_BTN8", "control": "panel.button.8"}
+      ],
+      "mapping": "high",
+      "confidence": "high",
+      "note": "METRIC ALT"
+    },
+    "panel.button.9": {
+      "type": "button",
+      "name": "APPR",
+      "inputs": [
+        {"input": "JOY_BTN9", "control": "panel.button.9"}
+      ],
+      "mapping": "high",
+      "confidence": "high",
+      "note": "APPR"
+    },
+    "panel.button.11": {
+      "type": "button",
+      "name": "SPD PULL",
+      "inputs": [
+        {"input": "JOY_BTN13", "control": "panel.button.11"}
+      ],
+      "mapping": "high",
+      "confidence": "high",
+      "note": "SPD knob pull, manual 13 (cap face)"
+    },
+    "panel.button.12": {
+      "type": "button",
+      "name": "HDG PULL",
+      "inputs": [
+        {"input": "JOY_BTN17", "control": "panel.button.12"}
+      ],
+      "mapping": "high",
+      "confidence": "high",
+      "note": "HDG knob pull, manual 17 (cap face)"
+    },
+    "panel.button.13": {
+      "type": "button",
+      "name": "ALT PULL",
+      "inputs": [
+        {"input": "JOY_BTN21", "control": "panel.button.13"}
+      ],
+      "mapping": "high",
+      "confidence": "high",
+      "note": "ALT knob pull, manual 21 (cap face)"
+    },
+    "panel.button.14": {
+      "type": "button",
+      "name": "V/S PULL",
+      "inputs": [
+        {"input": "JOY_BTN25", "control": "panel.button.14"}
+      ],
+      "mapping": "high",
+      "confidence": "high",
+      "note": "V/S knob pull, manual 25 (cap face)"
+    }
+  },
+  "unplaced": {},
+  "candidates": {},
+  "source": "JoyPro curated on the maker's photo (2026-10-11), FCU seen from the front-left and slightly above; whole front panel visible, the knobs protrude toward the viewer",
+  "mappingSource": "WinWing FCU manual section 3.2 \"Buttons\" drawing (page 14/39, https://eu.winctrl.com/static/ipfs/QmaNia5yLCgSvvnhtU6n1k1bwDHfYV5K8CSdnLEk2K7MCx), checked: matches the catalog (2 LOC, 3 HDG-TRK/V/S-FPA, 4 AP1, 5 AP2, 6 A/THR, 7 EXPED, 8 METRIC ALT, 9 APPR; SPD 10/11 turn, 12 push, 13 pull, X axis; HDG 14-17, Y; ALT 18-21, Z; V/S 22-25, Rx; 26/27 ALT 100/1000); catalog also cites the X-Plane plugin ToLiss profile (https://github.com/rswilem/winctrl-xplane-plugin)",
+  "confidence": "high",
+  "note": "Each of the four knobs carries three parts: the encoder (turn + push) sits on the knurled cap, the PULL button on the cap face, the axis (same knob in axis mode, replaces the turn buttons) on the knob shaft. The manual drawing shows the SPD/MACH key without a number; 1 comes from the catalog (X-Plane plugin button table), so that key is map=medium.",
+  "callouts": {
+    "version": 1,
+    "width": 2903,
+    "height": 1660,
+    "picture": [657, 30, 1600, 1600],
+    "rowHeight": 38,
+    "mainWidth": 323,
+    "modWidth": 209,
+    "otherY": -1,
+    "tables": [
+      {"id": "grid:panel.button.3", "title": "Buttons HDG-TRK / - EXPED", "parts": ["panel.button.3", "panel.button.4", "panel.button.5", "panel.button.13", "panel.button.6", "panel.button.7"], "side": "left", "x": 75, "y": 842.7, "width": 525, "grid": true, "columns": 3, "modifier": false, "spot": [0.3683, 0.4913], "rows": [{"input": "JOY_BTN3", "label": "HDG-TRK /", "icon": "button", "part": "panel.button.3", "cell": [0, 1, 0]}, {"input": "JOY_BTN4", "label": "AP1", "icon": "button", "part": "panel.button.4", "cell": [1, 0, 0]}, {"input": "JOY_BTN5", "label": "AP2", "icon": "button", "part": "panel.button.5", "cell": [1, 1, 0]}, {"input": "JOY_BTN21", "label": "ALT PULL", "icon": "button", "part": "panel.button.13", "cell": [2, 1, 0]}, {"input": "JOY_BTN6", "label": "A/THR", "icon": "button", "part": "panel.button.6", "cell": [3, 0, 0]}, {"input": "JOY_BTN7", "label": "EXPED", "icon": "button", "part": "panel.button.7", "cell": [4, 2, 0]}]},
+      {"id": "stack:panel.encoder.1", "title": "SPD / SPD PULL", "parts": ["panel.encoder.1", "panel.button.11"], "side": "left", "x": 30, "y": 424.7, "width": 570, "modifier": true, "spot": [0.1165, 0.379], "rows": [{"input": "JOY_BTN12", "label": "SPD Press", "icon": "button", "part": "panel.encoder.1"}, {"input": "JOY_BTN11", "label": "SPD Clockwise", "icon": "right", "part": "panel.encoder.1"}, {"input": "JOY_BTN10", "label": "SPD Counter-clockwise", "icon": "left", "part": "panel.encoder.1"}, {"input": "JOY_BTN13", "label": "SPD PULL Press", "icon": "button", "part": "panel.button.11"}]},
+      {"id": "stack:panel.encoder.2", "title": "HDG / HDG knob (axis mode) / HDG PULL", "parts": ["panel.encoder.2", "panel.axis.2", "panel.button.12"], "side": "left", "x": 30, "y": 614.7, "width": 570, "modifier": true, "spot": [0.2223, 0.412], "rows": [{"input": "JOY_BTN16", "label": "HDG Press", "icon": "button", "part": "panel.encoder.2"}, {"input": "JOY_BTN15", "label": "HDG Clockwise", "icon": "right", "part": "panel.encoder.2"}, {"input": "JOY_BTN14", "label": "HDG Counter-clockwise", "icon": "left", "part": "panel.encoder.2"}, {"input": "JOY_Y", "label": "HDG knob (axis mode) Y", "icon": "axis", "part": "panel.axis.2"}, {"input": "JOY_BTN17", "label": "HDG PULL Press", "icon": "button", "part": "panel.button.12"}]},
+      {"id": "panel.selector.1", "title": "ALT 100", "parts": ["panel.selector.1"], "side": "right", "x": 2303, "y": 608, "width": 570, "modifier": true, "pinned": true, "spot": [0.478, 0.505], "rows": [{"input": "JOY_BTN26", "label": "1", "icon": "pos", "part": "panel.selector.1"}, {"input": "JOY_BTN27", "label": "2", "icon": "pos", "part": "panel.selector.1"}]},
+      {"id": "panel.encoder.3", "title": "ALT", "parts": ["panel.encoder.3"], "side": "left", "x": 30, "y": 1070.7, "width": 570, "modifier": true, "spot": [0.4, 0.5], "rows": [{"input": "JOY_BTN20", "label": "Press", "icon": "button", "part": "panel.encoder.3"}, {"input": "JOY_BTN19", "label": "Clockwise", "icon": "right", "part": "panel.encoder.3"}, {"input": "JOY_BTN18", "label": "Counter-clockwise", "icon": "left", "part": "panel.encoder.3"}]},
+      {"id": "panel.encoder.4", "title": "V/S", "parts": ["panel.encoder.4"], "side": "right", "x": 2303, "y": 951, "width": 570, "modifier": true, "spot": [0.597, 0.563], "rows": [{"input": "JOY_BTN24", "label": "Press", "icon": "button", "part": "panel.encoder.4"}, {"input": "JOY_BTN23", "label": "Clockwise", "icon": "right", "part": "panel.encoder.4"}, {"input": "JOY_BTN22", "label": "Counter-clockwise", "icon": "left", "part": "panel.encoder.4"}]},
+      {"id": "panel.axis.1", "title": "SPD knob (axis mode)", "parts": ["panel.axis.1"], "side": "right", "x": 2303, "y": 377.6, "width": 570, "modifier": true, "pinned": true, "spot": [0.152, 0.381], "rows": [{"input": "JOY_X", "label": "X", "icon": "axis", "part": "panel.axis.1"}]},
+      {"id": "panel.axis.3", "title": "ALT knob (axis mode)", "parts": ["panel.axis.3"], "side": "right", "x": 2303, "y": 530.3, "width": 570, "modifier": true, "pinned": true, "spot": [0.439, 0.503], "rows": [{"input": "JOY_Z", "label": "Z", "icon": "axis", "part": "panel.axis.3"}]},
+      {"id": "panel.axis.4", "title": "V/S knob (axis mode)", "parts": ["panel.axis.4"], "side": "right", "x": 2303, "y": 875, "width": 570, "modifier": true, "spot": [0.622, 0.56], "rows": [{"input": "JOY_RX", "label": "RX", "icon": "axis", "part": "panel.axis.4"}]},
+      {"id": "panel.button.1", "title": "SPD/MACH", "parts": ["panel.button.1"], "side": "left", "x": 30, "y": 348.7, "width": 570, "modifier": true, "spot": [0.129, 0.331], "rows": [{"input": "JOY_BTN1", "label": "Press", "icon": "button", "part": "panel.button.1"}]},
+      {"id": "panel.button.2", "title": "LOC", "parts": ["panel.button.2"], "side": "right", "x": 2303, "y": 453.6, "width": 570, "modifier": true, "pinned": true, "spot": [0.231, 0.481], "rows": [{"input": "JOY_BTN2", "label": "Press", "icon": "button", "part": "panel.button.2"}]},
+      {"id": "panel.button.8", "title": "METRIC ALT", "parts": ["panel.button.8"], "side": "right", "x": 2303, "y": 723, "width": 570, "modifier": true, "spot": [0.54, 0.486], "rows": [{"input": "JOY_BTN8", "label": "Press", "icon": "button", "part": "panel.button.8"}]},
+      {"id": "panel.button.9", "title": "APPR", "parts": ["panel.button.9"], "side": "right", "x": 2303, "y": 1103, "width": 570, "modifier": true, "spot": [0.581, 0.653], "rows": [{"input": "JOY_BTN9", "label": "Press", "icon": "button", "part": "panel.button.9"}]},
+      {"id": "panel.button.14", "title": "V/S PULL", "parts": ["panel.button.14"], "side": "right", "x": 2303, "y": 799, "width": 570, "modifier": true, "spot": [0.572, 0.57], "rows": [{"input": "JOY_BTN25", "label": "Press", "icon": "button", "part": "panel.button.14"}]}
+    ],
+    "lines": [
+      {"table": "panel.button.1", "points": [[863.4, 559.6], [634, 559.6], [634, 394.7], [600, 394.7]]},
+      {"table": "stack:panel.encoder.1", "points": [[843.4, 636.4], [623, 636.4], [623, 470.7], [600, 470.7]]},
+      {"table": "stack:panel.encoder.2", "points": [[1012.7, 689.2], [634, 689.2], [634, 660.7], [600, 660.7]]},
+      {"table": "grid:panel.button.3", "points": [[1246.3, 816.1], [1246.3, 888.7], [600, 888.7]]},
+      {"table": "panel.encoder.3", "points": [[1297, 830], [1297, 1116.7], [600, 1116.7]]},
+      {"table": "panel.button.8", "points": [[1521, 807.6], [2280, 807.6], [2280, 769], [2303, 769]]},
+      {"table": "panel.button.14", "points": [[1572.2, 942], [1572.2, 845], [2303, 845]]},
+      {"table": "panel.axis.4", "points": [[1652.2, 926], [1652.2, 921], [2303, 921]]},
+      {"table": "panel.encoder.4", "points": [[1612.2, 930.8], [1612.2, 997], [2303, 997]]},
+      {"table": "panel.button.9", "points": [[1586.6, 1074.8], [2280, 1074.8], [2280, 1149], [2303, 1149]]},
+      {"table": "panel.selector.1", "points": [[1421.8, 838], [1862, 838], [1862, 654], [2303, 654]]},
+      {"table": "panel.axis.1", "points": [[900.2, 639.6], [1602, 639.6], [1602, 423.6], [2303, 423.6]]},
+      {"table": "panel.axis.3", "points": [[1359.4, 834.8], [1831, 834.8], [1831, 576.3], [2303, 576.3]]},
+      {"table": "panel.button.2", "points": [[1026.6, 799.6], [1665, 799.6], [1665, 499.6], [2303, 499.6]]}
+    ]
+  }
+}

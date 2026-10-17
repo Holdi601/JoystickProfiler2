@@ -1,0 +1,31 @@
+{
+  "format": "joypro-cockpit-drawing",
+  "version": 1,
+  "id": "airbus-sidestick",
+  "kind": "sidestick",
+  "aircraft": ["a320", "a330", "a350", "a380", "a400m"],
+  "variants": [],
+  "except": [],
+  "name": "Airbus side-stick",
+  "view": "the captain's side-stick from behind and slightly inboard, as the pilot sees it; forward is left, the take-over pushbutton on top of the grip head faces the viewer, the armrest behind",
+  "origin": "JoyPro's own vector drawing: the grip's outline and the control layout reconstructed from the FlyByWire A32NX flight deck documentation, the Wikipedia side-stick article and public photos looked at for proportions; not traced from a photo.",
+  "width": 800,
+  "height": 1000,
+  "shapes": [
+    { "kind": "ellipse", "role": "shadow", "x": 410, "y": 968, "w": 340, "h": 20 },
+    { "kind": "path", "role": "bodyAlt", "path": "M572,628 C610,592 712,590 744,630 L758,770 L560,770 Z" },
+    { "kind": "rect", "role": "bodyAlt", "x": 100, "y": 760, "w": 640, "h": 190, "r": 26 },
+    { "kind": "rect", "role": "line", "x": 140, "y": 880, "w": 150, "h": 40, "r": 10 },
+    { "kind": "path", "role": "bodyAlt", "path": "M292,772 C300,730 328,704 362,704 L494,704 C528,704 552,730 560,772 Z" },
+    { "kind": "path", "role": "body", "path": "M282,322 C276,252 322,206 398,204 C470,202 528,236 538,300 L540,392 C540,452 520,500 516,560 L512,712 L344,712 L334,640 C328,590 294,566 290,510 C286,462 290,420 282,322 Z" },
+    { "kind": "path", "role": "face", "path": "M312,292 C320,256 354,234 400,234 C460,234 500,256 508,294 L510,334 C470,348 350,348 312,334 Z" },
+    { "kind": "path", "role": "line", "path": "M294,518 C316,556 328,600 334,650" },
+    { "kind": "path", "role": "line", "path": "M528,470 C534,520 528,570 524,620" },
+    { "kind": "path", "role": "line", "path": "M336,720 L520,720" }
+  ],
+  "parts": [
+    { "id": "stick.button.takeover", "type": "release", "x": 414, "y": 288, "r": 24 },
+    { "id": "stick.trigger", "type": "trigger", "x": 280, "y": 448, "r": 38 },
+    { "id": "stick.gimbal", "type": "gimbal", "x": 428, "y": 860, "r": 56 }
+  ]
+}

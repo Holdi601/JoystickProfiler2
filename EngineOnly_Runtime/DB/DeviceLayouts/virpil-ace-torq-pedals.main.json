@@ -1,0 +1,62 @@
+{
+  "format": "joypro-device-layout",
+  "version": 1,
+  "model": "virpil-ace-torq-pedals",
+  "photo": {"kind": "vendor", "url": "https://virpil-controls.eu/media/catalog/product/cache/f8e7ca8059fef1dc7d5708cf2af44b2f/v/p/vpc-304_2022_01.jpg", "sha256": "ae4ffcc21cb8134f7d786b47fdd4a47d7d5ec75096a03451c8a2475e8e370f05", "view": "main"},
+  "markers": {
+    "pedals.axis.rudder": [0.5, 0.43]
+  },
+  "parts": {
+    "pedals.axis.rudder": {
+      "type": "rudder",
+      "name": "Rudder (Z)",
+      "inputs": [
+        {"input": "JOY_Z", "control": "pedals.axis.rudder"}
+      ],
+      "mapping": "medium",
+      "confidence": "medium",
+      "note": "rudder axis at the central mechanism box (pivot of both pedal arms)"
+    },
+    "pedals.axis.brake_left": {
+      "type": "brake",
+      "name": "Left toe brake",
+      "inputs": [
+        {"input": "", "control": "pedals.axis.brake_left"}
+      ],
+      "mapping": "medium"
+    },
+    "pedals.axis.brake_right": {
+      "type": "brake",
+      "name": "Right toe brake",
+      "inputs": [
+        {"input": "", "control": "pedals.axis.brake_right"}
+      ],
+      "mapping": "medium"
+    }
+  },
+  "unplaced": {
+    "pedals.axis.brake_left": "no toe brakes on this pedal set (catalog note); nothing to mark",
+    "pedals.axis.brake_right": "no toe brakes on this pedal set (catalog note); nothing to mark"
+  },
+  "candidates": {},
+  "source": "JoyPro curated on the maker's photo (2026-10-12), pedal set seen from the front-left and above: two large foot plates in front, the central rudder mechanism box with the rocker arms behind",
+  "mappingSource": "catalog sources (product page https://virpil-controls.eu/vpc-ace-torq-rudder-pedals.html; rudder on Z from flightcontrolviewer layout vpc-ace-torq-rudder.json and joystick-mapper devices.js); no Virpil numbering sheet",
+  "confidence": "medium",
+  "note": "single-axis pedal set without toe brakes (product page + HeliSimmer review); the catalog's brake_left/brake_right parts have no physical control and are not placed.",
+  "callouts": {
+    "version": 1,
+    "width": 1426,
+    "height": 1038,
+    "picture": [407, 19, 1000, 1000],
+    "rowHeight": 24,
+    "mainWidth": 204,
+    "modWidth": 132,
+    "otherY": -1,
+    "tables": [
+      {"id": "pedals.axis.rudder", "title": "Rudder (Z)", "parts": ["pedals.axis.rudder"], "side": "left", "x": 19, "y": 420, "width": 360, "modifier": true, "spot": [0.5, 0.43], "rows": [{"input": "JOY_Z", "label": "Z", "icon": "axis", "part": "pedals.axis.rudder"}]}
+    ],
+    "lines": [
+      {"table": "pedals.axis.rudder", "points": [[907, 449], [379, 449]]}
+    ]
+  }
+}

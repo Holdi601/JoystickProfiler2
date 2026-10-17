@@ -1,0 +1,18 @@
+<profile version="1" optionsVersion="2" rebindVersion="2">
+ <optiontree type="keyboard" name="root" UIShowInvert="-1">
+  <optiongroup name="master" UILabel="@ui_COMasterSensitivity"/>
+ </optiontree>
+ <optiontree type="joystick" instances="8" name="root" UISensitivityMin="0.01" UISensitivityMax="2.0">
+  <optiongroup name="master" UILabel="@ui_COMasterSensitivity" UIShowCurve="0" UIShowInvert="0">
+   <optiongroup name="flight_move" UILabel="@ui_COFlightMove" UIShowCurve="-1" UIShowInvert="-1">
+    <optiongroup name="flight_move_pitch" UILabel="@ui_COFlightPitch" UIShowCurve="1" UIShowInvert="1"/>
+    <optiongroup name="flight_move_yaw" UILabel="@ui_COFlightYaw" UIShowCurve="1" UIShowInvert="1"/>
+   </optiongroup>
+  </optiongroup>
+ </optiontree>
+ <actionmap name="spaceship_movement" version="1" UILabel="@ui_CGSpaceFlightMovement">
+  <action name="v_pitch" gamepad="thumbry" joystick="y" optionGroup="flight_move_pitch" UILabel="@ui_CIPitch"/>
+  <action name="v_yaw" gamepad="thumblx" joystick="x" optionGroup="flight_move_yaw" UILabel="@ui_CIYaw"/>
+  <action name="v_fire" activationMode="press" keyboard="mouse1" joystick="button1" UILabel="@ui_CIFire"/>
+ </actionmap>
+</profile>

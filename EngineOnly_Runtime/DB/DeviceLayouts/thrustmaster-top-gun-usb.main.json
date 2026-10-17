@@ -1,0 +1,100 @@
+{
+  "format": "joypro-device-layout",
+  "version": 1,
+  "model": "thrustmaster-top-gun-usb",
+  "photo": {"kind": "vendor", "url": "https://support.thrustmaster.com/wp-content/uploads/topgun-usb.jpg", "sha256": "5b9f1069c93b29b14e9f0ddaed31be89578c5685d68664fc9e1059314774904f", "view": "main"},
+  "markers": {
+    "stick.button.thumb.1": [0.345, 0.085],
+    "stick.gimbal": [0.45, 0.57],
+    "stick.hat.1": [0.42, 0.08]
+  },
+  "parts": {
+    "stick.trigger": {
+      "type": "trigger",
+      "name": "Trigger",
+      "inputs": [
+        {"input": "", "control": "stick.trigger.stage1"}
+      ],
+      "mapping": "medium"
+    },
+    "stick.gimbal": {
+      "type": "gimbal",
+      "name": "Stick (roll / pitch)",
+      "inputs": [
+        {"input": "JOY_X", "control": "stick.axis.roll"},
+        {"input": "JOY_Y", "control": "stick.axis.pitch"}
+      ],
+      "mapping": "medium",
+      "confidence": "medium",
+      "note": "stick boot on the base"
+    },
+    "stick.hat.1": {
+      "type": "hat",
+      "name": "POV hat",
+      "inputs": [
+        {"input": "", "control": "stick.hat.1.up"},
+        {"input": "", "control": "stick.hat.1.right"},
+        {"input": "", "control": "stick.hat.1.down"},
+        {"input": "", "control": "stick.hat.1.left"}
+      ],
+      "mapping": "medium",
+      "confidence": "medium",
+      "note": "dark hat cap on the top right of the head"
+    },
+    "stick.button.thumb.1": {
+      "type": "button",
+      "name": "Head button",
+      "inputs": [
+        {"input": "", "control": "stick.button.thumb.1"}
+      ],
+      "mapping": "medium",
+      "confidence": "high",
+      "note": "red button on the top left (front) of the head"
+    },
+    "stick.button.thumb.2": {
+      "type": "button",
+      "name": "Head button",
+      "inputs": [
+        {"input": "", "control": "stick.button.thumb.2"}
+      ],
+      "mapping": "medium"
+    },
+    "stick.button.thumb.3": {
+      "type": "button",
+      "name": "Head button",
+      "inputs": [
+        {"input": "", "control": "stick.button.thumb.3"}
+      ],
+      "mapping": "medium"
+    }
+  },
+  "unplaced": {
+    "stick.trigger": "red button on the front of the grip below the head (trigger or a button above it, not certain)",
+    "stick.button.thumb.2": "dark lever at the lower front of the grip (likely a pinky button)",
+    "stick.button.thumb.3": "not identifiable on this photo"
+  },
+  "candidates": {
+    "stick.button.thumb.2": [0.35, 0.43],
+    "stick.trigger": [0.36, 0.26]
+  },
+  "source": "JoyPro curated on the maker's photo (2026-10-11), the stick seen from its left side and slightly from the front, front of the grip to the left",
+  "mappingSource": "catalog (thrustmaster.json, confidence low): Thrustmaster's Top Gun USB driver INF (TMUSB.INF in https://ts.thrustmaster.com/download/accessories/pc/joysticks/exe/tgunusb/topgunusb.zip) registers 4 buttons and a POV hat, no Z axis; \"which number sits where is not documented -> controls without input\". No manual on the support page (https://support.thrustmaster.com/en/product/topgunusb-en/)",
+  "confidence": "low",
+  "note": "Very small photo (250 px) and no vendor figure. Only the red button on the head and the hat cap on top are clear. The red button on the front of the grip may be the trigger or a button above the trigger, and the dark lever at the lower front may be a pinky button; both are hidden candidates.",
+  "callouts": {
+    "version": 1,
+    "width": 606,
+    "height": 269,
+    "picture": [340, 16, 250, 237],
+    "rowHeight": 20,
+    "mainWidth": 170,
+    "modWidth": 110,
+    "otherY": -1,
+    "tables": [
+      {"id": "stick.gimbal", "title": "Stick (roll / pitch)", "parts": ["stick.gimbal"], "side": "left", "x": 16, "y": 127.1, "width": 300, "modifier": true, "spot": [0.45, 0.57], "rows": [{"input": "JOY_X", "label": "roll (X)", "icon": "axis", "part": "stick.gimbal"}, {"input": "JOY_Y", "label": "pitch (Y)", "icon": "axis", "part": "stick.gimbal"}]}
+    ],
+    "lines": [
+      {"table": "stick.gimbal", "points": [[452.5, 151.1], [316, 151.1]]}
+    ]
+  }
+}

@@ -1,0 +1,44 @@
+{
+  "format": "joypro-device-layout",
+  "version": 1,
+  "model": "vpforce-rhino",
+  "photo": {"kind": "vendor", "url": "https://vpforce.eu/rhino.webp", "sha256": "cd040ffdc6311b6ea9e2e12c88c0d45d9bf12d1ebc0b4a0d8780ffcf42ab78ba", "view": "main"},
+  "markers": {
+    "stick.gimbal": [0.49, 0.27]
+  },
+  "parts": {
+    "stick.gimbal": {
+      "type": "gimbal",
+      "name": "Stick (roll / pitch)",
+      "inputs": [
+        {"input": "JOY_X", "control": "stick.axis.roll"},
+        {"input": "JOY_Y", "control": "stick.axis.pitch"}
+      ],
+      "mapping": "medium",
+      "confidence": "medium",
+      "note": "gimbal under the leather boot on top of the base"
+    }
+  },
+  "unplaced": {},
+  "candidates": {},
+  "source": "JoyPro curated on the maker's photo (2026-10-11), the Rhino FFB base without a grip seen from the front left in a sim cockpit, leather boot and grip connector on top, the two motor covers in front",
+  "mappingSource": "catalog vpforce.json (sources https://docs.vpforce.eu/rhino/getting-started/, https://docs.vpforce.eu/products/grip-adapters/, https://github.com/walmis/VPforce-TelemFFB): roll = JOY_X, pitch = JOY_Y; VID:PID and HID name read from the user's own Rhino",
+  "confidence": "high",
+  "note": "The photo shows the base without a grip; the gimbal marker sits at the leather boot above the base (the shaft exit). Grip buttons/hats and the other axes depend on the mounted grip and the VPforce Configurator.",
+  "callouts": {
+    "version": 1,
+    "width": 2610,
+    "height": 1898,
+    "picture": [747, 35, 1828, 1828],
+    "rowHeight": 44,
+    "mainWidth": 374,
+    "modWidth": 242,
+    "otherY": -1,
+    "tables": [
+      {"id": "stick.gimbal", "title": "Stick (roll / pitch)", "parts": ["stick.gimbal"], "side": "left", "x": 35, "y": 474.6, "width": 660, "modifier": true, "spot": [0.49, 0.27], "rows": [{"input": "JOY_X", "label": "roll (X)", "icon": "axis", "part": "stick.gimbal"}, {"input": "JOY_Y", "label": "pitch (Y)", "icon": "axis", "part": "stick.gimbal"}]}
+    ],
+    "lines": [
+      {"table": "stick.gimbal", "points": [[1642.7, 528.6], [695, 528.6]]}
+    ]
+  }
+}

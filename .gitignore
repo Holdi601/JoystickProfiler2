@@ -1,0 +1,68 @@
+# Build output and IDE state
+bin/
+obj/
+.vs/
+*.user
+.tmp_build/
+.tmp_test_obj/
+
+# Stale nested build outputs from earlier experiments
+engine/JoyPro2/
+gui/JoyPro.Gui/JoyPro2/
+gui/JoyPro.Gui/engine/
+
+# Scratch files in engine/ (test fixtures live in engine/tests/fixtures)
+engine/tmp_*
+
+# The author's private notes and tools: kept locally, never published
+private/
+JoyPro2-private/
+
+# EngineOnly_Runtime also holds an old JoyPro 1 build; only the data the engine build copies is versioned
+EngineOnly_Runtime/*
+!EngineOnly_Runtime/DB/
+!EngineOnly_Runtime/CleanProfile/
+!EngineOnly_Runtime/KeyboardCleanProfile/
+!EngineOnly_Runtime/Clicks/
+!EngineOnly_Runtime/TOOLS/
+EngineOnly_Runtime/TOOLS/*
+!EngineOnly_Runtime/TOOLS/Conversions/
+!EngineOnly_Runtime/TOOLS/DCSLuaSocket/
+
+# Test and tool output
+TestResults/
+*.log
+
+# Third-party sample configs collected during format research (unknown licenses, local only)
+research-samples/
+
+__pycache__/
+artifacts/
+
+# Local editor and tool state
+.claude/
+
+# --- Public repository: data that stays in the maintainer's private repository ---
+# Game data extracted from installed games: JoyPro builds it on the user's PC.
+EngineOnly_Runtime/CleanProfile/
+EngineOnly_Runtime/KeyboardCleanProfile/
+EngineOnly_Runtime/Clicks/
+EngineOnly_Runtime/DB/*
+!EngineOnly_Runtime/DB/Functions/
+!EngineOnly_Runtime/DB/Devices/
+!EngineOnly_Runtime/DB/Llm/
+!EngineOnly_Runtime/DB/DevicePhotos/
+!EngineOnly_Runtime/DB/DeviceLayouts/
+!EngineOnly_Runtime/DB/DeviceDrawings/
+!EngineOnly_Runtime/DB/Cockpits/
+!EngineOnly_Runtime/DB/Detents/
+EngineOnly_Runtime/TOOLS/DCSLuaSocket/
+LayoutTemplates/
+# The maintainer's in-game test kit, drawing tools, licensing notes and private data
+tools/e2e/
+tools/photo_to_lineart.py
+tools/cockpit_manual_art.py
+tools/lineart_overrides.json
+docs/licensing-audit.md
+JoyPro2-private/
+private/

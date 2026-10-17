@@ -1,0 +1,377 @@
+{
+  "format": "joypro-device-layout",
+  "version": 1,
+  "model": "honeycomb-foxtrot-aviation-stick",
+  "photo": {"kind": "vendor", "url": "https://flyhoneycomb.com/cdn/shop/files/FoxtrotProductThumbnail_1_b9813450-7d12-4a4c-9f28-d668b7913684.webp", "sha256": "612555cc877a68d240a4706361dec4835372b6b51f06f3b5e907dc839a2c1ad2", "view": "main"},
+  "markers": {
+    "panel.selector.1": [0.706, 0.586],
+    "panel.toggle.1": [0.335, 0.712],
+    "panel.toggle.2": [0.418, 0.712],
+    "panel.toggle.3": [0.5, 0.712],
+    "panel.toggle.4": [0.583, 0.712],
+    "panel.toggle.5": [0.665, 0.712],
+    "stick.axis.twist": [0.5, 0.33],
+    "stick.base.button.5": [0.305, 0.58],
+    "stick.button.thumb.1": [0.453, 0.19],
+    "stick.button.thumb.2": [0.56, 0.19],
+    "stick.gimbal": [0.5, 0.6],
+    "stick.hat.1": [0.508, 0.168],
+    "stick.hat.2": [0.49, 0.215],
+    "stick.hat.3": [0.528, 0.215]
+  },
+  "parts": {
+    "stick.trigger": {
+      "type": "trigger",
+      "name": "Trigger",
+      "inputs": [
+        {"input": "JOY_BTN13", "control": "stick.trigger.stage1"}
+      ],
+      "mapping": "medium"
+    },
+    "stick.axis.twist": {
+      "type": "twist",
+      "name": "Twist",
+      "inputs": [
+        {"input": "", "control": "stick.axis.twist"}
+      ],
+      "mapping": "medium",
+      "confidence": "medium",
+      "note": "twist of the grip"
+    },
+    "stick.gimbal": {
+      "type": "gimbal",
+      "name": "Stick (roll / pitch)",
+      "inputs": [
+        {"input": "", "control": "stick.axis.roll"},
+        {"input": "", "control": "stick.axis.pitch"}
+      ],
+      "mapping": "medium",
+      "confidence": "medium",
+      "note": "stick boot on the base (roll/pitch)"
+    },
+    "stick.hat.1": {
+      "type": "hat",
+      "name": "8-way POV hat",
+      "inputs": [
+        {"input": "JOY_BTN_POV1_U", "control": "stick.hat.1.up"},
+        {"input": "JOY_BTN_POV1_R", "control": "stick.hat.1.right"},
+        {"input": "JOY_BTN_POV1_D", "control": "stick.hat.1.down"},
+        {"input": "JOY_BTN_POV1_L", "control": "stick.hat.1.left"}
+      ],
+      "mapping": "medium",
+      "confidence": "high",
+      "note": "8-way POV hat on top of the head"
+    },
+    "stick.hat.2": {
+      "type": "hat",
+      "name": "Momentary left rocker",
+      "inputs": [
+        {"input": "JOY_BTN3", "control": "stick.hat.2.up"},
+        {"input": "JOY_BTN2", "control": "stick.hat.2.down"}
+      ],
+      "mapping": "medium",
+      "confidence": "high",
+      "note": "left momentary rocker below the hat"
+    },
+    "stick.hat.3": {
+      "type": "hat",
+      "name": "Momentary right rocker",
+      "inputs": [
+        {"input": "JOY_BTN4", "control": "stick.hat.3.up"},
+        {"input": "JOY_BTN1", "control": "stick.hat.3.down"}
+      ],
+      "mapping": "medium",
+      "confidence": "high",
+      "note": "right momentary rocker below the hat"
+    },
+    "stick.button.thumb.1": {
+      "type": "button",
+      "name": "Red button",
+      "inputs": [
+        {"input": "JOY_BTN5", "control": "stick.button.thumb.1"}
+      ],
+      "mapping": "medium",
+      "confidence": "high",
+      "note": "red button, left of the hat"
+    },
+    "stick.button.thumb.2": {
+      "type": "button",
+      "name": "White button",
+      "inputs": [
+        {"input": "JOY_BTN6", "control": "stick.button.thumb.2"}
+      ],
+      "mapping": "medium",
+      "confidence": "high",
+      "note": "white button, right of the hat"
+    },
+    "stick.button.index.1": {
+      "type": "button",
+      "name": "Red left button",
+      "inputs": [
+        {"input": "JOY_BTN9", "control": "stick.button.index.1"}
+      ],
+      "mapping": "medium"
+    },
+    "stick.button.index.2": {
+      "type": "button",
+      "name": "Red right button",
+      "inputs": [
+        {"input": "JOY_BTN10", "control": "stick.button.index.2"}
+      ],
+      "mapping": "medium"
+    },
+    "panel.toggle.1": {
+      "type": "switch",
+      "name": "BEACON O",
+      "inputs": [
+        {"input": "JOY_BTN35", "control": "panel.toggle.1.up"},
+        {"input": "JOY_BTN36", "control": "panel.toggle.1.down"}
+      ],
+      "mapping": "medium",
+      "confidence": "high",
+      "note": "BEACON (EXT LTS) toggle"
+    },
+    "panel.toggle.2": {
+      "type": "switch",
+      "name": "LANDING O",
+      "inputs": [
+        {"input": "JOY_BTN37", "control": "panel.toggle.2.up"},
+        {"input": "JOY_BTN38", "control": "panel.toggle.2.down"}
+      ],
+      "mapping": "medium",
+      "confidence": "high",
+      "note": "LANDING toggle"
+    },
+    "panel.toggle.3": {
+      "type": "switch",
+      "name": "TAXI O",
+      "inputs": [
+        {"input": "JOY_BTN39", "control": "panel.toggle.3.up"},
+        {"input": "JOY_BTN40", "control": "panel.toggle.3.down"}
+      ],
+      "mapping": "medium",
+      "confidence": "high",
+      "note": "TAXI toggle"
+    },
+    "panel.toggle.4": {
+      "type": "switch",
+      "name": "NAV O",
+      "inputs": [
+        {"input": "JOY_BTN41", "control": "panel.toggle.4.up"},
+        {"input": "JOY_BTN42", "control": "panel.toggle.4.down"}
+      ],
+      "mapping": "medium",
+      "confidence": "high",
+      "note": "NAV toggle"
+    },
+    "panel.toggle.5": {
+      "type": "switch",
+      "name": "STROBE O",
+      "inputs": [
+        {"input": "JOY_BTN43", "control": "panel.toggle.5.up"},
+        {"input": "JOY_BTN44", "control": "panel.toggle.5.down"}
+      ],
+      "mapping": "medium",
+      "confidence": "high",
+      "note": "STROBE toggle"
+    },
+    "panel.selector.1": {
+      "type": "selector",
+      "name": "APU",
+      "inputs": [
+        {"input": "JOY_BTN45", "control": "panel.selector.1.pos.1"},
+        {"input": "JOY_BTN18", "control": "panel.selector.1.pos.2"},
+        {"input": "JOY_BTN19", "control": "panel.selector.1.pos.3"}
+      ],
+      "mapping": "medium",
+      "confidence": "high",
+      "note": "APU selector knob (OFF / ON / START)"
+    },
+    "panel.selector.2": {
+      "type": "selector",
+      "name": "RADIO",
+      "inputs": [
+        {"input": "JOY_BTN20", "control": "panel.selector.2.pos.1"},
+        {"input": "JOY_BTN21", "control": "panel.selector.2.pos.2"},
+        {"input": "JOY_BTN22", "control": "panel.selector.2.pos.3"},
+        {"input": "JOY_BTN23", "control": "panel.selector.2.pos.4"}
+      ],
+      "mapping": "low"
+    },
+    "panel.selector.3": {
+      "type": "selector",
+      "name": "AUTOPILOT",
+      "inputs": [
+        {"input": "JOY_BTN27", "control": "panel.selector.3.pos.1"},
+        {"input": "JOY_BTN28", "control": "panel.selector.3.pos.2"},
+        {"input": "JOY_BTN29", "control": "panel.selector.3.pos.3"},
+        {"input": "JOY_BTN30", "control": "panel.selector.3.pos.4"},
+        {"input": "JOY_BTN31", "control": "panel.selector.3.pos.5"}
+      ],
+      "mapping": "low"
+    },
+    "panel.encoder.1": {
+      "type": "encoder",
+      "name": "RADIO knob",
+      "inputs": [
+        {"input": "JOY_BTN25", "control": "panel.encoder.1.ccw"},
+        {"input": "JOY_BTN24", "control": "panel.encoder.1.cw"},
+        {"input": "JOY_BTN26", "control": "panel.encoder.1.press"}
+      ],
+      "mapping": "low"
+    },
+    "panel.encoder.2": {
+      "type": "encoder",
+      "name": "AUTOPILOT knob",
+      "inputs": [
+        {"input": "JOY_BTN33", "control": "panel.encoder.2.ccw"},
+        {"input": "JOY_BTN32", "control": "panel.encoder.2.cw"},
+        {"input": "JOY_BTN34", "control": "panel.encoder.2.press"}
+      ],
+      "mapping": "low"
+    },
+    "stick.base.button.1": {
+      "type": "button",
+      "name": "Base button 1",
+      "inputs": [
+        {"input": "JOY_BTN14", "control": "stick.base.button.1"}
+      ],
+      "mapping": "low"
+    },
+    "stick.base.button.2": {
+      "type": "button",
+      "name": "Base button 2",
+      "inputs": [
+        {"input": "JOY_BTN15", "control": "stick.base.button.2"}
+      ],
+      "mapping": "low"
+    },
+    "stick.base.button.3": {
+      "type": "button",
+      "name": "Base button 3",
+      "inputs": [
+        {"input": "JOY_BTN16", "control": "stick.base.button.3"}
+      ],
+      "mapping": "low"
+    },
+    "stick.base.button.4": {
+      "type": "button",
+      "name": "Base button 4",
+      "inputs": [
+        {"input": "JOY_BTN17", "control": "stick.base.button.4"}
+      ],
+      "mapping": "low"
+    },
+    "stick.base.button.5": {
+      "type": "button",
+      "name": "Logo button",
+      "inputs": [
+        {"input": "JOY_BTN11", "control": "stick.base.button.5"}
+      ],
+      "mapping": "medium",
+      "confidence": "high",
+      "note": "Honeycomb logo button, top left of the base"
+    },
+    "stick.base.button.6": {
+      "type": "button",
+      "name": "List",
+      "inputs": [
+        {"input": "JOY_BTN8", "control": "stick.base.button.6"}
+      ],
+      "mapping": "low"
+    },
+    "stick.base.button.7": {
+      "type": "button",
+      "name": "Menu",
+      "inputs": [
+        {"input": "JOY_BTN12", "control": "stick.base.button.7"}
+      ],
+      "mapping": "low"
+    },
+    "stick.base.button.8": {
+      "type": "button",
+      "name": "Back",
+      "inputs": [
+        {"input": "JOY_BTN7", "control": "stick.base.button.8"}
+      ],
+      "mapping": "low"
+    }
+  },
+  "unplaced": {
+    "stick.trigger": "trigger on the front of the grip, faces away from the camera",
+    "stick.button.index.1": "red button on the left side of the head, not visible from this angle",
+    "stick.button.index.2": "red button on the right side of the head, not visible from this angle",
+    "panel.selector.2": "RADIO pointer knob (NAV ... COM2); selector or encoder not documented",
+    "panel.selector.3": "AUTOPILOT pointer knob (IAS ... ALT); selector or encoder not documented",
+    "panel.encoder.1": "knurled ring of the RADIO knob; encoder or selector not documented",
+    "panel.encoder.2": "knurled ring of the AUTOPILOT knob; encoder or selector not documented",
+    "stick.base.button.1": "top button of the four on the left of the base; order not documented",
+    "stick.base.button.2": "second button on the left of the base; order not documented",
+    "stick.base.button.3": "third button on the left of the base; order not documented",
+    "stick.base.button.4": "bottom button on the left of the base; order not documented",
+    "stick.base.button.6": "right small top button (list icon), partly behind the APU knob",
+    "stick.base.button.7": "middle small top button (segmented bar icon)",
+    "stick.base.button.8": "left small top button (rotate-arrow icon), probably Back"
+  },
+  "candidates": {
+    "panel.encoder.1": [0.728, 0.627],
+    "panel.encoder.2": [0.712, 0.675],
+    "panel.selector.2": [0.708, 0.611],
+    "panel.selector.3": [0.71, 0.647],
+    "stick.base.button.1": [0.3, 0.622],
+    "stick.base.button.2": [0.3, 0.64],
+    "stick.base.button.3": [0.3, 0.659],
+    "stick.base.button.4": [0.3, 0.677],
+    "stick.base.button.6": [0.701, 0.577],
+    "stick.base.button.7": [0.676, 0.577],
+    "stick.base.button.8": [0.649, 0.577]
+  },
+  "source": "JoyPro curated on the maker's photo (2026-10-11), the stick and base seen from the pilot's seat, slightly from above",
+  "mappingSource": "catalog honeycomb.json (numbering from a local game configuration file, not publicly documented; https://flyhoneycomb.com/products/foxtrot-aviation-stick)",
+  "confidence": "medium",
+  "note": "Ambidextrous grip; the trigger (front of the grip) and the two red side buttons on the head (seen on gallery-3/-4) face away or sideways and are not visible here. RADIO and AUTOPILOT are each a red-pointer knob on a knurled ring: which part is the position selector and which the endless encoder (with push) is not documented, so those four parts are candidates (map=low). The four base buttons on the left are taken top to bottom as 1-4 and the three small top-right buttons (rotate-arrow, segmented bar, list icon) cannot be told apart as List/Menu/Back: candidates (map=low).",
+  "callouts": {
+    "version": 1,
+    "width": 4017,
+    "height": 3013,
+    "picture": [816, 323, 2000, 2000],
+    "rowHeight": 48,
+    "mainWidth": 408,
+    "modWidth": 264,
+    "otherY": 2361,
+    "tables": [
+      {"id": "grid:panel.toggle.1", "title": "Switches BEACON O - STROBE O", "parts": ["panel.toggle.1", "panel.toggle.2", "panel.toggle.3", "panel.toggle.4", "panel.toggle.5"], "side": "right", "x": 2874, "y": 1688, "width": 1105, "grid": true, "columns": 5, "modifier": false, "spot": [0.5002, 0.712], "rows": [{"input": "JOY_BTN35", "label": "BEACON O up", "icon": "up", "part": "panel.toggle.1", "cell": [0, 0, 0]}, {"input": "JOY_BTN36", "label": "BEACON O dn", "icon": "down", "part": "panel.toggle.1", "cell": [0, 0, 1]}, {"input": "JOY_BTN37", "label": "LANDING O up", "icon": "up", "part": "panel.toggle.2", "cell": [0, 1, 0]}, {"input": "JOY_BTN38", "label": "LANDING O dn", "icon": "down", "part": "panel.toggle.2", "cell": [0, 1, 1]}, {"input": "JOY_BTN39", "label": "TAXI O up", "icon": "up", "part": "panel.toggle.3", "cell": [0, 2, 0]}, {"input": "JOY_BTN40", "label": "TAXI O dn", "icon": "down", "part": "panel.toggle.3", "cell": [0, 2, 1]}, {"input": "JOY_BTN41", "label": "NAV O up", "icon": "up", "part": "panel.toggle.4", "cell": [0, 3, 0]}, {"input": "JOY_BTN42", "label": "NAV O dn", "icon": "down", "part": "panel.toggle.4", "cell": [0, 3, 1]}, {"input": "JOY_BTN43", "label": "STROBE O up", "icon": "up", "part": "panel.toggle.5", "cell": [0, 4, 0]}, {"input": "JOY_BTN44", "label": "STROBE O dn", "icon": "down", "part": "panel.toggle.5", "cell": [0, 4, 1]}]},
+      {"id": "stick.trigger", "title": "Trigger", "parts": ["stick.trigger"], "side": "other", "x": 38, "y": 2410, "width": 720, "modifier": true, "rows": [{"input": "JOY_BTN13", "label": "First stage", "icon": "button", "part": "stick.trigger"}]},
+      {"id": "stick.hat.1", "title": "8-way POV hat", "parts": ["stick.hat.1"], "side": "top", "x": 1784, "y": 38, "width": 720, "modifier": true, "spot": [0.508, 0.168], "rows": [{"input": "JOY_BTN_POV1_U", "label": "Up", "icon": "up", "part": "stick.hat.1"}, {"input": "JOY_BTN_POV1_R", "label": "Right", "icon": "right", "part": "stick.hat.1"}, {"input": "JOY_BTN_POV1_L", "label": "Left", "icon": "left", "part": "stick.hat.1"}, {"input": "JOY_BTN_POV1_D", "label": "Down", "icon": "down", "part": "stick.hat.1"}]},
+      {"id": "stick.hat.2", "title": "Momentary left rocker", "parts": ["stick.hat.2"], "side": "left", "x": 38, "y": 694, "width": 720, "modifier": true, "spot": [0.49, 0.215], "rows": [{"input": "JOY_BTN3", "label": "Up", "icon": "up", "part": "stick.hat.2"}, {"input": "JOY_BTN2", "label": "Down", "icon": "down", "part": "stick.hat.2"}]},
+      {"id": "stick.hat.3", "title": "Momentary right rocker", "parts": ["stick.hat.3"], "side": "right", "x": 2874, "y": 717.5, "width": 720, "modifier": true, "spot": [0.528, 0.215], "rows": [{"input": "JOY_BTN4", "label": "Up", "icon": "up", "part": "stick.hat.3"}, {"input": "JOY_BTN1", "label": "Down", "icon": "down", "part": "stick.hat.3"}]},
+      {"id": "stick.button.thumb.1", "title": "Red button", "parts": ["stick.button.thumb.1"], "side": "top", "x": 1050, "y": 182, "width": 720, "modifier": true, "spot": [0.453, 0.19], "rows": [{"input": "JOY_BTN5", "label": "Press", "icon": "button", "part": "stick.button.thumb.1"}]},
+      {"id": "stick.button.thumb.2", "title": "White button", "parts": ["stick.button.thumb.2"], "side": "right", "x": 2874, "y": 620.5, "width": 720, "modifier": true, "spot": [0.56, 0.19], "rows": [{"input": "JOY_BTN6", "label": "Press", "icon": "button", "part": "stick.button.thumb.2"}]},
+      {"id": "stick.button.index.1", "title": "Red left button", "parts": ["stick.button.index.1"], "side": "other", "x": 772, "y": 2410, "width": 720, "modifier": true, "rows": [{"input": "JOY_BTN9", "label": "Press", "icon": "button", "part": "stick.button.index.1"}]},
+      {"id": "stick.button.index.2", "title": "Red right button", "parts": ["stick.button.index.2"], "side": "other", "x": 1506, "y": 2410, "width": 720, "modifier": true, "rows": [{"input": "JOY_BTN10", "label": "Press", "icon": "button", "part": "stick.button.index.2"}]},
+      {"id": "panel.selector.1", "title": "APU", "parts": ["panel.selector.1"], "side": "right", "x": 2874, "y": 1436, "width": 720, "modifier": true, "spot": [0.706, 0.586], "rows": [{"input": "JOY_BTN45", "label": "1", "icon": "pos", "part": "panel.selector.1"}, {"input": "JOY_BTN18", "label": "2", "icon": "pos", "part": "panel.selector.1"}, {"input": "JOY_BTN19", "label": "3", "icon": "pos", "part": "panel.selector.1"}]},
+      {"id": "panel.selector.2", "title": "RADIO", "parts": ["panel.selector.2"], "side": "other", "x": 2240, "y": 2410, "width": 720, "modifier": true, "rows": [{"input": "JOY_BTN20", "label": "1", "icon": "pos", "part": "panel.selector.2"}, {"input": "JOY_BTN21", "label": "2", "icon": "pos", "part": "panel.selector.2"}, {"input": "JOY_BTN22", "label": "3", "icon": "pos", "part": "panel.selector.2"}, {"input": "JOY_BTN23", "label": "4", "icon": "pos", "part": "panel.selector.2"}]},
+      {"id": "panel.selector.3", "title": "AUTOPILOT", "parts": ["panel.selector.3"], "side": "other", "x": 2974, "y": 2410, "width": 720, "modifier": true, "rows": [{"input": "JOY_BTN27", "label": "1", "icon": "pos", "part": "panel.selector.3"}, {"input": "JOY_BTN28", "label": "2", "icon": "pos", "part": "panel.selector.3"}, {"input": "JOY_BTN29", "label": "3", "icon": "pos", "part": "panel.selector.3"}, {"input": "JOY_BTN30", "label": "4", "icon": "pos", "part": "panel.selector.3"}, {"input": "JOY_BTN31", "label": "5", "icon": "pos", "part": "panel.selector.3"}]},
+      {"id": "panel.encoder.1", "title": "RADIO knob", "parts": ["panel.encoder.1"], "side": "other", "x": 38, "y": 2699, "width": 720, "modifier": true, "rows": [{"input": "JOY_BTN26", "label": "Press", "icon": "button", "part": "panel.encoder.1"}, {"input": "JOY_BTN24", "label": "Clockwise", "icon": "right", "part": "panel.encoder.1"}, {"input": "JOY_BTN25", "label": "Counter-clockwise", "icon": "left", "part": "panel.encoder.1"}]},
+      {"id": "panel.encoder.2", "title": "AUTOPILOT knob", "parts": ["panel.encoder.2"], "side": "other", "x": 772, "y": 2699, "width": 720, "modifier": true, "rows": [{"input": "JOY_BTN34", "label": "Press", "icon": "button", "part": "panel.encoder.2"}, {"input": "JOY_BTN32", "label": "Clockwise", "icon": "right", "part": "panel.encoder.2"}, {"input": "JOY_BTN33", "label": "Counter-clockwise", "icon": "left", "part": "panel.encoder.2"}]},
+      {"id": "stick.base.button.1", "title": "Base button 1", "parts": ["stick.base.button.1"], "side": "other", "x": 1506, "y": 2699, "width": 720, "modifier": true, "rows": [{"input": "JOY_BTN14", "label": "Press", "icon": "button", "part": "stick.base.button.1"}]},
+      {"id": "stick.base.button.2", "title": "Base button 2", "parts": ["stick.base.button.2"], "side": "other", "x": 2240, "y": 2699, "width": 720, "modifier": true, "rows": [{"input": "JOY_BTN15", "label": "Press", "icon": "button", "part": "stick.base.button.2"}]},
+      {"id": "stick.base.button.3", "title": "Base button 3", "parts": ["stick.base.button.3"], "side": "other", "x": 2974, "y": 2699, "width": 720, "modifier": true, "rows": [{"input": "JOY_BTN16", "label": "Press", "icon": "button", "part": "stick.base.button.3"}]},
+      {"id": "stick.base.button.4", "title": "Base button 4", "parts": ["stick.base.button.4"], "side": "other", "x": 38, "y": 2892, "width": 720, "modifier": true, "rows": [{"input": "JOY_BTN17", "label": "Press", "icon": "button", "part": "stick.base.button.4"}]},
+      {"id": "stick.base.button.5", "title": "Logo button", "parts": ["stick.base.button.5"], "side": "left", "x": 38, "y": 1424, "width": 720, "modifier": true, "spot": [0.305, 0.58], "rows": [{"input": "JOY_BTN11", "label": "Press", "icon": "button", "part": "stick.base.button.5"}]},
+      {"id": "stick.base.button.6", "title": "List", "parts": ["stick.base.button.6"], "side": "other", "x": 772, "y": 2892, "width": 720, "modifier": true, "rows": [{"input": "JOY_BTN8", "label": "Press", "icon": "button", "part": "stick.base.button.6"}]},
+      {"id": "stick.base.button.7", "title": "Menu", "parts": ["stick.base.button.7"], "side": "other", "x": 1506, "y": 2892, "width": 720, "modifier": true, "rows": [{"input": "JOY_BTN12", "label": "Press", "icon": "button", "part": "stick.base.button.7"}]},
+      {"id": "stick.base.button.8", "title": "Back", "parts": ["stick.base.button.8"], "side": "other", "x": 2240, "y": 2892, "width": 720, "modifier": true, "rows": [{"input": "JOY_BTN7", "label": "Press", "icon": "button", "part": "stick.base.button.8"}]}
+    ],
+    "lines": [
+      {"table": "stick.hat.2", "points": [[1796, 753], [758, 753]]},
+      {"table": "stick.base.button.5", "points": [[1426, 1483], [758, 1483]]},
+      {"table": "stick.button.thumb.2", "points": [[1936, 703], [2845, 703], [2845, 679.5], [2874, 679.5]]},
+      {"table": "stick.hat.3", "points": [[1872, 753], [2845, 753], [2845, 776.5], [2874, 776.5]]},
+      {"table": "panel.selector.1", "points": [[2228, 1495], [2874, 1495]]},
+      {"table": "grid:panel.toggle.1", "points": [[1816.4, 1747], [2874, 1747]]},
+      {"table": "stick.button.thumb.1", "points": [[1722, 703], [1722, 294], [1410, 294], [1410, 265]]},
+      {"table": "stick.hat.1", "points": [[1832, 659], [1832, 294], [2144, 294], [2144, 265]]}
+    ]
+  }
+}

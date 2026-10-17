@@ -1,0 +1,161 @@
+{
+  "format": "joypro-device-layout",
+  "version": 1,
+  "model": "hori-hotas-flight-stick-xbox",
+  "photo": {"kind": "vendor", "url": "https://horieurope.com/cdn/shop/files/Product-Image_MBS-015_1.png", "sha256": "3e132fc382e4e6fd4b64eb431c10a8f8eb2ba042acafb082b073de6bac9ea709", "view": "main"},
+  "markers": {
+    "stick.button.thumb.1": [0.764, 0.318],
+    "stick.button.thumb.2": [0.708, 0.257],
+    "stick.button.thumb.3": [0.734, 0.243],
+    "stick.button.thumb.4": [0.689, 0.238],
+    "stick.gimbal": [0.693, 0.555],
+    "stick.hat.1": [0.645, 0.225],
+    "stick.trigger": [0.735, 0.2],
+    "throttle.axis.main": [0.2, 0.38],
+    "throttle.base.button.1": [0.811, 0.224],
+    "throttle.base.button.2": [0.826, 0.25]
+  },
+  "parts": {
+    "stick.trigger": {
+      "type": "trigger",
+      "name": "RSB / Fire 1",
+      "inputs": [
+        {"input": "", "control": "stick.trigger.stage1"}
+      ],
+      "mapping": "medium",
+      "confidence": "medium",
+      "note": "right mini-stick on top of the head; its press = RSB / Fire 1 (manual item 1). Not the index trigger (that is A)"
+    },
+    "throttle.axis.main": {
+      "type": "lever",
+      "name": "Throttle (LT/RT)",
+      "inputs": [
+        {"input": "", "control": "throttle.axis.main"}
+      ],
+      "mapping": "high",
+      "confidence": "medium",
+      "note": "throttle handle (manual item 31)"
+    },
+    "stick.gimbal": {
+      "type": "gimbal",
+      "name": "Left stick",
+      "inputs": [
+        {"input": "", "control": "stick.axis.roll"},
+        {"input": "", "control": "stick.axis.pitch"}
+      ],
+      "mapping": "high",
+      "confidence": "medium",
+      "note": "stick base joint (left stick = pitch/roll, manual item 6)"
+    },
+    "stick.hat.1": {
+      "type": "hat",
+      "name": "D-Pad / Hat",
+      "inputs": [
+        {"input": "", "control": "stick.hat.1.up"},
+        {"input": "", "control": "stick.hat.1.right"},
+        {"input": "", "control": "stick.hat.1.down"},
+        {"input": "", "control": "stick.hat.1.left"}
+      ],
+      "mapping": "high",
+      "confidence": "high",
+      "note": "castle D-pad at the left of the head (manual item 4)"
+    },
+    "throttle.axis.rotary.1": {
+      "type": "knob",
+      "name": "Ladder / rudder rocker (LB/RB)",
+      "inputs": [
+        {"input": "", "control": "throttle.axis.rotary.1"}
+      ],
+      "mapping": "high"
+    },
+    "stick.button.thumb.1": {
+      "type": "button",
+      "name": "A",
+      "inputs": [
+        {"input": "", "control": "stick.button.thumb.1"}
+      ],
+      "mapping": "high",
+      "confidence": "medium",
+      "note": "green index trigger = A button (manual item 12), partly hidden behind the grip"
+    },
+    "throttle.button.1": {
+      "type": "button",
+      "name": "LSB",
+      "inputs": [
+        {"input": "", "control": "throttle.button.1"}
+      ],
+      "mapping": "high"
+    },
+    "stick.button.thumb.2": {
+      "type": "button",
+      "name": "B",
+      "inputs": [
+        {"input": "", "control": "stick.button.thumb.2"}
+      ],
+      "mapping": "high",
+      "confidence": "high",
+      "note": "B button (red B, manual item 5)"
+    },
+    "throttle.base.button.1": {
+      "type": "button",
+      "name": "VIEW",
+      "inputs": [
+        {"input": "", "control": "throttle.base.button.1"}
+      ],
+      "mapping": "high",
+      "confidence": "medium",
+      "note": "VIEW button, upper side button of the stick head (manual item 10)"
+    },
+    "stick.button.thumb.3": {
+      "type": "button",
+      "name": "X",
+      "inputs": [
+        {"input": "", "control": "stick.button.thumb.3"}
+      ],
+      "mapping": "high",
+      "confidence": "high",
+      "note": "X button (blue X, manual item 2)"
+    },
+    "throttle.base.button.2": {
+      "type": "button",
+      "name": "MENU",
+      "inputs": [
+        {"input": "", "control": "throttle.base.button.2"}
+      ],
+      "mapping": "high",
+      "confidence": "medium",
+      "note": "MENU button, lower side button of the stick head (manual item 11)"
+    },
+    "stick.button.thumb.4": {
+      "type": "button",
+      "name": "Y",
+      "inputs": [
+        {"input": "", "control": "stick.button.thumb.4"}
+      ],
+      "mapping": "high",
+      "confidence": "high",
+      "note": "Y button (yellow Y, manual item 3)"
+    }
+  },
+  "unplaced": {
+    "throttle.axis.rotary.1": "ladder (rudder rocker) under the back of the throttle handle (manual item 30), faces away from the camera",
+    "throttle.button.1": "LSB on the back of the throttle handle (manual item 29), faces away from the camera"
+  },
+  "candidates": {},
+  "source": "JoyPro curated on the maker's photo (2026-10-11), throttle (left) and stick (right) seen from the front; stick head face (D-pad, Y/X/B, right stick) and its side buttons visible, the throttle handle's control face points right",
+  "mappingSource": "HORI instruction manual p.2 \"Layout\" (https://horieurope.com/cdn/shop/files/EN_Instruction_Manual_Xbox_Flight_Stick.pdf, also a catalog source): joystick 1 right stick/RSB (Fire 1), 2 X, 3 Y, 4 D-pad, 5 B, 6 left stick (pitch/roll), 10 VIEW, 11 MENU, 12 A, 13 LSB+RSB (NEXT), 14 LB+RB (Fire 2); throttle 21 AUDIO, 22 D-pad, 23 LT+RT (PREV), 24 SHARE, 25 Xbox, 29 LSB, 30 ladder (LB/RB, Yaw), 31 throttle (LT/RT); catalog parts have no input numbers",
+  "confidence": "medium",
+  "note": "Per the manual the green index trigger is the A button (item 12; green = Xbox A colour). The catalog's stick.trigger part is labelled \"RSB / Fire 1\", which per the manual is the press of the right mini-stick on top of the head (item 1); the marker follows the catalog label (on the mini-stick), see the report. VIEW and MENU are on the side of the joystick head (manual items 10/11), not on the throttle base as the catalog part ids (throttle.base.button.1/2) suggest; markers follow the manual. LSB (item 29) and the ladder/rudder rocker (item 30) are on the back of the throttle handle and face away from the camera.",
+  "callouts": {
+    "version": 1,
+    "width": 2076,
+    "height": 2076,
+    "picture": [38, 38, 2000, 2000],
+    "rowHeight": 48,
+    "mainWidth": 408,
+    "modWidth": 264,
+    "otherY": -1,
+    "tables": [],
+    "lines": []
+  }
+}

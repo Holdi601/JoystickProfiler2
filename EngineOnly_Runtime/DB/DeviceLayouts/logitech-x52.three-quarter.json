@@ -1,0 +1,369 @@
+{
+  "format": "joypro-device-layout",
+  "version": 1,
+  "model": "logitech-x52",
+  "photo": {"kind": "vendor", "url": "https://resource.logitechg.com/content/dam/gaming/en/products/x52-hotas/x52-gallery-1.png", "sha256": "0367672a970686b4b9f6a7cf3237eecd8141ff4c719eab830a345f4b99f17d02", "view": "three-quarter"},
+  "markers": {
+    "stick.axis.twist": [0.65, 0.36],
+    "stick.button.thumb.1": [0.644, 0.114],
+    "stick.button.thumb.2": [0.647, 0.163],
+    "stick.gimbal": [0.64, 0.56],
+    "stick.hat.dms": [0.589, 0.141],
+    "stick.hat.tms": [0.635, 0.191],
+    "stick.weapon_release": [0.615, 0.125],
+    "throttle.axis.main": [0.3, 0.53],
+    "throttle.axis.rotary.1": [0.398, 0.497],
+    "throttle.axis.rotary.2": [0.35, 0.395],
+    "throttle.base.button.1": [0.659, 0.096],
+    "throttle.base.button.2": [0.661, 0.106],
+    "throttle.base.button.3": [0.663, 0.116],
+    "throttle.base.toggle.1": [0.66, 0.742],
+    "throttle.base.toggle.2": [0.698, 0.723],
+    "throttle.base.toggle.3": [0.738, 0.707],
+    "throttle.button.1": [0.381, 0.43],
+    "throttle.button.6": [0.408, 0.508]
+  },
+  "parts": {
+    "stick.weapon_release": {
+      "type": "release",
+      "name": "FIRE (red, under cover)",
+      "inputs": [
+        {"input": "JOY_BTN2", "control": "stick.weapon_release"}
+      ],
+      "mapping": "medium",
+      "confidence": "high",
+      "note": "Fire button under the flip cover on top of the head"
+    },
+    "stick.hat.tms": {
+      "type": "hat",
+      "name": "TMS hat",
+      "inputs": [
+        {"input": "JOY_BTN_POV1_U", "control": "stick.hat.tms.up"},
+        {"input": "JOY_BTN_POV1_UR", "control": "stick.hat.tms.upright"},
+        {"input": "JOY_BTN_POV1_R", "control": "stick.hat.tms.right"},
+        {"input": "JOY_BTN_POV1_DR", "control": "stick.hat.tms.downright"},
+        {"input": "JOY_BTN_POV1_D", "control": "stick.hat.tms.down"},
+        {"input": "JOY_BTN_POV1_DL", "control": "stick.hat.tms.downleft"},
+        {"input": "JOY_BTN_POV1_L", "control": "stick.hat.tms.left"},
+        {"input": "JOY_BTN_POV1_UL", "control": "stick.hat.tms.upleft"}
+      ],
+      "mapping": "medium",
+      "confidence": "high",
+      "note": "lower thumb hat (POV)"
+    },
+    "stick.hat.dms": {
+      "type": "hat",
+      "name": "DMS hat",
+      "inputs": [
+        {"input": "JOY_BTN20", "control": "stick.hat.dms.up"},
+        {"input": "JOY_BTN21", "control": "stick.hat.dms.right"},
+        {"input": "JOY_BTN22", "control": "stick.hat.dms.down"},
+        {"input": "JOY_BTN23", "control": "stick.hat.dms.left"}
+      ],
+      "mapping": "medium",
+      "confidence": "high",
+      "note": "upper left hat"
+    },
+    "stick.trigger": {
+      "type": "trigger",
+      "name": "Trigger",
+      "inputs": [
+        {"input": "JOY_BTN1", "control": "stick.trigger.stage1"},
+        {"input": "JOY_BTN15", "control": "stick.trigger.stage2"}
+      ],
+      "mapping": "medium"
+    },
+    "stick.pinky.button": {
+      "type": "button",
+      "name": "Pinky switch",
+      "inputs": [
+        {"input": "JOY_BTN6", "control": "stick.pinky.button"}
+      ],
+      "mapping": "medium"
+    },
+    "stick.axis.twist": {
+      "type": "twist",
+      "name": "Twist",
+      "inputs": [
+        {"input": "JOY_RZ", "control": "stick.axis.twist"}
+      ],
+      "mapping": "medium",
+      "confidence": "medium",
+      "note": "the twist acts on the whole handle"
+    },
+    "throttle.axis.main": {
+      "type": "lever",
+      "name": "Throttle",
+      "inputs": [
+        {"input": "JOY_Z", "control": "throttle.axis.main"}
+      ],
+      "mapping": "medium",
+      "confidence": "medium",
+      "note": "throttle handle"
+    },
+    "stick.gimbal": {
+      "type": "gimbal",
+      "name": "Stick (roll / pitch)",
+      "inputs": [
+        {"input": "JOY_X", "control": "stick.axis.roll"},
+        {"input": "JOY_Y", "control": "stick.axis.pitch"}
+      ],
+      "mapping": "medium",
+      "confidence": "medium",
+      "note": "spring/boot at the stick base"
+    },
+    "stick.button.thumb.1": {
+      "type": "button",
+      "name": "A",
+      "inputs": [
+        {"input": "JOY_BTN3", "control": "stick.button.thumb.1"}
+      ],
+      "mapping": "medium",
+      "confidence": "high",
+      "note": "A, lit button right of the Fire cover"
+    },
+    "throttle.hat.1": {
+      "type": "hat",
+      "name": "Throttle hat 1",
+      "inputs": [
+        {"input": "JOY_BTN24", "control": "throttle.hat.1.down"},
+        {"input": "JOY_BTN25", "control": "throttle.hat.1.right"},
+        {"input": "JOY_BTN26", "control": "throttle.hat.1.up"},
+        {"input": "JOY_BTN27", "control": "throttle.hat.1.left"}
+      ],
+      "mapping": "medium"
+    },
+    "stick.button.thumb.2": {
+      "type": "button",
+      "name": "B",
+      "inputs": [
+        {"input": "JOY_BTN4", "control": "stick.button.thumb.2"}
+      ],
+      "mapping": "medium",
+      "confidence": "high",
+      "note": "B, lit button right of the lower hat"
+    },
+    "throttle.axis.rotary.1": {
+      "type": "knob",
+      "name": "Rotary 1",
+      "inputs": [
+        {"input": "JOY_RX", "control": "throttle.axis.rotary.1"}
+      ],
+      "mapping": "medium",
+      "confidence": "medium",
+      "note": "lower thumb rotary (RX per EDRefCard \"bottom rotary\")"
+    },
+    "stick.button.thumb.3": {
+      "type": "button",
+      "name": "C",
+      "inputs": [
+        {"input": "JOY_BTN5", "control": "stick.button.thumb.3"}
+      ],
+      "mapping": "medium"
+    },
+    "throttle.axis.rotary.2": {
+      "type": "knob",
+      "name": "Rotary 2",
+      "inputs": [
+        {"input": "JOY_RY", "control": "throttle.axis.rotary.2"}
+      ],
+      "mapping": "medium",
+      "confidence": "medium",
+      "note": "top-front rotary dome (RY per EDRefCard \"top rotary\"; same place as on the X52 Pro photo)"
+    },
+    "throttle.axis.slider.1": {
+      "type": "slider",
+      "name": "Slider 1",
+      "inputs": [
+        {"input": "JOY_SLIDER1", "control": "throttle.axis.slider.1"}
+      ],
+      "mapping": "medium"
+    },
+    "throttle.button.1": {
+      "type": "button",
+      "name": "D",
+      "inputs": [
+        {"input": "JOY_BTN7", "control": "throttle.button.1"}
+      ],
+      "mapping": "medium",
+      "confidence": "medium",
+      "note": "D, lit button in the recess on the thumb side (EDRefCard \"throttle blue button\")"
+    },
+    "throttle.button.2": {
+      "type": "button",
+      "name": "E",
+      "inputs": [
+        {"input": "JOY_BTN8", "control": "throttle.button.2"}
+      ],
+      "mapping": "medium"
+    },
+    "throttle.button.3": {
+      "type": "button",
+      "name": "Mouse button (throttle mini-stick press)",
+      "inputs": [
+        {"input": "JOY_BTN16", "control": "throttle.button.3"}
+      ],
+      "mapping": "medium"
+    },
+    "throttle.button.4": {
+      "type": "button",
+      "name": "Scroll wheel forward",
+      "inputs": [
+        {"input": "JOY_BTN17", "control": "throttle.button.4"}
+      ],
+      "mapping": "medium"
+    },
+    "throttle.button.5": {
+      "type": "button",
+      "name": "Scroll wheel back",
+      "inputs": [
+        {"input": "JOY_BTN18", "control": "throttle.button.5"}
+      ],
+      "mapping": "medium"
+    },
+    "throttle.button.6": {
+      "type": "button",
+      "name": "I (clutch)",
+      "inputs": [
+        {"input": "JOY_BTN31", "control": "throttle.button.6"}
+      ],
+      "mapping": "medium",
+      "confidence": "medium",
+      "note": "i (clutch), lit centre of the lower rotary"
+    },
+    "throttle.base.toggle.1": {
+      "type": "switch",
+      "name": "Base toggle 1",
+      "inputs": [
+        {"input": "JOY_BTN9", "control": "throttle.base.toggle.1.up"},
+        {"input": "JOY_BTN10", "control": "throttle.base.toggle.1.down"}
+      ],
+      "mapping": "medium",
+      "confidence": "high",
+      "note": "T1/T2 toggle on the stick base"
+    },
+    "throttle.base.toggle.2": {
+      "type": "switch",
+      "name": "Base toggle 2",
+      "inputs": [
+        {"input": "JOY_BTN11", "control": "throttle.base.toggle.2.up"},
+        {"input": "JOY_BTN12", "control": "throttle.base.toggle.2.down"}
+      ],
+      "mapping": "medium",
+      "confidence": "high",
+      "note": "T3/T4 toggle on the stick base"
+    },
+    "throttle.base.toggle.3": {
+      "type": "switch",
+      "name": "Base toggle 3",
+      "inputs": [
+        {"input": "JOY_BTN13", "control": "throttle.base.toggle.3.up"},
+        {"input": "JOY_BTN14", "control": "throttle.base.toggle.3.down"}
+      ],
+      "mapping": "medium",
+      "confidence": "high",
+      "note": "T5/T6 toggle on the stick base"
+    },
+    "throttle.base.button.1": {
+      "type": "button",
+      "name": "MODE 1",
+      "inputs": [
+        {"input": "JOY_BTN28", "control": "throttle.base.button.1"}
+      ],
+      "mapping": "medium",
+      "confidence": "medium",
+      "note": "mode rotary on the stick head (position 1)"
+    },
+    "throttle.base.button.2": {
+      "type": "button",
+      "name": "MODE 2",
+      "inputs": [
+        {"input": "JOY_BTN29", "control": "throttle.base.button.2"}
+      ],
+      "mapping": "medium",
+      "confidence": "medium",
+      "note": "mode rotary on the stick head (position 2)"
+    },
+    "throttle.base.button.3": {
+      "type": "button",
+      "name": "MODE 3",
+      "inputs": [
+        {"input": "JOY_BTN30", "control": "throttle.base.button.3"}
+      ],
+      "mapping": "medium",
+      "confidence": "medium",
+      "note": "mode rotary on the stick head (position 3)"
+    }
+  },
+  "unplaced": {
+    "stick.trigger": "front of the grip inside the frame; the trigger itself faces away",
+    "stick.pinky.button": "lower front of the grip, not identifiable on this photo",
+    "throttle.hat.1": "rear hat of the throttle, facing away",
+    "stick.button.thumb.3": "C, black button left of the lower hat; shape only",
+    "throttle.axis.slider.1": "silver part with two notches on the thumb side; may be the slider or the mouse stick",
+    "throttle.button.2": "E, lit centre on top of the top rotary (seen edge-on)",
+    "throttle.button.3": "red nub below the lower rotary, possibly the mouse mini-stick",
+    "throttle.button.4": "scroll wheel is on the rear of the throttle, facing away",
+    "throttle.button.5": "scroll wheel is on the rear of the throttle, facing away"
+  },
+  "candidates": {
+    "stick.button.thumb.3": [0.584, 0.196],
+    "stick.trigger": [0.575, 0.31],
+    "throttle.axis.slider.1": [0.357, 0.459],
+    "throttle.button.2": [0.345, 0.38],
+    "throttle.button.3": [0.385, 0.537]
+  },
+  "source": "JoyPro curated on the maker's photo (2026-10-11), throttle (left) and stick (right) seen from behind and to the right; the stick head faces the camera, the throttle shows its right (thumb) side",
+  "mappingSource": "catalog (logitech.json: X52 Pro driver map http://hacks4ros.github.io/h4r_x52_joyext/doc/doxygen/d3/d14/x52_general.html + community maps); locations cross-checked with EDRefCard bindingsData.py (https://github.com/richardbuckle/EDRefCard/blob/dev/www/scripts/bindingsData.py, SaitekX52/SaitekX52Pro: 2 = Safe/fire, 3 = button right of Safe, 4 = button right of hat, 5 = black button left of hat, 7 = throttle blue button, 8 = throttle top rotary button, 9-14 = stick base switches, RX = throttle bottom rotary, RY = top rotary) and the Logitech X52 user guide product tour https://www.logitech.com/assets/65328/x52-hotas.pdf p.3-4 (no numbered figure)",
+  "confidence": "medium",
+  "note": "The 3 base toggles (T1/T2, T3/T4, T5/T6) and the 3-position mode rotary are on the STICK (base and head), although the catalog part ids start with \"throttle.\"; markers are on the physical controls. POV1 (TMS) is placed on the lower thumb hat and buttons 20-23 (DMS) on the upper left hat, following EDRefCard (\"stick top hat\" = buttons, POV = the other hat); not confirmed by a Logitech figure. The three MODE parts are the positions of one rotary knob; their markers are spread along that knob. Throttle rear hat, scroll wheel and the stick trigger/pinky face away. Several throttle-side controls are only candidates: from this angle the mini-stick, slider and the E button cannot be told apart reliably.",
+  "callouts": {
+    "version": 1,
+    "width": 1503,
+    "height": 916,
+    "picture": [340, 134, 755, 556],
+    "rowHeight": 20,
+    "mainWidth": 170,
+    "modWidth": 110,
+    "otherY": 706,
+    "tables": [
+      {"id": "grid:stick.button.thumb.1", "title": "Buttons A - B", "parts": ["stick.button.thumb.1", "throttle.base.button.1", "throttle.base.button.2", "throttle.base.button.3", "stick.button.thumb.2"], "side": "right", "x": 1119, "y": 125.9, "width": 368, "grid": true, "columns": 4, "modifier": false, "spot": [0.6548, 0.119], "rows": [{"input": "JOY_BTN3", "label": "A", "icon": "button", "part": "stick.button.thumb.1", "cell": [0, 0, 0]}, {"input": "JOY_BTN28", "label": "MODE 1", "icon": "button", "part": "throttle.base.button.1", "cell": [0, 1, 0]}, {"input": "JOY_BTN29", "label": "MODE 2", "icon": "button", "part": "throttle.base.button.2", "cell": [0, 2, 0]}, {"input": "JOY_BTN30", "label": "MODE 3", "icon": "button", "part": "throttle.base.button.3", "cell": [0, 3, 0]}, {"input": "JOY_BTN4", "label": "B", "icon": "button", "part": "stick.button.thumb.2", "cell": [1, 0, 0]}]},
+      {"id": "stack:throttle.axis.rotary.1", "title": "Rotary 1 / I (clutch)", "parts": ["throttle.axis.rotary.1", "throttle.button.6"], "side": "left", "x": 16, "y": 383.2, "width": 300, "modifier": true, "spot": [0.403, 0.5025], "rows": [{"input": "JOY_RX", "label": "Rotary 1 RX", "icon": "axis", "part": "throttle.axis.rotary.1"}, {"input": "JOY_BTN31", "label": "I (clutch) Press", "icon": "button", "part": "throttle.button.6"}]},
+      {"id": "stick.weapon_release", "title": "FIRE (red, under cover)", "parts": ["stick.weapon_release"], "side": "top", "x": 795, "y": 76, "width": 300, "modifier": true, "spot": [0.615, 0.125], "rows": [{"input": "JOY_BTN2", "label": "Press", "icon": "button", "part": "stick.weapon_release"}]},
+      {"id": "stick.hat.tms", "title": "TMS hat", "parts": ["stick.hat.tms"], "side": "right", "x": 1119, "y": 185.9, "width": 300, "modifier": true, "spot": [0.635, 0.191], "rows": [{"input": "JOY_BTN_POV1_U", "label": "Up", "icon": "up", "part": "stick.hat.tms"}, {"input": "JOY_BTN_POV1_R", "label": "Right", "icon": "right", "part": "stick.hat.tms"}, {"input": "JOY_BTN_POV1_L", "label": "Left", "icon": "left", "part": "stick.hat.tms"}, {"input": "JOY_BTN_POV1_D", "label": "Down", "icon": "down", "part": "stick.hat.tms"}, {"input": "JOY_BTN_POV1_UR", "label": "Up-right", "icon": "upright", "part": "stick.hat.tms"}, {"input": "JOY_BTN_POV1_UL", "label": "Up-left", "icon": "upleft", "part": "stick.hat.tms"}, {"input": "JOY_BTN_POV1_DR", "label": "Down-right", "icon": "downright", "part": "stick.hat.tms"}, {"input": "JOY_BTN_POV1_DL", "label": "Down-left", "icon": "downleft", "part": "stick.hat.tms"}]},
+      {"id": "stick.hat.dms", "title": "DMS hat", "parts": ["stick.hat.dms"], "side": "top", "x": 489, "y": 16, "width": 300, "modifier": true, "spot": [0.589, 0.141], "rows": [{"input": "JOY_BTN20", "label": "Up", "icon": "up", "part": "stick.hat.dms"}, {"input": "JOY_BTN21", "label": "Right", "icon": "right", "part": "stick.hat.dms"}, {"input": "JOY_BTN23", "label": "Left", "icon": "left", "part": "stick.hat.dms"}, {"input": "JOY_BTN22", "label": "Down", "icon": "down", "part": "stick.hat.dms"}]},
+      {"id": "stick.trigger", "title": "Trigger", "parts": ["stick.trigger"], "side": "other", "x": 16, "y": 726, "width": 300, "modifier": true, "rows": [{"input": "JOY_BTN1", "label": "First stage", "icon": "button", "part": "stick.trigger"}, {"input": "JOY_BTN15", "label": "Second stage", "icon": "button", "part": "stick.trigger"}]},
+      {"id": "stick.pinky.button", "title": "Pinky switch", "parts": ["stick.pinky.button"], "side": "other", "x": 322, "y": 726, "width": 300, "modifier": true, "rows": [{"input": "JOY_BTN6", "label": "Press", "icon": "button", "part": "stick.pinky.button"}]},
+      {"id": "stick.axis.twist", "title": "Twist", "parts": ["stick.axis.twist"], "side": "right", "x": 1119, "y": 365.9, "width": 300, "modifier": true, "spot": [0.65, 0.36], "rows": [{"input": "JOY_RZ", "label": "RZ", "icon": "axis", "part": "stick.axis.twist"}]},
+      {"id": "throttle.axis.main", "title": "Throttle", "parts": ["throttle.axis.main"], "side": "left", "x": 16, "y": 443.2, "width": 300, "modifier": true, "spot": [0.3, 0.53], "rows": [{"input": "JOY_Z", "label": "Z", "icon": "axis", "part": "throttle.axis.main"}]},
+      {"id": "stick.gimbal", "title": "Stick (roll / pitch)", "parts": ["stick.gimbal"], "side": "right", "x": 1119, "y": 405.9, "width": 300, "modifier": true, "spot": [0.64, 0.56], "rows": [{"input": "JOY_X", "label": "roll (X)", "icon": "axis", "part": "stick.gimbal"}, {"input": "JOY_Y", "label": "pitch (Y)", "icon": "axis", "part": "stick.gimbal"}]},
+      {"id": "throttle.hat.1", "title": "Throttle hat 1", "parts": ["throttle.hat.1"], "side": "other", "x": 628, "y": 726, "width": 300, "modifier": true, "rows": [{"input": "JOY_BTN26", "label": "Up", "icon": "up", "part": "throttle.hat.1"}, {"input": "JOY_BTN25", "label": "Right", "icon": "right", "part": "throttle.hat.1"}, {"input": "JOY_BTN27", "label": "Left", "icon": "left", "part": "throttle.hat.1"}, {"input": "JOY_BTN24", "label": "Down", "icon": "down", "part": "throttle.hat.1"}]},
+      {"id": "stick.button.thumb.3", "title": "C", "parts": ["stick.button.thumb.3"], "side": "other", "x": 934, "y": 726, "width": 300, "modifier": true, "rows": [{"input": "JOY_BTN5", "label": "Press", "icon": "button", "part": "stick.button.thumb.3"}]},
+      {"id": "throttle.axis.rotary.2", "title": "Rotary 2", "parts": ["throttle.axis.rotary.2"], "side": "left", "x": 16, "y": 303.2, "width": 300, "modifier": true, "spot": [0.35, 0.395], "rows": [{"input": "JOY_RY", "label": "RY", "icon": "axis", "part": "throttle.axis.rotary.2"}]},
+      {"id": "throttle.axis.slider.1", "title": "Slider 1", "parts": ["throttle.axis.slider.1"], "side": "other", "x": 16, "y": 826, "width": 300, "modifier": true, "rows": [{"input": "JOY_SLIDER1", "label": "SLIDER1", "icon": "axis", "part": "throttle.axis.slider.1"}]},
+      {"id": "throttle.button.1", "title": "D", "parts": ["throttle.button.1"], "side": "left", "x": 16, "y": 343.2, "width": 300, "modifier": true, "spot": [0.381, 0.43], "rows": [{"input": "JOY_BTN7", "label": "Press", "icon": "button", "part": "throttle.button.1"}]},
+      {"id": "throttle.button.2", "title": "E", "parts": ["throttle.button.2"], "side": "other", "x": 322, "y": 826, "width": 300, "modifier": true, "rows": [{"input": "JOY_BTN8", "label": "Press", "icon": "button", "part": "throttle.button.2"}]},
+      {"id": "throttle.button.3", "title": "Mouse button (throttle mini-stick press)", "parts": ["throttle.button.3"], "side": "other", "x": 628, "y": 826, "width": 300, "modifier": true, "rows": [{"input": "JOY_BTN16", "label": "Press", "icon": "button", "part": "throttle.button.3"}]},
+      {"id": "throttle.button.4", "title": "Scroll wheel forward", "parts": ["throttle.button.4"], "side": "other", "x": 934, "y": 826, "width": 300, "modifier": true, "rows": [{"input": "JOY_BTN17", "label": "Press", "icon": "button", "part": "throttle.button.4"}]},
+      {"id": "throttle.button.5", "title": "Scroll wheel back", "parts": ["throttle.button.5"], "side": "other", "x": 16, "y": 866, "width": 300, "modifier": true, "rows": [{"input": "JOY_BTN18", "label": "Press", "icon": "button", "part": "throttle.button.5"}]},
+      {"id": "throttle.base.toggle.1", "title": "Base toggle 1", "parts": ["throttle.base.toggle.1"], "side": "right", "x": 1119, "y": 585.9, "width": 300, "modifier": true, "spot": [0.66, 0.742], "rows": [{"input": "JOY_BTN9", "label": "Up", "icon": "up", "part": "throttle.base.toggle.1"}, {"input": "JOY_BTN10", "label": "Down", "icon": "down", "part": "throttle.base.toggle.1"}]},
+      {"id": "throttle.base.toggle.2", "title": "Base toggle 2", "parts": ["throttle.base.toggle.2"], "side": "right", "x": 1119, "y": 525.9, "width": 300, "modifier": true, "spot": [0.698, 0.723], "rows": [{"input": "JOY_BTN11", "label": "Up", "icon": "up", "part": "throttle.base.toggle.2"}, {"input": "JOY_BTN12", "label": "Down", "icon": "down", "part": "throttle.base.toggle.2"}]},
+      {"id": "throttle.base.toggle.3", "title": "Base toggle 3", "parts": ["throttle.base.toggle.3"], "side": "right", "x": 1119, "y": 465.9, "width": 300, "modifier": true, "spot": [0.738, 0.707], "rows": [{"input": "JOY_BTN13", "label": "Up", "icon": "up", "part": "throttle.base.toggle.3"}, {"input": "JOY_BTN14", "label": "Down", "icon": "down", "part": "throttle.base.toggle.3"}]}
+    ],
+    "lines": [
+      {"table": "throttle.axis.rotary.2", "points": [[604.2, 353.6], [328, 353.6], [328, 327.2], [316, 327.2]]},
+      {"table": "throttle.button.1", "points": [[627.7, 373.1], [328, 373.1], [328, 367.2], [316, 367.2]]},
+      {"table": "stack:throttle.axis.rotary.1", "points": [[644.3, 413.4], [328, 413.4], [328, 407.2], [316, 407.2]]},
+      {"table": "throttle.axis.main", "points": [[566.5, 428.7], [328, 428.7], [328, 467.2], [316, 467.2]]},
+      {"table": "grid:stick.button.thumb.1", "points": [[834.4, 200.2], [1107, 200.2], [1107, 149.9], [1119, 149.9]]},
+      {"table": "stick.hat.tms", "points": [[819.4, 240.2], [1107, 240.2], [1107, 209.9], [1119, 209.9]]},
+      {"table": "stick.axis.twist", "points": [[830.8, 334.2], [1107, 334.2], [1107, 389.9], [1119, 389.9]]},
+      {"table": "stick.gimbal", "points": [[823.2, 445.4], [1107, 445.4], [1107, 429.9], [1119, 429.9]]},
+      {"table": "throttle.base.toggle.3", "points": [[897.2, 527.1], [897.2, 489.9], [1119, 489.9]]},
+      {"table": "throttle.base.toggle.2", "points": [[867, 536], [867, 549.9], [1119, 549.9]]},
+      {"table": "throttle.base.toggle.1", "points": [[838.3, 546.6], [1107, 546.6], [1107, 609.9], [1119, 609.9]]},
+      {"table": "stick.hat.dms", "points": [[784.7, 212.4], [784.7, 122], [639, 122], [639, 110]]},
+      {"table": "stick.weapon_release", "points": [[804.3, 203.5], [804.3, 122], [945, 122], [945, 110]]}
+    ]
+  }
+}

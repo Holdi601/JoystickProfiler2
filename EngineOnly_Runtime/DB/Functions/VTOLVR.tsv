@@ -1,0 +1,159 @@
+# VTOL VR + BYOJoystick mod: BYOJ <Target> -> JoyPro function slots. A target exists only in the vehicles listed in byoj_actions.tsv;
+# an exporter writes the row into every BYOJ_<vehicle>.xml whose vehicle has the target (per-vehicle files, see research.md).
+# plane	slot	action	status	hotas	frequency	control
+VTOLVR	pitch	Joystick Pitch	new	stick	constant	stick: pitch axis
+VTOLVR	roll	Joystick Roll	new	stick	constant	stick: roll axis
+VTOLVR	rudder	Joystick Yaw	new	pedals	constant	pedals / stick twist: yaw axis
+VTOLVR	throttlerightnonab	Throttle	new	throttle	constant	throttle: thrust axis (single lever)
+VTOLVR	throttleleftnonab	Throttle	new	throttle	constant	throttle: thrust axis (single lever)
+VTOLVR	throttlerightnonab	Collective	new	collective	constant	collective: AH-94 collective axis
+VTOLVR	throttleleftnonab	Collective	new	collective	constant	collective: AH-94 collective axis
+VTOLVR	rpm_control	Power	substitute	throttle	occasional	throttle quadrant: AH-94 engine power lever
+VTOLVR	rpm_increase	Throttle Increase	new	throttle	frequent	throttle: step up
+VTOLVR	rpm_decrease	Throttle Decrease	new	throttle	frequent	throttle: step down
+VTOLVR	nozzle_angle_mixture_control	Tilt	new	throttle	frequent	throttle wheel: AV-42C engine tilt axis
+VTOLVR	airbakeextend	Brakes/Airbrakes	substitute	throttle	frequent	throttle: trigger, airbrake + wheel brakes while held
+VTOLVR	flaps_toggle	Flaps Cycle	new	panel	occasional	panel: flaps lever cycle
+VTOLVR	flapsup	Flaps 1	new	panel	occasional	panel: flaps lever position 1 (up)
+VTOLVR	flapsneutral	Flaps 2	new	panel	occasional	panel: flaps lever position 2
+VTOLVR	flapsdown	Flaps 3	new	panel	occasional	panel: flaps lever position 3 (full)
+VTOLVR	gear_toggle	Landing Gear Toggle	new	panel	frequent	panel: gear lever toggle
+VTOLVR	gearin	Landing Gear Up	new	panel	frequent	panel: gear up
+VTOLVR	gearout	Landing Gear Down	new	panel	frequent	panel: gear down
+VTOLVR	parkbreakcw	Brake Lock Toggle	new	panel	frequent	panel: brake lock (parking brake) toggle
+VTOLVR	parkbreakpull	Brake Lock On	new	panel	frequent	panel: brake lock on
+VTOLVR	parkbreakstow	Brake Lock Off	new	panel	frequent	panel: brake lock off
+VTOLVR	launchbarextend	Launch Bar Extend	new	panel	occasional	panel: launch bar extend
+VTOLVR	launchbarretract	Launch Bar Retract	new	panel	occasional	panel: launch bar retract
+VTOLVR	tailhook_toggle	Arrestor Hook Toggle	new	panel	occasional	panel: hook toggle
+VTOLVR	tailhook_down	Arrestor Hook Extend	new	panel	occasional	panel: hook down
+VTOLVR	tailhook_up	Arrestor Hook Retract	new	panel	occasional	panel: hook up
+VTOLVR	autopilot_pitch_on	SAS Pitch On	new	panel	rare	panel: pitch SAS on
+VTOLVR	autopilot_pitch_off	SAS Pitch Off	new	panel	rare	panel: pitch SAS off
+VTOLVR	autopilot_roll_on	SAS Roll On	new	panel	rare	panel: roll SAS on
+VTOLVR	autopilot_roll_off	SAS Roll Off	new	panel	rare	panel: roll SAS off
+VTOLVR	autopilot_yaw_on	SAS Yaw On	new	panel	rare	panel: yaw SAS on
+VTOLVR	autopilot_yaw_off	SAS Yaw Off	new	panel	rare	panel: yaw SAS off
+VTOLVR	fbw_disconnect	Master Toggle	substitute	stick	occasional	panel: flight assist master toggle
+VTOLVR	autopilot_route	A/P Nav Mode	new	panel	occasional	panel: autopilot NAV mode
+VTOLVR	autopilot_altitude_hold	A/P Alt Hold	new	panel	occasional	panel: autopilot altitude hold
+VTOLVR	autopilot_auto_hover	A/P Hvr Mode	new	panel	occasional	panel: autopilot hover mode
+VTOLVR	atc_engage	A/P Spd Hold	new	panel	occasional	panel: autopilot speed hold
+VTOLVR	atc_engage	A/P Speed Hold	new	panel	occasional	panel: autopilot speed hold
+VTOLVR	autopilot_off	A/P Off	new	stick	frequent	panel: all autopilot modes off
+VTOLVR	ufc_mastercaution	Clear Cautions	new	panel	occasional	panel: clear cautions
+VTOLVR	master_arm_toggle	Master Arm Toggle	new	panel	occasional	panel: master arm toggle
+VTOLVR	master_arm_on	Master Arm On	new	panel	occasional	panel: master arm on
+VTOLVR	master_arm_off	Master Arm Off	new	panel	occasional	panel: master arm off
+VTOLVR	trigger1ststage	Fire Weapon	new	stick	constant	stick: trigger (fires the selected weapon)
+VTOLVR	launchweapon	Fire Weapon	substitute	stick	frequent	stick: trigger (fires the selected weapon)
+VTOLVR	select_heater	Cycle Weapons	substitute	stick	frequent	stick: menu button, next weapon
+VTOLVR	cms_fwd_start_program_or_just_flare	Fire Countermeasures	new	stick	frequent	throttle: countermeasure button
+VTOLVR	left_engine_start	Engine Left On	new	panel	occasional	panel: left engine on
+VTOLVR	left_engine_stop	Engine Left Off	new	panel	occasional	panel: left engine off
+VTOLVR	right_engine_start	Engine Right On	new	panel	occasional	panel: right engine on
+VTOLVR	right_engine_stop	Engine Right Off	new	panel	occasional	panel: right engine off
+VTOLVR	left_engine_start	Engine On	substitute	panel	occasional	panel: engine on (single engine)
+VTOLVR	left_engine_stop	Engine Off	substitute	panel	occasional	panel: engine off (single engine)
+VTOLVR	right_engine_start	Engine On	substitute	panel	occasional	panel: engine on (single engine)
+VTOLVR	right_engine_stop	Engine Off	substitute	panel	occasional	panel: engine off (single engine)
+VTOLVR	apu_start	APU On	new	panel	occasional	panel: APU on
+VTOLVR	radar_on	Radar Power On	new	panel	occasional	panel: radar power on
+VTOLVR	nvg	Helmet NV Toggle	new	none	occasional	helmet: night vision toggle
+VTOLVR	canopy_open	Canopy Open	new	panel	occasional	panel: canopy open
+VTOLVR	canopy_close	Canopy Close	new	panel	occasional	panel: canopy close
+VTOLVR	jettison_weapons	Jettison Execute	new	panel	rare	panel: jettison marked stores
+VTOLVR	jettison_fuel	Fuel Dump On	new	panel	rare	panel: fuel dump on
+VTOLVR	lights_ext_navigation_on	Nav Lights On	new	panel	rare	panel: navigation lights on
+VTOLVR	lights_ext_navigation_off	Nav Lights Off	new	panel	rare	panel: navigation lights off
+VTOLVR	lights_ext_landing_taxi_on	Landing Lights On	new	panel	occasional	panel: landing lights on
+VTOLVR	lights_ext_landing_taxi_off	Landing Lights Off	new	panel	occasional	panel: landing lights off
+VTOLVR	lights_ext_collision_on	Strobe Lights On	new	panel	rare	panel: strobe lights on
+VTOLVR	lights_ext_collision_off	Strobe Lights Off	new	panel	rare	panel: strobe lights off
+VTOLVR	instrumentlightsaxis1	Instrument Brightness	new	panel	rare	panel: instrument brightness knob
+VTOLVR	comm1_up	Radio Transmit	new	throttle	frequent	throttle: radio push-to-talk
+VTOLVR	tdc_horizontal	SOI Slew X	new	throttle	frequent	throttle: SOI slew (TDC) horizontal axis
+VTOLVR	tdc_vertical	SOI Slew Y	new	throttle	frequent	throttle: SOI slew (TDC) vertical axis
+VTOLVR	sensor_select_right	SOI Next	substitute	stick	frequent	stick: next sensor of interest
+VTOLVR	sensor_select_left	SOI Prev	substitute	stick	frequent	stick: previous sensor of interest
+VTOLVR	fov_toggle_china_hat_fwd	SOI Zoom In	new	stick	occasional	throttle: SOI zoom in
+VTOLVR	reset_curser_fov_out_lss_china_aft	SOI Zoom Out	new	stick	occasional	throttle: SOI zoom out
+VTOLVR	trimnoseup	Trim Pitch Up	new	stick	frequent	stick: trim nose up
+VTOLVR	trim_nosedown	Trim Pitch Down	new	stick	frequent	stick: trim nose down
+VTOLVR	trimleft	Trim Roll Left	new	stick	occasional	stick: trim roll left
+VTOLVR	trimright	Trim Roll Right	new	stick	occasional	stick: trim roll right
+VTOLVR	mode_a2a_bvr	Arming Mode AA	substitute	panel	occasional	panel: EF-24G arming mode AA
+VTOLVR	mode_a2g	Arming Mode AG	new	panel	occasional	panel: EF-24G arming mode AG
+VTOLVR	cms_depress_ecm	Tx Start	substitute	panel	occasional	panel: EF-24G start jamming transmitter
+VTOLVR	ufc_0	0	new	panel	occasional	dash keypad 0
+VTOLVR	ufc_1	1	new	panel	occasional	dash keypad 1
+VTOLVR	ufc_2_2	2	new	panel	occasional	dash keypad 2
+VTOLVR	ufc_3	3	new	panel	occasional	dash keypad 3
+VTOLVR	ufc_4	4	new	panel	occasional	dash keypad 4
+VTOLVR	ufc_5	5	new	panel	occasional	dash keypad 5
+VTOLVR	ufc_6	6	new	panel	occasional	dash keypad 6
+VTOLVR	ufc_7	7	new	panel	occasional	dash keypad 7
+VTOLVR	ufc_8	8	new	panel	occasional	dash keypad 8
+VTOLVR	ufc_9	9	new	panel	occasional	dash keypad 9
+VTOLVR	ufc_enter	Enter	new	panel	occasional	dash keypad enter
+VTOLVR	ufc_clear	Clear	new	panel	occasional	dash keypad clear
+VTOLVR	mfd_left_l1	MFD Left L1	new	panel	occasional	MFD left OSB L1
+VTOLVR	mfd_left_l2	MFD Left L2	new	panel	occasional	MFD left OSB L2
+VTOLVR	mfd_left_l3	MFD Left L3	new	panel	occasional	MFD left OSB L3
+VTOLVR	mfd_left_l4	MFD Left L4	new	panel	occasional	MFD left OSB L4
+VTOLVR	mfd_left_l5	MFD Left L5	new	panel	occasional	MFD left OSB L5
+VTOLVR	mfd_left_r1	MFD Left R1	new	panel	occasional	MFD left OSB R1
+VTOLVR	mfd_left_r2	MFD Left R2	new	panel	occasional	MFD left OSB R2
+VTOLVR	mfd_left_r3	MFD Left R3	new	panel	occasional	MFD left OSB R3
+VTOLVR	mfd_left_r4	MFD Left R4	new	panel	occasional	MFD left OSB R4
+VTOLVR	mfd_left_r5	MFD Left R5	new	panel	occasional	MFD left OSB R5
+VTOLVR	mfd_left_t1	MFD Left T1	new	panel	occasional	MFD left OSB T1
+VTOLVR	mfd_left_t2	MFD Left T2	new	panel	occasional	MFD left OSB T2
+VTOLVR	mfd_left_t3	MFD Left T3	new	panel	occasional	MFD left OSB T3
+VTOLVR	mfd_left_t4	MFD Left T4	new	panel	occasional	MFD left OSB T4
+VTOLVR	mfd_left_t5	MFD Left T5	new	panel	occasional	MFD left OSB T5
+VTOLVR	mfd_left_b1	MFD Left B1	new	panel	occasional	MFD left OSB B1
+VTOLVR	mfd_left_b2	MFD Left B2	new	panel	occasional	MFD left OSB B2
+VTOLVR	mfd_left_b3	MFD Left B3	new	panel	occasional	MFD left OSB B3
+VTOLVR	mfd_left_b4	MFD Left B4	new	panel	occasional	MFD left OSB B4
+VTOLVR	mfd_left_b5	MFD Left B5	new	panel	occasional	MFD left OSB B5
+VTOLVR	mfd_center_l1	MFD Center L1	new	panel	occasional	MFD center OSB L1
+VTOLVR	mfd_center_l2	MFD Center L2	new	panel	occasional	MFD center OSB L2
+VTOLVR	mfd_center_l3	MFD Center L3	new	panel	occasional	MFD center OSB L3
+VTOLVR	mfd_center_l4	MFD Center L4	new	panel	occasional	MFD center OSB L4
+VTOLVR	mfd_center_l5	MFD Center L5	new	panel	occasional	MFD center OSB L5
+VTOLVR	mfd_center_r1	MFD Center R1	new	panel	occasional	MFD center OSB R1
+VTOLVR	mfd_center_r2	MFD Center R2	new	panel	occasional	MFD center OSB R2
+VTOLVR	mfd_center_r3	MFD Center R3	new	panel	occasional	MFD center OSB R3
+VTOLVR	mfd_center_r4	MFD Center R4	new	panel	occasional	MFD center OSB R4
+VTOLVR	mfd_center_r5	MFD Center R5	new	panel	occasional	MFD center OSB R5
+VTOLVR	mfd_center_t1	MFD Center T1	new	panel	occasional	MFD center OSB T1
+VTOLVR	mfd_center_t2	MFD Center T2	new	panel	occasional	MFD center OSB T2
+VTOLVR	mfd_center_t3	MFD Center T3	new	panel	occasional	MFD center OSB T3
+VTOLVR	mfd_center_t4	MFD Center T4	new	panel	occasional	MFD center OSB T4
+VTOLVR	mfd_center_t5	MFD Center T5	new	panel	occasional	MFD center OSB T5
+VTOLVR	mfd_center_b1	MFD Center B1	new	panel	occasional	MFD center OSB B1
+VTOLVR	mfd_center_b2	MFD Center B2	new	panel	occasional	MFD center OSB B2
+VTOLVR	mfd_center_b3	MFD Center B3	new	panel	occasional	MFD center OSB B3
+VTOLVR	mfd_center_b4	MFD Center B4	new	panel	occasional	MFD center OSB B4
+VTOLVR	mfd_center_b5	MFD Center B5	new	panel	occasional	MFD center OSB B5
+VTOLVR	mfd_right_l1	MFD Right L1	new	panel	occasional	MFD right OSB L1
+VTOLVR	mfd_right_l2	MFD Right L2	new	panel	occasional	MFD right OSB L2
+VTOLVR	mfd_right_l3	MFD Right L3	new	panel	occasional	MFD right OSB L3
+VTOLVR	mfd_right_l4	MFD Right L4	new	panel	occasional	MFD right OSB L4
+VTOLVR	mfd_right_l5	MFD Right L5	new	panel	occasional	MFD right OSB L5
+VTOLVR	mfd_right_r1	MFD Right R1	new	panel	occasional	MFD right OSB R1
+VTOLVR	mfd_right_r2	MFD Right R2	new	panel	occasional	MFD right OSB R2
+VTOLVR	mfd_right_r3	MFD Right R3	new	panel	occasional	MFD right OSB R3
+VTOLVR	mfd_right_r4	MFD Right R4	new	panel	occasional	MFD right OSB R4
+VTOLVR	mfd_right_r5	MFD Right R5	new	panel	occasional	MFD right OSB R5
+VTOLVR	mfd_right_t1	MFD Right T1	new	panel	occasional	MFD right OSB T1
+VTOLVR	mfd_right_t2	MFD Right T2	new	panel	occasional	MFD right OSB T2
+VTOLVR	mfd_right_t3	MFD Right T3	new	panel	occasional	MFD right OSB T3
+VTOLVR	mfd_right_t4	MFD Right T4	new	panel	occasional	MFD right OSB T4
+VTOLVR	mfd_right_t5	MFD Right T5	new	panel	occasional	MFD right OSB T5
+VTOLVR	mfd_right_b1	MFD Right B1	new	panel	occasional	MFD right OSB B1
+VTOLVR	mfd_right_b2	MFD Right B2	new	panel	occasional	MFD right OSB B2
+VTOLVR	mfd_right_b3	MFD Right B3	new	panel	occasional	MFD right OSB B3
+VTOLVR	mfd_right_b4	MFD Right B4	new	panel	occasional	MFD right OSB B4
+VTOLVR	mfd_right_b5	MFD Right B5	new	panel	occasional	MFD right OSB B5

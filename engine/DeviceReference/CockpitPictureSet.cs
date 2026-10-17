@@ -1,0 +1,493 @@
+#if NET
+#nullable disable
+#endif
+using System;
+using System.Collections.Generic;
+using System.Globalization;
+using System.IO;
+using System.Linq;
+using System.Text;
+using System.Text.RegularExpressions;
+
+namespace JoyPro.DeviceReference
+{
+    // The cockpit pictures JoyPro made on this PC from the user's own games (docs/cockpits.md "Pictures from your
+    // games"): <data>\GameData\CockpitPictures\<game>\<aircraft>\pictures.json ("joypro-cockpit-pictures") with, per
+    // view (overview, a grip, a panel), the rendered picture (PNG), JoyPro's line drawing of it and the callouts at the
+    // game's own clickable controls. Never shipped: the engine builds them ("cockpits pictures build"); the Cockpits page
+    // shows them instead of JoyPro's drawings where they exist.
+    public sealed class CockpitPictureSet
+    {
+        public const string FolderName = "CockpitPictures";
+        public const string FormatName = "joypro-cockpit-pictures";
+
+        public string Game = string.Empty;
+        public string Plane = string.Empty;
+        public List<string> Planes = new List<string>();
+        public string Module = string.Empty;
+        public string Source = string.Empty;
+        public string GameVersion = string.Empty;
+        public string Built = string.Empty;
+        public List<string> Notes = new List<string>();
+        public string Folder = string.Empty;
+        public List<CockpitPictureView> Views = new List<CockpitPictureView>();
+
+        public static string Root()
+        {
+            return Path.Combine(DeviceCatalog.DataRoot(), "GameData", FolderName);
+        }
+
+        public static CockpitPictureSet Load(string folder)
+        {
+            string file = Path.Combine(folder ?? string.Empty, "pictures.json");
+            if (!File.Exists(file))
+                return null;
+            Dictionary<string, object> root = MiniJson.Parse(File.ReadAllText(file, Encoding.UTF8)) as Dictionary<string, object>;
+            if (root == null || !string.Equals(DeviceCatalog.Text(root, "format"), FormatName, StringComparison.OrdinalIgnoreCase))
+                return null;
+            CockpitPictureSet set = new CockpitPictureSet
+            {
+                Game = DeviceCatalog.Text(root, "game"),
+                Plane = DeviceCatalog.Text(root, "plane"),
+                Module = DeviceCatalog.Text(root, "module"),
+                Source = DeviceCatalog.Text(root, "source"),
+                GameVersion = DeviceCatalog.Text(root, "gameVersion"),
+                Built = DeviceCatalog.Text(root, "built"),
+                Folder = folder
+            };
+            set.Planes = Strings(root, "planes");
+            set.Notes = Strings(root, "notes");
+            foreach (Dictionary<string, object> v in DeviceCatalog.Objects(root, "views"))
+            {
+                CockpitPictureView view = new CockpitPictureView
+                {
+                    Id = DeviceCatalog.Text(v, "id"),
+                    Kind = DeviceCatalog.Text(v, "kind"),
+                    Title = DeviceCatalog.Text(v, "title"),
+                    Area = DeviceCatalog.Text(v, "area"),
+                    Device = DeviceCatalog.Text(v, "device"),
+                    Seat = (int)Number(v, "seat", 1),
+                    Image = Path.Combine(folder, DeviceCatalog.Text(v, "image")),
+                    Drawing = Path.Combine(folder, DeviceCatalog.Text(v, "drawing")),
+                    Width = Number(v, "width", 1),
+                    Height = Number(v, "height", 1),
+                    Set = set
+                };
+                foreach (Dictionary<string, object> c in DeviceCatalog.Objects(v, "callouts"))
+                {
+                    CockpitPictureCallout callout = new CockpitPictureCallout
+                    {
+                        N = (int)Number(c, "n", 0),
+                        Id = DeviceCatalog.Text(c, "id"),
+                        Label = DeviceCatalog.Text(c, "label"),
+                        X = Number(c, "x", -1),
+                        Y = Number(c, "y", -1),
+                        Hidden = c.ContainsKey("hidden") && c["hidden"] is bool && (bool)c["hidden"],
+                        Kind = DeviceCatalog.Text(c, "kind"),
+                        Device = DeviceCatalog.Text(c, "device"),
+                        Panel = DeviceCatalog.Text(c, "panel"),
+                        Link = DeviceCatalog.Text(c, "link")
+                    };
+                    foreach (Dictionary<string, object> cmd in DeviceCatalog.Objects(c, "commands"))
+                        callout.Commands.Add(new CockpitPictureCommand { Name = DeviceCatalog.Text(cmd, "name"), Category = DeviceCatalog.Text(cmd, "category"), Id = DeviceCatalog.Text(cmd, "id") });
+                    view.Callouts.Add(callout);
+                }
+                set.Views.Add(view);
+            }
+            return set;
+        }
+
+        private static List<string> Strings(Dictionary<string, object> item, string key)
+        {
+            object value;
+            List<string> list = new List<string>();
+            if (item.TryGetValue(key, out value) && value is List<object>)
+                list.AddRange(((List<object>)value).OfType<string>());
+            return list;
+        }
+
+        private static double Number(Dictionary<string, object> item, string key, double fallback)
+        {
+            object value;
+            if (item == null || !item.TryGetValue(key, out value) || value == null)
+                return fallback;
+            try
+            {
+                return Convert.ToDouble(value, CultureInfo.InvariantCulture);
+            }
+            catch (Exception)
+            {
+                return fallback;
+            }
+        }
+
+        // ------------------------------------------------------------------ finding the set of a variant
+
+        private static readonly object Gate = new object();
+        private static readonly Dictionary<string, Tuple<DateTime, CockpitPictureSet>> Cache = new Dictionary<string, Tuple<DateTime, CockpitPictureSet>>(StringComparer.OrdinalIgnoreCase);
+        private static readonly Dictionary<string, Tuple<DateTime, Dictionary<string, string>>> Indexes = new Dictionary<string, Tuple<DateTime, Dictionary<string, string>>>(StringComparer.OrdinalIgnoreCase);
+
+        // The game folders the sets are kept in, per JoyPro game id (the order is the order of preference: the game with
+        // the most cockpit detail first).
+        public static readonly string[] Games = { "DCS", "XPlane12", "MSFS2024", "MSFS2020", "IL2Game", "IL2Korea", "NuclearOption", "StarCitizen" };
+
+        // Where a game's sets are: MSFS 2024 keeps its models encrypted, so its aircraft use the MSFS 2020 models.
+        private static IEnumerable<string> FoldersOf(string game)
+        {
+            yield return game;
+            if (game == "MSFS2024")
+                yield return "MSFS2020";
+        }
+
+        // The set for a variant: its games in the order above; for each, the index of that game's folder names the set
+        // by the game's aircraft name, else by the variant's or the aircraft's names, else (games without aircraft names
+        // in JoyPro's tables) by the type number and words they share ("Cessna 172 Skyhawk" and "Cessna_172SP").
+        public static CockpitPictureSet For(CockpitVariant v, string root = null)
+        {
+            if (v == null || (v.Aircraft != null && v.Aircraft.Fiction && !v.Games.Any(g => g.Game == "StarCitizen" || g.Game == "NuclearOption")))
+                return null;
+            root = root ?? Root();
+            if (!Directory.Exists(root))
+                return null;
+            foreach (string game in Games)
+            {
+                List<CockpitGameRef> refs = v.Games.Where(g => string.Equals(g.Game, game, StringComparison.OrdinalIgnoreCase)).ToList();
+                if (refs.Count == 0)
+                    continue;
+                List<string> names = refs.Select(r => r.Plane).Where(p => p.Length > 0).ToList();
+                bool planeNames = names.Count > 0;
+                names.Add(v.Id);
+                names.AddRange(v.Aliases);
+                names.Add(v.Name);
+                if (v.Aircraft != null)
+                {
+                    names.Add(v.Aircraft.Name);
+                    names.AddRange(v.Aircraft.Aliases);
+                }
+                foreach (string folderGame in FoldersOf(game))
+                {
+                    Dictionary<string, string> index = Index(Path.Combine(root, folderGame));
+                    if (index.Count == 0)
+                        continue;
+                    foreach (string name in names)
+                    {
+                        string folder;
+                        if (index.TryGetValue(Norm(name), out folder))
+                        {
+                            CockpitPictureSet set = Cached(Path.Combine(root, folderGame, folder));
+                            if (set != null)
+                                return set;
+                        }
+                    }
+                    if (planeNames)
+                    {
+                        // A seat's name of the game's aircraft ("AH-64D_BLK_II_PLT" of "AH-64D_BLK_II"): the longest
+                        // aircraft name it starts with.
+                        foreach (string plane in refs.Select(r => Norm(r.Plane)).Where(p => p.Length > 0))
+                        {
+                            string prefix = index.Keys.Where(k => k.Length >= 5 && plane.StartsWith(k, StringComparison.Ordinal)).OrderByDescending(k => k.Length).FirstOrDefault();
+                            CockpitPictureSet set = prefix == null ? null : Cached(Path.Combine(root, folderGame, index[prefix]));
+                            if (set != null)
+                                return set;
+                        }
+                        continue;
+                    }
+                    string fuzzy = Fuzzy(index, names);
+                    if (fuzzy != null)
+                    {
+                        CockpitPictureSet set = Cached(Path.Combine(root, folderGame, fuzzy));
+                        if (set != null)
+                            return set;
+                    }
+                }
+            }
+            return null;
+        }
+
+        // Words and numbers of a name: "cessna172sp" -> cessna, 172, sp.
+        private static IEnumerable<string> Tokens(string s)
+        {
+            foreach (Match m in Regex.Matches((s ?? string.Empty).ToLowerInvariant(), "[a-z]+|[0-9]+"))
+                yield return m.Value;
+        }
+
+        // Words that name a special version (floats, skis, an AI-only model): they count against a set the variant does
+        // not name them for.
+        private static readonly HashSet<string> Versions = new HashSet<string>(StringComparer.Ordinal)
+        {
+            "seaplane", "floats", "float", "floaters", "skis", "ski", "amphibian", "amphib", "mariner", "ai", "tundra"
+        };
+
+        private static readonly HashSet<string> Common = new HashSet<string>(StringComparer.Ordinal)
+        {
+            "the", "and", "asobo", "aircraft", "airplane", "airplanes", "microsoft", "laminar", "research", "classic", "default", "series", "type", "model", "version", "block", "mk"
+        };
+
+        // The folder whose names share the most with the variant's: a type number of three or more digits (or two and a
+        // word) must be shared; a number the variant does not have ("1000" of a G1000 version) counts against it.
+        public static string Fuzzy(Dictionary<string, string> index, IEnumerable<string> variantNames)
+        {
+            HashSet<string> vt = new HashSet<string>(variantNames.Select(Norm).SelectMany(Tokens).Where(t => !Common.Contains(t)), StringComparer.Ordinal);
+            string best = null;
+            int bestScore = 0;
+            foreach (IGrouping<string, string> folder in index.GroupBy(kv => kv.Value, kv => kv.Key).OrderBy(g => g.Key.Length).ThenBy(g => g.Key, StringComparer.Ordinal))
+            {
+                HashSet<string> ft = new HashSet<string>(folder.SelectMany(Tokens).Where(t => !Common.Contains(t)), StringComparer.Ordinal);
+                List<string> numbers = ft.Where(t => char.IsDigit(t[0]) && vt.Contains(t)).ToList();
+                int words = ft.Count(t => char.IsLetter(t[0]) && t.Length >= 3 && vt.Contains(t));
+                if (!numbers.Any(n => n.Length >= 3) && !(numbers.Any(n => n.Length == 2) && words > 0))
+                    continue;
+                int extra = ft.Count(t => char.IsDigit(t[0]) && t.Length >= 3 && !vt.Contains(t)) + ft.Count(t => Versions.Contains(t) && !vt.Contains(t));
+                int score = numbers.Count * 10 + words * 2 - extra * 3;
+                if (score > bestScore)
+                {
+                    bestScore = score;
+                    best = folder.Key;
+                }
+            }
+            return best;
+        }
+
+        public static string Norm(string s)
+        {
+            return Regex.Replace((s ?? string.Empty).ToLowerInvariant(), "[^a-z0-9]", string.Empty);
+        }
+
+        // index.json of a game folder: normalised aircraft name -> folder.
+        private static Dictionary<string, string> Index(string gameFolder)
+        {
+            string file = Path.Combine(gameFolder, "index.json");
+            lock (Gate)
+            {
+                DateTime stamp = File.Exists(file) ? File.GetLastWriteTimeUtc(file) : DateTime.MinValue;
+                Tuple<DateTime, Dictionary<string, string>> hit;
+                if (Indexes.TryGetValue(file, out hit) && hit.Item1 == stamp)
+                    return hit.Item2;
+                Dictionary<string, string> map = new Dictionary<string, string>(StringComparer.Ordinal);
+                try
+                {
+                    if (stamp != DateTime.MinValue)
+                    {
+                        Dictionary<string, object> root = MiniJson.Parse(File.ReadAllText(file, Encoding.UTF8)) as Dictionary<string, object>;
+                        Dictionary<string, object> aircraft = root == null ? null : DeviceCatalog.Object(root, "aircraft");
+                        if (aircraft != null)
+                        {
+                            foreach (KeyValuePair<string, object> pair in aircraft)
+                            {
+                                string key = Norm(pair.Key);
+                                if (key.Length > 0 && pair.Value is string && !map.ContainsKey(key))
+                                    map[key] = (string)pair.Value;
+                            }
+                        }
+                    }
+                }
+                catch (Exception)
+                {
+                }
+                Indexes[file] = Tuple.Create(stamp, map);
+                return map;
+            }
+        }
+
+        private static CockpitPictureSet Cached(string folder)
+        {
+            string file = Path.Combine(folder, "pictures.json");
+            lock (Gate)
+            {
+                DateTime stamp = File.Exists(file) ? File.GetLastWriteTimeUtc(file) : DateTime.MinValue;
+                Tuple<DateTime, CockpitPictureSet> hit;
+                if (Cache.TryGetValue(folder, out hit) && hit.Item1 == stamp)
+                    return hit.Item2;
+                CockpitPictureSet set = null;
+                try
+                {
+                    set = stamp == DateTime.MinValue ? null : Load(folder);
+                }
+                catch (Exception)
+                {
+                    set = null;
+                }
+                Cache[folder] = Tuple.Create(stamp, set);
+                return set;
+            }
+        }
+
+        // The seat of a variant in the set: 2 for a back seat (CPG, RIO, WSO, operator) when the set has one.
+        public int SeatOf(CockpitVariant v)
+        {
+            bool second = v != null && (v.SeatOf.Length > 0 || Regex.IsMatch(v.Seat ?? string.Empty, "cpg|rio|wso|operator|gunner|copilot|co-pilot|rear|instructor", RegexOptions.IgnoreCase));
+            return second && Views.Any(x => x.Seat == 2) ? 2 : 1;
+        }
+
+        public List<CockpitPictureView> ViewsOf(int seat)
+        {
+            return Views.Where(x => x.Seat == seat).ToList();
+        }
+
+        public CockpitPictureView View(string id)
+        {
+            return Views.FirstOrDefault(x => string.Equals(x.Id, id, StringComparison.OrdinalIgnoreCase));
+        }
+
+        // The view of a grip of the variant: the stick side (stick, cyclic, yoke, side-stick, RHC) or the throttle side.
+        public CockpitPictureView Grip(int seat, string device)
+        {
+            string kind = CockpitCatalog.IsThrottleDevice(device) ? "throttle" : "stick";
+            return Views.FirstOrDefault(x => x.Seat == seat && x.Kind == "device" && string.Equals(x.Device, kind, StringComparison.OrdinalIgnoreCase));
+        }
+
+        // Which named part of the game's grip each control of the variant is (by the words in the part's name and in the
+        // control's id and name: "TRTL-R-HAT-SLEW" is the slew control); parts without a match stay unused.
+        public static Dictionary<string, CockpitPictureCallout> MatchGrip(CockpitPictureView grip, IEnumerable<CockpitControl> controls)
+        {
+            Dictionary<string, CockpitPictureCallout> match = new Dictionary<string, CockpitPictureCallout>(StringComparer.OrdinalIgnoreCase);
+            if (grip == null)
+                return match;
+            HashSet<CockpitPictureCallout> used = new HashSet<CockpitPictureCallout>();
+            List<Tuple<CockpitControl, CockpitPictureCallout, int>> pairs = new List<Tuple<CockpitControl, CockpitPictureCallout, int>>();
+            foreach (CockpitControl c in controls)
+            {
+                HashSet<string> cw = Words(c.Id + " " + c.Name + " " + c.Part);
+                foreach (CockpitPictureCallout p in grip.Callouts.Where(x => x.X >= 0))
+                {
+                    HashSet<string> pw = Words(p.Id + " " + p.Label);
+                    int score = cw.Count(w => pw.Contains(w));
+                    if (score > 0)
+                        pairs.Add(Tuple.Create(c, p, score));
+                }
+            }
+            foreach (Tuple<CockpitControl, CockpitPictureCallout, int> t in pairs.OrderByDescending(t => t.Item3))
+            {
+                if (match.ContainsKey(t.Item1.Id) || used.Contains(t.Item2))
+                    continue;
+                match[t.Item1.Id] = t.Item2;
+                used.Add(t.Item2);
+            }
+            return match;
+        }
+
+        private static readonly Dictionary<string, string> Synonyms = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase)
+        {
+            { "trig", "trigger" }, { "trg", "trigger" }, { "pickle", "release" }, { "wpn", "weapon" }, { "weap", "weapon" }, { "bomb", "release" },
+            { "spdbrk", "speedbrake" }, { "speedbrk", "speedbrake" }, { "sb", "speedbrake" }, { "brakes", "speedbrake" }, { "airbrake", "speedbrake" },
+            { "cur", "cursor" }, { "jstck", "cursor" }, { "slew", "cursor" }, { "ministick", "cursor" }, { "tdc", "cursor" },
+            { "rng", "range" }, { "antn", "antenna" }, { "ant", "antenna" }, { "elev", "antenna" }, { "dgft", "dogfight" },
+            { "nws", "nosewheel" }, { "pinky", "pinky" }, { "paddle", "paddle" }, { "mic", "mic" }, { "comm", "mic" }, { "radio", "mic" },
+            { "cms", "cms" }, { "tms", "tms" }, { "dms", "dms" }, { "trim", "trim" }, { "coolie", "coolie" }, { "china", "china" }, { "boat", "boat" },
+            { "cage", "cage" }, { "uncage", "cage" }, { "mmc", "mmcb" }, { "flaps", "flaps" }, { "flap", "flaps" }, { "gun", "trigger" }
+        };
+
+        private static readonly HashSet<string> Noise = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
+        {
+            "stick", "throttle", "trtl", "thr", "btn", "button", "hat", "tmb", "lvr", "lever", "switch", "sw", "dum", "ptr", "pnt", "grip", "left", "right", "l", "r",
+            "control", "the", "and", "of", "handle", "knob", "4", "way", "position", "axis", "main", "collective", "cyclic", "hand", "red", "black"
+        };
+
+        private static HashSet<string> Words(string s)
+        {
+            HashSet<string> set = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+            foreach (string raw in Regex.Split(s ?? string.Empty, "[^A-Za-z0-9]+"))
+            {
+                string w = Regex.Replace(raw, "[0-9]+$", string.Empty).ToLowerInvariant();
+                if (w.Length < 2 || Noise.Contains(w))
+                    continue;
+                string syn;
+                set.Add(Synonyms.TryGetValue(w, out syn) ? syn : w);
+            }
+            return set;
+        }
+
+        private readonly Dictionary<string, DeviceLineArt> drawings = new Dictionary<string, DeviceLineArt>(StringComparer.OrdinalIgnoreCase);
+
+        // JoyPro's line drawing of a view (read once), or null.
+        public DeviceLineArt DrawingOf(CockpitPictureView view)
+        {
+            if (view == null)
+                return null;
+            lock (drawings)
+            {
+                DeviceLineArt art;
+                if (drawings.TryGetValue(view.Drawing, out art))
+                    return art;
+                try
+                {
+                    art = File.Exists(view.Drawing) ? DeviceLineArt.Parse(File.ReadAllText(view.Drawing, Encoding.UTF8), view.Drawing) : null;
+                }
+                catch (Exception)
+                {
+                    art = null;
+                }
+                drawings[view.Drawing] = art;
+                return art;
+            }
+        }
+
+        // ------------------------------------------------------------------ status (Cockpits page, cockpits pictures status)
+
+        public sealed class GameStatus
+        {
+            public string Game = string.Empty;
+            public int Sets;
+            public string Built = string.Empty;
+        }
+
+        public static List<GameStatus> Status(string root = null)
+        {
+            root = root ?? Root();
+            List<GameStatus> list = new List<GameStatus>();
+            if (!Directory.Exists(root))
+                return list;
+            foreach (string dir in Directory.GetDirectories(root))
+            {
+                List<string> manifests = Directory.GetDirectories(dir).Select(d => Path.Combine(d, "pictures.json")).Where(File.Exists).ToList();
+                if (manifests.Count == 0)
+                    continue;
+                list.Add(new GameStatus
+                {
+                    Game = Path.GetFileName(dir),
+                    Sets = manifests.Count,
+                    Built = manifests.Max(f => File.GetLastWriteTime(f)).ToString("yyyy-MM-dd HH:mm", CultureInfo.InvariantCulture)
+                });
+            }
+            return list;
+        }
+    }
+
+    public sealed class CockpitPictureView
+    {
+        public string Id = string.Empty;
+        public string Kind = string.Empty;   // overview, device, panel
+        public string Title = string.Empty;
+        public string Area = string.Empty;
+        public string Device = string.Empty; // stick, throttle (grips)
+        public int Seat = 1;
+        public string Image = string.Empty;
+        public string Drawing = string.Empty;
+        public double Width = 1;
+        public double Height = 1;
+        public List<CockpitPictureCallout> Callouts = new List<CockpitPictureCallout>();
+        public CockpitPictureSet Set;
+    }
+
+    public sealed class CockpitPictureCallout
+    {
+        public int N;
+        public string Id = string.Empty;
+        public string Label = string.Empty;
+        public double X = -1;
+        public double Y = -1;
+        public bool Hidden;
+        public string Kind = string.Empty;
+        public string Device = string.Empty;
+        public string Panel = string.Empty;
+        public string Link = string.Empty;
+        public List<CockpitPictureCommand> Commands = new List<CockpitPictureCommand>();
+    }
+
+    public sealed class CockpitPictureCommand
+    {
+        public string Name = string.Empty;
+        public string Category = string.Empty;
+        public string Id = string.Empty;
+    }
+}

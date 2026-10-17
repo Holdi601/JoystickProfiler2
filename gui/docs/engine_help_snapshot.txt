@@ -1,0 +1,86 @@
+﻿engine - JoyPro CLI engine
+
+Global options:
+  --profile <path>     Load/create this .pr0file and auto-save after mutating commands
+  --out <path>         Write command output to file
+  --editor <command>   Editor command for relations edit / binds edit (use {file} placeholder)
+  --text               Text output instead of JSON for list/export/show/add
+  --status true|false  Emit live status/progress updates to stderr (default: false)
+  --benchmark true|false  Emit per-command timing summary to stderr (default: false)
+  --load-corrections true|false   Apply load-time correction mechanics (default: true)
+  --auto-add-db-items true|false  Auto-add corrected DB nodes during profile load (default: true)
+  --remap-missing-devices true|false  Remap missing profile device names during load (default: true)
+  --confirm-device-remap true|false   Ask before each load-time device remap (default: true)
+  --correction-mode strict|balanced|aggressive  Confidence model for relation-item remaps (default: balanced)
+  --correction-auto-threshold <0..200>  Minimum score to auto-apply relation-item remaps (default: mode-based)
+  --confirm-corrections true|false   Ask for confirmation on medium-confidence item remaps (default: true)
+  --correction-report <path>         Write load correction report (json, or text with .txt/.log)
+
+Commands:
+  engine summary
+  engine profile summary
+  engine profile load <path.pr0file>
+  engine profile save <path.pr0file>
+  engine profile save-last
+  engine profile validate [--fail-on-warnings true|false]
+  engine profile merge <left.pr0file> <right.pr0file> [<more.pr0file> ...] [--mode left|right|ask] [--save <path.pr0file>]
+  engine dcs scan [<saved-games-path>] [--path <saved-games-path>] [--plane <name>] [--planes <csv>] [--device <name>] [--devices <csv>] [--ignore-device <name>] [--ignore-devices <csv>] [--include-defaults] [--import-inverted] [--import-slider] [--import-curvature] [--import-deadzone] [--import-saturation-x] [--import-saturation-y] [--confirm true|false]
+  engine dcs import [<saved-games-path>] [--path <saved-games-path>] [--merge] [--save-profile <path.pr0file>] [--save-last] [--plane <name>] [--planes <csv>] [--device <name>] [--devices <csv>] [--ignore-device <name>] [--ignore-devices <csv>] [--include-defaults] [--import-inverted] [--import-slider] [--import-curvature] [--import-deadzone] [--import-saturation-x] [--import-saturation-y] [--confirm true|false]
+  engine dcs export [<saved-games-path>] [--path <saved-games-path>] [--mode clean|add|merge|merge-overwrite] [--keep-keyboard-defaults true|false] [--nuke-untouched-devices true|false]   (writes .diff.lua + .jp backup + modifiers.lua)
+  engine dcs defaults cut [<saved-games-path>] [<dcs-install-path>] [--path <saved-games-path>] [--install-path <dcs-install-path>] [--backup-path <path>]   (moves stick-specific defaults from game folder into BACKUP_JOYSTICK_DEFAULTS)
+  engine dcs defaults restore [<saved-games-path>] [<dcs-install-path>] [--path <saved-games-path>] [--install-path <dcs-install-path>] [--backup-path <path>]   (restores joystick defaults from BACKUP_JOYSTICK_DEFAULTS)
+  engine dcs refresh clean [<saved-games-path>] [<dcs-install-path>] [--path <saved-games-path>] [--install-path <dcs-install-path>] [--ocr true|false] [--launch true|false] [--keep-running true|false] [--headless-lua true|false] [--plane <name>] [--planes <csv>] [--dry-run] [--menu-wait-seconds <n>] [--ocr-menu-timeout-seconds <n>] [--settle-seconds <n>] [--default-stick <name>] [--clicks-xml <path>] [--clicks-dir <path>] [--dcs-exe <path>] [--preview-clicks] [--preview-image <path>] [--gui-scale <value>] [--window-left <n> --window-top <n> --window-width <n> --window-height <n>]
+  engine dcs refresh id [<saved-games-path>] [<dcs-install-path>] [--path <saved-games-path>] [--install-path <dcs-install-path>] [--ocr true|false] [--launch true|false] [--keep-running true|false] [--headless-lua true|false] [--plane <name>] [--planes <csv>] [--dry-run] [--menu-wait-seconds <n>] [--ocr-menu-timeout-seconds <n>] [--modules-to-scan <n>] [--clicks-xml <path>] [--clicks-dir <path>] [--dcs-exe <path>] [--preview-clicks] [--preview-image <path>] [--gui-scale <value>] [--window-left <n> --window-top <n> --window-width <n> --window-height <n>]
+  engine dcs refresh preview-clicks [--ocr true|false] [--path <saved-games-path>] [--install-path <dcs-install-path>] [--clicks-xml <path>] [--clicks-dir <path>] [--preview-image <path>] [--gui-scale <value>] [--window-left <n> --window-top <n> --window-width <n> --window-height <n>]
+  engine dcs ffb list [--path <saved-games-path>] [--device <name>] [--devices <csv>] [--connected] [--profile-devices] [--confirm true|false]
+  engine dcs ffb set <device-name> [--path <saved-games-path>] [--invert-x true|false] [--invert-y true|false] [--swap-axis true|false] [--confirm true|false]
+  engine dcs ffb clear [<device-name>] [--path <saved-games-path>] [--device <name>] [--devices <csv>] [--all] [--confirm true|false]
+  engine il2 scan [<il2-root-path>] [--path <il2-root-path>] [--device <name>] [--devices <csv>] [--ignore-device <name>] [--ignore-devices <csv>] [--import-inverted] [--import-curvature] [--import-deadzone] [--confirm true|false]
+  engine il2 import [<il2-root-path>] [--path <il2-root-path>] [--merge] [--save-profile <path.pr0file>] [--save-last] [--device <name>] [--devices <csv>] [--ignore-device <name>] [--ignore-devices <csv>] [--import-inverted] [--import-curvature] [--import-deadzone] [--confirm true|false]
+  engine il2 export [<il2-root-path>] [--path <il2-root-path>] [--mode clean|add|merge|merge-overwrite]
+  engine db summary [--keyboard] [--no-keyboard] [--strict-names]
+  engine db list [filter] [--missing] [--keyboard] [--no-keyboard] [--strict-names]
+  engine db check [--keyboard] [--no-keyboard] [--strict-names]
+  engine db games [filter]
+  engine db planes [filter] [--game <name>]
+  engine db fingerprint
+  engine games paths [--game <name>] [--games <csv>]
+  engine layout render [--path <export-folder>] [--device <name>] [--devices <csv>] [--layout-map <joystick>=<path.layout>] [--game <name>] [--games <csv>] [--plane <name>] [--planes <csv>] [--include-overview true|false] [--include-planes true|false] [--skip-missing-layouts true|false]
+  engine devices list [--connected] [--profile-devices]
+  engine devices inputs [--include-off]   (aliases: catalog, input-catalog)
+  engine devices exchange <old-device> <new-device> [--old <name>] [--new <name>] [--confirm true|false]   (aliases: replace, swap)
+  engine devices remove <device-name> [--device <name>] [--confirm true|false]   (aliases: purge, clear)
+  engine relations list [filter]
+  engine relations show <relation-name>
+  engine relations add <name> --axis|--button [--node game:id[:plane1|plane2]] [--from relation] [--group g] [--device d --input i --modifier m]
+  engine relations group list [relation-name]
+  engine relations group add <relation-name> <group1> [group2] [...]
+  engine relations group remove <relation-name> <group1> [group2] [...] [--all]
+  engine relations group rename <old-group> <new-group>
+  engine relations item add <relation-name> --node game:id[:plane1|plane2] [--node ...]  (or --id/--game/--planes)
+  engine relations item remove <relation-name> --node game:id[:plane1|plane2] [--node ...] [--all]
+  engine relations item enable <relation-name> --node game:id[:plane1|plane2] [--node ...]
+  engine relations item disable <relation-name> --node game:id[:plane1|plane2] [--node ...]
+  engine relations mass delete [--relation <name>] [--relations <csv>] [--query <text>] [--all]
+  engine relations mass duplicate [--relation <name>] [--relations <csv>] [--query <text>] [--all]
+  engine relations mass merge <name> [--relation <name>] [--relations <csv>] [--query <text>] [--all]
+  engine relations mass split <postfix> [--plane <game:plane|plane>] [--planes <csv>] [--relation <name>] [--relations <csv>] [--query <text>] [--all]
+  engine relations mass add-prefix <value> [--relation <name>] [--relations <csv>] [--query <text>] [--all]
+  engine relations mass add-postfix <value> [--relation <name>] [--relations <csv>] [--query <text>] [--all]
+  engine relations mass remove-part <value> [--relation <name>] [--relations <csv>] [--query <text>] [--all]
+  engine relations mass export <path.rl|path.json> [--format rl|json] [--relation <name>] [--relations <csv>] [--query <text>] [--all]
+  engine relations export <path.json>
+  engine relations import <path.json>
+  engine relations edit   (no args; exports temp relations JSON, opens editor, re-imports on close; uses --editor or notepad)
+  engine binds list [filter]
+  engine binds show <bind-or-relation>
+  engine binds set <bind-or-relation> [--device <name>] [--input <value>] [--format dcs|il2] [--modifier <name>] [--clear-modifiers] [--clear-input] [--inverted true|false] [--slider true|false] [--curvature <csv>] [--deadzone <value>] [--saturation-x <value>] [--saturation-y <value>] [--double-tap true|false]
+  engine binds clear <bind-or-relation> [--input-only]
+  engine binds modifier list [bind-or-relation]
+  engine binds modifier add <bind-or-relation> <mod1> [mod2] [...]
+  engine binds modifier remove <bind-or-relation> <mod1> [mod2] [...] [--all]
+  engine binds modifier rename <old-modifier> <new-modifier> [bind-or-relation]
+  engine binds unbind <device::input|input> [--device <name>] [--input <value>] [--format dcs|il2] [--game DCS|IL2Game] [--all]
+  engine binds export <path.json>
+  engine binds import <path.json>
+  engine binds edit   (no args; exports temp binds JSON, opens editor, re-imports on close; uses --editor or notepad)

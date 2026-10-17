@@ -1,0 +1,83 @@
+{
+  "format": "joypro-device-layout",
+  "version": 1,
+  "model": "vkb-gladiator-nxt-evo-base",
+  "photo": {"kind": "vendor", "url": "https://vkbsimcontrollers.com/cdn/shop/files/GNE_Base_1200_02.webp", "sha256": "c1105afa34368c817c7bdf676db150c10fa14200879287a5b0df9f8fc8d8fcd1", "view": "main"},
+  "markers": {
+    "stick.base.button.1": [0.654, 0.413],
+    "stick.base.button.2": [0.555, 0.453],
+    "stick.base.button.3": [0.752, 0.389],
+    "stick.gimbal": [0.45, 0.36]
+  },
+  "parts": {
+    "stick.gimbal": {
+      "type": "gimbal",
+      "name": "Stick (roll / pitch)",
+      "inputs": [
+        {"input": "JOY_X", "control": "stick.axis.roll"},
+        {"input": "JOY_Y", "control": "stick.axis.pitch"}
+      ],
+      "mapping": "medium",
+      "confidence": "high",
+      "note": "grip socket"
+    },
+    "stick.base.button.1": {
+      "type": "button",
+      "name": "F1",
+      "inputs": [
+        {"input": "JOY_BTN27", "control": "stick.base.button.1"}
+      ],
+      "mapping": "medium",
+      "confidence": "high",
+      "note": "F1, middle button"
+    },
+    "stick.base.button.2": {
+      "type": "button",
+      "name": "F2",
+      "inputs": [
+        {"input": "JOY_BTN28", "control": "stick.base.button.2"}
+      ],
+      "mapping": "medium",
+      "confidence": "high",
+      "note": "F2, left button"
+    },
+    "stick.base.button.3": {
+      "type": "button",
+      "name": "F3",
+      "inputs": [
+        {"input": "JOY_BTN29", "control": "stick.base.button.3"}
+      ],
+      "mapping": "medium",
+      "confidence": "high",
+      "note": "F3, right button"
+    }
+  },
+  "unplaced": {},
+  "candidates": {},
+  "source": "JoyPro curated on the maker's photo (2026-10-11): the base without a grip, from the front right; the printed labels F2, F1, F3 are next to the three buttons",
+  "mappingSource": "catalog (EDCD EliteCustomButtonNames VKB maps, VKB factory profile: F1 = 27, F2 = 28, F3 = 29); button names from the labels printed on the base",
+  "confidence": "medium",
+  "note": "The base's SW1 and EN1 wheels on the front module are not parts of this catalog model.",
+  "callouts": {
+    "version": 1,
+    "width": 1280,
+    "height": 632,
+    "picture": [340, 16, 600, 600],
+    "rowHeight": 20,
+    "mainWidth": 170,
+    "modWidth": 110,
+    "otherY": -1,
+    "tables": [
+      {"id": "stick.gimbal", "title": "Stick (roll / pitch)", "parts": ["stick.gimbal"], "side": "left", "x": 16, "y": 208, "width": 300, "modifier": true, "spot": [0.45, 0.36], "rows": [{"input": "JOY_X", "label": "roll (X)", "icon": "axis", "part": "stick.gimbal"}, {"input": "JOY_Y", "label": "pitch (Y)", "icon": "axis", "part": "stick.gimbal"}]},
+      {"id": "stick.base.button.1", "title": "F1", "parts": ["stick.base.button.1"], "side": "right", "x": 964, "y": 243, "width": 300, "modifier": true, "spot": [0.654, 0.413], "rows": [{"input": "JOY_BTN27", "label": "Press", "icon": "button", "part": "stick.base.button.1"}]},
+      {"id": "stick.base.button.2", "title": "F2", "parts": ["stick.base.button.2"], "side": "right", "x": 964, "y": 283, "width": 300, "modifier": true, "spot": [0.555, 0.453], "rows": [{"input": "JOY_BTN28", "label": "Press", "icon": "button", "part": "stick.base.button.2"}]},
+      {"id": "stick.base.button.3", "title": "F3", "parts": ["stick.base.button.3"], "side": "right", "x": 964, "y": 203, "width": 300, "modifier": true, "spot": [0.752, 0.389], "rows": [{"input": "JOY_BTN29", "label": "Press", "icon": "button", "part": "stick.base.button.3"}]}
+    ],
+    "lines": [
+      {"table": "stick.gimbal", "points": [[610, 232], [316, 232]]},
+      {"table": "stick.base.button.3", "points": [[791.2, 249.4], [952, 249.4], [952, 227], [964, 227]]},
+      {"table": "stick.base.button.1", "points": [[732.4, 263.8], [952, 263.8], [952, 267], [964, 267]]},
+      {"table": "stick.base.button.2", "points": [[673, 287.8], [952, 287.8], [952, 307], [964, 307]]}
+    ]
+  }
+}

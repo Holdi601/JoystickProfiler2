@@ -1,0 +1,51 @@
+<Application xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:local="using:JoyPro.Gui"
+             x:Class="JoyPro.Gui.App"
+             RequestedThemeVariant="Default">
+
+    <Application.DataTemplates>
+        <local:ViewLocator />
+    </Application.DataTemplates>
+
+    <!-- The icon set and status colors of every page (Styles/Icons.axaml), and how icon buttons and cards look. -->
+    <Application.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceInclude Source="avares://JoyPro.Gui/Styles/Icons.axaml" />
+                <ResourceInclude Source="avares://JoyPro.Gui/Styles/Branding.axaml" />
+                <ResourceInclude Source="avares://JoyPro.Gui/Styles/Design.axaml" />
+                <ResourceInclude Source="avares://JoyPro.Gui/Styles/SettingsSection.axaml" />
+            </ResourceDictionary.MergedDictionaries>
+        </ResourceDictionary>
+    </Application.Resources>
+
+    <Application.Styles>
+        <!-- The window and accent colors follow the banner: navy pages and JoyPro blue (Styles/Design.axaml). -->
+        <FluentTheme>
+            <FluentTheme.Palettes>
+                <ColorPaletteResources x:Key="Dark" Accent="#3B82F6" RegionColor="#111A2D" />
+                <ColorPaletteResources x:Key="Light" Accent="#2563EB" RegionColor="#FFFFFF" />
+            </FluentTheme.Palettes>
+        </FluentTheme>
+        <StyleInclude Source="avares://Avalonia.Controls.DataGrid/Themes/Fluent.xaml" />
+        <StyleInclude Source="avares://JoyPro.Gui/Styles/IconStyles.axaml" />
+        <StyleInclude Source="avares://JoyPro.Gui/Styles/DesignStyles.axaml" />
+
+        <Style Selector="Window">
+            <!-- Bahnschrift, with the CJK font of the language shown (App.axaml.cs, Languages.FontStack) -->
+            <Setter Property="FontFamily" Value="{DynamicResource JP.UiFont}" />
+        </Style>
+
+        <Style Selector="Button">
+            <Setter Property="CornerRadius" Value="10" />
+            <Setter Property="Padding" Value="14,8" />
+            <Setter Property="FontWeight" Value="SemiBold" />
+        </Style>
+
+        <Style Selector="TextBox">
+            <Setter Property="CornerRadius" Value="8" />
+            <Setter Property="Padding" Value="8" />
+        </Style>
+    </Application.Styles>
+</Application>

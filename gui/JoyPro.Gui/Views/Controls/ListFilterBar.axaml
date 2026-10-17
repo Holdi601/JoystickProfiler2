@@ -1,0 +1,129 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:l="using:JoyPro.Gui.Localization"
+             xmlns:vm="using:JoyPro.Gui.ViewModels"
+             xmlns:models="using:JoyPro.Gui.Models"
+             xmlns:controls="using:JoyPro.Gui.Views.Controls"
+             x:Name="FilterRoot"
+             x:Class="JoyPro.Gui.Views.Controls.ListFilterBar"
+             x:DataType="vm:ListFilterViewModel">
+    <!-- The filters of the Relations and Binds pages (ViewModels/ListFilterViewModel.cs): Groups, Games (with their
+         aircraft), Devices as drop-downs with a count per tick, bound / not bound and axis / button as switches, and the
+         active filters as chips with x and "Clear all". The search box stays on the page (Ctrl+F). Nothing scrolls
+         sideways: everything wraps, long names end in "...". -->
+    <UserControl.Styles>
+        <Style Selector="CheckBox.dim">
+            <Setter Property="Opacity" Value="0.5" />
+        </Style>
+    </UserControl.Styles>
+    <StackPanel Spacing="4">
+        <WrapPanel ItemSpacing="4" LineSpacing="4">
+            <!-- Groups -->
+            <Button Classes="small icon" Classes.accent="{Binding HasGroupFilter}" Tag="{StaticResource Icon.Tag}" Content="{Binding GroupsLabel}"
+                    IsEnabled="{Binding HasGroups}" ToolTip.Tip="{l:T 'Only relations of these groups (several: any of them)'}">
+                <Button.Flyout>
+                    <Flyout Placement="BottomEdgeAlignedLeft">
+                        <StackPanel Width="300" Spacing="6">
+                            <Grid ColumnDefinitions="*,Auto">
+                                <TextBlock Classes="h3" Text="{l:T 'Groups'}" VerticalAlignment="Center" />
+                                <Button Grid.Column="1" Classes="small ghost" Content="{l:T 'Clear'}" Command="{Binding ClearGroupsCommand}" IsVisible="{Binding HasGroupFilter}" />
+                            </Grid>
+                            <ScrollViewer MaxHeight="380" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
+                                <ItemsControl ItemsSource="{Binding Groups}">
+                                    <ItemsControl.ItemTemplate>
+                                        <DataTemplate x:DataType="models:FilterOptionItem">
+                                            <CheckBox IsChecked="{Binding IsChecked}" HorizontalAlignment="Stretch" HorizontalContentAlignment="Stretch" ToolTip.Tip="{Binding Tooltip}"
+                                                      Classes.dim="{Binding IsEmpty}">
+                                                <Grid ColumnDefinitions="*,Auto" ColumnSpacing="8">
+                                                    <TextBlock Text="{Binding Label}" TextTrimming="CharacterEllipsis" />
+                                                    <TextBlock Grid.Column="1" Classes="caption" Text="{Binding CountText}" />
+                                                </Grid>
+                                            </CheckBox>
+                                        </DataTemplate>
+                                    </ItemsControl.ItemTemplate>
+                                </ItemsControl>
+                            </ScrollViewer>
+                        </StackPanel>
+                    </Flyout>
+                </Button.Flyout>
+            </Button>
+
+            <!-- Games, each with its aircraft -->
+            <Button Classes="small icon" Classes.accent="{Binding HasGameFilter}" Tag="{StaticResource Icon.Airplane}" Content="{Binding GamesLabel}"
+                    IsEnabled="{Binding HasGames}" ToolTip.Tip="{l:T 'Only relations with an action of these games, or of some aircraft of a game (open the game)'}">
+                <Button.Flyout>
+                    <Flyout Placement="BottomEdgeAlignedLeft">
+                        <controls:ListFilterGamesPanel />
+                    </Flyout>
+                </Button.Flyout>
+            </Button>
+
+            <!-- Devices -->
+            <Button Classes="small icon" Classes.accent="{Binding HasDeviceFilter}" Tag="{StaticResource Icon.Joystick}" Content="{Binding DevicesLabel}"
+                    IsEnabled="{Binding HasDevices}" ToolTip.Tip="{l:T 'Only relations bound to these devices'}">
+                <Button.Flyout>
+                    <Flyout Placement="BottomEdgeAlignedLeft">
+                        <StackPanel Width="320" Spacing="6">
+                            <Grid ColumnDefinitions="*,Auto">
+                                <TextBlock Classes="h3" Text="{l:T 'Devices'}" VerticalAlignment="Center" />
+                                <Button Grid.Column="1" Classes="small ghost" Content="{l:T 'Clear'}" Command="{Binding ClearDevicesCommand}" IsVisible="{Binding HasDeviceFilter}" />
+                            </Grid>
+                            <ScrollViewer MaxHeight="380" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
+                                <ItemsControl ItemsSource="{Binding Devices}">
+                                    <ItemsControl.ItemTemplate>
+                                        <DataTemplate x:DataType="models:FilterOptionItem">
+                                            <CheckBox IsChecked="{Binding IsChecked}" HorizontalAlignment="Stretch" HorizontalContentAlignment="Stretch" ToolTip.Tip="{Binding Tooltip}"
+                                                      Classes.dim="{Binding IsEmpty}">
+                                                <Grid ColumnDefinitions="*,Auto" ColumnSpacing="8">
+                                                    <TextBlock Text="{Binding Label}" TextTrimming="CharacterEllipsis" />
+                                                    <TextBlock Grid.Column="1" Classes="caption" Text="{Binding CountText}" />
+                                                </Grid>
+                                            </CheckBox>
+                                        </DataTemplate>
+                                    </ItemsControl.ItemTemplate>
+                                </ItemsControl>
+                            </ScrollViewer>
+                        </StackPanel>
+                    </Flyout>
+                </Button.Flyout>
+            </Button>
+        </WrapPanel>
+
+        <!-- Bound / not bound, axis / button -->
+        <WrapPanel ItemSpacing="0" LineSpacing="0">
+            <ToggleButton Classes="filterChip" Content="{Binding BoundAllLabel}" IsChecked="{Binding IsBoundAll, Mode=OneWay}" Command="{Binding SetBoundCommand}" CommandParameter="all"
+                          ToolTip.Tip="{l:T 'Bound and not bound'}" />
+            <ToggleButton Classes="filterChip" Content="{Binding BoundLabel}" IsChecked="{Binding IsBoundOnly, Mode=OneWay}" Command="{Binding SetBoundCommand}" CommandParameter="bound"
+                          ToolTip.Tip="{l:T 'Only relations on an input of a device'}" />
+            <ToggleButton Classes="filterChip" Content="{Binding UnboundLabel}" IsChecked="{Binding IsUnboundOnly, Mode=OneWay}" Command="{Binding SetBoundCommand}" CommandParameter="unbound"
+                          ToolTip.Tip="{l:T 'Only relations not bound yet'}" />
+            <ToggleButton Classes="filterChip" Content="{Binding AxisLabel}" IsChecked="{Binding IsKindAxis, Mode=OneWay}" Command="{Binding SetKindCommand}" CommandParameter="axis"
+                          ToolTip.Tip="{l:T 'Only axis relations (again: axes and buttons)'}" />
+            <ToggleButton Classes="filterChip" Content="{Binding ButtonLabel}" IsChecked="{Binding IsKindButton, Mode=OneWay}" Command="{Binding SetKindCommand}" CommandParameter="button"
+                          ToolTip.Tip="{l:T 'Only button relations (again: axes and buttons)'}" />
+        </WrapPanel>
+
+        <!-- The active filters, each with x -->
+        <WrapPanel ItemSpacing="4" LineSpacing="4" IsVisible="{Binding IsFiltered}">
+            <ItemsControl ItemsSource="{Binding ActiveChips}">
+                <ItemsControl.ItemsPanel>
+                    <ItemsPanelTemplate>
+                        <WrapPanel ItemSpacing="4" LineSpacing="4" />
+                    </ItemsPanelTemplate>
+                </ItemsControl.ItemsPanel>
+                <ItemsControl.ItemTemplate>
+                    <DataTemplate x:DataType="models:FilterChipItem">
+                        <Button Classes="small accent" Command="{Binding Remove}" ToolTip.Tip="{Binding Tooltip}" MaxWidth="260">
+                            <StackPanel Orientation="Horizontal" Spacing="4">
+                                <TextBlock Text="{Binding Label}" TextTrimming="CharacterEllipsis" MaxWidth="220" />
+                                <PathIcon Data="{StaticResource Icon.Close}" Width="9" Height="9" />
+                            </StackPanel>
+                        </Button>
+                    </DataTemplate>
+                </ItemsControl.ItemTemplate>
+            </ItemsControl>
+            <TextBlock Classes="caption" Text="{Binding ResultText}" VerticalAlignment="Center" Margin="2,0,4,0" />
+            <Button Classes="small ghost" Content="{l:T 'Clear all'}" Command="{Binding ClearAllCommand}" ToolTip.Tip="{l:T 'Every filter off, the search too'}" />
+        </WrapPanel>
+    </StackPanel>
+</UserControl>

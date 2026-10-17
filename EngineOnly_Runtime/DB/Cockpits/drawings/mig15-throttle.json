@@ -1,0 +1,31 @@
+{
+  "format": "joypro-cockpit-drawing",
+  "version": 1,
+  "id": "mig15-throttle",
+  "kind": "throttle",
+  "aircraft": ["mig-15"],
+  "variants": [],
+  "except": [],
+  "name": "MiG-15 throttle (RUD)",
+  "view": "the throttle from the inboard side, as the pilot sees it; forward is left, the rotating grip on top of the lever, the quadrant on the left console below",
+  "origin": "JoyPro's own vector drawing: the lever's outline and the control layout reconstructed from the throttle description in the DCS MiG-15bis manual and public cockpit photos looked at for proportions; not traced from a photo.",
+  "width": 800,
+  "height": 1000,
+  "shapes": [
+    { "kind": "ellipse", "role": "shadow", "x": 410, "y": 968, "w": 320, "h": 20 },
+    { "kind": "path", "role": "bodyAlt", "path": "M130,950 L130,820 C130,790 150,772 180,772 L640,772 C670,772 690,790 690,820 L690,950 Z" },
+    { "kind": "rect", "role": "screen", "x": 196, "y": 790, "w": 430, "h": 20, "r": 10 },
+    { "kind": "path", "role": "body", "path": "M394,800 L428,800 L404,580 L370,580 Z" },
+    { "kind": "path", "role": "body", "path": "M300,332 C300,296 330,276 376,276 C422,276 452,296 452,332 L446,560 C446,584 426,600 398,600 L354,600 C326,600 306,584 306,560 Z" },
+    { "kind": "ellipse", "role": "bodyAlt", "x": 376, "y": 284, "w": 72, "h": 18 },
+    { "kind": "path", "role": "line", "path": "M304,380 C350,394 404,394 450,380" },
+    { "kind": "path", "role": "face", "path": "M312,404 C352,416 400,416 440,404 L438,530 C400,542 352,542 314,530 Z" },
+    { "kind": "path", "role": "line", "path": "M306,556 C350,570 402,570 446,556" }
+  ],
+  "parts": [
+    { "id": "throttle.hat.mic", "type": "button", "x": 346, "y": 328, "r": 17 },
+    { "id": "throttle.button.start", "type": "button", "x": 410, "y": 330, "r": 15 },
+    { "id": "throttle.twist.range", "type": "twist", "x": 376, "y": 470, "r": 34 },
+    { "id": "throttle.axis.main", "type": "axis", "x": 410, "y": 880, "r": 62, "angle": 90 }
+  ]
+}

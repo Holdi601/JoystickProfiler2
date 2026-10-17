@@ -1,0 +1,100 @@
+{
+  "format": "joypro-device-layout",
+  "version": 1,
+  "model": "winwing-3xx-joystick-grip",
+  "photo": {"kind": "vendor", "url": "https://eu.winctrl.com/static/ipfs/QmPnLmy39KvYMQSweU8s4quXi5SDisUDQwav4Jd82wzPxN", "sha256": "a734a4d17d59b59ed2008dc07de034edea79374963730372312eb4749c1bf615", "view": "main"},
+  "markers": {
+    "stick.button.thumb.1": [0.477, 0.15],
+    "stick.gimbal": [0.575, 0.745],
+    "stick.ministick": [0.325, 0.155],
+    "stick.trigger": [0.203, 0.35]
+  },
+  "parts": {
+    "stick.ministick": {
+      "type": "ministick",
+      "name": "Thumb stick",
+      "inputs": [
+        {"input": "JOY_RX", "control": "stick.axis.ministick.x"},
+        {"input": "JOY_RY", "control": "stick.axis.ministick.y"},
+        {"input": "JOY_BTN3", "control": "stick.ministick.press"},
+        {"input": "JOY_BTN4", "control": "stick.ministick.up"},
+        {"input": "JOY_BTN5", "control": "stick.ministick.right"},
+        {"input": "JOY_BTN6", "control": "stick.ministick.down"},
+        {"input": "JOY_BTN7", "control": "stick.ministick.left"}
+      ],
+      "mapping": "medium",
+      "confidence": "high",
+      "note": "mini-joystick on the top plate; RX/RY per manual p.8, button numbers 3-7 catalog only"
+    },
+    "stick.trigger": {
+      "type": "trigger",
+      "name": "Trigger",
+      "inputs": [
+        {"input": "JOY_BTN1", "control": "stick.trigger.stage1"}
+      ],
+      "mapping": "medium",
+      "confidence": "high",
+      "note": "front trigger paddle (PTT), catalog BTN1"
+    },
+    "stick.axis.twist": {
+      "type": "twist",
+      "name": "Twist",
+      "inputs": [
+        {"input": "JOY_Z", "control": "stick.axis.twist"}
+      ],
+      "mapping": "medium"
+    },
+    "stick.gimbal": {
+      "type": "gimbal",
+      "name": "Stick (roll / pitch)",
+      "inputs": [
+        {"input": "JOY_X", "control": "stick.axis.roll"},
+        {"input": "JOY_Y", "control": "stick.axis.pitch"}
+      ],
+      "mapping": "medium",
+      "confidence": "medium",
+      "note": "grip boot plate / base joint; X/Y from the Orion 2 base (catalog)"
+    },
+    "stick.button.thumb.1": {
+      "type": "button",
+      "name": "Button thumb 1",
+      "inputs": [
+        {"input": "JOY_BTN2", "control": "stick.button.thumb.1"}
+      ],
+      "mapping": "medium",
+      "confidence": "high",
+      "note": "red takeover button, the grip's only other button; catalog BTN2"
+    }
+  },
+  "unplaced": {
+    "stick.axis.twist": "catalog note: grip does not support the Z module, no twist on this grip"
+  },
+  "candidates": {},
+  "source": "JoyPro curated on the maker's photo (2026-10-11), Airbus-style sidestick grip alone (no base) seen from the left and above, front (trigger paddle) to the left, mini-joystick fitted on the top plate",
+  "mappingSource": "WinWing \"JOYSTICK GRIP OF 3XX User Manual EN V1.0\" (https://en.winwing.cn/static/file/JOYSTICK%20GRIP%20OF%203XX-User%20MANUAL%20EN%20V%201.0.pdf) page 8: mini-joystick calibrates as RX/RY (confirms the ministick axes); the manual has no button-number drawing, so trigger = 1, red button = 2 and the ministick button numbers 3-7 are the catalog's assignment only",
+  "confidence": "high",
+  "note": "The top plate takes either the mini-joystick (as on this photo) or the flat cover + button hat (manual accessory pack 2#/4#). X/Y come from the base (Orion 2, J2-2); gimbal marker at the grip's boot plate. The catalog note says this grip does not support the extension rod / Z module, yet the catalog lists a twist part (JOY_Z); no twist marker placed.",
+  "callouts": {
+    "version": 1,
+    "width": 2892,
+    "height": 2132,
+    "picture": [646, 369, 1600, 1600],
+    "rowHeight": 38,
+    "mainWidth": 323,
+    "modWidth": 209,
+    "otherY": 1999,
+    "tables": [
+      {"id": "stick.ministick", "title": "Thumb stick", "parts": ["stick.ministick"], "side": "top", "x": 712.1, "y": 30, "width": 570, "modifier": true, "spot": [0.325, 0.155], "rows": [{"input": "JOY_BTN3", "label": "Press", "icon": "button", "part": "stick.ministick"}, {"input": "JOY_BTN4", "label": "Up", "icon": "up", "part": "stick.ministick"}, {"input": "JOY_RX", "label": "X (RX)", "icon": "axis", "part": "stick.ministick"}, {"input": "JOY_BTN5", "label": "Right", "icon": "right", "part": "stick.ministick"}, {"input": "JOY_RY", "label": "Y (RY)", "icon": "axis", "part": "stick.ministick"}, {"input": "JOY_BTN7", "label": "Left", "icon": "left", "part": "stick.ministick"}, {"input": "JOY_BTN6", "label": "Down", "icon": "down", "part": "stick.ministick"}]},
+      {"id": "stick.trigger", "title": "Trigger", "parts": ["stick.trigger"], "side": "left", "x": 30, "y": 883, "width": 570, "modifier": true, "spot": [0.203, 0.35], "rows": [{"input": "JOY_BTN1", "label": "First stage", "icon": "button", "part": "stick.trigger"}]},
+      {"id": "stick.axis.twist", "title": "Twist", "parts": ["stick.axis.twist"], "side": "other", "x": 30, "y": 2037, "width": 570, "modifier": true, "rows": [{"input": "JOY_Z", "label": "Z", "icon": "axis", "part": "stick.axis.twist"}]},
+      {"id": "stick.gimbal", "title": "Stick (roll / pitch)", "parts": ["stick.gimbal"], "side": "right", "x": 2292, "y": 1515, "width": 570, "modifier": true, "spot": [0.575, 0.745], "rows": [{"input": "JOY_X", "label": "roll (X)", "icon": "axis", "part": "stick.gimbal"}, {"input": "JOY_Y", "label": "pitch (Y)", "icon": "axis", "part": "stick.gimbal"}]},
+      {"id": "stick.button.thumb.1", "title": "Button thumb 1", "parts": ["stick.button.thumb.1"], "side": "top", "x": 1293.1, "y": 258, "width": 570, "modifier": true, "spot": [0.477, 0.15], "rows": [{"input": "JOY_BTN2", "label": "Press", "icon": "button", "part": "stick.button.thumb.1"}]}
+    ],
+    "lines": [
+      {"table": "stick.trigger", "points": [[970.8, 929], [600, 929]]},
+      {"table": "stick.gimbal", "points": [[1566, 1561], [2292, 1561]]},
+      {"table": "stick.ministick", "points": [[1166, 617], [1166, 346], [997.1, 346], [997.1, 323]]},
+      {"table": "stick.button.thumb.1", "points": [[1409.2, 609], [1409.2, 346], [1578.1, 346], [1578.1, 323]]}
+    ]
+  }
+}

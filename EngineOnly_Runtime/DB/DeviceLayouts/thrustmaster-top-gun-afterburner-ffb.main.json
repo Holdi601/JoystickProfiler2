@@ -1,0 +1,180 @@
+{
+  "format": "joypro-device-layout",
+  "version": 1,
+  "model": "thrustmaster-top-gun-afterburner-ffb",
+  "photo": {"kind": "vendor", "url": "https://support.thrustmaster.com/wp-content/uploads/topgun-afterburner-FFB.jpg", "sha256": "eb0c3c6ff603725f9b21a3abd834a93d86e6634fc74f65c8706c72b4153db5bc", "view": "main"},
+  "markers": {
+    "stick.axis.twist": [0.75, 0.38],
+    "stick.button.thumb.1": [0.805, 0.18],
+    "stick.button.thumb.3": [0.885, 0.22],
+    "stick.gimbal": [0.6, 0.57],
+    "stick.hat.1": [0.733, 0.157],
+    "throttle.axis.main": [0.2, 0.15],
+    "throttle.button.1": [0.411, 0.228],
+    "throttle.button.2": [0.415, 0.207],
+    "throttle.button.3": [0.413, 0.187]
+  },
+  "parts": {
+    "stick.trigger": {
+      "type": "trigger",
+      "name": "Trigger (1)",
+      "inputs": [
+        {"input": "JOY_BTN1", "control": "stick.trigger.stage1"}
+      ],
+      "mapping": "medium"
+    },
+    "stick.axis.twist": {
+      "type": "twist",
+      "name": "Rudder: twisting handle or throttle rocker (selector switch JOYSTICK/THROTTLE)",
+      "inputs": [
+        {"input": "JOY_RZ", "control": "stick.axis.twist"}
+      ],
+      "mapping": "medium",
+      "confidence": "medium",
+      "note": "twist of the handle (or the throttle rocker, selected by the JOYSTICK/THROTTLE switch)"
+    },
+    "throttle.axis.main": {
+      "type": "lever",
+      "name": "Throttle",
+      "inputs": [
+        {"input": "JOY_Z", "control": "throttle.axis.main"}
+      ],
+      "mapping": "medium",
+      "confidence": "medium",
+      "note": "throttle handle"
+    },
+    "stick.gimbal": {
+      "type": "gimbal",
+      "name": "Stick (roll / pitch)",
+      "inputs": [
+        {"input": "JOY_X", "control": "stick.axis.roll"},
+        {"input": "JOY_Y", "control": "stick.axis.pitch"}
+      ],
+      "mapping": "medium",
+      "confidence": "medium",
+      "note": "stick boot inside the silver base ring"
+    },
+    "stick.hat.1": {
+      "type": "hat",
+      "name": "POV hat",
+      "inputs": [
+        {"input": "JOY_BTN_POV1_U", "control": "stick.hat.1.up"},
+        {"input": "JOY_BTN_POV1_R", "control": "stick.hat.1.right"},
+        {"input": "JOY_BTN_POV1_D", "control": "stick.hat.1.down"},
+        {"input": "JOY_BTN_POV1_L", "control": "stick.hat.1.left"}
+      ],
+      "mapping": "medium",
+      "confidence": "high",
+      "note": "round grey POV button on the left of the head (manual item 1)"
+    },
+    "throttle.button.1": {
+      "type": "button",
+      "name": "Throttle back, lower button (5)",
+      "inputs": [
+        {"input": "JOY_BTN5", "control": "throttle.button.1"}
+      ],
+      "mapping": "medium",
+      "confidence": "medium",
+      "note": "lowest of the three small buttons on the throttle's inner face"
+    },
+    "stick.button.thumb.1": {
+      "type": "button",
+      "name": "Top middle button (2)",
+      "inputs": [
+        {"input": "JOY_BTN2", "control": "stick.button.thumb.1"}
+      ],
+      "mapping": "medium",
+      "confidence": "high",
+      "note": "orange/black striped top middle button"
+    },
+    "throttle.button.2": {
+      "type": "button",
+      "name": "Throttle back, middle button (6)",
+      "inputs": [
+        {"input": "JOY_BTN6", "control": "throttle.button.2"}
+      ],
+      "mapping": "medium",
+      "confidence": "medium",
+      "note": "middle small button on the throttle's inner face"
+    },
+    "stick.button.thumb.2": {
+      "type": "button",
+      "name": "Front right button (3)",
+      "inputs": [
+        {"input": "JOY_BTN3", "control": "stick.button.thumb.2"}
+      ],
+      "mapping": "medium"
+    },
+    "throttle.button.3": {
+      "type": "button",
+      "name": "Throttle back, upper button (7)",
+      "inputs": [
+        {"input": "JOY_BTN7", "control": "throttle.button.3"}
+      ],
+      "mapping": "medium",
+      "confidence": "medium",
+      "note": "upper small button on the throttle's inner face"
+    },
+    "stick.button.thumb.3": {
+      "type": "button",
+      "name": "Top right button (4)",
+      "inputs": [
+        {"input": "JOY_BTN4", "control": "stick.button.thumb.3"}
+      ],
+      "mapping": "medium",
+      "confidence": "medium",
+      "note": "dark top right button on the right of the head"
+    },
+    "throttle.button.4": {
+      "type": "button",
+      "name": "Throttle front button (8)",
+      "inputs": [
+        {"input": "JOY_BTN8", "control": "throttle.button.4"}
+      ],
+      "mapping": "medium"
+    }
+  },
+  "unplaced": {
+    "stick.trigger": "on the front of the grip below the head, faces away from the camera",
+    "stick.button.thumb.2": "front right button of the head, faces away from the camera",
+    "throttle.button.4": "button on the throttle front, faces away from the camera"
+  },
+  "candidates": {},
+  "source": "JoyPro curated on the maker's photo (2026-10-11), black throttle (left, attached) and stick (right) seen from behind-left and above, head buttons toward the camera",
+  "mappingSource": "catalog (thrustmaster.json, confidence medium): FlightGear maps (https://gitlab.com/flightgear/fgdata/-/blob/next/Input/Joysticks/ThrustMaster/Top-Gun-Afterburner-USB.xml and Top-Gun-Afterburner.xml: trigger 1, top middle 2, front right 3, top right 4, throttle back 5-7, throttle front 8, axis 2 rudder, 3 throttle); locations per the user manual figure p.1 (https://ts.thrustmaster.com/download/accessories/Manuals/OLD/Afterburner_FFB_pc.pdf: 1 POV button on the left of the stick head, 9 action buttons: three small ones in a row on the throttle's inner face and one larger on the throttle front, 8 rudder rocker on the throttle front, 5 rudder selector switch JOYSTICK/THROTTLE)",
+  "confidence": "medium",
+  "note": "Small photo (300 px): the head buttons and the throttle buttons are positioned on a zoomed crop. Lower/middle/upper of the throttle back buttons follows the FlightGear comments; Thrustmaster does not number them. The trigger, the front right button (3), the throttle front button (8) and rocker, and the rudder selector switch face away from the camera.",
+  "callouts": {
+    "version": 1,
+    "width": 986,
+    "height": 480,
+    "picture": [340, 94, 300, 300],
+    "rowHeight": 20,
+    "mainWidth": 170,
+    "modWidth": 110,
+    "otherY": 410,
+    "tables": [
+      {"id": "stack:throttle.button.2", "title": "Throttle back, middle button (6) / Throttle back, upper button (7)", "parts": ["throttle.button.2", "throttle.button.3"], "side": "top", "x": 340, "y": 16, "width": 300, "modifier": true, "spot": [0.414, 0.197], "rows": [{"input": "JOY_BTN6", "label": "Throttle back, middle button (6) Press", "icon": "button", "part": "throttle.button.2"}, {"input": "JOY_BTN7", "label": "Throttle back, upper button (7) Press", "icon": "button", "part": "throttle.button.3"}]},
+      {"id": "stick.trigger", "title": "Trigger (1)", "parts": ["stick.trigger"], "side": "other", "x": 16, "y": 430, "width": 300, "modifier": true, "rows": [{"input": "JOY_BTN1", "label": "First stage", "icon": "button", "part": "stick.trigger"}]},
+      {"id": "stick.axis.twist", "title": "Rudder: twisting handle or throttle rocker (selector switch JOYSTICK/THROTTLE)", "parts": ["stick.axis.twist"], "side": "right", "x": 670, "y": 224.4, "width": 300, "modifier": true, "spot": [0.75, 0.38], "rows": [{"input": "JOY_RZ", "label": "RZ", "icon": "axis", "part": "stick.axis.twist"}]},
+      {"id": "throttle.axis.main", "title": "Throttle", "parts": ["throttle.axis.main"], "side": "left", "x": 16, "y": 106.7, "width": 300, "modifier": true, "spot": [0.2, 0.15], "rows": [{"input": "JOY_Z", "label": "Z", "icon": "axis", "part": "throttle.axis.main"}]},
+      {"id": "stick.gimbal", "title": "Stick (roll / pitch)", "parts": ["stick.gimbal"], "side": "right", "x": 670, "y": 264.4, "width": 300, "modifier": true, "spot": [0.6, 0.57], "rows": [{"input": "JOY_X", "label": "roll (X)", "icon": "axis", "part": "stick.gimbal"}, {"input": "JOY_Y", "label": "pitch (Y)", "icon": "axis", "part": "stick.gimbal"}]},
+      {"id": "stick.hat.1", "title": "POV hat", "parts": ["stick.hat.1"], "side": "right", "x": 670, "y": 84.4, "width": 300, "modifier": true, "spot": [0.733, 0.157], "rows": [{"input": "JOY_BTN_POV1_U", "label": "Up", "icon": "up", "part": "stick.hat.1"}, {"input": "JOY_BTN_POV1_R", "label": "Right", "icon": "right", "part": "stick.hat.1"}, {"input": "JOY_BTN_POV1_L", "label": "Left", "icon": "left", "part": "stick.hat.1"}, {"input": "JOY_BTN_POV1_D", "label": "Down", "icon": "down", "part": "stick.hat.1"}]},
+      {"id": "throttle.button.1", "title": "Throttle back, lower button (5)", "parts": ["throttle.button.1"], "side": "left", "x": 16, "y": 146.7, "width": 300, "modifier": true, "spot": [0.411, 0.228], "rows": [{"input": "JOY_BTN5", "label": "Press", "icon": "button", "part": "throttle.button.1"}]},
+      {"id": "stick.button.thumb.1", "title": "Top middle button (2)", "parts": ["stick.button.thumb.1"], "side": "right", "x": 670, "y": 44.4, "width": 300, "modifier": true, "spot": [0.805, 0.18], "rows": [{"input": "JOY_BTN2", "label": "Press", "icon": "button", "part": "stick.button.thumb.1"}]},
+      {"id": "stick.button.thumb.2", "title": "Front right button (3)", "parts": ["stick.button.thumb.2"], "side": "other", "x": 322, "y": 430, "width": 300, "modifier": true, "rows": [{"input": "JOY_BTN3", "label": "Press", "icon": "button", "part": "stick.button.thumb.2"}]},
+      {"id": "stick.button.thumb.3", "title": "Top right button (4)", "parts": ["stick.button.thumb.3"], "side": "right", "x": 670, "y": 184.4, "width": 300, "modifier": true, "spot": [0.885, 0.22], "rows": [{"input": "JOY_BTN4", "label": "Press", "icon": "button", "part": "stick.button.thumb.3"}]},
+      {"id": "throttle.button.4", "title": "Throttle front button (8)", "parts": ["throttle.button.4"], "side": "other", "x": 628, "y": 430, "width": 300, "modifier": true, "rows": [{"input": "JOY_BTN8", "label": "Press", "icon": "button", "part": "throttle.button.4"}]}
+    ],
+    "lines": [
+      {"table": "throttle.axis.main", "points": [[400, 139], [328, 139], [328, 130.7], [316, 130.7]]},
+      {"table": "throttle.button.1", "points": [[463.3, 162.4], [328, 162.4], [328, 170.7], [316, 170.7]]},
+      {"table": "stick.button.thumb.1", "points": [[581.5, 148], [652, 148], [652, 68.4], [670, 68.4]]},
+      {"table": "stick.hat.1", "points": [[559.9, 141.1], [559.9, 108.4], [670, 108.4]]},
+      {"table": "stick.button.thumb.3", "points": [[605.5, 160], [658, 160], [658, 208.4], [670, 208.4]]},
+      {"table": "stick.axis.twist", "points": [[565, 208], [652, 208], [652, 248.4], [670, 248.4]]},
+      {"table": "stick.gimbal", "points": [[520, 265], [652, 265], [652, 288.4], [670, 288.4]]},
+      {"table": "stack:throttle.button.2", "points": [[464.2, 153.1], [464.2, 82], [490, 82], [490, 70]]}
+    ]
+  }
+}

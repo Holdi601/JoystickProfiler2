@@ -1,0 +1,430 @@
+{
+  "format": "joypro-device-layout",
+  "version": 1,
+  "model": "winwing-carrierace-ufc",
+  "photo": {"kind": "vendor", "url": "https://eu.winctrl.com/static/ipfs/QmRcJSzB6RoMNWUSCRkJz1MFqUXFLwLvTKCr8GdxwZLwnK", "sha256": "9487ca935c4b1838bfdffebad70ae6ab7bdd1ec4ba4eb7c8a2c243f4fcdfa1dc", "view": "main"},
+  "markers": {
+    "panel.axis.1": [0.124, 0.39],
+    "panel.axis.2": [0.602, 0.656],
+    "panel.axis.3": [0.602, 0.487],
+    "panel.axis.4": [0.178, 0.608],
+    "panel.axis.5": [0.634, 0.876],
+    "panel.button.1": [0.128, 0.221],
+    "panel.button.10": [0.324, 0.534],
+    "panel.button.11": [0.213, 0.529],
+    "panel.button.12": [0.268, 0.56],
+    "panel.button.13": [0.324, 0.593],
+    "panel.button.14": [0.383, 0.342],
+    "panel.button.15": [0.383, 0.411],
+    "panel.button.16": [0.383, 0.486],
+    "panel.button.17": [0.383, 0.555],
+    "panel.button.18": [0.386, 0.63],
+    "panel.button.19": [0.614, 0.56],
+    "panel.button.2": [0.209, 0.335],
+    "panel.button.20": [0.25, 0.621],
+    "panel.button.21": [0.294, 0.645],
+    "panel.button.22": [0.344, 0.678],
+    "panel.button.23": [0.398, 0.708],
+    "panel.button.24": [0.445, 0.734],
+    "panel.button.25": [0.494, 0.763],
+    "panel.button.26": [0.544, 0.79],
+    "panel.button.3": [0.263, 0.352],
+    "panel.button.4": [0.32, 0.396],
+    "panel.button.5": [0.209, 0.392],
+    "panel.button.6": [0.266, 0.433],
+    "panel.button.7": [0.322, 0.464],
+    "panel.button.8": [0.211, 0.468],
+    "panel.button.9": [0.267, 0.492],
+    "panel.encoder.1": [0.168, 0.6],
+    "panel.encoder.2": [0.624, 0.868],
+    "panel.selector.1": [0.124, 0.291]
+  },
+  "parts": {
+    "panel.selector.1": {
+      "type": "selector",
+      "name": "ADF",
+      "inputs": [
+        {"input": "JOY_BTN39", "control": "panel.selector.1.pos.1"},
+        {"input": "JOY_BTN40", "control": "panel.selector.1.pos.2"},
+        {"input": "JOY_BTN41", "control": "panel.selector.1.pos.3"}
+      ],
+      "mapping": "high",
+      "confidence": "high",
+      "note": "ADF toggle, manual 39/40/41"
+    },
+    "panel.encoder.1": {
+      "type": "encoder",
+      "name": "COMM 1 CHAN",
+      "inputs": [
+        {"input": "JOY_BTN27", "control": "panel.encoder.1.ccw"},
+        {"input": "JOY_BTN28", "control": "panel.encoder.1.cw"},
+        {"input": "JOY_BTN29", "control": "panel.encoder.1.press"}
+      ],
+      "mapping": "high",
+      "confidence": "high",
+      "note": "COMM 1 channel pull knob (button mode 27/28/29)"
+    },
+    "panel.encoder.2": {
+      "type": "encoder",
+      "name": "COMM 2 CHAN",
+      "inputs": [
+        {"input": "JOY_BTN30", "control": "panel.encoder.2.ccw"},
+        {"input": "JOY_BTN31", "control": "panel.encoder.2.cw"},
+        {"input": "JOY_BTN32", "control": "panel.encoder.2.press"}
+      ],
+      "mapping": "high",
+      "confidence": "high",
+      "note": "COMM 2 channel pull knob (button mode 30/31/32)"
+    },
+    "panel.axis.1": {
+      "type": "knob",
+      "name": "COMM 1 VOL",
+      "inputs": [
+        {"input": "JOY_RX", "control": "panel.axis.1"}
+      ],
+      "mapping": "high",
+      "confidence": "high",
+      "note": "COMM 1 VOL knob, Rx"
+    },
+    "panel.axis.2": {
+      "type": "knob",
+      "name": "COMM 2 VOL",
+      "inputs": [
+        {"input": "JOY_RY", "control": "panel.axis.2"}
+      ],
+      "mapping": "high",
+      "confidence": "high",
+      "note": "COMM 2 VOL knob, Ry"
+    },
+    "panel.axis.3": {
+      "type": "knob",
+      "name": "BRT",
+      "inputs": [
+        {"input": "JOY_RZ", "control": "panel.axis.3"}
+      ],
+      "mapping": "high",
+      "confidence": "high",
+      "note": "BRT knob, Rz"
+    },
+    "panel.axis.4": {
+      "type": "knob",
+      "name": "COMM 1 channel knob (axis mode)",
+      "inputs": [
+        {"input": "JOY_SLIDER1", "control": "panel.axis.4"}
+      ],
+      "mapping": "high",
+      "confidence": "high",
+      "note": "COMM 1 channel knob in axis mode, Slider"
+    },
+    "panel.axis.5": {
+      "type": "knob",
+      "name": "COMM 2 channel knob (axis mode)",
+      "inputs": [
+        {"input": "JOY_SLIDER2", "control": "panel.axis.5"}
+      ],
+      "mapping": "high",
+      "confidence": "high",
+      "note": "COMM 2 channel knob in axis mode, Dial"
+    },
+    "panel.button.1": {
+      "type": "button",
+      "name": "I/P",
+      "inputs": [
+        {"input": "JOY_BTN1", "control": "panel.button.1"}
+      ],
+      "mapping": "high",
+      "confidence": "high",
+      "note": "I/P"
+    },
+    "panel.button.2": {
+      "type": "button",
+      "name": "1",
+      "inputs": [
+        {"input": "JOY_BTN2", "control": "panel.button.2"}
+      ],
+      "mapping": "high",
+      "confidence": "high",
+      "note": "1"
+    },
+    "panel.button.3": {
+      "type": "button",
+      "name": "2 N",
+      "inputs": [
+        {"input": "JOY_BTN3", "control": "panel.button.3"}
+      ],
+      "mapping": "high",
+      "confidence": "high",
+      "note": "2 N"
+    },
+    "panel.button.4": {
+      "type": "button",
+      "name": "3",
+      "inputs": [
+        {"input": "JOY_BTN4", "control": "panel.button.4"}
+      ],
+      "mapping": "high",
+      "confidence": "high",
+      "note": "3"
+    },
+    "panel.button.5": {
+      "type": "button",
+      "name": "4 W",
+      "inputs": [
+        {"input": "JOY_BTN5", "control": "panel.button.5"}
+      ],
+      "mapping": "high",
+      "confidence": "high",
+      "note": "4 W"
+    },
+    "panel.button.6": {
+      "type": "button",
+      "name": "5",
+      "inputs": [
+        {"input": "JOY_BTN6", "control": "panel.button.6"}
+      ],
+      "mapping": "high",
+      "confidence": "high",
+      "note": "5"
+    },
+    "panel.button.7": {
+      "type": "button",
+      "name": "6 E",
+      "inputs": [
+        {"input": "JOY_BTN7", "control": "panel.button.7"}
+      ],
+      "mapping": "high",
+      "confidence": "high",
+      "note": "6 E"
+    },
+    "panel.button.8": {
+      "type": "button",
+      "name": "7",
+      "inputs": [
+        {"input": "JOY_BTN8", "control": "panel.button.8"}
+      ],
+      "mapping": "high",
+      "confidence": "high",
+      "note": "7"
+    },
+    "panel.button.9": {
+      "type": "button",
+      "name": "8 S",
+      "inputs": [
+        {"input": "JOY_BTN9", "control": "panel.button.9"}
+      ],
+      "mapping": "high",
+      "confidence": "high",
+      "note": "8 S"
+    },
+    "panel.button.10": {
+      "type": "button",
+      "name": "9",
+      "inputs": [
+        {"input": "JOY_BTN10", "control": "panel.button.10"}
+      ],
+      "mapping": "high",
+      "confidence": "high",
+      "note": "9"
+    },
+    "panel.button.11": {
+      "type": "button",
+      "name": "CLR",
+      "inputs": [
+        {"input": "JOY_BTN11", "control": "panel.button.11"}
+      ],
+      "mapping": "high",
+      "confidence": "high",
+      "note": "CLR"
+    },
+    "panel.button.12": {
+      "type": "button",
+      "name": "0 -",
+      "inputs": [
+        {"input": "JOY_BTN12", "control": "panel.button.12"}
+      ],
+      "mapping": "high",
+      "confidence": "high",
+      "note": "0 -"
+    },
+    "panel.button.13": {
+      "type": "button",
+      "name": "ENT",
+      "inputs": [
+        {"input": "JOY_BTN13", "control": "panel.button.13"}
+      ],
+      "mapping": "high",
+      "confidence": "high",
+      "note": "ENT"
+    },
+    "panel.button.14": {
+      "type": "button",
+      "name": "OPTION SELECT 1",
+      "inputs": [
+        {"input": "JOY_BTN14", "control": "panel.button.14"}
+      ],
+      "mapping": "high",
+      "confidence": "high",
+      "note": "option select 1 (top)"
+    },
+    "panel.button.15": {
+      "type": "button",
+      "name": "OPTION SELECT 2",
+      "inputs": [
+        {"input": "JOY_BTN15", "control": "panel.button.15"}
+      ],
+      "mapping": "high",
+      "confidence": "high",
+      "note": "option select 2"
+    },
+    "panel.button.16": {
+      "type": "button",
+      "name": "OPTION SELECT 3",
+      "inputs": [
+        {"input": "JOY_BTN16", "control": "panel.button.16"}
+      ],
+      "mapping": "high",
+      "confidence": "high",
+      "note": "option select 3"
+    },
+    "panel.button.17": {
+      "type": "button",
+      "name": "OPTION SELECT 4",
+      "inputs": [
+        {"input": "JOY_BTN17", "control": "panel.button.17"}
+      ],
+      "mapping": "high",
+      "confidence": "high",
+      "note": "option select 4"
+    },
+    "panel.button.18": {
+      "type": "button",
+      "name": "OPTION SELECT 5",
+      "inputs": [
+        {"input": "JOY_BTN18", "control": "panel.button.18"}
+      ],
+      "mapping": "high",
+      "confidence": "high",
+      "note": "option select 5 (bottom)"
+    },
+    "panel.button.19": {
+      "type": "button",
+      "name": "EMCON",
+      "inputs": [
+        {"input": "JOY_BTN19", "control": "panel.button.19"}
+      ],
+      "mapping": "high",
+      "confidence": "high",
+      "note": "EMCON"
+    },
+    "panel.button.20": {
+      "type": "button",
+      "name": "A/P",
+      "inputs": [
+        {"input": "JOY_BTN20", "control": "panel.button.20"}
+      ],
+      "mapping": "high",
+      "confidence": "high",
+      "note": "A/P"
+    },
+    "panel.button.21": {
+      "type": "button",
+      "name": "IFF",
+      "inputs": [
+        {"input": "JOY_BTN21", "control": "panel.button.21"}
+      ],
+      "mapping": "high",
+      "confidence": "high",
+      "note": "IFF"
+    },
+    "panel.button.22": {
+      "type": "button",
+      "name": "TCN",
+      "inputs": [
+        {"input": "JOY_BTN22", "control": "panel.button.22"}
+      ],
+      "mapping": "high",
+      "confidence": "high",
+      "note": "TCN"
+    },
+    "panel.button.23": {
+      "type": "button",
+      "name": "ILS",
+      "inputs": [
+        {"input": "JOY_BTN23", "control": "panel.button.23"}
+      ],
+      "mapping": "high",
+      "confidence": "high",
+      "note": "ILS"
+    },
+    "panel.button.24": {
+      "type": "button",
+      "name": "D/L",
+      "inputs": [
+        {"input": "JOY_BTN24", "control": "panel.button.24"}
+      ],
+      "mapping": "high",
+      "confidence": "high",
+      "note": "D/L"
+    },
+    "panel.button.25": {
+      "type": "button",
+      "name": "BCN",
+      "inputs": [
+        {"input": "JOY_BTN25", "control": "panel.button.25"}
+      ],
+      "mapping": "high",
+      "confidence": "high",
+      "note": "BCN"
+    },
+    "panel.button.26": {
+      "type": "button",
+      "name": "ON/OFF",
+      "inputs": [
+        {"input": "JOY_BTN26", "control": "panel.button.26"}
+      ],
+      "mapping": "high",
+      "confidence": "high",
+      "note": "ON/OFF"
+    }
+  },
+  "unplaced": {},
+  "candidates": {},
+  "source": "JoyPro curated on the maker's photo (2026-10-11), CarrierAce UFC 2.0 seen from the front-left and slightly above; whole front panel visible",
+  "mappingSource": "WINCTRL \"CarrierAce UFC 2.0 User Manual V1.0 2026.04.17\" section 3.2 Buttons drawing, page 11 (https://eu.winctrl.com/static/ipfs/QmNjs6oJuxhJ5KPNn5qAh84VkD6mMPkt6FLx4xwP6YDhfS): 1 I/P, 2-13 keypad, 14-18 option select, 19 EMCON, 20-26 bottom row, 39/40/41 ADF; Rx = COMM 1 VOL, Ry = COMM 2 VOL, Rz = BRT; left channel knob = Slider with 27 (-) / 29 (middle) / 28 (+), right channel knob = Dial with 30 (-) / 32 / 31 (+)",
+  "confidence": "high",
+  "note": "Each channel pull knob is one control carrying both the encoder buttons (button mode) and the Slider/Dial axis (axis mode), so encoder and axis markers sit on the same knob. 29/32 are the knobs' middle marks, taken as \"press\" by the catalog.",
+  "callouts": {
+    "version": 1,
+    "width": 3022,
+    "height": 1885,
+    "picture": [776, 30, 1600, 1600],
+    "rowHeight": 38,
+    "mainWidth": 323,
+    "modWidth": 209,
+    "otherY": -1,
+    "tables": [
+      {"id": "grid:panel.button.14", "title": "Buttons OPTION SEL - TCN", "parts": ["panel.button.14", "panel.button.2", "panel.button.3", "panel.button.4", "panel.button.5", "panel.button.6", "panel.button.7", "panel.button.8", "panel.button.9", "panel.button.10", "panel.button.11", "panel.button.12", "panel.button.13", "panel.button.20", "panel.button.21", "panel.button.22"], "side": "left", "x": 205, "y": 671.3, "width": 525, "grid": true, "columns": 3, "modifier": false, "spot": [0.2792, 0.4896], "rows": [{"input": "JOY_BTN14", "label": "OPTION SEL", "icon": "button", "part": "panel.button.14", "cell": [0, 0, 0]}, {"input": "JOY_BTN2", "label": "1", "icon": "button", "part": "panel.button.2", "cell": [1, 0, 0]}, {"input": "JOY_BTN3", "label": "2 N", "icon": "button", "part": "panel.button.3", "cell": [1, 1, 0]}, {"input": "JOY_BTN4", "label": "3", "icon": "button", "part": "panel.button.4", "cell": [1, 2, 0]}, {"input": "JOY_BTN5", "label": "4 W", "icon": "button", "part": "panel.button.5", "cell": [2, 0, 0]}, {"input": "JOY_BTN6", "label": "5", "icon": "button", "part": "panel.button.6", "cell": [2, 1, 0]}, {"input": "JOY_BTN7", "label": "6 E", "icon": "button", "part": "panel.button.7", "cell": [2, 2, 0]}, {"input": "JOY_BTN8", "label": "7", "icon": "button", "part": "panel.button.8", "cell": [3, 0, 0]}, {"input": "JOY_BTN9", "label": "8 S", "icon": "button", "part": "panel.button.9", "cell": [3, 1, 0]}, {"input": "JOY_BTN10", "label": "9", "icon": "button", "part": "panel.button.10", "cell": [3, 2, 0]}, {"input": "JOY_BTN11", "label": "CLR", "icon": "button", "part": "panel.button.11", "cell": [4, 0, 0]}, {"input": "JOY_BTN12", "label": "0 -", "icon": "button", "part": "panel.button.12", "cell": [4, 1, 0]}, {"input": "JOY_BTN13", "label": "ENT", "icon": "button", "part": "panel.button.13", "cell": [4, 2, 0]}, {"input": "JOY_BTN20", "label": "A/P", "icon": "button", "part": "panel.button.20", "cell": [5, 0, 0]}, {"input": "JOY_BTN21", "label": "IFF", "icon": "button", "part": "panel.button.21", "cell": [5, 1, 0]}, {"input": "JOY_BTN22", "label": "TCN", "icon": "button", "part": "panel.button.22", "cell": [5, 2, 0]}]},
+      {"id": "grid:panel.button.15", "title": "Buttons OPTION SEL - ON/OFF", "parts": ["panel.button.15", "panel.button.16", "panel.button.17", "panel.button.18", "panel.button.23", "panel.button.24", "panel.button.25", "panel.button.26"], "side": "left", "x": 30, "y": 1127.3, "width": 700, "grid": true, "columns": 4, "modifier": false, "spot": [0.427, 0.6346], "rows": [{"input": "JOY_BTN15", "label": "OPTION SEL", "icon": "button", "part": "panel.button.15", "cell": [0, 0, 0]}, {"input": "JOY_BTN16", "label": "OPTION SEL", "icon": "button", "part": "panel.button.16", "cell": [1, 0, 0]}, {"input": "JOY_BTN17", "label": "OPTION SEL", "icon": "button", "part": "panel.button.17", "cell": [2, 0, 0]}, {"input": "JOY_BTN18", "label": "OPTION SEL", "icon": "button", "part": "panel.button.18", "cell": [3, 0, 0]}, {"input": "JOY_BTN23", "label": "ILS", "icon": "button", "part": "panel.button.23", "cell": [4, 0, 0]}, {"input": "JOY_BTN24", "label": "D/L", "icon": "button", "part": "panel.button.24", "cell": [4, 1, 0]}, {"input": "JOY_BTN25", "label": "BCN", "icon": "button", "part": "panel.button.25", "cell": [4, 2, 0]}, {"input": "JOY_BTN26", "label": "ON/OFF", "icon": "button", "part": "panel.button.26", "cell": [4, 3, 0]}]},
+      {"id": "stack:panel.encoder.1", "title": "COMM 1 CHAN / COMM 1 channel knob (axis mode)", "parts": ["panel.encoder.1", "panel.axis.4"], "side": "left", "x": 160, "y": 937.3, "width": 570, "modifier": true, "spot": [0.173, 0.604], "rows": [{"input": "JOY_BTN29", "label": "COMM 1 CHAN Press", "icon": "button", "part": "panel.encoder.1"}, {"input": "JOY_BTN28", "label": "COMM 1 CHAN Clockwise", "icon": "right", "part": "panel.encoder.1"}, {"input": "JOY_BTN27", "label": "COMM 1 CHAN Counter-clockwise", "icon": "left", "part": "panel.encoder.1"}, {"input": "JOY_SLIDER1", "label": "COMM 1 channel knob (axis mode) SLIDER1", "icon": "axis", "part": "panel.axis.4"}]},
+      {"id": "stack:panel.encoder.2", "title": "COMM 2 CHAN / COMM 2 channel knob (axis mode)", "parts": ["panel.encoder.2", "panel.axis.5"], "side": "bottom", "x": 1497.4, "y": 1676, "width": 570, "modifier": true, "spot": [0.629, 0.872], "rows": [{"input": "JOY_BTN32", "label": "COMM 2 CHAN Press", "icon": "button", "part": "panel.encoder.2"}, {"input": "JOY_BTN31", "label": "COMM 2 CHAN Clockwise", "icon": "right", "part": "panel.encoder.2"}, {"input": "JOY_BTN30", "label": "COMM 2 CHAN Counter-clockwise", "icon": "left", "part": "panel.encoder.2"}, {"input": "JOY_SLIDER2", "label": "COMM 2 channel knob (axis mode) SLIDER2", "icon": "axis", "part": "panel.axis.5"}]},
+      {"id": "panel.selector.1", "title": "ADF", "parts": ["panel.selector.1"], "side": "left", "x": 160, "y": 443.3, "width": 570, "modifier": true, "spot": [0.124, 0.291], "rows": [{"input": "JOY_BTN39", "label": "1", "icon": "pos", "part": "panel.selector.1"}, {"input": "JOY_BTN40", "label": "2", "icon": "pos", "part": "panel.selector.1"}, {"input": "JOY_BTN41", "label": "3", "icon": "pos", "part": "panel.selector.1"}]},
+      {"id": "panel.axis.1", "title": "COMM 1 VOL", "parts": ["panel.axis.1"], "side": "left", "x": 160, "y": 595.3, "width": 570, "modifier": true, "spot": [0.124, 0.39], "rows": [{"input": "JOY_RX", "label": "RX", "icon": "axis", "part": "panel.axis.1"}]},
+      {"id": "panel.axis.2", "title": "COMM 2 VOL", "parts": ["panel.axis.2"], "side": "right", "x": 2422, "y": 1033.6, "width": 570, "modifier": true, "spot": [0.602, 0.656], "rows": [{"input": "JOY_RY", "label": "RY", "icon": "axis", "part": "panel.axis.2"}]},
+      {"id": "panel.axis.3", "title": "BRT", "parts": ["panel.axis.3"], "side": "right", "x": 2422, "y": 763.2, "width": 570, "modifier": true, "spot": [0.602, 0.487], "rows": [{"input": "JOY_RZ", "label": "RZ", "icon": "axis", "part": "panel.axis.3"}]},
+      {"id": "panel.button.1", "title": "I/P", "parts": ["panel.button.1"], "side": "left", "x": 160, "y": 337.6, "width": 570, "modifier": true, "spot": [0.128, 0.221], "rows": [{"input": "JOY_BTN1", "label": "Press", "icon": "button", "part": "panel.button.1"}]},
+      {"id": "panel.button.19", "title": "EMCON", "parts": ["panel.button.19"], "side": "right", "x": 2422, "y": 880, "width": 570, "modifier": true, "spot": [0.614, 0.56], "rows": [{"input": "JOY_BTN19", "label": "Press", "icon": "button", "part": "panel.button.19"}]}
+    ],
+    "lines": [
+      {"table": "panel.button.1", "points": [[980.8, 383.6], [730, 383.6]]},
+      {"table": "panel.selector.1", "points": [[974.4, 495.6], [753, 495.6], [753, 489.3], [730, 489.3]]},
+      {"table": "panel.axis.1", "points": [[974.4, 654], [753, 654], [753, 641.3], [730, 641.3]]},
+      {"table": "grid:panel.button.14", "points": [[1222.7, 813.4], [753, 813.4], [753, 717.3], [730, 717.3]]},
+      {"table": "stack:panel.encoder.1", "points": [[1052.8, 996.4], [753, 996.4], [753, 983.3], [730, 983.3]]},
+      {"table": "grid:panel.button.15", "points": [[1459.2, 1045.4], [753, 1045.4], [753, 1173.3], [730, 1173.3]]},
+      {"table": "panel.axis.3", "points": [[1739.2, 809.2], [2422, 809.2]]},
+      {"table": "panel.button.19", "points": [[1758.4, 926], [2422, 926]]},
+      {"table": "panel.axis.2", "points": [[1739.2, 1079.6], [2422, 1079.6]]},
+      {"table": "stack:panel.encoder.2", "points": [[1782.4, 1425.2], [1782.4, 1676]]}
+    ]
+  }
+}

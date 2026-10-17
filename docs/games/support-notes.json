@@ -1,0 +1,578 @@
+{
+  "about": "Hand-kept part of docs/games/support.md (engine games support, tools/game_support.ps1): categories, bind files, command-list sources, anti-cheat, in-game test results, open points, the documented-only titles and the reasons for partial cells. The marks come from the code; a cell here may only lower a mark (with a note). Test levels: e2e (a green in-game run), partial (in game, not green or not complete), files (checked against installed game files only), blind (not installed), none (documented only).",
+  "updated": "2026-10-12",
+  "categories": [
+    { "id": "flight", "title": "Flight simulators", "note": "Civil and general flight simulators. JoyPro takes over the devices it writes (clean and nuke clear every other bind of those devices)." },
+    { "id": "combat", "title": "Combat flight", "note": "Combat flight sims and combat flight games that read several joysticks." },
+    { "id": "space", "title": "Space", "note": "Space sims: clean and nuke touch only the cataloged ship actions, on-foot and vehicle binds stay." },
+    { "id": "military", "title": "Military sims", "note": "Infantry sims with aircraft and helicopters: JoyPro writes only the cataloged aircraft and helicopter actions." },
+    { "id": "arcade", "title": "Arcade and one-device games", "note": "Arcade flight games and shooters that read one joystick, only Xbox pads, or a fixed layout (docs: one-device-games.md)." }
+  ],
+  "games": [
+    {
+      "id": "MSFS2024", "category": "flight", "doc": "msfs.md",
+      "bindFile": "JoyPro's Community package (`joypro-input-profiles`, one preset XML per device); reads the Steam `inputprofile_*` XML",
+      "listSource": "Asobo's preset files, the flight events `fs-base\\en-US.locPak` names, the installed aircraft", "listSize": "1739",
+      "antiCheat": "none known; the checksummed `profile_00` is never written; the Microsoft Store version is read only",
+      "test": { "level": "e2e", "result": "26/26", "date": "2026-10-11", "note": "controls and sensitivity pages" },
+      "open": "no per-aircraft export (presets reach only aircraft not configured yet); the sim's cloud copy can win",
+      "cells": {
+        "watcher": { "note": "Live watcher test 2026-10-17 (`tools\\e2e\\games\\Watchdog.ps1`): incomplete: the run reached Controls of the test aircraft, but the rebind of a button was not captured (the kit needs two clicks, fixed since); later runs did not reach the main menu on the portrait display." },
+        "modifiers": { "note": "MSFS: modifier buttons of the same device only." }
+      }
+    },
+    {
+      "id": "MSFS2020", "category": "flight", "doc": "msfs.md",
+      "bindFile": "Steam `userdata\\<id>\\1250410\\remote\\inputprofile_*` (XML fragment per device)",
+      "listSource": "as MSFS 2024", "listSize": "1580",
+      "antiCheat": "none known; the Microsoft Store version is not supported",
+      "test": { "level": "e2e", "result": "41/41", "date": "2026-10-10", "note": "controls, sensitivity and a flight" },
+      "open": "the Steam cloud can put an older profile back",
+      "cells": {
+        "modifiers": { "note": "MSFS: modifier buttons of the same device only." }
+      }
+    },
+    {
+      "id": "XPlane12", "category": "flight", "doc": "xplane.md",
+      "bindFile": "`Output\\preferences\\X-Plane Joystick Settings.prf`, `control profiles\\*.prf` (line based)",
+      "listSource": "`Resources\\plugins\\Commands.txt`", "listSize": "2779",
+      "antiCheat": "none known",
+      "test": { "level": "e2e", "result": "33/33", "date": "2026-10-11", "note": "binds and response curves, main menu" },
+      "open": "meaning of the use codes 74-77; HID versus DirectInput axis order; keyboard shortcuts (Keys.prf) are not written",
+      "cells": {
+        "watcher": { "note": "Live watcher test 2026-10-17 (`tools\\e2e\\games\\Watchdog.ps1`): not run yet: X-Plane 12 was never started on this PC; its first start flies the tutorial and writes no joystick preferences before a quit." },
+        "ffb": { "mark": "◐", "note": "X-Plane 12: only the per-device switch \"control-loaded axes\" for force feedback sticks; the sim has no stick force feedback effects of its own (plugins only)." }
+      }
+    },
+    {
+      "id": "XPlane11", "category": "flight", "doc": "xplane.md",
+      "bindFile": "as X-Plane 12",
+      "listSource": "`Resources\\plugins\\Commands.txt`", "listSize": "2066",
+      "antiCheat": "none known",
+      "test": { "level": "files", "note": "installed, never started" },
+      "open": "the in-game menu check is pending"
+    },
+    {
+      "id": "FSX", "category": "flight", "doc": "fsx-p3d.md",
+      "bindFile": "`%APPDATA%\\Microsoft\\FSX\\Controls\\Standard.XML` (XML)",
+      "listSource": "JoyPro's own event list (public SDK ids) + the events of your control files and the install's template", "listSize": "149 (own list)",
+      "devices": "no documented device limit (16 nominal); a hat is one whole PAN_VIEW",
+      "antiCheat": "none known",
+      "test": { "level": "blind", "note": "not installed: implemented from public files and SDK event lists, synthetic fixture" },
+      "open": "needs a real install",
+      "cells": {
+        "modifiers": { "note": "FSX and Prepar3D: Ctrl/Shift/Alt on keys; no modifier on joystick binds." }
+      }
+    },
+    {
+      "id": "FSXSE", "category": "flight", "doc": "fsx-p3d.md",
+      "bindFile": "`%APPDATA%\\Microsoft\\FSX-SE\\Controls\\` (or the FSX folder), XML",
+      "listSource": "as FSX", "listSize": "149 (own list)",
+      "devices": "as FSX",
+      "antiCheat": "none known",
+      "test": { "level": "blind", "note": "not installed" },
+      "open": "the config file name is inferred",
+      "cells": {
+        "modifiers": { "note": "FSX and Prepar3D: Ctrl/Shift/Alt on keys; no modifier on joystick binds." }
+      }
+    },
+    {
+      "id": "P3D4", "category": "flight", "doc": "fsx-p3d.md",
+      "bindFile": "`%APPDATA%\\Lockheed Martin\\Prepar3D v4\\Controls\\Standard.xml` (XML)",
+      "listSource": "JoyPro's own event list + your control files + the install's `Standard.xmlx`", "listSize": "149 (own list)",
+      "devices": "as FSX",
+      "antiCheat": "none known",
+      "test": { "level": "blind", "note": "not installed" },
+      "open": "header and GUID in `<Name>`; the sim may rebuild new maps",
+      "cells": {
+        "modifiers": { "note": "FSX and Prepar3D: Ctrl/Shift/Alt on keys; no modifier on joystick binds." }
+      }
+    },
+    {
+      "id": "P3D5", "category": "flight", "doc": "fsx-p3d.md",
+      "bindFile": "`%APPDATA%\\Lockheed Martin\\Prepar3D v5\\Controls\\Standard.xml` (XML)",
+      "listSource": "as Prepar3D v4", "listSize": "149 (own list)",
+      "devices": "as FSX",
+      "antiCheat": "none known",
+      "test": { "level": "blind", "note": "not installed" },
+      "open": "as Prepar3D v4",
+      "cells": {
+        "modifiers": { "note": "FSX and Prepar3D: Ctrl/Shift/Alt on keys; no modifier on joystick binds." }
+      }
+    },
+    {
+      "id": "P3D6", "category": "flight", "doc": "fsx-p3d.md",
+      "bindFile": "`%APPDATA%\\Lockheed Martin\\Prepar3D v6\\Controls\\Standard.xml` (XML)",
+      "listSource": "as Prepar3D v4", "listSize": "149 (own list)",
+      "devices": "as FSX",
+      "antiCheat": "none known",
+      "test": { "level": "blind", "note": "not installed" },
+      "open": "as Prepar3D v4",
+      "cells": {
+        "modifiers": { "note": "FSX and Prepar3D: Ctrl/Shift/Alt on keys; no modifier on joystick binds." }
+      }
+    },
+    {
+      "id": "doc:Flyout", "title": "Flyout", "level": "documented", "category": "flight", "doc": "flyout.md",
+      "devices": "effectively one (inputs merged)",
+      "antiCheat": "none",
+      "open": "not installed: where the game stores its binds is unknown (needs a look after one start)",
+      "cells": {
+        "vjoy": { "note": "Recommended once supported: one vJoy device, binds made in the game." }
+      }
+    },
+
+    {
+      "id": "DCS", "category": "combat", "doc": "dcs.md",
+      "bindFile": "`Saved Games\\DCS\\Config\\Input\\<aircraft>\\joystick\\<device>.diff.lua` (Lua diff), keyboard and modifiers.lua; `.jp` sidecar",
+      "listSource": "the install's input Lua files, run by DCS's own `luae.exe` (DCS stays closed)", "listSize": "92 aircraft lists, 1027 / 89 clean profiles",
+      "antiCheat": "none known",
+      "test": { "level": "e2e", "result": "56/56", "date": "2026-10-11", "note": "config watcher and GUI take-over; binds 52/52 and curves 15/15 in the release run" },
+      "open": "only installed modules get lists (by design)",
+      "cells": {
+        "watcher": { "note": "Live watcher test 2026-10-17 (`tools\\e2e\\games\\Watchdog.ps1`): a bind made in Options > Controls is offered 3-4 s after DCS closed; Ignore, Take over, the offer at the next start, no dialog without a change and the tray notification with Review checked in the game (38/39)." },
+        "settings": { "note": "DCS keeps its force feedback settings per device and aircraft (FF Tune), see In-game FFB; there are no game-wide control settings to manage." }
+      }
+    },
+    {
+      "id": "IL2Game", "title": "IL-2 Sturmovik: Great Battles", "category": "combat", "doc": "README.md",
+      "bindFile": "`<install>\\data\\input\\*.actions`, `current.responses`, `global.pitch`, `current.devices`; `jp.actions` sidecar",
+      "listSource": "the `data\\input\\*.actions` files the game writes", "listSize": "376 (the game writes only actions with an input)",
+      "antiCheat": "none known",
+      "test": { "level": "e2e", "result": "38/38", "date": "2026-10-11", "note": "binds; curves 11/11, files 19/19" },
+      "open": "74 actions without an input are not rebuilt on a fresh install",
+      "cells": {
+        "watcher": { "note": "Live watcher test 2026-10-17 (`tools\\e2e\\games\\Watchdog.ps1`): a bind made in Key mapping is offered after IL-2 closed; Ignore, Take over and no dialog without a change checked in the game (27/29; the misses were OCR of the dialog title)." }
+      }
+    },
+    {
+      "id": "IL2Korea", "category": "combat", "doc": "il2-korea.md",
+      "bindFile": "`<install>\\data\\input\\general.actions` (JSON) + `known.devices.json`; curves in `general.pitch` / `shared.responses`; settings in `data\\NSData\\UserData\\UserSettings.json`",
+      "listSource": "`general.actions`; titles from IL-2 Great Battles' list or JoyPro's wording", "listSize": "318",
+      "antiCheat": "none known",
+      "test": { "level": "e2e", "result": "49/49", "date": "2026-10-11", "note": "binds; curves 7/7; settings 23/23 on 2026-10-05" },
+      "open": "the game's own texts are in encrypted `.gtp` archives (not read); 60 actions without an input are missing",
+      "cells": {
+        "watcher": { "note": "Live watcher test 2026-10-17 (`tools\\e2e\\games\\Watchdog.ps1`): not possible yet: the first start shows the user agreement (never accepted by a test), and without a saved key mapping there is no general.actions to export to." }
+      }
+    },
+    {
+      "id": "IL21946", "category": "combat", "doc": "il2-1946.md",
+      "bindFile": "`<install>\\Users\\<pilot>\\settings.ini` (`[HotKey ...]`), responses in `conf.ini`",
+      "listSource": "JoyPro's own command list + the commands `Users\\default.ini`, `conf.ini` and the pilots' `settings.ini` name", "listSize": "187",
+      "devices": "4 joysticks (JoystickDevice0..3, by Windows' device order)",
+      "antiCheat": "none known",
+      "test": { "level": "partial", "result": "29/33", "date": "2026-10-12", "note": "IL-2 1946: 29 of 33 steps in game (seat hat, engine 4 throttle); fixed since, one green run pending." },
+      "open": "one green in-game run; the button limit (the game's files allow 128, players report 32)",
+      "cells": {
+        "modifiers": { "note": "IL-2 1946: one keyboard modifier on a key; joystick binds take no modifier." }
+      }
+    },
+    {
+      "id": "IL2CoD", "category": "combat", "doc": "il2-cliffs-of-dover.md",
+      "bindFile": "`Documents\\1C SoftClub\\il-2 sturmovik cliffs of dover\\confUser.ini` (ini; devices `Joystick`, `Joystick1` ...)",
+      "listSource": "JoyPro's own command list + your and the install's `confUser.ini`", "listSize": "227",
+      "devices": "8 devices",
+      "antiCheat": "none known",
+      "test": { "level": "files", "note": "installed, but the original game does not start on the development PC (its launcher quits); checked against the install's default file" },
+      "open": "an in-game check on a PC where it starts"
+    },
+    {
+      "id": "IL2CoDBlitz", "category": "combat", "doc": "il2-cliffs-of-dover.md",
+      "bindFile": "`confUser.ini` as Cliffs of Dover; devices `<product>-<hash of the HID path>` (changes with the USB port)",
+      "listSource": "as Cliffs of Dover", "listSize": "228",
+      "devices": "16 devices (since 5.026)",
+      "antiCheat": "none known",
+      "test": { "level": "files", "note": "installed and started to the main menu; the live run is pending" },
+      "open": "the live in-game run; second hat, five throttle values, old device names"
+    },
+    {
+      "id": "FalconBMS", "category": "combat", "doc": "falcon-bms.md",
+      "bindFile": "`<BMS>\\User\\Config\\Setup.v100.<device> {GUID}.xml` (launcher XML) + `User.cfg`, `Feedback.ini`, `.pop`",
+      "listSource": "`BMS - Full.key`", "listSize": "939",
+      "antiCheat": "none known",
+      "test": { "level": "partial", "result": "20/21", "date": "2026-10-09", "note": "Falcon BMS: 20 of 21 steps; entering an active cockpit failed (an earlier settings run: 20/26, trim calibration)." },
+      "open": "a full run including the flight part; the curve formula; custom axis shaping",
+      "cells": {
+        "keyboard": { "note": "Falcon BMS: the key file stays the one BMS manages." },
+        "modifiers": { "note": "Falcon BMS: only the one DX shift layer; no modifiers on axes." }
+      }
+    },
+    {
+      "id": "doc:Falcon4", "title": "Falcon 4.0 / Allied Force", "level": "documented", "category": "combat", "doc": "falcon-bms.md",
+      "devices": "the primary stick + `joystick.cal`",
+      "antiCheat": "none",
+      "open": "small user base, an older key file without a launcher store: use Falcon BMS"
+    },
+    {
+      "id": "WarThunder", "category": "combat", "doc": "war-thunder.md",
+      "bindFile": "`Documents\\My Games\\WarThunder\\Saves\\<uid>\\production\\machine.blk` (BLK text, a diff against the preset)",
+      "listSource": "`gui.vromfs.bin` / `lang.vromfs.bin` by default; JoyPro's own list with `--no-game-archives` (Settings > Games)", "listSize": "290 (116 own)",
+      "devices": "128 buttons, 4 hats per device",
+      "antiCheat": "BattlEye (`aces_BE`); reading the vromfs archives is EULA-sensitive and can be switched off",
+      "test": { "level": "e2e", "result": "29/29", "date": "2026-10-10", "note": "settings and binds; the watcher runs of 2026-10-11 were 32/34 and 31/32 (a WEP-hold change not seen, one sensitivity read back off by one)" },
+      "open": "a green watcher run; no shipped base-preset table; cloud versions of the file"
+    },
+    {
+      "id": "VTOLVR", "title": "VTOL VR (BYOJoystick mod)", "category": "combat", "doc": "vtol-vr.md",
+      "bindFile": "`<install>\\SaveData\\BYOJ_<seat>.xml` (XmlSerializer)",
+      "listSource": "the installed mod's `BYOJoystick.dll` (Steam Workshop; GUI: Install BYOJoystick on the VTOL VR card), else your own `BYOJ_*.xml`", "listSize": "433 with the mod; none without it",
+      "antiCheat": "none known; needs a third-party mod without a license (JoyPro ships nothing of it)",
+      "test": { "level": "files", "note": "the mod is not installed on the development PC; the reader is tested with a stand-in DLL" },
+      "open": "an in-game run with the mod; compatibility with VTOL VR 1.13.4",
+      "cells": {
+        "refresh": { "mark": "◐", "note": "VTOL VR (BYOJoystick): the list is built only when the BYOJoystick mod is installed." },
+        "modifiers": { "note": "BYOJoystick: one modifier per bind (a joystick button for joystick binds, a key for keyboard binds)." },
+        "tuning": { "mark": "◐", "note": "BYOJoystick: one dead zone value per bind (take-over threshold, or a cut for slew and tilt); no curves." }
+      }
+    },
+    {
+      "id": "VTOLVRNative", "title": "VTOL VR (native: rudder and brakes)", "category": "combat", "doc": "vtol-vr.md",
+      "bindFile": "`%APPDATA%\\Boundless Dynamics, LLC\\VTOLVR\\SaveData\\inputbindings.cfg` (ConfigNode + Rewired XML) + `gameSettings.cfg`",
+      "listSource": "`level0` of the game", "listSize": "3",
+      "devices": "3 axes only (rudder, left and right brake); every HID joystick",
+      "antiCheat": "none known",
+      "test": { "level": "files", "note": "installed, never started" },
+      "open": "the in-game check; hardware identifiers and element ids; a broken file makes the game drop all binds",
+      "cells": {
+        "tuning": { "mark": "◐", "note": "VTOL VR native: invert and axis range only, no curve or dead zone." }
+      }
+    },
+    {
+      "id": "NuclearOption", "category": "combat", "doc": "nuclear-option.md",
+      "bindFile": "registry `HKCU\\Software\\Shockfront\\NuclearOption` (Rewired XML in REG_BINARY values)",
+      "listSource": "`resources.assets` of the game", "listSize": "95",
+      "devices": "unknown controllers: 128 buttons, 16 hats (Rewired); slider and hat ids not seen yet",
+      "antiCheat": "none known; the EULA allows hardware profiles; JoyPro writes the registry (backed up)",
+      "test": { "level": "e2e", "result": "5/5", "date": "2026-10-10", "note": "pitch, roll and yaw only, no buttons" },
+      "open": "buttons and hats in game; devices Rewired recognizes (non-zero GUID) are not handled",
+      "cells": {
+        "watcher": { "note": "Live watcher test 2026-10-17 (`tools\\e2e\\games\\Watchdog.ps1`): simulated (stand-in process, the registry maps rewritten as the game stores them): 45/45. The in-game run waited for Steam's launch option question (answered by the kit since)." },
+        "tuning": { "note": "Nuclear Option: the game's calibration dead zone is not written." }
+      }
+    },
+    {
+      "id": "TinyCombatArena", "category": "combat", "doc": "tiny-combat-arena.md",
+      "bindFile": "registry `HKCU\\Software\\TinyCombat\\Arena` (Unity PlayerPrefs, Rewired maps per mapper tab)",
+      "listSource": "`sharedassets` of the game (Rewired input manager)", "listSize": "97",
+      "devices": "several",
+      "antiCheat": "none",
+      "test": { "level": "e2e", "result": "21/21", "date": "2026-10-11" },
+      "open": "devices Rewired recognizes (non-zero GUID); hat diagonals",
+      "cells": {
+        "tuning": { "note": "Tiny Combat Arena: Controls.cfg (curves) is not written." }
+      }
+    },
+    {
+      "id": "Wardogs", "title": "WARDOGS", "category": "combat", "doc": "wardogs.md",
+      "bindFile": "`%LOCALAPPDATA%\\Wardogs\\Saved\\Config\\WindowsClient\\GameUserSettings.ini` (Unreal ini, obfuscated field names)",
+      "listSource": "your `GameUserSettings.ini` + JoyPro's axes", "listSize": "28",
+      "devices": "identical devices collide",
+      "antiCheat": "not verified",
+      "test": { "level": "e2e", "result": "36/36", "date": "2026-10-11", "note": "settings and config watcher; binds 42/42 on 2026-10-10" },
+      "open": "the full action list; hat encoding; the response formula",
+      "cells": {
+        "watcher": { "note": "Live watcher test 2026-10-17 (`tools\\e2e\\games\\Watchdog.ps1`): simulated (stand-in process, the ini rewritten in the game's format): 45/45. The in-game run stopped at a season-end screen with in-game cash, which the test does not dismiss." }
+      }
+    },
+    {
+      "id": "GRebels", "title": "G-Rebels", "category": "combat", "doc": "g-rebels.md",
+      "bindFile": "`%LOCALAPPDATA%\\G_Rebels\\Saved\\SaveGames\\SaveOptions.sav` (GVAS, axis roles in place) + `EnhancedInputUserSettings.sav` (buttons)",
+      "listSource": "JoyPro's own table (axis roles, buttons)", "listSize": "7",
+      "devices": "channels 0-5",
+      "antiCheat": "none",
+      "test": { "level": "e2e", "result": "18/18", "date": "2026-10-11" },
+      "open": "hats, dead zone and sensitivity are not written; only Primary Fire of the buttons is confirmed in game",
+      "cells": {
+        "tuning": { "note": "G-Rebels: invert only." }
+      }
+    },
+
+    {
+      "id": "StarCitizen", "category": "space", "doc": "starcitizen.md",
+      "bindFile": "`LIVE\\user\\client\\0\\Profiles\\default\\actionmaps.xml` + `attributes.xml` (XML)",
+      "listSource": "`Data.p4k` (defaultProfile.xml) and your profiles", "listSize": "1103",
+      "devices": "8 joystick slots; the button limit is unknown (sources conflict)",
+      "antiCheat": "Easy Anti-Cheat (the in-game test stays in the main menu)",
+      "test": { "level": "e2e", "result": "54/54", "date": "2026-10-10", "note": "main menu: settings, binds and curves; release run 50/50" },
+      "open": "placement of `deviceoptions`; curve interpolation and exponent range; vibration versus DirectInput force feedback"
+    },
+    {
+      "id": "EliteDangerous", "title": "Elite Dangerous", "category": "space", "doc": "elite-dangerous.md",
+      "bindFile": "`%LOCALAPPDATA%\\Frontier Developments\\Elite Dangerous\\Options\\Bindings\\<preset>.4.x.binds` (XML)",
+      "listSource": "the stock and your `.binds`; `DeviceMappings.xml` of the install", "listSize": "201",
+      "devices": "about 32 buttons reported (button 41 worked on the development PC); 4 hats without diagonals",
+      "antiCheat": "none known",
+      "test": { "level": "e2e", "result": "23/23", "date": "2026-10-11", "note": "settings and config watcher; binds 50/50" },
+      "open": "identical devices (DeviceIndex) are skipped; a missing device voids the whole preset in the game"
+    },
+    {
+      "id": "X4", "title": "X4: Foundations", "category": "space", "doc": "x4.md",
+      "bindFile": "`Documents\\Egosoft\\X4\\<id>\\inputmap.xml` (XML) + the slots in `config.xml`",
+      "listSource": "`X4.exe` name tables and the `.cat/.dat` archives", "listSize": "128",
+      "devices": "8 device slots",
+      "antiCheat": "none known",
+      "test": { "level": "e2e", "result": "36/36", "date": "2026-10-11", "note": "settings and config watcher; binds 35/35" },
+      "open": "slots that are not pinned move; the `custom_modifier` markup is unknown",
+      "cells": {
+        "modifiers": { "note": "X4: Shift/Ctrl on keyboard binds; joystick binds take no modifier." },
+        "tuning": { "note": "X4: only the game-wide dead zone and inverts (Game settings), nothing per bind." }
+      }
+    },
+    {
+      "id": "doc:NoMansSky", "title": "No Man's Sky", "level": "documented", "category": "space", "doc": "no-mans-sky.md",
+      "devices": "no flight stick; pads through Steam Input",
+      "antiCheat": "none",
+      "open": "not installed; the pad binds live in Steam Input (nothing to write); a pad-layout list at most",
+      "cells": {
+        "xbox": { "note": "Recommended once supported: the virtual Xbox pad." }
+      }
+    },
+    {
+      "id": "doc:KSP1", "title": "Kerbal Space Program", "level": "documented", "category": "space", "doc": "kerbal-space-program.md",
+      "devices": "several (Unity: joysticks 1-8, about 20 buttons and 20 axes)",
+      "antiCheat": "none",
+      "open": "not installed; needs one real `settings.cfg` (Unity axis numbering)",
+      "cells": {
+        "vjoy": { "note": "A native candidate; vJoy would help against index shifts." }
+      }
+    },
+    {
+      "id": "doc:KSP2", "title": "Kerbal Space Program 2", "level": "documented", "category": "space", "doc": "kerbal-space-program.md",
+      "devices": "about one (\"a single two-axis stick\")",
+      "antiCheat": "none",
+      "open": "joystick support broken in the game, development stopped",
+      "cells": {
+        "xbox": { "note": "Recommended: the Xbox pad or the Inputbinder mod." }
+      }
+    },
+    {
+      "id": "doc:Squadrons", "title": "Star Wars: Squadrons", "level": "documented", "category": "space", "doc": "star-wars-squadrons.md",
+      "devices": "3-4 by name, unreliable",
+      "antiCheat": "Easy Anti-Cheat",
+      "open": "not installed; needs a Battlefield-style survey; the profile is synced by EA",
+      "cells": {
+        "vjoy": { "note": "Recommended once supported: one vJoy device." }
+      }
+    },
+    {
+      "id": "doc:XRebirth", "title": "X Rebirth", "level": "documented", "category": "space", "doc": "x4.md",
+      "antiCheat": "none known",
+      "open": "the same `inputmap.xml` words as X4, but the command list needs its own extraction"
+    },
+    {
+      "id": "doc:X3", "title": "X3 (Reunion, Terran Conflict, Albion Prelude)", "level": "documented", "category": "space", "doc": "x4.md",
+      "antiCheat": "none known",
+      "open": "file format unknown, another engine"
+    },
+
+    {
+      "id": "Arma3", "title": "Arma 3", "category": "military", "doc": "arma3.md",
+      "bindFile": "`Documents\\Arma 3\\<name>.Arma3Profile` (ParamFile text, numeric input codes)",
+      "listSource": "the game config (`bin.pbo` > `config.bin`) with the English names of `languagecore`; no first start needed", "listSize": "51",
+      "devices": "up to 256 buttons, 8 axes, one hat that the file can encode (inferred)",
+      "antiCheat": "BattlEye (the in-game test starts without it)",
+      "test": { "level": "e2e", "result": "25/25", "date": "2026-10-10", "note": "settings and binds; config watcher run 2026-10-11: 29/30, all watcher steps pass" },
+      "open": "joystick modifiers unconfirmed; one dead zone read back as 0.07 in the watcher run"
+    },
+    {
+      "id": "Arma2", "title": "Arma 2", "category": "military", "doc": "arma2.md",
+      "bindFile": "`Documents\\ArmA 2\\<name>.ArmA2Profile` (ParamFile text)",
+      "listSource": "`Dta\\bin.pbo` + stringtable", "listSize": "66",
+      "antiCheat": "none known",
+      "test": { "level": "e2e", "result": "17/17", "date": "2026-10-10" },
+      "open": "combos and the collective after a real first start; no merged full axis"
+    },
+    {
+      "id": "Arma2OA", "title": "Arma 2: Operation Arrowhead", "category": "military", "doc": "arma2.md",
+      "bindFile": "`Documents\\ArmA 2\\<name>.ArmA2OAProfile` (ParamFile text)",
+      "listSource": "`Expansion\\dta\\bin.pbo` + stringtable", "listSize": "68",
+      "antiCheat": "BattlEye (`ArmA2OA_BE`, multiplayer)",
+      "test": { "level": "e2e", "result": "17/17", "date": "2026-10-05" },
+      "open": "the direction of the \"more sensitive\" slider"
+    },
+    {
+      "id": "ArmaReforger", "category": "military", "doc": "arma-reforger.md",
+      "bindFile": "JoyPro's own preset `...\\customInputConfigs\\JoyPro.conf` (Enfusion text) + device order in `ReforgerEngineSettings.conf`",
+      "listSource": "the game's `.pak` files and localization", "listSize": "15",
+      "devices": "4 joysticks at most (the first four that send input)",
+      "antiCheat": "BattlEye (`ArmaReforger_BE`)",
+      "test": { "level": "partial", "date": "2026-10-05", "note": "Arma Reforger: the settings menus were explored in game; no scored run, the export is not yet checked in game." },
+      "open": "the export in game; the settings format; vJoy did not appear in the game in four starts",
+      "cells": {
+        "tuning": { "mark": "◐", "note": "Arma Reforger: multiplier and invert only; no dead zone or curve (the format is unknown)." },
+        "vjoy": { "mark": "◐", "note": "Arma Reforger: vJoy did not appear in the game in four starts; suggested only for more than four devices." }
+      }
+    },
+    {
+      "id": "doc:Squad", "title": "Squad", "level": "documented", "category": "military", "doc": "one-device-games.md",
+      "devices": "one merged device (v10.6 beta adds several HOTAS devices)",
+      "antiCheat": "Easy Anti-Cheat",
+      "open": "wait for 10.6"
+    },
+    {
+      "id": "doc:HellLetLoose", "title": "Hell Let Loose", "level": "documented", "category": "military", "doc": "one-device-games.md",
+      "antiCheat": "Easy Anti-Cheat",
+      "open": "nothing flyable (only artillery and MG axes): not planned"
+    },
+
+    {
+      "id": "AceCombat7", "title": "ACE COMBAT 7: Skies Unknown", "category": "arcade", "doc": "ace-combat.md",
+      "bindFile": "`%LOCALAPPDATA%\\BANDAI NAMCO Entertainment\\ACE COMBAT 7\\Config\\Input.ini` (ini, one section per device model)",
+      "listSource": "the `Input.ini` the game writes (start the game once)", "listSize": "after the game's first start",
+      "devices": "any number; devices of the same model share one section (the game averages them)",
+      "antiCheat": "none",
+      "test": { "level": "e2e", "result": "19/19", "date": "2026-10-12", "note": "without input: the file the game writes and an export that survives its rewrite; menus and flight not yet" },
+      "open": "menus and a flight in game",
+      "cells": {
+        "tuning": { "note": "ACE COMBAT 7: invert only (`:R`)." }
+      }
+    },
+    {
+      "id": "AceCombat8", "title": "ACE COMBAT 8: Wings of Theve", "category": "arcade", "doc": "ace-combat.md",
+      "bindFile": "`...\\ACE COMBAT 8\\Saved\\SaveGames\\System.sav` (GVAS with a checksum): read only",
+      "listSource": "the pad keys in `System.sav` + JoyPro's own stick table", "listSize": "13",
+      "antiCheat": "Easy Anti-Cheat",
+      "test": { "level": "e2e", "result": "20/20", "date": "2026-10-11", "note": "virtual Xbox pad, menus only" },
+      "open": "the pad buttons of flares and views; a flight",
+      "cells": {
+        "import": { "mark": "◐", "note": "ACE COMBAT 8: only the pad keys set in the game are read (it stores no joystick binds)." },
+        "export": { "mark": "◐", "note": "ACE COMBAT 8: JoyPro writes nothing (checksummed settings, Easy Anti-Cheat); your binds reach the game through the virtual Xbox pad." },
+        "keyboard": { "mark": "—", "note": "ACE COMBAT 8: nothing is written." },
+        "modifiers": { "mark": "—", "note": "ACE COMBAT 8: nothing is written." },
+        "watcher": { "mark": "—", "note": "ACE COMBAT 8: nothing is written, so there is nothing to watch." },
+        "tuning": { "note": "Virtual pad games: invert happens on the pad axis in JoyPro's forwarder." }
+      }
+    },
+    {
+      "id": "doc:AceCombatZero", "title": "ACE COMBAT Zero (with ACE COMBAT 8)", "level": "documented", "category": "arcade", "doc": "one-device-games.md",
+      "antiCheat": "unknown",
+      "open": "not researched",
+      "cells": {
+        "xbox": { "note": "Try the virtual Xbox pad of ACE COMBAT 8." }
+      }
+    },
+    {
+      "id": "doc:AceCombatAH", "title": "ACE COMBAT Assault Horizon Enhanced Edition", "level": "documented", "category": "arcade", "doc": "one-device-games.md",
+      "devices": "no joystick (XInput only)",
+      "antiCheat": "none known",
+      "open": "delisted",
+      "cells": {
+        "xbox": { "note": "Recommended: the virtual Xbox pad." }
+      }
+    },
+    {
+      "id": "ProjectWingman", "category": "arcade", "doc": "project-wingman.md",
+      "bindFile": "`%LOCALAPPDATA%\\ProjectWingman\\Saved\\Config\\WindowsNoEditor\\Input.ini` (Unreal ini, per device name and place) + curves and dead zones in `savegame.sav`",
+      "listSource": "`DefaultInput.ini` of the game's pak + your `Input.ini`", "listSize": "from the game's pak",
+      "devices": "several (all connected devices are listed); hats are not bindable",
+      "antiCheat": "none",
+      "test": { "level": "partial", "result": "19/25", "date": "2026-10-12", "note": "Project Wingman: export and import seen in game; one full run of the test is pending (19/25 and 17/24 so far)." },
+      "open": "one full in-game run; the device number is the reversed DirectInput order (export again after a hardware change)"
+    },
+    {
+      "id": "HLLVietnam", "title": "Hell Let Loose: Vietnam", "category": "arcade", "doc": "hll-vietnam.md",
+      "bindFile": "`%LOCALAPPDATA%\\HLLVietnam\\Saved\\SaveGames\\EnhancedInputUserSettings.sav` (GVAS; keyboard keys only)",
+      "listSource": "JoyPro's own table of the three pad layouts and the pilot keys; the game's own files only with an Oodle library (another game's after your yes)", "listSize": "28",
+      "antiCheat": "Easy Anti-Cheat",
+      "test": { "level": "e2e", "result": "19/19", "date": "2026-10-11", "note": "virtual Xbox pad, menus only" },
+      "open": "a flight with the pad; yaw and look overlap in pad layouts A and B",
+      "cells": {
+        "import": { "mark": "◐", "note": "Hell Let Loose: Vietnam reads no joystick: JoyPro reads and writes its keyboard keys; the pad layout is the game's." },
+        "export": { "mark": "◐", "note": "Hell Let Loose: Vietnam reads no joystick: JoyPro reads and writes its keyboard keys; the pad layout is the game's." },
+        "tuning": { "note": "Virtual pad games: invert happens on the pad axis in JoyPro's forwarder." }
+      }
+    },
+    {
+      "id": "Battlefield6", "title": "Battlefield 6", "category": "arcade", "doc": "battlefield.md",
+      "bindFile": "`Documents\\Battlefield 6\\settings\\steam\\PROFSAVEbf6mp_profile` + `PROFSAVE_profile` (text, `GstKeyBinding`)",
+      "listSource": "your profile", "listSize": "65",
+      "devices": "about 18 buttons seen (36 in the game's list); 4-way hats; vJoy without Rx/Ry (the game takes such a device for a pad)",
+      "antiCheat": "EA Javelin (kernel); HidHide is reportedly seen through: unplug the real devices",
+      "test": { "level": "files", "note": "installed, menus explored; the joystick survey needs a reboot window" },
+      "open": "the live joystick survey; until then joystick binds are not written",
+      "cells": {
+        "import": { "mark": "◐", "note": "Battlefield: keyboard keys only until the live survey confirms the game's joystick numbering." },
+        "export": { "mark": "◐", "note": "Battlefield: keyboard keys only until the live survey confirms the game's joystick numbering." },
+        "tuning": { "note": "Battlefield: invert only (swapped halves)." }
+      }
+    },
+    {
+      "id": "Battlefield2042", "title": "Battlefield 2042", "category": "arcade", "doc": "battlefield.md",
+      "bindFile": "`Documents\\Battlefield 2042\\settings\\PROFSAVE_profile` (text)",
+      "listSource": "your profile",
+      "devices": "as Battlefield 6",
+      "antiCheat": "EA anti-cheat",
+      "test": { "level": "blind", "note": "not installed" },
+      "open": "the same survey once it is installed",
+      "cells": {
+        "import": { "mark": "◐", "note": "Battlefield: keyboard keys only until the live survey confirms the game's joystick numbering." },
+        "export": { "mark": "◐", "note": "Battlefield: keyboard keys only until the live survey confirms the game's joystick numbering." },
+        "tuning": { "note": "Battlefield: invert only (swapped halves)." }
+      }
+    },
+    {
+      "id": "doc:BattlefieldV", "title": "Battlefield V", "level": "documented", "category": "arcade", "doc": "battlefield.md",
+      "devices": "one joystick",
+      "antiCheat": "EA anti-cheat",
+      "open": "a server-synced `_synced` profile with its own input numbering: needs its own survey",
+      "cells": { "vjoy": { "note": "Recommended once supported: one vJoy device." } }
+    },
+    {
+      "id": "doc:Battlefield1", "title": "Battlefield 1", "level": "documented", "category": "arcade", "doc": "battlefield.md",
+      "devices": "one joystick",
+      "antiCheat": "EA anti-cheat",
+      "open": "the same scheme as Battlefield V; not installed",
+      "cells": { "vjoy": { "note": "Recommended once supported: one vJoy device." } }
+    },
+    {
+      "id": "doc:Battlefield4", "title": "Battlefield 4", "level": "documented", "category": "arcade", "doc": "battlefield.md",
+      "devices": "one joystick (joystick and pad share one type)",
+      "antiCheat": "PunkBuster / FairFight",
+      "open": "not installed; the scheme is known from a community editor only",
+      "cells": { "vjoy": { "note": "Recommended once supported: one vJoy device." } }
+    },
+    {
+      "id": "doc:BattlefieldHardline", "title": "Battlefield Hardline", "level": "documented", "category": "arcade", "doc": "battlefield.md",
+      "devices": "one joystick",
+      "antiCheat": "PunkBuster / FairFight",
+      "open": "not installed",
+      "cells": { "vjoy": { "note": "Recommended once supported: one vJoy device." } }
+    },
+    {
+      "id": "doc:Battlefield3", "title": "Battlefield 3", "level": "documented", "category": "arcade", "doc": "battlefield.md",
+      "devices": "one joystick",
+      "antiCheat": "PunkBuster",
+      "open": "not installed",
+      "cells": { "vjoy": { "note": "Recommended once supported: one vJoy device." } }
+    },
+    {
+      "id": "doc:Battlefield2", "title": "Battlefield 2 / 2142", "level": "documented", "category": "arcade", "doc": "battlefield.md",
+      "devices": "one joystick (by device index)",
+      "antiCheat": "PunkBuster",
+      "open": "the old `Controls.con` with a device index",
+      "cells": { "vjoy": { "note": "Recommended once supported: one vJoy device." } }
+    },
+    {
+      "id": "doc:RisingStorm2", "title": "Rising Storm 2: Vietnam", "level": "documented", "category": "arcade", "doc": "rising-storm-2.md",
+      "devices": "no joystick (XInput only)",
+      "antiCheat": "Easy Anti-Cheat",
+      "open": "not installed; needs a real `ROInput.ini` (Unreal 3 trigger names); plan: a `Pad_*` list and `XboxTypeS_*` binds",
+      "cells": { "xbox": { "note": "Recommended once supported: the virtual Xbox pad." } }
+    },
+    {
+      "id": "doc:Hawx", "title": "H.A.W.X", "level": "documented", "category": "arcade", "doc": "hawx.md",
+      "devices": "one joystick",
+      "antiCheat": "none known",
+      "open": "the binary profile is not decoded",
+      "cells": { "vjoy": { "note": "Recommended: one vJoy device, binds made in the game." } }
+    },
+    {
+      "id": "doc:Hawx2", "title": "H.A.W.X 2", "level": "documented", "category": "arcade", "doc": "hawx.md",
+      "devices": "one joystick",
+      "antiCheat": "Ubisoft DRM only",
+      "open": "installed, but needs Ubisoft Connect with a login and a first start; at most the `settings.ini` dead zone could be set",
+      "cells": { "vjoy": { "note": "Recommended: one vJoy device, binds made in the game." } }
+    }
+  ]
+}

@@ -1,0 +1,2048 @@
+{
+ "vendor": "Honeycomb Aeronautical",
+ "officialHosts": [
+  "flyhoneycomb.com"
+ ],
+ "devices": [
+  {
+   "id": "honeycomb-alpha-flight-controls",
+   "name": "Honeycomb Alpha Flight Controls (Yoke + Switch Panel)",
+   "kind": "yoke",
+   "hand": "either",
+   "identify": {
+    "vidPids": [
+     "294B:1900",
+     "294B:0102"
+    ],
+    "names": [
+     "Alpha Flight Controls",
+     "Honeycomb Alpha Flight Controls",
+     "Honeycomb Alpha Yoke",
+     "Honeycomb Alpha Flight Control"
+    ],
+    "note": "Yoke and switch panel are one USB device. VID:PID 294B:1900 'Alpha Flight Controls' per the linux-hardware.org USB database. Each panel switch reports one button per position. The older entry 294B:0102 was unverified and is probably wrong. Rocker 'up' = forward. yoke.button.2, yoke.rocker.3/4 (horizontal rockers listed as yoke.switch.3/4 left/right) and panel.toggle.4 'LIGHTS' (the panel has five separate light switches, toggle.6-10) stay without input. Button numbering not confirmed by public documentation (originally derived from a local game configuration file); verify on a real device."
+   },
+   "image": "https://flyhoneycomb.com/cdn/shop/files/SB003011_ALPHAFLIGHTCONTROLS_1.jpg",
+   "productUrl": "https://flyhoneycomb.com/products/alpha-flight-controls",
+   "sources": [
+    "https://flyhoneycomb.com/products/alpha-flight-controls",
+    "https://linux-hardware.org/?view=search&vendorid=294b"
+   ],
+   "confidence": "low",
+   "axes": [
+    {
+     "control": "yoke.axis.roll",
+     "input": "JOY_X"
+    },
+    {
+     "control": "yoke.axis.pitch",
+     "input": "JOY_Y"
+    }
+   ],
+   "controls": [
+    {
+     "control": "yoke.button.1",
+     "input": "JOY_BTN2",
+     "type": "momentary",
+     "label": "Left handle white button (top, next to the hat)"
+    },
+    {
+     "control": "yoke.button.2",
+     "type": "momentary",
+     "label": "Left handle button 2"
+    },
+    {
+     "control": "yoke.button.3",
+     "input": "JOY_BTN1",
+     "type": "momentary",
+     "label": "Left handle white trigger (back side)"
+    },
+    {
+     "control": "yoke.rocker.1.up",
+     "input": "JOY_BTN6",
+     "type": "momentary",
+     "label": "Left handle rocker A forward"
+    },
+    {
+     "control": "yoke.rocker.1.down",
+     "input": "JOY_BTN5",
+     "type": "momentary",
+     "label": "Left handle rocker A aft"
+    },
+    {
+     "control": "yoke.rocker.2.up",
+     "input": "JOY_BTN8",
+     "type": "momentary",
+     "label": "Left handle rocker B forward"
+    },
+    {
+     "control": "yoke.rocker.2.down",
+     "input": "JOY_BTN7",
+     "type": "momentary",
+     "label": "Left handle rocker B aft"
+    },
+    {
+     "control": "yoke.hat.1.up",
+     "input": "JOY_BTN_POV1_U",
+     "type": "momentary",
+     "label": "Left 8-way POV"
+    },
+    {
+     "control": "yoke.rocker.3.up",
+     "type": "momentary",
+     "label": "Right horizontal rocker 1"
+    },
+    {
+     "control": "yoke.rocker.3.down",
+     "type": "momentary"
+    },
+    {
+     "control": "yoke.rocker.4.up",
+     "type": "momentary",
+     "label": "Right horizontal rocker 2"
+    },
+    {
+     "control": "yoke.rocker.4.down",
+     "type": "momentary"
+    },
+    {
+     "control": "yoke.button.4",
+     "input": "JOY_BTN3",
+     "type": "momentary",
+     "label": "Right handle white button"
+    },
+    {
+     "control": "yoke.button.5",
+     "input": "JOY_BTN4",
+     "type": "momentary",
+     "label": "Right handle red button"
+    },
+    {
+     "control": "panel.toggle.1.up",
+     "input": "JOY_BTN15",
+     "type": "latched",
+     "label": "MASTER BAT ON"
+    },
+    {
+     "control": "panel.toggle.2.up",
+     "input": "JOY_BTN13",
+     "type": "latched",
+     "label": "MASTER ALT ON"
+    },
+    {
+     "control": "panel.toggle.3.up",
+     "input": "JOY_BTN17",
+     "type": "latched",
+     "label": "AVIONICS BUS 1 ON"
+    },
+    {
+     "control": "panel.toggle.4.up",
+     "type": "latched",
+     "label": "LIGHTS"
+    },
+    {
+     "control": "panel.selector.1.pos.1",
+     "input": "JOY_BTN31",
+     "type": "latched",
+     "label": "IGNITION OFF"
+    },
+    {
+     "control": "panel.selector.1.pos.5",
+     "input": "JOY_BTN35",
+     "type": "latched",
+     "label": "IGNITION START"
+    },
+    {
+     "control": "yoke.hat.1.right",
+     "input": "JOY_BTN_POV1_R",
+     "type": "momentary",
+     "label": "Left 8-way POV"
+    },
+    {
+     "control": "yoke.hat.1.down",
+     "input": "JOY_BTN_POV1_D",
+     "type": "momentary",
+     "label": "Left 8-way POV"
+    },
+    {
+     "control": "yoke.hat.1.left",
+     "input": "JOY_BTN_POV1_L",
+     "type": "momentary",
+     "label": "Left 8-way POV"
+    },
+    {
+     "control": "yoke.switch.3.left",
+     "input": "JOY_BTN9",
+     "type": "momentary",
+     "label": "Right handle horizontal rocker 1 left"
+    },
+    {
+     "control": "yoke.switch.3.right",
+     "input": "JOY_BTN10",
+     "type": "momentary",
+     "label": "Right handle horizontal rocker 1 right"
+    },
+    {
+     "control": "yoke.switch.4.left",
+     "input": "JOY_BTN11",
+     "type": "momentary",
+     "label": "Right handle horizontal rocker 2 left"
+    },
+    {
+     "control": "yoke.switch.4.right",
+     "input": "JOY_BTN12",
+     "type": "momentary",
+     "label": "Right handle horizontal rocker 2 right"
+    },
+    {
+     "control": "panel.toggle.1.down",
+     "input": "JOY_BTN16",
+     "type": "latched",
+     "label": "MASTER BAT OFF"
+    },
+    {
+     "control": "panel.toggle.2.down",
+     "input": "JOY_BTN14",
+     "type": "latched",
+     "label": "MASTER ALT OFF"
+    },
+    {
+     "control": "panel.toggle.3.down",
+     "input": "JOY_BTN18",
+     "type": "latched",
+     "label": "AVIONICS BUS 1 OFF"
+    },
+    {
+     "control": "panel.toggle.5.up",
+     "input": "JOY_BTN19",
+     "type": "latched",
+     "label": "AVIONICS BUS 2 ON"
+    },
+    {
+     "control": "panel.toggle.5.down",
+     "input": "JOY_BTN20",
+     "type": "latched",
+     "label": "AVIONICS BUS 2 OFF"
+    },
+    {
+     "control": "panel.toggle.6.up",
+     "input": "JOY_BTN21",
+     "type": "latched",
+     "label": "BCN ON"
+    },
+    {
+     "control": "panel.toggle.6.down",
+     "input": "JOY_BTN22",
+     "type": "latched",
+     "label": "BCN OFF"
+    },
+    {
+     "control": "panel.toggle.7.up",
+     "input": "JOY_BTN23",
+     "type": "latched",
+     "label": "LAND ON"
+    },
+    {
+     "control": "panel.toggle.7.down",
+     "input": "JOY_BTN24",
+     "type": "latched",
+     "label": "LAND OFF"
+    },
+    {
+     "control": "panel.toggle.8.up",
+     "input": "JOY_BTN25",
+     "type": "latched",
+     "label": "TAXI ON"
+    },
+    {
+     "control": "panel.toggle.8.down",
+     "input": "JOY_BTN26",
+     "type": "latched",
+     "label": "TAXI OFF"
+    },
+    {
+     "control": "panel.toggle.9.up",
+     "input": "JOY_BTN27",
+     "type": "latched",
+     "label": "NAV ON"
+    },
+    {
+     "control": "panel.toggle.9.down",
+     "input": "JOY_BTN28",
+     "type": "latched",
+     "label": "NAV OFF"
+    },
+    {
+     "control": "panel.toggle.10.up",
+     "input": "JOY_BTN29",
+     "type": "latched",
+     "label": "STROBE ON"
+    },
+    {
+     "control": "panel.toggle.10.down",
+     "input": "JOY_BTN30",
+     "type": "latched",
+     "label": "STROBE OFF"
+    },
+    {
+     "control": "panel.selector.1.pos.2",
+     "input": "JOY_BTN32",
+     "type": "latched",
+     "label": "IGNITION R"
+    },
+    {
+     "control": "panel.selector.1.pos.3",
+     "input": "JOY_BTN33",
+     "type": "latched",
+     "label": "IGNITION L"
+    },
+    {
+     "control": "panel.selector.1.pos.4",
+     "input": "JOY_BTN34",
+     "type": "latched",
+     "label": "IGNITION BOTH"
+    }
+   ]
+  },
+  {
+   "id": "honeycomb-bravo-throttle-quadrant",
+   "name": "Honeycomb Bravo Throttle Quadrant",
+   "kind": "quadrant",
+   "hand": "left",
+   "identify": {
+    "vidPids": [
+     "294B:1901"
+    ],
+    "names": [
+     "Bravo Throttle Quadrant",
+     "Honeycomb Bravo Throttle Quadrant"
+    ],
+    "note": "48 buttons, 6 axes. Numbering from the Honeycomb X-Plane configuration sheet (its \"#N\" = DirectInput 1-based button). A second community list (blogofant) differs for several buttons; the manufacturer sheet was used. Axis order per that sheet: X=lever 2, Y=lever 1, Z=lever 5, Rx=lever 4, Ry=lever 3, Rz=lever 6 (lever 1 = spoiler, numbered left to right). Annunciator LEDs are outputs. PID 294B:1901 from community lists."
+   },
+   "image": "https://flyhoneycomb.com/cdn/shop/files/HC003042_BravoThrottleQuadrant_1.jpg",
+   "productUrl": "https://flyhoneycomb.com/products/bravo-throttle-quadrant",
+   "sources": [
+    "https://ipadpilotnews-images.s3.us-east-2.amazonaws.com/wp-content/uploads/2022/01/07113919/10503-Honeycomb-Bravo-Configuration-X-Plane.pdf",
+    "https://www.blogofant.de/en/technology/honeycomb-bravo-throttle-quadrant-key-maps-button-maps/",
+    "https://flyhoneycomb.com/products/bravo-throttle-quadrant"
+   ],
+   "confidence": "medium",
+   "axes": [
+    {
+     "control": "quadrant.axis.lever.1",
+     "input": "JOY_Y"
+    },
+    {
+     "control": "quadrant.axis.lever.2",
+     "input": "JOY_X"
+    },
+    {
+     "control": "quadrant.axis.lever.3",
+     "input": "JOY_RY"
+    },
+    {
+     "control": "quadrant.axis.lever.4",
+     "input": "JOY_RX"
+    },
+    {
+     "control": "quadrant.axis.lever.5",
+     "input": "JOY_Z"
+    },
+    {
+     "control": "quadrant.axis.lever.6",
+     "input": "JOY_RZ"
+    }
+   ],
+   "controls": [
+    {
+     "input": "JOY_BTN1",
+     "control": "panel.button.1",
+     "type": "momentary",
+     "label": "HDG"
+    },
+    {
+     "input": "JOY_BTN2",
+     "control": "panel.button.2",
+     "type": "momentary",
+     "label": "NAV"
+    },
+    {
+     "input": "JOY_BTN3",
+     "control": "panel.button.3",
+     "type": "momentary",
+     "label": "APR"
+    },
+    {
+     "input": "JOY_BTN4",
+     "control": "panel.button.4",
+     "type": "momentary",
+     "label": "REV"
+    },
+    {
+     "input": "JOY_BTN5",
+     "control": "panel.button.5",
+     "type": "momentary",
+     "label": "ALT"
+    },
+    {
+     "input": "JOY_BTN6",
+     "control": "panel.button.6",
+     "type": "momentary",
+     "label": "VS"
+    },
+    {
+     "input": "JOY_BTN7",
+     "control": "panel.button.7",
+     "type": "momentary",
+     "label": "IAS"
+    },
+    {
+     "input": "JOY_BTN8",
+     "control": "panel.button.8",
+     "type": "momentary",
+     "label": "AUTOPILOT"
+    },
+    {
+     "input": "JOY_BTN9",
+     "control": "quadrant.button.1",
+     "type": "momentary",
+     "label": "Lever 2 TOGA"
+    },
+    {
+     "input": "JOY_BTN10",
+     "control": "quadrant.button.2",
+     "type": "momentary",
+     "label": "Lever 3 TOGA"
+    },
+    {
+     "input": "JOY_BTN11",
+     "control": "quadrant.button.3",
+     "type": "momentary",
+     "label": "Lever 4 TOGA"
+    },
+    {
+     "input": "JOY_BTN12",
+     "control": "quadrant.button.4",
+     "type": "momentary",
+     "label": "Lever 5 TOGA"
+    },
+    {
+     "input": "JOY_BTN13",
+     "control": "panel.rotary.1.cw",
+     "type": "rotary",
+     "label": "AP dial INCR"
+    },
+    {
+     "input": "JOY_BTN14",
+     "control": "panel.rotary.1.ccw",
+     "type": "rotary",
+     "label": "AP dial DECR"
+    },
+    {
+     "input": "JOY_BTN15",
+     "control": "panel.lever.flaps.down",
+     "type": "momentary",
+     "label": "FLAP lever down"
+    },
+    {
+     "input": "JOY_BTN16",
+     "control": "panel.lever.flaps.up",
+     "type": "momentary",
+     "label": "FLAP lever up"
+    },
+    {
+     "input": "JOY_BTN17",
+     "control": "panel.selector.1.pos.1",
+     "type": "latched",
+     "label": "IAS"
+    },
+    {
+     "input": "JOY_BTN18",
+     "control": "panel.selector.1.pos.2",
+     "type": "latched",
+     "label": "CRS"
+    },
+    {
+     "input": "JOY_BTN19",
+     "control": "panel.selector.1.pos.3",
+     "type": "latched",
+     "label": "HDG"
+    },
+    {
+     "input": "JOY_BTN20",
+     "control": "panel.selector.1.pos.4",
+     "type": "latched",
+     "label": "VS"
+    },
+    {
+     "input": "JOY_BTN21",
+     "control": "panel.selector.1.pos.5",
+     "type": "latched",
+     "label": "ALT"
+    },
+    {
+     "input": "JOY_BTN22",
+     "control": "panel.rotary.2.ccw",
+     "type": "rotary",
+     "label": "TRIM WHEEL nose down"
+    },
+    {
+     "input": "JOY_BTN23",
+     "control": "panel.rotary.2.cw",
+     "type": "rotary",
+     "label": "TRIM WHEEL nose up"
+    },
+    {
+     "input": "JOY_BTN24",
+     "control": "quadrant.detent.1",
+     "type": "momentary",
+     "label": "Lever 1 detent"
+    },
+    {
+     "input": "JOY_BTN25",
+     "control": "quadrant.detent.2",
+     "type": "momentary",
+     "label": "Lever 2 detent"
+    },
+    {
+     "input": "JOY_BTN26",
+     "control": "quadrant.detent.3",
+     "type": "momentary",
+     "label": "Lever 3 detent"
+    },
+    {
+     "input": "JOY_BTN27",
+     "control": "quadrant.detent.4",
+     "type": "momentary",
+     "label": "Lever 4 detent"
+    },
+    {
+     "input": "JOY_BTN28",
+     "control": "quadrant.detent.5",
+     "type": "momentary",
+     "label": "Lever 5 detent"
+    },
+    {
+     "input": "JOY_BTN29",
+     "control": "quadrant.button.5",
+     "type": "momentary",
+     "label": "Lever 1 TOGA"
+    },
+    {
+     "input": "JOY_BTN30",
+     "control": "quadrant.button.6",
+     "type": "momentary",
+     "label": "Lever 3 commercial TOGA"
+    },
+    {
+     "input": "JOY_BTN31",
+     "control": "panel.lever.gear.up",
+     "type": "momentary",
+     "label": "GEAR UP"
+    },
+    {
+     "input": "JOY_BTN32",
+     "control": "panel.lever.gear.down",
+     "type": "momentary",
+     "label": "GEAR DOWN"
+    },
+    {
+     "input": "JOY_BTN33",
+     "control": "quadrant.detent.6",
+     "type": "momentary",
+     "label": "Lever 6 detent"
+    },
+    {
+     "input": "JOY_BTN34",
+     "control": "panel.toggle.1.up",
+     "type": "latched",
+     "label": "Switch 1 up"
+    },
+    {
+     "input": "JOY_BTN35",
+     "control": "panel.toggle.1.down",
+     "type": "latched",
+     "label": "Switch 1 down"
+    },
+    {
+     "input": "JOY_BTN36",
+     "control": "panel.toggle.2.up",
+     "type": "latched",
+     "label": "Switch 2 up"
+    },
+    {
+     "input": "JOY_BTN37",
+     "control": "panel.toggle.2.down",
+     "type": "latched",
+     "label": "Switch 2 down"
+    },
+    {
+     "input": "JOY_BTN38",
+     "control": "panel.toggle.3.up",
+     "type": "latched",
+     "label": "Switch 3 up"
+    },
+    {
+     "input": "JOY_BTN39",
+     "control": "panel.toggle.3.down",
+     "type": "latched",
+     "label": "Switch 3 down"
+    },
+    {
+     "input": "JOY_BTN40",
+     "control": "panel.toggle.4.up",
+     "type": "latched",
+     "label": "Switch 4 up"
+    },
+    {
+     "input": "JOY_BTN41",
+     "control": "panel.toggle.4.down",
+     "type": "latched",
+     "label": "Switch 4 down"
+    },
+    {
+     "input": "JOY_BTN42",
+     "control": "panel.toggle.5.up",
+     "type": "latched",
+     "label": "Switch 5 up"
+    },
+    {
+     "input": "JOY_BTN43",
+     "control": "panel.toggle.5.down",
+     "type": "latched",
+     "label": "Switch 5 down"
+    },
+    {
+     "input": "JOY_BTN44",
+     "control": "panel.toggle.6.up",
+     "type": "latched",
+     "label": "Switch 6 up"
+    },
+    {
+     "input": "JOY_BTN45",
+     "control": "panel.toggle.6.down",
+     "type": "latched",
+     "label": "Switch 6 down"
+    },
+    {
+     "input": "JOY_BTN46",
+     "control": "panel.toggle.7.up",
+     "type": "latched",
+     "label": "Switch 7 up"
+    },
+    {
+     "input": "JOY_BTN47",
+     "control": "panel.toggle.7.down",
+     "type": "latched",
+     "label": "Switch 7 down"
+    },
+    {
+     "input": "JOY_BTN48",
+     "control": "quadrant.button.7",
+     "type": "momentary",
+     "label": "Lever 4 commercial TOGA"
+    }
+   ]
+  },
+  {
+   "id": "honeycomb-charlie-rudder-pedals",
+   "name": "Honeycomb Charlie Rudder Pedals",
+   "kind": "pedals",
+   "hand": "none",
+   "identify": {
+    "vidPids": [
+     "294B:1903"
+    ],
+    "names": [
+     "Charlie Rudder Pedals",
+     "Honeycomb Charlie Rudder Pedals"
+    ],
+    "note": "Rudder + left/right toe brakes (Hall sensors). Axis order (DirectInput names) not verified. VID:PID 294B:1903 not confirmed by public documentation (originally derived from a local game configuration file); verify on a real device."
+   },
+   "image": "https://flyhoneycomb.com/cdn/shop/files/HC003073_CHARLIERUDDERPEDALS_1.jpg",
+   "productUrl": "https://flyhoneycomb.com/products/charlie-rudder-pedals",
+   "sources": [
+    "https://flyhoneycomb.com/products/charlie-rudder-pedals"
+   ],
+   "confidence": "low",
+   "axes": [
+    {
+     "control": "pedals.axis.rudder"
+    },
+    {
+     "control": "pedals.axis.brake_left"
+    },
+    {
+     "control": "pedals.axis.brake_right"
+    }
+   ],
+   "controls": []
+  },
+  {
+   "id": "honeycomb-alpha-flight-controls-lite",
+   "name": "Honeycomb Alpha Flight Controls Lite",
+   "kind": "yoke",
+   "hand": "either",
+   "identify": {
+    "vidPids": [
+     "294B:190C"
+    ],
+    "note": "Yoke without switch panel. Axes: pitch and roll (DirectInput names not known). VID:PID 294B:190C not publicly confirmed either. Button numbering not confirmed by public documentation (originally derived from a local game configuration file); verify on a real device."
+   },
+   "image": "https://flyhoneycomb.com/cdn/shop/files/HC003851_AlphaFlightControlsLite_2.jpg",
+   "productUrl": "https://flyhoneycomb.com/products/alpha-flight-controls-lite",
+   "sources": [
+    "https://flyhoneycomb.com/products/alpha-flight-controls-lite"
+   ],
+   "confidence": "low",
+   "axes": [
+    {
+     "control": "yoke.axis.roll"
+    },
+    {
+     "control": "yoke.axis.pitch"
+    }
+   ],
+   "controls": [
+    {
+     "control": "yoke.button.1",
+     "input": "JOY_BTN1",
+     "type": "momentary",
+     "label": "PTT"
+    },
+    {
+     "control": "yoke.button.2",
+     "input": "JOY_BTN2",
+     "type": "momentary",
+     "label": "White left button"
+    },
+    {
+     "control": "yoke.button.3",
+     "input": "JOY_BTN3",
+     "type": "momentary",
+     "label": "White right button"
+    },
+    {
+     "control": "yoke.button.4",
+     "input": "JOY_BTN4",
+     "type": "momentary",
+     "label": "AP disconnect"
+    },
+    {
+     "control": "yoke.rocker.1.up",
+     "input": "JOY_BTN6",
+     "type": "momentary",
+     "label": "Left momentary rocker up"
+    },
+    {
+     "control": "yoke.rocker.1.down",
+     "input": "JOY_BTN5",
+     "type": "momentary",
+     "label": "Left momentary rocker down"
+    },
+    {
+     "control": "yoke.switch.2.left",
+     "input": "JOY_BTN9",
+     "type": "momentary",
+     "label": "Right momentary rocker left"
+    },
+    {
+     "control": "yoke.switch.2.right",
+     "input": "JOY_BTN10",
+     "type": "momentary",
+     "label": "Right momentary rocker right"
+    },
+    {
+     "control": "yoke.hat.1.up",
+     "input": "JOY_BTN_POV1_U",
+     "type": "momentary",
+     "label": "8-way POV hat"
+    },
+    {
+     "control": "yoke.hat.1.right",
+     "input": "JOY_BTN_POV1_R",
+     "type": "momentary",
+     "label": "8-way POV hat"
+    },
+    {
+     "control": "yoke.hat.1.down",
+     "input": "JOY_BTN_POV1_D",
+     "type": "momentary",
+     "label": "8-way POV hat"
+    },
+    {
+     "control": "yoke.hat.1.left",
+     "input": "JOY_BTN_POV1_L",
+     "type": "momentary",
+     "label": "8-way POV hat"
+    }
+   ]
+  },
+  {
+   "id": "honeycomb-bravo-throttle-quadrant-lite",
+   "name": "Honeycomb Bravo Throttle Quadrant Lite",
+   "kind": "quadrant",
+   "hand": "left",
+   "identify": {
+    "vidPids": [
+     "294B:1909"
+    ],
+    "note": "Four levers, parking brake, trim wheel, gear lever. Lever axes: DirectInput names not known. VID:PID 294B:1909 not publicly confirmed either. Button numbering not confirmed by public documentation (originally derived from a local game configuration file); verify on a real device."
+   },
+   "image": "https://flyhoneycomb.com/cdn/shop/files/HC003790_BRAVOTHROTTLEQUADRANTLITE_1.webp",
+   "productUrl": "https://flyhoneycomb.com/products/bravo-throttle-quadrant-lite",
+   "sources": [
+    "https://flyhoneycomb.com/products/bravo-throttle-quadrant-lite"
+   ],
+   "confidence": "low",
+   "axes": [
+    {
+     "control": "quadrant.axis.lever.1",
+     "label": "Lever 1"
+    },
+    {
+     "control": "quadrant.axis.lever.2",
+     "label": "Lever 2"
+    },
+    {
+     "control": "quadrant.axis.lever.3",
+     "label": "Lever 3"
+    },
+    {
+     "control": "quadrant.axis.lever.4",
+     "label": "Lever 4"
+    }
+   ],
+   "controls": [
+    {
+     "control": "quadrant.button.1",
+     "input": "JOY_BTN2",
+     "type": "momentary",
+     "label": "TOGA (lever 1/2)"
+    },
+    {
+     "control": "quadrant.button.2",
+     "input": "JOY_BTN3",
+     "type": "momentary",
+     "label": "TOGA (lever 2/3)"
+    },
+    {
+     "control": "quadrant.button.3",
+     "input": "JOY_BTN4",
+     "type": "momentary",
+     "label": "Reverser throttle 1"
+    },
+    {
+     "control": "quadrant.button.4",
+     "input": "JOY_BTN5",
+     "type": "momentary",
+     "label": "Reverser throttle 2"
+    },
+    {
+     "control": "panel.lever.gear.up",
+     "input": "JOY_BTN6",
+     "type": "latched",
+     "label": "Gear up"
+    },
+    {
+     "control": "panel.lever.gear.down",
+     "input": "JOY_BTN7",
+     "type": "latched",
+     "label": "Gear down"
+    },
+    {
+     "control": "panel.toggle.1.up",
+     "input": "JOY_BTN1",
+     "type": "latched",
+     "label": "Parking brake set"
+    },
+    {
+     "control": "panel.toggle.1.down",
+     "input": "JOY_BTN8",
+     "type": "latched",
+     "label": "Parking brake release"
+    },
+    {
+     "control": "panel.rotary.1.ccw",
+     "input": "JOY_BTN13",
+     "type": "rotary",
+     "label": "Trim wheel nose down"
+    },
+    {
+     "control": "panel.rotary.1.cw",
+     "input": "JOY_BTN14",
+     "type": "rotary",
+     "label": "Trim wheel nose up"
+    }
+   ]
+  },
+  {
+   "id": "honeycomb-sierra-tpm-module",
+   "name": "Honeycomb Sierra TPM Module",
+   "kind": "quadrant",
+   "hand": "left",
+   "identify": {
+    "vidPids": [
+     "294B:190D"
+    ],
+    "note": "Throttle/prop/mixture levers, trim wheel, flaps, parking brake and gear lever. Lever axes: DirectInput names not known. VID:PID 294B:190D not publicly confirmed either. Button numbering not confirmed by public documentation (originally derived from a local game configuration file); verify on a real device."
+   },
+   "image": "https://flyhoneycomb.com/cdn/shop/files/HC003998_SIERRATPMMODULE_Thumbnails_1_54ea60b6-1390-4afe-981c-a2ee2e8f6905.webp",
+   "productUrl": "https://flyhoneycomb.com/products/sierra-tpm-module",
+   "sources": [
+    "https://flyhoneycomb.com/products/sierra-tpm-module"
+   ],
+   "confidence": "low",
+   "axes": [
+    {
+     "control": "quadrant.axis.lever.1",
+     "label": "Propeller"
+    },
+    {
+     "control": "quadrant.axis.lever.2",
+     "label": "Throttle"
+    },
+    {
+     "control": "quadrant.axis.lever.3",
+     "label": "Mixture"
+    }
+   ],
+   "controls": [
+    {
+     "control": "panel.rotary.1.ccw",
+     "input": "JOY_BTN1",
+     "type": "rotary",
+     "label": "Trim nose down"
+    },
+    {
+     "control": "panel.rotary.1.cw",
+     "input": "JOY_BTN2",
+     "type": "rotary",
+     "label": "Trim nose up"
+    },
+    {
+     "control": "panel.lever.flaps.up",
+     "input": "JOY_BTN3",
+     "type": "momentary",
+     "label": "Flaps up"
+    },
+    {
+     "control": "panel.lever.flaps.down",
+     "input": "JOY_BTN4",
+     "type": "momentary",
+     "label": "Flaps down"
+    },
+    {
+     "control": "panel.toggle.1.up",
+     "input": "JOY_BTN5",
+     "type": "latched",
+     "label": "Parking brake set"
+    },
+    {
+     "control": "panel.toggle.1.down",
+     "input": "JOY_BTN6",
+     "type": "latched",
+     "label": "Parking brake release"
+    },
+    {
+     "control": "panel.lever.gear.up",
+     "input": "JOY_BTN7",
+     "type": "latched",
+     "label": "Gear up"
+    },
+    {
+     "control": "panel.lever.gear.down",
+     "input": "JOY_BTN8",
+     "type": "latched",
+     "label": "Gear down"
+    }
+   ]
+  },
+  {
+   "id": "honeycomb-foxtrot-aviation-stick",
+   "name": "Honeycomb Foxtrot Aviation Stick",
+   "kind": "stick",
+   "hand": "either",
+   "identify": {
+    "vidPids": [
+     "294B:1916"
+    ],
+    "note": "Ambidextrous stick with twist and a base with light switches, APU switch and radio/autopilot selectors. Axes: pitch, roll, twist (DirectInput names not known). VID:PID 294B:1916 not publicly confirmed either. Button numbering not confirmed by public documentation (originally derived from a local game configuration file); verify on a real device."
+   },
+   "image": "https://flyhoneycomb.com/cdn/shop/files/FoxtrotProductThumbnail_1_b9813450-7d12-4a4c-9f28-d668b7913684.webp",
+   "productUrl": "https://flyhoneycomb.com/products/foxtrot-aviation-stick",
+   "sources": [
+    "https://flyhoneycomb.com/products/foxtrot-aviation-stick"
+   ],
+   "confidence": "low",
+   "axes": [
+    {
+     "control": "stick.axis.roll"
+    },
+    {
+     "control": "stick.axis.pitch"
+    },
+    {
+     "control": "stick.axis.twist"
+    }
+   ],
+   "controls": [
+    {
+     "control": "stick.button.thumb.1",
+     "input": "JOY_BTN5",
+     "type": "momentary",
+     "label": "Red button",
+     "finger": "thumb"
+    },
+    {
+     "control": "stick.button.thumb.2",
+     "input": "JOY_BTN6",
+     "type": "momentary",
+     "label": "White button",
+     "finger": "thumb"
+    },
+    {
+     "control": "stick.trigger.stage1",
+     "input": "JOY_BTN13",
+     "type": "momentary",
+     "label": "Trigger",
+     "finger": "index"
+    },
+    {
+     "control": "stick.hat.2.up",
+     "input": "JOY_BTN3",
+     "type": "momentary",
+     "label": "Momentary left rocker up",
+     "finger": "thumb"
+    },
+    {
+     "control": "stick.hat.2.down",
+     "input": "JOY_BTN2",
+     "type": "momentary",
+     "label": "Momentary left rocker down",
+     "finger": "thumb"
+    },
+    {
+     "control": "stick.hat.3.up",
+     "input": "JOY_BTN4",
+     "type": "momentary",
+     "label": "Momentary right rocker up",
+     "finger": "thumb"
+    },
+    {
+     "control": "stick.hat.3.down",
+     "input": "JOY_BTN1",
+     "type": "momentary",
+     "label": "Momentary right rocker down",
+     "finger": "thumb"
+    },
+    {
+     "control": "stick.button.index.1",
+     "input": "JOY_BTN9",
+     "type": "momentary",
+     "label": "Red left button"
+    },
+    {
+     "control": "stick.button.index.2",
+     "input": "JOY_BTN10",
+     "type": "momentary",
+     "label": "Red right button"
+    },
+    {
+     "control": "stick.hat.1.up",
+     "input": "JOY_BTN_POV1_U",
+     "type": "momentary",
+     "label": "8-way POV hat",
+     "finger": "thumb"
+    },
+    {
+     "control": "stick.hat.1.right",
+     "input": "JOY_BTN_POV1_R",
+     "type": "momentary",
+     "label": "8-way POV hat",
+     "finger": "thumb"
+    },
+    {
+     "control": "stick.hat.1.down",
+     "input": "JOY_BTN_POV1_D",
+     "type": "momentary",
+     "label": "8-way POV hat",
+     "finger": "thumb"
+    },
+    {
+     "control": "stick.hat.1.left",
+     "input": "JOY_BTN_POV1_L",
+     "type": "momentary",
+     "label": "8-way POV hat",
+     "finger": "thumb"
+    },
+    {
+     "control": "stick.base.button.1",
+     "input": "JOY_BTN14",
+     "type": "momentary",
+     "label": "Base button 1"
+    },
+    {
+     "control": "stick.base.button.2",
+     "input": "JOY_BTN15",
+     "type": "momentary",
+     "label": "Base button 2"
+    },
+    {
+     "control": "stick.base.button.3",
+     "input": "JOY_BTN16",
+     "type": "momentary",
+     "label": "Base button 3"
+    },
+    {
+     "control": "stick.base.button.4",
+     "input": "JOY_BTN17",
+     "type": "momentary",
+     "label": "Base button 4"
+    },
+    {
+     "control": "stick.base.button.5",
+     "input": "JOY_BTN11",
+     "type": "momentary",
+     "label": "Logo button"
+    },
+    {
+     "control": "stick.base.button.6",
+     "input": "JOY_BTN8",
+     "type": "momentary",
+     "label": "List"
+    },
+    {
+     "control": "stick.base.button.7",
+     "input": "JOY_BTN12",
+     "type": "momentary",
+     "label": "Menu"
+    },
+    {
+     "control": "stick.base.button.8",
+     "input": "JOY_BTN7",
+     "type": "momentary",
+     "label": "Back"
+    },
+    {
+     "control": "panel.toggle.1.up",
+     "input": "JOY_BTN35",
+     "type": "latched",
+     "label": "BEACON ON"
+    },
+    {
+     "control": "panel.toggle.1.down",
+     "input": "JOY_BTN36",
+     "type": "latched",
+     "label": "BEACON OFF"
+    },
+    {
+     "control": "panel.toggle.2.up",
+     "input": "JOY_BTN37",
+     "type": "latched",
+     "label": "LANDING ON"
+    },
+    {
+     "control": "panel.toggle.2.down",
+     "input": "JOY_BTN38",
+     "type": "latched",
+     "label": "LANDING OFF"
+    },
+    {
+     "control": "panel.toggle.3.up",
+     "input": "JOY_BTN39",
+     "type": "latched",
+     "label": "TAXI ON"
+    },
+    {
+     "control": "panel.toggle.3.down",
+     "input": "JOY_BTN40",
+     "type": "latched",
+     "label": "TAXI OFF"
+    },
+    {
+     "control": "panel.toggle.4.up",
+     "input": "JOY_BTN41",
+     "type": "latched",
+     "label": "NAV ON"
+    },
+    {
+     "control": "panel.toggle.4.down",
+     "input": "JOY_BTN42",
+     "type": "latched",
+     "label": "NAV OFF"
+    },
+    {
+     "control": "panel.toggle.5.up",
+     "input": "JOY_BTN43",
+     "type": "latched",
+     "label": "STROBE ON"
+    },
+    {
+     "control": "panel.toggle.5.down",
+     "input": "JOY_BTN44",
+     "type": "latched",
+     "label": "STROBE OFF"
+    },
+    {
+     "control": "panel.selector.1.pos.1",
+     "input": "JOY_BTN45",
+     "type": "latched",
+     "label": "APU OFF"
+    },
+    {
+     "control": "panel.selector.1.pos.2",
+     "input": "JOY_BTN18",
+     "type": "latched",
+     "label": "APU RUN"
+    },
+    {
+     "control": "panel.selector.1.pos.3",
+     "input": "JOY_BTN19",
+     "type": "momentary",
+     "label": "APU START"
+    },
+    {
+     "control": "panel.selector.2.pos.1",
+     "input": "JOY_BTN20",
+     "type": "latched",
+     "label": "RADIO NAV1"
+    },
+    {
+     "control": "panel.selector.2.pos.2",
+     "input": "JOY_BTN21",
+     "type": "latched",
+     "label": "RADIO NAV2"
+    },
+    {
+     "control": "panel.selector.2.pos.3",
+     "input": "JOY_BTN22",
+     "type": "latched",
+     "label": "RADIO COM1"
+    },
+    {
+     "control": "panel.selector.2.pos.4",
+     "input": "JOY_BTN23",
+     "type": "latched",
+     "label": "RADIO COM2"
+    },
+    {
+     "control": "panel.encoder.1.ccw",
+     "input": "JOY_BTN25",
+     "type": "rotary",
+     "label": "RADIO knob turn left"
+    },
+    {
+     "control": "panel.encoder.1.cw",
+     "input": "JOY_BTN24",
+     "type": "rotary",
+     "label": "RADIO knob turn right"
+    },
+    {
+     "control": "panel.encoder.1.press",
+     "input": "JOY_BTN26",
+     "type": "momentary",
+     "label": "RADIO knob press"
+    },
+    {
+     "control": "panel.selector.3.pos.1",
+     "input": "JOY_BTN27",
+     "type": "latched",
+     "label": "AUTOPILOT IAS"
+    },
+    {
+     "control": "panel.selector.3.pos.2",
+     "input": "JOY_BTN28",
+     "type": "latched",
+     "label": "AUTOPILOT VS"
+    },
+    {
+     "control": "panel.selector.3.pos.3",
+     "input": "JOY_BTN29",
+     "type": "latched",
+     "label": "AUTOPILOT HDG"
+    },
+    {
+     "control": "panel.selector.3.pos.4",
+     "input": "JOY_BTN30",
+     "type": "latched",
+     "label": "AUTOPILOT CRS"
+    },
+    {
+     "control": "panel.selector.3.pos.5",
+     "input": "JOY_BTN31",
+     "type": "latched",
+     "label": "AUTOPILOT ALT"
+    },
+    {
+     "control": "panel.encoder.2.ccw",
+     "input": "JOY_BTN33",
+     "type": "rotary",
+     "label": "AUTOPILOT knob turn left"
+    },
+    {
+     "control": "panel.encoder.2.cw",
+     "input": "JOY_BTN32",
+     "type": "rotary",
+     "label": "AUTOPILOT knob turn right"
+    },
+    {
+     "control": "panel.encoder.2.press",
+     "input": "JOY_BTN34",
+     "type": "momentary",
+     "label": "AUTOPILOT knob press"
+    }
+   ]
+  },
+  {
+   "id": "honeycomb-echo-aviation-controller",
+   "name": "Honeycomb Echo Aviation Controller",
+   "kind": "hotas",
+   "hand": "either",
+   "identify": {
+    "vidPids": [
+     "294B:190E"
+    ],
+    "note": "All-in-one aviation controller (joystick, four slider levers, rudder, hat, face/shoulder buttons, gear/flaps/brake/trim). Axis DirectInput names not known. The XPC (Xbox) version may report another USB id. VID:PID 294B:190E not publicly confirmed either. Button numbering not confirmed by public documentation (originally derived from a local game configuration file); verify on a real device."
+   },
+   "image": "https://flyhoneycomb.com/cdn/shop/files/HC003981_EchoAviationController_1.webp",
+   "productUrl": "https://flyhoneycomb.com/products/echo-aviation-controller",
+   "sources": [
+    "https://flyhoneycomb.com/products/echo-aviation-controller"
+   ],
+   "confidence": "low",
+   "axes": [
+    {
+     "control": "stick.axis.roll",
+     "label": "Joystick x"
+    },
+    {
+     "control": "stick.axis.pitch",
+     "label": "Joystick y"
+    },
+    {
+     "control": "quadrant.axis.lever.1",
+     "label": "Slider 1"
+    },
+    {
+     "control": "quadrant.axis.lever.2",
+     "label": "Slider 2"
+    },
+    {
+     "control": "quadrant.axis.lever.3",
+     "label": "Slider 3"
+    },
+    {
+     "control": "quadrant.axis.lever.4",
+     "label": "Slider 4"
+    },
+    {
+     "control": "pedals.axis.rudder",
+     "label": "Rudder (back)"
+    }
+   ],
+   "controls": [
+    {
+     "control": "stick.button.thumb.1",
+     "input": "JOY_BTN1",
+     "type": "momentary",
+     "label": "Bottom face button"
+    },
+    {
+     "control": "stick.button.thumb.2",
+     "input": "JOY_BTN2",
+     "type": "momentary",
+     "label": "Right face button"
+    },
+    {
+     "control": "stick.button.thumb.3",
+     "input": "JOY_BTN3",
+     "type": "momentary",
+     "label": "Left face button"
+    },
+    {
+     "control": "stick.button.thumb.4",
+     "input": "JOY_BTN4",
+     "type": "momentary",
+     "label": "Top face button"
+    },
+    {
+     "control": "stick.button.index.1",
+     "input": "JOY_BTN5",
+     "type": "momentary",
+     "label": "Top left button"
+    },
+    {
+     "control": "stick.button.index.2",
+     "input": "JOY_BTN6",
+     "type": "momentary",
+     "label": "Bottom left button"
+    },
+    {
+     "control": "stick.button.index.3",
+     "input": "JOY_BTN7",
+     "type": "momentary",
+     "label": "Top right button"
+    },
+    {
+     "control": "stick.button.index.4",
+     "input": "JOY_BTN8",
+     "type": "momentary",
+     "label": "Bottom right button"
+    },
+    {
+     "control": "stick.ministick.press",
+     "input": "JOY_BTN25",
+     "type": "momentary",
+     "label": "Joystick press"
+    },
+    {
+     "control": "stick.hat.1.up",
+     "input": "JOY_BTN_POV1_U",
+     "type": "momentary",
+     "label": "8-way hat"
+    },
+    {
+     "control": "stick.hat.1.right",
+     "input": "JOY_BTN_POV1_R",
+     "type": "momentary",
+     "label": "8-way hat"
+    },
+    {
+     "control": "stick.hat.1.down",
+     "input": "JOY_BTN_POV1_D",
+     "type": "momentary",
+     "label": "8-way hat"
+    },
+    {
+     "control": "stick.hat.1.left",
+     "input": "JOY_BTN_POV1_L",
+     "type": "momentary",
+     "label": "8-way hat"
+    },
+    {
+     "control": "panel.button.1",
+     "input": "JOY_BTN9",
+     "type": "momentary",
+     "label": "Menu"
+    },
+    {
+     "control": "panel.button.2",
+     "input": "JOY_BTN10",
+     "type": "momentary",
+     "label": "List"
+    },
+    {
+     "control": "panel.button.3",
+     "input": "JOY_BTN11",
+     "type": "momentary",
+     "label": "Logo"
+    },
+    {
+     "control": "panel.button.4",
+     "input": "JOY_BTN12",
+     "type": "momentary",
+     "label": "Back"
+    },
+    {
+     "control": "quadrant.button.1",
+     "input": "JOY_BTN19",
+     "type": "momentary",
+     "label": "Slider 1 reverse"
+    },
+    {
+     "control": "quadrant.button.2",
+     "input": "JOY_BTN20",
+     "type": "momentary",
+     "label": "Slider 2 reverse"
+    },
+    {
+     "control": "quadrant.button.3",
+     "input": "JOY_BTN21",
+     "type": "momentary",
+     "label": "Slider 3 reverse"
+    },
+    {
+     "control": "quadrant.button.4",
+     "input": "JOY_BTN22",
+     "type": "momentary",
+     "label": "Slider 4 reverse"
+    },
+    {
+     "control": "panel.lever.gear.up",
+     "input": "JOY_BTN13",
+     "type": "momentary",
+     "label": "Landing gear up"
+    },
+    {
+     "control": "panel.lever.gear.down",
+     "input": "JOY_BTN14",
+     "type": "momentary",
+     "label": "Landing gear down"
+    },
+    {
+     "control": "panel.toggle.1.up",
+     "input": "JOY_BTN15",
+     "type": "momentary",
+     "label": "Parking brake set"
+    },
+    {
+     "control": "panel.toggle.1.down",
+     "input": "JOY_BTN16",
+     "type": "momentary",
+     "label": "Parking brake release"
+    },
+    {
+     "control": "panel.lever.flaps.up",
+     "input": "JOY_BTN17",
+     "type": "momentary",
+     "label": "Flaps up"
+    },
+    {
+     "control": "panel.lever.flaps.down",
+     "input": "JOY_BTN18",
+     "type": "momentary",
+     "label": "Flaps down"
+    },
+    {
+     "control": "panel.rotary.1.ccw",
+     "input": "JOY_BTN23",
+     "type": "rotary",
+     "label": "Trim nose down"
+    },
+    {
+     "control": "panel.rotary.1.cw",
+     "input": "JOY_BTN24",
+     "type": "rotary",
+     "label": "Trim nose up"
+    }
+   ]
+  },
+  {
+   "id": "honeycomb-alpha-flight-controls-xpc",
+   "name": "Honeycomb Alpha Flight Controls XPC (Xbox / PC, Hall sensors)",
+   "kind": "yoke",
+   "hand": "none",
+   "identify": {
+    "vidPids": [],
+    "names": [
+     "Alpha Flight Controls XPC",
+     "Honeycomb Alpha Flight Controls XPC"
+    ],
+    "note": "Xbox-licensed revision of the Alpha (SKU HC003653, 2024) with Hall-effect sensors. Same yoke and switch panel layout per Honeycomb (8-way POV, two vertical and two horizontal rockers, three buttons and PTT per handle; master, alternator, avionics and light switches, 5-position ignition). Control list copied from the Alpha entry without numbers: the XPC's USB id and numbering are not published."
+   },
+   "productUrl": "https://flyhoneycomb.com/products/alpha-flight-controls-xpc",
+   "image": "https://flyhoneycomb.com/cdn/shop/files/HC003653_ALPHAFLIGHTCONTROLSXPC_1.jpg",
+   "sources": [
+    "https://flyhoneycomb.com/products/alpha-flight-controls-xpc"
+   ],
+   "confidence": "low",
+   "axes": [
+    {
+     "control": "yoke.axis.roll"
+    },
+    {
+     "control": "yoke.axis.pitch"
+    }
+   ],
+   "controls": [
+    {
+     "control": "yoke.button.1",
+     "type": "momentary",
+     "label": "Left handle white button (top, next to the hat)"
+    },
+    {
+     "control": "yoke.button.2",
+     "type": "momentary",
+     "label": "Left handle button 2"
+    },
+    {
+     "control": "yoke.button.3",
+     "type": "momentary",
+     "label": "Left handle white trigger (back side)"
+    },
+    {
+     "control": "yoke.rocker.1.up",
+     "type": "momentary",
+     "label": "Left handle rocker A forward"
+    },
+    {
+     "control": "yoke.rocker.1.down",
+     "type": "momentary",
+     "label": "Left handle rocker A aft"
+    },
+    {
+     "control": "yoke.rocker.2.up",
+     "type": "momentary",
+     "label": "Left handle rocker B forward"
+    },
+    {
+     "control": "yoke.rocker.2.down",
+     "type": "momentary",
+     "label": "Left handle rocker B aft"
+    },
+    {
+     "control": "yoke.hat.1.up",
+     "type": "momentary",
+     "label": "Left 8-way POV"
+    },
+    {
+     "control": "yoke.rocker.3.up",
+     "type": "momentary",
+     "label": "Right horizontal rocker 1"
+    },
+    {
+     "control": "yoke.rocker.3.down",
+     "type": "momentary"
+    },
+    {
+     "control": "yoke.rocker.4.up",
+     "type": "momentary",
+     "label": "Right horizontal rocker 2"
+    },
+    {
+     "control": "yoke.rocker.4.down",
+     "type": "momentary"
+    },
+    {
+     "control": "yoke.button.4",
+     "type": "momentary",
+     "label": "Right handle white button"
+    },
+    {
+     "control": "yoke.button.5",
+     "type": "momentary",
+     "label": "Right handle red button"
+    },
+    {
+     "control": "panel.toggle.1.up",
+     "type": "latched",
+     "label": "MASTER BAT ON"
+    },
+    {
+     "control": "panel.toggle.2.up",
+     "type": "latched",
+     "label": "MASTER ALT ON"
+    },
+    {
+     "control": "panel.toggle.3.up",
+     "type": "latched",
+     "label": "AVIONICS BUS 1 ON"
+    },
+    {
+     "control": "panel.toggle.4.up",
+     "type": "latched",
+     "label": "LIGHTS"
+    },
+    {
+     "control": "panel.selector.1.pos.1",
+     "type": "latched",
+     "label": "IGNITION OFF"
+    },
+    {
+     "control": "panel.selector.1.pos.5",
+     "type": "latched",
+     "label": "IGNITION START"
+    },
+    {
+     "control": "yoke.hat.1.right",
+     "type": "momentary",
+     "label": "Left 8-way POV"
+    },
+    {
+     "control": "yoke.hat.1.down",
+     "type": "momentary",
+     "label": "Left 8-way POV"
+    },
+    {
+     "control": "yoke.hat.1.left",
+     "type": "momentary",
+     "label": "Left 8-way POV"
+    },
+    {
+     "control": "yoke.switch.3.left",
+     "type": "momentary",
+     "label": "Right handle horizontal rocker 1 left"
+    },
+    {
+     "control": "yoke.switch.3.right",
+     "type": "momentary",
+     "label": "Right handle horizontal rocker 1 right"
+    },
+    {
+     "control": "yoke.switch.4.left",
+     "type": "momentary",
+     "label": "Right handle horizontal rocker 2 left"
+    },
+    {
+     "control": "yoke.switch.4.right",
+     "type": "momentary",
+     "label": "Right handle horizontal rocker 2 right"
+    },
+    {
+     "control": "panel.toggle.1.down",
+     "type": "latched",
+     "label": "MASTER BAT OFF"
+    },
+    {
+     "control": "panel.toggle.2.down",
+     "type": "latched",
+     "label": "MASTER ALT OFF"
+    },
+    {
+     "control": "panel.toggle.3.down",
+     "type": "latched",
+     "label": "AVIONICS BUS 1 OFF"
+    },
+    {
+     "control": "panel.toggle.5.up",
+     "type": "latched",
+     "label": "AVIONICS BUS 2 ON"
+    },
+    {
+     "control": "panel.toggle.5.down",
+     "type": "latched",
+     "label": "AVIONICS BUS 2 OFF"
+    },
+    {
+     "control": "panel.toggle.6.up",
+     "type": "latched",
+     "label": "BCN ON"
+    },
+    {
+     "control": "panel.toggle.6.down",
+     "type": "latched",
+     "label": "BCN OFF"
+    },
+    {
+     "control": "panel.toggle.7.up",
+     "type": "latched",
+     "label": "LAND ON"
+    },
+    {
+     "control": "panel.toggle.7.down",
+     "type": "latched",
+     "label": "LAND OFF"
+    },
+    {
+     "control": "panel.toggle.8.up",
+     "type": "latched",
+     "label": "TAXI ON"
+    },
+    {
+     "control": "panel.toggle.8.down",
+     "type": "latched",
+     "label": "TAXI OFF"
+    },
+    {
+     "control": "panel.toggle.9.up",
+     "type": "latched",
+     "label": "NAV ON"
+    },
+    {
+     "control": "panel.toggle.9.down",
+     "type": "latched",
+     "label": "NAV OFF"
+    },
+    {
+     "control": "panel.toggle.10.up",
+     "type": "latched",
+     "label": "STROBE ON"
+    },
+    {
+     "control": "panel.toggle.10.down",
+     "type": "latched",
+     "label": "STROBE OFF"
+    },
+    {
+     "control": "panel.selector.1.pos.2",
+     "type": "latched",
+     "label": "IGNITION R"
+    },
+    {
+     "control": "panel.selector.1.pos.3",
+     "type": "latched",
+     "label": "IGNITION L"
+    },
+    {
+     "control": "panel.selector.1.pos.4",
+     "type": "latched",
+     "label": "IGNITION BOTH"
+    }
+   ]
+  },
+  {
+   "id": "honeycomb-echo-aviation-controller-xpc",
+   "name": "Honeycomb Echo Aviation Controller XPC (Xbox / PC)",
+   "kind": "hotas",
+   "hand": "either",
+   "identify": {
+    "vidPids": [],
+    "names": [
+     "Echo Aviation Controller XPC"
+    ],
+    "note": "Xbox-licensed version of the Echo (SKU HC004339, October 2026): TMR stick, Hall rudder paddles, four sliders with detents, trim wheel, flight switches, wireless dongle or USB-C. Control list copied from the Echo entry without numbers; USB id and numbering not published."
+   },
+   "productUrl": "https://flyhoneycomb.com/products/echo-xpc-aviation-controller",
+   "image": "https://flyhoneycomb.com/cdn/shop/files/HC004339_EchoXPC_Shopify_1.webp",
+   "sources": [
+    "https://flyhoneycomb.com/products/echo-xpc-aviation-controller"
+   ],
+   "confidence": "low",
+   "axes": [
+    {
+     "control": "stick.axis.roll",
+     "label": "Joystick x"
+    },
+    {
+     "control": "stick.axis.pitch",
+     "label": "Joystick y"
+    },
+    {
+     "control": "quadrant.axis.lever.1",
+     "label": "Slider 1"
+    },
+    {
+     "control": "quadrant.axis.lever.2",
+     "label": "Slider 2"
+    },
+    {
+     "control": "quadrant.axis.lever.3",
+     "label": "Slider 3"
+    },
+    {
+     "control": "quadrant.axis.lever.4",
+     "label": "Slider 4"
+    },
+    {
+     "control": "pedals.axis.rudder",
+     "label": "Rudder (back)"
+    }
+   ],
+   "controls": [
+    {
+     "control": "stick.button.thumb.1",
+     "type": "momentary",
+     "label": "Bottom face button"
+    },
+    {
+     "control": "stick.button.thumb.2",
+     "type": "momentary",
+     "label": "Right face button"
+    },
+    {
+     "control": "stick.button.thumb.3",
+     "type": "momentary",
+     "label": "Left face button"
+    },
+    {
+     "control": "stick.button.thumb.4",
+     "type": "momentary",
+     "label": "Top face button"
+    },
+    {
+     "control": "stick.button.index.1",
+     "type": "momentary",
+     "label": "Top left button"
+    },
+    {
+     "control": "stick.button.index.2",
+     "type": "momentary",
+     "label": "Bottom left button"
+    },
+    {
+     "control": "stick.button.index.3",
+     "type": "momentary",
+     "label": "Top right button"
+    },
+    {
+     "control": "stick.button.index.4",
+     "type": "momentary",
+     "label": "Bottom right button"
+    },
+    {
+     "control": "stick.ministick.press",
+     "type": "momentary",
+     "label": "Joystick press"
+    },
+    {
+     "control": "stick.hat.1.up",
+     "type": "momentary",
+     "label": "8-way hat"
+    },
+    {
+     "control": "stick.hat.1.right",
+     "type": "momentary",
+     "label": "8-way hat"
+    },
+    {
+     "control": "stick.hat.1.down",
+     "type": "momentary",
+     "label": "8-way hat"
+    },
+    {
+     "control": "stick.hat.1.left",
+     "type": "momentary",
+     "label": "8-way hat"
+    },
+    {
+     "control": "panel.button.1",
+     "type": "momentary",
+     "label": "Menu"
+    },
+    {
+     "control": "panel.button.2",
+     "type": "momentary",
+     "label": "List"
+    },
+    {
+     "control": "panel.button.3",
+     "type": "momentary",
+     "label": "Logo"
+    },
+    {
+     "control": "panel.button.4",
+     "type": "momentary",
+     "label": "Back"
+    },
+    {
+     "control": "quadrant.button.1",
+     "type": "momentary",
+     "label": "Slider 1 reverse"
+    },
+    {
+     "control": "quadrant.button.2",
+     "type": "momentary",
+     "label": "Slider 2 reverse"
+    },
+    {
+     "control": "quadrant.button.3",
+     "type": "momentary",
+     "label": "Slider 3 reverse"
+    },
+    {
+     "control": "quadrant.button.4",
+     "type": "momentary",
+     "label": "Slider 4 reverse"
+    },
+    {
+     "control": "panel.lever.gear.up",
+     "type": "momentary",
+     "label": "Landing gear up"
+    },
+    {
+     "control": "panel.lever.gear.down",
+     "type": "momentary",
+     "label": "Landing gear down"
+    },
+    {
+     "control": "panel.toggle.1.up",
+     "type": "momentary",
+     "label": "Parking brake set"
+    },
+    {
+     "control": "panel.toggle.1.down",
+     "type": "momentary",
+     "label": "Parking brake release"
+    },
+    {
+     "control": "panel.lever.flaps.up",
+     "type": "momentary",
+     "label": "Flaps up"
+    },
+    {
+     "control": "panel.lever.flaps.down",
+     "type": "momentary",
+     "label": "Flaps down"
+    },
+    {
+     "control": "panel.rotary.1.ccw",
+     "type": "rotary",
+     "label": "Trim nose down"
+    },
+    {
+     "control": "panel.rotary.1.cw",
+     "type": "rotary",
+     "label": "Trim nose up"
+    }
+   ]
+  },
+  {
+   "id": "honeycomb-throttle-box",
+   "name": "Honeycomb Throttle Box (Foxtrot Takeoff Kit)",
+   "kind": "quadrant",
+   "hand": "left",
+   "identify": {
+    "vidPids": [],
+    "names": [
+     "Honeycomb Throttle Box",
+     "Throttle Box"
+    ],
+    "note": "Compact throttle of the Foxtrot Takeoff Kit (SKU HC004018, 2026), also sold alone. Per Honeycomb: four exchangeable levers with detents for reverse thrust, parking brake lever, gear lever, engine switches. Honeycomb publishes two input maps (throttle box alone, and with the Foxtrot stick over the connector cable), so it can probably report standalone or through the stick; neither map was retrievable (Canto share links), so no numbers and no USB id."
+   },
+   "productUrl": "https://flyhoneycomb.com/products/foxtrot-takeoff-kit",
+   "image": "https://flyhoneycomb.com/cdn/shop/files/HC004018_FoxtrotTakeoffKit_Thumbnail_5.webp",
+   "sources": [
+    "https://flyhoneycomb.com/products/foxtrot-takeoff-kit",
+    "https://flyhoneycomb.com/pages/downloads"
+   ],
+   "confidence": "low",
+   "axes": [
+    {
+     "control": "quadrant.axis.lever.1"
+    },
+    {
+     "control": "quadrant.axis.lever.2"
+    },
+    {
+     "control": "quadrant.axis.lever.3"
+    },
+    {
+     "control": "quadrant.axis.lever.4"
+    }
+   ],
+   "controls": [
+    {
+     "control": "quadrant.detent.1",
+     "label": "Lever 1 reverse detent",
+     "type": "momentary"
+    },
+    {
+     "control": "quadrant.detent.2",
+     "label": "Lever 2 reverse detent",
+     "type": "momentary"
+    },
+    {
+     "control": "quadrant.detent.3",
+     "label": "Lever 3 reverse detent",
+     "type": "momentary"
+    },
+    {
+     "control": "quadrant.detent.4",
+     "label": "Lever 4 reverse detent",
+     "type": "momentary"
+    },
+    {
+     "control": "quadrant.toggle.1.up",
+     "label": "Parking brake lever",
+     "type": "latched"
+    },
+    {
+     "control": "quadrant.toggle.1.down",
+     "label": "Parking brake lever",
+     "type": "latched"
+    },
+    {
+     "control": "panel.lever.gear.up",
+     "label": "Gear lever up",
+     "type": "latched"
+    },
+    {
+     "control": "panel.lever.gear.down",
+     "label": "Gear lever down",
+     "type": "latched"
+    }
+   ]
+  }
+ ]
+}

@@ -1,0 +1,144 @@
+{
+  "format": "joypro-device-layout",
+  "version": 1,
+  "model": "vkb-gunfighter-scg-standard",
+  "photo": {"kind": "vendor", "url": "https://vkbsimcontrollers.com/cdn/shop/files/SCG-L_For_GF_1200_03.webp", "sha256": "e9eac14da79175303bed409bb5dbfdd7ba9ad4c3172dbe04b7d634d4cd914c14", "view": "main"},
+  "markers": {
+    "stick.axis.twist": [0.54, 0.52],
+    "stick.button.thumb.1": [0.272, 0.325],
+    "stick.button.thumb.2": [0.649, 0.472],
+    "stick.gimbal": [0.6, 0.845],
+    "stick.hat.1": [0.508, 0.263],
+    "stick.trigger": [0.386, 0.425],
+    "stick.weapon_release": [0.573, 0.31]
+  },
+  "parts": {
+    "stick.weapon_release": {
+      "type": "release",
+      "name": "A2",
+      "inputs": [
+        {"input": "", "control": "stick.weapon_release"}
+      ],
+      "mapping": "medium",
+      "confidence": "high",
+      "note": "A2 red button"
+    },
+    "stick.trigger": {
+      "type": "trigger",
+      "name": "Dual-action trigger stage 2",
+      "inputs": [
+        {"input": "", "control": "stick.trigger.stage1"},
+        {"input": "", "control": "stick.trigger.stage2"}
+      ],
+      "mapping": "medium",
+      "confidence": "high",
+      "note": "red dual-action trigger"
+    },
+    "stick.pinky.button": {
+      "type": "button",
+      "name": "D1 pinky button",
+      "inputs": [
+        {"input": "", "control": "stick.pinky.button"}
+      ],
+      "mapping": "medium"
+    },
+    "stick.axis.twist": {
+      "type": "twist",
+      "name": "Lockable twist (MaRS sensor)",
+      "inputs": [
+        {"input": "", "control": "stick.axis.twist"}
+      ],
+      "mapping": "medium",
+      "confidence": "medium",
+      "note": "twist on the handle"
+    },
+    "stick.gimbal": {
+      "type": "gimbal",
+      "name": "Stick (roll / pitch)",
+      "inputs": [
+        {"input": "", "control": "stick.axis.roll"},
+        {"input": "", "control": "stick.axis.pitch"},
+        {"input": "JOY_X", "control": "stick.axis.roll"},
+        {"input": "JOY_Y", "control": "stick.axis.pitch"}
+      ],
+      "mapping": "medium",
+      "confidence": "medium",
+      "note": "grip connector; add-on grip, base not on the photo"
+    },
+    "stick.hat.1": {
+      "type": "hat",
+      "name": "A3 hat",
+      "inputs": [
+        {"input": "", "control": "stick.hat.1.up"}
+      ],
+      "mapping": "medium",
+      "confidence": "high",
+      "note": "A3 centre hat (catalog label 'A3 hat')"
+    },
+    "stick.hat.2": {
+      "type": "hat",
+      "name": "Second 4-way hat with push (Standard has no ministick)",
+      "inputs": [
+        {"input": "", "control": "stick.hat.2.up"}
+      ],
+      "mapping": "low"
+    },
+    "stick.hat.3": {
+      "type": "hat",
+      "name": "Third 4-way hat with push",
+      "inputs": [
+        {"input": "", "control": "stick.hat.3.up"}
+      ],
+      "mapping": "low"
+    },
+    "stick.button.thumb.1": {
+      "type": "button",
+      "name": "B1 side button",
+      "inputs": [
+        {"input": "", "control": "stick.button.thumb.1"}
+      ],
+      "mapping": "medium",
+      "confidence": "medium",
+      "note": "B1 side button on the outer (left) side of the head, seen edge-on"
+    },
+    "stick.button.thumb.2": {
+      "type": "button",
+      "name": "Fourth button",
+      "inputs": [
+        {"input": "", "control": "stick.button.thumb.2"}
+      ],
+      "mapping": "medium",
+      "confidence": "medium",
+      "note": "C1 white control on the right (thumb) side, only its edge visible; = 'Fourth button' by elimination"
+    }
+  },
+  "unplaced": {
+    "stick.pinky.button": "D1 at the lower front of the grip, turned away from the camera",
+    "stick.hat.2": "A1 4-way hat (textured cap, top right of the face); catalog hat order of 'second'/'third' undefined",
+    "stick.hat.3": "A4 top-left ribbed hat; catalog hat order of 'second'/'third' undefined"
+  },
+  "candidates": {
+    "stick.hat.2": [0.551, 0.212],
+    "stick.hat.3": [0.434, 0.187]
+  },
+  "source": "JoyPro curated on the maker's photo (2026-10-11), Standard SCG add-on grip in its LEFT-hand version (SCG-L_For_GF_1200_03), seen from the rear left, front of the stick to the left: grip face, B1 on the outer (left) side, red trigger, edge of the white C1 on the right (thumb) side",
+  "mappingSource": "catalog only (vkb.json: no factory numbering for the Standard, parts have no inputs; hat.1 is labelled 'A3 hat', the other two hats are unnumbered). Control identities from the product page https://vkbsimcontrollers.com/products/scg-add-on-grip-for-gunfighter-mk-iv-us (3 four-way hats with push, 4 buttons, dual-action trigger, no rapid-fire trigger, no ministick) and VKB's binding template \"VKB Gunfighter SCG (LH)\" v1.0 (https://cdn.shopify.com/s/files/1/0808/7827/2731/files/VKB-Gunfighter-SCG-LH-v1.0.pdf, linked on https://vkbsimcontrollers.com/pages/downloads): A4 top-left hat, A1 top right, A3 centre, A2 red, B1 side, C1 thumb side, D1 pinky",
+  "confidence": "medium",
+  "note": "The model is 'either' hand; this photo is the left-hand grip (mirror of the right). Many gallery photos (gallery-7..11, 17..21, 23, 24: SCG-L-P / SCG-R-P) show the PREMIUM grip with the rapid-fire lever, not this model; main is a Standard photo. The Standard's A1 is a 4-way hat (textured cap, no ministick). The catalog's 'second' and 'third' hats have no defined order, so A1 and A4 are kept as hidden candidates (map=low). 'Fourth button' = C1 by elimination (VKB spec: 4 buttons = A2, B1, C1, D1).",
+  "callouts": {
+    "version": 1,
+    "width": 632,
+    "height": 710,
+    "picture": [16, 16, 600, 600],
+    "rowHeight": 20,
+    "mainWidth": 170,
+    "modWidth": 110,
+    "otherY": -1,
+    "tables": [
+      {"id": "stick.gimbal", "title": "Stick (roll / pitch)", "parts": ["stick.gimbal"], "side": "bottom", "x": 226, "y": 640, "width": 300, "modifier": true, "spot": [0.6, 0.845], "rows": [{"input": "JOY_X", "label": "roll (X)", "icon": "axis", "part": "stick.gimbal"}, {"input": "JOY_Y", "label": "pitch (Y)", "icon": "axis", "part": "stick.gimbal"}]}
+    ],
+    "lines": [
+      {"table": "stick.gimbal", "points": [[376, 523], [376, 640]]}
+    ]
+  }
+}

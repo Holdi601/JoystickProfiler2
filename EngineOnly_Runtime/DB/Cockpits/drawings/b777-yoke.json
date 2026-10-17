@@ -1,0 +1,32 @@
+{
+  "format": "joypro-cockpit-drawing",
+  "version": 1,
+  "id": "b777-yoke",
+  "kind": "yoke",
+  "aircraft": ["b777", "b787"],
+  "variants": [],
+  "except": [],
+  "name": "Boeing 777 / 787 control wheel",
+  "view": "the captain's control wheel and column from the seat; the horns lean outward, the outboard (left) horn carries the stabilizer trim switches on top, the microphone switch and the autopilot disconnect button",
+  "origin": "JoyPro's own vector drawing: the wheel's outline and the switch layout reconstructed from the public 777 and 787 flight deck descriptions (Boeing 777/787 technical sites, PMDG 777 documentation, Wikipedia) and public photos looked at for proportions; not traced from a photo.",
+  "width": 1000,
+  "height": 700,
+  "shapes": [
+    { "kind": "ellipse", "role": "shadow", "x": 500, "y": 684, "w": 300, "h": 14 },
+    { "kind": "rect", "role": "bodyAlt", "x": 376, "y": 620, "w": 248, "h": 56, "r": 18 },
+    { "kind": "rect", "role": "bodyAlt", "x": 460, "y": 400, "w": 80, "h": 230, "r": 14 },
+    { "kind": "path", "role": "body", "path": "M146,86 C98,86 76,126 82,172 L120,424 C130,484 212,482 218,424 L226,376 L774,376 L782,424 C788,482 870,484 880,424 L918,172 C924,126 902,86 854,86 C808,86 788,124 792,168 L790,288 L210,288 L208,168 C212,124 192,86 146,86 Z" },
+    { "kind": "ellipse", "role": "face", "x": 500, "y": 332, "w": 116, "h": 72 },
+    { "kind": "ellipse", "role": "line", "x": 500, "y": 332, "w": 60, "h": 36 },
+    { "kind": "path", "role": "line", "path": "M236,300 L236,364 M764,300 L764,364" },
+    { "kind": "path", "role": "line", "path": "M130,392 C150,408 180,408 204,392" },
+    { "kind": "path", "role": "line", "path": "M796,392 C820,408 850,408 870,392" },
+    { "kind": "path", "role": "line", "path": "M482,430 L482,610 M518,430 L518,610" }
+  ],
+  "parts": [
+    { "id": "yoke.rocker.stab_trim", "type": "rocker", "x": 148, "y": 150, "r": 22 },
+    { "id": "yoke.switch.mic", "type": "switch3", "x": 158, "y": 242, "r": 18 },
+    { "id": "yoke.button.ap_disc", "type": "release", "x": 168, "y": 330, "r": 17 },
+    { "id": "yoke.gimbal", "type": "gimbal", "x": 500, "y": 530, "r": 56 }
+  ]
+}

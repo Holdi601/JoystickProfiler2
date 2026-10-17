@@ -1,0 +1,42 @@
+<ActionMaps>
+ <ActionProfiles version="1" optionsVersion="2" rebindVersion="2" profileName="default">
+  <deviceoptions name="Test Stick {11111111-1111-1111-1111-111111111111}">
+   <option input="x" deadzone="0.1"/>
+   <option input="rotz" saturation="0.9"/>
+  </deviceoptions>
+  <options type="keyboard" instance="1" Product="Keyboard  {6F1D2B61-D5A0-11CF-BFC7-444553540000}"/>
+  <options type="gamepad" instance="1" Product="Controller (Gamepad)"/>
+  <options type="joystick" instance="1" Product="Test Stick {11111111-1111-1111-1111-111111111111}">
+   <flight_move_yaw invert="1" exponent="2"/>
+   <flight_move_roll>
+    <nonlinearity_curve>
+     <point in="0.1" out="0.02"/>
+     <point in="0.2" out="0.05"/>
+     <point in="0.3" out="0.1"/>
+     <point in="0.4" out="0.16"/>
+     <point in="0.5" out="0.25"/>
+     <point in="0.6" out="0.36"/>
+     <point in="0.7" out="0.49"/>
+     <point in="0.8" out="0.64"/>
+     <point in="0.9" out="0.81"/>
+    </nonlinearity_curve>
+   </flight_move_roll>
+   <flight_move_strafe_vertical invert="1"/>
+  </options>
+  <options type="joystick" instance="2" Product="Other Stick {22222222-2222-3333-4444-555555555555}">
+   <flight_move_pitch invert="1"/>
+  </options>
+  <modifiers />
+  <actionmap name="spaceship_movement">
+   <action name="v_pitch">
+    <rebind input="js1_y"/>
+   </action>
+   <action name="v_roll">
+    <rebind input="js1_rotz"/>
+   </action>
+   <action name="v_yaw">
+    <rebind input="js1_x"/>
+   </action>
+  </actionmap>
+ </ActionProfiles>
+</ActionMaps>

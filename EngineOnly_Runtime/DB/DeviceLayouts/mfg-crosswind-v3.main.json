@@ -1,0 +1,67 @@
+{
+  "format": "joypro-device-layout",
+  "version": 1,
+  "model": "mfg-crosswind-v3",
+  "photo": {"kind": "vendor", "url": "https://mfg-sim.com/231-large_default/mfg-crosswind-v3-base.jpg", "sha256": "6d430f6acb6ea887030c4784cd7c400f2ef15012a2736f293d53c9cfa6caae3f", "view": "main"},
+  "markers": {
+    "pedals.axis.rudder": [0.62, 0.6]
+  },
+  "parts": {
+    "pedals.axis.rudder": {
+      "type": "rudder",
+      "name": "Rudder",
+      "inputs": [
+        {"input": "JOY_RZ", "control": "pedals.axis.rudder"}
+      ],
+      "mapping": "medium",
+      "confidence": "medium",
+      "note": "the rudder arm's pivot"
+    },
+    "pedals.axis.brake_left": {
+      "type": "brake",
+      "name": "Left toe brake",
+      "inputs": [
+        {"input": "JOY_X", "control": "pedals.axis.brake_left"}
+      ],
+      "mapping": "low"
+    },
+    "pedals.axis.brake_right": {
+      "type": "brake",
+      "name": "Right toe brake",
+      "inputs": [
+        {"input": "JOY_Y", "control": "pedals.axis.brake_right"}
+      ],
+      "mapping": "low"
+    }
+  },
+  "unplaced": {
+    "pedals.axis.brake_left": "a spring and cam unit at one pedal mount; whether it is the brake and which side is left is not certain (no pedal plates on this photo)",
+    "pedals.axis.brake_right": "the unit at the other pedal mount; whether it is the brake and which side is right is not certain"
+  },
+  "candidates": {
+    "pedals.axis.brake_left": [0.33, 0.51],
+    "pedals.axis.brake_right": [0.83, 0.36]
+  },
+  "source": "JoyPro curated on the maker's photo (2026-10-11): the V3 base without pedal plates, from the side",
+  "mappingSource": "catalog (MFG product page: rudder + two toe brakes; axis letters from the V2 on the user's PC, V3 not verified)",
+  "confidence": "medium",
+  "note": "Only the rudder pivot is certain. The two brake cams are visible, but which one is the pilot's left cannot be told from this angle, and the axis letters of the V3 are not verified.",
+  "callouts": {
+    "version": 1,
+    "width": 814,
+    "height": 527,
+    "picture": [16, 16, 458, 425],
+    "rowHeight": 20,
+    "mainWidth": 170,
+    "modWidth": 110,
+    "otherY": 457,
+    "tables": [
+      {"id": "pedals.axis.rudder", "title": "Rudder", "parts": ["pedals.axis.rudder"], "side": "right", "x": 498, "y": 247, "width": 300, "modifier": true, "spot": [0.62, 0.6], "rows": [{"input": "JOY_RZ", "label": "RZ", "icon": "axis", "part": "pedals.axis.rudder"}]},
+      {"id": "pedals.axis.brake_left", "title": "Left toe brake", "parts": ["pedals.axis.brake_left"], "side": "other", "x": 16, "y": 477, "width": 300, "modifier": true, "rows": [{"input": "JOY_X", "label": "X", "icon": "axis", "part": "pedals.axis.brake_left"}]},
+      {"id": "pedals.axis.brake_right", "title": "Right toe brake", "parts": ["pedals.axis.brake_right"], "side": "other", "x": 322, "y": 477, "width": 300, "modifier": true, "rows": [{"input": "JOY_Y", "label": "Y", "icon": "axis", "part": "pedals.axis.brake_right"}]}
+    ],
+    "lines": [
+      {"table": "pedals.axis.rudder", "points": [[300, 271], [498, 271]]}
+    ]
+  }
+}

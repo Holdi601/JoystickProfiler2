@@ -1,0 +1,133 @@
+{
+  "format": "joypro-device-layout",
+  "version": 1,
+  "model": "virpil-warbrd-grip",
+  "photo": {"kind": "vendor", "url": "https://virpil-controls.eu/media/catalog/product/cache/f8e7ca8059fef1dc7d5708cf2af44b2f/v/p/vpc-006_2024-001_2.jpg", "sha256": "ef251e68169de78b33fdf5482c6f1454a94abf8aeba4ff3bb60bdf68bc99d042", "view": "main"},
+  "markers": {
+    "stick.axis.twist": [0.6, 0.56],
+    "stick.button.thumb.1": [0.42, 0.298],
+    "stick.gimbal": [0.555, 0.935],
+    "stick.hat.cms": [0.445, 0.488],
+    "stick.hat.tms": [0.535, 0.276],
+    "stick.trigger": [0.401, 0.445]
+  },
+  "parts": {
+    "stick.hat.tms": {
+      "type": "hat",
+      "name": "TMS hat",
+      "inputs": [
+        {"input": "JOY_BTN4", "control": "stick.hat.tms.press"},
+        {"input": "JOY_BTN5", "control": "stick.hat.tms.up"},
+        {"input": "JOY_BTN6", "control": "stick.hat.tms.upright"},
+        {"input": "JOY_BTN7", "control": "stick.hat.tms.right"},
+        {"input": "JOY_BTN8", "control": "stick.hat.tms.downright"},
+        {"input": "JOY_BTN9", "control": "stick.hat.tms.down"},
+        {"input": "JOY_BTN10", "control": "stick.hat.tms.downleft"},
+        {"input": "JOY_BTN11", "control": "stick.hat.tms.left"},
+        {"input": "JOY_BTN12", "control": "stick.hat.tms.upleft"}
+      ],
+      "mapping": "high",
+      "confidence": "high",
+      "note": "top hat 4-12 (8-way + push)"
+    },
+    "stick.hat.cms": {
+      "type": "hat",
+      "name": "Thumb-side hat",
+      "inputs": [
+        {"input": "JOY_BTN13", "control": "stick.hat.cms.press"},
+        {"input": "JOY_BTN14", "control": "stick.hat.cms.up"},
+        {"input": "JOY_BTN15", "control": "stick.hat.cms.right"},
+        {"input": "JOY_BTN16", "control": "stick.hat.cms.down"},
+        {"input": "JOY_BTN17", "control": "stick.hat.cms.left"}
+      ],
+      "mapping": "high",
+      "confidence": "high",
+      "note": "castellated thumb-side hat 13-17"
+    },
+    "stick.trigger": {
+      "type": "trigger",
+      "name": "Trigger stage",
+      "inputs": [
+        {"input": "JOY_BTN1", "control": "stick.trigger.stage1"},
+        {"input": "JOY_BTN2", "control": "stick.trigger.stage2"}
+      ],
+      "mapping": "high",
+      "confidence": "medium",
+      "note": "red trigger 1 / 2 (two stages), partly hidden behind the head"
+    },
+    "stick.axis.twist": {
+      "type": "twist",
+      "name": "Twist (rZ)",
+      "inputs": [
+        {"input": "JOY_RZ", "control": "stick.axis.twist"}
+      ],
+      "mapping": "high",
+      "confidence": "medium",
+      "note": "twist of the handle (rZ)"
+    },
+    "stick.gimbal": {
+      "type": "gimbal",
+      "name": "Base",
+      "inputs": [
+        {"input": "JOY_X", "control": "stick.axis.roll"},
+        {"input": "JOY_Y", "control": "stick.axis.pitch"}
+      ],
+      "mapping": "high",
+      "confidence": "medium",
+      "note": "grip-to-base joint (knurled nut; base not in the photo)"
+    },
+    "stick.button.thumb.1": {
+      "type": "button",
+      "name": "Thumb button",
+      "inputs": [
+        {"input": "JOY_BTN3", "control": "stick.button.thumb.1"}
+      ],
+      "mapping": "high",
+      "confidence": "high",
+      "note": "round button 3 with white ring, front of the top"
+    },
+    "stick.button.thumb.2": {
+      "type": "button",
+      "name": "Pinky button",
+      "inputs": [
+        {"input": "JOY_BTN18", "control": "stick.button.thumb.2"}
+      ],
+      "mapping": "high"
+    }
+  },
+  "unplaced": {
+    "stick.button.thumb.2": "button 18 on the pinky bulge faces forward/away (sheet right-hand view); not visible on this photo"
+  },
+  "candidates": {},
+  "source": "JoyPro curated on the maker's photo (2026-10-11), grip seen from its left (thumb) side, front (red trigger) to the left; base not in the photo",
+  "mappingSource": "Virpil support sheet \"VPC WarBRD Grip\" (https://support.virpil.com/en/support/solutions/articles/47001285160-vpc-warbrd-grip, attachment 47404429068), the catalog's source",
+  "confidence": "medium",
+  "note": "the green-lit ring between button 3 and the top hat is an LED (unlabelled on the sheet too), not a control. the catalog calls hat 13-17 \"Rear hat\" and button 18 \"Rear button\"; on the sheet and the photo the 13-17 hat sits on the thumb side at mid-grip, and 18 is a round button on the pinky bulge (sheet right-hand view), not at the rear. the sheet shows the 4-12 hat as a single top hat (8 directions + push); the per-direction order is the catalog's reading of the perspective sheet (identify note), positions of the directions are not marked separately.",
+  "callouts": {
+    "version": 1,
+    "width": 2184,
+    "height": 1462,
+    "picture": [492, 23, 1200, 1200],
+    "rowHeight": 29,
+    "mainWidth": 246,
+    "modWidth": 160,
+    "otherY": 1359,
+    "tables": [
+      {"id": "stick.hat.tms", "title": "TMS hat", "parts": ["stick.hat.tms"], "side": "right", "x": 1726, "y": 318.7, "width": 435, "modifier": true, "spot": [0.535, 0.276], "rows": [{"input": "JOY_BTN4", "label": "Press", "icon": "button", "part": "stick.hat.tms"}, {"input": "JOY_BTN5", "label": "Up", "icon": "up", "part": "stick.hat.tms"}, {"input": "JOY_BTN7", "label": "Right", "icon": "right", "part": "stick.hat.tms"}, {"input": "JOY_BTN11", "label": "Left", "icon": "left", "part": "stick.hat.tms"}, {"input": "JOY_BTN9", "label": "Down", "icon": "down", "part": "stick.hat.tms"}, {"input": "JOY_BTN6", "label": "Up-right", "icon": "upright", "part": "stick.hat.tms"}, {"input": "JOY_BTN12", "label": "Up-left", "icon": "upleft", "part": "stick.hat.tms"}, {"input": "JOY_BTN8", "label": "Down-right", "icon": "downright", "part": "stick.hat.tms"}, {"input": "JOY_BTN10", "label": "Down-left", "icon": "downleft", "part": "stick.hat.tms"}]},
+      {"id": "stick.hat.cms", "title": "Thumb-side hat", "parts": ["stick.hat.cms"], "side": "left", "x": 23, "y": 591.3, "width": 435, "modifier": true, "spot": [0.445, 0.488], "rows": [{"input": "JOY_BTN13", "label": "Press", "icon": "button", "part": "stick.hat.cms"}, {"input": "JOY_BTN14", "label": "Up", "icon": "up", "part": "stick.hat.cms"}, {"input": "JOY_BTN15", "label": "Right", "icon": "right", "part": "stick.hat.cms"}, {"input": "JOY_BTN17", "label": "Left", "icon": "left", "part": "stick.hat.cms"}, {"input": "JOY_BTN16", "label": "Down", "icon": "down", "part": "stick.hat.cms"}]},
+      {"id": "stick.trigger", "title": "Trigger stage", "parts": ["stick.trigger"], "side": "left", "x": 23, "y": 503.3, "width": 435, "modifier": true, "spot": [0.401, 0.445], "rows": [{"input": "JOY_BTN1", "label": "First stage", "icon": "button", "part": "stick.trigger"}, {"input": "JOY_BTN2", "label": "Second stage", "icon": "button", "part": "stick.trigger"}]},
+      {"id": "stick.axis.twist", "title": "Twist (rZ)", "parts": ["stick.axis.twist"], "side": "right", "x": 1726, "y": 659.5, "width": 435, "modifier": true, "spot": [0.6, 0.56], "rows": [{"input": "JOY_RZ", "label": "RZ", "icon": "axis", "part": "stick.axis.twist"}]},
+      {"id": "stick.gimbal", "title": "Base", "parts": ["stick.gimbal"], "side": "bottom", "x": 940.5, "y": 1257, "width": 435, "modifier": true, "spot": [0.555, 0.935], "rows": [{"input": "JOY_X", "label": "roll (X)", "icon": "axis", "part": "stick.gimbal"}, {"input": "JOY_Y", "label": "pitch (Y)", "icon": "axis", "part": "stick.gimbal"}]},
+      {"id": "stick.button.thumb.1", "title": "Thumb button", "parts": ["stick.button.thumb.1"], "side": "left", "x": 23, "y": 345.1, "width": 435, "modifier": true, "spot": [0.42, 0.298], "rows": [{"input": "JOY_BTN3", "label": "Press", "icon": "button", "part": "stick.button.thumb.1"}]},
+      {"id": "stick.button.thumb.2", "title": "Pinky button", "parts": ["stick.button.thumb.2"], "side": "other", "x": 23, "y": 1389, "width": 435, "modifier": true, "rows": [{"input": "JOY_BTN18", "label": "Press", "icon": "button", "part": "stick.button.thumb.2"}]}
+    ],
+    "lines": [
+      {"table": "stick.button.thumb.1", "points": [[996, 380.6], [458, 380.6]]},
+      {"table": "stick.trigger", "points": [[973.2, 557], [475, 557], [475, 538.8], [458, 538.8]]},
+      {"table": "stick.hat.cms", "points": [[1026, 608.6], [475, 608.6], [475, 626.8], [458, 626.8]]},
+      {"table": "stick.hat.tms", "points": [[1134, 354.2], [1726, 354.2]]},
+      {"table": "stick.axis.twist", "points": [[1212, 695], [1726, 695]]},
+      {"table": "stick.gimbal", "points": [[1158, 1145], [1158, 1257]]}
+    ]
+  }
+}

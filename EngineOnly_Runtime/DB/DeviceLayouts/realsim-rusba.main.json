@@ -1,0 +1,69 @@
+{
+  "format": "joypro-device-layout",
+  "version": 1,
+  "model": "realsim-rusba",
+  "photo": {"kind": "vendor", "url": "https://realsimulator.com/wp-content/uploads/2020/02/RUSBA_product_2021_new.jpg", "sha256": "7436be46443ef8a093c9ab127a41c85c3290096712d504e7998f00dd83a814a5", "view": "main"},
+  "markers": {
+    "pedals.axis.brake_left": [0.69, 0.79],
+    "pedals.axis.brake_right": [0.87, 0.805],
+    "pedals.axis.rudder": [0.78, 0.835]
+  },
+  "parts": {
+    "pedals.axis.rudder": {
+      "type": "rudder",
+      "name": "Rudder",
+      "inputs": [
+        {"input": "JOY_Z", "control": "pedals.axis.rudder"}
+      ],
+      "mapping": "high",
+      "confidence": "medium",
+      "note": "on the inset: centre of the pedal assembly"
+    },
+    "pedals.axis.brake_left": {
+      "type": "brake",
+      "name": "Left toe brake",
+      "inputs": [
+        {"input": "JOY_RX", "control": "pedals.axis.brake_left"}
+      ],
+      "mapping": "high",
+      "confidence": "medium",
+      "note": "on the inset: left pedal plate (toe brake)"
+    },
+    "pedals.axis.brake_right": {
+      "type": "brake",
+      "name": "Right toe brake",
+      "inputs": [
+        {"input": "JOY_RY", "control": "pedals.axis.brake_right"}
+      ],
+      "mapping": "high",
+      "confidence": "medium",
+      "note": "on the inset: right pedal plate (toe brake)"
+    }
+  },
+  "unplaced": {},
+  "candidates": {},
+  "source": "JoyPro curated on the maker's photo (2026-10-11), the RUSBA adapter, with an inset (bottom right) of game-port rudder pedals with toe brakes (Thrustmaster Elite style), seen from the front-left",
+  "mappingSource": "RUSBA User Guide (https://www.realsimulator.com/download/RUSBA_User_Guide.pdf) p.7: RandB firmware Axis Z = rudder, Rotation X = left brake, Rotation Y = right brake, as cited by the catalog",
+  "confidence": "medium",
+  "note": "The adapter itself has no controls; the markers are on the small inset picture of the pedals it connects (about 15% of the photo). Any Cougar-compatible game-port pedals work; the pictured set is an example. Brakes only with the RandB firmware; the Rudder firmware reports Z only.",
+  "callouts": {
+    "version": 1,
+    "width": 1092,
+    "height": 969,
+    "picture": [18, 18, 700, 933],
+    "rowHeight": 22,
+    "mainWidth": 187,
+    "modWidth": 121,
+    "otherY": -1,
+    "tables": [
+      {"id": "pedals.axis.rudder", "title": "Rudder", "parts": ["pedals.axis.rudder"], "side": "right", "x": 744, "y": 791.7, "width": 330, "modifier": true, "spot": [0.78, 0.835], "rows": [{"input": "JOY_Z", "label": "Z", "icon": "axis", "part": "pedals.axis.rudder"}]},
+      {"id": "pedals.axis.brake_left", "title": "Left toe brake", "parts": ["pedals.axis.brake_left"], "side": "right", "x": 744, "y": 701.7, "width": 330, "modifier": true, "spot": [0.69, 0.79], "rows": [{"input": "JOY_RX", "label": "RX", "icon": "axis", "part": "pedals.axis.brake_left"}]},
+      {"id": "pedals.axis.brake_right", "title": "Right toe brake", "parts": ["pedals.axis.brake_right"], "side": "right", "x": 744, "y": 746.7, "width": 330, "modifier": true, "spot": [0.87, 0.805], "rows": [{"input": "JOY_RY", "label": "RY", "icon": "axis", "part": "pedals.axis.brake_right"}]}
+    ],
+    "lines": [
+      {"table": "pedals.axis.brake_left", "points": [[501, 755.1], [731, 755.1], [731, 728.7], [744, 728.7]]},
+      {"table": "pedals.axis.brake_right", "points": [[627, 769.1], [731, 769.1], [731, 773.7], [744, 773.7]]},
+      {"table": "pedals.axis.rudder", "points": [[564, 797.1], [731, 797.1], [731, 818.7], [744, 818.7]]}
+    ]
+  }
+}

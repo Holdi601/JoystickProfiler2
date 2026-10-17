@@ -1,0 +1,2004 @@
+{
+ "vendor": "VPforce",
+ "officialHosts": [
+  "vpforce.eu",
+  "docs.vpforce.eu",
+  "www.thrustmaster.com",
+  "virpil-controls.eu",
+  "support.virpil.com",
+  "eu.winctrl.com",
+  "vkbsimcontrollers.com",
+  "support.thrustmaster.com"
+ ],
+ "devices": [
+  {
+   "id": "vpforce-rhino",
+   "name": "VPforce Rhino FFB Base",
+   "kind": "base",
+   "hand": "none",
+   "identify": {
+    "vidPids": [
+     "FFFF:2055"
+    ],
+    "names": [
+     "Rhino FFB Joystick",
+     "VPforce Rhino FFB Joystick"
+    ],
+    "note": "VID:PID FFFF:2055 and HID name 'Rhino FFB Joystick' read from the user's own Rhino (JoyPro engine devices list). DirectInput: axes JOY_Z, JOY_Y, JOY_X, JOY_RY, JOY_RX, JOY_RZ, JOY_SLIDER1 (7 axes), 64 buttons, 4 hats - identical for every grip (grip chosen in the VPforce Configurator Grip Type; the firmware always exposes 64 buttons / 4 hats). Which grip axes (analog brake lever, ministick, Virpil axes) land on Z/RX/RY/RZ/SLIDER1 is configurable and was not documented. TelemFFB (software, not a device) adds telemetry effects for DCS/MSFS/X-Plane. VPforce documents no default per-grip button numbering; buttons can be remapped per physical button in the Configurator Button Mapping tab."
+   },
+   "image": "https://vpforce.eu/rhino.webp",
+   "productUrl": "https://vpforce.eu/usb/rhino",
+   "sources": [
+    "https://docs.vpforce.eu/rhino/getting-started/",
+    "https://docs.vpforce.eu/products/grip-adapters/",
+    "https://github.com/walmis/VPforce-TelemFFB"
+   ],
+   "confidence": "high",
+   "axes": [
+    {
+     "input": "JOY_X",
+     "control": "stick.axis.roll"
+    },
+    {
+     "input": "JOY_Y",
+     "control": "stick.axis.pitch"
+    }
+   ],
+   "controls": []
+  },
+  {
+   "id": "vpforce-rhino-diy-kit",
+   "name": "VPforce Rhino DIY Motor Kit / Kaltokri RhinoJoystick",
+   "kind": "base",
+   "hand": "none",
+   "identify": {
+    "vidPids": [
+     "FFFF:2055"
+    ],
+    "names": [
+     "Rhino FFB Joystick"
+    ],
+    "note": "DIY builds use the same Rhino electronics and identify like the Rhino."
+   },
+   "productUrl": "https://docs.vpforce.eu/third-party-vendors/kaltokri-kits/rhinojoystick/",
+   "sources": [
+    "https://docs.vpforce.eu/third-party-vendors/kaltokri-kits/rhinojoystick/"
+   ],
+   "confidence": "low",
+   "axes": [
+    {
+     "input": "JOY_X",
+     "control": "stick.axis.roll"
+    },
+    {
+     "input": "JOY_Y",
+     "control": "stick.axis.pitch"
+    }
+   ],
+   "controls": []
+  },
+  {
+   "id": "vpforce-rhino-tm-warthog-grip",
+   "name": "Thrustmaster Warthog Grip on Rhino",
+   "kind": "stick",
+   "hand": "right",
+   "base": "vpforce-rhino",
+   "identify": {
+    "names": [
+     "Rhino FFB Joystick"
+    ],
+    "note": "Button/hat numbering of this grip on the Rhino is set by the Rhino firmware/VPforce Configurator Button Mapping tab and differs from the grip's native base numbering; factory numbers could not be verified from documentation -> controls listed without input. Up to 24 buttons via the 5-pin interface. A VPforce community thread (2023) reports that the Warthog grip's button/hat numbers on the Rhino differ from the TM manual and from what TM and Virpil bases report; users remap in the Configurator. As of 2026-10 docs.vpforce.eu (and its source repo walmis/VPforce-Docs) has no per-grip button tables."
+   },
+   "image": "https://www.thrustmaster.com/wp-content/uploads/2023/03/HotasWarthoFlightStick-pichi-768x768-2.webp",
+   "productUrl": "https://www.thrustmaster.com/products/hotas-warthog-flight-stick/",
+   "sources": [
+    "https://docs.vpforce.eu/products/grip-adapters/",
+    "https://www.answeroverflow.com/m/1137088622198280333",
+    "https://docs.vpforce.eu/rhino/using-the-rhino/"
+   ],
+   "confidence": "low",
+   "axes": [
+    {
+     "input": "JOY_X",
+     "control": "stick.axis.roll"
+    },
+    {
+     "input": "JOY_Y",
+     "control": "stick.axis.pitch"
+    }
+   ],
+   "controls": [
+    {
+     "control": "stick.trigger.stage1",
+     "finger": "index",
+     "type": "momentary"
+    },
+    {
+     "control": "stick.trigger.stage2",
+     "finger": "index",
+     "type": "momentary"
+    },
+    {
+     "control": "stick.weapon_release",
+     "finger": "thumb",
+     "type": "momentary"
+    },
+    {
+     "control": "stick.button.thumb.1",
+     "label": "NWS/MSL STEP",
+     "finger": "thumb",
+     "type": "momentary"
+    },
+    {
+     "control": "stick.pinky.lever",
+     "finger": "pinky",
+     "type": "momentary"
+    },
+    {
+     "control": "stick.hat.trim.up",
+     "finger": "thumb",
+     "type": "momentary"
+    },
+    {
+     "control": "stick.hat.trim.down",
+     "finger": "thumb",
+     "type": "momentary"
+    },
+    {
+     "control": "stick.hat.trim.left",
+     "finger": "thumb",
+     "type": "momentary"
+    },
+    {
+     "control": "stick.hat.trim.right",
+     "finger": "thumb",
+     "type": "momentary"
+    },
+    {
+     "control": "stick.hat.tms.up",
+     "finger": "thumb",
+     "type": "momentary"
+    },
+    {
+     "control": "stick.hat.tms.down",
+     "finger": "thumb",
+     "type": "momentary"
+    },
+    {
+     "control": "stick.hat.tms.left",
+     "finger": "thumb",
+     "type": "momentary"
+    },
+    {
+     "control": "stick.hat.tms.right",
+     "finger": "thumb",
+     "type": "momentary"
+    },
+    {
+     "control": "stick.hat.dms.up",
+     "finger": "thumb",
+     "type": "momentary"
+    },
+    {
+     "control": "stick.hat.dms.down",
+     "finger": "thumb",
+     "type": "momentary"
+    },
+    {
+     "control": "stick.hat.dms.left",
+     "finger": "thumb",
+     "type": "momentary"
+    },
+    {
+     "control": "stick.hat.dms.right",
+     "finger": "thumb",
+     "type": "momentary"
+    },
+    {
+     "control": "stick.hat.cms.up",
+     "finger": "thumb",
+     "type": "momentary"
+    },
+    {
+     "control": "stick.hat.cms.down",
+     "finger": "thumb",
+     "type": "momentary"
+    },
+    {
+     "control": "stick.hat.cms.left",
+     "finger": "thumb",
+     "type": "momentary"
+    },
+    {
+     "control": "stick.hat.cms.right",
+     "finger": "thumb",
+     "type": "momentary"
+    },
+    {
+     "control": "stick.hat.cms.press",
+     "finger": "thumb",
+     "type": "momentary"
+    }
+   ]
+  },
+  {
+   "id": "vpforce-rhino-tm-f16-grip",
+   "name": "Thrustmaster F-16C Viper Grip on Rhino",
+   "kind": "stick",
+   "hand": "right",
+   "base": "vpforce-rhino",
+   "identify": {
+    "names": [
+     "Rhino FFB Joystick"
+    ],
+    "note": "Button/hat numbering of this grip on the Rhino is set by the Rhino firmware/VPforce Configurator Button Mapping tab and differs from the grip's native base numbering (VPforce docs, community); factory numbers could not be verified from documentation -> controls listed without input."
+   },
+   "image": "https://www.thrustmaster.com/wp-content/uploads/2023/03/F16CviperProduct-pichi-768x768-1.webp",
+   "productUrl": "https://www.thrustmaster.com/products/f-16c-viper-hotas-add-on-grip/",
+   "sources": [
+    "https://docs.vpforce.eu/products/grip-adapters/"
+   ],
+   "confidence": "low",
+   "axes": [
+    {
+     "input": "JOY_X",
+     "control": "stick.axis.roll"
+    },
+    {
+     "input": "JOY_Y",
+     "control": "stick.axis.pitch"
+    }
+   ],
+   "controls": [
+    {
+     "control": "stick.trigger.stage1",
+     "finger": "index",
+     "type": "momentary"
+    },
+    {
+     "control": "stick.trigger.stage2",
+     "finger": "index",
+     "type": "momentary"
+    },
+    {
+     "control": "stick.weapon_release",
+     "finger": "thumb",
+     "type": "momentary"
+    },
+    {
+     "control": "stick.pinky.lever",
+     "finger": "pinky",
+     "type": "momentary"
+    },
+    {
+     "control": "stick.hat.trim.up",
+     "finger": "thumb",
+     "type": "momentary"
+    },
+    {
+     "control": "stick.hat.trim.down",
+     "finger": "thumb",
+     "type": "momentary"
+    },
+    {
+     "control": "stick.hat.trim.left",
+     "finger": "thumb",
+     "type": "momentary"
+    },
+    {
+     "control": "stick.hat.trim.right",
+     "finger": "thumb",
+     "type": "momentary"
+    },
+    {
+     "control": "stick.hat.tms.up",
+     "finger": "thumb",
+     "type": "momentary"
+    },
+    {
+     "control": "stick.hat.tms.down",
+     "finger": "thumb",
+     "type": "momentary"
+    },
+    {
+     "control": "stick.hat.tms.left",
+     "finger": "thumb",
+     "type": "momentary"
+    },
+    {
+     "control": "stick.hat.tms.right",
+     "finger": "thumb",
+     "type": "momentary"
+    },
+    {
+     "control": "stick.hat.dms.up",
+     "finger": "thumb",
+     "type": "momentary"
+    },
+    {
+     "control": "stick.hat.dms.down",
+     "finger": "thumb",
+     "type": "momentary"
+    },
+    {
+     "control": "stick.hat.dms.left",
+     "finger": "thumb",
+     "type": "momentary"
+    },
+    {
+     "control": "stick.hat.dms.right",
+     "finger": "thumb",
+     "type": "momentary"
+    },
+    {
+     "control": "stick.hat.cms.up",
+     "finger": "thumb",
+     "type": "momentary"
+    },
+    {
+     "control": "stick.hat.cms.down",
+     "finger": "thumb",
+     "type": "momentary"
+    },
+    {
+     "control": "stick.hat.cms.left",
+     "finger": "thumb",
+     "type": "momentary"
+    },
+    {
+     "control": "stick.hat.cms.right",
+     "finger": "thumb",
+     "type": "momentary"
+    },
+    {
+     "control": "stick.hat.cms.press",
+     "finger": "thumb",
+     "type": "momentary"
+    }
+   ]
+  },
+  {
+   "id": "vpforce-rhino-tm-f18-grip",
+   "name": "Thrustmaster F/A-18C Hornet Grip on Rhino",
+   "kind": "stick",
+   "hand": "right",
+   "base": "vpforce-rhino",
+   "identify": {
+    "names": [
+     "Rhino FFB Joystick"
+    ],
+    "note": "Button/hat numbering of this grip on the Rhino is set by the Rhino firmware/VPforce Configurator Button Mapping tab and differs from the grip's native base numbering (VPforce docs, community); factory numbers could not be verified from documentation -> controls listed without input."
+   },
+   "image": "https://www.thrustmaster.com/wp-content/uploads/2023/03/stickFA18product-pichi-768x768-1.webp",
+   "productUrl": "https://www.thrustmaster.com/products/f-a-18c-hornet-hotas-add-on-grip/",
+   "sources": [
+    "https://docs.vpforce.eu/products/grip-adapters/"
+   ],
+   "confidence": "low",
+   "axes": [
+    {
+     "input": "JOY_X",
+     "control": "stick.axis.roll"
+    },
+    {
+     "input": "JOY_Y",
+     "control": "stick.axis.pitch"
+    }
+   ],
+   "controls": [
+    {
+     "control": "stick.trigger.stage1",
+     "finger": "index",
+     "type": "momentary"
+    },
+    {
+     "control": "stick.trigger.stage2",
+     "finger": "index",
+     "type": "momentary"
+    },
+    {
+     "control": "stick.weapon_release",
+     "finger": "thumb",
+     "type": "momentary"
+    },
+    {
+     "control": "stick.pinky.lever",
+     "finger": "pinky",
+     "type": "momentary"
+    },
+    {
+     "control": "stick.button.thumb.2",
+     "finger": "thumb",
+     "type": "momentary"
+    },
+    {
+     "control": "stick.button.thumb.3",
+     "finger": "thumb",
+     "type": "momentary"
+    },
+    {
+     "control": "stick.hat.trim.up",
+     "finger": "thumb",
+     "type": "momentary"
+    },
+    {
+     "control": "stick.hat.trim.down",
+     "finger": "thumb",
+     "type": "momentary"
+    },
+    {
+     "control": "stick.hat.trim.left",
+     "finger": "thumb",
+     "type": "momentary"
+    },
+    {
+     "control": "stick.hat.trim.right",
+     "finger": "thumb",
+     "type": "momentary"
+    },
+    {
+     "control": "stick.hat.tms.up",
+     "finger": "thumb",
+     "type": "momentary"
+    },
+    {
+     "control": "stick.hat.tms.down",
+     "finger": "thumb",
+     "type": "momentary"
+    },
+    {
+     "control": "stick.hat.tms.left",
+     "finger": "thumb",
+     "type": "momentary"
+    },
+    {
+     "control": "stick.hat.tms.right",
+     "finger": "thumb",
+     "type": "momentary"
+    },
+    {
+     "control": "stick.hat.dms.up",
+     "finger": "thumb",
+     "type": "momentary"
+    },
+    {
+     "control": "stick.hat.dms.down",
+     "finger": "thumb",
+     "type": "momentary"
+    },
+    {
+     "control": "stick.hat.dms.left",
+     "finger": "thumb",
+     "type": "momentary"
+    },
+    {
+     "control": "stick.hat.dms.right",
+     "finger": "thumb",
+     "type": "momentary"
+    }
+   ]
+  },
+  {
+   "id": "vpforce-rhino-tm-cougar-grip",
+   "name": "Thrustmaster HOTAS Cougar Grip on Rhino",
+   "kind": "stick",
+   "hand": "right",
+   "base": "vpforce-rhino",
+   "identify": {
+    "names": [
+     "Rhino FFB Joystick"
+    ],
+    "note": "Button/hat numbering of this grip on the Rhino is set by the Rhino firmware/VPforce Configurator Button Mapping tab and differs from the grip's native base numbering (VPforce docs, community); factory numbers could not be verified from documentation -> controls listed without input. Native Rhino mount (Cougar)."
+   },
+   "sources": [
+    "https://docs.vpforce.eu/products/grip-adapters/"
+   ],
+   "confidence": "low",
+   "axes": [
+    {
+     "input": "JOY_X",
+     "control": "stick.axis.roll"
+    },
+    {
+     "input": "JOY_Y",
+     "control": "stick.axis.pitch"
+    }
+   ],
+   "controls": [
+    {
+     "control": "stick.trigger.stage1",
+     "finger": "index",
+     "type": "momentary"
+    },
+    {
+     "control": "stick.trigger.stage2",
+     "finger": "index",
+     "type": "momentary"
+    },
+    {
+     "control": "stick.weapon_release",
+     "finger": "thumb",
+     "type": "momentary"
+    },
+    {
+     "control": "stick.hat.trim.up",
+     "finger": "thumb",
+     "type": "momentary"
+    },
+    {
+     "control": "stick.hat.trim.down",
+     "finger": "thumb",
+     "type": "momentary"
+    },
+    {
+     "control": "stick.hat.trim.left",
+     "finger": "thumb",
+     "type": "momentary"
+    },
+    {
+     "control": "stick.hat.trim.right",
+     "finger": "thumb",
+     "type": "momentary"
+    },
+    {
+     "control": "stick.hat.tms.up",
+     "finger": "thumb",
+     "type": "momentary"
+    },
+    {
+     "control": "stick.hat.tms.down",
+     "finger": "thumb",
+     "type": "momentary"
+    },
+    {
+     "control": "stick.hat.tms.left",
+     "finger": "thumb",
+     "type": "momentary"
+    },
+    {
+     "control": "stick.hat.tms.right",
+     "finger": "thumb",
+     "type": "momentary"
+    },
+    {
+     "control": "stick.hat.dms.up",
+     "finger": "thumb",
+     "type": "momentary"
+    },
+    {
+     "control": "stick.hat.dms.down",
+     "finger": "thumb",
+     "type": "momentary"
+    },
+    {
+     "control": "stick.hat.dms.left",
+     "finger": "thumb",
+     "type": "momentary"
+    },
+    {
+     "control": "stick.hat.dms.right",
+     "finger": "thumb",
+     "type": "momentary"
+    },
+    {
+     "control": "stick.hat.cms.up",
+     "finger": "thumb",
+     "type": "momentary"
+    },
+    {
+     "control": "stick.hat.cms.down",
+     "finger": "thumb",
+     "type": "momentary"
+    },
+    {
+     "control": "stick.hat.cms.left",
+     "finger": "thumb",
+     "type": "momentary"
+    },
+    {
+     "control": "stick.hat.cms.right",
+     "finger": "thumb",
+     "type": "momentary"
+    }
+   ]
+  },
+  {
+   "id": "vpforce-rhino-virpil-mongoost50",
+   "name": "Virpil MongoosT-50CM3 Grip on Rhino",
+   "kind": "stick",
+   "hand": "right",
+   "base": "vpforce-rhino",
+   "identify": {
+    "names": [
+     "Rhino FFB Joystick"
+    ],
+    "note": "Button/hat numbering of this grip on the Rhino is set by the Rhino firmware/VPforce Configurator Button Mapping tab and differs from the grip's native base numbering (VPforce docs, community); factory numbers could not be verified from documentation -> controls listed without input. Native Rhino mount with analog axes and LED support. Control list is a generic approximation of the grip layout, not a verified map."
+   },
+   "sources": [
+    "https://docs.vpforce.eu/products/grip-adapters/",
+    "https://virpil-controls.eu/"
+   ],
+   "confidence": "low",
+   "axes": [
+    {
+     "input": "JOY_X",
+     "control": "stick.axis.roll"
+    },
+    {
+     "input": "JOY_Y",
+     "control": "stick.axis.pitch"
+    }
+   ],
+   "controls": [
+    {
+     "control": "stick.trigger.stage1",
+     "finger": "index",
+     "type": "momentary"
+    },
+    {
+     "control": "stick.trigger.stage2",
+     "finger": "index",
+     "type": "momentary"
+    },
+    {
+     "control": "stick.weapon_release",
+     "finger": "thumb",
+     "type": "momentary"
+    },
+    {
+     "control": "stick.hat.trim.up",
+     "finger": "thumb",
+     "type": "momentary"
+    },
+    {
+     "control": "stick.hat.trim.down",
+     "finger": "thumb",
+     "type": "momentary"
+    },
+    {
+     "control": "stick.hat.trim.left",
+     "finger": "thumb",
+     "type": "momentary"
+    },
+    {
+     "control": "stick.hat.trim.right",
+     "finger": "thumb",
+     "type": "momentary"
+    },
+    {
+     "control": "stick.hat.tms.up",
+     "finger": "thumb",
+     "type": "momentary"
+    },
+    {
+     "control": "stick.hat.tms.down",
+     "finger": "thumb",
+     "type": "momentary"
+    },
+    {
+     "control": "stick.hat.tms.left",
+     "finger": "thumb",
+     "type": "momentary"
+    },
+    {
+     "control": "stick.hat.tms.right",
+     "finger": "thumb",
+     "type": "momentary"
+    },
+    {
+     "control": "stick.hat.dms.up",
+     "finger": "thumb",
+     "type": "momentary"
+    },
+    {
+     "control": "stick.hat.dms.down",
+     "finger": "thumb",
+     "type": "momentary"
+    },
+    {
+     "control": "stick.hat.dms.left",
+     "finger": "thumb",
+     "type": "momentary"
+    },
+    {
+     "control": "stick.hat.dms.right",
+     "finger": "thumb",
+     "type": "momentary"
+    },
+    {
+     "control": "stick.button.thumb.1",
+     "finger": "thumb",
+     "type": "momentary"
+    },
+    {
+     "control": "stick.button.thumb.2",
+     "finger": "thumb",
+     "type": "momentary"
+    },
+    {
+     "control": "stick.pinky.lever",
+     "finger": "pinky",
+     "type": "momentary"
+    }
+   ]
+  },
+  {
+   "id": "vpforce-rhino-virpil-warbrd",
+   "name": "Virpil WarBRD / WarBRD-D Grip on Rhino",
+   "kind": "stick",
+   "hand": "right",
+   "base": "vpforce-rhino",
+   "identify": {
+    "names": [
+     "Rhino FFB Joystick"
+    ],
+    "note": "Button/hat numbering of this grip on the Rhino is set by the Rhino firmware/VPforce Configurator Button Mapping tab and differs from the grip's native base numbering (VPforce docs, community); factory numbers could not be verified from documentation -> controls listed without input. Native Rhino mount with analog axes and LED support. Control list is a generic approximation of the grip layout, not a verified map."
+   },
+   "sources": [
+    "https://docs.vpforce.eu/products/grip-adapters/",
+    "https://virpil-controls.eu/"
+   ],
+   "confidence": "low",
+   "axes": [
+    {
+     "input": "JOY_X",
+     "control": "stick.axis.roll"
+    },
+    {
+     "input": "JOY_Y",
+     "control": "stick.axis.pitch"
+    }
+   ],
+   "controls": [
+    {
+     "control": "stick.trigger.stage1",
+     "finger": "index",
+     "type": "momentary"
+    },
+    {
+     "control": "stick.trigger.stage2",
+     "finger": "index",
+     "type": "momentary"
+    },
+    {
+     "control": "stick.weapon_release",
+     "finger": "thumb",
+     "type": "momentary"
+    },
+    {
+     "control": "stick.hat.trim.up",
+     "finger": "thumb",
+     "type": "momentary"
+    },
+    {
+     "control": "stick.hat.trim.down",
+     "finger": "thumb",
+     "type": "momentary"
+    },
+    {
+     "control": "stick.hat.trim.left",
+     "finger": "thumb",
+     "type": "momentary"
+    },
+    {
+     "control": "stick.hat.trim.right",
+     "finger": "thumb",
+     "type": "momentary"
+    },
+    {
+     "control": "stick.hat.tms.up",
+     "finger": "thumb",
+     "type": "momentary"
+    },
+    {
+     "control": "stick.hat.tms.down",
+     "finger": "thumb",
+     "type": "momentary"
+    },
+    {
+     "control": "stick.hat.tms.left",
+     "finger": "thumb",
+     "type": "momentary"
+    },
+    {
+     "control": "stick.hat.tms.right",
+     "finger": "thumb",
+     "type": "momentary"
+    },
+    {
+     "control": "stick.hat.dms.up",
+     "finger": "thumb",
+     "type": "momentary"
+    },
+    {
+     "control": "stick.hat.dms.down",
+     "finger": "thumb",
+     "type": "momentary"
+    },
+    {
+     "control": "stick.hat.dms.left",
+     "finger": "thumb",
+     "type": "momentary"
+    },
+    {
+     "control": "stick.hat.dms.right",
+     "finger": "thumb",
+     "type": "momentary"
+    },
+    {
+     "control": "stick.button.thumb.1",
+     "finger": "thumb",
+     "type": "momentary"
+    },
+    {
+     "control": "stick.button.thumb.2",
+     "finger": "thumb",
+     "type": "momentary"
+    },
+    {
+     "control": "stick.pinky.lever",
+     "finger": "pinky",
+     "type": "momentary"
+    }
+   ]
+  },
+  {
+   "id": "vpforce-rhino-virpil-alpha",
+   "name": "Virpil Constellation Alpha Grip on Rhino",
+   "kind": "stick",
+   "hand": "right",
+   "base": "vpforce-rhino",
+   "identify": {
+    "names": [
+     "Rhino FFB Joystick"
+    ],
+    "note": "Button/hat numbering of this grip on the Rhino is set by the Rhino firmware/VPforce Configurator Button Mapping tab and differs from the grip's native base numbering (VPforce docs, community); factory numbers could not be verified from documentation -> controls listed without input. Native Rhino mount with analog axes and LED support. Control list is a generic approximation of the grip layout, not a verified map."
+   },
+   "sources": [
+    "https://docs.vpforce.eu/products/grip-adapters/",
+    "https://virpil-controls.eu/"
+   ],
+   "confidence": "low",
+   "axes": [
+    {
+     "input": "JOY_X",
+     "control": "stick.axis.roll"
+    },
+    {
+     "input": "JOY_Y",
+     "control": "stick.axis.pitch"
+    }
+   ],
+   "controls": [
+    {
+     "control": "stick.trigger.stage1",
+     "finger": "index",
+     "type": "momentary"
+    },
+    {
+     "control": "stick.trigger.stage2",
+     "finger": "index",
+     "type": "momentary"
+    },
+    {
+     "control": "stick.weapon_release",
+     "finger": "thumb",
+     "type": "momentary"
+    },
+    {
+     "control": "stick.hat.trim.up",
+     "finger": "thumb",
+     "type": "momentary"
+    },
+    {
+     "control": "stick.hat.trim.down",
+     "finger": "thumb",
+     "type": "momentary"
+    },
+    {
+     "control": "stick.hat.trim.left",
+     "finger": "thumb",
+     "type": "momentary"
+    },
+    {
+     "control": "stick.hat.trim.right",
+     "finger": "thumb",
+     "type": "momentary"
+    },
+    {
+     "control": "stick.hat.tms.up",
+     "finger": "thumb",
+     "type": "momentary"
+    },
+    {
+     "control": "stick.hat.tms.down",
+     "finger": "thumb",
+     "type": "momentary"
+    },
+    {
+     "control": "stick.hat.tms.left",
+     "finger": "thumb",
+     "type": "momentary"
+    },
+    {
+     "control": "stick.hat.tms.right",
+     "finger": "thumb",
+     "type": "momentary"
+    },
+    {
+     "control": "stick.hat.dms.up",
+     "finger": "thumb",
+     "type": "momentary"
+    },
+    {
+     "control": "stick.hat.dms.down",
+     "finger": "thumb",
+     "type": "momentary"
+    },
+    {
+     "control": "stick.hat.dms.left",
+     "finger": "thumb",
+     "type": "momentary"
+    },
+    {
+     "control": "stick.hat.dms.right",
+     "finger": "thumb",
+     "type": "momentary"
+    },
+    {
+     "control": "stick.button.thumb.1",
+     "finger": "thumb",
+     "type": "momentary"
+    },
+    {
+     "control": "stick.button.thumb.2",
+     "finger": "thumb",
+     "type": "momentary"
+    },
+    {
+     "control": "stick.pinky.lever",
+     "finger": "pinky",
+     "type": "momentary"
+    }
+   ]
+  },
+  {
+   "id": "vpforce-rhino-virpil-alpha-prime",
+   "name": "Virpil Constellation Alpha Prime Grip on Rhino",
+   "kind": "stick",
+   "hand": "right",
+   "base": "vpforce-rhino",
+   "identify": {
+    "names": [
+     "Rhino FFB Joystick"
+    ],
+    "note": "Button/hat numbering of this grip on the Rhino is set by the Rhino firmware/VPforce Configurator Button Mapping tab and differs from the grip's native base numbering (VPforce docs, community); factory numbers could not be verified from documentation -> controls listed without input. Native Rhino mount with analog axes and LED support. Control list is a generic approximation of the grip layout, not a verified map."
+   },
+   "productUrl": "https://virpil-controls.eu/vpc-constellation-alpha-prime-r.html",
+   "sources": [
+    "https://docs.vpforce.eu/products/grip-adapters/",
+    "https://virpil-controls.eu/"
+   ],
+   "confidence": "low",
+   "axes": [
+    {
+     "input": "JOY_X",
+     "control": "stick.axis.roll"
+    },
+    {
+     "input": "JOY_Y",
+     "control": "stick.axis.pitch"
+    }
+   ],
+   "controls": [
+    {
+     "control": "stick.trigger.stage1",
+     "finger": "index",
+     "type": "momentary"
+    },
+    {
+     "control": "stick.trigger.stage2",
+     "finger": "index",
+     "type": "momentary"
+    },
+    {
+     "control": "stick.weapon_release",
+     "finger": "thumb",
+     "type": "momentary"
+    },
+    {
+     "control": "stick.hat.trim.up",
+     "finger": "thumb",
+     "type": "momentary"
+    },
+    {
+     "control": "stick.hat.trim.down",
+     "finger": "thumb",
+     "type": "momentary"
+    },
+    {
+     "control": "stick.hat.trim.left",
+     "finger": "thumb",
+     "type": "momentary"
+    },
+    {
+     "control": "stick.hat.trim.right",
+     "finger": "thumb",
+     "type": "momentary"
+    },
+    {
+     "control": "stick.hat.tms.up",
+     "finger": "thumb",
+     "type": "momentary"
+    },
+    {
+     "control": "stick.hat.tms.down",
+     "finger": "thumb",
+     "type": "momentary"
+    },
+    {
+     "control": "stick.hat.tms.left",
+     "finger": "thumb",
+     "type": "momentary"
+    },
+    {
+     "control": "stick.hat.tms.right",
+     "finger": "thumb",
+     "type": "momentary"
+    },
+    {
+     "control": "stick.hat.dms.up",
+     "finger": "thumb",
+     "type": "momentary"
+    },
+    {
+     "control": "stick.hat.dms.down",
+     "finger": "thumb",
+     "type": "momentary"
+    },
+    {
+     "control": "stick.hat.dms.left",
+     "finger": "thumb",
+     "type": "momentary"
+    },
+    {
+     "control": "stick.hat.dms.right",
+     "finger": "thumb",
+     "type": "momentary"
+    },
+    {
+     "control": "stick.button.thumb.1",
+     "finger": "thumb",
+     "type": "momentary"
+    },
+    {
+     "control": "stick.button.thumb.2",
+     "finger": "thumb",
+     "type": "momentary"
+    },
+    {
+     "control": "stick.pinky.lever",
+     "finger": "pinky",
+     "type": "momentary"
+    }
+   ]
+  },
+  {
+   "id": "vpforce-rhino-virpil-vfx",
+   "name": "Virpil VFX Grip on Rhino",
+   "kind": "stick",
+   "hand": "right",
+   "base": "vpforce-rhino",
+   "identify": {
+    "names": [
+     "Rhino FFB Joystick"
+    ],
+    "note": "Button/hat numbering of this grip on the Rhino is set by the Rhino firmware/VPforce Configurator Button Mapping tab and differs from the grip's native base numbering (VPforce docs, community); factory numbers could not be verified from documentation -> controls listed without input. Native Rhino mount with analog axes and LED support. Control list is a generic approximation of the grip layout, not a verified map."
+   },
+   "sources": [
+    "https://docs.vpforce.eu/products/grip-adapters/",
+    "https://virpil-controls.eu/"
+   ],
+   "confidence": "low",
+   "axes": [
+    {
+     "input": "JOY_X",
+     "control": "stick.axis.roll"
+    },
+    {
+     "input": "JOY_Y",
+     "control": "stick.axis.pitch"
+    }
+   ],
+   "controls": [
+    {
+     "control": "stick.trigger.stage1",
+     "finger": "index",
+     "type": "momentary"
+    },
+    {
+     "control": "stick.trigger.stage2",
+     "finger": "index",
+     "type": "momentary"
+    },
+    {
+     "control": "stick.weapon_release",
+     "finger": "thumb",
+     "type": "momentary"
+    },
+    {
+     "control": "stick.hat.trim.up",
+     "finger": "thumb",
+     "type": "momentary"
+    },
+    {
+     "control": "stick.hat.trim.down",
+     "finger": "thumb",
+     "type": "momentary"
+    },
+    {
+     "control": "stick.hat.trim.left",
+     "finger": "thumb",
+     "type": "momentary"
+    },
+    {
+     "control": "stick.hat.trim.right",
+     "finger": "thumb",
+     "type": "momentary"
+    },
+    {
+     "control": "stick.hat.tms.up",
+     "finger": "thumb",
+     "type": "momentary"
+    },
+    {
+     "control": "stick.hat.tms.down",
+     "finger": "thumb",
+     "type": "momentary"
+    },
+    {
+     "control": "stick.hat.tms.left",
+     "finger": "thumb",
+     "type": "momentary"
+    },
+    {
+     "control": "stick.hat.tms.right",
+     "finger": "thumb",
+     "type": "momentary"
+    },
+    {
+     "control": "stick.hat.dms.up",
+     "finger": "thumb",
+     "type": "momentary"
+    },
+    {
+     "control": "stick.hat.dms.down",
+     "finger": "thumb",
+     "type": "momentary"
+    },
+    {
+     "control": "stick.hat.dms.left",
+     "finger": "thumb",
+     "type": "momentary"
+    },
+    {
+     "control": "stick.hat.dms.right",
+     "finger": "thumb",
+     "type": "momentary"
+    },
+    {
+     "control": "stick.button.thumb.1",
+     "finger": "thumb",
+     "type": "momentary"
+    },
+    {
+     "control": "stick.button.thumb.2",
+     "finger": "thumb",
+     "type": "momentary"
+    },
+    {
+     "control": "stick.pinky.lever",
+     "finger": "pinky",
+     "type": "momentary"
+    }
+   ]
+  },
+  {
+   "id": "vpforce-rhino-virpil-ah64",
+   "name": "Virpil AH-64 Grip on Rhino",
+   "kind": "stick",
+   "hand": "right",
+   "base": "vpforce-rhino",
+   "identify": {
+    "names": [
+     "Rhino FFB Joystick"
+    ],
+    "note": "Button/hat numbering of this grip on the Rhino is set by the Rhino firmware/VPforce Configurator Button Mapping tab and differs from the grip's native base numbering (VPforce docs, community); factory numbers could not be verified from documentation -> controls listed without input. Native Rhino mount with analog axes and LED support. Control list is a generic approximation of the grip layout, not a verified map."
+   },
+   "sources": [
+    "https://docs.vpforce.eu/products/grip-adapters/",
+    "https://virpil-controls.eu/"
+   ],
+   "confidence": "low",
+   "axes": [
+    {
+     "input": "JOY_X",
+     "control": "stick.axis.roll"
+    },
+    {
+     "input": "JOY_Y",
+     "control": "stick.axis.pitch"
+    }
+   ],
+   "controls": [
+    {
+     "control": "stick.trigger.stage1",
+     "finger": "index",
+     "type": "momentary"
+    },
+    {
+     "control": "stick.trigger.stage2",
+     "finger": "index",
+     "type": "momentary"
+    },
+    {
+     "control": "stick.weapon_release",
+     "finger": "thumb",
+     "type": "momentary"
+    },
+    {
+     "control": "stick.hat.trim.up",
+     "finger": "thumb",
+     "type": "momentary"
+    },
+    {
+     "control": "stick.hat.trim.down",
+     "finger": "thumb",
+     "type": "momentary"
+    },
+    {
+     "control": "stick.hat.trim.left",
+     "finger": "thumb",
+     "type": "momentary"
+    },
+    {
+     "control": "stick.hat.trim.right",
+     "finger": "thumb",
+     "type": "momentary"
+    },
+    {
+     "control": "stick.hat.tms.up",
+     "finger": "thumb",
+     "type": "momentary"
+    },
+    {
+     "control": "stick.hat.tms.down",
+     "finger": "thumb",
+     "type": "momentary"
+    },
+    {
+     "control": "stick.hat.tms.left",
+     "finger": "thumb",
+     "type": "momentary"
+    },
+    {
+     "control": "stick.hat.tms.right",
+     "finger": "thumb",
+     "type": "momentary"
+    },
+    {
+     "control": "stick.button.thumb.1",
+     "finger": "thumb",
+     "type": "momentary"
+    },
+    {
+     "control": "stick.button.thumb.2",
+     "finger": "thumb",
+     "type": "momentary"
+    },
+    {
+     "control": "stick.pinky.lever",
+     "finger": "pinky",
+     "type": "momentary"
+    }
+   ]
+  },
+  {
+   "id": "vpforce-rhino-virpil-uh60",
+   "name": "Virpil UH-60 Grip on Rhino",
+   "kind": "stick",
+   "hand": "right",
+   "base": "vpforce-rhino",
+   "identify": {
+    "names": [
+     "Rhino FFB Joystick"
+    ],
+    "note": "Button/hat numbering of this grip on the Rhino is set by the Rhino firmware/VPforce Configurator Button Mapping tab and differs from the grip's native base numbering (VPforce docs, community); factory numbers could not be verified from documentation -> controls listed without input. Native Rhino mount with analog axes and LED support. Control list is a generic approximation of the grip layout, not a verified map."
+   },
+   "sources": [
+    "https://docs.vpforce.eu/products/grip-adapters/",
+    "https://virpil-controls.eu/"
+   ],
+   "confidence": "low",
+   "axes": [
+    {
+     "input": "JOY_X",
+     "control": "stick.axis.roll"
+    },
+    {
+     "input": "JOY_Y",
+     "control": "stick.axis.pitch"
+    }
+   ],
+   "controls": [
+    {
+     "control": "stick.trigger.stage1",
+     "finger": "index",
+     "type": "momentary"
+    },
+    {
+     "control": "stick.trigger.stage2",
+     "finger": "index",
+     "type": "momentary"
+    },
+    {
+     "control": "stick.weapon_release",
+     "finger": "thumb",
+     "type": "momentary"
+    },
+    {
+     "control": "stick.hat.trim.up",
+     "finger": "thumb",
+     "type": "momentary"
+    },
+    {
+     "control": "stick.hat.trim.down",
+     "finger": "thumb",
+     "type": "momentary"
+    },
+    {
+     "control": "stick.hat.trim.left",
+     "finger": "thumb",
+     "type": "momentary"
+    },
+    {
+     "control": "stick.hat.trim.right",
+     "finger": "thumb",
+     "type": "momentary"
+    },
+    {
+     "control": "stick.hat.tms.up",
+     "finger": "thumb",
+     "type": "momentary"
+    },
+    {
+     "control": "stick.hat.tms.down",
+     "finger": "thumb",
+     "type": "momentary"
+    },
+    {
+     "control": "stick.hat.tms.left",
+     "finger": "thumb",
+     "type": "momentary"
+    },
+    {
+     "control": "stick.hat.tms.right",
+     "finger": "thumb",
+     "type": "momentary"
+    },
+    {
+     "control": "stick.button.thumb.1",
+     "finger": "thumb",
+     "type": "momentary"
+    },
+    {
+     "control": "stick.button.thumb.2",
+     "finger": "thumb",
+     "type": "momentary"
+    },
+    {
+     "control": "stick.pinky.lever",
+     "finger": "pinky",
+     "type": "momentary"
+    }
+   ]
+  },
+  {
+   "id": "vpforce-rhino-virpil-flnkr",
+   "name": "Virpil FLNKR Grip on Rhino",
+   "kind": "stick",
+   "hand": "right",
+   "base": "vpforce-rhino",
+   "identify": {
+    "names": [
+     "Rhino FFB Joystick"
+    ],
+    "note": "Button/hat numbering of this grip on the Rhino is set by the Rhino firmware/VPforce Configurator Button Mapping tab and differs from the grip's native base numbering (VPforce docs, community); factory numbers could not be verified from documentation -> controls listed without input. Native Rhino mount with analog axes and LED support. Control list is a generic approximation of the grip layout, not a verified map."
+   },
+   "productUrl": "https://virpil-controls.eu/vpc-flnkr-grip.html",
+   "sources": [
+    "https://docs.vpforce.eu/products/grip-adapters/",
+    "https://virpil-controls.eu/"
+   ],
+   "confidence": "low",
+   "axes": [
+    {
+     "input": "JOY_X",
+     "control": "stick.axis.roll"
+    },
+    {
+     "input": "JOY_Y",
+     "control": "stick.axis.pitch"
+    }
+   ],
+   "controls": [
+    {
+     "control": "stick.trigger.stage1",
+     "finger": "index",
+     "type": "momentary"
+    },
+    {
+     "control": "stick.trigger.stage2",
+     "finger": "index",
+     "type": "momentary"
+    },
+    {
+     "control": "stick.weapon_release",
+     "finger": "thumb",
+     "type": "momentary"
+    },
+    {
+     "control": "stick.hat.trim.up",
+     "finger": "thumb",
+     "type": "momentary"
+    },
+    {
+     "control": "stick.hat.trim.down",
+     "finger": "thumb",
+     "type": "momentary"
+    },
+    {
+     "control": "stick.hat.trim.left",
+     "finger": "thumb",
+     "type": "momentary"
+    },
+    {
+     "control": "stick.hat.trim.right",
+     "finger": "thumb",
+     "type": "momentary"
+    },
+    {
+     "control": "stick.hat.tms.up",
+     "finger": "thumb",
+     "type": "momentary"
+    },
+    {
+     "control": "stick.hat.tms.down",
+     "finger": "thumb",
+     "type": "momentary"
+    },
+    {
+     "control": "stick.hat.tms.left",
+     "finger": "thumb",
+     "type": "momentary"
+    },
+    {
+     "control": "stick.hat.tms.right",
+     "finger": "thumb",
+     "type": "momentary"
+    },
+    {
+     "control": "stick.button.thumb.1",
+     "finger": "thumb",
+     "type": "momentary"
+    },
+    {
+     "control": "stick.button.thumb.2",
+     "finger": "thumb",
+     "type": "momentary"
+    },
+    {
+     "control": "stick.pinky.lever",
+     "finger": "pinky",
+     "type": "momentary"
+    }
+   ]
+  },
+  {
+   "id": "vpforce-rhino-winwing-f16ex",
+   "name": "WinWing F-16EX Grip on Rhino (WinWing adapter)",
+   "kind": "stick",
+   "hand": "right",
+   "base": "vpforce-rhino",
+   "identify": {
+    "names": [
+     "Rhino FFB Joystick"
+    ],
+    "note": "Button/hat numbering of this grip on the Rhino is set by the Rhino firmware/VPforce Configurator Button Mapping tab and differs from the grip's native base numbering (VPforce docs, community); factory numbers could not be verified from documentation -> controls listed without input. Needs the VPforce WinWing adapter; Rhino button 32 lights when the grip link is lost; analog brake lever/thumbstick pass through."
+   },
+   "sources": [
+    "https://docs.vpforce.eu/products/grip-adapters/"
+   ],
+   "confidence": "low",
+   "axes": [
+    {
+     "input": "JOY_X",
+     "control": "stick.axis.roll"
+    },
+    {
+     "input": "JOY_Y",
+     "control": "stick.axis.pitch"
+    }
+   ],
+   "controls": [
+    {
+     "control": "stick.trigger.stage1",
+     "finger": "index",
+     "type": "momentary"
+    },
+    {
+     "control": "stick.trigger.stage2",
+     "finger": "index",
+     "type": "momentary"
+    },
+    {
+     "control": "stick.weapon_release",
+     "finger": "thumb",
+     "type": "momentary"
+    },
+    {
+     "control": "stick.pinky.lever",
+     "finger": "pinky",
+     "type": "momentary"
+    },
+    {
+     "control": "stick.hat.trim.up",
+     "finger": "thumb",
+     "type": "momentary"
+    },
+    {
+     "control": "stick.hat.trim.down",
+     "finger": "thumb",
+     "type": "momentary"
+    },
+    {
+     "control": "stick.hat.trim.left",
+     "finger": "thumb",
+     "type": "momentary"
+    },
+    {
+     "control": "stick.hat.trim.right",
+     "finger": "thumb",
+     "type": "momentary"
+    },
+    {
+     "control": "stick.hat.tms.up",
+     "finger": "thumb",
+     "type": "momentary"
+    },
+    {
+     "control": "stick.hat.tms.down",
+     "finger": "thumb",
+     "type": "momentary"
+    },
+    {
+     "control": "stick.hat.tms.left",
+     "finger": "thumb",
+     "type": "momentary"
+    },
+    {
+     "control": "stick.hat.tms.right",
+     "finger": "thumb",
+     "type": "momentary"
+    },
+    {
+     "control": "stick.hat.dms.up",
+     "finger": "thumb",
+     "type": "momentary"
+    },
+    {
+     "control": "stick.hat.dms.down",
+     "finger": "thumb",
+     "type": "momentary"
+    },
+    {
+     "control": "stick.hat.dms.left",
+     "finger": "thumb",
+     "type": "momentary"
+    },
+    {
+     "control": "stick.hat.dms.right",
+     "finger": "thumb",
+     "type": "momentary"
+    },
+    {
+     "control": "stick.hat.cms.up",
+     "finger": "thumb",
+     "type": "momentary"
+    },
+    {
+     "control": "stick.hat.cms.down",
+     "finger": "thumb",
+     "type": "momentary"
+    },
+    {
+     "control": "stick.hat.cms.left",
+     "finger": "thumb",
+     "type": "momentary"
+    },
+    {
+     "control": "stick.hat.cms.right",
+     "finger": "thumb",
+     "type": "momentary"
+    },
+    {
+     "control": "stick.hat.cms.press",
+     "finger": "thumb",
+     "type": "momentary"
+    }
+   ]
+  },
+  {
+   "id": "vpforce-rhino-winwing-fa18",
+   "name": "WinWing F/A-18 Grip on Rhino (WinWing adapter)",
+   "kind": "stick",
+   "hand": "right",
+   "base": "vpforce-rhino",
+   "identify": {
+    "names": [
+     "Rhino FFB Joystick"
+    ],
+    "note": "Button/hat numbering of this grip on the Rhino is set by the Rhino firmware/VPforce Configurator Button Mapping tab and differs from the grip's native base numbering (VPforce docs, community); factory numbers could not be verified from documentation -> controls listed without input. Needs the VPforce WinWing adapter."
+   },
+   "sources": [
+    "https://docs.vpforce.eu/products/grip-adapters/"
+   ],
+   "confidence": "low",
+   "axes": [
+    {
+     "input": "JOY_X",
+     "control": "stick.axis.roll"
+    },
+    {
+     "input": "JOY_Y",
+     "control": "stick.axis.pitch"
+    }
+   ],
+   "controls": [
+    {
+     "control": "stick.trigger.stage1",
+     "finger": "index",
+     "type": "momentary"
+    },
+    {
+     "control": "stick.trigger.stage2",
+     "finger": "index",
+     "type": "momentary"
+    },
+    {
+     "control": "stick.weapon_release",
+     "finger": "thumb",
+     "type": "momentary"
+    },
+    {
+     "control": "stick.pinky.lever",
+     "finger": "pinky",
+     "type": "momentary"
+    },
+    {
+     "control": "stick.hat.trim.up",
+     "finger": "thumb",
+     "type": "momentary"
+    },
+    {
+     "control": "stick.hat.trim.down",
+     "finger": "thumb",
+     "type": "momentary"
+    },
+    {
+     "control": "stick.hat.trim.left",
+     "finger": "thumb",
+     "type": "momentary"
+    },
+    {
+     "control": "stick.hat.trim.right",
+     "finger": "thumb",
+     "type": "momentary"
+    },
+    {
+     "control": "stick.hat.tms.up",
+     "finger": "thumb",
+     "type": "momentary"
+    },
+    {
+     "control": "stick.hat.tms.down",
+     "finger": "thumb",
+     "type": "momentary"
+    },
+    {
+     "control": "stick.hat.tms.left",
+     "finger": "thumb",
+     "type": "momentary"
+    },
+    {
+     "control": "stick.hat.tms.right",
+     "finger": "thumb",
+     "type": "momentary"
+    },
+    {
+     "control": "stick.hat.dms.up",
+     "finger": "thumb",
+     "type": "momentary"
+    },
+    {
+     "control": "stick.hat.dms.down",
+     "finger": "thumb",
+     "type": "momentary"
+    },
+    {
+     "control": "stick.hat.dms.left",
+     "finger": "thumb",
+     "type": "momentary"
+    },
+    {
+     "control": "stick.hat.dms.right",
+     "finger": "thumb",
+     "type": "momentary"
+    }
+   ]
+  },
+  {
+   "id": "vpforce-rhino-vkb-adapter",
+   "name": "VKB Gladiator / Gunfighter Grip on Rhino (VKB adapter, Rev. B/C)",
+   "kind": "stick",
+   "hand": "right",
+   "base": "vpforce-rhino",
+   "identify": {
+    "names": [
+     "Rhino FFB Joystick"
+    ],
+    "note": "Button/hat numbering of this grip on the Rhino is set by the Rhino firmware/VPforce Configurator Button Mapping tab and differs from the grip's native base numbering (VPforce docs, community); factory numbers could not be verified from documentation -> controls listed without input. Needs VPforce VKB adapter, a VKB Black Box and the RhinoLoopback app; the grip buttons are then reported by the VKB device (VKBDevCfg numbering), not by the Rhino."
+   },
+   "sources": [
+    "https://docs.vpforce.eu/products/grip-adapters/"
+   ],
+   "confidence": "low",
+   "axes": [
+    {
+     "input": "JOY_X",
+     "control": "stick.axis.roll"
+    },
+    {
+     "input": "JOY_Y",
+     "control": "stick.axis.pitch"
+    }
+   ],
+   "controls": [
+    {
+     "control": "stick.trigger.stage1",
+     "finger": "index",
+     "type": "momentary"
+    },
+    {
+     "control": "stick.trigger.stage2",
+     "finger": "index",
+     "type": "momentary"
+    },
+    {
+     "control": "stick.hat.trim.up",
+     "finger": "thumb",
+     "type": "momentary"
+    },
+    {
+     "control": "stick.hat.trim.down",
+     "finger": "thumb",
+     "type": "momentary"
+    },
+    {
+     "control": "stick.hat.trim.left",
+     "finger": "thumb",
+     "type": "momentary"
+    },
+    {
+     "control": "stick.hat.trim.right",
+     "finger": "thumb",
+     "type": "momentary"
+    },
+    {
+     "control": "stick.hat.tms.up",
+     "finger": "thumb",
+     "type": "momentary"
+    },
+    {
+     "control": "stick.hat.tms.down",
+     "finger": "thumb",
+     "type": "momentary"
+    },
+    {
+     "control": "stick.hat.tms.left",
+     "finger": "thumb",
+     "type": "momentary"
+    },
+    {
+     "control": "stick.hat.tms.right",
+     "finger": "thumb",
+     "type": "momentary"
+    },
+    {
+     "control": "stick.button.thumb.1",
+     "finger": "thumb",
+     "type": "momentary"
+    },
+    {
+     "control": "stick.button.thumb.2",
+     "finger": "thumb",
+     "type": "momentary"
+    },
+    {
+     "control": "stick.pinky.button",
+     "finger": "pinky",
+     "type": "momentary"
+    }
+   ]
+  },
+  {
+   "id": "vpforce-rhino-fc-tech-grip",
+   "name": "FC Technologies Grip on Rhino",
+   "kind": "stick",
+   "hand": "right",
+   "base": "vpforce-rhino",
+   "identify": {
+    "names": [
+     "Rhino FFB Joystick"
+    ],
+    "note": "Button/hat numbering of this grip on the Rhino is set by the Rhino firmware/VPforce Configurator Button Mapping tab and differs from the grip's native base numbering (VPforce docs, community); factory numbers could not be verified from documentation -> controls listed without input. Direct 5-pin connection per VPforce docs."
+   },
+   "sources": [
+    "https://docs.vpforce.eu/products/grip-adapters/"
+   ],
+   "confidence": "low",
+   "axes": [
+    {
+     "input": "JOY_X",
+     "control": "stick.axis.roll"
+    },
+    {
+     "input": "JOY_Y",
+     "control": "stick.axis.pitch"
+    }
+   ],
+   "controls": [
+    {
+     "control": "stick.trigger.stage1",
+     "finger": "index",
+     "type": "momentary"
+    },
+    {
+     "control": "stick.trigger.stage2",
+     "finger": "index",
+     "type": "momentary"
+    },
+    {
+     "control": "stick.hat.trim.up",
+     "finger": "thumb",
+     "type": "momentary"
+    },
+    {
+     "control": "stick.hat.trim.down",
+     "finger": "thumb",
+     "type": "momentary"
+    },
+    {
+     "control": "stick.hat.trim.left",
+     "finger": "thumb",
+     "type": "momentary"
+    },
+    {
+     "control": "stick.hat.trim.right",
+     "finger": "thumb",
+     "type": "momentary"
+    }
+   ]
+  },
+  {
+   "id": "vpforce-rhino-custom-grip",
+   "name": "Custom shift-register DIY grip on Rhino",
+   "kind": "stick",
+   "hand": "right",
+   "base": "vpforce-rhino",
+   "identify": {
+    "names": [
+     "Rhino FFB Joystick"
+    ],
+    "note": "Button/hat numbering of this grip on the Rhino is set by the Rhino firmware/VPforce Configurator Button Mapping tab and differs from the grip's native base numbering (VPforce docs, community); factory numbers could not be verified from documentation -> controls listed without input. DIY grips using generic shift-register inputs."
+   },
+   "sources": [
+    "https://docs.vpforce.eu/products/grip-adapters/"
+   ],
+   "confidence": "low",
+   "axes": [
+    {
+     "input": "JOY_X",
+     "control": "stick.axis.roll"
+    },
+    {
+     "input": "JOY_Y",
+     "control": "stick.axis.pitch"
+    }
+   ],
+   "controls": [
+    {
+     "control": "stick.button.thumb.1",
+     "type": "momentary"
+    },
+    {
+     "control": "stick.button.thumb.2",
+     "type": "momentary"
+    },
+    {
+     "control": "stick.button.thumb.3",
+     "type": "momentary"
+    },
+    {
+     "control": "stick.button.thumb.4",
+     "type": "momentary"
+    },
+    {
+     "control": "stick.button.thumb.5",
+     "type": "momentary"
+    },
+    {
+     "control": "stick.button.thumb.6",
+     "type": "momentary"
+    },
+    {
+     "control": "stick.button.thumb.7",
+     "type": "momentary"
+    },
+    {
+     "control": "stick.button.thumb.8",
+     "type": "momentary"
+    }
+   ]
+  },
+  {
+   "id": "vpforce-ffb-pedal-conversion",
+   "name": "VPforce FFB rudder pedal conversion (Kaltokri RhinoMFG / RhinoMFG86 / RhinoTPR / RhinoACE / RhinoOrion / RhinoR1)",
+   "kind": "pedals",
+   "hand": "none",
+   "identify": {
+    "vidPids": [
+     "FFFF:2052",
+     "FFFF:2054"
+    ],
+    "names": [
+     "RhinoMFG",
+     "RhinoMFG86",
+     "RhinoTPR",
+     "RhinoACE",
+     "RhinoOrion",
+     "RhinoR1"
+    ],
+    "note": "VPforce DIY motor kit (single motor + USB board) built into MFG Crosswind, Thrustmaster TPR, Virpil ACE, WinWing Orion or Virpil R1 pedals with the Kaltokri kits. The VPforce board drives the rudder only: the docs tell to disable the Y axis (TelemFFB detects pedals by a single X axis) and to set USB Device Ident 'RhinoMFG' / 'RhinoMFG86' / 'RhinoTPR' (Product ID 2052) or 'RhinoACE' / 'RhinoOrion' / 'RhinoR1' (Product ID 2054) - both are user settings ('or unique'). Left unchanged the board reports like a Rhino (FFFF:2055, 'Rhino FFB Joystick'). The toe brakes stay on the pedals' own USB device (own catalog entry)."
+   },
+   "image": "https://docs.vpforce.eu/third-party-vendors/kaltokri-kits/images/rhinomfg/image-2.webp",
+   "productUrl": "https://docs.vpforce.eu/third-party-vendors/kaltokri-kits/",
+   "sources": [
+    "https://docs.vpforce.eu/third-party-vendors/kaltokri-kits/",
+    "https://docs.vpforce.eu/third-party-vendors/kaltokri-kits/rhinomfg/",
+    "https://docs.vpforce.eu/third-party-vendors/kaltokri-kits/rhinotpr-inside/",
+    "https://docs.vpforce.eu/third-party-vendors/kaltokri-kits/rhinoace/",
+    "https://docs.vpforce.eu/third-party-vendors/kaltokri-kits/rhinoorion/",
+    "https://docs.vpforce.eu/third-party-vendors/kaltokri-kits/rhinor1/"
+   ],
+   "confidence": "medium",
+   "axes": [
+    {
+     "input": "JOY_X",
+     "control": "pedals.axis.rudder"
+    }
+   ],
+   "controls": []
+  }
+ ]
+}

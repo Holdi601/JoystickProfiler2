@@ -1,0 +1,38 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <!-- Virtual joystick forwarder: reads the mapped physical devices (DirectInput, non-exclusive) and writes the vJoy
+       devices (vJoyInterface.dll) live. The GUI starts it for virtual joystick mode (docs/virtual-joystick.md). -->
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net9.0-windows</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <RootNamespace>JoyPro.VJoy</RootNamespace>
+    <AssemblyName>JoyPro.VJoy</AssemblyName>
+    <Version>2.0.0</Version>
+    <IsPackable>false</IsPackable>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <InvariantGlobalization>true</InvariantGlobalization>
+    <ServerGarbageCollector>false</ServerGarbageCollector>
+    <ConcurrentGarbageCollection>false</ConcurrentGarbageCollection>
+    <TieredPGO>true</TieredPGO>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <!-- The loop allocates nothing; the reporting thread a few strings a second. A small hard limit keeps the heap
+         small and flat over hours. -->
+    <RuntimeHostConfigurationOption Include="System.GC.HeapHardLimit" Value="33554432" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Nefarius.ViGEm.Client" Version="1.21.256" />
+  </ItemGroup>
+
+  <!-- Virtual functions (docs/virtual-joystick.md "Virtual functions"): the engine's model and evaluation (plain C# 7.3,
+       "#nullable disable" for NET), so the forwarder runs exactly what the engine tests and the GUI previews; the axis
+       curves (AxisTuning) for the curve function. -->
+  <ItemGroup>
+    <Compile Include="..\..\engine\VJoy\VirtualFunctions.cs" Link="Functions\VirtualFunctions.cs" />
+    <Compile Include="..\..\engine\VJoy\VirtualFunctionRuntime.cs" Link="Functions\VirtualFunctionRuntime.cs" />
+    <Compile Include="..\..\engine\AxisTuning.cs" Link="Functions\AxisTuning.cs" />
+  </ItemGroup>
+</Project>

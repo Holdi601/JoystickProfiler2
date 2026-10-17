@@ -1,0 +1,96 @@
+{
+  "format": "joypro-device-layout",
+  "version": 1,
+  "model": "turtlebeach-velocityone-flightstick-ii",
+  "photo": {"kind": "vendor", "url": "https://cdn.shopify.com/s/files/1/0556/5795/5430/files/2_MediaGallery_VelocityOne_Flightstick_PC_2400x1350_8ee42e97-4ae4-400f-82bd-b1104e370abc.png", "sha256": "b85f7711982a6127d4f3f8a42f8bc6cd3a56f86411fadbed84051ba5d2811e2c", "view": "front"},
+  "markers": {
+    "stick.axis.rotary.1": [0.5, 0.26],
+    "stick.axis.twist": [0.5, 0.45],
+    "stick.gimbal": [0.5, 0.71],
+    "stick.ministick": [0.477, 0.155],
+    "throttle.axis": [0.375, 0.595]
+  },
+  "parts": {
+    "stick.ministick": {
+      "type": "ministick",
+      "name": "Thumbstick",
+      "inputs": [
+        {"input": "", "control": "stick.axis.ministick.x"},
+        {"input": "", "control": "stick.axis.ministick.y"}
+      ],
+      "mapping": "medium",
+      "confidence": "high",
+      "note": "P1 thumbstick on the head (printed RxRy, push B18)"
+    },
+    "stick.trigger": {
+      "type": "trigger",
+      "name": "Trigger",
+      "inputs": [
+        {"input": "", "control": "stick.trigger.stage1"}
+      ],
+      "mapping": "medium"
+    },
+    "stick.axis.twist": {
+      "type": "twist",
+      "name": "Twist",
+      "inputs": [
+        {"input": "", "control": "stick.axis.twist"}
+      ],
+      "mapping": "medium",
+      "confidence": "medium",
+      "note": "twist of the handle"
+    },
+    "stick.gimbal": {
+      "type": "gimbal",
+      "name": "Stick (roll / pitch)",
+      "inputs": [
+        {"input": "", "control": "stick.axis.roll"},
+        {"input": "", "control": "stick.axis.pitch"}
+      ],
+      "mapping": "medium",
+      "confidence": "medium",
+      "note": "stick base inside the green ring"
+    },
+    "stick.axis.rotary.1": {
+      "type": "knob",
+      "name": "Multi-function wheel",
+      "inputs": [
+        {"input": "", "control": "stick.axis.rotary.1"}
+      ],
+      "mapping": "medium",
+      "confidence": "high",
+      "note": "ribbed vertical wheel below FIRE (printed S, push B21)"
+    },
+    "throttle.axis": {
+      "type": "button",
+      "name": "throttle.axis",
+      "inputs": [
+        {"input": "", "control": "throttle.axis.left"},
+        {"input": "", "control": "throttle.axis.right"}
+      ],
+      "mapping": "medium",
+      "confidence": "medium",
+      "note": "base lever L1 on the left (L2 on the right of the base)"
+    }
+  },
+  "unplaced": {
+    "stick.trigger": "on the front of the grip below the head, faces away from the camera"
+  },
+  "candidates": {},
+  "source": "JoyPro curated on the maker's photo (2026-10-11), the stick seen straight from behind (pilot's view), head with display, P1/H1, FIRE B25, B23/B24 and the S wheel toward the camera, base levers L1 (left) and L2 (right)",
+  "mappingSource": "catalog (turtlebeach.json, confidence low: \"Numbering not documented\"; controls per https://www.turtlebeach.com/products/velocity-one-flight-stick-ii: Hall stick X/Y, lockable twist rudder, dual levers, thumbstick, multi-function wheel). Which control is which part is read from the labels printed on the device: P1 \"RxRy, push B18\" = thumbstick, the ribbed wheel \"S, push B21\" below FIRE = multi-function wheel, base levers L1 (TOGA/100%/0%/REV scale) and L2 (UP/DOWN scale)",
+  "confidence": "medium",
+  "note": "The catalog part \"throttle.axis\" (type button, inputs left/right) stands for the two base levers; it is marked on L1 (left, throttle scale); L2 (right, UP/DOWN scale) is at about 0.620 0.590. The photo shows many controls the catalog has no part for: H1 hat (NAV), FIRE B25, B23/B24, the eight green base buttons B1-B4 / B27-B30, the ALTITUDE/SPEED dual encoder (B10-17), START/STOP and B31-B33.",
+  "callouts": {
+    "version": 1,
+    "width": 2490,
+    "height": 1440,
+    "picture": [45, 45, 2400, 1350],
+    "rowHeight": 56,
+    "mainWidth": 476,
+    "modWidth": 308,
+    "otherY": -1,
+    "tables": [],
+    "lines": []
+  }
+}

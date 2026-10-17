@@ -1,0 +1,38 @@
+{
+  "format": "joypro-cockpit-drawing",
+  "version": 1,
+  "id": "bf109-throttle",
+  "kind": "throttle",
+  "aircraft": ["bf-109"],
+  "variants": [],
+  "except": [],
+  "name": "Bf 109 throttle quadrant and trim / flap handwheels",
+  "view": "the left cockpit wall from the inboard side, as the pilot sees it; forward is left: the throttle lever in its quadrant with the propeller pitch rocker and the push-to-talk button on the grip, the governor automation switch under the quadrant, the stabilizer trim and flap handwheels left of the seat",
+  "origin": "JoyPro's own vector drawing: the quadrant's outline and the control layout reconstructed from the engine control and trim descriptions in the DCS Bf 109 K-4 manual, the IL-2 Great Battles Bf 109 notes and public cockpit photos looked at for proportions; not traced from a photo.",
+  "width": 1000,
+  "height": 700,
+  "shapes": [
+    { "kind": "ellipse", "role": "shadow", "x": 520, "y": 612, "w": 430, "h": 16 },
+    { "kind": "rect", "role": "bodyAlt", "x": 90, "y": 530, "w": 860, "h": 72, "r": 18 },
+    { "kind": "path", "role": "bodyAlt", "path": "M120,424 L120,334 C220,292 420,292 530,334 L530,424 Z" },
+    { "kind": "path", "role": "screen", "path": "M150,340 C250,312 410,312 500,340 L500,354 C410,326 250,326 150,354 Z" },
+    { "kind": "path", "role": "body", "path": "M330,330 L280,262 L302,252 L350,322 Z" },
+    { "kind": "path", "role": "body", "path": "M222,190 C222,140 240,112 266,112 C292,112 310,140 310,190 L310,236 C310,266 296,280 266,280 C236,280 222,266 222,236 Z" },
+    { "kind": "path", "role": "line", "path": "M226,214 C250,222 282,222 306,214" },
+    { "kind": "rect", "role": "bodyAlt", "x": 372, "y": 436, "w": 120, "h": 70, "r": 12 },
+    { "kind": "rect", "role": "bodyAlt", "x": 600, "y": 440, "w": 270, "h": 100, "r": 16 },
+    { "kind": "ellipse", "role": "body", "x": 660, "y": 400, "w": 118, "h": 118 },
+    { "kind": "ellipse", "role": "face", "x": 660, "y": 400, "w": 82, "h": 82 },
+    { "kind": "ellipse", "role": "body", "x": 820, "y": 430, "w": 82, "h": 82 },
+    { "kind": "ellipse", "role": "face", "x": 820, "y": 430, "w": 54, "h": 54 }
+  ],
+  "parts": [
+    { "id": "throttle.rocker.prop", "type": "rocker", "x": 266, "y": 160, "r": 28 },
+    { "id": "throttle.hat.mic", "type": "button", "x": 266, "y": 246, "r": 15 },
+    { "id": "throttle.detent.afterburner", "type": "detent", "x": 170, "y": 390, "r": 26 },
+    { "id": "throttle.axis.main", "type": "axis", "x": 340, "y": 390, "r": 52, "angle": 90 },
+    { "id": "throttle.switch.prop_auto", "type": "switch2", "x": 432, "y": 472, "r": 20 },
+    { "id": "throttle.wheel.trim", "type": "wheel", "x": 660, "y": 400, "r": 32 },
+    { "id": "throttle.wheel.flaps", "type": "wheel", "x": 820, "y": 430, "r": 26 }
+  ]
+}

@@ -1,0 +1,220 @@
+# Evaluation queries for "Find actions" (engine relations search) on the real game lists: tools/relations/check-function-map.ps1.
+# class	query	expected functions (any of them is right; "id:dir" also checks the direction)	[first row per game: "Game=id" or "Game~title regex", ';' between; the canonical axis must lead its game]
+name	throttle	throttle	MSFS2020=KEY_THROTTLE_AXIS_SET_EX1;MSFS2024=KEY_THROTTLE_AXIS_SET_EX1;FSX=AXIS_THROTTLE_SET;FSXSE=AXIS_THROTTLE_SET;P3D4=AXIS_THROTTLE_SET;P3D5=AXIS_THROTTLE_SET;P3D6=AXIS_THROTTLE_SET;DCS~^Throttle$;FalconBMS=axis/Throttle;XPlane11=axis/throttle;XPlane12=axis/throttle;WarThunder=throttle;EliteDangerous=ThrottleAxis;IL2Game=rpc_all_engines_throttles;IL2Korea=rpc_all_engines_throttles;IL21946=move.power;IL2CoD=pilotMove.throttle;IL2CoDBlitz=pilotMove.throttle;NuclearOption=Throttle;TinyCombatArena=ThrottleAxis;VTOLVR=Throttle;X4=INPUT_RANGE_THROTTLE;StarCitizen=spaceship_movement|v_strafe_longitudinal;Arma3=Axis.PlaneThrottle
+name	landing gear	gear
+name	flaps	flaps
+name	speed brake	airbrake
+name	wheel brakes	wheel_brakes
+name	parking brake	parking_brake
+name	pitch	pitch	MSFS2020=KEY_AXIS_ELEVATOR_SET;MSFS2024=KEY_AXIS_ELEVATOR_SET;FSX=AXIS_ELEVATOR_SET;FSXSE=AXIS_ELEVATOR_SET;P3D4=AXIS_ELEVATOR_SET;P3D5=AXIS_ELEVATOR_SET;P3D6=AXIS_ELEVATOR_SET;DCS=a2001cdnil;FalconBMS=axis/Pitch;XPlane11=axis/pitch;XPlane12=axis/pitch;WarThunder=elevator;EliteDangerous=PitchAxisRaw;IL2Game=rpc_pitch;IL2Korea=rpc_pitch;IL21946=move.elevator;IL2CoD=pilotMove.elevator;IL2CoDBlitz=pilotMove.elevator;NuclearOption=Pitch;TinyCombatArena=Pitch;VTOLVR=Joystick Pitch;X4=INPUT_RANGE_STEERING_PITCH;StarCitizen=spaceship_movement|v_pitch;Arma3=Axis.PlanePitch;Arma2=Axis.Pitch;GRebels=Axis_Pitch;ProjectWingman=Pitch Axis
+name	roll	roll	MSFS2020=KEY_AXIS_AILERONS_SET;MSFS2024=KEY_AXIS_AILERONS_SET;FSX=AXIS_AILERONS_SET;FSXSE=AXIS_AILERONS_SET;P3D4=AXIS_AILERONS_SET;P3D5=AXIS_AILERONS_SET;P3D6=AXIS_AILERONS_SET;DCS=a2002cdnil;FalconBMS=axis/Roll;XPlane11=axis/roll;XPlane12=axis/roll;WarThunder=ailerons;EliteDangerous=RollAxisRaw;IL2Game=rpc_roll;IL2Korea=rpc_roll;IL21946=move.aileron;IL2CoD=pilotMove.aileron;IL2CoDBlitz=pilotMove.aileron;NuclearOption=Roll;TinyCombatArena=Roll;VTOLVR=Joystick Roll;StarCitizen=spaceship_movement|v_roll;Arma3=Axis.PlaneRoll;Arma2=Axis.Roll;GRebels=Axis_Roll;ProjectWingman=Roll Axis
+name	yaw	yaw	MSFS2020=KEY_AXIS_RUDDER_SET;MSFS2024=KEY_AXIS_RUDDER_SET;FSX=AXIS_RUDDER_SET;FSXSE=AXIS_RUDDER_SET;P3D4=AXIS_RUDDER_SET;P3D5=AXIS_RUDDER_SET;P3D6=AXIS_RUDDER_SET;DCS=a2003cdnil;FalconBMS=axis/Yaw;XPlane11=axis/yaw;XPlane12=axis/yaw;WarThunder=rudder;EliteDangerous=YawAxisRaw;IL2Game=rpc_yaw;IL2Korea=rpc_yaw;IL21946=move.rudder;IL2CoD=pilotMove.rudder;IL2CoDBlitz=pilotMove.rudder;NuclearOption=Yaw;TinyCombatArena=Yaw;VTOLVR=Joystick Yaw;StarCitizen=spaceship_movement|v_yaw;Arma3=Axis.Rudder;Arma2=Axis.Rudder;GRebels=Axis_Yaw;ProjectWingman=Yaw Axis
+name	rudder	yaw	MSFS2020=KEY_AXIS_RUDDER_SET;MSFS2024=KEY_AXIS_RUDDER_SET;FSX=AXIS_RUDDER_SET;DCS=a2003cdnil
+name	trim	trim_pitch|trim_roll|trim_yaw|trim_set|trim_reset
+name	afterburner	afterburner
+name	mixture	mixture
+name	propeller pitch	prop_pitch
+name	canopy	canopy
+name	eject	eject
+name	tail hook	tailhook
+name	refuelling probe	refuel_probe
+name	master arm	master_arm
+name	weapon release	weapon_release
+name	flares	flare
+name	chaff	chaff
+name	countermeasures	cm_dispense|flare|chaff|cms_switch
+name	ecm	ecm
+name	radar	radar_power|radar_mode
+name	zoom	zoom
+name	night vision	nvg
+name	kneeboard	kneeboard
+name	autopilot	autopilot
+name	waypoint	waypoint
+name	push to talk	comm_ptt
+name	landing lights	lights_landing
+name	navigation lights	lights_nav
+name	strobe lights	lights_anticollision
+name	battery	battery
+name	pitot heat	pitot_heat
+name	pause	pause
+name	screenshot	screenshot
+name	view center	view_center
+name	external view	view_external
+name	map	view_map
+synonym	thrust	throttle
+synonym	collective	throttle
+synonym	undercarriage	gear
+synonym	airbrake	airbrake
+synonym	spoilers	airbrake
+synonym	elevator	pitch
+synonym	ailerons	roll
+synonym	pedals	yaw
+synonym	yaw	yaw
+synonym	reheat	afterburner
+synonym	pickle	weapon_release
+synonym	bomb release	weapon_release
+synonym	gun trigger	trigger
+synonym	cannon	trigger
+synonym	decoys	cm_dispense|flare|chaff
+synonym	jammer	ecm
+synonym	cms	cms_switch
+synonym	tms	tms
+synonym	dms	dms
+synonym	china hat	china_hat
+synonym	castle switch	sensor_select
+synonym	tdc	tdc
+synonym	cursor slew	tdc
+synonym	designate	tdc_press
+synonym	stt	target_lock
+synonym	steerpoint	waypoint
+synonym	fov	zoom
+synonym	nvg	nvg
+synonym	ptt	comm_ptt
+synonym	comm menu	comm_menu
+synonym	intercom	intercom
+synonym	force trim	trim_set
+synonym	nose wheel steering	nws
+synonym	tiller	nws
+synonym	beacon	lights_anticollision
+synonym	hud	hud
+synonym	helmet display	hmd
+synonym	targeting pod	tgp
+synonym	flir	tgp
+synonym	jfs	apu
+synonym	starter	engine_start
+synonym	magnetos	magnetos
+synonym	cowl flaps	cowl_flaps
+synonym	drop tanks	drop_tanks
+synonym	bail out	eject
+synonym	hand brake	parking_brake
+synonym	jester	crew_ai
+synonym	padlock	view_padlock
+synonym	trackir	view_look
+gameterm	strafe longitudinal	throttle
+gameterm	forward thrust	throttle
+gameterm	lateral thrust	strafe_lateral
+gameterm	vertical thrust	strafe_vertical
+gameterm	strafe left	strafe_lateral:left
+gameterm	quantum drive	jump_drive
+gameterm	frame shift drive	jump_drive
+gameterm	supercruise	jump_drive
+gameterm	flight assist	sas
+gameterm	decoupled	sas
+gameterm	space brake	space_brake
+gameterm	cargo scoop	cargo_scoop
+gameterm	power to shields	power_distribution
+gameterm	heat sink	heat_sink
+gameterm	hardpoints	hardpoints
+gameterm	speed limiter	speed_control
+gameterm	match target speed	speed_control
+gameterm	seta	time_accel
+direction	gear up	gear:up
+direction	gear down	gear:down
+direction	flaps down	flaps:down
+direction	trim nose up	trim_pitch:noseup
+direction	trim left wing down	trim_roll:left
+direction	throttle up	throttle:increase
+direction	tms aft	tms:down
+direction	tms up	tms:up
+direction	dms left	dms:left
+direction	cms forward	cms_switch:fwd
+direction	zoom out	zoom:out
+direction	canopy open	canopy:open
+direction	airbrake extend	airbrake:extend
+direction	next waypoint	waypoint:next
+direction	look left	view_look:left
+direction	radar elevation up	radar_elevation:up
+described	release flares	flare
+described	drop countermeasures	cm_dispense|flare|chaff
+described	make the plane go faster	throttle
+described	more power	throttle
+described	slow down in the air	airbrake|throttle
+described	lower the landing gear	gear:down
+described	raise the wheels	gear:up
+described	look around	view_look
+described	zoom in	zoom:in
+described	lock target	target_lock|tms
+described	lock onto the enemy	target_lock
+described	talk to the tower	comm_menu|atc_request
+described	talk on the radio	comm_ptt
+described	move sideways	strafe_lateral
+described	shoot the guns	trigger
+described	drop bombs	weapon_release
+described	fire missiles	weapon_release
+described	arm the weapons	master_arm
+described	choose a weapon	weapon_select
+described	get out of the plane	eject
+described	stop on the runway	wheel_brakes
+described	steer on the ground	nws
+described	turn on the autopilot	autopilot
+described	take control back	ap_disconnect
+described	see in the dark	nvg
+described	open the map	view_map
+described	recenter the view	view_center
+described	start the engine	engine_start
+described	stop the engine	engine_start|throttle_cutoff
+described	jam enemy radar	ecm
+described	next target	target_cycle
+described	nearest enemy	target_hostile
+described	jump to another system	jump_drive
+described	stop the ship	space_brake
+described	refuel in flight	refuel_probe
+described	catch the wire	tailhook
+described	open the cockpit	canopy
+described	light up the instruments	lights_instrument
+described	speed up time	time_accel
+described	take a picture	screenshot
+described	hover automatically	auto_hover
+described	keep the altitude	ap_altitude
+described	type a message	chat
+described	give orders to the wingman	wingman
+heldout	dispense flares	flare|cm_dispense
+heldout	pop some chaff	chaff
+heldout	accelerate	throttle
+heldout	reduce thrust	throttle
+heldout	retract the undercarriage	gear:up
+heldout	put the wheels down	gear:down
+heldout	see behind me	view_look|mirrors
+heldout	fire the gun	trigger
+heldout	launch a missile	weapon_release
+heldout	release the bombs	weapon_release
+heldout	contact air traffic control	atc_request|comm_menu
+heldout	radio my wingman	wingman|comm_menu
+heldout	slide left in space	strafe_lateral:left
+heldout	slow the ship down	space_brake|throttle
+heldout	kill the engine	engine_start|throttle_cutoff
+heldout	hover in place	auto_hover
+heldout	follow the waypoints	ap_route|waypoint
+heldout	night goggles	nvg
+heldout	widen the field of view	zoom:out
+heldout	lock the closest enemy	target_hostile|target_lock
+heldout	cycle targets	target_cycle
+heldout	deploy the landing gear	gear:down
+heldout	open the canopy	canopy:open
+heldout	jettison stores	jettison
+heldout	drop the fuel tanks	drop_tanks
+heldout	go to warp	jump_drive
+heldout	cut the throttle	throttle_cutoff
+heldout	trim nose down	trim_pitch:nosedown
+heldout	fold the wings	wing_fold
+heldout	lower the hook	tailhook:down
+heldout	safe the weapons	master_arm:safe
+heldout	change radar range	radar_range
+heldout	point the targeting pod	tdc|tgp
+heldout	move the cursor up	tdc:up
+heldout	pause the sim	pause
+heldout	turn on the landing lights	lights_landing:on
+heldout	toggle night vision	nvg
+heldout	speed brake out	airbrake:extend
+heldout	turn left with the pedals	yaw:left
+heldout	pull the nose up	pitch:up
+typo	throtle	throttle
+typo	landng gear	gear
+typo	flaires	flare
+typo	countermesures	cm_dispense|flare|chaff
+typo	afterbruner	afterburner
+typo	kneboard	kneeboard
+typo	autopliot	autopilot
+typo	cannopy	canopy
+typo	rudderr	yaw
+typo	zooom	zoom

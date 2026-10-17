@@ -1,0 +1,181 @@
+{
+  "format": "joypro-device-layout",
+  "version": 1,
+  "model": "virpil-sharka-50-collective-grip",
+  "photo": {"kind": "vendor", "url": "https://virpil-controls.eu/media/catalog/product/cache/f8e7ca8059fef1dc7d5708cf2af44b2f/v/p/vpc-011_01-e.jpg", "sha256": "d0e2caf35d9cb1fa128e36ff9e3aea8c93720391c9172bbc4f261c4d8c2f0ce3", "view": "main"},
+  "markers": {
+    "collective.axis.main": [0.59, 0.63],
+    "collective.button.1": [0.272, 0.401],
+    "collective.button.2": [0.541, 0.369],
+    "collective.button.3": [0.489, 0.304],
+    "collective.hat.1": [0.285, 0.268],
+    "collective.hat.2": [0.348, 0.352],
+    "collective.hat.3": [0.421, 0.344],
+    "collective.switch.1": [0.222, 0.34],
+    "collective.switch.2": [0.35, 0.272],
+    "collective.switch.3": [0.432, 0.245]
+  },
+  "parts": {
+    "collective.axis.main": {
+      "type": "lever",
+      "name": "Collective",
+      "inputs": [
+        {"input": "", "control": "collective.axis.main"}
+      ],
+      "mapping": "high",
+      "confidence": "medium",
+      "note": "the grip tube that moves the collective (axis from the TCS base)"
+    },
+    "collective.axis.throttle_twist": {
+      "type": "twist",
+      "name": "Throttle twist",
+      "inputs": [
+        {"input": "", "control": "collective.axis.throttle_twist"}
+      ],
+      "mapping": "high"
+    },
+    "collective.hat.1": {
+      "type": "hat",
+      "name": "Collective hat 1",
+      "inputs": [
+        {"input": "JOY_BTN9", "control": "collective.hat.1.press"},
+        {"input": "JOY_BTN10", "control": "collective.hat.1.up"},
+        {"input": "JOY_BTN11", "control": "collective.hat.1.right"},
+        {"input": "JOY_BTN12", "control": "collective.hat.1.down"},
+        {"input": "JOY_BTN23", "control": "collective.hat.1.left"}
+      ],
+      "mapping": "high",
+      "confidence": "high",
+      "note": "large hat at the back left, ПС ВОЗД / ВНЕШ / ВНУТ / ЧП plate (9-12, 23)"
+    },
+    "collective.hat.2": {
+      "type": "hat",
+      "name": "Collective hat 2",
+      "inputs": [
+        {"input": "JOY_BTN4", "control": "collective.hat.2.press"},
+        {"input": "JOY_BTN5", "control": "collective.hat.2.up"},
+        {"input": "JOY_BTN6", "control": "collective.hat.2.right"},
+        {"input": "JOY_BTN7", "control": "collective.hat.2.down"},
+        {"input": "JOY_BTN8", "control": "collective.hat.2.left"}
+      ],
+      "mapping": "high",
+      "confidence": "high",
+      "note": "round hat in front of it, ФАРА label (4-8)"
+    },
+    "collective.hat.3": {
+      "type": "hat",
+      "name": "Rocker",
+      "inputs": [
+        {"input": "JOY_BTN14", "control": "collective.hat.3.press"},
+        {"input": "JOY_BTN15", "control": "collective.hat.3.up"},
+        {"input": "JOY_BTN16", "control": "collective.hat.3.down"}
+      ],
+      "mapping": "high",
+      "confidence": "high",
+      "note": "ribbed rocker M/Б (14-16)"
+    },
+    "collective.switch.1": {
+      "type": "switch",
+      "name": "Left toggle",
+      "inputs": [
+        {"input": "JOY_BTN2", "control": "collective.switch.1.up"},
+        {"input": "JOY_BTN3", "control": "collective.switch.1.down"}
+      ],
+      "mapping": "high",
+      "confidence": "high",
+      "note": "left toggle (2/3)"
+    },
+    "collective.switch.2": {
+      "type": "switch",
+      "name": "Middle toggle",
+      "inputs": [
+        {"input": "JOY_BTN17", "control": "collective.switch.2.up"},
+        {"input": "JOY_BTN18", "control": "collective.switch.2.down"}
+      ],
+      "mapping": "high",
+      "confidence": "high",
+      "note": "middle toggle ШПЗ (17/18)"
+    },
+    "collective.switch.3": {
+      "type": "switch",
+      "name": "Right toggle",
+      "inputs": [
+        {"input": "JOY_BTN21", "control": "collective.switch.3.up"},
+        {"input": "JOY_BTN22", "control": "collective.switch.3.down"}
+      ],
+      "mapping": "high",
+      "confidence": "high",
+      "note": "right toggle МАР (21/22)"
+    },
+    "collective.button.1": {
+      "type": "button",
+      "name": "Collective button 1",
+      "inputs": [
+        {"input": "JOY_BTN1", "control": "collective.button.1"}
+      ],
+      "mapping": "high",
+      "confidence": "high",
+      "note": "grey button ГРУЗ (1)"
+    },
+    "collective.button.2": {
+      "type": "button",
+      "name": "Collective button 2",
+      "inputs": [
+        {"input": "JOY_BTN19", "control": "collective.button.2"}
+      ],
+      "mapping": "high",
+      "confidence": "high",
+      "note": "red button АВТ (19)"
+    },
+    "collective.button.3": {
+      "type": "button",
+      "name": "Collective button 3",
+      "inputs": [
+        {"input": "JOY_BTN20", "control": "collective.button.3"}
+      ],
+      "mapping": "high",
+      "confidence": "high",
+      "note": "grey button СНИЖ (20)"
+    }
+  },
+  "unplaced": {
+    "collective.axis.throttle_twist": "twist is on the Rotor TCS base, not in the photo"
+  },
+  "candidates": {},
+  "source": "JoyPro curated on the maker's photo (2026-10-11), grip alone seen from above on its control box, box top left, grip tube and nut bottom right; the same view as Virpil's layout sheet; collective tube and base not in the photo",
+  "mappingSource": "Virpil support sheet \"VPC SharKa-50 Collective Grip\" (https://support.virpil.com/en/support/solutions/articles/47001250819-vpc-sharka-50-collective-grip, attachment 47246733123), the catalog's source; every leader line traced to the control",
+  "confidence": "high",
+  "note": "the catalog's hat.1 uses 23 for left (9 press, 10 up, 11 right, 12 down), as the sheet does. The collective axis comes from the Rotor TCS base (marker on the grip tube); the throttle twist is on the base, not in the photo.",
+  "callouts": {
+    "version": 1,
+    "width": 1828,
+    "height": 1038,
+    "picture": [421, 19, 1000, 1000],
+    "rowHeight": 24,
+    "mainWidth": 204,
+    "modWidth": 132,
+    "otherY": -1,
+    "tables": [
+      {"id": "collective.hat.1", "title": "Collective hat 1", "parts": ["collective.hat.1"], "side": "left", "x": 19, "y": 59.5, "width": 360, "modifier": true, "spot": [0.285, 0.268], "rows": [{"input": "JOY_BTN9", "label": "Press", "icon": "button", "part": "collective.hat.1"}, {"input": "JOY_BTN10", "label": "Up", "icon": "up", "part": "collective.hat.1"}, {"input": "JOY_BTN11", "label": "Right", "icon": "right", "part": "collective.hat.1"}, {"input": "JOY_BTN23", "label": "Left", "icon": "left", "part": "collective.hat.1"}, {"input": "JOY_BTN12", "label": "Down", "icon": "down", "part": "collective.hat.1"}]},
+      {"id": "collective.hat.2", "title": "Collective hat 2", "parts": ["collective.hat.2"], "side": "left", "x": 19, "y": 443.5, "width": 360, "modifier": true, "spot": [0.348, 0.352], "rows": [{"input": "JOY_BTN4", "label": "Press", "icon": "button", "part": "collective.hat.2"}, {"input": "JOY_BTN5", "label": "Up", "icon": "up", "part": "collective.hat.2"}, {"input": "JOY_BTN6", "label": "Right", "icon": "right", "part": "collective.hat.2"}, {"input": "JOY_BTN8", "label": "Left", "icon": "left", "part": "collective.hat.2"}, {"input": "JOY_BTN7", "label": "Down", "icon": "down", "part": "collective.hat.2"}]},
+      {"id": "collective.hat.3", "title": "Rocker", "parts": ["collective.hat.3"], "side": "left", "x": 19, "y": 347.5, "width": 360, "modifier": true, "spot": [0.421, 0.344], "rows": [{"input": "JOY_BTN14", "label": "Press", "icon": "button", "part": "collective.hat.3"}, {"input": "JOY_BTN15", "label": "Up", "icon": "up", "part": "collective.hat.3"}, {"input": "JOY_BTN16", "label": "Down", "icon": "down", "part": "collective.hat.3"}]},
+      {"id": "collective.switch.1", "title": "Left toggle", "parts": ["collective.switch.1"], "side": "left", "x": 19, "y": 275.5, "width": 360, "modifier": true, "spot": [0.222, 0.34], "rows": [{"input": "JOY_BTN2", "label": "Up", "icon": "up", "part": "collective.switch.1"}, {"input": "JOY_BTN3", "label": "Down", "icon": "down", "part": "collective.switch.1"}]},
+      {"id": "collective.switch.2", "title": "Middle toggle", "parts": ["collective.switch.2"], "side": "left", "x": 19, "y": 203.5, "width": 360, "modifier": true, "spot": [0.35, 0.272], "rows": [{"input": "JOY_BTN17", "label": "Up", "icon": "up", "part": "collective.switch.2"}, {"input": "JOY_BTN18", "label": "Down", "icon": "down", "part": "collective.switch.2"}]},
+      {"id": "collective.switch.3", "title": "Right toggle", "parts": ["collective.switch.3"], "side": "right", "x": 1449, "y": 221.2, "width": 360, "modifier": true, "pinned": true, "spot": [0.432, 0.245], "rows": [{"input": "JOY_BTN21", "label": "Up", "icon": "up", "part": "collective.switch.3"}, {"input": "JOY_BTN22", "label": "Down", "icon": "down", "part": "collective.switch.3"}]},
+      {"id": "collective.button.1", "title": "Collective button 1", "parts": ["collective.button.1"], "side": "left", "x": 19, "y": 587.5, "width": 360, "modifier": true, "spot": [0.272, 0.401], "rows": [{"input": "JOY_BTN1", "label": "Press", "icon": "button", "part": "collective.button.1"}]},
+      {"id": "collective.button.2", "title": "Collective button 2", "parts": ["collective.button.2"], "side": "right", "x": 1449, "y": 359, "width": 360, "modifier": true, "spot": [0.541, 0.369], "rows": [{"input": "JOY_BTN19", "label": "Press", "icon": "button", "part": "collective.button.2"}]},
+      {"id": "collective.button.3", "title": "Collective button 3", "parts": ["collective.button.3"], "side": "right", "x": 1449, "y": 294, "width": 360, "modifier": true, "pinned": true, "spot": [0.489, 0.304], "rows": [{"input": "JOY_BTN20", "label": "Press", "icon": "button", "part": "collective.button.3"}]}
+    ],
+    "lines": [
+      {"table": "collective.hat.1", "points": [[706, 287], [706, 88.5], [379, 88.5]]},
+      {"table": "collective.switch.2", "points": [[771, 291], [771, 232.5], [379, 232.5]]},
+      {"table": "collective.switch.1", "points": [[643, 359], [643, 304.5], [379, 304.5]]},
+      {"table": "collective.hat.3", "points": [[842, 363], [842, 370], [393, 370], [393, 376.5], [379, 376.5]]},
+      {"table": "collective.hat.2", "points": [[769, 371], [400, 371], [400, 472.5], [379, 472.5]]},
+      {"table": "collective.button.1", "points": [[693, 420], [407, 420], [407, 616.5], [379, 616.5]]},
+      {"table": "collective.button.2", "points": [[962, 388], [1449, 388]]},
+      {"table": "collective.switch.3", "points": [[853, 264], [1151, 264], [1151, 250.2], [1449, 250.2]]},
+      {"table": "collective.button.3", "points": [[910, 323], [1449, 323]]}
+    ]
+  }
+}

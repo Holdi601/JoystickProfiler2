@@ -1,0 +1,65 @@
+{
+  "format": "joypro-device-layout",
+  "version": 1,
+  "model": "virpil-r1-legend-pedals",
+  "photo": {"kind": "vendor", "url": "https://virpil-controls.eu/media/catalog/product/cache/f8e7ca8059fef1dc7d5708cf2af44b2f/v/p/vpc-305-002_01.jpg", "sha256": "353238ef580340c64cccec25a74111205904befebc888ca2c9f98cca41c2c247", "view": "main"},
+  "markers": {
+    "pedals.axis.brake_left": [0.2, 0.4],
+    "pedals.axis.brake_right": [0.8, 0.29],
+    "pedals.axis.rudder": [0.52, 0.5]
+  },
+  "parts": {
+    "pedals.axis.rudder": {
+      "type": "rudder",
+      "name": "Rudder (Z, sibling)",
+      "inputs": [
+        {"input": "JOY_Z", "control": "pedals.axis.rudder"}
+      ],
+      "mapping": "medium",
+      "confidence": "medium",
+      "note": "centre linkage of the rudder mechanism"
+    },
+    "pedals.axis.brake_left": {
+      "type": "brake",
+      "name": "Left toe brake",
+      "inputs": [
+        {"input": "", "control": "pedals.axis.brake_left"}
+      ],
+      "mapping": "high",
+      "confidence": "medium",
+      "note": "forefoot (toe) part of the left pedal under the strap (no input set in the catalog)"
+    },
+    "pedals.axis.brake_right": {
+      "type": "brake",
+      "name": "Right toe brake",
+      "inputs": [
+        {"input": "", "control": "pedals.axis.brake_right"}
+      ],
+      "mapping": "high",
+      "confidence": "medium",
+      "note": "forefoot (toe) part of the right pedal under the strap (no input set in the catalog)"
+    }
+  },
+  "unplaced": {},
+  "candidates": {},
+  "source": "JoyPro curated on the maker's photo (2026-10-11), pedals seen from the pilot's seat and above: left pedal to the left, right pedal to the right, heel cups at the bottom, toe plates with straps at the top, centre linkage on the base plate",
+  "mappingSource": "catalog: rudder on Z taken from the sibling R1-FALCON community template (hamlet2k/sc-mapper deviceTemplates.ts, as cited in the catalog) and the ACE pedals (EDCD); toe brakes without input because the community sources disagree on left/right",
+  "confidence": "high",
+  "note": "the toe-brake markers sit on the strapped forefoot part of each pedal; which axis each brake reports is open in the catalog.",
+  "callouts": {
+    "version": 1,
+    "width": 1715,
+    "height": 1246,
+    "picture": [23, 23, 1200, 1200],
+    "rowHeight": 29,
+    "mainWidth": 246,
+    "modWidth": 160,
+    "otherY": -1,
+    "tables": [
+      {"id": "pedals.axis.rudder", "title": "Rudder (Z, sibling)", "parts": ["pedals.axis.rudder"], "side": "right", "x": 1257, "y": 587.5, "width": 435, "modifier": true, "spot": [0.52, 0.5], "rows": [{"input": "JOY_Z", "label": "Z", "icon": "axis", "part": "pedals.axis.rudder"}]}
+    ],
+    "lines": [
+      {"table": "pedals.axis.rudder", "points": [[647, 623], [1257, 623]]}
+    ]
+  }
+}

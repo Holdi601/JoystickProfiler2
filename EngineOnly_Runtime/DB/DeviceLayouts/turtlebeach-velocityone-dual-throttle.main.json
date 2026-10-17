@@ -1,0 +1,84 @@
+{
+  "format": "joypro-device-layout",
+  "version": 1,
+  "model": "turtlebeach-velocityone-dual-throttle",
+  "photo": {"kind": "vendor", "url": "https://cdn.shopify.com/s/files/1/0556/5795/5430/files/1_MediaGallery_VelocityOne_Dual_Trottle_XB_2400x1350_d3dc7d5e-4b08-47c4-bccf-2c4f391ca2c9.png", "sha256": "55a2b7e28c4565d28d5442f26a0f27feef577ae5687f7f40b1a39c9bd1a9eaa0", "view": "main"},
+  "markers": {
+    "throttle.axis": [0.47, 0.3],
+    "throttle.axis.slider.1": [0.53, 0.57],
+    "throttle.axis.wheel.1": [0.6, 0.56],
+    "throttle.ministick": [0.555, 0.277]
+  },
+  "parts": {
+    "throttle.ministick": {
+      "type": "ministick",
+      "name": "Thumbstick",
+      "inputs": [
+        {"input": "", "control": "throttle.axis.ministick.x"},
+        {"input": "", "control": "throttle.axis.ministick.y"}
+      ],
+      "mapping": "medium",
+      "confidence": "high",
+      "note": "P1 thumbstick on the head (printed RxRy A9-10, push B01)"
+    },
+    "throttle.axis.slider.1": {
+      "type": "slider",
+      "name": "Base lever",
+      "inputs": [
+        {"input": "", "control": "throttle.axis.slider.1"}
+      ],
+      "mapping": "medium",
+      "confidence": "high",
+      "note": "base lever knob (printed Z AXIS 7, UP B10 / DOWN B11)"
+    },
+    "throttle.axis.wheel.1": {
+      "type": "wheel",
+      "name": "Wheel",
+      "inputs": [
+        {"input": "", "control": "throttle.axis.wheel.1"}
+      ],
+      "mapping": "medium",
+      "confidence": "medium",
+      "note": "big red illuminated wheel at the right of the base"
+    },
+    "throttle.axis.wheel.2": {
+      "type": "wheel",
+      "name": "Scroll wheel",
+      "inputs": [
+        {"input": "", "control": "throttle.axis.wheel.2"}
+      ],
+      "mapping": "medium"
+    },
+    "throttle.axis": {
+      "type": "button",
+      "name": "throttle.axis",
+      "inputs": [
+        {"input": "", "control": "throttle.axis.left"},
+        {"input": "", "control": "throttle.axis.right"}
+      ],
+      "mapping": "medium",
+      "confidence": "medium",
+      "note": "the split throttle handle (L1 left lever = X throttle, L2 right lever = Y axis 6)"
+    }
+  },
+  "unplaced": {
+    "throttle.axis.wheel.2": "scroll wheel on the right flank of the head (printed Rz A8 B26-28), the wheel itself faces away from the camera"
+  },
+  "candidates": {},
+  "source": "JoyPro curated on the maker's photo (2026-10-11), the throttle seen from the front-right and above (pilot's side), handle head with P1/H1 and the green B2-B4 cluster toward the camera, base lever and red wheel on the right",
+  "mappingSource": "catalog (turtlebeach.json, confidence low: \"USB id and numbering not published\"; controls per https://www.turtlebeach.com/products/velocity-one-dual-throttle: two Hall throttle levers, base lever, thumbstick X/Y, wheel, scroll wheel). Which control is which part is read from the labels printed on the device in this photo: P1 \"RxRy A9-10, B01\" = thumbstick, base lever \"Z AXIS 7\" with UP B10 / DOWN B11, \"Rz A8 B26-28\" on the right flank of the head, handle halves \"L1 / L2\" over \"X THROTTLE\" and \"Y AXIS 6\"",
+  "confidence": "medium",
+  "note": "The catalog part \"throttle.axis\" (type button, inputs left/right) looks like a placeholder for the two throttle levers (L1 = X throttle, L2 = Y axis 6); marked on the split throttle handle. Wheel vs scroll wheel: the big red illuminated wheel at the right of the base is taken as \"Wheel\"; the \"Scroll wheel\" is taken to be the Rz A8 wheel on the right flank of the head (only its printed label is visible). This split is JoyPro's reading of Turtle Beach's description, not documented. The photo shows many controls the catalog has no part for: H1 hat, the green B2/B3/B4 buttons, three toggle switches (B15-B20, B47-B52), three green base buttons B12-B14, the base rotary encoder (B21-23, B53-55) and the lever detent buttons B25/B27/B57/B59.",
+  "callouts": {
+    "version": 1,
+    "width": 2490,
+    "height": 1440,
+    "picture": [45, 45, 2400, 1350],
+    "rowHeight": 56,
+    "mainWidth": 476,
+    "modWidth": 308,
+    "otherY": -1,
+    "tables": [],
+    "lines": []
+  }
+}

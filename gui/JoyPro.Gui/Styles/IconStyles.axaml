@@ -1,0 +1,121 @@
+<!--
+    Shared looks for the icon set (Icons.axaml):
+      Button.icon / ToggleButton.icon   icon left of the text: Tag="{DynamicResource Icon.X}", Content="{l:T 'Text'}" (Content stays a string)
+      ToggleButton.nav / Button.nav     icon above a small text (bottom page navigation)
+      PathIcon.ok / .warn / .error / .info   status symbols in their colors
+      Border.card                       a framed card; Border.tile a game/device tile
+      TextBlock.hint                    a short plain-language hint under a control
+      TextBlock.section                 a section title
+      Border.step + TextBlock           a round step number of a wizard (1, 2, 3)
+-->
+<Styles xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:l="using:JoyPro.Gui.Localization">
+
+    <Style Selector="Button.icon">
+        <Setter Property="ContentTemplate">
+            <DataTemplate x:DataType="x:String">
+                <!-- A long translation wraps to a second line where the button has less room (never cut off). -->
+                <Grid ColumnDefinitions="Auto,*" ColumnSpacing="7">
+                    <PathIcon Width="16" Height="16" Data="{Binding $parent[Button].Tag}" />
+                    <TextBlock Grid.Column="1" Text="{Binding}" VerticalAlignment="Center" TextWrapping="Wrap" />
+                </Grid>
+            </DataTemplate>
+        </Setter>
+    </Style>
+
+    <Style Selector="ToggleButton.icon">
+        <Setter Property="ContentTemplate">
+            <DataTemplate x:DataType="x:String">
+                <!-- A long translation wraps to a second line where the button has less room (never cut off). -->
+                <Grid ColumnDefinitions="Auto,*" ColumnSpacing="7">
+                    <PathIcon Width="16" Height="16" Data="{Binding $parent[ToggleButton].Tag}" />
+                    <TextBlock Grid.Column="1" Text="{Binding}" VerticalAlignment="Center" TextWrapping="Wrap" />
+                </Grid>
+            </DataTemplate>
+        </Setter>
+    </Style>
+
+    <Style Selector="ToggleButton.nav">
+        <Setter Property="Padding" Value="10,4" />
+        <Setter Property="MinWidth" Value="64" />
+        <Setter Property="ContentTemplate">
+            <DataTemplate x:DataType="x:String">
+                <StackPanel Spacing="2" HorizontalAlignment="Center">
+                    <PathIcon Width="18" Height="18" HorizontalAlignment="Center" Data="{Binding $parent[ToggleButton].Tag}" />
+                    <TextBlock Text="{Binding}" FontSize="11" HorizontalAlignment="Center" />
+                </StackPanel>
+            </DataTemplate>
+        </Setter>
+    </Style>
+
+    <Style Selector="Button.nav">
+        <Setter Property="Padding" Value="10,4" />
+        <Setter Property="MinWidth" Value="64" />
+        <Setter Property="ContentTemplate">
+            <DataTemplate x:DataType="x:String">
+                <StackPanel Spacing="2" HorizontalAlignment="Center">
+                    <PathIcon Width="18" Height="18" HorizontalAlignment="Center" Data="{Binding $parent[Button].Tag}" />
+                    <TextBlock Text="{Binding}" FontSize="11" HorizontalAlignment="Center" />
+                </StackPanel>
+            </DataTemplate>
+        </Setter>
+    </Style>
+
+    <Style Selector="PathIcon.ok">
+        <Setter Property="Foreground" Value="{DynamicResource StatusOkBrush}" />
+    </Style>
+    <Style Selector="PathIcon.warn">
+        <Setter Property="Foreground" Value="{DynamicResource StatusWarnBrush}" />
+    </Style>
+    <Style Selector="PathIcon.error">
+        <Setter Property="Foreground" Value="{DynamicResource StatusErrorBrush}" />
+    </Style>
+    <Style Selector="PathIcon.info">
+        <Setter Property="Foreground" Value="{DynamicResource StatusInfoBrush}" />
+    </Style>
+
+    <Style Selector="Border.card">
+        <Setter Property="BorderBrush" Value="{DynamicResource CardBorderBrush}" />
+        <Setter Property="BorderThickness" Value="1" />
+        <Setter Property="CornerRadius" Value="10" />
+        <Setter Property="Padding" Value="10" />
+    </Style>
+
+    <Style Selector="Border.tile">
+        <Setter Property="BorderBrush" Value="{DynamicResource CardBorderBrush}" />
+        <Setter Property="BorderThickness" Value="1" />
+        <Setter Property="CornerRadius" Value="10" />
+        <Setter Property="Padding" Value="8" />
+        <Setter Property="Background" Value="{DynamicResource CardTintBrush}" />
+    </Style>
+
+    <Style Selector="TextBlock.hint">
+        <Setter Property="TextWrapping" Value="Wrap" />
+        <Setter Property="Opacity" Value="0.8" />
+        <Setter Property="FontSize" Value="12" />
+    </Style>
+
+    <Style Selector="TextBlock.section">
+        <Setter Property="FontSize" Value="16" />
+        <Setter Property="FontWeight" Value="SemiBold" />
+        <Setter Property="VerticalAlignment" Value="Center" />
+    </Style>
+
+    <Style Selector="Border.step">
+        <Setter Property="Width" Value="26" />
+        <Setter Property="Height" Value="26" />
+        <Setter Property="CornerRadius" Value="13" />
+        <Setter Property="Background" Value="{DynamicResource StatusInfoBrush}" />
+        <Setter Property="VerticalAlignment" Value="Center" />
+    </Style>
+    <Style Selector="Border.step > TextBlock">
+        <Setter Property="Foreground" Value="White" />
+        <Setter Property="FontWeight" Value="Bold" />
+        <Setter Property="HorizontalAlignment" Value="Center" />
+        <Setter Property="VerticalAlignment" Value="Center" />
+    </Style>
+    <Style Selector="Border.step.done">
+        <Setter Property="Background" Value="{DynamicResource StatusOkBrush}" />
+    </Style>
+</Styles>

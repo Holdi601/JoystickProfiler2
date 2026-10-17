@@ -1,0 +1,129 @@
+{
+  "format": "joypro-device-layout",
+  "version": 1,
+  "model": "virpil-warbrd-grip-classic",
+  "photo": {"kind": "vendor", "url": "https://support.virpil.com/helpdesk/attachments/47246733679", "sha256": "404c7b44a14b912e0916aa7b12080354ab820c932c670d93130e066256bbc177", "view": "sheet"},
+  "markers": {
+    "stick.axis.twist": [0.72, 0.6],
+    "stick.button.thumb.1": [0.63, 0.41],
+    "stick.gimbal": [0.708, 0.885],
+    "stick.hat.cms": [0.64, 0.568],
+    "stick.hat.tms": [0.69, 0.348],
+    "stick.pinky.button": [0.632, 0.75],
+    "stick.trigger": [0.598, 0.522]
+  },
+  "parts": {
+    "stick.hat.tms": {
+      "type": "hat",
+      "name": "8-way hat",
+      "inputs": [
+        {"input": "JOY_BTN5", "control": "stick.hat.tms.press"},
+        {"input": "JOY_BTN6", "control": "stick.hat.tms.up"},
+        {"input": "JOY_BTN7", "control": "stick.hat.tms.upright"},
+        {"input": "JOY_BTN8", "control": "stick.hat.tms.right"},
+        {"input": "JOY_BTN9", "control": "stick.hat.tms.downright"},
+        {"input": "JOY_BTN10", "control": "stick.hat.tms.down"},
+        {"input": "JOY_BTN11", "control": "stick.hat.tms.downleft"},
+        {"input": "JOY_BTN12", "control": "stick.hat.tms.left"},
+        {"input": "JOY_BTN13", "control": "stick.hat.tms.upleft"}
+      ],
+      "mapping": "high",
+      "confidence": "high"
+    },
+    "stick.hat.cms": {
+      "type": "hat",
+      "name": "Side hat",
+      "inputs": [
+        {"input": "JOY_BTN14", "control": "stick.hat.cms.press"},
+        {"input": "JOY_BTN15", "control": "stick.hat.cms.up"},
+        {"input": "JOY_BTN16", "control": "stick.hat.cms.right"},
+        {"input": "JOY_BTN17", "control": "stick.hat.cms.down"},
+        {"input": "JOY_BTN18", "control": "stick.hat.cms.left"}
+      ],
+      "mapping": "high",
+      "confidence": "high"
+    },
+    "stick.trigger": {
+      "type": "trigger",
+      "name": "Trigger stage",
+      "inputs": [
+        {"input": "JOY_BTN1", "control": "stick.trigger.stage1"},
+        {"input": "JOY_BTN2", "control": "stick.trigger.stage2"}
+      ],
+      "mapping": "high",
+      "confidence": "high"
+    },
+    "stick.pinky.button": {
+      "type": "button",
+      "name": "Button at the foot of the handle",
+      "inputs": [
+        {"input": "JOY_BTN4", "control": "stick.pinky.button"}
+      ],
+      "mapping": "high",
+      "confidence": "high"
+    },
+    "stick.axis.twist": {
+      "type": "twist",
+      "name": "Twist (Z)",
+      "inputs": [
+        {"input": "JOY_Z", "control": "stick.axis.twist"}
+      ],
+      "mapping": "high",
+      "confidence": "medium"
+    },
+    "stick.gimbal": {
+      "type": "gimbal",
+      "name": "Base",
+      "inputs": [
+        {"input": "JOY_X", "control": "stick.axis.roll"},
+        {"input": "JOY_Y", "control": "stick.axis.pitch"}
+      ],
+      "mapping": "medium",
+      "confidence": "medium",
+      "note": "base not on the sheet; X/Y come from the base (catalog note)"
+    },
+    "stick.button.thumb.1": {
+      "type": "button",
+      "name": "Thumb button",
+      "inputs": [
+        {"input": "JOY_BTN3", "control": "stick.button.thumb.1"}
+      ],
+      "mapping": "high",
+      "confidence": "high"
+    }
+  },
+  "unplaced": {},
+  "candidates": {},
+  "source": "JoyPro curated on the maker's photo (2026-10-11), Virpil's control layout sheet: right-hand grip seen from the left/thumb side, top hat at the top, side hat on the left flank",
+  "mappingSource": "Virpil 'VPC WarBRD Grip' control layout sheet (this image), support article https://support.virpil.com/en/support/solutions/articles/47001250822-vpc-warbrd-grip ; numbers on the sheet match the catalog (1/2 trigger stages, 3 thumb, 4 foot button, 5-13 top hat, 14-18 side hat, Z twist)",
+  "confidence": "high",
+  "note": "the base is not on the sheet; the gimbal marker sits on the grip's base collar (where the grip joins the base). Numbering per the older sheet; the Configurator 2.0 sheet (entry virpil-warbrd-grip) differs, see catalog note.",
+  "callouts": {
+    "version": 1,
+    "width": 1921,
+    "height": 1125,
+    "picture": [26, 26, 1341, 948],
+    "rowHeight": 32,
+    "mainWidth": 272,
+    "modWidth": 176,
+    "otherY": -1,
+    "tables": [
+      {"id": "stick.hat.tms", "title": "8-way hat", "parts": ["stick.hat.tms"], "side": "right", "x": 1415, "y": 77.9, "width": 480, "modifier": true, "spot": [0.69, 0.348], "rows": [{"input": "JOY_BTN5", "label": "Press", "icon": "button", "part": "stick.hat.tms"}, {"input": "JOY_BTN6", "label": "Up", "icon": "up", "part": "stick.hat.tms"}, {"input": "JOY_BTN8", "label": "Right", "icon": "right", "part": "stick.hat.tms"}, {"input": "JOY_BTN12", "label": "Left", "icon": "left", "part": "stick.hat.tms"}, {"input": "JOY_BTN10", "label": "Down", "icon": "down", "part": "stick.hat.tms"}, {"input": "JOY_BTN7", "label": "Up-right", "icon": "upright", "part": "stick.hat.tms"}, {"input": "JOY_BTN13", "label": "Up-left", "icon": "upleft", "part": "stick.hat.tms"}, {"input": "JOY_BTN9", "label": "Down-right", "icon": "downright", "part": "stick.hat.tms"}, {"input": "JOY_BTN11", "label": "Down-left", "icon": "downleft", "part": "stick.hat.tms"}]},
+      {"id": "stick.hat.cms", "title": "Side hat", "parts": ["stick.hat.cms"], "side": "right", "x": 1415, "y": 560.9, "width": 480, "modifier": true, "spot": [0.64, 0.568], "rows": [{"input": "JOY_BTN14", "label": "Press", "icon": "button", "part": "stick.hat.cms"}, {"input": "JOY_BTN15", "label": "Up", "icon": "up", "part": "stick.hat.cms"}, {"input": "JOY_BTN16", "label": "Right", "icon": "right", "part": "stick.hat.cms"}, {"input": "JOY_BTN18", "label": "Left", "icon": "left", "part": "stick.hat.cms"}, {"input": "JOY_BTN17", "label": "Down", "icon": "down", "part": "stick.hat.cms"}]},
+      {"id": "stick.trigger", "title": "Trigger stage", "parts": ["stick.trigger"], "side": "right", "x": 1415, "y": 463.9, "width": 480, "modifier": true, "spot": [0.598, 0.522], "rows": [{"input": "JOY_BTN1", "label": "First stage", "icon": "button", "part": "stick.trigger"}, {"input": "JOY_BTN2", "label": "Second stage", "icon": "button", "part": "stick.trigger"}]},
+      {"id": "stick.pinky.button", "title": "Button at the foot of the handle", "parts": ["stick.pinky.button"], "side": "bottom", "x": 397, "y": 1012, "width": 480, "modifier": true, "spot": [0.632, 0.75], "rows": [{"input": "JOY_BTN4", "label": "Press", "icon": "button", "part": "stick.pinky.button"}]},
+      {"id": "stick.axis.twist", "title": "Twist (Z)", "parts": ["stick.axis.twist"], "side": "right", "x": 1415, "y": 753.9, "width": 480, "modifier": true, "spot": [0.72, 0.6], "rows": [{"input": "JOY_Z", "label": "Z", "icon": "axis", "part": "stick.axis.twist"}]},
+      {"id": "stick.gimbal", "title": "Base", "parts": ["stick.gimbal"], "side": "bottom", "x": 887, "y": 1012, "width": 480, "modifier": true, "spot": [0.708, 0.885], "rows": [{"input": "JOY_X", "label": "roll (X)", "icon": "axis", "part": "stick.gimbal"}, {"input": "JOY_Y", "label": "pitch (Y)", "icon": "axis", "part": "stick.gimbal"}]},
+      {"id": "stick.button.thumb.1", "title": "Thumb button", "parts": ["stick.button.thumb.1"], "side": "right", "x": 1415, "y": 398.9, "width": 480, "modifier": true, "spot": [0.63, 0.41], "rows": [{"input": "JOY_BTN3", "label": "Press", "icon": "button", "part": "stick.button.thumb.1"}]}
+    ],
+    "lines": [
+      {"table": "stick.hat.tms", "points": [[951.3, 355.9], [1386, 355.9], [1386, 116.9], [1415, 116.9]]},
+      {"table": "stick.button.thumb.1", "points": [[870.8, 414.7], [1386, 414.7], [1386, 437.9], [1415, 437.9]]},
+      {"table": "stick.trigger", "points": [[827.9, 520.9], [1386, 520.9], [1386, 502.9], [1415, 502.9]]},
+      {"table": "stick.hat.cms", "points": [[884.2, 564.5], [1396, 564.5], [1396, 599.9], [1415, 599.9]]},
+      {"table": "stick.axis.twist", "points": [[991.5, 594.8], [1386, 594.8], [1386, 792.9], [1415, 792.9]]},
+      {"table": "stick.pinky.button", "points": [[873.5, 737], [873.5, 993], [637, 993], [637, 1012]]},
+      {"table": "stick.gimbal", "points": [[975.4, 865], [975.4, 993], [1127, 993], [1127, 1012]]}
+    ]
+  }
+}

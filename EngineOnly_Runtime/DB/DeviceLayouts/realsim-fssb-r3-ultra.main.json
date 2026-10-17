@@ -1,0 +1,56 @@
+{
+  "format": "joypro-device-layout",
+  "version": 1,
+  "model": "realsim-fssb-r3-ultra",
+  "photo": {"kind": "vendor", "url": "https://realsimulator.com/wp-content/uploads/2022/12/FSSB-R3L_ULTRA.png", "sha256": "833f6585f0f1a345500689ea0b8eb2f29db597a058b3d3ffb81b4f35e519ccbd", "view": "main"},
+  "markers": {
+    "stick.axis.twist": [0.5, 0.17],
+    "stick.gimbal": [0.5, 0.3]
+  },
+  "parts": {
+    "stick.gimbal": {
+      "type": "gimbal",
+      "name": "Stick (roll / pitch)",
+      "inputs": [
+        {"input": "JOY_X", "control": "stick.axis.roll"},
+        {"input": "JOY_Y", "control": "stick.axis.pitch"}
+      ],
+      "mapping": "high",
+      "confidence": "medium"
+    },
+    "stick.axis.twist": {
+      "type": "twist",
+      "name": "Twist",
+      "inputs": [
+        {"input": "JOY_RZ", "control": "stick.axis.twist"}
+      ],
+      "mapping": "medium",
+      "confidence": "medium",
+      "note": "Yaw axis only with SSF firmware; rZ not stated in the guide"
+    }
+  },
+  "unplaced": {},
+  "candidates": {},
+  "source": "JoyPro curated on the maker's photo (2026-10-11), FSSB-R3L MKII ULTRA force-sensing base seen from the front, black grip adapter post on top, no grip mounted",
+  "mappingSource": "FSSB-R3 User Guide (https://www.realsimulator.com/download/FSSB-R3_User_Guide.pdf), as cited by the catalog: p.32/p.37 Roll = X axis, Pitch = Y axis; a third Yaw axis only with the SSF firmware (p.78-79), its DirectInput axis name not stated",
+  "confidence": "medium",
+  "note": "A force-sensing base has no moving gimbal: roll/pitch/twist are the forces on the grip adapter post. Gimbal marker at the post's base joint, twist on the post. The standard MJF firmware reports only two axes (p.94 'Two analog axes: Pitch and Roll'); twist (Yaw) needs the SSF firmware or an RS grip with its own analog axes (F16SGRH guide p.6). The catalog's JOY_RZ for twist is not confirmed by the guide.",
+  "callouts": {
+    "version": 1,
+    "width": 1064,
+    "height": 1003,
+    "picture": [20, 118, 1024, 865],
+    "rowHeight": 25,
+    "mainWidth": 212,
+    "modWidth": 138,
+    "otherY": -1,
+    "tables": [
+      {"id": "stick.gimbal", "title": "Stick (roll / pitch)", "parts": ["stick.gimbal"], "side": "top", "x": 536, "y": 20, "width": 375, "modifier": true, "spot": [0.5, 0.3], "rows": [{"input": "JOY_X", "label": "roll (X)", "icon": "axis", "part": "stick.gimbal"}, {"input": "JOY_Y", "label": "pitch (Y)", "icon": "axis", "part": "stick.gimbal"}]},
+      {"id": "stick.axis.twist", "title": "Twist", "parts": ["stick.axis.twist"], "side": "top", "x": 153, "y": 45, "width": 375, "modifier": true, "spot": [0.5, 0.17], "rows": [{"input": "JOY_RZ", "label": "RZ", "icon": "axis", "part": "stick.axis.twist"}]}
+    ],
+    "lines": [
+      {"table": "stick.axis.twist", "points": [[532, 265], [340.5, 265], [340.5, 88]]},
+      {"table": "stick.gimbal", "points": [[532, 377.5], [723.5, 377.5], [723.5, 88]]}
+    ]
+  }
+}

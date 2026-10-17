@@ -1,0 +1,128 @@
+{
+  "format": "joypro-device-layout",
+  "version": 1,
+  "model": "vpforce-rhino-winwing-f16ex",
+  "photo": {"kind": "vendor", "url": "https://eu.winctrl.com/static/ipfs/QmSXddA3pBz88J8JzUEpukr5gTYNYvc1AjcBooYKA1xm51", "sha256": "2385790acb5d61667a717d3904a9abbb93a3d2b6383d8b892415ab50904ddf32", "view": "main"},
+  "markers": {
+    "stick.hat.trim": [0.47, 0.12],
+    "stick.pinky.lever": [0.3, 0.6],
+    "stick.weapon_release": [0.375, 0.18]
+  },
+  "parts": {
+    "stick.hat.trim": {
+      "type": "hat",
+      "name": "Trim hat",
+      "inputs": [
+        {"input": "", "control": "stick.hat.trim.up"},
+        {"input": "", "control": "stick.hat.trim.down"},
+        {"input": "", "control": "stick.hat.trim.left"},
+        {"input": "", "control": "stick.hat.trim.right"}
+      ],
+      "mapping": "high",
+      "confidence": "high",
+      "note": "trim hat with NOSE DOWN / LWD / NOSE UP markings on top of the head"
+    },
+    "stick.weapon_release": {
+      "type": "release",
+      "name": "Weapon release",
+      "inputs": [
+        {"input": "", "control": "stick.weapon_release"}
+      ],
+      "mapping": "medium",
+      "confidence": "high",
+      "note": "red pickle button on the top left of the head"
+    },
+    "stick.hat.tms": {
+      "type": "hat",
+      "name": "TMS hat",
+      "inputs": [
+        {"input": "", "control": "stick.hat.tms.up"},
+        {"input": "", "control": "stick.hat.tms.down"},
+        {"input": "", "control": "stick.hat.tms.left"},
+        {"input": "", "control": "stick.hat.tms.right"}
+      ],
+      "mapping": "low"
+    },
+    "stick.hat.dms": {
+      "type": "hat",
+      "name": "DMS hat",
+      "inputs": [
+        {"input": "", "control": "stick.hat.dms.up"},
+        {"input": "", "control": "stick.hat.dms.down"},
+        {"input": "", "control": "stick.hat.dms.left"},
+        {"input": "", "control": "stick.hat.dms.right"}
+      ],
+      "mapping": "low"
+    },
+    "stick.hat.cms": {
+      "type": "hat",
+      "name": "CMS hat",
+      "inputs": [
+        {"input": "", "control": "stick.hat.cms.up"},
+        {"input": "", "control": "stick.hat.cms.down"},
+        {"input": "", "control": "stick.hat.cms.left"},
+        {"input": "", "control": "stick.hat.cms.right"},
+        {"input": "", "control": "stick.hat.cms.press"}
+      ],
+      "mapping": "low"
+    },
+    "stick.trigger": {
+      "type": "trigger",
+      "name": "Trigger",
+      "inputs": [
+        {"input": "", "control": "stick.trigger.stage1"},
+        {"input": "", "control": "stick.trigger.stage2"}
+      ],
+      "mapping": "medium"
+    },
+    "stick.pinky.lever": {
+      "type": "paddle",
+      "name": "Pinky lever",
+      "inputs": [
+        {"input": "", "control": "stick.pinky.lever"}
+      ],
+      "mapping": "medium",
+      "confidence": "high",
+      "note": "long lever at the lower front of the grip (paddle / analog brake lever)"
+    },
+    "stick.gimbal": {
+      "type": "gimbal",
+      "name": "Stick (roll / pitch)",
+      "inputs": [
+        {"input": "JOY_X", "control": "stick.axis.roll"},
+        {"input": "JOY_Y", "control": "stick.axis.pitch"}
+      ],
+      "mapping": "medium"
+    }
+  },
+  "unplaced": {
+    "stick.hat.tms": "knurled 4-way switch behind the pickle (F-16 TMS position); could also be DMS",
+    "stick.hat.dms": "round 4-way hat on the left rear of the head; which F-16 hat it is is not verified",
+    "stick.hat.cms": "4-way hat low on the left side of the grip (owners report the CMS sits low on the F-16EX); not verified",
+    "stick.trigger": "under the head on the front of the grip, hidden (only a red edge shows below the left extension)",
+    "stick.gimbal": "the photo shows the grip only; the gimbal is in the Rhino base"
+  },
+  "candidates": {
+    "stick.hat.cms": [0.41, 0.47],
+    "stick.hat.dms": [0.53, 0.25],
+    "stick.hat.tms": [0.41, 0.27]
+  },
+  "source": "JoyPro curated on the maker's photo (2026-10-11), the WinWing F-16EX grip alone (no base) seen from the pilot's left side, slightly from above; front of the grip to the left",
+  "mappingSource": "catalog vpforce.json (source https://docs.vpforce.eu/products/grip-adapters/): control names only, no input numbers (Rhino numbering set by the Configurator); identities from the grip's F-16 layout: trim hat printed NOSE DOWN/LWD/NOSE UP, red pickle = weapon release, lower front lever = paddle/analog brake lever; WinWing publishes no reachable control drawing for the F-16EX (HeliSimmer review https://www.helisimmer.com/reviews/winwing-f-16ex-joystick-grip-hotas-orion-2-base lists 4x 4-way+push hats, one 8-way+push hat, two buttons, top and bottom levers plus a removable left-side extension with two more hats)",
+  "confidence": "medium",
+  "note": "The F-16EX has more thumb hats than an F-16 grip (the left-side extension adds a hat and a mini-stick), so which hat is TMS, DMS or CMS cannot be told from the photo -> TMS/DMS/CMS are candidates only. The trigger sits under the head on the front and is hidden (only a red edge shows). The photo shows the grip only, so the gimbal is not marked.",
+  "callouts": {
+    "version": 1,
+    "width": 1660,
+    "height": 1831,
+    "picture": [30, 30, 1600, 1600],
+    "rowHeight": 38,
+    "mainWidth": 323,
+    "modWidth": 209,
+    "otherY": 1660,
+    "tables": [
+      {"id": "stick.gimbal", "title": "Stick (roll / pitch)", "parts": ["stick.gimbal"], "side": "other", "x": 30, "y": 1698, "width": 570, "modifier": true, "rows": [{"input": "JOY_X", "label": "roll (X)", "icon": "axis", "part": "stick.gimbal"}, {"input": "JOY_Y", "label": "pitch (Y)", "icon": "axis", "part": "stick.gimbal"}]}
+    ],
+    "lines": []
+  }
+}

@@ -1,0 +1,260 @@
+{
+  "format": "joypro-device-layout",
+  "version": 1,
+  "model": "thrustmaster-viper-panel",
+  "photo": {"kind": "vendor", "url": "https://www.thrustmaster.com/wp-content/uploads/2023/07/ProductListing-ViperPanel-800x800-1-768x768-1.webp", "sha256": "1fefa9b59fc1158c51b0d8af1aa6cd3cee80f5b54ceb207c9cf001e6ec2b8283", "view": "main"},
+  "markers": {
+    "panel.axis.1": [0.581, 0.519],
+    "panel.button.1": [0.585, 0.285],
+    "panel.button.2": [0.433, 0.457],
+    "panel.button.3": [0.504, 0.482],
+    "panel.button.6": [0.392, 0.465],
+    "panel.button.7": [0.344, 0.49],
+    "panel.button.8": [0.415, 0.505],
+    "panel.encoder.1": [0.467, 0.573],
+    "panel.lever.gear": [0.665, 0.33],
+    "panel.selector.1": [0.64, 0.457],
+    "panel.selector.2": [0.55, 0.433],
+    "panel.selector.3": [0.525, 0.541],
+    "panel.toggle.1": [0.466, 0.41],
+    "panel.toggle.2": [0.458, 0.48],
+    "panel.toggle.3": [0.293, 0.528],
+    "panel.toggle.4": [0.37, 0.54]
+  },
+  "parts": {
+    "panel.lever.gear": {
+      "type": "lever",
+      "name": "LDG GEAR lever",
+      "inputs": [
+        {"input": "JOY_BTN17", "control": "panel.lever.gear.down"}
+      ],
+      "mapping": "high",
+      "confidence": "high",
+      "note": "red landing gear lever handle"
+    },
+    "panel.toggle.1": {
+      "type": "switch",
+      "name": "Toggle 1",
+      "inputs": [
+        {"input": "JOY_BTN2", "control": "panel.toggle.1.up"},
+        {"input": "JOY_BTN3", "control": "panel.toggle.1.down"}
+      ],
+      "mapping": "high",
+      "confidence": "medium",
+      "note": "toggle at the gear end of the left column (2 up / 3 down)"
+    },
+    "panel.toggle.2": {
+      "type": "switch",
+      "name": "Toggle 2",
+      "inputs": [
+        {"input": "JOY_BTN25", "control": "panel.toggle.2.up"},
+        {"input": "JOY_BTN26", "control": "panel.toggle.2.down"}
+      ],
+      "mapping": "high",
+      "confidence": "medium",
+      "note": "right column toggle of row 3 (25 / 26)"
+    },
+    "panel.toggle.3": {
+      "type": "switch",
+      "name": "Toggle 3",
+      "inputs": [
+        {"input": "JOY_BTN29", "control": "panel.toggle.3.up"},
+        {"input": "JOY_BTN30", "control": "panel.toggle.3.down"}
+      ],
+      "mapping": "high",
+      "confidence": "high",
+      "note": "left toggle of the row nearest the camera (29 / 30)"
+    },
+    "panel.toggle.4": {
+      "type": "switch",
+      "name": "Toggle 4",
+      "inputs": [
+        {"input": "JOY_BTN31", "control": "panel.toggle.4.up"},
+        {"input": "JOY_BTN32", "control": "panel.toggle.4.down"}
+      ],
+      "mapping": "high",
+      "confidence": "high",
+      "note": "right toggle of the row nearest the camera (31 / 32)"
+    },
+    "panel.selector.1": {
+      "type": "selector",
+      "name": "5-position rotary",
+      "inputs": [
+        {"input": "JOY_BTN4", "control": "panel.selector.1.pos.1"},
+        {"input": "JOY_BTN5", "control": "panel.selector.1.pos.2"},
+        {"input": "JOY_BTN6", "control": "panel.selector.1.pos.3"},
+        {"input": "JOY_BTN7", "control": "panel.selector.1.pos.4"},
+        {"input": "JOY_BTN8", "control": "panel.selector.1.pos.5"}
+      ],
+      "mapping": "high",
+      "confidence": "medium",
+      "note": "right knob of row 1, 5-position rotary (4-8)"
+    },
+    "panel.selector.2": {
+      "type": "selector",
+      "name": "4-position rotary",
+      "inputs": [
+        {"input": "JOY_BTN9", "control": "panel.selector.2.pos.1"},
+        {"input": "JOY_BTN10", "control": "panel.selector.2.pos.2"},
+        {"input": "JOY_BTN11", "control": "panel.selector.2.pos.3"},
+        {"input": "JOY_BTN12", "control": "panel.selector.2.pos.4"}
+      ],
+      "mapping": "high",
+      "confidence": "medium",
+      "note": "left knob of row 1, 4-position rotary (9-12)"
+    },
+    "panel.selector.3": {
+      "type": "selector",
+      "name": "3-position rotary",
+      "inputs": [
+        {"input": "JOY_BTN18", "control": "panel.selector.3.pos.1"},
+        {"input": "JOY_BTN19", "control": "panel.selector.3.pos.2"},
+        {"input": "JOY_BTN20", "control": "panel.selector.3.pos.3"}
+      ],
+      "mapping": "high",
+      "confidence": "medium",
+      "note": "pointer knob right of the toggles, 3-position rotary (18-20)"
+    },
+    "panel.encoder.1": {
+      "type": "encoder",
+      "name": "Encoder 1",
+      "inputs": [
+        {"input": "JOY_BTN21", "control": "panel.encoder.1.cw"},
+        {"input": "JOY_BTN22", "control": "panel.encoder.1.ccw"},
+        {"input": "JOY_BTN23", "control": "panel.encoder.1.press"}
+      ],
+      "mapping": "high",
+      "confidence": "high",
+      "note": "ribbed PUSH encoder at the lower right of the toggle rows (21 / 22 / 23)"
+    },
+    "panel.axis.1": {
+      "type": "knob",
+      "name": "Axis 1",
+      "inputs": [
+        {"input": "", "control": "panel.axis.1"}
+      ],
+      "mapping": "high",
+      "confidence": "medium",
+      "note": "thumbwheel B1 with INCR/DECR scale"
+    },
+    "panel.button.1": {
+      "type": "button",
+      "name": "Button 1",
+      "inputs": [
+        {"input": "JOY_BTN1", "control": "panel.button.1"}
+      ],
+      "mapping": "high",
+      "confidence": "high",
+      "note": "round EMER STORES JETTISON button in the striped frame"
+    },
+    "panel.button.2": {
+      "type": "button",
+      "name": "square pushbutton",
+      "inputs": [
+        {"input": "JOY_BTN13", "control": "panel.button.2"}
+      ],
+      "mapping": "high",
+      "confidence": "medium",
+      "note": "lit square pushbutton, upper left of the 2x2 group (13)"
+    },
+    "panel.button.3": {
+      "type": "button",
+      "name": "square pushbutton",
+      "inputs": [
+        {"input": "JOY_BTN14", "control": "panel.button.3"}
+      ],
+      "mapping": "high",
+      "confidence": "medium",
+      "note": "lit square pushbutton, upper right of the 2x2 group (14)"
+    },
+    "panel.button.4": {
+      "type": "button",
+      "name": "square pushbutton",
+      "inputs": [
+        {"input": "JOY_BTN15", "control": "panel.button.4"}
+      ],
+      "mapping": "high"
+    },
+    "panel.button.5": {
+      "type": "button",
+      "name": "square pushbutton",
+      "inputs": [
+        {"input": "JOY_BTN16", "control": "panel.button.5"}
+      ],
+      "mapping": "high"
+    },
+    "panel.button.6": {
+      "type": "button",
+      "name": "toggle (single reported position)",
+      "inputs": [
+        {"input": "JOY_BTN24", "control": "panel.button.6"}
+      ],
+      "mapping": "high",
+      "confidence": "medium",
+      "note": "left column toggle of row 3 (24, single reported position)"
+    },
+    "panel.button.7": {
+      "type": "button",
+      "name": "toggle (single reported position)",
+      "inputs": [
+        {"input": "JOY_BTN27", "control": "panel.button.7"}
+      ],
+      "mapping": "high",
+      "confidence": "medium",
+      "note": "left column toggle of row 4 (27, single reported position)"
+    },
+    "panel.button.8": {
+      "type": "button",
+      "name": "toggle (single reported position)",
+      "inputs": [
+        {"input": "JOY_BTN28", "control": "panel.button.8"}
+      ],
+      "mapping": "high",
+      "confidence": "medium",
+      "note": "right column toggle of row 4 (28, single reported position)"
+    }
+  },
+  "unplaced": {
+    "panel.button.4": "lower left square (15), mostly hidden by the toggles",
+    "panel.button.5": "lower right square (16), hidden behind the toggles"
+  },
+  "candidates": {
+    "panel.button.4": [0.4, 0.485]
+  },
+  "source": "JoyPro curated on the maker's photo (2026-10-11), panel mounted on the VIPER TQS, seen from its lower end and the left: toggle rows nearest the camera, jettison button and gear lever section at the upper right",
+  "mappingSource": "VIPER PANEL user manual (https://ts.thrustmaster.com/download/accessories/Manuals/Viper/VIPER_PANEL_User_Manual.pdf) p.8 \"Mapping of the 32 buttons and 1 axis in mode A\": 1 jettison button, 17 gear lever; row 1: toggle 2/3, rotary 9-12, rotary 4-8; row 2: squares 13 14 / 15 16, wheel B1 (axis); row 3: 24, 25/26; row 4: 27, 28, rotary 18-20; row 5: 29/30, 31/32, encoder 21 cw / 22 ccw / 23 push",
+  "confidence": "medium",
+  "note": "The photo is taken along the panel's length, so the rows run left to right and the columns run toward the upper right; the toggle rows were matched by their base rings. Mode B (virtual buttons, manual p.9) changes the numbering; the catalog follows mode A. Of the 2x2 square pushbuttons only the upper pair (13, 14) is clearly visible; 15 is partly hidden by the toggles, 16 hidden. The rotary positions share one spot per knob.",
+  "callouts": {
+    "version": 1,
+    "width": 1528,
+    "height": 870,
+    "picture": [408, 16, 768, 768],
+    "rowHeight": 20,
+    "mainWidth": 170,
+    "modWidth": 110,
+    "otherY": 800,
+    "tables": [
+      {"id": "grid:panel.button.3", "title": "Buttons square pus - toggle (si", "parts": ["panel.button.3", "panel.button.2", "panel.button.6", "panel.button.8", "panel.button.7"], "side": "left", "x": 16, "y": 434.2, "width": 368, "grid": true, "columns": 4, "modifier": false, "spot": [0.4176, 0.4798], "rows": [{"input": "JOY_BTN14", "label": "square pus", "icon": "button", "part": "panel.button.3", "cell": [0, 3, 0]}, {"input": "JOY_BTN13", "label": "square pus", "icon": "button", "part": "panel.button.2", "cell": [1, 2, 0]}, {"input": "JOY_BTN24", "label": "toggle (si", "icon": "button", "part": "panel.button.6", "cell": [2, 1, 0]}, {"input": "JOY_BTN28", "label": "toggle (si", "icon": "button", "part": "panel.button.8", "cell": [2, 2, 0]}, {"input": "JOY_BTN27", "label": "toggle (si", "icon": "button", "part": "panel.button.7", "cell": [3, 0, 0]}]},
+      {"id": "grid:panel.toggle.1", "title": "Switches Toggle 1 - 4", "parts": ["panel.toggle.1", "panel.toggle.2", "panel.toggle.3", "panel.toggle.4"], "side": "left", "x": 108, "y": 294.2, "width": 276, "grid": true, "columns": 3, "modifier": false, "spot": [0.3968, 0.4895], "rows": [{"input": "JOY_BTN2", "label": "Toggle 1 up", "icon": "up", "part": "panel.toggle.1", "cell": [0, 2, 0]}, {"input": "JOY_BTN3", "label": "Toggle 1 dn", "icon": "down", "part": "panel.toggle.1", "cell": [0, 2, 1]}, {"input": "JOY_BTN25", "label": "Toggle 2 up", "icon": "up", "part": "panel.toggle.2", "cell": [1, 2, 0]}, {"input": "JOY_BTN26", "label": "Toggle 2 dn", "icon": "down", "part": "panel.toggle.2", "cell": [1, 2, 1]}, {"input": "JOY_BTN29", "label": "Toggle 3 up", "icon": "up", "part": "panel.toggle.3", "cell": [2, 0, 0]}, {"input": "JOY_BTN30", "label": "Toggle 3 dn", "icon": "down", "part": "panel.toggle.3", "cell": [2, 0, 1]}, {"input": "JOY_BTN31", "label": "Toggle 4 up", "icon": "up", "part": "panel.toggle.4", "cell": [2, 1, 0]}, {"input": "JOY_BTN32", "label": "Toggle 4 dn", "icon": "down", "part": "panel.toggle.4", "cell": [2, 1, 1]}]},
+      {"id": "panel.lever.gear", "title": "LDG GEAR lever", "parts": ["panel.lever.gear"], "side": "right", "x": 1200, "y": 220.1, "width": 300, "modifier": true, "spot": [0.665, 0.33], "rows": [{"input": "JOY_BTN17", "label": "Down", "icon": "down", "part": "panel.lever.gear"}]},
+      {"id": "panel.selector.1", "title": "5-position rotary", "parts": ["panel.selector.1"], "side": "right", "x": 1200, "y": 360.1, "width": 300, "modifier": true, "spot": [0.64, 0.457], "rows": [{"input": "JOY_BTN4", "label": "1", "icon": "pos", "part": "panel.selector.1"}, {"input": "JOY_BTN5", "label": "2", "icon": "pos", "part": "panel.selector.1"}, {"input": "JOY_BTN6", "label": "3", "icon": "pos", "part": "panel.selector.1"}, {"input": "JOY_BTN7", "label": "4", "icon": "pos", "part": "panel.selector.1"}, {"input": "JOY_BTN8", "label": "5", "icon": "pos", "part": "panel.selector.1"}]},
+      {"id": "panel.selector.2", "title": "4-position rotary", "parts": ["panel.selector.2"], "side": "right", "x": 1200, "y": 260.1, "width": 300, "modifier": true, "spot": [0.55, 0.433], "rows": [{"input": "JOY_BTN9", "label": "1", "icon": "pos", "part": "panel.selector.2"}, {"input": "JOY_BTN10", "label": "2", "icon": "pos", "part": "panel.selector.2"}, {"input": "JOY_BTN11", "label": "3", "icon": "pos", "part": "panel.selector.2"}, {"input": "JOY_BTN12", "label": "4", "icon": "pos", "part": "panel.selector.2"}]},
+      {"id": "panel.selector.3", "title": "3-position rotary", "parts": ["panel.selector.3"], "side": "right", "x": 1200, "y": 480.1, "width": 300, "modifier": true, "spot": [0.525, 0.541], "rows": [{"input": "JOY_BTN18", "label": "1", "icon": "pos", "part": "panel.selector.3"}, {"input": "JOY_BTN19", "label": "2", "icon": "pos", "part": "panel.selector.3"}, {"input": "JOY_BTN20", "label": "3", "icon": "pos", "part": "panel.selector.3"}]},
+      {"id": "panel.encoder.1", "title": "Encoder 1", "parts": ["panel.encoder.1"], "side": "right", "x": 1212, "y": 580.1, "width": 300, "modifier": true, "pinned": true, "spot": [0.467, 0.573], "rows": [{"input": "JOY_BTN23", "label": "Press", "icon": "button", "part": "panel.encoder.1"}, {"input": "JOY_BTN21", "label": "Clockwise", "icon": "right", "part": "panel.encoder.1"}, {"input": "JOY_BTN22", "label": "Counter-clockwise", "icon": "left", "part": "panel.encoder.1"}]},
+      {"id": "panel.button.1", "title": "Button 1", "parts": ["panel.button.1"], "side": "left", "x": 84, "y": 198.9, "width": 300, "modifier": true, "pinned": true, "spot": [0.585, 0.285], "rows": [{"input": "JOY_BTN1", "label": "Press", "icon": "button", "part": "panel.button.1"}]},
+      {"id": "panel.button.4", "title": "square pushbutton", "parts": ["panel.button.4"], "side": "other", "x": 16, "y": 820, "width": 300, "modifier": true, "rows": [{"input": "JOY_BTN15", "label": "Press", "icon": "button", "part": "panel.button.4"}]},
+      {"id": "panel.button.5", "title": "square pushbutton", "parts": ["panel.button.5"], "side": "other", "x": 322, "y": 820, "width": 300, "modifier": true, "rows": [{"input": "JOY_BTN16", "label": "Press", "icon": "button", "part": "panel.button.5"}]}
+    ],
+    "lines": [
+      {"table": "grid:panel.toggle.1", "points": [[712.7, 391.9], [712.7, 318.2], [384, 318.2]]},
+      {"table": "grid:panel.button.3", "points": [[728.7, 384.5], [728.7, 458.2], [384, 458.2]]},
+      {"table": "panel.lever.gear", "points": [[918.7, 269.4], [1188, 269.4], [1188, 244.1], [1200, 244.1]]},
+      {"table": "panel.selector.2", "points": [[830.4, 348.5], [1188, 348.5], [1188, 284.1], [1200, 284.1]]},
+      {"table": "panel.selector.1", "points": [[899.5, 367], [1188, 367], [1188, 384.1], [1200, 384.1]]},
+      {"table": "panel.selector.3", "points": [[811.2, 431.5], [1188, 431.5], [1188, 504.1], [1200, 504.1]]},
+      {"table": "panel.encoder.1", "points": [[766.7, 456.1], [989, 456.1], [989, 604.1], [1212, 604.1]]},
+      {"table": "panel.button.1", "points": [[857.3, 234.9], [621, 234.9], [621, 222.9], [384, 222.9]]}
+    ]
+  }
+}

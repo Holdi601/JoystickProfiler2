@@ -1,0 +1,530 @@
+{
+ "vendor": "Microsoft",
+ "officialHosts": [],
+ "devices": [
+  {
+   "id": "microsoft-sidewinder-force-feedback-2",
+   "name": "Microsoft SideWinder Force Feedback 2",
+   "kind": "stick",
+   "hand": "right",
+   "identify": {
+    "vidPids": [
+     "045E:001B"
+    ],
+    "names": [
+     "SideWinder Force Feedback 2 Joystick"
+    ],
+    "note": "USB force-feedback stick (discontinued). VID:PID and name from usb.ids. The buttons are printed with numbers 1-8 (GamesFirst review): trigger = 1, head buttons printed 2-4, base buttons printed 5-8, hat = POV1; DirectInput button n = printed number n is assumed. Axes: X/Y stick, twist, throttle lever (DirectInput names not known). Button numbering not confirmed by public documentation (originally derived from a local game configuration file); verify on a real device."
+   },
+   "sources": [
+    "http://www.linux-usb.org/usb.ids",
+    "https://gamesfirst.com/articles/2001/microsoft-sidewinder-force-feedback-2/"
+   ],
+   "confidence": "low",
+   "axes": [
+    {
+     "control": "stick.axis.roll"
+    },
+    {
+     "control": "stick.axis.pitch"
+    },
+    {
+     "control": "stick.axis.twist"
+    },
+    {
+     "control": "stick.axis.slider",
+     "label": "Throttle lever on the base"
+    }
+   ],
+   "controls": [
+    {
+     "control": "stick.trigger.stage1",
+     "input": "JOY_BTN1",
+     "type": "momentary",
+     "label": "Trigger (1)",
+     "finger": "index"
+    },
+    {
+     "control": "stick.button.thumb.1",
+     "input": "JOY_BTN2",
+     "type": "momentary",
+     "label": "Button 2 (large thumb button, lower right of the head)",
+     "finger": "thumb"
+    },
+    {
+     "control": "stick.button.thumb.2",
+     "input": "JOY_BTN3",
+     "type": "momentary",
+     "label": "Button 3 (small round button, left of the head)",
+     "finger": "thumb"
+    },
+    {
+     "control": "stick.button.thumb.3",
+     "input": "JOY_BTN4",
+     "type": "momentary",
+     "label": "Button 4 (small round button, upper right of the head)",
+     "finger": "thumb"
+    },
+    {
+     "control": "stick.hat.1.up",
+     "input": "JOY_BTN_POV1_U",
+     "type": "momentary",
+     "label": "Hat",
+     "finger": "thumb"
+    },
+    {
+     "control": "stick.hat.1.right",
+     "input": "JOY_BTN_POV1_R",
+     "type": "momentary",
+     "label": "Hat",
+     "finger": "thumb"
+    },
+    {
+     "control": "stick.hat.1.down",
+     "input": "JOY_BTN_POV1_D",
+     "type": "momentary",
+     "label": "Hat",
+     "finger": "thumb"
+    },
+    {
+     "control": "stick.hat.1.left",
+     "input": "JOY_BTN_POV1_L",
+     "type": "momentary",
+     "label": "Hat",
+     "finger": "thumb"
+    },
+    {
+     "control": "stick.base.button.1",
+     "input": "JOY_BTN5",
+     "type": "momentary",
+     "label": "Base button 5"
+    },
+    {
+     "control": "stick.base.button.2",
+     "input": "JOY_BTN6",
+     "type": "momentary",
+     "label": "Base button 6"
+    },
+    {
+     "control": "stick.base.button.3",
+     "input": "JOY_BTN7",
+     "type": "momentary",
+     "label": "Base button 7"
+    },
+    {
+     "control": "stick.base.button.4",
+     "input": "JOY_BTN8",
+     "type": "momentary",
+     "label": "Base button 8"
+    }
+   ]
+  },
+  {
+   "id": "microsoft-sidewinder-force-feedback-pro",
+   "name": "Microsoft SideWinder Force Feedback Pro",
+   "kind": "stick",
+   "hand": "right",
+   "identify": {
+    "names": [
+     "SideWinder Force Feedback Pro",
+     "Microsoft SideWinder Force Feedback Pro"
+    ],
+    "note": "Game-port/MIDI-port force-feedback stick (discontinued; force feedback via the MIDI pins): it has no USB VID:PID of its own; on current PCs it only appears through a game-port adapter whose USB id and name belong to the adapter. It has a shift button on the base (dropped on the Force Feedback 2). Control list (trigger, head buttons, hat, twist, throttle, base buttons A-D, shift) not verified against a manual; DirectInput numbers unknown -> controls without input."
+   },
+   "sources": [
+    "https://en.wikipedia.org/wiki/Microsoft_SideWinder"
+   ],
+   "confidence": "low",
+   "axes": [
+    {
+     "control": "stick.axis.roll"
+    },
+    {
+     "control": "stick.axis.pitch"
+    },
+    {
+     "control": "stick.axis.twist"
+    },
+    {
+     "control": "stick.axis.slider",
+     "label": "Throttle wheel"
+    }
+   ],
+   "controls": [
+    {
+     "control": "stick.trigger.stage1",
+     "type": "momentary",
+     "label": "Trigger",
+     "finger": "index"
+    },
+    {
+     "control": "stick.button.thumb.1",
+     "type": "momentary",
+     "label": "Head button",
+     "finger": "thumb"
+    },
+    {
+     "control": "stick.button.thumb.2",
+     "type": "momentary",
+     "label": "Head button",
+     "finger": "thumb"
+    },
+    {
+     "control": "stick.button.thumb.3",
+     "type": "momentary",
+     "label": "Head button",
+     "finger": "thumb"
+    },
+    {
+     "control": "stick.hat.1.up",
+     "type": "momentary",
+     "label": "Hat",
+     "finger": "thumb"
+    },
+    {
+     "control": "stick.hat.1.right",
+     "type": "momentary",
+     "label": "Hat",
+     "finger": "thumb"
+    },
+    {
+     "control": "stick.hat.1.down",
+     "type": "momentary",
+     "label": "Hat",
+     "finger": "thumb"
+    },
+    {
+     "control": "stick.hat.1.left",
+     "type": "momentary",
+     "label": "Hat",
+     "finger": "thumb"
+    },
+    {
+     "control": "stick.base.button.1",
+     "type": "momentary",
+     "label": "Base button A"
+    },
+    {
+     "control": "stick.base.button.2",
+     "type": "momentary",
+     "label": "Base button B"
+    },
+    {
+     "control": "stick.base.button.3",
+     "type": "momentary",
+     "label": "Base button C"
+    },
+    {
+     "control": "stick.base.button.4",
+     "type": "momentary",
+     "label": "Base button D"
+    },
+    {
+     "control": "stick.base.button.5",
+     "type": "momentary",
+     "label": "Shift button"
+    }
+   ]
+  },
+  {
+   "id": "microsoft-sidewinder-precision-pro",
+   "name": "Microsoft SideWinder Precision Pro",
+   "kind": "stick",
+   "hand": "right",
+   "identify": {
+    "vidPids": [
+     "045E:0008"
+    ],
+    "names": [
+     "SideWinder Precision Pro"
+    ],
+    "note": "USB version (the stick shipped with a game-port to USB adapter; game-port mode has no USB id). VID:PID and name from usb.ids. Hat, wheel throttle and a base shift button per Wikipedia; the rest of the control list is not verified against a manual. Button positions unknown -> controls without input."
+   },
+   "sources": [
+    "http://www.linux-usb.org/usb.ids",
+    "https://en.wikipedia.org/wiki/Microsoft_SideWinder"
+   ],
+   "confidence": "low",
+   "axes": [
+    {
+     "control": "stick.axis.roll"
+    },
+    {
+     "control": "stick.axis.pitch"
+    },
+    {
+     "control": "stick.axis.twist"
+    },
+    {
+     "control": "stick.axis.slider",
+     "label": "Throttle wheel"
+    }
+   ],
+   "controls": [
+    {
+     "control": "stick.trigger.stage1",
+     "type": "momentary",
+     "label": "Trigger",
+     "finger": "index"
+    },
+    {
+     "control": "stick.button.thumb.1",
+     "type": "momentary",
+     "label": "Head button",
+     "finger": "thumb"
+    },
+    {
+     "control": "stick.button.thumb.2",
+     "type": "momentary",
+     "label": "Head button",
+     "finger": "thumb"
+    },
+    {
+     "control": "stick.button.thumb.3",
+     "type": "momentary",
+     "label": "Head button",
+     "finger": "thumb"
+    },
+    {
+     "control": "stick.hat.1.up",
+     "type": "momentary",
+     "label": "Hat",
+     "finger": "thumb"
+    },
+    {
+     "control": "stick.hat.1.right",
+     "type": "momentary",
+     "label": "Hat",
+     "finger": "thumb"
+    },
+    {
+     "control": "stick.hat.1.down",
+     "type": "momentary",
+     "label": "Hat",
+     "finger": "thumb"
+    },
+    {
+     "control": "stick.hat.1.left",
+     "type": "momentary",
+     "label": "Hat",
+     "finger": "thumb"
+    },
+    {
+     "control": "stick.base.button.1",
+     "type": "momentary",
+     "label": "Base button A"
+    },
+    {
+     "control": "stick.base.button.2",
+     "type": "momentary",
+     "label": "Base button B"
+    },
+    {
+     "control": "stick.base.button.3",
+     "type": "momentary",
+     "label": "Base button C"
+    },
+    {
+     "control": "stick.base.button.4",
+     "type": "momentary",
+     "label": "Base button D"
+    },
+    {
+     "control": "stick.base.button.5",
+     "type": "momentary",
+     "label": "Shift button"
+    }
+   ]
+  },
+  {
+   "id": "microsoft-sidewinder-3d-pro",
+   "name": "Microsoft SideWinder 3D Pro / 3D Pro Plus (game port)",
+   "kind": "stick",
+   "hand": "right",
+   "identify": {
+    "vidPids": [],
+    "names": [
+     "Microsoft SideWinder 3D Pro",
+     "SideWinder 3D Pro"
+    ],
+    "note": "Discontinued digital-optical game-port stick (1995/96; 3D Pro Plus later): no USB id of its own, on current PCs only through a game-port adapter. Per the FlightGear map: axes X, Y, rudder twist (Windows axis 3 = Rz), throttle (axis 2 = Z), hat (axes 6/7 = POV) and 8 buttons (trigger, 3 head buttons, 4 base buttons A-D); positions of buttons 2-8 not documented -> buttons without input."
+   },
+   "sources": [
+    "https://gitlab.com/flightgear/fgdata/-/blob/next/Input/Joysticks/Microsoft/sidewinder-3d-pro.xml",
+    "https://en.wikipedia.org/wiki/Microsoft_SideWinder"
+   ],
+   "confidence": "low",
+   "axes": [
+    {
+     "control": "stick.axis.roll",
+     "input": "JOY_X"
+    },
+    {
+     "control": "stick.axis.pitch",
+     "input": "JOY_Y"
+    },
+    {
+     "control": "stick.axis.twist",
+     "input": "JOY_RZ"
+    },
+    {
+     "control": "stick.axis.slider",
+     "input": "JOY_Z",
+     "label": "Throttle wheel"
+    }
+   ],
+   "controls": [
+    {
+     "control": "stick.trigger.stage1",
+     "finger": "index",
+     "type": "momentary",
+     "label": "Trigger"
+    },
+    {
+     "control": "stick.hat.1.up",
+     "finger": "thumb",
+     "type": "momentary",
+     "label": "Hat"
+    },
+    {
+     "control": "stick.hat.1.right",
+     "finger": "thumb",
+     "type": "momentary",
+     "label": "Hat"
+    },
+    {
+     "control": "stick.hat.1.down",
+     "finger": "thumb",
+     "type": "momentary",
+     "label": "Hat"
+    },
+    {
+     "control": "stick.hat.1.left",
+     "finger": "thumb",
+     "type": "momentary",
+     "label": "Hat"
+    },
+    {
+     "control": "stick.button.thumb.1",
+     "finger": "thumb",
+     "type": "momentary",
+     "label": "Head button"
+    },
+    {
+     "control": "stick.button.thumb.2",
+     "finger": "thumb",
+     "type": "momentary",
+     "label": "Head button"
+    },
+    {
+     "control": "stick.button.thumb.3",
+     "finger": "thumb",
+     "type": "momentary",
+     "label": "Head button"
+    },
+    {
+     "control": "stick.base.button.1",
+     "type": "momentary",
+     "label": "Base button A"
+    },
+    {
+     "control": "stick.base.button.2",
+     "type": "momentary",
+     "label": "Base button B"
+    },
+    {
+     "control": "stick.base.button.3",
+     "type": "momentary",
+     "label": "Base button C"
+    },
+    {
+     "control": "stick.base.button.4",
+     "type": "momentary",
+     "label": "Base button D"
+    }
+   ]
+  },
+  {
+   "id": "microsoft-sidewinder-joystick",
+   "name": "Microsoft SideWinder Joystick (USB)",
+   "kind": "stick",
+   "hand": "right",
+   "identify": {
+    "vidPids": [
+     "045E:003C"
+    ],
+    "names": [
+     "SideWinder Joystick",
+     "Microsoft SideWinder Joystick"
+    ],
+    "note": "Discontinued entry-level USB stick (no twist). VID:PID from usb.ids ('SideWinder Joystick'); name and axes from the FlightGear map: X, Y, throttle wheel (axis 2 = Z); buttons up to 8 used there without naming positions -> buttons without input."
+   },
+   "sources": [
+    "http://www.linux-usb.org/usb.ids",
+    "https://gitlab.com/flightgear/fgdata/-/blob/next/Input/Joysticks/Microsoft/sidewinder.xml"
+   ],
+   "confidence": "low",
+   "axes": [
+    {
+     "control": "stick.axis.roll",
+     "input": "JOY_X"
+    },
+    {
+     "control": "stick.axis.pitch",
+     "input": "JOY_Y"
+    },
+    {
+     "control": "stick.axis.slider",
+     "input": "JOY_Z",
+     "label": "Throttle wheel"
+    }
+   ],
+   "controls": [
+    {
+     "control": "stick.trigger.stage1",
+     "finger": "index",
+     "type": "momentary",
+     "label": "Trigger"
+    },
+    {
+     "control": "stick.button.thumb.1",
+     "finger": "thumb",
+     "type": "momentary",
+     "label": "Head button"
+    },
+    {
+     "control": "stick.button.thumb.2",
+     "finger": "thumb",
+     "type": "momentary",
+     "label": "Head button"
+    },
+    {
+     "control": "stick.button.thumb.3",
+     "finger": "thumb",
+     "type": "momentary",
+     "label": "Head button"
+    },
+    {
+     "control": "stick.base.button.1",
+     "type": "momentary",
+     "label": "Base button"
+    },
+    {
+     "control": "stick.base.button.2",
+     "type": "momentary",
+     "label": "Base button"
+    },
+    {
+     "control": "stick.base.button.3",
+     "type": "momentary",
+     "label": "Base button"
+    },
+    {
+     "control": "stick.base.button.4",
+     "type": "momentary",
+     "label": "Base button"
+    }
+   ]
+  }
+ ]
+}

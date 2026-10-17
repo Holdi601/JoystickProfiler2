@@ -1,0 +1,365 @@
+{
+  "format": "joypro-device-layout",
+  "version": 1,
+  "model": "ch-eclipse-yoke",
+  "photo": {"kind": "vendor", "url": "https://www.chproducts.com/Eclipse-Yoke-v13-p-178.html-!do=ZG89dGh1bWJuYWlsZXIuZ2V0JnNyYz1pbWFnZXMlMkZjaHByb2R1Y3RzJTJGcHJvZHVjdHMlMkZTaW11bGF0aW9uJTJGRUNMSVBTRS1Zb2tlLTVfMy0yLmdpZiZ2ZXJzaW9uPXByb2R1Y3RzLmxpZ2h0.jpeg", "sha256": "c50e7d252647315417fe0f6f34e9352e05b6735a671d4024a78ae1304ed15e71", "view": "three-quarter"},
+  "markers": {
+    "pedals.axis.rudder": [0.435, 0.6],
+    "quadrant.axis.lever.1": [0.505, 0.17],
+    "quadrant.axis.lever.2": [0.565, 0.13],
+    "quadrant.axis.lever.3": [0.605, 0.16],
+    "yoke.button.10": [0.364, 0.457],
+    "yoke.button.17": [0.539, 0.712],
+    "yoke.button.18": [0.597, 0.625],
+    "yoke.button.19": [0.617, 0.625],
+    "yoke.button.20": [0.607, 0.632],
+    "yoke.button.21": [0.573, 0.757],
+    "yoke.button.22": [0.611, 0.74],
+    "yoke.button.23": [0.646, 0.718],
+    "yoke.button.24": [0.582, 0.685],
+    "yoke.button.25": [0.606, 0.653],
+    "yoke.button.26": [0.63, 0.661],
+    "yoke.button.3": [0.738, 0.283],
+    "yoke.button.4": [0.754, 0.283],
+    "yoke.button.9": [0.348, 0.457],
+    "yoke.column": [0.468, 0.49],
+    "yoke.hat.1": [0.344, 0.407],
+    "yoke.hat.2": [0.732, 0.242],
+    "yoke.rocker.2": [0.539, 0.698],
+    "yoke.rocker.3": [0.607, 0.62],
+    "yoke.switch.1": [0.577, 0.452],
+    "yoke.switch.2": [0.614, 0.437]
+  },
+  "parts": {
+    "yoke.column": {
+      "type": "gimbal",
+      "name": "Yoke (roll / pitch)",
+      "inputs": [
+        {"input": "JOY_X", "control": "yoke.axis.roll"},
+        {"input": "JOY_Y", "control": "yoke.axis.pitch"}
+      ],
+      "mapping": "high",
+      "confidence": "medium",
+      "note": "yoke shaft entering the housing"
+    },
+    "yoke.hat.1": {
+      "type": "hat",
+      "name": "Yoke hat 1",
+      "inputs": [
+        {"input": "JOY_BTN_POV1_U", "control": "yoke.hat.1.up"},
+        {"input": "JOY_BTN_POV1_R", "control": "yoke.hat.1.right"},
+        {"input": "JOY_BTN_POV1_D", "control": "yoke.hat.1.down"},
+        {"input": "JOY_BTN_POV1_L", "control": "yoke.hat.1.left"}
+      ],
+      "mapping": "high",
+      "confidence": "high",
+      "note": "gray POV hat on top of the left handle"
+    },
+    "yoke.hat.2": {
+      "type": "hat",
+      "name": "4-way hat (buttons 11-14)",
+      "inputs": [
+        {"input": "JOY_BTN11", "control": "yoke.hat.2.up"},
+        {"input": "JOY_BTN12", "control": "yoke.hat.2.right"},
+        {"input": "JOY_BTN13", "control": "yoke.hat.2.down"},
+        {"input": "JOY_BTN14", "control": "yoke.hat.2.left"}
+      ],
+      "mapping": "high",
+      "confidence": "high",
+      "note": "gray 4-way hat on top of the right handle (11-14)"
+    },
+    "yoke.button.1": {
+      "type": "button",
+      "name": "Backside handle left red button",
+      "inputs": [
+        {"input": "JOY_BTN1", "control": "yoke.button.1"}
+      ],
+      "mapping": "high"
+    },
+    "yoke.button.2": {
+      "type": "button",
+      "name": "Backside handle right red button",
+      "inputs": [
+        {"input": "JOY_BTN2", "control": "yoke.button.2"}
+      ],
+      "mapping": "high"
+    },
+    "yoke.button.3": {
+      "type": "button",
+      "name": "Rocker switch left",
+      "inputs": [
+        {"input": "JOY_BTN3", "control": "yoke.button.3"}
+      ],
+      "mapping": "high",
+      "confidence": "high",
+      "note": "left half of the gray rocker on the right handle (3)"
+    },
+    "yoke.button.4": {
+      "type": "button",
+      "name": "Rocker switch right",
+      "inputs": [
+        {"input": "JOY_BTN4", "control": "yoke.button.4"}
+      ],
+      "mapping": "high",
+      "confidence": "high",
+      "note": "right half of the gray rocker on the right handle (4)"
+    },
+    "yoke.button.9": {
+      "type": "button",
+      "name": "Rocker switch left (trim)",
+      "inputs": [
+        {"input": "JOY_BTN9", "control": "yoke.button.9"}
+      ],
+      "mapping": "high",
+      "confidence": "high",
+      "note": "left half of the gray rocker on the left handle (9)"
+    },
+    "yoke.button.10": {
+      "type": "button",
+      "name": "Rocker switch right (trim)",
+      "inputs": [
+        {"input": "JOY_BTN10", "control": "yoke.button.10"}
+      ],
+      "mapping": "high",
+      "confidence": "high",
+      "note": "right half of the gray rocker on the left handle (10)"
+    },
+    "yoke.button.17": {
+      "type": "button",
+      "name": "Up/Down/Push wheel push",
+      "inputs": [
+        {"input": "JOY_BTN17", "control": "yoke.button.17"}
+      ],
+      "mapping": "high",
+      "confidence": "medium",
+      "note": "push of the vertical wheel at the left of the centre panel (17)"
+    },
+    "yoke.button.18": {
+      "type": "button",
+      "name": "Left/Right/Push wheel left",
+      "inputs": [
+        {"input": "JOY_BTN18", "control": "yoke.button.18"}
+      ],
+      "mapping": "high",
+      "confidence": "medium",
+      "note": "left turn of the horizontal wheel below the ECLIPSE label (18)"
+    },
+    "yoke.button.19": {
+      "type": "button",
+      "name": "Left/Right/Push wheel right",
+      "inputs": [
+        {"input": "JOY_BTN19", "control": "yoke.button.19"}
+      ],
+      "mapping": "high",
+      "confidence": "medium",
+      "note": "right turn of the horizontal wheel below the ECLIPSE label (19)"
+    },
+    "yoke.button.20": {
+      "type": "button",
+      "name": "Left/Right/Push wheel push",
+      "inputs": [
+        {"input": "JOY_BTN20", "control": "yoke.button.20"}
+      ],
+      "mapping": "high",
+      "confidence": "medium",
+      "note": "push of the horizontal wheel below the ECLIPSE label (20)"
+    },
+    "yoke.rocker.2": {
+      "type": "rocker",
+      "name": "Up/Down/Push wheel (buttons 15-17)",
+      "inputs": [
+        {"input": "JOY_BTN15", "control": "yoke.rocker.2.up"},
+        {"input": "JOY_BTN16", "control": "yoke.rocker.2.down"}
+      ],
+      "mapping": "high",
+      "confidence": "medium",
+      "note": "vertical up/down wheel at the left of the centre panel (15/16)"
+    },
+    "yoke.rocker.3": {
+      "type": "rocker",
+      "name": "Left/Right/Push wheel (buttons 18-20)",
+      "inputs": [
+        {"input": "", "control": "yoke.rocker.3.up"},
+        {"input": "", "control": "yoke.rocker.3.down"}
+      ],
+      "mapping": "high",
+      "confidence": "medium",
+      "note": "horizontal left/right wheel below the ECLIPSE label (catalog has no input on this part)"
+    },
+    "yoke.button.21": {
+      "type": "button",
+      "name": "Left square red button",
+      "inputs": [
+        {"input": "JOY_BTN21", "control": "yoke.button.21"}
+      ],
+      "mapping": "high",
+      "confidence": "high",
+      "note": "left square red button"
+    },
+    "yoke.button.22": {
+      "type": "button",
+      "name": "Middle round red button",
+      "inputs": [
+        {"input": "JOY_BTN22", "control": "yoke.button.22"}
+      ],
+      "mapping": "high",
+      "confidence": "high",
+      "note": "middle round red button"
+    },
+    "yoke.button.23": {
+      "type": "button",
+      "name": "Right square red button",
+      "inputs": [
+        {"input": "JOY_BTN23", "control": "yoke.button.23"}
+      ],
+      "mapping": "high",
+      "confidence": "high",
+      "note": "right square red button"
+    },
+    "yoke.button.24": {
+      "type": "button",
+      "name": "Yellow LED dial",
+      "inputs": [
+        {"input": "JOY_BTN24", "control": "yoke.button.24"}
+      ],
+      "mapping": "high",
+      "confidence": "medium",
+      "note": "yellow LED of the mode dial (dial position 24)"
+    },
+    "yoke.button.25": {
+      "type": "button",
+      "name": "Green LED dial",
+      "inputs": [
+        {"input": "JOY_BTN25", "control": "yoke.button.25"}
+      ],
+      "mapping": "high",
+      "confidence": "medium",
+      "note": "green LED of the mode dial (dial position 25)"
+    },
+    "yoke.button.26": {
+      "type": "button",
+      "name": "Red LED dial",
+      "inputs": [
+        {"input": "JOY_BTN26", "control": "yoke.button.26"}
+      ],
+      "mapping": "high",
+      "confidence": "medium",
+      "note": "red LED of the mode dial (dial position 26)"
+    },
+    "yoke.switch.1": {
+      "type": "switch",
+      "name": "Toggle switch 1",
+      "inputs": [
+        {"input": "JOY_BTN5", "control": "yoke.switch.1.up"},
+        {"input": "JOY_BTN6", "control": "yoke.switch.1.down"}
+      ],
+      "mapping": "high",
+      "confidence": "high",
+      "note": "left gray toggle switch (5/6)"
+    },
+    "yoke.switch.2": {
+      "type": "switch",
+      "name": "Toggle switch 2",
+      "inputs": [
+        {"input": "JOY_BTN7", "control": "yoke.switch.2.up"},
+        {"input": "JOY_BTN8", "control": "yoke.switch.2.down"}
+      ],
+      "mapping": "high",
+      "confidence": "high",
+      "note": "right gray toggle switch (7/8)"
+    },
+    "pedals.axis.rudder": {
+      "type": "rudder",
+      "name": "Black paddles (rudder)",
+      "inputs": [
+        {"input": "JOY_RZ", "control": "pedals.axis.rudder"}
+      ],
+      "mapping": "high",
+      "confidence": "medium",
+      "note": "left black paddle (both paddles = rudder, Z rotation)"
+    },
+    "quadrant.axis.lever.1": {
+      "type": "lever",
+      "name": "Quadrant lever 1",
+      "inputs": [
+        {"input": "JOY_Z", "control": "quadrant.axis.lever.1"}
+      ],
+      "mapping": "high",
+      "confidence": "high",
+      "note": "black lever (Z)"
+    },
+    "quadrant.axis.lever.2": {
+      "type": "lever",
+      "name": "Quadrant lever 2",
+      "inputs": [
+        {"input": "JOY_RY", "control": "quadrant.axis.lever.2"}
+      ],
+      "mapping": "high",
+      "confidence": "high",
+      "note": "blue lever (Y rotation)"
+    },
+    "quadrant.axis.lever.3": {
+      "type": "lever",
+      "name": "Quadrant lever 3",
+      "inputs": [
+        {"input": "JOY_RX", "control": "quadrant.axis.lever.3"}
+      ],
+      "mapping": "high",
+      "confidence": "high",
+      "note": "red lever (X rotation)"
+    }
+  },
+  "unplaced": {
+    "yoke.button.1": "red button on the back of the left handle, faces away from the camera",
+    "yoke.button.2": "red button on the back of the right handle, faces away from the camera"
+  },
+  "candidates": {},
+  "source": "JoyPro curated on the maker's photo (2026-10-11), seen from the pilot's side, slightly from the right and above; housing behind, levers on top",
+  "mappingSource": "CH quick start 200-616 \"Eclipse Yoke Button Assignments\" (https://www.chproducts.com/files/chproducts/Retail-Quickstarts/200-616%20Eclipse%20Yoke%20-%20FS2020.pdf): the same photo with numbered arrows; POV hat + 9/10 rocker on the left handle, 11-14 4-way hat + 3/4 rocker on the right handle, 1/2 backside handle buttons, 5/6 left and 7/8 right toggle, 15-17 up/down/push wheel, 18-20 left/right/push wheel, 21/22/23 red buttons, 24-26 yellow/green/red LED mode dial, Z black / Y rotation blue / X rotation red lever, Z rotation black paddles",
+  "confidence": "high",
+  "note": "The quick start text says buttons 24-26 = Yellow/Green/Red LED dial (also the Control Manager mode switch); each dial position is marked on its LED next to the dial knob. The two wheels each carry several parts (rocker + push button, or left/right/push buttons); their markers sit on the same wheel with small offsets. The left/right wheel's rocker.3 has no input in the catalog (vocabulary only has up/down), its inputs are buttons 18-20. Rudder (Z rotation) is the pair of black paddles; the marker is on the left paddle.",
+  "callouts": {
+    "version": 1,
+    "width": 1433,
+    "height": 691,
+    "picture": [340, 74, 679, 453],
+    "rowHeight": 20,
+    "mainWidth": 170,
+    "modWidth": 110,
+    "otherY": 621,
+    "tables": [
+      {"id": "grid:yoke.button.17", "title": "Buttons Up/Down/Pu - Right squa", "parts": ["yoke.button.17", "yoke.button.24", "yoke.button.25", "yoke.button.21", "yoke.button.22", "yoke.button.23"], "side": "bottom", "x": 733.2, "y": 551, "width": 276, "grid": true, "columns": 3, "modifier": false, "spot": [0.5928, 0.7108], "rows": [{"input": "JOY_BTN17", "label": "Up/Down/Pu", "icon": "button", "part": "yoke.button.17", "cell": [0, 0, 0]}, {"input": "JOY_BTN24", "label": "Yellow LED", "icon": "button", "part": "yoke.button.24", "cell": [0, 1, 0]}, {"input": "JOY_BTN25", "label": "Green LED", "icon": "button", "part": "yoke.button.25", "cell": [0, 2, 0]}, {"input": "JOY_BTN21", "label": "Left squar", "icon": "button", "part": "yoke.button.21", "cell": [1, 0, 0]}, {"input": "JOY_BTN22", "label": "Middle rou", "icon": "button", "part": "yoke.button.22", "cell": [1, 1, 0]}, {"input": "JOY_BTN23", "label": "Right squa", "icon": "button", "part": "yoke.button.23", "cell": [1, 2, 0]}]},
+      {"id": "grid:yoke.button.18", "title": "Buttons Left/Right - Left/Right", "parts": ["yoke.button.18", "yoke.button.20", "yoke.button.26", "yoke.button.19"], "side": "right", "x": 1049, "y": 376.8, "width": 368, "grid": true, "columns": 4, "modifier": false, "spot": [0.6128, 0.6358], "rows": [{"input": "JOY_BTN18", "label": "Left/Right", "icon": "button", "part": "yoke.button.18", "cell": [0, 0, 0]}, {"input": "JOY_BTN20", "label": "Left/Right", "icon": "button", "part": "yoke.button.20", "cell": [0, 1, 0]}, {"input": "JOY_BTN26", "label": "Red LED di", "icon": "button", "part": "yoke.button.26", "cell": [0, 2, 0]}, {"input": "JOY_BTN19", "label": "Left/Right", "icon": "button", "part": "yoke.button.19", "cell": [0, 3, 0]}]},
+      {"id": "stack:yoke.button.3", "title": "Rocker switch left / Rocker switch right", "parts": ["yoke.button.3", "yoke.button.4"], "side": "right", "x": 1049, "y": 196.8, "width": 300, "modifier": true, "spot": [0.746, 0.283], "rows": [{"input": "JOY_BTN3", "label": "Rocker switch left Press", "icon": "button", "part": "yoke.button.3"}, {"input": "JOY_BTN4", "label": "Rocker switch right Press", "icon": "button", "part": "yoke.button.4"}]},
+      {"id": "stack:yoke.button.9", "title": "Rocker switch left (trim) / Rocker switch right (trim)", "parts": ["yoke.button.9", "yoke.button.10"], "side": "left", "x": 16, "y": 251.3, "width": 300, "modifier": true, "spot": [0.356, 0.457], "rows": [{"input": "JOY_BTN9", "label": "Rocker switch left (trim) Press", "icon": "button", "part": "yoke.button.9"}, {"input": "JOY_BTN10", "label": "Rocker switch right (trim) Press", "icon": "button", "part": "yoke.button.10"}]},
+      {"id": "yoke.column", "title": "Yoke (roll / pitch)", "parts": ["yoke.column"], "side": "left", "x": 16, "y": 311.3, "width": 300, "modifier": true, "spot": [0.468, 0.49], "rows": [{"input": "JOY_X", "label": "roll (X)", "icon": "axis", "part": "yoke.column"}, {"input": "JOY_Y", "label": "pitch (Y)", "icon": "axis", "part": "yoke.column"}]},
+      {"id": "yoke.hat.1", "title": "Yoke hat 1", "parts": ["yoke.hat.1"], "side": "left", "x": 16, "y": 151.3, "width": 300, "modifier": true, "spot": [0.344, 0.407], "rows": [{"input": "JOY_BTN_POV1_U", "label": "Up", "icon": "up", "part": "yoke.hat.1"}, {"input": "JOY_BTN_POV1_R", "label": "Right", "icon": "right", "part": "yoke.hat.1"}, {"input": "JOY_BTN_POV1_L", "label": "Left", "icon": "left", "part": "yoke.hat.1"}, {"input": "JOY_BTN_POV1_D", "label": "Down", "icon": "down", "part": "yoke.hat.1"}]},
+      {"id": "yoke.hat.2", "title": "4-way hat (buttons 11-14)", "parts": ["yoke.hat.2"], "side": "right", "x": 1049, "y": 96.8, "width": 300, "modifier": true, "spot": [0.732, 0.242], "rows": [{"input": "JOY_BTN11", "label": "Up", "icon": "up", "part": "yoke.hat.2"}, {"input": "JOY_BTN12", "label": "Right", "icon": "right", "part": "yoke.hat.2"}, {"input": "JOY_BTN14", "label": "Left", "icon": "left", "part": "yoke.hat.2"}, {"input": "JOY_BTN13", "label": "Down", "icon": "down", "part": "yoke.hat.2"}]},
+      {"id": "yoke.button.1", "title": "Backside handle left red button", "parts": ["yoke.button.1"], "side": "other", "x": 16, "y": 641, "width": 300, "modifier": true, "rows": [{"input": "JOY_BTN1", "label": "Press", "icon": "button", "part": "yoke.button.1"}]},
+      {"id": "yoke.button.2", "title": "Backside handle right red button", "parts": ["yoke.button.2"], "side": "other", "x": 322, "y": 641, "width": 300, "modifier": true, "rows": [{"input": "JOY_BTN2", "label": "Press", "icon": "button", "part": "yoke.button.2"}]},
+      {"id": "yoke.rocker.2", "title": "Up/Down/Push wheel (buttons 15-17)", "parts": ["yoke.rocker.2"], "side": "bottom", "x": 427.2, "y": 551, "width": 300, "modifier": true, "spot": [0.539, 0.698], "rows": [{"input": "JOY_BTN15", "label": "Up", "icon": "up", "part": "yoke.rocker.2"}, {"input": "JOY_BTN16", "label": "Down", "icon": "down", "part": "yoke.rocker.2"}]},
+      {"id": "yoke.switch.1", "title": "Toggle switch 1", "parts": ["yoke.switch.1"], "side": "right", "x": 1049, "y": 316.8, "width": 300, "modifier": true, "spot": [0.577, 0.452], "rows": [{"input": "JOY_BTN5", "label": "Up", "icon": "up", "part": "yoke.switch.1"}, {"input": "JOY_BTN6", "label": "Down", "icon": "down", "part": "yoke.switch.1"}]},
+      {"id": "yoke.switch.2", "title": "Toggle switch 2", "parts": ["yoke.switch.2"], "side": "right", "x": 1049, "y": 256.8, "width": 300, "modifier": true, "spot": [0.614, 0.437], "rows": [{"input": "JOY_BTN7", "label": "Up", "icon": "up", "part": "yoke.switch.2"}, {"input": "JOY_BTN8", "label": "Down", "icon": "down", "part": "yoke.switch.2"}]},
+      {"id": "pedals.axis.rudder", "title": "Black paddles (rudder)", "parts": ["pedals.axis.rudder"], "side": "left", "x": 16, "y": 371.3, "width": 300, "modifier": true, "spot": [0.435, 0.6], "rows": [{"input": "JOY_RZ", "label": "RZ", "icon": "axis", "part": "pedals.axis.rudder"}]},
+      {"id": "quadrant.axis.lever.1", "title": "Quadrant lever 1", "parts": ["quadrant.axis.lever.1"], "side": "top", "x": 400.3, "y": 16, "width": 300, "modifier": true, "spot": [0.505, 0.17], "rows": [{"input": "JOY_Z", "label": "Z", "icon": "axis", "part": "quadrant.axis.lever.1"}]},
+      {"id": "quadrant.axis.lever.2", "title": "Quadrant lever 2", "parts": ["quadrant.axis.lever.2"], "side": "top", "x": 706.3, "y": 16, "width": 300, "modifier": true, "spot": [0.565, 0.13], "rows": [{"input": "JOY_RY", "label": "RY", "icon": "axis", "part": "quadrant.axis.lever.2"}]},
+      {"id": "quadrant.axis.lever.3", "title": "Quadrant lever 3", "parts": ["quadrant.axis.lever.3"], "side": "right", "x": 1049, "y": 56.8, "width": 300, "modifier": true, "spot": [0.605, 0.16], "rows": [{"input": "JOY_RX", "label": "RX", "icon": "axis", "part": "quadrant.axis.lever.3"}]}
+    ],
+    "lines": [
+      {"table": "yoke.hat.1", "points": [[573.6, 258.4], [328, 258.4], [328, 175.3], [316, 175.3]]},
+      {"table": "stack:yoke.button.9", "points": [[581.7, 281], [328, 281], [328, 275.3], [316, 275.3]]},
+      {"table": "yoke.column", "points": [[657.8, 296], [328, 296], [328, 335.3], [316, 335.3]]},
+      {"table": "pedals.axis.rudder", "points": [[635.4, 345.8], [328, 345.8], [328, 395.3], [316, 395.3]]},
+      {"table": "quadrant.axis.lever.3", "points": [[750.8, 146.5], [1031, 146.5], [1031, 80.8], [1049, 80.8]]},
+      {"table": "yoke.hat.2", "points": [[837, 183.6], [1037, 183.6], [1037, 120.8], [1049, 120.8]]},
+      {"table": "stack:yoke.button.3", "points": [[846.5, 202.2], [1031, 202.2], [1031, 220.8], [1049, 220.8]]},
+      {"table": "yoke.switch.2", "points": [[756.9, 272], [756.9, 280.8], [1049, 280.8]]},
+      {"table": "yoke.switch.1", "points": [[731.8, 278.8], [731.8, 340.8], [1049, 340.8]]},
+      {"table": "grid:yoke.button.18", "points": [[756.1, 362], [1031, 362], [1031, 400.8], [1049, 400.8]]},
+      {"table": "quadrant.axis.lever.1", "points": [[682.9, 151], [682.9, 62], [550.3, 62], [550.3, 50]]},
+      {"table": "quadrant.axis.lever.2", "points": [[723.6, 132.9], [723.6, 62], [856.3, 62], [856.3, 50]]},
+      {"table": "yoke.rocker.2", "points": [[706, 390.2], [706, 539], [577.2, 539], [577.2, 551]]},
+      {"table": "grid:yoke.button.17", "points": [[742.5, 396], [742.5, 539], [871.2, 539], [871.2, 551]]}
+    ]
+  }
+}

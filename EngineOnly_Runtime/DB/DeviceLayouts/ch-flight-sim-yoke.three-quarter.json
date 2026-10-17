@@ -1,0 +1,205 @@
+{
+  "format": "joypro-device-layout",
+  "version": 1,
+  "model": "ch-flight-sim-yoke",
+  "photo": {"kind": "vendor", "url": "https://www.chproducts.com/Flight-Sim-Yoke-v13-p-177.html-!do=ZG89dGh1bWJuYWlsZXIuZ2V0JnNyYz1pbWFnZXMlMkZjaHByb2R1Y3RzJTJGcHJvZHVjdHMlMkZTaW11bGF0aW9uJTJGRlNZLmpwZyZ2ZXJzaW9uPXByb2R1Y3RzLmxpZ2h0.jpeg", "sha256": "b9e8197a6de61208ca91afe314638d6b4925481af88be77e03408cb3c7b816a1", "view": "three-quarter"},
+  "markers": {
+    "quadrant.axis.lever.1": [0.609, 0.338],
+    "quadrant.axis.lever.2": [0.687, 0.356],
+    "quadrant.axis.lever.3": [0.726, 0.424],
+    "yoke.column": [0.28, 0.37],
+    "yoke.hat.1": [0.512, 0.115],
+    "yoke.rocker.1": [0.278, 0.066],
+    "yoke.switch.1": [0.51, 0.554],
+    "yoke.switch.2": [0.537, 0.572]
+  },
+  "parts": {
+    "yoke.column": {
+      "type": "gimbal",
+      "name": "Yoke (roll / pitch)",
+      "inputs": [
+        {"input": "JOY_X", "control": "yoke.axis.roll"},
+        {"input": "JOY_Y", "control": "yoke.axis.pitch"}
+      ],
+      "mapping": "high",
+      "confidence": "medium",
+      "note": "yoke centre piece (FLIGHT SIM logo), the shaft runs into the housing behind it"
+    },
+    "yoke.hat.1": {
+      "type": "hat",
+      "name": "Yoke hat 1",
+      "inputs": [
+        {"input": "JOY_BTN_POV1_U", "control": "yoke.hat.1.up"},
+        {"input": "JOY_BTN_POV1_R", "control": "yoke.hat.1.right"},
+        {"input": "JOY_BTN_POV1_D", "control": "yoke.hat.1.down"},
+        {"input": "JOY_BTN_POV1_L", "control": "yoke.hat.1.left"}
+      ],
+      "mapping": "high",
+      "confidence": "medium",
+      "note": "gray POV hat on top of the right handle, seen from above"
+    },
+    "yoke.button.1": {
+      "type": "button",
+      "name": "Backside handle left red button",
+      "inputs": [
+        {"input": "JOY_BTN1", "control": "yoke.button.1"}
+      ],
+      "mapping": "high"
+    },
+    "yoke.button.2": {
+      "type": "button",
+      "name": "Backside handle right red button",
+      "inputs": [
+        {"input": "JOY_BTN2", "control": "yoke.button.2"}
+      ],
+      "mapping": "high"
+    },
+    "yoke.button.3": {
+      "type": "button",
+      "name": "Rocker switch left",
+      "inputs": [
+        {"input": "JOY_BTN3", "control": "yoke.button.3"}
+      ],
+      "mapping": "high"
+    },
+    "yoke.button.4": {
+      "type": "button",
+      "name": "Rocker switch right",
+      "inputs": [
+        {"input": "JOY_BTN4", "control": "yoke.button.4"}
+      ],
+      "mapping": "high"
+    },
+    "yoke.button.9": {
+      "type": "button",
+      "name": "Top left red button",
+      "inputs": [
+        {"input": "JOY_BTN9", "control": "yoke.button.9"}
+      ],
+      "mapping": "low"
+    },
+    "yoke.rocker.1": {
+      "type": "rocker",
+      "name": "Rocker switch",
+      "inputs": [
+        {"input": "JOY_BTN11", "control": "yoke.rocker.1.up"},
+        {"input": "JOY_BTN12", "control": "yoke.rocker.1.down"}
+      ],
+      "mapping": "high",
+      "confidence": "high",
+      "note": "gray up/down rocker next to the red buttons on the left handle (11/12)"
+    },
+    "yoke.button.10": {
+      "type": "button",
+      "name": "Bottom left red button",
+      "inputs": [
+        {"input": "JOY_BTN10", "control": "yoke.button.10"}
+      ],
+      "mapping": "low"
+    },
+    "yoke.switch.1": {
+      "type": "switch",
+      "name": "Toggle switch 1",
+      "inputs": [
+        {"input": "JOY_BTN5", "control": "yoke.switch.1.up"},
+        {"input": "JOY_BTN6", "control": "yoke.switch.1.down"}
+      ],
+      "mapping": "high",
+      "confidence": "medium",
+      "note": "left gray toggle switch on the housing front (5/6)"
+    },
+    "yoke.switch.2": {
+      "type": "switch",
+      "name": "Toggle switch 2",
+      "inputs": [
+        {"input": "JOY_BTN7", "control": "yoke.switch.2.up"},
+        {"input": "JOY_BTN8", "control": "yoke.switch.2.down"}
+      ],
+      "mapping": "high",
+      "confidence": "medium",
+      "note": "right gray toggle switch on the housing front (7/8)"
+    },
+    "quadrant.axis.lever.1": {
+      "type": "lever",
+      "name": "Quadrant lever 1",
+      "inputs": [
+        {"input": "JOY_Z", "control": "quadrant.axis.lever.1"}
+      ],
+      "mapping": "high",
+      "confidence": "high",
+      "note": "first gray lever, round knob (Z)"
+    },
+    "quadrant.axis.lever.2": {
+      "type": "lever",
+      "name": "Quadrant lever 2",
+      "inputs": [
+        {"input": "JOY_RY", "control": "quadrant.axis.lever.2"}
+      ],
+      "mapping": "high",
+      "confidence": "high",
+      "note": "second gray lever (Y rotation)"
+    },
+    "quadrant.axis.lever.3": {
+      "type": "lever",
+      "name": "Quadrant lever 3",
+      "inputs": [
+        {"input": "JOY_RX", "control": "quadrant.axis.lever.3"}
+      ],
+      "mapping": "high",
+      "confidence": "high",
+      "note": "third gray lever (X rotation)"
+    }
+  },
+  "unplaced": {
+    "yoke.button.1": "red button on the back of the left handle, faces away from the camera",
+    "yoke.button.2": "red button on the back of the right handle, faces away from the camera",
+    "yoke.button.3": "left/right rocker on the right handle face below the POV hat, not visible from this angle",
+    "yoke.button.4": "left/right rocker on the right handle face below the POV hat, not visible from this angle",
+    "yoke.button.9": "one of the two red buttons on the left handle; top (9) vs bottom (10) not identifiable at this angle",
+    "yoke.button.10": "one of the two red buttons on the left handle; top (9) vs bottom (10) not identifiable at this angle"
+  },
+  "candidates": {
+    "yoke.button.10": [0.272, 0.048],
+    "yoke.button.9": [0.237, 0.048]
+  },
+  "source": "JoyPro curated on the maker's photo (2026-10-11), seen from the pilot's front left and slightly above; left handle in front, right handle and the three levers behind it",
+  "mappingSource": "CH quick start 200-615 \"Flight Sim Yoke Button Assignments\" (https://www.chproducts.com/files/chproducts/Retail-Quickstarts/200-615%20Flight%20Sim%20Yoke%20-%20FS2020.pdf): 1/2 backside left/right handle red buttons, 3/4 rocker left/right (right handle), 5/6 and 7/8 toggle switches, 9/10 top/bottom left red buttons, 11/12 rocker up/down (left handle), POV hat on the right handle, Z / Y rotation / X rotation = first / second / third gray lever",
+  "confidence": "medium",
+  "note": "The two red buttons on the left handle are seen from above, side by side; which one is the top (9) and which the bottom (10) cannot be told from this angle, so both stay hidden candidates. The backside buttons (1, 2) and the right handle's left/right rocker (3/4) face away from the camera.",
+  "callouts": {
+    "version": 1,
+    "width": 1360,
+    "height": 712,
+    "picture": [340, 134, 680, 452],
+    "rowHeight": 20,
+    "mainWidth": 170,
+    "modWidth": 110,
+    "otherY": 602,
+    "tables": [
+      {"id": "yoke.column", "title": "Yoke (roll / pitch)", "parts": ["yoke.column"], "side": "left", "x": 16, "y": 277.2, "width": 300, "modifier": true, "spot": [0.28, 0.37], "rows": [{"input": "JOY_X", "label": "roll (X)", "icon": "axis", "part": "yoke.column"}, {"input": "JOY_Y", "label": "pitch (Y)", "icon": "axis", "part": "yoke.column"}]},
+      {"id": "yoke.hat.1", "title": "Yoke hat 1", "parts": ["yoke.hat.1"], "side": "top", "x": 646, "y": 16, "width": 300, "modifier": true, "spot": [0.512, 0.115], "rows": [{"input": "JOY_BTN_POV1_U", "label": "Up", "icon": "up", "part": "yoke.hat.1"}, {"input": "JOY_BTN_POV1_R", "label": "Right", "icon": "right", "part": "yoke.hat.1"}, {"input": "JOY_BTN_POV1_L", "label": "Left", "icon": "left", "part": "yoke.hat.1"}, {"input": "JOY_BTN_POV1_D", "label": "Down", "icon": "down", "part": "yoke.hat.1"}]},
+      {"id": "yoke.button.1", "title": "Backside handle left red button", "parts": ["yoke.button.1"], "side": "other", "x": 16, "y": 622, "width": 300, "modifier": true, "rows": [{"input": "JOY_BTN1", "label": "Press", "icon": "button", "part": "yoke.button.1"}]},
+      {"id": "yoke.button.2", "title": "Backside handle right red button", "parts": ["yoke.button.2"], "side": "other", "x": 322, "y": 622, "width": 300, "modifier": true, "rows": [{"input": "JOY_BTN2", "label": "Press", "icon": "button", "part": "yoke.button.2"}]},
+      {"id": "yoke.button.3", "title": "Rocker switch left", "parts": ["yoke.button.3"], "side": "other", "x": 628, "y": 622, "width": 300, "modifier": true, "rows": [{"input": "JOY_BTN3", "label": "Press", "icon": "button", "part": "yoke.button.3"}]},
+      {"id": "yoke.button.4", "title": "Rocker switch right", "parts": ["yoke.button.4"], "side": "other", "x": 934, "y": 622, "width": 300, "modifier": true, "rows": [{"input": "JOY_BTN4", "label": "Press", "icon": "button", "part": "yoke.button.4"}]},
+      {"id": "yoke.button.9", "title": "Top left red button", "parts": ["yoke.button.9"], "side": "other", "x": 16, "y": 662, "width": 300, "modifier": true, "rows": [{"input": "JOY_BTN9", "label": "Press", "icon": "button", "part": "yoke.button.9"}]},
+      {"id": "yoke.rocker.1", "title": "Rocker switch", "parts": ["yoke.rocker.1"], "side": "top", "x": 340, "y": 56, "width": 300, "modifier": true, "spot": [0.278, 0.066], "rows": [{"input": "JOY_BTN11", "label": "Up", "icon": "up", "part": "yoke.rocker.1"}, {"input": "JOY_BTN12", "label": "Down", "icon": "down", "part": "yoke.rocker.1"}]},
+      {"id": "yoke.button.10", "title": "Bottom left red button", "parts": ["yoke.button.10"], "side": "other", "x": 322, "y": 662, "width": 300, "modifier": true, "rows": [{"input": "JOY_BTN10", "label": "Press", "icon": "button", "part": "yoke.button.10"}]},
+      {"id": "yoke.switch.1", "title": "Toggle switch 1", "parts": ["yoke.switch.1"], "side": "right", "x": 1044, "y": 408.9, "width": 300, "modifier": true, "spot": [0.51, 0.554], "rows": [{"input": "JOY_BTN5", "label": "Up", "icon": "up", "part": "yoke.switch.1"}, {"input": "JOY_BTN6", "label": "Down", "icon": "down", "part": "yoke.switch.1"}]},
+      {"id": "yoke.switch.2", "title": "Toggle switch 2", "parts": ["yoke.switch.2"], "side": "right", "x": 1044, "y": 348.9, "width": 300, "modifier": true, "spot": [0.537, 0.572], "rows": [{"input": "JOY_BTN7", "label": "Up", "icon": "up", "part": "yoke.switch.2"}, {"input": "JOY_BTN8", "label": "Down", "icon": "down", "part": "yoke.switch.2"}]},
+      {"id": "quadrant.axis.lever.1", "title": "Quadrant lever 1", "parts": ["quadrant.axis.lever.1"], "side": "right", "x": 1044, "y": 268.9, "width": 300, "modifier": true, "spot": [0.609, 0.338], "rows": [{"input": "JOY_Z", "label": "Z", "icon": "axis", "part": "quadrant.axis.lever.1"}]},
+      {"id": "quadrant.axis.lever.2", "title": "Quadrant lever 2", "parts": ["quadrant.axis.lever.2"], "side": "right", "x": 1044, "y": 228.9, "width": 300, "modifier": true, "spot": [0.687, 0.356], "rows": [{"input": "JOY_RY", "label": "RY", "icon": "axis", "part": "quadrant.axis.lever.2"}]},
+      {"id": "quadrant.axis.lever.3", "title": "Quadrant lever 3", "parts": ["quadrant.axis.lever.3"], "side": "right", "x": 1044, "y": 308.9, "width": 300, "modifier": true, "spot": [0.726, 0.424], "rows": [{"input": "JOY_RX", "label": "RX", "icon": "axis", "part": "quadrant.axis.lever.3"}]}
+    ],
+    "lines": [
+      {"table": "yoke.column", "points": [[530.4, 301.2], [316, 301.2]]},
+      {"table": "quadrant.axis.lever.2", "points": [[807.2, 294.9], [807.2, 252.9], [1044, 252.9]]},
+      {"table": "quadrant.axis.lever.1", "points": [[754.1, 286.8], [754.1, 292.8], [1032, 292.8], [1032, 292.9], [1044, 292.9]]},
+      {"table": "quadrant.axis.lever.3", "points": [[833.7, 325.6], [1032, 325.6], [1032, 332.9], [1044, 332.9]]},
+      {"table": "yoke.switch.2", "points": [[705.2, 392.5], [705.2, 372.9], [1044, 372.9]]},
+      {"table": "yoke.switch.1", "points": [[686.8, 384.4], [686.8, 432.9], [1044, 432.9]]},
+      {"table": "yoke.rocker.1", "points": [[529, 163.8], [529, 122], [490, 122], [490, 110]]},
+      {"table": "yoke.hat.1", "points": [[688.2, 186], [688.2, 122], [796, 122], [796, 110]]}
+    ]
+  }
+}

@@ -1,0 +1,125 @@
+version:i=13
+
+content{
+  machineId:t=""
+
+  controls{
+    version:i=5
+
+    basePresetPaths{
+      default:t="config/hotkeys/hotkey.keyboard_ver1.blk"
+    }
+
+    hotkeys{
+      ID_CONTINUE{
+        keyboardKey:i=57
+      }
+
+      ID_FIRE_MGUNS{
+        joyButton:i=28
+      }
+
+      ID_FIRE_MGUNS{
+        mouseButton:i=0
+      }
+
+      ID_GEAR{
+        keyboardKey:i=34
+      }
+
+      ID_GEAR{
+        joyButton:i=50
+      }
+
+      ID_FLAPS{
+        keyboardKey:i=29
+        joyButton:i=40
+      }
+
+      ID_TOGGLE_ENGINE{
+        joyButton:i=31
+        joyButton:i=45
+      }
+
+      ID_AIR_BRAKE{}
+      ID_FIRE_GM{
+        joyButton:i=29
+      }
+
+      ID_BOMBS_SERIES{
+        joyButton:i=5
+      }
+
+      ID_SCREENSHOT{
+        keyboardKey:i=183
+      }
+    }
+
+    axes{
+      ailerons{
+        axisId:i=7
+        mouseAxisId:i=-1
+        nonlinearity:r=0
+      }
+
+      elevator{
+        axisId:i=8
+        inverse:b=yes
+        innerDeadzone:r=0.05
+      }
+
+      gm_throttle{
+        axisId:i=13
+      }
+
+      rudder{
+        axisId:i=-1
+      }
+
+      throttle{
+        axisId:i=12
+        relative:b=no
+      }
+    }
+
+    params{
+      mouseJoystick:b=no
+    }
+
+    deviceMapping{
+      joystick{
+        connected:b=no
+        devId:t="x360"
+        axesOffset:i=0
+        name:t="Controller 1"
+        buttonsOffset:i=0
+        buttonsCount:i=28
+        axesCount:i=7
+      }
+
+      joystick{
+        connected:b=yes
+        devId:t="1234:5678"
+        axesOffset:i=7
+        name:t="Smoke Stick"
+        buttonsOffset:i=28
+        buttonsCount:i=16
+        axesCount:i=5
+      }
+
+      joystick{
+        connected:b=yes
+        devId:t="ABCD:0001"
+        axesOffset:i=12
+        name:t="Smoke Throttle"
+        buttonsOffset:i=44
+        buttonsCount:i=20
+        axesCount:i=5
+      }
+    }
+  }
+
+  settings{
+    fullScreenMode:b=yes
+  }
+}

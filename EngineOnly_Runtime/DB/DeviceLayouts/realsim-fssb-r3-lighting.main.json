@@ -1,0 +1,55 @@
+{
+  "format": "joypro-device-layout",
+  "version": 1,
+  "model": "realsim-fssb-r3-lighting",
+  "photo": {"kind": "vendor", "url": "https://realsimulator.com/wp-content/uploads/2020/01/FSSB_R3_2021.jpg", "sha256": "16978ee8f9c099791e47da205ec15366de779fb37988d1289bc4aade43e50e18", "view": "main"},
+  "markers": {
+    "stick.gimbal": [0.5, 0.42]
+  },
+  "parts": {
+    "stick.gimbal": {
+      "type": "gimbal",
+      "name": "Stick (roll / pitch)",
+      "inputs": [
+        {"input": "JOY_X", "control": "stick.axis.roll"},
+        {"input": "JOY_Y", "control": "stick.axis.pitch"}
+      ],
+      "mapping": "high",
+      "confidence": "medium",
+      "note": "force-sensing stem under the grip connector (roll X / pitch Y)"
+    },
+    "stick.axis.twist": {
+      "type": "twist",
+      "name": "Twist",
+      "inputs": [
+        {"input": "JOY_RZ", "control": "stick.axis.twist"}
+      ],
+      "mapping": "high"
+    }
+  },
+  "unplaced": {
+    "stick.axis.twist": "the user guide documents no twist sensor (only roll/pitch; SSF firmware yaw = side force with pinky held); no grip on this photo"
+  },
+  "candidates": {},
+  "source": "JoyPro curated on the maker's photo (2026-10-11), the FSSB R3L \"Lighting\" force-sensing base alone (no grip) seen from the front, grip connector on top",
+  "mappingSource": "FSSB-R3 User Guide (https://www.realsimulator.com/download/FSSB-R3_User_Guide.pdf) p.32/37/94: Roll = X axis, Pitch = Y axis; p.78-84: the SSF firmware adds Yaw by swapping the X force to Yaw while the pinky is held; catalog realsimulator.json also cites https://www.manualslib.com/manual/3221478/Realsimulator-Fssb-R3-Lighting.html",
+  "confidence": "high",
+  "note": "The base has no moving gimbal (force sensing); the roll/pitch marker sits on the sensing stem under the grip connector. Catalog discrepancy: the catalog lists a twist axis (JOY_RZ); the user guide documents only Roll (X) and Pitch (Y), plus a Yaw axis in the SSF firmware made from the side force while the pinky is held, not a grip twist. The twist part is therefore not placed.",
+  "callouts": {
+    "version": 1,
+    "width": 1092,
+    "height": 1048,
+    "picture": [374, 18, 700, 933],
+    "rowHeight": 22,
+    "mainWidth": 187,
+    "modWidth": 121,
+    "otherY": 969,
+    "tables": [
+      {"id": "stick.gimbal", "title": "Stick (roll / pitch)", "parts": ["stick.gimbal"], "side": "left", "x": 18, "y": 382.9, "width": 330, "modifier": true, "spot": [0.5, 0.42], "rows": [{"input": "JOY_X", "label": "roll (X)", "icon": "axis", "part": "stick.gimbal"}, {"input": "JOY_Y", "label": "pitch (Y)", "icon": "axis", "part": "stick.gimbal"}]},
+      {"id": "stick.axis.twist", "title": "Twist", "parts": ["stick.axis.twist"], "side": "other", "x": 18, "y": 992, "width": 330, "modifier": true, "rows": [{"input": "JOY_RZ", "label": "RZ", "icon": "axis", "part": "stick.axis.twist"}]}
+    ],
+    "lines": [
+      {"table": "stick.gimbal", "points": [[724, 409.9], [348, 409.9]]}
+    ]
+  }
+}

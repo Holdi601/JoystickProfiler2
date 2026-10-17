@@ -1,0 +1,120 @@
+{
+  "format": "joypro-device-layout",
+  "version": 1,
+  "model": "virtualfly-yoko-neo",
+  "photo": {"kind": "vendor", "url": "https://www.virtual-fly.com/wp-content/gallery/yokoneo/virtualfly-yoko-neo-_0005_070A4499.jpg", "sha256": "6adeda8e8648b0a0cf24b48cf2681d7a9a77370c432eae2dd4e29cfc392a6a59", "view": "front"},
+  "markers": {
+    "yoke.button.2": [0.285, 0.19],
+    "yoke.button.4": [0.765, 0.18],
+    "yoke.column": [0.53, 0.76],
+    "yoke.rocker.1": [0.246, 0.243],
+    "yoke.switch.2": [0.79, 0.235]
+  },
+  "parts": {
+    "yoke.column": {
+      "type": "gimbal",
+      "name": "Yoke (roll / pitch)",
+      "inputs": [
+        {"input": "", "control": "yoke.axis.roll"},
+        {"input": "", "control": "yoke.axis.pitch"}
+      ],
+      "mapping": "medium",
+      "confidence": "medium",
+      "note": "yoke hub; the column enters the base behind it"
+    },
+    "yoke.rocker.1": {
+      "type": "rocker",
+      "name": "Electric trim",
+      "inputs": [
+        {"input": "JOY_BTN1", "control": "yoke.rocker.1.down"},
+        {"input": "JOY_BTN2", "control": "yoke.rocker.1.up"}
+      ],
+      "mapping": "medium",
+      "confidence": "high",
+      "note": "TRIM UP rocker on the left handle"
+    },
+    "yoke.button.1": {
+      "type": "button",
+      "name": "Button (left handle)",
+      "inputs": [
+        {"input": "JOY_BTN3", "control": "yoke.button.1"}
+      ],
+      "mapping": "medium"
+    },
+    "yoke.button.2": {
+      "type": "button",
+      "name": "PTT (left handle)",
+      "inputs": [
+        {"input": "JOY_BTN4", "control": "yoke.button.2"}
+      ],
+      "mapping": "medium",
+      "confidence": "medium",
+      "note": "4-way mini hat under the PTT label (left handle); which direction/press is PTT is not documented"
+    },
+    "yoke.button.3": {
+      "type": "button",
+      "name": "Button (right handle)",
+      "inputs": [
+        {"input": "JOY_BTN7", "control": "yoke.button.3"}
+      ],
+      "mapping": "medium"
+    },
+    "yoke.button.4": {
+      "type": "button",
+      "name": "AP disconnect (right handle)",
+      "inputs": [
+        {"input": "JOY_BTN8", "control": "yoke.button.4"}
+      ],
+      "mapping": "medium",
+      "confidence": "high",
+      "note": "small push button under the A/P DIS. label (right handle)"
+    },
+    "yoke.switch.2": {
+      "type": "switch",
+      "name": "Electric trim",
+      "inputs": [
+        {"input": "JOY_BTN5", "control": "yoke.switch.2.left"},
+        {"input": "JOY_BTN6", "control": "yoke.switch.2.right"}
+      ],
+      "mapping": "medium",
+      "confidence": "medium",
+      "note": "rocker with left/right arrows on the right handle"
+    }
+  },
+  "unplaced": {
+    "yoke.button.1": "small round button/socket below the hat on the left handle, unclear whether it is a button",
+    "yoke.button.3": "recessed round part at the inner end of the right handle top; may be a screw socket, not a button"
+  },
+  "candidates": {
+    "yoke.button.1": [0.275, 0.265],
+    "yoke.button.3": [0.723, 0.168]
+  },
+  "source": "JoyPro curated on the maker's photo (2026-10-11), yoke seen from the pilot's seat (front), base box blurred behind it, tops of both handles visible",
+  "mappingSource": "catalog virtualfly-yoko-neo (others_massmarket.json, source https://www.virtual-fly.com/shop/products/controls), button numbers derived from a local game configuration file (catalog says unconfirmed); controls identified by the printed handle labels (TRIM UP, PTT, A/P DIS., left/right arrows); Virtual Fly publishes no manual or button map",
+  "confidence": "medium",
+  "note": "the \"main\" photo of this model shows the YOKO FORCE neo (base labelled YOKO FORCE, red button on the left handle), a different handle layout; it was not used. the left handle carries a 4-way mini hat under the PTT label; the catalog has no hat part, only a PTT button. The PTT marker sits on that hat. the JOY_BTN numbers in the catalog are unverified; only \"which control is which part\" comes from the labels.",
+  "callouts": {
+    "version": 1,
+    "width": 3466,
+    "height": 1438,
+    "picture": [783, 172, 1900, 1066],
+    "rowHeight": 46,
+    "mainWidth": 391,
+    "modWidth": 253,
+    "otherY": 1275,
+    "tables": [
+      {"id": "yoke.rocker.1", "title": "Electric trim", "parts": ["yoke.rocker.1"], "side": "left", "x": 37, "y": 375, "width": 690, "modifier": true, "spot": [0.246, 0.243], "rows": [{"input": "JOY_BTN2", "label": "Up", "icon": "up", "part": "yoke.rocker.1"}, {"input": "JOY_BTN1", "label": "Down", "icon": "down", "part": "yoke.rocker.1"}]},
+      {"id": "yoke.button.1", "title": "Button (left handle)", "parts": ["yoke.button.1"], "side": "other", "x": 37, "y": 1322, "width": 690, "modifier": true, "rows": [{"input": "JOY_BTN3", "label": "Press", "icon": "button", "part": "yoke.button.1"}]},
+      {"id": "yoke.button.2", "title": "PTT (left handle)", "parts": ["yoke.button.2"], "side": "top", "x": 979.5, "y": 37, "width": 690, "modifier": true, "spot": [0.285, 0.19], "rows": [{"input": "JOY_BTN4", "label": "Press", "icon": "button", "part": "yoke.button.2"}]},
+      {"id": "yoke.button.3", "title": "Button (right handle)", "parts": ["yoke.button.3"], "side": "other", "x": 741, "y": 1322, "width": 690, "modifier": true, "rows": [{"input": "JOY_BTN7", "label": "Press", "icon": "button", "part": "yoke.button.3"}]},
+      {"id": "yoke.button.4", "title": "AP disconnect (right handle)", "parts": ["yoke.button.4"], "side": "top", "x": 1891.5, "y": 37, "width": 690, "modifier": true, "spot": [0.765, 0.18], "rows": [{"input": "JOY_BTN8", "label": "Press", "icon": "button", "part": "yoke.button.4"}]},
+      {"id": "yoke.switch.2", "title": "Electric trim", "parts": ["yoke.switch.2"], "side": "right", "x": 2739, "y": 366.5, "width": 690, "modifier": true, "spot": [0.79, 0.235], "rows": [{"input": "JOY_BTN6", "label": "Right", "icon": "right", "part": "yoke.switch.2"}, {"input": "JOY_BTN5", "label": "Left", "icon": "left", "part": "yoke.switch.2"}]}
+    ],
+    "lines": [
+      {"table": "yoke.rocker.1", "points": [[1250.4, 431], [727, 431]]},
+      {"table": "yoke.switch.2", "points": [[2284, 422.5], [2739, 422.5]]},
+      {"table": "yoke.button.2", "points": [[1324.5, 374.5], [1324.5, 116]]},
+      {"table": "yoke.button.4", "points": [[2236.5, 363.9], [2236.5, 116]]}
+    ]
+  }
+}

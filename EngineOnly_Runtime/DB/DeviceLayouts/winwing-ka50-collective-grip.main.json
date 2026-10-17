@@ -1,0 +1,244 @@
+{
+  "format": "joypro-device-layout",
+  "version": 1,
+  "model": "winwing-ka50-collective-grip",
+  "photo": {"kind": "vendor", "url": "https://eu.winctrl.com/static/ipfs/QmaecQeC8VFeasS7AAV6HFuATXuMzmc2vpxtSodE7MR7G9", "sha256": "6ff0469e58e8a2f9268af7131238629c731fc37c5e32a0c654068f0cf5142e80", "view": "main"},
+  "markers": {
+    "collective.axis.rotary.1": [0.364, 0.196],
+    "collective.axis.throttle_twist": [0.47, 0.5],
+    "collective.button.1": [0.222, 0.222],
+    "collective.button.2": [0.416, 0.147],
+    "collective.button.3": [0.131, 0.315],
+    "collective.button.4": [0.156, 0.329],
+    "collective.button.5": [0.136, 0.345],
+    "collective.button.6": [0.167, 0.362],
+    "collective.hat.1": [0.251, 0.127],
+    "collective.hat.2": [0.312, 0.222],
+    "collective.ministick": [0.306, 0.214],
+    "collective.switch.1": [0.169, 0.18],
+    "collective.switch.2": [0.282, 0.104],
+    "collective.switch.3": [0.371, 0.118]
+  },
+  "parts": {
+    "collective.axis.throttle_twist": {
+      "type": "twist",
+      "name": "Throttle twist",
+      "inputs": [
+        {"input": "JOY_Z", "control": "collective.axis.throttle_twist"}
+      ],
+      "mapping": "high",
+      "confidence": "medium",
+      "note": "twist grip tube, manual Z axis (29/32 at the ends)"
+    },
+    "collective.hat.1": {
+      "type": "hat",
+      "name": "Collective hat 1",
+      "inputs": [
+        {"input": "JOY_BTN_POV1_U", "control": "collective.hat.1.up"},
+        {"input": "JOY_BTN_POV1_UR", "control": "collective.hat.1.upright"},
+        {"input": "JOY_BTN_POV1_R", "control": "collective.hat.1.right"},
+        {"input": "JOY_BTN_POV1_DR", "control": "collective.hat.1.downright"},
+        {"input": "JOY_BTN_POV1_D", "control": "collective.hat.1.down"},
+        {"input": "JOY_BTN_POV1_DL", "control": "collective.hat.1.downleft"},
+        {"input": "JOY_BTN_POV1_L", "control": "collective.hat.1.left"},
+        {"input": "JOY_BTN_POV1_UL", "control": "collective.hat.1.upleft"},
+        {"input": "JOY_BTN3", "control": "collective.hat.1.press"}
+      ],
+      "mapping": "high",
+      "confidence": "high",
+      "note": "big 8-way HAT on the AIR TO AIR plate, press = manual 3"
+    },
+    "collective.hat.2": {
+      "type": "hat",
+      "name": "Collective hat 2",
+      "inputs": [
+        {"input": "JOY_BTN18", "control": "collective.hat.2.press"},
+        {"input": "JOY_BTN19", "control": "collective.hat.2.up"},
+        {"input": "JOY_BTN20", "control": "collective.hat.2.right"},
+        {"input": "JOY_BTN21", "control": "collective.hat.2.down"},
+        {"input": "JOY_BTN22", "control": "collective.hat.2.left"}
+      ],
+      "mapping": "high",
+      "confidence": "high",
+      "note": "mini stick cap (LDG LIGHT) in button mode, manual 18-22"
+    },
+    "collective.ministick": {
+      "type": "ministick",
+      "name": "Collective ministick",
+      "inputs": [
+        {"input": "JOY_X", "control": "collective.axis.ministick.x"},
+        {"input": "JOY_Y", "control": "collective.axis.ministick.y"}
+      ],
+      "mapping": "high",
+      "confidence": "high",
+      "note": "mini stick cap (LDG LIGHT), manual X/Y 0-4095"
+    },
+    "collective.switch.1": {
+      "type": "switch",
+      "name": "Collective switch 1",
+      "inputs": [
+        {"input": "JOY_BTN5", "control": "collective.switch.1.up"},
+        {"input": "JOY_BTN6", "control": "collective.switch.1.center"},
+        {"input": "JOY_BTN7", "control": "collective.switch.1.down"}
+      ],
+      "mapping": "high",
+      "confidence": "high",
+      "note": "toggle on the NOM/LOW plate, manual 5/6/7"
+    },
+    "collective.switch.2": {
+      "type": "switch",
+      "name": "Collective switch 2",
+      "inputs": [
+        {"input": "JOY_BTN8", "control": "collective.switch.2.up"},
+        {"input": "JOY_BTN9", "control": "collective.switch.2.center"},
+        {"input": "JOY_BTN10", "control": "collective.switch.2.down"}
+      ],
+      "mapping": "high",
+      "confidence": "high",
+      "note": "toggle behind the HAT, manual 8/9/10"
+    },
+    "collective.switch.3": {
+      "type": "switch",
+      "name": "Collective switch 3",
+      "inputs": [
+        {"input": "JOY_BTN11", "control": "collective.switch.3.up"},
+        {"input": "JOY_BTN12", "control": "collective.switch.3.center"},
+        {"input": "JOY_BTN13", "control": "collective.switch.3.down"}
+      ],
+      "mapping": "high",
+      "confidence": "high",
+      "note": "toggle on the ROUTE/DESCENT plate, manual 11/12/13"
+    },
+    "collective.axis.rotary.1": {
+      "type": "knob",
+      "name": "Collective rotary 1",
+      "inputs": [
+        {"input": "JOY_RZ", "control": "collective.axis.rotary.1"}
+      ],
+      "mapping": "high",
+      "confidence": "high",
+      "note": "knurled wheel, manual Rz"
+    },
+    "collective.button.1": {
+      "type": "button",
+      "name": "SLING",
+      "inputs": [
+        {"input": "JOY_BTN4", "control": "collective.button.1"}
+      ],
+      "mapping": "high",
+      "confidence": "high",
+      "note": "SLING button, manual 4"
+    },
+    "collective.button.2": {
+      "type": "button",
+      "name": "TGT LOCK",
+      "inputs": [
+        {"input": "JOY_BTN14", "control": "collective.button.2"}
+      ],
+      "mapping": "high",
+      "confidence": "high",
+      "note": "TGT LOCK button, manual 14"
+    },
+    "collective.button.3": {
+      "type": "button",
+      "name": "Collective button 3",
+      "inputs": [
+        {"input": "JOY_BTN23", "control": "collective.button.3"}
+      ],
+      "mapping": "high",
+      "confidence": "high",
+      "note": "left face, upper-left button, manual 23"
+    },
+    "collective.button.4": {
+      "type": "button",
+      "name": "Collective button 4",
+      "inputs": [
+        {"input": "JOY_BTN26", "control": "collective.button.4"}
+      ],
+      "mapping": "high",
+      "confidence": "high",
+      "note": "left face, upper-right button, manual 26"
+    },
+    "collective.button.5": {
+      "type": "button",
+      "name": "Collective button 5",
+      "inputs": [
+        {"input": "JOY_BTN25", "control": "collective.button.5"}
+      ],
+      "mapping": "high",
+      "confidence": "high",
+      "note": "left face, lower-left button, manual 25"
+    },
+    "collective.button.6": {
+      "type": "button",
+      "name": "Collective button 6",
+      "inputs": [
+        {"input": "JOY_BTN24", "control": "collective.button.6"}
+      ],
+      "mapping": "high",
+      "confidence": "high",
+      "note": "left face, lower-right button, manual 24"
+    },
+    "collective.button.7": {
+      "type": "button",
+      "name": "Collective button 7",
+      "inputs": [
+        {"input": "JOY_BTN28", "control": "collective.button.7"}
+      ],
+      "mapping": "high"
+    },
+    "collective.button.8": {
+      "type": "button",
+      "name": "Collective button 8",
+      "inputs": [
+        {"input": "JOY_BTN27", "control": "collective.button.8"}
+      ],
+      "mapping": "high"
+    }
+  },
+  "unplaced": {
+    "collective.button.7": "rear-face button 28 (manual drawing 14), on the far end of the head, hidden",
+    "collective.button.8": "rear-face button 27 (manual drawing 15), on the far end of the head, hidden"
+  },
+  "candidates": {},
+  "source": "JoyPro curated on the maker's photo (2026-10-11), KA-50 collective grip alone (no base) seen from above and the left, switch head at the top left, twist grip running to the lower right, mounting clamp at the lower right",
+  "mappingSource": "WinWing \"COLLECTIVE GRIP OF BLACK SHARK KA50 User Manual V1.0\" page 4, section 2.1 button switch and functions drawing (https://en.winwing.cn/static/file/COLLECTIVE%20GRIP%20OF%20BLACK%20SHARK%20KA50-MANUAL%20EN%20V%201.0.pdf): HAT press 3 (8-way), toggles 5-7 (NOM/LOW plate), 8-10 (behind the hat), 11-13 (ROUTE/DESCENT plate), SLING 4, TGT LOCK 14, mini stick X/Y (18-22 in button mode), wheel Rz (15-17), twist Z (29/32 at the ends), left-face buttons 23/26/25/24, rear-face buttons 27/28; matches the catalog note",
+  "confidence": "high",
+  "note": "The mini stick (LDG LIGHT cap) carries both the X/Y ministick part and, in its button mode, hat 2 (18-22); both markers sit on the same cap. The collective lever axis comes from the base (Orion T2 / Gemini T3), not this grip. The two rear-face buttons (27/28) are on the far end of the head, not visible.",
+  "callouts": {
+    "version": 1,
+    "width": 2309,
+    "height": 2132,
+    "picture": [679, 368.8, 1600, 1600],
+    "rowHeight": 38,
+    "mainWidth": 323,
+    "modWidth": 209,
+    "otherY": 1999,
+    "tables": [
+      {"id": "grid:collective.button.3", "title": "Buttons Collective button 3 - 6", "parts": ["collective.button.3", "collective.button.4", "collective.button.5", "collective.button.6"], "side": "left", "x": 250, "y": 1170, "width": 350, "grid": true, "columns": 2, "modifier": false, "spot": [0.1475, 0.3378], "rows": [{"input": "JOY_BTN23", "label": "Collective", "icon": "button", "part": "collective.button.3", "cell": [0, 0, 0]}, {"input": "JOY_BTN26", "label": "Collective", "icon": "button", "part": "collective.button.4", "cell": [0, 1, 0]}, {"input": "JOY_BTN25", "label": "Collective", "icon": "button", "part": "collective.button.5", "cell": [1, 0, 0]}, {"input": "JOY_BTN24", "label": "Collective", "icon": "button", "part": "collective.button.6", "cell": [1, 1, 0]}]},
+      {"id": "stack:collective.hat.2", "title": "Collective hat 2 / Collective ministick", "parts": ["collective.hat.2", "collective.ministick"], "side": "left", "x": 30, "y": 866, "width": 570, "modifier": true, "spot": [0.309, 0.218], "rows": [{"input": "JOY_BTN18", "label": "Collective hat 2 Press", "icon": "button", "part": "collective.hat.2"}, {"input": "JOY_BTN19", "label": "Collective hat 2 Up", "icon": "up", "part": "collective.hat.2"}, {"input": "JOY_BTN20", "label": "Collective hat 2 Right", "icon": "right", "part": "collective.hat.2"}, {"input": "JOY_BTN22", "label": "Collective hat 2 Left", "icon": "left", "part": "collective.hat.2"}, {"input": "JOY_BTN21", "label": "Collective hat 2 Down", "icon": "down", "part": "collective.hat.2"}, {"input": "JOY_X", "label": "Collective ministick X (X)", "icon": "axis", "part": "collective.ministick"}, {"input": "JOY_Y", "label": "Collective ministick Y (Y)", "icon": "axis", "part": "collective.ministick"}]},
+      {"id": "collective.axis.throttle_twist", "title": "Throttle twist", "parts": ["collective.axis.throttle_twist"], "side": "left", "x": 30, "y": 1284, "width": 570, "modifier": true, "spot": [0.47, 0.5], "rows": [{"input": "JOY_Z", "label": "Z", "icon": "axis", "part": "collective.axis.throttle_twist"}]},
+      {"id": "collective.hat.1", "title": "Collective hat 1", "parts": ["collective.hat.1"], "side": "left", "x": 30, "y": 182, "width": 570, "modifier": true, "spot": [0.251, 0.127], "rows": [{"input": "JOY_BTN3", "label": "Press", "icon": "button", "part": "collective.hat.1"}, {"input": "JOY_BTN_POV1_U", "label": "Up", "icon": "up", "part": "collective.hat.1"}, {"input": "JOY_BTN_POV1_R", "label": "Right", "icon": "right", "part": "collective.hat.1"}, {"input": "JOY_BTN_POV1_L", "label": "Left", "icon": "left", "part": "collective.hat.1"}, {"input": "JOY_BTN_POV1_D", "label": "Down", "icon": "down", "part": "collective.hat.1"}, {"input": "JOY_BTN_POV1_UR", "label": "Up-right", "icon": "upright", "part": "collective.hat.1"}, {"input": "JOY_BTN_POV1_UL", "label": "Up-left", "icon": "upleft", "part": "collective.hat.1"}, {"input": "JOY_BTN_POV1_DR", "label": "Down-right", "icon": "downright", "part": "collective.hat.1"}, {"input": "JOY_BTN_POV1_DL", "label": "Down-left", "icon": "downleft", "part": "collective.hat.1"}]},
+      {"id": "collective.switch.1", "title": "Collective switch 1", "parts": ["collective.switch.1"], "side": "left", "x": 30, "y": 562, "width": 570, "modifier": true, "spot": [0.169, 0.18], "rows": [{"input": "JOY_BTN5", "label": "Up", "icon": "up", "part": "collective.switch.1"}, {"input": "JOY_BTN6", "label": "Center", "icon": "mid", "part": "collective.switch.1"}, {"input": "JOY_BTN7", "label": "Down", "icon": "down", "part": "collective.switch.1"}]},
+      {"id": "collective.switch.2", "title": "Collective switch 2", "parts": ["collective.switch.2"], "side": "left", "x": 30, "y": 30, "width": 570, "modifier": true, "spot": [0.282, 0.104], "rows": [{"input": "JOY_BTN8", "label": "Up", "icon": "up", "part": "collective.switch.2"}, {"input": "JOY_BTN9", "label": "Center", "icon": "mid", "part": "collective.switch.2"}, {"input": "JOY_BTN10", "label": "Down", "icon": "down", "part": "collective.switch.2"}]},
+      {"id": "collective.switch.3", "title": "Collective switch 3", "parts": ["collective.switch.3"], "side": "top", "x": 733.1, "y": 181.8, "width": 570, "modifier": true, "spot": [0.371, 0.118], "rows": [{"input": "JOY_BTN11", "label": "Up", "icon": "up", "part": "collective.switch.3"}, {"input": "JOY_BTN12", "label": "Center", "icon": "mid", "part": "collective.switch.3"}, {"input": "JOY_BTN13", "label": "Down", "icon": "down", "part": "collective.switch.3"}]},
+      {"id": "collective.axis.rotary.1", "title": "Collective rotary 1", "parts": ["collective.axis.rotary.1"], "side": "left", "x": 30, "y": 714, "width": 570, "modifier": true, "spot": [0.364, 0.196], "rows": [{"input": "JOY_RZ", "label": "RZ", "icon": "axis", "part": "collective.axis.rotary.1"}]},
+      {"id": "collective.button.1", "title": "SLING", "parts": ["collective.button.1"], "side": "left", "x": 30, "y": 790, "width": 570, "modifier": true, "spot": [0.222, 0.222], "rows": [{"input": "JOY_BTN4", "label": "Press", "icon": "button", "part": "collective.button.1"}]},
+      {"id": "collective.button.2", "title": "TGT LOCK", "parts": ["collective.button.2"], "side": "top", "x": 1314.1, "y": 257.8, "width": 570, "modifier": true, "spot": [0.416, 0.147], "rows": [{"input": "JOY_BTN14", "label": "Press", "icon": "button", "part": "collective.button.2"}]},
+      {"id": "collective.button.7", "title": "Collective button 7", "parts": ["collective.button.7"], "side": "other", "x": 30, "y": 2037, "width": 570, "modifier": true, "rows": [{"input": "JOY_BTN28", "label": "Press", "icon": "button", "part": "collective.button.7"}]},
+      {"id": "collective.button.8", "title": "Collective button 8", "parts": ["collective.button.8"], "side": "other", "x": 611, "y": 2037, "width": 570, "modifier": true, "rows": [{"input": "JOY_BTN27", "label": "Press", "icon": "button", "part": "collective.button.8"}]}
+    ],
+    "lines": [
+      {"table": "collective.switch.2", "points": [[1130.2, 535.2], [656, 535.2], [656, 76], [600, 76]]},
+      {"table": "collective.hat.1", "points": [[1080.6, 572], [645, 572], [645, 228], [600, 228]]},
+      {"table": "collective.switch.1", "points": [[949.4, 656.8], [656, 656.8], [656, 608], [600, 608]]},
+      {"table": "collective.axis.rotary.1", "points": [[1261.4, 682.4], [623, 682.4], [623, 760], [600, 760]]},
+      {"table": "collective.button.1", "points": [[1034.2, 724], [1034.2, 836], [600, 836]]},
+      {"table": "stack:collective.hat.2", "points": [[1173.4, 717.6], [1173.4, 728.6], [634, 728.6], [634, 912], [600, 912]]},
+      {"table": "grid:collective.button.3", "points": [[915, 909.3], [645, 909.3], [645, 1216], [600, 1216]]},
+      {"table": "collective.axis.throttle_twist", "points": [[1431, 1168.8], [656, 1168.8], [656, 1330], [600, 1330]]},
+      {"table": "collective.switch.3", "points": [[1272.6, 557.6], [1272.6, 345.8], [1018.1, 345.8], [1018.1, 322.8]]},
+      {"table": "collective.button.2", "points": [[1344.6, 604], [1344.6, 345.8], [1599.1, 345.8], [1599.1, 322.8]]}
+    ]
+  }
+}

@@ -1,0 +1,31 @@
+{
+  "format": "joypro-cockpit-drawing",
+  "version": 1,
+  "id": "c101-throttle",
+  "kind": "throttle",
+  "aircraft": ["c-101"],
+  "variants": [],
+  "except": [],
+  "name": "C-101 Aviojet power lever",
+  "view": "the power lever from the inboard side, as the pilot sees it; forward is left, the thumb controls face the viewer, the MPR switch below the grip head, the STOP position at the rear of the slot",
+  "origin": "JoyPro's own vector drawing: the power lever's outline and the control layout reconstructed from the public description of the DCS C-101 manual and public photos looked at for proportions; not traced from a photo.",
+  "width": 800,
+  "height": 1000,
+  "shapes": [
+    { "kind": "ellipse", "role": "shadow", "x": 420, "y": 968, "w": 330, "h": 20 },
+    { "kind": "rect", "role": "bodyAlt", "x": 120, "y": 770, "w": 600, "h": 180, "r": 26 },
+    { "kind": "rect", "role": "screen", "x": 170, "y": 800, "w": 440, "h": 22, "r": 11 },
+    { "kind": "path", "role": "body", "path": "M402,810 L408,560 L474,560 L470,810 Z" },
+    { "kind": "path", "role": "body", "path": "M266,284 C264,208 318,170 396,168 L550,166 C616,166 648,210 644,272 L632,450 C628,510 594,546 542,546 L346,546 C298,546 268,514 268,464 Z" },
+    { "kind": "path", "role": "face", "path": "M312,240 C316,218 336,206 362,206 L580,204 C602,204 612,220 610,242 L604,316 C602,334 590,344 572,344 L336,344 C320,344 310,334 310,318 Z" },
+    { "kind": "path", "role": "line", "path": "M282,486 C306,518 342,528 382,530" }
+  ],
+  "parts": [
+    { "id": "throttle.speedbrake", "type": "switch3", "x": 362, "y": 274, "r": 24 },
+    { "id": "throttle.switch.range", "type": "switch3", "x": 466, "y": 270, "r": 22 },
+    { "id": "throttle.button.ptt", "type": "button", "x": 566, "y": 272, "r": 19 },
+    { "id": "throttle.switch.mpr", "type": "switch2", "x": 556, "y": 430, "r": 20 },
+    { "id": "throttle.detent.cutoff", "type": "detent", "x": 652, "y": 812, "r": 20 },
+    { "id": "throttle.axis.main", "type": "axis", "x": 410, "y": 884, "r": 62, "angle": 90 }
+  ]
+}

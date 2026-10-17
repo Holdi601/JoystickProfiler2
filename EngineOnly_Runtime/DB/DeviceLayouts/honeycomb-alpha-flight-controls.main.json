@@ -1,0 +1,328 @@
+{
+  "format": "joypro-device-layout",
+  "version": 1,
+  "model": "honeycomb-alpha-flight-controls",
+  "photo": {"kind": "vendor", "url": "https://flyhoneycomb.com/cdn/shop/files/SB003011_ALPHAFLIGHTCONTROLS_1.jpg", "sha256": "32e62282cf8f23ed3dd793213f070b559da6283f2e3b69b2becc6344bbe9a54a", "view": "main"},
+  "markers": {
+    "panel.selector.1": [0.735, 0.53],
+    "panel.toggle.1": [0.322, 0.495],
+    "panel.toggle.2": [0.287, 0.495],
+    "panel.toggle.3": [0.355, 0.495],
+    "panel.toggle.5": [0.39, 0.495],
+    "panel.toggle.6": [0.245, 0.567],
+    "panel.toggle.7": [0.28, 0.565],
+    "yoke.button.1": [0.236, 0.3],
+    "yoke.button.3": [0.236, 0.405],
+    "yoke.button.4": [0.765, 0.3],
+    "yoke.button.5": [0.8, 0.282],
+    "yoke.column": [0.5, 0.515],
+    "yoke.hat.1": [0.205, 0.275]
+  },
+  "parts": {
+    "yoke.column": {
+      "type": "gimbal",
+      "name": "Yoke (roll / pitch)",
+      "inputs": [
+        {"input": "JOY_X", "control": "yoke.axis.roll"},
+        {"input": "JOY_Y", "control": "yoke.axis.pitch"}
+      ],
+      "mapping": "medium",
+      "confidence": "medium",
+      "note": "yoke shaft hub in the centre of the panel (roll/pitch)"
+    },
+    "yoke.hat.1": {
+      "type": "hat",
+      "name": "Left 8-way POV",
+      "inputs": [
+        {"input": "JOY_BTN_POV1_U", "control": "yoke.hat.1.up"},
+        {"input": "JOY_BTN_POV1_R", "control": "yoke.hat.1.right"},
+        {"input": "JOY_BTN_POV1_D", "control": "yoke.hat.1.down"},
+        {"input": "JOY_BTN_POV1_L", "control": "yoke.hat.1.left"}
+      ],
+      "mapping": "medium",
+      "confidence": "high",
+      "note": "8-way POV hat on top of the left handle"
+    },
+    "yoke.button.1": {
+      "type": "button",
+      "name": "Left handle white button (top, next to the hat)",
+      "inputs": [
+        {"input": "JOY_BTN2", "control": "yoke.button.1"}
+      ],
+      "mapping": "medium",
+      "confidence": "high",
+      "note": "white push button next to the hat (left handle)"
+    },
+    "yoke.button.2": {
+      "type": "button",
+      "name": "Left handle button 2",
+      "inputs": [
+        {"input": "", "control": "yoke.button.2"}
+      ],
+      "mapping": "medium"
+    },
+    "yoke.button.3": {
+      "type": "button",
+      "name": "Left handle white trigger (back side)",
+      "inputs": [
+        {"input": "JOY_BTN1", "control": "yoke.button.3"}
+      ],
+      "mapping": "medium",
+      "confidence": "medium",
+      "note": "white PTT trigger on the back of the left handle, seen below the handle head"
+    },
+    "yoke.button.4": {
+      "type": "button",
+      "name": "Right handle white button",
+      "inputs": [
+        {"input": "JOY_BTN3", "control": "yoke.button.4"}
+      ],
+      "mapping": "medium",
+      "confidence": "high",
+      "note": "white push button on the right handle"
+    },
+    "yoke.button.5": {
+      "type": "button",
+      "name": "Right handle red button",
+      "inputs": [
+        {"input": "JOY_BTN4", "control": "yoke.button.5"}
+      ],
+      "mapping": "medium",
+      "confidence": "high",
+      "note": "red push button on the right handle"
+    },
+    "yoke.rocker.1": {
+      "type": "rocker",
+      "name": "Left handle rocker A",
+      "inputs": [
+        {"input": "JOY_BTN6", "control": "yoke.rocker.1.up"},
+        {"input": "JOY_BTN5", "control": "yoke.rocker.1.down"}
+      ],
+      "mapping": "low"
+    },
+    "yoke.rocker.2": {
+      "type": "rocker",
+      "name": "Left handle rocker B",
+      "inputs": [
+        {"input": "JOY_BTN8", "control": "yoke.rocker.2.up"},
+        {"input": "JOY_BTN7", "control": "yoke.rocker.2.down"}
+      ],
+      "mapping": "low"
+    },
+    "yoke.rocker.3": {
+      "type": "rocker",
+      "name": "Right horizontal rocker 1",
+      "inputs": [
+        {"input": "", "control": "yoke.rocker.3.up"},
+        {"input": "", "control": "yoke.rocker.3.down"}
+      ],
+      "mapping": "medium"
+    },
+    "yoke.rocker.4": {
+      "type": "rocker",
+      "name": "Right horizontal rocker 2",
+      "inputs": [
+        {"input": "", "control": "yoke.rocker.4.up"},
+        {"input": "", "control": "yoke.rocker.4.down"}
+      ],
+      "mapping": "medium"
+    },
+    "panel.toggle.1": {
+      "type": "switch",
+      "name": "MASTER BAT O",
+      "inputs": [
+        {"input": "JOY_BTN15", "control": "panel.toggle.1.up"},
+        {"input": "JOY_BTN16", "control": "panel.toggle.1.down"}
+      ],
+      "mapping": "medium",
+      "confidence": "high",
+      "note": "MASTER BAT rocker (red, right)"
+    },
+    "panel.toggle.2": {
+      "type": "switch",
+      "name": "MASTER ALT O",
+      "inputs": [
+        {"input": "JOY_BTN13", "control": "panel.toggle.2.up"},
+        {"input": "JOY_BTN14", "control": "panel.toggle.2.down"}
+      ],
+      "mapping": "medium",
+      "confidence": "high",
+      "note": "MASTER ALT rocker (red, left)"
+    },
+    "panel.toggle.3": {
+      "type": "switch",
+      "name": "AVIONICS BUS 1 O",
+      "inputs": [
+        {"input": "JOY_BTN17", "control": "panel.toggle.3.up"},
+        {"input": "JOY_BTN18", "control": "panel.toggle.3.down"}
+      ],
+      "mapping": "medium",
+      "confidence": "high",
+      "note": "AVIONICS BUS1 rocker (white)"
+    },
+    "panel.toggle.4": {
+      "type": "switch",
+      "name": "LIGHTS",
+      "inputs": [
+        {"input": "", "control": "panel.toggle.4.up"}
+      ],
+      "mapping": "medium"
+    },
+    "panel.toggle.5": {
+      "type": "switch",
+      "name": "AVIONICS BUS 2 O",
+      "inputs": [
+        {"input": "JOY_BTN19", "control": "panel.toggle.5.up"},
+        {"input": "JOY_BTN20", "control": "panel.toggle.5.down"}
+      ],
+      "mapping": "medium",
+      "confidence": "high",
+      "note": "AVIONICS BUS2 rocker (white)"
+    },
+    "panel.toggle.6": {
+      "type": "switch",
+      "name": "BCN O",
+      "inputs": [
+        {"input": "JOY_BTN21", "control": "panel.toggle.6.up"},
+        {"input": "JOY_BTN22", "control": "panel.toggle.6.down"}
+      ],
+      "mapping": "medium",
+      "confidence": "medium",
+      "note": "BCN light switch, low and partly shaded"
+    },
+    "panel.toggle.7": {
+      "type": "switch",
+      "name": "LAND O",
+      "inputs": [
+        {"input": "JOY_BTN23", "control": "panel.toggle.7.up"},
+        {"input": "JOY_BTN24", "control": "panel.toggle.7.down"}
+      ],
+      "mapping": "medium",
+      "confidence": "medium",
+      "note": "LAND light switch, partly hidden by the yoke shroud"
+    },
+    "panel.toggle.8": {
+      "type": "switch",
+      "name": "TAXI O",
+      "inputs": [
+        {"input": "JOY_BTN25", "control": "panel.toggle.8.up"},
+        {"input": "JOY_BTN26", "control": "panel.toggle.8.down"}
+      ],
+      "mapping": "medium"
+    },
+    "panel.toggle.9": {
+      "type": "switch",
+      "name": "NAV O",
+      "inputs": [
+        {"input": "JOY_BTN27", "control": "panel.toggle.9.up"},
+        {"input": "JOY_BTN28", "control": "panel.toggle.9.down"}
+      ],
+      "mapping": "medium"
+    },
+    "panel.toggle.10": {
+      "type": "switch",
+      "name": "STROBE O",
+      "inputs": [
+        {"input": "JOY_BTN29", "control": "panel.toggle.10.up"},
+        {"input": "JOY_BTN30", "control": "panel.toggle.10.down"}
+      ],
+      "mapping": "medium"
+    },
+    "yoke.switch.3": {
+      "type": "switch",
+      "name": "Right handle horizontal rocker 1",
+      "inputs": [
+        {"input": "JOY_BTN9", "control": "yoke.switch.3.left"},
+        {"input": "JOY_BTN10", "control": "yoke.switch.3.right"}
+      ],
+      "mapping": "low"
+    },
+    "yoke.switch.4": {
+      "type": "switch",
+      "name": "Right handle horizontal rocker 2",
+      "inputs": [
+        {"input": "JOY_BTN11", "control": "yoke.switch.4.left"},
+        {"input": "JOY_BTN12", "control": "yoke.switch.4.right"}
+      ],
+      "mapping": "low"
+    },
+    "panel.selector.1": {
+      "type": "selector",
+      "name": "IGNITION",
+      "inputs": [
+        {"input": "JOY_BTN31", "control": "panel.selector.1.pos.1"},
+        {"input": "JOY_BTN35", "control": "panel.selector.1.pos.5"},
+        {"input": "JOY_BTN32", "control": "panel.selector.1.pos.2"},
+        {"input": "JOY_BTN33", "control": "panel.selector.1.pos.3"},
+        {"input": "JOY_BTN34", "control": "panel.selector.1.pos.4"}
+      ],
+      "mapping": "medium",
+      "confidence": "high",
+      "note": "IGNITION key (OFF R L BOTH START)"
+    }
+  },
+  "unplaced": {
+    "yoke.button.2": "catalog lists a second left-handle button without input; no such separate button is identifiable on the photo",
+    "yoke.rocker.1": "one of the two vertical rockers on the left handle's pilot-facing side; A/B order not documented",
+    "yoke.rocker.2": "the other vertical rocker on the left handle; A/B order not documented",
+    "yoke.rocker.3": "duplicate of yoke.switch.3 (no input in the catalog)",
+    "yoke.rocker.4": "duplicate of yoke.switch.4 (no input in the catalog)",
+    "panel.toggle.4": "generic LIGHTS entry without input; the five light switches are panel.toggle.6-10",
+    "panel.toggle.8": "TAXI switch is almost entirely hidden by the yoke shroud (only its label is visible)",
+    "panel.toggle.9": "NAV switch hidden behind the yoke shroud",
+    "panel.toggle.10": "STROBE switch hidden behind the yoke shroud",
+    "yoke.switch.3": "upper horizontal rocker on the right handle; which rocker is 9/10 vs 11/12 not documented",
+    "yoke.switch.4": "lower horizontal rocker on the right handle; order not documented"
+  },
+  "candidates": {
+    "yoke.rocker.1": [0.172, 0.32],
+    "yoke.rocker.2": [0.212, 0.322],
+    "yoke.switch.3": [0.812, 0.318],
+    "yoke.switch.4": [0.818, 0.355]
+  },
+  "source": "JoyPro curated on the maker's photo (2026-10-11), the yoke with its switch panel seen from the pilot's seat, slightly from above",
+  "mappingSource": "catalog honeycomb.json (numbering from a local game configuration file, not publicly documented; https://flyhoneycomb.com/products/alpha-flight-controls). Partly matched by the FlightGear wiki Alpha binding (0-based button 0 = left white trigger, 1 = left top white button, 4/5 = left rocker; https://wiki.flightgear.org/Honeycomb_Input_Devices). Retail spec: left handle 8-way hat, 2 vertical rockers, button, PTT; right handle 2 buttons, 2 horizontal rockers.",
+  "confidence": "medium",
+  "note": "Which of the two vertical rockers on the left handle is rocker A (5/6) vs B (7/8), and which horizontal rocker on the right handle is 9/10 vs 11/12, is not documented: those spots are kept as candidates (map=low). The yoke shroud hides the NAV and STROBE light switches and most of TAXI. yoke.rocker.3/4 duplicate yoke.switch.3/4 (catalog note) and have no input, so they are not placed. The white lever behind the right handle is not a catalog part.",
+  "callouts": {
+    "version": 1,
+    "width": 3796,
+    "height": 2439,
+    "picture": [980, 38, 2000, 2000],
+    "rowHeight": 48,
+    "mainWidth": 408,
+    "modWidth": 264,
+    "otherY": 2076,
+    "tables": [
+      {"id": "grid:panel.toggle.2", "title": "Switches MASTER ALT - AVIONICS B", "parts": ["panel.toggle.2", "panel.toggle.1", "panel.toggle.3", "panel.toggle.5"], "side": "left", "x": 38, "y": 850.4, "width": 884, "grid": true, "columns": 4, "modifier": false, "spot": [0.3385, 0.495], "rows": [{"input": "JOY_BTN13", "label": "MASTER ALT up", "icon": "up", "part": "panel.toggle.2", "cell": [0, 0, 0]}, {"input": "JOY_BTN14", "label": "MASTER ALT dn", "icon": "down", "part": "panel.toggle.2", "cell": [0, 0, 1]}, {"input": "JOY_BTN15", "label": "MASTER BAT up", "icon": "up", "part": "panel.toggle.1", "cell": [0, 1, 0]}, {"input": "JOY_BTN16", "label": "MASTER BAT dn", "icon": "down", "part": "panel.toggle.1", "cell": [0, 1, 1]}, {"input": "JOY_BTN17", "label": "AVIONICS B up", "icon": "up", "part": "panel.toggle.3", "cell": [0, 2, 0]}, {"input": "JOY_BTN18", "label": "AVIONICS B dn", "icon": "down", "part": "panel.toggle.3", "cell": [0, 2, 1]}, {"input": "JOY_BTN19", "label": "AVIONICS B up", "icon": "up", "part": "panel.toggle.5", "cell": [0, 3, 0]}, {"input": "JOY_BTN20", "label": "AVIONICS B dn", "icon": "down", "part": "panel.toggle.5", "cell": [0, 3, 1]}]},
+      {"id": "yoke.column", "title": "Yoke (roll / pitch)", "parts": ["yoke.column"], "side": "left", "x": 202, "y": 995.4, "width": 720, "modifier": true, "spot": [0.5, 0.515], "rows": [{"input": "JOY_X", "label": "roll (X)", "icon": "axis", "part": "yoke.column"}, {"input": "JOY_Y", "label": "pitch (Y)", "icon": "axis", "part": "yoke.column"}]},
+      {"id": "yoke.hat.1", "title": "Left 8-way POV", "parts": ["yoke.hat.1"], "side": "left", "x": 202, "y": 415.4, "width": 720, "modifier": true, "spot": [0.205, 0.275], "rows": [{"input": "JOY_BTN_POV1_U", "label": "Up", "icon": "up", "part": "yoke.hat.1"}, {"input": "JOY_BTN_POV1_R", "label": "Right", "icon": "right", "part": "yoke.hat.1"}, {"input": "JOY_BTN_POV1_L", "label": "Left", "icon": "left", "part": "yoke.hat.1"}, {"input": "JOY_BTN_POV1_D", "label": "Down", "icon": "down", "part": "yoke.hat.1"}]},
+      {"id": "yoke.button.1", "title": "Left handle white button (top, next to the hat)", "parts": ["yoke.button.1"], "side": "left", "x": 202, "y": 656.4, "width": 720, "modifier": true, "spot": [0.236, 0.3], "rows": [{"input": "JOY_BTN2", "label": "Press", "icon": "button", "part": "yoke.button.1"}]},
+      {"id": "yoke.button.3", "title": "Left handle white trigger (back side)", "parts": ["yoke.button.3"], "side": "left", "x": 202, "y": 753.4, "width": 720, "modifier": true, "spot": [0.236, 0.405], "rows": [{"input": "JOY_BTN1", "label": "Press", "icon": "button", "part": "yoke.button.3"}]},
+      {"id": "yoke.button.4", "title": "Right handle white button", "parts": ["yoke.button.4"], "side": "right", "x": 3038, "y": 609.5, "width": 720, "modifier": true, "spot": [0.765, 0.3], "rows": [{"input": "JOY_BTN3", "label": "Press", "icon": "button", "part": "yoke.button.4"}]},
+      {"id": "yoke.button.5", "title": "Right handle red button", "parts": ["yoke.button.5"], "side": "right", "x": 3038, "y": 512.5, "width": 720, "modifier": true, "spot": [0.8, 0.282], "rows": [{"input": "JOY_BTN4", "label": "Press", "icon": "button", "part": "yoke.button.5"}]},
+      {"id": "yoke.rocker.1", "title": "Left handle rocker A", "parts": ["yoke.rocker.1"], "side": "other", "x": 38, "y": 2125, "width": 720, "modifier": true, "rows": [{"input": "JOY_BTN6", "label": "Up", "icon": "up", "part": "yoke.rocker.1"}, {"input": "JOY_BTN5", "label": "Down", "icon": "down", "part": "yoke.rocker.1"}]},
+      {"id": "yoke.rocker.2", "title": "Left handle rocker B", "parts": ["yoke.rocker.2"], "side": "other", "x": 772, "y": 2125, "width": 720, "modifier": true, "rows": [{"input": "JOY_BTN8", "label": "Up", "icon": "up", "part": "yoke.rocker.2"}, {"input": "JOY_BTN7", "label": "Down", "icon": "down", "part": "yoke.rocker.2"}]},
+      {"id": "panel.toggle.6", "title": "BCN O", "parts": ["panel.toggle.6"], "side": "left", "x": 202, "y": 1140.4, "width": 720, "modifier": true, "spot": [0.245, 0.567], "rows": [{"input": "JOY_BTN21", "label": "Up", "icon": "up", "part": "panel.toggle.6"}, {"input": "JOY_BTN22", "label": "Down", "icon": "down", "part": "panel.toggle.6"}]},
+      {"id": "panel.toggle.7", "title": "LAND O", "parts": ["panel.toggle.7"], "side": "left", "x": 202, "y": 1285.4, "width": 720, "modifier": true, "spot": [0.28, 0.565], "rows": [{"input": "JOY_BTN23", "label": "Up", "icon": "up", "part": "panel.toggle.7"}, {"input": "JOY_BTN24", "label": "Down", "icon": "down", "part": "panel.toggle.7"}]},
+      {"id": "panel.toggle.8", "title": "TAXI O", "parts": ["panel.toggle.8"], "side": "other", "x": 1506, "y": 2125, "width": 720, "modifier": true, "rows": [{"input": "JOY_BTN25", "label": "Up", "icon": "up", "part": "panel.toggle.8"}, {"input": "JOY_BTN26", "label": "Down", "icon": "down", "part": "panel.toggle.8"}]},
+      {"id": "panel.toggle.9", "title": "NAV O", "parts": ["panel.toggle.9"], "side": "other", "x": 2240, "y": 2125, "width": 720, "modifier": true, "rows": [{"input": "JOY_BTN27", "label": "Up", "icon": "up", "part": "panel.toggle.9"}, {"input": "JOY_BTN28", "label": "Down", "icon": "down", "part": "panel.toggle.9"}]},
+      {"id": "panel.toggle.10", "title": "STROBE O", "parts": ["panel.toggle.10"], "side": "other", "x": 2974, "y": 2125, "width": 720, "modifier": true, "rows": [{"input": "JOY_BTN29", "label": "Up", "icon": "up", "part": "panel.toggle.10"}, {"input": "JOY_BTN30", "label": "Down", "icon": "down", "part": "panel.toggle.10"}]},
+      {"id": "yoke.switch.3", "title": "Right handle horizontal rocker 1", "parts": ["yoke.switch.3"], "side": "other", "x": 38, "y": 2270, "width": 720, "modifier": true, "rows": [{"input": "JOY_BTN10", "label": "Right", "icon": "right", "part": "yoke.switch.3"}, {"input": "JOY_BTN9", "label": "Left", "icon": "left", "part": "yoke.switch.3"}]},
+      {"id": "yoke.switch.4", "title": "Right handle horizontal rocker 2", "parts": ["yoke.switch.4"], "side": "other", "x": 772, "y": 2270, "width": 720, "modifier": true, "rows": [{"input": "JOY_BTN12", "label": "Right", "icon": "right", "part": "yoke.switch.4"}, {"input": "JOY_BTN11", "label": "Left", "icon": "left", "part": "yoke.switch.4"}]},
+      {"id": "panel.selector.1", "title": "IGNITION", "parts": ["panel.selector.1"], "side": "right", "x": 3038, "y": 1039, "width": 720, "modifier": true, "spot": [0.735, 0.53], "rows": [{"input": "JOY_BTN31", "label": "1", "icon": "pos", "part": "panel.selector.1"}, {"input": "JOY_BTN32", "label": "2", "icon": "pos", "part": "panel.selector.1"}, {"input": "JOY_BTN33", "label": "3", "icon": "pos", "part": "panel.selector.1"}, {"input": "JOY_BTN34", "label": "4", "icon": "pos", "part": "panel.selector.1"}, {"input": "JOY_BTN35", "label": "5", "icon": "pos", "part": "panel.selector.1"}]}
+    ],
+    "lines": [
+      {"table": "yoke.hat.1", "points": [[1390, 588], [951, 588], [951, 474.4], [922, 474.4]]},
+      {"table": "yoke.button.1", "points": [[1452, 638], [951, 638], [951, 715.4], [922, 715.4]]},
+      {"table": "yoke.button.3", "points": [[1452, 848], [951, 848], [951, 812.4], [922, 812.4]]},
+      {"table": "grid:panel.toggle.2", "points": [[1657, 1028], [951, 1028], [951, 909.4], [922, 909.4]]},
+      {"table": "yoke.column", "points": [[1980, 1068], [951, 1068], [951, 1054.4], [922, 1054.4]]},
+      {"table": "panel.toggle.6", "points": [[1470, 1172], [1470, 1199.4], [922, 1199.4]]},
+      {"table": "panel.toggle.7", "points": [[1540, 1168], [1540, 1344.4], [922, 1344.4]]},
+      {"table": "yoke.button.5", "points": [[2580, 602], [3009, 602], [3009, 571.5], [3038, 571.5]]},
+      {"table": "yoke.button.4", "points": [[2510, 638], [3009, 638], [3009, 668.5], [3038, 668.5]]},
+      {"table": "panel.selector.1", "points": [[2450, 1098], [3038, 1098]]}
+    ]
+  }
+}

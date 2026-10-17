@@ -1,0 +1,30 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:l="using:JoyPro.Gui.Localization"
+        x:Class="JoyPro.Gui.Views.ConfirmWindow"
+        Title="JoyPro2"
+        Icon="/Assets/joypro2_gui.ico"
+        Width="520"
+        SizeToContent="Height"
+        CanResize="False"
+        ShowInTaskbar="False"
+        WindowStartupLocation="CenterOwner">
+    <!-- A question before an action that changes game files or the profile (MainWindowViewModel.ConfirmAsync). -->
+    <Grid RowDefinitions="Auto,Auto" Margin="18" RowSpacing="16">
+        <Grid ColumnDefinitions="Auto,*" ColumnSpacing="14">
+            <PathIcon x:Name="QuestionIcon" Width="36" Height="36" VerticalAlignment="Top" Data="{StaticResource Icon.Info}" Classes="info" />
+            <StackPanel Grid.Column="1" Spacing="8">
+                <TextBlock x:Name="TitleText" FontSize="18" FontWeight="Bold" TextWrapping="Wrap" />
+                <TextBlock x:Name="MessageText" TextWrapping="Wrap" />
+            </StackPanel>
+        </Grid>
+        <Grid Grid.Row="1" ColumnDefinitions="*,Auto" ColumnSpacing="10">
+        <CheckBox x:Name="DontAskAgainBox" Content="{l:T 'Do not ask again'}" IsVisible="False" VerticalAlignment="Center"
+                  ToolTip.Tip="{l:T 'JoyPro does this without asking from now on. Settings > Confirmations asks again.'}" />
+        <StackPanel Grid.Column="1" Orientation="Horizontal" HorizontalAlignment="Right" Spacing="10">
+            <Button x:Name="ConfirmButton" Classes="icon accent" Tag="{StaticResource Icon.Check}" Click="ConfirmClicked" />
+            <Button x:Name="CancelButton" Classes="icon" Tag="{StaticResource Icon.Close}" Content="{l:T 'Cancel'}" Click="CancelClicked" IsCancel="True" />
+        </StackPanel>
+        </Grid>
+    </Grid>
+</Window>

@@ -1,0 +1,1699 @@
+{
+ "vendor": "RealSimulator",
+ "officialHosts": [
+  "realsimulator.com"
+ ],
+ "devices": [
+  {
+   "id": "realsim-fssb-r3-lighting",
+   "name": "RealSimulator FSSB-R3 Lighting",
+   "kind": "base",
+   "hand": "none",
+   "identify": {
+    "names": [
+     "Real Simulator FSSB-R3"
+    ],
+    "note": "Up to 64 DX buttons with F16SGRH: buttons 0-31 on the first HID device, 32-63 on a second HID device (two devices appear in Windows). Mini-USB config port; firmware has 8 memory slots. VID:PID not published."
+   },
+   "image": "https://realsimulator.com/wp-content/uploads/2020/01/FSSB_R3_2021.jpg",
+   "productUrl": "https://realsimulator.com/fssb-r3-lighting/",
+   "sources": [
+    "https://www.realsimulator.com/download/FSSB-R3_User_Guide.pdf",
+    "https://www.manualslib.com/manual/3221478/Realsimulator-Fssb-R3-Lighting.html"
+   ],
+   "confidence": "medium",
+   "axes": [
+    {
+     "input": "JOY_X",
+     "control": "stick.axis.roll"
+    },
+    {
+     "input": "JOY_Y",
+     "control": "stick.axis.pitch"
+    },
+    {
+     "input": "JOY_RZ",
+     "control": "stick.axis.twist"
+    }
+   ],
+   "controls": []
+  },
+  {
+   "id": "realsim-fssb-r3-ultra",
+   "name": "RealSimulator FSSB-R3L MKII ULTRA",
+   "kind": "base",
+   "hand": "none",
+   "identify": {
+    "names": [
+     "Real Simulator FSSB-R3"
+    ],
+    "note": "Second version of the R3 Lighting with new sensor board; same firmware/numbering."
+   },
+   "productUrl": "https://realsimulator.com/fssb-r3-ultra/",
+   "sources": [
+    "https://www.realsimulator.com/download/FSSB-R3_User_Guide.pdf"
+   ],
+   "confidence": "medium",
+   "axes": [
+    {
+     "input": "JOY_X",
+     "control": "stick.axis.roll"
+    },
+    {
+     "input": "JOY_Y",
+     "control": "stick.axis.pitch"
+    },
+    {
+     "input": "JOY_RZ",
+     "control": "stick.axis.twist"
+    }
+   ],
+   "controls": []
+  },
+  {
+   "id": "realsim-f16sgrh",
+   "name": "RealSimulator F16SGRH F-16 Side Grip",
+   "kind": "stick",
+   "hand": "right",
+   "base": "realsim-fssb-r3-lighting",
+   "identify": {
+    "names": [
+     "Real Simulator FSSB-R3"
+    ],
+    "note": "DX numbers are 0-based in RealSimulator's tool, JoyPro JOY_BTN = DX+1. Table transcribed from the user guide (DX CENTER BUTTONS MODE, native mode ON with hat as TRIM). Centre+direction combination buttons (DX32-55, 58-59) are not listed. In DX-centre mode COMP only DX0-18 plus the trim hat exist (standard 19 TM-compatible buttons); in OFF mode the centre buttons are absent. Firmware F16_RH_FW_0_01_5: 2 HID devices (axes + 32 buttons, then 32 buttons); firmware 0_01_6 and later: 1 device with 64 buttons. Falcon BMS only supports 32 buttons per device. Hat as POV puts the trim hat on a DX hat instead (DX27-30 still sent)."
+   },
+   "productUrl": "https://realsimulator.com/f-16-side-grips/",
+   "sources": [
+    "https://www.realsimulator.com/download/F16SGRH_User_Guide_EN.pdf"
+   ],
+   "confidence": "high",
+   "axes": [
+    {
+     "input": "JOY_X",
+     "control": "stick.axis.roll"
+    },
+    {
+     "input": "JOY_Y",
+     "control": "stick.axis.pitch"
+    },
+    {
+     "input": "JOY_RZ",
+     "control": "stick.axis.twist"
+    }
+   ],
+   "controls": [
+    {
+     "control": "stick.trigger.stage1",
+     "input": "JOY_BTN1",
+     "label": "Trigger 1",
+     "finger": "index",
+     "type": "momentary"
+    },
+    {
+     "control": "stick.weapon_release",
+     "input": "JOY_BTN2",
+     "label": "WR Weapon release",
+     "finger": "thumb",
+     "type": "momentary"
+    },
+    {
+     "control": "stick.pinky.button",
+     "input": "JOY_BTN3",
+     "label": "Pinky",
+     "finger": "pinky",
+     "type": "momentary"
+    },
+    {
+     "control": "stick.pinky.lever",
+     "input": "JOY_BTN4",
+     "label": "Paddle",
+     "finger": "pinky",
+     "type": "momentary"
+    },
+    {
+     "control": "stick.button.thumb.1",
+     "input": "JOY_BTN5",
+     "label": "NWS Nosewheel Steering",
+     "finger": "thumb",
+     "type": "momentary"
+    },
+    {
+     "control": "stick.trigger.stage2",
+     "input": "JOY_BTN6",
+     "label": "Trigger 2",
+     "finger": "index",
+     "type": "momentary"
+    },
+    {
+     "control": "stick.hat.tms.up",
+     "input": "JOY_BTN7",
+     "label": "TMS up",
+     "finger": "thumb",
+     "type": "momentary"
+    },
+    {
+     "control": "stick.hat.tms.right",
+     "input": "JOY_BTN8",
+     "label": "TMS right",
+     "finger": "thumb",
+     "type": "momentary"
+    },
+    {
+     "control": "stick.hat.tms.down",
+     "input": "JOY_BTN9",
+     "label": "TMS down",
+     "finger": "thumb",
+     "type": "momentary"
+    },
+    {
+     "control": "stick.hat.tms.left",
+     "input": "JOY_BTN10",
+     "label": "TMS left",
+     "finger": "thumb",
+     "type": "momentary"
+    },
+    {
+     "control": "stick.hat.dms.up",
+     "input": "JOY_BTN11",
+     "label": "DMS up",
+     "finger": "thumb",
+     "type": "momentary"
+    },
+    {
+     "control": "stick.hat.dms.right",
+     "input": "JOY_BTN12",
+     "label": "DMS right",
+     "finger": "thumb",
+     "type": "momentary"
+    },
+    {
+     "control": "stick.hat.dms.down",
+     "input": "JOY_BTN13",
+     "label": "DMS down",
+     "finger": "thumb",
+     "type": "momentary"
+    },
+    {
+     "control": "stick.hat.dms.left",
+     "input": "JOY_BTN14",
+     "label": "DMS left",
+     "finger": "thumb",
+     "type": "momentary"
+    },
+    {
+     "control": "stick.hat.cms.up",
+     "input": "JOY_BTN15",
+     "label": "CMS up",
+     "finger": "thumb",
+     "type": "momentary"
+    },
+    {
+     "control": "stick.hat.cms.right",
+     "input": "JOY_BTN16",
+     "label": "CMS right",
+     "finger": "thumb",
+     "type": "momentary"
+    },
+    {
+     "control": "stick.hat.cms.down",
+     "input": "JOY_BTN17",
+     "label": "CMS down",
+     "finger": "thumb",
+     "type": "momentary"
+    },
+    {
+     "control": "stick.hat.cms.left",
+     "input": "JOY_BTN18",
+     "label": "CMS left",
+     "finger": "thumb",
+     "type": "momentary"
+    },
+    {
+     "control": "stick.hat.cms.press",
+     "input": "JOY_BTN19",
+     "label": "CMS center",
+     "finger": "thumb",
+     "type": "momentary"
+    },
+    {
+     "control": "stick.hat.1.up",
+     "input": "JOY_BTN20",
+     "label": "WR hat up",
+     "finger": "thumb",
+     "type": "momentary"
+    },
+    {
+     "control": "stick.hat.1.right",
+     "input": "JOY_BTN21",
+     "label": "WR hat right",
+     "finger": "thumb",
+     "type": "momentary"
+    },
+    {
+     "control": "stick.hat.1.down",
+     "input": "JOY_BTN22",
+     "label": "WR hat down",
+     "finger": "thumb",
+     "type": "momentary"
+    },
+    {
+     "control": "stick.hat.1.left",
+     "input": "JOY_BTN23",
+     "label": "WR hat left",
+     "finger": "thumb",
+     "type": "momentary"
+    },
+    {
+     "control": "stick.hat.2.up",
+     "input": "JOY_BTN24",
+     "label": "NWS hat up",
+     "finger": "thumb",
+     "type": "momentary"
+    },
+    {
+     "control": "stick.hat.2.right",
+     "input": "JOY_BTN25",
+     "label": "NWS hat right",
+     "finger": "thumb",
+     "type": "momentary"
+    },
+    {
+     "control": "stick.hat.2.down",
+     "input": "JOY_BTN26",
+     "label": "NWS hat down",
+     "finger": "thumb",
+     "type": "momentary"
+    },
+    {
+     "control": "stick.hat.2.left",
+     "input": "JOY_BTN27",
+     "label": "NWS hat left",
+     "finger": "thumb",
+     "type": "momentary"
+    },
+    {
+     "control": "stick.hat.trim.down",
+     "input": "JOY_BTN28",
+     "label": "Trim nose down",
+     "finger": "thumb",
+     "type": "momentary"
+    },
+    {
+     "control": "stick.hat.trim.left",
+     "input": "JOY_BTN29",
+     "label": "Trim left wing down",
+     "finger": "thumb",
+     "type": "momentary"
+    },
+    {
+     "control": "stick.hat.trim.up",
+     "input": "JOY_BTN30",
+     "label": "Trim nose up",
+     "finger": "thumb",
+     "type": "momentary"
+    },
+    {
+     "control": "stick.hat.trim.right",
+     "input": "JOY_BTN31",
+     "label": "Trim right wing down",
+     "finger": "thumb",
+     "type": "momentary"
+    },
+    {
+     "control": "stick.hat.trim.press",
+     "input": "JOY_BTN32",
+     "label": "Trim center",
+     "finger": "thumb",
+     "type": "momentary"
+    },
+    {
+     "control": "stick.hat.3.left",
+     "input": "JOY_BTN57",
+     "label": "Pinky left",
+     "finger": "pinky",
+     "type": "momentary"
+    },
+    {
+     "control": "stick.hat.3.right",
+     "input": "JOY_BTN58",
+     "label": "Pinky right",
+     "finger": "pinky",
+     "type": "momentary"
+    },
+    {
+     "control": "stick.hat.dms.press",
+     "input": "JOY_BTN62",
+     "label": "DMS center",
+     "finger": "thumb",
+     "type": "momentary"
+    },
+    {
+     "control": "stick.hat.tms.press",
+     "input": "JOY_BTN63",
+     "label": "TMS center",
+     "finger": "thumb",
+     "type": "momentary"
+    }
+   ]
+  },
+  {
+   "id": "realsim-f18cgrh",
+   "name": "RealSimulator F18CGRH F/A-18 Center Grip",
+   "kind": "stick",
+   "hand": "right",
+   "base": "realsim-fssb-r3-lighting",
+   "identify": {
+    "names": [
+     "Real Simulator FSSB-R3"
+    ],
+    "note": "DX numbers are 0-based in RealSimulator's tool, JoyPro JOY_BTN = DX+1. Table transcribed from the user guide (DX CENTER BUTTONS MODE, native mode ON with hat as TRIM). Centre+direction combination buttons (DX32-55, 58-59) are not listed. In DX-centre mode COMP only DX0-18 plus the trim hat exist (standard 19 TM-compatible buttons); in OFF mode the centre buttons are absent. Firmware F16_RH_FW_0_01_5: 2 HID devices (axes + 32 buttons, then 32 buttons); firmware 0_01_6 and later: 1 device with 64 buttons. Falcon BMS only supports 32 buttons per device. Hat as POV puts the trim hat on a DX hat instead (DX27-30 still sent). F18CGRH has no pinky/paddle (DX2, DX3, DX56-59 unused); hats are named Sensor Control (TMS), Recce (DMS), Weapon Select (CMS)."
+   },
+   "productUrl": "https://realsimulator.com/f-18-center-grips/",
+   "sources": [
+    "https://www.realsimulator.com/download/F18CGRH_User_Guide_EN.pdf"
+   ],
+   "confidence": "high",
+   "axes": [
+    {
+     "input": "JOY_X",
+     "control": "stick.axis.roll"
+    },
+    {
+     "input": "JOY_Y",
+     "control": "stick.axis.pitch"
+    },
+    {
+     "input": "JOY_RZ",
+     "control": "stick.axis.twist"
+    }
+   ],
+   "controls": [
+    {
+     "control": "stick.trigger.stage1",
+     "input": "JOY_BTN1",
+     "label": "Trigger 1",
+     "finger": "index",
+     "type": "momentary"
+    },
+    {
+     "control": "stick.weapon_release",
+     "input": "JOY_BTN2",
+     "label": "WR Weapon release",
+     "finger": "thumb",
+     "type": "momentary"
+    },
+    {
+     "control": "stick.button.thumb.1",
+     "input": "JOY_BTN5",
+     "label": "NWS Nosewheel Steering",
+     "finger": "thumb",
+     "type": "momentary"
+    },
+    {
+     "control": "stick.trigger.stage2",
+     "input": "JOY_BTN6",
+     "label": "Trigger 2",
+     "finger": "index",
+     "type": "momentary"
+    },
+    {
+     "control": "stick.hat.tms.up",
+     "input": "JOY_BTN7",
+     "label": "TMS (Sensor Control) up",
+     "finger": "thumb",
+     "type": "momentary"
+    },
+    {
+     "control": "stick.hat.tms.right",
+     "input": "JOY_BTN8",
+     "label": "TMS (Sensor Control) right",
+     "finger": "thumb",
+     "type": "momentary"
+    },
+    {
+     "control": "stick.hat.tms.down",
+     "input": "JOY_BTN9",
+     "label": "TMS (Sensor Control) down",
+     "finger": "thumb",
+     "type": "momentary"
+    },
+    {
+     "control": "stick.hat.tms.left",
+     "input": "JOY_BTN10",
+     "label": "TMS (Sensor Control) left",
+     "finger": "thumb",
+     "type": "momentary"
+    },
+    {
+     "control": "stick.hat.dms.up",
+     "input": "JOY_BTN11",
+     "label": "DMS (Recce) up",
+     "finger": "thumb",
+     "type": "momentary"
+    },
+    {
+     "control": "stick.hat.dms.right",
+     "input": "JOY_BTN12",
+     "label": "DMS (Recce) right",
+     "finger": "thumb",
+     "type": "momentary"
+    },
+    {
+     "control": "stick.hat.dms.down",
+     "input": "JOY_BTN13",
+     "label": "DMS (Recce) down",
+     "finger": "thumb",
+     "type": "momentary"
+    },
+    {
+     "control": "stick.hat.dms.left",
+     "input": "JOY_BTN14",
+     "label": "DMS (Recce) left",
+     "finger": "thumb",
+     "type": "momentary"
+    },
+    {
+     "control": "stick.hat.cms.up",
+     "input": "JOY_BTN15",
+     "label": "CMS (Weapon Select) up",
+     "finger": "thumb",
+     "type": "momentary"
+    },
+    {
+     "control": "stick.hat.cms.right",
+     "input": "JOY_BTN16",
+     "label": "CMS (Weapon Select) right",
+     "finger": "thumb",
+     "type": "momentary"
+    },
+    {
+     "control": "stick.hat.cms.down",
+     "input": "JOY_BTN17",
+     "label": "CMS (Weapon Select) down",
+     "finger": "thumb",
+     "type": "momentary"
+    },
+    {
+     "control": "stick.hat.cms.left",
+     "input": "JOY_BTN18",
+     "label": "CMS (Weapon Select) left",
+     "finger": "thumb",
+     "type": "momentary"
+    },
+    {
+     "control": "stick.hat.cms.press",
+     "input": "JOY_BTN19",
+     "label": "CMS (Weapon Select) center",
+     "finger": "thumb",
+     "type": "momentary"
+    },
+    {
+     "control": "stick.hat.1.up",
+     "input": "JOY_BTN20",
+     "label": "WR hat up",
+     "finger": "thumb",
+     "type": "momentary"
+    },
+    {
+     "control": "stick.hat.1.right",
+     "input": "JOY_BTN21",
+     "label": "WR hat right",
+     "finger": "thumb",
+     "type": "momentary"
+    },
+    {
+     "control": "stick.hat.1.down",
+     "input": "JOY_BTN22",
+     "label": "WR hat down",
+     "finger": "thumb",
+     "type": "momentary"
+    },
+    {
+     "control": "stick.hat.1.left",
+     "input": "JOY_BTN23",
+     "label": "WR hat left",
+     "finger": "thumb",
+     "type": "momentary"
+    },
+    {
+     "control": "stick.hat.2.up",
+     "input": "JOY_BTN24",
+     "label": "NWS hat up",
+     "finger": "thumb",
+     "type": "momentary"
+    },
+    {
+     "control": "stick.hat.2.right",
+     "input": "JOY_BTN25",
+     "label": "NWS hat right",
+     "finger": "thumb",
+     "type": "momentary"
+    },
+    {
+     "control": "stick.hat.2.down",
+     "input": "JOY_BTN26",
+     "label": "NWS hat down",
+     "finger": "thumb",
+     "type": "momentary"
+    },
+    {
+     "control": "stick.hat.2.left",
+     "input": "JOY_BTN27",
+     "label": "NWS hat left",
+     "finger": "thumb",
+     "type": "momentary"
+    },
+    {
+     "control": "stick.hat.trim.down",
+     "input": "JOY_BTN28",
+     "label": "Trim nose down",
+     "finger": "thumb",
+     "type": "momentary"
+    },
+    {
+     "control": "stick.hat.trim.left",
+     "input": "JOY_BTN29",
+     "label": "Trim left wing down",
+     "finger": "thumb",
+     "type": "momentary"
+    },
+    {
+     "control": "stick.hat.trim.up",
+     "input": "JOY_BTN30",
+     "label": "Trim nose up",
+     "finger": "thumb",
+     "type": "momentary"
+    },
+    {
+     "control": "stick.hat.trim.right",
+     "input": "JOY_BTN31",
+     "label": "Trim right wing down",
+     "finger": "thumb",
+     "type": "momentary"
+    },
+    {
+     "control": "stick.hat.trim.press",
+     "input": "JOY_BTN32",
+     "label": "Trim center",
+     "finger": "thumb",
+     "type": "momentary"
+    },
+    {
+     "control": "stick.hat.dms.press",
+     "input": "JOY_BTN62",
+     "label": "DMS (Recce) center",
+     "finger": "thumb",
+     "type": "momentary"
+    },
+    {
+     "control": "stick.hat.tms.press",
+     "input": "JOY_BTN63",
+     "label": "TMS (Sensor Control) center",
+     "finger": "thumb",
+     "type": "momentary"
+    }
+   ]
+  },
+  {
+   "id": "realsim-linear-throttle",
+   "name": "RealSimulator Linear Throttle",
+   "kind": "throttle",
+   "hand": "left",
+   "identify": {
+    "names": [
+     "Real Simulator"
+    ],
+    "note": "Linear throttle products exist; layout unresearched."
+   },
+   "productUrl": "https://realsimulator.com/linear-throttles/",
+   "sources": [
+    "https://realsimulator.com/linear-throttles/"
+   ],
+   "confidence": "low",
+   "axes": [
+    {
+     "control": "throttle.axis.main"
+    }
+   ],
+   "controls": []
+  },
+  {
+   "id": "realsim-tusba",
+   "name": "RealSimulator TUSBA (USB adapter for the Thrustmaster HOTAS Cougar TQS throttle)",
+   "kind": "throttle",
+   "hand": "left",
+   "identify": {
+    "note": "USB adapter that turns the F-16 Cougar TQS into its own USB game controller (Windows numbers the buttons 1-32; BMS .key files count from 0). Buttons from the TUSBA user guide (firmware v1.07): DX1-13 the Cougar switches and the centre positions of COMMS, DOGFIGHT and SPEED BRAKE (centre buttons can be disabled), DX14-16 throttle areas Idle / Mil / Afterburner, DX17-32 user-configured buttons linked to analog values (disabled by default). Analog axes: throttle, cursor X/Y, range, antenna elevation plus 3 derived throttle axes (Idle, Mil, AB); their DirectInput axis names are not documented. VID:PID and product string not published. The DOGFIGHT outboard/inboard and COMMS directions follow the guide's names, not verified on hardware."
+   },
+   "image": "https://realsimulator.com/wp-content/uploads/2020/02/TUSBA_product_2021.jpg",
+   "productUrl": "https://realsimulator.com/tusba/",
+   "sources": [
+    "https://www.realsimulator.com/download/TUSBA_User_Guide.pdf",
+    "https://realsimulator.com/tusba/"
+   ],
+   "confidence": "high",
+   "axes": [
+    {
+     "control": "throttle.axis.main",
+     "label": "Throttle"
+    },
+    {
+     "control": "throttle.axis.ministick.x",
+     "label": "Radar cursor X"
+    },
+    {
+     "control": "throttle.axis.ministick.y",
+     "label": "Radar cursor Y"
+    },
+    {
+     "control": "throttle.axis.rotary.1",
+     "label": "ANT ELEV"
+    },
+    {
+     "control": "throttle.axis.rotary.2",
+     "label": "MAN RNG"
+    }
+   ],
+   "controls": [
+    {
+     "input": "JOY_BTN1",
+     "control": "throttle.button.1",
+     "label": "COMMS switch centre (Comms Off)",
+     "finger": "thumb",
+     "type": "latched"
+    },
+    {
+     "input": "JOY_BTN2",
+     "control": "throttle.hat.mic.down",
+     "label": "COMMS down - VHF",
+     "finger": "thumb",
+     "type": "momentary"
+    },
+    {
+     "input": "JOY_BTN3",
+     "control": "throttle.hat.mic.up",
+     "label": "COMMS up - UHF",
+     "finger": "thumb",
+     "type": "momentary"
+    },
+    {
+     "input": "JOY_BTN4",
+     "control": "throttle.hat.mic.right",
+     "label": "COMMS right - IFF IN",
+     "finger": "thumb",
+     "type": "momentary"
+    },
+    {
+     "input": "JOY_BTN5",
+     "control": "throttle.hat.mic.left",
+     "label": "COMMS left - IFF OUT",
+     "finger": "thumb",
+     "type": "momentary"
+    },
+    {
+     "input": "JOY_BTN6",
+     "control": "throttle.dogfight.center",
+     "label": "DOGFIGHT centre (MSTR cancel)",
+     "finger": "thumb",
+     "type": "latched"
+    },
+    {
+     "input": "JOY_BTN7",
+     "control": "throttle.dogfight.fwd",
+     "label": "DOG FIGHT",
+     "finger": "thumb",
+     "type": "latched"
+    },
+    {
+     "input": "JOY_BTN8",
+     "control": "throttle.dogfight.aft",
+     "label": "MSL OVRD (missile override)",
+     "finger": "thumb",
+     "type": "latched"
+    },
+    {
+     "input": "JOY_BTN9",
+     "control": "throttle.speedbrake.center",
+     "label": "SPEED BRAKE centre (stop)",
+     "finger": "thumb",
+     "type": "latched"
+    },
+    {
+     "input": "JOY_BTN10",
+     "control": "throttle.speedbrake.aft",
+     "label": "SPEED BRAKE OPEN",
+     "finger": "thumb",
+     "type": "momentary"
+    },
+    {
+     "input": "JOY_BTN11",
+     "control": "throttle.speedbrake.fwd",
+     "label": "SPEED BRAKE CLOSE",
+     "finger": "thumb",
+     "type": "latched"
+    },
+    {
+     "input": "JOY_BTN12",
+     "control": "throttle.cage",
+     "label": "UNCAGE (MAN RNG knob press)",
+     "finger": "index",
+     "type": "momentary"
+    },
+    {
+     "input": "JOY_BTN13",
+     "control": "throttle.ministick.press",
+     "label": "RDR CURSOR ENABLE",
+     "finger": "thumb",
+     "type": "momentary"
+    },
+    {
+     "input": "JOY_BTN14",
+     "control": "throttle.detent.idle",
+     "label": "Throttle in Idle area",
+     "type": "latched"
+    },
+    {
+     "input": "JOY_BTN15",
+     "control": "throttle.button.2",
+     "label": "Throttle in Mil area",
+     "type": "latched"
+    },
+    {
+     "input": "JOY_BTN16",
+     "control": "throttle.detent.afterburner",
+     "label": "Throttle in Afterburner area",
+     "type": "latched"
+    }
+   ]
+  },
+  {
+   "id": "realsim-rusba",
+   "name": "RealSimulator RUSBA (USB adapter for game-port rudder pedals)",
+   "kind": "pedals",
+   "hand": "none",
+   "identify": {
+    "note": "USB adapter for game-port rudder pedals. RUSBA user guide, 'RandB' (rudder and brakes) firmware: Z axis = rudder, X rotation = left brake, Y rotation = right brake; 'Rudder' firmware: Z axis = rudder only. A GamePort firmware turns it into a generic game-port joystick adapter (4 axes, 4 buttons). VID:PID and product string not published."
+   },
+   "image": "https://realsimulator.com/wp-content/uploads/2020/02/RUSBA_product_2021_new.jpg",
+   "productUrl": "https://realsimulator.com/rusba/",
+   "sources": [
+    "https://www.realsimulator.com/download/RUSBA_User_Guide.pdf",
+    "https://realsimulator.com/rusba/"
+   ],
+   "confidence": "high",
+   "axes": [
+    {
+     "input": "JOY_Z",
+     "control": "pedals.axis.rudder"
+    },
+    {
+     "input": "JOY_RX",
+     "control": "pedals.axis.brake_left"
+    },
+    {
+     "input": "JOY_RY",
+     "control": "pedals.axis.brake_right"
+    }
+   ],
+   "controls": []
+  },
+  {
+   "id": "realsim-fusba",
+   "name": "RealSimulator FUSBA (USB adapter for the Suncom SFS F-15 throttle and SFS / Talon / Eagle sticks)",
+   "kind": "hotas",
+   "hand": "none",
+   "identify": {
+    "note": "USB adapter for the Suncom SFS F-15 throttle with an attached Suncom SFS, Talon or Eagle stick, all on one USB game controller. User guide: throttle left/right axes, stick X/Y, 4 virtual axes (cursor X/Y, antenna, range), 20 throttle buttons and 12 stick buttons (Talon/Eagle) or 8 (SFS). Button and axis numbers are only shown in the configuration tool, so no inputs are given. VID:PID not published."
+   },
+   "image": "https://realsimulator.com/wp-content/uploads/2020/02/FUSBA_product-e1583094410644.jpg",
+   "productUrl": "https://realsimulator.com/fusba/",
+   "sources": [
+    "https://www.realsimulator.com/download/FUSBA_User_Guide.pdf",
+    "https://realsimulator.com/fusba/"
+   ],
+   "confidence": "low",
+   "axes": [
+    {
+     "control": "stick.axis.roll"
+    },
+    {
+     "control": "stick.axis.pitch"
+    },
+    {
+     "control": "throttle.axis.left"
+    },
+    {
+     "control": "throttle.axis.right"
+    },
+    {
+     "control": "throttle.axis.ministick.x",
+     "label": "Cursor X (virtual)"
+    },
+    {
+     "control": "throttle.axis.ministick.y",
+     "label": "Cursor Y (virtual)"
+    },
+    {
+     "control": "throttle.axis.rotary.1",
+     "label": "Antenna (virtual)"
+    },
+    {
+     "control": "throttle.axis.rotary.2",
+     "label": "Range (virtual)"
+    }
+   ],
+   "controls": []
+  },
+  {
+   "id": "realsim-f16sglh",
+   "name": "RealSimulator F16SGLH F-16 Side Grip, left hand (F16SGLH / F16SGLH-CE)",
+   "kind": "stick",
+   "hand": "left",
+   "base": "realsim-fssb-r3-lighting",
+   "fitsBases": [
+    "realsim-fssb-r3-ultra",
+    "realsim-fssb-r3-pro"
+   ],
+   "identify": {
+    "names": [
+     "Real Simulator FSSB-R3"
+    ],
+    "note": "Left-hand version of the F16SGRH for the FSSB-R3 bases (the CE edition adds a hand-painted finish and a BLE module for standalone use). The control set equals the F16SGRH; whether the button numbers are mirrored or identical is not documented, so no inputs are given. The grip's buttons appear on the base's USB device."
+   },
+   "productUrl": "https://realsimulator.com/f16sglh/",
+   "sources": [
+    "https://realsimulator.com/f16sglh/",
+    "https://www.realsimulator.com/download/F16SGRH_User_Guide_EN.pdf"
+   ],
+   "confidence": "low",
+   "axes": [
+    {
+     "control": "stick.axis.roll"
+    },
+    {
+     "control": "stick.axis.pitch"
+    },
+    {
+     "control": "stick.axis.twist"
+    }
+   ],
+   "controls": [
+    {
+     "control": "stick.trigger.stage1",
+     "label": "Trigger 1st stage",
+     "finger": "index",
+     "type": "momentary"
+    },
+    {
+     "control": "stick.trigger.stage2",
+     "label": "Trigger 2nd stage",
+     "finger": "index",
+     "type": "momentary"
+    },
+    {
+     "control": "stick.weapon_release",
+     "label": "WR Weapon release",
+     "finger": "thumb",
+     "type": "momentary"
+    },
+    {
+     "control": "stick.button.thumb.1",
+     "label": "NWS Nosewheel steering",
+     "finger": "index",
+     "type": "momentary"
+    },
+    {
+     "control": "stick.pinky.button",
+     "label": "Pinky",
+     "finger": "pinky",
+     "type": "momentary"
+    },
+    {
+     "control": "stick.pinky.lever",
+     "label": "Paddle",
+     "finger": "pinky",
+     "type": "momentary"
+    },
+    {
+     "control": "stick.hat.tms.up",
+     "label": "TMS up",
+     "finger": "thumb",
+     "type": "momentary"
+    },
+    {
+     "control": "stick.hat.tms.right",
+     "label": "TMS right",
+     "finger": "thumb",
+     "type": "momentary"
+    },
+    {
+     "control": "stick.hat.tms.down",
+     "label": "TMS down",
+     "finger": "thumb",
+     "type": "momentary"
+    },
+    {
+     "control": "stick.hat.tms.left",
+     "label": "TMS left",
+     "finger": "thumb",
+     "type": "momentary"
+    },
+    {
+     "control": "stick.hat.tms.press",
+     "label": "TMS press",
+     "finger": "thumb",
+     "type": "momentary"
+    },
+    {
+     "control": "stick.hat.dms.up",
+     "label": "DMS up",
+     "finger": "thumb",
+     "type": "momentary"
+    },
+    {
+     "control": "stick.hat.dms.right",
+     "label": "DMS right",
+     "finger": "thumb",
+     "type": "momentary"
+    },
+    {
+     "control": "stick.hat.dms.down",
+     "label": "DMS down",
+     "finger": "thumb",
+     "type": "momentary"
+    },
+    {
+     "control": "stick.hat.dms.left",
+     "label": "DMS left",
+     "finger": "thumb",
+     "type": "momentary"
+    },
+    {
+     "control": "stick.hat.dms.press",
+     "label": "DMS press",
+     "finger": "thumb",
+     "type": "momentary"
+    },
+    {
+     "control": "stick.hat.cms.up",
+     "label": "CMS up",
+     "finger": "thumb",
+     "type": "momentary"
+    },
+    {
+     "control": "stick.hat.cms.right",
+     "label": "CMS right",
+     "finger": "thumb",
+     "type": "momentary"
+    },
+    {
+     "control": "stick.hat.cms.down",
+     "label": "CMS down",
+     "finger": "thumb",
+     "type": "momentary"
+    },
+    {
+     "control": "stick.hat.cms.left",
+     "label": "CMS left",
+     "finger": "thumb",
+     "type": "momentary"
+    },
+    {
+     "control": "stick.hat.cms.press",
+     "label": "CMS press",
+     "finger": "thumb",
+     "type": "momentary"
+    },
+    {
+     "control": "stick.hat.trim.up",
+     "label": "Trim up",
+     "finger": "thumb",
+     "type": "momentary"
+    },
+    {
+     "control": "stick.hat.trim.right",
+     "label": "Trim right",
+     "finger": "thumb",
+     "type": "momentary"
+    },
+    {
+     "control": "stick.hat.trim.down",
+     "label": "Trim down",
+     "finger": "thumb",
+     "type": "momentary"
+    },
+    {
+     "control": "stick.hat.trim.left",
+     "label": "Trim left",
+     "finger": "thumb",
+     "type": "momentary"
+    },
+    {
+     "control": "stick.hat.trim.press",
+     "label": "Trim press",
+     "finger": "thumb",
+     "type": "momentary"
+    }
+   ]
+  },
+  {
+   "id": "realsim-fssb-r3-pro",
+   "name": "RealSimulator FSSB-R3 PRO (professional force-sensing base)",
+   "kind": "base",
+   "hand": "none",
+   "identify": {
+    "names": [
+     "Real Simulator FSSB-R3"
+    ],
+    "note": "Professional version of the FSSB-R3 force sensor base (24/7 sensors and electronics, commercial licence). Same 5-pin mini-DIN grip connector as the other R3 bases; whether it reports like the R3 Lighting (X, Y, twist on rZ) is not documented, so no inputs are given."
+   },
+   "image": "https://realsimulator.com/wp-content/uploads/2021/09/FSSB-R3-PRO_producto.jpg",
+   "productUrl": "https://realsimulator.com/fssb-r3-pro/",
+   "sources": [
+    "https://realsimulator.com/fssb-r3-pro/"
+   ],
+   "confidence": "low",
+   "axes": [
+    {
+     "control": "stick.axis.roll"
+    },
+    {
+     "control": "stick.axis.pitch"
+    },
+    {
+     "control": "stick.axis.twist"
+    }
+   ],
+   "controls": []
+  },
+  {
+   "id": "realsim-f16sgrh-pro",
+   "name": "RealSimulator F16SGRH PRO F-16 Side Grip (military switches)",
+   "kind": "stick",
+   "hand": "right",
+   "base": "realsim-fssb-r3-pro",
+   "fitsBases": [
+    "realsim-fssb-r3-lighting",
+    "realsim-fssb-r3-ultra"
+   ],
+   "identify": {
+    "names": [
+     "Real Simulator FSSB-R3"
+    ],
+    "note": "Professional F16SGRH with MIL-PRF-8805E switches: two-stage trigger; NWS, weapon release, pinky and paddle push switches; 4-way DMS, TMS and trim; 4/5-way CMS (product page). Uses its own software in professional setups; button numbers not published."
+   },
+   "image": "https://realsimulator.com/wp-content/uploads/2021/09/F16SGRH-PRO_producto.jpg",
+   "productUrl": "https://realsimulator.com/f16sgrh-pro/",
+   "sources": [
+    "https://realsimulator.com/f16sgrh-pro/"
+   ],
+   "confidence": "low",
+   "axes": [
+    {
+     "control": "stick.axis.roll"
+    },
+    {
+     "control": "stick.axis.pitch"
+    }
+   ],
+   "controls": [
+    {
+     "control": "stick.trigger.stage1",
+     "label": "Trigger 1st stage",
+     "finger": "index",
+     "type": "momentary"
+    },
+    {
+     "control": "stick.trigger.stage2",
+     "label": "Trigger 2nd stage",
+     "finger": "index",
+     "type": "momentary"
+    },
+    {
+     "control": "stick.weapon_release",
+     "label": "Weapon release",
+     "finger": "thumb",
+     "type": "momentary"
+    },
+    {
+     "control": "stick.button.thumb.1",
+     "label": "NWS",
+     "finger": "index",
+     "type": "momentary"
+    },
+    {
+     "control": "stick.pinky.button",
+     "label": "Pinky",
+     "finger": "pinky",
+     "type": "momentary"
+    },
+    {
+     "control": "stick.pinky.lever",
+     "label": "Paddle",
+     "finger": "pinky",
+     "type": "momentary"
+    },
+    {
+     "control": "stick.hat.tms.up",
+     "label": "TMS up",
+     "finger": "thumb",
+     "type": "momentary"
+    },
+    {
+     "control": "stick.hat.tms.right",
+     "label": "TMS right",
+     "finger": "thumb",
+     "type": "momentary"
+    },
+    {
+     "control": "stick.hat.tms.down",
+     "label": "TMS down",
+     "finger": "thumb",
+     "type": "momentary"
+    },
+    {
+     "control": "stick.hat.tms.left",
+     "label": "TMS left",
+     "finger": "thumb",
+     "type": "momentary"
+    },
+    {
+     "control": "stick.hat.dms.up",
+     "label": "DMS up",
+     "finger": "thumb",
+     "type": "momentary"
+    },
+    {
+     "control": "stick.hat.dms.right",
+     "label": "DMS right",
+     "finger": "thumb",
+     "type": "momentary"
+    },
+    {
+     "control": "stick.hat.dms.down",
+     "label": "DMS down",
+     "finger": "thumb",
+     "type": "momentary"
+    },
+    {
+     "control": "stick.hat.dms.left",
+     "label": "DMS left",
+     "finger": "thumb",
+     "type": "momentary"
+    },
+    {
+     "control": "stick.hat.cms.up",
+     "label": "CMS up",
+     "finger": "thumb",
+     "type": "momentary"
+    },
+    {
+     "control": "stick.hat.cms.right",
+     "label": "CMS right",
+     "finger": "thumb",
+     "type": "momentary"
+    },
+    {
+     "control": "stick.hat.cms.down",
+     "label": "CMS down",
+     "finger": "thumb",
+     "type": "momentary"
+    },
+    {
+     "control": "stick.hat.cms.left",
+     "label": "CMS left",
+     "finger": "thumb",
+     "type": "momentary"
+    },
+    {
+     "control": "stick.hat.cms.press",
+     "label": "CMS press",
+     "finger": "thumb",
+     "type": "momentary"
+    },
+    {
+     "control": "stick.hat.trim.up",
+     "label": "Trim up",
+     "finger": "thumb",
+     "type": "momentary"
+    },
+    {
+     "control": "stick.hat.trim.right",
+     "label": "Trim right",
+     "finger": "thumb",
+     "type": "momentary"
+    },
+    {
+     "control": "stick.hat.trim.down",
+     "label": "Trim down",
+     "finger": "thumb",
+     "type": "momentary"
+    },
+    {
+     "control": "stick.hat.trim.left",
+     "label": "Trim left",
+     "finger": "thumb",
+     "type": "momentary"
+    }
+   ]
+  },
+  {
+   "id": "realsim-rs16-throttle-grip",
+   "name": "RealSimulator RS-16 Throttle (RS-16-TG F-16 throttle grip on the RS-35-LTB linear base)",
+   "kind": "throttle",
+   "hand": "left",
+   "base": "realsim-linear-throttle",
+   "identify": {
+    "note": "RS-16-TG grip kit (F-16 throttle replica with guide rail and chaff/flare slap switch) for the RS-35-LTB linear throttle base (realsim-linear-throttle). Switch map from the product page: 5-position switches H1 dogfight/missile override, H4 speed brake, H5 communications; S3 chaff/flare slap switch; mini-stick P1/P2 with push S1 (cursor); potentiometer with centre detent and push P3/S2 (manual range / uncage); potentiometer P4 (antenna elevation). The base adds the throttle axis, a pot with push (B-P2), a guarded cut-off toggle (B-T1) and a 3-position toggle (B-T2). DirectInput numbers are configurable in 8 profile slots and not published."
+   },
+   "image": "https://realsimulator.com/wp-content/uploads/2026/04/Throttle-RS-16.png",
+   "productUrl": "https://realsimulator.com/rs-16-throttle/",
+   "sources": [
+    "https://realsimulator.com/rs-16-throttle/"
+   ],
+   "confidence": "low",
+   "axes": [
+    {
+     "control": "throttle.axis.ministick.x",
+     "label": "Cursor (P1)"
+    },
+    {
+     "control": "throttle.axis.ministick.y",
+     "label": "Cursor (P2)"
+    },
+    {
+     "control": "throttle.axis.rotary.1",
+     "label": "MAN RNG (P3)"
+    },
+    {
+     "control": "throttle.axis.rotary.2",
+     "label": "ANT ELEV (P4)"
+    }
+   ],
+   "controls": [
+    {
+     "control": "throttle.hat.1.up",
+     "label": "H1 dogfight / missile override up",
+     "finger": "thumb",
+     "type": "momentary"
+    },
+    {
+     "control": "throttle.hat.1.right",
+     "label": "H1 dogfight / missile override right",
+     "finger": "thumb",
+     "type": "momentary"
+    },
+    {
+     "control": "throttle.hat.1.down",
+     "label": "H1 dogfight / missile override down",
+     "finger": "thumb",
+     "type": "momentary"
+    },
+    {
+     "control": "throttle.hat.1.left",
+     "label": "H1 dogfight / missile override left",
+     "finger": "thumb",
+     "type": "momentary"
+    },
+    {
+     "control": "throttle.hat.1.press",
+     "label": "H1 dogfight / missile override press",
+     "finger": "thumb",
+     "type": "momentary"
+    },
+    {
+     "control": "throttle.hat.2.up",
+     "label": "H4 speed brake up",
+     "finger": "thumb",
+     "type": "momentary"
+    },
+    {
+     "control": "throttle.hat.2.right",
+     "label": "H4 speed brake right",
+     "finger": "thumb",
+     "type": "momentary"
+    },
+    {
+     "control": "throttle.hat.2.down",
+     "label": "H4 speed brake down",
+     "finger": "thumb",
+     "type": "momentary"
+    },
+    {
+     "control": "throttle.hat.2.left",
+     "label": "H4 speed brake left",
+     "finger": "thumb",
+     "type": "momentary"
+    },
+    {
+     "control": "throttle.hat.2.press",
+     "label": "H4 speed brake press",
+     "finger": "thumb",
+     "type": "momentary"
+    },
+    {
+     "control": "throttle.hat.mic.up",
+     "label": "H5 communications up",
+     "finger": "thumb",
+     "type": "momentary"
+    },
+    {
+     "control": "throttle.hat.mic.down",
+     "label": "H5 communications down",
+     "finger": "thumb",
+     "type": "momentary"
+    },
+    {
+     "control": "throttle.hat.mic.left",
+     "label": "H5 communications left",
+     "finger": "thumb",
+     "type": "momentary"
+    },
+    {
+     "control": "throttle.hat.mic.right",
+     "label": "H5 communications right",
+     "finger": "thumb",
+     "type": "momentary"
+    },
+    {
+     "control": "throttle.hat.mic.press",
+     "label": "H5 communications press",
+     "finger": "thumb",
+     "type": "momentary"
+    },
+    {
+     "control": "throttle.button.1",
+     "label": "S3 chaff / flare slap switch",
+     "finger": "hand",
+     "type": "momentary"
+    },
+    {
+     "control": "throttle.ministick.press",
+     "label": "Cursor enable (S1)",
+     "finger": "thumb",
+     "type": "momentary"
+    },
+    {
+     "control": "throttle.cage",
+     "label": "Uncage (S2, MAN RNG press)",
+     "finger": "index",
+     "type": "momentary"
+    }
+   ]
+  },
+  {
+   "id": "realsim-rs35-throttle-grip",
+   "name": "RealSimulator RS-35 Throttle (RS-35-TG F-35 throttle grip on the RS-35-LTB linear base)",
+   "kind": "throttle",
+   "hand": "left",
+   "base": "realsim-linear-throttle",
+   "identify": {
+    "note": "RS-35-TG F-35 throttle grip replica for the RS-35-LTB linear throttle base (realsim-linear-throttle); the page says it had not started production when published. Switch map from the product page: 5-position switches H1 weapon master mode, H2 uncage, H3 countermeasures, H4 speed brake, H5 comm, H6 speed hold, H7 polarity, H8 (unnamed); T1 two-position lights toggle; mini-stick P1/P2 with push S1 (cursor slew); pot with centre detent and push P3/S2 (range, replaces the AB detent button); pot P4 (antenna elevation / FLC). DirectInput numbers not published."
+   },
+   "image": "https://realsimulator.com/wp-content/uploads/2026/04/Throttle-RS-35.png",
+   "productUrl": "https://realsimulator.com/rs-35-throttle/",
+   "sources": [
+    "https://realsimulator.com/rs-35-throttle/"
+   ],
+   "confidence": "low",
+   "axes": [
+    {
+     "control": "throttle.axis.ministick.x",
+     "label": "Cursor slew (P1)"
+    },
+    {
+     "control": "throttle.axis.ministick.y",
+     "label": "Cursor slew (P2)"
+    },
+    {
+     "control": "throttle.axis.rotary.1",
+     "label": "Range (P3)"
+    },
+    {
+     "control": "throttle.axis.rotary.2",
+     "label": "Antenna elevation / FLC (P4)"
+    }
+   ],
+   "controls": [
+    {
+     "control": "throttle.hat.1.up",
+     "label": "H1 weapon master mode up",
+     "finger": "thumb",
+     "type": "momentary"
+    },
+    {
+     "control": "throttle.hat.1.right",
+     "label": "H1 weapon master mode right",
+     "finger": "thumb",
+     "type": "momentary"
+    },
+    {
+     "control": "throttle.hat.1.down",
+     "label": "H1 weapon master mode down",
+     "finger": "thumb",
+     "type": "momentary"
+    },
+    {
+     "control": "throttle.hat.1.left",
+     "label": "H1 weapon master mode left",
+     "finger": "thumb",
+     "type": "momentary"
+    },
+    {
+     "control": "throttle.hat.1.press",
+     "label": "H1 weapon master mode press",
+     "finger": "thumb",
+     "type": "momentary"
+    },
+    {
+     "control": "throttle.hat.2.up",
+     "label": "H2 uncage up",
+     "finger": "thumb",
+     "type": "momentary"
+    },
+    {
+     "control": "throttle.hat.2.right",
+     "label": "H2 uncage right",
+     "finger": "thumb",
+     "type": "momentary"
+    },
+    {
+     "control": "throttle.hat.2.down",
+     "label": "H2 uncage down",
+     "finger": "thumb",
+     "type": "momentary"
+    },
+    {
+     "control": "throttle.hat.2.left",
+     "label": "H2 uncage left",
+     "finger": "thumb",
+     "type": "momentary"
+    },
+    {
+     "control": "throttle.hat.2.press",
+     "label": "H2 uncage press",
+     "finger": "thumb",
+     "type": "momentary"
+    },
+    {
+     "control": "throttle.hat.3.up",
+     "label": "H3 countermeasures up",
+     "finger": "thumb",
+     "type": "momentary"
+    },
+    {
+     "control": "throttle.hat.3.right",
+     "label": "H3 countermeasures right",
+     "finger": "thumb",
+     "type": "momentary"
+    },
+    {
+     "control": "throttle.hat.3.down",
+     "label": "H3 countermeasures down",
+     "finger": "thumb",
+     "type": "momentary"
+    },
+    {
+     "control": "throttle.hat.3.left",
+     "label": "H3 countermeasures left",
+     "finger": "thumb",
+     "type": "momentary"
+    },
+    {
+     "control": "throttle.hat.3.press",
+     "label": "H3 countermeasures press",
+     "finger": "thumb",
+     "type": "momentary"
+    },
+    {
+     "control": "throttle.hat.4.up",
+     "label": "H4 speed brake up",
+     "finger": "thumb",
+     "type": "momentary"
+    },
+    {
+     "control": "throttle.hat.4.right",
+     "label": "H4 speed brake right",
+     "finger": "thumb",
+     "type": "momentary"
+    },
+    {
+     "control": "throttle.hat.4.down",
+     "label": "H4 speed brake down",
+     "finger": "thumb",
+     "type": "momentary"
+    },
+    {
+     "control": "throttle.hat.4.left",
+     "label": "H4 speed brake left",
+     "finger": "thumb",
+     "type": "momentary"
+    },
+    {
+     "control": "throttle.hat.4.press",
+     "label": "H4 speed brake press",
+     "finger": "thumb",
+     "type": "momentary"
+    },
+    {
+     "control": "throttle.hat.mic.up",
+     "label": "H5 comm up",
+     "finger": "thumb",
+     "type": "momentary"
+    },
+    {
+     "control": "throttle.hat.mic.down",
+     "label": "H5 comm down",
+     "finger": "thumb",
+     "type": "momentary"
+    },
+    {
+     "control": "throttle.hat.mic.left",
+     "label": "H5 comm left",
+     "finger": "thumb",
+     "type": "momentary"
+    },
+    {
+     "control": "throttle.hat.mic.right",
+     "label": "H5 comm right",
+     "finger": "thumb",
+     "type": "momentary"
+    },
+    {
+     "control": "throttle.hat.mic.press",
+     "label": "H5 comm press",
+     "finger": "thumb",
+     "type": "momentary"
+    },
+    {
+     "control": "throttle.hat.6.up",
+     "label": "H6 speed hold up",
+     "finger": "thumb",
+     "type": "momentary"
+    },
+    {
+     "control": "throttle.hat.6.right",
+     "label": "H6 speed hold right",
+     "finger": "thumb",
+     "type": "momentary"
+    },
+    {
+     "control": "throttle.hat.6.down",
+     "label": "H6 speed hold down",
+     "finger": "thumb",
+     "type": "momentary"
+    },
+    {
+     "control": "throttle.hat.6.left",
+     "label": "H6 speed hold left",
+     "finger": "thumb",
+     "type": "momentary"
+    },
+    {
+     "control": "throttle.hat.6.press",
+     "label": "H6 speed hold press",
+     "finger": "thumb",
+     "type": "momentary"
+    },
+    {
+     "control": "throttle.hat.7.up",
+     "label": "H7 polarity up",
+     "finger": "thumb",
+     "type": "momentary"
+    },
+    {
+     "control": "throttle.hat.7.right",
+     "label": "H7 polarity right",
+     "finger": "thumb",
+     "type": "momentary"
+    },
+    {
+     "control": "throttle.hat.7.down",
+     "label": "H7 polarity down",
+     "finger": "thumb",
+     "type": "momentary"
+    },
+    {
+     "control": "throttle.hat.7.left",
+     "label": "H7 polarity left",
+     "finger": "thumb",
+     "type": "momentary"
+    },
+    {
+     "control": "throttle.hat.7.press",
+     "label": "H7 polarity press",
+     "finger": "thumb",
+     "type": "momentary"
+    },
+    {
+     "control": "throttle.hat.8.up",
+     "label": "H8 up",
+     "finger": "thumb",
+     "type": "momentary"
+    },
+    {
+     "control": "throttle.hat.8.right",
+     "label": "H8 right",
+     "finger": "thumb",
+     "type": "momentary"
+    },
+    {
+     "control": "throttle.hat.8.down",
+     "label": "H8 down",
+     "finger": "thumb",
+     "type": "momentary"
+    },
+    {
+     "control": "throttle.hat.8.left",
+     "label": "H8 left",
+     "finger": "thumb",
+     "type": "momentary"
+    },
+    {
+     "control": "throttle.hat.8.press",
+     "label": "H8 press",
+     "finger": "thumb",
+     "type": "momentary"
+    },
+    {
+     "control": "throttle.button.1",
+     "label": "T1 lights (two-position toggle)",
+     "finger": "thumb",
+     "type": "latched"
+    },
+    {
+     "control": "throttle.ministick.press",
+     "label": "Cursor (S1 press)",
+     "finger": "thumb",
+     "type": "momentary"
+    },
+    {
+     "control": "throttle.cage",
+     "label": "Range push (S2)",
+     "finger": "index",
+     "type": "momentary"
+    }
+   ]
+  }
+ ]
+}

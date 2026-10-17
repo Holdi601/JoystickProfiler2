@@ -1,0 +1,69 @@
+{
+  "format": "joypro-device-layout",
+  "version": 1,
+  "model": "thrustmaster-tfrp",
+  "photo": {"kind": "vendor", "url": "https://www.thrustmaster.com/wp-content/uploads/2023/03/list-TFRP-rudder-flightsim-768x768-2.webp", "sha256": "f99e385c6e6948a8a25929f14de282be482b6d095989b7f71b9b8573855e8d73", "view": "main"},
+  "markers": {
+    "pedals.axis.brake_left": [0.25, 0.22],
+    "pedals.axis.brake_right": [0.75, 0.22],
+    "pedals.axis.rudder": [0.5, 0.59]
+  },
+  "parts": {
+    "pedals.axis.rudder": {
+      "type": "rudder",
+      "name": "Rudder",
+      "inputs": [
+        {"input": "JOY_Z", "control": "pedals.axis.rudder"}
+      ],
+      "mapping": "medium",
+      "confidence": "medium",
+      "note": "centre pivot of the sliding pedals (rudder)"
+    },
+    "pedals.axis.brake_left": {
+      "type": "brake",
+      "name": "Left toe brake",
+      "inputs": [
+        {"input": "JOY_Y", "control": "pedals.axis.brake_left"}
+      ],
+      "mapping": "medium",
+      "confidence": "high",
+      "note": "left pedal toe plate (left toe brake)"
+    },
+    "pedals.axis.brake_right": {
+      "type": "brake",
+      "name": "Right toe brake",
+      "inputs": [
+        {"input": "JOY_X", "control": "pedals.axis.brake_right"}
+      ],
+      "mapping": "medium",
+      "confidence": "high",
+      "note": "right pedal toe plate (right toe brake)"
+    }
+  },
+  "unplaced": {},
+  "candidates": {},
+  "source": "JoyPro curated on the maker's photo (2026-10-11), seen from the pilot's seat: heel rest nearest the camera, left pedal on the left, right pedal on the right",
+  "mappingSource": "catalog (thrustmaster.json): standalone on USB via the T.RJ12 adapter X = right toe brake, Y = left toe brake, Z = rudder per FlightGear T-Rudder.xml (https://gitlab.com/flightgear/fgdata/-/blob/next/Input/Joysticks/ThrustMaster/T-Rudder.xml); the vendor TCA Yoke Pack sheet (https://ts.thrustmaster.com/download/pictures/Mappings/MappingTCAyokePack_PC.PDF p.1: Axis X right brake, Axis Y left brake, Axis Z rudder) agrees; TFRP user manual https://ts.thrustmaster.com/download/accessories/Manuals/TFRP/TFRP_User_Manual.pdf",
+  "confidence": "high",
+  "note": "The axis letters apply standalone; plugged into a TWCS/T.Flight/TCA host the axes merge into that device with the host's letters (catalog note). The catalog records a doubt (EDRefCard lists X = left, Y = right for T-Rudder); the vendor sheet sides with the catalog, but it shows the pedals merged into the TCA yoke, so mapping stays medium.",
+  "callouts": {
+    "version": 1,
+    "width": 1448,
+    "height": 800,
+    "picture": [340, 16, 768, 768],
+    "rowHeight": 20,
+    "mainWidth": 170,
+    "modWidth": 110,
+    "otherY": -1,
+    "tables": [
+      {"id": "pedals.axis.rudder", "title": "Rudder", "parts": ["pedals.axis.rudder"], "side": "left", "x": 16, "y": 445.1, "width": 300, "modifier": true, "spot": [0.5, 0.59], "rows": [{"input": "JOY_Z", "label": "Z", "icon": "axis", "part": "pedals.axis.rudder"}]},
+      {"id": "pedals.axis.brake_left", "title": "Left toe brake", "parts": ["pedals.axis.brake_left"], "side": "left", "x": 16, "y": 161, "width": 300, "modifier": true, "spot": [0.25, 0.22], "rows": [{"input": "JOY_Y", "label": "Y", "icon": "axis", "part": "pedals.axis.brake_left"}]},
+      {"id": "pedals.axis.brake_right", "title": "Right toe brake", "parts": ["pedals.axis.brake_right"], "side": "right", "x": 1132, "y": 161, "width": 300, "modifier": true, "spot": [0.75, 0.22], "rows": [{"input": "JOY_X", "label": "X", "icon": "axis", "part": "pedals.axis.brake_right"}]}
+    ],
+    "lines": [
+      {"table": "pedals.axis.brake_left", "points": [[532, 185], [316, 185]]},
+      {"table": "pedals.axis.rudder", "points": [[724, 469.1], [316, 469.1]]},
+      {"table": "pedals.axis.brake_right", "points": [[916, 185], [1132, 185]]}
+    ]
+  }
+}

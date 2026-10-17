@@ -1,0 +1,55 @@
+{
+  "format": "joypro-device-layout",
+  "version": 1,
+  "model": "winwing-orion2-joystick-base",
+  "photo": {"kind": "vendor", "url": "https://eu.winctrl.com/static/ipfs/QmdG1Beco7VDEbcN8HPV8HaAqNaqG1gWWBuPnbLukqNbsB", "sha256": "a9263a31c5cc6ed7a25592e8b2f9faaad46b8ee1c21a7e577cb07c3071b5f204", "view": "main"},
+  "markers": {
+    "stick.gimbal": [0.49, 0.33]
+  },
+  "parts": {
+    "stick.gimbal": {
+      "type": "gimbal",
+      "name": "Stick (roll / pitch)",
+      "inputs": [
+        {"input": "JOY_X", "control": "stick.axis.roll"},
+        {"input": "JOY_Y", "control": "stick.axis.pitch"}
+      ],
+      "mapping": "medium",
+      "confidence": "medium",
+      "note": "grip socket in the rubber boot = gimbal (X roll / Y pitch)"
+    },
+    "stick.axis.twist": {
+      "type": "twist",
+      "name": "Twist",
+      "inputs": [
+        {"input": "JOY_Z", "control": "stick.axis.twist"}
+      ],
+      "mapping": "medium"
+    }
+  },
+  "unplaced": {
+    "stick.axis.twist": "twist comes from the optional Z-axis module under a mounted grip, not shown on this photo (catalog: JOY_Z assumed)"
+  },
+  "candidates": {},
+  "source": "JoyPro curated on the maker's photo (2026-10-11), Orion 2 joystick base without grip on its desk plate with suction cups, seen from the front-left corner and above; grip socket in the rubber boot on top, USB port on the near face",
+  "mappingSource": "catalog: WinWing \"J2 ORION JOYSTICK BASE Manual EN V1.0\" (https://en.winwing.cn/static/file/J2-ORION%20JOYSTICK%20BASE-MANUAL%20EN%20V%201.0.pdf), WinCtrl udev list in the X-Plane plugin (https://github.com/rswilem/winctrl-xplane-plugin) and https://eu.winctrl.com/static/ipfs/QmQHHeiMhWatgMrJhm9QpHuQ7KDoHC6SuFG3aq39JyMAgx; X = roll, Y = pitch; the manual text has no axis letters, so the axis tokens are the catalog's",
+  "confidence": "high",
+  "note": "The base has no buttons; the gimbal marker sits on the grip socket in the boot. The twist (Z) needs the optional Z-axis module / a grip mounted with it; catalog note: twist assumed JOY_Z, not confirmed. Neither is on this photo.",
+  "callouts": {
+    "version": 1,
+    "width": 2276,
+    "height": 1793,
+    "picture": [646, 30, 1600, 1600],
+    "rowHeight": 38,
+    "mainWidth": 323,
+    "modWidth": 209,
+    "otherY": 1660,
+    "tables": [
+      {"id": "stick.gimbal", "title": "Stick (roll / pitch)", "parts": ["stick.gimbal"], "side": "left", "x": 30, "y": 512, "width": 570, "modifier": true, "spot": [0.49, 0.33], "rows": [{"input": "JOY_X", "label": "roll (X)", "icon": "axis", "part": "stick.gimbal"}, {"input": "JOY_Y", "label": "pitch (Y)", "icon": "axis", "part": "stick.gimbal"}]},
+      {"id": "stick.axis.twist", "title": "Twist", "parts": ["stick.axis.twist"], "side": "other", "x": 30, "y": 1698, "width": 570, "modifier": true, "rows": [{"input": "JOY_Z", "label": "Z", "icon": "axis", "part": "stick.axis.twist"}]}
+    ],
+    "lines": [
+      {"table": "stick.gimbal", "points": [[1430, 558], [600, 558]]}
+    ]
+  }
+}

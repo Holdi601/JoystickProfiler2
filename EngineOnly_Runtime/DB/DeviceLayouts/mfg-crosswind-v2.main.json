@@ -1,0 +1,67 @@
+{
+  "format": "joypro-device-layout",
+  "version": 1,
+  "model": "mfg-crosswind-v2",
+  "photo": {"kind": "vendor", "url": "https://mfg-sim.com/img/layerslider/homeslider/mfg-crosswind-v2-graphite.jpg", "sha256": "eb0e61ca5be4198eff02fcc92f979eb6f89d7fbf48be23e94a280d69f461fa12", "view": "main"},
+  "markers": {
+    "pedals.axis.rudder": [0.62, 0.52]
+  },
+  "parts": {
+    "pedals.axis.rudder": {
+      "type": "rudder",
+      "name": "Rudder",
+      "inputs": [
+        {"input": "JOY_RZ", "control": "pedals.axis.rudder"}
+      ],
+      "mapping": "medium",
+      "confidence": "medium",
+      "note": "central rocker arm linking both pedals"
+    },
+    "pedals.axis.brake_left": {
+      "type": "brake",
+      "name": "Left toe brake",
+      "inputs": [
+        {"input": "JOY_X", "control": "pedals.axis.brake_left"}
+      ],
+      "mapping": "low"
+    },
+    "pedals.axis.brake_right": {
+      "type": "brake",
+      "name": "Right toe brake",
+      "inputs": [
+        {"input": "JOY_Y", "control": "pedals.axis.brake_right"}
+      ],
+      "mapping": "low"
+    }
+  },
+  "unplaced": {
+    "pedals.axis.brake_left": "left (foreground) foot plate; X = left brake not verified",
+    "pedals.axis.brake_right": "right (background) foot plate; Y = right brake not verified"
+  },
+  "candidates": {
+    "pedals.axis.brake_left": [0.16, 0.3],
+    "pedals.axis.brake_right": [0.76, 0.22]
+  },
+  "source": "JoyPro curated on the maker's photo (2026-10-11), pedals seen from the front left at low height; the left pedal is in the foreground, the right pedal behind it (heel rests point to the lower right, toward the pilot)",
+  "mappingSource": "catalog (read from the user's own pedals: 16D0:0A38 axes RZ, Y, X; rudder = RZ per IL-2 forum https://forum.il2sturmovik.com/topic/90149-mfg-crosswind-rudder-pedals-won%E2%80%99t-work/; X = left / Y = right brake is assumed, not verified)",
+  "confidence": "medium",
+  "note": "Toe brakes: each whole foot plate tilts about its lower pivot; markers sit on the upper plate. Because the catalog does not know whether X or Y is the left brake, both brake markers are hidden candidates (map=low) until verified on hardware. Left/right was derived from the pedal geometry (heels toward the lower right = pilot side), so the foreground pedal is the left one.",
+  "callouts": {
+    "version": 1,
+    "width": 1833,
+    "height": 879,
+    "picture": [25, 25, 1280, 720],
+    "rowHeight": 31,
+    "mainWidth": 264,
+    "modWidth": 170,
+    "otherY": 770,
+    "tables": [
+      {"id": "pedals.axis.rudder", "title": "Rudder", "parts": ["pedals.axis.rudder"], "side": "right", "x": 1343, "y": 361.9, "width": 465, "modifier": true, "spot": [0.62, 0.52], "rows": [{"input": "JOY_RZ", "label": "RZ", "icon": "axis", "part": "pedals.axis.rudder"}]},
+      {"id": "pedals.axis.brake_left", "title": "Left toe brake", "parts": ["pedals.axis.brake_left"], "side": "other", "x": 25, "y": 801, "width": 465, "modifier": true, "rows": [{"input": "JOY_X", "label": "X", "icon": "axis", "part": "pedals.axis.brake_left"}]},
+      {"id": "pedals.axis.brake_right", "title": "Right toe brake", "parts": ["pedals.axis.brake_right"], "side": "other", "x": 499, "y": 801, "width": 465, "modifier": true, "rows": [{"input": "JOY_Y", "label": "Y", "icon": "axis", "part": "pedals.axis.brake_right"}]}
+    ],
+    "lines": [
+      {"table": "pedals.axis.rudder", "points": [[818.6, 399.4], [1343, 399.4]]}
+    ]
+  }
+}

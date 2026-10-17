@@ -1,0 +1,297 @@
+{
+  "format": "joypro-device-layout",
+  "version": 1,
+  "model": "thrustmaster-hotas-warthog-dual-throttle",
+  "photo": {"kind": "vendor", "url": "https://www.thrustmaster.com/wp-content/uploads/2023/04/HotasWarthog_DualThrottle_800x800_1-768x768-1.webp", "sha256": "e5505c61d36bc189fca5eb35d43fd6e0bb364fc3ba79685868d18960d42cd7ff", "view": "main"},
+  "markers": {
+    "throttle.axis": [0.455, 0.15],
+    "throttle.axis.slider.1": [0.7, 0.6],
+    "throttle.base.button.1": [0.581, 0.587],
+    "throttle.base.button.2": [0.412, 0.677],
+    "throttle.base.toggle.1": [0.74, 0.345],
+    "throttle.base.toggle.2": [0.838, 0.36],
+    "throttle.base.toggle.3": [0.658, 0.428],
+    "throttle.base.toggle.4": [0.769, 0.428],
+    "throttle.base.toggle.5": [0.655, 0.48],
+    "throttle.base.toggle.6": [0.256, 0.426],
+    "throttle.base.toggle.7": [0.2, 0.585],
+    "throttle.base.toggle.8": [0.304, 0.615],
+    "throttle.base.toggle.9": [0.484, 0.675],
+    "throttle.boat": [0.738, 0.295],
+    "throttle.china": [0.715, 0.365],
+    "throttle.hat.mic": [0.735, 0.125],
+    "throttle.pinky": [0.225, 0.15],
+    "throttle.speedbrake": [0.748, 0.22]
+  },
+  "parts": {
+    "throttle.hat.mic": {
+      "type": "hat",
+      "name": "MIC SWITCH",
+      "inputs": [
+        {"input": "JOY_BTN2", "control": "throttle.hat.mic.press"},
+        {"input": "JOY_BTN3", "control": "throttle.hat.mic.up"},
+        {"input": "JOY_BTN4", "control": "throttle.hat.mic.right"},
+        {"input": "JOY_BTN5", "control": "throttle.hat.mic.down"},
+        {"input": "JOY_BTN6", "control": "throttle.hat.mic.left"}
+      ],
+      "mapping": "high",
+      "confidence": "medium",
+      "note": "MIC switch, top of the right flank of the right handle"
+    },
+    "throttle.speedbrake": {
+      "type": "switch",
+      "name": "SPEED BRAKE",
+      "inputs": [
+        {"input": "JOY_BTN7", "control": "throttle.speedbrake.fwd"},
+        {"input": "JOY_BTN8", "control": "throttle.speedbrake.aft"}
+      ],
+      "mapping": "high",
+      "confidence": "medium",
+      "note": "speed brake slider (light grey block) below the MIC switch"
+    },
+    "throttle.boat": {
+      "type": "switch",
+      "name": "BOAT SWITCH",
+      "inputs": [
+        {"input": "JOY_BTN9", "control": "throttle.boat.fwd"},
+        {"input": "JOY_BTN10", "control": "throttle.boat.aft"}
+      ],
+      "mapping": "high",
+      "confidence": "medium",
+      "note": "boat switch (ribbed light grey) below the speed brake"
+    },
+    "throttle.china": {
+      "type": "switch",
+      "name": "CHINA HAT",
+      "inputs": [
+        {"input": "JOY_BTN11", "control": "throttle.china.fwd"},
+        {"input": "JOY_BTN12", "control": "throttle.china.aft"}
+      ],
+      "mapping": "high",
+      "confidence": "medium",
+      "note": "red china hat at the lower front of the right flank, lowest of the four (manual figure order)"
+    },
+    "throttle.pinky": {
+      "type": "paddle",
+      "name": "PINKY SWITCH",
+      "inputs": [
+        {"input": "JOY_BTN13", "control": "throttle.pinky.fwd"},
+        {"input": "JOY_BTN14", "control": "throttle.pinky.aft"}
+      ],
+      "mapping": "high",
+      "confidence": "high",
+      "note": "pinky lever sticking out of the left flank of the left handle"
+    },
+    "throttle.ministick": {
+      "type": "ministick",
+      "name": "SLEW CONTROL",
+      "inputs": [
+        {"input": "JOY_X", "control": "throttle.axis.ministick.x"},
+        {"input": "JOY_Y", "control": "throttle.axis.ministick.y"},
+        {"input": "JOY_BTN1", "control": "throttle.ministick.press"}
+      ],
+      "mapping": "high"
+    },
+    "throttle.detent.idle": {
+      "type": "detent",
+      "name": "IDLE DETENT",
+      "inputs": [
+        {"input": "JOY_BTN29", "control": "throttle.detent.idle"},
+        {"input": "JOY_BTN30", "control": "throttle.detent.idle"}
+      ],
+      "mapping": "high"
+    },
+    "throttle.axis.slider.1": {
+      "type": "slider",
+      "name": "Slider 1",
+      "inputs": [
+        {"input": "JOY_SLIDER1", "control": "throttle.axis.slider.1"}
+      ],
+      "mapping": "high",
+      "confidence": "medium",
+      "note": "light grey wheel between INCR and DECR at the right of the panel (Slider0)"
+    },
+    "throttle.axis": {
+      "type": "button",
+      "name": "throttle.axis",
+      "inputs": [
+        {"input": "JOY_RZ", "control": "throttle.axis.left"},
+        {"input": "JOY_Z", "control": "throttle.axis.right"}
+      ],
+      "mapping": "high",
+      "confidence": "medium",
+      "note": "both throttle handles side by side (RZ left handle, Z right handle)"
+    },
+    "throttle.button.1": {
+      "type": "button",
+      "name": "LTB (left throttle button)",
+      "inputs": [
+        {"input": "JOY_BTN15", "control": "throttle.button.1"}
+      ],
+      "mapping": "high"
+    },
+    "throttle.base.toggle.1": {
+      "type": "switch",
+      "name": "FUEL FLOW L (NORM)",
+      "inputs": [
+        {"input": "JOY_BTN16", "control": "throttle.base.toggle.1.up"}
+      ],
+      "mapping": "high",
+      "confidence": "medium",
+      "note": "FUEL FLOW ENG L toggle (left of the two NORM / OVERRIDE toggles)"
+    },
+    "throttle.base.toggle.2": {
+      "type": "switch",
+      "name": "FUEL FLOW R (NORM)",
+      "inputs": [
+        {"input": "JOY_BTN17", "control": "throttle.base.toggle.2.up"}
+      ],
+      "mapping": "high",
+      "confidence": "high",
+      "note": "FUEL FLOW ENG R toggle"
+    },
+    "throttle.base.toggle.3": {
+      "type": "switch",
+      "name": "ENG OPER L",
+      "inputs": [
+        {"input": "JOY_BTN31", "control": "throttle.base.toggle.3.up"},
+        {"input": "JOY_BTN18", "control": "throttle.base.toggle.3.down"}
+      ],
+      "mapping": "high",
+      "confidence": "high",
+      "note": "ENG OPER L toggle (IGN / NORM / MOTOR)"
+    },
+    "throttle.base.toggle.4": {
+      "type": "switch",
+      "name": "ENG OPER R",
+      "inputs": [
+        {"input": "JOY_BTN32", "control": "throttle.base.toggle.4.up"},
+        {"input": "JOY_BTN19", "control": "throttle.base.toggle.4.down"}
+      ],
+      "mapping": "high",
+      "confidence": "high",
+      "note": "ENG OPER R toggle (IGN / NORM / MOTOR)"
+    },
+    "throttle.base.toggle.5": {
+      "type": "switch",
+      "name": "APU START",
+      "inputs": [
+        {"input": "JOY_BTN20", "control": "throttle.base.toggle.5.up"}
+      ],
+      "mapping": "high",
+      "confidence": "high",
+      "note": "APU START / OFF toggle"
+    },
+    "throttle.base.toggle.6": {
+      "type": "switch",
+      "name": "FLAPS",
+      "inputs": [
+        {"input": "JOY_BTN22", "control": "throttle.base.toggle.6.up"},
+        {"input": "JOY_BTN23", "control": "throttle.base.toggle.6.down"}
+      ],
+      "mapping": "high",
+      "confidence": "high",
+      "note": "FLAPS lever (UP / MVR / DN)"
+    },
+    "throttle.base.toggle.7": {
+      "type": "switch",
+      "name": "EAC ARM",
+      "inputs": [
+        {"input": "JOY_BTN24", "control": "throttle.base.toggle.7.up"}
+      ],
+      "mapping": "high",
+      "confidence": "high",
+      "note": "EAC ARM / OFF toggle"
+    },
+    "throttle.base.toggle.8": {
+      "type": "switch",
+      "name": "RDR ALTM NORM",
+      "inputs": [
+        {"input": "JOY_BTN25", "control": "throttle.base.toggle.8.up"}
+      ],
+      "mapping": "high",
+      "confidence": "high",
+      "note": "RDR ALTM NRM / DIS toggle"
+    },
+    "throttle.base.toggle.9": {
+      "type": "switch",
+      "name": "AUTOPILOT",
+      "inputs": [
+        {"input": "JOY_BTN27", "control": "throttle.base.toggle.9.up"},
+        {"input": "JOY_BTN28", "control": "throttle.base.toggle.9.down"}
+      ],
+      "mapping": "high",
+      "confidence": "high",
+      "note": "AUTOPILOT PATH / ALT-HDG / ALT toggle"
+    },
+    "throttle.base.button.1": {
+      "type": "button",
+      "name": "LDG GEAR WARN SILENCE",
+      "inputs": [
+        {"input": "JOY_BTN21", "control": "throttle.base.button.1"}
+      ],
+      "mapping": "high",
+      "confidence": "high",
+      "note": "L/G WRN SILENCE button"
+    },
+    "throttle.base.button.2": {
+      "type": "button",
+      "name": "AUTOPILOT ENGAGE",
+      "inputs": [
+        {"input": "JOY_BTN26", "control": "throttle.base.button.2"}
+      ],
+      "mapping": "high",
+      "confidence": "high",
+      "note": "AUTOPILOT ENGAGE / DISENGAGE button"
+    }
+  },
+  "unplaced": {
+    "throttle.ministick": "slew control on the front face of the right handle, faces away from the camera",
+    "throttle.detent.idle": "idle / off detents inside the lever slots, not visible",
+    "throttle.button.1": "LTB on the front face of the left handle, faces away from the camera"
+  },
+  "candidates": {},
+  "source": "JoyPro curated on the maker's photo (2026-10-11), the throttle alone seen from behind-right and above, front to the upper left; engine panel and rear strip readable",
+  "mappingSource": "HOTAS Warthog Dual Throttles manual (https://ts.thrustmaster.com/download/accessories/pc/hotas/manual/hotas_warthog/HOTAS_Warthog_DualThrottles_Manual.pdf, catalog source) and the identical throttle mapping of the HOTAS Warthog MKII manual p.26 (https://ts.thrustmaster.com/download/accessories/Manuals/HOTAS_Warthog_MKII/Hotas_Warthog_MKII_user_manual.pdf): MIC 2-6, SB 7/8, boat 9/10, china 11/12 (right flank of the right handle, top to bottom), pinky 13/14, LTB 15, slew X/Y + 1, panel 16-28 + 31/32, idle detents 29/30, RZ left / Z right handle, Slider0 = panel wheel; matches the catalog",
+  "confidence": "high",
+  "note": "The Dual Throttles manual PDF is image-only; the numbering was read from the Warthog MKII manual p.26 figure, which the catalog note says is identical. The front faces of the handles (LTB on the left handle, slew control on the right handle) face away from the camera. The idle / off detents are inside the lever slots (IDLE / OFF marking is visible, the detent itself is not).",
+  "callouts": {
+    "version": 1,
+    "width": 1448,
+    "height": 988,
+    "picture": [340, 94, 768, 768],
+    "rowHeight": 20,
+    "mainWidth": 170,
+    "modWidth": 110,
+    "otherY": 878,
+    "tables": [
+      {"id": "grid:throttle.speedbrake", "title": "Switches SPEED BRAK - FUEL FLOW", "parts": ["throttle.speedbrake", "throttle.boat", "throttle.base.toggle.3", "throttle.china", "throttle.base.toggle.1", "throttle.base.toggle.5", "throttle.base.toggle.4", "throttle.base.toggle.2"], "side": "right", "x": 1132, "y": 320.7, "width": 276, "grid": true, "columns": 3, "modifier": false, "spot": [0.7326, 0.3651], "rows": [{"input": "JOY_BTN7", "label": "SPEED BRAK fwd", "icon": "up", "part": "throttle.speedbrake", "cell": [0, 0, 0]}, {"input": "JOY_BTN8", "label": "SPEED BRAK aft", "icon": "down", "part": "throttle.speedbrake", "cell": [0, 0, 1]}, {"input": "JOY_BTN9", "label": "BOAT SWITC fwd", "icon": "up", "part": "throttle.boat", "cell": [1, 0, 0]}, {"input": "JOY_BTN10", "label": "BOAT SWITC aft", "icon": "down", "part": "throttle.boat", "cell": [1, 0, 1]}, {"input": "JOY_BTN31", "label": "ENG OPER L up", "icon": "up", "part": "throttle.base.toggle.3", "cell": [2, 0, 0]}, {"input": "JOY_BTN18", "label": "ENG OPER L dn", "icon": "down", "part": "throttle.base.toggle.3", "cell": [2, 0, 1]}, {"input": "JOY_BTN11", "label": "CHINA HAT fwd", "icon": "up", "part": "throttle.china", "cell": [2, 1, 0]}, {"input": "JOY_BTN12", "label": "CHINA HAT aft", "icon": "down", "part": "throttle.china", "cell": [2, 1, 1]}, {"input": "JOY_BTN16", "label": "FUEL FLOW", "icon": "up", "part": "throttle.base.toggle.1", "cell": [2, 2, 0]}, {"input": "JOY_BTN20", "label": "APU START", "icon": "up", "part": "throttle.base.toggle.5", "cell": [3, 0, 0]}, {"input": "JOY_BTN32", "label": "ENG OPER R up", "icon": "up", "part": "throttle.base.toggle.4", "cell": [4, 0, 0]}, {"input": "JOY_BTN19", "label": "ENG OPER R dn", "icon": "down", "part": "throttle.base.toggle.4", "cell": [4, 0, 1]}, {"input": "JOY_BTN17", "label": "FUEL FLOW", "icon": "up", "part": "throttle.base.toggle.2", "cell": [4, 1, 0]}]},
+      {"id": "throttle.hat.mic", "title": "MIC SWITCH", "parts": ["throttle.hat.mic"], "side": "right", "x": 1132, "y": 166, "width": 300, "modifier": true, "spot": [0.735, 0.125], "rows": [{"input": "JOY_BTN2", "label": "Press", "icon": "button", "part": "throttle.hat.mic"}, {"input": "JOY_BTN3", "label": "Up", "icon": "up", "part": "throttle.hat.mic"}, {"input": "JOY_BTN4", "label": "Right", "icon": "right", "part": "throttle.hat.mic"}, {"input": "JOY_BTN6", "label": "Left", "icon": "left", "part": "throttle.hat.mic"}, {"input": "JOY_BTN5", "label": "Down", "icon": "down", "part": "throttle.hat.mic"}]},
+      {"id": "throttle.pinky", "title": "PINKY SWITCH", "parts": ["throttle.pinky"], "side": "left", "x": 16, "y": 185.2, "width": 300, "modifier": true, "spot": [0.225, 0.15], "rows": [{"input": "JOY_BTN13", "label": "Forward", "icon": "up", "part": "throttle.pinky"}, {"input": "JOY_BTN14", "label": "Back", "icon": "down", "part": "throttle.pinky"}]},
+      {"id": "throttle.ministick", "title": "SLEW CONTROL", "parts": ["throttle.ministick"], "side": "other", "x": 16, "y": 898, "width": 300, "modifier": true, "rows": [{"input": "JOY_BTN1", "label": "Press", "icon": "button", "part": "throttle.ministick"}, {"input": "JOY_X", "label": "X (X)", "icon": "axis", "part": "throttle.ministick"}, {"input": "JOY_Y", "label": "Y (Y)", "icon": "axis", "part": "throttle.ministick"}]},
+      {"id": "throttle.detent.idle", "title": "IDLE DETENT", "parts": ["throttle.detent.idle"], "side": "other", "x": 322, "y": 898, "width": 300, "modifier": true, "rows": [{"input": "JOY_BTN29", "label": "Press", "icon": "button", "part": "throttle.detent.idle"}, {"input": "JOY_BTN30", "label": "Press", "icon": "button", "part": "throttle.detent.idle"}]},
+      {"id": "throttle.axis.slider.1", "title": "Slider 1", "parts": ["throttle.axis.slider.1"], "side": "right", "x": 1132, "y": 520.7, "width": 300, "modifier": true, "spot": [0.7, 0.6], "rows": [{"input": "JOY_SLIDER1", "label": "SLIDER1", "icon": "axis", "part": "throttle.axis.slider.1"}]},
+      {"id": "throttle.axis", "title": "Throttle axis", "parts": ["throttle.axis"], "side": "top", "x": 539.4, "y": 16, "width": 300, "modifier": true, "spot": [0.455, 0.15], "rows": [{"input": "JOY_Z", "label": "right (Z)", "icon": "axis", "part": "throttle.axis"}, {"input": "JOY_RZ", "label": "left (RZ)", "icon": "axis", "part": "throttle.axis"}]},
+      {"id": "throttle.button.1", "title": "LTB (left throttle button)", "parts": ["throttle.button.1"], "side": "other", "x": 628, "y": 898, "width": 300, "modifier": true, "rows": [{"input": "JOY_BTN15", "label": "Press", "icon": "button", "part": "throttle.button.1"}]},
+      {"id": "throttle.base.toggle.6", "title": "FLAPS", "parts": ["throttle.base.toggle.6"], "side": "left", "x": 16, "y": 397.2, "width": 300, "modifier": true, "spot": [0.256, 0.426], "rows": [{"input": "JOY_BTN22", "label": "Up", "icon": "up", "part": "throttle.base.toggle.6"}, {"input": "JOY_BTN23", "label": "Down", "icon": "down", "part": "throttle.base.toggle.6"}]},
+      {"id": "throttle.base.toggle.7", "title": "EAC ARM", "parts": ["throttle.base.toggle.7"], "side": "left", "x": 16, "y": 500, "width": 300, "modifier": true, "spot": [0.2, 0.585], "rows": [{"input": "JOY_BTN24", "label": "Up", "icon": "up", "part": "throttle.base.toggle.7"}]},
+      {"id": "throttle.base.toggle.8", "title": "RDR ALTM NORM", "parts": ["throttle.base.toggle.8"], "side": "left", "x": 16, "y": 540, "width": 300, "modifier": true, "spot": [0.304, 0.615], "rows": [{"input": "JOY_BTN25", "label": "Up", "icon": "up", "part": "throttle.base.toggle.8"}]},
+      {"id": "throttle.base.toggle.9", "title": "AUTOPILOT", "parts": ["throttle.base.toggle.9"], "side": "left", "x": 16, "y": 620, "width": 300, "modifier": true, "spot": [0.484, 0.675], "rows": [{"input": "JOY_BTN27", "label": "Up", "icon": "up", "part": "throttle.base.toggle.9"}, {"input": "JOY_BTN28", "label": "Down", "icon": "down", "part": "throttle.base.toggle.9"}]},
+      {"id": "throttle.base.button.1", "title": "LDG GEAR WARN SILENCE", "parts": ["throttle.base.button.1"], "side": "right", "x": 1132, "y": 560.7, "width": 300, "modifier": true, "spot": [0.581, 0.587], "rows": [{"input": "JOY_BTN21", "label": "Press", "icon": "button", "part": "throttle.base.button.1"}]},
+      {"id": "throttle.base.button.2", "title": "AUTOPILOT ENGAGE", "parts": ["throttle.base.button.2"], "side": "left", "x": 16, "y": 580, "width": 300, "modifier": true, "spot": [0.412, 0.677], "rows": [{"input": "JOY_BTN26", "label": "Press", "icon": "button", "part": "throttle.base.button.2"}]}
+    ],
+    "lines": [
+      {"table": "throttle.pinky", "points": [[512.8, 209.2], [316, 209.2]]},
+      {"table": "throttle.base.toggle.6", "points": [[536.6, 421.2], [316, 421.2]]},
+      {"table": "throttle.base.toggle.7", "points": [[493.6, 543.3], [328, 543.3], [328, 524], [316, 524]]},
+      {"table": "throttle.base.toggle.8", "points": [[573.5, 566.3], [328, 566.3], [328, 564], [316, 564]]},
+      {"table": "throttle.base.button.2", "points": [[656.4, 613.9], [656.4, 604], [316, 604]]},
+      {"table": "throttle.base.toggle.9", "points": [[711.7, 612.4], [711.7, 644], [316, 644]]},
+      {"table": "throttle.hat.mic", "points": [[904.5, 190], [1132, 190]]},
+      {"table": "grid:throttle.speedbrake", "points": [[902.6, 374.4], [1120, 374.4], [1120, 344.7], [1132, 344.7]]},
+      {"table": "throttle.axis.slider.1", "points": [[877.6, 554.8], [877.6, 544.7], [1132, 544.7]]},
+      {"table": "throttle.base.button.1", "points": [[786.2, 544.8], [786.2, 584.7], [1132, 584.7]]},
+      {"table": "throttle.axis", "points": [[689.4, 209.2], [689.4, 70]]}
+    ]
+  }
+}

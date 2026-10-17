@@ -1,0 +1,100 @@
+{
+  "format": "joypro-device-layout",
+  "version": 1,
+  "model": "hori-hotas-flight-control-system",
+  "photo": {"kind": "vendor", "url": "https://horieurope.com/cdn/shop/files/HPC-045U_Product_Image_02.png", "sha256": "a03651d591c22fb7d291b2fc51ce48c48f98233c177f5db95ae402dc6b70c8a5", "view": "main"},
+  "markers": {
+    "stick.axis.twist": [0.812, 0.536],
+    "stick.gimbal": [0.809, 0.577],
+    "stick.trigger": [0.738, 0.358],
+    "throttle.axis": [0.314, 0.469]
+  },
+  "parts": {
+    "stick.trigger": {
+      "type": "trigger",
+      "name": "Trigger stage",
+      "inputs": [
+        {"input": "", "control": "stick.trigger.stage1"},
+        {"input": "", "control": "stick.trigger.stage2"}
+      ],
+      "mapping": "medium",
+      "confidence": "medium",
+      "note": "red dual stage trigger at the grip front (manual p.5 item 7)"
+    },
+    "stick.axis.twist": {
+      "type": "twist",
+      "name": "Rudder function",
+      "inputs": [
+        {"input": "", "control": "stick.axis.twist"}
+      ],
+      "mapping": "medium",
+      "confidence": "medium",
+      "note": "knurled rudder ring at the stick base (manual p.5 item 1 \"Rudder Axis\")"
+    },
+    "stick.gimbal": {
+      "type": "gimbal",
+      "name": "Stick (roll / pitch)",
+      "inputs": [
+        {"input": "", "control": "stick.axis.roll"},
+        {"input": "", "control": "stick.axis.pitch"}
+      ],
+      "mapping": "medium",
+      "confidence": "medium",
+      "note": "stick shaft above the base"
+    },
+    "stick.hat.1": {
+      "type": "hat",
+      "name": "Hat",
+      "inputs": [
+        {"input": "", "control": "stick.hat.1.up"},
+        {"input": "", "control": "stick.hat.1.right"},
+        {"input": "", "control": "stick.hat.1.down"},
+        {"input": "", "control": "stick.hat.1.left"}
+      ],
+      "mapping": "low"
+    },
+    "throttle.axis": {
+      "type": "button",
+      "name": "throttle.axis",
+      "inputs": [
+        {"input": "", "control": "throttle.axis.left"},
+        {"input": "", "control": "throttle.axis.right"}
+      ],
+      "mapping": "medium",
+      "confidence": "medium",
+      "note": "twin throttle handle (left + right levers side by side, manual p.6 items 1/2)"
+    },
+    "throttle.base.toggle.1": {
+      "type": "switch",
+      "name": "Toggle switch",
+      "inputs": [
+        {"input": "", "control": "throttle.base.toggle.1.up"},
+        {"input": "", "control": "throttle.base.toggle.1.down"}
+      ],
+      "mapping": "medium"
+    }
+  },
+  "unplaced": {
+    "stick.hat.1": "white 4-way hat on top of the head; one of three 4-way hats, which one the catalog means is unknown",
+    "throttle.base.toggle.1": "one of 11 toggle switches on the control panel; which one is not documented"
+  },
+  "candidates": {
+    "stick.hat.1": [0.785, 0.259]
+  },
+  "source": "JoyPro curated on the maker's photo (2026-10-11), throttle (left) and joystick (right) side by side, the stick seen from its left side, the throttle from its left rear",
+  "mappingSource": "catalog only (others_massmarket.json, confidence low, no button map published -> controls without input); control identity from the HORI instruction manual \"Layout and Features\" p.5-6 (https://stores.horiusa.com/HPC-045U/manual/ -> https://drive.google.com/file/d/1-D342nayIUoUFBAtnBfS2f2KPK6HZ58Z/view): joystick 1 Rudder Axis (knurled ring at the stick base), 5 4-way hat switches (three), 6 action buttons, 7 dual stage trigger, 8 stick button; throttle 1/2 left/right throttle, 4 control panel with 11 toggle switches",
+  "confidence": "medium",
+  "note": "The stick has three 4-way hats (manual p.5 item 5); which one the catalog's single \"Hat\" means is unknown, so it is only a hidden candidate on the white hat on top of the head. The control panel has 11 toggle switches (manual p.6); the catalog's single \"Toggle switch\" part cannot be tied to one of them, so it is not placed. The catalog's stick.axis.twist (\"Rudder function\") is placed on the knurled ring the manual labels \"Rudder Axis\" (p.5 item 1). The throttle also has its own rudder axis (manual p.6 item 8) which is not in the catalog.",
+  "callouts": {
+    "version": 1,
+    "width": 2076,
+    "height": 2076,
+    "picture": [38, 38, 2000, 2000],
+    "rowHeight": 48,
+    "mainWidth": 408,
+    "modWidth": 264,
+    "otherY": -1,
+    "tables": [],
+    "lines": []
+  }
+}

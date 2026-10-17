@@ -1,0 +1,44 @@
+{
+  "format": "joypro-device-layout",
+  "version": 1,
+  "model": "brunner-cls-e-mk2",
+  "photo": {"kind": "vendor", "url": "https://shop.brunner-simulation.ch/wp-content/uploads/2023/04/CLS-E-MK-II-Joystick.png", "sha256": "2238c615b8c0dcb4a26f0ee050a9877572f2b805ea077225042c0ea79895e14b", "view": "main"},
+  "markers": {
+    "stick.gimbal": [0.49, 0.205]
+  },
+  "parts": {
+    "stick.gimbal": {
+      "type": "gimbal",
+      "name": "Stick (roll / pitch)",
+      "inputs": [
+        {"input": "JOY_X", "control": "stick.axis.roll"},
+        {"input": "JOY_Y", "control": "stick.axis.pitch"}
+      ],
+      "mapping": "medium",
+      "confidence": "medium",
+      "note": "grip connector / shaft exit on top of the leather boot"
+    }
+  },
+  "unplaced": {},
+  "candidates": {},
+  "source": "JoyPro curated on the maker's photo (2026-10-11), the CLS-E MK II joystick base alone (no grip) seen from the front left, slightly from above; leather boot with the threaded grip connector on top",
+  "mappingSource": "catalog brunner.json (fact sheet https://shop.brunner-simulation.ch/wp-content/uploads/2024/02/20180903_Brunner_FactSheet_CLS-E-MKII-Joystick.pdf): JOY_X roll, JOY_Y pitch; the catalog note says the base is not a DirectInput joystick by itself (the grip's own USB device carries the buttons, FFB via CLS2Sim)",
+  "confidence": "high",
+  "note": "The photo shows the base without a grip; the gimbal is marked at the shaft exit on top of the boot (grip connector).",
+  "callouts": {
+    "version": 1,
+    "width": 1038,
+    "height": 1131,
+    "picture": [19, 112, 1000, 1000],
+    "rowHeight": 24,
+    "mainWidth": 204,
+    "modWidth": 132,
+    "otherY": -1,
+    "tables": [
+      {"id": "stick.gimbal", "title": "Stick (roll / pitch)", "parts": ["stick.gimbal"], "side": "top", "x": 329, "y": 19, "width": 360, "modifier": true, "spot": [0.49, 0.205], "rows": [{"input": "JOY_X", "label": "roll (X)", "icon": "axis", "part": "stick.gimbal"}, {"input": "JOY_Y", "label": "pitch (Y)", "icon": "axis", "part": "stick.gimbal"}]}
+    ],
+    "lines": [
+      {"table": "stick.gimbal", "points": [[509, 317], [509, 84]]}
+    ]
+  }
+}

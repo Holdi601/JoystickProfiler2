@@ -1,0 +1,189 @@
+{
+  "format": "joypro-device-layout",
+  "version": 1,
+  "model": "virpil-archer-sf-cyclic-grip",
+  "photo": {"kind": "vendor", "url": "https://virpil-controls.eu/media/catalog/product/cache/f8e7ca8059fef1dc7d5708cf2af44b2f/v/p/vpc-024_01.jpg", "sha256": "e10c14db66bbd12c98db09eb4071dc4a9a101ffbd63f75af04f46e7deb2cb43d", "view": "main"},
+  "markers": {
+    "stick.button.thumb.1": [0.454, 0.293],
+    "stick.gimbal": [0.555, 0.848],
+    "stick.hat.1": [0.384, 0.364],
+    "stick.hat.2": [0.49, 0.454],
+    "stick.hat.3": [0.456, 0.199],
+    "stick.hat.4": [0.554, 0.196],
+    "stick.hat.trim": [0.387, 0.253],
+    "stick.trigger": [0.427, 0.422]
+  },
+  "parts": {
+    "stick.hat.trim": {
+      "type": "hat",
+      "name": "TRIM hat push",
+      "inputs": [
+        {"input": "JOY_BTN16", "control": "stick.hat.trim.press"},
+        {"input": "JOY_BTN17", "control": "stick.hat.trim.up"},
+        {"input": "JOY_BTN18", "control": "stick.hat.trim.right"},
+        {"input": "JOY_BTN19", "control": "stick.hat.trim.down"},
+        {"input": "JOY_BTN20", "control": "stick.hat.trim.left"}
+      ],
+      "mapping": "high",
+      "confidence": "high",
+      "note": "TRIM hat 16-20, square cap"
+    },
+    "stick.trigger": {
+      "type": "trigger",
+      "name": "Trigger",
+      "inputs": [
+        {"input": "JOY_BTN2", "control": "stick.trigger.stage1"},
+        {"input": "JOY_BTN3", "control": "stick.trigger.stage2"}
+      ],
+      "mapping": "high",
+      "confidence": "medium",
+      "note": "trigger 2/3, only its tip visible under the head front"
+    },
+    "stick.button.index_lower": {
+      "type": "button",
+      "name": "Lever below the trigger",
+      "inputs": [
+        {"input": "JOY_BTN1", "control": "stick.button.index_lower"}
+      ],
+      "mapping": "high"
+    },
+    "stick.gimbal": {
+      "type": "gimbal",
+      "name": "Base",
+      "inputs": [
+        {"input": "JOY_X", "control": "stick.axis.roll"},
+        {"input": "JOY_Y", "control": "stick.axis.pitch"}
+      ],
+      "mapping": "high",
+      "confidence": "medium",
+      "note": "grip-to-base joint (connector nut; base not in the photo)"
+    },
+    "stick.hat.1": {
+      "type": "hat",
+      "name": "RADIO hat push",
+      "inputs": [
+        {"input": "JOY_BTN11", "control": "stick.hat.1.press"},
+        {"input": "JOY_BTN12", "control": "stick.hat.1.up"},
+        {"input": "JOY_BTN13", "control": "stick.hat.1.right"},
+        {"input": "JOY_BTN14", "control": "stick.hat.1.down"},
+        {"input": "JOY_BTN15", "control": "stick.hat.1.left"}
+      ],
+      "mapping": "high",
+      "confidence": "high",
+      "note": "RADIO hat 11-15"
+    },
+    "stick.hat.2": {
+      "type": "hat",
+      "name": "Lower thumb hat push",
+      "inputs": [
+        {"input": "JOY_BTN6", "control": "stick.hat.2.press"},
+        {"input": "JOY_BTN7", "control": "stick.hat.2.up"},
+        {"input": "JOY_BTN8", "control": "stick.hat.2.right"},
+        {"input": "JOY_BTN9", "control": "stick.hat.2.down"},
+        {"input": "JOY_BTN10", "control": "stick.hat.2.left"}
+      ],
+      "mapping": "high",
+      "confidence": "high",
+      "note": "lower thumb hat 6-10"
+    },
+    "stick.hat.3": {
+      "type": "hat",
+      "name": "Top centre hat push",
+      "inputs": [
+        {"input": "JOY_BTN21", "control": "stick.hat.3.press"},
+        {"input": "JOY_BTN22", "control": "stick.hat.3.up"},
+        {"input": "JOY_BTN23", "control": "stick.hat.3.right"},
+        {"input": "JOY_BTN24", "control": "stick.hat.3.down"},
+        {"input": "JOY_BTN25", "control": "stick.hat.3.left"}
+      ],
+      "mapping": "high",
+      "confidence": "high",
+      "note": "top centre hat 21-25, round ridged cap"
+    },
+    "stick.hat.4": {
+      "type": "hat",
+      "name": "Top right hat (CT/HB) push",
+      "inputs": [
+        {"input": "JOY_BTN26", "control": "stick.hat.4.press"},
+        {"input": "JOY_BTN27", "control": "stick.hat.4.up"},
+        {"input": "JOY_BTN28", "control": "stick.hat.4.right"},
+        {"input": "JOY_BTN29", "control": "stick.hat.4.down"},
+        {"input": "JOY_BTN30", "control": "stick.hat.4.left"}
+      ],
+      "mapping": "high",
+      "confidence": "high",
+      "note": "CT/HB hat 26-30"
+    },
+    "stick.button.thumb.1": {
+      "type": "button",
+      "name": "Round button next to the TRIM hat",
+      "inputs": [
+        {"input": "JOY_BTN31", "control": "stick.button.thumb.1"}
+      ],
+      "mapping": "high",
+      "confidence": "high",
+      "note": "button 31, red round button next to TRIM"
+    },
+    "stick.button.index.1": {
+      "type": "button",
+      "name": "Front button upper (below trigger)",
+      "inputs": [
+        {"input": "JOY_BTN4", "control": "stick.button.index.1"}
+      ],
+      "mapping": "high"
+    },
+    "stick.button.index.2": {
+      "type": "button",
+      "name": "Front button lower",
+      "inputs": [
+        {"input": "JOY_BTN5", "control": "stick.button.index.2"}
+      ],
+      "mapping": "high"
+    }
+  },
+  "unplaced": {
+    "stick.button.index_lower": "lever 1 sits below the trigger on the front; not distinguishable from the trigger tip here",
+    "stick.button.index.1": "front button 4 on the lower front of the grip, faces away from the camera",
+    "stick.button.index.2": "front button 5 on the lower front of the grip, faces away from the camera"
+  },
+  "candidates": {
+    "stick.button.index_lower": [0.425, 0.432]
+  },
+  "source": "JoyPro curated on the maker's photo (2026-10-12), grip seen from its left (thumb) side, front (trigger) to the left; grip connector nut at the bottom, base not in the photo",
+  "mappingSource": "Virpil support sheet \"VPC Archer-SF Cyclic Grip\" (https://support.virpil.com/en/support/solutions/articles/47001307633-archer-sf-cyclic-grip, attachment 47447227053), matches the catalog 1:1 (TRIM 16-20, RADIO 11-15, lower thumb hat 6-10, top centre hat 21-25, CT/HB hat 26-30, round button 31, trigger 2/3, lever 1, front buttons 4/5)",
+  "confidence": "high",
+  "note": "the photo is the same view as the sheet's main drawing, so every thumb-side control is identified directly. Only the tip of the trigger peeks out under the head front; the lever below it (1) and the two front buttons 4/5 (lower front of the grip) face away from the camera.",
+  "callouts": {
+    "version": 1,
+    "width": 1842,
+    "height": 1776,
+    "picture": [537, 240, 1280, 1280],
+    "rowHeight": 31,
+    "mainWidth": 264,
+    "modWidth": 170,
+    "otherY": 1667,
+    "tables": [
+      {"id": "stick.hat.trim", "title": "TRIM hat push", "parts": ["stick.hat.trim"], "side": "left", "x": 25, "y": 380.7, "width": 465, "modifier": true, "spot": [0.387, 0.253], "rows": [{"input": "JOY_BTN16", "label": "Press", "icon": "button", "part": "stick.hat.trim"}, {"input": "JOY_BTN17", "label": "Up", "icon": "up", "part": "stick.hat.trim"}, {"input": "JOY_BTN18", "label": "Right", "icon": "right", "part": "stick.hat.trim"}, {"input": "JOY_BTN20", "label": "Left", "icon": "left", "part": "stick.hat.trim"}, {"input": "JOY_BTN19", "label": "Down", "icon": "down", "part": "stick.hat.trim"}]},
+      {"id": "stick.trigger", "title": "Trigger", "parts": ["stick.trigger"], "side": "left", "x": 25, "y": 814.7, "width": 465, "modifier": true, "spot": [0.427, 0.422], "rows": [{"input": "JOY_BTN2", "label": "First stage", "icon": "button", "part": "stick.trigger"}, {"input": "JOY_BTN3", "label": "Second stage", "icon": "button", "part": "stick.trigger"}]},
+      {"id": "stick.button.index_lower", "title": "Lever below the trigger", "parts": ["stick.button.index_lower"], "side": "other", "x": 25, "y": 1698, "width": 465, "modifier": true, "rows": [{"input": "JOY_BTN1", "label": "Press", "icon": "button", "part": "stick.button.index_lower"}]},
+      {"id": "stick.gimbal", "title": "Base", "parts": ["stick.gimbal"], "side": "bottom", "x": 1014.9, "y": 1558, "width": 465, "modifier": true, "spot": [0.555, 0.848], "rows": [{"input": "JOY_X", "label": "roll (X)", "icon": "axis", "part": "stick.gimbal"}, {"input": "JOY_Y", "label": "pitch (Y)", "icon": "axis", "part": "stick.gimbal"}]},
+      {"id": "stick.hat.1", "title": "RADIO hat push", "parts": ["stick.hat.1"], "side": "left", "x": 25, "y": 628.7, "width": 465, "modifier": true, "spot": [0.384, 0.364], "rows": [{"input": "JOY_BTN11", "label": "Press", "icon": "button", "part": "stick.hat.1"}, {"input": "JOY_BTN12", "label": "Up", "icon": "up", "part": "stick.hat.1"}, {"input": "JOY_BTN13", "label": "Right", "icon": "right", "part": "stick.hat.1"}, {"input": "JOY_BTN15", "label": "Left", "icon": "left", "part": "stick.hat.1"}, {"input": "JOY_BTN14", "label": "Down", "icon": "down", "part": "stick.hat.1"}]},
+      {"id": "stick.hat.2", "title": "Lower thumb hat push", "parts": ["stick.hat.2"], "side": "left", "x": 25, "y": 907.7, "width": 465, "modifier": true, "spot": [0.49, 0.454], "rows": [{"input": "JOY_BTN6", "label": "Press", "icon": "button", "part": "stick.hat.2"}, {"input": "JOY_BTN7", "label": "Up", "icon": "up", "part": "stick.hat.2"}, {"input": "JOY_BTN8", "label": "Right", "icon": "right", "part": "stick.hat.2"}, {"input": "JOY_BTN10", "label": "Left", "icon": "left", "part": "stick.hat.2"}, {"input": "JOY_BTN9", "label": "Down", "icon": "down", "part": "stick.hat.2"}]},
+      {"id": "stick.hat.3", "title": "Top centre hat push", "parts": ["stick.hat.3"], "side": "top", "x": 713.9, "y": 25, "width": 465, "modifier": true, "spot": [0.456, 0.199], "rows": [{"input": "JOY_BTN21", "label": "Press", "icon": "button", "part": "stick.hat.3"}, {"input": "JOY_BTN22", "label": "Up", "icon": "up", "part": "stick.hat.3"}, {"input": "JOY_BTN23", "label": "Right", "icon": "right", "part": "stick.hat.3"}, {"input": "JOY_BTN25", "label": "Left", "icon": "left", "part": "stick.hat.3"}, {"input": "JOY_BTN24", "label": "Down", "icon": "down", "part": "stick.hat.3"}]},
+      {"id": "stick.hat.4", "title": "Top right hat (CT/HB) push", "parts": ["stick.hat.4"], "side": "top", "x": 1187.9, "y": 25, "width": 465, "modifier": true, "spot": [0.554, 0.196], "rows": [{"input": "JOY_BTN26", "label": "Press", "icon": "button", "part": "stick.hat.4"}, {"input": "JOY_BTN27", "label": "Up", "icon": "up", "part": "stick.hat.4"}, {"input": "JOY_BTN28", "label": "Right", "icon": "right", "part": "stick.hat.4"}, {"input": "JOY_BTN30", "label": "Left", "icon": "left", "part": "stick.hat.4"}, {"input": "JOY_BTN29", "label": "Down", "icon": "down", "part": "stick.hat.4"}]},
+      {"id": "stick.button.thumb.1", "title": "Round button next to the TRIM hat", "parts": ["stick.button.thumb.1"], "side": "left", "x": 25, "y": 566.7, "width": 465, "modifier": true, "spot": [0.454, 0.293], "rows": [{"input": "JOY_BTN31", "label": "Press", "icon": "button", "part": "stick.button.thumb.1"}]},
+      {"id": "stick.button.index.1", "title": "Front button upper (below trigger)", "parts": ["stick.button.index.1"], "side": "other", "x": 499, "y": 1698, "width": 465, "modifier": true, "rows": [{"input": "JOY_BTN4", "label": "Press", "icon": "button", "part": "stick.button.index.1"}]},
+      {"id": "stick.button.index.2", "title": "Front button lower", "parts": ["stick.button.index.2"], "side": "other", "x": 973, "y": 1698, "width": 465, "modifier": true, "rows": [{"input": "JOY_BTN5", "label": "Press", "icon": "button", "part": "stick.button.index.2"}]}
+    ],
+    "lines": [
+      {"table": "stick.hat.trim", "points": [[1032.4, 563.8], [518, 563.8], [518, 418.2], [490, 418.2]]},
+      {"table": "stick.button.thumb.1", "points": [[1118.1, 615], [518, 615], [518, 604.2], [490, 604.2]]},
+      {"table": "stick.hat.1", "points": [[1028.5, 705.9], [518, 705.9], [518, 666.2], [490, 666.2]]},
+      {"table": "stick.trigger", "points": [[1083.6, 780.2], [509, 780.2], [509, 852.2], [490, 852.2]]},
+      {"table": "stick.hat.2", "points": [[1164.2, 821.1], [518, 821.1], [518, 945.2], [490, 945.2]]},
+      {"table": "stick.hat.3", "points": [[1120.7, 494.7], [1120.7, 221], [946.4, 221], [946.4, 202]]},
+      {"table": "stick.hat.4", "points": [[1246.1, 490.9], [1246.1, 221], [1420.4, 221], [1420.4, 202]]},
+      {"table": "stick.gimbal", "points": [[1247.4, 1325.4], [1247.4, 1558]]}
+    ]
+  }
+}

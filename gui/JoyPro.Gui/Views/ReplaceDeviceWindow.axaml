@@ -1,0 +1,111 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:l="using:JoyPro.Gui.Localization"
+        xmlns:vm="using:JoyPro.Gui.ViewModels"
+        xmlns:models="using:JoyPro.Gui.Models"
+        x:Class="JoyPro.Gui.Views.ReplaceDeviceWindow"
+        x:DataType="vm:MainWindowViewModel"
+        Title="{l:T 'JoyPro2 - Replace a device'}"
+        Icon="/Assets/joypro2_gui.ico"
+        Width="1180"
+        Height="780"
+        MinWidth="760"
+        MinHeight="520"
+        Background="{DynamicResource JP.PageBackgroundBrush}"
+        WindowStartupLocation="CenterOwner">
+    <!-- Replace a device (MainWindowViewModel.DeviceReplace.cs, engine devices replace): old device -> new device, the
+         preview of every input, changeable per input, and how to merge when the new device has binds already. -->
+    <Grid x:Name="ReplaceRoot" RowDefinitions="Auto,Auto,Auto,Auto,*,Auto,Auto" Margin="16" RowSpacing="10">
+        <StackPanel Spacing="4">
+            <TextBlock Text="{l:T 'Replace a device'}" FontSize="22" FontWeight="Bold" />
+            <TextBlock TextWrapping="Wrap" Opacity="0.85"
+                       Text="{l:T 'Moves every bind and modifier of one device to another, input by input: a new stick, or your old profile on a new PC. The same product keeps its input ids; another device is mapped by its parts (trigger to trigger, hat to hat, roll to roll). Change any input below before you move them; one Undo takes it all back.'}" />
+        </StackPanel>
+
+        <Grid Grid.Row="1" ColumnDefinitions="Auto,*,Auto,*" ColumnSpacing="10">
+            <TextBlock Text="{l:T 'Old device'}" VerticalAlignment="Center" FontWeight="SemiBold" />
+            <ComboBox Grid.Column="1" ItemsSource="{Binding ReplaceOldChoices}" SelectedItem="{Binding ReplaceOldDevice}" HorizontalAlignment="Stretch"
+                      PlaceholderText="{l:T 'the device whose binds move'}" ToolTip.Tip="{l:T 'Devices with binds in your profile; ones that are not connected (an old PC, a sold stick) come first'}" />
+            <TextBlock Grid.Column="2" Text="{l:T 'New device'}" VerticalAlignment="Center" FontWeight="SemiBold" />
+            <ComboBox Grid.Column="3" ItemsSource="{Binding ReplaceNewChoices}" SelectedItem="{Binding ReplaceNewDevice}" HorizontalAlignment="Stretch"
+                      PlaceholderText="{l:T 'the connected device that gets them'}" />
+        </Grid>
+
+        <WrapPanel Grid.Row="2" ItemSpacing="16">
+            <TextBlock Text="{l:T 'Inputs'}" VerticalAlignment="Center" FontWeight="SemiBold" />
+            <RadioButton GroupName="ReplaceMode" IsChecked="{Binding ReplaceModeAuto}" Content="{l:T 'Automatic'}"
+                         ToolTip.Tip="{l:T 'The same product: the same input ids. Another device: by its parts on the device.'}" />
+            <RadioButton GroupName="ReplaceMode" IsChecked="{Binding ReplaceModeSame}" Content="{l:T 'Same input ids (1:1)'}"
+                         ToolTip.Tip="{l:T 'Button 5 stays button 5, X stays X (for the same product, or a device you set up the same way)'}" />
+            <RadioButton GroupName="ReplaceMode" IsChecked="{Binding ReplaceModeLayout}" Content="{l:T 'By layout (device catalog)'}"
+                         ToolTip.Tip="{l:T 'Trigger to trigger, hat 2 to hat 2, roll to roll, throttle to throttle; buttons without a matching part by their order (shown as a guess)'}" />
+        </WrapPanel>
+
+        <Border Grid.Row="3" Classes="card" Padding="10,8">
+            <StackPanel Spacing="3">
+                <TextBlock Text="{Binding ReplaceSummary}" FontWeight="SemiBold" TextWrapping="Wrap" />
+                <TextBlock Text="{Binding ReplaceModels}" TextWrapping="Wrap" FontSize="12" Opacity="0.85" IsVisible="{Binding ReplaceHasPreview}" />
+                <TextBlock Text="{Binding ReplaceCounts}" TextWrapping="Wrap" FontSize="12" IsVisible="{Binding ReplaceHasPreview}" />
+                <TextBlock Text="{Binding ReplaceUnmappedText}" TextWrapping="Wrap" FontSize="12" Foreground="#D97706" IsVisible="{Binding HasReplaceUnmapped}" />
+                <TextBlock Text="{Binding ReplaceWarnings}" TextWrapping="Wrap" FontSize="12" Foreground="#D97706" IsVisible="{Binding HasReplaceWarnings}" />
+                <TextBlock Text="{l:T 'Working out the inputs...'}" FontSize="12" Opacity="0.7" IsVisible="{Binding IsReplacePreviewing}" />
+            </StackPanel>
+        </Border>
+
+        <Grid Grid.Row="4" RowDefinitions="Auto,*" IsVisible="{Binding ReplaceHasPreview}">
+            <Grid ColumnDefinitions="2*,24,2*,2*,2*" ColumnSpacing="8" Margin="8,0,8,4">
+                <TextBlock Text="{l:T 'Input of the old device'}" FontWeight="SemiBold" FontSize="12" />
+                <TextBlock Grid.Column="2" Text="{l:T 'Goes to'}" FontWeight="SemiBold" FontSize="12" />
+                <TextBlock Grid.Column="3" Text="{l:T 'Why'}" FontWeight="SemiBold" FontSize="12" />
+                <TextBlock Grid.Column="4" Text="{l:T 'Used by'}" FontWeight="SemiBold" FontSize="12" />
+            </Grid>
+            <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
+                <ItemsControl ItemsSource="{Binding ReplaceRows}">
+                    <ItemsControl.ItemTemplate>
+                        <DataTemplate x:DataType="models:DeviceReplaceRow">
+                            <Border BorderBrush="{DynamicResource JP.BorderBrush}" BorderThickness="0,0,0,1" Padding="8,5">
+                                <Grid ColumnDefinitions="2*,24,2*,2*,2*" ColumnSpacing="8">
+                                    <TextBlock Text="{Binding OldText}" TextWrapping="Wrap" VerticalAlignment="Center" ToolTip.Tip="{Binding OldText}" />
+                                    <TextBlock Grid.Column="1" Text="→" VerticalAlignment="Center" HorizontalAlignment="Center" Opacity="0.7" />
+                                    <StackPanel Grid.Column="2" Spacing="2" VerticalAlignment="Center">
+                                        <ComboBox ItemsSource="{Binding Choices}" SelectedItem="{Binding ChosenInput}" HorizontalAlignment="Stretch" FontSize="12"
+                                                  ToolTip.Tip="{l:T 'Pick another input of the new device, or leave this one on the old device'}" />
+                                        <TextBlock Text="{Binding NewPartText}" FontSize="11" Opacity="0.75" TextWrapping="Wrap" IsVisible="{Binding IsMapped}" />
+                                    </StackPanel>
+                                    <StackPanel Grid.Column="3" Spacing="2" VerticalAlignment="Center">
+                                        <TextBlock Text="{Binding MethodText}" FontSize="12" TextWrapping="Wrap" IsVisible="{Binding IsPlainMethod}" />
+                                        <TextBlock Text="{Binding MethodText}" FontSize="12" TextWrapping="Wrap" IsVisible="{Binding IsUnmapped}" Opacity="0.6" FontStyle="Italic" />
+                                        <TextBlock Text="{Binding MethodText}" FontSize="12" TextWrapping="Wrap" IsVisible="{Binding IsGuess}" Foreground="#D97706" />
+                                        <TextBlock Text="{Binding OverlapText}" FontSize="11" TextWrapping="Wrap" Foreground="#D97706" IsVisible="{Binding HasOverlap}" />
+                                    </StackPanel>
+                                    <TextBlock Grid.Column="4" Text="{Binding UsedByText}" FontSize="12" TextWrapping="Wrap" VerticalAlignment="Center" ToolTip.Tip="{Binding UsedByTip}" />
+                                </Grid>
+                            </Border>
+                        </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+                </ItemsControl>
+            </ScrollViewer>
+        </Grid>
+
+        <Border Grid.Row="5" Classes="callout warn" IsVisible="{Binding ReplaceNeedsMerge}">
+            <StackPanel Spacing="4">
+                <TextBlock Text="{Binding ReplaceMergeText}" TextWrapping="Wrap" FontWeight="SemiBold" />
+                <WrapPanel ItemSpacing="16">
+                    <RadioButton GroupName="ReplaceMerge" IsChecked="{Binding ReplaceMergeAdd}" Content="{l:T 'Keep both'}"
+                                 ToolTip.Tip="{l:T 'Both binds stay on that input (fine when they are for different games or aircraft)'}" />
+                    <RadioButton GroupName="ReplaceMerge" IsChecked="{Binding ReplaceMergeKeep}" Content="{l:T 'Keep the new device\'s binds'}"
+                                 ToolTip.Tip="{l:T 'The old device\'s bind stays on the old device for those inputs'}" />
+                    <RadioButton GroupName="ReplaceMerge" IsChecked="{Binding ReplaceMergeReplace}" Content="{l:T 'Replace them with the old device\'s binds'}"
+                                 ToolTip.Tip="{l:T 'The new device\'s binds on those inputs are removed (Undo brings them back)'}" />
+                </WrapPanel>
+            </StackPanel>
+        </Border>
+
+        <Grid Grid.Row="6" ColumnDefinitions="*,Auto,Auto" ColumnSpacing="8">
+            <TextBlock Text="{Binding ReplaceStatus}" TextWrapping="Wrap" VerticalAlignment="Center" Foreground="#D97706" />
+            <Button Grid.Column="1" Content="{l:T 'Cancel'}" Click="CancelClicked" />
+            <Button Grid.Column="2" Content="{l:T 'Move binds'}" Classes="accent" IsEnabled="{Binding CanApplyReplace}" Click="ApplyClicked"
+                    ToolTip.Tip="{l:T 'Moves the binds as shown above; Undo (top bar or the notice) takes it back'}" />
+        </Grid>
+    </Grid>
+</Window>

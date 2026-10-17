@@ -1,0 +1,157 @@
+{
+  "format": "joypro-device-layout",
+  "version": 1,
+  "model": "honeycomb-bravo-throttle-quadrant-lite",
+  "photo": {"kind": "vendor", "url": "https://flyhoneycomb.com/cdn/shop/files/HC003790_BRAVOTHROTTLEQUADRANTLITE_1.webp", "sha256": "973814d6d5b7114c656d5f2640d749714b101940a6a0ba70b971d4cba767481a", "view": "main"},
+  "markers": {
+    "panel.lever.gear": [0.82, 0.74],
+    "panel.rotary.1": [0.205, 0.65],
+    "panel.toggle.1": [0.205, 0.475],
+    "quadrant.axis.lever.1": [0.33, 0.33],
+    "quadrant.axis.lever.2": [0.36, 0.14],
+    "quadrant.axis.lever.3": [0.64, 0.14],
+    "quadrant.axis.lever.4": [0.615, 0.37]
+  },
+  "parts": {
+    "quadrant.axis.lever.1": {
+      "type": "lever",
+      "name": "Lever 1",
+      "inputs": [
+        {"input": "", "control": "quadrant.axis.lever.1"}
+      ],
+      "mapping": "medium",
+      "confidence": "medium",
+      "note": "SPEED BRAKE handle (leftmost slot)"
+    },
+    "quadrant.axis.lever.2": {
+      "type": "lever",
+      "name": "Lever 2",
+      "inputs": [
+        {"input": "", "control": "quadrant.axis.lever.2"}
+      ],
+      "mapping": "medium",
+      "confidence": "medium",
+      "note": "throttle handle \"1\""
+    },
+    "quadrant.axis.lever.3": {
+      "type": "lever",
+      "name": "Lever 3",
+      "inputs": [
+        {"input": "", "control": "quadrant.axis.lever.3"}
+      ],
+      "mapping": "medium",
+      "confidence": "medium",
+      "note": "throttle handle \"2\""
+    },
+    "quadrant.axis.lever.4": {
+      "type": "lever",
+      "name": "Lever 4",
+      "inputs": [
+        {"input": "", "control": "quadrant.axis.lever.4"}
+      ],
+      "mapping": "medium",
+      "confidence": "medium",
+      "note": "FLAP handle (rightmost slot)"
+    },
+    "panel.toggle.1": {
+      "type": "switch",
+      "name": "Parking brake",
+      "inputs": [
+        {"input": "JOY_BTN1", "control": "panel.toggle.1.up"},
+        {"input": "JOY_BTN8", "control": "panel.toggle.1.down"}
+      ],
+      "mapping": "medium",
+      "confidence": "high",
+      "note": "PARK BRK switch"
+    },
+    "panel.rotary.1": {
+      "type": "encoder",
+      "name": "Trim wheel nose",
+      "inputs": [
+        {"input": "JOY_BTN13", "control": "panel.rotary.1.ccw"},
+        {"input": "JOY_BTN14", "control": "panel.rotary.1.cw"}
+      ],
+      "mapping": "medium",
+      "confidence": "high",
+      "note": "vertical TRIM wheel (NOSE DOWN top / NOSE UP bottom)"
+    },
+    "panel.lever.gear": {
+      "type": "lever",
+      "name": "Gear",
+      "inputs": [
+        {"input": "JOY_BTN6", "control": "panel.lever.gear.up"},
+        {"input": "JOY_BTN7", "control": "panel.lever.gear.down"}
+      ],
+      "mapping": "medium",
+      "confidence": "high",
+      "note": "GEAR lever knob (UP/DOWN)"
+    },
+    "quadrant.button.1": {
+      "type": "button",
+      "name": "TOGA (lever 1/2)",
+      "inputs": [
+        {"input": "JOY_BTN2", "control": "quadrant.button.1"}
+      ],
+      "mapping": "medium"
+    },
+    "quadrant.button.2": {
+      "type": "button",
+      "name": "TOGA (lever 2/3)",
+      "inputs": [
+        {"input": "JOY_BTN3", "control": "quadrant.button.2"}
+      ],
+      "mapping": "medium"
+    },
+    "quadrant.button.3": {
+      "type": "button",
+      "name": "Reverser throttle 1",
+      "inputs": [
+        {"input": "JOY_BTN4", "control": "quadrant.button.3"}
+      ],
+      "mapping": "medium"
+    },
+    "quadrant.button.4": {
+      "type": "button",
+      "name": "Reverser throttle 2",
+      "inputs": [
+        {"input": "JOY_BTN5", "control": "quadrant.button.4"}
+      ],
+      "mapping": "medium"
+    }
+  },
+  "unplaced": {
+    "quadrant.button.1": "TOGA button on the throttle handles, not identifiable from the front",
+    "quadrant.button.2": "TOGA button on the throttle handles, not identifiable from the front",
+    "quadrant.button.3": "reverser lever of throttle 1, not identifiable on this photo",
+    "quadrant.button.4": "reverser lever of throttle 2, not identifiable on this photo"
+  },
+  "candidates": {},
+  "source": "JoyPro curated on the maker's photo (2026-10-11), the quadrant seen from the front with the airliner handles (speed brake, throttles 1/2, flap)",
+  "mappingSource": "catalog honeycomb.json (button numbering from a local game configuration file, not publicly documented; https://flyhoneycomb.com/products/bravo-throttle-quadrant-lite). Lever axes have no DirectInput names in the catalog; levers taken as numbered left to right like the Bravo (Honeycomb Bravo X-Plane sheet).",
+  "confidence": "medium",
+  "note": "Lever order left to right: speed brake, throttle 1, throttle 2, flap (as fitted on this photo). The TOGA buttons and the reverser levers on the throttle handles are not identifiable from the front; the knurled knob right of the levers is the lever tension adjuster, not a catalog part.",
+  "callouts": {
+    "version": 1,
+    "width": 3632,
+    "height": 2246,
+    "picture": [816, 38, 2000, 2000],
+    "rowHeight": 48,
+    "mainWidth": 408,
+    "modWidth": 264,
+    "otherY": 2076,
+    "tables": [
+      {"id": "panel.toggle.1", "title": "Parking brake", "parts": ["panel.toggle.1"], "side": "left", "x": 38, "y": 929, "width": 720, "modifier": true, "spot": [0.205, 0.475], "rows": [{"input": "JOY_BTN1", "label": "Up", "icon": "up", "part": "panel.toggle.1"}, {"input": "JOY_BTN8", "label": "Down", "icon": "down", "part": "panel.toggle.1"}]},
+      {"id": "panel.rotary.1", "title": "Trim wheel nose", "parts": ["panel.rotary.1"], "side": "left", "x": 38, "y": 1279, "width": 720, "modifier": true, "spot": [0.205, 0.65], "rows": [{"input": "JOY_BTN14", "label": "Clockwise", "icon": "right", "part": "panel.rotary.1"}, {"input": "JOY_BTN13", "label": "Counter-clockwise", "icon": "left", "part": "panel.rotary.1"}]},
+      {"id": "panel.lever.gear", "title": "Gear", "parts": ["panel.lever.gear"], "side": "right", "x": 2874, "y": 1459, "width": 720, "modifier": true, "spot": [0.82, 0.74], "rows": [{"input": "JOY_BTN6", "label": "Up", "icon": "up", "part": "panel.lever.gear"}, {"input": "JOY_BTN7", "label": "Down", "icon": "down", "part": "panel.lever.gear"}]},
+      {"id": "quadrant.button.1", "title": "TOGA (lever 1/2)", "parts": ["quadrant.button.1"], "side": "other", "x": 38, "y": 2125, "width": 720, "modifier": true, "rows": [{"input": "JOY_BTN2", "label": "Press", "icon": "button", "part": "quadrant.button.1"}]},
+      {"id": "quadrant.button.2", "title": "TOGA (lever 2/3)", "parts": ["quadrant.button.2"], "side": "other", "x": 772, "y": 2125, "width": 720, "modifier": true, "rows": [{"input": "JOY_BTN3", "label": "Press", "icon": "button", "part": "quadrant.button.2"}]},
+      {"id": "quadrant.button.3", "title": "Reverser throttle 1", "parts": ["quadrant.button.3"], "side": "other", "x": 1506, "y": 2125, "width": 720, "modifier": true, "rows": [{"input": "JOY_BTN4", "label": "Press", "icon": "button", "part": "quadrant.button.3"}]},
+      {"id": "quadrant.button.4", "title": "Reverser throttle 2", "parts": ["quadrant.button.4"], "side": "other", "x": 2240, "y": 2125, "width": 720, "modifier": true, "rows": [{"input": "JOY_BTN5", "label": "Press", "icon": "button", "part": "quadrant.button.4"}]}
+    ],
+    "lines": [
+      {"table": "panel.toggle.1", "points": [[1226, 988], [758, 988]]},
+      {"table": "panel.rotary.1", "points": [[1226, 1338], [758, 1338]]},
+      {"table": "panel.lever.gear", "points": [[2456, 1518], [2874, 1518]]}
+    ]
+  }
+}

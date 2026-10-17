@@ -1,0 +1,22 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <!-- The game config watcher shared by the GUI and the tray host (JoyPro.Tray): file/registry watching, the engine's
+       sync status/diff output, the shared ui-settings.json fields, instance names and the tray host's logic
+       (docs/sync-watcher.md). No UI framework, so the tray host stays small. -->
+  <PropertyGroup>
+    <TargetFramework>net9.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <RootNamespace>JoyPro.Watch</RootNamespace>
+    <AssemblyName>JoyPro.Watch</AssemblyName>
+    <Version>2.0.0</Version>
+    <IsPackable>false</IsPackable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <InternalsVisibleTo Include="JoyPro.Gui.Tests" />
+  </ItemGroup>
+
+  <!-- The shared background log (docs/logging.md). -->
+  <ItemGroup>
+    <ProjectReference Include="..\JoyPro.Logging\JoyPro.Logging.csproj" />
+  </ItemGroup>
+</Project>

@@ -1,0 +1,199 @@
+{
+  "format": "joypro-device-layout",
+  "version": 1,
+  "model": "winwing-agp",
+  "photo": {"kind": "vendor", "url": "https://eu.winctrl.com/static/ipfs/QmTc2ZEC5qPNpS9dgJASkchQAy3ukft8PzG9WMg6yHg7WT", "sha256": "6f05802d25cd533db847ddf9e29dc2e20c127d5fc82a5510808423c7118f31c5", "view": "main"},
+  "markers": {
+    "panel.button.1": [0.366, 0.252],
+    "panel.button.2": [0.409, 0.262],
+    "panel.button.3": [0.467, 0.274],
+    "panel.button.4": [0.512, 0.47],
+    "panel.encoder.1": [0.302, 0.377],
+    "panel.encoder.2": [0.435, 0.409],
+    "panel.encoder.3": [0.28, 0.438],
+    "panel.lever.gear": [0.19, 0.855],
+    "panel.selector.1": [0.42, 0.466],
+    "panel.selector.2": [0.409, 0.533],
+    "panel.toggle.1": [0.568, 0.162],
+    "panel.toggle.2": [0.512, 0.292]
+  },
+  "parts": {
+    "panel.lever.gear": {
+      "type": "lever",
+      "name": "LDG GEAR",
+      "inputs": [
+        {"input": "JOY_BTN24", "control": "panel.lever.gear.up"},
+        {"input": "JOY_BTN25", "control": "panel.lever.gear.down"}
+      ],
+      "mapping": "medium",
+      "confidence": "high",
+      "note": "LDG GEAR handle knob (gear module, lower left)"
+    },
+    "panel.toggle.1": {
+      "type": "switch",
+      "name": "BRK FAN O",
+      "inputs": [
+        {"input": "JOY_BTN1", "control": "panel.toggle.1.down"},
+        {"input": "JOY_BTN2", "control": "panel.toggle.1.up"}
+      ],
+      "mapping": "medium",
+      "confidence": "high",
+      "note": "BRK FAN HOT/ON latching push button"
+    },
+    "panel.toggle.2": {
+      "type": "switch",
+      "name": "A/SKID & N/W STRG O",
+      "inputs": [
+        {"input": "JOY_BTN6", "control": "panel.toggle.2.up"},
+        {"input": "JOY_BTN7", "control": "panel.toggle.2.down"}
+      ],
+      "mapping": "medium",
+      "confidence": "high",
+      "note": "A/SKID & N/W STRG toggle lever (ON up, OFF down)"
+    },
+    "panel.selector.1": {
+      "type": "selector",
+      "name": "UTC",
+      "inputs": [
+        {"input": "JOY_BTN17", "control": "panel.selector.1.pos.1"},
+        {"input": "JOY_BTN18", "control": "panel.selector.1.pos.2"},
+        {"input": "JOY_BTN19", "control": "panel.selector.1.pos.3"}
+      ],
+      "mapping": "medium",
+      "confidence": "high",
+      "note": "UTC GPS/INT/SET knob"
+    },
+    "panel.selector.2": {
+      "type": "selector",
+      "name": "Selector 2",
+      "inputs": [
+        {"input": "JOY_BTN20", "control": "panel.selector.2.pos.1"},
+        {"input": "JOY_BTN21", "control": "panel.selector.2.pos.2"},
+        {"input": "JOY_BTN22", "control": "panel.selector.2.pos.3"}
+      ],
+      "mapping": "medium",
+      "confidence": "high",
+      "note": "ET RUN/STP/RST knob"
+    },
+    "panel.encoder.1": {
+      "type": "encoder",
+      "name": "CHRONO RST",
+      "inputs": [
+        {"input": "JOY_BTN8", "control": "panel.encoder.1.ccw"},
+        {"input": "JOY_BTN9", "control": "panel.encoder.1.press"},
+        {"input": "JOY_BTN10", "control": "panel.encoder.1.cw"}
+      ],
+      "mapping": "medium",
+      "confidence": "high",
+      "note": "RST knob (top left of clock)"
+    },
+    "panel.encoder.2": {
+      "type": "encoder",
+      "name": "CHR",
+      "inputs": [
+        {"input": "JOY_BTN11", "control": "panel.encoder.2.ccw"},
+        {"input": "JOY_BTN12", "control": "panel.encoder.2.press"},
+        {"input": "JOY_BTN13", "control": "panel.encoder.2.cw"}
+      ],
+      "mapping": "medium",
+      "confidence": "high",
+      "note": "CHR knob (top right of clock)"
+    },
+    "panel.encoder.3": {
+      "type": "encoder",
+      "name": "DATE",
+      "inputs": [
+        {"input": "JOY_BTN14", "control": "panel.encoder.3.ccw"},
+        {"input": "JOY_BTN15", "control": "panel.encoder.3.press"},
+        {"input": "JOY_BTN16", "control": "panel.encoder.3.cw"}
+      ],
+      "mapping": "medium",
+      "confidence": "high",
+      "note": "DATE (SET) knob"
+    },
+    "panel.button.1": {
+      "type": "button",
+      "name": "AUTO BRK LO",
+      "inputs": [
+        {"input": "JOY_BTN3", "control": "panel.button.1"}
+      ],
+      "mapping": "medium",
+      "confidence": "high",
+      "note": "AUTO BRK LO"
+    },
+    "panel.button.2": {
+      "type": "button",
+      "name": "AUTO BRK MED",
+      "inputs": [
+        {"input": "JOY_BTN4", "control": "panel.button.2"}
+      ],
+      "mapping": "medium",
+      "confidence": "high",
+      "note": "AUTO BRK MED"
+    },
+    "panel.button.3": {
+      "type": "button",
+      "name": "AUTO BRK MAX",
+      "inputs": [
+        {"input": "JOY_BTN5", "control": "panel.button.3"}
+      ],
+      "mapping": "medium",
+      "confidence": "high",
+      "note": "AUTO BRK MAX"
+    },
+    "panel.button.4": {
+      "type": "button",
+      "name": "TERR ON ND",
+      "inputs": [
+        {"input": "JOY_BTN23", "control": "panel.button.4"}
+      ],
+      "mapping": "medium",
+      "confidence": "high",
+      "note": "TERR ON ND"
+    }
+  },
+  "unplaced": {},
+  "candidates": {},
+  "source": "JoyPro curated on the maker's photo (2026-10-11), AGP front panel seen from the front-left, landing gear module at the lower left; every control visible",
+  "mappingSource": "catalog source = rswilem/winctrl-xplane-plugin ToLiss AGP profile (https://github.com/rswilem/winctrl-xplane-plugin/blob/HEAD/src/include/products/agp/profiles/toliss-agp-profile.cpp, HID index + 1): 1/2 brake fan on/off, 3/4/5 autobrake LO/MED/MAX, 6/7 antiskid on/off, 8-10 RST knob, 11-13 CHR knob, 14-16 DATE knob, 17-19 UTC GPS/INT/SET, 20-22 ET RUN/STP/RST, 23 TERR ON ND, 24/25 gear up/down. The WinCtrl 32.AGP.Met.1.0 manual (https://eu.winctrl.com/static/ipfs/QmVKXy8jQzVyfdmWFSTxkc9hXAwpMMmSBYMN4YEFAgazcL) has a parts diagram but no button-number drawing.",
+  "confidence": "high",
+  "note": "BRK FAN is a latching push button (manual 1.2.2), not a toggle: the plugin reads 1 = fan on (pressed in), 2 = fan off; the catalog names them down/up. Marker on the button face. panel.selector.2 is the ET RUN/STP/RST knob (3-position auto-reset knob per manual), panel.selector.1 the UTC GPS/INT/SET knob. The RST/CHR/DATE knobs are press encoders; turn direction names come from the plugin (left/right).",
+  "callouts": {
+    "version": 1,
+    "width": 2914,
+    "height": 1809,
+    "picture": [668, 179, 1600, 1600],
+    "rowHeight": 38,
+    "mainWidth": 323,
+    "modWidth": 209,
+    "otherY": -1,
+    "tables": [
+      {"id": "panel.lever.gear", "title": "LDG GEAR", "parts": ["panel.lever.gear"], "side": "left", "x": 30, "y": 1501, "width": 570, "modifier": true, "spot": [0.19, 0.855], "rows": [{"input": "JOY_BTN24", "label": "Up", "icon": "up", "part": "panel.lever.gear"}, {"input": "JOY_BTN25", "label": "Down", "icon": "down", "part": "panel.lever.gear"}]},
+      {"id": "panel.toggle.1", "title": "BRK FAN O", "parts": ["panel.toggle.1"], "side": "top", "x": 1291.8, "y": 30, "width": 570, "modifier": true, "spot": [0.568, 0.162], "rows": [{"input": "JOY_BTN2", "label": "Up", "icon": "up", "part": "panel.toggle.1"}, {"input": "JOY_BTN1", "label": "Down", "icon": "down", "part": "panel.toggle.1"}]},
+      {"id": "panel.toggle.2", "title": "A/SKID & N/W STRG O", "parts": ["panel.toggle.2"], "side": "right", "x": 2314, "y": 600.2, "width": 570, "modifier": true, "spot": [0.512, 0.292], "rows": [{"input": "JOY_BTN6", "label": "Up", "icon": "up", "part": "panel.toggle.2"}, {"input": "JOY_BTN7", "label": "Down", "icon": "down", "part": "panel.toggle.2"}]},
+      {"id": "panel.selector.1", "title": "UTC", "parts": ["panel.selector.1"], "side": "left", "x": 30, "y": 1058.2, "width": 570, "modifier": true, "spot": [0.42, 0.466], "rows": [{"input": "JOY_BTN17", "label": "1", "icon": "pos", "part": "panel.selector.1"}, {"input": "JOY_BTN18", "label": "2", "icon": "pos", "part": "panel.selector.1"}, {"input": "JOY_BTN19", "label": "3", "icon": "pos", "part": "panel.selector.1"}]},
+      {"id": "panel.selector.2", "title": "Selector 2", "parts": ["panel.selector.2"], "side": "left", "x": 30, "y": 1210.2, "width": 570, "modifier": true, "spot": [0.409, 0.533], "rows": [{"input": "JOY_BTN20", "label": "1", "icon": "pos", "part": "panel.selector.2"}, {"input": "JOY_BTN21", "label": "2", "icon": "pos", "part": "panel.selector.2"}, {"input": "JOY_BTN22", "label": "3", "icon": "pos", "part": "panel.selector.2"}]},
+      {"id": "panel.encoder.1", "title": "CHRONO RST", "parts": ["panel.encoder.1"], "side": "left", "x": 30, "y": 602.2, "width": 570, "modifier": true, "spot": [0.302, 0.377], "rows": [{"input": "JOY_BTN9", "label": "Press", "icon": "button", "part": "panel.encoder.1"}, {"input": "JOY_BTN10", "label": "Clockwise", "icon": "right", "part": "panel.encoder.1"}, {"input": "JOY_BTN8", "label": "Counter-clockwise", "icon": "left", "part": "panel.encoder.1"}]},
+      {"id": "panel.encoder.2", "title": "CHR", "parts": ["panel.encoder.2"], "side": "left", "x": 30, "y": 754.2, "width": 570, "modifier": true, "spot": [0.435, 0.409], "rows": [{"input": "JOY_BTN12", "label": "Press", "icon": "button", "part": "panel.encoder.2"}, {"input": "JOY_BTN13", "label": "Clockwise", "icon": "right", "part": "panel.encoder.2"}, {"input": "JOY_BTN11", "label": "Counter-clockwise", "icon": "left", "part": "panel.encoder.2"}]},
+      {"id": "panel.encoder.3", "title": "DATE", "parts": ["panel.encoder.3"], "side": "left", "x": 30, "y": 906.2, "width": 570, "modifier": true, "spot": [0.28, 0.438], "rows": [{"input": "JOY_BTN15", "label": "Press", "icon": "button", "part": "panel.encoder.3"}, {"input": "JOY_BTN16", "label": "Clockwise", "icon": "right", "part": "panel.encoder.3"}, {"input": "JOY_BTN14", "label": "Counter-clockwise", "icon": "left", "part": "panel.encoder.3"}]},
+      {"id": "panel.button.1", "title": "AUTO BRK LO", "parts": ["panel.button.1"], "side": "left", "x": 30, "y": 374.2, "width": 570, "modifier": true, "spot": [0.366, 0.252], "rows": [{"input": "JOY_BTN3", "label": "Press", "icon": "button", "part": "panel.button.1"}]},
+      {"id": "panel.button.2", "title": "AUTO BRK MED", "parts": ["panel.button.2"], "side": "left", "x": 30, "y": 450.2, "width": 570, "modifier": true, "spot": [0.409, 0.262], "rows": [{"input": "JOY_BTN4", "label": "Press", "icon": "button", "part": "panel.button.2"}]},
+      {"id": "panel.button.3", "title": "AUTO BRK MAX", "parts": ["panel.button.3"], "side": "left", "x": 30, "y": 526.2, "width": 570, "modifier": true, "spot": [0.467, 0.274], "rows": [{"input": "JOY_BTN5", "label": "Press", "icon": "button", "part": "panel.button.3"}]},
+      {"id": "panel.button.4", "title": "TERR ON ND", "parts": ["panel.button.4"], "side": "right", "x": 2314, "y": 885, "width": 570, "modifier": true, "spot": [0.512, 0.47], "rows": [{"input": "JOY_BTN23", "label": "Press", "icon": "button", "part": "panel.button.4"}]}
+    ],
+    "lines": [
+      {"table": "panel.button.1", "points": [[1253.6, 582.2], [1253.6, 420.2], [600, 420.2]]},
+      {"table": "panel.button.2", "points": [[1322.4, 598.2], [1322.4, 496.2], [600, 496.2]]},
+      {"table": "panel.button.3", "points": [[1415.2, 617.4], [645, 617.4], [645, 572.2], [600, 572.2]]},
+      {"table": "panel.encoder.1", "points": [[1151.2, 782.2], [645, 782.2], [645, 648.2], [600, 648.2]]},
+      {"table": "panel.encoder.2", "points": [[1364, 833.4], [645, 833.4], [645, 800.2], [600, 800.2]]},
+      {"table": "panel.encoder.3", "points": [[1116, 879.8], [623, 879.8], [623, 952.2], [600, 952.2]]},
+      {"table": "panel.selector.1", "points": [[1340, 924.6], [634, 924.6], [634, 1104.2], [600, 1104.2]]},
+      {"table": "panel.selector.2", "points": [[1322.4, 1031.8], [645, 1031.8], [645, 1256.2], [600, 1256.2]]},
+      {"table": "panel.lever.gear", "points": [[972, 1547], [600, 1547]]},
+      {"table": "panel.toggle.2", "points": [[1487.2, 646.2], [2314, 646.2]]},
+      {"table": "panel.button.4", "points": [[1487.2, 931], [2314, 931]]},
+      {"table": "panel.toggle.1", "points": [[1576.8, 438.2], [1576.8, 133]]}
+    ]
+  }
+}

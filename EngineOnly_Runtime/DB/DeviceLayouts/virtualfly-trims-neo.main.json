@@ -1,0 +1,99 @@
+{
+  "format": "joypro-device-layout",
+  "version": 1,
+  "model": "virtualfly-trims-neo",
+  "photo": {"kind": "vendor", "url": "https://www.virtual-fly.com/wp-content/uploads/trims_neo.png", "sha256": "f27e32a4e315fbf9ee1cf747cbea1bffd67eb97a93eb04cd9189e1a91815758c", "view": "main"},
+  "markers": {
+    "panel.button.1": [0.34, 0.765],
+    "panel.lever.flaps": [0.536, 0.695],
+    "panel.lever.gear": [0.44, 0.72],
+    "panel.rotary.1": [0.344, 0.27],
+    "panel.rotary.2": [0.626, 0.655],
+    "panel.rotary.3": [0.628, 0.785]
+  },
+  "parts": {
+    "panel.lever.flaps": {
+      "type": "lever",
+      "name": "FLAP",
+      "inputs": [
+        {"input": "", "control": "panel.lever.flaps.up"},
+        {"input": "", "control": "panel.lever.flaps.down"}
+      ],
+      "mapping": "medium",
+      "confidence": "high",
+      "note": "FLAP UP / FLAP DN lever knob"
+    },
+    "panel.lever.gear": {
+      "type": "lever",
+      "name": "GEAR",
+      "inputs": [
+        {"input": "", "control": "panel.lever.gear.up"},
+        {"input": "", "control": "panel.lever.gear.down"}
+      ],
+      "mapping": "medium",
+      "confidence": "high",
+      "note": "GEAR UP wheel-shaped gear lever"
+    },
+    "panel.rotary.1": {
+      "type": "encoder",
+      "name": "ELEVATOR TRIM NOSE",
+      "inputs": [
+        {"input": "", "control": "panel.rotary.1.cw"},
+        {"input": "", "control": "panel.rotary.1.ccw"}
+      ],
+      "mapping": "medium",
+      "confidence": "medium",
+      "note": "elevator trim wheel (NOSE UP), seen edge-on"
+    },
+    "panel.rotary.2": {
+      "type": "encoder",
+      "name": "RUDDER TRIM",
+      "inputs": [
+        {"input": "", "control": "panel.rotary.2.cw"},
+        {"input": "", "control": "panel.rotary.2.ccw"}
+      ],
+      "mapping": "medium",
+      "confidence": "medium",
+      "note": "horizontal rudder trim wheel between LEFT and RIGHT"
+    },
+    "panel.rotary.3": {
+      "type": "encoder",
+      "name": "AILERON TRIM",
+      "inputs": [
+        {"input": "", "control": "panel.rotary.3.cw"},
+        {"input": "", "control": "panel.rotary.3.ccw"}
+      ],
+      "mapping": "medium",
+      "confidence": "high",
+      "note": "AILERON TRIM knob"
+    },
+    "panel.button.1": {
+      "type": "button",
+      "name": "P. BRAKE",
+      "inputs": [
+        {"input": "", "control": "panel.button.1"}
+      ],
+      "mapping": "medium",
+      "confidence": "high",
+      "note": "red P. BRAKE knob"
+    }
+  },
+  "unplaced": {},
+  "candidates": {},
+  "source": "JoyPro curated on the maker's photo (2026-10-11), TQ TRIMS panel seen from the front (small, low-resolution product image), elevator trim wheel standing up at the left",
+  "mappingSource": "which control is which from the printed panel labels (NOSE UP, P. BRAKE, GEAR UP, WING FLAPS / FLAP UP / FLAP DN, RUDDER TRIM LEFT/RIGHT, AILERON TRIM) as in the catalog (others_massmarket.json, source https://www.virtual-fly.com/shop/avionics/tq-trim-neo); input numbers are not published (configured with VFHub)",
+  "confidence": "medium",
+  "note": "the catalog has no real input numbers for this panel; markers say only which control is which part. the rudder trim is a thin horizontal wheel under the RUDDER TRIM label, barely visible at this resolution.",
+  "callouts": {
+    "version": 1,
+    "width": 1064,
+    "height": 574,
+    "picture": [20, 20, 1024, 534],
+    "rowHeight": 25,
+    "mainWidth": 212,
+    "modWidth": 138,
+    "otherY": -1,
+    "tables": [],
+    "lines": []
+  }
+}

@@ -1,0 +1,93 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:l="using:JoyPro.Gui.Localization"
+        xmlns:vm="using:JoyPro.Gui.ViewModels"
+        xmlns:models="using:JoyPro.Gui.Models"
+        xmlns:controls="using:JoyPro.Gui.Views.Controls"
+        x:Class="JoyPro.Gui.Views.GameSetupWindow"
+        x:DataType="vm:MainWindowViewModel"
+        Title="{l:T 'JoyPro2 - Your games'}"
+        Icon="/Assets/joypro2_gui.ico"
+        Width="1040"
+        Height="780"
+        MinWidth="760"
+        MinHeight="520"
+        WindowStartupLocation="CenterOwner">
+    <!-- The game setup: what JoyPro found, "I have this game", linked installation folders (portable installs, other
+         drives) and config locations. Nothing is written before Done. -->
+    <Grid x:Name="SetupRoot" RowDefinitions="Auto,*,Auto" Margin="16">
+        <StackPanel Spacing="6" Margin="0,0,0,10">
+            <TextBlock Text="{Binding GameSetupTitle}" FontSize="22" FontWeight="Bold" />
+            <TextBlock Text="{Binding GameSetupSummary}" TextWrapping="Wrap" />
+            <TextBlock TextWrapping="Wrap" Opacity="0.8"
+                       Text="{l:T 'A found game you untick is hidden everywhere in JoyPro (export, game lists) until you bring it back in Settings &gt; Games. Games JoyPro did not find stay unticked but are not hidden: once installed, JoyPro finds them. Browse... links a folder, e.g. a portable install or one on another drive: JoyPro then uses that folder for everything (import, export, DB refresh) and detection never replaces it.'}" />
+        </StackPanel>
+
+        <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto">
+            <ItemsControl ItemsSource="{Binding GameSetupItems}">
+                <ItemsControl.ItemTemplate>
+                    <DataTemplate x:DataType="models:GameSetupItem">
+                        <Border BorderBrush="#334155" BorderThickness="1" CornerRadius="8" Padding="8" Margin="0,0,0,6">
+                            <Grid ColumnDefinitions="44,*" ColumnSpacing="10">
+                                <Border Width="44" Height="66" CornerRadius="5" ClipToBounds="True" Background="#1A94A3B8" VerticalAlignment="Top">
+                                    <Panel>
+                                        <controls:GameBadge GameId="{Binding Install.GameId}" Title="{Binding Install.Name}" />
+                                        <Image Source="{Binding Install.Cover}" Stretch="UniformToFill" />
+                                    </Panel>
+                                </Border>
+                                <StackPanel Grid.Column="1" Spacing="4">
+                                    <StackPanel Orientation="Horizontal" Spacing="8">
+                                        <CheckBox IsChecked="{Binding HasGame}" ToolTip.Tip="{l:T 'I have this game'}">
+                                            <TextBlock Text="{Binding Name}" FontWeight="SemiBold" />
+                                        </CheckBox>
+                                        <Border CornerRadius="8" Padding="8,1" Background="#3322C55E" IsVisible="{Binding ShowFound}" VerticalAlignment="Center">
+                                            <TextBlock Text="{Binding DetectedLabel}" FontSize="11" />
+                                        </Border>
+                                        <Border CornerRadius="8" Padding="8,1" Background="#333B82F6" IsVisible="{Binding ShowLinked}" VerticalAlignment="Center">
+                                            <TextBlock Text="{Binding DetectedLabel}" FontSize="11" />
+                                        </Border>
+                                        <Border CornerRadius="8" Padding="8,1" Background="#33EF4444" IsVisible="{Binding ShowNotFound}" VerticalAlignment="Center">
+                                            <TextBlock Text="{Binding DetectedLabel}" FontSize="11" />
+                                        </Border>
+                                    </StackPanel>
+                                    <TextBlock Text="{Binding DetectedText}" FontSize="12" TextWrapping="Wrap" Opacity="0.75" />
+                                    <CheckBox IsChecked="{Binding ExplicitlyHidden}" IsVisible="{Binding ShowHideChoice}" FontSize="12"
+                                              Content="{l:T 'I don\'t have it (hide it everywhere)'}" ToolTip.Tip="{l:T 'Otherwise JoyPro finds the game once it is installed'}" />
+                                    <StackPanel Spacing="4" IsVisible="{Binding HasGame}">
+                                        <Grid ColumnDefinitions="120,*,90,60,110" ColumnSpacing="8">
+                                            <TextBlock Text="{l:T 'Installation'}" VerticalAlignment="Center" Opacity="0.8" />
+                                            <TextBlock Grid.Column="1" Text="{Binding InstallText}" TextWrapping="Wrap" VerticalAlignment="Center" FontSize="12" />
+                                            <Button Grid.Column="2" Content="{l:T 'Browse...'}" HorizontalAlignment="Stretch" HorizontalContentAlignment="Center" Click="BrowseInstallClicked"
+                                                    ToolTip.Tip="{l:T 'Link the game\'s folder (portable install, other drive); it then counts as the installation'}" />
+                                            <Button Grid.Column="3" Content="{l:T '.exe...'}" HorizontalAlignment="Stretch" HorizontalContentAlignment="Center" Click="BrowseInstallExeClicked"
+                                                    ToolTip.Tip="{l:T 'Pick the game\'s .exe or its launcher instead; JoyPro links the game\'s folder'}" />
+                                            <Button Grid.Column="4" Content="{l:T 'Use detected'}" HorizontalAlignment="Stretch" HorizontalContentAlignment="Center" Command="{Binding UseDetectedFolderCommand}" IsVisible="{Binding HasLink}"
+                                                    ToolTip.Tip="{l:T 'Forget your folder; JoyPro detects the game again'}" />
+                                        </Grid>
+                                        <TextBlock Text="{Binding MarkerStatus}" FontSize="11" TextWrapping="Wrap" Foreground="#16A34A" IsVisible="{Binding MarkerOk}" Margin="128,0,0,0" />
+                                        <TextBlock Text="{Binding MarkerStatus}" FontSize="11" TextWrapping="Wrap" Foreground="#D97706" IsVisible="{Binding MarkerProblem}" Margin="128,0,0,0" />
+                                        <Grid ColumnDefinitions="120,*,90,60,110" ColumnSpacing="8">
+                                            <TextBlock Text="{l:T 'Controls saved in'}" VerticalAlignment="Center" Opacity="0.8" />
+                                            <TextBlock Grid.Column="1" Text="{Binding ConfigText}" TextWrapping="Wrap" VerticalAlignment="Center" FontSize="12" />
+                                            <Button Grid.Column="2" Content="{l:T 'Browse...'}" HorizontalAlignment="Stretch" HorizontalContentAlignment="Center" Click="BrowseConfigClicked" IsVisible="{Binding CanChangeConfig}"
+                                                    ToolTip.Tip="{l:T 'Where the game keeps its controls, e.g. Saved Games\\DCS.openbeta instead of Saved Games\\DCS'}" />
+                                            <Button Grid.Column="4" Content="{l:T 'Use detected'}" HorizontalAlignment="Stretch" HorizontalContentAlignment="Center" Command="{Binding UseDetectedConfigCommand}" IsVisible="{Binding HasConfigLink}"
+                                                    ToolTip.Tip="{l:T 'Forget your config location; JoyPro finds it again'}" />
+                                        </Grid>
+                                        <TextBlock Text="{Binding ConfigNote}" FontSize="11" TextWrapping="Wrap" Opacity="0.7" IsVisible="{Binding HasConfigNote}" Margin="128,0,0,0" />
+                                    </StackPanel>
+                                </StackPanel>
+                            </Grid>
+                        </Border>
+                    </DataTemplate>
+                </ItemsControl.ItemTemplate>
+            </ItemsControl>
+        </ScrollViewer>
+
+        <Grid Grid.Row="2" ColumnDefinitions="*,Auto,Auto" ColumnSpacing="8" Margin="0,10,0,0">
+            <TextBlock Text="{Binding GameSetupStatus}" TextWrapping="Wrap" Foreground="#DC2626" VerticalAlignment="Center" />
+            <Button Grid.Column="1" Content="{l:T 'Later'}" Click="LaterClicked" ToolTip.Tip="{l:T 'Change nothing; Settings &gt; Games &gt; Run setup again shows this again'}" />
+            <Button Grid.Column="2" Content="{l:T 'Done'}" Classes="accent" Click="DoneClicked" IsEnabled="{Binding CanRun}" />
+        </Grid>
+    </Grid>
+</Window>

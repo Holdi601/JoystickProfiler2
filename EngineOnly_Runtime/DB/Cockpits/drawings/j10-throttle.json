@@ -1,0 +1,30 @@
+{
+  "format": "joypro-cockpit-drawing",
+  "version": 1,
+  "id": "j10-throttle",
+  "kind": "throttle",
+  "aircraft": ["j-10"],
+  "variants": [],
+  "except": [],
+  "name": "J-10 throttle grip",
+  "view": "the single throttle lever on the left console from the inboard side, as the pilot sees it; forward is left, the speed brake switch, the cursor control and the transmit button on the thumb face",
+  "origin": "JoyPro's own vector drawing: the HOTAS throttle's public silhouette (one large grip on a left-console track) and the listed controls placed from public descriptions and photos looked at for proportions; low-confidence data, only the listed controls are drawn; not traced from a photo.",
+  "width": 800,
+  "height": 1000,
+  "shapes": [
+    { "kind": "ellipse", "role": "shadow", "x": 420, "y": 968, "w": 330, "h": 20 },
+    { "kind": "rect", "role": "bodyAlt", "x": 120, "y": 772, "w": 600, "h": 178, "r": 26 },
+    { "kind": "rect", "role": "screen", "x": 170, "y": 802, "w": 500, "h": 22, "r": 11 },
+    { "kind": "path", "role": "body", "path": "M404,812 L414,590 L486,590 L478,812 Z" },
+    { "kind": "path", "role": "body", "path": "M250,320 C240,236 292,186 372,178 L556,164 C630,158 668,206 662,276 L644,490 C638,552 600,592 544,594 L350,598 C298,598 268,564 266,512 L264,440 C246,418 244,384 256,360 Z" },
+    { "kind": "path", "role": "face", "path": "M296,300 C298,250 326,222 372,218 L582,200 C612,198 628,218 626,246 L612,470 C610,494 596,508 572,508 L330,512 C312,512 302,500 302,482 Z" },
+    { "kind": "path", "role": "line", "path": "M276,532 C304,566 344,578 392,580" },
+    { "kind": "path", "role": "line", "path": "M640,320 C650,380 648,440 638,500" }
+  ],
+  "parts": [
+    { "id": "throttle.speedbrake", "type": "switch3", "x": 358, "y": 282, "r": 24 },
+    { "id": "throttle.ministick", "type": "ministick", "x": 548, "y": 268, "r": 30 },
+    { "id": "throttle.hat.mic", "type": "button", "x": 362, "y": 410, "r": 19 },
+    { "id": "throttle.axis.main", "type": "axis", "x": 420, "y": 886, "r": 62, "angle": 90 }
+  ]
+}

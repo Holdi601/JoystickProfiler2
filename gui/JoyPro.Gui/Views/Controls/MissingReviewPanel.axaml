@@ -1,0 +1,70 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:l="using:JoyPro.Gui.Localization"
+             xmlns:vm="using:JoyPro.Gui.ViewModels"
+             xmlns:models="using:JoyPro.Gui.Models"
+             xmlns:controls="using:JoyPro.Gui.Views.Controls"
+             x:Name="ReviewRoot"
+             x:Class="JoyPro.Gui.Views.Controls.MissingReviewPanel"
+             x:DataType="vm:MainWindowViewModel">
+    <!-- Suggest missing for every relation (ViewModels/MainWindowViewModel.SuggestMissing.cs): relation by relation, the
+         actions of games and aircraft it lacks that no other relation uses; tick, Add ticked. -->
+    <Grid RowDefinitions="Auto,Auto,*,Auto" RowSpacing="6" MinHeight="0">
+        <Grid ColumnDefinitions="*,Auto" ColumnSpacing="6">
+            <TextBlock Classes="caption" Text="{Binding MissingReviewStatus}" TextWrapping="Wrap" VerticalAlignment="Center" />
+            <Button Grid.Column="1" Classes="icon small" Tag="{StaticResource Icon.Refresh}" Content="{l:T 'Check again'}" Command="{Binding SuggestMissingForAllCommand}"
+                    VerticalAlignment="Top" ToolTip.Tip="{l:T 'Look at every relation again'}" />
+        </Grid>
+        <ProgressBar Grid.Row="1" IsIndeterminate="True" IsVisible="{Binding IsMissingReviewLoading}" />
+        <ScrollViewer Grid.Row="2" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled" MinHeight="0">
+            <ItemsControl ItemsSource="{Binding MissingReview}" Margin="0,0,12,0">
+                <ItemsControl.ItemTemplate>
+                    <DataTemplate x:DataType="models:MissingReviewRelationItem">
+                        <Border Classes="raised" Padding="8,6" Margin="0,0,0,6">
+                            <StackPanel Spacing="4">
+                                <Grid ColumnDefinitions="Auto,*,Auto,Auto" ColumnSpacing="8">
+                                    <CheckBox IsChecked="{Binding IsChecked}" VerticalAlignment="Center" ToolTip.Tip="{l:T 'Tick or untick everything of this relation'}" />
+                                    <StackPanel Grid.Column="1" VerticalAlignment="Center">
+                                        <TextBlock Text="{Binding Name}" FontWeight="Bold" TextTrimming="CharacterEllipsis" />
+                                        <TextBlock Classes="caption" Text="{Binding Summary}" TextTrimming="CharacterEllipsis" />
+                                    </StackPanel>
+                                    <Button Grid.Column="2" Classes="small ghost" Content="{l:T 'Open'}"
+                                            Command="{Binding $parent[controls:MissingReviewPanel].((vm:MainWindowViewModel)DataContext).OpenMissingReviewRelationCommand}" CommandParameter="{Binding}"
+                                            ToolTip.Tip="{l:T 'Open the relation with its suggestions (also the ones other relations use)'}" />
+                                    <ToggleButton Grid.Column="3" Classes="small ghost" IsChecked="{Binding IsExpanded}" ToolTip.Tip="{l:T 'Show or hide its suggestions'}">
+                                        <Panel>
+                                            <TextBlock Text="{l:T 'Hide'}" IsVisible="{Binding IsExpanded}" />
+                                            <TextBlock Text="{l:T 'Show'}" IsVisible="{Binding !IsExpanded}" />
+                                        </Panel>
+                                    </ToggleButton>
+                                </Grid>
+                                <ItemsControl ItemsSource="{Binding Items}" IsVisible="{Binding IsExpanded}" Margin="26,0,0,0">
+                                    <ItemsControl.ItemTemplate>
+                                        <DataTemplate x:DataType="models:BuilderSuggestionItem">
+                                            <CheckBox IsChecked="{Binding IsChecked}" HorizontalAlignment="Stretch" HorizontalContentAlignment="Stretch" ToolTip.Tip="{Binding Why}">
+                                                <Grid ColumnDefinitions="Auto,*,Auto" ColumnSpacing="6">
+                                                    <Border Classes="chip game"><TextBlock Text="{Binding GameLabel}" /></Border>
+                                                    <StackPanel Grid.Column="1">
+                                                        <TextBlock Text="{Binding Title}" TextTrimming="CharacterEllipsis" />
+                                                        <TextBlock Classes="caption" FontSize="11" Text="{Binding MissingText}" TextTrimming="CharacterEllipsis" />
+                                                    </StackPanel>
+                                                    <TextBlock Grid.Column="2" Classes="caption" Text="{Binding ScoreText}" VerticalAlignment="Center" />
+                                                </Grid>
+                                            </CheckBox>
+                                        </DataTemplate>
+                                    </ItemsControl.ItemTemplate>
+                                </ItemsControl>
+                            </StackPanel>
+                        </Border>
+                    </DataTemplate>
+                </ItemsControl.ItemTemplate>
+            </ItemsControl>
+        </ScrollViewer>
+        <WrapPanel Grid.Row="3" ItemSpacing="6" LineSpacing="6" IsVisible="{Binding HasMissingReview}">
+            <Button Classes="icon accent" Tag="{StaticResource Icon.Check}" Content="{Binding MissingReviewAddLabel}" Command="{Binding AddTickedMissingReviewCommand}"
+                    IsEnabled="{Binding HasMissingReviewTicked}" ToolTip.Tip="{l:T 'Adds the ticked actions to their relations (Ctrl+Z undoes them one relation at a time)'}" />
+            <Button Classes="small ghost" Content="{l:T 'Tick all'}" Command="{Binding TickAllMissingReviewCommand}" />
+            <Button Classes="small ghost" Content="{l:T 'Clear ticks'}" Command="{Binding ClearMissingReviewTicksCommand}" IsVisible="{Binding HasMissingReviewTicked}" />
+        </WrapPanel>
+    </Grid>
+</UserControl>

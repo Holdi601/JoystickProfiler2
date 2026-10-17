@@ -1,0 +1,24 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:l="using:JoyPro.Gui.Localization"
+        xmlns:vm="using:JoyPro.Gui.ViewModels"
+        xmlns:controls="using:JoyPro.Gui.Views.Controls"
+        x:Class="JoyPro.Gui.Views.HudWindow"
+        x:DataType="vm:MainWindowViewModel"
+        Title="{l:T 'JoyPro HUD'}"
+        FontFamily="{DynamicResource JP.UiFont}"
+        CanResize="False"
+        SizeToContent="WidthAndHeight"
+        MinWidth="20"
+        MinHeight="20">
+    <!-- On screen: transparent, sized to the visible widgets, placed by HudWindow.PlaceOnScreen.
+         Stream window: the whole 1920 x 1080 HUD scaled into a normal window with a plain background (OBS chroma key). -->
+    <Panel>
+        <LayoutTransformControl x:Name="ScreenHost">
+            <controls:HudSurface x:Name="ScreenSurface" Widgets="{Binding HudWidgets}" Context="{Binding HudContext}" />
+        </LayoutTransformControl>
+        <Viewbox x:Name="StreamHost" Stretch="Uniform" IsVisible="False">
+            <controls:HudSurface x:Name="StreamSurface" Fixed="True" Widgets="{Binding HudWidgets}" Context="{Binding HudContext}" />
+        </Viewbox>
+    </Panel>
+</Window>

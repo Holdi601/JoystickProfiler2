@@ -1,0 +1,30 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <!-- Telemetry force feedback process: reads a game's telemetry and drives a DirectInput force feedback stick
+       through a JoyPro.Ffb.Core graph. The GUI starts it only while a supported game runs (docs/ffb-telemetry.md). -->
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net9.0-windows</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <RootNamespace>JoyPro.Ffb</RootNamespace>
+    <AssemblyName>JoyPro.Ffb</AssemblyName>
+    <Version>2.0.0</Version>
+    <IsPackable>false</IsPackable>
+    <InvariantGlobalization>true</InvariantGlobalization>
+    <ServerGarbageCollector>false</ServerGarbageCollector>
+    <ConcurrentGarbageCollection>false</ConcurrentGarbageCollection>
+    <TieredPGO>true</TieredPGO>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <!-- The process allocates ~1 MB/s while forces run and keeps under 1 MB alive. With the default gen0 budget (sized
+         from the CPU cache) the heap grows to ~50 MB between collections; a 64 MB hard limit makes the GC collect every
+         few seconds instead (measured: private bytes 18 MB flat instead of 58 MB). System.GC.Gen0Size is not read by
+         .NET 9 from the runtimeconfig. -->
+    <RuntimeHostConfigurationOption Include="System.GC.HeapHardLimit" Value="67108864" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\JoyPro.Ffb.Core\JoyPro.Ffb.Core.csproj" />
+  </ItemGroup>
+</Project>

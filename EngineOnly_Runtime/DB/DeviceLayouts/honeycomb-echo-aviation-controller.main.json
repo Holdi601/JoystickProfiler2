@@ -1,0 +1,354 @@
+{
+  "format": "joypro-device-layout",
+  "version": 1,
+  "model": "honeycomb-echo-aviation-controller",
+  "photo": {"kind": "vendor", "url": "https://flyhoneycomb.com/cdn/shop/files/HC003981_EchoAviationController_1.webp", "sha256": "40b194bfb2fefc5bb46a3807c3b22253bc1edc1978a865cffcd6000b64840618", "view": "main"},
+  "markers": {
+    "panel.button.3": [0.5, 0.245],
+    "panel.lever.flaps": [0.625, 0.705],
+    "panel.lever.gear": [0.5, 0.7],
+    "panel.rotary.1": [0.775, 0.395],
+    "panel.toggle.1": [0.362, 0.685],
+    "quadrant.axis.lever.1": [0.528, 0.43],
+    "quadrant.axis.lever.2": [0.585, 0.43],
+    "quadrant.axis.lever.3": [0.64, 0.43],
+    "quadrant.axis.lever.4": [0.7, 0.43],
+    "stick.button.thumb.1": [0.362, 0.38],
+    "stick.button.thumb.2": [0.402, 0.34],
+    "stick.button.thumb.3": [0.322, 0.34],
+    "stick.button.thumb.4": [0.362, 0.3],
+    "stick.gimbal": [0.355, 0.5],
+    "stick.hat.1": [0.225, 0.37],
+    "stick.ministick": [0.355, 0.485]
+  },
+  "parts": {
+    "stick.ministick": {
+      "type": "ministick",
+      "name": "Joystick press",
+      "inputs": [
+        {"input": "JOY_BTN25", "control": "stick.ministick.press"}
+      ],
+      "mapping": "medium",
+      "confidence": "medium",
+      "note": "press on the joystick"
+    },
+    "stick.gimbal": {
+      "type": "gimbal",
+      "name": "Joystick",
+      "inputs": [
+        {"input": "", "control": "stick.axis.roll"},
+        {"input": "", "control": "stick.axis.pitch"}
+      ],
+      "mapping": "medium",
+      "confidence": "medium",
+      "note": "large joystick, lower left"
+    },
+    "panel.lever.flaps": {
+      "type": "lever",
+      "name": "Flaps",
+      "inputs": [
+        {"input": "JOY_BTN17", "control": "panel.lever.flaps.up"},
+        {"input": "JOY_BTN18", "control": "panel.lever.flaps.down"}
+      ],
+      "mapping": "medium",
+      "confidence": "medium",
+      "note": "white wedge lever on the bottom edge (flaps)"
+    },
+    "stick.hat.1": {
+      "type": "hat",
+      "name": "8-way hat",
+      "inputs": [
+        {"input": "JOY_BTN_POV1_U", "control": "stick.hat.1.up"},
+        {"input": "JOY_BTN_POV1_R", "control": "stick.hat.1.right"},
+        {"input": "JOY_BTN_POV1_D", "control": "stick.hat.1.down"},
+        {"input": "JOY_BTN_POV1_L", "control": "stick.hat.1.left"}
+      ],
+      "mapping": "medium",
+      "confidence": "high",
+      "note": "ridged 8-way hat, upper left"
+    },
+    "panel.lever.gear": {
+      "type": "lever",
+      "name": "Landing gear",
+      "inputs": [
+        {"input": "JOY_BTN13", "control": "panel.lever.gear.up"},
+        {"input": "JOY_BTN14", "control": "panel.lever.gear.down"}
+      ],
+      "mapping": "medium",
+      "confidence": "medium",
+      "note": "lever with the wheel-shaped knob on the bottom edge (gear)"
+    },
+    "stick.button.thumb.1": {
+      "type": "button",
+      "name": "Bottom face button",
+      "inputs": [
+        {"input": "JOY_BTN1", "control": "stick.button.thumb.1"}
+      ],
+      "mapping": "medium",
+      "confidence": "high",
+      "note": "bottom face button"
+    },
+    "quadrant.axis.lever.1": {
+      "type": "lever",
+      "name": "Slider 1",
+      "inputs": [
+        {"input": "", "control": "quadrant.axis.lever.1"}
+      ],
+      "mapping": "medium",
+      "confidence": "medium",
+      "note": "slider 1 (leftmost, SPEED BRAKE)"
+    },
+    "stick.button.thumb.2": {
+      "type": "button",
+      "name": "Right face button",
+      "inputs": [
+        {"input": "JOY_BTN2", "control": "stick.button.thumb.2"}
+      ],
+      "mapping": "medium",
+      "confidence": "high",
+      "note": "right face button"
+    },
+    "quadrant.axis.lever.2": {
+      "type": "lever",
+      "name": "Slider 2",
+      "inputs": [
+        {"input": "", "control": "quadrant.axis.lever.2"}
+      ],
+      "mapping": "medium",
+      "confidence": "medium",
+      "note": "slider 2"
+    },
+    "stick.button.thumb.3": {
+      "type": "button",
+      "name": "Left face button",
+      "inputs": [
+        {"input": "JOY_BTN3", "control": "stick.button.thumb.3"}
+      ],
+      "mapping": "medium",
+      "confidence": "high",
+      "note": "left face button"
+    },
+    "quadrant.axis.lever.3": {
+      "type": "lever",
+      "name": "Slider 3",
+      "inputs": [
+        {"input": "", "control": "quadrant.axis.lever.3"}
+      ],
+      "mapping": "medium",
+      "confidence": "medium",
+      "note": "slider 3"
+    },
+    "stick.button.thumb.4": {
+      "type": "button",
+      "name": "Top face button",
+      "inputs": [
+        {"input": "JOY_BTN4", "control": "stick.button.thumb.4"}
+      ],
+      "mapping": "medium",
+      "confidence": "high",
+      "note": "top face button"
+    },
+    "quadrant.axis.lever.4": {
+      "type": "lever",
+      "name": "Slider 4",
+      "inputs": [
+        {"input": "", "control": "quadrant.axis.lever.4"}
+      ],
+      "mapping": "medium",
+      "confidence": "medium",
+      "note": "slider 4 (rightmost, SLAT FLAP)"
+    },
+    "stick.button.index.1": {
+      "type": "button",
+      "name": "Top left button",
+      "inputs": [
+        {"input": "JOY_BTN5", "control": "stick.button.index.1"}
+      ],
+      "mapping": "medium"
+    },
+    "panel.toggle.1": {
+      "type": "switch",
+      "name": "Parking brake",
+      "inputs": [
+        {"input": "JOY_BTN15", "control": "panel.toggle.1.up"},
+        {"input": "JOY_BTN16", "control": "panel.toggle.1.down"}
+      ],
+      "mapping": "medium",
+      "confidence": "medium",
+      "note": "mushroom-knob lever on the bottom edge (parking brake, by elimination)"
+    },
+    "stick.button.index.2": {
+      "type": "button",
+      "name": "Bottom left button",
+      "inputs": [
+        {"input": "JOY_BTN6", "control": "stick.button.index.2"}
+      ],
+      "mapping": "medium"
+    },
+    "panel.rotary.1": {
+      "type": "encoder",
+      "name": "Trim nose",
+      "inputs": [
+        {"input": "JOY_BTN23", "control": "panel.rotary.1.ccw"},
+        {"input": "JOY_BTN24", "control": "panel.rotary.1.cw"}
+      ],
+      "mapping": "medium",
+      "confidence": "high",
+      "note": "TRIM wheel right of the sliders"
+    },
+    "stick.button.index.3": {
+      "type": "button",
+      "name": "Top right button",
+      "inputs": [
+        {"input": "JOY_BTN7", "control": "stick.button.index.3"}
+      ],
+      "mapping": "medium"
+    },
+    "panel.button.1": {
+      "type": "button",
+      "name": "Menu",
+      "inputs": [
+        {"input": "JOY_BTN9", "control": "panel.button.1"}
+      ],
+      "mapping": "low"
+    },
+    "stick.button.index.4": {
+      "type": "button",
+      "name": "Bottom right button",
+      "inputs": [
+        {"input": "JOY_BTN8", "control": "stick.button.index.4"}
+      ],
+      "mapping": "medium"
+    },
+    "panel.button.2": {
+      "type": "button",
+      "name": "List",
+      "inputs": [
+        {"input": "JOY_BTN10", "control": "panel.button.2"}
+      ],
+      "mapping": "low"
+    },
+    "panel.button.3": {
+      "type": "button",
+      "name": "Logo",
+      "inputs": [
+        {"input": "JOY_BTN11", "control": "panel.button.3"}
+      ],
+      "mapping": "medium",
+      "confidence": "high",
+      "note": "Honeycomb logo button (top centre)"
+    },
+    "panel.button.4": {
+      "type": "button",
+      "name": "Back",
+      "inputs": [
+        {"input": "JOY_BTN12", "control": "panel.button.4"}
+      ],
+      "mapping": "low"
+    },
+    "pedals.axis.rudder": {
+      "type": "rudder",
+      "name": "Rudder (back)",
+      "inputs": [
+        {"input": "", "control": "pedals.axis.rudder"}
+      ],
+      "mapping": "medium"
+    },
+    "quadrant.button.1": {
+      "type": "button",
+      "name": "Slider 1 reverse",
+      "inputs": [
+        {"input": "JOY_BTN19", "control": "quadrant.button.1"}
+      ],
+      "mapping": "medium"
+    },
+    "quadrant.button.2": {
+      "type": "button",
+      "name": "Slider 2 reverse",
+      "inputs": [
+        {"input": "JOY_BTN20", "control": "quadrant.button.2"}
+      ],
+      "mapping": "medium"
+    },
+    "quadrant.button.3": {
+      "type": "button",
+      "name": "Slider 3 reverse",
+      "inputs": [
+        {"input": "JOY_BTN21", "control": "quadrant.button.3"}
+      ],
+      "mapping": "medium"
+    },
+    "quadrant.button.4": {
+      "type": "button",
+      "name": "Slider 4 reverse",
+      "inputs": [
+        {"input": "JOY_BTN22", "control": "quadrant.button.4"}
+      ],
+      "mapping": "medium"
+    }
+  },
+  "unplaced": {
+    "stick.button.index.1": "shoulder button on the top edge, not visible from the front",
+    "stick.button.index.2": "shoulder button on the top edge, not visible from the front",
+    "stick.button.index.3": "shoulder button on the top edge, not visible from the front",
+    "panel.button.1": "right small top button (list icon); Menu or List not documented",
+    "stick.button.index.4": "shoulder button on the top edge, not visible from the front",
+    "panel.button.2": "centre lower top button (segmented bar icon); Menu or List not documented",
+    "panel.button.4": "left small top button (rotate-arrow icon), probably Back",
+    "pedals.axis.rudder": "rudder paddles on the back of the controller, not visible from the front",
+    "quadrant.button.1": "virtual reverse button of slider 1 (slider past its detent)",
+    "quadrant.button.2": "virtual reverse button of slider 2",
+    "quadrant.button.3": "virtual reverse button of slider 3",
+    "quadrant.button.4": "virtual reverse button of slider 4"
+  },
+  "candidates": {
+    "panel.button.1": [0.565, 0.272],
+    "panel.button.2": [0.5, 0.287],
+    "panel.button.4": [0.435, 0.272]
+  },
+  "source": "JoyPro curated on the maker's photo (2026-10-11), the controller seen from the front (face up, levers at the bottom edge)",
+  "mappingSource": "catalog honeycomb.json (numbering from a local game configuration file, not publicly documented; https://flyhoneycomb.com/products/echo-aviation-controller)",
+  "confidence": "medium",
+  "note": "Upper-left ridged knob = 8-way hat, lower large stick = joystick (press = stick.ministick). Sliders taken left to right as 1-4 (SPEED BRAKE label under the left one, SLAT FLAP under the right one). The three levers on the bottom edge identified by shape: mushroom knob = parking brake, wheel knob = gear, white wedge = flaps. The four shoulder buttons (index) sit on the top edge and the rudder paddles on the back (gallery-2 shows two paddles with up/down marks), not visible from the front. Which of the three small top buttons is Menu, List or Back is not documented (icons: rotate-arrow left, segmented bar centre, list icon right): kept as candidates. The slider reverse buttons are virtual (slider pulled past its detent).",
+  "callouts": {
+    "version": 1,
+    "width": 3632,
+    "height": 2581,
+    "picture": [816, 179, 2000, 2000],
+    "rowHeight": 48,
+    "mainWidth": 408,
+    "modWidth": 264,
+    "otherY": 2217,
+    "tables": [
+      {"id": "grid:stick.button.thumb.4", "title": "Buttons Top face b - Bottom fac", "parts": ["stick.button.thumb.4", "stick.button.thumb.2", "stick.button.thumb.3", "stick.button.thumb.1"], "side": "left", "x": 316, "y": 739.7, "width": 442, "grid": true, "columns": 2, "modifier": false, "spot": [0.362, 0.34], "rows": [{"input": "JOY_BTN4", "label": "Top face b", "icon": "button", "part": "stick.button.thumb.4", "cell": [0, 0, 0]}, {"input": "JOY_BTN2", "label": "Right face", "icon": "button", "part": "stick.button.thumb.2", "cell": [0, 1, 0]}, {"input": "JOY_BTN3", "label": "Left face", "icon": "button", "part": "stick.button.thumb.3", "cell": [1, 0, 0]}, {"input": "JOY_BTN1", "label": "Bottom fac", "icon": "button", "part": "stick.button.thumb.1", "cell": [1, 1, 0]}]},
+      {"id": "stick.ministick", "title": "Joystick press", "parts": ["stick.ministick"], "side": "left", "x": 38, "y": 1125.7, "width": 720, "modifier": true, "spot": [0.355, 0.485], "rows": [{"input": "JOY_BTN25", "label": "Press", "icon": "button", "part": "stick.ministick"}]},
+      {"id": "panel.lever.flaps", "title": "Flaps", "parts": ["panel.lever.flaps"], "side": "right", "x": 2874, "y": 1530, "width": 720, "modifier": true, "spot": [0.625, 0.705], "rows": [{"input": "JOY_BTN17", "label": "Up", "icon": "up", "part": "panel.lever.flaps"}, {"input": "JOY_BTN18", "label": "Down", "icon": "down", "part": "panel.lever.flaps"}]},
+      {"id": "stick.hat.1", "title": "8-way hat", "parts": ["stick.hat.1"], "side": "left", "x": 38, "y": 884.7, "width": 720, "modifier": true, "spot": [0.225, 0.37], "rows": [{"input": "JOY_BTN_POV1_U", "label": "Up", "icon": "up", "part": "stick.hat.1"}, {"input": "JOY_BTN_POV1_R", "label": "Right", "icon": "right", "part": "stick.hat.1"}, {"input": "JOY_BTN_POV1_L", "label": "Left", "icon": "left", "part": "stick.hat.1"}, {"input": "JOY_BTN_POV1_D", "label": "Down", "icon": "down", "part": "stick.hat.1"}]},
+      {"id": "panel.lever.gear", "title": "Landing gear", "parts": ["panel.lever.gear"], "side": "left", "x": 38, "y": 1577.5, "width": 720, "modifier": true, "spot": [0.5, 0.7], "rows": [{"input": "JOY_BTN13", "label": "Up", "icon": "up", "part": "panel.lever.gear"}, {"input": "JOY_BTN14", "label": "Down", "icon": "down", "part": "panel.lever.gear"}]},
+      {"id": "stick.button.index.1", "title": "Top left button", "parts": ["stick.button.index.1"], "side": "other", "x": 38, "y": 2266, "width": 720, "modifier": true, "rows": [{"input": "JOY_BTN5", "label": "Press", "icon": "button", "part": "stick.button.index.1"}]},
+      {"id": "panel.toggle.1", "title": "Parking brake", "parts": ["panel.toggle.1"], "side": "left", "x": 38, "y": 1432.5, "width": 720, "modifier": true, "spot": [0.362, 0.685], "rows": [{"input": "JOY_BTN15", "label": "Up", "icon": "up", "part": "panel.toggle.1"}, {"input": "JOY_BTN16", "label": "Down", "icon": "down", "part": "panel.toggle.1"}]},
+      {"id": "stick.button.index.2", "title": "Bottom left button", "parts": ["stick.button.index.2"], "side": "other", "x": 772, "y": 2266, "width": 720, "modifier": true, "rows": [{"input": "JOY_BTN6", "label": "Press", "icon": "button", "part": "stick.button.index.2"}]},
+      {"id": "panel.rotary.1", "title": "Trim nose", "parts": ["panel.rotary.1"], "side": "right", "x": 2874, "y": 910, "width": 720, "modifier": true, "spot": [0.775, 0.395], "rows": [{"input": "JOY_BTN24", "label": "Clockwise", "icon": "right", "part": "panel.rotary.1"}, {"input": "JOY_BTN23", "label": "Counter-clockwise", "icon": "left", "part": "panel.rotary.1"}]},
+      {"id": "stick.button.index.3", "title": "Top right button", "parts": ["stick.button.index.3"], "side": "other", "x": 1506, "y": 2266, "width": 720, "modifier": true, "rows": [{"input": "JOY_BTN7", "label": "Press", "icon": "button", "part": "stick.button.index.3"}]},
+      {"id": "panel.button.1", "title": "Menu", "parts": ["panel.button.1"], "side": "other", "x": 2240, "y": 2266, "width": 720, "modifier": true, "rows": [{"input": "JOY_BTN9", "label": "Press", "icon": "button", "part": "panel.button.1"}]},
+      {"id": "stick.button.index.4", "title": "Bottom right button", "parts": ["stick.button.index.4"], "side": "other", "x": 38, "y": 2363, "width": 720, "modifier": true, "rows": [{"input": "JOY_BTN8", "label": "Press", "icon": "button", "part": "stick.button.index.4"}]},
+      {"id": "panel.button.2", "title": "List", "parts": ["panel.button.2"], "side": "other", "x": 772, "y": 2363, "width": 720, "modifier": true, "rows": [{"input": "JOY_BTN10", "label": "Press", "icon": "button", "part": "panel.button.2"}]},
+      {"id": "panel.button.3", "title": "Logo", "parts": ["panel.button.3"], "side": "top", "x": 1456, "y": 38, "width": 720, "modifier": true, "spot": [0.5, 0.245], "rows": [{"input": "JOY_BTN11", "label": "Press", "icon": "button", "part": "panel.button.3"}]},
+      {"id": "panel.button.4", "title": "Back", "parts": ["panel.button.4"], "side": "other", "x": 1506, "y": 2363, "width": 720, "modifier": true, "rows": [{"input": "JOY_BTN12", "label": "Press", "icon": "button", "part": "panel.button.4"}]},
+      {"id": "quadrant.button.1", "title": "Slider 1 reverse", "parts": ["quadrant.button.1"], "side": "other", "x": 2240, "y": 2363, "width": 720, "modifier": true, "rows": [{"input": "JOY_BTN19", "label": "Press", "icon": "button", "part": "quadrant.button.1"}]},
+      {"id": "quadrant.button.2", "title": "Slider 2 reverse", "parts": ["quadrant.button.2"], "side": "other", "x": 38, "y": 2460, "width": 720, "modifier": true, "rows": [{"input": "JOY_BTN20", "label": "Press", "icon": "button", "part": "quadrant.button.2"}]},
+      {"id": "quadrant.button.3", "title": "Slider 3 reverse", "parts": ["quadrant.button.3"], "side": "other", "x": 772, "y": 2460, "width": 720, "modifier": true, "rows": [{"input": "JOY_BTN21", "label": "Press", "icon": "button", "part": "quadrant.button.3"}]},
+      {"id": "quadrant.button.4", "title": "Slider 4 reverse", "parts": ["quadrant.button.4"], "side": "other", "x": 1506, "y": 2460, "width": 720, "modifier": true, "rows": [{"input": "JOY_BTN22", "label": "Press", "icon": "button", "part": "quadrant.button.4"}]}
+    ],
+    "lines": [
+      {"table": "grid:stick.button.thumb.4", "points": [[1540, 859], [787, 859], [787, 798.7], [758, 798.7]]},
+      {"table": "stick.hat.1", "points": [[1266, 919], [787, 919], [787, 943.7], [758, 943.7]]},
+      {"table": "stick.ministick", "points": [[1526, 1149], [787, 1149], [787, 1184.7], [758, 1184.7]]},
+      {"table": "panel.toggle.1", "points": [[1540, 1549], [787, 1549], [787, 1491.5], [758, 1491.5]]},
+      {"table": "panel.lever.gear", "points": [[1816, 1579], [787, 1579], [787, 1636.5], [758, 1636.5]]},
+      {"table": "panel.rotary.1", "points": [[2366, 969], [2874, 969]]},
+      {"table": "panel.lever.flaps", "points": [[2066, 1589], [2874, 1589]]},
+      {"table": "panel.button.3", "points": [[1816, 669], [1816, 121]]}
+    ]
+  }
+}

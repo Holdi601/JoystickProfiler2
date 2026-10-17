@@ -1,0 +1,195 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:l="using:JoyPro.Gui.Localization"
+             xmlns:vm="using:JoyPro.Gui.ViewModels"
+             xmlns:models="using:JoyPro.Gui.Models"
+             xmlns:controls="using:JoyPro.Gui.Views.Controls"
+             x:Class="JoyPro.Gui.Views.VirtualFunctionEditorView"
+             x:DataType="vm:VirtualFunctionEditorViewModel">
+    <!-- The editor of one virtual function (docs/virtual-joystick.md "Virtual functions"),
+         VirtualFunctionEditorViewModel.cs. The page around it has Save / Close. -->
+    <StackPanel Spacing="10">
+        <Grid ColumnDefinitions="Auto,*" ColumnSpacing="12">
+            <Border Width="54" Height="54" CornerRadius="10" Background="#F5BE4B" VerticalAlignment="Top">
+                <TextBlock Text="{Binding Icon}" FontSize="30" Foreground="#0F1115" HorizontalAlignment="Center" VerticalAlignment="Center" />
+            </Border>
+            <StackPanel Grid.Column="1" Spacing="4">
+                <Grid ColumnDefinitions="*,Auto,Auto" ColumnSpacing="10">
+                    <TextBox Text="{Binding Name}" FontSize="16" FontWeight="SemiBold" Watermark="{l:T 'Name of the function'}" ToolTip.Tip="{l:T 'A name you recognise, e.g. Throttle detents'}" />
+                    <CheckBox Grid.Column="1" IsChecked="{Binding Enabled}" Content="{l:T 'On'}" ToolTip.Tip="{l:T 'Off: the forwarder skips this function (its outputs stay reserved).'}" />
+                    <CheckBox Grid.Column="2" IsChecked="{Binding Keyboard}" Content="{l:T 'Keyboard output'}"
+                              ToolTip.Tip="{l:T 'Only when you want keys: lets outputs and macro steps press keyboard keys (KEY_...). They are sent only while the virtual joystick runs for real (Start), never in Test.'}" />
+                </Grid>
+                <TextBlock Text="{Binding TypeName, StringFormat='{}{0}'}" FontWeight="SemiBold" Opacity="0.85" />
+                <TextBlock Text="{Binding Summary}" TextWrapping="Wrap" />
+                <TextBlock Text="{Binding Example}" TextWrapping="Wrap" Opacity="0.7" FontSize="12" />
+            </StackPanel>
+        </Grid>
+
+        <Border Background="#1AF43F5E" BorderBrush="#F43F5E" BorderThickness="1" CornerRadius="8" Padding="8" IsVisible="{Binding HasProblems}">
+            <TextBlock Text="{Binding ProblemsText}" TextWrapping="Wrap" />
+        </Border>
+        <Border Background="#1AF59E0B" BorderBrush="#F59E0B" BorderThickness="1" CornerRadius="8" Padding="8" IsVisible="{Binding HasWarnings}">
+            <TextBlock Text="{Binding WarningsText}" TextWrapping="Wrap" />
+        </Border>
+
+        <!-- Node view: inputs -> function -> outputs, lit while an output fires. -->
+        <controls:VirtualFunctionFlowView Editor="{Binding}" />
+
+        <Grid ColumnDefinitions="Auto,*" ColumnSpacing="10">
+            <ToggleButton IsChecked="{Binding PreviewRunning}" Content="{l:T 'Try it'}" MinWidth="90"
+                          ToolTip.Tip="{l:T 'Runs the function here with the inputs you set below (sliders, buttons): nothing goes to vJoy or the game. With Test or Start on the page, the bars show your real devices instead (LIVE).'}" />
+            <TextBlock Grid.Column="1" Text="{Binding StateText}" VerticalAlignment="Center" FontWeight="SemiBold" />
+        </Grid>
+
+        <!-- Axis bands / axis ends: the live axis bar with draggable edges. -->
+        <StackPanel Spacing="6" IsVisible="{Binding ShowBandEditor}">
+            <controls:AxisBandEditor Editor="{Binding}" Height="170" />
+            <StackPanel Orientation="Horizontal" Spacing="8" IsVisible="{Binding IsBands}">
+                <Button Content="{l:T 'Add a band'}" Command="{Binding AddBandCommand}" ToolTip.Tip="{l:T 'Splits the widest band in two (up to 16 bands).'}" />
+                <Button Content="{l:T 'Remove the last band'}" Command="{Binding RemoveBandCommand}" />
+            </StackPanel>
+            <ItemsControl ItemsSource="{Binding Edges}" IsVisible="{Binding IsBands}">
+                <ItemsControl.ItemsPanel>
+                    <ItemsPanelTemplate>
+                        <WrapPanel />
+                    </ItemsPanelTemplate>
+                </ItemsControl.ItemsPanel>
+                <ItemsControl.ItemTemplate>
+                    <DataTemplate x:DataType="models:VfEdgeItem">
+                        <StackPanel Orientation="Horizontal" Spacing="6" Margin="0,0,14,4">
+                            <TextBlock Text="{Binding Label}" VerticalAlignment="Center" />
+                            <NumericUpDown Value="{Binding Value}" Minimum="0.01" Maximum="0.99" Increment="0.005" FormatString="0.000" Width="120" />
+                        </StackPanel>
+                    </DataTemplate>
+                </ItemsControl.ItemTemplate>
+            </ItemsControl>
+        </StackPanel>
+
+        <!-- Axis curve: JoyPro's axis curves (DCS parameters). -->
+        <Grid ColumnDefinitions="260,*" ColumnSpacing="12" IsVisible="{Binding IsCurve}">
+            <controls:AxisCurveView Curve="{Binding CurvePoints}" StickInput="{Binding CurveStickInput}" StickOutput="{Binding CurveOutput}" Height="240" Width="260" />
+            <StackPanel Grid.Column="1" Spacing="6">
+                <TextBlock Text="{Binding CurveSummary}" FontWeight="SemiBold" TextWrapping="Wrap" />
+                <TextBlock Text="{l:T 'Dead zone'}" />
+                <Slider Value="{Binding CurveDeadzone}" Minimum="0" Maximum="0.5" />
+                <TextBlock Text="{l:T 'Saturation X (travel used)'}" />
+                <Slider Value="{Binding CurveSaturationX}" Minimum="0.3" Maximum="1" />
+                <TextBlock Text="{l:T 'Saturation Y (highest output)'}" />
+                <Slider Value="{Binding CurveSaturationY}" Minimum="0.3" Maximum="1" />
+                <TextBlock Text="{l:T 'Curvature'}" />
+                <Slider Value="{Binding CurveCurvature}" Minimum="-1" Maximum="1" />
+                <StackPanel Orientation="Horizontal" Spacing="12">
+                    <CheckBox IsChecked="{Binding CurveInvert}" Content="{l:T 'Invert'}" />
+                    <CheckBox IsChecked="{Binding CurveSlider}" Content="{l:T 'Slider (no centre)'}" />
+                </StackPanel>
+            </StackPanel>
+        </Grid>
+
+        <!-- Steps / layer inputs / macro outputs: how many. -->
+        <StackPanel Orientation="Horizontal" Spacing="8" IsVisible="{Binding HasCount}">
+            <TextBlock Text="{Binding CountLabel}" VerticalAlignment="Center" FontWeight="SemiBold" />
+            <Button Content="-" Command="{Binding RemoveCountCommand}" MinWidth="32" />
+            <TextBlock Text="{Binding CountText}" VerticalAlignment="Center" MinWidth="24" TextAlignment="Center" />
+            <Button Content="+" Command="{Binding AddCountCommand}" MinWidth="32" />
+        </StackPanel>
+
+        <TextBlock Text="{l:T 'Inputs (your devices)'}" FontSize="15" FontWeight="SemiBold" />
+        <ItemsControl ItemsSource="{Binding Inputs}">
+            <ItemsControl.ItemTemplate>
+                <DataTemplate x:DataType="models:VfInputRoleItem">
+                    <Grid ColumnDefinitions="150,1.4*,1*,Auto,1.2*" ColumnSpacing="8" Margin="0,2">
+                        <StackPanel VerticalAlignment="Center">
+                            <TextBlock Text="{Binding Label}" FontWeight="SemiBold" />
+                            <TextBlock Text="{Binding KindText}" FontSize="11" Opacity="0.7" />
+                        </StackPanel>
+                        <ComboBox Grid.Column="1" ItemsSource="{Binding Devices}" SelectedItem="{Binding SelectedDevice}" PlaceholderText="{l:T 'device'}" HorizontalAlignment="Stretch">
+                            <ComboBox.ItemTemplate>
+                                <DataTemplate x:DataType="models:VfDeviceOption">
+                                    <TextBlock Text="{Binding Display}" />
+                                </DataTemplate>
+                            </ComboBox.ItemTemplate>
+                        </ComboBox>
+                        <ComboBox Grid.Column="2" ItemsSource="{Binding InputOptions}" SelectedItem="{Binding SelectedInput}" PlaceholderText="{l:T 'input'}" HorizontalAlignment="Stretch" MaxDropDownHeight="320" />
+                        <Button Grid.Column="3" Content="{l:T 'Clear'}" Command="{Binding ClearCommand}" Padding="8,2" />
+                        <Grid Grid.Column="4" ColumnDefinitions="*,Auto" ColumnSpacing="6">
+                            <Slider Value="{Binding PreviewValue}" Minimum="0" Maximum="1" IsVisible="{Binding PreviewIsAxis}" ToolTip.Tip="{l:T 'Try it: the axis position'}" />
+                            <TextBlock Grid.Column="1" Text="{Binding PreviewPercent}" VerticalAlignment="Center" IsVisible="{Binding PreviewIsAxis}" MinWidth="44" />
+                            <ToggleButton IsChecked="{Binding PreviewPressed}" Content="{l:T 'Press'}" IsVisible="{Binding PreviewIsButton}" ToolTip.Tip="{l:T 'Try it: hold the button (click again to let go)'}" />
+                            <ComboBox ItemsSource="{Binding HatOptions}" SelectedIndex="{Binding PreviewHatIndex}" IsVisible="{Binding PreviewIsHat}" ToolTip.Tip="{l:T 'Try it: the hat direction'}" />
+                        </Grid>
+                    </Grid>
+                </DataTemplate>
+            </ItemsControl.ItemTemplate>
+        </ItemsControl>
+
+        <TextBlock Text="{l:T 'Virtual outputs (what the game gets)'}" FontSize="15" FontWeight="SemiBold" />
+        <ItemsControl ItemsSource="{Binding Outputs}">
+            <ItemsControl.ItemTemplate>
+                <DataTemplate x:DataType="models:VfOutputRoleItem">
+                    <Grid ColumnDefinitions="Auto,150,1.2*,70,1.2*,1*,Auto" ColumnSpacing="8" Margin="0,2">
+                        <Panel Width="14" Height="14" VerticalAlignment="Center">
+                            <Ellipse Fill="#22C55E" IsVisible="{Binding IsOn}" />
+                            <Ellipse Fill="#475569" IsVisible="{Binding !IsOn}" />
+                        </Panel>
+                        <TextBlock Grid.Column="1" Text="{Binding Label}" FontWeight="SemiBold" VerticalAlignment="Center" />
+                        <ComboBox Grid.Column="2" ItemsSource="{Binding Targets}" SelectedItem="{Binding Target}" HorizontalAlignment="Stretch" MaxDropDownHeight="320"
+                                  ToolTip.Tip="{l:T 'JOY_BTN30 = vJoy button 30, JOY_Z = vJoy Z axis, POV2 = vJoy hat 2, XB_ = the virtual Xbox pad, KEY_ = a keyboard key (with Keyboard output on).'}" />
+                        <ComboBox Grid.Column="3" ItemsSource="{Binding Devices}" SelectedItem="{Binding VJoyDevice}" IsVisible="{Binding IsVJoyTarget}" ToolTip.Tip="{l:T 'vJoy device'}" />
+                        <ComboBox Grid.Column="4" ItemsSource="{Binding Modes}" SelectedIndex="{Binding ModeIndex}" IsVisible="{Binding HasMode}" HorizontalAlignment="Stretch" />
+                        <TextBlock Grid.Column="5" Text="{Binding ValueText}" VerticalAlignment="Center" Opacity="0.8" />
+                        <Button Grid.Column="6" Content="{l:T 'Bind relation'}" Padding="8,2" IsEnabled="{Binding IsVJoyTarget}"
+                                Command="{Binding $parent[UserControl].((vm:VirtualFunctionEditorViewModel)DataContext).BindOutputCommand}" CommandParameter="{Binding}"
+                                ToolTip.Tip="{l:T 'Binds the relation named below to this output, like any vJoy button (engine binds set). Export the game again afterwards.'}" />
+                    </Grid>
+                </DataTemplate>
+            </ItemsControl.ItemTemplate>
+        </ItemsControl>
+        <Grid ColumnDefinitions="Auto,*" ColumnSpacing="8">
+            <TextBlock Text="{l:T 'Bind a relation to an output:'}" VerticalAlignment="Center" />
+            <TextBox Grid.Column="1" Text="{Binding BindRelation}" Watermark="{l:T 'relation name, then press Bind relation on the output'}"
+                     ToolTip.Tip="{l:T 'A function\'s output is a vJoy input like any other: bind a relation to it here or on the Relations page (device vJoy Device, input JOY_BTN...).'}" />
+        </Grid>
+
+        <TextBlock Text="{l:T 'Settings'}" FontSize="15" FontWeight="SemiBold" IsVisible="{Binding HasParams}" />
+        <ItemsControl ItemsSource="{Binding Params}">
+            <ItemsControl.ItemTemplate>
+                <DataTemplate x:DataType="models:VfParamItem">
+                    <Grid ColumnDefinitions="180,*,110" ColumnSpacing="8" Margin="0,2" ToolTip.Tip="{Binding Help}">
+                        <TextBlock Text="{Binding Label}" VerticalAlignment="Center" />
+                        <Slider Grid.Column="1" Value="{Binding Value}" Minimum="{Binding Minimum}" Maximum="{Binding Maximum}" SmallChange="{Binding Step}" TickFrequency="{Binding Step}"
+                                IsSnapToTickEnabled="True" IsVisible="{Binding IsNumber}" />
+                        <ComboBox Grid.Column="1" ItemsSource="{Binding Choices}" SelectedIndex="{Binding ChoiceIndex}" IsVisible="{Binding IsChoice}" MinWidth="200" />
+                        <TextBlock Grid.Column="2" Text="{Binding ValueText}" VerticalAlignment="Center" IsVisible="{Binding IsNumber}" />
+                    </Grid>
+                </DataTemplate>
+            </ItemsControl.ItemTemplate>
+        </ItemsControl>
+
+        <!-- Macro steps. -->
+        <StackPanel Spacing="6" IsVisible="{Binding IsMacro}">
+            <TextBlock Text="{l:T 'Steps (played on each press)'}" FontSize="15" FontWeight="SemiBold" />
+            <ItemsControl ItemsSource="{Binding Steps}">
+                <ItemsControl.ItemTemplate>
+                    <DataTemplate x:DataType="models:VfStepItem">
+                        <StackPanel Orientation="Horizontal" Spacing="8" Margin="0,2">
+                            <TextBlock Text="{l:T 'after'}" VerticalAlignment="Center" />
+                            <NumericUpDown Value="{Binding DelayMs}" Minimum="0" Maximum="60000" Increment="10" FormatString="0" Width="120" />
+                            <TextBlock Text="{l:T 'ms'}" VerticalAlignment="Center" />
+                            <ComboBox ItemsSource="{Binding Actions}" SelectedIndex="{Binding ActionIndex}" Width="100" />
+                            <ComboBox ItemsSource="{Binding Outputs}" SelectedItem="{Binding Output}" Width="110" />
+                            <TextBlock Text="{l:T 'hold'}" VerticalAlignment="Center" />
+                            <NumericUpDown Value="{Binding HoldMs}" Minimum="1" Maximum="60000" Increment="10" FormatString="0" Width="120" />
+                            <TextBlock Text="{l:T 'ms'}" VerticalAlignment="Center" />
+                            <Button Content="{l:T 'Remove'}" Padding="8,2"
+                                    Command="{Binding $parent[UserControl].((vm:VirtualFunctionEditorViewModel)DataContext).RemoveStepCommand}" CommandParameter="{Binding}" />
+                        </StackPanel>
+                    </DataTemplate>
+                </ItemsControl.ItemTemplate>
+            </ItemsControl>
+            <Button Content="{l:T 'Add a step'}" Command="{Binding AddStepCommand}" />
+            <TextBlock TextWrapping="Wrap" Opacity="0.75" FontSize="12"
+                       Text="{l:T 'A step taps (press, hold, release), presses or releases one of the outputs. Keys (KEY_...) only with Keyboard output on; they type only while the virtual joystick runs for real.'}" />
+        </StackPanel>
+    </StackPanel>
+</UserControl>

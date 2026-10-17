@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Version Num="-1"/>
+<FriendlyName PlatformAvailability="1" Locked="false">Smoke Override</FriendlyName>
+<Device DeviceName="Smoke Override Stick" GUID="{BBBBBBBB-0000-1111-2222-333333333333}" ProductID="1" CompositeID="0" HWVer="1.0.0.0">
+	<AircraftInfo CategoryName="AIRPLANE"/>
+	<Axes>
+		<Axis AxisName="X" AxisSensitivy="0" AxisSensitivyMinus="0" AxisNeutral="0" AxisDeadZone="0" AxisOutDeadZone="0" AxisResponseRate="-1"/>
+		<Axis AxisName="Y" AxisSensitivy="-19" AxisSensitivyMinus="-19" AxisNeutral="0" AxisDeadZone="2" AxisOutDeadZone="0" AxisResponseRate="-1"/>
+		<Axis AxisName="rZ" AxisSensitivy="0" AxisSensitivyMinus="0" AxisNeutral="0" AxisDeadZone="0" AxisOutDeadZone="0" AxisResponseRate="-1"/>
+	</Axes>
+	<Context ContextName="BASIC_CONTROL">
+		<Action ActionName="KEY_AXIS_LEFT_BRAKE_SET" ValueEvent="0.000000" Delay="0.000000" Flag="2"/>
+		<Action ActionName="KEY_AXIS_RUDDER_SET" ValueEvent="0.000000" Delay="0.000000" Flag="4100">
+			<Axis AxisSensitivy="-50" AxisSensitivyMinus="-50" AxisNeutral="0" AxisDeadZone="25" AxisOutDeadZone="0" AxisResponseRate="-1"/>
+			<Primary>
+				<KEY Information="Joystick R-Axis Z ">802</KEY>
+			</Primary>
+		</Action>
+	</Context>
+	<Context ContextName="SURFACES">
+		<Action ActionName="KEY_AXIS_AILERONS_SET" ValueEvent="0.000000" Delay="2.000000" Flag="4100">
+			<Axis AxisSensitivy="-25" AxisSensitivyMinus="-25" AxisNeutral="0" AxisDeadZone="12" AxisOutDeadZone="0" AxisResponseRate="-1"/>
+			<Primary>
+				<KEY Information="Joystick L-Axis X ">1026</KEY>
+			</Primary>
+		</Action>
+		<Action ActionName="KEY_AXIS_ELEVATOR_SET" ValueEvent="0.000000" Delay="2.000000" Flag="1028">
+			<Primary>
+				<KEY Information="Joystick L-Axis Y ">1042</KEY>
+			</Primary>
+		</Action>
+	</Context>
+</Device>

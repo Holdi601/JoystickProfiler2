@@ -1,0 +1,423 @@
+{
+  "format": "joypro-throttle-gates",
+  "version": 1,
+  "about": "Where each aircraft's afterburner starts on the game's throttle axis (0 = idle end, 1 = full), its idle cut-off region on the axis (idleGate), source and confidence. Read from the games' own files and manuals (static analysis, 2026-10-17); see docs/axis-curves.md \"Detent mode\".",
+  "aircraft": [
+    {
+      "game": "DCS",
+      "plane": "F-15E",
+      "title": "F-15E Strike Eagle (RAZBAM)",
+      "aliases": [
+        "F-15E_WSO"
+      ],
+      "afterburner": 0.75,
+      "idleGate": 0.1,
+      "confidence": "high",
+      "source": "<DCS>\\Mods\\aircraft\\F-15E\\Options\\options.dlg:203-204 ('Position of throttle cutoff detent in axis percent (15% IRL)', 'Position of throttle afterburner detent in axis percent (64% IRL)'); optionsDb.lua:27-28; Cockpit\\ControlsIndicator\\ControlsIndicator_page.lua:146-147 (idle 19/130, MIL 83/130 PLA)",
+      "gameOption": "THROTTLE_AB_DETENT (default 75, percent of axis (slider 60..90); <DCS>\\Mods\\aircraft\\F-15E\\Options\\optionsDb.lua)",
+      "notes": "Explicit axis-percent options. Real-jet values per dialog: cutoff 15%, AB 64% (= PLA 83/130). Gates follow the user's option value; defaults shown."
+    },
+    {
+      "game": "DCS",
+      "plane": "M-2000C",
+      "title": "Mirage 2000C (RAZBAM)",
+      "afterburner": 0.9,
+      "idleGate": 0.15,
+      "confidence": "high",
+      "source": "<DCS>\\Mods\\aircraft\\M-2000C\\Options\\options.dlg:219-220 ('...cutoff detent in axis percent (5 IRL, 15 in previous versions)', '...afterburner detent in axis percent (70 IRL, 90 in previous versions)'); optionsDb.lua:40-41; Cockpit\\ControlsIndicator\\ControlsIndicator_page.lua:162-163 (idle 0.15, MIL 0.90)",
+      "gameOption": "THROTTLE_AB_DETENT (default 90, percent of axis (slider 60..90); <DCS>\\Mods\\aircraft\\M-2000C\\Options\\optionsDb.lua)",
+      "notes": "Defaults are still the legacy 15/90; dialog says real jet is CO 5 / AB 70. Manual p46: idle stop bypassed with idle cut-off button, MIL stop bypassed by more force."
+    },
+    {
+      "game": "DCS",
+      "plane": "Mirage-F1CE",
+      "title": "Mirage F1CE (Aerges)",
+      "afterburner": 0.59,
+      "confidence": "high",
+      "source": "<DCS>\\Mods\\aircraft\\Mirage-F1\\Options\\optionsData.lua:28-29 ('Selected position of the afterburner detent in the physical throttle of the user. In the real aircraft it is at 59%.'); Docs\\Mirage F1 Flight Manual.pdf p34",
+      "gameOption": "F1SelectedABDetentPos (default 59, percent of axis (slider 50..95); <DCS>\\Mods\\aircraft\\Mirage-F1\\Options\\optionsDb.lua)",
+      "notes": "Manual p34: default 59 = percentage of the 90 deg lever travel where the A/B detent sits (53 deg). Idle/stop is a separate 'throttle cut/idle switch' (keybind), not an axis region. One option shared by all F1 variants."
+    },
+    {
+      "game": "DCS",
+      "plane": "Mirage-F1EE",
+      "title": "Mirage F1EE (Aerges)",
+      "afterburner": 0.59,
+      "confidence": "high",
+      "source": "<DCS>\\Mods\\aircraft\\Mirage-F1\\Options\\optionsData.lua:28-29 ('Selected position of the afterburner detent in the physical throttle of the user. In the real aircraft it is at 59%.'); Docs\\Mirage F1 Flight Manual.pdf p34",
+      "gameOption": "F1SelectedABDetentPos (default 59, percent of axis (slider 50..95); <DCS>\\Mods\\aircraft\\Mirage-F1\\Options\\optionsDb.lua)",
+      "notes": "Manual p34: default 59 = percentage of the 90 deg lever travel where the A/B detent sits (53 deg). Idle/stop is a separate 'throttle cut/idle switch' (keybind), not an axis region. One option shared by all F1 variants."
+    },
+    {
+      "game": "DCS",
+      "plane": "Mirage-F1BE",
+      "title": "Mirage F1BE (Aerges)",
+      "afterburner": 0.59,
+      "confidence": "high",
+      "source": "<DCS>\\Mods\\aircraft\\Mirage-F1\\Options\\optionsData.lua:28-29 ('Selected position of the afterburner detent in the physical throttle of the user. In the real aircraft it is at 59%.'); Docs\\Mirage F1 Flight Manual.pdf p34",
+      "gameOption": "F1SelectedABDetentPos (default 59, percent of axis (slider 50..95); <DCS>\\Mods\\aircraft\\Mirage-F1\\Options\\optionsDb.lua)",
+      "notes": "Manual p34: default 59 = percentage of the 90 deg lever travel where the A/B detent sits (53 deg). Idle/stop is a separate 'throttle cut/idle switch' (keybind), not an axis region. One option shared by all F1 variants."
+    },
+    {
+      "game": "DCS",
+      "plane": "Mirage-F1M-EE",
+      "title": "Mirage F1M-EE (Aerges)",
+      "afterburner": 0.59,
+      "confidence": "high",
+      "source": "<DCS>\\Mods\\aircraft\\Mirage-F1\\Options\\optionsData.lua:28-29 ('Selected position of the afterburner detent in the physical throttle of the user. In the real aircraft it is at 59%.'); Docs\\Mirage F1 Flight Manual.pdf p34",
+      "gameOption": "F1SelectedABDetentPos (default 59, percent of axis (slider 50..95); <DCS>\\Mods\\aircraft\\Mirage-F1\\Options\\optionsDb.lua)",
+      "notes": "Manual p34: default 59 = percentage of the 90 deg lever travel where the A/B detent sits (53 deg). Idle/stop is a separate 'throttle cut/idle switch' (keybind), not an axis region. One option shared by all F1 variants."
+    },
+    {
+      "game": "DCS",
+      "plane": "F-14",
+      "title": "F-14A/B Tomcat (Heatblur)",
+      "aliases": [
+        "F-14_RIO"
+      ],
+      "afterburner": 0.7,
+      "confidence": "high",
+      "source": "<DCS>\\Mods\\aircraft\\F14\\Options\\optionsData.lua:49-63; F14\\Docs\\F-14 Manual.pdf p1174-1175 ('if set to 80%, the MIL power range ... between 0% and 80% of your physical throttle ... 20% for the deadzone and 80% for the detent results in afterburner activation at 82% and deactivation at 78%')",
+      "gameOption": "AFTERBURNER_DETENT_VALUE (default 70, percent of axis (0..100); <DCS>\\Mods\\aircraft\\F14\\Options\\optionsDb.lua)",
+      "notes": "Axis 0 = IDLE (OFF via keybinds). In-game lever MIL mark is fixed at 0.8 of lever travel in the Controls Indicator (ControlsIndicator_page.lua:193), so HB remaps axis [0,detent]->lever [0,0.8]. F-14A indicator also shows TF30 AB zone marks at lever 83/85/88.6/92 % (line 199). Deadzone 10 -> on at detent+1%, off at detent-1%."
+    },
+    {
+      "game": "DCS",
+      "plane": "F-4E-45MC",
+      "title": "F-4E Phantom II (Heatblur)",
+      "aliases": [
+        "F-4E-45MC_WSO"
+      ],
+      "afterburner": 0.7,
+      "confidence": "high",
+      "source": "<DCS>\\Mods\\aircraft\\F-4E\\Options\\optionsData.lua:23-28 ('Defines % of throttle input beyond which AB will light...', 'detent at 80% and the detent deadzone at 20‰ results in AB activation at 82% and deactivation at 78%'); F-4E\\Doc\\F-4E Manual.pdf p966, p108",
+      "gameOption": "AFTERBURNER_DETENT_VALUE (default 70, percent of axis (0..100); <DCS>\\Mods\\aircraft\\F-4E\\Options\\optionsDb.lua)",
+      "notes": "Idle detent / engine shutdown is a keybind ('Right/Left Engine Idle Detent', manual p957), not an axis region. Controls Indicator draws the AB mark from a live 'throttle_ab_detent' controller."
+    },
+    {
+      "game": "DCS",
+      "plane": "F-16C_50",
+      "title": "F-16C Viper (ED)",
+      "afterburner": 0.775,
+      "idleGate": 0.1,
+      "confidence": "medium",
+      "source": "<DCS>\\Mods\\aircraft\\F-16C\\Cockpit\\Scripts\\ControlsIndicator\\ControlsIndicator_page.lua:23-24 (throttleIdle = 0.1, throttleMil = 0.775), :157-158 (idle/ab marks); Doc\\DCS F-16C Early Access Guide EN.pdf p22, p25 (indicator legend 'Afterburner Detent Marker', 'Idle Detent Marker')",
+      "gameOption": "abDetent (default 0, enum: 0 Always off (AB by axis only), 1 Always on (needs 'Cycle Afterburner Detent' key to pass MIL); <DCS>\\Mods\\aircraft\\F-16C\\Options\\optionsDb.lua)",
+      "notes": "Values are positions on the module's own throttle-lever scale (0 = lever fully aft incl. OFF/STOP region, 1 = max AB) taken from the Controls Indicator (RCtrl+Enter) script. Assumption: ED maps the Thrust axis 1:1 to that lever (the region below the idle mark can only be entered while the cutoff/latch button is held, otherwise the lever stays at idle). This is inferred from the held 'cutoff release'/'finger lift'/'idle latch' binds, not stated in a file. If ED instead remaps axis 0..1 onto idle..max, the AB start would be (mil-idle)/(1-idle) - see altStartIfIdleRemapped. ED's option does not move the detent position; it only adds a soft gate at MIL. If DCS stretches the axis over idle..max instead of 1:1, the afterburner starts at 0.75."
+    },
+    {
+      "game": "DCS",
+      "plane": "FA-18C_hornet",
+      "title": "F/A-18C Hornet (ED)",
+      "afterburner": 0.77,
+      "idleGate": 0.1,
+      "confidence": "medium",
+      "source": "<DCS>\\Mods\\aircraft\\FA-18C\\Cockpit\\Scripts\\ControlsIndicator\\ControlsIndicator_page.lua:180 (idle 0.1*scale), :190 (ab 0.77*scale), :204 (throttlePos 0..1); CoreMods\\aircraft\\FA-18C\\FA-18C_hornet.lua:1087 (MinRUD = 0.1 'same value as of the flyable F/A-18C Lot 20'); Doc EN guide p20",
+      "gameOption": "abDetent (default 0, enum: 0 Always off, 1 Only carrier, 2 Always on ('Cycle Afterburner Detent' key); <DCS>\\Mods\\aircraft\\FA-18C\\Options\\optionsDb.lua)",
+      "notes": "Values are positions on the module's own throttle-lever scale (0 = lever fully aft incl. OFF/STOP region, 1 = max AB) taken from the Controls Indicator (RCtrl+Enter) script. Assumption: ED maps the Thrust axis 1:1 to that lever (the region below the idle mark can only be entered while the cutoff/latch button is held, otherwise the lever stays at idle). This is inferred from the held 'cutoff release'/'finger lift'/'idle latch' binds, not stated in a file. If ED instead remaps axis 0..1 onto idle..max, the AB start would be (mil-idle)/(1-idle) - see altStartIfIdleRemapped. MinRUD=0.1 in the AI entry confirms idle lever = 0.1 on the flyable jet. If DCS stretches the axis over idle..max instead of 1:1, the afterburner starts at 0.744."
+    },
+    {
+      "game": "DCS",
+      "plane": "MiG-29-Fulcrum",
+      "title": "MiG-29A Fulcrum (ED, full fidelity)",
+      "afterburner": 0.675,
+      "idleGate": 0.163,
+      "confidence": "medium",
+      "source": "<DCS>\\Mods\\aircraft\\MiG-29-Fulcrum\\Cockpit\\Scripts\\ControlsIndicator\\ControlsIndicator_page.lua:21-22 (throttleIdle = 27/166, throttleMil = 0.675); Doc\\DCS MiG-29A Flight Manual EN.pdf p120 ('Afterburner latches', 'Idle throttle latches'), p129",
+      "gameOption": "ThrottleAutoLatch (default True, bool ('Throttle Auto Latch'); <DCS>\\Mods\\aircraft\\MiG-29-Fulcrum\\Options\\optionsDb.lua)",
+      "notes": "Values are positions on the module's own throttle-lever scale (0 = lever fully aft incl. OFF/STOP region, 1 = max AB) taken from the Controls Indicator (RCtrl+Enter) script. Assumption: ED maps the Thrust axis 1:1 to that lever (the region below the idle mark can only be entered while the cutoff/latch button is held, otherwise the lever stays at idle). This is inferred from the held 'cutoff release'/'finger lift'/'idle latch' binds, not stated in a file. If ED instead remaps axis 0..1 onto idle..max, the AB start would be (mil-idle)/(1-idle) - see altStartIfIdleRemapped. AB latch can be unlocked with 'AB Lock Latch' / 'Cycle AB Detent' binds. If DCS stretches the axis over idle..max instead of 1:1, the afterburner starts at 0.612."
+    },
+    {
+      "game": "DCS",
+      "plane": "F-5E-3",
+      "title": "F-5E-3 Tiger II (ED)",
+      "afterburner": 0.8,
+      "confidence": "medium",
+      "source": "<DCS>\\Mods\\aircraft\\F-5E\\Cockpit\\Scripts\\ControlsIndicator\\ControlsIndicator_page.lua:19 (local throttleMil = 0.8), :200 (ab_scale), idle mark at scale bottom (:189)",
+      "notes": "Idle mark sits at the bottom of the lever scale (no OFF region on the axis; OFF/IDLE via keybinds 'Throttle (Left/Right) - OFF/IDLE'), so axis = lever is the natural reading. No special option."
+    },
+    {
+      "game": "DCS",
+      "plane": "JF-17",
+      "title": "JF-17 Thunder (Deka)",
+      "afterburner": 0.8333,
+      "confidence": "medium",
+      "source": "<DCS>\\Mods\\aircraft\\JF-17\\Cockpit\\Scripts\\ControlsIndicator\\Indicator\\ctrl_indicator_page.lua:156-161 (comment '加力参考线' = afterburner reference line at y = 0.66667*hh on a scale -hh..+hh), :210-211 (EFM_THROTTLE_POSITION moves 0..1 over 2*hh)",
+      "notes": "AB reference line = (0.66667+1)/2 = 0.8333 of EFM_THROTTLE_POSITION. Assumes EFM throttle position is linear to the Thrust axis (HOTAS_Throttle_Abs, command 2004). Deka also has an 'Afterburner Toggle' command and AB switch (PNT_524). No special option. English quick guide has no number; CN manual text not extractable."
+    },
+    {
+      "game": "DCS",
+      "plane": "AJS37",
+      "title": "AJS 37 Viggen (Heatblur)",
+      "confidence": "low",
+      "source": "<DCS>\\Mods\\aircraft\\AJS37\\Doc\\DCS_AJS37_Flight_Manual_EN_RC2.1.pdf p57 (Figure 46 throttle positions, no numbers); hint only: CoreMods\\aircraft\\AJS37\\Entry\\AJS37.lua:486-487 (AI SFM MaksRUD 0.60, ForsRUD 0.71)",
+      "notes": "Unknown. Manual: OFF is behind a detent (catch lifted), then ground idle, flight idle, MIL, AB zones 1-3 with soft detents. The AI SFM table has non-default MaksRUD 0.60 / ForsRUD 0.71 (Heatblur also set 0.60/0.71 for the F-4E AI), which may hint at AB around 0.6-0.71 but is NOT the player model. Needs in-game measurement."
+    },
+    {
+      "game": "DCS",
+      "plane": "MiG-21Bis",
+      "title": "MiG-21bis (Magnitude 3)",
+      "confidence": "low",
+      "source": "<DCS>\\Mods\\aircraft\\MIG-21bis\\Doc\\DCS MiG-21bis EN.pdf (no numbers); Cockpit\\clickabledata.lua:385-386 (Afterburner/Maximum and Emergency AB switches), :765 ('Throttle Fixation' lever)",
+      "notes": "Unknown from static files (controls indicator is compiled 'cip', engine logic in dll). A cockpit 'Afterburner/Maximum Off/On' switch and a separate 'Emergency Afterburner' switch exist (clickabledata.lua:385-386); their exact interplay with the axis was not verified. Needs in-game measurement."
+    },
+    {
+      "game": "DCS",
+      "plane": "MiG-19P",
+      "title": "MiG-19P Farmer (RAZBAM)",
+      "noAfterburner": true,
+      "confidence": "medium",
+      "source": "<DCS>\\Mods\\aircraft\\MiG-19P\\Doc\\DCS MiG-19P Flight Manual.pdf p17; Cockpit\\clickabledata.lua:21-22 (Mil-power Limit/Afterburner Disable, Afterburner Enable)",
+      "notes": "The afterburner is switched on by a button, not by the throttle position; the axis gives full dry power at its end. Not an axis gate: full forward throttle + button. Total lever travel in degrees not found, so the 16-deg disengage point cannot be expressed as an axis fraction."
+    },
+    {
+      "game": "DCS",
+      "plane": "F-100D",
+      "title": "F-100D Super Sabre",
+      "noAfterburner": true,
+      "confidence": "medium",
+      "source": "<DCS>\\Mods\\aircraft\\F-100D\\Input\\F-100D\\keyboard\\default.lua:217-221",
+      "notes": "The afterburner is switched on by a button, not by the throttle position; the axis gives full dry power at its end. Button-driven AB (outboard throttle movement in the real jet)."
+    },
+    {
+      "game": "DCS",
+      "plane": "F-15C",
+      "title": "F-15C (FC3)",
+      "confidence": "low",
+      "source": "No lua/cfg data: FC3 player engine logic is compiled (F-15C\\FM\\F15\\config.lua has no engine section; Su-27/Su-33 FM\\PPlant*\\Engine.emp is a binary table). Generic AI SFM fields MaksRUD 0.85 / ForsRUD 0.91 seen in CoreMods (e.g. ChinaAssetPack J-11A.lua:558-559) are AI-only defaults.",
+      "notes": "Unknown from static files. The AI SFM default (MIL at RUD 0.85, AB from RUD 0.91) is the only number found and is NOT verified for the player aircraft. Needs in-game measurement (watch HUD/engine page while sweeping the axis). AI flight model hint: afterburner from {'MaksRUD': 0.85, 'ForsRUD': 0.91} (not the player aircraft)."
+    },
+    {
+      "game": "DCS",
+      "plane": "su-27",
+      "title": "Su-27 (FC3)",
+      "confidence": "low",
+      "source": "No lua/cfg data: FC3 player engine logic is compiled (F-15C\\FM\\F15\\config.lua has no engine section; Su-27/Su-33 FM\\PPlant*\\Engine.emp is a binary table). Generic AI SFM fields MaksRUD 0.85 / ForsRUD 0.91 seen in CoreMods (e.g. ChinaAssetPack J-11A.lua:558-559) are AI-only defaults.",
+      "notes": "Unknown from static files. The AI SFM default (MIL at RUD 0.85, AB from RUD 0.91) is the only number found and is NOT verified for the player aircraft. Needs in-game measurement (watch HUD/engine page while sweeping the axis). AI flight model hint: afterburner from {'MaksRUD': 0.85, 'ForsRUD': 0.91} (not the player aircraft)."
+    },
+    {
+      "game": "DCS",
+      "plane": "su-33",
+      "title": "Su-33 (FC3)",
+      "confidence": "low",
+      "source": "No lua/cfg data: FC3 player engine logic is compiled (F-15C\\FM\\F15\\config.lua has no engine section; Su-27/Su-33 FM\\PPlant*\\Engine.emp is a binary table). Generic AI SFM fields MaksRUD 0.85 / ForsRUD 0.91 seen in CoreMods (e.g. ChinaAssetPack J-11A.lua:558-559) are AI-only defaults.",
+      "notes": "Unknown from static files. The AI SFM default (MIL at RUD 0.85, AB from RUD 0.91) is the only number found and is NOT verified for the player aircraft. Needs in-game measurement (watch HUD/engine page while sweeping the axis). AI flight model hint: afterburner from {'MaksRUD': 0.85, 'ForsRUD': 0.91} (not the player aircraft)."
+    },
+    {
+      "game": "DCS",
+      "plane": "J-11A",
+      "title": "J-11A (FC3)",
+      "confidence": "low",
+      "source": "No lua/cfg data: FC3 player engine logic is compiled (F-15C\\FM\\F15\\config.lua has no engine section; Su-27/Su-33 FM\\PPlant*\\Engine.emp is a binary table). Generic AI SFM fields MaksRUD 0.85 / ForsRUD 0.91 seen in CoreMods (e.g. ChinaAssetPack J-11A.lua:558-559) are AI-only defaults.",
+      "notes": "Unknown from static files. The AI SFM default (MIL at RUD 0.85, AB from RUD 0.91) is the only number found and is NOT verified for the player aircraft. Needs in-game measurement (watch HUD/engine page while sweeping the axis). AI flight model hint: afterburner from {'MaksRUD': 0.85, 'ForsRUD': 0.91} (not the player aircraft)."
+    },
+    {
+      "game": "DCS",
+      "plane": "mig-29",
+      "title": "MiG-29A (FC3)",
+      "confidence": "low",
+      "source": "No lua/cfg data: FC3 player engine logic is compiled (F-15C\\FM\\F15\\config.lua has no engine section; Su-27/Su-33 FM\\PPlant*\\Engine.emp is a binary table). Generic AI SFM fields MaksRUD 0.85 / ForsRUD 0.91 seen in CoreMods (e.g. ChinaAssetPack J-11A.lua:558-559) are AI-only defaults.",
+      "notes": "Unknown from static files. The AI SFM default (MIL at RUD 0.85, AB from RUD 0.91) is the only number found and is NOT verified for the player aircraft. Needs in-game measurement (watch HUD/engine page while sweeping the axis). AI flight model hint: afterburner from {'MaksRUD': 0.85, 'ForsRUD': 0.91} (not the player aircraft)."
+    },
+    {
+      "game": "DCS",
+      "plane": "mig-29c",
+      "title": "MiG-29S 9.13 (FC3)",
+      "confidence": "low",
+      "source": "No lua/cfg data: FC3 player engine logic is compiled (F-15C\\FM\\F15\\config.lua has no engine section; Su-27/Su-33 FM\\PPlant*\\Engine.emp is a binary table). Generic AI SFM fields MaksRUD 0.85 / ForsRUD 0.91 seen in CoreMods (e.g. ChinaAssetPack J-11A.lua:558-559) are AI-only defaults.",
+      "notes": "Unknown from static files. The AI SFM default (MIL at RUD 0.85, AB from RUD 0.91) is the only number found and is NOT verified for the player aircraft. Needs in-game measurement (watch HUD/engine page while sweeping the axis). AI flight model hint: afterburner from {'MaksRUD': 0.85, 'ForsRUD': 0.91} (not the player aircraft)."
+    },
+    {
+      "game": "DCS",
+      "plane": "mig-29g",
+      "title": "MiG-29G (FC3)",
+      "confidence": "low",
+      "source": "No lua/cfg data: FC3 player engine logic is compiled (F-15C\\FM\\F15\\config.lua has no engine section; Su-27/Su-33 FM\\PPlant*\\Engine.emp is a binary table). Generic AI SFM fields MaksRUD 0.85 / ForsRUD 0.91 seen in CoreMods (e.g. ChinaAssetPack J-11A.lua:558-559) are AI-only defaults.",
+      "notes": "Unknown from static files. The AI SFM default (MIL at RUD 0.85, AB from RUD 0.91) is the only number found and is NOT verified for the player aircraft. Needs in-game measurement (watch HUD/engine page while sweeping the axis). AI flight model hint: afterburner from {'MaksRUD': 0.85, 'ForsRUD': 0.91} (not the player aircraft)."
+    },
+    {
+      "game": "DCS",
+      "plane": "F-86F",
+      "title": "F-86F Sabre",
+      "aliases": [
+        "F-86F Sabre"
+      ],
+      "noAfterburner": true,
+      "confidence": "high",
+      "source": "Module files (no AB commands/options found); CoreMods SFM ForsRUD=1 where present",
+      "notes": "Engine stop/start via separate controls; no axis cutoff gate."
+    },
+    {
+      "game": "DCS",
+      "plane": "MiG-15bis",
+      "title": "MiG-15bis",
+      "noAfterburner": true,
+      "confidence": "high",
+      "source": "Module files (no AB commands/options found); CoreMods SFM ForsRUD=1 where present",
+      "notes": "Stop-cock separate; no axis cutoff gate."
+    },
+    {
+      "game": "DCS",
+      "plane": "AV8BNA",
+      "title": "AV-8B N/A Harrier",
+      "noAfterburner": true,
+      "confidence": "high",
+      "source": "Module files (no AB commands/options found); CoreMods SFM ForsRUD=1 where present",
+      "notes": "Throttle Cutoff Lever is a held bind usable only at idle (Harrier Manual p84/p128) - not an axis region. Water injection is a 3-pos switch, not a throttle gate. Nozzle is a separate axis."
+    },
+    {
+      "game": "DCS",
+      "plane": "A-10C",
+      "title": "A-10C Warthog",
+      "noAfterburner": true,
+      "confidence": "high",
+      "source": "Module files (no AB commands/options found); CoreMods SFM ForsRUD=1 where present",
+      "notes": "Throttle OFF via 'Left/Right Engine Throttle Set OFF' (hold) binds (lift over idle stop in the real jet) - not an axis region."
+    },
+    {
+      "game": "DCS",
+      "plane": "A-10C II",
+      "title": "A-10C II Tank Killer",
+      "noAfterburner": true,
+      "confidence": "high",
+      "source": "Module files (no AB commands/options found); CoreMods SFM ForsRUD=1 where present",
+      "notes": "As A-10C: OFF via held binds, not on the axis."
+    },
+    {
+      "game": "DCS",
+      "plane": "L-39C",
+      "title": "L-39C Albatros",
+      "noAfterburner": true,
+      "confidence": "high",
+      "source": "Module files (no AB commands/options found); CoreMods SFM ForsRUD=1 where present",
+      "notes": "Throttle IDLE/STOP via keybinds ('Throttle - IDLE', 'Throttle - STOP', 'Idle/Stop (hold)'); not an axis region."
+    },
+    {
+      "game": "DCS",
+      "plane": "MB-339A",
+      "title": "MB-339A",
+      "noAfterburner": true,
+      "confidence": "high",
+      "source": "Module files (no AB commands/options found); CoreMods SFM ForsRUD=1 where present",
+      "notes": "No AB."
+    },
+    {
+      "game": "DCS",
+      "plane": "C-101CC",
+      "title": "C-101CC Aviojet",
+      "noAfterburner": true,
+      "confidence": "high",
+      "source": "Module files (no AB commands/options found); CoreMods SFM ForsRUD=1 where present",
+      "notes": "No AB. Note: the Controls Indicator has a dynamic 'AB_detentPos' marker (C-101\\Cockpit\\ControlsIndicator\\ControlsIndicator_page.lua:254-261) whose meaning is not documented."
+    },
+    {
+      "game": "DCS",
+      "plane": "C-101EB",
+      "title": "C-101EB Aviojet",
+      "noAfterburner": true,
+      "confidence": "high",
+      "source": "Module files (no AB commands/options found); CoreMods SFM ForsRUD=1 where present",
+      "notes": "No AB."
+    },
+    {
+      "game": "DCS",
+      "plane": "su-25T",
+      "title": "Su-25T (FC3)",
+      "noAfterburner": true,
+      "confidence": "high",
+      "source": "Module files (no AB commands/options found); CoreMods SFM ForsRUD=1 where present",
+      "notes": "No AB; engine start/stop via keybinds."
+    },
+    {
+      "game": "DCS",
+      "plane": "su-25",
+      "title": "Su-25A (FC3)",
+      "noAfterburner": true,
+      "confidence": "high",
+      "source": "Module files (no AB commands/options found); CoreMods SFM ForsRUD=1 where present",
+      "notes": "No AB."
+    },
+    {
+      "game": "DCS",
+      "plane": "a-10a",
+      "title": "A-10A (FC3)",
+      "noAfterburner": true,
+      "confidence": "high",
+      "source": "Module files (no AB commands/options found); CoreMods SFM ForsRUD=1 where present",
+      "notes": "No AB (AI SFM ForsRUD = 1)."
+    },
+    {
+      "game": "DCS",
+      "plane": "Christen Eagle II",
+      "title": "Christen Eagle II",
+      "noAfterburner": true,
+      "confidence": "high",
+      "source": "Module files (no AB commands/options found); CoreMods SFM ForsRUD=1 where present",
+      "notes": "Piston engine; AI SFM MinRUD 0.223 (Eagle_II.lua:492) is not an axis gate."
+    },
+    {
+      "game": "FalconBMS",
+      "plane": "*",
+      "title": "Falcon BMS 4.38 - F-16 (all BMS jets)",
+      "confidence": "medium",
+      "source": "<Falcon BMS 4.38>\\Docs\\00 BMS Manuals\\BMS-User-Manual.pdf p35-36 ('Left-click on SET AB = Set Afterburner detent (green). Right-click = Set Idle detent (red). By default no detents are set... markers at the top (green) and bottom (red)'); BMS-Technical-Manual.pdf p16, p25",
+      "gameOption": "g_bUseAnalogIdleCutoff (default 0, bool (0/1): engine start/stop by moving throttle over the idle detent; <Falcon BMS 4.38>\\User\\Config\\Falcon BMS.cfg)",
+      "notes": "BMS has no per-aircraft fixed AB point: the user calibrates Idle and AB detents on the throttle axis in UI SETUP > CONTROLLERS (also in-game, up to 2 engines). Values live in User\\Config\\joystick.cal (binary, 30 records x 6 int32; the two records that look like throttle axes hold {0,15000,15000,0,0,257} = AB marker at full scale, i.e. not set). Record layout inferred, not documented."
+    },
+    {
+      "game": "XPlane12",
+      "plane": "Grumman F-14 Tomcat (F-14D.acf)",
+      "title": "Laminar F-14D - Grumman F-14 Tomcat (F-14D.acf)",
+      "afterburner": 0.6,
+      "confidence": "medium",
+      "source": "<Steam>\\X-Plane 12\\Aircraft\\Laminar Research\\Grumman F-14 Tomcat\\F-14D.acf:32431; Plane Maker.exe string: 'go to low afterburner above this throttle { Burner engages smoothly above this throttle as you go to 100%. ENTER ZERO HERE TO LET THE THE BURNER LEVEL PANEL-SWITCH CONTROL THE BURNER LEVEL.'",
+      "gameOption": "P acf/_go_to_burner_50_above_thro (default 0.6, throttle ratio 0..1 (Plane Maker: 'go to low afterburner above this throttle'); <Steam>\\X-Plane 12\\Aircraft\\Laminar Research\\Grumman F-14 Tomcat\\F-14D.acf)",
+      "notes": "acf/_throt_max_fwd_nrm = 1.0 here, so throttle ratio = axis fraction (assuming no user response curve). X-Plane per-axis settings (Joystick prefs) can also define beta/reverse ranges for throttles; no prefs file exists yet (sim never started)."
+    },
+    {
+      "game": "XPlane12",
+      "plane": "McDonnell Douglas F-4 Phantom II (F-4.acf)",
+      "title": "Laminar F-4 - McDonnell Douglas F-4 Phantom II (F-4.acf)",
+      "afterburner": 0.97,
+      "confidence": "low",
+      "source": "<Steam>\\X-Plane 12\\Aircraft\\Laminar Research\\McDonnell Douglas F-4 Phantom II\\F-4.acf:27784 (also :28618-28619 _throt_max_fwd_nrm/_emr = 1.05)",
+      "gameOption": "P acf/_go_to_burner_50_above_thro (default 0.97, throttle ratio; <Steam>\\X-Plane 12\\Aircraft\\Laminar Research\\McDonnell Douglas F-4 Phantom II\\F-4.acf)",
+      "notes": "If the axis maps 0..1 onto throttle ratio 0..1.05, the AB point on the axis would be ~0.924 instead of 0.97; not verified."
+    },
+    {
+      "game": "MSFS2024",
+      "plane": "*",
+      "title": "MSFS 2024 jets - F/A-18E / T-38 etc.",
+      "confidence": "low",
+      "source": "<MSFS 2024 user folder>\\Packages\\Official2024\\Steam\\asobo-passiveaircraft-fa18 (AI only, files are .fsc/.fsarchive encrypted); flyable jets are streamed",
+      "gameOption": "afterburner_throttle_threshold (default None, throttle ratio in engines.cfg [TURBINEENGINEDATA] (SDK key name); None)",
+      "notes": "Not readable: MSFS 2024 official aircraft are encrypted (.fsc/.fsarchive) or streamed. Only passive (AI) FA-18 and T-38 packages are local. Value must come from an unencrypted community aircraft's engines.cfg or in-sim measurement."
+    },
+    {
+      "game": "IL2Game",
+      "plane": "*",
+      "title": "IL-2 Sturmovik Great Battles",
+      "noAfterburner": true,
+      "confidence": "low",
+      "source": "<Steam>\\IL-2 Sturmovik Battle of Stalingrad\\data (aircraft data packed in .gtp archives)",
+      "notes": "No afterburners (Me 262/Ar 234 jets have none). Combat/emergency/boost power is per-aircraft (separate boost/MW-50 key, or throttle range above 100% on some types) - the tech specs are inside .gtp archives, so no per-aircraft gate could be read statically."
+    },
+    {
+      "game": "NuclearOption",
+      "plane": "*",
+      "title": "Nuclear Option - (jets)",
+      "confidence": "low",
+      "source": "<Steam>\\Nuclear Option\\NuclearOption_Data\\Managed\\Assembly-CSharp.dll (fields afterburner, afterburnerAmount, allowAfterburner, afterburnerOn)",
+      "notes": "AB exists in game code; threshold not determined statically (would need IL decompilation)."
+    },
+    {
+      "game": "IL2Korea",
+      "plane": "*",
+      "title": "IL-2 Series: Korea",
+      "noAfterburner": true,
+      "confidence": "medium",
+      "source": "Aircraft of the game (MiG-15, F-86, piston aircraft): none has an afterburner.",
+      "notes": ""
+    }
+  ]
+}

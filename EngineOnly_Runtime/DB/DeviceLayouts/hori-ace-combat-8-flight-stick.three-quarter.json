@@ -1,0 +1,110 @@
+{
+  "format": "joypro-device-layout",
+  "version": 1,
+  "model": "hori-ace-combat-8-flight-stick",
+  "photo": {"kind": "vendor", "url": "https://horieurope.com/cdn/shop/files/07_SPF-034_EC_ProductImage.png", "sha256": "d8efa526be9143a83bc3fae8d16b9c3da598b30a2603d9f8be0e5d5de527e879", "view": "three-quarter"},
+  "markers": {
+    "stick.axis.brake_lever": [0.385, 0.545],
+    "stick.axis.slider": [0.29, 0.525],
+    "stick.axis.twist": [0.525, 0.4],
+    "stick.gimbal": [0.49, 0.615],
+    "stick.hat.1": [0.526, 0.138],
+    "stick.trigger": [0.627, 0.31]
+  },
+  "parts": {
+    "stick.trigger": {
+      "type": "trigger",
+      "name": "Trigger",
+      "inputs": [
+        {"input": "", "control": "stick.trigger.stage1"}
+      ],
+      "mapping": "medium",
+      "confidence": "medium",
+      "note": "red trigger behind the grip, only its edge is visible"
+    },
+    "stick.axis.twist": {
+      "type": "twist",
+      "name": "Twist",
+      "inputs": [
+        {"input": "", "control": "stick.axis.twist"}
+      ],
+      "mapping": "medium",
+      "confidence": "medium",
+      "note": "grip (twist)"
+    },
+    "stick.gimbal": {
+      "type": "gimbal",
+      "name": "Stick (roll / pitch)",
+      "inputs": [
+        {"input": "", "control": "stick.axis.roll"},
+        {"input": "", "control": "stick.axis.pitch"}
+      ],
+      "mapping": "medium",
+      "confidence": "medium",
+      "note": "stick base joint"
+    },
+    "stick.axis.brake_lever": {
+      "type": "brake",
+      "name": "Brake lever",
+      "inputs": [
+        {"input": "", "control": "stick.axis.brake_lever"}
+      ],
+      "mapping": "medium",
+      "confidence": "medium",
+      "note": "inboard curved lever on the left side (BRAKE, mirrored from the labelled right pair)"
+    },
+    "stick.axis.slider": {
+      "type": "slider",
+      "name": "Throttle lever",
+      "inputs": [
+        {"input": "", "control": "stick.axis.slider"}
+      ],
+      "mapping": "medium",
+      "confidence": "medium",
+      "note": "outboard cylinder lever on the left side (THROTTLE [L], mirrored from the labelled THROTTLE [R])"
+    },
+    "stick.hat.1": {
+      "type": "hat",
+      "name": "Hat",
+      "inputs": [
+        {"input": "", "control": "stick.hat.1.up"},
+        {"input": "", "control": "stick.hat.1.right"},
+        {"input": "", "control": "stick.hat.1.down"},
+        {"input": "", "control": "stick.hat.1.left"}
+      ],
+      "mapping": "medium",
+      "confidence": "high",
+      "note": "four-way hat at the left of the head face"
+    },
+    "stick.button.thumb.1": {
+      "type": "button",
+      "name": "High-G button",
+      "inputs": [
+        {"input": "", "control": "stick.button.thumb.1"}
+      ],
+      "mapping": "low"
+    }
+  },
+  "unplaced": {
+    "stick.button.thumb.1": "yellow striped button in the middle of the head: guessed as the High-G button"
+  },
+  "candidates": {
+    "stick.button.thumb.1": [0.603, 0.114]
+  },
+  "source": "JoyPro curated on the maker's photo (2026-10-11), seen from the front left and slightly above: head face (hat, ministick, square/triangle/circle buttons, yellow button), lever pairs on both base sides, button block on the base",
+  "mappingSource": "catalog only (others_massmarket.json, confidence low: no button map published, controls without input); control identity from the maker's product page https://horieurope.com/products/spf-034 (dual throttle and brake levers on both sides, twist, High-G button) and the printed labels \"THROTTLE [R]\" / \"BRAKE\" next to the right levers on this photo",
+  "confidence": "medium",
+  "note": "The stick has a throttle + brake lever pair on EACH side (ambidextrous). The catalog has one throttle and one brake part; they are placed on the left pair (outboard cylinder = throttle, inboard curved paddle = brake, mirrored from the labelled right pair). Which side the game/HID reports for these parts is unknown. Which button is the \"High-G button\" is not stated by HORI; the yellow striped button in the middle of the head is only a hidden candidate. The red \"CAUTION\" button carries the PlayStation circle symbol, the two dark buttons square and triangle.",
+  "callouts": {
+    "version": 1,
+    "width": 2076,
+    "height": 2076,
+    "picture": [38, 38, 2000, 2000],
+    "rowHeight": 48,
+    "mainWidth": 408,
+    "modWidth": 264,
+    "otherY": -1,
+    "tables": [],
+    "lines": []
+  }
+}

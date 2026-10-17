@@ -1,0 +1,69 @@
+{
+  "format": "joypro-device-layout",
+  "version": 1,
+  "model": "logitech-pro-flight-rudder-pedals",
+  "photo": {"kind": "vendor", "url": "https://resource.logitechg.com/content/dam/gaming/en/products/flight-rudder-pedals/flight-rudder-pedals-gallery-1.png", "sha256": "b3b4020f237b20c747a9c50f737fbe23e0f2c21074149f0b596b42fe335071a2", "view": "front"},
+  "markers": {
+    "pedals.axis.brake_left": [0.232, 0.16],
+    "pedals.axis.brake_right": [0.75, 0.16],
+    "pedals.axis.rudder": [0.5, 0.556]
+  },
+  "parts": {
+    "pedals.axis.rudder": {
+      "type": "rudder",
+      "name": "Rudder",
+      "inputs": [
+        {"input": "JOY_RZ", "control": "pedals.axis.rudder"}
+      ],
+      "mapping": "medium",
+      "confidence": "medium",
+      "note": "centre housing (both pedals slide fore/aft)"
+    },
+    "pedals.axis.brake_left": {
+      "type": "brake",
+      "name": "Left toe brake",
+      "inputs": [
+        {"input": "JOY_X", "control": "pedals.axis.brake_left"}
+      ],
+      "mapping": "medium",
+      "confidence": "medium",
+      "note": "toe part of the left foot plate"
+    },
+    "pedals.axis.brake_right": {
+      "type": "brake",
+      "name": "Right toe brake",
+      "inputs": [
+        {"input": "JOY_Y", "control": "pedals.axis.brake_right"}
+      ],
+      "mapping": "medium",
+      "confidence": "medium",
+      "note": "toe part of the right foot plate"
+    }
+  },
+  "unplaced": {},
+  "candidates": {},
+  "source": "JoyPro curated on the maker's photo (2026-10-11), pedals seen from above, the pilot's heels at the bottom (left pedal on the left)",
+  "mappingSource": "catalog (EDRefCard DeviceMappings/bindingsData: X = left toe brake, Y = right toe brake, RZ = rudder; FlightGear Pro-Flight-Rudder-Pedals.xml agrees: axes 0/1 = left/right brake)",
+  "confidence": "medium",
+  "note": "Toe brakes placed on the upper (toe) part of each foot plate, which tilts forward for braking. The rudder axis is the fore/aft slide of both pedals; its marker sits on the centre housing below the tension dial.",
+  "callouts": {
+    "version": 1,
+    "width": 1435,
+    "height": 588,
+    "picture": [340, 16, 755, 556],
+    "rowHeight": 20,
+    "mainWidth": 170,
+    "modWidth": 110,
+    "otherY": -1,
+    "tables": [
+      {"id": "pedals.axis.rudder", "title": "Rudder", "parts": ["pedals.axis.rudder"], "side": "left", "x": 16, "y": 301.1, "width": 300, "modifier": true, "spot": [0.5, 0.556], "rows": [{"input": "JOY_RZ", "label": "RZ", "icon": "axis", "part": "pedals.axis.rudder"}]},
+      {"id": "pedals.axis.brake_left", "title": "Left toe brake", "parts": ["pedals.axis.brake_left"], "side": "left", "x": 16, "y": 81, "width": 300, "modifier": true, "spot": [0.232, 0.16], "rows": [{"input": "JOY_X", "label": "X", "icon": "axis", "part": "pedals.axis.brake_left"}]},
+      {"id": "pedals.axis.brake_right", "title": "Right toe brake", "parts": ["pedals.axis.brake_right"], "side": "right", "x": 1119, "y": 81, "width": 300, "modifier": true, "spot": [0.75, 0.16], "rows": [{"input": "JOY_Y", "label": "Y", "icon": "axis", "part": "pedals.axis.brake_right"}]}
+    ],
+    "lines": [
+      {"table": "pedals.axis.brake_left", "points": [[515.2, 105], [316, 105]]},
+      {"table": "pedals.axis.rudder", "points": [[717.5, 325.1], [316, 325.1]]},
+      {"table": "pedals.axis.brake_right", "points": [[906.2, 105], [1119, 105]]}
+    ]
+  }
+}

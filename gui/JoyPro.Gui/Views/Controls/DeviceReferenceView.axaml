@@ -1,0 +1,162 @@
+<!--
+    The device reference (docs/device-reference.md): the picture of a device with a numbered marker on every part (drawn by
+    the shared picture canvas DeviceMarkerCanvas: zoom, pan, drag with snapping, assistant clicks, dropped photos), and
+    the legend (input, physical name, bound command). DataContext: a DeviceReferenceViewModel. Options on the control:
+    LegendPlacement (Right, Bottom, None), ShowToolbar, ShowAssistant.
+-->
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:l="using:JoyPro.Gui.Localization"
+             xmlns:vm="using:JoyPro.Gui.ViewModels"
+             xmlns:models="using:JoyPro.Gui.Models"
+             xmlns:dr="using:JoyPro.DeviceReference"
+             xmlns:controls="using:JoyPro.Gui.Views.Controls"
+             x:Class="JoyPro.Gui.Views.Controls.DeviceReferenceView"
+             x:Name="View"
+             x:DataType="vm:DeviceReferenceViewModel">
+    <UserControl.Styles>
+        <Style Selector="ListBox.legend > ListBoxItem">
+            <Setter Property="Padding" Value="4,2" />
+            <Setter Property="MinHeight" Value="0" />
+            <Setter Property="HorizontalContentAlignment" Value="Stretch" />
+        </Style>
+        <Style Selector="TextBox.cell">
+            <Setter Property="MinHeight" Value="26" />
+            <Setter Property="Padding" Value="6,2" />
+            <Setter Property="FontSize" Value="12" />
+            <Setter Property="VerticalContentAlignment" Value="Center" />
+        </Style>
+        <Style Selector="Border.badge">
+            <Setter Property="Background" Value="{DynamicResource JP.AccentBrush}" />
+            <Setter Property="CornerRadius" Value="10" />
+            <Setter Property="MinWidth" Value="22" />
+            <Setter Property="Height" Value="20" />
+            <Setter Property="Padding" Value="5,0" />
+            <Setter Property="HorizontalAlignment" Value="Left" />
+            <Setter Property="VerticalAlignment" Value="Center" />
+        </Style>
+    </UserControl.Styles>
+
+    <Grid x:Name="Root" RowDefinitions="Auto,*,Auto,Auto" ColumnDefinitions="*,Auto" ColumnSpacing="10" RowSpacing="8">
+        <!-- Header: what it is, which picture, the actions -->
+        <StackPanel x:Name="Header" Grid.Row="0" Grid.ColumnSpan="2" Spacing="4" IsVisible="{Binding #View.ShowToolbar}">
+            <TextBlock Text="{Binding Title}" FontSize="16" FontWeight="SemiBold" TextWrapping="Wrap" />
+            <TextBlock Text="{Binding Subtitle}" Classes="muted" FontSize="12" TextWrapping="Wrap" />
+            <TextBlock Text="{l:T 'Found by: {0}', Arg0={Binding MatchReason}}" Classes="muted" FontSize="11"
+                       IsVisible="{Binding MatchReason, Converter={x:Static StringConverters.IsNotNullOrEmpty}}" />
+            <WrapPanel Orientation="Horizontal" ItemSpacing="6" LineSpacing="6" Margin="0,4,0,0">
+                <ComboBox ItemsSource="{Binding GripChoices}" SelectedItem="{Binding SelectedGrip}" MinWidth="200"
+                          IsVisible="{Binding HasGripChoices}" PlaceholderText="{l:T 'Grip on this base'}"
+                          ToolTip.Tip="{l:T 'The grip on this base decides the picture and the button names'}">
+                    <ComboBox.ItemTemplate>
+                        <DataTemplate x:DataType="dr:RefDevice">
+                            <TextBlock Text="{Binding DisplayName}" />
+                        </DataTemplate>
+                    </ComboBox.ItemTemplate>
+                </ComboBox>
+                <ComboBox ItemsSource="{Binding Pictures}" SelectedItem="{Binding SelectedPicture}" MinWidth="170"
+                          ToolTip.Tip="{l:T 'JoyPro\'s drawing, the manufacturer\'s photo (loaded on this PC only) or your own photo'}">
+                    <ComboBox.ItemTemplate>
+                        <DataTemplate x:DataType="models:ReferencePictureOption">
+                            <TextBlock Text="{Binding Title}" />
+                        </DataTemplate>
+                    </ComboBox.ItemTemplate>
+                </ComboBox>
+                <CheckBox Content="{l:T 'Maker\'s photo of this device'}" IsChecked="{Binding VendorPhotosEnabled}"
+                          ToolTip.Tip="{l:T 'Download the maker\'s product photo of this device from its web site and show it (stored on this PC only, never shipped). Off: JoyPro\'s drawing. Settings &gt; Privacy: ask, always or never for all devices.'}" />
+                <Button x:Name="UserPhotoButton" Content="{l:T 'Your photo...'}" Click="UserPhotoClicked" Classes="small"
+                        ToolTip.Tip="{l:T 'Use your own photo of the device (or drop a picture file on the picture)'}" />
+                <Button Content="{l:T 'Remove photo'}" Command="{Binding RemoveUserPhotoCommand}" Classes="small" IsVisible="{Binding HasUserPhoto}" />
+                <Button Content="{l:T 'Save markers'}" Command="{Binding SaveMarkersCommand}" Classes="small" IsEnabled="{Binding HasUnsavedChanges}"
+                        ToolTip.Tip="{l:T 'Keep the marker positions of this picture'}" />
+                <Button Content="{l:T 'Reset markers'}" Command="{Binding ResetMarkersCommand}" Classes="small" />
+                <Button Content="{l:T 'Marker assistant'}" Command="{Binding OpenAssistantCommand}" Classes="small" IsVisible="{Binding #View.ShowAssistant}"
+                        ToolTip.Tip="{l:T 'Press each button of the device and click where it is'}" />
+                <Button Content="{l:T 'Export...'}" Click="ExportClicked" Classes="small" ToolTip.Tip="{l:T 'Save this device as a definition file (JSON) to share'}" />
+                <Button Content="{l:T 'Import...'}" Click="ImportClicked" Classes="small" ToolTip.Tip="{l:T 'Add a device definition file (JSON)'}" />
+            </WrapPanel>
+            <TextBlock Text="{Binding Status}" Classes="warnText" FontSize="12" TextWrapping="Wrap"
+                       IsVisible="{Binding Status, Converter={x:Static StringConverters.IsNotNullOrEmpty}}" />
+            <!-- Asked once per device before the maker's photo is downloaded (DevicePhotoConsent) -->
+            <Border Classes="sunken" Padding="8" IsVisible="{Binding AsksPhotoConsent}">
+                <StackPanel Spacing="6">
+                    <TextBlock Text="{Binding PhotoConsentText}" TextWrapping="Wrap" />
+                    <WrapPanel ItemSpacing="6" LineSpacing="6">
+                        <Button Content="{l:T 'Yes'}" Classes="small accent" Command="{Binding AnswerPhotoConsentCommand}" CommandParameter="yes" />
+                        <Button Content="{l:T 'No'}" Classes="small" Command="{Binding AnswerPhotoConsentCommand}" CommandParameter="no" />
+                        <Button Content="{l:T 'Always for all my devices'}" Classes="small" Command="{Binding AnswerPhotoConsentCommand}" CommandParameter="always" />
+                        <Button Content="{l:T 'Never'}" Classes="small" Command="{Binding AnswerPhotoConsentCommand}" CommandParameter="never" />
+                    </WrapPanel>
+                </StackPanel>
+            </Border>
+        </StackPanel>
+
+        <!-- The picture -->
+        <Border x:Name="PictureHost" Grid.Row="1" Grid.Column="0" Classes="sunken" Padding="6" MinHeight="200">
+            <Grid RowDefinitions="*,Auto">
+                <controls:DeviceMarkerCanvas x:Name="Canvas" Source="{Binding CanvasPhoto}" Schematic="{Binding CanvasSchematic}"
+                                                SourceWidth="{Binding PictureWidth}" SourceHeight="{Binding PictureHeight}"
+                                                Markers="{Binding CanvasMarkers}" SelectedMarker="{Binding SelectedCanvasMarker}" Mode="{Binding CanvasMode}"
+                                                ShowBadges="{Binding #View.ShowBadges}" ShowCommands="False" ShowChrome="{Binding #View.ShowCanvasChrome}" SnapEnabled="False"
+                                                MarkerMovedCommand="{Binding CanvasMarkerMovedCommand}" CanvasClickedCommand="{Binding CanvasClickedCommand}"
+                                                PictureFileDroppedCommand="{Binding DropPhotoCommand}" />
+                <TextBlock Grid.Row="1" Text="{Binding PhotoCredit}" FontSize="11" Classes="muted" HorizontalAlignment="Right"
+                           IsVisible="{Binding PhotoCredit, Converter={x:Static StringConverters.IsNotNullOrEmpty}}" />
+            </Grid>
+        </Border>
+
+        <!-- The marker assistant -->
+        <Border x:Name="AssistantHost" Grid.Row="2" Grid.ColumnSpan="2" Classes="callout" Padding="10"
+                IsVisible="{Binding HasAssistant}">
+            <StackPanel Spacing="6" DataContext="{Binding Assistant}" x:DataType="vm:MarkerAssistantViewModel">
+                <TextBlock Text="{Binding Prompt}" TextWrapping="Wrap" FontWeight="SemiBold" />
+                <WrapPanel Orientation="Horizontal" ItemSpacing="6" LineSpacing="6">
+                    <Button Content="{l:T 'Start'}" Command="{Binding StartCommand}" Classes="small" ToolTip.Tip="{l:T 'Press a button or hat direction on the device next'}" />
+                    <Button Content="{l:T 'Axis'}" Command="{Binding CaptureAxisCommand}" Classes="small" ToolTip.Tip="{l:T 'Move an axis of the device next'}" />
+                    <Button Content="{l:T 'Skip'}" Command="{Binding SkipCommand}" Classes="small" />
+                    <Button Content="{l:T 'Undo'}" Command="{Binding UndoCommand}" Classes="small" />
+                    <Button Content="{l:T 'Stop'}" Command="{Binding StopCommand}" Classes="small" />
+                    <Button Content="{l:T 'Finish'}" Command="{Binding FinishCommand}" Classes="small" ToolTip.Tip="{l:T 'Save the markers (and your device definition)'}" />
+                    <Button Content="{l:T 'Close'}" Click="CloseAssistantClicked" Classes="small" />
+                    <TextBlock Text="{Binding PlacedCount, StringFormat='{}{0} placed'}" Classes="muted" VerticalAlignment="Center" />
+                </WrapPanel>
+            </StackPanel>
+        </Border>
+
+        <!-- The legend -->
+        <Border x:Name="LegendHost" Grid.Row="1" Grid.Column="1" Width="400" Classes="sunken" Padding="6">
+            <Grid RowDefinitions="Auto,*">
+                <Grid ColumnDefinitions="36,104,*,*" Margin="8,2,8,4">
+                    <TextBlock Text="#" Classes="caption" />
+                    <TextBlock Grid.Column="1" Text="{l:T 'Input'}" Classes="caption" />
+                    <TextBlock Grid.Column="2" Text="{l:T 'Part'}" Classes="caption" />
+                    <TextBlock Grid.Column="3" Text="{l:T 'Command'}" Classes="caption" Margin="6,0,0,0" />
+                </Grid>
+                <ListBox Grid.Row="1" Classes="legend" ItemsSource="{Binding Legend}" SelectedItem="{Binding SelectedLegendRow}"
+                         Background="Transparent">
+                    <!-- Not virtualized: a legend has at most a few hundred rows, and exports render all of them. -->
+                    <ListBox.ItemsPanel>
+                        <ItemsPanelTemplate>
+                            <StackPanel />
+                        </ItemsPanelTemplate>
+                    </ListBox.ItemsPanel>
+                    <ListBox.ItemTemplate>
+                        <DataTemplate x:DataType="models:ReferenceLegendRow">
+                            <Grid ColumnDefinitions="36,104,*,*">
+                                <Border Classes="badge">
+                                    <TextBlock Text="{Binding Badge}" Foreground="White" FontSize="11" FontWeight="SemiBold"
+                                               HorizontalAlignment="Center" VerticalAlignment="Center" />
+                                </Border>
+                                <TextBlock Grid.Column="1" Text="{Binding InputText}" Classes="mono" FontSize="11" VerticalAlignment="Center"
+                                           TextTrimming="CharacterEllipsis" />
+                                <TextBox Grid.Column="2" Classes="cell" Text="{Binding Name}" IsReadOnly="{Binding !#View.IsLegendEditable}" />
+                                <TextBox Grid.Column="3" Classes="cell" Text="{Binding Command}" Margin="6,0,0,0" Watermark="{l:T 'not bound'}"
+                                         IsReadOnly="{Binding !#View.IsLegendEditable}" />
+                            </Grid>
+                        </DataTemplate>
+                    </ListBox.ItemTemplate>
+                </ListBox>
+            </Grid>
+        </Border>
+    </Grid>
+</UserControl>

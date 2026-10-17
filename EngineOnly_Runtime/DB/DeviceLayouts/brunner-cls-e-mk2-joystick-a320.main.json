@@ -1,0 +1,67 @@
+{
+  "format": "joypro-device-layout",
+  "version": 1,
+  "model": "brunner-cls-e-mk2-joystick-a320",
+  "photo": {"kind": "vendor", "url": "https://shop.brunner-simulation.ch/wp-content/uploads/2024/02/1.png", "sha256": "a783c2502bde8b465ad9a9cad0435007b74d0ccfa0d9142533b0088a73ad2636", "view": "main"},
+  "markers": {
+    "stick.button.thumb.1": [0.643, 0.117],
+    "stick.gimbal": [0.54, 0.42]
+  },
+  "parts": {
+    "stick.trigger": {
+      "type": "trigger",
+      "name": "Radio / PTT trigger",
+      "inputs": [
+        {"input": "", "control": "stick.trigger.stage1"}
+      ],
+      "mapping": "medium"
+    },
+    "stick.gimbal": {
+      "type": "gimbal",
+      "name": "Stick (roll / pitch)",
+      "inputs": [
+        {"input": "JOY_X", "control": "stick.axis.roll"},
+        {"input": "JOY_Y", "control": "stick.axis.pitch"}
+      ],
+      "mapping": "medium",
+      "confidence": "medium",
+      "note": "shaft exit at the grip base plate on top of the blue bellows boot"
+    },
+    "stick.button.thumb.1": {
+      "type": "button",
+      "name": "Takeover push button (red, autopilot disconnect)",
+      "inputs": [
+        {"input": "", "control": "stick.button.thumb.1"}
+      ],
+      "mapping": "medium",
+      "confidence": "high",
+      "note": "red takeover push button on the head"
+    }
+  },
+  "unplaced": {
+    "stick.trigger": "small feature under the head overhang, possibly the PTT trigger; the trigger is not clearly visible from this angle"
+  },
+  "candidates": {
+    "stick.trigger": [0.605, 0.215]
+  },
+  "source": "JoyPro curated on the maker's photo (2026-10-11), the CLS-E MK II base with the fixed A320 sidestick grip (blue bellows boot) seen from the front left, slightly from above; red takeover push button on the head",
+  "mappingSource": "catalog brunner.json (quick install guide https://shop.brunner-simulation.ch/wp-content/uploads/2025/05/20240417_BRUNNER_QuickInstallGuide_CLS-E-MKII-joystick_V1.0.pdf, fact sheet https://shop.brunner-simulation.ch/wp-content/uploads/2024/03/20240304_Brunner_FactSheet_CLS-E-MKII-Joystick.pdf, product page https://brunner-innovation.swiss/product/cls-e-joystick-a320-captain-including-grip/): USB X = roll, Y = pitch; grip controls named by the product photo, button numbers not published",
+  "confidence": "medium",
+  "note": "The red takeover button is unmistakable. The radio/PTT trigger is not clearly visible on this angle (only a small feature under the head overhang), so it is kept as a hidden candidate. Captain (V002, left hand) and first officer (V005, right hand) grips are mirror images; this photo shows one of them (not stated).",
+  "callouts": {
+    "version": 1,
+    "width": 1426,
+    "height": 1038,
+    "picture": [19, 19, 1000, 1000],
+    "rowHeight": 24,
+    "mainWidth": 204,
+    "modWidth": 132,
+    "otherY": -1,
+    "tables": [
+      {"id": "stick.gimbal", "title": "Stick (roll / pitch)", "parts": ["stick.gimbal"], "side": "right", "x": 1047, "y": 410, "width": 360, "modifier": true, "spot": [0.54, 0.42], "rows": [{"input": "JOY_X", "label": "roll (X)", "icon": "axis", "part": "stick.gimbal"}, {"input": "JOY_Y", "label": "pitch (Y)", "icon": "axis", "part": "stick.gimbal"}]}
+    ],
+    "lines": [
+      {"table": "stick.gimbal", "points": [[559, 439], [1047, 439]]}
+    ]
+  }
+}

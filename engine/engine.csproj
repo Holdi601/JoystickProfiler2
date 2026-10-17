@@ -1,0 +1,349 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">x64</Platform>
+    <ProjectGuid>{65C6D977-8CA6-4D68-AF95-C13C74E8A2D1}</ProjectGuid>
+    <OutputType>Exe</OutputType>
+    <RootNamespace>JoyPro.Engine</RootNamespace>
+    <AssemblyName>engine</AssemblyName>
+    <TargetFrameworkVersion>v4.8</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
+    <Deterministic>true</Deterministic>
+    <PublishUrl>publish\</PublishUrl>
+    <Install>true</Install>
+    <InstallFrom>Disk</InstallFrom>
+    <UpdateEnabled>false</UpdateEnabled>
+    <UpdateMode>Foreground</UpdateMode>
+    <UpdateInterval>7</UpdateInterval>
+    <UpdateIntervalUnits>Days</UpdateIntervalUnits>
+    <UpdatePeriodically>false</UpdatePeriodically>
+    <UpdateRequired>false</UpdateRequired>
+    <MapFileExtensions>true</MapFileExtensions>
+    <ApplicationRevision>0</ApplicationRevision>
+    <ApplicationVersion>1.0.0.%2a</ApplicationVersion>
+    <IsWebBootstrapper>false</IsWebBootstrapper>
+    <UseApplicationTrust>false</UseApplicationTrust>
+    <BootstrapperEnabled>true</BootstrapperEnabled>
+    <ApplicationIcon>assets\engine_console.ico</ApplicationIcon>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|x64'">
+    <DebugSymbols>true</DebugSymbols>
+    <OutputPath>bin\x64\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <DebugType>full</DebugType>
+    <PlatformTarget>x64</PlatformTarget>
+    <ErrorReport>prompt</ErrorReport>
+    <Optimize>false</Optimize>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|x64'">
+    <OutputPath>bin\x64\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <Optimize>true</Optimize>
+    <DebugType>pdbonly</DebugType>
+    <PlatformTarget>x64</PlatformTarget>
+    <ErrorReport>prompt</ErrorReport>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System" />
+    <Reference Include="System.Buffers">
+      <HintPath>lib\System.Buffers.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="System.IO.Compression" />
+    <Reference Include="System.IO.Compression.FileSystem" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.Management" />
+    <Reference Include="System.ServiceProcess" />
+    <Reference Include="System.Memory">
+      <HintPath>lib\System.Memory.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="System.Runtime.CompilerServices.Unsafe">
+      <HintPath>lib\System.Runtime.CompilerServices.Unsafe.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="System.Threading.Tasks.Extensions">
+      <HintPath>lib\System.Threading.Tasks.Extensions.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="System.Windows.Forms" />
+    <Reference Include="System.Web.Extensions" />
+    <Reference Include="WindowsBase" />
+    <Reference Include="System.Xml" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="ZstdSharp">
+      <HintPath>lib\ZstdSharp.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="CoreInternalDataManagement.cs" />
+    <Compile Include="CoreLayoutFile.cs" />
+    <Compile Include="CoreDbFingerprint.cs" />
+    <Compile Include="CoreMainStructure.cs" />
+    <Compile Include="CoreProfile.cs" />
+    <Compile Include="CoreRelation.cs" />
+    <Compile Include="CoreSerializationBinder.cs" />
+    <Compile Include="CoreTypes.cs" />
+    <Compile Include="DirectInputDeviceDiscovery.cs" />
+    <Compile Include="EngineDatabase.cs" />
+    <Compile Include="EngineDcsFfbCorrectionCatalog.cs" />
+    <Compile Include="DcsDeviceNames.cs" />
+    <Compile Include="EngineDcsExport.cs" />
+    <Compile Include="EngineDcsImport.cs" />
+    <Compile Include="EngineDcsRefresh.cs" />
+    <Compile Include="EngineDcsRefresh.Verify.cs" />
+    <Compile Include="EngineDcsDefaultsStrip.cs" />
+    <Compile Include="EngineAutoGroup.cs" />
+    <Compile Include="EngineNlGroup.cs" />
+    <Compile Include="EngineLlm.cs" />
+    <Compile Include="EngineAutoAssign.cs" />
+    <Compile Include="EngineSetupWizard.cs" />
+    <Compile Include="SetupWizard\SetupModel.cs" />
+    <Compile Include="SetupWizard\SetupRoles.cs" />
+    <Compile Include="SetupWizard\SetupCockpits.cs" />
+    <Compile Include="SetupWizard\SetupCatalog.cs" />
+    <Compile Include="SetupWizard\SetupImportance.cs" />
+    <Compile Include="SetupWizard\SetupPlanner.cs" />
+    <Compile Include="SetupWizard\SetupPlanJson.cs" />
+    <Compile Include="SetupWizard\SetupPlanText.cs" />
+    <Compile Include="EngineRelationChat.cs" />
+    <Compile Include="EngineRelationAssistant.cs" />
+    <Compile Include="EngineFunctionMap.cs" />
+    <Compile Include="EngineFunctionMapCache.cs" />
+    <Compile Include="EngineIdMeanings.cs" />
+    <Compile Include="EngineRelationFunctions.cs" />
+    <Compile Include="EngineRelationSearch.cs" />
+    <Compile Include="EngineRelationSuggest.cs" />
+    <Compile Include="EngineGameCovers.cs" />
+    <Compile Include="EngineMedia.cs" />
+    <Compile Include="EngineProfileGames.cs" />
+    <Compile Include="EngineProfileHistory.cs" />
+    <Compile Include="ProfileHistory.cs" />
+    <Compile Include="EngineOverlay.cs" />
+    <Compile Include="EngineHud.cs" />
+    <Compile Include="EngineDeviceReplace.cs" />
+    <Compile Include="GameInstalls.cs" />
+    <Compile Include="GameDataPaths.cs" />
+    <Compile Include="EngineDeviceKb.cs" />
+    <Compile Include="EngineDeviceReference.cs" />
+    <Compile Include="EngineSchematicBitmap.cs" />
+    <Compile Include="EngineLineArtBitmap.cs" />
+    <Compile Include="DeviceReference\DeviceLineArt.cs" />
+    <Compile Include="DeviceReference\DrawingStyle.cs" />
+    <Compile Include="EngineIl2.cs" />
+    <Compile Include="EngineDtos.cs" />
+    <Compile Include="DbUpdateCheck.cs" />
+    <Compile Include="DeviceModelIdentity.cs" />
+    <Compile Include="DeviceReference\MiniJson.cs" />
+    <Compile Include="DeviceReference\DeviceCatalog.cs" />
+    <Compile Include="DeviceReference\DeviceIdentifier.cs" />
+    <Compile Include="DeviceReference\DeviceVocabulary.cs" />
+    <Compile Include="DeviceReference\DeviceSchematic.cs" />
+    <Compile Include="DeviceReference\DeviceGeneric.cs" />
+    <Compile Include="DeviceReference\DevicePhotos.cs" />
+    <Compile Include="DeviceReference\DeviceChoices.cs" />
+    <Compile Include="DeviceReference\DeviceClasses.cs" />
+    <Compile Include="DeviceReference\CalloutLayout.cs" />
+    <Compile Include="DeviceReference\CockpitCatalog.cs" />
+    <Compile Include="DeviceReference\CockpitSchematic.cs" />
+    <Compile Include="DeviceReference\CockpitManualPages.cs" />
+    <Compile Include="EngineManualPageRenderer.cs" />
+    <Compile Include="EngineCockpits.cs" />
+    <Compile Include="CockpitPictures\Bc7.cs" />
+    <Compile Include="CockpitPictures\CockpitScene.cs" />
+    <Compile Include="CockpitPictures\CockpitViews.cs" />
+    <Compile Include="CockpitPictures\DcsCockpitPictures.cs" />
+    <Compile Include="CockpitPictures\DcsLua.cs" />
+    <Compile Include="CockpitPictures\EdmFile.cs" />
+    <Compile Include="CockpitPictures\EdmScene.cs" />
+    <Compile Include="CockpitPictures\LineArtTracer.cs" />
+    <Compile Include="CockpitPictures\PictureWriter.cs" />
+    <Compile Include="CockpitPictures\PngWriter.cs" />
+    <Compile Include="CockpitPictures\SoftwareRenderer.cs" />
+    <Compile Include="CockpitPictures\TextureImage.cs" />
+    <Compile Include="CockpitPictures\TextureLibrary.cs" />
+    <Compile Include="CockpitPictures\XPlaneCockpitPictures.cs" />
+    <Compile Include="CockpitPictures\XPlaneObj.cs" />
+    <Compile Include="DeviceReference\CockpitPictureSet.cs" />
+    <Compile Include="EngineCockpitPictures.cs" />
+    <Compile Include="DeviceReference\CalloutGrids.cs" />
+    <Compile Include="EngineCalloutRenderer.cs" />
+    <Compile Include="EngineLayoutCallouts.cs" />
+    <Compile Include="EngineLayoutSuggestion.cs" />
+    <Compile Include="EngineLayoutRenderer.cs" />
+    <Compile Include="EngineLayoutTemplateEditor.cs" />
+    <Compile Include="EngineStarCitizen.cs" />
+    <Compile Include="EngineStarCitizenTuning.cs" />
+    <Compile Include="EngineSync.cs" />
+    <Compile Include="EngineGameSupport.cs" />
+    <Compile Include="EngineVJoy.cs" />
+    <Compile Include="VJoy\HidHideSession.cs" />
+    <Compile Include="VJoy\VJoyMapping.cs" />
+    <Compile Include="VJoy\XboxMapping.cs" />
+    <Compile Include="VJoy\VirtualFunctions.cs" />
+    <Compile Include="VJoy\VirtualFunctionRuntime.cs" />
+    <Compile Include="VJoy\GameInputLimits.cs" />
+    <Compile Include="VJoy\EngineVJoyFunctions.cs" />
+    <Compile Include="Games\ArmaGameData.cs" />
+    <Compile Include="Games\ClrMetadata.cs" />
+    <Compile Include="Games\VtolVrMod.cs" />
+    <Compile Include="Games\ArmaProfileIntegration.cs" />
+    <Compile Include="Games\Arma3Integration.cs" />
+    <Compile Include="Games\Arma2Integration.cs" />
+    <Compile Include="Games\ArmaReforgerIntegration.cs" />
+    <Compile Include="Games\EnfusionPak.cs" />
+    <Compile Include="Games\ReforgerCatalogSource.cs" />
+    <Compile Include="Games\WarThunderIntegration.cs" />
+    <Compile Include="Games\WarThunderVromfs.cs" />
+    <Compile Include="Games\BlkDocument.cs" />
+    <Compile Include="Games\XPlaneIntegration.cs" />
+    <Compile Include="Games\X4Integration.cs" />
+    <Compile Include="Games\X4CatalogSource.cs" />
+    <Compile Include="Games\VtolVrIntegration.cs" />
+    <Compile Include="Games\VtolVrNativeIntegration.cs" />
+    <Compile Include="Games\NuclearOptionIntegration.cs" />
+    <Compile Include="Games\RewiredMapIntegration.cs" />
+    <Compile Include="Games\TinyCombatArenaIntegration.cs" />
+    <Compile Include="Games\GRebelsIntegration.cs" />
+    <Compile Include="Games\GRebelsSaveOptions.cs" />
+    <Compile Include="Games\EliteDangerousIntegration.cs" />
+    <Compile Include="Games\XPlanePrf.cs" />
+    <Compile Include="Games\LegacyIniFile.cs" />
+    <Compile Include="Games\FsxEvents.cs" />
+    <Compile Include="Games\Il2LegacyInput.cs" />
+    <Compile Include="Games\Il2LegacyIntegration.cs" />
+    <Compile Include="Games\Il21946Integration.cs" />
+    <Compile Include="Games\Il2CodIntegration.cs" />
+    <Compile Include="Games\FsxControlsFile.cs" />
+    <Compile Include="Games\FsxIntegration.cs" />
+    <Compile Include="Games\MsfsAircraft.cs" />
+    <Compile Include="Games\MsfsCommunityPackage.cs" />
+    <Compile Include="Games\MsfsGameData.cs" />
+    <Compile Include="Games\MsfsIntegration.cs" />
+    <Compile Include="Games\MsfsProfileFile.cs" />
+    <Compile Include="Games\MsfsUserProfiles.cs" />
+    <Compile Include="Games\LegacyGameIds.cs" />
+    <Compile Include="Games\FalconBmsIntegration.cs" />
+    <Compile Include="Games\HllVietnamIntegration.cs" />
+    <Compile Include="Games\GvasKeyMappings.cs" />
+    <Compile Include="Games\BattlefieldIntegration.cs" />
+    <Compile Include="Games\AceCombat8Integration.cs" />
+    <Compile Include="Games\AceCombat7Integration.cs" />
+    <Compile Include="Games\ProjectWingmanIntegration.cs" />
+    <Compile Include="Games\ProjectWingmanSaveGame.cs" />
+    <Compile Include="Games\UnrealPak.cs" />
+    <Compile Include="Games\UnrealIoStore.cs" />
+    <Compile Include="Games\Il2KoreaIntegration.cs" />
+    <Compile Include="AxisTuning.cs" />
+    <Compile Include="AxisDetents.cs" />
+    <Compile Include="EngineAxisDetents.cs" />
+    <Compile Include="EngineAxisDetentsCli.cs" />
+    <Compile Include="EngineAxisDetentsMerge.cs" />
+    <Compile Include="AxisModels\*.cs" />
+    <Compile Include="FfbModels\*.cs" />
+    <Compile Include="BindTuning.cs" />
+    <Compile Include="EngineAxisTuningCli.cs" />
+    <Compile Include="FfbSettings.cs" />
+    <Compile Include="EngineFfbCli.cs" />
+    <Compile Include="EngineFfbTelemetry.cs" />
+    <Compile Include="EngineIl2DbRefresh.cs" />
+    <Compile Include="Games\GameCommands.cs" />
+    <Compile Include="Games\GameKeyCodes.cs" />
+    <Compile Include="Games\GameDeviceDirectory.cs" />
+    <Compile Include="Games\GameInputTokens.cs" />
+    <Compile Include="Games\GameIntegration.cs" />
+    <Compile Include="Games\GameOwnershipStore.cs" />
+    <Compile Include="Games\BindMetadata.cs" />
+    <Compile Include="Games\GameProfileBridge.cs" />
+    <Compile Include="Games\GameRegistry.cs" />
+    <Compile Include="Games\UeIniStruct.cs" />
+    <Compile Include="Games\WardogsIntegration.cs" />
+    <Compile Include="GameBackups.cs" />
+    <Compile Include="GameExportSafety.cs" />
+    <Compile Include="JoyProLog.cs" />
+    <Compile Include="EngineLogging.cs" />
+    <Compile Include="EngineProgress.cs" />
+    <Compile Include="GamePathDiscovery.cs" />
+    <Compile Include="EngineSerialization.cs" />
+    <Compile Include="EngineState.cs" />
+    <Compile Include="Program.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="..\EngineOnly_Runtime\DB\**\*">
+      <Link>DB\%(RecursiveDir)%(Filename)%(Extension)</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="..\EngineOnly_Runtime\CleanProfile\**\*">
+      <Link>CleanProfile\%(RecursiveDir)%(Filename)%(Extension)</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="..\EngineOnly_Runtime\KeyboardCleanProfile\**\*">
+      <Link>KeyboardCleanProfile\%(RecursiveDir)%(Filename)%(Extension)</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="..\EngineOnly_Runtime\TOOLS\Conversions\**\*">
+      <Link>TOOLS\Conversions\%(RecursiveDir)%(Filename)%(Extension)</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="..\EngineOnly_Runtime\Clicks\**\*">
+      <Link>Clicks\%(RecursiveDir)%(Filename)%(Extension)</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="LayoutCatalog\**\*">
+      <Link>LayoutCatalog\%(RecursiveDir)%(Filename)%(Extension)</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="assets\engine_console.ico" />
+  </ItemGroup>
+  <ItemGroup>
+    <!-- engine games support: the hand-kept verification notes (docs/games/support.md) -->
+    <EmbeddedResource Include="..\docs\games\support-notes.json">
+      <LogicalName>JoyPro.Engine.GameSupportNotes.json</LogicalName>
+    </EmbeddedResource>
+  </ItemGroup>
+  <ItemGroup>
+    <BootstrapperPackage Include=".NETFramework,Version=v4.8">
+      <Visible>False</Visible>
+      <ProductName>Microsoft .NET Framework 4.8 %28x86 and x64%29</ProductName>
+      <Install>true</Install>
+    </BootstrapperPackage>
+    <BootstrapperPackage Include="Microsoft.Net.Framework.3.5.SP1">
+      <Visible>False</Visible>
+      <ProductName>.NET Framework 3.5 SP1</ProductName>
+      <Install>false</Install>
+    </BootstrapperPackage>
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+</Project>
+
+

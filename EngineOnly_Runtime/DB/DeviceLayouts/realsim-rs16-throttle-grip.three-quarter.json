@@ -1,0 +1,138 @@
+{
+  "format": "joypro-device-layout",
+  "version": 1,
+  "model": "realsim-rs16-throttle-grip",
+  "photo": {"kind": "vendor", "url": "https://realsimulator.com/wp-content/uploads/2022/01/RS-35_F-16_Throttle_3.jpg", "sha256": "abd4932c57b4e7051315dd0c39323e4814a6e7ed902f36526bd51d81a1c19a6e", "view": "three-quarter"},
+  "markers": {
+    "throttle.axis.main": [0.25, 0.385],
+    "throttle.axis.rotary.1": [0.29, 0.275],
+    "throttle.axis.rotary.2": [0.21, 0.345],
+    "throttle.button.1": [0.53, 0.315]
+  },
+  "parts": {
+    "throttle.hat.mic": {
+      "type": "hat",
+      "name": "H5 communications",
+      "inputs": [
+        {"input": "", "control": "throttle.hat.mic.up"},
+        {"input": "", "control": "throttle.hat.mic.down"},
+        {"input": "", "control": "throttle.hat.mic.left"},
+        {"input": "", "control": "throttle.hat.mic.right"},
+        {"input": "", "control": "throttle.hat.mic.press"}
+      ],
+      "mapping": "medium"
+    },
+    "throttle.cage": {
+      "type": "button",
+      "name": "Uncage (S2, MAN RNG press)",
+      "inputs": [
+        {"input": "", "control": "throttle.cage"}
+      ],
+      "mapping": "low"
+    },
+    "throttle.ministick": {
+      "type": "ministick",
+      "name": "Cursor",
+      "inputs": [
+        {"input": "", "control": "throttle.axis.ministick.x"},
+        {"input": "", "control": "throttle.axis.ministick.y"},
+        {"input": "", "control": "throttle.ministick.press"}
+      ],
+      "mapping": "low"
+    },
+    "throttle.axis.main": {
+      "type": "lever",
+      "name": "Throttle",
+      "inputs": [
+        {"input": "", "control": "throttle.axis.main"}
+      ],
+      "mapping": "medium",
+      "confidence": "medium",
+      "note": "the grip; the throttle axis is its travel along the base"
+    },
+    "throttle.hat.1": {
+      "type": "hat",
+      "name": "H1 dogfight / missile override",
+      "inputs": [
+        {"input": "", "control": "throttle.hat.1.up"},
+        {"input": "", "control": "throttle.hat.1.right"},
+        {"input": "", "control": "throttle.hat.1.down"},
+        {"input": "", "control": "throttle.hat.1.left"},
+        {"input": "", "control": "throttle.hat.1.press"}
+      ],
+      "mapping": "medium"
+    },
+    "throttle.hat.2": {
+      "type": "hat",
+      "name": "H4 speed brake",
+      "inputs": [
+        {"input": "", "control": "throttle.hat.2.up"},
+        {"input": "", "control": "throttle.hat.2.right"},
+        {"input": "", "control": "throttle.hat.2.down"},
+        {"input": "", "control": "throttle.hat.2.left"},
+        {"input": "", "control": "throttle.hat.2.press"}
+      ],
+      "mapping": "medium"
+    },
+    "throttle.axis.rotary.1": {
+      "type": "knob",
+      "name": "MAN RNG (P3)",
+      "inputs": [
+        {"input": "", "control": "throttle.axis.rotary.1"}
+      ],
+      "mapping": "medium",
+      "confidence": "medium",
+      "note": "knurled knob, MAN RNG by elimination (the other knurled pot is labeled ANT ELEV)"
+    },
+    "throttle.axis.rotary.2": {
+      "type": "knob",
+      "name": "ANT ELEV (P4)",
+      "inputs": [
+        {"input": "", "control": "throttle.axis.rotary.2"}
+      ],
+      "mapping": "medium",
+      "confidence": "high",
+      "note": "knurled wheel labeled ANT ELEV"
+    },
+    "throttle.button.1": {
+      "type": "button",
+      "name": "S3 chaff / flare slap switch",
+      "inputs": [
+        {"input": "", "control": "throttle.button.1"}
+      ],
+      "mapping": "medium",
+      "confidence": "high",
+      "note": "round slap switch in the top of the guide rail"
+    }
+  },
+  "unplaced": {
+    "throttle.hat.mic": "guess: the top 5-way cap (H5 comms)",
+    "throttle.cage": "push of the MAN RNG knob (S2); knob identified by elimination",
+    "throttle.ministick": "dished round cap, most likely the cursor mini-stick",
+    "throttle.hat.1": "guess: the left 5-way cap (H1 dogfight)",
+    "throttle.hat.2": "guess: the square 5-way cap on the near side (H4 speed brake)"
+  },
+  "candidates": {
+    "throttle.cage": [0.29, 0.275],
+    "throttle.hat.1": [0.165, 0.29],
+    "throttle.hat.2": [0.33, 0.335],
+    "throttle.hat.mic": [0.2, 0.235],
+    "throttle.ministick": [0.145, 0.335]
+  },
+  "source": "JoyPro curated on the maker's photo (2026-10-11), RS-16-TG F-16 throttle grip on the RS-35-LTB linear base with the stainless guide rail, seen from the front-left, grip at the left end of travel",
+  "mappingSource": "product page https://realsimulator.com/rs-16-throttle/ (catalog source): switch map H1 dogfight/missile override, H4 speed brake, H5 comms (5-way), S3 chaff/flare slap switch on the guide rail, mini-stick P1/P2/S1, pot+push P3/S2 MAN RNG/uncage, pot P4 ANT ELEV; no labeled picture, no input numbers",
+  "confidence": "medium",
+  "note": "The catalog gives no input numbers (configurable in 8 profile slots). ANT ELEV is printed next to its knurled wheel; MAN RNG is the only other knurled pot knob (by elimination); S3 is the round button in the top of the guide rail (product page). The three grey 5-way caps are H1/H4/H5, but which cap is which is not documented: hidden candidates (guess). The dished round cap left of ANT ELEV is most likely the cursor mini-stick (only remaining control type): hidden candidate. Base controls (B-P2 pot, B-T1 guarded cut-off, B-T2 toggle) belong to realsim-linear-throttle and are not parts of this model.",
+  "callouts": {
+    "version": 1,
+    "width": 736,
+    "height": 969,
+    "picture": [18, 18, 700, 933],
+    "rowHeight": 22,
+    "mainWidth": 187,
+    "modWidth": 121,
+    "otherY": -1,
+    "tables": [],
+    "lines": []
+  }
+}

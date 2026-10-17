@@ -1,0 +1,108 @@
+{
+  "format": "joypro-device-layout",
+  "version": 1,
+  "model": "thrustmaster-tflight-hotas-5",
+  "photo": {"kind": "vendor", "url": "https://www.thrustmaster.com/wp-content/uploads/2026/05/Website_TFHO5-MSF_PageProductListing_800x800.webp", "sha256": "cf564b0f54bafe488a676360d608677153bdd61df35a4557cae01c051bbd9cbd", "view": "three-quarter"},
+  "markers": {
+    "stick.axis.twist": [0.615, 0.32],
+    "stick.gimbal": [0.575, 0.63],
+    "stick.hat.trim": [0.614, 0.068],
+    "stick.trigger": [0.705, 0.23],
+    "throttle.axis.main": [0.32, 0.3]
+  },
+  "parts": {
+    "stick.hat.trim": {
+      "type": "hat",
+      "name": "Trim hat",
+      "inputs": [
+        {"input": "JOY_BTN_POV1_U", "control": "stick.hat.trim.up"},
+        {"input": "JOY_BTN_POV1_R", "control": "stick.hat.trim.right"},
+        {"input": "JOY_BTN_POV1_D", "control": "stick.hat.trim.down"},
+        {"input": "JOY_BTN_POV1_L", "control": "stick.hat.trim.left"}
+      ],
+      "mapping": "medium",
+      "confidence": "high",
+      "note": "dark hat at the top left of the head"
+    },
+    "stick.trigger": {
+      "type": "trigger",
+      "name": "Trigger",
+      "inputs": [
+        {"input": "", "control": "stick.trigger.stage1"}
+      ],
+      "mapping": "medium",
+      "confidence": "medium",
+      "note": "dark trigger under the front of the head"
+    },
+    "stick.axis.twist": {
+      "type": "twist",
+      "name": "Twist",
+      "inputs": [
+        {"input": "JOY_RZ", "control": "stick.axis.twist"}
+      ],
+      "mapping": "medium",
+      "confidence": "medium",
+      "note": "twist of the handle"
+    },
+    "throttle.axis.main": {
+      "type": "lever",
+      "name": "Throttle",
+      "inputs": [
+        {"input": "JOY_Z", "control": "throttle.axis.main"}
+      ],
+      "mapping": "medium",
+      "confidence": "medium",
+      "note": "throttle handle"
+    },
+    "stick.gimbal": {
+      "type": "gimbal",
+      "name": "Stick (roll / pitch)",
+      "inputs": [
+        {"input": "JOY_X", "control": "stick.axis.roll"},
+        {"input": "JOY_Y", "control": "stick.axis.pitch"}
+      ],
+      "mapping": "medium",
+      "confidence": "medium",
+      "note": "stick base joint inside the blue ring"
+    },
+    "throttle.axis.wheel.1": {
+      "type": "wheel",
+      "name": "Wheel 1",
+      "inputs": [
+        {"input": "JOY_SLIDER1", "control": "throttle.axis.wheel.1"}
+      ],
+      "mapping": "medium"
+    }
+  },
+  "unplaced": {
+    "throttle.axis.wheel.1": "rudder rocker on the throttle face turned away from the camera"
+  },
+  "candidates": {},
+  "source": "JoyPro curated on the maker's photo (2026-10-12), moved from the earlier photo",
+  "mappingSource": "catalog (thrustmaster.json; sources https://ts.thrustmaster.com/download/accessories/Manuals/TFH5/T.Flight_Hotas_5_user_manual.pdf and driverscloud): axes Z throttle, RZ twist, X/Y handle, Slider1 rocker; button numbering not published (the catalog trigger has no input number)",
+  "confidence": "medium",
+  "note": "The catalog lists only the hat, trigger and axes; the throttle's square/cross/circle/triangle keys, the head keys and the base keys visible here have no catalog parts yet. The rudder rocker on the throttle faces away from the camera.",
+  "callouts": {
+    "version": 1,
+    "width": 1480,
+    "height": 1020,
+    "picture": [340, 134, 800, 800],
+    "rowHeight": 20,
+    "mainWidth": 170,
+    "modWidth": 110,
+    "otherY": 950,
+    "tables": [
+      {"id": "stick.hat.trim", "title": "Trim hat", "parts": ["stick.hat.trim"], "side": "top", "x": 681.2, "y": 16, "width": 300, "modifier": true, "spot": [0.614, 0.068], "rows": [{"input": "JOY_BTN_POV1_U", "label": "Up", "icon": "up", "part": "stick.hat.trim"}, {"input": "JOY_BTN_POV1_R", "label": "Right", "icon": "right", "part": "stick.hat.trim"}, {"input": "JOY_BTN_POV1_L", "label": "Left", "icon": "left", "part": "stick.hat.trim"}, {"input": "JOY_BTN_POV1_D", "label": "Down", "icon": "down", "part": "stick.hat.trim"}]},
+      {"id": "stick.axis.twist", "title": "Twist", "parts": ["stick.axis.twist"], "side": "right", "x": 1164, "y": 366, "width": 300, "modifier": true, "spot": [0.615, 0.32], "rows": [{"input": "JOY_RZ", "label": "RZ", "icon": "axis", "part": "stick.axis.twist"}]},
+      {"id": "throttle.axis.main", "title": "Throttle", "parts": ["throttle.axis.main"], "side": "left", "x": 16, "y": 350, "width": 300, "modifier": true, "spot": [0.32, 0.3], "rows": [{"input": "JOY_Z", "label": "Z", "icon": "axis", "part": "throttle.axis.main"}]},
+      {"id": "stick.gimbal", "title": "Stick (roll / pitch)", "parts": ["stick.gimbal"], "side": "right", "x": 1164, "y": 614, "width": 300, "modifier": true, "spot": [0.575, 0.63], "rows": [{"input": "JOY_X", "label": "roll (X)", "icon": "axis", "part": "stick.gimbal"}, {"input": "JOY_Y", "label": "pitch (Y)", "icon": "axis", "part": "stick.gimbal"}]},
+      {"id": "throttle.axis.wheel.1", "title": "Wheel 1", "parts": ["throttle.axis.wheel.1"], "side": "other", "x": 16, "y": 970, "width": 300, "modifier": true, "rows": [{"input": "JOY_SLIDER1", "label": "SLIDER1", "icon": "axis", "part": "throttle.axis.wheel.1"}]}
+    ],
+    "lines": [
+      {"table": "throttle.axis.main", "points": [[596, 374], [316, 374]]},
+      {"table": "stick.axis.twist", "points": [[832, 390], [1164, 390]]},
+      {"table": "stick.gimbal", "points": [[800, 638], [1164, 638]]},
+      {"table": "stick.hat.trim", "points": [[831.2, 188.4], [831.2, 110]]}
+    ]
+  }
+}

@@ -1,0 +1,235 @@
+{
+  "format": "joypro-device-layout",
+  "version": 1,
+  "model": "virpil-mongoost-50cm2-grip",
+  "photo": {"kind": "vendor", "url": "https://virpil-controls.eu/media/catalog/product/cache/f8e7ca8059fef1dc7d5708cf2af44b2f/v/p/vpc-007-mongoost50cm2-01.jpg", "sha256": "71640c9ff589045c753ddda52df0a74bd82b02cb9bbcd75a350e708953b2b9bf", "view": "main"},
+  "markers": {
+    "stick.axis.brake_lever": [0.385, 0.5],
+    "stick.button.thumb.1": [0.385, 0.125],
+    "stick.button.thumb.2": [0.523, 0.085],
+    "stick.button.thumb.3": [0.533, 0.168],
+    "stick.gimbal": [0.49, 0.9],
+    "stick.hat.cms": [0.426, 0.409],
+    "stick.hat.dms": [0.487, 0.192],
+    "stick.hat.tms": [0.397, 0.23],
+    "stick.hat.trim": [0.455, 0.103],
+    "stick.pinky.lever": [0.405, 0.555]
+  },
+  "parts": {
+    "stick.hat.trim": {
+      "type": "hat",
+      "name": "Trim hat",
+      "inputs": [
+        {"input": "JOY_BTN5", "control": "stick.hat.trim.press"},
+        {"input": "JOY_BTN6", "control": "stick.hat.trim.up"},
+        {"input": "JOY_BTN7", "control": "stick.hat.trim.right"},
+        {"input": "JOY_BTN8", "control": "stick.hat.trim.down"},
+        {"input": "JOY_BTN9", "control": "stick.hat.trim.left"}
+      ],
+      "mapping": "high",
+      "confidence": "high",
+      "note": "square stepped hat 5-9"
+    },
+    "stick.hat.tms": {
+      "type": "hat",
+      "name": "POV hat push",
+      "inputs": [
+        {"input": "JOY_BTN3", "control": "stick.hat.tms.press"},
+        {"input": "JOY_BTN_POV1_U", "control": "stick.hat.tms.up"},
+        {"input": "JOY_BTN_POV1_R", "control": "stick.hat.tms.right"},
+        {"input": "JOY_BTN_POV1_D", "control": "stick.hat.tms.down"},
+        {"input": "JOY_BTN_POV1_L", "control": "stick.hat.tms.left"}
+      ],
+      "mapping": "high",
+      "confidence": "high",
+      "note": "concentric POV hat (U/R/D/L, push 3)"
+    },
+    "stick.hat.dms": {
+      "type": "hat",
+      "name": "DMS hat",
+      "inputs": [
+        {"input": "JOY_BTN11", "control": "stick.hat.dms.press"},
+        {"input": "JOY_BTN12", "control": "stick.hat.dms.up"},
+        {"input": "JOY_BTN13", "control": "stick.hat.dms.right"},
+        {"input": "JOY_BTN14", "control": "stick.hat.dms.down"},
+        {"input": "JOY_BTN15", "control": "stick.hat.dms.left"}
+      ],
+      "mapping": "high",
+      "confidence": "high",
+      "note": "ribbed hat 11-15 (МАНЕВР)"
+    },
+    "stick.hat.cms": {
+      "type": "hat",
+      "name": "CMS hat",
+      "inputs": [
+        {"input": "JOY_BTN21", "control": "stick.hat.cms.press"},
+        {"input": "JOY_BTN22", "control": "stick.hat.cms.up"},
+        {"input": "JOY_BTN23", "control": "stick.hat.cms.right"},
+        {"input": "JOY_BTN24", "control": "stick.hat.cms.down"},
+        {"input": "JOY_BTN25", "control": "stick.hat.cms.left"}
+      ],
+      "mapping": "high",
+      "confidence": "high",
+      "note": "side hat 21-25 on the front below the head"
+    },
+    "stick.trigger": {
+      "type": "trigger",
+      "name": "Trigger stage",
+      "inputs": [
+        {"input": "JOY_BTN1", "control": "stick.trigger.stage1"},
+        {"input": "JOY_BTN2", "control": "stick.trigger.stage2"}
+      ],
+      "mapping": "high"
+    },
+    "stick.button.index_lower": {
+      "type": "button",
+      "name": "Index-lower paddle",
+      "inputs": [
+        {"input": "JOY_BTN20", "control": "stick.button.index_lower"}
+      ],
+      "mapping": "high"
+    },
+    "stick.pinky.lever": {
+      "type": "paddle",
+      "name": "Lever button",
+      "inputs": [
+        {"input": "JOY_BTN27", "control": "stick.pinky.lever"}
+      ],
+      "mapping": "high",
+      "confidence": "high",
+      "note": "lever click 27 (same lever as Z), lower part of the lever"
+    },
+    "stick.gimbal": {
+      "type": "gimbal",
+      "name": "Base",
+      "inputs": [
+        {"input": "JOY_X", "control": "stick.axis.roll"},
+        {"input": "JOY_Y", "control": "stick.axis.pitch"}
+      ],
+      "mapping": "high",
+      "confidence": "medium",
+      "note": "knurled grip nut, base not shown"
+    },
+    "stick.axis.brake_lever": {
+      "type": "brake",
+      "name": "Lever (Z)",
+      "inputs": [
+        {"input": "JOY_Z", "control": "stick.axis.brake_lever"}
+      ],
+      "mapping": "high",
+      "confidence": "high",
+      "note": "lever axis Z"
+    },
+    "stick.hat.1": {
+      "type": "hat",
+      "name": "Side rocker push",
+      "inputs": [
+        {"input": "JOY_BTN17", "control": "stick.hat.1.press"},
+        {"input": "JOY_BTN18", "control": "stick.hat.1.up"},
+        {"input": "JOY_BTN19", "control": "stick.hat.1.down"}
+      ],
+      "mapping": "high"
+    },
+    "stick.button.thumb.1": {
+      "type": "button",
+      "name": "Button thumb 1",
+      "inputs": [
+        {"input": "JOY_BTN4", "control": "stick.button.thumb.1"}
+      ],
+      "mapping": "high",
+      "confidence": "high",
+      "note": "round button 4 (red)"
+    },
+    "stick.button.thumb.2": {
+      "type": "button",
+      "name": "Button thumb 2",
+      "inputs": [
+        {"input": "JOY_BTN10", "control": "stick.button.thumb.2"}
+      ],
+      "mapping": "high",
+      "confidence": "high",
+      "note": "round button 10 (grey, upper right)"
+    },
+    "stick.button.thumb.3": {
+      "type": "button",
+      "name": "Button thumb 3",
+      "inputs": [
+        {"input": "JOY_BTN16", "control": "stick.button.thumb.3"}
+      ],
+      "mapping": "high",
+      "confidence": "high",
+      "note": "round button 16 (grey, lower right)"
+    },
+    "stick.button.thumb.4": {
+      "type": "button",
+      "name": "Button thumb 4",
+      "inputs": [
+        {"input": "JOY_BTN26", "control": "stick.button.thumb.4"}
+      ],
+      "mapping": "high"
+    },
+    "stick.button.index.1": {
+      "type": "button",
+      "name": "Index paddle (up position)",
+      "inputs": [
+        {"input": "JOY_BTN28", "control": "stick.button.index.1"}
+      ],
+      "mapping": "high"
+    }
+  },
+  "unplaced": {
+    "stick.trigger": "under the head front, not distinguishable on this view",
+    "stick.button.index_lower": "ribbed part under the head front, probably the index paddle (lower position 20); not certain",
+    "stick.hat.1": "side rocker 17-19 on the right side of the head, facing away",
+    "stick.button.thumb.4": "possibly lower button 26 (small round recess on the side of the grip); not certain",
+    "stick.button.index.1": "same part as index_lower, up position (28); not certain"
+  },
+  "candidates": {
+    "stick.button.index.1": [0.39, 0.306],
+    "stick.button.index_lower": [0.392, 0.318],
+    "stick.button.thumb.4": [0.52, 0.637]
+  },
+  "source": "JoyPro curated on the maker's photo (2026-10-12), moved from the earlier photo",
+  "mappingSource": "the sheet itself (Virpil support \"VPC MongoosT-50CM2 Grip\", https://support.virpil.com/en/support/solutions/articles/47001250820-vpc-mongoost-50cm2-grip, attachment 47246733291); every leader line was traced from its label to the control",
+  "confidence": "medium",
+  "note": "product render from behind-left (head face toward the camera, front of the grip to the left, Russian labels). Face as on the sheet: red round button 4 upper left, square stepped hat 5-9 top middle, grey round button 10 upper right, concentric POV hat lower left (УПРАВЛ СТРОБОМ), ribbed hat 11-15 lower middle (МАНЕВР), grey round button 16 lower right; side hat 21-25 on the front below the head (СБРОС ЗАДАЧИ), lever Z/27 at the front (АВТ СТАРТ ТОРМОЗ). Hidden: side rocker 17-19 (right side of the head). A ribbed part under the head front is probably the index paddle 28/20 (could also be the trigger); the trigger itself cannot be told apart. on the sheet 28 and 20 are the up/down positions of ONE paddle.",
+  "callouts": {
+    "version": 1,
+    "width": 1821,
+    "height": 1476,
+    "picture": [414, 184, 1000, 1000],
+    "rowHeight": 24,
+    "mainWidth": 204,
+    "modWidth": 132,
+    "otherY": 1296,
+    "tables": [
+      {"id": "stick.hat.trim", "title": "Trim hat", "parts": ["stick.hat.trim"], "side": "top", "x": 539.5, "y": 19, "width": 360, "modifier": true, "spot": [0.455, 0.103], "rows": [{"input": "JOY_BTN5", "label": "Press", "icon": "button", "part": "stick.hat.trim"}, {"input": "JOY_BTN6", "label": "Up", "icon": "up", "part": "stick.hat.trim"}, {"input": "JOY_BTN7", "label": "Right", "icon": "right", "part": "stick.hat.trim"}, {"input": "JOY_BTN9", "label": "Left", "icon": "left", "part": "stick.hat.trim"}, {"input": "JOY_BTN8", "label": "Down", "icon": "down", "part": "stick.hat.trim"}]},
+      {"id": "stick.hat.tms", "title": "POV hat push", "parts": ["stick.hat.tms"], "side": "left", "x": 19, "y": 418.2, "width": 360, "modifier": true, "spot": [0.397, 0.23], "rows": [{"input": "JOY_BTN3", "label": "Press", "icon": "button", "part": "stick.hat.tms"}, {"input": "JOY_BTN_POV1_U", "label": "Up", "icon": "up", "part": "stick.hat.tms"}, {"input": "JOY_BTN_POV1_R", "label": "Right", "icon": "right", "part": "stick.hat.tms"}, {"input": "JOY_BTN_POV1_L", "label": "Left", "icon": "left", "part": "stick.hat.tms"}, {"input": "JOY_BTN_POV1_D", "label": "Down", "icon": "down", "part": "stick.hat.tms"}]},
+      {"id": "stick.hat.dms", "title": "DMS hat", "parts": ["stick.hat.dms"], "side": "left", "x": 19, "y": 274.2, "width": 360, "modifier": true, "spot": [0.487, 0.192], "rows": [{"input": "JOY_BTN11", "label": "Press", "icon": "button", "part": "stick.hat.dms"}, {"input": "JOY_BTN12", "label": "Up", "icon": "up", "part": "stick.hat.dms"}, {"input": "JOY_BTN13", "label": "Right", "icon": "right", "part": "stick.hat.dms"}, {"input": "JOY_BTN15", "label": "Left", "icon": "left", "part": "stick.hat.dms"}, {"input": "JOY_BTN14", "label": "Down", "icon": "down", "part": "stick.hat.dms"}]},
+      {"id": "stick.hat.cms", "title": "CMS hat", "parts": ["stick.hat.cms"], "side": "left", "x": 19, "y": 562.2, "width": 360, "modifier": true, "spot": [0.426, 0.409], "rows": [{"input": "JOY_BTN21", "label": "Press", "icon": "button", "part": "stick.hat.cms"}, {"input": "JOY_BTN22", "label": "Up", "icon": "up", "part": "stick.hat.cms"}, {"input": "JOY_BTN23", "label": "Right", "icon": "right", "part": "stick.hat.cms"}, {"input": "JOY_BTN25", "label": "Left", "icon": "left", "part": "stick.hat.cms"}, {"input": "JOY_BTN24", "label": "Down", "icon": "down", "part": "stick.hat.cms"}]},
+      {"id": "stick.trigger", "title": "Trigger stage", "parts": ["stick.trigger"], "side": "other", "x": 19, "y": 1320, "width": 360, "modifier": true, "rows": [{"input": "JOY_BTN1", "label": "First stage", "icon": "button", "part": "stick.trigger"}, {"input": "JOY_BTN2", "label": "Second stage", "icon": "button", "part": "stick.trigger"}]},
+      {"id": "stick.button.index_lower", "title": "Index-lower paddle", "parts": ["stick.button.index_lower"], "side": "other", "x": 386, "y": 1320, "width": 360, "modifier": true, "rows": [{"input": "JOY_BTN20", "label": "Press", "icon": "button", "part": "stick.button.index_lower"}]},
+      {"id": "stick.pinky.lever", "title": "Lever button", "parts": ["stick.pinky.lever"], "side": "left", "x": 19, "y": 754.2, "width": 360, "modifier": true, "spot": [0.405, 0.555], "rows": [{"input": "JOY_BTN27", "label": "Press", "icon": "button", "part": "stick.pinky.lever"}]},
+      {"id": "stick.gimbal", "title": "Base", "parts": ["stick.gimbal"], "side": "bottom", "x": 724, "y": 1212, "width": 360, "modifier": true, "spot": [0.49, 0.9], "rows": [{"input": "JOY_X", "label": "roll (X)", "icon": "axis", "part": "stick.gimbal"}, {"input": "JOY_Y", "label": "pitch (Y)", "icon": "axis", "part": "stick.gimbal"}]},
+      {"id": "stick.axis.brake_lever", "title": "Lever (Z)", "parts": ["stick.axis.brake_lever"], "side": "left", "x": 19, "y": 706.2, "width": 360, "modifier": true, "spot": [0.385, 0.5], "rows": [{"input": "JOY_Z", "label": "Z", "icon": "axis", "part": "stick.axis.brake_lever"}]},
+      {"id": "stick.hat.1", "title": "Side rocker push", "parts": ["stick.hat.1"], "side": "other", "x": 753, "y": 1320, "width": 360, "modifier": true, "rows": [{"input": "JOY_BTN17", "label": "Press", "icon": "button", "part": "stick.hat.1"}, {"input": "JOY_BTN18", "label": "Up", "icon": "up", "part": "stick.hat.1"}, {"input": "JOY_BTN19", "label": "Down", "icon": "down", "part": "stick.hat.1"}]},
+      {"id": "stick.button.thumb.1", "title": "Button thumb 1", "parts": ["stick.button.thumb.1"], "side": "left", "x": 19, "y": 226.2, "width": 360, "modifier": true, "spot": [0.385, 0.125], "rows": [{"input": "JOY_BTN4", "label": "Press", "icon": "button", "part": "stick.button.thumb.1"}]},
+      {"id": "stick.button.thumb.2", "title": "Button thumb 2", "parts": ["stick.button.thumb.2"], "side": "top", "x": 906.5, "y": 115, "width": 360, "modifier": true, "spot": [0.523, 0.085], "rows": [{"input": "JOY_BTN10", "label": "Press", "icon": "button", "part": "stick.button.thumb.2"}]},
+      {"id": "stick.button.thumb.3", "title": "Button thumb 3", "parts": ["stick.button.thumb.3"], "side": "right", "x": 1442, "y": 323, "width": 360, "modifier": true, "spot": [0.533, 0.168], "rows": [{"input": "JOY_BTN16", "label": "Press", "icon": "button", "part": "stick.button.thumb.3"}]},
+      {"id": "stick.button.thumb.4", "title": "Button thumb 4", "parts": ["stick.button.thumb.4"], "side": "other", "x": 1120, "y": 1320, "width": 360, "modifier": true, "rows": [{"input": "JOY_BTN26", "label": "Press", "icon": "button", "part": "stick.button.thumb.4"}]},
+      {"id": "stick.button.index.1", "title": "Index paddle (up position)", "parts": ["stick.button.index.1"], "side": "other", "x": 19, "y": 1416, "width": 360, "modifier": true, "rows": [{"input": "JOY_BTN28", "label": "Press", "icon": "button", "part": "stick.button.index.1"}]}
+    ],
+    "lines": [
+      {"table": "stick.button.thumb.1", "points": [[799, 309], [400, 309], [400, 255.2], [379, 255.2]]},
+      {"table": "stick.hat.dms", "points": [[901, 376], [393, 376], [393, 303.2], [379, 303.2]]},
+      {"table": "stick.hat.tms", "points": [[811, 414], [400, 414], [400, 447.2], [379, 447.2]]},
+      {"table": "stick.hat.cms", "points": [[840, 593], [400, 593], [400, 591.2], [379, 591.2]]},
+      {"table": "stick.axis.brake_lever", "points": [[799, 684], [400, 684], [400, 735.2], [379, 735.2]]},
+      {"table": "stick.pinky.lever", "points": [[819, 739], [400, 739], [400, 783.2], [379, 783.2]]},
+      {"table": "stick.button.thumb.3", "points": [[947, 352], [1442, 352]]},
+      {"table": "stick.hat.trim", "points": [[869, 287], [869, 170], [719.5, 170], [719.5, 156]]},
+      {"table": "stick.button.thumb.2", "points": [[937, 269], [937, 170], [1086.5, 170], [1086.5, 156]]},
+      {"table": "stick.gimbal", "points": [[904, 1084], [904, 1212]]}
+    ]
+  }
+}

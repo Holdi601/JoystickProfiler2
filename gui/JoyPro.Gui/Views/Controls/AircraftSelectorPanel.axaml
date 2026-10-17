@@ -1,0 +1,51 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:l="using:JoyPro.Gui.Localization"
+             xmlns:models="using:JoyPro.Gui.Models"
+             x:Class="JoyPro.Gui.Views.Controls.AircraftSelectorPanel"
+             x:DataType="models:AircraftSelector">
+    <!-- The aircraft of one id (Models/RelationBuilderItems.cs AircraftSelector), grouped by what the id means in each
+         (same meaning, nearly the same, not in its list, something else: then with that aircraft's own title), a tick
+         each (Space toggles the focused one, Shift+click ticks a range), All / None / Only same meaning / Only same title
+         / Invert on the shown aircraft and a filter box. Nothing scrolls sideways: long titles end in "...". -->
+    <Border Classes="sunken" Padding="8,6" Margin="0,2,0,8">
+    <StackPanel Spacing="4">
+        <WrapPanel ItemSpacing="4" LineSpacing="4">
+            <Button Classes="small" Content="{l:T 'All'}" Command="{Binding SelectAllCommand}" ToolTip.Tip="{l:T 'Tick every aircraft shown'}" />
+            <Button Classes="small" Content="{l:T 'None'}" Command="{Binding SelectNoneCommand}" ToolTip.Tip="{l:T 'Untick every aircraft shown'}" />
+            <Button Classes="small" Content="{l:T 'Only same meaning'}" Command="{Binding OnlySameMeaningCommand}"
+                    ToolTip.Tip="{l:T 'Tick the aircraft where this id means the same (also the nearly same ones), untick the ones where it means something else'}" />
+            <Button Classes="small" Content="{l:T 'Only same function'}" Command="{Binding OnlySameFunctionCommand}" IsVisible="{Binding HasSameFunction}"
+                    ToolTip.Tip="{l:T 'Tick every aircraft where this id is this function, also under another title (a helicopter\'s cyclic pitch for pitch)'}" />
+            <Button Classes="small" Content="{l:T 'Only same title'}" Command="{Binding OnlySameTitleCommand}"
+                    ToolTip.Tip="{l:T 'Tick only the aircraft whose title of this id is exactly the row\'s (not the near ones, never the ones where it means something else)'}" />
+            <Button Classes="small" Content="{l:T 'Invert'}" Command="{Binding InvertCommand}" ToolTip.Tip="{l:T 'Swap the ticks of the aircraft shown'}" />
+            <TextBox Text="{Binding FilterText}" Watermark="{l:T 'Filter: aircraft or title'}" MinWidth="150" MaxWidth="220"
+                     ToolTip.Tip="{l:T 'Shows only the aircraft whose name, title or category has these letters (\'differs\' shows the ones with another meaning)'}" />
+        </WrapPanel>
+        <TextBlock Classes="warnText" FontSize="11.5" TextWrapping="Wrap" Text="{Binding DiffersText}" IsVisible="{Binding HasDiffers}" />
+        <ScrollViewer MaxHeight="300" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
+            <ItemsControl x:Name="AircraftList" ItemsSource="{Binding Visible}">
+                <ItemsControl.ItemTemplate>
+                    <DataTemplate x:DataType="models:AircraftChoiceItem">
+                        <StackPanel>
+                            <TextBlock Classes="caption" FontWeight="SemiBold" Margin="0,6,0,2" TextTrimming="CharacterEllipsis"
+                                       Classes.warnText="{Binding IsOtherFunction}" Text="{Binding GroupHeader}" IsVisible="{Binding HasGroupHeader}" />
+                            <CheckBox IsChecked="{Binding IsChecked}" HorizontalAlignment="Stretch" HorizontalContentAlignment="Stretch" Margin="0,0"
+                                      Tapped="AircraftChoiceTapped" ToolTip.Tip="{Binding Tooltip}">
+                                <Grid ColumnDefinitions="140,*,Auto" ColumnSpacing="8">
+                                    <TextBlock Text="{Binding Plane}" FontWeight="SemiBold" TextTrimming="CharacterEllipsis" VerticalAlignment="Center" />
+                                    <TextBlock Grid.Column="1" Classes="caption" Text="{Binding MeaningText}" TextTrimming="CharacterEllipsis" VerticalAlignment="Center" />
+                                    <Border Grid.Column="2" Classes="chip" Classes.warn="{Binding IsOtherFunction}" IsVisible="{Binding HasMarker}" VerticalAlignment="Center">
+                                        <TextBlock Text="{Binding MarkerText}" />
+                                    </Border>
+                                </Grid>
+                            </CheckBox>
+                        </StackPanel>
+                    </DataTemplate>
+                </ItemsControl.ItemTemplate>
+            </ItemsControl>
+        </ScrollViewer>
+    </StackPanel>
+    </Border>
+</UserControl>

@@ -1,0 +1,80 @@
+{
+  "format": "joypro-device-layout",
+  "version": 1,
+  "model": "moza-ma3x",
+  "photo": {"kind": "vendor", "url": "https://us.mozaracing.com/cdn/shop/files/MOZA-MA3X-Side-Stick-4-png_converted.png", "sha256": "a38ba6f3341bc720242267d56945cea52b4ff6d7cb85f6f319bc834c0ee82895", "view": "three-quarter"},
+  "markers": {
+    "stick.button.thumb.1": [0.458, 0.205],
+    "stick.gimbal": [0.44, 0.715],
+    "stick.hat.trim": [0.583, 0.205],
+    "stick.trigger": [0.627, 0.385]
+  },
+  "parts": {
+    "stick.hat.trim": {
+      "type": "hat",
+      "name": "Trim hat",
+      "inputs": [
+        {"input": "", "control": "stick.hat.trim.up"},
+        {"input": "", "control": "stick.hat.trim.down"},
+        {"input": "", "control": "stick.hat.trim.left"},
+        {"input": "", "control": "stick.hat.trim.right"}
+      ],
+      "mapping": "medium",
+      "confidence": "high",
+      "note": "4-way hat on the right of the head"
+    },
+    "stick.trigger": {
+      "type": "trigger",
+      "name": "Trigger",
+      "inputs": [
+        {"input": "", "control": "stick.trigger.stage1"}
+      ],
+      "mapping": "medium",
+      "confidence": "high",
+      "note": "trigger at the front of the head"
+    },
+    "stick.gimbal": {
+      "type": "gimbal",
+      "name": "Stick (roll / pitch)",
+      "inputs": [
+        {"input": "JOY_X", "control": "stick.axis.roll"},
+        {"input": "JOY_Y", "control": "stick.axis.pitch"}
+      ],
+      "mapping": "medium",
+      "confidence": "medium",
+      "note": "grip foot on the base mount, the grip moves the base's roll and pitch"
+    },
+    "stick.button.thumb.1": {
+      "type": "button",
+      "name": "Button thumb 1",
+      "inputs": [
+        {"input": "", "control": "stick.button.thumb.1"}
+      ],
+      "mapping": "medium",
+      "confidence": "high",
+      "note": "red button on the top left of the head"
+    }
+  },
+  "unplaced": {},
+  "candidates": {},
+  "source": "JoyPro curated on the maker's photo (2026-10-11), three-quarter view from behind on the right: red top button, 4-way hat, trigger at the front",
+  "mappingSource": "catalog (us.mozaracing.com/products/ma3x-sidestick, \"Airbus-style side stick. Numbering unpublished.\"): the parts carry no button numbers; each part is the only control of its kind on the grip (one hat, one trigger, one red top button)",
+  "confidence": "medium",
+  "note": "The grip also has a small side rocker on the left of the head and an opening on the right side (both seen on gallery-1) that the catalog does not list.",
+  "callouts": {
+    "version": 1,
+    "width": 1426,
+    "height": 1038,
+    "picture": [407, 19, 1000, 1000],
+    "rowHeight": 24,
+    "mainWidth": 204,
+    "modWidth": 132,
+    "otherY": -1,
+    "tables": [
+      {"id": "stick.gimbal", "title": "Stick (roll / pitch)", "parts": ["stick.gimbal"], "side": "left", "x": 19, "y": 705, "width": 360, "modifier": true, "spot": [0.44, 0.715], "rows": [{"input": "JOY_X", "label": "roll (X)", "icon": "axis", "part": "stick.gimbal"}, {"input": "JOY_Y", "label": "pitch (Y)", "icon": "axis", "part": "stick.gimbal"}]}
+    ],
+    "lines": [
+      {"table": "stick.gimbal", "points": [[847, 734], [379, 734]]}
+    ]
+  }
+}

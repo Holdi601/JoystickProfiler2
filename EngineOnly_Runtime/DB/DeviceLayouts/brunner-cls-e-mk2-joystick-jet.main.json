@@ -1,0 +1,91 @@
+{
+  "format": "joypro-device-layout",
+  "version": 1,
+  "model": "brunner-cls-e-mk2-joystick-jet",
+  "photo": {"kind": "vendor", "url": "https://shop.brunner-simulation.ch/wp-content/uploads/2023/04/Joystick-Jet-MK-II.png", "sha256": "d760ee44b261698bfad6bd0c38d54f16abdf77a03c736824f407796d3f03ae86", "view": "main"},
+  "markers": {
+    "stick.button.thumb.1": [0.455, 0.105],
+    "stick.button.thumb.2": [0.575, 0.12],
+    "stick.gimbal": [0.5, 0.47],
+    "stick.hat.trim": [0.495, 0.105],
+    "stick.trigger": [0.425, 0.245]
+  },
+  "parts": {
+    "stick.hat.trim": {
+      "type": "hat",
+      "name": "Hat (hardware trim in standalone mode)",
+      "inputs": [
+        {"input": "", "control": "stick.hat.trim.up"},
+        {"input": "", "control": "stick.hat.trim.right"},
+        {"input": "", "control": "stick.hat.trim.down"},
+        {"input": "", "control": "stick.hat.trim.left"}
+      ],
+      "mapping": "medium",
+      "confidence": "high",
+      "note": "hat cap on top of the grip"
+    },
+    "stick.trigger": {
+      "type": "trigger",
+      "name": "Trigger",
+      "inputs": [
+        {"input": "", "control": "stick.trigger.stage1"}
+      ],
+      "mapping": "medium",
+      "confidence": "medium",
+      "note": "index trigger below the head (photo-left side of the grip)"
+    },
+    "stick.gimbal": {
+      "type": "gimbal",
+      "name": "Stick (roll / pitch)",
+      "inputs": [
+        {"input": "JOY_X", "control": "stick.axis.roll"},
+        {"input": "JOY_Y", "control": "stick.axis.pitch"}
+      ],
+      "mapping": "medium",
+      "confidence": "medium",
+      "note": "shaft exit at the top of the boot"
+    },
+    "stick.button.thumb.1": {
+      "type": "button",
+      "name": "Red button (left of the hat)",
+      "inputs": [
+        {"input": "", "control": "stick.button.thumb.1"}
+      ],
+      "mapping": "medium",
+      "confidence": "high",
+      "note": "red button (photo left of the hat)"
+    },
+    "stick.button.thumb.2": {
+      "type": "button",
+      "name": "Green button (right of the hat)",
+      "inputs": [
+        {"input": "", "control": "stick.button.thumb.2"}
+      ],
+      "mapping": "medium",
+      "confidence": "high",
+      "note": "green button (photo right of the hat)"
+    }
+  },
+  "unplaced": {},
+  "candidates": {},
+  "source": "JoyPro curated on the maker's photo (2026-10-11), the CLS-E MK II base with the BRUNNER Jet grip seen from the front left, slightly from above; hat on top with a red button (photo left) and a green button (photo right), index trigger sticking out below the head on the photo-left side",
+  "mappingSource": "catalog brunner.json (quick install guide https://shop.brunner-simulation.ch/wp-content/uploads/2025/05/20240417_BRUNNER_QuickInstallGuide_CLS-E-MKII-joystick_V1.0.pdf, fact sheet https://shop.brunner-simulation.ch/wp-content/uploads/2024/03/20240304_Brunner_FactSheet_CLS-E-MKII-Joystick.pdf, product page https://brunner-innovation.swiss/product/brunner-jet/): USB X = roll, Y = pitch; grip controls named by the product photo (red button, green button, hat, trigger), their button numbers are not published",
+  "confidence": "high",
+  "note": "Parts are identified by colour/shape (red and green buttons, hat, trigger), so which part is which control is certain; the DirectInput button numbers are not published by Brunner. In standalone mode (no CLS2Sim) the hat is hardware trim.",
+  "callouts": {
+    "version": 1,
+    "width": 1426,
+    "height": 1038,
+    "picture": [407, 19, 1000, 1000],
+    "rowHeight": 24,
+    "mainWidth": 204,
+    "modWidth": 132,
+    "otherY": -1,
+    "tables": [
+      {"id": "stick.gimbal", "title": "Stick (roll / pitch)", "parts": ["stick.gimbal"], "side": "left", "x": 19, "y": 460, "width": 360, "modifier": true, "spot": [0.5, 0.47], "rows": [{"input": "JOY_X", "label": "roll (X)", "icon": "axis", "part": "stick.gimbal"}, {"input": "JOY_Y", "label": "pitch (Y)", "icon": "axis", "part": "stick.gimbal"}]}
+    ],
+    "lines": [
+      {"table": "stick.gimbal", "points": [[907, 489], [379, 489]]}
+    ]
+  }
+}
