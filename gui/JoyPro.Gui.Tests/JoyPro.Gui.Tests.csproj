@@ -35,6 +35,12 @@
   <!-- The engine's cockpit picture generator (plain C# 7.3, engine-only code) for its unit tests. -->
   <ItemGroup>
     <Compile Include="..\..\engine\CockpitPictures\*.cs" Link="CockpitPictures\%(Filename)%(Extension)" />
+    <!-- The War Thunder Oodle helper's decoder (tools/wt-oodle, a separate GPL-3 program; unsafe code). -->
+    <Compile Include="..\..\tools\wt-oodle\OodleLz.cs" Link="WtOodle\OodleLz.cs" />
   </ItemGroup>
+
+  <PropertyGroup>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+  </PropertyGroup>
 
 </Project>

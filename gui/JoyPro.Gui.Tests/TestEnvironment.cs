@@ -35,6 +35,9 @@ internal static class TestEnvironment
         // The update check (at start and "Check for updates") never asks GitHub: a feed file that does not exist reads
         // as "no release". The update tests point it at their own fake feeds (UpdateFeedTests).
         System.Environment.SetEnvironmentVariable(UpdateService.FeedVariable, Path.Combine(Path.GetTempPath(), "JoyPro2.Gui.Tests", "no-update-feed", "latest.json"));
+        // The cockpit picture packs (Cockpits page) are never looked up on GitHub either: an empty folder has no
+        // manifest. The pack tests use their own local feeds (CockpitPicturePackTests).
+        System.Environment.SetEnvironmentVariable(CockpitPicturePacks.FeedVariable, Path.Combine(Path.GetTempPath(), "JoyPro2.Gui.Tests", "no-picture-feed"));
         ProblemReporter.FolderOverride = Path.Combine(Path.GetTempPath(), "JoyPro2.Gui.Tests", "problem-reports");
         // The engine the tests start keeps its data (game folders, hidden games, sync records, last profile) in
         // JOYPRO_DATA_DIR: a fresh folder per run, never the user's %LOCALAPPDATA%\JoyPro or Documents\JoyPro.

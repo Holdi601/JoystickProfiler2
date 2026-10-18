@@ -57,7 +57,7 @@ public sealed class UserJourneyTests
             return;
         string engine = Environment.GetEnvironmentVariable("JOYPRO_JOURNEY_ENGINE") is { Length: > 0 } e ? e : FindEngine();
         Assert.True(File.Exists(engine), "Build the engine first (engine.exe not found at " + engine + ").");
-        string[] scenarios = (Environment.GetEnvironmentVariable("JOYPRO_JOURNEY_SCENARIOS") is { Length: > 0 } s ? s : "empty,new-user,unbound,visual-assign,settings-updates,device-replace")
+        string[] scenarios = (Environment.GetEnvironmentVariable("JOYPRO_JOURNEY_SCENARIOS") is { Length: > 0 } s ? s : "empty,new-user,unbound,visual-assign,settings-updates,device-replace,telemetry-recording")
             .Split(',', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
         Directory.CreateDirectory(outDir);
 
@@ -166,6 +166,9 @@ public sealed class UserJourneyTests
                                 break;
                             case "device-replace":
                                 RunDeviceReplace();
+                                break;
+                            case "telemetry-recording":
+                                RunTelemetryRecording();
                                 break;
                             default:
                                 throw new ArgumentException("Unknown scenario " + scenario);
@@ -483,7 +486,73 @@ public sealed class UserJourneyTests
                         vm.Cockpits.SelectedPage = panel;
                     return Task.CompletedTask;
                 }, extraRender: slug => RenderTall(slug, 3000));
+                // The other games' pictures where the folder has them: MSFS 2020 (rendered from its glTF interior),
+                // MSFS 2024 (screenshots taken in the sim, the aircraft's input events listed), Nuclear Option.
+                foreach ((string game, string aircraft, string variant, string what) in new[]
+                {
+                    ("MSFS2020", "c152", "c152-classic", "Cessna 152 with the pictures from MSFS 2020"),
+                    ("MSFS2024", "h125", "h125-as350b3e", "H125 with the screenshots from MSFS 2024"),
+                    ("NuclearOption", "no-a-19-brawler", "", "A-19 Brawler with the pictures from Nuclear Option")
+                })
+                {
+                    if (!Directory.Exists(Path.Combine(pictures, game)))
+                        continue;
+                    Step("cockpits: " + what, () =>
+                    {
+                        vm!.Cockpits.PictureModeIndex = CockpitsViewModel.ModePicture;
+                        if (variant.Length > 0)
+                            vm.Cockpits.Show(aircraft, variant);
+                        else
+                            vm.Cockpits.Show(aircraft);
+                        Note(game + ": " + vm.Cockpits.GamePicturesText + " | pages " + vm.Cockpits.Pages.Count);
+                        if (!vm.Cockpits.HasGamePictures)
+                            Failures.Add("cockpits: no pictures from " + game + " for " + aircraft);
+                        return Task.CompletedTask;
+                    }, extraRender: slug => RenderTall(slug, 3000));
+                    Step("cockpits: a " + game + " panel page", () =>
+                    {
+                        CockpitPageItem? panel = vm!.Cockpits.PanelPages.FirstOrDefault(p => p.Page.Id.StartsWith("game:", StringComparison.Ordinal));
+                        if (panel != null)
+                            vm.Cockpits.SelectedPage = panel;
+                        Note("panel page: " + (panel?.Title ?? "none"));
+                        return Task.CompletedTask;
+                    }, extraRender: slug => RenderTall(slug, 3000));
+                }
             }
+            // Cockpits with a picture pack of a release (docs/cockpits.md "Picture packs") from a local feed: the
+            // F-16 without pictures gets the offer, then the downloaded pictures; the list of the release's games.
+            // JOYPRO_JOURNEY_PICTURE_FEED names a pack folder as tools/build_cockpit_packs.ps1 makes it; without it a
+            // feed of the synthetic test cockpit is made in the scenario folder.
+            string packFeed = Environment.GetEnvironmentVariable("JOYPRO_JOURNEY_PICTURE_FEED") is { Length: > 0 } f && Directory.Exists(f)
+                ? f
+                : FakePictureFeed.Create(Path.Combine(folder, "picture-feed"), Path.GetDirectoryName(Path.GetDirectoryName(CockpitPictureTests.WriteSyntheticSet(Path.Combine(folder, "picture-source")))!)!, [("DCS", "F-16C_50", 1)]);
+            Step("cockpits: picture pack offered for the F-16", async () =>
+            {
+                vm!.CurrentStage = UiStage.Cockpits;
+                vm.Cockpits.PictureFeed = packFeed;
+                vm.Cockpits.PackMode = () => CockpitPicturePacks.Ask;
+                vm.Cockpits.PicturesRoot = Path.Combine(folder, "pack-pictures");
+                vm.Cockpits.Show("a-10", null);
+                await vm.Cockpits.PackCheck;
+                vm.Cockpits.Show("f-16", "f-16c-block-50");
+                await vm.Cockpits.PackCheck;
+                Note("offer: " + vm.Cockpits.HasPackOffer + " | " + vm.Cockpits.PackOfferText + " | pictures: " + vm.Cockpits.HasGamePictures);
+                if (!vm.Cockpits.HasPackOffer)
+                    Failures.Add("cockpits: no picture pack offer for the F-16 from " + packFeed);
+            });
+            Step("cockpits: F-16 pictures downloaded from the pack", async () =>
+            {
+                await vm!.Cockpits.DownloadOfferedPacksCommand.ExecuteAsync(null);
+                Note("after download: " + vm.Cockpits.PackStatus + " | " + vm.Cockpits.GamePicturesText + " | pages " + vm.Cockpits.Pages.Count);
+                if (!vm.Cockpits.HasGamePictures)
+                    Failures.Add("cockpits: the downloaded pack shows no pictures (" + vm.Cockpits.PackStatus + ")");
+            }, extraRender: slug => RenderTall(slug, 3000));
+            Step("cockpits: the release's picture packs", async () =>
+            {
+                vm!.Cockpits.PacksExpanded = true;
+                await vm.Cockpits.PackGamesLoad;
+                Note("pack games: " + string.Join(", ", vm.Cockpits.PackGames.Select(g => g.Name + " " + g.Summary)));
+            });
             // Settings > DCS: default binds, read only: the status of the real DCS install and the dry-run list of
             // the files the strip option would change (the journey guard refuses every write to the install).
             Step("settings: DCS default binds (status and preview)", async () =>
@@ -1242,6 +1311,77 @@ public sealed class UserJourneyTests
                 if (bind == null || !bind.HasBind || !string.Equals(bind.Input, input, StringComparison.OrdinalIgnoreCase) ||
                     !JoyPro.DeviceReference.CalloutCombos.Same(bind.ModifiersSummary, combo))
                     Failures.Add("visual assign did not bind " + label);
+            });
+        }
+
+        // Settings > Telemetry recording: the section off, switched on with three recorded sessions (DCS with a
+        // position, IL-2 without, X-Plane), the timeline of one, the Tacview and CSV exports, delete. The process manager
+        // never looks at the PC's processes here (no game is recorded for real).
+        private void RunTelemetryRecording()
+        {
+            FirstStart(answerSetup: "later");
+            vm!.FfbFindGameProcess = _ => null;
+            string recordings = Path.Combine(data, "Telemetry", "Recordings");
+            Step("telemetry recording: the section, off", () =>
+            {
+                vm!.CurrentStage = UiStage.Settings;
+                vm.CollapseAllSettingsCommand.Execute(null);
+                vm.MoveSettingsSectionToTopCommand.Execute(vm.FindSettingsSection("telemetry-recording"));
+                vm.FindSettingsSection("telemetry-recording")!.IsExpanded = true;
+                Note("state: " + vm.TelemetryRecordingStateText + "; folder " + vm.TelemetryRecordingFolderText + "; sessions: " + vm.TelemetrySessionsSummary);
+                if (vm.TelemetryRecordingEnabled)
+                    Failures.Add("telemetry recording is on by default");
+                return Task.CompletedTask;
+            }, extraRender: slug => RenderTall(slug, 2400));
+            Step("telemetry recording: on, three sessions", async () =>
+            {
+                TelemetryRecordingTests.WriteSession(recordings, "DCS", "F-16C_50", DateTime.UtcNow.AddHours(-26), seconds: 900);
+                TelemetryRecordingTests.WriteSession(recordings, "IL2Game", "Bf 109 G-14", DateTime.UtcNow.AddHours(-5), seconds: 420, position: false);
+                TelemetryRecordingTests.WriteSession(recordings, "XPlane12", "Cessna 172 SP", DateTime.UtcNow.AddMinutes(-40), seconds: 1800);
+                vm!.TelemetryRecordingEnabled = true;
+                await vm.RefreshTelemetrySessionsAsync();
+                vm.SelectedTelemetrySession = vm.TelemetrySessions.FirstOrDefault(s => s.Info.Game == "DCS");
+                await vm.LoadTelemetryPreviewAsync(vm.SelectedTelemetrySession);
+                Note("state: " + vm.TelemetryRecordingStateText + "; " + vm.TelemetrySessionsSummary + "; rows: " +
+                     string.Join(" | ", vm.TelemetrySessions.Select(s => s.Date + " " + s.Game + " " + s.Aircraft + " " + s.Duration + " " + s.Size)) +
+                     "; preview: " + vm.TelemetryPreviewText + " (" + (vm.TelemetryPreviewTracks?.Count ?? 0) + " tracks)");
+                if (vm.TelemetrySessions.Count != 3 || vm.TelemetryPreviewTracks is not { Count: > 0 })
+                    Failures.Add("telemetry recording: sessions or preview missing");
+                if (!File.Exists(Path.Combine(data, "Telemetry", "telemetry-recording.json")))
+                    Failures.Add("telemetry recording: settings file not written");
+            }, extraRender: slug =>
+            {
+                RenderTall(slug, 2400);
+                RenderWindow(vm!, 1280, 2900, Path.Combine(folder, slug + "-tall-1280.png"));
+            });
+            Step("telemetry recording: export for Tacview and CSV", async () =>
+            {
+                string? acmi = await vm!.ExportSelectedTelemetryAsync("acmi-zip");
+                string? csv = await vm.ExportSelectedTelemetryAsync("csv");
+                Note("acmi: " + acmi + "; csv: " + csv + "; message: " + vm.TelemetryRecordingMessage);
+                if (acmi == null || !File.Exists(acmi) || csv == null || !Directory.Exists(csv))
+                    Failures.Add("telemetry recording: export failed: " + vm.TelemetryRecordingMessage);
+            }, extraRender: slug => RenderTall(slug, 2400));
+            Step("telemetry recording: an IL-2 session (no Tacview export)", async () =>
+            {
+                vm!.SelectedTelemetrySession = vm.TelemetrySessions.FirstOrDefault(s => s.Info.Game == "IL2Game");
+                await vm.LoadTelemetryPreviewAsync(vm.SelectedTelemetrySession);
+                Note("ACMI possible: " + vm.CanExportSelectedTelemetryAcmi + "; preview " + vm.TelemetryPreviewText);
+                if (vm.CanExportSelectedTelemetryAcmi)
+                    Failures.Add("telemetry recording: ACMI offered without a position");
+            });
+            Step("telemetry recording: delete it", async () =>
+            {
+                await vm!.DeleteTelemetrySessionAsync();
+                Note("after delete: " + vm.TelemetrySessionsSummary + "; " + vm.TelemetryRecordingMessage);
+                if (vm.TelemetrySessions.Count != 2)
+                    Failures.Add("telemetry recording: delete did not remove the session");
+            }, extraRender: slug => RenderTall(slug, 2400));
+            Step("telemetry recording: switched off again", () =>
+            {
+                vm!.TelemetryRecordingEnabled = false;
+                Note("state: " + vm.TelemetryRecordingStateText);
+                return Task.CompletedTask;
             });
         }
 

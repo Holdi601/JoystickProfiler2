@@ -36,7 +36,8 @@ namespace JoyPro.CockpitPictures
             // The pictures of an earlier build go (they are made again from the game).
             if (clean)
             {
-                foreach (string old in Directory.GetFiles(folder, "*.png").Concat(Directory.GetFiles(folder, "*.drawing.json")))
+                // (also a picture pack's JPEGs and its pack.json: the set is made on this PC now)
+                foreach (string old in Directory.GetFiles(folder, "*.png").Concat(Directory.GetFiles(folder, "*.jpg")).Concat(Directory.GetFiles(folder, "*.drawing.json")).Concat(Directory.GetFiles(folder, "pack.json")))
                 {
                     try
                     {

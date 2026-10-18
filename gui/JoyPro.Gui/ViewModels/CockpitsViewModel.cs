@@ -470,6 +470,7 @@ public sealed partial class CockpitsViewModel : ObservableObject
             Plan = null;
         }
         BuildPages();
+        PackCheck = CheckPicturePackAsync();
         foreach (string name in new[]
                  {
                      nameof(HasVariant), nameof(HasNoVariant), nameof(Title), nameof(Summary), nameof(Facts), nameof(IsFiction), nameof(FictionNote),

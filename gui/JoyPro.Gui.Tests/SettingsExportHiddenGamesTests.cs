@@ -73,7 +73,8 @@ public sealed class SettingsExportHiddenGamesTests : IDisposable
         Assert.Contains("confirmations", ids);
         Assert.Contains("about", ids);
         Assert.Equal(["games"], vm.SettingsSections.Where(s => s.IsExpanded).Select(s => s.Id));
-        Assert.Equal("1 of 17 sections open", vm.SettingsSectionsSummary);
+        Assert.Equal("1 of 18 sections open", vm.SettingsSectionsSummary);
+        Assert.Contains("telemetry-recording", ids);
         Assert.Contains("language", ids);
         // Every section of the page has its item (else it could not fold, move or be found) and the other way round.
         DirectoryInfo? repo = new(AppContext.BaseDirectory);

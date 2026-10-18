@@ -85,15 +85,60 @@
                     </Grid>
                     <!-- Pictures from the user's own games (made on this PC, never shipped) -->
                     <Border BorderBrush="#334155" BorderThickness="1" CornerRadius="8" Padding="10,6">
-                        <Grid ColumnDefinitions="*,Auto,Auto" ColumnSpacing="8" RowDefinitions="Auto,Auto" RowSpacing="4">
+                        <Grid ColumnDefinitions="*,Auto,Auto" ColumnSpacing="8" RowDefinitions="Auto,Auto,Auto" RowSpacing="4">
                             <TextBlock Text="{Binding PicturesStatus}" TextWrapping="Wrap" VerticalAlignment="Center" Opacity="0.85" />
                             <ComboBox Grid.Column="1" ItemsSource="{Binding PictureModes}" SelectedIndex="{Binding PictureModeIndex}" MinWidth="200"
                                       IsVisible="{Binding HasGamePictures}" VerticalAlignment="Center"
                                       ToolTip.Tip="{l:T 'How the game\'s cockpit is shown: the picture made from the game, or JoyPro\'s line drawing of it in your drawing style (Settings &gt; Drawings)'}" />
                             <Button Grid.Column="2" Content="{l:T 'Build pictures from my games'}" Command="{Binding BuildPicturesCommand}" IsEnabled="{Binding !IsBuildingPictures}"
                                     VerticalAlignment="Center"
-                                    ToolTip.Tip="{l:T 'Renders the cockpits of your installed games (DCS World, X-Plane 12) with every clickable control numbered and named as the game names it. Made on this PC only, kept with your game data.'}" />
+                                    ToolTip.Tip="{l:T 'Renders the cockpits of your installed games ({0}) with every clickable control numbered and named as the game names it. Made on this PC, kept with your game data.', Arg0={Binding PictureGames}}" />
                             <TextBlock Grid.Row="1" Grid.ColumnSpan="3" Text="{Binding GamePicturesText}" FontSize="12" Opacity="0.7" IsVisible="{Binding HasGamePictures}" />
+                            <!-- Picture packs of JoyPro's releases (CockpitsViewModel.PicturePacks.cs): the offer for this
+                                 aircraft, the download with its progress, all my aircraft / one game. -->
+                            <StackPanel Grid.Row="2" Grid.ColumnSpan="3" Spacing="6">
+                                <Border IsVisible="{Binding HasPackOffer}" Background="#1A38BDF8" BorderBrush="#38BDF8" BorderThickness="1" CornerRadius="8" Padding="10,8">
+                                    <WrapPanel ItemSpacing="8" LineSpacing="6">
+                                        <TextBlock Text="{Binding PackOfferText}" TextWrapping="Wrap" VerticalAlignment="Center" FontWeight="SemiBold" />
+                                        <Button Classes="accent" Content="{l:T 'Download'}" Command="{Binding DownloadOfferedPacksCommand}"
+                                                ToolTip.Tip="{l:T 'Downloads the cockpit pictures JoyPro rendered from the game (a release asset on GitHub), checks them and keeps them with your game data'}" />
+                                        <Button Content="{l:T 'Not now'}" Command="{Binding DismissPackOfferCommand}" />
+                                    </WrapPanel>
+                                </Border>
+                                <Grid ColumnDefinitions="*,Auto" ColumnSpacing="8" RowDefinitions="Auto,Auto" RowSpacing="2" IsVisible="{Binding IsDownloadingPacks}">
+                                    <ProgressBar Value="{Binding PackProgress}" Minimum="0" Maximum="100" Height="8" VerticalAlignment="Center" />
+                                    <Button Grid.Column="1" Grid.RowSpan="2" Classes="small" Content="{l:T 'Cancel'}" Command="{Binding CancelPackDownloadCommand}" VerticalAlignment="Center" />
+                                    <TextBlock Grid.Row="1" Text="{Binding PackProgressText}" FontSize="12" Opacity="0.8" TextWrapping="Wrap" />
+                                </Grid>
+                                <TextBlock Text="{Binding PackStatus}" TextWrapping="Wrap" FontSize="12" Opacity="0.85" IsVisible="{Binding PackStatus, Converter={x:Static StringConverters.IsNotNullOrEmpty}}" />
+                                <Expander Header="{l:T 'Picture packs from JoyPro\'s releases'}" IsExpanded="{Binding PacksExpanded}" HorizontalAlignment="Stretch">
+                                    <StackPanel Spacing="6" Margin="0,4,0,0">
+                                        <TextBlock TextWrapping="Wrap" FontSize="12" Opacity="0.8"
+                                                   Text="{l:T 'Cockpit pictures JoyPro rendered from the games, for aircraft you cannot or do not want to build yourself. The designs, textures and names belong to their owners. Settings &gt; Privacy decides whether JoyPro asks before a download.'}" />
+                                        <WrapPanel ItemSpacing="8" LineSpacing="6">
+                                            <Button Content="{l:T 'Download pictures for all my aircraft'}" Command="{Binding DownloadMyAircraftPacksCommand}" IsEnabled="{Binding !IsDownloadingPacks}"
+                                                    ToolTip.Tip="{l:T 'The packs of every aircraft of your installed games that JoyPro knows; you see the total size first'}" />
+                                        </WrapPanel>
+                                        <TextBlock Text="{Binding PackListStatus}" TextWrapping="Wrap" FontSize="12" Opacity="0.75" IsVisible="{Binding PackListStatus, Converter={x:Static StringConverters.IsNotNullOrEmpty}}" />
+                                        <ItemsControl ItemsSource="{Binding PackGames}">
+                                            <ItemsControl.ItemTemplate>
+                                                <DataTemplate x:DataType="vm:CockpitPackGameItem">
+                                                    <Grid ColumnDefinitions="*,Auto" ColumnSpacing="8" Margin="0,0,0,4">
+                                                        <TextBlock VerticalAlignment="Center" TextWrapping="Wrap">
+                                                            <Run Text="{Binding Name, Mode=OneWay}" FontWeight="SemiBold" />
+                                                            <Run Text=": " />
+                                                            <Run Text="{Binding Summary, Mode=OneWay}" />
+                                                        </TextBlock>
+                                                        <Button Grid.Column="1" Classes="small" Content="{l:T 'Download all of this game'}" VerticalAlignment="Center"
+                                                                Command="{Binding $parent[ItemsControl].((vm:CockpitsViewModel)DataContext).DownloadGamePacksCommand}" CommandParameter="{Binding Game}"
+                                                                IsEnabled="{Binding !$parent[ItemsControl].((vm:CockpitsViewModel)DataContext).IsDownloadingPacks}" />
+                                                    </Grid>
+                                                </DataTemplate>
+                                            </ItemsControl.ItemTemplate>
+                                        </ItemsControl>
+                                    </StackPanel>
+                                </Expander>
+                            </StackPanel>
                         </Grid>
                     </Border>
                     <StackPanel Orientation="Horizontal" Spacing="8" IsVisible="{Binding HasSeats}">

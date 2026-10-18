@@ -1,5 +1,8 @@
 # Telemetry force feedback (JoyPro.Ffb)
 
+(Recording the telemetry of a session, Tacview export: [telemetry-recording.md](telemetry-recording.md). It uses the
+same sources and runs in the same process while force feedback runs.)
+
 JoyPro reads live telemetry from the game you fly and turns it into force feedback on a DirectInput force feedback
 stick (for example the VPforce Rhino): stall buffet, G-force stick weight, gear and flap rumble, gun bursts, runway
 rumble, a centring spring that stiffens with airspeed and follows the trim (the game's, and JoyPro's own stick trim
@@ -319,6 +322,19 @@ absent (the node reads 0). Raw game keys (`dcs.*`, `il2.*`, `wt.*`) are availabl
   did not write; backed up (`engine backups`); `--remove` deletes it. DCS must be closed (it loads hooks at start).
 - **Line protocol:** `plane <unit type>` (aircraft change, every 5 s), `exit` (mission end), `noexport` (multiplayer
   server forbids ownship export), and `t=12.34;ias=154.2;aoa=0.081;g=3.42;...` (`DcsTelemetryProtocol`).
+  Hook version 2 (for telemetry recording) keeps these keys and adds: position and attitude every frame
+  (`lat`/`lon`/`alt_msl`, `heading`/`true_pitch`/`true_bank` from `LoGetSelfData()`, `pos_x/y/z`, velocity
+  `vx/vy/vz`, and the ADI `pitch`/`bank`/`yaw` the protocol always listed); a `slow t=...;...` line 10 times a second
+  (engine temperatures, fuel flow and quantity in kg, hydraulics, control surfaces, wheel brakes, canopy, hook, stores,
+  chaff/flares, the `LoGetMCPState()` flags one by one, radar altimeter, magnetic heading, ILS deviations, wind, ACS
+  requirements, targets and the first locked target; route and wingmen once a second) that the source adds to the
+  following frames; `start`; `info key=text` session facts (map, mission, mission date/time, pilot, unit, group,
+  coalition, game version); `objs`/`obj`/`objend` (the other objects once a second, only when the server allows
+  object export); `ev <name> <text>` (onGameEvent, pause/resume, navigation mode changes) and `msg` (chat). The Lua
+  source is `engine\DcsHooks\JoyProFfb.lua` (embedded in the engine). An installed version-1 hook shows as "outdated"
+  in the setup status; Install (or `engine ffb telemetry setup dcs`) replaces it, DCS reads it at its next start.
+  `DcsRecordingTelemetryTests` runs the hook in DCS's own `bin\luae.exe` (Lua 5.1) with stubbed DCS tables and parses
+  what it sends (skipped without a DCS install; `JOYPRO_DCS_LUAE`, `JOYPRO_DCS_HOOK_FILE` to test an installed copy).
 - **Multiplayer:** the ownship functions only work when the server allows player export
   (`LoIsOwnshipExportAllowed()`, server setting "Allow player export"); otherwise the hook says `noexport` and the
   status line explains it.
@@ -353,8 +369,23 @@ absent (the node reads 0). Raw game keys (`dcs.*`, `il2.*`, `wt.*`) are availabl
   aces.exe runs and the feature is on; if the server does not answer it retries every 2 s. The game's own web page
   polls every 500 ms; community tools poll every 250 ms; no rate limit is documented.
 - **How it is enabled:** nothing to set up. Settings `url` must stay on this PC.
+- **Recording extras** (`WarThunderTelemetrySource.RecordExtras`, off for force feedback; the session recorder
+  switches it on through `WarThunderTelemetryFeed.RecordExtras`): while /state is valid, one extra request per poll
+  period after /state: `/map_info.json` every 10 s (map_min/map_max in m, grid_steps, grid_zero = top left corner,
+  map_generation, valid), `/map_obj.json` at 2 Hz (type, icon, color, x/y 0..1 of the map picture with y down, dx/dy,
+  airfields sx/sy/ex/ey), `/hudmsg?lastEvt=&lastDmg=` at 1 Hz (events/damage with id, msg, time), `/mission.json`
+  every 5 s (objectives with primary, status, text). Field names checked in the game's own page (webUi.vromfs.bin;
+  the page polls all of them every 500 ms). Frame keys added: `wt.map.x_m` (east), `wt.map.y_m` (north),
+  `wt.map.heading_deg`, `wt.att.roll_deg` / `wt.att.pitch_deg` (artificial horizon gauge, sign decided from the
+  turn direction and flight path + AoA, default inverted). `/gamechat` and `/map.img` are never requested.
 
-### MSFS 2020 / 2024 (researched, not implemented)
+### MSFS 2020 / 2024 (telemetry recording source; no force feedback effects yet)
+
+Implemented for the telemetry recording (`gui/JoyPro.Ffb.Core/Telemetry/Msfs`, docs/telemetry-recording.md): a
+read-only native SimConnect client that loads the user's own `SimConnect.dll` with NativeLibrary (never shipped),
+213 FLOAT64 simvars as `msfs.<name>` keys (98 tagged/changed-only at sim-frame rate, interval adapted to about 20 Hz;
+115 once per second), 8 strings (TITLE, ATC ID, ...), system events and a 1 Hz traffic snapshot. Not verified
+against a running sim yet. The research notes below still apply.
 
 SimConnect (`Microsoft.FlightSimulator.SimConnect.dll` from the SDK + native `SimConnect.dll`, x64):
 `SimConnect_RequestDataOnSimObject` with `SIMCONNECT_PERIOD_SIM_FRAME` (every sim frame) or VISUAL_FRAME/SECOND,
@@ -366,7 +397,11 @@ ELEVATOR TRIM POSITION (rad) / ELEVATOR TRIM PCT, AILERON/RUDDER TRIM PCT, DESIG
 per aircraft). Simvar names are the same in 2020 and 2024; facility structures differ (load the SimConnect DLL that
 matches the running exe if facilities are ever needed). Enabling: nothing in the sim (SimConnect is always on locally).
 
-### X-Plane 11 / 12 (researched, not implemented)
+### X-Plane 11 / 12 (telemetry source done, no force feedback graph yet)
+
+The source and its UDP feed exist for telemetry recording (`gui/JoyPro.Ffb.Core/Telemetry/XPlane`, keys `xp.*`,
+see docs/telemetry-recording.md); the force feedback process does not use it yet (no `ac.*` deriver for X-Plane).
+
 
 UDP on port 49000 ("Exchanging Data with X-Plane.rtfd" in the install's Instructions folder): request
 `"RREF\0"` + `int freq` + `int index` + `char path[400]` (413 bytes; freq 0 unsubscribes; array elements as

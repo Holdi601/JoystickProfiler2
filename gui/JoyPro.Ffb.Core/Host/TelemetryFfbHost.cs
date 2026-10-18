@@ -6,6 +6,7 @@ using JoyPro.Ffb.Core.Runtime;
 using JoyPro.Ffb.Core.Telemetry;
 using JoyPro.Ffb.Core.Telemetry.Dcs;
 using JoyPro.Ffb.Core.Telemetry.Il2;
+using JoyPro.Ffb.Core.Telemetry.Recording;
 using JoyPro.Ffb.Core.Telemetry.WarThunder;
 using JoyPro.Logging;
 
@@ -80,6 +81,11 @@ public sealed class TelemetryFfbHostOptions
 
     /// <summary>Wait before the output is tried again after an error.</summary>
     public double RetrySeconds { get; init; } = 10;
+
+    /// <summary>Telemetry recording settings (docs/telemetry-recording.md); null = read telemetry-recording.json.</summary>
+    public TelemetryRecordingConfig? RecordingConfig { get; init; }
+
+    public TelemetrySessionRecorderOptions? RecorderOptions { get; init; }
 }
 
 /// <summary>Runs telemetry force feedback for one game: source -> normalised model -> graph -> mixer -> backend.</summary>
@@ -112,6 +118,8 @@ public sealed class TelemetryFfbHost : IDisposable
     private bool _watching;
     private bool _disposed;
     private int _graphSwitchPending;
+    private TelemetryRecordingConfig _recordingConfig = new();
+    private TelemetrySessionRecorder? _recorder;
 
     public TelemetryFfbHost(TelemetryFfbConfig config, TelemetryGame game, IFfbBackend backend, IFfbClock clock, TelemetryFfbHostOptions? options = null)
     {
@@ -130,6 +138,12 @@ public sealed class TelemetryFfbHost : IDisposable
     public int Port => _udp?.Port ?? 0;
 
     public string? Aircraft => _aircraft;
+
+    /// <summary>The session recorder while telemetry recording is on for this game (it shares this host's source).</summary>
+    public TelemetrySessionRecorder? Recorder => _recorder;
+
+    /// <summary>Raised (on any thread) when a recording session starts or ends.</summary>
+    public event Action? RecordingChanged;
 
     /// <summary>Raised (on any thread) when the status line changes.</summary>
     public event Action<TelemetryFfbStatus>? StatusChanged;
@@ -169,6 +183,7 @@ public sealed class TelemetryFfbHost : IDisposable
                                       (_options.GamePid is { } followPid ? ", following game pid " + followPid.ToString(System.Globalization.CultureInfo.InvariantCulture) : string.Empty) +
                                       (_options.IgnoreGameProcess ? ", game check off" : string.Empty));
             _runtime = runtime;
+            _recordingConfig = _options.RecordingConfig ?? TelemetryRecordingConfig.Load();
             _source = CreateSource();
             _source.Enricher = _game.Id switch
             {
@@ -225,6 +240,28 @@ public sealed class TelemetryFfbHost : IDisposable
         Publish();
     }
 
+    /// <summary>Takes new recording settings (recording switched on or off, other folder or rate).</summary>
+    public void ReloadRecording(TelemetryRecordingConfig config)
+    {
+        lock (_gate)
+        {
+            var changed = !string.Equals(config.ToJson(), _recordingConfig.ToJson(), StringComparison.Ordinal);
+            _recordingConfig = config;
+            if (changed && _recorder is not null)
+            {
+                _recorder.Dispose("the recording settings changed");
+                _recorder = null;
+            }
+
+            if (_runtime is not null)
+                ApplyConfigLocked();
+            if (!changed)
+                return;
+        }
+
+        RecordingChanged?.Invoke();
+    }
+
     /// <summary>Someone looks at the live values: keep evaluating while idle and capture node values.</summary>
     public void Watch(bool on)
     {
@@ -264,6 +301,9 @@ public sealed class TelemetryFfbHost : IDisposable
             runtime.Dispose();
         }
 
+        var recorder = _recorder;
+        _recorder = null;
+        recorder?.Dispose(_gameRunning || _options.IgnoreGameProcess ? "recording stopped" : "game exited");
         _udp?.Dispose();
         _udp = null;
         if (_source is IDisposable disposable)
@@ -325,13 +365,37 @@ public sealed class TelemetryFfbHost : IDisposable
         runtime.PreviewWhileIdle = _watching;
         runtime.CaptureNodeValues = _watching;
         runtime.Enabled = enabled;
+        var recording = _recordingConfig.Records(_game.Id) && (_gameRunning || _options.IgnoreGameProcess);
+        ApplyRecordingLocked(recording);
         if (_source is WarThunderTelemetrySource wt)
         {
-            // Poll only while the game runs (and the feature is on): no requests otherwise.
-            if (enabled)
+            // Poll only while the game runs (and force feedback or recording is on): no requests otherwise. The map,
+            // objects, HUD messages and mission are polled only for a recording.
+            wt.RecordExtras = recording;
+            if (enabled || recording)
                 wt.Start();
             else
                 wt.Stop();
+        }
+    }
+
+    // The recorder exists exactly while recording is on for this game and the game runs.
+    private void ApplyRecordingLocked(bool recording)
+    {
+        if (_source is null)
+            return;
+        if (recording && _recorder is null)
+        {
+            _recorder = new TelemetrySessionRecorder(_source, _game.Id, _recordingConfig, _options.RecorderOptions);
+            _recorder.SessionStarted += _ => RecordingChanged?.Invoke();
+            _recorder.SessionEnded += (_, _) => RecordingChanged?.Invoke();
+        }
+        else if (!recording && _recorder is not null)
+        {
+            var recorder = _recorder;
+            _recorder = null;
+            recorder.Dispose(_gameRunning || _options.IgnoreGameProcess ? "recording switched off" : "game exited");
+            RecordingChanged?.Invoke();
         }
     }
 

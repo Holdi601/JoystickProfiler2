@@ -151,6 +151,9 @@ public static class DeviceReferenceService
 
         public bool GameCovers { get; set; } = true;
 
+        // The picture packs of JoyPro's releases on the Cockpits page: ask (default), always or never (CockpitPicturePacks).
+        public string? CockpitPictureDownloads { get; set; }
+
         // How JoyPro's own drawings are painted (DrawingStyle spec "mode=cel;preset=joypro;..."): on screen (Layout page,
         // device cards) and in exports / cheat sheets (empty = the screen's). The engine reads both from this file.
         public string? DrawingStyle { get; set; }

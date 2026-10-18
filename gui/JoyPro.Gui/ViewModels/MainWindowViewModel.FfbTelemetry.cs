@@ -1056,6 +1056,8 @@ public sealed partial class MainWindowViewModel
 
     private void StartFfbHost(FfbTelemetryGameItem game, int gamePid)
     {
+        // A recording of this game without force feedback gives the game's port back first (this process records now).
+        StopTelemetryRecordHostFor(game.Id);
         List<string> args =
         [
             "run", "--game", game.Id,
@@ -1207,6 +1209,9 @@ public sealed partial class MainWindowViewModel
                 break;
             case "log":
                 AppendFfbLog(FfbNodeString(json, "message"));
+                break;
+            case "recording":
+                OnTelemetryRecordingLine(json);
                 break;
             case "exit":
                 ffbHostExitReason = FfbNodeString(json, "reason");

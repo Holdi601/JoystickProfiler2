@@ -94,7 +94,7 @@ public sealed class ManualPageView : Control
                     context.DrawEllipse(Brush(item.Fill), null, r.Center, r.Width / 2, r.Height / 2);
                     break;
                 case "drawing":
-                    if (item.Art is { HasPicture: true } && Picture(item.Art.Picture) is { } picture)
+                    if (item.Art is { HasPicture: true } && Picture(item.Art.Picture, item.Art.Mask) is { } picture)
                     {
                         // A picture made from the user's game.
                         context.DrawImage(picture, new Rect(0, 0, picture.Size.Width, picture.Size.Height), r);
@@ -120,28 +120,37 @@ public sealed class ManualPageView : Control
         }
     }
 
-    // The game pictures, read once each (a few recent ones are kept).
+    // The game pictures, read once each (a few recent ones are kept; a file written again is read again).
     private static readonly Dictionary<string, Bitmap?> Pictures = new(StringComparer.OrdinalIgnoreCase);
     private static readonly List<string> PictureOrder = [];
 
-    private static Bitmap? Picture(string file)
+    private static Bitmap? Picture(string file, string? mask = null)
     {
+        string key;
+        try
+        {
+            key = file + "|" + (File.Exists(file) ? File.GetLastWriteTimeUtc(file).Ticks : 0) + "|" + mask;
+        }
+        catch (Exception)
+        {
+            key = file;
+        }
         lock (Pictures)
         {
-            if (Pictures.TryGetValue(file, out Bitmap? hit))
+            if (Pictures.TryGetValue(key, out Bitmap? hit))
                 return hit;
             Bitmap? bitmap = null;
             try
             {
                 if (File.Exists(file))
-                    bitmap = new Bitmap(file);
+                    bitmap = LoadPicture(file, mask);
             }
             catch (Exception)
             {
                 bitmap = null;
             }
-            Pictures[file] = bitmap;
-            PictureOrder.Add(file);
+            Pictures[key] = bitmap;
+            PictureOrder.Add(key);
             while (PictureOrder.Count > 24)
             {
                 string old = PictureOrder[0];
@@ -150,6 +159,51 @@ public sealed class ManualPageView : Control
                     gone?.Dispose();
             }
             return bitmap;
+        }
+    }
+
+    // A PNG as it is; a JPEG of a picture pack with its transparency from the grey mask PNG next to it (docs/cockpits.md
+    // "Picture packs"). Without a usable mask the JPEG is shown opaque.
+    internal static Bitmap LoadPicture(string file, string? mask)
+    {
+        if (string.IsNullOrEmpty(mask) || !File.Exists(mask))
+            return new Bitmap(file);
+        using SkiaSharp.SKBitmap? color = SkiaSharp.SKBitmap.Decode(file);
+        using SkiaSharp.SKBitmap? alpha = SkiaSharp.SKBitmap.Decode(mask);
+        if (color == null)
+            return new Bitmap(file);
+        if (alpha == null || alpha.Width != color.Width || alpha.Height != color.Height)
+            return new Bitmap(file);
+        int w = color.Width, h = color.Height;
+        using SkiaSharp.SKBitmap? rgb = color.Copy(SkiaSharp.SKColorType.Bgra8888);
+        using SkiaSharp.SKBitmap? grey = alpha.Copy(SkiaSharp.SKColorType.Bgra8888);
+        if (rgb == null || grey == null)
+            return new Bitmap(file);
+        byte[] px = rgb.Bytes;
+        byte[] m = grey.Bytes;
+        const int mStep = 4, mOffset = 2;
+        byte[] premul = new byte[w * h * 4];
+        for (int y = 0; y < h; y++)
+        {
+            int row = y * rgb.RowBytes, mrow = y * grey.RowBytes;
+            for (int x = 0; x < w; x++)
+            {
+                int i = row + 4 * x, o = (y * w + x) * 4;
+                int a = m[mrow + mStep * x + mOffset];
+                premul[o] = (byte)(px[i] * a / 255);
+                premul[o + 1] = (byte)(px[i + 1] * a / 255);
+                premul[o + 2] = (byte)(px[i + 2] * a / 255);
+                premul[o + 3] = (byte)a;
+            }
+        }
+        System.Runtime.InteropServices.GCHandle handle = System.Runtime.InteropServices.GCHandle.Alloc(premul, System.Runtime.InteropServices.GCHandleType.Pinned);
+        try
+        {
+            return new Bitmap(Avalonia.Platform.PixelFormat.Bgra8888, Avalonia.Platform.AlphaFormat.Premul, handle.AddrOfPinnedObject(), new PixelSize(w, h), new Vector(96, 96), w * 4);
+        }
+        finally
+        {
+            handle.Free();
         }
     }
 

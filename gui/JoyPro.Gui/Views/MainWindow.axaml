@@ -5418,9 +5418,27 @@
                                         <Button Classes="small" Content="{l:T 'Ask again for every device'}" Command="{Binding ForgetPhotoAnswersCommand}"
                                                 ToolTip.Tip="{l:T 'Forget the yes / no you gave per device; JoyPro asks again before it shows a maker\'s photo'}" />
                                     </WrapPanel>
+                                    <Grid ColumnDefinitions="Auto,*" ColumnSpacing="10">
+                                        <TextBlock Text="{l:T 'Cockpit pictures from JoyPro\'s releases'}" VerticalAlignment="Center" />
+                                        <ComboBox Grid.Column="1" ItemsSource="{Binding CockpitPictureDownloadModes}" SelectedItem="{Binding CockpitPictureDownloadMode}" MinWidth="220"
+                                                  ToolTip.Tip="{l:T 'When you open an aircraft on the Cockpits page that has no pictures from your games, JoyPro looks whether its releases have a picture pack for it (GitHub) and asks before it downloads it. Always: download without asking. Never: JoyPro does not look; the buttons on the Cockpits page still work.'}">
+                                            <ComboBox.ItemTemplate>
+                                                <DataTemplate x:DataType="x:String">
+                                                    <TextBlock Text="{Binding Converter={x:Static l:TConverter.Instance}}" />
+                                                </DataTemplate>
+                                            </ComboBox.ItemTemplate>
+                                        </ComboBox>
+                                    </Grid>
+                                    <TextBlock TextWrapping="Wrap" Opacity="0.75" FontSize="12"
+                                               Text="{l:T 'The cockpit picture packs come from JoyPro\'s releases on GitHub (pictures JoyPro rendered from the games); GitHub sees your IP address. Kept with your game data.'}" />
                                     <CheckBox Content="{l:T 'Game covers from the internet'}" IsChecked="{Binding GameCoverDownloads}"
                                               ToolTip.Tip="{l:T 'Covers of games Steam has no picture of on this PC are downloaded once from Steam\'s store or the publisher\'s site (engine media sources). Off: JoyPro\'s badges and the pictures already on this PC. Takes effect at the next start.'}" />
                                 </StackPanel>
+                            </controls:SettingsSection>
+
+                            <!-- Settings > Telemetry recording (docs/telemetry-recording.md): opt-in, Tacview-like recording of every game's telemetry -->
+                            <controls:SettingsSection SectionId="telemetry-recording" Title="{l:T 'Telemetry recording'}" Icon="{StaticResource Icon.Record}">
+                                <controls:TelemetryRecordingPanel />
                             </controls:SettingsSection>
 
                             <!-- Settings > Drawings: how JoyPro's own drawings of the devices are painted (DrawingStyleOptions) -->

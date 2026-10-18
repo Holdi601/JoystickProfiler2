@@ -13,13 +13,16 @@ namespace JoyPro.DeviceReference
 {
     // The cockpit pictures JoyPro made on this PC from the user's own games (docs/cockpits.md "Pictures from your
     // games"): <data>\GameData\CockpitPictures\<game>\<aircraft>\pictures.json ("joypro-cockpit-pictures") with, per
-    // view (overview, a grip, a panel), the rendered picture (PNG), JoyPro's line drawing of it and the callouts at the
-    // game's own clickable controls. Never shipped: the engine builds them ("cockpits pictures build"); the Cockpits page
-    // shows them instead of JoyPro's drawings where they exist.
+    // view (overview, a grip, a panel), the rendered picture (PNG, or JPEG with a mask PNG for its transparency), JoyPro's
+    // line drawing of it and the callouts at the game's own clickable controls. Not in the repository: the engine builds
+    // them ("cockpits pictures build"), or the GUI downloads a picture pack of JoyPro's releases (docs/cockpits.md
+    // "Picture packs", pack.json next to pictures.json); the Cockpits page shows them instead of JoyPro's drawings.
     public sealed class CockpitPictureSet
     {
         public const string FolderName = "CockpitPictures";
         public const string FormatName = "joypro-cockpit-pictures";
+        public const string PackFileName = "pack.json";
+        public const string PackFormatName = "joypro-cockpit-pack";
 
         public string Game = string.Empty;
         public string Plane = string.Empty;
@@ -30,7 +33,11 @@ namespace JoyPro.DeviceReference
         public string Built = string.Empty;
         public List<string> Notes = new List<string>();
         public string Folder = string.Empty;
+        // The version of the picture pack the set came from; 0: made on this PC.
+        public int PackVersion;
         public List<CockpitPictureView> Views = new List<CockpitPictureView>();
+
+        public bool FromPack { get { return PackVersion > 0; } }
 
         public static string Root()
         {
@@ -68,6 +75,7 @@ namespace JoyPro.DeviceReference
                     Device = DeviceCatalog.Text(v, "device"),
                     Seat = (int)Number(v, "seat", 1),
                     Image = Path.Combine(folder, DeviceCatalog.Text(v, "image")),
+                    Mask = DeviceCatalog.Text(v, "mask").Length > 0 ? Path.Combine(folder, DeviceCatalog.Text(v, "mask")) : string.Empty,
                     Drawing = Path.Combine(folder, DeviceCatalog.Text(v, "drawing")),
                     Width = Number(v, "width", 1),
                     Height = Number(v, "height", 1),
@@ -94,7 +102,29 @@ namespace JoyPro.DeviceReference
                 }
                 set.Views.Add(view);
             }
+            ReadPack(set);
             return set;
+        }
+
+        // A set from a picture pack of JoyPro's releases has the pack's pack.json next to pictures.json (written when it
+        // was installed). It counts only while pictures.json is the pack's: a build on this PC writes a new one.
+        private static void ReadPack(CockpitPictureSet set)
+        {
+            try
+            {
+                string file = Path.Combine(set.Folder, PackFileName);
+                if (!File.Exists(file))
+                    return;
+                Dictionary<string, object> pack = MiniJson.Parse(File.ReadAllText(file, Encoding.UTF8)) as Dictionary<string, object>;
+                if (pack == null || !string.Equals(DeviceCatalog.Text(pack, "format"), PackFormatName, StringComparison.OrdinalIgnoreCase) ||
+                    !string.Equals(DeviceCatalog.Text(pack, "picturesBuilt"), set.Built, StringComparison.Ordinal))
+                    return;
+                set.PackVersion = Math.Max(1, (int)Number(pack, "version", 1));
+            }
+            catch (Exception)
+            {
+                set.PackVersion = 0;
+            }
         }
 
         private static List<string> Strings(Dictionary<string, object> item, string key)
@@ -129,7 +159,7 @@ namespace JoyPro.DeviceReference
 
         // The game folders the sets are kept in, per JoyPro game id (the order is the order of preference: the game with
         // the most cockpit detail first).
-        public static readonly string[] Games = { "DCS", "XPlane12", "MSFS2024", "MSFS2020", "IL2Game", "IL2Korea", "NuclearOption", "StarCitizen" };
+        public static readonly string[] Games = { "DCS", "XPlane12", "MSFS2024", "MSFS2020", "IL2Game", "IL2Korea", "NuclearOption", "StarCitizen", "WarThunder" };
 
         // Where a game's sets are: MSFS 2024 keeps its models encrypted, so its aircraft use the MSFS 2020 models.
         private static IEnumerable<string> FoldersOf(string game)
@@ -144,10 +174,24 @@ namespace JoyPro.DeviceReference
         // in JoyPro's tables) by the type number and words they share ("Cessna 172 Skyhawk" and "Cessna_172SP").
         public static CockpitPictureSet For(CockpitVariant v, string root = null)
         {
-            if (v == null || (v.Aircraft != null && v.Aircraft.Fiction && !v.Games.Any(g => g.Game == "StarCitizen" || g.Game == "NuclearOption")))
-                return null;
             root = root ?? Root();
             if (!Directory.Exists(root))
+                return null;
+            CockpitPictureSet found = null;
+            Locate(v, game => Index(Path.Combine(root, game)), (game, folder) =>
+            {
+                found = Cached(Path.Combine(root, game, folder));
+                return found != null;
+            });
+            return found;
+        }
+
+        // The game folder and the set folder of a variant by the indexes of the game folders (normalised aircraft name ->
+        // set folder, as IndexOf makes them): the first one the caller accepts ("usable"), or null. Used for the sets on
+        // this PC (For) and for the picture packs of JoyPro's releases (the names in their manifest).
+        public static Tuple<string, string> Locate(CockpitVariant v, Func<string, Dictionary<string, string>> indexOf, Func<string, string, bool> usable)
+        {
+            if (v == null || (v.Aircraft != null && v.Aircraft.Fiction && !v.Games.Any(g => g.Game == "StarCitizen" || g.Game == "NuclearOption")))
                 return null;
             foreach (string game in Games)
             {
@@ -166,18 +210,14 @@ namespace JoyPro.DeviceReference
                 }
                 foreach (string folderGame in FoldersOf(game))
                 {
-                    Dictionary<string, string> index = Index(Path.Combine(root, folderGame));
+                    Dictionary<string, string> index = indexOf(folderGame) ?? new Dictionary<string, string>();
                     if (index.Count == 0)
                         continue;
                     foreach (string name in names)
                     {
                         string folder;
-                        if (index.TryGetValue(Norm(name), out folder))
-                        {
-                            CockpitPictureSet set = Cached(Path.Combine(root, folderGame, folder));
-                            if (set != null)
-                                return set;
-                        }
+                        if (index.TryGetValue(Norm(name), out folder) && usable(folderGame, folder))
+                            return Tuple.Create(folderGame, folder);
                     }
                     if (planeNames)
                     {
@@ -186,22 +226,30 @@ namespace JoyPro.DeviceReference
                         foreach (string plane in refs.Select(r => Norm(r.Plane)).Where(p => p.Length > 0))
                         {
                             string prefix = index.Keys.Where(k => k.Length >= 5 && plane.StartsWith(k, StringComparison.Ordinal)).OrderByDescending(k => k.Length).FirstOrDefault();
-                            CockpitPictureSet set = prefix == null ? null : Cached(Path.Combine(root, folderGame, index[prefix]));
-                            if (set != null)
-                                return set;
+                            if (prefix != null && usable(folderGame, index[prefix]))
+                                return Tuple.Create(folderGame, index[prefix]);
                         }
                         continue;
                     }
                     string fuzzy = Fuzzy(index, names);
-                    if (fuzzy != null)
-                    {
-                        CockpitPictureSet set = Cached(Path.Combine(root, folderGame, fuzzy));
-                        if (set != null)
-                            return set;
-                    }
+                    if (fuzzy != null && usable(folderGame, fuzzy))
+                        return Tuple.Create(folderGame, fuzzy);
                 }
             }
             return null;
+        }
+
+        // An index of aircraft names to set folders (the names normalised; the first folder of a name wins).
+        public static Dictionary<string, string> IndexOf(IEnumerable<KeyValuePair<string, string>> names)
+        {
+            Dictionary<string, string> map = new Dictionary<string, string>(StringComparer.Ordinal);
+            foreach (KeyValuePair<string, string> pair in names)
+            {
+                string key = Norm(pair.Key);
+                if (key.Length > 0 && !string.IsNullOrEmpty(pair.Value) && !map.ContainsKey(key))
+                    map[key] = pair.Value;
+            }
+            return map;
         }
 
         // Words and numbers of a name: "cessna172sp" -> cessna, 172, sp.
@@ -428,6 +476,8 @@ namespace JoyPro.DeviceReference
         {
             public string Game = string.Empty;
             public int Sets;
+            // Of them from picture packs (pack.json next to pictures.json).
+            public int Packs;
             public string Built = string.Empty;
         }
 
@@ -446,6 +496,7 @@ namespace JoyPro.DeviceReference
                 {
                     Game = Path.GetFileName(dir),
                     Sets = manifests.Count,
+                    Packs = manifests.Count(f => File.Exists(Path.Combine(Path.GetDirectoryName(f), PackFileName))),
                     Built = manifests.Max(f => File.GetLastWriteTime(f)).ToString("yyyy-MM-dd HH:mm", CultureInfo.InvariantCulture)
                 });
             }
@@ -462,6 +513,8 @@ namespace JoyPro.DeviceReference
         public string Device = string.Empty; // stick, throttle (grips)
         public int Seat = 1;
         public string Image = string.Empty;
+        // A JPEG picture's transparency: an 8-bit grey PNG of the same size (255 = opaque); empty for none.
+        public string Mask = string.Empty;
         public string Drawing = string.Empty;
         public double Width = 1;
         public double Height = 1;

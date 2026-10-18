@@ -289,6 +289,9 @@ namespace JoyPro.Engine
                 case "ffb":
                     exitCode = Measure("command.execute", () => RunFfb(command, outPath, textOutput));
                     break;
+                case "telemetry":
+                    exitCode = Measure("command.execute", () => RunTelemetry(command, outPath, textOutput));
+                    break;
                 case "profile":
                     exitCode = Measure("command.execute", () => RunProfile(command, outPath, textOutput));
                     break;
@@ -14353,7 +14356,7 @@ namespace JoyPro.Engine
             Console.WriteLine("      --explain lists the best candidates of a relation and what occupies them.");
             Console.WriteLine("  engine devices kb [list [query] | show <id> | identify [--grip <device>=<grip id>]... [--add-device <id>]...]   (device catalog for Auto Assign)");
             Console.WriteLine("  engine devices reference [list [query] | identify --vidpid <VID:PID> --name <HID name> [--instance <name>] [--buttons <n>] [--hats <n>] [--axes X,Y,RZ] | show <id> [--base <id>] [--svg <file>] [--light] [--no-badges] | check [query] | photos [query] [--coverage] | photo-add --model <id> --url <https photo on the maker's host> --view <front|side|back|top|base|three-quarter|sheet> [--page <url>] [--confidence <c>] [--shows a,b] [--sha256 <hex>] | layout-check | drawings [query] [--check] [--model <id> [--view <v>] --svg <file> | --png <file>] [--light] [--drawing-style lines|cel] [--drawing-preset <p>]]   (device reference pictures: catalog, identification and the question to ask, JoyPro's schematic with markers, photo references, curated marker positions, JoyPro's own drawings of the devices)");
-            Console.WriteLine("  engine cockpits [list [query] [--game G] [--era E] [--role R] [--nation N] [--category fixed-wing|helicopter|space|fiction|real] | search <text> [--limit n] | get <aircraft> [<variant>] [--json] | check | render <aircraft> [<variant>] --png <file> [--device <d>] [--style dark|light] [--print-width <px>] [--drawing-only] | compare <aircraft> [<variant>] [--game G] | photos [query] [--coverage] | coverage | drawings | pictures build [--game DCS|XPlane12|all] [--aircraft <name>,...] [--force] [--out <folder>] | pictures status]");
+            Console.WriteLine("  engine cockpits [list [query] [--game G] [--era E] [--role R] [--nation N] [--category fixed-wing|helicopter|space|fiction|real] | search <text> [--limit n] | get <aircraft> [<variant>] [--json] | check | render <aircraft> [<variant>] --png <file> [--device <d>] [--style dark|light] [--print-width <px>] [--drawing-only] | compare <aircraft> [<variant>] [--game G] | photos [query] [--coverage] | coverage | drawings | pictures build [--game DCS|XPlane12|MSFS2020|IL2Game|NuclearOption|all] [--aircraft <name>,...] [--force] [--out <folder>] | pictures status]");
             Console.WriteLine("      the cockpit database (DB/Cockpits, docs/cockpits.md): stick and throttle of real and fictional aircraft per variant with");
             Console.WriteLine("      their functions and JoyPro function ids, JoyPro's drawings, panels, sources and photo links; get = the layout the setup");
             Console.WriteLine("      wizard takes over; compare (with --profile) = which functions the profile has relations for.");
@@ -14375,6 +14378,16 @@ namespace JoyPro.Engine
             Console.WriteLine("  engine ffb telemetry config set [--game DCS|IL2Game|IL2Korea|WarThunder] [--plane <aircraft>] [--effect <name>] | [--device {guid}] --param <key>=<value>...");
             Console.WriteLine("  engine ffb telemetry config clear [--game <game>] [--plane <aircraft>] [--effect <name>] | [--device {guid}]");
             Console.WriteLine("  engine ffb telemetry setup dcs|il2|il2korea|warthunder [--remove] [--dry-run] [--path <Saved Games\\DCS | IL-2 folder | startup.cfg>]   (DCS Hooks script / IL-2 startup.cfg telemetry target; backed up)");
+            Console.WriteLine("  engine telemetry games   (telemetry recording, docs/telemetry-recording.md: the games, what JoyPro listens to, ACMI possible)");
+            Console.WriteLine("  engine telemetry config show");
+            Console.WriteLine("  engine telemetry config set [--game <game>] --param enabled|folder|max-total-mb|keep-days|sample-hz|keep-raw|session-timeout=<value>...");
+            Console.WriteLine("  engine telemetry sessions [--game <game>] [--folder <folder>]   (recorded sessions, newest first)");
+            Console.WriteLine("  engine telemetry show <session> [--folder <folder>]   (<session> = path, file name, latest or a number of the list)");
+            Console.WriteLine("  engine telemetry export <session> --format acmi|acmi-zip|csv [--to <file or folder>] [--max-hz <n>] [--no-per-channel]   (Tacview ACMI 2.2 / CSV)");
+            Console.WriteLine("  engine telemetry preview <session> [--channel <key>]... [--points <n>]");
+            Console.WriteLine("  engine telemetry delete <session>...");
+            Console.WriteLine("  engine telemetry recover | prune   (finish sessions cut off by a crash | apply the retention settings)");
+            Console.WriteLine("  engine telemetry record --game <game> [--seconds <n>] [--folder <folder>] [--sample-hz <n>] [--no-raw] [--no-game-check]   (records now; Ctrl+C ends it)");
             Console.WriteLine("  engine binds tuning models");
             Console.WriteLine("  engine binds tuning show <bind-or-relation> [--game <game>] [--plane <plane>]");
             Console.WriteLine("  engine binds tuning set <bind-or-relation> --scope base|game:<game>|plane:<game>:<plane>|family:<family> [--param <name>=<value>]... [--inverted true|false] [--slider true|false] [--deadzone <value>] [--saturation-x <value>] [--saturation-y <value>] [--curvature <csv>] [--curve-points <x:y,...>|none]");

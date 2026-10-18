@@ -267,9 +267,11 @@ so the tables never overlap and the lines do not cross tables. Controls the draw
 ## Pictures from your games
 
 **Build pictures from my games** on the Cockpits page (or `engine cockpits pictures build`) draws the cockpits of the
-games installed on this PC from the games' own files. The pictures are made on this PC only. They are kept with the game
-data (`<data>\GameData\CockpitPictures\<game>\<aircraft>`) and are never part of JoyPro or its repository. Wherever a variant's
-game has pictures, the manual pages show them in place of JoyPro's drawings:
+games installed on this PC from the games' own files (only files stored in plain or openly documented formats; nothing
+encrypted or obfuscated is decrypted). They are kept with the game data (`<data>\GameData\CockpitPictures\<game>\<aircraft>`)
+and are never part of the repository; the maintainer's sets are offered as picture packs (see "Picture packs"). Games whose
+models are encrypted get screenshots taken in the game instead (MSFS 2024, see below). Wherever a variant's game has
+pictures, the manual pages show them in place of JoyPro's drawings:
 
 - **Cockpit overview**: the whole cockpit from behind the pilot's head. Its numbered callouts lead to the panels and
   the grips.
@@ -295,15 +297,19 @@ yoke and throttle datarefs (X-Plane).
 |---|---|---|
 | DCS World | `Mods\aircraft\*`: entry.lua (aircraft, cockpit folder), mainpanel_init.lua (model, grip arguments), clickabledata.lua, Views.lua (seats, eye points), the cockpit EDM and its textures (DDS in zip archives) | 48 cockpits on the maintainer's PC (about 1,900 pictures, 15,000 callouts). Not complete: F-14BU (no clickable data yet) and SA342 (no cockpit model in the files); some C-130J, OH-58D and F-14 textures are not found (flat colour) |
 | X-Plane 12 | `Aircraft\**\*.acf` (objects, pilot's eye) and the OBJ8 objects with their textures | 24 aircraft (every one in Aircraft) |
-| MSFS 2024 | models are in encrypted archives | not possible from the files |
-| MSFS 2020 | official packages hold plain glTF interiors (parts named by function) | not yet: planned, and these models would also serve the MSFS 2024 aircraft |
-| IL-2, Nuclear Option, Star Citizen | proprietary or packed formats | not yet |
+| MSFS 2020 | the packages of `InstalledPackagesPath` (UserCfg.opt) that are not encrypted (no `.fsarchive`): `model*\model.cfg` `interior=` -> the interior xml (its first LOD's glTF, its behaviours) -> the glTF (Asobo's optimised format: interleaved vertices, half-float texture coordinates, primitives sharing one index buffer by `ASOBO_primitive` StartIndex / BaseVertexIndex, `MSFT_texture_dds`), the textures (texture.cfg fallbacks), cameras.cfg + flight_model.cfg (eye = reference datum + eyepoint + the pilot camera's offset) | 57 interiors (all open ones of the maintainer's packages; about 730 pictures, 7,300 callouts). Callouts on the parts named by function (`ELECTRICAL_Switch_Battery_Master`, older models `DEICESYSTEM_SWITCH_AIRFRAME`), with the behaviour template and its events where the xml names the node; the yoke (`HANDLING_Yoke_1`, `YOKE_LEFT`) and throttle are grips. Encrypted packages and the sim itself (not installed on the maintainer's PC) are skipped |
+| MSFS 2024 | models are in encrypted packages (`.fsc`, `.fsarchive`): not read. Screenshots in the sim instead: `tools\e2e\games\Msfs2024CockpitShots.ps1` (unattended; SimConnect through the sim's own client library `SimConnect_internal.dll`: EnumerateSimObjectsAndLiveries, FlightSave/FlightLoad to swap the aircraft at Innsbruck, CAMERA VIEW TYPE AND INDEX for the pilot's view and every instrument view, EnumerateInputEvents) | screenshots of every aircraft family (overview + instrument views, the HUD cropped away); the list on the overview is the aircraft's own input events (`ELECTRICAL_Battery_1`), without places (they cannot be derived honestly from a screenshot). Only via picture packs or the e2e script, not from the Cockpits page |
+| Nuclear Option | `NuclearOption_Data\resources.assets` (plain Unity 2022.3 data, JoyPro's own read-only reader): the aircraft prefabs' cockpit objects (interior, stick, throttle or collective, screens), the pilot's helmet camera as the eye, the textures from `resources.assets.resS`, the unit names of the aircraft definitions and the game's Rewired action list | 13 aircraft (every flyable one; 46 pictures, about a minute). The cockpits have no separate switches (painted on), so the callouts name the grips and the screens only; each grip page lists the game's "Flight Controls" actions (they bind to any button) |
+| IL-2 Great Battles | `data\*.gtp` (plain stored archives, read only): the plane scripts (`luascripts/worldobjects/planes/*.txt`: name, cockpit model, pilot seat as the eye), the cockpit `-c.mgm` models (JoyPro's own reader: node tree, geometry, skinned parts, the animations that tie the argument numbers to the parts), `-c.arg` argument names, DDS textures, the input actions and their English names (`swf/il2`) | 117 aircraft with a pilot's cockpit (about 1,070 pictures, 2,200 callouts; the 66 catalog variants find their set). Callouts: the parts the control arguments move, named by the game's input action where the argument is plainly that control (gear, flaps, throttle, mixture ...), else by the argument's own name. Not complete: CG-4A and Pe-2 ser.87 overviews are wrong (frames the reader does not follow), a few WWI/transport sticks are not found, linkage rods the game places at run time are left out |
+| IL-2 Korea | not read: the archive directories are obfuscated and `Scripts.gtp`, `Graphics2.gtp`, `Interface.gtp` (`S16E!`) are encrypted; the plain archives (`S16R!`) hold no cockpit model (searched for the cockpit node and texture names, nothing decoded). Readable on disk: `data\input\general.actions` (JSON) and the mission files | skipped; in-game screenshots (Quick Mission) would be the way, only while the PC is idle |
+| Star Citizen | packed formats | not yet (menus only: anti-cheat) |
+| War Thunder | `content.hq\pkg_cockpits\res`, read only and without de-obfuscation: the GRP2 packs (`*.grp`: the 1,197 `<plane>_cockpit` DynModels with their `_skeleton` node trees; DagorEngine's format: vertex declarations, packed positions with the model's unpack constants, meshoptimizer-packed indices, LOD 0's rigid meshes), `dynModelDesc.bin` (zstd, binary BLK: each model's materials and texture names) and the DxP2 texture packs (DDSx; the best of `$hq` / base / `$tq`). The vertex data and most textures are Oodle Leviathan packed: unpacked by the War Thunder Oodle helper `tools\wt-oodle` (a separate GPL-3 program, a C# port of parts of ooz with fixes; the engine starts it as a process, `JOYPRO_WT_OODLE` names it; without it War Thunder is skipped with a note). The eye is the pilot figure's head bone (`Bip01 Head01`); the grips are the model's `stick*` / `throttle*` nodes; the callouts are the model's own control and instrument node names (`gears`, `flaps`, `airbrake_lever`, `mixture`, `speed`, `altitude_hour` ...; instruments carry the node name). Obfuscated (not read): `aces.vromfs.bin` (flight models, cockpit instruments, HUD, the factory HOTAS presets), `char`/`game`/`gui`/`lang`/`mis`/`webUi`/`wwdata` vromfs and every `grp_hdr.vromfs.bin` | 1,197 cockpits on the maintainer's PC (9,274 pictures, about 25,000 callouts; about 4 hours at low priority). Environment cubemaps and some shared textures are not in the cockpit packs (flat colour); 42 cockpits have a texture in a format JoyPro does not decode (flat colour). 52 models have no pilot figure (mostly bomber cockpits made of their instruments): the eye is placed above and behind the stick (7) or behind the middle of the instruments (45). Users get the pictures as picture packs (the helper is not part of the release) |
 
 The Lua files are read with DCS's own interpreter (`bin\luae.exe`) and small harness scripts that only print; nothing in
 a game folder is written. A build skips an aircraft whose pictures are newer than its model and were made for the same
 game version (`--force` makes them again). It takes about two seconds per picture; a big DCS module has 50 to 80 pictures.
 
-`engine cockpits pictures build [--game DCS|XPlane12|all] [--aircraft <name>,...] [--force] [--out <folder>]`,
+`engine cockpits pictures build [--game DCS|XPlane12|MSFS2020|IL2Game|NuclearOption|all] [--aircraft <name>,...] [--force] [--out <folder>]`,
 `engine cockpits pictures status`, `engine cockpits render ... --pictures picture|drawing|none`. The format:
 `pictures.json` (`joypro-cockpit-pictures`): per view `id`, `kind` (overview, device, panel), `title`, `area`, `seat`,
 `image`, `drawing` (a `joypro-device-drawing`), `width`, `height`, and `callouts` (`n`, `id`, `label`, `x`, `y` 0..1 of
@@ -439,3 +445,70 @@ grips with their HOTAS tables and numbered panels; `cockpits check` reports no p
   the overview's links, the numbered panels, the seats and the problems `check` reports.
 - `engine\tests\smoke\cockpits.ps1`: `cockpits check`, `list` with filters, `search`, `get` (JSON for the wizard,
   vocabulary and game actions), `render` (PNG), `compare` on a profile, `photos --coverage`.
+- `dotnet test gui/JoyPro.Gui.Tests --filter CockpitPicturePackTests`: the picture packs (below).
+
+## Picture packs
+
+The cockpit pictures the maintainer rendered from the games ("Pictures from your games" above) are also published, so
+that a user who cannot build them (game not installed, MSFS 2024, too slow a PC) still gets them. They are **release
+assets** of the GitHub release `cockpit-pictures-v1` (one zip per aircraft set plus `manifest.json`), never part of the
+repository or of JoyPro's release package. The rights stay with the games' owners (`CREDITS.txt` in each pack;
+`NOTICE.md`, `THIRD_PARTY_NOTICES.md` section 2).
+
+- **Cockpits page**: an aircraft (variant) without pictures from the user's games that has a pack gets "Download
+  pictures for {aircraft} ({size} MB)?" (Download / Not now; "Not now" holds for the session). Settings > Privacy >
+  "Cockpit pictures from JoyPro's releases": **Ask** (default), **Always download** (no question), **Never** (JoyPro
+  does not even read the list). "Picture packs from JoyPro's releases" (expander) lists the release's games with
+  their count and size: "Download pictures for all my aircraft" (the catalog variants of the installed games) or
+  "Download all of this game"; both ask first with the total size. A download shows its bytes and can be cancelled;
+  a pack that does not match its SHA-256 is not installed ("does not match its checksum"). "Build pictures from my
+  games" stays.
+- **On disk**: the zip is checked, unpacked into `<data>\GameData\CockpitPictures\.downloads` and moved to
+  `<game>\<set>`; the game's `index.json` gets the pack's aircraft names (a name that already leads to another set on
+  this PC keeps it); `pack.json` in the set folder keeps the pack's id, version, checksum and the pictures' build time.
+  A newer version in the manifest replaces an installed pack; a set built on this PC that is at least as new as the
+  pack's pictures is kept unless asked (the "force" of `CockpitPicturePacks.DownloadAsync`); an older one is replaced.
+  A later build on this PC writes a new `pictures.json`, and the set counts as built on this PC again.
+- **Feed**: `https://github.com/Holdi601/JoystickProfiler2/releases/download/cockpit-pictures-v1/manifest.json`, read
+  only when needed and kept for the session (after a failure again two minutes later). `JOYPRO_COCKPIT_PICTURE_FEED`
+  names another one: a folder, a `file://` address or an http(s) folder or `manifest.json` (tests, checking a pack
+  release before it is published). The code: `gui/JoyPro.Gui/Services/CockpitPicturePacks.cs`,
+  `ViewModels/CockpitsViewModel.PicturePacks.cs`.
+- **Several feeds** (a GitHub release takes at most 1000 assets): a manifest's `"feeds"` names the release tags of
+  further manifests (text or `{"tag": ...}`; letters, digits, `.`, `_`, `-`). The main release names
+  `cockpit-pictures-wt-v1` (War Thunder, 1,197 packs), which names its second part `cockpit-pictures-wt-v1-part2`.
+  The GUI reads them all (the further feeds' own `"feeds"` too, each tag once, at most 16) and lists their packs as
+  one; a game and set comes from the first feed that has it; each asset is downloaded from its own release
+  (`.../download/<tag>/<asset>`). A tag resolves next to the feed: on the web the release `<tag>` next to it; in a
+  local folder the folder `<tag>` in it or next to it, else the folder next to it whose `manifest.json` has that
+  `"tag"` (so `E:\JoyProWork\release\cockpit-packs` finds `cockpit-packs-wt`). A further feed that cannot be read is
+  left out ("1 part of the picture packs could not be read ..." under the expander) and read again two minutes later;
+  only the main feed's failure fails the list.
+- **Pictures**: JPEG (quality 90, at most 1600 px on the long side). A picture with transparent parts gets
+  `<name>.mask.png` (8-bit grey, 255 = opaque) and `"mask"` next to `"image"` in `pictures.json`; the GUI
+  (`ManualPageView.LoadPicture`) and the engine (`EngineManualPageRenderer.LoadPicture`) draw the JPEG with it. Without
+  a mask a JPEG is drawn opaque; PNG pictures work as before. The page's source line says "Picture rendered from <game>
+  with JoyPro (picture pack version N)".
+- **Building a release**: `powershell -File tools\build_cockpit_packs.ps1 [-Source <pictures root>] [-Out <folder>]
+  [-Game DCS,XPlane12] [-Quality 90] [-MaxSide 1600] [-Tag cockpit-pictures-v1] [-Feeds <tag>,...] [-MaxAssets 1000]
+  [-ManifestOnly] [-Force]` (default source `<data>\GameData\CockpitPictures`, outside the repository). The main
+  release (default tag, output `E:\JoyProWork\release\cockpit-packs`) has every game except War Thunder and names
+  `cockpit-pictures-wt-v1` in `"feeds"` (`-Feeds` gives others); `-Tag cockpit-pictures-wt-v1` builds War Thunder
+  into `E:\JoyProWork\release\cockpit-packs-wt`. It writes one zip per set (asset names of letters, digits, `-`, `_`,
+  `.`; each below 2 GB) and `manifest.json`: `format` `joypro-cockpit-packs`, `packVersion` 1, `tag`, `feeds`,
+  `packs[]` with `id` (`<game>/<set>`), `game`, `set`, `planes`, `asset`, `size`, `sha256`, `version`, `built`,
+  `picturesBuilt`, `sourceHash`. More than `MaxAssets - 1` packs (999 with the manifest) are split: the rest goes to
+  `<Out>\<Tag>-part2` (its own `manifest.json`, tag `<Tag>-part2`), named in the first part's `"feeds"`; a pack keeps
+  its part while that part has room. A set whose files did not change keeps its zip and version; a changed one gets
+  the next version. `-ManifestOnly` writes the manifests again from the zips that are there (new feeds, a new split)
+  without reading the pictures. The script prints each release's asset count and size and uploads nothing: create the
+  releases and attach each folder's zips and `manifest.json` by hand (`gh release upload <tag> <folder>\*.zip
+  <folder>\manifest.json --clobber`). Before uploading, `set JOYPRO_CHECK_PICTURE_FEED=<main folder>` and the opt-in
+  test `OptIn_LocalRelease_EveryFeedAndEveryAssetIsThere` reads every feed and checks every zip.
+- Tests (`CockpitPicturePackTests`): the manifest (unsafe packs left out, a newer pack format refused), the feed
+  addresses, several feeds (local folders and a localhost web feed, a loop, a missing feed, the page's list), the
+  build tool's split into parts and `-ManifestOnly`, a checksum mismatch, where a pack goes with `pack.json` and the index, a zip with paths or other file
+  types, the version rule, the setting, the page against a localhost feed (offer, download, Not now, Always, Never,
+  all my aircraft, one game), the bytes and Cancel, and the build tool on a synthetic set (JPEG and mask, installed and
+  drawn with its transparency). The journey (`UserJourneyTests`) shows the offer and the downloaded F-16 pictures
+  (`JOYPRO_JOURNEY_PICTURE_FEED`: a pack folder; else a feed of the synthetic test cockpit).

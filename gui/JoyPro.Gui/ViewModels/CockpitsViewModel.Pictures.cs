@@ -18,6 +18,11 @@ public sealed partial class CockpitsViewModel
     public const int ModePicture = 0;
     public const int ModeDrawing = 1;
 
+    // The games "Build pictures from my games" reads (engine cockpits pictures build --game all); game names stay as they are.
+    public const string PictureGamesText = "DCS World, X-Plane 12, Microsoft Flight Simulator 2020, IL-2 Great Battles, Nuclear Option";
+
+    public string PictureGames => PictureGamesText;
+
     public IReadOnlyList<string> PictureModes => [T("Picture from the game"), T("JoyPro's drawing of it")];
 
     // 0 the picture from the game, 1 JoyPro's line drawing of it.
@@ -53,6 +58,8 @@ public sealed partial class CockpitsViewModel
     public bool HasGamePictures => GamePictures != null;
 
     public string GamePicturesText => GamePictures == null ? string.Empty
+        : GamePictures.FromPack
+            ? T("Pictures rendered from {0} with JoyPro, downloaded ({1}, picture pack version {2})", CockpitManualPages.GameName(GamePictures.Game), GamePictures.Plane, GamePictures.PackVersion)
         : GamePictures.Built.Length >= 10
             ? T("Pictures from {0} on this PC ({1}, made {2})", CockpitManualPages.GameName(GamePictures.Game), GamePictures.Plane, GamePictures.Built.Substring(0, 10))
             : T("Pictures from {0} on this PC ({1})", CockpitManualPages.GameName(GamePictures.Game), GamePictures.Plane);
@@ -98,8 +105,10 @@ public sealed partial class CockpitsViewModel
             status = [];
         }
         PicturesStatus = status.Count == 0
-            ? T("No pictures from your games yet. JoyPro can make them from the cockpits of DCS World and X-Plane 12 on this PC.")
-            : T("Pictures from your games: {0} (made {1}).", string.Join(", ", status.Select(s => Plural("{1} {0} cockpit", "{1} {0} cockpits", s.Sets, s.Sets, CockpitManualPages.GameName(s.Game)))), status.Max(s => s.Built));
+            ? T("No pictures from your games yet. JoyPro can make them from the cockpits of {0} on this PC, or download picture packs.", PictureGamesText)
+            : status.Any(s => s.Packs > 0)
+                ? T("Cockpit pictures on this PC: {0} (newest {1}); {2} downloaded as picture packs.", string.Join(", ", status.Select(s => Plural("{1} {0} cockpit", "{1} {0} cockpits", s.Sets, s.Sets, CockpitManualPages.GameName(s.Game)))), status.Max(s => s.Built), status.Sum(s => s.Packs))
+                : T("Pictures from your games: {0} (made {1}).", string.Join(", ", status.Select(s => Plural("{1} {0} cockpit", "{1} {0} cockpits", s.Sets, s.Sets, CockpitManualPages.GameName(s.Game)))), status.Max(s => s.Built));
     }
 
     [RelayCommand]
@@ -108,7 +117,7 @@ public sealed partial class CockpitsViewModel
         if (PictureBuilder == null || IsBuildingPictures)
             return;
         IsBuildingPictures = true;
-        PicturesStatus = T("Making the pictures from your games (DCS World, X-Plane 12)... This takes a few minutes per game.");
+        PicturesStatus = T("Making the pictures from your games ({0})... This takes a few minutes per game.", PictureGamesText);
         try
         {
             string? output = await PictureBuilder();

@@ -20,8 +20,10 @@ namespace JoyPro.DeviceReference
     {
         public DeviceLineArt LineArt;
         public DeviceSchematic Schematic;
-        // A picture made on this PC from the user's game (PNG, CockpitPictureSet): drawn as it is, in its own size.
+        // A picture made from the user's game (PNG or JPEG, CockpitPictureSet): drawn as it is, in its own size.
         public string Picture = string.Empty;
+        // A JPEG picture's transparency (8-bit grey PNG, CockpitPictureView.Mask); empty for none.
+        public string Mask = string.Empty;
         public double PictureWidth;
         public double PictureHeight;
 
@@ -342,18 +344,23 @@ namespace JoyPro.DeviceReference
                 return null;
             bool drawing = string.Equals(o.PictureMode, "drawing", StringComparison.OrdinalIgnoreCase);
             if (!drawing && File.Exists(view.Image))
-                return new CockpitArt { Picture = view.Image, PictureWidth = view.Width, PictureHeight = view.Height };
+                return new CockpitArt { Picture = view.Image, Mask = File.Exists(view.Mask) ? view.Mask : string.Empty, PictureWidth = view.Width, PictureHeight = view.Height };
             DeviceLineArt art = view.Set != null ? view.Set.DrawingOf(view) : null;
             if (art != null)
                 return new CockpitArt { LineArt = art };
-            return File.Exists(view.Image) ? new CockpitArt { Picture = view.Image, PictureWidth = view.Width, PictureHeight = view.Height } : null;
+            return File.Exists(view.Image) ? new CockpitArt { Picture = view.Image, Mask = File.Exists(view.Mask) ? view.Mask : string.Empty, PictureWidth = view.Width, PictureHeight = view.Height } : null;
         }
 
         private static string GameSource(CockpitPictureSet set)
         {
             if (set == null)
                 return string.Empty;
-            return "Picture made on this PC from " + GameName(set.Game) + (set.Module.Length > 0 ? " (" + set.Module + (set.Source.Length > 0 ? ", " + set.Source : string.Empty) + ")" : string.Empty) +
+            // Screenshots taken in the game (its models are encrypted): no callouts on the picture, the list names the
+            // aircraft's own controls.
+            if (string.Equals(set.Source, "screenshot", StringComparison.OrdinalIgnoreCase))
+                return "Screenshot taken in " + GameName(set.Game) + (set.FromPack ? " (picture pack version " + set.PackVersion.ToString(CultureInfo.InvariantCulture) + ")" : " on this PC") +
+                       (set.Module.Length > 0 ? " (" + set.Module + ")" : string.Empty) + "; the controls listed are the aircraft's own names for them, without places on the picture.";
+            return (set.FromPack ? "Picture rendered from " + GameName(set.Game) + " with JoyPro (picture pack version " + set.PackVersion.ToString(CultureInfo.InvariantCulture) + ")" : "Picture made on this PC from " + GameName(set.Game)) + (set.Module.Length > 0 ? " (" + set.Module + (set.Source.Length > 0 ? ", " + set.Source : string.Empty) + ")" : string.Empty) +
                    (set.GameVersion.Length > 0 ? ", game version " + set.GameVersion : string.Empty) + "; callouts at the game's own controls, functions as the game names them.";
         }
 
@@ -377,6 +384,8 @@ namespace JoyPro.DeviceReference
                     return "Nuclear Option";
                 case "StarCitizen":
                     return "Star Citizen";
+                case "WarThunder":
+                    return "War Thunder";
                 default:
                     return game;
             }

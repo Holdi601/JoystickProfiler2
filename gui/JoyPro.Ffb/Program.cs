@@ -7,6 +7,7 @@ using JoyPro.Ffb.Core.Graph;
 using JoyPro.Ffb.Core.Host;
 using JoyPro.Ffb.Core.Output;
 using JoyPro.Ffb.Core.Telemetry;
+using JoyPro.Ffb.Core.Telemetry.Recording;
 using JoyPro.Logging;
 
 namespace JoyPro.Ffb;
@@ -19,6 +20,8 @@ namespace JoyPro.Ffb;
 ///                [--game-pid N] [--parent-pid N] [--protocol] [--config file] [--no-game-check]
 ///                [--port N] [--wt-url URL] [--duration seconds] [--no-status-file]
 ///     runs until the game exits, the parent (GUI) exits, stdin ends (--protocol), "stop", Ctrl+C, or --duration
+/// JoyPro.Ffb record --game G [--force] [--folder F] [--sample-hz N] [--no-raw] [--game-pid N] [--parent-pid N] [--protocol] [--duration s]
+///     telemetry recording without force feedback (docs/telemetry-recording.md)
 /// JoyPro.Ffb preset [--out file]
 ///     the built-in flight graph as JSON
 /// JoyPro.Ffb simulate --game G --port N [--seconds S] [--rate Hz] [--gap-from S --gap-to S]
@@ -51,6 +54,7 @@ internal static class Program
             {
                 "devices" => Devices(options),
                 "run" => Run(options),
+                "record" => Record(options),
                 "preset" => Preset(options),
                 "simulate" => Simulate(options),
                 "test" => Test(options),
@@ -77,6 +81,7 @@ internal static class Program
     {
         Console.WriteLine("JoyPro.Ffb devices [--json]");
         Console.WriteLine("JoyPro.Ffb run --game DCS|IL2Game|IL2Korea|WarThunder [--sink directinput|dry] [--record file.jsonl] [--game-pid N] [--parent-pid N] [--protocol] [--config file] [--no-game-check] [--port N] [--wt-url URL] [--duration seconds] [--no-status-file] [--conditions combined|separate|restart]");
+        Console.WriteLine("JoyPro.Ffb record --game " + string.Join("|", JoyPro.TelemetrySessions.TelemetryRecordingGames.All.Select(g => g.Id)) + " [--force] [--folder F] [--sample-hz N] [--no-raw] [--game-pid N] [--parent-pid N] [--protocol] [--no-game-check] [--duration seconds] [--port N] [--wt-url URL] [--xplane IP:PORT] [--elite-folder F] [--simconnect-dll F] [--recording-config file]");
         Console.WriteLine("JoyPro.Ffb preset [--out file]");
         Console.WriteLine("JoyPro.Ffb simulate --game DCS|IL2Game|IL2Korea|WarThunder --port N [--seconds S] [--rate Hz] [--gap-from S --gap-to S]");
         Console.WriteLine("JoyPro.Ffb test [--device GUID] [--config file] [--sink directinput|dry] [--parent-pid N]   (stdin: invert X Y | push X|Y m | spring k cx cy | conditions combined|separate|restart | pos | stop | quit)");
@@ -258,6 +263,18 @@ internal static class Program
             WriteStatusFile(statusFile, status, deviceName);
         };
         _host.GameExited += () => RequestExit("game exited");
+        // Telemetry recording rides along with the force feedback process (one process owns the game's port).
+        _host.RecordingChanged += () =>
+        {
+            var host = _host;
+            if (host is null)
+                return;
+            var recorder = host.Recorder;
+            var state = recorder is null ? "off" : recorder.CurrentPath is null ? "listening" : "recording";
+            Emit(protocol, protocol
+                ? HostProtocol.RecordingLine(state, state, game.Id, recorder?.CurrentPath, recorder?.CurrentFrames ?? 0, recorder?.SessionsWritten ?? 0, recorder?.LastError, host.Aircraft)
+                : "recording: " + state + (recorder?.CurrentPath is { } path ? " " + path : string.Empty));
+        };
 
         InstallExitHandlers();
         if (ParseInt(options.Value("--parent-pid")) is { } parent)
@@ -297,6 +314,70 @@ internal static class Program
     }
 
     private static Timer? WatchTimer;
+    private static TelemetryRecordHost? _recordHost;
+    private static string? _recordingConfigPath;
+
+    // Telemetry recording without force feedback (docs/telemetry-recording.md): the game's feed and the session
+    // recorder, only while the game runs. The GUI starts it when recording is on for a game JoyPro.Ffb run does not
+    // cover; "engine telemetry record" starts it with --force (records even when the settings say off).
+    private static int Record(Options options)
+    {
+        var gameId = options.Value("--game") ?? "";
+        var game = JoyPro.TelemetrySessions.TelemetryRecordingGames.Find(gameId)
+                   ?? throw new ArgumentException("record needs --game " + string.Join("|", JoyPro.TelemetrySessions.TelemetryRecordingGames.All.Select(g => g.Id)) + ".");
+        _recordingConfigPath = options.Value("--recording-config");
+        var config = TelemetryRecordingConfig.Load(_recordingConfigPath);
+        if (options.Value("--sample-hz") is { } hz && double.TryParse(hz, NumberStyles.Float, CultureInfo.InvariantCulture, out var rate))
+            config.SampleHz = Math.Clamp(rate, 0, 1000);
+        if (options.Has("--no-raw"))
+            config.KeepRaw = false;
+        var protocol = options.Has("--protocol");
+        var clock = new StopwatchClock();
+        var portText = options.Value("--port");
+        var hostOptions = new TelemetryRecordHostOptions
+        {
+            GamePid = ParseInt(options.Value("--game-pid")),
+            IgnoreGameProcess = options.Has("--no-game-check"),
+            Force = options.Has("--force"),
+            Feed = new TelemetryFeedOptions
+            {
+                Port = portText is null ? null : ParseInt(portText),
+                WarThunderUri = options.Value("--wt-url") is { } url ? new Uri(url) : null,
+                XPlaneEndpoint = options.Value("--xplane") is { } xp ? System.Net.IPEndPoint.Parse(xp) : null,
+                EliteFolder = options.Value("--elite-folder"),
+                SimConnectDll = options.Value("--simconnect-dll"),
+                BmsMemoryPrefix = options.Value("--bms-memory-prefix")
+            },
+            Recorder = new Core.Telemetry.Recording.TelemetrySessionRecorderOptions { Folder = options.Value("--folder") }
+        };
+        JoyProLog.Info("Recorder", "Record: game " + game.Id + (hostOptions.Force ? " (forced)" : string.Empty) + (protocol ? ", GUI protocol" : string.Empty));
+        _recordHost = new TelemetryRecordHost(game.Id, config, clock, hostOptions);
+        _recordHost.StatusChanged += status => Emit(protocol, protocol
+            ? HostProtocol.RecordingLine(status)
+            : status.Reason + (status.Session is { } path ? " -> " + path + " (" + status.Frames.ToString(CultureInfo.InvariantCulture) + " frames)" : string.Empty) +
+              (status.Error is { } error ? " [" + error + "]" : string.Empty));
+        _recordHost.GameExited += () => RequestExit("game exited");
+        InstallExitHandlers();
+        if (ParseInt(options.Value("--parent-pid")) is { } parent)
+            FollowParent(parent);
+        _recordHost.Start();
+        if (protocol)
+            StartCommandReader(TelemetryFfbPaths.ConfigFile());
+        var duration = options.Value("--duration") is { } d && double.TryParse(d, NumberStyles.Float, CultureInfo.InvariantCulture, out var seconds) ? seconds : (double?)null;
+        if (duration is { } limit)
+            ExitSignal.Wait(TimeSpan.FromSeconds(limit));
+        else
+            ExitSignal.Wait();
+        if (!ExitSignal.IsSet)
+            _exitReason = "duration over";
+        var sessions = _recordHost.Recorder?.SessionsWritten ?? 0;
+        var current = _recordHost.Recorder?.CurrentPath;
+        Cleanup();
+        if (!protocol && current is not null)
+            Console.WriteLine("last session: " + current);
+        Emit(protocol, protocol ? HostProtocol.ExitLine(_exitReason) : "exit: " + _exitReason);
+        return 0;
+    }
 
     // --diag: memory and GC numbers every 10 s (the resource test reads them to tell a leak from the GC's budget).
     private static string Diagnostics()
@@ -335,6 +416,8 @@ internal static class Program
                             break;
                         case HostProtocol.Reload:
                             _host?.Reload(TelemetryFfbConfig.Load(configPath));
+                            _host?.ReloadRecording(TelemetryRecordingConfig.Load(_recordingConfigPath));
+                            _recordHost?.Reload(TelemetryRecordingConfig.Load(_recordingConfigPath));
                             break;
                         case HostProtocol.Stop:
                             RequestExit("stop requested");
@@ -427,6 +510,16 @@ internal static class Program
         catch (Exception ex)
         {
             JoyProLog.Warn("Ffb", "Stopping the host failed", ex);
+        }
+
+        try
+        {
+            // Finishes the session being recorded (summary written, file closed).
+            _recordHost?.Dispose();
+        }
+        catch (Exception ex)
+        {
+            JoyProLog.Warn("Ffb", "Stopping the recorder failed", ex);
         }
 
         try

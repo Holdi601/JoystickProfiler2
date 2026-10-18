@@ -53,6 +53,24 @@ public static class HostProtocol
         return json.ToJsonString();
     }
 
+    /// <summary>Telemetry recording (run and record): state "off" | "waiting" | "listening" | "recording", the file
+    /// being written, its frames, and the last problem.</summary>
+    public static string RecordingLine(string state, string reason, string game, string? session, long frames, int sessions, string? error, string? aircraft = null) => new JsonObject
+    {
+        ["type"] = "recording",
+        ["state"] = state,
+        ["reason"] = reason,
+        ["game"] = game,
+        ["aircraft"] = aircraft,
+        ["session"] = session,
+        ["frames"] = frames,
+        ["sessions"] = sessions,
+        ["error"] = error
+    }.ToJsonString();
+
+    public static string RecordingLine(TelemetryRecordStatus status) =>
+        RecordingLine(status.State, status.Reason, status.Game, status.Session, status.Frames, status.Sessions, status.Error, status.Aircraft);
+
     public static string LogLine(string message) => new JsonObject { ["type"] = "log", ["message"] = message }.ToJsonString();
 
     public static string ExitLine(string reason) => new JsonObject { ["type"] = "exit", ["reason"] = reason }.ToJsonString();

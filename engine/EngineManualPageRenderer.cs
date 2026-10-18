@@ -77,7 +77,7 @@ namespace JoyPro.Engine
                         // A picture made from the user's game.
                         try
                         {
-                            using (Bitmap picture = new Bitmap(item.Art.Picture))
+                            using (Bitmap picture = LoadPicture(item.Art.Picture, item.Art.Mask))
                             {
                                 g.InterpolationMode = InterpolationMode.HighQualityBicubic;
                                 g.DrawImage(picture, r);
@@ -92,6 +92,56 @@ namespace JoyPro.Engine
                     using (Bitmap art = item.Art.LineArt != null ? EngineLineArtBitmap.Render(item.Art.LineArt, w, colors, true) : EngineSchematicBitmap.Render(item.Art.Schematic, w, dark))
                         g.DrawImage(art, r);
                     break;
+            }
+        }
+
+        // A game picture: a PNG, or a JPEG with its transparency in a grey mask PNG of the same size (picture packs,
+        // docs/cockpits.md "Picture packs").
+        internal static Bitmap LoadPicture(string file, string mask)
+        {
+            Bitmap picture = new Bitmap(file);
+            if (string.IsNullOrEmpty(mask) || !File.Exists(mask))
+                return picture;
+            try
+            {
+                using (Bitmap alpha = new Bitmap(mask))
+                {
+                    if (alpha.Width != picture.Width || alpha.Height != picture.Height)
+                        return picture;
+                    Bitmap result = new Bitmap(picture.Width, picture.Height, PixelFormat.Format32bppArgb);
+                    using (Graphics g = Graphics.FromImage(result))
+                    {
+                        g.CompositingMode = CompositingMode.SourceCopy;
+                        g.DrawImage(picture, new Rectangle(0, 0, picture.Width, picture.Height));
+                    }
+                    Rectangle all = new Rectangle(0, 0, result.Width, result.Height);
+                    BitmapData target = result.LockBits(all, ImageLockMode.ReadWrite, PixelFormat.Format32bppArgb);
+                    BitmapData source = alpha.LockBits(all, ImageLockMode.ReadOnly, PixelFormat.Format32bppArgb);
+                    try
+                    {
+                        byte[] px = new byte[target.Stride * result.Height];
+                        byte[] m = new byte[source.Stride * result.Height];
+                        System.Runtime.InteropServices.Marshal.Copy(target.Scan0, px, 0, px.Length);
+                        System.Runtime.InteropServices.Marshal.Copy(source.Scan0, m, 0, m.Length);
+                        for (int y = 0; y < result.Height; y++)
+                        {
+                            for (int x = 0; x < result.Width; x++)
+                                px[y * target.Stride + 4 * x + 3] = m[y * source.Stride + 4 * x + 2];
+                        }
+                        System.Runtime.InteropServices.Marshal.Copy(px, 0, target.Scan0, px.Length);
+                    }
+                    finally
+                    {
+                        result.UnlockBits(target);
+                        alpha.UnlockBits(source);
+                    }
+                    picture.Dispose();
+                    return result;
+                }
+            }
+            catch (Exception)
+            {
+                return picture;
             }
         }
 

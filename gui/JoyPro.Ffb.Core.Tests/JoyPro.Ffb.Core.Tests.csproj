@@ -22,4 +22,9 @@
   <ItemGroup>
     <ProjectReference Include="..\JoyPro.Ffb.Core\JoyPro.Ffb.Core.csproj" />
   </ItemGroup>
+
+  <!-- The DCS hook the engine installs (DcsRecordingTelemetryTests runs it in DCS's luae.exe with stubbed DCS APIs). -->
+  <ItemGroup>
+    <None Include="..\..\engine\DcsHooks\JoyProFfb.lua" Link="DcsHooks\JoyProFfb.lua" CopyToOutputDirectory="PreserveNewest" />
+  </ItemGroup>
 </Project>

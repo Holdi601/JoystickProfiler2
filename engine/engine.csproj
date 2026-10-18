@@ -183,7 +183,11 @@
     <Compile Include="CockpitPictures\DcsLua.cs" />
     <Compile Include="CockpitPictures\EdmFile.cs" />
     <Compile Include="CockpitPictures\EdmScene.cs" />
+    <Compile Include="CockpitPictures\Il2CockpitPictures.cs" />
+    <Compile Include="CockpitPictures\Il2Gtp.cs" />
+    <Compile Include="CockpitPictures\Il2Mgm.cs" />
     <Compile Include="CockpitPictures\LineArtTracer.cs" />
+    <Compile Include="CockpitPictures\MsfsCockpitPictures.cs" />
     <Compile Include="CockpitPictures\PictureWriter.cs" />
     <Compile Include="CockpitPictures\PngWriter.cs" />
     <Compile Include="CockpitPictures\SoftwareRenderer.cs" />
@@ -191,6 +195,11 @@
     <Compile Include="CockpitPictures\TextureLibrary.cs" />
     <Compile Include="CockpitPictures\XPlaneCockpitPictures.cs" />
     <Compile Include="CockpitPictures\XPlaneObj.cs" />
+    <Compile Include="CockpitPictures\WarThunderCockpitPictures.cs" />
+    <Compile Include="CockpitPictures\WarThunderFiles.cs" />
+    <Compile Include="CockpitPictures\WarThunderModel.cs" />
+    <Compile Include="CockpitPictures\NuclearOptionCockpitPictures.cs" />
+    <Compile Include="CockpitPictures\UnityAssets.cs" />
     <Compile Include="DeviceReference\CockpitPictureSet.cs" />
     <Compile Include="EngineCockpitPictures.cs" />
     <Compile Include="DeviceReference\CalloutGrids.cs" />
@@ -273,6 +282,8 @@
     <Compile Include="FfbSettings.cs" />
     <Compile Include="EngineFfbCli.cs" />
     <Compile Include="EngineFfbTelemetry.cs" />
+    <Compile Include="TelemetryRecording\*.cs" />
+    <Compile Include="EngineTelemetryRecording.cs" />
     <Compile Include="EngineIl2DbRefresh.cs" />
     <Compile Include="Games\GameCommands.cs" />
     <Compile Include="Games\GameKeyCodes.cs" />
@@ -329,6 +340,10 @@
     <!-- engine games support: the hand-kept verification notes (docs/games/support.md) -->
     <EmbeddedResource Include="..\docs\games\support-notes.json">
       <LogicalName>JoyPro.Engine.GameSupportNotes.json</LogicalName>
+    </EmbeddedResource>
+    <!-- engine ffb telemetry setup dcs: the DCS hook (Saved Games\DCS\Scripts\Hooks\JoyProFfb.lua) -->
+    <EmbeddedResource Include="DcsHooks\JoyProFfb.lua">
+      <LogicalName>JoyPro.Engine.DcsHooks.JoyProFfb.lua</LogicalName>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>

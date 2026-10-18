@@ -135,6 +135,9 @@ Force Feedback, Settings, Advanced), the profile bar at the top, and the confirm
 | `dcs ffb list/set/clear` | Settings: "DCS force feedback: swap and invert per device" (table with Apply/Clear per row) | IMPROVED | Plain hint; **Clear All** now asks first. |
 | `ffb telemetry status/effects/config show/set/clear` | **Force Feedback** page: Settings tab (game, aircraft, effects with sliders), Graph editor, Telemetry inspector | FULL | |
 | `ffb telemetry setup dcs\|il2\|il2korea\|warthunder [--remove] [--dry-run]` | Force Feedback page: per game Set up / Remove / Check | FULL | Backed up by the engine. |
+| `telemetry games / config show / config set` | **Settings > Telemetry recording**: the switch, folder (picker), values per second, space, delete after, raw data, one switch per game with what it reads | FULL | Off by default. |
+| `telemetry sessions / show / preview / export / delete` | Settings > Telemetry recording: the sessions list, a timeline of the selected session, Export for Tacview (ACMI), Export CSV, Delete (asks first) | FULL | |
+| `telemetry record`, `telemetry recover`, `telemetry prune` | automatic: the GUI records while a game runs and recording is on; cut-off sessions are finished and the retention runs by themselves | FULL | `record` also records when the settings say off (for experts). |
 | `overlay dcs-hook status/install/remove` | HUD page: Install DCS hook / Remove / Check | FULL | |
 | `overlay map`, `hud devices` | HUD page and the running HUD (automatic) | FULL | |
 | `layout render` | Layout page > Cheat sheets (devices, games, aircraft, what to make incl. one page with all devices and white page, look, output folder, preview gallery, open folder) | FULL | Not on Export: it changes no game. Sheets with tables and lines are the Layout page's saved callout sheets (`--layout-map <device>=<callouts .json>`), the same picture as `layout callouts --png`. |

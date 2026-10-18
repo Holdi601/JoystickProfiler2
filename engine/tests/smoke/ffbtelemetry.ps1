@@ -309,6 +309,8 @@ try {
     Assert-Match $ffbtHookText "local PORT = 41992" "the DCS hook should send to JoyPro's DCS port."
     Assert-Match $ffbtHookText "setUserCallbacks" "the DCS hook should register with Sim/DCS.setUserCallbacks."
     Assert-Match $ffbtHookText "LoIsOwnshipExportAllowed" "the DCS hook should respect the server's export permission."
+    Assert-Match $ffbtHookText "LoIsObjectExportAllowed" "the DCS hook should send other objects only when the server allows it."
+    Assert-True ($ffbtHookText.StartsWith("-- JoyPro2 telemetry force feedback")) "the DCS hook should start with JoyPro's marker (setup updates only its own file)."
     Assert-True ([System.Linq.Enumerable]::SequenceEqual([byte[]]$ffbtExportBefore, [System.IO.File]::ReadAllBytes($ffbtExportLua))) "setup dcs must not change Export.lua."
     $ffbtAgain = Run-Engine @("ffb", "telemetry", "setup", "dcs", "--path", $ffbtDcs, "--text")
     Assert-Match $ffbtAgain.Output "nothing to change" "setup dcs twice should change nothing."

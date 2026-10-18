@@ -47,6 +47,7 @@ namespace JoyPro.Engine
             new Column { Key = "settings", Header = "Game settings", Meaning = "game-wide control settings (engine ffb set --device *)" },
             new Column { Key = "ffb", Header = "In-game FFB", Meaning = "the game's own force feedback settings (DCS FF Tune, IL-2 feedback power ...)" },
             new Column { Key = "telemetry", Header = "Telemetry FFB", Meaning = "JoyPro's force feedback from the game's telemetry (JoyPro.Ffb)" },
+            new Column { Key = "recording", Header = "Telemetry recording", Meaning = "records every session's telemetry, Tacview ACMI and CSV export (engine telemetry, docs/telemetry-recording.md)" },
             new Column { Key = "vjoy", Header = "vJoy mode", Meaning = "virtual joystick (engine vjoy mode <game> virtual)" },
             new Column { Key = "xbox", Header = "Xbox pad", Meaning = "virtual Xbox 360 pad (engine vjoy mode <game> xbox)" },
             new Column { Key = "functions", Header = "Virtual functions", Meaning = "engine vjoy functions for the game" },
@@ -55,6 +56,8 @@ namespace JoyPro.Engine
             new Column { Key = "layout", Header = "Cheat sheet", Meaning = "layout pictures / cheat sheets per game and aircraft (engine layout render)" },
             new Column { Key = "e2e", Header = "In-game test", Meaning = "JoyPro's in-game end-to-end test: result of the best run" }
         };
+
+        private const string NoPositionRecordingNote = "The game's telemetry has no world position: recorded and exported as CSV, no Tacview (ACMI) track.";
 
         // ---- what the code says ----------------------------------------------------------------------------------
 
@@ -220,6 +223,10 @@ namespace JoyPro.Engine
                 Set(row, "settings", row.Settings.Count > 0 || settingsCode ? Yes : No, string.Empty);
                 Set(row, "ffb", row.FfbSettings.Count > 0 ? Yes : No, string.Empty);
                 Set(row, "telemetry", telemetry.Contains(id) ? Yes : No, string.Empty);
+                JoyPro.TelemetrySessions.TelemetryRecordingGame recorded = JoyPro.TelemetrySessions.TelemetryRecordingGames.All.FirstOrDefault(g => string.Equals(g.Id, id, StringComparison.OrdinalIgnoreCase));
+                Set(row, "recording", recorded == null ? No : recorded.HasPosition ? Yes : Partial, recorded == null ? string.Empty : recorded.Transport);
+                if (row.Cells["recording"].Mark == Partial)
+                    row.Cells["recording"].Note = NoPositionRecordingNote;
                 bool xboxLayout = game is IGameGamepadLayout || (deviceLimit != null && deviceLimit.SuggestedMode == VJoySettings.ModeXbox);
                 Set(row, "vjoy", !vjoyGames.Contains(id) ? No : deviceLimit != null && deviceLimit.MaxJoysticks == 0 ? NotApplicable : Yes, string.Empty);
                 Set(row, "xbox", !vjoyGames.Contains(id) ? No : xboxLayout ? Yes : Partial, string.Empty);

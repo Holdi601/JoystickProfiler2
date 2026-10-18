@@ -48,6 +48,8 @@ public sealed class Il2TelemetrySource : FrameTelemetrySource
     {
         lock (_gate)
         {
+            if (WantsRaw)
+                PublishRaw("udp", packet);
             var kind = IngestLocked(packet);
             if (kind == Il2PacketKind.Invalid)
             {
@@ -183,6 +185,7 @@ public sealed class Il2TelemetrySource : FrameTelemetrySource
             case Il2EventId.SetFocus:
                 FocusObject = Il2EventData.String(e);
                 Count("il2.ev.focus");
+                SetInfo(TelemetryInfoKeys.Aircraft, FocusObject);
                 break;
             case Il2EventId.GunFire:
                 Count("il2.ev.gun_fire");
@@ -194,34 +197,41 @@ public sealed class Il2TelemetrySource : FrameTelemetrySource
                 break;
             case Il2EventId.Hit:
                 Count("il2.ev.hit");
+                RaiseEvent("il2.hit");
                 if (Il2EventData.TryHit(e, out var hit))
                     _values["il2.ev.hit.force"] = hit.Force.Length();
                 break;
             case Il2EventId.Damage:
                 Count("il2.ev.damage");
+                RaiseEvent("il2.damage");
                 if (Il2EventData.TryHit(e, out var damage))
                     _values["il2.ev.damage.force"] = damage.Force.Length();
                 break;
             case Il2EventId.Explosion:
                 Count("il2.ev.explosion");
+                RaiseEvent("il2.explosion");
                 if (Il2EventData.TryExplosion(e, out var explosion))
                     _values["il2.ev.explosion.radius"] = explosion.Radius;
                 break;
             case Il2EventId.DropBomb:
                 Count("il2.ev.bomb");
+                RaiseEvent("il2.bomb");
                 if (Il2EventData.TryDrop(e, out var bomb))
                     _values["il2.ev.bomb.mass"] = bomb.Mass;
                 break;
             case Il2EventId.RocketLaunch:
                 Count("il2.ev.rocket");
+                RaiseEvent("il2.rocket");
                 if (Il2EventData.TryDrop(e, out var rocket))
                     _values["il2.ev.rocket.mass"] = rocket.Mass;
                 break;
             case Il2EventId.ServerAddress:
                 ServerAddress = Il2EventData.String(e);
+                SetInfo("server_address", ServerAddress);
                 break;
             case Il2EventId.ServerTitle:
                 ServerTitle = Il2EventData.String(e);
+                SetInfo(TelemetryInfoKeys.Server, ServerTitle);
                 break;
         }
     }

@@ -6,13 +6,20 @@
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
     <RootNamespace>JoyPro.Ffb.Core</RootNamespace>
-    <Version>2.0.0</Version>
+    <Version>2.1.0</Version>
     <IsPackable>false</IsPackable>
   </PropertyGroup>
 
   <ItemGroup>
     <InternalsVisibleTo Include="JoyPro.Ffb.Core.Tests" />
     <InternalsVisibleTo Include="JoyPro.Gui.Tests" />
+  </ItemGroup>
+
+  <!-- Telemetry recording (docs/telemetry-recording.md): the session file format, store and exports (ACMI, CSV) and the
+       game list are plain C# 7.3 in the engine ("#nullable disable" for NET), so the engine CLI and the recorder share
+       one implementation. -->
+  <ItemGroup>
+    <Compile Include="..\..\engine\TelemetryRecording\*.cs" Link="TelemetryRecording\%(Filename)%(Extension)" />
   </ItemGroup>
 
   <!-- The shared background log (docs/logging.md), in its own small library (also used by JoyPro.Watch). -->

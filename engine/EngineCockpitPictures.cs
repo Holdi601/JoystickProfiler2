@@ -10,11 +10,11 @@ namespace JoyPro.Engine
 {
     // engine cockpits pictures ...: the cockpit pictures made on this PC from the user's own games (docs/cockpits.md
     // "Pictures from your games"). They are kept under <data>\GameData\CockpitPictures\<game> and never shipped.
-    //   cockpits pictures build [--game DCS|XPlane12|all] [--aircraft <name>[,<name>...]] [--force] [--out <folder>]
+    //   cockpits pictures build [--game DCS|XPlane12|MSFS2020|IL2Game|NuclearOption|all] [--aircraft <name>[,<name>...]] [--force] [--out <folder>]
     //   cockpits pictures status [--out <folder>]
     internal static partial class Program
     {
-        private static readonly string[] PictureGames = { "DCS", "XPlane12" };
+        private static readonly string[] PictureGames = { "DCS", "XPlane12", "MSFS2020", "NuclearOption", "IL2Game", "WarThunder" };
 
         private static int CockpitsPictures(List<string> rest, string outPath, bool textOutput)
         {
@@ -117,6 +117,85 @@ namespace JoyPro.Engine
                         };
                         job.Only.AddRange(only);
                         List<XPlaneCockpitPictures.SetResult> results = XPlaneCockpitPictures.Build(job);
+                        AddReport(report, game, results.Select(r => new PictureResult { Plane = r.Plane, Folder = r.Folder, Views = r.Views, Callouts = r.Callouts, Skipped = r.Skipped, Error = r.Error, Notes = r.Notes }).ToList(), textOutput);
+                    }
+                    else if (game == "MSFS2020")
+                    {
+                        MsfsCockpitPictures.Job job = new MsfsCockpitPictures.Job
+                        {
+                            OutRoot = outRoot,
+                            Force = force,
+                            ViewFilter = Environment.GetEnvironmentVariable("JOYPRO_PICTURE_VIEWS") ?? string.Empty,
+                            Progress = (cur, total, phase, item) => EngineProgress.Report(cur, total, phase, item),
+                            Cancelled = () => EngineProgress.CancelRequested
+                        };
+                        job.PackageRoots.AddRange(MsfsCockpitPictures.PackageRoots(install.InstallPath));
+                        job.Only.AddRange(only);
+                        List<MsfsCockpitPictures.SetResult> results = MsfsCockpitPictures.Build(job);
+                        AddReport(report, game, results.Select(r => new PictureResult { Plane = r.Plane, Folder = r.Folder, Views = r.Views, Callouts = r.Callouts, Skipped = r.Skipped, Error = r.Error, Notes = r.Notes }).ToList(), textOutput);
+                    }
+                    else if (game == "NuclearOption")
+                    {
+                        NuclearOptionCockpitPictures.Job job = new NuclearOptionCockpitPictures.Job
+                        {
+                            GameRoot = install.InstallPath,
+                            OutRoot = outRoot,
+                            Force = force,
+                            ViewFilter = Environment.GetEnvironmentVariable("JOYPRO_PICTURE_VIEWS") ?? string.Empty,
+                            Progress = (cur, total, phase, item) => EngineProgress.Report(cur, total, phase, item),
+                            Cancelled = () => EngineProgress.CancelRequested
+                        };
+                        job.Only.AddRange(only);
+                        List<NuclearOptionCockpitPictures.SetResult> results = NuclearOptionCockpitPictures.Build(job);
+                        AddReport(report, game, results.Select(r => new PictureResult { Plane = r.Plane, Folder = r.Folder, Views = r.Views, Callouts = r.Callouts, Skipped = r.Skipped, Error = r.Error, Notes = r.Notes }).ToList(), textOutput);
+                    }
+                    else if (game == "IL2Game")
+                    {
+                        Il2CockpitPictures.Job job = new Il2CockpitPictures.Job
+                        {
+                            DataFolder = Il2CockpitPictures.DataFolder(install.InstallPath),
+                            OutRoot = outRoot,
+                            Force = force,
+                            ViewFilter = Environment.GetEnvironmentVariable("JOYPRO_PICTURE_VIEWS") ?? string.Empty,
+                            Progress = (cur, total, phase, item) => EngineProgress.Report(cur, total, phase, item),
+                            Cancelled = () => EngineProgress.CancelRequested
+                        };
+                        job.Only.AddRange(only);
+                        List<Il2CockpitPictures.SetResult> results = Il2CockpitPictures.Build(job);
+                        AddReport(report, game, results.Select(r => new PictureResult { Plane = r.Plane, Folder = r.Folder, Views = r.Views, Callouts = r.Callouts, Skipped = r.Skipped, Error = r.Error, Notes = r.Notes }).ToList(), textOutput);
+                    }
+                    else if (game == "WarThunder")
+                    {
+                        // The models are Oodle packed: only with the maintainer's helper (tools\wt-oodle); users get packs.
+                        if (WarThunderCockpitPictures.FindOodleHelper().Length == 0)
+                        {
+                            string note = "War Thunder's cockpit models need the War Thunder Oodle helper (tools\\wt-oodle, a maintainer tool); its pictures come as picture packs.";
+                            report.Add(new { Game = game, Built = 0, Skipped = 0, Failed = 0, Note = note });
+                            if (textOutput)
+                                Console.WriteLine(CockpitManualPages.GameName(game) + ": " + note);
+                            continue;
+                        }
+                        WarThunderCockpitPictures.Job job = new WarThunderCockpitPictures.Job
+                        {
+                            GameRoot = install.InstallPath,
+                            OutRoot = outRoot,
+                            Force = force,
+                            ViewFilter = Environment.GetEnvironmentVariable("JOYPRO_PICTURE_VIEWS") ?? string.Empty,
+                            Zstd = (data, offset, length) =>
+                            {
+                                using (MemoryStream packed = new MemoryStream(data, offset, length))
+                                using (ZstdSharp.DecompressionStream z = new ZstdSharp.DecompressionStream(packed))
+                                using (MemoryStream raw = new MemoryStream())
+                                {
+                                    z.CopyTo(raw);
+                                    return raw.ToArray();
+                                }
+                            },
+                            Progress = (cur, total, phase, item) => EngineProgress.Report(cur, total, phase, item),
+                            Cancelled = () => EngineProgress.CancelRequested
+                        };
+                        job.Only.AddRange(only);
+                        List<WarThunderCockpitPictures.SetResult> results = WarThunderCockpitPictures.Build(job);
                         AddReport(report, game, results.Select(r => new PictureResult { Plane = r.Plane, Folder = r.Folder, Views = r.Views, Callouts = r.Callouts, Skipped = r.Skipped, Error = r.Error, Notes = r.Notes }).ToList(), textOutput);
                     }
                     if (EngineProgress.CancelRequested)

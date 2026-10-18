@@ -14,7 +14,7 @@
 | `JoyPro.Gui` | `GUI\JoyPro.Gui\` | Avalonia MVVM GUI |
 | `JoyPro.Gui.Tests` | `GUI\JoyPro.Gui.Tests\` | GUI tests |
 | `JoyPro.Ffb.Core` | `GUI\JoyPro.Ffb.Core\` | FFB runtime subsystem (`Graph`, `Output`, `Runtime`, `Telemetry`, `Host`) |
-| `JoyPro.Ffb` | `GUI\JoyPro.Ffb\` | Telemetry force feedback process `JoyPro.Ffb.exe` (DirectInput output, dry sink, simulator; docs/ffb-telemetry.md) |
+| `JoyPro.Ffb` | `GUI\JoyPro.Ffb\` | Telemetry force feedback process `JoyPro.Ffb.exe` (DirectInput output, dry sink, simulator; docs/ffb-telemetry.md) and telemetry recording (`record`, docs/telemetry-recording.md) |
 | `JoyPro.Ffb.Core.Tests` | `GUI\JoyPro.Ffb.Core.Tests\` | FFB tests |
 | `JoyPro.VJoy` | `GUI\JoyPro.VJoy\` | Virtual joystick forwarder `JoyPro.VJoy.exe` (DirectInput -> vJoy, bundled to `<GUI>\vjoy\`; docs/virtual-joystick.md) |
 

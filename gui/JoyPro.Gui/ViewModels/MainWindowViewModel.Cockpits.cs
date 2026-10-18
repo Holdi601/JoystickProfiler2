@@ -18,7 +18,7 @@ public sealed partial class MainWindowViewModel
         {
             if (cockpits == null)
             {
-                cockpits = new CockpitsViewModel { CompareRunner = RunCockpitCompareAsync, PictureBuilder = RunCockpitPicturesAsync };
+                cockpits = new CockpitsViewModel { CompareRunner = RunCockpitCompareAsync, PictureBuilder = RunCockpitPicturesAsync, IsGameInstalled = IsGameInstalled };
                 cockpits.UseLayoutRequested += (_, request) =>
                 {
                     PendingCockpitLayout = request;

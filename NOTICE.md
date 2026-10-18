@@ -49,6 +49,13 @@ Each JoyPro release on GitHub is built from the tagged commit of this repository
 source. The release package contains `LICENSE`, this `NOTICE.md` and `THIRD_PARTY_NOTICES.md` (the licenses of the
 components by other people that JoyPro uses).
 
+## Cockpit picture packs
+
+The cockpit picture packs of the releases `cockpit-pictures-v1` and `cockpit-pictures-wt-v1` (with its parts; downloaded on the Cockpits page, not part of the
+repository or the release package) are renders and screenshots of the games' own cockpits, made with JoyPro. The
+cockpit designs, textures and names belong to their respective owners; `CREDITS.txt` in each pack names the game, its
+publisher and the aircraft's module or package. They are not covered by the GPL of this program.
+
 ## Trademarks
 
 Game, aircraft, company and device names are trademarks of their owners. JoyPro uses them only to say what it works

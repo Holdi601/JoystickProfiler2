@@ -98,6 +98,11 @@ Suggested About-page wording:
   Devenish) and DCS-EDM-Blender-Importer (https://github.com/devozdemirhasancan/DCS-EDM-Blender-Importer, MIT License,
   Copyright (c) 2026 devozdemirhasancan and contributors), used as a layout reference; no code is copied. License
   texts in section 4.6.
+- War Thunder cockpit models and textures for the cockpit pictures (`engine/CockpitPictures/WarThunder*.cs`: GRP2,
+  DynModel, GeomNodeTree, DDSx/DxP2, binary BLK) follow the formats of the open-source Dagor Engine (BSD-3-Clause, see
+  above); no Dagor source code is copied. Its packed index buffers are decoded by a C# port of meshoptimizer's
+  `meshopt_decodeIndexSequence` (https://github.com/zeux/meshoptimizer, MIT License, Copyright (c) 2016-2020 Arseny
+  Kapoulkine), compiled into `engine\engine.exe`; license text in section 4.1.
 
 ## 2. Downloaded only after the user agrees (not shipped)
 
@@ -115,6 +120,7 @@ pinned by revision and SHA-256, and are stored under `%LOCALAPPDATA%\JoyPro2\Llm
 | Qwen3-8B GGUF (Q4_K_M) | https://huggingface.co/Qwen/Qwen3-8B-GGUF | Apache-2.0 |
 | .NET Framework 4.8 installer (only when missing) | https://go.microsoft.com/fwlink/?linkid=2088631 | Microsoft .NET Framework license (Windows component) |
 | JoyPro updates | GitHub releases of this repository | GPL-3.0-or-later (JoyPro's own license, `LICENSE`) |
+| Cockpit picture packs (Cockpits page, after the user's yes or with "Always download" in Settings > Privacy; `docs/cockpits.md` "Picture packs") | GitHub releases `cockpit-pictures-v1`, `cockpit-pictures-wt-v1` and `cockpit-pictures-wt-v1-part2` of this repository (release assets, never in the repository or the release package) | Renders and screenshots of the games' own cockpits, made with JoyPro from the games' files. The cockpit designs, textures and names belong to their respective owners (the game's publisher, the aircraft module's or package's developer; `CREDITS.txt` in each pack). Not covered by JoyPro's GPL |
 
 Do not add Qwen2.5-3B or Qwen2.5-72B (Qwen Research / Qwen license, not Apache-2.0) or any model without a license
 check; `EngineOnly_Runtime/DB/Llm/models.json` carries the license per model and the consent text shows it.
@@ -331,6 +337,7 @@ SOFTWARE.
 | Avalonia.Diagnostics | 11.3.12 | MIT | Debug builds only (excluded from Release) |
 | Avalonia.BuildServices | 11.3.2 | MIT | build time only (Avalonia's anonymous build telemetry; opt out with `AVALONIA_TELEMETRY_OPTOUT=1`) |
 | Tesseract OCR (if installed) | — | Apache-2.0 | the maintainer's in-game test scripts (not in the public repository) |
+| ooz (parts, ported to C# in `tools/wt-oodle/OodleLz.cs`) | 2016 (github.com/powzix/ooz) | GPL-3.0-or-later, Copyright (C) 2016 Powzix | the maintainer's War Thunder Oodle helper `tools/wt-oodle` (a separate program the engine starts; builds the War Thunder picture packs) and its unit tests |
 | Python 3 with Pillow (if installed) | — | PSF License; Pillow: MIT-CMU (HPND) | helper scripts in `tools/` and `branding/` (run by hand, never shipped) |
 | Windows PowerShell 5.1 | — | part of Windows | `engine/tests` smoke test, `tools/*.ps1` |
 | SimConnect (part of Microsoft Flight Simulator) | — | Microsoft; not redistributed | the maintainer's in-game test tools load the `SimConnect.dll` of the user's MSFS install (not in the public repository) |

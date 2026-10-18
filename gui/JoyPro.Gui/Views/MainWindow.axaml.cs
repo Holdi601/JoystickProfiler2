@@ -477,6 +477,7 @@ public partial class MainWindow : Window
         (DataContext as MainWindowViewModel)?.StopGameConfigWatcher();
         // JoyPro.Ffb follows the GUI's pid anyway; "stop" ends it at once (killed after 3 s).
         (DataContext as MainWindowViewModel)?.StopFfbTelemetryForShutdown();
+        (DataContext as MainWindowViewModel)?.StopTelemetryRecordingForShutdown();
         // JoyPro.VJoy stops (vJoy neutral); a HidHide session is restored by an engine process (one admin prompt).
         (DataContext as MainWindowViewModel)?.StopVirtualJoystickForShutdown();
         if (ShouldUseDefaultLayout())

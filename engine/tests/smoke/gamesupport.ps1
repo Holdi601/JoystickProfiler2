@@ -19,13 +19,16 @@ foreach ($gsId in $gsExpected) {
 }
 Assert-True (@($gsReport.Rows | Where-Object { $_.Level -eq "documented" }).Count -ge 15) "The game support page should list the documented-only titles."
 foreach ($gsRow in $gsReport.Rows) {
-    Assert-True (@($gsRow.Cells.PSObject.Properties).Count -eq 17) ("Every row has the 17 feature cells: " + $gsRow.GameId)
+    Assert-True (@($gsRow.Cells.PSObject.Properties).Count -eq 18) ("Every row has the 18 feature cells: " + $gsRow.GameId)
 }
 
 # Facts the matrix takes from the code.
 $gsDcs = $gsReport.Rows | Where-Object { $_.GameId -eq "DCS" }
 Assert-True ($gsDcs.Cells.telemetry.Mark -eq [string][char]0x2713) "DCS has telemetry force feedback (EngineFfbTelemetry)."
 Assert-True ($gsDcs.AxisModel -eq "dcs") "DCS writes curves in its own model."
+Assert-True ($gsDcs.Cells.recording.Mark -eq [string][char]0x2713) "DCS telemetry is recorded with a position (TelemetryRecordingGames)."
+$gsIl2 = $gsReport.Rows | Where-Object { $_.GameId -eq "IL2Game" }
+Assert-True ($gsIl2.Cells.recording.Mark -eq [string][char]0x25D0) "IL-2 telemetry is recorded without a position (partial: CSV only)."
 $gsAc8 = $gsReport.Rows | Where-Object { $_.GameId -eq "AceCombat8" }
 Assert-True ($gsAc8.Level -eq "xbox") "ACE COMBAT 8 is a virtual Xbox pad game (IGameDeviceLimit)."
 $gsBf6 = $gsReport.Rows | Where-Object { $_.GameId -eq "Battlefield6" }

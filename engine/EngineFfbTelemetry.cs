@@ -673,117 +673,36 @@ namespace JoyPro.Engine
             return (text ?? string.Empty).Replace("\r\n", "\n").Trim();
         }
 
-        // The DCS hook (Saved Games\DCS\Scripts\Hooks\JoyProFfb.lua). Runs in DCS's GUI Lua state; the export functions
-        // are there as Export.Lo* (API\Sim_ControlAPI.md). Sends at most 100 lines per second of model time, nothing
-        // while paused (model time stands still), "noexport" when a multiplayer server forbids ownship export, "exit"
-        // when the mission ends. UDP to 127.0.0.1 only; nothing waits for JoyPro and nothing fails when it is not running.
+        // The DCS hook (Saved Games\DCS\Scripts\Hooks\JoyProFfb.lua) is engine\DcsHooks\JoyProFfb.lua, embedded. It runs
+        // in DCS's GUI Lua state; the export functions are there as Export.Lo* (API\Sim_ControlAPI.md). It sends at most
+        // 100 lines per second of model time plus slower values, session facts and (when the server allows it) the other
+        // objects once a second; nothing while paused (model time stands still), "noexport" when a multiplayer server
+        // forbids ownship export, "exit" when the mission ends. UDP to 127.0.0.1 only; nothing waits for JoyPro and
+        // nothing fails when it is not running. The line protocol: gui/JoyPro.Ffb.Core/Telemetry/Dcs/DcsTelemetry.cs.
+        public const string DcsHookResource = "JoyPro.Engine.DcsHooks.JoyProFfb.lua";
+
         public static string DcsHookScript(int port)
         {
-            string p = port.ToString(CultureInfo.InvariantCulture);
-            return string.Join("\n", new[]
+            string template;
+            using (Stream stream = typeof(EngineFfbTelemetry).Assembly.GetManifestResourceStream(DcsHookResource))
             {
-                DcsHookMarker + ": sends flight data to JoyPro's force feedback (UDP 127.0.0.1:" + p + ").",
-                "-- Installed by JoyPro (engine ffb telemetry setup dcs); remove it there or delete this file.",
-                "-- It only reads (Export.Lo*), never changes the simulation, and never blocks: UDP, no reply expected.",
-                "local ok, err = pcall(function()",
-                "    local api = Sim or DCS",
-                "    package.path = package.path .. \";.\\\\LuaSocket\\\\?.lua\"",
-                "    package.cpath = package.cpath .. \";.\\\\LuaSocket\\\\?.dll\"",
-                "    local socket = require(\"socket\")",
-                "    local udp = socket.udp()",
-                "    udp:settimeout(0)",
-                "    local PORT = " + p,
-                "    local E = Export",
-                "    local lastSend, lastPlane, lastNotice = -1, nil, -100",
-                "    local function send(text)",
-                "        pcall(function() udp:sendto(text, \"127.0.0.1\", PORT) end)",
-                "    end",
-                "    local parts = {}",
-                "    local function add(key, value)",
-                "        if type(value) == \"number\" and value == value and value ~= math.huge and value ~= -math.huge then",
-                "            parts[#parts + 1] = key .. \"=\" .. string.format(\"%.5g\", value)",
-                "        end",
-                "    end",
-                "    local function frame(t)",
-                "        if E.LoIsOwnshipExportAllowed and not E.LoIsOwnshipExportAllowed() then",
-                "            if t - lastNotice > 5 then send(\"noexport\"); lastNotice = t end",
-                "            return",
-                "        end",
-                "        local self = E.LoGetSelfData()",
-                "        if not self then return end",
-                "        if self.Name ~= lastPlane or t - lastNotice > 5 then",
-                "            send(\"plane \" .. tostring(self.Name))",
-                "            lastPlane = self.Name",
-                "            lastNotice = t",
-                "        end",
-                "        parts = {}",
-                "        add(\"t\", t)",
-                "        add(\"ias\", E.LoGetIndicatedAirSpeed())",
-                "        add(\"tas\", E.LoGetTrueAirSpeed())",
-                "        add(\"mach\", E.LoGetMachNumber())",
-                "        add(\"aoa\", E.LoGetAngleOfAttack())",
-                "        add(\"aos\", E.LoGetAngleOfSideSlip())",
-                "        add(\"vv\", E.LoGetVerticalVelocity())",
-                "        add(\"agl\", E.LoGetAltitudeAboveGroundLevel())",
-                "        add(\"alt\", E.LoGetAltitudeAboveSeaLevel())",
-                "        local acc = E.LoGetAccelerationUnits()",
-                "        if acc then add(\"g\", acc.y); add(\"gx\", acc.x); add(\"gz\", acc.z) end",
-                "        local w = E.LoGetAngularVelocity()",
-                "        if w then add(\"wx\", w.x); add(\"wy\", w.y); add(\"wz\", w.z) end",
-                "        local v = E.LoGetVectorVelocity()",
-                "        if v then add(\"gs\", math.sqrt(v.x * v.x + v.z * v.z)) end",
-                "        local mech = E.LoGetMechInfo()",
-                "        if mech then",
-                "            if mech.gear then",
-                "                add(\"gear\", mech.gear.value)",
-                "                local main = mech.gear.main",
-                "                if main then",
-                "                    if main.left then add(\"rod_l\", main.left.rod) end",
-                "                    if main.right then add(\"rod_r\", main.right.rod) end",
-                "                    if main.nose then add(\"rod_n\", main.nose.rod) end",
-                "                end",
-                "            end",
-                "            if mech.flaps then add(\"flaps\", mech.flaps.value) end",
-                "            if mech.speedbrakes then add(\"speedbrake\", mech.speedbrakes.value) end",
-                "        end",
-                "        local payload = E.LoGetPayloadInfo()",
-                "        if payload and payload.Cannon then add(\"shells\", payload.Cannon.shells) end",
-                "        local mcp = E.LoGetMCPState()",
-                "        if mcp then",
-                "            add(\"stall\", mcp.StallSignalization and 1 or 0)",
-                "            local failed = 0",
-                "            for key, value in pairs(mcp) do",
-                "                if value == true and string.find(key, \"Failure\") then failed = failed + 1 end",
-                "            end",
-                "            if mcp.FuelTankDamage then failed = failed + 1 end",
-                "            add(\"fail\", failed)",
-                "        end",
-                "        local engine = E.LoGetEngineInfo()",
-                "        if engine and engine.RPM then add(\"rpm_l\", engine.RPM.left); add(\"rpm_r\", engine.RPM.right) end",
-                "        send(table.concat(parts, \";\"))",
-                "    end",
-                "    local callbacks = {}",
-                "    function callbacks.onSimulationStart()",
-                "        lastSend, lastPlane, lastNotice = -1, nil, -100",
-                "    end",
-                "    function callbacks.onSimulationFrame()",
-                "        local t = api.getModelTime()",
-                "        if t < lastSend then lastSend = -1 end",
-                "        if t - lastSend < 0.01 then return end",
-                "        lastSend = t",
-                "        pcall(frame, t)",
-                "    end",
-                "    function callbacks.onSimulationStop()",
-                "        send(\"exit\")",
-                "        lastSend, lastPlane, lastNotice = -1, nil, -100",
-                "    end",
-                "    api.setUserCallbacks(callbacks)",
-                "end)",
-                "if not ok and log and log.write then",
-                "    pcall(log.write, \"JoyPro\", log.WARNING, \"JoyPro force feedback hook not loaded: \" .. tostring(err))",
-                "end",
-                string.Empty
-            });
+                if (stream == null)
+                    throw new InvalidOperationException("The DCS hook script is missing from the engine (" + DcsHookResource + ").");
+                using (StreamReader reader = new StreamReader(stream, new UTF8Encoding(false)))
+                    template = reader.ReadToEnd();
+            }
+            return DcsHookScriptFromTemplate(template, port);
+        }
+
+        // The template sends to the default port; setup writes the configured one. LF line ends, one final line end.
+        public static string DcsHookScriptFromTemplate(string template, int port)
+        {
+            string p = port.ToString(CultureInfo.InvariantCulture);
+            string d = DcsPort.ToString(CultureInfo.InvariantCulture);
+            string text = (template ?? string.Empty).Replace("\r\n", "\n")
+                .Replace("127.0.0.1:" + d, "127.0.0.1:" + p)
+                .Replace("local PORT = " + d, "local PORT = " + p);
+            return text.TrimEnd('\n') + "\n";
         }
 
         private static EngineFfbTelemetrySetupResult SetupIl2(EngineFfbTelemetrySetupResult result, GameSpec spec, bool remove, bool statusOnly, string path, bool dryRun)

@@ -466,7 +466,7 @@ engine profile save "C:\profiles\my_setup.pr0file"
   engine relations auto-assign [--grip <device|VID:PID>=<grip id>]... [--add-device <catalog id>]... [--ignore-device <device>]... [--relation <name>]... [--max-modifiers 0|1|2] [--overwrite [--include-missing]] [--no-style] [--explain <relation>]... [--dry-run]
   engine devices kb [list [query] | show <id> | identify [--grip <device>=<grip id>]... [--add-device <id>]...]   (device catalog for Auto Assign)
   engine devices reference [list [query] | identify --vidpid <VID:PID> --name <HID name> [--instance <name>] [--buttons <n>] [--hats <n>] [--axes X,Y,RZ] | show <id> [--base <id>] [--svg <file>] [--light] [--no-badges] | check [query] | photos [query] [--coverage] | photo-add --model <id> --url <https photo on the maker's host> --view <front|side|back|top|base|three-quarter|sheet> [--page <url>] [--confidence <c>] [--shows a,b] [--sha256 <hex>] | layout-check | drawings [query] [--check] [--model <id> [--view <v>] --svg <file> | --png <file>] [--light] [--drawing-style lines|cel] [--drawing-preset <p>]]   (device reference pictures: catalog, identification and the question to ask, JoyPro's schematic with markers, photo references, curated marker positions, JoyPro's own drawings of the devices)
-  engine cockpits [list [query] [--game G] [--era E] [--role R] [--nation N] [--category fixed-wing|helicopter|space|fiction|real] | search <text> [--limit n] | get <aircraft> [<variant>] [--json] | check | render <aircraft> [<variant>] --png <file> [--device <d>] [--style dark|light] [--print-width <px>] [--drawing-only] | compare <aircraft> [<variant>] [--game G] | photos [query] [--coverage] | coverage | drawings | pictures build [--game DCS|XPlane12|all] [--aircraft <name>,...] [--force] [--out <folder>] | pictures status]
+  engine cockpits [list [query] [--game G] [--era E] [--role R] [--nation N] [--category fixed-wing|helicopter|space|fiction|real] | search <text> [--limit n] | get <aircraft> [<variant>] [--json] | check | render <aircraft> [<variant>] --png <file> [--device <d>] [--style dark|light] [--print-width <px>] [--drawing-only] | compare <aircraft> [<variant>] [--game G] | photos [query] [--coverage] | coverage | drawings | pictures build [--game DCS|XPlane12|MSFS2020|IL2Game|NuclearOption|all] [--aircraft <name>,...] [--force] [--out <folder>] | pictures status]
   engine binds list [filter]
   engine binds show <bind-or-relation>
   engine binds set <bind-or-relation> [--device <name>] [--input <value>] [--format dcs|il2] [--modifier <name>] [--clear-modifiers] [--clear-input] [--inverted true|false] [--slider true|false] [--curvature <csv>] [--deadzone <value>] [--saturation-x <value>] [--saturation-y <value>] [--double-tap true|false]
@@ -485,6 +485,16 @@ engine profile save "C:\profiles\my_setup.pr0file"
   engine ffb telemetry config set [--game DCS|IL2Game|IL2Korea|WarThunder] [--plane <aircraft>] [--effect <name>] | [--device {guid}] --param <key>=<value>...
   engine ffb telemetry config clear [--game <game>] [--plane <aircraft>] [--effect <name>] | [--device {guid}]
   engine ffb telemetry setup dcs|il2|il2korea|warthunder [--remove] [--dry-run] [--path <Saved Games\DCS | IL-2 folder | startup.cfg>]   (DCS Hooks script / IL-2 startup.cfg telemetry target; backed up)
+  engine telemetry games   (telemetry recording, docs/telemetry-recording.md: the games, what JoyPro listens to, ACMI possible)
+  engine telemetry config show
+  engine telemetry config set [--game <game>] --param enabled|folder|max-total-mb|keep-days|sample-hz|keep-raw|session-timeout=<value>...
+  engine telemetry sessions [--game <game>] [--folder <folder>]   (recorded sessions, newest first)
+  engine telemetry show <session> [--folder <folder>]   (<session> = path, file name, latest or a number of the list)
+  engine telemetry export <session> --format acmi|acmi-zip|csv [--to <file or folder>] [--max-hz <n>] [--no-per-channel]   (Tacview ACMI 2.2 / CSV)
+  engine telemetry preview <session> [--channel <key>]... [--points <n>]
+  engine telemetry delete <session>...
+  engine telemetry recover | prune   (finish sessions cut off by a crash | apply the retention settings)
+  engine telemetry record --game <game> [--seconds <n>] [--folder <folder>] [--sample-hz <n>] [--no-raw] [--no-game-check]   (records now; Ctrl+C ends it)
   engine binds tuning models
   engine binds tuning show <bind-or-relation> [--game <game>] [--plane <plane>]
   engine binds tuning set <bind-or-relation> --scope base|game:<game>|plane:<game>:<plane>|family:<family> [--param <name>=<value>]... [--inverted true|false] [--slider true|false] [--deadzone <value>] [--saturation-x <value>] [--saturation-y <value>] [--curvature <csv>] [--curve-points <x:y,...>|none]
@@ -5919,7 +5929,7 @@ Examples:
 engine --help
 ```
 
-### `engine cockpits [list [query] [--game G] [--era E] [--role R] [--nation N] [--category fixed-wing|helicopter|space|fiction|real] | search <text> [--limit n] | get <aircraft> [<variant>] [--json] | check | render <aircraft> [<variant>] --png <file> [--device <d>] [--style dark|light] [--print-width <px>] [--drawing-only] | compare <aircraft> [<variant>] [--game G] | photos [query] [--coverage] | coverage | drawings | pictures build [--game DCS|XPlane12|all] [--aircraft <name>,...] [--force] [--out <folder>] | pictures status]`
+### `engine cockpits [list [query] [--game G] [--era E] [--role R] [--nation N] [--category fixed-wing|helicopter|space|fiction|real] | search <text> [--limit n] | get <aircraft> [<variant>] [--json] | check | render <aircraft> [<variant>] --png <file> [--device <d>] [--style dark|light] [--print-width <px>] [--drawing-only] | compare <aircraft> [<variant>] [--game G] | photos [query] [--coverage] | coverage | drawings | pictures build [--game DCS|XPlane12|MSFS2020|IL2Game|NuclearOption|all] [--aircraft <name>,...] [--force] [--out <folder>] | pictures status]`
 What it does: Runs this command operation.
 
 Arguments and example values:
@@ -6234,6 +6244,142 @@ Examples:
 engine ffb telemetry setup dcs --dry-run --text
 engine ffb telemetry setup il2 --text
 engine ffb telemetry setup il2 --remove --text
+```
+
+### `engine telemetry games   (telemetry recording, docs/telemetry-recording.md: the games, what JoyPro listens to, ACMI possible)`
+What it does: Runs this command operation.
+
+Arguments and example values:
+- No command-specific arguments.
+
+Examples:
+```powershell
+engine --help
+```
+
+### `engine telemetry config show`
+What it does: Runs this command operation.
+
+Arguments and example values:
+- No command-specific arguments.
+
+Examples:
+```powershell
+engine --help
+```
+
+### `engine telemetry config set [--game <game>] --param enabled|folder|max-total-mb|keep-days|sample-hz|keep-raw|session-timeout=<value>...`
+What it does: Runs this command operation.
+
+Arguments and example values:
+- `--game`: Game filter value. Example: DCS or IL2Game.
+- `<game>`: Command argument. See examples for typical values.
+- `--param`: A response model parameter as name=value, repeatable. Example: --param sensitivity=22 --param offset=10.
+- `<value>`: Generic value placeholder. Example for --input: JOY_BTN1 or joy0_b0.
+
+Examples:
+```powershell
+engine --help
+```
+
+### `engine telemetry sessions [--game <game>] [--folder <folder>]   (recorded sessions, newest first)`
+What it does: Runs this command operation.
+
+Arguments and example values:
+- `--game`: Game filter value. Example: DCS or IL2Game.
+- `<game>`: Command argument. See examples for typical values.
+- `--folder`: Command argument. See examples for typical values.
+- `<folder>`: Command argument. See examples for typical values.
+
+Examples:
+```powershell
+engine --help
+```
+
+### `engine telemetry show <session> [--folder <folder>]   (<session> = path, file name, latest or a number of the list)`
+What it does: Runs this command operation.
+
+Arguments and example values:
+- `<session>`: Command argument. See examples for typical values.
+- `--folder`: Command argument. See examples for typical values.
+- `<folder>`: Command argument. See examples for typical values.
+
+Examples:
+```powershell
+engine --help
+```
+
+### `engine telemetry export <session> --format acmi|acmi-zip|csv [--to <file or folder>] [--max-hz <n>] [--no-per-channel]   (Tacview ACMI 2.2 / CSV)`
+What it does: Writes the profile's binds for this game. Only the flight actions JoyPro manages are changed, the game must be closed, and the file is backed up to <file>.jpbak first.
+
+Arguments and example values:
+- `<session>`: Command argument. See examples for typical values.
+- `--format`: Format selector. Example values: dcs/il2 for binds unbind, rl/json for relations mass export.
+- `--to`: Command argument. See examples for typical values.
+- `<file or folder>`: Command argument. See examples for typical values.
+- `--max-hz`: Command argument. See examples for typical values.
+- `<n>`: Integer numeric value. Example: 45.
+- `--no-per-channel`: Command argument. See examples for typical values.
+
+Examples:
+```powershell
+engine --profile 'C:\JoyPro\profiles\pilot_main.pr0file' telemetry export --dry-run --text engine --profile 'C:\JoyPro\profiles\pilot_main.pr0file' telemetry export --mode merge-overwrite --text
+```
+
+### `engine telemetry preview <session> [--channel <key>]... [--points <n>]`
+What it does: Runs this command operation.
+
+Arguments and example values:
+- `<session>`: Command argument. See examples for typical values.
+- `--channel`: Command argument. See examples for typical values.
+- `<key>`: Command argument. See examples for typical values.
+- `--points`: Number of preview samples from -1 to 1. Example: --points 21.
+- `<n>`: Integer numeric value. Example: 45.
+
+Examples:
+```powershell
+engine --help
+```
+
+### `engine telemetry delete <session>...`
+What it does: Runs this command operation.
+
+Arguments and example values:
+- `<session>`: Command argument. See examples for typical values.
+
+Examples:
+```powershell
+engine --help
+```
+
+### `engine telemetry recover | prune   (finish sessions cut off by a crash | apply the retention settings)`
+What it does: Runs this command operation.
+
+Arguments and example values:
+- No command-specific arguments.
+
+Examples:
+```powershell
+engine --help
+```
+
+### `engine telemetry record --game <game> [--seconds <n>] [--folder <folder>] [--sample-hz <n>] [--no-raw] [--no-game-check]   (records now; Ctrl+C ends it)`
+What it does: Runs this command operation.
+
+Arguments and example values:
+- `--game`: Game filter value. Example: DCS or IL2Game.
+- `<game>`: Command argument. See examples for typical values.
+- `--seconds`: Command argument. See examples for typical values.
+- `<n>`: Integer numeric value. Example: 45.
+- `--folder`: Command argument. See examples for typical values.
+- `<folder>`: Command argument. See examples for typical values.
+- `--sample-hz`: Command argument. See examples for typical values.
+- `--no-raw`: Command argument. See examples for typical values.
+- `--no-game-check`: Command argument. See examples for typical values.
+
+Examples:
+```powershell
+engine --help
 ```
 
 ### `engine binds tuning models`

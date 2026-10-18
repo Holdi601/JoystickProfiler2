@@ -1100,6 +1100,7 @@ public sealed partial class MainWindowViewModel : ViewModelBase
         RefreshModifierValidationState();
 
         InitializeFfbTelemetry(loadPersistedUiSettings);
+        InitializeTelemetryRecording(loadPersistedUiSettings);
         InitializeVirtualJoystick(loadPersistedUiSettings);
         InitializeDesign();
         InitializeProfileHistory();
@@ -1120,7 +1121,10 @@ public sealed partial class MainWindowViewModel : ViewModelBase
         OnPropertyChanged(nameof(IsExportStage));
         OnPropertyChanged(nameof(IsSettingsStage));
         if (value == UiStage.Settings)
+        {
             SyncFfbSettingsSection();
+            SyncTelemetryRecordingSection();
+        }
         OnPropertyChanged(nameof(IsAdvancedStage));
         OnPropertyChanged(nameof(IsHudStage));
         OnHudStageChanged(value == UiStage.Hud);

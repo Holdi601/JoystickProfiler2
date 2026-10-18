@@ -1,0 +1,97 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:l="using:JoyPro.Gui.Localization"
+             xmlns:vm="using:JoyPro.Gui.ViewModels"
+             xmlns:models="using:JoyPro.Gui.Models"
+             xmlns:controls="using:JoyPro.Gui.Views.Controls"
+             x:Class="JoyPro.Gui.Views.Controls.TelemetryRecordingPanel"
+             x:DataType="vm:MainWindowViewModel">
+    <!-- Settings > Telemetry recording (ViewModels/MainWindowViewModel.TelemetryRecording.cs, docs/telemetry-recording.md):
+         the switches, where and how much, the games, and the recorded sessions with a small timeline. -->
+    <StackPanel Spacing="8">
+        <TextBlock Classes="caption" TextWrapping="Wrap"
+                   Text="{l:T 'Records every round, mission or flight with all the telemetry the game sends (position, attitude, speeds, accelerations, controls, engines, weapons and events), like Tacview does for DCS, for every game JoyPro reads telemetry of. Export for Tacview (ACMI) or as CSV. Off until you switch it on. Everything stays on this PC: nothing is uploaded.'}" />
+        <CheckBox Content="{l:T 'Record the telemetry of my games'}" IsChecked="{Binding TelemetryRecordingEnabled}" FontWeight="SemiBold"
+                  ToolTip.Tip="{l:T 'On: while a game below runs and sends telemetry, JoyPro writes one file per round, mission or flight. Off: nothing is recorded and nothing is looked up.'}" />
+        <TextBlock Text="{Binding TelemetryRecordingStateText}" TextWrapping="Wrap" Opacity="0.85" />
+
+        <Grid ColumnDefinitions="Auto,*" RowDefinitions="Auto,Auto,Auto,Auto,Auto" ColumnSpacing="10" RowSpacing="6">
+            <TextBlock Text="{l:T 'Folder'}" VerticalAlignment="Center" />
+            <WrapPanel Grid.Column="1" ItemSpacing="8" LineSpacing="4">
+                <TextBlock Text="{Binding TelemetryRecordingFolderText}" VerticalAlignment="Center" TextWrapping="Wrap" MaxWidth="560" />
+                <Button Classes="small" Content="{l:T 'Choose...'}" Click="ChooseFolderClicked"
+                        ToolTip.Tip="{l:T 'Where the recordings go, on any drive (a drive with free space: an hour is about 10 to 50 MB)'}" />
+                <Button Classes="small" Content="{l:T 'Default folder'}" Command="{Binding UseDefaultTelemetryFolderCommand}"
+                        IsVisible="{Binding !TelemetryRecordingUsesDefaultFolder}" ToolTip.Tip="{l:T 'Back to JoyPro\'s data folder'}" />
+                <Button Classes="small" Content="{l:T 'Open folder'}" Command="{Binding OpenTelemetryFolderCommand}" />
+            </WrapPanel>
+
+            <TextBlock Grid.Row="1" Text="{l:T 'Values per second'}" VerticalAlignment="Center" />
+            <ComboBox Grid.Row="1" Grid.Column="1" ItemsSource="{Binding TelemetrySampleRates}" SelectedItem="{Binding SelectedTelemetrySampleRate}" MinWidth="240"
+                      ToolTip.Tip="{l:T 'How often the values are written. More is smoother and bigger; events (shots, hits, messages) are always kept.'}" />
+
+            <TextBlock Grid.Row="2" Text="{l:T 'Space for recordings'}" VerticalAlignment="Center" />
+            <ComboBox Grid.Row="2" Grid.Column="1" ItemsSource="{Binding TelemetrySizeCaps}" SelectedItem="{Binding SelectedTelemetrySizeCap}" MinWidth="240"
+                      ToolTip.Tip="{l:T 'When the folder gets bigger than this, the oldest recordings are deleted first. The recording in progress is never deleted.'}" />
+
+            <TextBlock Grid.Row="3" Text="{l:T 'Delete recordings after'}" VerticalAlignment="Center" />
+            <ComboBox Grid.Row="3" Grid.Column="1" ItemsSource="{Binding TelemetryKeepDaysChoices}" SelectedItem="{Binding SelectedTelemetryKeepDays}" MinWidth="240" />
+
+            <CheckBox Grid.Row="4" Grid.Column="1" Content="{l:T 'Also keep the raw data as the game sent it'}" IsChecked="{Binding TelemetryRecordingKeepRaw}"
+                      ToolTip.Tip="{l:T 'The game\'s own packets, answers and files next to the values, for tools that read them. About twice the size.'}" />
+        </Grid>
+
+        <TextBlock Text="{l:T 'Games'}" FontWeight="SemiBold" Margin="0,4,0,0" />
+        <ItemsControl ItemsSource="{Binding TelemetryRecordingGames}">
+            <ItemsControl.ItemsPanel>
+                <ItemsPanelTemplate>
+                    <WrapPanel ItemSpacing="10" LineSpacing="4" />
+                </ItemsPanelTemplate>
+            </ItemsControl.ItemsPanel>
+            <ItemsControl.ItemTemplate>
+                <DataTemplate x:DataType="models:TelemetryRecordingGameItem">
+                    <StackPanel Width="410" Spacing="0">
+                        <CheckBox Content="{Binding Title}" IsChecked="{Binding Enabled}" />
+                        <TextBlock Text="{Binding Details}" Classes="caption" FontSize="11" Opacity="0.7" TextWrapping="Wrap" Margin="28,-4,0,2" />
+                    </StackPanel>
+                </DataTemplate>
+            </ItemsControl.ItemTemplate>
+        </ItemsControl>
+
+        <Grid ColumnDefinitions="*,Auto" Margin="0,6,0,0">
+            <StackPanel Spacing="2">
+                <TextBlock Text="{l:T 'Recorded sessions'}" FontWeight="SemiBold" />
+                <TextBlock Text="{Binding TelemetrySessionsSummary}" Classes="caption" Opacity="0.75" TextWrapping="Wrap" />
+            </StackPanel>
+            <Button Grid.Column="1" Classes="icon" Tag="{StaticResource Icon.Refresh}" Content="{l:T 'Refresh'}" Command="{Binding RefreshTelemetrySessionsCommand}" VerticalAlignment="Top" />
+        </Grid>
+        <ListBox ItemsSource="{Binding TelemetrySessions}" SelectedItem="{Binding SelectedTelemetrySession}" MaxHeight="260"
+                 IsVisible="{Binding HasTelemetrySessions}">
+            <ListBox.ItemTemplate>
+                <DataTemplate x:DataType="models:TelemetrySessionItem">
+                    <Grid ColumnDefinitions="150,190,*,70,80,Auto" ColumnSpacing="10" ToolTip.Tip="{Binding Tooltip}">
+                        <TextBlock Text="{Binding Date}" VerticalAlignment="Center" />
+                        <TextBlock Grid.Column="1" Text="{Binding Game}" VerticalAlignment="Center" TextTrimming="CharacterEllipsis" />
+                        <TextBlock Grid.Column="2" Text="{Binding Aircraft}" VerticalAlignment="Center" TextTrimming="CharacterEllipsis" Opacity="0.85" />
+                        <TextBlock Grid.Column="3" Text="{Binding Duration}" VerticalAlignment="Center" HorizontalAlignment="Right" />
+                        <TextBlock Grid.Column="4" Text="{Binding Size}" VerticalAlignment="Center" HorizontalAlignment="Right" Opacity="0.75" />
+                        <Border Grid.Column="5" IsVisible="{Binding HasState}" Background="#33F59E0B" CornerRadius="4" Padding="6,1">
+                            <TextBlock Text="{Binding State}" FontSize="11" />
+                        </Border>
+                    </Grid>
+                </DataTemplate>
+            </ListBox.ItemTemplate>
+        </ListBox>
+        <WrapPanel ItemSpacing="8" LineSpacing="4" IsVisible="{Binding HasTelemetrySessions}">
+            <Button Classes="icon" Tag="{StaticResource Icon.FolderOpen}" Content="{l:T 'Show in folder'}" Command="{Binding OpenTelemetryFolderCommand}" IsEnabled="{Binding HasSelectedTelemetrySession}" />
+            <Button Classes="icon" Tag="{StaticResource Icon.Export}" Content="{l:T 'Export for Tacview (ACMI)'}" Command="{Binding ExportTelemetryAcmiCommand}" IsEnabled="{Binding CanExportSelectedTelemetryAcmi}"
+                    ToolTip.Tip="{l:T 'A .zip.acmi file Tacview opens: the track, attitude, speeds and the other objects the game reported. Only for games whose telemetry has a position.'}" />
+            <Button Classes="icon" Tag="{StaticResource Icon.Export}" Content="{l:T 'Export CSV'}" Command="{Binding ExportTelemetryCsvCommand}" IsEnabled="{Binding HasSelectedTelemetrySession}"
+                    ToolTip.Tip="{l:T 'A folder with one table of every value per moment, the events, the channel list and one small file per channel (comma separated, decimal point).'}" />
+            <Button Classes="icon" Tag="{StaticResource Icon.Delete}" Content="{l:T 'Delete'}" Command="{Binding DeleteTelemetrySessionCommand}" IsEnabled="{Binding CanChangeSelectedTelemetrySession}" />
+        </WrapPanel>
+        <TextBlock Text="{Binding TelemetryPreviewText}" Classes="caption" Opacity="0.8" TextWrapping="Wrap" IsVisible="{Binding HasSelectedTelemetrySession}" />
+        <controls:TelemetryTimelineView Tracks="{Binding TelemetryPreviewTracks}" IsVisible="{Binding HasSelectedTelemetrySession}" HorizontalAlignment="Stretch" />
+        <TextBlock Text="{Binding TelemetryRecordingMessage}" TextWrapping="Wrap" FontWeight="SemiBold" />
+    </StackPanel>
+</UserControl>
