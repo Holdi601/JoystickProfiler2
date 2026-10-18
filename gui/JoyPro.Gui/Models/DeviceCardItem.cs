@@ -109,6 +109,13 @@ public sealed partial class DeviceCardItem : ObservableObject
     [ObservableProperty]
     private string photoConsentText = string.Empty;
 
+    // An analog keyboard (or a keyboard the catalog knows): typing moves its axes, so follow input and recording leave
+    // them alone unless UsesAxes (Settings > Devices, "Use this device's axes for follow input and recording").
+    public bool IsKeyboardLike { get; init; }
+
+    [ObservableProperty]
+    private bool usesAxes;
+
     public bool HasPicture => Picture != null || Schematic != null;
 
     public bool HasNoPicture => !HasPicture;

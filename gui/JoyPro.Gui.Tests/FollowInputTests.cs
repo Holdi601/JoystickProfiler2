@@ -334,6 +334,160 @@ public sealed class FollowInputTests
         source.RaiseEvent(new Avalonia.Input.PointerEventArgs(Avalonia.Input.InputElement.PointerMovedEvent, source, pointer, main, at, 0,
             Avalonia.Input.PointerPointProperties.None, Avalonia.Input.KeyModifiers.None));
 
+    // ---- Analog keyboards (Wooting & co.): typing moves their axes ----
+
+    private const string Wooting = "Wooting Two HE (ARM) {00000000-0000-0000-0000-0000000000F9}";
+
+    [Fact]
+    public void KeyboardLike_AnalogKeyboardsAndCatalogKeyboards_SticksNot()
+    {
+        Func<JoyPro.DeviceReference.DeviceCatalog?> previous = KeyboardLikeDevices.CatalogSource;
+        try
+        {
+            JoyPro.DeviceReference.DeviceCatalog catalog = new();
+            catalog.Devices.Add(new JoyPro.DeviceReference.RefDevice { Id = "acme-k1", Name = "Acme K1", Kind = "keyboard", Names = ["ACME HID Board"] });
+            KeyboardLikeDevices.ClearCache();
+            KeyboardLikeDevices.CatalogSource = () => catalog;
+            Assert.True(KeyboardLikeDevices.IsKeyboardLike(Wooting));
+            Assert.True(KeyboardLikeDevices.IsKeyboardLike("Razer Huntsman V3 Pro {GUID}"));
+            Assert.True(KeyboardLikeDevices.IsKeyboardLike("SteelSeries Apex Pro TKL"));
+            Assert.True(KeyboardLikeDevices.IsKeyboardLike("Keychron Q1 HE"));
+            Assert.True(KeyboardLikeDevices.IsKeyboardLike("Some Gaming Keyboard"));
+            Assert.True(KeyboardLikeDevices.IsKeyboardLike("ACME HID Board {00000000-0000-0000-0000-000000000001}"));
+            Assert.False(KeyboardLikeDevices.IsKeyboardLike(Stick));
+            Assert.False(KeyboardLikeDevices.IsKeyboardLike(Throttle));
+            Assert.False(KeyboardLikeDevices.IsKeyboardLike("Keyboard"));
+        }
+        finally
+        {
+            KeyboardLikeDevices.CatalogSource = previous;
+            KeyboardLikeDevices.ClearCache();
+        }
+    }
+
+    [Fact]
+    public async Task Follow_TypingOnAnAnalogKeyboard_DoesNotJump_ARealAxisStillDoes_OptInCounts()
+    {
+        (MainWindowViewModel vm, _) = await CreateBindsPageAsync();
+        int activity = 0;
+        vm.FollowInputActivity += (_, _) => activity++;
+        vm.SelectedBind = vm.Binds.Single(b => b.RelationName == "Fire");
+
+        // Typing: the keys' analog axes jump from 0 to full travel and back.
+        vm.OnLiveAxes(new JoystickAxisSnapshot(Wooting, [0, 0, 0, 0, 0, 0, 0, 0]));
+        for (int i = 0; i < 6; i++)
+        {
+            vm.OnLiveAxes(new JoystickAxisSnapshot(Wooting, [i % 2 == 0 ? 1 : 0, 0, 1, 0, 0, 0, 0, 0]));
+            await Task.Delay((int)FollowInputTracker.AxisStepGapMs + 20);
+        }
+        Assert.Equal("Fire", vm.SelectedBind?.RelationName);
+        Assert.Equal(string.Empty, vm.FollowInputToast);
+        Assert.Equal(0, activity);
+
+        // The throttle still follows.
+        vm.OnLiveAxes(new JoystickAxisSnapshot(Throttle, [0.5, 0.5, 0, 0, 0, 0, 0, 0]));
+        vm.OnLiveAxes(new JoystickAxisSnapshot(Throttle, [0.5, 0.5, 0.9, 0, 0, 0, 0, 0]));
+        Assert.Equal("Thrust", vm.SelectedBind?.RelationName);
+
+        // The keyboard's keys (buttons) still count: keyboard binds jump.
+        vm.OnLiveInput(new JoystickInputEvent(Wooting, "JOY_BTN5", true));
+        Assert.Contains("nothing bound", vm.FollowInputToast);
+
+        // Opted in (Settings > Devices): its axes count.
+        vm.SetDeviceAxesInput(Wooting, true);
+        Assert.True(vm.UsesAxesOf(Wooting));
+        vm.OnLiveAxes(new JoystickAxisSnapshot(Wooting, [0, 0, 0, 0, 0, 0, 0, 0]));
+        vm.OnLiveAxes(new JoystickAxisSnapshot(Wooting, [0.9, 0, 0, 0, 0, 0, 0, 0]));
+        Assert.Contains("on Wooting", vm.FollowInputToast);
+    }
+
+    [Fact]
+    public async Task Follow_NotWhileAnotherWindowIsInFront_OrATextBoxHoldsTheFocus_NoteCanBeHidden()
+    {
+        (MainWindowViewModel vm, _) = await CreateBindsPageAsync();
+        vm.SelectedBind = vm.Binds.Single(b => b.RelationName == "Fire");
+
+        vm.IsMainWindowActive = false;
+        vm.OnLiveInput(new JoystickInputEvent(Stick, "JOY_BTN8", true));
+        vm.OnLiveInput(new JoystickInputEvent(Stick, "JOY_BTN8", false));
+        Assert.Equal("Fire", vm.SelectedBind?.RelationName);
+        vm.IsMainWindowActive = true;
+
+        // The focus flag lags behind (no focus event yet): the live check still holds.
+        bool typing = true;
+        vm.TextInputFocusProbe = () => typing;
+        await Task.Delay((int)FollowInputTracker.ButtonDebounceMs + 30);
+        vm.OnLiveInput(new JoystickInputEvent(Stick, "JOY_BTN8", true));
+        vm.OnLiveInput(new JoystickInputEvent(Stick, "JOY_BTN8", false));
+        Assert.Equal("Fire", vm.SelectedBind?.RelationName);
+        typing = false;
+
+        vm.ShowFollowInputNote = false;
+        await Task.Delay((int)FollowInputTracker.ButtonDebounceMs + 30);
+        vm.OnLiveInput(new JoystickInputEvent(Stick, "JOY_BTN8", true));
+        Assert.Equal("Gear", vm.SelectedBind?.RelationName);
+        Assert.Equal(string.Empty, vm.FollowInputToast);
+        Assert.False(vm.HasFollowInputToast);
+    }
+
+    [Fact]
+    public async Task Record_LeavesTheAxesOfAnAnalogKeyboardOut_UnlessOptedIn()
+    {
+        (MainWindowViewModel vm, FollowCapture capture) = await CreateBindsPageAsync();
+        vm.SelectedBind = vm.Binds.Single(b => b.RelationName == "Thrust");
+        await vm.RecordNextInputCommand.ExecuteAsync(null);
+        Func<string, bool>? ignore = capture.LastOptions?.IgnoreAxesOf;
+        Assert.NotNull(ignore);
+        Assert.True(ignore!(Wooting));
+        Assert.False(ignore(Throttle));
+        Assert.False(ignore(Stick));
+
+        vm.SetDeviceAxesInput(Wooting, true);
+        await vm.RecordNextInputCommand.ExecuteAsync(null);
+        Assert.False(capture.LastOptions!.IgnoreAxesOf!(Wooting));
+    }
+
+    // A key pressed in the window (also one that makes follow input jump) and every jump arm the tooltip hold; no
+    // control opens its tooltip at once because another one was open a moment ago.
+    [Fact]
+    public void Tooltips_KeyPressAndEveryJump_ArmTheHold_NoInstantTooltips()
+    {
+        AvaloniaRenderThread.Run(() =>
+        {
+            (MainWindowViewModel vm, _) = AvaloniaRenderThread.Wait(CreateBindsPageAsync());
+            vm.CurrentStage = UiStage.Relations;
+            Views.MainWindow main = new() { DataContext = vm, Width = 1280, Height = 800 };
+            Views.TooltipHold hold = main.TooltipHold;
+            Avalonia.Input.Pointer pointer = new(Avalonia.Input.Pointer.GetNextFreeId(), Avalonia.Input.PointerType.Mouse, true);
+            void Move(Avalonia.Point at) => RaiseMove(main, main, pointer, at);
+            Move(new Avalonia.Point(400, 300));
+            Assert.False(hold.IsHolding);
+
+            // Typing (no follow input involved): the pointer rests over the list, no tooltip.
+            main.RaiseEvent(new Avalonia.Input.KeyEventArgs { RoutedEvent = Avalonia.Input.InputElement.KeyDownEvent, Key = Avalonia.Input.Key.A, Source = main });
+            Assert.True(hold.IsHolding);
+            for (int i = 0; i < 20; i++)
+                Move(new Avalonia.Point(400, 300));
+            Assert.True(hold.IsHolding);
+            for (int x = 400; x <= 480; x += 5)
+                Move(new Avalonia.Point(x, 300));
+            Assert.False(hold.IsHolding);
+
+            // A jump by a keyboard's key (its game-controller button) arms it as well.
+            vm.OnLiveInput(new JoystickInputEvent(Wooting, "JOY_BTN5", true));
+            Assert.True(hold.IsHolding);
+            Assert.False(Avalonia.Controls.ToolTip.GetServiceEnabled(main));
+
+            // No instant tooltip along a list: every control with a tooltip waits for its show delay.
+            Avalonia.Controls.Control tipped = Avalonia.LogicalTree.LogicalExtensions.GetLogicalDescendants(main)
+                .OfType<Avalonia.Controls.Control>().First(c => Avalonia.Controls.ToolTip.GetTip(c) != null);
+            Assert.Equal(-1, Avalonia.Controls.ToolTip.GetBetweenShowDelay(tipped));
+            Avalonia.Controls.Button later = new();
+            Avalonia.Controls.ToolTip.SetTip(later, "later");
+            Assert.Equal(-1, Avalonia.Controls.ToolTip.GetBetweenShowDelay(later));
+        });
+    }
+
     [Fact]
     public async Task Follow_ARestingButtonOfTheFirstReport_DoesNotJump()
     {
@@ -419,12 +573,19 @@ public sealed class FollowInputTests
             MainWindowViewModel first = new(new FollowEngine(), new FollowCapture(), loadPersistedUiSettings: true);
             Assert.True(first.FollowInputOnBinds);
             Assert.False(first.RecordReleaseOfHeldButtons);
+            Assert.True(first.ShowFollowInputNote);
+            Assert.False(first.UsesAxesOf(Wooting));
             first.FollowInputOnBinds = false;
             first.RecordReleaseOfHeldButtons = true;
+            first.ShowFollowInputNote = false;
+            first.SetDeviceAxesInput(Wooting, true);
 
             MainWindowViewModel second = new(new FollowEngine(), new FollowCapture(), loadPersistedUiSettings: true);
             Assert.False(second.FollowInputOnBinds);
             Assert.True(second.RecordReleaseOfHeldButtons);
+            Assert.False(second.ShowFollowInputNote);
+            Assert.True(second.UsesAxesOf(Wooting));
+            Assert.False(second.UsesAxesOf("Keychron Q1 HE"));
         }
         finally
         {

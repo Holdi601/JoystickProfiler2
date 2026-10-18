@@ -5491,6 +5491,9 @@
                                 <StackPanel Spacing="6">
                                     <CheckBox Content="{l:T 'Follow input on the Binds and Relations pages'}" IsChecked="{Binding FollowInputOnBinds}"
                                               ToolTip.Tip="{l:T 'Press a button (or move an axis a long way) and the Binds or Relations page jumps to its relation; press it again for the next relation on it, the ones without modifiers first. Not while recording or typing in a box.'}" />
+                                    <CheckBox Content="{l:T 'Show the note over the list when follow input jumps'}" IsChecked="{Binding ShowFollowInputNote}" Margin="20,0,0,0"
+                                              IsEnabled="{Binding FollowInputOnBinds}"
+                                              ToolTip.Tip="{l:T 'The short note at the bottom of the list (BTN 8 on WarBRD: Gear) after follow input jumped. The list still jumps when it is off.'}" />
                                     <CheckBox Content="{l:T 'Record: also take a button that rests pressed when it is released'}" IsChecked="{Binding RecordReleaseOfHeldButtons}"
                                               ToolTip.Tip="{l:T 'Record only takes a button that changes state; a button already pressed when recording starts (a 3-way switch\'s middle, a mode switch) never counts. Ticked: letting it go counts as that button.'}" />
                                 </StackPanel>
@@ -5741,6 +5744,10 @@
                                                                 <PathIcon Data="{StaticResource Icon.Link}" Width="13" Height="13" Classes="info" IsVisible="{Binding InProfile}" />
                                                                 <TextBlock Text="{Binding ProfileText}" FontSize="11" Opacity="0.85" VerticalAlignment="Center" />
                                                             </StackPanel>
+                                                            <CheckBox IsVisible="{Binding IsKeyboardLike}" IsChecked="{Binding UsesAxes}" FontSize="12"
+                                                                      Content="{l:T 'Use its axes for follow input and recording'}"
+                                                                      Command="{Binding #RootWindow.DataContext.ToggleDeviceAxesInputCommand}" CommandParameter="{Binding}"
+                                                                      ToolTip.Tip="{l:T 'An analog keyboard reports its keys as axes too: typing moves them. JoyPro leaves its axes out of follow input and axis recording unless this is ticked. Its keys and buttons always count.'}" />
                                                             <WrapPanel IsVisible="{Binding InProfile}">
                                                                 <Button Content="{l:T 'Replace...'}" Classes="icon" Tag="{StaticResource Icon.Swap}" Padding="8,3" FontSize="12" Margin="0,2,4,0"
                                                                         Command="{Binding #RootWindow.DataContext.OpenReplaceDeviceCommand}" CommandParameter="{Binding}"

@@ -144,7 +144,12 @@ public sealed partial class MainWindowViewModel
 
         DeviceCards.Clear();
         foreach (DeviceCardItem card in set.Cards)
+        {
+            if (card.IsKeyboardLike)
+                keyboardLikeDevices.Add(DeviceMarkerText.DeviceName(card.Device));
+            card.UsesAxes = card.IsKeyboardLike && axisInputOptIns.Contains(DeviceMarkerText.DeviceName(card.Device));
             DeviceCards.Add(card);
+        }
         OtherDevicesText = set.Others;
         OnPropertyChanged(nameof(HasDeviceCards));
         if (announce)
@@ -327,7 +332,8 @@ public sealed partial class MainWindowViewModel
                 ModelId = shown?.Id ?? string.Empty,
                 KindLabel = kindLabel.Length > 0 ? kindLabel : chosenClass.Length > 0 ? DeviceClasses.Title(chosenClass) : modelClass == "keyboard" ? "Keyboard" : string.Empty,
                 IsVirtual = isVirtual,
-                NeedsGrip = needsAnswer
+                NeedsGrip = needsAnswer,
+                IsKeyboardLike = kind == "keyboard" || modelClass == "keyboard" || chosenClass == "keyboard" || KeyboardLikeDevices.IsKeyboardLike(info.Device)
             };
 
             // A drawing at once, like the Layout page: JoyPro's drawing of the model when it is recognizable, else the

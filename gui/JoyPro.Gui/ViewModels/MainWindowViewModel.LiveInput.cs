@@ -15,7 +15,9 @@ namespace JoyPro.Gui.ViewModels;
 // Live input on the pages that show binds and pictures (docs/ui/live-input.md):
 // - Binds and Relations pages, "Follow input": pressing a button (or moving an axis a long way) selects the relation
 //   bound to it; pressing it again steps through all relations on that input, the ones without modifiers first. Not
-//   while Record runs, a text box has the focus or the picture (Visual Assign) is open.
+//   while Record runs, a text box has the focus, the picture (Visual Assign) is open or another window is in front.
+//   The axes of analog keyboards (KeyboardLikeDevices: typing moves them) never count unless the user opted the device
+//   in (Settings > Devices); the same for recording an axis. Their buttons (keyboard binds) count.
 // - Visual Assign and the Layout page's device pictures: the pressed input's marker, its row in the lists and its
 //   line light up while it is held; an axis shows a small live bar.
 // One DirectInput monitor feeds both while one of them is on screen; it stops when the page is left, the window is
@@ -44,6 +46,23 @@ public sealed partial class MainWindowViewModel
     [ObservableProperty]
     private bool isTextInputFocused;
 
+    // Asked at every input: a text box has the focus right now (the window sets it; the flag above can lag behind).
+    internal Func<bool>? TextInputFocusProbe { get; set; }
+
+    // JoyPro's window is the active (foreground) one; follow input acts only then (the window sets it).
+    [ObservableProperty]
+    private bool isMainWindowActive = true;
+
+    // Settings > Binds: the note over the list ("BTN 8 on WarBRD: Gear (1/3)") after a jump (on by default).
+    [ObservableProperty]
+    private bool showFollowInputNote = true;
+
+    // Analog keyboards whose axes the user wants for follow input and recording (device names without GUID).
+    private readonly HashSet<string> axisInputOptIns = new(StringComparer.OrdinalIgnoreCase);
+
+    // Devices Settings > Devices showed as keyboards (also ones only the catalog's VID:PID knows).
+    private readonly HashSet<string> keyboardLikeDevices = new(StringComparer.OrdinalIgnoreCase);
+
     // "BTN 8 on L-VPC Stick WarBRD: Gear (1/3)", shown for a moment over the bind or relation list.
     [ObservableProperty]
     private string followInputToast = string.Empty;
@@ -68,6 +87,63 @@ public sealed partial class MainWindowViewModel
         if (!loadingUiSettings)
             SaveUiSettings();
         UpdateLiveInputMonitor();
+    }
+
+    partial void OnShowFollowInputNoteChanged(bool value)
+    {
+        if (!value)
+            FollowInputToast = string.Empty;
+        if (!loadingUiSettings)
+            SaveUiSettings();
+    }
+
+    // The device's axes count for follow input and recording: not an analog keyboard, or one the user opted in.
+    internal bool UsesAxesOf(string? device)
+    {
+        string name = DeviceMarkerText.DeviceName(device);
+        if (name.Length == 0)
+            return true;
+        bool keyboard = keyboardLikeDevices.Contains(name) || KeyboardLikeDevices.IsKeyboardLike(name);
+        return !keyboard || axisInputOptIns.Contains(name);
+    }
+
+    // Settings > Devices: "Use this device's axes for follow input and recording" on a keyboard's card.
+    [RelayCommand]
+    private void ToggleDeviceAxesInput(DeviceCardItem? card)
+    {
+        if (card == null)
+            return;
+        SetDeviceAxesInput(card.Device, card.UsesAxes);
+    }
+
+    internal void SetDeviceAxesInput(string device, bool use)
+    {
+        string name = DeviceMarkerText.DeviceName(device);
+        bool changed = use ? axisInputOptIns.Add(name) : axisInputOptIns.Remove(name);
+        if (!changed)
+            return;
+        followTracker.Reset();
+        if (!loadingUiSettings)
+            SaveUiSettings();
+    }
+
+    // For Record (asked off the UI thread): the devices whose axes do not count, as they are now.
+    internal Func<string, bool> AxisIgnorePredicate()
+    {
+        HashSet<string> optIns = new(axisInputOptIns, StringComparer.OrdinalIgnoreCase);
+        HashSet<string> keyboards = new(keyboardLikeDevices, StringComparer.OrdinalIgnoreCase);
+        return device =>
+        {
+            string name = DeviceMarkerText.DeviceName(device);
+            return name.Length > 0 && (keyboards.Contains(name) || KeyboardLikeDevices.IsKeyboardLike(name)) && !optIns.Contains(name);
+        };
+    }
+
+    partial void OnIsMainWindowActiveChanged(bool value)
+    {
+        // Back in front: the axes are where they are now, not a move.
+        if (value)
+            followTracker.Reset();
     }
 
     partial void OnRecordReleaseOfHeldButtonsChanged(bool value)
@@ -167,6 +243,9 @@ public sealed partial class MainWindowViewModel
             if (WorkspaceLiveInput.SetAxes(snapshot.Axes, snapshot.FirstReport).Count > 0)
                 RefreshLiveRows();
         }
+        // An analog keyboard's axes (typing moves them): never followed unless the user opted the device in.
+        if (!UsesAxesOf(snapshot.Device))
+            return;
         if (!CanFollowInput())
         {
             // Keeps the axis anchors where the axes are, so the first move after typing is not one big jump.
@@ -181,7 +260,21 @@ public sealed partial class MainWindowViewModel
     }
 
     private bool CanFollowInput() =>
-        FollowInputWanted && !(IsBindsStage && OpenVisualAssignMode) && !IsRecordingInput && !IsTextInputFocused;
+        FollowInputWanted && IsMainWindowActive && !(IsBindsStage && OpenVisualAssignMode) && !IsRecordingInput && !TextHasFocus();
+
+    private bool TextHasFocus()
+    {
+        if (IsTextInputFocused)
+            return true;
+        try
+        {
+            return TextInputFocusProbe?.Invoke() == true;
+        }
+        catch (Exception ex) when (ex is not OutOfMemoryException)
+        {
+            return false;
+        }
+    }
 
     // ---- Follow input: select the relation(s) bound to the input ----
 
@@ -291,6 +384,8 @@ public sealed partial class MainWindowViewModel
 
     private void ShowFollowToast(string text)
     {
+        if (!ShowFollowInputNote)
+            return;
         FollowInputToast = text;
         followToastCts?.Cancel();
         followToastCts = new CancellationTokenSource();

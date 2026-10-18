@@ -5511,6 +5511,8 @@ public sealed partial class MainWindowViewModel : ViewModelBase
         JoystickCaptureService.CaptureOptions options = new()
         {
             AxisMode = axisMode,
+            // Typing moves an analog keyboard's axes: not an axis move unless the user opted the device in.
+            IgnoreAxesOf = AxisIgnorePredicate(),
             PreferredDevice = BindDeviceInput,
             TimeoutMs = timeoutMs,
             WarmupMs = warmupMs,
@@ -11702,6 +11704,11 @@ public sealed partial class MainWindowViewModel : ViewModelBase
             CloseToTray = state.CloseToTray;
             ReadWarThunderArchives = state.ReadWarThunderArchives;
             FollowInputOnBinds = state.FollowInputOnBinds;
+            ShowFollowInputNote = state.ShowFollowInputNote;
+            axisInputOptIns.Clear();
+            foreach (string device in state.AxisInputDevices ?? [])
+                if (!string.IsNullOrWhiteSpace(device))
+                    axisInputOptIns.Add(device.Trim());
             RecordReleaseOfHeldButtons = state.RecordReleaseOfHeldButtons;
             HllvOodleAnswer = state.HllvOodleAnswer ?? string.Empty;
             HllvOodleFile = state.HllvOodleFile ?? string.Empty;
@@ -11760,6 +11767,8 @@ public sealed partial class MainWindowViewModel : ViewModelBase
                 CloseToTray = CloseToTray,
                 ReadWarThunderArchives = ReadWarThunderArchives,
                 FollowInputOnBinds = FollowInputOnBinds,
+                ShowFollowInputNote = ShowFollowInputNote,
+                AxisInputDevices = axisInputOptIns.OrderBy(d => d, StringComparer.OrdinalIgnoreCase).ToList(),
                 RecordReleaseOfHeldButtons = RecordReleaseOfHeldButtons,
                 HllvOodleAnswer = HllvOodleAnswer,
                 HllvOodleFile = HllvOodleFile,
@@ -11951,6 +11960,12 @@ public sealed partial class MainWindowViewModel : ViewModelBase
 
         // Binds page: pressing a button selects its relation (on by default).
         public bool FollowInputOnBinds { get; set; } = true;
+
+        // The note over the list after a follow-input jump (on by default).
+        public bool ShowFollowInputNote { get; set; } = true;
+
+        // Analog keyboards whose axes count for follow input and recording (Settings > Devices; names without GUID).
+        public List<string>? AxisInputDevices { get; set; }
 
         // Record: releasing a button that rests pressed counts (off by default).
         public bool RecordReleaseOfHeldButtons { get; set; }

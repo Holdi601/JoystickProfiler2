@@ -64,7 +64,18 @@ public partial class MainWindow : Window
         AddHandler(GotFocusEvent, (_, _) => UpdateTextInputFocus(), RoutingStrategies.Bubble, handledEventsToo: true);
         AddHandler(LostFocusEvent, (_, _) => Dispatcher.UIThread.Post(UpdateTextInputFocus), RoutingStrategies.Bubble, handledEventsToo: true);
         tooltipHold = new TooltipHold(this);
+        // Follow input acts only while JoyPro is the active window (typing in another program must not jump the list).
+        Activated += (_, _) => SetViewModelActive(true);
+        Deactivated += (_, _) => SetViewModelActive(false);
     }
+
+    private void SetViewModelActive(bool active)
+    {
+        if (DataContext is MainWindowViewModel vm)
+            vm.IsMainWindowActive = active;
+    }
+
+    private bool TextBoxHasFocus() => FocusManager?.GetFocusedElement() is TextBox;
 
     // Follow input moved the list under a resting mouse (or the window was in the background): no tooltip pops up
     // until the mouse really moves.
@@ -77,7 +88,7 @@ public partial class MainWindow : Window
     private void UpdateTextInputFocus()
     {
         if (DataContext is MainWindowViewModel vm)
-            vm.IsTextInputFocused = FocusManager?.GetFocusedElement() is TextBox;
+            vm.IsTextInputFocused = TextBoxHasFocus();
     }
 
     private async void OpenProfileClicked(object? sender, RoutedEventArgs e)
@@ -386,6 +397,7 @@ public partial class MainWindow : Window
 
     private void OnWindowOpened(object? sender, EventArgs e)
     {
+        SetViewModelActive(IsActive);
         if (DataContext is MainWindowViewModel startupVm)
         {
             _ = startupVm.RunStartupChecksAsync();
@@ -532,6 +544,8 @@ public partial class MainWindow : Window
             observedViewModel.SettingsSectionFocusRequested -= OnSettingsSectionFocusRequested;
             observedViewModel.AssistantMessages.CollectionChanged -= OnAssistantMessagesChanged;
             observedViewModel.FollowInputActivity -= OnFollowInputActivity;
+            observedViewModel.FollowInputJumped -= OnFollowInputActivity;
+            observedViewModel.TextInputFocusProbe = null;
             observedViewModel.ConfirmHandler = null;
         }
 
@@ -552,6 +566,9 @@ public partial class MainWindow : Window
             observedViewModel.SettingsSectionFocusRequested += OnSettingsSectionFocusRequested;
             observedViewModel.AssistantMessages.CollectionChanged += OnAssistantMessagesChanged;
             observedViewModel.FollowInputActivity += OnFollowInputActivity;
+            // Every jump arms the tooltip hold (again), whatever input caused it.
+            observedViewModel.FollowInputJumped += OnFollowInputActivity;
+            observedViewModel.TextInputFocusProbe = TextBoxHasFocus;
             observedViewModel.ConfirmHandler = AskConfirmationAsync;
             // The output panel's place follows the view model (hidden when closed) from the first layout on.
             Dispatcher.UIThread.Post(UpdateEngineOutputCompactLayout);

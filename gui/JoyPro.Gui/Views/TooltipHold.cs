@@ -20,7 +20,12 @@ namespace JoyPro.Gui.Views;
 // release the normal tooltip delay applies (the pointer must rest on the item).
 //
 // An inactive window (another program in front, e.g. the game) never shows a tooltip, and coming back to the window
-// arms the hold again, so a mouse resting where it was does not pop one either.
+// arms the hold again, so a mouse resting where it was does not pop one either. A key pressed in the window (typing,
+// keyboard navigation, a key bind that makes follow input jump) arms it too.
+//
+// Avalonia opens the next tooltip at once (no show delay) when another one was open or closed less than its
+// BetweenShowDelay ago; that made tooltips pop instantly along a list after a jump. Every control with a tooltip gets
+// BetweenShowDelay -1 here: each tooltip waits for its show delay with the mouse resting on the control.
 internal sealed class TooltipHold
 {
     public const double ReleasePath = 60;
@@ -43,6 +48,7 @@ internal sealed class TooltipHold
     {
         this.root = root;
         root.AddHandler(InputElement.PointerMovedEvent, OnPointerMoved, RoutingStrategies.Tunnel, handledEventsToo: true);
+        root.AddHandler(InputElement.KeyDownEvent, (_, _) => Hold(), RoutingStrategies.Tunnel, handledEventsToo: true);
         if (root is TopLevel topLevel)
             Holds.AddOrUpdate(topLevel, this);
         if (root is Window window)
@@ -51,6 +57,12 @@ internal sealed class TooltipHold
             window.Deactivated += (_, _) => SetActive(false);
         }
         InstallTipGuard();
+        // Tooltips set before the guard was there (the window's own XAML).
+        foreach (Control control in root.GetLogicalDescendants().OfType<Control>().Prepend(root))
+        {
+            if (ToolTip.GetTip(control) != null && !control.IsSet(ToolTip.BetweenShowDelayProperty))
+                ToolTip.SetBetweenShowDelay(control, -1);
+        }
     }
 
     // Follow input moved the content: no tooltip until the mouse really moves.
@@ -153,6 +165,11 @@ internal sealed class TooltipHold
         if (tipGuardInstalled)
             return;
         tipGuardInstalled = true;
+        ToolTip.TipProperty.Changed.AddClassHandler<Control>((control, e) =>
+        {
+            if (e.NewValue != null && !control.IsSet(ToolTip.BetweenShowDelayProperty))
+                ToolTip.SetBetweenShowDelay(control, -1);
+        });
         ToolTip.IsOpenProperty.Changed.AddClassHandler<Control>((control, e) =>
         {
             if (e.NewValue is not true || !KeepsBack(control))

@@ -82,6 +82,16 @@ public static class DeviceReferenceService
         }
     }
 
+    // The catalog when it is loaded already (never loads it; for checks on the UI thread).
+    public static DeviceCatalog? LoadedCatalog
+    {
+        get
+        {
+            lock (Gate)
+                return catalog;
+        }
+    }
+
     public static void Reload()
     {
         lock (Gate)

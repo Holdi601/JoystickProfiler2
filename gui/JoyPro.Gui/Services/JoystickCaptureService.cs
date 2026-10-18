@@ -60,6 +60,8 @@ public sealed class JoystickCaptureService : IJoystickCaptureService
         // A button that was already pressed when recording started (a resting switch position) counts when it is
         // released. Off: such buttons never count.
         public bool RecordReleaseOfHeldButtons { get; init; }
+        // Devices whose axes never count as an axis move (analog keyboards: typing moves them). Null = every device.
+        public Func<string, bool>? IgnoreAxesOf { get; init; }
     }
 
     public sealed class CaptureResult
@@ -153,6 +155,7 @@ public sealed class JoystickCaptureService : IJoystickCaptureService
 
         Stopwatch clock = Stopwatch.StartNew();
         int ignoredButtons = 0;
+        Dictionary<string, bool> axisIgnoreCache = new(StringComparer.OrdinalIgnoreCase);
         bool allowRelease = safeOptions.RecordReleaseOfHeldButtons;
         foreach (DirectInputPollingDevice device in directInputPollingDevices)
             device.Buttons = new RecordButtonTracker(PressedButtons(device.LastState.Buttons), PovAngles(device.LastState.Pov), allowRelease);
@@ -193,7 +196,11 @@ public sealed class JoystickCaptureService : IJoystickCaptureService
                     if (!TryReadDirectInputState(device.Device, out DirectInputJoyState currentState))
                         continue;
 
-                    if (axisMode)
+                    if (axisMode && IgnoresAxes(safeOptions, axisIgnoreCache, device.DisplayName))
+                    {
+                        // An analog keyboard: typing moves its axes; never an axis to record.
+                    }
+                    else if (axisMode)
                     {
                         int[] axes = AxisValues(currentState);
                         if (device.BaselineAxes == null)
@@ -256,7 +263,7 @@ public sealed class JoystickCaptureService : IJoystickCaptureService
                     else
                     {
 
-                        if (axisMode &&
+                        if (axisMode && !IgnoresAxes(safeOptions, axisIgnoreCache, name) &&
                             winMmBaselines.TryGetValue(device.Id, out JoyInfoEx baseline) &&
                             TryDetectAxis(baseline, current, device.Caps, axisThresholdPercent, out string axisInput))
                             return Found(name, axisInput);
@@ -284,6 +291,20 @@ public sealed class JoystickCaptureService : IJoystickCaptureService
         {
             foreach (DirectInputPollingDevice device in directInputPollingDevices)
                 device.Dispose();
+        }
+    }
+
+    private static bool IgnoresAxes(CaptureOptions options, Dictionary<string, bool> cache, string device)
+    {
+        try
+        {
+            if (!cache.TryGetValue(device, out bool ignored))
+                cache[device] = ignored = options.IgnoreAxesOf?.Invoke(device) == true;
+            return ignored;
+        }
+        catch (Exception ex) when (ex is not OutOfMemoryException)
+        {
+            return false;
         }
     }
 

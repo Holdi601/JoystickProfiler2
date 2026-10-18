@@ -27,7 +27,14 @@ Pressing a button or hat selects the relation bound to it; pressing it again sel
 input: the ones without modifiers first, then the ones with, each in list order. An axis moved more than 40 % of its
 travel selects its relation; every further large move (at least 350 ms apart) steps on, until the axis stops. A note
 over the list says what happened: "BTN 8 on L-VPC Stick WarBRD: Gear (1/3)". A relation hidden by the search is shown by
-clearing the search. No jumping while Record runs, a text box has the focus, or the picture (Visual Assign) is open.
+clearing the search. No jumping while Record runs, a text box has the focus (checked live at every input), the picture
+(Visual Assign) is open or JoyPro is not the active window. Settings > Binds can hide the note (the list still jumps).
+
+Analog keyboards (Wooting, Razer Huntsman V2 Analog / V3 Pro, SteelSeries Apex Pro, Keychron HE, any name with
+"keyboard", any catalog keyboard; `Services/KeyboardLikeDevices.cs`) report their keys as axes too, so typing moves them.
+Their axes count neither for follow input nor for recording an axis (`CaptureOptions.IgnoreAxesOf`) unless the device's
+card in Settings > Devices has "Use its axes for follow input and recording" ticked (`axisInputDevices` in the UI
+settings). Their keys and buttons always count (keyboard binds jump).
 Logic: `Services/FollowInputTracker.cs` (debounce 120 ms; a press in a device's first report counts only when released
 within 1.5 s), `MainWindowViewModel.LiveInput.cs`.
 
@@ -38,7 +45,10 @@ arms its hold again: tooltips off (`ToolTip.ServiceEnabled`, inherited), an open
 tooltip that still opens (a show timer started before the hold). Only real mouse movement releases it: a screen-space
 path of at least 60 px (device-independent, counted in steps of 4 px so jitter and synthetic moves at the same place
 never add up) that got at least 16 px away. Clicks, the wheel and keyboard focus do not release it. After the release
-the normal show delay applies. An inactive window never shows tooltips; becoming active arms the hold again.
+the normal show delay applies. An inactive window never shows tooltips; becoming active arms the hold again, and so does
+every key pressed in the window (typing never pops a tooltip under a resting mouse). Avalonia opens a tooltip at once
+when another one was open or closed within `ToolTip.BetweenShowDelay`; every control with a tooltip gets -1 there, so
+each tooltip waits for its own show delay with the mouse resting on it.
 
 ## Live highlight (Visual Assign, Layout page)
 
