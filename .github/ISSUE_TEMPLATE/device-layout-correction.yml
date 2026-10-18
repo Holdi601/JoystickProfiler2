@@ -1,0 +1,29 @@
+name: Device layout correction
+description: JoyPro put a control of your device on the wrong spot, or forgot one (sent from the Layout page)
+title: "Device layout correction: "
+labels: ["device-correction"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks! JoyPro filled this in from your Layout page ("Send correction to JoyPro"). It holds only the device model,
+        its USB id, the picture, the positions you placed and the controls you added or renamed. If the correction is
+        too long for the form, attach the file JoyPro saved (the path is in JoyPro's status line).
+  - type: input
+    id: model
+    attributes:
+      label: Device model (JoyPro id)
+    validations:
+      required: true
+  - type: textarea
+    id: correction
+    attributes:
+      label: Correction (joypro-device-correction)
+      render: json
+    validations:
+      required: true
+  - type: textarea
+    id: notes
+    attributes:
+      label: What was wrong? (optional)
+      placeholder: "e.g. the 4-way hat with press on the left side was missing"
