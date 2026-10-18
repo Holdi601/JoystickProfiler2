@@ -1,7 +1,7 @@
 # Posts every published JoyPro release (its release notes and the download link) to a Discord channel.
 # Needs the repository secret DISCORD_WEBHOOK_URL (Discord: channel settings > Integrations > Webhooks > New Webhook >
 # Copy Webhook URL; GitHub: Settings > Secrets and variables > Actions > New repository secret). Without the secret the
-# job does nothing. Releases of picture packs (tags starting with "cockpit-pictures") are not announced.
+# job does nothing. Only app versions (tags starting with "v") are announced; picture and 3D packs are not.
 name: Discord release notice
 
 on:
@@ -10,7 +10,7 @@ on:
 
 jobs:
   notify:
-    if: ${{ !startsWith(github.event.release.tag_name, 'cockpit-pictures') && !github.event.release.prerelease }}
+    if: ${{ startsWith(github.event.release.tag_name, 'v') && !github.event.release.prerelease }}
     runs-on: ubuntu-latest
     steps:
       - name: Post the release to Discord
