@@ -1,0 +1,300 @@
+{
+  "format": "joypro-cockpit-guide",
+  "version": 1,
+  "id": "sim-extra-330lt",
+  "title": "Extra 330LT (cockpit)",
+  "variants": [
+    "extra-330lt"
+  ],
+  "games": [
+    "MSFS2020",
+    "MSFS2024"
+  ],
+  "sets": [],
+  "intro": "The Extra 330LT is an aerobatic aeroplane built for stunt flying. The cockpit is small and simple: a centre stick, rudder pedals, a compact panel with one big Garmin G3X screen and a few backup instruments, and a quadrant of three levers on the left side for the throttle, the propeller and the mixture.",
+  "sources": [
+    {
+      "id": "c1",
+      "title": "JoyPro cockpit catalog",
+      "kind": "reference"
+    },
+    {
+      "id": "s1",
+      "title": "Extra EA-300 (Wikipedia, includes the 330)",
+      "url": "https://en.wikipedia.org/wiki/Extra_EA-300"
+    },
+    {
+      "id": "e1",
+      "title": "Extra 330LT (public knowledge: aerobatic single-seat cockpit, Garmin G3X)"
+    },
+    {
+      "id": "fn",
+      "title": "JoyPro function tables MSFS2020/2024 and X-Plane 11/12 (DB/Functions)"
+    }
+  ],
+  "areas": [
+    {
+      "id": "front-center",
+      "where": "front-center",
+      "name": "Instrument panel",
+      "text": "A compact panel with one large screen and a few backup instruments.",
+      "panels": [
+        {
+          "id": "instrument-panel",
+          "name": "Instrument panel",
+          "db": "instrument-panel",
+          "src": "e1",
+          "text": "A compact aerobatic panel with the Garmin G3X display, a G-meter, backup speed and height gauges, the magneto and starter switch and the electrical switches.",
+          "context": "The pilot flies mostly by looking outside. The panel shows the speed, the height, the engine data and how hard the aircraft is pulled in turns.",
+          "controls": [
+            {
+              "id": "g3x",
+              "name": "Garmin G3X display",
+              "type": "display",
+              "match": [
+                "item:instrument-panel:1"
+              ],
+              "text": "This large screen shows the flight data (attitude, speed, height) and the engine data. It replaces many round gauges.",
+              "context": "It is the main instrument of the panel."
+            },
+            {
+              "id": "gmeter",
+              "name": "G-meter",
+              "type": "gauge",
+              "match": [
+                "item:instrument-panel:2"
+              ],
+              "text": "This gauge shows the load factor, in G. It shows how hard the pilot is pushed into the seat during turns and pull-ups.",
+              "context": "In aerobatics, the pilot watches it to stay within the limits of the aircraft and of the pilot."
+            },
+            {
+              "id": "asi",
+              "name": "Airspeed indicator",
+              "type": "gauge",
+              "match": [
+                "item:instrument-panel:3"
+              ],
+              "text": "A backup gauge that shows how fast the aircraft moves through the air.",
+              "context": "It is used if the screen fails and as a cross-check."
+            },
+            {
+              "id": "altimeter",
+              "name": "Altimeter",
+              "type": "gauge",
+              "match": [
+                "item:instrument-panel:4"
+              ],
+              "text": "A backup gauge that shows the height above sea level.",
+              "context": "It is used if the screen fails and as a cross-check."
+            },
+            {
+              "id": "magneto",
+              "name": "Magneto / starter switch",
+              "type": "selector",
+              "match": [
+                "item:instrument-panel:5"
+              ],
+              "positions": [
+                {
+                  "name": "OFF",
+                  "text": "The magnetos are off and the engine stops."
+                },
+                {
+                  "name": "R",
+                  "text": "Only the right magneto gives sparks."
+                },
+                {
+                  "name": "L",
+                  "text": "Only the left magneto gives sparks."
+                },
+                {
+                  "name": "BOTH",
+                  "text": "Both magnetos work, the normal setting."
+                },
+                {
+                  "name": "START",
+                  "text": "The starter turns the engine. It springs back to BOTH on release."
+                }
+              ],
+              "text": "This switch turns on the magnetos (the sparks of the engine) and the starter. The pilot turns it to START to crank the engine, then it springs back to BOTH.",
+              "context": "It works like the ignition key of a car, but the engine has two magnetos for safety."
+            },
+            {
+              "id": "master",
+              "name": "Master and avionics switches",
+              "type": "switch",
+              "match": [
+                "item:instrument-panel:6"
+              ],
+              "text": "These switches connect the battery to the aircraft and give power to the screen and the radios (avionics).",
+              "context": "The pilot switches the master on first."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "left-side",
+      "where": "left-side",
+      "name": "Left side: engine levers and trim",
+      "text": "The levers on the left side of the cockpit for the engine, the trim and the fuel.",
+      "panels": [
+        {
+          "id": "left-side",
+          "name": "Left side console",
+          "db": "left-side",
+          "src": "e1",
+          "text": "The quadrant on the left side with the throttle, propeller and mixture levers, the elevator trim lever and the fuel selector or pump.",
+          "context": "The pilot handles the engine and the trim with the left hand.",
+          "controls": [
+            {
+              "id": "throttle",
+              "name": "Throttle lever",
+              "type": "lever",
+              "match": [
+                "item:left-side:1"
+              ],
+              "text": "This lever controls the engine power. Moving it forward gives more power.",
+              "context": "The pilot pushes it forward for take-off and pulls it back for landing."
+            },
+            {
+              "id": "prop",
+              "name": "Propeller lever",
+              "type": "lever",
+              "match": [
+                "item:left-side:2"
+              ],
+              "text": "This lever sets how fast the propeller turns. The engine has a propeller that changes its pitch (how sharply the blades bite the air).",
+              "context": "The pilot sets a high speed for take-off and a lower one for cruise."
+            },
+            {
+              "id": "mixture",
+              "name": "Mixture lever",
+              "type": "lever",
+              "match": [
+                "item:left-side:3"
+              ],
+              "text": "This lever sets the fuel and air mixture from rich to lean. Fully back stops the engine.",
+              "context": "The pilot leans the mixture at high altitude."
+            },
+            {
+              "id": "trim",
+              "name": "Elevator trim lever",
+              "type": "lever",
+              "match": [
+                "item:left-side:4"
+              ],
+              "text": "This small lever trims the elevator, the flap on the tail that pitches the nose. It takes the force from the stick.",
+              "context": "The pilot trims whenever the speed changes."
+            },
+            {
+              "id": "fuel",
+              "name": "Fuel selector / pump",
+              "type": "selector",
+              "match": [
+                "item:left-side:5"
+              ],
+              "text": "This control chooses the fuel tank and works the fuel pump.",
+              "context": "The pilot sets it for the start and changes it in flight when needed."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "hotas",
+      "where": "hotas",
+      "name": "Stick, levers and pedals",
+      "text": "The controls that match your joystick, throttle and pedals.",
+      "panels": [
+        {
+          "id": "stick",
+          "name": "Control stick",
+          "src": "e1",
+          "text": "The centre stick between the pilot's knees.",
+          "context": "The pilot flies by moving the stick.",
+          "controls": [
+            {
+              "id": "stick-gimbal",
+              "name": "Control stick",
+              "type": "axis",
+              "match": [
+                "control:stick.gimbal"
+              ],
+              "text": "Pushing the stick forward and pulling it back moves the elevator and pitches the nose down and up. Moving it sideways rolls the aircraft.",
+              "context": "It is the main control for flying by hand and for aerobatics."
+            }
+          ]
+        },
+        {
+          "id": "throttle",
+          "name": "Engine levers and trim",
+          "src": "e1",
+          "text": "The throttle, propeller and mixture levers on the left side and the trim lever, as they match a throttle device.",
+          "context": "The pilot handles them with the left hand.",
+          "controls": [
+            {
+              "id": "lever-1",
+              "name": "Throttle",
+              "type": "axis",
+              "match": [
+                "control:quadrant.axis.lever.1"
+              ],
+              "text": "The throttle lever on the left side. Moving it forward gives more engine power.",
+              "context": "On a throttle device this is the first of three lever axes."
+            },
+            {
+              "id": "lever-2",
+              "name": "Propeller",
+              "type": "axis",
+              "match": [
+                "control:quadrant.axis.lever.2"
+              ],
+              "text": "The lever beside the throttle. It sets the speed of the propeller.",
+              "context": "On a throttle device this is the second of three lever axes."
+            },
+            {
+              "id": "lever-3",
+              "name": "Mixture",
+              "type": "axis",
+              "match": [
+                "control:quadrant.axis.lever.3"
+              ],
+              "text": "The lever beside the propeller lever. It sets the mixture from rich to cut-off.",
+              "context": "On a throttle device this is the third lever axis."
+            },
+            {
+              "id": "trim-hotas",
+              "name": "Elevator trim lever",
+              "type": "lever",
+              "match": [
+                "control:quadrant.lever.trim"
+              ],
+              "text": "The small lever on the left side. Moving it forward trims the nose down, aft trims the nose up.",
+              "context": "Trim takes the force off the stick."
+            }
+          ]
+        },
+        {
+          "id": "pedals",
+          "name": "Rudder pedals",
+          "src": "e1",
+          "text": "The rudder pedals at the pilot's feet with the toe brakes on top.",
+          "context": "They steer the aircraft in the air and on the ground.",
+          "controls": [
+            {
+              "id": "pedals-hotas",
+              "name": "Rudder pedals",
+              "type": "axis",
+              "match": [
+                "control:pedals.axis.rudder"
+              ],
+              "text": "The pedals move the rudder left and right. The toe brakes on top of the pedals brake the left and right wheels.",
+              "context": "The pedals keep the aircraft straight and are used in aerobatic figures."
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

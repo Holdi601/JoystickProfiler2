@@ -34,7 +34,7 @@ The lists go to the game-data folder `%LOCALAPPDATA%\JoyPro\GameData` (`DB\<game
 ([installs.md](../installs.md#game-data); `engine db paths` shows where each list is read from).
 Every game needs to be installed (or its folder linked); what else each build needs:
 
-Measured on the dev PC with a release-like engine folder (game data removed by `tools/ReleaseContent.psm1`) and an empty
+Measured with a release-like engine folder (game data removed by `tools/ReleaseContent.psm1`) and an empty
 `JOYPRO_DATA_DIR`, one `refresh-db` per game, as the GUI's "Build All Missing Lists" runs them. "Before" = the build of
 2026-10-11, "after" = 2026-10-12 (this change), "dev" = the development list in `EngineOnly_Runtime`.
 
@@ -42,7 +42,7 @@ Measured on the dev PC with a release-like engine folder (game data removed by `
 |---|---|---|---|---|---|---|
 | DCS World | `dcs refresh id` + `dcs refresh clean` (headless Lua) | the DCS install's input Lua files, run by its own `luae.exe` in a temporary Saved Games folder | 92 html, 1027 / 89 clean profiles | (not rerun, unchanged) | 119 html, 1145 / 118 | only the installed modules get lists (correct) |
 | IL-2 Great Battles | `db refresh-il2` | `data\input\*.actions` the game writes | 376 | 376 | 450 | the game writes only actions that have an input; the 74 others are only in the maintainer's development list (not shipped) and are not rebuilt |
-| IL-2 Series: Korea | `il2korea refresh-db` | `general.actions`; titles from IL-2 GB's built list or, without it, IL-2 GB's own `data\input\*.actions`; JoyPro's own wording for the rest | 318 (91 titles were ids) | 318 (the cryptic ids get JoyPro's wording) | 378 | Korea's own texts are in its encrypted `.gtp` archives, which JoyPro does not read; 60 actions without an input are not in `general.actions` |
+| IL-2 Series: Korea | `il2korea refresh-db` | `general.actions`; titles from IL-2 GB's built list or, without it, IL-2 GB's own `data\input\*.actions`; JoyPro's own wording for the rest | 318 (91 titles were ids) | 318 (the cryptic ids get JoyPro's wording) | 378 | Korea's own texts are in its `.gtp` archives, which JoyPro does not read; 60 actions without an input are not in `general.actions` |
 | Star Citizen | `db refresh-starcitizen` | `Data.p4k` (defaultProfile.xml) and user profiles | 1103 | 1103 | 1103 | — |
 | War Thunder | `warthunder refresh-db` | `gui.vromfs.bin` / `lang.vromfs.bin` **by default** (user decision 2026-10-12); `--no-game-archives` (Settings > Games) = JoyPro's own list | 116 | 290 | 290 | no base preset table (exports write tuned attributes explicitly) |
 | X-Plane 12 / 11 | `xplane12` / `xplane11 refresh-db` | `Resources\plugins\Commands.txt` | 2779 / 2066 | same | same | — |
@@ -55,12 +55,12 @@ Measured on the dev PC with a release-like engine folder (game data removed by `
 | Nuclear Option | `nuclearoption refresh-db` | `resources.assets` | 95 | 95 | 95 | — |
 | Tiny Combat Arena | `tca refresh-db` | `sharedassets` (Rewired) | 97 | 97 | 97 | — |
 | VTOL VR native | `vtolvr-native refresh-db` | `level0` | 3 | 3 | 3 | — |
-| VTOL VR (BYOJoystick) | `vtolvr refresh-db` | **the installed mod's `BYOJoystick.dll`** (Steam Workshop item; GUI: Install BYOJoystick on the VTOL VR card), else the user's own `BYOJ_*.xml` | failed | failed (the mod is not installed on the dev PC) | 433 | the full list after the user installs the mod; the reader is tested with a stand-in DLL only |
+| VTOL VR (BYOJoystick) | `vtolvr refresh-db` | **the installed mod's `BYOJoystick.dll`** (Steam Workshop item; GUI: Install BYOJoystick on the VTOL VR card), else the user's own `BYOJ_*.xml` | failed | failed (the mod is not installed on a test PC) | 433 | the full list after the user installs the mod; the reader is tested with a stand-in DLL only |
 | WARDOGS | `wardogs refresh-db` | the user's `GameUserSettings.ini` + JoyPro's axes | 28 | 28 | 28 | — |
 | Hell Let Loose: Vietnam | `hllv refresh-db` | **JoyPro's own table** of the three pad layouts and pilot keys; the game's files only with an Oodle library (the game ships none; another installed game's only after the user's yes, asked when the list is built) | 28 (read silently with Battlefield 6's Oodle) | 28 (own table, no yes given) | — | the game's own wording only with the user's consent to another game's Oodle library |
 | G-Rebels | `grebels refresh-db` | **JoyPro's own table** (axis roles, buttons) | failed (no refresh) | 7 | 7 | — |
 | Battlefield 6 / ACE COMBAT 8 | `bf6` / `ac8 refresh-db` | the user's profile / `System.sav` | 65 / 13 | same | — | — |
-| ACE COMBAT 7 | `ac7 refresh-db` | `Input.ini` the game writes | failed | failed | — | the game must have been started once (other agent's integration) |
+| ACE COMBAT 7 | `ac7 refresh-db` | `Input.ini` the game writes | failed | failed | — | the game must have been started once |
 | IL-2 Sturmovik: 1946 | `il21946 refresh-db` | **JoyPro's own command list** + the commands `Users\default.ini`, `conf.ini` and the pilots' `settings.ini` name | 187 | 187 | 125 | titles of commands JoyPro does not list are humanized ids |
 | Cliffs of Dover / Blitz | `il2cod` / `il2codblitz refresh-db` | **JoyPro's own command list** + the user's and the install's `confUser.ini` | 227 / 228 | same | 106 | as above |
 | FSX / FSX-SE / Prepar3D v4-v6 | `fsx` / `fsxse` / `p3d4` / `p3d5` / `p3d6 refresh-db` | **JoyPro's own event list** (public SDK ids, own titles) + the events of the user's control files, FSX's install template, Prepar3D's `Standard.xmlx` | 149 own (not installed) | same | 149 | — |

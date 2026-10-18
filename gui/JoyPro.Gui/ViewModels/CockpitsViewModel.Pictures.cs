@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Globalization;
 using System.Linq;
 using System.Threading.Tasks;
@@ -19,7 +20,7 @@ public sealed partial class CockpitsViewModel
     public const int ModeDrawing = 1;
 
     // The games "Build pictures from my games" reads (engine cockpits pictures build --game all); game names stay as they are.
-    public const string PictureGamesText = "DCS World, X-Plane 12, Microsoft Flight Simulator 2020, IL-2 Great Battles, Nuclear Option";
+    public const string PictureGamesText = "DCS World, X-Plane 12, Microsoft Flight Simulator 2020, IL-2 Great Battles, Nuclear Option, Star Citizen";
 
     public string PictureGames => PictureGamesText;
 
@@ -68,13 +69,58 @@ public sealed partial class CockpitsViewModel
 
     partial void OnPictureModeIndexChanged(int value) => BuildPages();
 
+    // The games that have pictures of the variant (several: "Pictures from" lets the user pick; the first is the best:
+    // a low-quality set comes last).
+    public ObservableCollection<string> GamePictureSources { get; } = [];
+
+    public bool HasGamePictureChoice => GamePictureSources.Count > 1;
+
+    [ObservableProperty] private int gamePictureSourceIndex;
+
+    private string? sourcesVariant;
+    private bool fillingSources;
+
+    partial void OnGamePictureSourceIndexChanged(int value)
+    {
+        if (!fillingSources && value >= 0)
+            BuildPages();
+    }
+
+    private string SourceName(CockpitPictureSet s)
+    {
+        string game = CockpitManualPages.GameName(s.Game);
+        return s.LowQuality ? T("{0} (low quality)", game)
+            : string.Equals(s.Source, "screenshot", StringComparison.OrdinalIgnoreCase) ? T("{0} (screenshots)", game) : game;
+    }
+
     // The set for the variant (looked up again on every page build: a build may have made it meanwhile).
     private CockpitPictureSet? FindGamePictures(CockpitVariant? v)
     {
         CockpitPictureSet? set = null;
         try
         {
-            set = v == null ? null : CockpitPictureSet.For(v, PicturesRoot);
+            List<CockpitPictureSet> all = v == null ? [] : CockpitPictureSet.AllFor(v, PicturesRoot);
+            fillingSources = true;
+            try
+            {
+                List<string> names = all.Select(SourceName).ToList();
+                if (!names.SequenceEqual(GamePictureSources))
+                {
+                    GamePictureSources.Clear();
+                    foreach (string n in names)
+                        GamePictureSources.Add(n);
+                }
+                // Another variant starts with the best set.
+                if (!string.Equals(sourcesVariant, v?.Id, StringComparison.OrdinalIgnoreCase) || GamePictureSourceIndex < 0 || GamePictureSourceIndex >= all.Count)
+                    GamePictureSourceIndex = 0;
+                sourcesVariant = v?.Id;
+            }
+            finally
+            {
+                fillingSources = false;
+            }
+            OnPropertyChanged(nameof(HasGamePictureChoice));
+            set = all.Count == 0 ? null : all[Math.Max(0, Math.Min(all.Count - 1, GamePictureSourceIndex))];
         }
         catch (Exception)
         {

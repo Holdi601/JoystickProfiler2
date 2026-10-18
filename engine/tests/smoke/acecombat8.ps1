@@ -5,7 +5,7 @@
 #  1. ac8 refresh-db: the fixed sticks from JoyPro's table, the mappable keys from the save (the swapped ones too).
 #  2. vjoy mode AceCombat8 xbox: pitch/roll on the left stick, the throttle relation on both triggers (centre split),
 #     the missile button on the key the player set.
-#  3. export writes nothing (checksummed settings, Easy Anti-Cheat) and says so; the save stays byte-identical.
+#  3. export writes nothing (checksummed settings) and says so; the save stays byte-identical.
 $acDir = Join-Path $tempDir "acecombat8"
 $acFake = Join-Path $acDir "fake"
 New-Item -ItemType Directory -Force -Path $acFake | Out-Null

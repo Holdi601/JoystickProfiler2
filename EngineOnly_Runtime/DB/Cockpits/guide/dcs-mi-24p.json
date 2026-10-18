@@ -1,0 +1,1975 @@
+{
+  "format": "joypro-cockpit-guide",
+  "version": 1,
+  "id": "dcs-mi-24p",
+  "title": "Mi-24P Hind (DCS)",
+  "variants": [
+    "mi-24p-pilot",
+    "mi-24p-operator"
+  ],
+  "games": [
+    "DCS"
+  ],
+  "sets": [
+    "DCS/Mi-24P"
+  ],
+  "sources": [
+    {
+      "id": "m1",
+      "title": "DCS Mi-24P Quick Start Manual EN",
+      "file": "Mods/aircraft/Mi-24P/Doc/Mi-24P Quick Start Manual EN.pdf"
+    }
+  ],
+  "intro": "The Mi-24P Hind is a Soviet attack helicopter with two cockpits one behind the other. The pilot-commander sits in the raised rear cockpit, flies the helicopter and fires the fixed gun, the rockets and the bombs. The pilot-operator (the gunner) sits in the lower front cockpit and aims and guides the anti-tank missiles through a periscope sight. The rear cockpit holds most of the switches, circuit breakers and radios; the front cockpit has fewer controls.",
+  "areas": [
+    {
+      "id": "pilot-glareshield",
+      "where": "glareshield",
+      "name": "Glareshield and sight",
+      "seat": 1,
+      "text": "The top of the instrument panel, right in front of the pilot's eyes. The aiming sight sits here, and a small cockpit fan.",
+      "panels": [
+        {
+          "id": "asp-17v",
+          "name": "ASP-17V pilot-commander sight",
+          "db": "asp-17v-sight",
+          "src": "m1",
+          "page": "32",
+          "text": "This is the aiming sight of the pilot-commander, mounted in front of the windscreen. A glass plate shows aiming marks the pilot looks through at the target. The panel around it has the knobs and switches that set the marks.",
+          "context": "The pilot uses it for the fixed gun, the rockets and the bombs. For the anti-tank missiles it is only a helper: the pilot flies the helicopter so that the sight's marks line up, and the operator fires.",
+          "controls": [
+            {
+              "id": "auto-manual",
+              "name": "AUTO-MANUAL switch (how the sight finds the aim point)",
+              "type": "switch2",
+              "match": [
+                "SIGHT-MAN-AUTO-PTR",
+                "item:asp-17v-sight:1"
+              ],
+              "positions": [
+                {
+                  "name": "AUTO",
+                  "text": "The sight's fire control computer works out the firing solution (where to aim) by itself."
+                },
+                {
+                  "name": "MANUAL",
+                  "text": "The pilot sets the range to the target by hand with the manual range knob on the weapons panel."
+                }
+              ],
+              "text": "This switch chooses who works out where to aim. In AUTO the sight's computer does it. In MANUAL the pilot types in the distance to the target by hand.",
+              "context": "The manual says the moving aiming mark gives a valid firing solution in AUTO only for the GUV-8700 gun pods, the S-5KO and S-8 rockets and the 30 mm cannon. The guided missile procedure also sets the sight to AUTO.",
+              "src": "m1",
+              "page": "32"
+            },
+            {
+              "id": "sync-async",
+              "name": "SYNC-ASYNC switch (moving targets)",
+              "type": "switch2",
+              "match": [
+                "SIGHT-SYNC-UNSYNC-PTR",
+                "item:asp-17v-sight:2"
+              ],
+              "positions": [
+                {
+                  "name": "SYNC",
+                  "text": "The computer adjusts for the target's speed after the pilot tracks it with the mark for two to three seconds."
+                },
+                {
+                  "name": "ASYNC",
+                  "text": "In AUTO mode the computer corrects for wind and sideslip only; this suits targets that do not move."
+                }
+              ],
+              "text": "This switch decides how the sight handles a target that moves. In SYNC the sight learns the target's speed. In ASYNC it only takes wind and sideways slip into account.",
+              "context": "The manual says ASYNC suits targets that stand still. In SYNC the pilot keeps the aiming mark on the moving target for two or three seconds, and the computer then corrects for the target's speed.",
+              "src": "m1",
+              "page": "32"
+            },
+            {
+              "id": "degrees-scale",
+              "name": "Sight degrees scale",
+              "type": "indicator",
+              "match": [
+                "item:asp-17v-sight:3"
+              ],
+              "text": "This is a printed scale on the sight with angles in degrees. The pilot reads from it how far the moving aiming mark is moved.",
+              "context": "The manual lists it as the sight degrees scale for the aiming mark. It belongs to the manual setting of the mark.",
+              "src": "m1",
+              "page": "32"
+            },
+            {
+              "id": "depression-knob",
+              "name": "Floating reticle depression knob",
+              "type": "knob",
+              "match": [
+                "SIGHT-VERT-KNOB-PTR",
+                "item:asp-17v-sight:4"
+              ],
+              "text": "Turning this knob moves the moving aiming mark up or down in the sight. The game names it the Sight Crosshair Vertical Adjustment.",
+              "context": "The manual calls it the floating reticle depression setting. The pilot uses it in manual mode, with the values from the weapons tables.",
+              "src": "m1",
+              "page": "33"
+            },
+            {
+              "id": "base-knob",
+              "name": "Target base size knob",
+              "type": "knob",
+              "match": [
+                "SIGHT-BASE-KNOB-PTR",
+                "item:asp-17v-sight:5"
+              ],
+              "text": "This knob tells the sight how big the target really is. With the target's size the sight can measure the distance by itself in AUTO mode.",
+              "context": "The manual says the size set here is used for the automatic distance calculation. The scale next to the knob shows the number that was set.",
+              "src": "m1",
+              "page": "33"
+            },
+            {
+              "id": "base-scale",
+              "name": "Target base size scale",
+              "type": "indicator",
+              "match": [
+                "item:asp-17v-sight:6"
+              ],
+              "text": "This printed scale shows the target size that is set with the target base size knob.",
+              "context": "It sits next to the knob. The pilot reads it to check the setting before an attack.",
+              "src": "m1",
+              "page": "33"
+            },
+            {
+              "id": "adjust-handles",
+              "name": "Sight adjustment handles",
+              "type": "handle",
+              "match": [
+                "ILS-ADJUST-HANDLE-PTR",
+                "item:asp-17v-sight:7"
+              ],
+              "text": "These handles move the sight, so that its glass plate can be adjusted. The game names the clickable part 'Sight reflector control'.",
+              "context": "The manual lists the adjustment handles and the reflector glass as separate parts of the sight. It does not describe how they are used.",
+              "src": "m1",
+              "page": "33"
+            },
+            {
+              "id": "reflector-glass",
+              "name": "Reflector glass",
+              "type": "other",
+              "match": [
+                "item:asp-17v-sight:8"
+              ],
+              "text": "This is the clear glass plate in front of the pilot's eyes. The aiming marks are shown on it, so the pilot sees them over the outside world.",
+              "context": "The pilot looks through it at the target. The marks on it come from the fixed and the floating reticle.",
+              "src": "m1",
+              "page": "33"
+            },
+            {
+              "id": "floating-reticle",
+              "name": "Floating aiming reticle (moving mark)",
+              "type": "indicator",
+              "match": [
+                "item:asp-17v-sight:9"
+              ],
+              "text": "This is the aiming mark that moves on the glass. It shows where the weapon will hit. A part of it also shows the distance to the target and the effective range of the weapon.",
+              "context": "The manual says the mark has a centre point, target base lines, a sideslip indicator, a distance arc and an effective range arc. The distance arc shrinks as the target comes closer.",
+              "src": "m1",
+              "page": "35"
+            },
+            {
+              "id": "fixed-reticle",
+              "name": "Fixed aiming reticle (net)",
+              "type": "indicator",
+              "match": [
+                "item:asp-17v-sight:10"
+              ],
+              "text": "This is the aiming mark that stays at one place on the glass. It is made of two rings and is 8 degrees wide.",
+              "context": "For the anti-tank missile attack the pilot flies the helicopter until the moving mark sits in the inner ring of the fixed mark. The manual describes this on page 57.",
+              "src": "m1",
+              "page": "34"
+            },
+            {
+              "id": "indicator-lights",
+              "name": "Indicator lights (green, yellow, red)",
+              "type": "light",
+              "match": [
+                "item:asp-17v-sight:11"
+              ],
+              "text": "These lights tell the pilot about the sight. Green means that automatic ranging is on. Yellow means that the target is inside the best range of the weapon.",
+              "context": "The manual says the red light does not work in this helicopter. Elsewhere it says a red light in the sight and a beep show launch approval for the missile; the two statements are not explained further.",
+              "src": "m1",
+              "page": "33"
+            },
+            {
+              "id": "weapon-indicators",
+              "name": "Weapon selection indicators (USLP, FXD MG, BOMBS, 30, RKT)",
+              "type": "light",
+              "match": [
+                "item:asp-17v-sight:12"
+              ],
+              "text": "These lamps show which weapon is selected on the weapons panel. There is one lamp each for the cluster dispenser, the gun pod, the bombs, the 30 mm cannon and the rockets.",
+              "context": "After choosing a weapon the pilot checks that the matching lamp is lit. The manual shows this with the 30 mm cannon, where the lamp marked 30 lights.",
+              "src": "m1",
+              "page": "33"
+            },
+            {
+              "id": "float-brightness",
+              "name": "Floating reticle brightness knob",
+              "type": "knob",
+              "match": [
+                "SIGHT-CROSSHAIR-BRIGHNTNESS-KNOB-PTR",
+                "item:asp-17v-sight:13"
+              ],
+              "text": "This knob makes the moving aiming mark brighter or dimmer. The game calls it the Sight Crosshair Brightness Adjustment.",
+              "context": "The pilot sets the brightness to the light outside, brighter by day and dimmer at night, so the mark stays easy to see.",
+              "src": "m1",
+              "page": "33"
+            },
+            {
+              "id": "horizontal-indication",
+              "name": "Floating reticle horizontal indication",
+              "type": "indicator",
+              "match": [
+                "item:asp-17v-sight:14"
+              ],
+              "text": "This printed scale shows how far the moving aiming mark has been moved sideways with the horizontal knob.",
+              "context": "It belongs to the horizontal adjustment knob next to it.",
+              "src": "m1",
+              "page": "33"
+            },
+            {
+              "id": "horizontal-knob",
+              "name": "Floating reticle horizontal adjustment knob",
+              "type": "knob",
+              "match": [
+                "SIGHT-HOR-KNOB-PTR",
+                "item:asp-17v-sight:15"
+              ],
+              "text": "This knob moves the moving aiming mark to the left or to the right. The game calls it the Sight Crosshair Horizontal Adjustment.",
+              "context": "The pilot uses it to bring the mark to the right place sideways, for example in manual mode.",
+              "src": "m1",
+              "page": "33"
+            },
+            {
+              "id": "fixed-brightness",
+              "name": "Fixed reticle brightness knob",
+              "type": "knob",
+              "match": [
+                "SIGHT-GRID-BRIGHNTNESS-KNOB-PTR",
+                "item:asp-17v-sight:16"
+              ],
+              "text": "This knob makes the fixed aiming mark, the ring net, brighter or dimmer. The game calls it the Sight Grid Brightness Adjustment.",
+              "context": "It is set separately from the moving mark, so the pilot can see both marks equally well.",
+              "src": "m1",
+              "page": "33"
+            },
+            {
+              "id": "fixed-backup",
+              "name": "Fixed reticle lamp switch (MAIN / BACKUP)",
+              "type": "switch2",
+              "match": [
+                "SIGHT-GRID-BACKUP-PTR",
+                "item:asp-17v-sight:17"
+              ],
+              "positions": [
+                {
+                  "name": "MAIN",
+                  "text": "The main lamp lights the fixed aiming mark."
+                },
+                {
+                  "name": "BACKUP",
+                  "text": "The spare lamp lights the fixed aiming mark."
+                }
+              ],
+              "text": "This switch picks the lamp that lights the fixed aiming mark. One position uses the main lamp, the other the spare lamp.",
+              "context": "The pilot switches to the spare lamp if the main lamp of the fixed mark has failed. The moving mark has its own switch.",
+              "src": "m1",
+              "page": "33"
+            },
+            {
+              "id": "float-backup",
+              "name": "Floating reticle lamp switch (MAIN / BACKUP)",
+              "type": "switch2",
+              "match": [
+                "SIGHT-CROSSHAIR-BACKUP-PTR",
+                "item:asp-17v-sight:18"
+              ],
+              "positions": [
+                {
+                  "name": "MAIN",
+                  "text": "The main lamp lights the moving aiming mark."
+                },
+                {
+                  "name": "BACKUP",
+                  "text": "The spare lamp lights the moving aiming mark."
+                }
+              ],
+              "text": "This switch picks the lamp that lights the moving aiming mark. One position uses the main lamp, the other the spare lamp.",
+              "context": "The pilot uses the spare lamp when the main lamp of the moving mark does not light.",
+              "src": "m1",
+              "page": "33"
+            },
+            {
+              "id": "operational-lamp",
+              "name": "Operational lamp",
+              "type": "light",
+              "match": [
+                "item:asp-17v-sight:19"
+              ],
+              "text": "This lamp lights while the sight runs its built-in test.",
+              "context": "The pilot presses the BIT button to start the test and watches this lamp.",
+              "src": "m1",
+              "page": "33"
+            },
+            {
+              "id": "bit-button",
+              "name": "Sight BIT button (built-in test)",
+              "type": "button",
+              "match": [
+                "SIGHT-CONTROL-PTR",
+                "item:asp-17v-sight:20"
+              ],
+              "text": "Pressing this button makes the sight test itself. The game calls it Sight Check.",
+              "context": "The test is started when the sight is switched on, before the weapons are used. The operational lamp shows while it runs.",
+              "src": "m1",
+              "page": "34"
+            }
+          ]
+        },
+        {
+          "id": "cockpit-fan",
+          "name": "Cockpit fan",
+          "src": "m1",
+          "text": "This is a clickable spot on the small fan of the pilot's cockpit. The game names it 'Cockpit Fan - Touch'.",
+          "context": "The manual lists a cockpit cooler in the rear cockpit. The switch that turns the fan on is on the left side panel.",
+          "controls": [
+            {
+              "id": "fan-touch",
+              "name": "Cockpit fan (touch spot)",
+              "type": "button",
+              "match": [
+                "EASTER_PILOT"
+              ],
+              "text": "Clicking this spot touches the fan in the pilot's cockpit. The game names it 'Cockpit Fan - Touch'; the manual does not describe it.",
+              "context": "The fan itself is switched on and off with the Pilot Fan switch on the left side panel.",
+              "src": "m1"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "pilot-front-left",
+      "where": "front-left",
+      "name": "Left instrument panel",
+      "seat": 1,
+      "text": "The left part of the instrument panel with the flight dials and the main warning lights. Below and beside it are the fire extinguisher, the exterior lights and the R-60 missile panel.",
+      "panels": [
+        {
+          "id": "instrument-panel",
+          "name": "Pilot-commander instrument panel (left)",
+          "db": "pilot-commander-instrument-panel",
+          "src": "m1",
+          "page": "17",
+          "text": "This is the big panel with the dials the pilot reads most: speed, height, climb rate, engine and rotor speed, fuel and warning lights. A few levers and switches are here too, such as the landing gear handle.",
+          "context": "The pilot flies mainly by this panel. The manual lists the numbered parts of it on pages 17 and 18; here the dials come first and the clickable switches after them.",
+          "controls": [
+            {
+              "id": "pitch-gauge",
+              "name": "UShV-1K main rotor pitch gauge",
+              "type": "gauge",
+              "match": [
+                "item:pilot-commander-instrument-panel:1"
+              ],
+              "text": "This dial shows how steeply the blades of the main rotor are tilted. The blades are tilted more when the pilot pulls the collective lever up.",
+              "context": "More blade angle means more lift, so the helicopter climbs. The pilot watches it together with the collective lever.",
+              "src": "m1",
+              "page": "17"
+            },
+            {
+              "id": "gyro-annunciator",
+              "name": "Gyro annunciator panel",
+              "type": "light",
+              "match": [
+                "item:pilot-commander-instrument-panel:2"
+              ],
+              "text": "These lights tell about the two gyros that keep the artificial horizon steady. They go out when the gyros are ready.",
+              "context": "During start-up the manual says the GYRO 1 FAILURE and GYRO 2 FAILURE lights should go out after the gyros are caged, one to two minutes after the gyros are switched on.",
+              "src": "m1",
+              "page": "22"
+            },
+            {
+              "id": "doppler-hover",
+              "name": "Hover and low-speed indicator (DISS-15)",
+              "type": "gauge",
+              "match": [
+                "item:pilot-commander-instrument-panel:4"
+              ],
+              "text": "This dial shows how fast the helicopter moves slowly over the ground, forward, backward and sideways. It gets its numbers from the DISS-15 system.",
+              "context": "The pilot uses it to hold a hover when little outside gives a clue about the movement.",
+              "src": "m1",
+              "page": "18"
+            },
+            {
+              "id": "annunciators",
+              "name": "Annunciator panel (warning and caution lights)",
+              "type": "light",
+              "match": [
+                "item:pilot-commander-instrument-panel:5"
+              ],
+              "text": "This board of labelled lights tells the pilot what needs attention: each light stands for one problem or one system state, such as an engine, a generator or the oil pressure.",
+              "context": "The pilot looks at it during start-up to see that things happen in the right order. The manual names lights such as APU running, oil pressure normal and generator off.",
+              "src": "m1",
+              "page": "20"
+            },
+            {
+              "id": "airspeed",
+              "name": "US-450 airspeed gauge",
+              "type": "gauge",
+              "match": [
+                "item:pilot-commander-instrument-panel:6"
+              ],
+              "text": "This dial shows how fast the helicopter moves through the air, in kilometres per hour. It reads from 0 to 450.",
+              "context": "The pilot uses it for take-off, cruise and landing. The manual gives speeds in kilometres per hour, for example 120 km/h for the landing approach.",
+              "src": "m1",
+              "page": "18"
+            },
+            {
+              "id": "chip-detect",
+              "name": "Chip Detect annunciator",
+              "type": "light",
+              "match": [
+                "item:pilot-commander-instrument-panel:8"
+              ],
+              "text": "This light comes on when metal chips are found in the oil of a gearbox. Chips are a sign that parts inside are wearing.",
+              "context": "A lit light tells the pilot that a gearbox may be failing, so the pilot decides whether to land.",
+              "src": "m1",
+              "page": "18"
+            },
+            {
+              "id": "sight-on-panel",
+              "name": "ASP-17V aiming sight (above the panel)",
+              "type": "other",
+              "match": [
+                "item:pilot-commander-instrument-panel:10"
+              ],
+              "text": "The manual lists the pilot's aiming sight as part of this panel. It is the glass plate at the top. Its own knobs and switches are listed in the sight panel.",
+              "context": "It is used for the fixed gun, the rockets and the bombs.",
+              "src": "m1",
+              "page": "18"
+            },
+            {
+              "id": "vsi",
+              "name": "VAR-30MK vertical speed indicator",
+              "type": "gauge",
+              "match": [
+                "item:pilot-commander-instrument-panel:11"
+              ],
+              "text": "This dial shows how fast the helicopter climbs or sinks, in metres per second. It reads from minus 30 to plus 30.",
+              "context": "The pilot watches it when changing height and when landing, so the helicopter does not sink too fast.",
+              "src": "m1",
+              "page": "18"
+            },
+            {
+              "id": "moving-map",
+              "name": "Moving map (DISS-15)",
+              "type": "display",
+              "match": [
+                "item:pilot-commander-instrument-panel:15"
+              ],
+              "text": "This is a small map screen that shows where the helicopter is. The DISS-15 system moves the map as the helicopter flies.",
+              "context": "The knobs and switches next to it, on the Map Display Commands panel, set its position, scale and power.",
+              "src": "m1",
+              "page": "18"
+            },
+            {
+              "id": "fuel-gauges",
+              "name": "UTPR-1K-1A fuel gauges",
+              "type": "gauge",
+              "match": [
+                "item:pilot-commander-instrument-panel:16"
+              ],
+              "text": "These dials show how much fuel is in the tanks.",
+              "context": "The pilot checks them before take-off and during the flight. The fuel meter selector on the right side chooses which tank is shown.",
+              "src": "m1",
+              "page": "18"
+            },
+            {
+              "id": "cruise-speed",
+              "name": "Cruise speed and sideslip indicator (DISS-15)",
+              "type": "gauge",
+              "match": [
+                "item:pilot-commander-instrument-panel:17"
+              ],
+              "text": "This instrument shows the speed over the ground and how far the helicopter slips sideways. A light in it shows the memory mode of the DISS-15 system.",
+              "context": "It is fed by the DISS-15 system. The mode switch of the DISS-15 is on the right panel.",
+              "src": "m1",
+              "page": "18"
+            },
+            {
+              "id": "egt-gauge",
+              "name": "2UT-6K exhaust gas temperature gauge",
+              "type": "gauge",
+              "match": [
+                "item:pilot-commander-instrument-panel:18"
+              ],
+              "text": "This dial shows the temperature of the hot gas that leaves the engines. A high number means the engine is very hot.",
+              "context": "The pilot watches it during engine start. The manual says that during the APU start the temperature must stay below 880 degrees Celsius.",
+              "src": "m1",
+              "page": "20"
+            },
+            {
+              "id": "power-gauge",
+              "name": "UR-117V engine power gauge",
+              "type": "gauge",
+              "match": [
+                "item:pilot-commander-instrument-panel:21"
+              ],
+              "text": "This dial shows how much power the engines deliver compared with their possible power.",
+              "context": "The pilot uses it to set the engine power, for example for take-off. The manual refers to it as the EPR gauge in the take-off steps.",
+              "src": "m1",
+              "page": "24"
+            },
+            {
+              "id": "engine-rpm",
+              "name": "ITE-2T engine RPM gauge (Engines)",
+              "type": "gauge",
+              "match": [
+                "item:pilot-commander-instrument-panel:22"
+              ],
+              "text": "This dial shows how fast the cores of both engines turn. The dial is labelled 'Engines'.",
+              "context": "The pilot watches it during engine start to see the speed rise. The manual says to wait at idle at least 60 seconds for the engines to warm up.",
+              "src": "m1",
+              "page": "21"
+            },
+            {
+              "id": "rotor-rpm",
+              "name": "ITE-2T main rotor RPM gauge (Main Rotor)",
+              "type": "gauge",
+              "match": [
+                "item:pilot-commander-instrument-panel:25"
+              ],
+              "text": "This dial shows how fast the big main rotor turns. The dial is labelled 'Main Rotor'.",
+              "context": "It is one of the most important dials. The manual says to switch the generators on when the rotor reaches about 95 percent, and to keep it above 93 percent in a hover.",
+              "src": "m1",
+              "page": "22"
+            },
+            {
+              "id": "hydro-main-aux",
+              "name": "Main/auxiliary hydraulic switch (MAIN / AUXILIARY)",
+              "type": "switch2",
+              "match": [
+                "HYDRO-MAIN-SECOND-PTR",
+                "HYDRO-MAIN-SECOND-COVER-PTR"
+              ],
+              "positions": [
+                {
+                  "name": "AUXILIARY",
+                  "text": "The auxiliary hydraulic system is in use."
+                },
+                {
+                  "name": "MAIN",
+                  "text": "The main hydraulic system is in use."
+                }
+              ],
+              "text": "This switch picks which hydraulic system powers the controls: the main one or the auxiliary one. A cover protects it. Hydraulics is oil under high pressure that moves heavy parts such as the controls and the gear.",
+              "context": "The pilot lifts the cover before moving the switch. The manual does not describe it in detail; the names come from the game.",
+              "src": "m1"
+            },
+            {
+              "id": "gear-lever",
+              "name": "Landing gear lever (UP / DOWN)",
+              "type": "switch2",
+              "match": [
+                "LANDING-GEAR-PTR"
+              ],
+              "positions": [
+                {
+                  "name": "UP",
+                  "text": "The landing gear is raised and folded away."
+                },
+                {
+                  "name": "DOWN",
+                  "text": "The landing gear is lowered for taxiing, take-off and landing."
+                }
+              ],
+              "text": "This lever raises and lowers the wheels. Pulled up the wheels fold into the body, pushed down they come out for landing.",
+              "context": "The manual says to raise the gear after take-off at about 70 km/h and at least 15 metres height. A lock holds the lever so it cannot be moved by accident.",
+              "src": "m1",
+              "page": "24"
+            },
+            {
+              "id": "gear-lever-lock",
+              "name": "Landing gear lever lock (UP / DOWN)",
+              "type": "switch2",
+              "match": [
+                "LANDING-GEAR-LOCK-PTR"
+              ],
+              "positions": [
+                {
+                  "name": "UP",
+                  "text": "The game's UP position of the lock."
+                },
+                {
+                  "name": "DOWN",
+                  "text": "The game's DOWN position of the lock."
+                }
+              ],
+              "text": "This is the lock of the landing gear lever. It stops the lever from being moved by accident, for example on the ground.",
+              "context": "The pilot releases the lock before moving the gear lever. The game gives it the positions UP and DOWN.",
+              "src": "m1"
+            }
+          ]
+        },
+        {
+          "id": "fire-extinguisher",
+          "name": "Fire extinguisher control panel",
+          "src": "m1",
+          "text": "This panel fights a fire in the engines, the APU or the main gearbox. It has buttons that fire the extinguisher bottles and switches that test and power the system.",
+          "context": "The helicopter has two sets of extinguisher bottles. If a fire light comes on, the pilot presses the button of the burning place. The manual says to switch the fire protection on during start-up.",
+          "controls": [
+            {
+              "id": "extinguish-1",
+              "name": "Extinguish buttons, first set (left engine, right engine, APU, gearbox)",
+              "type": "button",
+              "match": [
+                "FIRE-1-L-ENG-PTR",
+                "FIRE-1-R-ENG-PTR",
+                "FIRE-1-APU-PTR",
+                "FIRE-1-REDUCER-PTR"
+              ],
+              "count": 4,
+              "text": "These four buttons empty the first extinguisher bottle into one place: the left engine, the right engine, the APU or the main gearbox. The game names them 'Extinguish Left Engine 1' and so on.",
+              "context": "The pilot presses the button of the place where the fire light shows a fire. The second set below is the reserve.",
+              "src": "m1"
+            },
+            {
+              "id": "extinguish-2",
+              "name": "Extinguish buttons, second set (left engine, right engine, APU, gearbox)",
+              "type": "button",
+              "match": [
+                "FIRE-2-L-ENG-PTR",
+                "FIRE-2-R-ENG-PTR",
+                "FIRE-2-APU-PTR",
+                "FIRE-2-REDUCER-PTR"
+              ],
+              "count": 4,
+              "text": "These four buttons empty the second extinguisher bottle into one place: the left engine, the right engine, the APU or the main gearbox. The game names them 'Extinguish Left Engine 2' and so on.",
+              "context": "They are the reserve for the case that the first bottle did not put out the fire, or that a second fire starts.",
+              "src": "m1"
+            },
+            {
+              "id": "extinguish-control",
+              "name": "Extinguisher control switch (EXING / CNTRL)",
+              "type": "switch2",
+              "match": [
+                "EXTINGUISH-CONTROL-PTR"
+              ],
+              "positions": [
+                {
+                  "name": "EXING",
+                  "text": "Named EXING by the game; the manual does not describe it."
+                },
+                {
+                  "name": "CNTRL",
+                  "text": "Named CNTRL by the game; the manual does not describe it."
+                }
+              ],
+              "text": "This switch changes the system between being ready to fight a fire and being ready for a check. The game names the positions EXING and CNTRL.",
+              "context": "The manual does not describe the positions. The names suggest extinguishing and control (check); only the names are certain.",
+              "src": "m1"
+            },
+            {
+              "id": "sensor-channel",
+              "name": "Fire sensor channel selector (OFF / 1 / 2 / 3)",
+              "type": "selector",
+              "match": [
+                "FIRE-SENSOR-CHANNEL-PTR1"
+              ],
+              "positions": [
+                {
+                  "name": "OFF",
+                  "text": "No sensor channel is chosen."
+                },
+                {
+                  "name": "1",
+                  "text": "Sensor channel 1 is chosen."
+                },
+                {
+                  "name": "2",
+                  "text": "Sensor channel 2 is chosen."
+                },
+                {
+                  "name": "3",
+                  "text": "Sensor channel 3 is chosen."
+                }
+              ],
+              "text": "This rotary switch picks one of three sensor channels of the fire detection system, or none. The game names it 'Fire Extinguisher Sensor Channel OFF/1/2/3'.",
+              "context": "The manual does not describe it. It is part of the fire protection system on this panel.",
+              "src": "m1"
+            },
+            {
+              "id": "squib-control",
+              "name": "Squib control button",
+              "type": "button",
+              "match": [
+                "FIRE-PYRO-CHANNEL-PTR"
+              ],
+              "text": "This button belongs to the small charges (squibs) that open the extinguisher bottles. The game names it 'Fire Extinguisher Squib Control'.",
+              "context": "The manual does not describe it. It is a check button of the extinguisher system.",
+              "src": "m1"
+            },
+            {
+              "id": "fire-alarm-off",
+              "name": "Fire signal OFF button",
+              "type": "button",
+              "match": [
+                "FIRE-ALARM-OFF-PTR"
+              ],
+              "text": "Pressing this button turns off the fire signal, the alarm lights and sound.",
+              "context": "The pilot presses it after the fire is out, or when the alarm should be silenced.",
+              "src": "m1"
+            },
+            {
+              "id": "fire-power",
+              "name": "Fire extinguisher power switch",
+              "type": "switch2",
+              "match": [
+                "FIRE-POWER-PTR"
+              ],
+              "positions": [
+                {
+                  "name": "ON",
+                  "text": "The fire extinguisher system has power."
+                },
+                {
+                  "name": "OFF",
+                  "text": "The fire extinguisher system is off."
+                }
+              ],
+              "text": "This switch gives power to the fire extinguisher system. Without power the extinguisher buttons do nothing.",
+              "context": "The manual's start-up list says to turn on the fire protection system on the left side before starting the engines.",
+              "src": "m1",
+              "page": "20"
+            }
+          ]
+        },
+        {
+          "id": "aso-launch",
+          "name": "Pilot countermeasure launch button",
+          "src": "m1",
+          "text": "One button of the ASO-2V countermeasure dispenser, which belongs to the pilot. The game names it 'Pilot Launch Snars'.",
+          "context": "The operator has the ASO-2V panel with the cassette selector and the settings. The manual says the dispenser throws out countermeasures, but it does not describe this pilot button.",
+          "controls": [
+            {
+              "id": "aso-pilot-launch",
+              "name": "Pilot launch button (ASO-2V)",
+              "type": "button",
+              "match": [
+                "ASO-ON-PTR"
+              ],
+              "text": "Pressing this button launches the countermeasures of the ASO-2V dispenser from the pilot's seat. The game names it 'Pilot Launch Snars'.",
+              "context": "Countermeasures are things the helicopter throws out to fool enemy missiles. The settings are on the operator's ASO-2V panel.",
+              "src": "m1"
+            }
+          ]
+        },
+        {
+          "id": "r60-panel",
+          "name": "R-60 missile interface",
+          "src": "m1",
+          "text": "This small panel belongs to the R-60 air-to-air missiles. It has a power switch, a fuse selector and a switch to choose the active missile.",
+          "context": "The manual lists the R-60M infrared missiles as weapons that come after the early access. The panel is in the cockpit already.",
+          "controls": [
+            {
+              "id": "r60-power",
+              "name": "R-60 power switch",
+              "type": "switch2",
+              "match": [
+                "R60-POWER-PTR"
+              ],
+              "positions": [
+                {
+                  "name": "ON",
+                  "text": "The R-60 system has power."
+                },
+                {
+                  "name": "OFF",
+                  "text": "The R-60 system is off."
+                }
+              ],
+              "text": "This switch gives power to the R-60 missile system.",
+              "context": "The game names it 'R60 Power'; the manual does not describe the R-60 panel.",
+              "src": "m1"
+            },
+            {
+              "id": "r60-fuse",
+              "name": "R-60 fuse selector",
+              "type": "switch",
+              "match": [
+                "R60-AIR-PTR"
+              ],
+              "text": "This selector chooses the fuse of the R-60 missile. The game names it 'Fuse selector'.",
+              "context": "The manual does not describe the fuse settings.",
+              "src": "m1"
+            },
+            {
+              "id": "r60-select",
+              "name": "Active missile selector",
+              "type": "selector",
+              "match": [
+                "PU-SELECT-PTR"
+              ],
+              "text": "This selector chooses which R-60 missile is the active one.",
+              "context": "The game names it 'Active missile selector'; the manual does not describe it.",
+              "src": "m1"
+            }
+          ]
+        },
+        {
+          "id": "exterior-lights",
+          "name": "Exterior lights switches (pilot)",
+          "src": "m1",
+          "text": "Switches for the lights on the outside of the helicopter: the taxi light and the navigation lights.",
+          "context": "Pilots use them at night and in bad light so that other aircraft can see the helicopter and so that the pilot can see the ground.",
+          "controls": [
+            {
+              "id": "taxi-light",
+              "name": "Taxi light switch",
+              "type": "switch2",
+              "match": [
+                "TAXILIGHT-PTR"
+              ],
+              "positions": [
+                {
+                  "name": "ON",
+                  "text": "The taxi light is on."
+                },
+                {
+                  "name": "OFF",
+                  "text": "The taxi light is off."
+                }
+              ],
+              "text": "This switch turns the taxi light on and off. The taxi light shines on the ground ahead while the helicopter rolls on its wheels.",
+              "context": "The pilot uses it for taxiing at night.",
+              "src": "m1"
+            },
+            {
+              "id": "nav-code",
+              "name": "Navigation lights code button",
+              "type": "button",
+              "match": [
+                "CODE-NAVLIGHT-PTR"
+              ],
+              "text": "Pressing this button makes the navigation lights give a coded light signal.",
+              "context": "The game names it 'Navigation Lights Code Button'; the manual does not describe it.",
+              "src": "m1"
+            },
+            {
+              "id": "nav-lights",
+              "name": "Navigation lights switch (BRIGHT / OFF / DIM)",
+              "type": "switch3",
+              "match": [
+                "NAVLIGHT-BRIGHT-DIM-OFF-PTR"
+              ],
+              "positions": [
+                {
+                  "name": "BRIGHT",
+                  "text": "The navigation lights shine bright."
+                },
+                {
+                  "name": "OFF",
+                  "text": "The navigation lights are off."
+                },
+                {
+                  "name": "DIM",
+                  "text": "The navigation lights shine dim."
+                }
+              ],
+              "text": "This switch turns the position lights on, bright or dim, or off. Position lights are the coloured lamps that show other pilots where the helicopter is.",
+              "context": "They are used at night and in poor visibility.",
+              "src": "m1"
+            }
+          ]
+        },
+        {
+          "id": "standby-compass",
+          "name": "KI-13 standby compass",
+          "src": "m1",
+          "text": "A small magnetic compass in the cockpit. It does not need electricity.",
+          "context": "The manual lists it in the pilot-commander cockpit. It serves as a backup for the course system.",
+          "controls": [
+            {
+              "id": "ki13",
+              "name": "KI-13 standby compass",
+              "type": "gauge",
+              "match": [
+                "item:pilot-commander-cockpit-controls:4"
+              ],
+              "text": "This is a plain magnetic compass. It shows the direction the helicopter points.",
+              "context": "The pilot looks at it if the other heading instruments fail.",
+              "src": "m1",
+              "page": "16"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "pilot-front-right",
+      "where": "front-right",
+      "name": "Right side of the instrument panel",
+      "seat": 1,
+      "text": "The right part of the instrument panel holds the DISS-15 controls, the fuel meter and the moving map controls.",
+      "panels": [
+        {
+          "id": "ac-panel-3",
+          "name": "Map light, engine thermometer check and dim transformer",
+          "src": "m1",
+          "text": "A group of small controls on the right side of the instrument panel: the map light, two check buttons for the engine thermometer and the switch of the dimming transformer.",
+          "context": "The map light helps the pilot read the paper map at night. The thermometer buttons are used in the checks before and after engine start.",
+          "controls": [
+            {
+              "id": "map-light",
+              "name": "Map light switch (BRIGHT / OFF / DIM)",
+              "type": "switch3",
+              "match": [
+                "MAP-LIGHT-PTR"
+              ],
+              "positions": [
+                {
+                  "name": "BRIGHT",
+                  "text": "The map light shines bright."
+                },
+                {
+                  "name": "OFF",
+                  "text": "The map light is off."
+                },
+                {
+                  "name": "DIM",
+                  "text": "The map light shines dim."
+                }
+              ],
+              "text": "This switch turns the map light on, bright or dim, or off. The game names it 'Map Highlight'.",
+              "context": "The pilot uses it at night to read a map.",
+              "src": "m1"
+            },
+            {
+              "id": "temp-cold",
+              "name": "Engine thermometer check button COLD",
+              "type": "button",
+              "match": [
+                "ENG-TEMP-SENSOR-CONTROL-COLD-PTR"
+              ],
+              "text": "Pressing this button checks the engine thermometer, the dial for the exhaust gas temperature, in its cold setting. The game names it 'Engine Termometer control COLD'.",
+              "context": "The manual does not describe it. It belongs to the check of the thermometer gauge on the instrument panel.",
+              "src": "m1"
+            },
+            {
+              "id": "temp-hot",
+              "name": "Engine thermometer check button HOT",
+              "type": "button",
+              "match": [
+                "ENG-TEMP-SENSOR-CONTROL-HOT-PTR"
+              ],
+              "text": "Pressing this button checks the engine thermometer in its hot setting. The game names it 'Engine Termometer control HOT'.",
+              "context": "The manual does not describe it. Together with the COLD button it checks the exhaust gas temperature dial.",
+              "src": "m1"
+            },
+            {
+              "id": "dim-transformer",
+              "name": "DIM transformer switch (MAIN / BACKUP)",
+              "type": "switch2",
+              "match": [
+                "TRANS-DIM-PTR"
+              ],
+              "positions": [
+                {
+                  "name": "MAIN",
+                  "text": "The main 36 volt dimming transformer is in use."
+                },
+                {
+                  "name": "BACKUP",
+                  "text": "The backup 36 volt dimming transformer is in use."
+                }
+              ],
+              "text": "This switch picks the transformer for the dimmed lighting: the main one or the backup. A transformer changes the electric voltage to the value the lights need.",
+              "context": "The pilot switches to the backup if the main transformer fails. The game names it 'DIM Transformer 36v'.",
+              "src": "m1"
+            }
+          ]
+        },
+        {
+          "id": "diss-mode",
+          "name": "DISS-15 mode panel",
+          "src": "m1",
+          "text": "The DISS-15 measures the movement of the helicopter over the ground and feeds the speed dials and the moving map. This panel sets its mode.",
+          "context": "The pilot turns the DISS-15 on with a switch on the left side panel. The mode switches here choose work or check, land or sea, and the memory or operating mode.",
+          "controls": [
+            {
+              "id": "diss-work-check",
+              "name": "DISS mode switch (WORK / CHECK)",
+              "type": "switch2",
+              "match": [
+                "DRIFT-R-K-PTR"
+              ],
+              "positions": [
+                {
+                  "name": "WORK",
+                  "text": "The DISS-15 works normally."
+                },
+                {
+                  "name": "CHECK",
+                  "text": "The DISS-15 runs its check."
+                }
+              ],
+              "text": "This switch puts the DISS-15 into normal work or into a check. The game names it 'DISS Mode WORK/CHECK'.",
+              "context": "The manual does not describe it in detail.",
+              "src": "m1"
+            },
+            {
+              "id": "diss-land-sea",
+              "name": "DISS surface switch (LAND / SEA)",
+              "type": "switch2",
+              "match": [
+                "DRIFT-S-M-PTR"
+              ],
+              "positions": [
+                {
+                  "name": "LAND",
+                  "text": "The DISS-15 is set for flight over land."
+                },
+                {
+                  "name": "SEA",
+                  "text": "The DISS-15 is set for flight over the sea."
+                }
+              ],
+              "text": "This switch tells the DISS-15 whether the helicopter flies over land or over the sea. The game names it 'DISS Mode LAND/SEA'.",
+              "context": "The measurement depends on the surface, so the pilot sets it to what is below.",
+              "src": "m1"
+            },
+            {
+              "id": "diss-selector",
+              "name": "DISS mode selector (MEM / OPER and others)",
+              "type": "selector",
+              "match": [
+                "DISS-SELECTOR-KNOB-PTR"
+              ],
+              "positions": [
+                {
+                  "name": "IDK 1",
+                  "text": "The game names this position IDK; the manual does not describe it."
+                },
+                {
+                  "name": "IDK 2",
+                  "text": "The game names this position IDK; the manual does not describe it."
+                },
+                {
+                  "name": "IDK 3",
+                  "text": "The game names this position IDK; the manual does not describe it."
+                },
+                {
+                  "name": "MEM",
+                  "text": "Memory mode of the DISS-15."
+                },
+                {
+                  "name": "OPER",
+                  "text": "Normal operating mode of the DISS-15."
+                }
+              ],
+              "text": "This rotary selector sets the operating mode of the DISS-15. The game lists three positions it names IDK, then MEM and OPER.",
+              "context": "In the memory mode the DISS-15 keeps the last values. The instrument panel shows a memory light for it. The manual does not describe the other positions.",
+              "src": "m1"
+            }
+          ]
+        },
+        {
+          "id": "fuel-meter",
+          "name": "Fuel meter controls",
+          "src": "m1",
+          "text": "Controls of the fuel gauge: two test buttons and a knob that picks which tank the gauge shows.",
+          "context": "The pilot picks a tank to read how much fuel is in it. The test buttons check that the gauge works.",
+          "controls": [
+            {
+              "id": "fuel-test-low",
+              "name": "Fuel meter test button (low)",
+              "type": "button",
+              "match": [
+                "FUEL-METER-H-BUTTON-PTR"
+              ],
+              "text": "Pressing this button tests the fuel meter at its low value. The game names it 'Fuel meter test low'.",
+              "context": "The manual does not describe the test values.",
+              "src": "m1"
+            },
+            {
+              "id": "fuel-test-high",
+              "name": "Fuel meter test button (high)",
+              "type": "button",
+              "match": [
+                "FUEL-METER-P-BUTTON-PTR"
+              ],
+              "text": "Pressing this button tests the fuel meter at its high value. The game names it 'Fuel meter test high'.",
+              "context": "Together with the low test button it checks the fuel gauge. The manual does not describe it.",
+              "src": "m1"
+            },
+            {
+              "id": "fuel-meter-knob",
+              "name": "Fuel meter tank selector",
+              "type": "selector",
+              "match": [
+                "FUEL-METER-KNOB-PTR"
+              ],
+              "text": "This rotary selector picks the tank whose fuel amount the fuel gauge shows. The game names it 'Select tank for fuel meter'.",
+              "context": "The helicopter has several fuel tanks, numbered on the fuel control panel. The pilot turns the selector to read one after the other.",
+              "src": "m1"
+            }
+          ]
+        },
+        {
+          "id": "map-display",
+          "name": "Map display commands",
+          "src": "m1",
+          "text": "Controls of the moving map: a power switch, a scale switch and two knobs that move the helicopter's position on the map.",
+          "context": "The moving map is part of the DISS-15 system. The pilot uses these controls to start it and to set it to the area of the flight.",
+          "controls": [
+            {
+              "id": "map-power",
+              "name": "Map display power switch",
+              "type": "switch2",
+              "match": [
+                "MAPDISPLAY-POWER-PTR"
+              ],
+              "positions": [
+                {
+                  "name": "ON",
+                  "text": "The map display is on."
+                },
+                {
+                  "name": "OFF",
+                  "text": "The map display is off."
+                }
+              ],
+              "text": "This switch turns the moving map on and off.",
+              "context": "Without it the map screen stays dark.",
+              "src": "m1"
+            },
+            {
+              "id": "map-scale",
+              "name": "Map scale selector (2 km / 10 km)",
+              "type": "switch2",
+              "match": [
+                "MAPDISPLAY-SCALE-PTR"
+              ],
+              "positions": [
+                {
+                  "name": "2 km",
+                  "text": "The map shows a small area in more detail."
+                },
+                {
+                  "name": "10 km",
+                  "text": "The map shows a larger area."
+                }
+              ],
+              "text": "This switch chooses how much of the ground the map shows. The game gives the scales 2 km and 10 km.",
+              "context": "A small scale shows little ground with more detail. A large scale shows a bigger area.",
+              "src": "m1"
+            },
+            {
+              "id": "map-vertical",
+              "name": "Map vertical position knob",
+              "type": "knob",
+              "match": [
+                "MAPDISPLAY-VERT-PTR"
+              ],
+              "text": "Turning this knob moves the helicopter's position on the map up or down.",
+              "context": "The pilot sets the position so that it fits the real position of the helicopter.",
+              "src": "m1"
+            },
+            {
+              "id": "map-horizontal",
+              "name": "Map horizontal position knob",
+              "type": "knob",
+              "match": [
+                "MAPDISPLAY-HOR-PTR"
+              ],
+              "text": "Turning this knob moves the helicopter's position on the map to the left or the right.",
+              "context": "It is used with the vertical knob to put the map at the right place.",
+              "src": "m1"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "pilot-weapons-area",
+      "where": "front-right",
+      "name": "Pilot-commander weapons panel",
+      "text": "The weapons panel of the rear cockpit, listed in the game's second picture set. It is on the right of the instrument panel.",
+      "panels": [
+        {
+          "id": "pilot-weapons",
+          "name": "Pilot-commander weapons control panel",
+          "db": "pilot-commander-weapons-control-panel",
+          "src": "m1",
+          "page": "36",
+          "text": "This panel chooses and prepares the weapons the pilot fires: the fixed gun, the gun pods, the rockets, the bombs and the cluster dispenser. It also has the emergency release switches and lights that show what is loaded.",
+          "context": "The panel belongs to the rear cockpit; the game shows it in its second picture set. The pilot sets the weapon here and then fires with the weapons release button on the cyclic. The manual describes it on pages 36 to 38.",
+          "controls": [
+            {
+              "id": "weapon-selector",
+              "name": "Weapons selector switch",
+              "type": "selector",
+              "match": [
+                "WEAP-SELECT-KNOB-PTR",
+                "item:pilot-commander-weapons-control-panel:4"
+              ],
+              "positions": [
+                {
+                  "name": "OFF/MSL",
+                  "text": "No weapon is active. The pilot's sight is slaved to the operator's periscope sight, for watching and for guiding the anti-tank missiles."
+                },
+                {
+                  "name": "GM-30",
+                  "text": "The AP-30 automatic grenade launcher on the GUV-8700 pod."
+                },
+                {
+                  "name": "FXD MG 7.62+12.7",
+                  "text": "Both the 12.7 mm and the 7.62 mm guns of the GUV-8700 gun pod fire."
+                },
+                {
+                  "name": "FXD MG 12.7",
+                  "text": "Only the 12.7 mm gun of the GUV-8700 gun pod fires."
+                },
+                {
+                  "name": "FXD MG 7.62",
+                  "text": "Only the 7.62 mm gun of the GUV-8700 gun pod fires."
+                },
+                {
+                  "name": "FXD MG-30",
+                  "text": "The fixed 30 mm twin-barrel cannon fires."
+                },
+                {
+                  "name": "ROCKET",
+                  "text": "The unguided rockets fire."
+                },
+                {
+                  "name": "BOMB",
+                  "text": "The bombs are released."
+                },
+                {
+                  "name": "USLP",
+                  "text": "The KMGU-2 cluster munitions dispenser works."
+                }
+              ],
+              "text": "This rotary switch picks what the weapons release button on the cyclic fires. It has nine positions, from the gun pods to the cluster dispenser.",
+              "context": "After setting it the pilot checks that the matching weapon lamp on the sight is lit. In the OFF/MSL position the missile is guided by the operator.",
+              "src": "m1",
+              "page": "37"
+            },
+            {
+              "id": "ranging",
+              "name": "Weapon ranging switch (AUTO / MANUAL)",
+              "type": "switch2",
+              "match": [
+                "WEAP-DIST-MAN-AUTO-PTR",
+                "item:pilot-commander-weapons-control-panel:1"
+              ],
+              "positions": [
+                {
+                  "name": "AUTO",
+                  "text": "The distance is worked out automatically."
+                },
+                {
+                  "name": "MANUAL",
+                  "text": "The pilot sets the distance by hand."
+                }
+              ],
+              "text": "This switch picks how the distance to the target is found for the weapons: by the sight's computer or by the pilot's hand.",
+              "context": "It works together with the sight mode switch. In MANUAL the pilot sets the range with the manual range knob.",
+              "src": "m1",
+              "page": "36"
+            },
+            {
+              "id": "burst",
+              "name": "Burst length switch (SHORT / MEDIUM / LONG)",
+              "type": "switch3",
+              "match": [
+                "WEAP-BURST-LENGTH-PTR",
+                "item:pilot-commander-weapons-control-panel:2"
+              ],
+              "positions": [
+                {
+                  "name": "SHORT",
+                  "text": "A short burst."
+                },
+                {
+                  "name": "MEDIUM",
+                  "text": "A medium burst."
+                },
+                {
+                  "name": "LONG",
+                  "text": "A long burst."
+                }
+              ],
+              "text": "This switch sets how long the gun fires each time the button is pressed: a short, a medium or a long burst.",
+              "context": "The manual's weapon steps set the burst before firing the cannon.",
+              "src": "m1",
+              "page": "36"
+            },
+            {
+              "id": "reload-left",
+              "name": "Left GUV pod reload switch",
+              "type": "selector",
+              "match": [
+                "WEAP-127-LEFT-RELOAD-PTR",
+                "item:pilot-commander-weapons-control-panel:3"
+              ],
+              "text": "This four-position switch is used to fix an ammunition feed fault of the left gun pod. The game names it 'Reload Left Gondola'.",
+              "context": "The manual says the fault is not modelled, so the switch has no use in DCS.",
+              "src": "m1",
+              "page": "37"
+            },
+            {
+              "id": "reload-right",
+              "name": "Right GUV pod reload switch",
+              "type": "selector",
+              "match": [
+                "WEAP-127-RIGHT-RELOAD-PTR",
+                "item:pilot-commander-weapons-control-panel:5"
+              ],
+              "text": "This four-position switch is used to fix an ammunition feed fault of the right gun pod. The game names it 'Reload Right Gondola'.",
+              "context": "The manual says the fault is not modelled, so this switch has no use in DCS.",
+              "src": "m1",
+              "page": "37"
+            },
+            {
+              "id": "sight-zero",
+              "name": "Sight zero button",
+              "type": "button",
+              "match": [
+                "WEAP-SIGHT-RESET-PTR",
+                "item:pilot-commander-weapons-control-panel:6"
+              ],
+              "text": "Holding this button pulls the moving aiming mark back onto the fixed mark of the sight. The game names it 'Sight Reset Crosshair'.",
+              "context": "The manual says the moving reticle is caged to the fixed reticle while the button is held.",
+              "src": "m1",
+              "page": "37"
+            },
+            {
+              "id": "asp-power",
+              "name": "ASP-17 power switch",
+              "type": "switch2",
+              "match": [
+                "WEAP-SIGHT-ON-PFF-PTR",
+                "item:pilot-commander-weapons-control-panel:7"
+              ],
+              "positions": [
+                {
+                  "name": "ON",
+                  "text": "The sight is on."
+                },
+                {
+                  "name": "OFF",
+                  "text": "The sight is off."
+                }
+              ],
+              "text": "This switch turns the ASP-17V aiming sight on and off.",
+              "context": "The manual's weapon steps turn the sight on first.",
+              "src": "m1",
+              "page": "39"
+            },
+            {
+              "id": "asp-camera",
+              "name": "ASP-17 camera power switch",
+              "type": "switch2",
+              "match": [
+                "WEAP-SIGHT-CONTROL-ON-OFF-PTR",
+                "item:pilot-commander-weapons-control-panel:8"
+              ],
+              "positions": [
+                {
+                  "name": "ON",
+                  "text": "The sight camera would be on."
+                },
+                {
+                  "name": "OFF",
+                  "text": "The sight camera is off."
+                }
+              ],
+              "text": "This switch is for the camera of the aiming sight, which records what the sight sees.",
+              "context": "The manual marks this function as not implemented.",
+              "src": "m1",
+              "page": "37"
+            },
+            {
+              "id": "rocket-sides",
+              "name": "Rocket sides switch (LEFT / BOTH / RIGHT)",
+              "type": "switch3",
+              "match": [
+                "WEAP-ROCKET-SELECT-PTR",
+                "item:pilot-commander-weapons-control-panel:9"
+              ],
+              "positions": [
+                {
+                  "name": "LEFT",
+                  "text": "Only the left rocket pod fires."
+                },
+                {
+                  "name": "BOTH",
+                  "text": "Both rocket pods fire."
+                },
+                {
+                  "name": "RIGHT",
+                  "text": "Only the right rocket pod fires."
+                }
+              ],
+              "text": "This switch picks which rocket pods fire: the left, the right or both.",
+              "context": "The rocket pods hang on the left and right of the helicopter.",
+              "src": "m1",
+              "page": "37"
+            },
+            {
+              "id": "arm-button",
+              "name": "Launcher arm button",
+              "type": "button",
+              "match": [
+                "WEAP-PUS-ENGAGEMENT-PTR",
+                "item:pilot-commander-weapons-control-panel:14"
+              ],
+              "text": "Pressing this button arms the rocket pods, so they can fire. The game names it 'Arm Rockets'.",
+              "context": "After arming, the launcher armed lights come on.",
+              "src": "m1",
+              "page": "37"
+            },
+            {
+              "id": "kmgu-lights",
+              "name": "KMGU empty and available lights",
+              "type": "light",
+              "match": [
+                "item:pilot-commander-weapons-control-panel:10",
+                "item:pilot-commander-weapons-control-panel:11"
+              ],
+              "count": 2,
+              "text": "The first light is on when the KMGU cluster dispenser has run empty. The second is on when the weapons selector is at USLP and the dispenser still has munitions.",
+              "context": "The pilot uses them to know whether the dispenser can still drop munitions.",
+              "src": "m1",
+              "page": "37"
+            },
+            {
+              "id": "launcher-lights",
+              "name": "Left and right launcher armed lights",
+              "type": "light",
+              "match": [
+                "item:pilot-commander-weapons-control-panel:12",
+                "item:pilot-commander-weapons-control-panel:13"
+              ],
+              "count": 2,
+              "text": "These two lights show that the left and right rocket pod is armed.",
+              "context": "They come on after the launcher arm button is pressed.",
+              "src": "m1",
+              "page": "37"
+            },
+            {
+              "id": "rack-lights",
+              "name": "Weapon rack status lights 1-4",
+              "type": "light",
+              "match": [
+                "item:pilot-commander-weapons-control-panel:16",
+                "item:pilot-commander-weapons-control-panel:17",
+                "item:pilot-commander-weapons-control-panel:19",
+                "item:pilot-commander-weapons-control-panel:20"
+              ],
+              "count": 4,
+              "text": "These four lights are on when the weapon rack of the station with the same number is loaded.",
+              "context": "The stations are numbered on the wing pylons. The manual shows the numbering on page 38.",
+              "src": "m1",
+              "page": "38"
+            },
+            {
+              "id": "atgm-release",
+              "name": "ATGM emergency release button with cover",
+              "type": "button",
+              "match": [
+                "WEAP-JETTISON-LAUNCHER-PTR",
+                "WEAP-JETTISON-LAUNCHER-COVER-PTR",
+                "item:pilot-commander-weapons-control-panel:15"
+              ],
+              "text": "Pressing this button throws off the launchers of the anti-tank guided missiles in an emergency. A cover protects the button.",
+              "context": "The game names it 'Jettison Launcher'. The manual says the button jettisons the ATGM pods.",
+              "src": "m1",
+              "page": "37"
+            },
+            {
+              "id": "stores-release",
+              "name": "Emergency stores release switch with cover",
+              "type": "switch",
+              "match": [
+                "WEAP-JETTISON-SPECIAL-PTR",
+                "WEAP-JETTISON-SPECIAL-COVER-PTR",
+                "item:pilot-commander-weapons-control-panel:18"
+              ],
+              "text": "This switch drops the loads on the racks 1 to 4 in an emergency. A cover protects it. The game names it 'Jettison Pylons'.",
+              "context": "The manual says the switch jettisons racks 1 through 4.",
+              "src": "m1",
+              "page": "38"
+            },
+            {
+              "id": "jettison-arm",
+              "name": "Jettison arm switch with cover",
+              "type": "switch",
+              "match": [
+                "WEAP-JETTISON-EXPLOSION-PTR",
+                "WEAP-JETTISON-EXPLOSION-COVER-PTR",
+                "item:pilot-commander-weapons-control-panel:21"
+              ],
+              "positions": [
+                {
+                  "name": "ON",
+                  "text": "Bombs are armed when jettisoned."
+                },
+                {
+                  "name": "OFF",
+                  "text": "Bombs are not armed when jettisoned."
+                }
+              ],
+              "text": "This switch decides whether bombs are armed when they are dropped in an emergency. A cover protects it. The game names it 'Explosion on Jettison'.",
+              "context": "The manual says that when it is on, bombs are armed when jettisoned. A light shows this.",
+              "src": "m1",
+              "page": "38"
+            },
+            {
+              "id": "jettison-light",
+              "name": "Emergency jettison armed light",
+              "type": "light",
+              "match": [
+                "item:pilot-commander-weapons-control-panel:23"
+              ],
+              "text": "This light is on when bombs will be jettisoned armed.",
+              "context": "It goes with the jettison arm switch.",
+              "src": "m1",
+              "page": "38"
+            },
+            {
+              "id": "uslp-stop",
+              "name": "USLP discontinue button",
+              "type": "button",
+              "match": [
+                "WEAP-KMG-INTERRUPT-PTR",
+                "item:pilot-commander-weapons-control-panel:22"
+              ],
+              "text": "Pressing this button stops the cluster dispenser from dropping more munitions. The game names it 'Stop container'.",
+              "context": "The pilot uses it to end a drop.",
+              "src": "m1",
+              "page": "38"
+            },
+            {
+              "id": "cannon-reload",
+              "name": "Main cannon reload button",
+              "type": "button",
+              "match": [
+                "WEAP-NPU-RELOAD-PTR",
+                "item:pilot-commander-weapons-control-panel:24"
+              ],
+              "text": "This button is used after an ammunition feed failure of the main gun. The game names it 'Reload Cannon'.",
+              "context": "The manual says the failure is not modelled.",
+              "src": "m1",
+              "page": "38"
+            },
+            {
+              "id": "fire-rate",
+              "name": "Cannon firing rate switch (FAST / SLOW)",
+              "type": "switch2",
+              "match": [
+                "WEAP-CANNON-PACE-PTR",
+                "item:pilot-commander-weapons-control-panel:25"
+              ],
+              "positions": [
+                {
+                  "name": "FAST",
+                  "text": "A fast rate of fire."
+                },
+                {
+                  "name": "SLOW",
+                  "text": "A slow rate of fire."
+                }
+              ],
+              "text": "This switch sets how fast the cannon fires.",
+              "context": "The manual gives 2000 to 2600 rounds a minute for FAST and 300 to 400 for SLOW. It is set when the 30 mm cannon is used.",
+              "src": "m1",
+              "page": "38"
+            },
+            {
+              "id": "fire-control",
+              "name": "Fire control switch",
+              "type": "switch2",
+              "match": [
+                "WEAP-ON-OFF-PTR",
+                "item:pilot-commander-weapons-control-panel:26"
+              ],
+              "positions": [
+                {
+                  "name": "ON",
+                  "text": "The weapon system is ready."
+                },
+                {
+                  "name": "OFF",
+                  "text": "The weapon system is not ready."
+                }
+              ],
+              "text": "This switch completes the readiness checks of the weapons. The game names it 'Weapon Control ON/OFF'.",
+              "context": "The manual's weapon steps turn it on before the weapon indication lights are checked.",
+              "src": "m1",
+              "page": "38"
+            },
+            {
+              "id": "manual-range",
+              "name": "Manual range knob",
+              "type": "knob",
+              "match": [
+                "WEAP-SIGHT-DIST-PTR",
+                "item:pilot-commander-weapons-control-panel:27"
+              ],
+              "text": "This knob sets the distance to the target by hand. It is used when the sight is in manual mode.",
+              "context": "The values come from the weapons tables. The game names it 'Sight Range Adjustment'.",
+              "src": "m1",
+              "page": "38"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "pilot-extra",
+      "where": "front-center",
+      "name": "More pilot instrument controls",
+      "text": "Clickable parts of the pilot's instruments that the game shows in its second picture set: the horizon, the heading indicator, the altimeters, the clock and a few switches.",
+      "panels": [
+        {
+          "id": "pilot-pkp",
+          "name": "PKP-72M attitude indicator and UKT-2 controls",
+          "src": "m1",
+          "text": "The PKP-72M shows the pilot whether the nose is up or down and whether the helicopter leans. These are the test button and the pitch knob on it, and a knob of the UKT-2 backup instrument.",
+          "context": "The manual lists the PKP-72M and the UKT-2 backup instrument as parts of the instrument panel.",
+          "controls": [
+            {
+              "id": "pkp-test",
+              "name": "PKP-72M test ADI button",
+              "type": "button",
+              "match": [
+                "PKP-TEST-PTR"
+              ],
+              "text": "Pressing this button tests the attitude indicator (the artificial horizon).",
+              "context": "The game names it 'Test ADI Button'; the manual does not describe the test.",
+              "src": "m1",
+              "page": "17"
+            },
+            {
+              "id": "pkp-pitch",
+              "name": "PKP-72M pitch trim knob",
+              "type": "knob",
+              "match": [
+                "PKP-INIT-PITCH-KNOB-PTR",
+                "item:pilot-commander-instrument-panel:9"
+              ],
+              "text": "This knob moves the pitch mark of the PKP-72M up or down. The game names it 'Pitch Trim Knob'.",
+              "context": "The manual lists the PKP-72M as the horizontal situation indicator of the pilot.",
+              "src": "m1",
+              "page": "18"
+            },
+            {
+              "id": "ukt-knob",
+              "name": "UKT-2 knob (pitch trim)",
+              "type": "knob",
+              "match": [
+                "UKT-KNOB-PTR",
+                "item:pilot-commander-instrument-panel:14"
+              ],
+              "text": "This knob belongs to the UKT-2, the backup instrument for heading and course. The game names it 'Pitch Trim Knob'.",
+              "context": "The manual calls the UKT-2 the backup HSI.",
+              "src": "m1",
+              "page": "18"
+            }
+          ]
+        },
+        {
+          "id": "pilot-nav",
+          "name": "Heading, altimeter and clock controls",
+          "src": "m1",
+          "text": "Knobs and buttons of the heading indicator, the altimeters and the clock. The clock and the radar warning controls are listed here too.",
+          "context": "These parts belong to the pilot's instrument panel. The game lists them in its second picture set.",
+          "controls": [
+            {
+              "id": "rmi-mode",
+              "name": "RMI-2 mode switch (ZK / ARK-U2)",
+              "type": "switch",
+              "match": [
+                "RMI-KUR-2-PTR",
+                "item:pilot-commander-instrument-panel:20"
+              ],
+              "text": "This switch picks what the heading indicator shows: the course system (ZK) or the ARK-U2 radio compass.",
+              "context": "The manual lists the RMI-2 heading indicator. The game names the clickable part 'Mode Switch ZK/ARKU2'.",
+              "src": "m1",
+              "page": "18"
+            },
+            {
+              "id": "rmi-course",
+              "name": "Course setter knob",
+              "type": "knob",
+              "match": [
+                "RMI-COURSE-KNOB-PTR",
+                "item:pilot-commander-instrument-panel:19"
+              ],
+              "text": "This knob sets the wanted course on the heading indicator. The game names it 'Course setter'.",
+              "context": "The pilot turns it until the mark is where he wants to steer.",
+              "src": "m1",
+              "page": "18"
+            },
+            {
+              "id": "baro-pilot",
+              "name": "Baro pressure knob (barometric altimeter)",
+              "type": "knob",
+              "match": [
+                "ALTIMETER-KNOB-PTR",
+                "item:pilot-commander-instrument-panel:24"
+              ],
+              "text": "This knob sets the air pressure of the barometric altimeter, the height gauge that works with air pressure.",
+              "context": "The pilot sets it so that the gauge reads right. The manual calls the gauge the VD-10K barometric altimeter.",
+              "src": "m1",
+              "page": "18"
+            },
+            {
+              "id": "radar-alt",
+              "name": "Radar altimeter adjust and test button",
+              "type": "button",
+              "match": [
+                "RADAR-ALTIMETER-KNOB-PTR",
+                "item:pilot-commander-instrument-panel:26"
+              ],
+              "text": "Pressing this button adjusts and tests the radar altimeter, the gauge for the real height above the ground.",
+              "context": "The manual calls the gauge the UV-5 radar altimeter and says it also shows a failure of the RV-5.",
+              "src": "m1",
+              "page": "18"
+            },
+            {
+              "id": "clock",
+              "name": "Clock lever buttons (left, right)",
+              "type": "button",
+              "match": [
+                "CLOCK-LEFT-PTR",
+                "CLOCK-RIGHT-PTR",
+                "item:pilot-commander-instrument-panel:12"
+              ],
+              "count": 2,
+              "text": "These two buttons work the levers of the mechanical clock of the pilot. The clock is the AChS-1M, which also has a stopwatch.",
+              "context": "The manual's start-up list uses the stopwatch of the clock to time the starts.",
+              "src": "m1",
+              "page": "20"
+            },
+            {
+              "id": "rwr-check",
+              "name": "RWR check button",
+              "type": "button",
+              "match": [
+                "GFORCE-RESET-PTR001",
+                "item:pilot-commander-instrument-panel:13"
+              ],
+              "text": "Pressing this button checks the RWR, the radar warning receiver. The game names it 'Check RWR'.",
+              "context": "The RWR display is the S3M-5M, part of the SPO-10 system.",
+              "src": "m1"
+            },
+            {
+              "id": "rwr-day-night",
+              "name": "RWR day-night switch",
+              "type": "switch2",
+              "match": [
+                "MAPDISPLAY-VERT-PTR001"
+              ],
+              "positions": [
+                {
+                  "name": "DAY",
+                  "text": "The RWR display is set for daytime."
+                },
+                {
+                  "name": "NIGHT",
+                  "text": "The RWR display is set for night."
+                }
+              ],
+              "text": "This switch sets the brightness of the RWR display for day or night. The game names it 'RWR DAY/NIGHT'.",
+              "context": "It belongs to the SPO-10 radar warning receiver.",
+              "src": "m1"
+            },
+            {
+              "id": "g-meter-reset",
+              "name": "G-meter reset button",
+              "type": "button",
+              "match": [
+                "GFORCE-RESET-PTR",
+                "item:pilot-commander-instrument-panel:7"
+              ],
+              "text": "Pressing this button sets the G-meter back. The G-meter shows how strong the push into the seat is.",
+              "context": "The game names it 'Accelerometer Reset Button'. The manual lists the ADP-4 G-meter.",
+              "src": "m1",
+              "page": "18"
+            }
+          ]
+        },
+        {
+          "id": "pilot-gyros",
+          "name": "Gyro cage buttons and gyro selector",
+          "src": "m1",
+          "text": "Two buttons that cage the gyros of the artificial horizon, and a switch that picks which gyro is used. Caging holds a gyro in its starting position.",
+          "context": "The manual's start-up list presses and holds the cage buttons for a few seconds, one to two minutes after the gyros are switched on.",
+          "controls": [
+            {
+              "id": "cage-1",
+              "name": "Cage gyro 1 button",
+              "type": "button",
+              "match": [
+                "GYRO1-CAGE-PTR"
+              ],
+              "text": "Pressing and holding this button cages gyro 1.",
+              "context": "After it the red flags on the horizon should disappear.",
+              "src": "m1",
+              "page": "22"
+            },
+            {
+              "id": "cage-2",
+              "name": "Cage gyro 2 button",
+              "type": "button",
+              "match": [
+                "GYRO2-CAGE-PTR"
+              ],
+              "text": "Pressing and holding this button cages gyro 2.",
+              "context": "Both gyros are caged during the start-up checks.",
+              "src": "m1",
+              "page": "22"
+            },
+            {
+              "id": "gyro-select",
+              "name": "Gyrovertical switch (1 / 2)",
+              "type": "switch2",
+              "match": [
+                "GYRO-SEL-PTR"
+              ],
+              "positions": [
+                {
+                  "name": "1",
+                  "text": "Gyro 1 is used."
+                },
+                {
+                  "name": "2",
+                  "text": "Gyro 2 is used."
+                }
+              ],
+              "text": "This switch picks the gyro whose picture the attitude indicator shows.",
+              "context": "The game names it 'Gyrovertical Switch'.",
+              "src": "m1"
+            }
+          ]
+        },
+        {
+          "id": "pilot-controls-hyd",
+          "name": "Control switches, pedal damper and landing light",
+          "src": "m1",
+          "text": "A group of switches and handles the game shows in its second picture set: the assume control switch, the auxiliary hydraulic cut-off, the pedal damper, the landing light and the emergency gear lever.",
+          "context": "The pilot uses them seldom: the assume control switch hands the flight controls over, and the emergency gear lever lowers the wheels if the normal system fails.",
+          "controls": [
+            {
+              "id": "assume-control",
+              "name": "Assume control switch with cover",
+              "type": "switch2",
+              "match": [
+                "*CONTROL-COVER-PRIORITY-PTR",
+                "CONTROL-PRIORITY-PTR",
+                "item:pilot-commander-instrument-panel:3"
+              ],
+              "positions": [
+                {
+                  "name": "ON",
+                  "text": "The pilot takes over the controls."
+                },
+                {
+                  "name": "OFF",
+                  "text": "The pilot does not take over the controls."
+                }
+              ],
+              "text": "This switch takes the flight controls from the other seat. A cover protects it. The game names it 'Control Assumed Switch'.",
+              "context": "The manual lists the Assume Control switch on the instrument panel.",
+              "src": "m1",
+              "page": "18"
+            },
+            {
+              "id": "aux-off",
+              "name": "Auxiliary disable button with cover",
+              "type": "button",
+              "match": [
+                "HYDRO-BACKUP-OFF-PTR",
+                "HYDRO-BACKUP-OFF-COVER-PTR"
+              ],
+              "text": "Pressing this button switches off the auxiliary hydraulic system. A cover protects the button.",
+              "context": "The game names it 'Auxiliary Disable Button'.",
+              "src": "m1"
+            },
+            {
+              "id": "pedal-damper",
+              "name": "Pedal damper switch with cover",
+              "type": "switch2",
+              "match": [
+                "PEDAL-DAMPER-COVER-PTR",
+                "PEDAL-DAMPER-COVER-PTR-PTR",
+                "item:pilot-commander-instrument-panel:27"
+              ],
+              "positions": [
+                {
+                  "name": "ON",
+                  "text": "The pedal damper is on."
+                },
+                {
+                  "name": "OFF",
+                  "text": "The pedal damper is off."
+                }
+              ],
+              "text": "This switch turns the pedal damper on and off. A damper makes the pedals move smoothly. A cover protects it.",
+              "context": "The manual lists it as the anti-torque pedals damper switch.",
+              "src": "m1",
+              "page": "18"
+            },
+            {
+              "id": "landing-light",
+              "name": "Landing light switch (CONTROL / OFF / RETRACT)",
+              "type": "switch3",
+              "match": [
+                "TAXILIGHT-RETR-PTR"
+              ],
+              "positions": [
+                {
+                  "name": "CONTROL",
+                  "text": "The light can be aimed with the collective switch."
+                },
+                {
+                  "name": "OFF",
+                  "text": "The light is off."
+                },
+                {
+                  "name": "RETRACT",
+                  "text": "The light is folded into the helicopter."
+                }
+              ],
+              "text": "This switch controls the landing light under the nose: use it to aim the light, switch it off or fold it away.",
+              "context": "The light is aimed with the searchlight switch on the collective.",
+              "src": "m1"
+            },
+            {
+              "id": "emergency-gear",
+              "name": "Emergency gear lever",
+              "type": "handle",
+              "match": [
+                "LANDING-GEAR-EMER-PTR",
+                "item:pilot-commander-instrument-panel:23"
+              ],
+              "text": "This handle lowers the landing gear in an emergency, when the normal system does not work.",
+              "context": "The manual lists it as the emergency gear release handle on the instrument panel.",
+              "src": "m1",
+              "page": "18"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

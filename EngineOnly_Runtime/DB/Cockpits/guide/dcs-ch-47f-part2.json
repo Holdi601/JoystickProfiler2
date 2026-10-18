@@ -1,0 +1,1896 @@
+{
+  "format": "joypro-cockpit-guide",
+  "version": 1,
+  "id": "dcs-ch-47f-part2",
+  "partOf": "dcs-ch-47f",
+  "areas": [
+    {
+      "id": "overhead-panel",
+      "where": "overhead",
+      "name": "Overhead switch panel",
+      "text": "The big panel above the pilots' heads. It holds the electrical, fuel, hydraulic, lighting and engine-start switches, plus the winch and cargo hook controls.",
+      "panels": [
+        {
+          "id": "electrical-power",
+          "name": "Electrical power panel",
+          "db": "electrical-power-panel",
+          "src": "m1",
+          "page": "50",
+          "text": "This panel controls where the helicopter's electricity comes from: the battery, the little APU engine in the tail and the generators of the main engines.",
+          "context": "It is the first panel the crew uses on start-up. Almost everything else needs power from here.",
+          "controls": [
+            {
+              "id": "batt",
+              "name": "BATT switch",
+              "type": "switch2",
+              "match": [
+                "OCEP_BATT",
+                "item:electrical-power-panel:1"
+              ],
+              "text": "This is the switch of the 24-volt battery. With the battery on, the essential electrical lines get power.",
+              "context": "It is the first switch moved when starting. With the engines off, the battery is the only source.",
+              "positions": [
+                {
+                  "name": "OFF",
+                  "text": "The battery feeds only the battery bus."
+                },
+                {
+                  "name": "ON",
+                  "text": "The battery feeds the battery bus and the essential bus."
+                }
+              ],
+              "src": "m1",
+              "page": "50"
+            },
+            {
+              "id": "util-pres",
+              "name": "UTIL PRES light",
+              "type": "light",
+              "match": [
+                "item:electrical-power-panel:2"
+              ],
+              "text": "This light comes on when the pressure of the utility hydraulic system (the oil system for wheel brakes, steering and the ramp) is not normal.",
+              "context": "It is one of the lights that the LAMP TEST button checks.",
+              "src": "m1",
+              "page": "50"
+            },
+            {
+              "id": "apu-rdy",
+              "name": "APU RDY light",
+              "type": "light",
+              "match": [
+                "item:electrical-power-panel:3"
+              ],
+              "text": "This light comes on when the APU is running and its exhaust temperature is in the normal range.",
+              "context": "The APU is a small engine in the base of the rear pylon that makes electricity and pressure before the main engines run.",
+              "src": "m1",
+              "page": "50"
+            },
+            {
+              "id": "apu",
+              "name": "APU switch",
+              "type": "switch3",
+              "match": [
+                "OCEP_APU*",
+                "item:electrical-power-panel:4"
+              ],
+              "text": "This switch starts and stops the APU. START springs back to RUN when released.",
+              "context": "The start itself is automatic, controlled by a small computer. The APU RDY light tells when it is ready.",
+              "positions": [
+                {
+                  "name": "OFF",
+                  "text": "The APU is told to shut down."
+                },
+                {
+                  "name": "RUN",
+                  "text": "The APU is made ready to start, and keeps running once started."
+                },
+                {
+                  "name": "START",
+                  "text": "Starts the APU start sequence; the switch springs back to RUN."
+                }
+              ],
+              "src": "m1",
+              "page": "50"
+            },
+            {
+              "id": "gen-1",
+              "name": "GEN 1 switch",
+              "type": "switch3",
+              "match": [
+                "OCEP_GEN_1*",
+                "item:electrical-power-panel:5"
+              ],
+              "text": "This switch connects generator 1, driven by the rear transmission, to the electrical system.",
+              "context": "It is switched ON after the engines run. RESET gives a failed generator another try.",
+              "positions": [
+                {
+                  "name": "TEST",
+                  "text": "The generator is checked but stays disconnected from the AC bus 1."
+                },
+                {
+                  "name": "OFF/RESET",
+                  "text": "The generator is disconnected and reset."
+                },
+                {
+                  "name": "ON",
+                  "text": "The generator feeds AC bus 1 and transformer-rectifier 1."
+                }
+              ],
+              "src": "m1",
+              "page": "50"
+            },
+            {
+              "id": "gen-2",
+              "name": "GEN 2 switch",
+              "type": "switch3",
+              "match": [
+                "OCEP_GEN_2*",
+                "item:electrical-power-panel:6"
+              ],
+              "text": "This switch connects generator 2, driven by the rear transmission, to the electrical system.",
+              "context": "It is the same kind of switch as GEN 1, for the second system.",
+              "positions": [
+                {
+                  "name": "TEST",
+                  "text": "The generator is checked but stays disconnected from the AC bus 2."
+                },
+                {
+                  "name": "OFF/RESET",
+                  "text": "The generator is disconnected and reset."
+                },
+                {
+                  "name": "ON",
+                  "text": "The generator feeds AC bus 2 and transformer-rectifier 2."
+                }
+              ],
+              "src": "m1",
+              "page": "50"
+            },
+            {
+              "id": "gen-apu",
+              "name": "GEN APU switch",
+              "type": "switch3",
+              "match": [
+                "OCEP_GEN_APU*",
+                "item:electrical-power-panel:7"
+              ],
+              "text": "This switch connects the generator of the APU to both electrical systems.",
+              "context": "On the ground it powers the helicopter before the main engines run.",
+              "positions": [
+                {
+                  "name": "TEST",
+                  "text": "The APU generator is checked but stays disconnected from the buses."
+                },
+                {
+                  "name": "OFF/RESET",
+                  "text": "The APU generator is disconnected and reset."
+                },
+                {
+                  "name": "ON",
+                  "text": "The APU generator feeds both AC buses and both transformer-rectifiers."
+                }
+              ],
+              "src": "m1",
+              "page": "50"
+            }
+          ]
+        },
+        {
+          "id": "fuel",
+          "name": "Fuel control panel",
+          "db": "fuel-control-panel",
+          "src": "m1",
+          "page": "44",
+          "text": "This panel switches the fuel pumps, opens the link between the left and right fuel systems, and powers the refuel connection.",
+          "context": "The CH-47 has two main tanks and four extra tanks. Each tank has pumps that push the fuel toward the engines. The checklist sets XFEED to CLOSE and REFUEL STA to OFF.",
+          "controls": [
+            {
+              "id": "xfeed",
+              "name": "XFEED switch (crossfeed)",
+              "type": "switch2",
+              "match": [
+                "OCFC_XFEED",
+                "item:fuel-control-panel:1"
+              ],
+              "text": "This switch opens or closes a valve between the two fuel systems. Open, both engines can use fuel from both main tanks.",
+              "context": "Pilots open it if one side runs low or a pump fails, so no engine starves.",
+              "positions": [
+                {
+                  "name": "CLOSE",
+                  "text": "Engine 1 is fed from the left main tank and engine 2 from the right main tank."
+                },
+                {
+                  "name": "OPEN",
+                  "text": "Both engines are fed from both main tanks."
+                }
+              ],
+              "src": "m1",
+              "page": "44"
+            },
+            {
+              "id": "aft-aux",
+              "name": "AFT AUX PUMP switches (L and R)",
+              "type": "switch2",
+              "match": [
+                "OCFC_ENG?_AFTAUX",
+                "item:fuel-control-panel:2"
+              ],
+              "text": "These two switches turn on the pumps in the rear auxiliary tanks, one for the left and one for the right side.",
+              "context": "The auxiliary tanks are extra tanks besides the two main tanks.",
+              "positions": [
+                {
+                  "name": "ON",
+                  "text": "The pump in the aft auxiliary tank runs."
+                },
+                {
+                  "name": "OFF",
+                  "text": "That pump is off."
+                }
+              ],
+              "count": 2,
+              "src": "m1",
+              "page": "45"
+            },
+            {
+              "id": "aft-main",
+              "name": "AFT MAIN PUMP switches (L and R)",
+              "type": "switch2",
+              "match": [
+                "OCFC_ENG?_MAIN2",
+                "item:fuel-control-panel:3"
+              ],
+              "text": "These two switches turn on the rear pumps in the main tanks, one for the left and one for the right tank.",
+              "context": "The main tanks feed the engines directly, so these pumps are on during engine start and flight.",
+              "positions": [
+                {
+                  "name": "ON",
+                  "text": "The aft pump in that main tank runs."
+                },
+                {
+                  "name": "OFF",
+                  "text": "That pump is off."
+                }
+              ],
+              "count": 2,
+              "src": "m1",
+              "page": "45"
+            },
+            {
+              "id": "fwd-main",
+              "name": "FWD MAIN PUMP switches (L and R)",
+              "type": "switch2",
+              "match": [
+                "OCFC_ENG?_MAIN1",
+                "item:fuel-control-panel:4"
+              ],
+              "text": "These two switches turn on the front pumps in the main tanks, one for the left and one for the right tank.",
+              "context": "Each main tank has a front and a rear pump. The front pumps are used together with the rear ones.",
+              "positions": [
+                {
+                  "name": "ON",
+                  "text": "The forward pump in that main tank runs."
+                },
+                {
+                  "name": "OFF",
+                  "text": "That pump is off."
+                }
+              ],
+              "count": 2,
+              "src": "m1",
+              "page": "45"
+            },
+            {
+              "id": "fwd-aux",
+              "name": "FWD AUX PUMP switches (L and R)",
+              "type": "switch2",
+              "match": [
+                "OCFC_ENG?_FWDAUX",
+                "item:fuel-control-panel:5"
+              ],
+              "text": "These two switches turn on the pumps in the front auxiliary tanks, one for the left and one for the right side.",
+              "context": "They work like the pumps of the rear auxiliary tanks, one tank at the front on each side.",
+              "positions": [
+                {
+                  "name": "ON",
+                  "text": "The pump in the forward auxiliary tank runs."
+                },
+                {
+                  "name": "OFF",
+                  "text": "That pump is off."
+                }
+              ],
+              "count": 2,
+              "src": "m1",
+              "page": "45"
+            },
+            {
+              "id": "refuel-sta",
+              "name": "REFUEL STA switch",
+              "type": "switch2",
+              "match": [
+                "OCFC_REFUEL",
+                "item:fuel-control-panel:6"
+              ],
+              "text": "This switch gives power to the refuel panel at the right fuel pod, where the fuel hose is connected on the ground.",
+              "context": "It is switched on only when refuelling and is OFF in the start checklist.",
+              "positions": [
+                {
+                  "name": "ON",
+                  "text": "The external refuel panel has power."
+                },
+                {
+                  "name": "OFF",
+                  "text": "The external refuel panel is off."
+                }
+              ],
+              "src": "m1",
+              "page": "45"
+            }
+          ]
+        },
+        {
+          "id": "hydraulics",
+          "name": "Hydraulic control panel",
+          "db": "hydraulic-control-panel",
+          "src": "m1",
+          "page": "51",
+          "text": "This panel handles the oil-pressure systems that move the flight controls, the wheel brakes and steering, and the tail ramp.",
+          "context": "The crew uses it to check the flight controls before starting the engines and for emergency actions.",
+          "controls": [
+            {
+              "id": "pwr-xfer-1",
+              "name": "PWR XFER 1 switch",
+              "type": "switch2",
+              "match": [
+                "OCHC_PTU_1",
+                "item:hydraulic-control-panel:1"
+              ],
+              "text": "This switch connects the utility hydraulic system to flight control system 1 through a power transfer unit. With the APU running, the controls can be checked before engine start.",
+              "context": "A power transfer unit moves pressure from one system to the other.",
+              "positions": [
+                {
+                  "name": "ON",
+                  "text": "The utility system helps flight control system 1."
+                },
+                {
+                  "name": "OFF",
+                  "text": "The link is off."
+                }
+              ],
+              "src": "m1",
+              "page": "51"
+            },
+            {
+              "id": "pwr-xfer-2",
+              "name": "PWR XFER 2 switch",
+              "type": "switch2",
+              "match": [
+                "OCHC_PTU_2",
+                "item:hydraulic-control-panel:2"
+              ],
+              "text": "This switch connects the utility hydraulic system to flight control system 2. With the APU running, the controls can be checked before engine start.",
+              "context": "It is the same as PWR XFER 1, for the second system.",
+              "positions": [
+                {
+                  "name": "ON",
+                  "text": "The utility system helps flight control system 2."
+                },
+                {
+                  "name": "OFF",
+                  "text": "The link is off."
+                }
+              ],
+              "src": "m1",
+              "page": "51"
+            },
+            {
+              "id": "flt-contr",
+              "name": "FLT CONTR switch",
+              "type": "switch3",
+              "match": [
+                "OCHC_FLT_CONTR",
+                "item:hydraulic-control-panel:3"
+              ],
+              "text": "This switch switches off one of the two flight control systems on the ground. In flight it must be at BOTH.",
+              "context": "The manual says caution messages show which system is off.",
+              "positions": [
+                {
+                  "name": "2 ON",
+                  "text": "Flight control system 1 and DAFCS 1 are off; only system 2 works."
+                },
+                {
+                  "name": "BOTH",
+                  "text": "Both flight control systems are on."
+                },
+                {
+                  "name": "1 ON",
+                  "text": "Flight control system 2 and DAFCS 2 are off; only system 1 works."
+                }
+              ],
+              "src": "m1",
+              "page": "51"
+            },
+            {
+              "id": "pwr-steer-cover",
+              "name": "PWR STEER switch cover",
+              "type": "cover",
+              "match": [
+                "OCHC_PWR_STEER_COVER"
+              ],
+              "text": "This is the guard over the PWR STEER switch. It prevents the switch from being flipped by accident.",
+              "context": "The guard is lifted first, and then the switch can be moved.",
+              "src": "m1",
+              "page": "51"
+            },
+            {
+              "id": "pwr-steer",
+              "name": "PWR STEER switch (guarded)",
+              "type": "switch2",
+              "match": [
+                "OCHC_PWR_STEER",
+                "item:hydraulic-control-panel:4"
+              ],
+              "text": "This switch cuts the wheel brakes and steering off from the rest of the utility hydraulic system, if they leak.",
+              "context": "It protects the other hydraulic users when the brakes or steering fail.",
+              "positions": [
+                {
+                  "name": "OFF",
+                  "text": "Brakes and steering are isolated; the brakes still work in a limited way and the aft wheels stay locked."
+                },
+                {
+                  "name": "ON",
+                  "text": "Brakes and steering get pressure from the utility system as normal."
+                }
+              ],
+              "src": "m1",
+              "page": "51"
+            },
+            {
+              "id": "ramp-pwr",
+              "name": "RAMP PWR switch",
+              "type": "switch3",
+              "match": [
+                "OCHC_RAMP",
+                "item:hydraulic-control-panel:5"
+              ],
+              "text": "This switch gives hydraulic pressure to the tail ramp, or hands ramp control to the cockpit for emergencies.",
+              "context": "The ramp is the loading door at the tail.",
+              "positions": [
+                {
+                  "name": "OFF",
+                  "text": "The ramp gets no pressure."
+                },
+                {
+                  "name": "ON",
+                  "text": "The ramp is powered by the utility system."
+                },
+                {
+                  "name": "EMERG",
+                  "text": "Allows the emergency ramp switch in the cockpit to move the ramp."
+                }
+              ],
+              "src": "m1",
+              "page": "51"
+            },
+            {
+              "id": "ramp-emer-cover",
+              "name": "RAMP EMER switch cover",
+              "type": "cover",
+              "match": [
+                "OCHC_RAMP_EMER_COVER"
+              ],
+              "text": "This is the guard over the RAMP EMER switch.",
+              "context": "Lifting this guard is the first step of moving the tail ramp from the cockpit in an emergency.",
+              "src": "m1",
+              "page": "51"
+            },
+            {
+              "id": "ramp-emer",
+              "name": "RAMP EMER switch (guarded)",
+              "type": "switch3",
+              "match": [
+                "OCHC_RAMP_EMER",
+                "item:hydraulic-control-panel:6"
+              ],
+              "text": "This switch moves the tail ramp up or down in an emergency, for example to let out smoke or to leave quickly after a landing. It springs back to HOLD.",
+              "context": "It works only when RAMP PWR is at EMERG.",
+              "positions": [
+                {
+                  "name": "UP",
+                  "text": "While held here the ramp moves up to closed."
+                },
+                {
+                  "name": "HOLD",
+                  "text": "The ramp stops moving; the switch springs back here."
+                },
+                {
+                  "name": "DOWN",
+                  "text": "While held here the ramp moves down to open; it keeps opening for 5 seconds after release."
+                }
+              ],
+              "src": "m1",
+              "page": "51"
+            }
+          ]
+        },
+        {
+          "id": "engine-condition",
+          "name": "Engine condition panel",
+          "db": "engine-condition-panel",
+          "src": "m1",
+          "page": "52",
+          "text": "This panel has the two big levers that decide what each engine does: off, idle on the ground, or ready for flight.",
+          "context": "The levers are used for engine start and stop. They also set intermediate speeds between ground and flight.",
+          "controls": [
+            {
+              "id": "eng-cond",
+              "name": "ENG COND levers (engine 1 and 2)",
+              "type": "lever",
+              "match": [
+                "OCEC_ENG*",
+                "item:engine-condition-panel:1",
+                "control:panel.lever.eng_cond"
+              ],
+              "text": "These two levers set the condition of the left and right engine. Each lever is held outward by a spring, which makes a gate. To pull it back past a gate, the pilot pushes it inboard first.",
+              "context": "STOP also clears an engine failure message after an aborted start, so a new start can be tried. The levers can also be put at points between GROUND and FLIGHT.",
+              "positions": [
+                {
+                  "name": "STOP",
+                  "text": "Fuel to the engine is off, or a start is stopped."
+                },
+                {
+                  "name": "GROUND",
+                  "text": "The engine idles at 50 to 59 percent of its gas generator speed."
+                },
+                {
+                  "name": "FLIGHT",
+                  "text": "The engine holds the rotor speed set with the NR% knob; the engines share the load."
+                }
+              ],
+              "count": 2,
+              "src": "m1",
+              "page": "52"
+            }
+          ]
+        },
+        {
+          "id": "fadec",
+          "name": "FADEC panel (engine computers)",
+          "db": "fadec-panel",
+          "src": "m1",
+          "page": "53",
+          "text": "FADEC is the engine computer. This panel starts the engines, sets the rotor speed and lets the crew test or take over the computers.",
+          "context": "The pilots use the ENG START switch after the APU runs. The ENG COND levers on the next panel then give the engines fuel.",
+          "controls": [
+            {
+              "id": "nr-knob",
+              "name": "NR% knob (rotor speed)",
+              "type": "selector",
+              "match": [
+                "OCFC_NR",
+                "item:fadec-panel:1"
+              ],
+              "text": "This knob fine-tunes the speed of the rotors between 97 and 103 percent. The best speed is the middle mark at 100.",
+              "context": "The engines hold this rotor speed when the ENG COND levers are at FLIGHT.",
+              "positions": [
+                {
+                  "name": "97",
+                  "text": "The lowest rotor speed setting, 97 percent."
+                },
+                {
+                  "name": "100",
+                  "text": "The middle mark, the best rotor speed."
+                },
+                {
+                  "name": "103",
+                  "text": "The highest rotor speed setting, 103 percent."
+                }
+              ],
+              "src": "m1",
+              "page": "53"
+            },
+            {
+              "id": "eng-start",
+              "name": "ENG START switch",
+              "type": "switch3",
+              "match": [
+                "OCFC_ENG_START",
+                "item:fadec-panel:2"
+              ],
+              "text": "Held to 1 or 2, this switch starts the left or right engine. It also spins an engine without a start when no start is under way. It springs back to the middle.",
+              "context": "It is used in the engine start after the APU runs.",
+              "positions": [
+                {
+                  "name": "1",
+                  "text": "While held here the left engine is started or turned over."
+                },
+                {
+                  "name": "OFF",
+                  "text": "The middle position; the switch springs back here."
+                },
+                {
+                  "name": "2",
+                  "text": "While held here the right engine is started or turned over."
+                }
+              ],
+              "src": "m1",
+              "page": "53"
+            },
+            {
+              "id": "pri-rev",
+              "name": "FADEC 1 and 2 PRI/REV switches",
+              "type": "switch2",
+              "match": [
+                "OCFC_MODE_?",
+                "item:fadec-panel:3"
+              ],
+              "text": "These two switches choose the main (PRI) or the backup (REV) mode of the computer of each engine. The computer may go to REV by itself after a serious fault.",
+              "context": "The game's callouts for these two switches are OCFC_MODE_1 and OCFC_MODE_2; the second one has no command of its own.",
+              "positions": [
+                {
+                  "name": "PRI",
+                  "text": "The computer works in primary mode, the normal one."
+                },
+                {
+                  "name": "REV",
+                  "text": "The computer works in reversionary mode, the backup."
+                }
+              ],
+              "count": 2,
+              "src": "m1",
+              "page": "53"
+            },
+            {
+              "id": "inc-dec",
+              "name": "FADEC 1 and 2 INC/DEC switches",
+              "type": "switch3",
+              "match": [
+                "OCFC_NR_?",
+                "item:fadec-panel:4"
+              ],
+              "text": "In backup (REV) mode, these two switches raise (INC) or lower (DEC) the engine speed while held. They spring back to the middle.",
+              "context": "They are the manual control of each engine when its computer is in the backup mode.",
+              "positions": [
+                {
+                  "name": "INC",
+                  "text": "While held here the engine speed rises."
+                },
+                {
+                  "name": "Center",
+                  "text": "The middle position; the switch springs back here."
+                },
+                {
+                  "name": "DEC",
+                  "text": "While held here the engine speed falls."
+                }
+              ],
+              "count": 2,
+              "src": "m1",
+              "page": "53"
+            },
+            {
+              "id": "bu-pwr",
+              "name": "B/U PWR switch",
+              "type": "switch2",
+              "match": [
+                "OCFC_BU_PWR",
+                "item:fadec-panel:5"
+              ],
+              "text": "This switch gives backup electrical power to the primary mode of the engine computers, when an engine's own alternator has failed or its speed is under 48 percent.",
+              "context": "It matters during starts and failures.",
+              "positions": [
+                {
+                  "name": "ON",
+                  "text": "Backup power is given to the engine computers."
+                },
+                {
+                  "name": "OFF",
+                  "text": "Backup power is off."
+                }
+              ],
+              "src": "m1",
+              "page": "53"
+            },
+            {
+              "id": "ospd",
+              "name": "OSPD switch (overspeed test)",
+              "type": "switch3",
+              "match": [
+                "OCFC_OSPD",
+                "item:fadec-panel:6"
+              ],
+              "text": "This switch tests the overspeed protection of an engine. The test works when rotor speed is above 81.3 percent. It springs back to the middle.",
+              "context": "In the test the fuel flow drops to ground idle, to show that the protection works.",
+              "positions": [
+                {
+                  "name": "1",
+                  "text": "Tests the left engine: the overspeed limit is lowered to about 79 percent and the fuel falls to idle."
+                },
+                {
+                  "name": "OFF",
+                  "text": "The middle position; the switch springs back here."
+                },
+                {
+                  "name": "2",
+                  "text": "Tests the right engine: the overspeed limit is lowered to about 79 percent and the fuel falls to idle."
+                }
+              ],
+              "src": "m1",
+              "page": "54"
+            },
+            {
+              "id": "load-share",
+              "name": "LOAD SHARE switch",
+              "type": "switch2",
+              "match": [
+                "OCFC_LOAD",
+                "item:fadec-panel:7"
+              ],
+              "text": "This switch picks how the two engines share the work: by their temperature or by their torque (twisting force).",
+              "context": "TRQ is the normal choice. PTIT can be used if one engine runs hotter.",
+              "positions": [
+                {
+                  "name": "PTIT",
+                  "text": "The computers balance the engine temperatures."
+                },
+                {
+                  "name": "TRQ",
+                  "text": "The computers balance the torque of both engines."
+                }
+              ],
+              "src": "m1",
+              "page": "54"
+            }
+          ]
+        },
+        {
+          "id": "hoist-cargo",
+          "name": "Hoist / cargo hook control panel",
+          "db": "hoist-cargo-hook-control-panel",
+          "src": "m1",
+          "page": "117",
+          "text": "This panel runs the winch (hoist) and the three cargo hooks under the belly. They carry loads outside the helicopter.",
+          "context": "The hooks can also be released with the buttons on the cyclic grips. Hoist and hooks are described in the manual's transport chapter.",
+          "controls": [
+            {
+              "id": "cable-cut-cover",
+              "name": "CABLE CUT switch cover",
+              "type": "cover",
+              "match": [
+                "OCCH_CABLE_CUT_COVER"
+              ],
+              "text": "This is the guard over the CABLE CUT switch.",
+              "context": "The guard stops the switch from being moved by mistake.",
+              "src": "m1",
+              "page": "117"
+            },
+            {
+              "id": "cable-cut",
+              "name": "CABLE CUT switch (guarded)",
+              "type": "switch2",
+              "match": [
+                "OCCH_CABLE_CUT",
+                "item:hoist-cargo-hook-control-panel:1"
+              ],
+              "text": "With the guard open, the ON position sets off a small charge that cuts the winch cable.",
+              "context": "It is for an emergency, for example if the winch cable is caught.",
+              "positions": [
+                {
+                  "name": "ON",
+                  "text": "The winch cable is cut."
+                },
+                {
+                  "name": "OFF",
+                  "text": "The cable is not cut."
+                }
+              ],
+              "src": "m1",
+              "page": "117"
+            },
+            {
+              "id": "hoist-knob",
+              "name": "HOIST control knob",
+              "type": "selector",
+              "match": [
+                "OCCH_HOIST_CONTROL*",
+                "item:hoist-cargo-hook-control-panel:2"
+              ],
+              "text": "This knob reels the winch cable out or in, when the HOIST MSTR switch is at PLT. Turning it further makes the reel go faster.",
+              "context": "It springs back to OFF when released.",
+              "positions": [
+                {
+                  "name": "OUT",
+                  "text": "The cable is reeled out."
+                },
+                {
+                  "name": "OFF",
+                  "text": "The winch stops; the knob springs back here."
+                },
+                {
+                  "name": "IN",
+                  "text": "The cable is reeled in."
+                }
+              ],
+              "src": "m1",
+              "page": "117"
+            },
+            {
+              "id": "hoist-mstr",
+              "name": "HOIST MSTR switch",
+              "type": "switch3",
+              "match": [
+                "OCCH_HOIST_MASTER",
+                "item:hoist-cargo-hook-control-panel:3"
+              ],
+              "text": "This switch decides who may run the winch: nobody, the pilot in the cockpit or the hoist operator in the cabin.",
+              "context": "It must be set before the winch is used.",
+              "positions": [
+                {
+                  "name": "REMOTE",
+                  "text": "The hoist operator in the cabin runs the winch."
+                },
+                {
+                  "name": "OFF",
+                  "text": "The winch is disabled."
+                },
+                {
+                  "name": "PLT",
+                  "text": "The winch is run from this cockpit panel."
+                }
+              ],
+              "src": "m1",
+              "page": "117"
+            },
+            {
+              "id": "hook-mstr",
+              "name": "CARGO HOOK MSTR switch",
+              "type": "switch3",
+              "match": [
+                "OCCH_HOOK_MASTER*",
+                "item:hoist-cargo-hook-control-panel:4"
+              ],
+              "text": "This switch allows or blocks the release of the hooks from the cyclic grips and from the grip at the hoist operator station.",
+              "context": "With ARM the hooks selected by HOOK SEL open when a release button is pressed.",
+              "positions": [
+                {
+                  "name": "RESET",
+                  "text": "Clears the FWD HOOK OPEN and AFT HOOK OPEN messages after those hooks opened."
+                },
+                {
+                  "name": "OFF",
+                  "text": "Release from the grips is disabled; the center hook closes and its message goes out."
+                },
+                {
+                  "name": "ARM",
+                  "text": "Release from the grips is enabled."
+                }
+              ],
+              "src": "m1",
+              "page": "117"
+            },
+            {
+              "id": "hook-sel",
+              "name": "HOOK SEL knob",
+              "type": "selector",
+              "match": [
+                "OCCH_HOOK_SELECTOR",
+                "item:hoist-cargo-hook-control-panel:5"
+              ],
+              "text": "This knob picks which hooks open when the release button is pressed. It only works with CARGO HOOK MSTR at ARM.",
+              "context": "It lets the crew drop one load at a time.",
+              "positions": [
+                {
+                  "name": "FWD",
+                  "text": "Only the front hook opens."
+                },
+                {
+                  "name": "MID",
+                  "text": "Only the middle hook opens."
+                },
+                {
+                  "name": "AFT",
+                  "text": "Only the rear hook opens."
+                },
+                {
+                  "name": "TANDEM",
+                  "text": "The front and rear hooks open."
+                },
+                {
+                  "name": "ALL",
+                  "text": "All three hooks open."
+                }
+              ],
+              "src": "m1",
+              "page": "117"
+            },
+            {
+              "id": "emerg-rel-cover",
+              "name": "EMERG REL ALL switch cover",
+              "type": "cover",
+              "match": [
+                "OCCH_EMER_COVER"
+              ],
+              "text": "This is the guard over the EMERG REL ALL switch.",
+              "context": "The guard stops the switch from being moved by mistake.",
+              "src": "m1",
+              "page": "117"
+            },
+            {
+              "id": "emerg-rel",
+              "name": "EMERG REL ALL switch",
+              "type": "switch2",
+              "match": [
+                "OCCH_EMER",
+                "item:hoist-cargo-hook-control-panel:6"
+              ],
+              "text": "This switch opens all three cargo hooks at once, whatever the other switches say.",
+              "context": "It is the electrical emergency release of a sling load.",
+              "positions": [
+                {
+                  "name": "Off",
+                  "text": "The emergency release is not used."
+                },
+                {
+                  "name": "On",
+                  "text": "All three hooks are commanded to open."
+                }
+              ],
+              "src": "m1",
+              "page": "117"
+            }
+          ]
+        },
+        {
+          "id": "eaps",
+          "name": "EAPS control panel (engine air particle separators)",
+          "db": "eaps-control-panel",
+          "src": "m1",
+          "page": "44",
+          "text": "This panel is for the sand and dust filters of the engines. The game does not use them: the manual marks the panel as not implemented.",
+          "context": "In the real helicopter the crew switches the filter fans on when flying over dusty ground. The checklist keeps the fans OFF and the doors at CLOSE.",
+          "controls": [
+            {
+              "id": "fans",
+              "name": "ENG 1 / ENG 2 FAN switches",
+              "type": "switch2",
+              "match": [
+                "OCPS_ENG?_FAN",
+                "item:eaps-control-panel:1"
+              ],
+              "text": "These two switches switch the fans of the particle separators of engine 1 and engine 2 on and off. A particle separator throws dust out of the air before it enters the engine.",
+              "context": "Nothing happens in the game, since the separators are not implemented.",
+              "positions": [
+                {
+                  "name": "ON",
+                  "text": "The fan of that engine runs."
+                },
+                {
+                  "name": "OFF",
+                  "text": "The fan of that engine is off."
+                }
+              ],
+              "count": 2,
+              "src": "m1",
+              "page": "44"
+            },
+            {
+              "id": "doors",
+              "name": "ENG 1 / ENG 2 DOORS switches",
+              "type": "switch2",
+              "match": [
+                "OCPS_ENG?_DOOR",
+                "item:eaps-control-panel:2"
+              ],
+              "text": "These two switches open and close the bypass doors of the separators. The doors are opened if dust has blocked the separator.",
+              "context": "The doors only open if dust blocks the separator; nothing happens in the game, since the separators are not implemented.",
+              "positions": [
+                {
+                  "name": "CLOSE",
+                  "text": "The bypass doors are closed."
+                },
+                {
+                  "name": "OPEN",
+                  "text": "The bypass doors are open, so air can bypass a blocked separator."
+                }
+              ],
+              "count": 2,
+              "src": "m1",
+              "page": "44"
+            }
+          ]
+        },
+        {
+          "id": "anti-ice",
+          "name": "Anti-ice panel",
+          "db": "anti-ice-panel",
+          "src": "m1",
+          "page": "48",
+          "text": "This panel switches on the heating of the cockpit windows and of the air-speed probes outside.",
+          "context": "Heat keeps ice off the windshield and the probes. The probes measure how fast the helicopter flies.",
+          "controls": [
+            {
+              "id": "ws-cplt",
+              "name": "W/S HEAT CPLT switch",
+              "type": "switch2",
+              "match": [
+                "OCAI_CPLT",
+                "item:anti-ice-panel:1"
+              ],
+              "text": "This switch heats the Copilot's windshield.",
+              "context": "Heat clears ice and fog from the glass.",
+              "positions": [
+                {
+                  "name": "ON",
+                  "text": "The heater of the Copilot's windshield is on."
+                },
+                {
+                  "name": "OFF",
+                  "text": "The heater is off."
+                }
+              ],
+              "src": "m1",
+              "page": "48"
+            },
+            {
+              "id": "ws-plt",
+              "name": "W/S HEAT PLT switch",
+              "type": "switch2",
+              "match": [
+                "OCAI_PLT",
+                "item:anti-ice-panel:2"
+              ],
+              "text": "This switch heats the Pilot's windshield.",
+              "context": "Heat clears ice and fog from the glass.",
+              "positions": [
+                {
+                  "name": "ON",
+                  "text": "The heater of the Pilot's windshield is on."
+                },
+                {
+                  "name": "OFF",
+                  "text": "The heater is off."
+                }
+              ],
+              "src": "m1",
+              "page": "48"
+            },
+            {
+              "id": "ws-ctr",
+              "name": "W/S HEAT CTR switch",
+              "type": "switch2",
+              "match": [
+                "OCAI_CTR",
+                "item:anti-ice-panel:3"
+              ],
+              "text": "This switch heats the center windshield.",
+              "context": "The center window sits between the two pilot windows.",
+              "positions": [
+                {
+                  "name": "ON",
+                  "text": "The heater of the center windshield is on."
+                },
+                {
+                  "name": "OFF",
+                  "text": "The heater is off."
+                }
+              ],
+              "src": "m1",
+              "page": "48"
+            },
+            {
+              "id": "pitot",
+              "name": "PITOT HEAT switch",
+              "type": "switch2",
+              "match": [
+                "OCAI_PITOT",
+                "item:anti-ice-panel:4"
+              ],
+              "text": "This switch heats the pitot tubes, the static ports and the yaw ports. Those are small openings and tubes outside that measure speed and air pressure.",
+              "context": "Without heat they could freeze shut and the speed readings would be wrong.",
+              "positions": [
+                {
+                  "name": "ON",
+                  "text": "The heating elements are on."
+                },
+                {
+                  "name": "OFF",
+                  "text": "The heating elements are off."
+                }
+              ],
+              "src": "m1",
+              "page": "48"
+            }
+          ]
+        },
+        {
+          "id": "troop-heat",
+          "name": "Troop warning / heating control panel",
+          "db": "troop-warning-heating-control-panel",
+          "src": "m1",
+          "page": "49",
+          "text": "This panel has the red and green jump lights and the alarm bell for the people in the cabin, plus the cabin heater and the windshield wiper.",
+          "context": "Soldiers in the cabin get their signals from here. The checklist leaves the troop warnings and the wiper OFF.",
+          "controls": [
+            {
+              "id": "jump-lights",
+              "name": "JUMP LT indicator lights",
+              "type": "light",
+              "match": [
+                "item:troop-warning-heating-control-panel:1"
+              ],
+              "text": "These two lights repeat in the cockpit what the red and green jump lights in the cabin show.",
+              "context": "They let the pilots see which signal the cabin has.",
+              "src": "m1",
+              "page": "49"
+            },
+            {
+              "id": "jump-switch",
+              "name": "JUMP LT switch",
+              "type": "switch3",
+              "match": [
+                "OCTW_LT",
+                "item:troop-warning-heating-control-panel:2"
+              ],
+              "text": "This switch turns on the red or green signal lights in the cabin, just behind the cockpit and at the tail ramp.",
+              "context": "One pair of red and green lights faces aft just behind the cockpit; a second pair at the tail ramp faces forward.",
+              "positions": [
+                {
+                  "name": "GREEN",
+                  "text": "Only the green jump light is on."
+                },
+                {
+                  "name": "OFF",
+                  "text": "Both jump lights are off."
+                },
+                {
+                  "name": "RED",
+                  "text": "Only the red jump light is on."
+                }
+              ],
+              "src": "m1",
+              "page": "49"
+            },
+            {
+              "id": "alarm",
+              "name": "ALARM switch",
+              "type": "switch2",
+              "match": [
+                "OCTW_ALARM",
+                "item:troop-warning-heating-control-panel:3"
+              ],
+              "text": "This switch rings an alarm bell in the cabin for as long as it stays in ON.",
+              "context": "It warns the people in the cabin.",
+              "positions": [
+                {
+                  "name": "ON",
+                  "text": "The alarm bell rings without stopping."
+                },
+                {
+                  "name": "OFF",
+                  "text": "The bell is silent."
+                }
+              ],
+              "src": "m1",
+              "page": "49"
+            },
+            {
+              "id": "heater-function",
+              "name": "Heater function switch",
+              "type": "switch3",
+              "match": [
+                "OCTW_HTR_MODE",
+                "item:troop-warning-heating-control-panel:4"
+              ],
+              "text": "This switch decides whether the cockpit and cabin get fresh air, no air, or heated air.",
+              "context": "The heater burns aircraft fuel, so it is used only in cold weather.",
+              "positions": [
+                {
+                  "name": "BLWR ONLY",
+                  "text": "A blower pushes fresh outside air, unheated, into the cockpit and cabin."
+                },
+                {
+                  "name": "OFF",
+                  "text": "No ventilated or heated air is supplied."
+                },
+                {
+                  "name": "HTR ON",
+                  "text": "Heated air from the combustion heater is blown into the cockpit and cabin."
+                }
+              ],
+              "src": "m1",
+              "page": "49"
+            },
+            {
+              "id": "cabin-temp",
+              "name": "CABIN TEMP SEL knob",
+              "type": "knob",
+              "match": [
+                "OCTW_HTR_TEMP",
+                "item:troop-warning-heating-control-panel:5"
+              ],
+              "text": "This knob sets for how long the heater may run before it shuts down by itself. Turning it clockwise makes the heat last longer.",
+              "context": "It works only together with the heater function switch at HTR ON.",
+              "src": "m1",
+              "page": "49"
+            },
+            {
+              "id": "htr-start",
+              "name": "HTR START button",
+              "type": "button",
+              "match": [
+                "OCTW_HTR_START",
+                "item:troop-warning-heating-control-panel:6"
+              ],
+              "text": "A short press on this button starts the heater, when the heater function switch is at HTR ON.",
+              "context": "It starts the combustion heater with aircraft fuel.",
+              "src": "m1",
+              "page": "49"
+            },
+            {
+              "id": "wiper",
+              "name": "W/S WIPER knob",
+              "type": "selector",
+              "match": [
+                "OCTW_WIPER*",
+                "item:troop-warning-heating-control-panel:7"
+              ],
+              "text": "This knob switches the windshield wiper on, at one of three speeds, and parks it. Holding it at PARK moves the wiper to its parking place.",
+              "context": "The knob springs back from PARK to OFF.",
+              "positions": [
+                {
+                  "name": "PARK",
+                  "text": "While held here the wiper moves to its parking place; the knob springs back to OFF."
+                },
+                {
+                  "name": "OFF",
+                  "text": "The wiper is off and stops where it is."
+                },
+                {
+                  "name": "SLOW",
+                  "text": "The wiper moves slowly."
+                },
+                {
+                  "name": "MED",
+                  "text": "The wiper moves at medium speed."
+                },
+                {
+                  "name": "FAST",
+                  "text": "The wiper moves fast."
+                }
+              ],
+              "src": "m1",
+              "page": "49"
+            }
+          ]
+        },
+        {
+          "id": "lighting",
+          "name": "Lighting panel",
+          "db": "lighting-panel",
+          "src": "m1",
+          "page": "45",
+          "text": "This panel has two knobs for the backlight of the middle panels and of the stick position indicator.",
+          "context": "The knobs are used at night. Their lights are separate from the lights of the pilot and copilot panels.",
+          "controls": [
+            {
+              "id": "ctr-csl",
+              "name": "CTR CSL knob (center console lighting)",
+              "type": "knob",
+              "match": [
+                "OCLP_CONSOLE_DIMMER",
+                "item:lighting-panel:1"
+              ],
+              "text": "This knob sets how bright the backlight is on the canted console and the center console.",
+              "context": "It also controls the audio panel indicators when the mode is NIGHT or NVG.",
+              "src": "m1",
+              "page": "45"
+            },
+            {
+              "id": "stick-pos",
+              "name": "STICK POS knob",
+              "type": "knob",
+              "match": [
+                "OCLP_STICK_DIMMER",
+                "item:lighting-panel:2"
+              ],
+              "text": "This knob sets how bright the light of the stick position indicator is.",
+              "context": "The indicator shows how far forward or back the cyclic stick is.",
+              "src": "m1",
+              "page": "45"
+            }
+          ]
+        },
+        {
+          "id": "interior-lighting",
+          "name": "Interior lighting panel",
+          "db": "interior-lighting-panel",
+          "src": "m1",
+          "page": "45",
+          "text": "This panel controls the floodlights, the dome lights and the emergency exit lights.",
+          "context": "Floodlights light the panels softly at night. The emergency exit lights help people find the doors in the dark.",
+          "controls": [
+            {
+              "id": "flood-inst",
+              "name": "FLOOD INST switch",
+              "type": "switch2",
+              "match": [
+                "OCLP_INST_FLOOD",
+                "item:interior-lighting-panel:1"
+              ],
+              "text": "This switch turns on the floodlights under the top of the instrument panel and the small stalk lights beside the seats and the console.",
+              "context": "Their brightness is set with the FLOOD knob.",
+              "positions": [
+                {
+                  "name": "ON",
+                  "text": "The instrument floodlights and the stalk lights are on."
+                },
+                {
+                  "name": "OFF",
+                  "text": "They are off."
+                }
+              ],
+              "src": "m1",
+              "page": "45"
+            },
+            {
+              "id": "flood-ovhd",
+              "name": "FLOOD OVHD switch",
+              "type": "switch2",
+              "match": [
+                "OCLP_OVHD_FLOOD",
+                "item:interior-lighting-panel:2"
+              ],
+              "text": "This switch turns on the floodlights mounted on the wall behind the pilot seats.",
+              "context": "Their brightness is set with the FLOOD knob.",
+              "positions": [
+                {
+                  "name": "ON",
+                  "text": "The floodlights behind the seats are on."
+                },
+                {
+                  "name": "OFF",
+                  "text": "They are off."
+                }
+              ],
+              "src": "m1",
+              "page": "45"
+            },
+            {
+              "id": "emer-exit",
+              "name": "EMER EXIT switch",
+              "type": "switch3",
+              "match": [
+                "OCLP_EMER",
+                "item:interior-lighting-panel:3"
+              ],
+              "text": "This switch runs the removable emergency exit lights at the right cabin door, the left escape hatch and the tail ramp.",
+              "context": "In ARM they light up only after a power failure or a hard landing.",
+              "positions": [
+                {
+                  "name": "DISARM",
+                  "text": "The emergency lights stay off and are charged by the aircraft battery."
+                },
+                {
+                  "name": "TEST",
+                  "text": "The emergency lights light up, powered by their own battery."
+                },
+                {
+                  "name": "ARM",
+                  "text": "The lights stay off until an electrical failure or hard landing; they are charged by the aircraft battery."
+                }
+              ],
+              "src": "m1",
+              "page": "45"
+            },
+            {
+              "id": "dome",
+              "name": "DOME switch",
+              "type": "switch3",
+              "match": [
+                "OCLP_DOME",
+                "item:interior-lighting-panel:4"
+              ],
+              "text": "This switch turns on the dome lights on both sides of the overhead panel, in white or in blue-green for night vision goggles.",
+              "context": "The blue-green light is used when the crew wears night vision goggles.",
+              "positions": [
+                {
+                  "name": "WHT",
+                  "text": "The white dome lamps are on."
+                },
+                {
+                  "name": "OFF",
+                  "text": "The dome lights are off."
+                },
+                {
+                  "name": "NVG",
+                  "text": "The blue-green lamps made for night vision goggles are on."
+                }
+              ],
+              "src": "m1",
+              "page": "45"
+            },
+            {
+              "id": "flood-knob",
+              "name": "FLOOD knob",
+              "type": "knob",
+              "match": [
+                "OCLP_FLOOD_DIMMER",
+                "item:interior-lighting-panel:5"
+              ],
+              "text": "This knob sets how bright the cockpit floodlights are, when they are switched on.",
+              "context": "It works together with the FLOOD INST and FLOOD OVHD switches.",
+              "src": "m1",
+              "page": "45"
+            }
+          ]
+        },
+        {
+          "id": "exterior-lighting",
+          "name": "Exterior lighting panel",
+          "db": "exterior-lighting-panel",
+          "src": "m1",
+          "page": "46",
+          "text": "This panel controls the lights on the outside of the helicopter: the flashing anti-collision lights, the formation lights and the position lights.",
+          "context": "Others see the helicopter by these lights. The infrared (IR) modes can only be seen with night vision goggles.",
+          "controls": [
+            {
+              "id": "anti-col",
+              "name": "ANTI COL control knob",
+              "type": "selector",
+              "match": [
+                "OCLP_ANTICOL_MODE",
+                "item:exterior-lighting-panel:1"
+              ],
+              "text": "This knob picks which flashing warning light is on, the one on top of the rear pylon or the one under the fuselage, and whether it shines red or in infrared.",
+              "context": "IR is for flying with night vision goggles. FAA means the visible red light.",
+              "positions": [
+                {
+                  "name": "OFF",
+                  "text": "Both anti-collision lights are off."
+                },
+                {
+                  "name": "TOP IR",
+                  "text": "Only the top light, in infrared."
+                },
+                {
+                  "name": "LWR IR",
+                  "text": "Only the lower light, in infrared."
+                },
+                {
+                  "name": "BOTH IR",
+                  "text": "Both lights, in infrared."
+                },
+                {
+                  "name": "TOP FAA",
+                  "text": "Only the top light, flashing red."
+                },
+                {
+                  "name": "LWR FAA",
+                  "text": "Only the lower light, flashing red."
+                },
+                {
+                  "name": "BOTH FAA",
+                  "text": "Both lights, flashing red."
+                }
+              ],
+              "src": "m1",
+              "page": "46"
+            },
+            {
+              "id": "ir-flash",
+              "name": "ANTI COL IR FLASH PATT knob",
+              "type": "selector",
+              "match": [
+                "OCLP_IR_PATTERN",
+                "item:exterior-lighting-panel:2"
+              ],
+              "text": "This knob picks one of five flash patterns for the infrared anti-collision lights.",
+              "context": "It only matters when the ANTI COL knob is on an IR setting.",
+              "positions": [
+                {
+                  "name": "1",
+                  "text": "A single flash."
+                },
+                {
+                  "name": "2",
+                  "text": "A double flash."
+                },
+                {
+                  "name": "3",
+                  "text": "A triple flash."
+                },
+                {
+                  "name": "4",
+                  "text": "A long and a short flash."
+                },
+                {
+                  "name": "5",
+                  "text": "A long and a double short flash."
+                }
+              ],
+              "src": "m1",
+              "page": "46"
+            },
+            {
+              "id": "ir-inten",
+              "name": "ANTI COL IR INTEN knob",
+              "type": "knob",
+              "match": [
+                "OCLP_IR_DIMMER",
+                "item:exterior-lighting-panel:3"
+              ],
+              "text": "This knob sets how bright the infrared anti-collision lights are.",
+              "context": "It only matters when the ANTI COL knob is on an IR setting.",
+              "src": "m1",
+              "page": "46"
+            },
+            {
+              "id": "form-nvg",
+              "name": "FORM NVG/NORM switch",
+              "type": "switch3",
+              "match": [
+                "OCLP_FORM",
+                "item:exterior-lighting-panel:4"
+              ],
+              "text": "This switch turns the formation lights on top of the helicopter on, as a green light or as an infrared light.",
+              "context": "Formation lights help helicopters to fly close together at night.",
+              "positions": [
+                {
+                  "name": "NVG",
+                  "text": "The formation lights shine in infrared at the brightness of the FORM knob."
+                },
+                {
+                  "name": "OFF",
+                  "text": "The formation lights are off."
+                },
+                {
+                  "name": "NORM",
+                  "text": "The formation lights shine green at the brightness of the FORM knob."
+                }
+              ],
+              "src": "m1",
+              "page": "47"
+            },
+            {
+              "id": "form-flash",
+              "name": "FORM FLASH/STDY switch",
+              "type": "switch2",
+              "match": [
+                "OCLP_FORM_MODE",
+                "item:exterior-lighting-panel:5"
+              ],
+              "text": "This switch makes the formation lights flash or shine steadily.",
+              "context": "It works together with the FORM NVG/NORM switch.",
+              "positions": [
+                {
+                  "name": "FLASH",
+                  "text": "The formation lights flash."
+                },
+                {
+                  "name": "STDY",
+                  "text": "The formation lights shine steadily."
+                }
+              ],
+              "src": "m1",
+              "page": "47"
+            },
+            {
+              "id": "posn",
+              "name": "POSN DIM/BRT switch",
+              "type": "switch3",
+              "match": [
+                "OCLP_POSN",
+                "item:exterior-lighting-panel:6"
+              ],
+              "text": "This switch sets the brightness of the position lights: red on the left side, green on the right and white at the tail.",
+              "context": "They show other pilots which way the helicopter is pointing.",
+              "positions": [
+                {
+                  "name": "DIM",
+                  "text": "The position lights shine dim."
+                },
+                {
+                  "name": "OFF",
+                  "text": "The position lights are off."
+                },
+                {
+                  "name": "BRT",
+                  "text": "The position lights shine bright."
+                }
+              ],
+              "src": "m1",
+              "page": "47"
+            },
+            {
+              "id": "posn-flash",
+              "name": "POSN FLASH/STDY switch",
+              "type": "switch2",
+              "match": [
+                "OCLP_POSN_MODE",
+                "item:exterior-lighting-panel:7"
+              ],
+              "text": "This switch makes the position lights flash or shine steadily.",
+              "context": "It works together with the POSN DIM/BRT switch.",
+              "positions": [
+                {
+                  "name": "FLASH",
+                  "text": "The position lights flash."
+                },
+                {
+                  "name": "STDY",
+                  "text": "The position lights shine steadily."
+                }
+              ],
+              "src": "m1",
+              "page": "47"
+            },
+            {
+              "id": "form-knob",
+              "name": "FORM knob",
+              "type": "knob",
+              "match": [
+                "OCLP_FORM_DIMMER",
+                "item:exterior-lighting-panel:8"
+              ],
+              "text": "This knob sets how bright the formation lights are.",
+              "context": "The lights are on the center fuselage and the rear pylon.",
+              "src": "m1",
+              "page": "47"
+            }
+          ]
+        },
+        {
+          "id": "pilot-lighting",
+          "name": "Pilot lighting panel",
+          "db": "pilot-lighting-panel",
+          "src": "m1",
+          "page": "47",
+          "text": "This panel controls the Pilot's searchlight, the brightness mode of the cockpit lights and the backlight of the middle and right instrument panels.",
+          "context": "The Pilot is in the right seat. This panel is on the overhead panel, within the Pilot's reach.",
+          "controls": [
+            {
+              "id": "plt-srchlt",
+              "name": "PLT SRCHLT CONTR switch",
+              "type": "switch2",
+              "match": [
+                "OCLP_PLT_SRCHLT",
+                "item:pilot-lighting-panel:1"
+              ],
+              "text": "This switch lets the Pilot aim the searchlight, the movable lamp under the helicopter. In RET the searchlight is pulled into its stowed position.",
+              "context": "The switch on the Pilot's thrust control grip only works when this switch is ON.",
+              "positions": [
+                {
+                  "name": "RET",
+                  "text": "The Pilot's searchlight position switch is disabled and the light retracts."
+                },
+                {
+                  "name": "ON",
+                  "text": "The Pilot's searchlight position switch works."
+                }
+              ],
+              "src": "m1",
+              "page": "47"
+            },
+            {
+              "id": "mode-sel",
+              "name": "MODE SEL switch",
+              "type": "switch3",
+              "match": [
+                "OCLP_MODE",
+                "item:pilot-lighting-panel:2"
+              ],
+              "text": "This switch sets how bright the indicator lights in the cockpit are.",
+              "context": "In NIGHT and NVG the audio panel indicators follow the CTR CSL knob.",
+              "positions": [
+                {
+                  "name": "DAY",
+                  "text": "The indicator lights are at full brightness."
+                },
+                {
+                  "name": "NIGHT",
+                  "text": "The indicator lights are dimmer."
+                },
+                {
+                  "name": "NVG",
+                  "text": "The indicator lights are dimmer, and the screens and keypad units are also limited in brightness."
+                }
+              ],
+              "src": "m1",
+              "page": "47"
+            },
+            {
+              "id": "ctr-inst",
+              "name": "CTR INST knob",
+              "type": "knob",
+              "match": [
+                "OCLP_CTR_DIMMER",
+                "item:pilot-lighting-panel:3"
+              ],
+              "text": "This knob sets the backlight of the center part of the instrument panel.",
+              "context": "It is turned up or down at night, together with the other instrument light knobs.",
+              "src": "m1",
+              "page": "47"
+            },
+            {
+              "id": "plt-inst",
+              "name": "PLT INST knob",
+              "type": "knob",
+              "match": [
+                "OCLP_PLT_DIMMER",
+                "item:pilot-lighting-panel:4"
+              ],
+              "text": "This knob sets the backlight of the right part of the instrument panel, in front of the Pilot.",
+              "context": "It lights only the Pilot's side of the panel; the Copilot has an own knob for the left side.",
+              "src": "m1",
+              "page": "47"
+            }
+          ]
+        },
+        {
+          "id": "copilot-lighting",
+          "name": "Copilot lighting panel",
+          "db": "copilot-lighting-panel",
+          "src": "m1",
+          "page": "48",
+          "text": "This panel controls the Copilot's searchlight and the backlight of the left instrument panel and of the overhead panel.",
+          "context": "The Copilot is in the left seat.",
+          "controls": [
+            {
+              "id": "cplt-srchlt",
+              "name": "CPLT SRCHLT CONTR switch",
+              "type": "switch2",
+              "match": [
+                "OCLP_CPLT_SRCHLT",
+                "item:copilot-lighting-panel:1"
+              ],
+              "text": "This switch lets the Copilot aim the searchlight. In RET the searchlight is pulled into its stowed position.",
+              "context": "The switch on the Copilot's thrust control grip only works when this switch is ON.",
+              "positions": [
+                {
+                  "name": "RET",
+                  "text": "The Copilot's searchlight position switch is disabled and the light retracts."
+                },
+                {
+                  "name": "ON",
+                  "text": "The Copilot's searchlight position switch works."
+                }
+              ],
+              "src": "m1",
+              "page": "48"
+            },
+            {
+              "id": "cplt-inst",
+              "name": "CPLT INST knob",
+              "type": "knob",
+              "match": [
+                "OCLP_CPLT_DIMMER",
+                "item:copilot-lighting-panel:2"
+              ],
+              "text": "This knob sets the backlight of the left part of the instrument panel, in front of the Copilot.",
+              "context": "It lights only the Copilot's side of the panel; the Pilot has an own knob for the right side.",
+              "src": "m1",
+              "page": "48"
+            },
+            {
+              "id": "ovhd-csl",
+              "name": "OVHD CSL knob",
+              "type": "knob",
+              "match": [
+                "OCLP_OVHD_DIMMER",
+                "item:copilot-lighting-panel:3"
+              ],
+              "text": "This knob sets the backlight of the overhead switch panel.",
+              "context": "The overhead panel is the one with the electrical, fuel and engine switches, so this light helps at night.",
+              "src": "m1",
+              "page": "48"
+            }
+          ]
+        },
+        {
+          "id": "overhead-misc",
+          "name": "Other overhead switches and gauge",
+          "db": "free-air-temperature-gauge",
+          "src": "m1",
+          "page": "34",
+          "text": "These are a few extra items on the overhead panel: an oil level check switch and the outside air temperature gauge.",
+          "context": "They are used rarely, mainly on the ground.",
+          "controls": [
+            {
+              "id": "oil-check",
+              "name": "OIL LV CHK switch",
+              "type": "switch",
+              "match": [
+                "OCLP_OILCHK_SW"
+              ],
+              "text": "The game names this switch OIL LV CHK. It has two positions. The manual does not describe it.",
+              "context": "The game also has a circuit breaker with a similar name on PDP 1.",
+              "src": "m1"
+            },
+            {
+              "id": "temp-gauge",
+              "name": "Free air temperature gauge",
+              "type": "gauge",
+              "match": [
+                "item:free-air-temperature-gauge:1"
+              ],
+              "text": "This gauge shows the temperature of the outside air in degrees Celsius. Its probe sticks out of the Pilot's overhead window.",
+              "context": "It tells the crew about icing risk and engine power.",
+              "src": "m1",
+              "page": "34"
+            },
+            {
+              "id": "temp-scale",
+              "name": "Temperature scale",
+              "type": "gauge",
+              "match": [
+                "item:free-air-temperature-gauge:2"
+              ],
+              "text": "This is the printed scale of the gauge. Each big mark is 10 degrees and each small mark 2 degrees.",
+              "context": "It is read together with the pointer.",
+              "src": "m1",
+              "page": "34"
+            }
+          ]
+        },
+        {
+          "id": "unclear-knobs",
+          "name": "SL and PUL knobs (not in the manual)",
+          "src": "m1",
+          "text": "The game has some knobs and switches on the overhead panel that the manual does not describe. They are named only by short codes.",
+          "context": "The guide lists them so that nothing in the cockpit stays unexplained. The meaning of the codes is not known.",
+          "controls": [
+            {
+              "id": "sl-knobs",
+              "name": "SL knobs (5 callouts)",
+              "type": "knob",
+              "match": [
+                "OCLP_*SL_KNOB"
+              ],
+              "text": "The game has five knobs named CPSL, PSL, TCSL, PDP1SL and PDP2SL. The manual does not describe them. It does mention small stalk lights that the FLOOD INST switch turns on.",
+              "context": "The name SL may or may not mean stalk light; this is not stated anywhere.",
+              "count": 5,
+              "src": "m1"
+            },
+            {
+              "id": "sl-locks",
+              "name": "SL lock switches (2 callouts)",
+              "type": "switch",
+              "match": [
+                "OCLP_*SL_LOCK"
+              ],
+              "text": "The game has two switches named PDP1SL_LOCK and PDP2SL_LOCK. The manual does not describe them.",
+              "context": "They sit next to the PDP1SL and PDP2SL knobs.",
+              "count": 2,
+              "src": "m1"
+            },
+            {
+              "id": "pul-knobs",
+              "name": "PUL knobs (2 callouts)",
+              "type": "knob",
+              "match": [
+                "OCLP_*PUL_KNOB"
+              ],
+              "text": "The game has two knobs named PUL_KNOB and CPUL_KNOB. The manual does not describe them.",
+              "context": "Their purpose is not known; the guide only lists them so that nothing stays unexplained.",
+              "count": 2,
+              "src": "m1"
+            },
+            {
+              "id": "pul-colors",
+              "name": "PUL color switches (2 callouts)",
+              "type": "switch",
+              "match": [
+                "OCLP_*PUL_COLOR"
+              ],
+              "text": "The game has two switches named PUL_COLOR and CPUL_COLOR. The manual does not describe them.",
+              "context": "Their purpose is not known; the name suggests a color choice.",
+              "count": 2,
+              "src": "m1"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

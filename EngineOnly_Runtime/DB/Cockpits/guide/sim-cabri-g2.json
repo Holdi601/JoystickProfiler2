@@ -1,0 +1,338 @@
+{
+  "format": "joypro-cockpit-guide",
+  "version": 1,
+  "id": "sim-cabri-g2",
+  "title": "Guimbal Cabri G2 (helicopter cockpit)",
+  "variants": [
+    "cabri-g2-standard"
+  ],
+  "games": [
+    "MSFS2020",
+    "MSFS2024"
+  ],
+  "sets": [],
+  "intro": "The Guimbal Cabri G2 is a small two-seat training helicopter. The pilots sit side by side with a cyclic stick in front of each seat and a collective lever on the left. The collective has a twist grip like a motorbike's throttle and carries the governor switch and the starter button. The panel is small, with a few flight instruments and one engine display.",
+  "sources": [
+    {
+      "id": "c1",
+      "title": "JoyPro cockpit catalog",
+      "kind": "reference"
+    },
+    {
+      "id": "s1",
+      "title": "Guimbal Cabri G2 (Wikipedia)",
+      "url": "https://en.wikipedia.org/wiki/Guimbal_Cabri_G2"
+    },
+    {
+      "id": "s2",
+      "title": "HeliSimmer: Max Flight Stick Cabri G2 replica controls",
+      "url": "https://www.helisimmer.com/news/max-flight-stick-released-g2-controls/"
+    },
+    {
+      "id": "s3",
+      "title": "MSFS forums: Cabri G2 Starter and Governor Switch Operation",
+      "url": "https://forums.flightsimulator.com/t/cabri-g2-starter-governor-switch-operation/623295"
+    },
+    {
+      "id": "g1",
+      "title": "Guimbal Cabri G2 flight manual (public knowledge)"
+    },
+    {
+      "id": "fn",
+      "title": "JoyPro function tables MSFS2020/2024 and X-Plane 11/12 (DB/Functions)"
+    }
+  ],
+  "areas": [
+    {
+      "id": "front-center",
+      "where": "front-center",
+      "name": "Instrument panel",
+      "text": "A small panel with a few flight instruments and one engine display.",
+      "panels": [
+        {
+          "id": "instrument-panel",
+          "name": "Instrument panel",
+          "db": "instrument-panel",
+          "src": "g1",
+          "text": "The flight instruments (speed, height, attitude), the rotor and engine speed gauge, the vehicle and engine display and the warning lights.",
+          "context": "The pilot flies mostly by looking outside and uses the panel to watch the rotor and the engine.",
+          "controls": [
+            {
+              "id": "asi",
+              "name": "Airspeed indicator",
+              "type": "gauge",
+              "match": [
+                "item:instrument-panel:1"
+              ],
+              "text": "This gauge shows how fast the helicopter moves through the air.",
+              "context": "The pilot watches it, especially in the climb and the approach."
+            },
+            {
+              "id": "altimeter",
+              "name": "Altimeter",
+              "type": "gauge",
+              "match": [
+                "item:instrument-panel:2"
+              ],
+              "text": "This gauge shows the height above sea level. A knob sets the local air pressure so the reading is right.",
+              "context": "The pilot sets the pressure before the flight."
+            },
+            {
+              "id": "attitude",
+              "name": "Attitude indicator",
+              "type": "gauge",
+              "match": [
+                "item:instrument-panel:3"
+              ],
+              "text": "This gauge shows whether the nose points up or down and whether the helicopter is level. It is also called the artificial horizon.",
+              "context": "It is useful when the real horizon cannot be seen."
+            },
+            {
+              "id": "rpm",
+              "name": "Rotor / engine rpm",
+              "type": "gauge",
+              "match": [
+                "item:instrument-panel:4"
+              ],
+              "text": "This gauge shows how fast the main rotor (NR) and the engine turn, in revolutions per minute.",
+              "context": "The rotor speed must stay in a narrow range, as the rotor gives the lift. The pilot watches it all the time."
+            },
+            {
+              "id": "display",
+              "name": "Vehicle and engine display",
+              "type": "display",
+              "match": [
+                "item:instrument-panel:5"
+              ],
+              "text": "This screen shows the engine data and the alarms of the helicopter.",
+              "context": "The pilot checks it during the start-up and in flight."
+            },
+            {
+              "id": "warnings",
+              "name": "Warning lights",
+              "type": "light",
+              "match": [
+                "item:instrument-panel:6"
+              ],
+              "text": "These lights show alarms. Each light names what needs attention.",
+              "context": "The pilot reacts to a light that comes on."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "center-pedestal",
+      "where": "center-pedestal",
+      "name": "Centre console",
+      "text": "The console between the seats with the switches, the fuel valve, the mixture control, the carburettor heat, the rotor brake and the radios.",
+      "panels": [
+        {
+          "id": "console",
+          "name": "Centre console",
+          "db": "console",
+          "src": "g1",
+          "text": "The switches and controls between the seats: the master and ignition switches, the fuel valve, the mixture control, the carburettor heat, the rotor brake and the radios.",
+          "context": "The pilot uses them for the start-up and the shut-down, and for the radios during the flight.",
+          "controls": [
+            {
+              "id": "master",
+              "name": "Master / ignition switches",
+              "type": "switch",
+              "match": [
+                "item:console:1"
+              ],
+              "text": "These switches connect the battery to the helicopter and turn the magnetos (the sparks of the engine) on.",
+              "context": "The pilot switches them on before the engine start."
+            },
+            {
+              "id": "fuel-valve",
+              "name": "Fuel valve",
+              "type": "knob",
+              "match": [
+                "item:console:2"
+              ],
+              "text": "This knob opens or closes the fuel supply to the engine.",
+              "context": "It is open for flight and closed after the shut-down."
+            },
+            {
+              "id": "mixture",
+              "name": "Mixture control",
+              "type": "knob",
+              "match": [
+                "item:console:3"
+              ],
+              "text": "This knob sets the fuel and air mixture from rich to cut-off. Cut-off stops the engine.",
+              "context": "The pilot sets it rich for the start and uses it to stop the engine."
+            },
+            {
+              "id": "carb-heat",
+              "name": "Carburettor heat",
+              "type": "knob",
+              "match": [
+                "item:console:4"
+              ],
+              "text": "This knob sends hot air to the carburettor (the part that mixes fuel and air) to melt ice that may form there.",
+              "context": "The pilot uses it in damp air and when reducing the power."
+            },
+            {
+              "id": "rotor-brake",
+              "name": "Rotor brake",
+              "type": "lever",
+              "match": [
+                "item:console:5"
+              ],
+              "text": "This lever applies the rotor brake, which slows and holds the main rotor after the shut-down, so it stops sooner.",
+              "context": "It is used only after the engine is stopped, when the rotor has slowed."
+            },
+            {
+              "id": "radios",
+              "name": "Radio and transponder",
+              "type": "keypad",
+              "match": [
+                "item:console:6"
+              ],
+              "text": "The radio tunes the frequency used to talk with air traffic control. The transponder is a box that answers radar with a code.",
+              "context": "The pilot sets the frequency and the code before the flight."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "hotas",
+      "where": "hotas",
+      "name": "Cyclic, collective and pedals",
+      "text": "The controls that match your helicopter stick, collective and pedals.",
+      "panels": [
+        {
+          "id": "cyclic",
+          "name": "Cyclic",
+          "src": "g1",
+          "text": "The cyclic stick in front of each seat with the trim hat, the trim release button and the push-to-talk on its grip.",
+          "context": "The pilot steers the helicopter forward, back and sideways with it.",
+          "controls": [
+            {
+              "id": "cyclic-gimbal",
+              "name": "Cyclic",
+              "type": "axis",
+              "match": [
+                "control:stick.gimbal"
+              ],
+              "text": "The cyclic tilts the rotor. Pushing it forward makes the helicopter fly forward, pulling back slows it, and moving it sideways flies left or right.",
+              "context": "It is the main control for steering in the air."
+            },
+            {
+              "id": "trim-hat",
+              "name": "Trim hat",
+              "type": "hat",
+              "match": [
+                "control:stick.hat.trim"
+              ],
+              "text": "A four-way switch on top of the cyclic grip, used with the thumb. It sets the trim, the position where the stick stays without being held, forward, back, left or right.",
+              "context": "Trim takes the force from the pilot's hand."
+            },
+            {
+              "id": "trim-release",
+              "name": "Trim release button",
+              "type": "button",
+              "match": [
+                "control:stick.button.ftr"
+              ],
+              "text": "A button on the cyclic grip. Pressing it releases the trim and resets it to the new stick position.",
+              "context": "The pilot uses it to set a new trim point."
+            },
+            {
+              "id": "ptt",
+              "name": "Push-to-talk",
+              "type": "trigger",
+              "match": [
+                "control:stick.trigger"
+              ],
+              "text": "A button on the cyclic grip. Pressing it transmits on the radio while it is held.",
+              "context": "The pilot presses it before talking."
+            }
+          ]
+        },
+        {
+          "id": "collective",
+          "name": "Collective and twist-grip throttle",
+          "src": "g1",
+          "text": "The collective lever on the left of each seat with the twist-grip throttle, the governor switch and the starter button.",
+          "context": "The collective makes the helicopter climb or sink, and the grip controls the engine.",
+          "controls": [
+            {
+              "id": "collective-axis",
+              "name": "Collective",
+              "type": "axis",
+              "match": [
+                "control:collective.axis.main"
+              ],
+              "text": "The collective lever on the left of the seat. Pulling it up makes the helicopter climb, pushing it down makes it sink. It changes the pitch of all rotor blades together.",
+              "context": "The pilot uses it for the take-off, the climb and the landing."
+            },
+            {
+              "id": "twist-throttle",
+              "name": "Twist-grip throttle",
+              "type": "axis",
+              "match": [
+                "control:collective.axis.throttle_twist"
+              ],
+              "text": "A rotating grip at the end of the collective, like a motorbike's. Turning it changes the engine power. A governor helps to hold the rotor speed.",
+              "context": "The pilot uses it to set the engine power during the start and the flight."
+            },
+            {
+              "id": "governor",
+              "name": "Governor switch",
+              "type": "switch2",
+              "match": [
+                "control:collective.switch.governor"
+              ],
+              "positions": [
+                {
+                  "name": "on",
+                  "text": "The rotor speed governor is on."
+                },
+                {
+                  "name": "off",
+                  "text": "The governor is off."
+                }
+              ],
+              "text": "This switch on the throttle grip turns the governor on or off. The governor is a system that keeps the rotor speed in the right range by itself.",
+              "context": "The pilot uses it to leave the rotor speed control to the system or to take it by hand."
+            },
+            {
+              "id": "starter",
+              "name": "Starter button",
+              "type": "button",
+              "match": [
+                "control:collective.button.starter"
+              ],
+              "text": "A push button on the throttle grip. Pressing it starts the engine.",
+              "context": "The pilot presses it in the start-up, after the master and the magnetos are on."
+            }
+          ]
+        },
+        {
+          "id": "pedals",
+          "name": "Anti-torque pedals",
+          "src": "g1",
+          "text": "The two anti-torque pedals at the pilot's feet, which work the tail rotor.",
+          "context": "They steer the nose of the helicopter left and right.",
+          "controls": [
+            {
+              "id": "pedals-hotas",
+              "name": "Anti-torque pedals",
+              "type": "axis",
+              "match": [
+                "control:pedals.axis.rudder"
+              ],
+              "text": "The pedals change the pitch of the tail rotor (the small rotor at the tail), which turns the nose left and right.",
+              "context": "The pilot uses them to keep the nose straight and to turn on the spot."
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

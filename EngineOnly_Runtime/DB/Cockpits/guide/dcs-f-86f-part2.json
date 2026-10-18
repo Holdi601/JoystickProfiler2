@@ -1,0 +1,2498 @@
+{
+  "format": "joypro-cockpit-guide",
+  "version": 1,
+  "id": "dcs-f-86f-part2",
+  "partOf": "dcs-f-86f",
+  "areas": [
+    {
+      "id": "left-console",
+      "where": "left-console",
+      "name": "Left console",
+      "text": "The left wall of the cockpit holds the fuel tank and bomb release panel, the landing light and anti-ice switches, the gun selector, the hydraulic and trim switches, the air conditioning and the oxygen regulator.",
+      "panels": [
+        {
+          "id": "left-overview",
+          "name": "Left side of the cockpit (overview items)",
+          "src": "m1",
+          "page": "127",
+          "text": "These items stand for whole parts of the left wall. Each one is explained in the panel of the same name.",
+          "context": "The left wall is a long shelf with many small panels. They are listed in the order given in the manual.",
+          "controls": [
+            {
+              "id": "left-cb",
+              "name": "Left circuit-breaker panel",
+              "type": "other",
+              "match": [
+                "item:cockpit-left-side:1",
+                "Circuit_Breaker_LP_*"
+              ],
+              "text": "This panel holds the circuit breakers of the left side. A circuit breaker is a safety switch that cuts the power when something draws too much. There are 23 here, each labelled with the equipment it protects.",
+              "context": "In the game all circuit breakers are already on, so the player does not need to touch them. Labels include Bomb Sel., Gyr'Syn Compass, Speed Brake, Sight Power and AN/ARN-6 Radio Compass.",
+              "count": 23,
+              "src": "m1",
+              "page": "128"
+            },
+            {
+              "id": "side-air-outlet",
+              "name": "Side air outlet",
+              "type": "other",
+              "match": [
+                "item:cockpit-left-side:3"
+              ],
+              "text": "This is an air vent on the left wall of the cockpit. Air from the cockpit air system comes out of it.",
+              "context": "The manual lists it as part of the pressurization system and does not describe more.",
+              "src": "m1",
+              "page": "128"
+            },
+            {
+              "id": "ov-gun-panel",
+              "name": "Machine gun control panel (see its own panel)",
+              "type": "other",
+              "match": [
+                "item:cockpit-left-side:5"
+              ],
+              "text": "This item stands for the whole panel that selects which machine guns fire. Its selector and lights have their own entries.",
+              "context": "The panel belongs to the armament and sits at the front of the left wall.",
+              "src": "m1",
+              "page": "128"
+            },
+            {
+              "id": "ov-throttle",
+              "name": "Throttle quadrant (see its own panel)",
+              "type": "other",
+              "match": [
+                "item:cockpit-left-side:6"
+              ],
+              "text": "This item stands for the throttle quadrant, the lever block on the left that holds the throttle and the flap lever.",
+              "context": "Its levers are described under Stick, throttle and pedals.",
+              "src": "m1",
+              "page": "129"
+            },
+            {
+              "id": "ov-droptank",
+              "name": "Drop tank control panel (see its own panel)",
+              "type": "other",
+              "match": [
+                "item:cockpit-left-side:7"
+              ],
+              "text": "This item stands for the panel that selects and releases the extra fuel tanks and other external loads.",
+              "context": "Its selector and buttons have their own entries in the drop tank panel.",
+              "src": "m1",
+              "page": "130"
+            },
+            {
+              "id": "ov-leftfwd",
+              "name": "Left forward console (see its own panel)",
+              "type": "other",
+              "match": [
+                "item:cockpit-left-side:8"
+              ],
+              "text": "This item stands for the console in front of the left wall with gear lights, anti-ice and landing light controls.",
+              "context": "Its switches have their own entries in the left forward console panel.",
+              "src": "m1",
+              "page": "131"
+            },
+            {
+              "id": "ov-oxygen",
+              "name": "Oxygen regulator panel (see its own panel)",
+              "type": "other",
+              "match": [
+                "item:cockpit-left-side:10"
+              ],
+              "text": "This item stands for the oxygen regulator that sits on the inner face of the left forward console.",
+              "context": "Its lever, gauge and flow indicator have their own entries in the oxygen panel.",
+              "src": "m1",
+              "page": "132"
+            },
+            {
+              "id": "ov-leftaft",
+              "name": "Left aft console (see its own panel)",
+              "type": "other",
+              "match": [
+                "item:cockpit-left-side:11"
+              ],
+              "text": "This item stands for the rear part of the left wall with the hydraulic, trim and cockpit air controls.",
+              "context": "Its switches have their own entries in the left aft console panel.",
+              "src": "m1",
+              "page": "132"
+            },
+            {
+              "id": "windshield-antiice",
+              "name": "Windshield anti-icing lever",
+              "type": "switch2",
+              "match": [
+                "Windshield_Anti-icing_Lever",
+                "item:cockpit-left-side:4"
+              ],
+              "positions": [
+                {
+                  "name": "ON",
+                  "text": "Hot engine air flows to the windshield outlet."
+                },
+                {
+                  "name": "OFF",
+                  "text": "The air flow to the windshield is shut off."
+                }
+              ],
+              "text": "This lever sends hot air from the engine to the windshield to keep it clear of ice. The manual says it can also blow rain away.",
+              "context": "The lever is mechanical. Anti-icing air works best at low and medium speeds and with the engine above 75 percent.",
+              "src": "m1",
+              "page": "128"
+            },
+            {
+              "id": "windshield-overheat",
+              "name": "Windshield anti-icing overheat warning light",
+              "type": "light",
+              "match": [
+                "Windshield_anti-icing_overheat_Warning_Light",
+                "item:cockpit-left-side:2"
+              ],
+              "text": "This amber light comes on when the air sent to the windshield gets hotter than 275 degrees Fahrenheit. Pushing it tests the bulb.",
+              "context": "It does not mean the windshield itself is in danger. The pilot can lower the engine speed or set the cockpit pressure switch to RAM.",
+              "src": "m1",
+              "page": "128"
+            }
+          ]
+        },
+        {
+          "id": "drop-tank-panel",
+          "name": "Drop tank control panel",
+          "db": "drop-tank-control-panel",
+          "src": "m1",
+          "page": "130",
+          "text": "This panel handles the extra fuel tanks under the wings (drop tanks) and other things hanging on the plane, such as bombs and rockets.",
+          "context": "The pilot uses the tanks first, then lets them go when they are empty or for a fight. Burning their fuel first keeps the plane balanced.",
+          "controls": [
+            {
+              "id": "tank-selector",
+              "name": "Drop tank selector switch",
+              "type": "selector",
+              "match": [
+                "JETT_SELECTOR",
+                "item:drop-tank-control-panel:1"
+              ],
+              "text": "This seven-position wheel picks which external tanks give fuel and which ones will be let go.",
+              "context": "Outboard tanks are used first, then the inboard tanks. In the ALL TANKS OFF position no external tank is used.",
+              "src": "m1",
+              "page": "167"
+            },
+            {
+              "id": "tank-empty-light",
+              "name": "Outboard drop tank empty light",
+              "type": "light",
+              "match": [
+                "Tanks_Empty_Warning_Light",
+                "item:drop-tank-control-panel:2"
+              ],
+              "text": "This amber light comes on when the outboard tanks are empty. Pushing it tests the bulb.",
+              "context": "It tells the pilot that the tanks can be dropped without losing fuel. The inboard tanks have no such light.",
+              "src": "m1",
+              "page": "167"
+            },
+            {
+              "id": "tank-jettison",
+              "name": "Drop tank jettison button",
+              "type": "button",
+              "match": [
+                "TANKS_JETTISON",
+                "item:drop-tank-control-panel:3"
+              ],
+              "text": "Pressing this button lets go of the external tanks that the selector has chosen.",
+              "context": "Outboard tanks are pushed away by a small charge, inboard tanks are simply unlocked. The pilot first checks that they are empty.",
+              "src": "m1",
+              "page": "167"
+            },
+            {
+              "id": "brt-jettison",
+              "name": "Bomb-rocket-tank jettison button",
+              "type": "button",
+              "match": [
+                "Bomb_Rocket_Tank Jettison Button",
+                "item:drop-tank-control-panel:4"
+              ],
+              "text": "Pressing this button drops all external loads at once: bombs, rockets and tanks, but not the missiles. They fall unarmed.",
+              "context": "It is the electric emergency release. A mechanical handle also exists in case the electrics fail.",
+              "src": "m1",
+              "page": "222"
+            },
+            {
+              "id": "jett-cover",
+              "name": "Emergency jettison handle cover",
+              "type": "guard",
+              "match": [
+                "Emergency_Jettison_Cover"
+              ],
+              "text": "This cover protects the emergency jettison handle from being touched by mistake. It is opened first.",
+              "context": "The handle underneath can drop the external loads without electricity.",
+              "src": "m1",
+              "page": "131"
+            },
+            {
+              "id": "jett-handle",
+              "name": "Emergency jettison handle",
+              "type": "handle",
+              "match": [
+                "Emergency_Jettison_Handle",
+                "item:cockpit-left-side:9"
+              ],
+              "text": "This guarded handle releases the external loads by hand. Pulling it straight out drops all of them; turning it right and pulling drops only the outboard tanks.",
+              "context": "It works without electricity. Pulling it also disarms all weapons, no matter where the switches are.",
+              "src": "m1",
+              "page": "131"
+            }
+          ]
+        },
+        {
+          "id": "left-forward-console",
+          "name": "Left forward console",
+          "db": "left-forward-console",
+          "src": "m1",
+          "page": "131",
+          "text": "This panel holds the controls for the engine intake screens and anti-ice, the pitot heater, the landing lights and the gear indicator.",
+          "context": "The pilot uses them while taxiing, in icing weather and when landing at night.",
+          "controls": [
+            {
+              "id": "antiice-switch",
+              "name": "Engine anti-ice and screen switch",
+              "type": "switch3",
+              "match": [
+                "ANTI-ICE_Switch",
+                "item:left-forward-console:1"
+              ],
+              "positions": [
+                {
+                  "name": "EXTEND",
+                  "text": "Eight screens move into the engine intake to keep objects out. This is for ground use."
+                },
+                {
+                  "name": "RET.",
+                  "text": "The screens are retracted. This is the normal position in flight."
+                },
+                {
+                  "name": "ANTI-ICE",
+                  "text": "Hot air from the compressor heats the intake lip; the screens retract."
+                }
+              ],
+              "text": "This switch protects the engine intake. It extends metal screens against debris on the ground, retracts them in flight, or turns on hot air against ice.",
+              "context": "The screens would collect ice in flight, so the pilot must retract them after take-off. Anti-ice turns the screens in automatically.",
+              "src": "m1",
+              "page": "183"
+            },
+            {
+              "id": "horn-cutout",
+              "name": "Landing gear warning horn cutout button",
+              "type": "button",
+              "match": [
+                "Horn_Cutout_Button",
+                "item:left-forward-console:2"
+              ],
+              "text": "Pressing this button silences the warning horn that sounds when the landing gear is not down.",
+              "context": "The horn is a reminder to lower the wheels before landing; the pilot silences it only when a landing is not planned.",
+              "src": "m1",
+              "page": "131"
+            },
+            {
+              "id": "pitot-heater",
+              "name": "Pitot heater switch",
+              "type": "switch2",
+              "match": [
+                "PITOT_Switch",
+                "item:left-forward-console:3"
+              ],
+              "positions": [
+                {
+                  "name": "ON",
+                  "text": "The pitot tube is heated."
+                },
+                {
+                  "name": "OFF",
+                  "text": "The pitot tube is not heated."
+                }
+              ],
+              "text": "This switch heats the pitot tube, the little tube outside that measures airspeed, so it does not freeze.",
+              "context": "The pilot switches it on when flying through cloud or in cold air.",
+              "src": "m1",
+              "page": "131"
+            },
+            {
+              "id": "gear-indicator",
+              "name": "Landing gear position indicators",
+              "type": "indicator",
+              "match": [
+                "item:left-forward-console:4"
+              ],
+              "text": "This indicator shows whether the wheels are up, down and locked, or on their way. It has marks for the three states.",
+              "context": "The pilot checks it after moving the gear handle.",
+              "src": "m1",
+              "page": "176"
+            },
+            {
+              "id": "landing-lights",
+              "name": "Landing and taxi light switch",
+              "type": "switch3",
+              "match": [
+                "TMB-TAXILGT_Switch",
+                "item:left-forward-console:5"
+              ],
+              "positions": [
+                {
+                  "name": "EXTEND & ON",
+                  "text": "The lights move out of the fuselage and light up."
+                },
+                {
+                  "name": "OFF",
+                  "text": "The lights go out but stay extended."
+                },
+                {
+                  "name": "RETRACT",
+                  "text": "The lights fold back into the fuselage."
+                }
+              ],
+              "text": "This switch extends and lights the landing and taxi lights in the nose and also retracts them. They light the runway at night.",
+              "context": "The landing light switches off by itself when the nose wheel touches the ground, and returns when the weight is off the nose strut.",
+              "src": "m1",
+              "page": "199"
+            }
+          ]
+        },
+        {
+          "id": "machine-gun-panel",
+          "name": "Machine gun control panel",
+          "db": "machine-gun-control-panel",
+          "src": "m1",
+          "page": "212",
+          "text": "This panel chooses which of the six machine guns will fire and shows with lights which ones are ready.",
+          "context": "The guns are paired: two upper, two middle and two lower. The selector on the centre pedestal must also be at GUNS.",
+          "controls": [
+            {
+              "id": "gun-selector",
+              "name": "Gun selector switch",
+              "type": "selector",
+              "match": [
+                "Guns_Selector",
+                "item:machine-gun-control-panel:1"
+              ],
+              "positions": [
+                {
+                  "name": "OFF",
+                  "text": "No gun fires."
+                },
+                {
+                  "name": "UPPER GUNS",
+                  "text": "The two upper guns can fire."
+                },
+                {
+                  "name": "MID GUNS",
+                  "text": "The two middle guns can fire."
+                },
+                {
+                  "name": "LOWER GUNS",
+                  "text": "The two lower guns can fire."
+                },
+                {
+                  "name": "ALL GUNS",
+                  "text": "All six guns can fire."
+                }
+              ],
+              "text": "This knob decides which guns shoot when the trigger is pressed: none, the upper pair, the middle pair, the lower pair or all six.",
+              "context": "Firing fewer guns saves ammunition. The pilot sets it before the fight.",
+              "src": "m1",
+              "page": "212"
+            },
+            {
+              "id": "gun-lights",
+              "name": "Gun indicator lights",
+              "type": "light",
+              "match": [
+                "item:machine-gun-control-panel:2"
+              ],
+              "text": "These lights show which guns are ready to fire.",
+              "context": "They follow the position of the gun selector switch.",
+              "src": "m1",
+              "page": "212"
+            }
+          ]
+        },
+        {
+          "id": "left-aft-console",
+          "name": "Left aft console",
+          "db": "left-aft-console",
+          "src": "m1",
+          "page": "132",
+          "text": "This panel holds the switch for the backup hydraulics, three trim switches and the controls for cockpit air and pressure.",
+          "context": "The trim switches here are the backups for the thumb switch on the stick. The air switches matter at high altitude.",
+          "controls": [
+            {
+              "id": "flight-control-switch",
+              "name": "Flight control switch",
+              "type": "switch3",
+              "match": [
+                "Flight_Control_Switch",
+                "item:left-aft-console:1"
+              ],
+              "positions": [
+                {
+                  "name": "ALTERNATE ON",
+                  "text": "The backup booster system is used for the controls."
+                },
+                {
+                  "name": "NORMAL",
+                  "text": "The normal booster system is used."
+                },
+                {
+                  "name": "RESET",
+                  "text": "Held briefly to return from the backup to the normal system."
+                }
+              ],
+              "text": "This switch chooses which hydraulic system helps move the stick: the normal one or the backup. RESET goes back to the normal one.",
+              "context": "After engine start the pilot checks both systems with it and ends at NORMAL after briefly using RESET. The alternate-on light shows when the backup is in use.",
+              "src": "m1",
+              "page": "170"
+            },
+            {
+              "id": "long-trim-cover",
+              "name": "Longitudinal alternate trim switch cover",
+              "type": "guard",
+              "match": [
+                "Longitudinal_Alternate_Trim_Switch_Cover"
+              ],
+              "text": "This cover guards the backup pitch trim switch. It must be opened before the switch can be moved away from its normal position.",
+              "context": "Normally the switch stays under the cover in NORMAL GRIP CONT.",
+              "src": "m1",
+              "page": "149"
+            },
+            {
+              "id": "long-trim",
+              "name": "Longitudinal alternate trim switch",
+              "type": "switch",
+              "match": [
+                "Longitudinal_Alternate_Trim_Switch",
+                "item:left-aft-console:2"
+              ],
+              "positions": [
+                {
+                  "name": "NOSE UP",
+                  "text": "The elevator trim moves nose-up while held; the switch springs back to OFF."
+                },
+                {
+                  "name": "NORMAL GRIP CONT",
+                  "text": "The thumb switch on the stick controls the trim."
+                },
+                {
+                  "name": "OFF",
+                  "text": "No pitch trim is possible."
+                },
+                {
+                  "name": "NOSE DOWN",
+                  "text": "The elevator trim moves nose-down while held; the switch springs back to OFF."
+                }
+              ],
+              "text": "This is the backup switch for trimming the nose up or down. It is used when the thumb switch on the stick fails.",
+              "context": "It must stay in NORMAL GRIP CONT for the thumb switch to work. In the OFF position all pitch trim stops.",
+              "src": "m1",
+              "page": "149"
+            },
+            {
+              "id": "rudder-trim",
+              "name": "Rudder trim switch",
+              "type": "switch3",
+              "match": [
+                "Rudder_Trim_Switch",
+                "item:left-aft-console:3"
+              ],
+              "positions": [
+                {
+                  "name": "LEFT",
+                  "text": "The rudder trim tab moves left while held."
+                },
+                {
+                  "name": "OFF",
+                  "text": "The switch rests in the middle and nothing moves."
+                },
+                {
+                  "name": "RIGHT",
+                  "text": "The rudder trim tab moves right while held."
+                }
+              ],
+              "text": "Holding this switch moves the trim of the rudder to the left or right. It springs back to the middle.",
+              "context": "Rudder trim is used when the plane pulls to one side, for example after dropping only one bomb.",
+              "src": "m1",
+              "page": "151"
+            },
+            {
+              "id": "lat-trim",
+              "name": "Lateral alternate trim switch",
+              "type": "switch",
+              "match": [
+                "Lateral_Alternate_Trim_Switch",
+                "item:left-aft-console:4"
+              ],
+              "positions": [
+                {
+                  "name": "LEFT",
+                  "text": "The roll trim moves to the left while held."
+                },
+                {
+                  "name": "NORMAL",
+                  "text": "The thumb switch on the stick controls the roll trim."
+                },
+                {
+                  "name": "OFF",
+                  "text": "No roll trim is possible."
+                },
+                {
+                  "name": "RIGHT",
+                  "text": "The roll trim moves to the right while held."
+                }
+              ],
+              "text": "This is the backup switch for trimming the wings left or right. It is used when the thumb switch on the stick fails.",
+              "context": "It must be at NORMAL for the thumb switch to trim the roll. At OFF all roll trim stops.",
+              "src": "m1",
+              "page": "148"
+            },
+            {
+              "id": "pressure-control",
+              "name": "Cockpit pressure control switch",
+              "type": "switch2",
+              "match": [
+                "Cockpit_Pressure_Control_Switch",
+                "item:left-aft-console:5"
+              ],
+              "positions": [
+                {
+                  "name": "PRESS",
+                  "text": "The cockpit is pressurized with air from the engine."
+                },
+                {
+                  "name": "RAM",
+                  "text": "The cockpit gets outside (ram) air instead."
+                }
+              ],
+              "text": "This switch chooses whether the cockpit is pressurized or filled with fresh outside air.",
+              "context": "The manual says setting it to RAM can lower the temperature of the windshield air if that overheats.",
+              "src": "m1",
+              "page": "133"
+            },
+            {
+              "id": "outlet-selector",
+              "name": "Air outlet selector lever",
+              "type": "selector",
+              "match": [
+                "Air_Outlet_Selector_Lever",
+                "item:left-aft-console:6"
+              ],
+              "positions": [
+                {
+                  "name": "FLOOR",
+                  "text": "The air flows out at the floor."
+                },
+                {
+                  "name": "BOTH",
+                  "text": "The air flows out at the floor and at the windshield."
+                },
+                {
+                  "name": "DEFROST",
+                  "text": "The air flows to the windshield."
+                }
+              ],
+              "text": "This lever chooses where the cockpit air comes out: at the floor, at the windshield for defrosting, or at both.",
+              "context": "The pilot uses DEFROST when the windshield fogs up.",
+              "src": "m1",
+              "page": "133"
+            },
+            {
+              "id": "pressure-schedule",
+              "name": "Cockpit pressure schedule selector switch",
+              "type": "switch2",
+              "match": [
+                "Cockpit_Pressure_Schedule_Selector_Switch",
+                "item:left-aft-console:7"
+              ],
+              "positions": [
+                {
+                  "name": "5 PSI",
+                  "text": "The cockpit pressure is kept 5 PSI above the outside air."
+                },
+                {
+                  "name": "2.75 PSI",
+                  "text": "The cockpit pressure is kept 2.75 PSI above the outside air."
+                }
+              ],
+              "text": "This switch chooses how much higher the cockpit pressure is than the air outside: 5 PSI or 2.75 PSI.",
+              "context": "A higher difference is more comfortable at altitude. The manual does not explain the choice further.",
+              "src": "m1",
+              "page": "133"
+            },
+            {
+              "id": "temp-rheostat",
+              "name": "Cockpit air temperature control rheostat",
+              "type": "knob",
+              "match": [
+                "Cockpit_Air_Temperature_Control_Rheostat",
+                "item:left-aft-console:8"
+              ],
+              "text": "This knob sets the wanted temperature of the cockpit air. Turning it makes the cockpit warmer or colder.",
+              "context": "It works with the temperature control switch. The air-conditioning section of the manual does not describe it in detail.",
+              "src": "m1",
+              "page": "133"
+            },
+            {
+              "id": "temp-switch-cover",
+              "name": "Cockpit air temperature control switch cover",
+              "type": "guard",
+              "match": [
+                "Cockpit_Air_Temperature_Control_Switch_Cover"
+              ],
+              "text": "This cover guards the cockpit temperature switch. It is opened to reach the switch.",
+              "context": "The switch under it chooses between automatic and manual temperature control.",
+              "src": "m1",
+              "page": "133"
+            },
+            {
+              "id": "temp-switch",
+              "name": "Cockpit air temperature control switch",
+              "type": "switch",
+              "match": [
+                "Cockpit_Air_Temperature_Control_Switch",
+                "item:left-aft-console:9"
+              ],
+              "positions": [
+                {
+                  "name": "AUTO",
+                  "text": "The temperature control unit regulates the cockpit air by itself."
+                },
+                {
+                  "name": "OFF",
+                  "text": "The temperature control is off."
+                },
+                {
+                  "name": "HOT",
+                  "text": "The air is made warmer."
+                },
+                {
+                  "name": "COLD",
+                  "text": "The air is made colder."
+                }
+              ],
+              "text": "This switch chooses how the cockpit temperature is controlled: automatically, off, or by hand toward hot or cold.",
+              "context": "The manual lists the switch but does not describe it further. It is guarded by a cover.",
+              "src": "m1",
+              "page": "133"
+            },
+            {
+              "id": "ammo-overheat",
+              "name": "Ammunition compartment overheat warning light",
+              "type": "light",
+              "match": [
+                "item:left-aft-console:10"
+              ],
+              "text": "This light comes on when the gun bay where the ammunition is stored gets too hot.",
+              "context": "The manual lists the light on the left aft console without further description.",
+              "src": "m1",
+              "page": "133"
+            }
+          ]
+        },
+        {
+          "id": "rocket-intervalometer",
+          "name": "Rocket intervalometer",
+          "db": "rocket-intervalometer",
+          "src": "m1",
+          "page": "134",
+          "text": "This small counter and knob sets which rocket will be fired first.",
+          "context": "The rockets sit on eight launchers with two tiers. If the drop tanks are carried, the pilot sets 9 so the first rocket comes from launcher 9.",
+          "controls": [
+            {
+              "id": "intervalometer",
+              "name": "Rocket intervalometer",
+              "type": "knob",
+              "match": [
+                "Rocket_Intervalometer",
+                "item:rocket-intervalometer:1",
+                "item:rocket-intervalometer:2",
+                "item:cockpit-left-side:12"
+              ],
+              "text": "A window shows the number of the first rocket to be fired, from 1 to 16. A knob next to it changes the number.",
+              "context": "After a misfire the pilot can set the number of the rocket that failed and try again.",
+              "src": "m1",
+              "page": "232"
+            }
+          ]
+        },
+        {
+          "id": "oxygen-regulator",
+          "name": "Oxygen regulator panel (D-2(A))",
+          "db": "oxygen-regulator",
+          "src": "m1",
+          "page": "189",
+          "text": "The oxygen regulator controls the oxygen the pilot breathes through the mask. Oxygen is the breathing gas for high altitude.",
+          "context": "The pilot checks before take-off that the supply lever is ON, the gauge reads about 400 PSI and the diluter lever is at NORMAL OXYGEN.",
+          "controls": [
+            {
+              "id": "diluter-lever",
+              "name": "Diluter lever",
+              "type": "switch2",
+              "match": [
+                "OXYGEN_SWITCH",
+                "item:oxygen-regulator:1"
+              ],
+              "positions": [
+                {
+                  "name": "NORMAL OXYGEN",
+                  "text": "The regulator adjusts the mix of oxygen and air automatically by altitude."
+                },
+                {
+                  "name": "100% OXYGEN",
+                  "text": "The pilot breathes pure oxygen."
+                }
+              ],
+              "text": "This lever chooses how much pure oxygen the pilot gets. Normally the regulator mixes oxygen and air by itself; the other position gives pure oxygen.",
+              "context": "Pure oxygen is for emergencies; the normal mixture lasts longer because the bottles empty more slowly.",
+              "src": "m1",
+              "page": "189"
+            },
+            {
+              "id": "oxygen-gauge",
+              "name": "Oxygen pressure gauge",
+              "type": "gauge",
+              "match": [
+                "item:oxygen-regulator:2"
+              ],
+              "text": "This gauge shows how much oxygen is left in the bottles, as pressure in PSI. 400 PSI means full.",
+              "context": "Four bottles feed it. The pilot checks it before take-off.",
+              "src": "m1",
+              "page": "189"
+            },
+            {
+              "id": "flow-indicator",
+              "name": "Oxygen flow indicator",
+              "type": "indicator",
+              "match": [
+                "item:oxygen-regulator:3"
+              ],
+              "text": "This little window shows black and white slots that change while the pilot breathes oxygen.",
+              "context": "It shows that oxygen is flowing.",
+              "src": "m1",
+              "page": "189"
+            },
+            {
+              "id": "supply-lever",
+              "name": "Oxygen supply lever",
+              "type": "switch2",
+              "match": [
+                "Pressure_demand_oxygen_regulator",
+                "item:oxygen-regulator:4"
+              ],
+              "positions": [
+                {
+                  "name": "ON",
+                  "text": "Oxygen flows to the mask."
+                },
+                {
+                  "name": "OFF",
+                  "text": "The supply is cut. The pilot would soon run out of oxygen."
+                }
+              ],
+              "text": "This lever turns the oxygen supply to the mask on or off. In the game it should always stay ON.",
+              "context": "In the game the mask is always on the pilot's face, so with the lever OFF the pilot can lose consciousness within about 30 to 40 seconds.",
+              "src": "m1",
+              "page": "190"
+            },
+            {
+              "id": "oxygen-warning-switch",
+              "name": "Oxygen regulator warning light switch",
+              "type": "switch2",
+              "match": [
+                "Warning_System_Off"
+              ],
+              "positions": [
+                {
+                  "name": "ON",
+                  "text": "Named ON by the game; the manual does not describe the effect."
+                },
+                {
+                  "name": "OFF",
+                  "text": "Named OFF by the game; the manual does not describe the effect."
+                }
+              ],
+              "text": "The game names this switch 'Oxygen Regulator Warning Light Switch' and it has ON and OFF positions. The manual does not describe it.",
+              "context": "It is part of the oxygen regulator. The manual's oxygen section does not cover it."
+            },
+            {
+              "id": "oxygen-emergency",
+              "name": "Oxygen regulator emergency lever",
+              "type": "lever",
+              "match": [
+                "Emergency_Test"
+              ],
+              "text": "The game names this lever 'Oxygen Regulator Emergency Lever'. It can be moved to the left, centre, right or pushed in. The manual does not describe it.",
+              "context": "The manual's oxygen section does not mention it.",
+              "src": "m1",
+              "page": "189"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "right-console",
+      "where": "right-console",
+      "name": "Right console",
+      "text": "The right wall holds the engine start and electrical switches, the radios, the circuit breakers and the cockpit light knobs. The two emergency handles and the canopy jettison handle are here too.",
+      "panels": [
+        {
+          "id": "right-overview",
+          "name": "Right side of the cockpit (overview items)",
+          "src": "m1",
+          "page": "135",
+          "text": "These items stand for whole parts of the right wall. The ones that have controls are explained in the panels of the same name.",
+          "context": "Some of them are not simulated in DCS and are listed only so that the picture and the manual match.",
+          "controls": [
+            {
+              "id": "rc-fwd-console",
+              "name": "Right forward console (see its own panel)",
+              "type": "other",
+              "match": [
+                "item:cockpit-right-side:2"
+              ],
+              "text": "This item stands for the console with the fuel, generator, engine start and exterior light switches.",
+              "context": "Its switches have their own entries in the right forward console panel.",
+              "src": "m1",
+              "page": "136"
+            },
+            {
+              "id": "rc-test-plug",
+              "name": "Sight ground test plug",
+              "type": "other",
+              "match": [
+                "item:cockpit-right-side:3"
+              ],
+              "text": "This socket is where ground crews connect a test device to check the A-4 sight. It is not simulated.",
+              "context": "It has no function for the pilot.",
+              "src": "m1",
+              "page": "136"
+            },
+            {
+              "id": "rc-adf",
+              "name": "Radio compass control panel (see its own panel)",
+              "type": "other",
+              "match": [
+                "item:cockpit-right-side:4"
+              ],
+              "text": "This item stands for the AN/ARN-6 radio compass control panel on the right wall.",
+              "context": "Its switches have their own entries in the radio compass panel.",
+              "src": "m1",
+              "page": "136"
+            },
+            {
+              "id": "rc-uhf",
+              "name": "UHF radio control panel (see its own panel)",
+              "type": "other",
+              "match": [
+                "item:cockpit-right-side:5"
+              ],
+              "text": "This item stands for the AN/ARC-27 UHF command radio control panel.",
+              "context": "Its three controls have their own entries in the UHF radio panel.",
+              "src": "m1",
+              "page": "136"
+            },
+            {
+              "id": "rc-iff",
+              "name": "IFF control panel (see its own panel)",
+              "type": "other",
+              "match": [
+                "item:cockpit-right-side:6"
+              ],
+              "text": "This item stands for the AN/APX-6 IFF control panel. The manual says the IFF panel is not simulated.",
+              "context": "Its switches have their own entries in the IFF panel.",
+              "src": "m1",
+              "page": "136"
+            },
+            {
+              "id": "rc-camera",
+              "name": "Camera panel",
+              "type": "other",
+              "match": [
+                "item:cockpit-right-side:7"
+              ],
+              "text": "This panel holds the lens switch of the gun camera. The manual says it is not simulated.",
+              "context": "It has no function in DCS, so the pilot can ignore it.",
+              "src": "m1",
+              "page": "136"
+            },
+            {
+              "id": "rc-cb",
+              "name": "Right circuit-breaker panel",
+              "type": "other",
+              "match": [
+                "item:cockpit-right-side:8",
+                "Circuit_Breaker_RP_*"
+              ],
+              "text": "This panel holds 13 circuit breakers. A circuit breaker is a safety switch that cuts the power when something draws too much. Each is labelled with the equipment it protects, such as Fuel Level or Wing Flap LH.",
+              "context": "In the game all circuit breakers are already on, so the player does not need to touch them. The manual says it is not necessary to use them.",
+              "count": 13,
+              "src": "m1",
+              "page": "155"
+            },
+            {
+              "id": "rc-lights",
+              "name": "Interior light control panel (see its own panel)",
+              "type": "other",
+              "match": [
+                "item:cockpit-right-side:9"
+              ],
+              "text": "This item stands for the panel with the three light knobs for the cockpit.",
+              "context": "The knobs have their own entries in the light rheostat panel.",
+              "src": "m1",
+              "page": "136"
+            }
+          ]
+        },
+        {
+          "id": "emergency-handles-right",
+          "name": "Canopy jettison and hydraulic override handles",
+          "src": "m1",
+          "page": "135",
+          "text": "Two emergency handles sit on the right: one throws off the canopy and one forces the backup hydraulics on.",
+          "context": "Both are for emergencies. The pilot normally never touches them.",
+          "controls": [
+            {
+              "id": "alt-canopy-jettison",
+              "name": "Canopy alternate emergency jettison handle",
+              "type": "handle",
+              "match": [
+                "Canopy_Alternate_Emergency_Jettison_Handle",
+                "item:cockpit-right-side:1"
+              ],
+              "text": "Pulling this handle fires a small charge that throws the canopy off backwards. It is labelled ALT CANOPY JET.",
+              "context": "It removes the canopy without arming the ejection seat. It is not meant to replace the seat handle when the pilot must eject.",
+              "src": "m1",
+              "page": "135"
+            },
+            {
+              "id": "hyd-override",
+              "name": "Emergency override handle (flight control hydraulics)",
+              "type": "handle",
+              "match": [
+                "Alternate_Hydraulic_Override_Switch",
+                "item:cockpit-right-side:10"
+              ],
+              "text": "Pulling this handle forces the backup booster hydraulics on, even if the automatic changeover failed. It is labelled FLIGHT CONT EMERG.",
+              "context": "The backup pump then runs without stopping and drains the battery, so it is used only in an emergency.",
+              "src": "m1",
+              "page": "136"
+            }
+          ]
+        },
+        {
+          "id": "right-forward-console",
+          "name": "Right forward console",
+          "db": "right-forward-console",
+          "src": "m1",
+          "page": "137",
+          "text": "This console holds the switches the pilot needs to start the engine and to run the electricity, fuel ignition and exterior lights.",
+          "context": "The engine start uses the engine master switch, the battery-starter switch and the throttle together. The manual's start-up checklist gives the order.",
+          "controls": [
+            {
+              "id": "voltage-rheostat",
+              "name": "Generator voltage regulator rheostat",
+              "type": "knob",
+              "match": [
+                "item:right-forward-console:1"
+              ],
+              "text": "This knob would adjust the voltage of the generator. The manual says it is not used in the game.",
+              "context": "It is on the console for completeness.",
+              "src": "m1",
+              "page": "155"
+            },
+            {
+              "id": "engine-master",
+              "name": "Engine master switch",
+              "type": "switch2",
+              "match": [
+                "Engine_Master_Switch",
+                "item:right-forward-console:2"
+              ],
+              "positions": [
+                {
+                  "name": "ON",
+                  "text": "The fuel shutoff and the engine control have power."
+                },
+                {
+                  "name": "OFF",
+                  "text": "The engine fuel control is without power."
+                }
+              ],
+              "text": "This switch gives power to the engine start system and the fuel shut-off valve. Without it the engine cannot get fuel.",
+              "context": "It is the second step of the start-up. The booster pumps run once it is on and the throttle goes from OFF to IDLE.",
+              "src": "m1",
+              "page": "269"
+            },
+            {
+              "id": "gen-cover",
+              "name": "Generator switch cover",
+              "type": "guard",
+              "match": [
+                "Generator_Switch_Cover"
+              ],
+              "text": "This small cover protects the generator switch from being knocked by mistake. It is normally closed.",
+              "context": "The generator switch below it is always ON by default.",
+              "src": "m1",
+              "page": "155"
+            },
+            {
+              "id": "gen-switch",
+              "name": "Generator switch",
+              "type": "switch3",
+              "match": [
+                "Generator_Switch",
+                "item:right-forward-console:3"
+              ],
+              "positions": [
+                {
+                  "name": "ON",
+                  "text": "The generator feeds the electrical system."
+                },
+                {
+                  "name": "OFF",
+                  "text": "The generator is cut off; the generator warning light comes on."
+                },
+                {
+                  "name": "RESET",
+                  "text": "Held briefly to reconnect the generator after a trip."
+                }
+              ],
+              "text": "This switch connects the generator to the electrical system. RESET tries to bring the generator back after an overvoltage.",
+              "context": "It is on from the start. If the generator trips because the voltage got too high, the pilot can move it to RESET and back to ON.",
+              "src": "m1",
+              "page": "155"
+            },
+            {
+              "id": "emerg-ign-cover",
+              "name": "Emergency ignition switch cover",
+              "type": "guard",
+              "match": [
+                "Emergency_Ingition_Switch_Cover"
+              ],
+              "text": "This cover guards the emergency ignition switch.",
+              "context": "It is opened for restarting the engine in the air.",
+              "src": "m1",
+              "page": "136"
+            },
+            {
+              "id": "emerg-ign",
+              "name": "Emergency (in-air) ignition switch",
+              "type": "switch2",
+              "match": [
+                "Emergency_Ingition_Switch",
+                "item:right-forward-console:4"
+              ],
+              "positions": [
+                {
+                  "name": "ON",
+                  "text": "The igniters are on."
+                },
+                {
+                  "name": "OFF",
+                  "text": "The igniters are off."
+                }
+              ],
+              "text": "This switch turns the engine's igniters on by hand. They make the sparks that relight the fuel in the engine.",
+              "context": "The pilot uses it to restart a flamed-out engine in the air, together with the emergency fuel switch. The manual says to switch it off at 90 percent RPM and not to leave it on for more than 3 minutes.",
+              "src": "m1",
+              "page": "328"
+            },
+            {
+              "id": "fuel-dens-cover",
+              "name": "Fuel densitometer selection switch cover",
+              "type": "guard",
+              "match": [
+                "Fuel_density_correction_Switch_Cover"
+              ],
+              "text": "This cover guards the fuel densitometer switch.",
+              "context": "The pilot normally does not touch the switch under it.",
+              "src": "m1",
+              "page": "136"
+            },
+            {
+              "id": "fuel-dens",
+              "name": "Fuel densitometer selection switch",
+              "type": "switch2",
+              "match": [
+                "Fuel_density_correction_Switch",
+                "item:right-forward-console:5"
+              ],
+              "positions": [
+                {
+                  "name": "IN",
+                  "text": "One of the two gauge modes; the manual does not say which."
+                },
+                {
+                  "name": "OUT",
+                  "text": "The other gauge mode; the manual does not say which."
+                }
+              ],
+              "text": "This switch chooses whether the fuel quantity gauge corrects for the density of the fuel. The correction is normally automatic.",
+              "context": "The manual says a selector switch gives gauge readings without the correction when wanted.",
+              "src": "m1",
+              "page": "107"
+            },
+            {
+              "id": "battery-starter",
+              "name": "Battery-starter switch",
+              "type": "switch3",
+              "match": [
+                "BATTERY-STARTER_SWITCH",
+                "item:right-forward-console:6"
+              ],
+              "positions": [
+                {
+                  "name": "BATTERY",
+                  "text": "The battery is connected to the electrical system."
+                },
+                {
+                  "name": "OFF",
+                  "text": "The battery is disconnected."
+                },
+                {
+                  "name": "STARTER",
+                  "text": "The starter spins the engine. The switch is held briefly."
+                }
+              ],
+              "text": "This switch connects the battery to the plane and also starts the engine. Briefly holding STARTER spins the engine; then the pilot returns it to BATTERY.",
+              "context": "It is the third step of the engine start, after the engine master switch. The manual says the starter may be used only three times in 30 minutes.",
+              "src": "m1",
+              "page": "270"
+            },
+            {
+              "id": "compass-light",
+              "name": "Compass light switch",
+              "type": "switch2",
+              "match": [
+                "Compass_Switch",
+                "item:right-forward-console:7"
+              ],
+              "positions": [
+                {
+                  "name": "ON",
+                  "text": "The compass light is on."
+                },
+                {
+                  "name": "OFF",
+                  "text": "The compass light is off."
+                }
+              ],
+              "text": "This switch turns on the little light of the magnetic compass above the instrument panel.",
+              "context": "The brightness is set with the console light knob.",
+              "src": "m1",
+              "page": "140"
+            },
+            {
+              "id": "compass-fast-slave",
+              "name": "Magnetic compass fast slaving button",
+              "type": "button",
+              "match": [
+                "item:right-forward-console:8"
+              ],
+              "text": "This button does the same job as the fast slaving button on the instrument panel. It quickly aligns the heading instrument with the magnetic compass.",
+              "context": "The manual says the pilot can use either of the two buttons, and to wait at least 10 minutes between uses.",
+              "src": "m1",
+              "page": "90"
+            },
+            {
+              "id": "stop-starter",
+              "name": "Stop-starter button",
+              "type": "button",
+              "match": [
+                "Stop Starter Button",
+                "item:right-forward-console:9"
+              ],
+              "text": "Pressing this button stops the starter and the ignition when an engine start goes wrong.",
+              "context": "The manual says to use it if the voltage falls below 15 volts or the temperature does not rise within 5 seconds. Pressing it in a normal start can damage the ignition.",
+              "src": "m1",
+              "page": "270"
+            },
+            {
+              "id": "pos-lights",
+              "name": "Position and fuselage light selector switch",
+              "type": "switch3",
+              "match": [
+                "Pos. Lt. Steady_Switch",
+                "item:right-forward-console:10"
+              ],
+              "positions": [
+                {
+                  "name": "STEADY",
+                  "text": "The lights are on and do not blink."
+                },
+                {
+                  "name": "OFF",
+                  "text": "The lights are off."
+                },
+                {
+                  "name": "FLASH",
+                  "text": "The lights flash."
+                }
+              ],
+              "text": "This switch turns the plane's outside lights on, steady or flashing. They show other pilots where the plane is at night.",
+              "context": "The lights are red on the left, green on the right, two at the tail and one under the belly.",
+              "src": "m1",
+              "page": "197"
+            },
+            {
+              "id": "ext-dimmer",
+              "name": "Exterior lighting dimmer switch",
+              "type": "switch2",
+              "match": [
+                "Ext. Ltng. Bright Switch",
+                "item:right-forward-console:11"
+              ],
+              "positions": [
+                {
+                  "name": "BRIGHT",
+                  "text": "The position lights shine bright."
+                },
+                {
+                  "name": "DIM",
+                  "text": "The position lights shine dim."
+                }
+              ],
+              "text": "This switch makes the outside position lights bright or dim.",
+              "context": "Dim is for formation flying, when bright lights would dazzle the pilots nearby.",
+              "src": "m1",
+              "page": "198"
+            }
+          ]
+        },
+        {
+          "id": "uhf-radio",
+          "name": "UHF command radio (AN/ARC-27)",
+          "db": "uhf-radio-panel",
+          "src": "m1",
+          "page": "261",
+          "text": "This is the plane's radio for talking to other aircraft and the control tower. It has three controls.",
+          "context": "To talk, the pilot switches it on, picks a channel, sets the volume and presses the microphone button on the throttle.",
+          "controls": [
+            {
+              "id": "uhf-power",
+              "name": "UHF power switch",
+              "type": "selector",
+              "match": [
+                "UHF_Power_Switch",
+                "item:uhf-radio-panel:1"
+              ],
+              "positions": [
+                {
+                  "name": "OFF",
+                  "text": "The radio is off."
+                },
+                {
+                  "name": "T/R",
+                  "text": "One receiver is used for sending and receiving."
+                },
+                {
+                  "name": "T/R+G REC",
+                  "text": "Two receivers listen, including the guard channel."
+                },
+                {
+                  "name": "ADF",
+                  "text": "Not implemented in DCS."
+                }
+              ],
+              "text": "This switch turns the radio on and chooses its mode.",
+              "context": "The manual says the ADF position is not implemented.",
+              "src": "m1",
+              "page": "261"
+            },
+            {
+              "id": "uhf-channel",
+              "name": "UHF preset channel selector",
+              "type": "selector",
+              "match": [
+                "UHF_Preset_Channel_Selector",
+                "item:uhf-radio-panel:2"
+              ],
+              "text": "This knob picks one of 18 stored radio channels. A preset is like a station button on a car radio.",
+              "context": "The channels can be set in the Mission Editor on the radio channels tab.",
+              "src": "m1",
+              "page": "261"
+            },
+            {
+              "id": "uhf-volume",
+              "name": "UHF audio volume knob",
+              "type": "knob",
+              "match": [
+                "UHF_Volume_Knob",
+                "item:uhf-radio-panel:3"
+              ],
+              "text": "This knob makes the radio sound louder or quieter in the pilot's headset.",
+              "context": "The pilot adjusts it after switching the radio on.",
+              "src": "m1",
+              "page": "262"
+            }
+          ]
+        },
+        {
+          "id": "radio-compass",
+          "name": "Radio compass (AN/ARN-6)",
+          "db": "radio-compass-panel",
+          "src": "m1",
+          "page": "264",
+          "text": "The radio compass is a receiver that points to a radio station on the ground. The needle on the instrument panel shows the direction to it.",
+          "context": "It helps the pilot fly toward a radio beacon. The panel has a mode knob, a band switch, a tuning crank and a volume knob.",
+          "controls": [
+            {
+              "id": "adf-function",
+              "name": "Function selector switch",
+              "type": "selector",
+              "match": [
+                "LOOP-ANT-COMP-OFF_Switch",
+                "item:radio-compass-panel:1"
+              ],
+              "positions": [
+                {
+                  "name": "OFF",
+                  "text": "The radio compass is off."
+                },
+                {
+                  "name": "COMP",
+                  "text": "Compass mode, the normal one."
+                },
+                {
+                  "name": "ANT",
+                  "text": "Antenna mode, used for fine tuning."
+                },
+                {
+                  "name": "LOOP",
+                  "text": "Loop mode, for turning the loop antenna by hand."
+                },
+                {
+                  "name": "CONT",
+                  "text": "Not implemented."
+                }
+              ],
+              "text": "This switch turns the radio compass on and chooses its mode. COMP is the normal mode.",
+              "context": "ANT is for fine tuning, LOOP is for checking the loop antenna and CONT is not implemented.",
+              "src": "m1",
+              "page": "264"
+            },
+            {
+              "id": "adf-meter",
+              "name": "Tuning meter",
+              "type": "gauge",
+              "match": [
+                "item:radio-compass-panel:2"
+              ],
+              "text": "This meter shows how strong the received signal is. It helps to tune to the exact frequency.",
+              "context": "The pilot tunes until the meter reads highest.",
+              "src": "m1",
+              "page": "265"
+            },
+            {
+              "id": "adf-display",
+              "name": "Band and frequency display",
+              "type": "display",
+              "match": [
+                "item:radio-compass-panel:3"
+              ],
+              "text": "This window shows the chosen band and the frequency the radio is tuned to. The frequency is read under the vertical line.",
+              "context": "There are four bands, from 100 to 1750 kHz.",
+              "src": "m1",
+              "page": "265"
+            },
+            {
+              "id": "adf-band",
+              "name": "Frequency band switch",
+              "type": "switch",
+              "match": [
+                "Bandswitch",
+                "item:radio-compass-panel:4"
+              ],
+              "text": "This switch chooses one of four frequency bands, from 100 to 200, 200 to 410, 410 to 850 and 850 to 1750 kHz.",
+              "context": "The pilot picks the band that holds the frequency of the wanted station before tuning.",
+              "src": "m1",
+              "page": "265"
+            },
+            {
+              "id": "adf-tuning",
+              "name": "Tuning crank",
+              "type": "knob",
+              "match": [
+                "TUNING_CONTROL",
+                "item:radio-compass-panel:5"
+              ],
+              "text": "Turning this crank fine-tunes the frequency of the radio compass.",
+              "context": "The pilot watches the tuning meter and listens to the sound while turning.",
+              "src": "m1",
+              "page": "265"
+            },
+            {
+              "id": "adf-cw-voice",
+              "name": "CW-voice switch",
+              "type": "switch2",
+              "match": [
+                "RADIO_COMPASS_PANEL_CW / VOICE",
+                "item:radio-compass-panel:6"
+              ],
+              "positions": [
+                {
+                  "name": "CW",
+                  "text": "Not simulated."
+                },
+                {
+                  "name": "VOICE",
+                  "text": "Not simulated."
+                }
+              ],
+              "text": "This switch is labelled CW and VOICE. The manual says it is not simulated.",
+              "context": "It has no function in DCS, so the radio compass works without it.",
+              "src": "m1",
+              "page": "265"
+            },
+            {
+              "id": "adf-volume",
+              "name": "Volume control",
+              "type": "knob",
+              "match": [
+                "VOLUME_CONTROL",
+                "item:radio-compass-panel:7"
+              ],
+              "text": "This knob sets how loud the radio compass sound is in the pilot's headset.",
+              "context": "The manual says to turn it fully up (to the right) before tuning.",
+              "src": "m1",
+              "page": "265"
+            },
+            {
+              "id": "adf-light",
+              "name": "Display light control switch",
+              "type": "switch3",
+              "match": [
+                "RADIO_COMPASS_PANEL_LIGHTS",
+                "item:radio-compass-panel:8"
+              ],
+              "positions": [
+                {
+                  "name": "HI",
+                  "text": "The back light is bright."
+                },
+                {
+                  "name": "OFF",
+                  "text": "The back light is off."
+                },
+                {
+                  "name": "LO",
+                  "text": "The back light is dim."
+                }
+              ],
+              "text": "This switch sets how bright the back light of the meter and the frequency display is.",
+              "context": "A back light makes the dials readable at night.",
+              "src": "m1",
+              "page": "265"
+            },
+            {
+              "id": "adf-loop",
+              "name": "Loop rotation switch",
+              "type": "switch3",
+              "match": [
+                "LOOP L-R_Switch",
+                "item:radio-compass-panel:9"
+              ],
+              "positions": [
+                {
+                  "name": "L",
+                  "text": "The loop antenna turns left while held."
+                },
+                {
+                  "name": "0",
+                  "text": "The switch rests and the antenna stays where it is."
+                },
+                {
+                  "name": "R",
+                  "text": "The loop antenna turns right while held."
+                }
+              ],
+              "text": "This switch turns the loop antenna to the left or to the right by hand when the function selector is at LOOP.",
+              "context": "The needle on the instrument panel turns with it. It springs back to the middle.",
+              "src": "m1",
+              "page": "265"
+            }
+          ]
+        },
+        {
+          "id": "iff",
+          "name": "IFF control panel (AN/APX-6)",
+          "src": "m1",
+          "page": "136",
+          "text": "IFF stands for Identification Friend or Foe. It is a radio box that answers 'who are you?' questions from radars with a code number.",
+          "context": "The manual says the IFF panel is not simulated, so none of these controls has an effect in DCS.",
+          "controls": [
+            {
+              "id": "iff-mode2",
+              "name": "IFF Mode 2 switch",
+              "type": "switch3",
+              "match": [
+                "IFF_PANEL_MODE2"
+              ],
+              "positions": [
+                {
+                  "name": "MODE 2",
+                  "text": "Named MODE 2 by the game; not simulated."
+                },
+                {
+                  "name": "OUT",
+                  "text": "Named OUT by the game; not simulated."
+                },
+                {
+                  "name": "I/P",
+                  "text": "Named I/P by the game; not simulated."
+                }
+              ],
+              "text": "This switch selects the code mode 2 of the IFF set. In DCS it has no function.",
+              "context": "It would choose which code the set answers with.",
+              "src": "m1",
+              "page": "136"
+            },
+            {
+              "id": "iff-dial-stop",
+              "name": "IFF dial stop button",
+              "type": "button",
+              "match": [
+                "IFF_Dial_Stop_Button"
+              ],
+              "text": "This button belongs to the code dials of the IFF set. In DCS it has no function.",
+              "context": "The manual says the IFF control panel is not simulated.",
+              "src": "m1",
+              "page": "136"
+            },
+            {
+              "id": "iff-master",
+              "name": "IFF master switch",
+              "type": "selector",
+              "match": [
+                "IFF_Master_Mode_Selector_Knob"
+              ],
+              "positions": [
+                {
+                  "name": "EMERGENCY",
+                  "text": "Named by the game; not simulated."
+                },
+                {
+                  "name": "NORM",
+                  "text": "Named by the game; not simulated."
+                },
+                {
+                  "name": "LOW",
+                  "text": "Named by the game; not simulated."
+                },
+                {
+                  "name": "STDBY",
+                  "text": "Named by the game; not simulated."
+                },
+                {
+                  "name": "OFF",
+                  "text": "Named by the game; not simulated."
+                }
+              ],
+              "text": "This knob would turn the IFF set on and choose its level. In DCS it has no function.",
+              "context": "Its positions are named EMERGENCY, NORM, LOW, STDBY and OFF.",
+              "src": "m1",
+              "page": "136"
+            },
+            {
+              "id": "iff-mode3",
+              "name": "IFF Mode 3 switch",
+              "type": "switch2",
+              "match": [
+                "IFF_PANEL_MODE3"
+              ],
+              "positions": [
+                {
+                  "name": "MODE 3",
+                  "text": "Named MODE 3 by the game; not simulated."
+                },
+                {
+                  "name": "OUT",
+                  "text": "Named OUT by the game; not simulated."
+                }
+              ],
+              "text": "This switch selects the code mode 3 of the IFF set. In DCS it has no function.",
+              "context": "Mode 3 is one of the codes an IFF set can answer with.",
+              "src": "m1",
+              "page": "136"
+            },
+            {
+              "id": "iff-destruct-cover",
+              "name": "IFF destruct switch cover",
+              "type": "guard",
+              "match": [
+                "IFF_Destruct_Switch_Cover"
+              ],
+              "text": "This cover guards the destruct switch of the IFF set so that it is not triggered by mistake.",
+              "context": "It has no function in DCS, like the rest of the IFF panel.",
+              "src": "m1",
+              "page": "136"
+            },
+            {
+              "id": "iff-destruct",
+              "name": "IFF destruct switch",
+              "type": "button",
+              "match": [
+                "IFF_Destruct_Switch"
+              ],
+              "text": "As its name says, this switch is meant to destroy the IFF set. In DCS it has no function.",
+              "context": "A destroyed set keeps its codes from an enemy. It is under a cover.",
+              "src": "m1",
+              "page": "136"
+            }
+          ]
+        },
+        {
+          "id": "light-rheostats",
+          "name": "Cockpit light rheostat panel",
+          "db": "light-rheostat-panel",
+          "src": "m1",
+          "page": "194",
+          "text": "This panel has three knobs that set how bright the cockpit lights are. A rheostat is a dimmer knob.",
+          "context": "The pilot turns them up at night to read the instruments and down in daylight. The bulbs are made for 27 to 29 volts, so with the generator off the lights only glimmer.",
+          "controls": [
+            {
+              "id": "rheo-left",
+              "name": "Left rheostat (utility lights)",
+              "type": "knob",
+              "match": [
+                "item:light-rheostat-panel:1"
+              ],
+              "text": "According to the manual, the left knob sets the brightness of the two utility lights, one on each side of the pilot's seat.",
+              "context": "The utility lights give extra light on the consoles and the instrument panel.",
+              "src": "m1",
+              "page": "194"
+            },
+            {
+              "id": "rheo-middle",
+              "name": "Middle rheostat (console lights)",
+              "type": "knob",
+              "match": [
+                "item:light-rheostat-panel:2"
+              ],
+              "text": "According to the manual, the middle knob sets the brightness of the left and right console floodlights and of the lights built into the consoles.",
+              "context": "These lights make the switches on both walls readable.",
+              "src": "m1",
+              "page": "194"
+            },
+            {
+              "id": "rheo-right",
+              "name": "Right rheostat (instrument ring lights)",
+              "type": "knob",
+              "match": [
+                "item:light-rheostat-panel:3"
+              ],
+              "text": "According to the manual, the right knob sets the brightness of the ring lights around the instruments and of the dials on the consoles.",
+              "context": "The ring lights make the gauges readable at night.",
+              "src": "m1",
+              "page": "194"
+            },
+            {
+              "id": "rheo-game-console",
+              "name": "Console and panel light rheostat (game name)",
+              "type": "knob",
+              "match": [
+                "Console_Panel_Light_Control"
+              ],
+              "text": "The game names this knob 'Console and Panel Light Rheostat'. It is one of the three light knobs of the panel.",
+              "context": "The manual does not say which of its three knobs carries this game name; the label mentions console and panel.",
+              "src": "m1",
+              "page": "194"
+            },
+            {
+              "id": "rheo-game-aux",
+              "name": "Instrument panel auxiliary light rheostat (game name)",
+              "type": "knob",
+              "match": [
+                "Instrument_Panel_Auxiliary_Light_Control"
+              ],
+              "text": "The game names this knob 'Instrument Panel Auxiliary Light Rheostat'. It is one of the three light knobs of the panel.",
+              "context": "The manual does not say which of its three knobs carries this game name; the label mentions auxiliary lights.",
+              "src": "m1",
+              "page": "194"
+            },
+            {
+              "id": "rheo-game-primary",
+              "name": "Instrument panel primary light rheostat (game name)",
+              "type": "knob",
+              "match": [
+                "Instrument_Panel_Primary_Light_Control"
+              ],
+              "text": "The game names this knob 'Instrument Panel Primary Light Rheostat'. It is one of the three light knobs of the panel.",
+              "context": "The manual does not say which of its three knobs carries this game name.",
+              "src": "m1",
+              "page": "194"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "center-pedestal",
+      "where": "center-pedestal",
+      "name": "Center pedestal",
+      "text": "The block between the pilot's knees holds the weapon switches, the sight selector unit, the instrument power switch and two emergency handles.",
+      "panels": [
+        {
+          "id": "armament-panel",
+          "name": "Weapons control panel (center pedestal)",
+          "db": "center-pedestal",
+          "src": "m1",
+          "page": "206",
+          "text": "This panel sets up the weapons: guns or missiles, rockets, and bombs, and how they are fuzed and released.",
+          "context": "The pilot sets these switches before an attack. The button on the stick then drops or fires what was chosen here.",
+          "controls": [
+            {
+              "id": "gun-missile-selector",
+              "name": "Gun-missile selector switch",
+              "type": "selector",
+              "match": [
+                "MISSILE_GUNS_RADAR-Selector",
+                "item:center-pedestal:1"
+              ],
+              "positions": [
+                {
+                  "name": "OFF",
+                  "text": "The sight, camera, radar, guns and missiles are all switched off."
+                },
+                {
+                  "name": "SIGHT CAMERA & RADAR",
+                  "text": "The sight, camera and radar work. The guns and missiles cannot fire."
+                },
+                {
+                  "name": "GUNS",
+                  "text": "The sight, camera and radar work and the guns can fire."
+                },
+                {
+                  "name": "MISSILE",
+                  "text": "The sight, camera and radar work and the missiles can be launched."
+                }
+              ],
+              "text": "This switch is the master safety for the guns and missiles, and it also switches on the sight, camera and radar.",
+              "context": "Bombs and rockets work in every position, because they have their own switches.",
+              "src": "m1",
+              "page": "207"
+            },
+            {
+              "id": "gun-heater",
+              "name": "Gun heater switch",
+              "type": "switch2",
+              "match": [
+                "Gun_Heater_Switch",
+                "item:center-pedestal:2"
+              ],
+              "positions": [
+                {
+                  "name": "HEATER",
+                  "text": "Named HEATER by the game; the heater is not simulated."
+                },
+                {
+                  "name": "OFF",
+                  "text": "The heater is off."
+                }
+              ],
+              "text": "This switch heats the machine guns. It would stop them from jamming in the cold. It is not simulated.",
+              "context": "The manual says it is for low temperatures and high humidity.",
+              "src": "m1",
+              "page": "207"
+            },
+            {
+              "id": "rockets-jett",
+              "name": "Rocket jettison switch",
+              "type": "switch2",
+              "match": [
+                "Rockets_Jett_Switch",
+                "item:center-pedestal:3"
+              ],
+              "positions": [
+                {
+                  "name": "READY",
+                  "text": "Pressing the release button on the stick drops all rockets at once."
+                },
+                {
+                  "name": "OFF",
+                  "text": "Rockets are fired normally."
+                }
+              ],
+              "text": "This switch prepares the emergency drop of all rockets. When it is on READY, pressing the release button on the stick drops them all.",
+              "context": "It is used when the pilot carries rockets and tanks and wants to drop only the rockets.",
+              "src": "m1",
+              "page": "207"
+            },
+            {
+              "id": "rockets-cover",
+              "name": "Rocket release selector switch cover",
+              "type": "guard",
+              "match": [
+                "Rockets_switch_cover"
+              ],
+              "text": "This cover guards the rocket release selector switch.",
+              "context": "The pilot opens it before choosing how rockets are fired.",
+              "src": "m1",
+              "page": "207"
+            },
+            {
+              "id": "rockets-switch",
+              "name": "Rocket release selector switch",
+              "type": "switch3",
+              "match": [
+                "Rockets_switch",
+                "item:center-pedestal:4"
+              ],
+              "positions": [
+                {
+                  "name": "SINGLE",
+                  "text": "One rocket leaves each time the release button is pressed."
+                },
+                {
+                  "name": "OFF",
+                  "text": "No rocket can be fired."
+                },
+                {
+                  "name": "AUTO",
+                  "text": "Rockets leave one after another while the release button is held."
+                }
+              ],
+              "text": "This switch chooses how rockets are fired: one at a time, none, or one after another while the button is held.",
+              "context": "The first rocket to go is set on the rocket intervalometer on the left wall.",
+              "src": "m1",
+              "page": "207"
+            },
+            {
+              "id": "rocket-fuze",
+              "name": "Rocket fuze (arming) switch",
+              "type": "switch3",
+              "match": [
+                "Fuze_Delay_Switch",
+                "item:center-pedestal:5"
+              ],
+              "positions": [
+                {
+                  "name": "DELAY",
+                  "text": "The rocket explodes a little after impact."
+                },
+                {
+                  "name": "OFF",
+                  "text": "The rocket explodes when its internal fuze goes off."
+                },
+                {
+                  "name": "INSTANT",
+                  "text": "The nose fuze is armed and the rocket explodes on impact."
+                }
+              ],
+              "text": "This switch sets whether the rocket explodes the moment it hits or a moment later.",
+              "context": "A fuze is the part that sets off the explosive. Rockets dropped in an emergency are unarmed.",
+              "src": "m1",
+              "page": "208"
+            },
+            {
+              "id": "bomb-arming",
+              "name": "Bomb arming switch",
+              "type": "switch3",
+              "match": [
+                "ARM_SWITCH",
+                "item:center-pedestal:6"
+              ],
+              "positions": [
+                {
+                  "name": "ARM NOSE & TAIL",
+                  "text": "Both fuzes are armed and the bombs explode at once on impact."
+                },
+                {
+                  "name": "OFF",
+                  "text": "The bombs are not armed and do not explode."
+                },
+                {
+                  "name": "TAIL ONLY",
+                  "text": "Only the tail fuze is armed and the bombs explode with a delay."
+                }
+              ],
+              "text": "This switch decides which fuzes of the bombs are armed. A bomb that is not armed does not explode.",
+              "context": "With both fuzes armed the bomb explodes on impact; with only the tail fuze it explodes a little later.",
+              "src": "m1",
+              "page": "208"
+            },
+            {
+              "id": "bomb-sequence",
+              "name": "Demolition bomb sequence selector switch",
+              "type": "selector",
+              "match": [
+                "Station_selector_switch",
+                "item:center-pedestal:7"
+              ],
+              "positions": [
+                {
+                  "name": "ALL",
+                  "text": "Both bomb racks release together."
+                },
+                {
+                  "name": "OFF",
+                  "text": "No bomb can be dropped. This is the position when not about to bomb."
+                },
+                {
+                  "name": "LEFT",
+                  "text": "The left bomb drops first, the right one on the next press."
+                },
+                {
+                  "name": "RIGHT",
+                  "text": "The right bomb drops first, the left one on the next press."
+                }
+              ],
+              "text": "This switch chooses which bomb racks are released: both together, the left first, the right first, or none.",
+              "context": "With LEFT or RIGHT the second press of the release button drops the other bomb, so the switch need not be moved.",
+              "src": "m1",
+              "page": "208"
+            },
+            {
+              "id": "bomb-release-mode",
+              "name": "Demolition bomb release selector switch",
+              "type": "switch2",
+              "match": [
+                "Auto_Release_Switch",
+                "item:center-pedestal:8"
+              ],
+              "positions": [
+                {
+                  "name": "AUTO RELEASE",
+                  "text": "Holding the release button drops the bomb automatically when the conditions are right."
+                },
+                {
+                  "name": "MANUAL RELEASE",
+                  "text": "The bomb drops immediately when the release button is pressed."
+                }
+              ],
+              "text": "This switch decides whether a bomb leaves as soon as the button is pressed, or only when the plane is in the right place.",
+              "context": "In automatic mode the pilot holds the button down and the plane's computer chooses the moment.",
+              "src": "m1",
+              "page": "208"
+            },
+            {
+              "id": "filament-switch",
+              "name": "Filament selector switch",
+              "type": "switch2",
+              "match": [
+                "SIGHT_FILAMENT_SWITCH",
+                "item:center-pedestal:9"
+              ],
+              "positions": [
+                {
+                  "name": "PRIMARY",
+                  "text": "The main lamp filament is used."
+                },
+                {
+                  "name": "SECONDARY",
+                  "text": "The spare lamp filament is used."
+                }
+              ],
+              "text": "This switch chooses which of the two filaments of the sight's lamp is used for the aiming mark.",
+              "context": "If one filament burns out, the pilot can use the other.",
+              "src": "m1",
+              "page": "208"
+            },
+            {
+              "id": "frag-selector",
+              "name": "Fragmentation bomb selector switch",
+              "type": "switch3",
+              "match": [
+                "item:center-pedestal:10"
+              ],
+              "positions": [
+                {
+                  "name": "ALL TRAIN",
+                  "text": "Both bombs would be released together."
+                },
+                {
+                  "name": "OFF",
+                  "text": "No fragmentation bombs would be released."
+                },
+                {
+                  "name": "SINGLE TRAIN",
+                  "text": "The bombs would be released one after another."
+                }
+              ],
+              "text": "This switch would choose how fragmentation bombs are released. The manual says it is not implemented because the game has no such bombs.",
+              "context": "It has no function in DCS, so the pilot can ignore it.",
+              "src": "m1",
+              "page": "208"
+            },
+            {
+              "id": "frag-light",
+              "name": "Fragmentation bombs indicator light",
+              "type": "light",
+              "match": [
+                "item:center-pedestal:11"
+              ],
+              "text": "This light would show that fragmentation bombs are ready. It is not implemented.",
+              "context": "The game has no fragmentation bombs for the F-86.",
+              "src": "m1",
+              "page": "209"
+            },
+            {
+              "id": "instr-power",
+              "name": "Instrument power switch",
+              "type": "switch2",
+              "match": [
+                "INSTRUMENT_POWER_ALTERNATE",
+                "item:center-pedestal:12"
+              ],
+              "positions": [
+                {
+                  "name": "NORMAL",
+                  "text": "The main three-phase inverter powers the gyro instruments."
+                },
+                {
+                  "name": "ALTERNATE",
+                  "text": "The spare inverter powers them."
+                }
+              ],
+              "text": "This switch picks which inverter powers the gyro instruments: the main one or the spare. An inverter turns the plane's electricity into the kind the gyros need.",
+              "context": "The pilot moves it to ALTERNATE when the main inverter failure light comes on.",
+              "src": "m1",
+              "page": "209"
+            },
+            {
+              "id": "sight-selector-ptr",
+              "name": "Sight selector unit (see its own panel)",
+              "type": "other",
+              "match": [
+                "item:center-pedestal:13"
+              ],
+              "text": "This item stands for the sight selector unit, the block with the sight function lever, the rocket lever and the target speed switch.",
+              "context": "Its controls have their own entries in the sight selector unit panel.",
+              "src": "m1",
+              "page": "209"
+            },
+            {
+              "id": "wind-knob",
+              "name": "Bomb-target wind control knob",
+              "type": "knob",
+              "match": [
+                "Bomb_wind_control",
+                "item:center-pedestal:14"
+              ],
+              "text": "This knob would let the pilot enter the wind or the target's speed to improve bomb aiming. In the game it has no function.",
+              "context": "The manual says the knob is not used in the simulation.",
+              "src": "m1",
+              "page": "246"
+            },
+            {
+              "id": "unused-knob",
+              "name": "Knob not in use",
+              "type": "knob",
+              "match": [
+                "item:center-pedestal:15"
+              ],
+              "text": "The manual calls this knob 'Knob not in use'. It does nothing.",
+              "context": "It sits on the panel but is not connected to anything in the simulation.",
+              "src": "m1",
+              "page": "209"
+            }
+          ]
+        },
+        {
+          "id": "sight-selector-unit",
+          "name": "Sight selector unit",
+          "db": "sight-selector-unit",
+          "src": "m1",
+          "page": "245",
+          "text": "This unit tells the gunsight which weapon the pilot is using and what the target is doing. The sight then moves its aiming mark to suit.",
+          "context": "A gun shell, a rocket and a bomb fly different curves, so the sight needs to know which one is meant. The pilot sets this before the attack.",
+          "controls": [
+            {
+              "id": "rocket-lever",
+              "name": "Rocket setting lever",
+              "type": "knob",
+              "match": [
+                "Rocket_depression_angle_pointer",
+                "item:sight-selector-unit:1"
+              ],
+              "text": "This lever sets by how many mils (tiny angles) the aiming mark is pushed down for rockets. A rocket falls on its way, so the pilot aims a bit higher than the target.",
+              "context": "The manual gives about 17 mils for 5-inch rockets in dives up to 40 degrees.",
+              "src": "m1",
+              "page": "245"
+            },
+            {
+              "id": "rocket-scale",
+              "name": "Rocket sight angle scale",
+              "type": "gauge",
+              "match": [
+                "item:sight-selector-unit:2"
+              ],
+              "text": "This scale shows the angle set with the rocket lever, in mils.",
+              "context": "A mil is a tiny angle, a 6400th of a full circle in NATO countries.",
+              "src": "m1",
+              "page": "245"
+            },
+            {
+              "id": "sight-function",
+              "name": "Sight function selector lever",
+              "type": "selector",
+              "match": [
+                "Rocket-Gun-Bomb_selector",
+                "item:sight-selector-unit:3"
+              ],
+              "positions": [
+                {
+                  "name": "ROCKET",
+                  "text": "The sight is set up for rockets."
+                },
+                {
+                  "name": "GUN",
+                  "text": "The sight is set up for the guns."
+                },
+                {
+                  "name": "BOMB",
+                  "text": "The sight is set up for bombs."
+                }
+              ],
+              "text": "This lever tells the sight which weapon is being aimed. The aiming mark moves differently for each.",
+              "context": "For a gun attack it is set to GUN, for bombing to BOMB and for rockets to ROCKET.",
+              "src": "m1",
+              "page": "246"
+            },
+            {
+              "id": "target-speed",
+              "name": "Target speed switch",
+              "type": "switch3",
+              "match": [
+                "Target_speed_switch",
+                "item:sight-selector-unit:4"
+              ],
+              "positions": [
+                {
+                  "name": "TR",
+                  "text": "Named TR by the game; the manual does not describe it."
+                },
+                {
+                  "name": "HI",
+                  "text": "The target flies at about the same speed as the plane."
+                },
+                {
+                  "name": "LO",
+                  "text": "The target is slower than the plane."
+                }
+              ],
+              "text": "This switch tells the sight how fast the target flies compared with the pilot's own plane.",
+              "context": "The manual says LO is for targets slower than the plane and HI for targets of about the same speed.",
+              "src": "m1",
+              "page": "246"
+            }
+          ]
+        },
+        {
+          "id": "emergency-control-panel",
+          "name": "Emergency control panel",
+          "db": "emergency-control-panel",
+          "src": "m1",
+          "page": "142",
+          "text": "This small panel at the bottom of the pedestal holds two emergency handles: a yellow one for the canopy and a red one for the wheels.",
+          "context": "Both handles are for rare cases. The pilot normally never needs them.",
+          "controls": [
+            {
+              "id": "canopy-declutch",
+              "name": "Canopy declutch handle",
+              "type": "handle",
+              "match": [
+                "Canopy_declutch_handle",
+                "item:emergency-control-panel:1"
+              ],
+              "text": "Pulling out this yellow handle frees the canopy from its motor so it can be moved by hand. The canopy switch then does nothing.",
+              "context": "It is for emergency use on the ground. It does not throw off the canopy.",
+              "src": "m1",
+              "page": "63"
+            },
+            {
+              "id": "gear-emergency-release",
+              "name": "Landing gear emergency release handle",
+              "type": "handle",
+              "match": [
+                "Landing_gear_emergency_release_handle",
+                "item:emergency-control-panel:2"
+              ],
+              "text": "Pulling this red handle lets the wheels fall down when the normal system has no pressure or no power.",
+              "context": "The gear handle is put at DOWN first. The main wheels drop by their weight, and the nose wheel gets pressure from a small tank.",
+              "src": "m1",
+              "page": "178"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "hotas",
+      "where": "hotas",
+      "name": "Stick, throttle and pedals",
+      "text": "The stick is in the middle between the pilot's knees, the throttle is on the left wall and the pedals are on the floor. The buttons on the stick and the throttle grip fire the weapons and talk on the radio.",
+      "panels": [
+        {
+          "id": "stick",
+          "name": "Control stick (B-8A grip)",
+          "src": "m1",
+          "page": "77",
+          "text": "The control stick steers the plane up, down, left and right. The buttons on its grip let the pilot shoot and trim without letting go.",
+          "context": "The stick moves hydraulic valves directly, so the pilot feels springs instead of the air forces. The grip carries the most used weapon buttons.",
+          "controls": [
+            {
+              "id": "stick-axis",
+              "name": "Flight control stick",
+              "type": "axis",
+              "match": [
+                "control:stick.gimbal"
+              ],
+              "text": "Pushing the stick forward or back tips the nose down or up. Moving it left or right rolls the plane.",
+              "context": "A boost hydraulic system helps move the surfaces, and springs give the stick a feel that gets stiffer at high speed.",
+              "src": "m1",
+              "page": "77"
+            },
+            {
+              "id": "stick-trigger",
+              "name": "Gun and missile trigger",
+              "type": "trigger",
+              "match": [
+                "Gun_Trigger",
+                "control:stick.trigger"
+              ],
+              "text": "This two-stage trigger on the front of the grip fires. The first stage runs the gun camera, the second stage fires the guns or launches a missile.",
+              "context": "What it fires depends on the gun-missile selector switch on the centre pedestal. At GUNS it fires the guns, at MISSILE it launches the missiles.",
+              "src": "m1",
+              "page": "77"
+            },
+            {
+              "id": "stick-release",
+              "name": "Bomb-rocket release button",
+              "type": "button",
+              "match": [
+                "Bomb_Rocket_Release_Button",
+                "control:stick.weapon_release"
+              ],
+              "text": "This button on top of the grip drops the bombs or fires the rockets. It also runs the gun camera.",
+              "context": "The switches on the centre pedestal decide whether it releases one thing, a series or everything; it only does the release itself.",
+              "src": "m1",
+              "page": "221"
+            },
+            {
+              "id": "stick-radar-target",
+              "name": "Radar target selector button",
+              "type": "button",
+              "match": [
+                "Radar_Target_Selector_Button",
+                "control:stick.button.radar_target"
+              ],
+              "text": "Pressing this button makes the sight's radar let go of the target it follows and look for another one.",
+              "context": "The radar then searches again from the shortest distance, so it finds the closest target first.",
+              "src": "m1",
+              "page": "242"
+            },
+            {
+              "id": "stick-nws",
+              "name": "Nosewheel steering button",
+              "type": "button",
+              "match": [
+                "Nose_Wheel_Steering_Button",
+                "Nose_Wheel_Steering_Button001",
+                "control:stick.button.nws"
+              ],
+              "text": "Hold this button on the ground and the front wheel follows the rudder pedals, like a car's steering. When it is released, the wheel swivels freely.",
+              "context": "The pilot uses it while taxiing. The steering range is about 21 degrees to each side and it uses the utility hydraulic pressure.",
+              "src": "m1",
+              "page": "178"
+            },
+            {
+              "id": "stick-trim",
+              "name": "Normal trim switch",
+              "type": "hat",
+              "match": [
+                "Trim_Switch_*",
+                "control:stick.hat.trim"
+              ],
+              "text": "This thumb switch on top of the grip trims the plane. Pushing it forward or back trims the nose down or up, left or right trims the wings.",
+              "context": "Trim removes the force on the stick so the plane flies straight with the hand relaxed. The switch springs back to the middle and trims only while held.",
+              "src": "m1",
+              "page": "147"
+            }
+          ]
+        },
+        {
+          "id": "throttle",
+          "name": "Throttle (grip and quadrant)",
+          "src": "m1",
+          "page": "78",
+          "text": "The throttle lever on the left wall controls the engine power. Its grip carries four controls the pilot can reach with the left hand.",
+          "context": "The pilot moves the lever forward for more power. At its rearmost position OFF it also shuts the fuel line mechanically.",
+          "controls": [
+            {
+              "id": "throttle-axis",
+              "name": "Engine throttle",
+              "type": "axis",
+              "match": [
+                "control:throttle.axis.main",
+                "item:throttle-quadrant:1"
+              ],
+              "text": "Pushing this lever forward gives the engine more power, pulling it back gives less. All the way back is OFF and the fuel is shut.",
+              "context": "Moving it from OFF to IDLE opens the fuel valve during the engine start. Once the engine runs, the lever position sets the engine speed.",
+              "src": "m1",
+              "page": "78"
+            },
+            {
+              "id": "throttle-mic",
+              "name": "Microphone button",
+              "type": "button",
+              "match": [
+                "Microphone_Button",
+                "Mic_Bt",
+                "control:throttle.hat.mic"
+              ],
+              "text": "Hold this button on the throttle grip to speak on the radio. In the game it also opens the radio menu.",
+              "context": "It transmits on the UHF radio. The radio panel on the right wall must be switched on first.",
+              "src": "m1",
+              "page": "262"
+            },
+            {
+              "id": "throttle-range",
+              "name": "Rotating grip (manual ranging)",
+              "type": "knob",
+              "match": [
+                "Grip_Rotation",
+                "control:throttle.twist.range"
+              ],
+              "text": "The grip of the throttle can be twisted. This sets the distance to the target in the gunsight by hand, from about 1,200 to 2,700 feet.",
+              "context": "Clockwise makes the ring bigger, so the sight thinks the target is closer. Fully counter-clockwise lets the radar do the ranging.",
+              "src": "m1",
+              "page": "243"
+            },
+            {
+              "id": "throttle-speedbrake",
+              "name": "Speed brake switch",
+              "type": "switch3",
+              "match": [
+                "Speed_Brake_Switch",
+                "AirBrakeSW",
+                "control:throttle.speedbrake"
+              ],
+              "positions": [
+                {
+                  "name": "IN",
+                  "text": "The speed brakes close."
+                },
+                {
+                  "name": "HOLD",
+                  "text": "The speed brakes stay where they are."
+                },
+                {
+                  "name": "OUT",
+                  "text": "The speed brakes open."
+                }
+              ],
+              "text": "This switch on the throttle grip opens and closes the speed brakes. Speed brakes are flaps on the rear fuselage that open into the wind to slow the plane down.",
+              "context": "The pilot uses them in dives and landings. A hold position freezes them where they are.",
+              "src": "m1",
+              "page": "58"
+            },
+            {
+              "id": "throttle-cage",
+              "name": "Sight electrical caging button",
+              "type": "button",
+              "match": [
+                "Sight_Electrical_Caging_Button",
+                "Sight_Bt",
+                "control:throttle.cage"
+              ],
+              "text": "Holding this button locks the aiming mark of the gunsight still. Releasing it makes the sight work with its computer again.",
+              "context": "It lets the pilot lock the gyro without taking a hand off the throttle, just before a gun attack.",
+              "src": "m1",
+              "page": "243"
+            },
+            {
+              "id": "flap-lever",
+              "name": "Wing flap lever",
+              "type": "lever",
+              "match": [
+                "Wing_Flap_Lever",
+                "control:quadrant.lever.flaps",
+                "item:throttle-quadrant:3"
+              ],
+              "text": "This lever sits to the right of the throttle. Pushed all the way forward it lowers the flaps; pulled all the way back it raises them.",
+              "context": "Flaps are parts of the wing that slide out for more lift at low speed. In the game the keys can stop them half way.",
+              "src": "m1",
+              "page": "57"
+            },
+            {
+              "id": "speedbrake-emergency",
+              "name": "Speed brake emergency lever",
+              "type": "lever",
+              "match": [
+                "item:throttle-quadrant:2"
+              ],
+              "text": "This lever would retract the speed brakes by hand in an emergency. It is not installed in the F-86F-35 version.",
+              "context": "The manual lists it only to say that it is removed in this version.",
+              "src": "m1",
+              "page": "129"
+            },
+            {
+              "id": "friction-wheel",
+              "name": "Throttle friction wheel",
+              "type": "wheel",
+              "match": [
+                "item:throttle-quadrant:4"
+              ],
+              "text": "This wheel would make the throttle lever stiffer so it stays where it is put. It is not simulated.",
+              "context": "It has no effect in DCS, so the throttle always moves with the same effort.",
+              "src": "m1",
+              "page": "129"
+            }
+          ]
+        },
+        {
+          "id": "pedals",
+          "name": "Rudder pedals and brakes",
+          "src": "m1",
+          "page": "78",
+          "text": "The pedals on the floor steer the nose left and right in the air. The upper part of each pedal works the wheel brake of that side.",
+          "context": "On the ground the pedals steer the nosewheel while the steering button is held, and the brakes on the two sides slow the plane or turn it.",
+          "controls": [
+            {
+              "id": "rudder",
+              "name": "Rudder pedals",
+              "type": "pedal",
+              "match": [
+                "control:pedals.axis.rudder"
+              ],
+              "text": "Pressing the left or the right pedal turns the plane's nose to that side. The rudder is the movable part of the tail fin.",
+              "context": "On the ground the pedals steer the front wheel while the nosewheel steering button is held.",
+              "src": "m1",
+              "page": "78"
+            },
+            {
+              "id": "brake-left",
+              "name": "Left toe brake",
+              "type": "pedal",
+              "match": [
+                "control:pedals.axis.brake_left"
+              ],
+              "text": "Pushing the top of the left pedal brakes the left wheel.",
+              "context": "Braking one side only turns the plane on the ground. The brakes use the utility hydraulic system.",
+              "src": "m1",
+              "page": "151"
+            },
+            {
+              "id": "brake-right",
+              "name": "Right toe brake",
+              "type": "pedal",
+              "match": [
+                "control:pedals.axis.brake_right"
+              ],
+              "text": "Pushing the top of the right pedal brakes the right wheel.",
+              "context": "Both brakes together slow the plane after landing; one alone helps with tight turns on the ground.",
+              "src": "m1",
+              "page": "151"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

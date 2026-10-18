@@ -1,0 +1,371 @@
+{
+  "format": "joypro-cockpit-guide",
+  "version": 1,
+  "id": "il2-hs-129",
+  "title": "Henschel Hs 129 B-2 (IL-2)",
+  "variants": [
+    "hs-129b-2"
+  ],
+  "games": [
+    "IL2Game"
+  ],
+  "sets": [],
+  "sources": [
+    {
+      "id": "c1",
+      "title": "JoyPro cockpit catalog (from the IL-2 and real aircraft manuals)",
+      "kind": "reference"
+    }
+  ],
+  "intro": "The Hs 129 was a German ground-attack plane with a tiny armoured cockpit of triangular cross-section. There was no room for the engine instruments, so they sit on the engine housings (nacelles) and are read through the side windows. The propellers are controlled by pitch; the automatic mode holds 2750 RPM.",
+  "areas": [
+    {
+      "id": "gunsight",
+      "where": "glareshield",
+      "name": "Gunsight",
+      "text": "The reflector sight sits ahead of the pilot.",
+      "panels": [
+        {
+          "id": "gunsight",
+          "name": "Revi C12/D gunsight",
+          "db": "gunsight",
+          "src": "c1",
+          "text": "This is the reflector gunsight in front of the pilot. A glass plate shows an aiming mark that seems to float in the air; the pilot puts the mark on the target to aim the guns.",
+          "context": "The pilot uses it in every attack. The knob dims the mark and the lever swings a sun filter in front of the glass.",
+          "controls": [
+            {
+              "id": "reflector",
+              "name": "Reflector glass",
+              "type": "display",
+              "match": [
+                "item:gunsight:1"
+              ],
+              "text": "This is the glass plate of the reflector gunsight. It shows an aiming mark; the pilot moves the mark onto the target to aim the guns.",
+              "context": "The mark looks as if it floats in the air in front of the plane."
+            },
+            {
+              "id": "sight-dimmer",
+              "name": "Sight dimmer",
+              "type": "knob",
+              "match": [
+                "item:gunsight:2"
+              ],
+              "text": "This knob sets how bright the aiming mark of the gunsight glows.",
+              "context": "The pilot turns it down in dim light and up in bright light so the mark stays easy to see."
+            },
+            {
+              "id": "sun-filter",
+              "name": "Sun filter",
+              "type": "lever",
+              "match": [
+                "item:gunsight:3"
+              ],
+              "text": "This lever swings a tinted filter in front of the gunsight glass, like sunglasses for the sight.",
+              "context": "The pilot uses it when looking toward the sun, so the aiming mark does not get lost in the glare."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "instruments",
+      "where": "front-center",
+      "name": "Small instrument panel",
+      "text": "A few flight instruments sit under the windscreen.",
+      "panels": [
+        {
+          "id": "main-panel",
+          "name": "Small instrument panel",
+          "db": "main-panel",
+          "src": "c1",
+          "text": "This is a small panel with the basic flight instruments, the ammunition counters and the gear lights.",
+          "context": "The cockpit is so small that the panel holds only the most needed instruments.",
+          "controls": [
+            {
+              "id": "airspeed",
+              "name": "Airspeed indicator",
+              "type": "gauge",
+              "match": [
+                "item:main-panel:1"
+              ],
+              "text": "This dial shows how fast the plane moves through the air. The scale is in kilometres per hour (km/h).",
+              "context": "The pilot watches it all the time. Too slow and the wings stop carrying the plane; too fast and the plane can be damaged. It matters most at take-off and landing."
+            },
+            {
+              "id": "altimeter",
+              "name": "Altimeter",
+              "type": "gauge",
+              "match": [
+                "item:main-panel:2"
+              ],
+              "text": "This dial shows how high the plane is, measured from the air pressure. The needles work like the hands of a clock, one for the hundreds and one for the thousands of metres.",
+              "context": "The pilot checks it to stay clear of the ground and to hold the height the mission needs."
+            },
+            {
+              "id": "turn-slip",
+              "name": "Turn and slip indicator",
+              "type": "gauge",
+              "match": [
+                "item:main-panel:3"
+              ],
+              "text": "This instrument has a needle that shows how fast the plane turns and a ball that shows whether it skids sideways. The pilot keeps the ball in the middle with the rudder.",
+              "context": "It is one of the basic flight instruments, used in clouds and for turning."
+            },
+            {
+              "id": "compass",
+              "name": "Compass",
+              "type": "gauge",
+              "match": [
+                "item:main-panel:4"
+              ],
+              "text": "This is the magnetic compass. It shows the direction the plane is heading, like a hiking compass.",
+              "context": "The pilot uses it to hold a course."
+            },
+            {
+              "id": "ammo-counters",
+              "name": "Ammunition counters",
+              "type": "indicator",
+              "match": [
+                "item:main-panel:5"
+              ],
+              "text": "These counters show how many rounds are left for each group of guns, like a fuel gauge for bullets.",
+              "context": "The pilot checks them after firing to decide whether to keep attacking or to fly home."
+            },
+            {
+              "id": "gear-lights",
+              "name": "Landing gear lights",
+              "type": "light",
+              "match": [
+                "item:main-panel:6"
+              ],
+              "text": "These lamps show where the landing gear is. The catalog says red means up and green means down.",
+              "context": "The pilot checks them before landing to see that the wheels are really down."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "nacelles",
+      "where": "front-left",
+      "name": "Nacelle gauges",
+      "text": "The engine instruments are on the engine housings and are read through the side windows.",
+      "panels": [
+        {
+          "id": "nacelle-gauges",
+          "name": "Nacelle gauges",
+          "db": "nacelle-gauges",
+          "src": "c1",
+          "text": "These gauges for the two engines sit on the engine housings outside the cockpit and are read through the side windows.",
+          "context": "The pilot glances sideways to check each engine.",
+          "controls": [
+            {
+              "id": "tacho-pl",
+              "name": "Tachometers",
+              "type": "gauge",
+              "match": [
+                "item:nacelle-gauges:1"
+              ],
+              "text": "These dials show how fast the engines turn, in revolutions per minute (RPM).",
+              "context": "The pilot watches them to keep the engines in step."
+            },
+            {
+              "id": "boost-multi",
+              "name": "Boost gauges",
+              "type": "gauge",
+              "match": [
+                "item:nacelle-gauges:2"
+              ],
+              "text": "These gauges show the boost of each engine, the pressure with which the supercharger pushes air into the engine. More boost means more power.",
+              "context": "The throttle levers set the boost. The pilot compares the engines to keep them in step."
+            },
+            {
+              "id": "oil-temp-press",
+              "name": "Oil temperature / pressure gauges",
+              "type": "gauge",
+              "match": [
+                "item:nacelle-gauges:3"
+              ],
+              "text": "These gauges show the temperature and pressure of the engine oil for each engine.",
+              "context": "They sit on the engine housings (nacelles) and are read through the side windows."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "left",
+      "where": "left-side",
+      "name": "Engine levers",
+      "text": "The throttles, the mixture lever, the trim wheel and the flap lever are on the left.",
+      "panels": [
+        {
+          "id": "engine-levers",
+          "name": "Engine levers",
+          "db": "engine-levers",
+          "src": "c1",
+          "text": "These controls are on the left: the throttles for the two engines, the mixture lever, the elevator trim wheel and the flap lever.",
+          "context": "The pilot's left hand works them.",
+          "controls": [
+            {
+              "id": "throttle-hs",
+              "name": "Throttle levers (left / right)",
+              "type": "lever",
+              "match": [
+                "item:engine-levers:1"
+              ],
+              "text": "These two levers set the engine power, one lever for each engine. The catalog says they give a boost of up to 1.25 or 1.5 ATA, depending on the engine.",
+              "context": "The Hs 129 had two Gnome-Rhône engines. The pilot moves both levers together for straight flight."
+            },
+            {
+              "id": "mixture",
+              "name": "Mixture lever",
+              "type": "lever",
+              "match": [
+                "item:engine-levers:2"
+              ],
+              "text": "This lever sets how much fuel goes into the engine's air, the mixture. The pilot leans it out as the plane climbs because the air gets thinner.",
+              "context": "The catalog says the Hs 129 mixture is automatic at the rich end of the lever, so the pilot moves it only to lean the mixture."
+            },
+            {
+              "id": "elev-trim-wheel",
+              "name": "Elevator trim wheel",
+              "type": "wheel",
+              "match": [
+                "item:engine-levers:3"
+              ],
+              "text": "This wheel adjusts the elevator trim. Trim is a small adjustment so that the plane flies level without the pilot holding the stick.",
+              "context": "The pilot turns it after take-off, in the climb and when the speed changes."
+            },
+            {
+              "id": "flap-control",
+              "name": "Flap control",
+              "type": "lever",
+              "match": [
+                "item:engine-levers:4"
+              ],
+              "text": "This control raises and lowers the flaps. Flaps are parts of the wing that slide out to give more lift at low speed.",
+              "context": "The pilot lowers them for take-off and landing and raises them in normal flight."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "hotas",
+      "where": "hotas",
+      "name": "Stick and throttle",
+      "text": "These are the controls on the pilot's stick or yoke and on the left-hand throttle side that JoyPro can assign to a joystick or throttle.",
+      "panels": [
+        {
+          "id": "stick",
+          "name": "Control stick",
+          "src": "c1",
+          "text": "This is the control stick and the buttons on its grip.",
+          "context": "The pilot flies with it and fires and drops the weapons from it.",
+          "controls": [
+            {
+              "id": "trigger",
+              "name": "Gun trigger",
+              "type": "trigger",
+              "match": [
+                "control:stick.trigger"
+              ],
+              "text": "This is the main trigger on the stick grip, pressed with the index finger. It fires the main guns of the plane. In the game: press: Fire the MG 17 machine guns.",
+              "context": "The pilot presses it when the target sits in the gunsight. The ammunition counters on the instrument panel show how much is left."
+            },
+            {
+              "id": "button-thumb-1",
+              "name": "Cannon button",
+              "type": "button",
+              "match": [
+                "control:stick.button.thumb.1"
+              ],
+              "text": "This button on the stick grip is pressed with the thumb. It fires the plane's cannons, the heavier guns. In the game: press: Fire the cannons (MG 151, MK 101/103).",
+              "context": "Cannons hit harder than machine guns. The pilot uses them for the decisive burst on a target."
+            },
+            {
+              "id": "weapon-release",
+              "name": "Bomb release button",
+              "type": "button",
+              "match": [
+                "control:stick.weapon_release"
+              ],
+              "text": "This button on top of the stick grip drops the bombs. It works only when the plane carries bombs. In the game: press: Release bombs (one at a time).",
+              "context": "The pilot presses it over the target. The other weapons are fired with the trigger and the cannon button."
+            },
+            {
+              "id": "gimbal",
+              "name": "Control stick",
+              "type": "axis",
+              "match": [
+                "control:stick.gimbal"
+              ],
+              "text": "This is the control stick (or control column). Moving it forward and back tilts the plane's nose down and up, moving it left and right rolls the plane. In the game: pitch: Pitch; roll: Roll.",
+              "context": "It is the pilot's main flight control. Everything else in the cockpit supports it."
+            }
+          ]
+        },
+        {
+          "id": "throttle",
+          "name": "Throttle and left-hand controls",
+          "src": "c1",
+          "text": "These are the throttle levers and the other controls the pilot's left hand reaches on the left side.",
+          "context": "The pilot sets engine power, propeller, trim, flaps and gear with the left hand.",
+          "controls": [
+            {
+              "id": "axis-left",
+              "name": "Left boost lever",
+              "type": "axis",
+              "match": [
+                "control:throttle.axis.left"
+              ],
+              "text": "This is the throttle of the left engine. It makes that engine stronger or weaker. In the game: axis: Left engine boost (to 1.25 / 1.5 ATA).",
+              "context": "On a twin-engined plane the pilot moves both throttles together for straight flight and one at a time to turn on the ground."
+            },
+            {
+              "id": "axis-right",
+              "name": "Right boost lever",
+              "type": "axis",
+              "match": [
+                "control:throttle.axis.right"
+              ],
+              "text": "This is the throttle of the right engine. It makes that engine stronger or weaker. In the game: axis: Right engine boost (to 1.25 / 1.5 ATA).",
+              "context": "Holding one throttle back while the other stays open helps to steer on the ground and to fly straight when the engines pull unevenly."
+            },
+            {
+              "id": "axis-mixture",
+              "name": "Mixture control",
+              "type": "axis",
+              "match": [
+                "control:throttle.axis.mixture"
+              ],
+              "text": "This lever sets the mixture, how much fuel goes into the engine's air. Moving it leans the mixture, which means less fuel for the air. In the game: axis: Lean the mixture (auto at rich).",
+              "context": "The pilot leans the engine as the plane climbs, because the air gets thinner."
+            },
+            {
+              "id": "wheel-trim",
+              "name": "Elevator trim wheel",
+              "type": "wheel",
+              "match": [
+                "control:throttle.wheel.trim"
+              ],
+              "text": "This handwheel trims the plane. Trim is a small adjustment so the plane flies level without the pilot holding the controls. In the game: up: Trim nose down; down: Trim nose up.",
+              "context": "The pilot turns it after take-off and when speed or load changes."
+            },
+            {
+              "id": "lever-flaps",
+              "name": "Flap control",
+              "type": "lever",
+              "match": [
+                "control:throttle.lever.flaps"
+              ],
+              "text": "This control raises and lowers the flaps. Flaps are parts of the wing that slide out to give more lift at low speed. In the game: up: Flaps up; down: Flaps down.",
+              "context": "On the throttle side of the HOTAS, this is the flap lever of the left console; it is moved down for take-off and landing and up after that."
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,448 @@
+{
+  "format": "joypro-cockpit-guide",
+  "version": 1,
+  "id": "sim-c152",
+  "title": "Cessna 152",
+  "variants": [
+    "c152-classic"
+  ],
+  "games": [
+    "MSFS2020",
+    "MSFS2024",
+    "FSX"
+  ],
+  "sets": [],
+  "sources": [
+    {
+      "id": "c1",
+      "title": "JoyPro cockpit catalog",
+      "kind": "reference"
+    },
+    {
+      "id": "u1",
+      "title": "Cessna 152 (Wikipedia)",
+      "kind": "reference",
+      "url": "https://en.wikipedia.org/wiki/Cessna_152"
+    },
+    {
+      "id": "h1",
+      "title": "Cessna 152 POH (public knowledge)",
+      "kind": "reference"
+    }
+  ],
+  "intro": "The Cessna 152 is a small two-seat training plane with one piston engine and a propeller. The seats are side by side, and each has a control wheel. The round dials in front of the pilot show how the plane flies, and the engine is controlled with knobs on the lower panel.",
+  "areas": [
+    {
+      "id": "flight-instruments",
+      "where": "front-left",
+      "name": "Flight instruments",
+      "text": "The round dials in front of the pilot.",
+      "panels": [
+        {
+          "id": "flight-instruments",
+          "name": "Flight instruments (the six-pack)",
+          "db": "flight-instruments",
+          "src": "h1",
+          "text": "The round dials in front of the pilot that show speed, tilt, height, turning, heading and climb. Together they are called the six-pack.",
+          "context": "The pilot looks at them to know how the plane flies, especially in clouds or at night.",
+          "controls": [
+            {
+              "id": "asi",
+              "name": "Airspeed indicator",
+              "type": "gauge",
+              "match": [
+                "item:flight-instruments:1"
+              ],
+              "text": "This dial shows how fast the plane moves through the air.",
+              "context": "The pilot watches it on take-off and landing and to avoid flying too slowly.",
+              "src": "h1"
+            },
+            {
+              "id": "ai",
+              "name": "Attitude indicator (artificial horizon)",
+              "type": "gauge",
+              "match": [
+                "item:flight-instruments:2"
+              ],
+              "text": "This dial shows whether the nose is up or down and whether the wings are level, like a small model horizon.",
+              "context": "It is most useful when the real horizon cannot be seen.",
+              "src": "h1"
+            },
+            {
+              "id": "alt",
+              "name": "Altimeter",
+              "type": "gauge",
+              "match": [
+                "item:flight-instruments:3"
+              ],
+              "text": "This dial shows the height of the plane above sea level.",
+              "context": "The pilot sets the air-pressure value so that it reads correctly.",
+              "src": "h1"
+            },
+            {
+              "id": "tc",
+              "name": "Turn coordinator",
+              "type": "gauge",
+              "match": [
+                "item:flight-instruments:4"
+              ],
+              "text": "This dial shows how fast the plane turns, and a ball shows whether the turn is smooth or the plane slides sideways.",
+              "context": "The pilot keeps the ball in the middle with the rudder pedals.",
+              "src": "h1"
+            },
+            {
+              "id": "hi",
+              "name": "Heading indicator",
+              "type": "gauge",
+              "match": [
+                "item:flight-instruments:5"
+              ],
+              "text": "This dial shows the compass direction the nose points to. It is driven by a gyro, a spinning wheel that keeps its direction.",
+              "context": "The pilot sets it to the magnetic compass from time to time.",
+              "src": "h1"
+            },
+            {
+              "id": "vsi",
+              "name": "Vertical speed indicator",
+              "type": "gauge",
+              "match": [
+                "item:flight-instruments:6"
+              ],
+              "text": "This dial shows how fast the plane climbs or sinks.",
+              "context": "The pilot uses it to see whether the plane is holding its height.",
+              "src": "h1"
+            },
+            {
+              "id": "tach",
+              "name": "Tachometer",
+              "type": "gauge",
+              "match": [
+                "item:flight-instruments:7"
+              ],
+              "text": "This dial shows how fast the engine turns, in revolutions per minute (RPM).",
+              "context": "The engine speed tells the pilot how much power the engine gives.",
+              "src": "h1"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "radio-stack",
+      "where": "front-center",
+      "name": "Radio stack",
+      "text": "The radios in the middle of the panel.",
+      "panels": [
+        {
+          "id": "radio-stack",
+          "name": "Radio stack",
+          "db": "radio-stack",
+          "src": "h1",
+          "text": "The radios in the middle of the panel for talking to air traffic control and for navigating.",
+          "context": "The pilot tunes them before take-off and during the flight.",
+          "controls": [
+            {
+              "id": "audio",
+              "name": "Audio panel",
+              "type": "button",
+              "match": [
+                "item:radio-stack:1"
+              ],
+              "text": "These buttons choose which radio the pilot talks on and listens to.",
+              "context": "It works like a switch box for the radios and the intercom.",
+              "src": "h1"
+            },
+            {
+              "id": "navcom",
+              "name": "NAV / COM radio",
+              "type": "keypad",
+              "match": [
+                "item:radio-stack:2"
+              ],
+              "text": "This radio has two parts: the COM part is for talking to other people on the radio and the NAV part is for the radio beacons used for navigation. Knobs set the frequencies, the station numbers.",
+              "context": "The pilot dials the frequency told by air traffic control.",
+              "src": "h1"
+            },
+            {
+              "id": "vor",
+              "name": "VOR indicator",
+              "type": "gauge",
+              "match": [
+                "item:radio-stack:3"
+              ],
+              "text": "This dial shows whether the plane is to the left or right of a chosen line from a ground radio beacon.",
+              "context": "The pilot uses it to follow a path to or from a beacon.",
+              "src": "h1"
+            },
+            {
+              "id": "xpdr",
+              "name": "Transponder",
+              "type": "keypad",
+              "match": [
+                "item:radio-stack:4"
+              ],
+              "text": "The transponder answers radar so air traffic control can see the plane. The pilot sets a four-digit code, called the squawk.",
+              "context": "Air traffic control tells the pilot which code to set.",
+              "src": "h1"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "engine-controls",
+      "where": "center-pedestal",
+      "name": "Engine controls and switches",
+      "text": "The lower panel with the engine knobs, electrical switches, ignition key and flap switch.",
+      "panels": [
+        {
+          "id": "engine-controls",
+          "name": "Engine controls and switches",
+          "db": "engine-controls",
+          "src": "h1",
+          "text": "The lower panel holds the engine controls, the electrical switches, the ignition key and the engine gauges.",
+          "context": "The pilot uses it for the engine start, power setting and the flaps.",
+          "controls": [
+            {
+              "id": "master",
+              "name": "Master switch (ALT / BAT)",
+              "type": "switch2",
+              "match": [
+                "item:engine-controls:1"
+              ],
+              "positions": [
+                {
+                  "name": "ON",
+                  "text": "The electric power is connected."
+                },
+                {
+                  "name": "OFF",
+                  "text": "The electric power is cut."
+                }
+              ],
+              "text": "This switch connects the plane's electricity. It has two halves: BAT is the battery and ALT is the alternator, which makes power while the engine runs.",
+              "context": "It is the first switch used when preparing the plane, as most electric equipment needs it.",
+              "src": "h1"
+            },
+            {
+              "id": "ignition",
+              "name": "Ignition key (OFF, R, L, BOTH, START)",
+              "type": "selector",
+              "match": [
+                "item:engine-controls:2"
+              ],
+              "positions": [
+                {
+                  "name": "OFF",
+                  "text": "The magnetos are off and the engine stops."
+                },
+                {
+                  "name": "R",
+                  "text": "Only the right magneto works."
+                },
+                {
+                  "name": "L",
+                  "text": "Only the left magneto works."
+                },
+                {
+                  "name": "BOTH",
+                  "text": "Both magnetos work, the normal setting for flight."
+                },
+                {
+                  "name": "START",
+                  "text": "The starter motor turns the engine; the key springs back to BOTH."
+                }
+              ],
+              "text": "This key switches the magnetos on and starts the engine. Magnetos are small generators that make the sparks for the engine, and there are two of them for safety.",
+              "context": "The pilot turns it to BOTH after the engine runs and uses START to turn the engine over.",
+              "src": "h1"
+            },
+            {
+              "id": "lights",
+              "name": "Light switches (beacon, land, nav, strobe)",
+              "type": "switch",
+              "match": [
+                "item:engine-controls:3"
+              ],
+              "text": "These switches turn on the lights outside the plane.",
+              "context": "The pilot uses them to be seen and to see the runway.",
+              "src": "h1"
+            },
+            {
+              "id": "carb-heat",
+              "name": "Carburettor heat knob",
+              "type": "knob",
+              "match": [
+                "item:engine-controls:4",
+                "control:quadrant.knob.carb_heat"
+              ],
+              "text": "Pulling this knob sends warmed air to the carburettor, the part that mixes fuel and air. This stops ice from forming in it.",
+              "context": "The pilot pulls it in conditions where ice may form and pushes it in again for normal power.",
+              "src": "h1"
+            },
+            {
+              "id": "throttle",
+              "name": "Throttle knob",
+              "type": "axis",
+              "match": [
+                "item:engine-controls:5",
+                "control:quadrant.axis.lever.1"
+              ],
+              "text": "This black knob sets how much power the engine gives. Pushing it in gives more power, pulling it out gives less.",
+              "context": "The pilot pushes it in all the way for take-off.",
+              "src": "h1"
+            },
+            {
+              "id": "mixture",
+              "name": "Mixture knob",
+              "type": "axis",
+              "match": [
+                "item:engine-controls:6",
+                "control:quadrant.axis.lever.2"
+              ],
+              "text": "This red knob sets how much fuel is mixed with the air. Pushed in is rich (more fuel), pulled out is lean (less fuel). Pulled out fully, it stops the engine.",
+              "context": "The pilot leans the mixture at higher altitudes, where the air is thinner.",
+              "src": "h1"
+            },
+            {
+              "id": "flaps",
+              "name": "Flap switch and indicator",
+              "type": "switch",
+              "match": [
+                "item:engine-controls:7",
+                "control:panel.switch.flaps"
+              ],
+              "positions": [
+                {
+                  "name": "UP",
+                  "text": "The flaps are retracted for normal flight."
+                },
+                {
+                  "name": "10",
+                  "text": "Flaps at 10 degrees."
+                },
+                {
+                  "name": "20",
+                  "text": "Flaps at 20 degrees."
+                },
+                {
+                  "name": "30",
+                  "text": "Flaps at 30 degrees, the most, for landing."
+                }
+              ],
+              "text": "This electric switch moves the flaps, parts of the wing which extend to give more lift at low speed. An indicator shows the position.",
+              "context": "The flaps are used for take-off and landing.",
+              "src": "h1"
+            },
+            {
+              "id": "trim",
+              "name": "Elevator trim wheel",
+              "type": "wheel",
+              "match": [
+                "item:engine-controls:8",
+                "control:quadrant.wheel.pitch_trim"
+              ],
+              "text": "This wheel trims the nose up or down. Trim removes the steady push on the controls.",
+              "context": "The pilot turns it after changing speed so that the plane flies without pressure on the wheel.",
+              "src": "h1"
+            },
+            {
+              "id": "fuel",
+              "name": "Fuel shutoff valve",
+              "type": "knob",
+              "match": [
+                "item:engine-controls:9",
+                "control:panel.selector.fuel"
+              ],
+              "positions": [
+                {
+                  "name": "ON",
+                  "text": "Fuel flows to the engine."
+                },
+                {
+                  "name": "OFF",
+                  "text": "The fuel is shut off."
+                }
+              ],
+              "text": "This valve lets fuel flow from the tanks to the engine or cuts it off.",
+              "context": "It stays on in normal use. Closing it is for emergencies and for shutting down.",
+              "src": "h1"
+            },
+            {
+              "id": "gauges",
+              "name": "Engine gauges (oil, fuel, ammeter)",
+              "type": "gauge",
+              "match": [
+                "item:engine-controls:10"
+              ],
+              "text": "These dials show the oil pressure and temperature, the fuel in the tanks and the electric current (ammeter).",
+              "context": "The pilot checks them after starting and during the flight.",
+              "src": "h1"
+            },
+            {
+              "id": "park-brake",
+              "name": "Parking brake handle",
+              "type": "handle",
+              "match": [
+                "control:panel.handle.parking_brake"
+              ],
+              "text": "Pulling this handle under the lower left panel, together with the toe brakes, holds the wheels still while parked.",
+              "context": "It is set when parked and released before taxiing.",
+              "src": "h1"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "hotas",
+      "where": "hotas",
+      "name": "Control wheel and pedals",
+      "text": "The controls the pilot holds or pushes with the feet.",
+      "panels": [
+        {
+          "id": "grips",
+          "name": "Control wheel and pedals",
+          "src": "h1",
+          "text": "The controls the pilot holds or pushes with the feet.",
+          "context": "Both seats have a control wheel and pedals.",
+          "controls": [
+            {
+              "id": "gimbal",
+              "name": "Control wheel",
+              "type": "axis",
+              "match": [
+                "control:yoke.gimbal"
+              ],
+              "text": "Pushing the wheel forward points the nose down, pulling it back points it up. Turning it rolls the plane left or right.",
+              "context": "The wheel moves the elevator on the tail and the ailerons on the wings.",
+              "src": "h1"
+            },
+            {
+              "id": "ptt",
+              "name": "Push-to-talk switch",
+              "type": "button",
+              "match": [
+                "control:yoke.button.ptt"
+              ],
+              "text": "While this switch on the wheel is pressed, the radio transmits.",
+              "context": "The pilot uses it to talk to air traffic control.",
+              "src": "h1"
+            },
+            {
+              "id": "pedals",
+              "name": "Rudder pedals",
+              "type": "pedal",
+              "match": [
+                "control:pedals.axis.rudder"
+              ],
+              "text": "The pedals move the rudder on the tail to point the nose left or right. The tops of the pedals are the toe brakes for the left and right wheels.",
+              "context": "They also steer the nosewheel a few degrees.",
+              "src": "h1"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

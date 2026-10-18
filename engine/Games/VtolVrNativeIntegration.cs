@@ -317,8 +317,7 @@ namespace JoyPro.Engine.Games
             GameExportSafety.BackupBeforeOverwrite(path, result.Warnings);
             string temp = path + ".jptmp";
             File.WriteAllText(temp, updated, new UTF8Encoding(false));
-            File.Copy(temp, path, true);
-            File.Delete(temp);
+            SafeFileIo.CopyOverAndDelete(temp, path);
             result.FilesWritten.Add(path);
             result.Steps.Add("gameSettings.cfg: " + string.Join(", ", changes) + " (Steam Cloud syncs this file at the next start).");
         }
@@ -814,8 +813,7 @@ namespace JoyPro.Engine.Games
             string text = string.Join("\n", lines) + ending;
             string temp = path + ".jptmp";
             File.WriteAllText(temp, text, new UTF8Encoding(false));
-            File.Copy(temp, path, true);
-            File.Delete(temp);
+            SafeFileIo.CopyOverAndDelete(temp, path);
         }
     }
 

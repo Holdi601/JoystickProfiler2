@@ -1,0 +1,152 @@
+{
+  "format": "joypro-cockpit-guide",
+  "version": 1,
+  "id": "dcs-mirage-f1ee",
+  "inherits": "dcs-mirage-f1ce",
+  "title": "Mirage F1EE (DCS)",
+  "variants": [
+    "mirage-f1ee"
+  ],
+  "games": [
+    "DCS"
+  ],
+  "sets": [
+    "DCS/Mirage-F1EE"
+  ],
+  "sources": [
+    {
+      "id": "m1",
+      "title": "DCS Mirage F1 Flight Manual (EN)",
+      "file": "Mods/aircraft/Mirage-F1/Docs/Mirage F1 Flight Manual.pdf"
+    },
+    {
+      "id": "m2",
+      "title": "DCS Mirage F1 Quick Start Guide (EN)",
+      "file": "Mods/aircraft/Mirage-F1/Docs/Mirage F1 Quick Start Guide.pdf"
+    }
+  ],
+  "intro": "The Mirage F1EE is the multi-role version of the Mirage F1 that can take fuel in flight. Most of the cockpit is the same as in the F1CE, and this guide only lists what differs: a new navigation indicator, an inertial navigation system, a radar warning receiver with its own screen and the aerial refuelling system.",
+  "remove": [
+    "jettison/matra-guard",
+    "idn-controls/mode",
+    "idn-controls/vector",
+    "idn-controls/target",
+    "idn-controls/knob",
+    "idn-controls/test"
+  ],
+  "areas": [
+    {
+      "id": "front-center",
+      "where": "front-center",
+      "name": "Main panel: centre",
+      "panels": [
+        {
+          "id": "radar-detector",
+          "name": "Radar detector indicator",
+          "src": "m1",
+          "page": "107",
+          "text": "A small display that warns the pilot when an enemy radar is looking at the plane.",
+          "context": "It is the BF radar detector (an RWR, a radar warning receiver). It gives a light and sound warning from every direction and shows what kind of radar it is.",
+          "controls": [
+            {
+              "id": "jammer-light",
+              "name": "Jammer detection / feeder tanks overflow light",
+              "type": "light",
+              "match": [
+                "PNT-194"
+              ],
+              "text": "A light with two jobs. It comes on when the radar detector senses a jammer, a transmitter that blinds radars. It also warns that the feeder tanks are overflowing while fuel is taken from a tanker in the air, but only when the refuelling system is switched on.",
+              "context": "The manual says the overflow function is not implemented in the game. The light sits below the standby compass and can be pressed to test it.",
+              "src": "m1",
+              "page": "210"
+            }
+          ]
+        },
+        {
+          "id": "jettison",
+          "name": "Jettison panel",
+          "src": "m1",
+          "page": "100",
+          "text": "The buttons that let the pilot drop the external loads (tanks, bombs, rockets) or fire the wingtip missiles unarmed, in an emergency.",
+          "context": "Dropping the loads makes the plane lighter and faster. The buttons are guarded so they are not pressed by accident.",
+          "controls": [
+            {
+              "id": "matra",
+              "name": "MATRA 550 or Sidewinder jettison button (catalog only)",
+              "type": "button",
+              "match": [
+                "item:main-instrument-panel:19"
+              ],
+              "text": "The catalog lists a guarded button on the main panel that launches the two wingtip missiles unarmed. The game's F1EE cockpit offers no clickable part for it.",
+              "context": "On the F1CE this button is described with its guard in the jettison panel.",
+              "src": "m1",
+              "page": "100"
+            }
+          ]
+        },
+        {
+          "id": "idn-controls",
+          "name": "Navigation indicator (IDN)",
+          "src": "m1",
+          "page": "87",
+          "text": "The round navigation dial of the main panel. The F1EE uses the newer version described in the panel 'Navigation indicator (IDN, F1EE)'.",
+          "context": "The extra switches of the F1CE dial are not present on the F1EE; the new dial uses its own panel items.",
+          "controls": [
+            {
+              "id": "ind",
+              "name": "Navigation indicator (IDN)",
+              "type": "indicator",
+              "match": [
+                "item:main-instrument-panel:27"
+              ],
+              "text": "The round navigation dial in the middle of the panel. On the F1EE it is the newer version with a compass rose, a wide needle, a narrow needle and a distance counter, and it also works with the inertial navigation system.",
+              "context": "The parts of this dial are listed in the panel 'Navigation indicator (IDN, F1EE)'. The mode selector, test button and vector switches of the F1CE version do not exist here.",
+              "src": "m1",
+              "page": "208"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "center-pedestal",
+      "where": "center-pedestal",
+      "name": "Lower panel and pedestal",
+      "panels": [
+        {
+          "id": "air-data-switches",
+          "name": "Warning horn, probe heat and radar detector switches",
+          "src": "m1",
+          "page": "138",
+          "text": "Three switches for safety equipment: the warning horn, the heating of the speed probes and the radar detector.",
+          "context": "The after-start list switches on all three.",
+          "controls": [
+            {
+              "id": "radar-detector",
+              "name": "Radar detector switch",
+              "type": "switch2",
+              "match": [
+                "PNT-478",
+                "item:right-side-panel-detail:7"
+              ],
+              "positions": [
+                {
+                  "name": "OFF",
+                  "text": "The radar warning system is off."
+                },
+                {
+                  "name": "ON",
+                  "text": "The radar warning system is on."
+                }
+              ],
+              "text": "Switches on the radar warning system. The game names it 'Radar detector switch'. On the F1EE the warning system can be the BF radar detector or the AN/ALR-300 receiver, depending on the mission setting.",
+              "context": "The manual says the ALR-300 has a power switch on the front part of the right console. The after-start list sets the switch ON.",
+              "src": "m1",
+              "page": "212"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

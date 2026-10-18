@@ -23,18 +23,28 @@ public sealed class ManualPageView : Control
     public static readonly StyledProperty<DrawingStyle?> DrawingStyleProperty =
         AvaloniaProperty.Register<ManualPageView, DrawingStyle?>(nameof(DrawingStyle));
 
+    // The tags of the items to mark ("click:<id>", "item:<panel>:<n>", several joined by "|"): the control picked in the
+    // cockpit guide, drawn with a ring and a filled callout.
+    public static readonly StyledProperty<string?> SelectedTagProperty =
+        AvaloniaProperty.Register<ManualPageView, string?>(nameof(SelectedTag));
+
     private readonly SchematicPainter painter = new();
     private readonly Dictionary<DeviceLineArt, LineArtImage> art = [];
 
     static ManualPageView()
     {
-        AffectsRender<ManualPageView>(PageProperty, DrawingStyleProperty);
+        AffectsRender<ManualPageView>(PageProperty, DrawingStyleProperty, SelectedTagProperty);
         AffectsMeasure<ManualPageView>(PageProperty);
     }
 
     public ManualPage? Page { get => GetValue(PageProperty); set => SetValue(PageProperty, value); }
 
     public DrawingStyle? DrawingStyle { get => GetValue(DrawingStyleProperty); set => SetValue(DrawingStyleProperty, value); }
+
+    public string? SelectedTag { get => GetValue(SelectedTagProperty); set => SetValue(SelectedTagProperty, value); }
+
+    // A callout or list line with a tag (and no link) was clicked: its tag ("click:<id>", "item:<panel>:<n>" ...).
+    public event EventHandler<string>? TagClicked;
 
     // A link of the page was clicked ("panel:<id>", "device:<device>").
     public event EventHandler<string>? LinkClicked;
@@ -58,34 +68,82 @@ public sealed class ManualPageView : Control
     {
         if (Page is not { Width: > 0 } page)
             return;
-        Draw(context, page, Scale, DrawingStyle ?? JoyPro.DeviceReference.DrawingStyle.Default, Dark, painter, art);
+        Draw(context, page, Scale, DrawingStyle ?? JoyPro.DeviceReference.DrawingStyle.Default, Dark, painter, art, SelectedTag);
+    }
+
+    protected override void OnPropertyChanged(AvaloniaPropertyChangedEventArgs change)
+    {
+        base.OnPropertyChanged(change);
+        if (change.Property == SelectedTagProperty || change.Property == PageProperty)
+            Avalonia.Threading.Dispatcher.UIThread.Post(RevealSelected, Avalonia.Threading.DispatcherPriority.Background);
+    }
+
+    // Scrolls the marked callout into view (the page is taller than the window).
+    private void RevealSelected()
+    {
+        if (Page is not { } page || string.IsNullOrEmpty(SelectedTag) || Bounds.Width <= 0)
+            return;
+        ManualPageItem? dot = page.Items.FirstOrDefault(i => i.Kind == "dot" && IsSelected(i.Tag, SelectedTag)) ??
+                              page.Items.FirstOrDefault(i => i.Kind != "drawing" && IsSelected(i.Tag, SelectedTag));
+        if (dot == null)
+            return;
+        double s = Scale;
+        RaiseEvent(new RequestBringIntoViewEventArgs
+        {
+            RoutedEvent = RequestBringIntoViewEvent,
+            TargetObject = this,
+            TargetRect = new Rect(dot.X * s - 120, dot.Y * s - 160, dot.W * s + 240, dot.H * s + 320)
+        });
+    }
+
+    // An item's tag is one of the selected tags ("click:a|fn:x" is "click:a").
+    public static bool IsSelected(string tag, string? selected)
+    {
+        if (string.IsNullOrEmpty(selected) || string.IsNullOrEmpty(tag))
+            return false;
+        string[] wanted = selected.Split('|');
+        foreach (string part in tag.Split('|'))
+        {
+            if (part.Length > 0 && Array.IndexOf(wanted, part) >= 0)
+                return true;
+        }
+        return false;
     }
 
     // Draws a page at a scale (also used for the PNG and PDF export).
     public static void Draw(DrawingContext context, ManualPage page, double s, DrawingStyle style, bool dark, SchematicPainter? painter = null,
-        Dictionary<DeviceLineArt, LineArtImage>? cache = null)
+        Dictionary<DeviceLineArt, LineArtImage>? cache = null, string? selectedTag = null)
     {
         painter ??= new SchematicPainter();
         context.FillRectangle(Brush(page.Paper), new Rect(0, 0, page.Width * s, page.Height * s));
+        List<ManualPageItem> marked = [];
+        // The mark's colour follows the page's paper (a light page in the dark theme too).
+        string markFill = JoyPro.DeviceReference.DrawingStyle.IsDarkColor(page.Paper) ? "#5A4A12" : "#FFE680";
         foreach (ManualPageItem item in page.Items)
         {
             Rect r = new(item.X * s, item.Y * s, Math.Max(0, item.W * s), Math.Max(0, item.H * s));
+            bool selected = IsSelected(item.Tag, selectedTag);
+            if (selected && item.Kind != "drawing")
+                marked.Add(item);
             switch (item.Kind)
             {
                 case "rect":
                 case "cell":
-                    IPen? pen = item.Stroke.Length > 0 ? new Pen(Brush(item.Stroke), item.StrokeWidth * s) : null;
-                    context.DrawRectangle(item.Fill.Length > 0 ? Brush(item.Fill) : null, pen, r, item.Radius * s, item.Radius * s);
+                    IPen? pen = item.Stroke.Length > 0 ? new Pen(Brush(item.Stroke), item.StrokeWidth * s * (selected ? 2.2 : 1)) : null;
+                    string fill = selected && item.Kind == "cell" ? markFill : item.Fill;
+                    context.DrawRectangle(fill.Length > 0 ? Brush(fill) : null, pen, r, item.Radius * s, item.Radius * s);
                     if (item.Lines.Count > 0)
                         DrawLines(context, item, r, s, true);
                     break;
                 case "text":
+                    if (selected)
+                        context.DrawRectangle(Brush(markFill), null, r.Inflate(3 * s), 3 * s, 3 * s);
                     DrawLines(context, item, r, s, false);
                     break;
                 case "line":
                     if (item.Points is { Length: >= 4 } pts)
                     {
-                        Pen line = new(Brush(item.Stroke), item.StrokeWidth * s, lineJoin: PenLineJoin.Round, lineCap: PenLineCap.Round);
+                        Pen line = new(Brush(item.Stroke), item.StrokeWidth * s * (selected ? 2.4 : 1), lineJoin: PenLineJoin.Round, lineCap: PenLineCap.Round);
                         for (int i = 2; i + 1 < pts.Length; i += 2)
                             context.DrawLine(line, new Point(pts[i - 2] * s, pts[i - 1] * s), new Point(pts[i] * s, pts[i + 1] * s));
                     }
@@ -93,6 +151,7 @@ public sealed class ManualPageView : Control
                 case "dot":
                     context.DrawEllipse(Brush(item.Fill), null, r.Center, r.Width / 2, r.Height / 2);
                     break;
+
                 case "drawing":
                     if (item.Art is { HasPicture: true } && Picture(item.Art.Picture, item.Art.Mask) is { } picture)
                     {
@@ -117,6 +176,13 @@ public sealed class ManualPageView : Control
                     }
                     break;
             }
+        }
+        // The marked controls on top of the picture: a ring around each callout point.
+        foreach (ManualPageItem item in marked.Where(i => i.Kind == "dot"))
+        {
+            Point c = new((item.X + item.W / 2) * s, (item.Y + item.H / 2) * s);
+            context.DrawEllipse(null, new Pen(Brush("#000000"), 5 * s), c, 15 * s, 15 * s);
+            context.DrawEllipse(null, new Pen(Brush("#FFD34D"), 3 * s), c, 15 * s, 15 * s);
         }
     }
 
@@ -219,8 +285,9 @@ public sealed class ManualPageView : Control
         return brush;
     }
 
-    private static readonly Typeface Regular = new("Segoe UI, Inter, Arial");
-    private static readonly Typeface Bold = new("Segoe UI, Inter, Arial", FontStyle.Normal, FontWeight.Bold);
+    // Segoe UI as the manual pages are, then the language's fallbacks (CJK of the language, symbols).
+    private static Typeface Regular => new(SheetFonts.Get("Segoe UI, Inter, Arial, "));
+    private static Typeface Bold => new(SheetFonts.Get("Segoe UI, Inter, Arial, "), FontStyle.Normal, FontWeight.Bold);
 
     private static void DrawLines(DrawingContext context, ManualPageItem item, Rect r, double s, bool centre)
     {
@@ -299,6 +366,13 @@ public sealed class ManualPageView : Control
         if (link != null)
         {
             LinkClicked?.Invoke(this, link.Link);
+            e.Handled = true;
+            return;
+        }
+        ManualPageItem? tagged = ItemAt(e.GetPosition(this), i => i.Tag.Length > 0 && i.Kind != "drawing" && !i.Tag.StartsWith("fn:", StringComparison.Ordinal));
+        if (tagged != null)
+        {
+            TagClicked?.Invoke(this, tagged.Tag);
             e.Handled = true;
         }
     }

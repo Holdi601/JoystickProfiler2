@@ -1,0 +1,802 @@
+{
+  "format": "joypro-cockpit-guide",
+  "version": 1,
+  "id": "msfs2020-common",
+  "title": "Microsoft Flight Simulator 2020: all aircraft (shared guide)",
+  "common": true,
+  "games": [
+    "MSFS2020"
+  ],
+  "sets": [],
+  "sources": [
+    {
+      "id": "g1",
+      "title": "Microsoft Flight Simulator 2020: the cockpit models' node names and behaviours",
+      "kind": "game-files"
+    }
+  ],
+  "intro": "These texts serve every aircraft of Microsoft Flight Simulator 2020, from small propeller planes and gliders to airliners. The simulator builds each cockpit from a 3D model, and every clickable part of the model has a node name, such as ELECTRICAL_Switch_Battery_Master_1 or LIGHTING_Switch_Light_Strobe. The first word names the system, the next words say what kind of part it is (Switch, Knob, Lever, Push) and which one, and a number tells which copy it is. A control appears only on aircraft that have it, and the texts describe the function in general; the exact switch differs from aircraft to aircraft.",
+  "areas": [
+    {
+      "id": "electrical",
+      "where": "other",
+      "name": "Electrical system",
+      "text": "These controls decide where the aircraft's electricity comes from and which equipment gets it. The names are the node names of the cockpit model, so each aircraft shows only the ones it has.",
+      "panels": [
+        {
+          "id": "battery-generators",
+          "name": "Battery, alternators and generators",
+          "src": "g1",
+          "text": "These controls switch the electricity sources on and off: the battery, and the alternators or generators that make power while the engine runs.",
+          "context": "The pilot switches the battery on first when getting into the aircraft. The alternators or generators are switched on after the engine runs, and they then power everything and recharge the battery.",
+          "controls": [
+            {
+              "id": "battery-master",
+              "name": "Battery Master switch(es)",
+              "type": "switch",
+              "match": [
+                "ELECTRICAL_Switch_Battery_Master*",
+                "Battery_Switch*",
+                "Bat_Switch*",
+                "DA??_knob_electric_master*"
+              ],
+              "text": "This switch connects the aircraft's battery to the rest of the aircraft. The battery stores electricity for when the engines are off. With the master switch off, most of the cockpit stays dark. The number tells which battery it is, where an aircraft has more than one.",
+              "context": "It is one of the first things the pilot switches on, and one of the last to be switched off. Small aircraft usually have one, larger ones one per battery."
+            },
+            {
+              "id": "battery-standby",
+              "name": "Standby battery switch",
+              "type": "switch",
+              "match": [
+                "ELECTRICAL_Switch_Battery_STBY*"
+              ],
+              "text": "This switch connects the standby battery, a second small battery kept for the most important instruments. If the main electricity fails, the standby battery can keep those running for a while.",
+              "context": "The pilot arms or tests it during the checks before flight. Only aircraft with a standby battery have this switch."
+            },
+            {
+              "id": "alternator",
+              "name": "Alternator switch(es)",
+              "type": "switch",
+              "match": [
+                "ELECTRICAL_Switch_Alternator*"
+              ],
+              "text": "This switch connects an alternator to the aircraft's electricity. An alternator is a small power plant on the engine that makes electricity while the engine turns. The number tells which engine's alternator it is.",
+              "context": "After the engine start the pilot switches the alternators on, so that they carry the load and the battery is not drained. If one fails, the battery or the other alternator keeps the power going."
+            },
+            {
+              "id": "generator",
+              "name": "Generator switch(es)",
+              "type": "switch",
+              "match": [
+                "Gen_Switch*",
+                "ELECTRICAL_Switch_Gen*",
+                "ELECTRICPOWER_SWITCH_GENERATOR*",
+                "ELECTRICPOWER_LEVER_GENERATORRESET*"
+              ],
+              "text": "This switch connects a generator to the aircraft's electricity. A generator is a machine on the engine that makes electricity while the engine turns. The name also covers its reset control on aircraft that have one.",
+              "context": "It is switched on after the engine start so the generator takes over from the battery. The exact layout differs between aircraft."
+            },
+            {
+              "id": "apu-generator",
+              "name": "APU generator switch",
+              "type": "switch",
+              "match": [
+                "ELECTRICAL_Switch_APU_Generator*"
+              ],
+              "text": "This switch connects the generator of the APU. The APU is a small extra engine that makes electricity and air while the main engines are off.",
+              "context": "Airliners use the APU on the ground for power and to start the main engines. Aircraft without an APU do not have this switch."
+            },
+            {
+              "id": "external-power",
+              "name": "External power switch(es)",
+              "type": "switch",
+              "match": [
+                "ELECTRICAL_Switch_ExternalPower*"
+              ],
+              "text": "This switch connects power from outside the aircraft, such as a ground power cart plugged in at the parking position. It lets the pilot use the aircraft's electricity without running the engines or draining the battery.",
+              "context": "It is used on the ground before the engine start. After the start the aircraft's own generators take over."
+            },
+            {
+              "id": "power-12v",
+              "name": "12V power switch",
+              "type": "switch",
+              "match": [
+                "ELECTRICAL_Switch_Power1?V",
+                "ELECTRICAL_Switch_Power2?V",
+                "ELECTRICAL_Switch_1?V",
+                "ELECTRICAL_Switch_2?V",
+                "ELECTRICAL_Switch_?V"
+              ],
+              "text": "The simulator names this switch after a voltage, such as 12V. It switches a power supply or outlet of that voltage. The node name is all the simulator says about it.",
+              "context": "What exactly it feeds depends on the aircraft; the name tells only the voltage."
+            },
+            {
+              "id": "elec-starter",
+              "name": "Starter push button / knob",
+              "type": "button",
+              "match": [
+                "ELECTRICAL_Push_Starter*",
+                "ELECTRICAL_Knob_Starter*"
+              ],
+              "text": "Holding this button or knob makes the electric starter turn the engine. The starter is a motor that spins the engine until it can run on its own, like a car's starter motor.",
+              "context": "The pilot uses it in the engine start, after the battery is on and the fuel and ignition are set. Aircraft with a key-type switch use the magneto switch for this instead."
+            },
+            {
+              "id": "elec-radio-button",
+              "name": "Radio button (electrical)",
+              "type": "button",
+              "match": [
+                "ELECTRICAL_Push_RadioButton*"
+              ],
+              "text": "The simulator names this push button 'Radio Button' under the electrical parts. It belongs to the radio equipment's power; the node name is all the simulator says about it.",
+              "context": "Its exact job depends on the aircraft that has it."
+            }
+          ]
+        },
+        {
+          "id": "avionics-power",
+          "name": "Avionics power",
+          "src": "g1",
+          "text": "Avionics are the electronic instruments, radios and screens. These controls switch power to them.",
+          "context": "The pilot switches avionics on after the engine start, so the sensitive equipment does not see the voltage jumps of the start.",
+          "controls": [
+            {
+              "id": "avionics-master",
+              "name": "Avionics Master switch",
+              "type": "switch",
+              "match": [
+                "ELECTRICAL_Switch_Avionics_Master*"
+              ],
+              "text": "This switch gives power to all the electronic equipment at once: the radios, the screens and the navigation units. With it off, these stay dark even when the battery is on.",
+              "context": "It is switched on after the engine start and off before the engine is shut down. Some aircraft have two (one per side), numbered 1 and 2."
+            },
+            {
+              "id": "avionics-bus",
+              "name": "Avionics Bus switch(es)",
+              "type": "switch",
+              "match": [
+                "ELECTRICAL_Switch_Avionics_Bus*"
+              ],
+              "text": "This switch connects a group of electric lines (a bus) that feed the avionics. The number tells which bus. With it off, the equipment on that bus has no power.",
+              "context": "Two avionics buses give a spare if one fails. The pilot switches both on after the engine start."
+            },
+            {
+              "id": "avionics-other",
+              "name": "Other avionics power switches",
+              "type": "switch",
+              "match": [
+                "ELECTRICAL_Switch_Avionics*",
+                "avionic_*_switch*",
+                "internal_instr_switch*"
+              ],
+              "text": "These switches belong to the avionics power, such as a standby power or a bus tie. The name says which part; what it does depends on the aircraft.",
+              "context": "They are part of the electrical panel and matter mostly when something fails."
+            }
+          ]
+        },
+        {
+          "id": "circuit-breakers",
+          "name": "Circuit breakers",
+          "src": "g1",
+          "text": "A circuit breaker is a safety switch that cuts power when something draws too much current. It pops out and can be pushed back in.",
+          "context": "Pilots check them before flight and reset a popped breaker only when the checklist allows. Each aircraft has a panel of them, one per piece of equipment.",
+          "controls": [
+            {
+              "id": "breaker",
+              "name": "Circuit breaker (named)",
+              "type": "button",
+              "match": [
+                "ELECTRICAL_Switch_Breaker*",
+                "*_breaker*"
+              ],
+              "text": "A breaker is named after the equipment it protects, for example Radios, Pitot Heat or Strobe Lights. Pushed in, the equipment has power. Popped out, the power to it is cut.",
+              "context": "If a breaker pops out in flight, something drew too much current. The pilot may push it in once, as the aircraft's checklist allows."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "engine",
+      "where": "other",
+      "name": "Engine controls",
+      "text": "These levers and switches start the engines and set how much power they give. Small planes have a few levers; larger aircraft have a set for each engine. The number in the name says which engine.",
+      "panels": [
+        {
+          "id": "power-levers",
+          "name": "Throttle, propeller and mixture levers",
+          "src": "g1",
+          "text": "These levers set the engine's power: how much fuel it gets, how sharply the propeller bites the air, and how rich the fuel mixture is.",
+          "context": "The pilot moves them for the start, the take-off, the climb and the landing. Jet aircraft have only throttles; piston aircraft with a constant-speed propeller have more levers.",
+          "controls": [
+            {
+              "id": "throttle-reverser",
+              "name": "Thrust reverser lever(s)",
+              "type": "lever",
+              "match": [
+                "ENGINE_Lever_Throttle_Reverser*",
+                "ENGINE_Switch_Reverse*"
+              ],
+              "text": "This lever or switch sets the reverse thrust. The engine then pushes air forward instead of backward, which helps slow the aircraft down after landing.",
+              "context": "The pilot uses it only on the ground, in the landing roll. It works on engines that can reverse."
+            },
+            {
+              "id": "throttle",
+              "name": "Throttle lever(s)",
+              "type": "lever",
+              "match": [
+                "ENGINE_Lever_Throttle*",
+                "IdleControl_Lever*",
+                "ENGINE_Switch_TOGA*",
+                "ENGINE_Push_TOGA*"
+              ],
+              "text": "Pushing this lever forward makes the engine stronger, pulling it back makes it weaker. It works like the gas pedal of a car, only as a lever. The number tells which engine it controls.",
+              "context": "The pilot sets full power for the take-off, less for the climb and cruise, and idle for the landing. Aircraft with more engines have one lever per engine, often side by side."
+            },
+            {
+              "id": "throttle-shake",
+              "name": "Throttle lever shake helpers",
+              "type": "lever",
+              "match": [
+                "*_Lever_*_Shake*",
+                "ENGINE_Lever_Throttle*_Copilot*"
+              ],
+              "text": "These are extra parts of the throttle, propeller or mixture lever. Some are for the second pilot's copy of the lever, others make the lever shake or follow the first. They belong to the lever of the same name.",
+              "context": "A copilot's lever works like the pilot's; both move the same engine control."
+            },
+            {
+              "id": "pitch-propeller",
+              "name": "Propeller lever(s)",
+              "type": "lever",
+              "match": [
+                "ENGINE_Lever_Propeller*",
+                "Prop_Lever*",
+                "PropControl_Lever*",
+                "Prop_Switch_General*",
+                "ENGINE_Switch_PropSync*"
+              ],
+              "text": "This lever sets how sharply the propeller blades bite the air, and with it how fast the propeller turns. Forward gives a fast propeller for take-off, back a slower one for cruising. A prop sync switch makes two propellers turn at the same speed.",
+              "context": "Only aircraft with an adjustable propeller have it. The pilot moves it forward before take-off and back after the climb."
+            },
+            {
+              "id": "mixture",
+              "name": "Mixture lever(s)",
+              "type": "lever",
+              "match": [
+                "FUEL_Lever_Mixture*"
+              ],
+              "text": "This lever sets how much fuel is mixed into the engine's air. Forward is rich, with plenty of fuel. Pulled back is lean, with less fuel. All the way back stops the engine in many piston aircraft.",
+              "context": "The pilot sets it rich for the start and take-off and leans it in the cruise, because thin air at altitude needs less fuel. The pilot stops a piston engine with it."
+            },
+            {
+              "id": "cowl-flaps",
+              "name": "Cowl flaps lever(s)",
+              "type": "lever",
+              "match": [
+                "ENGINE_Lever_CowlFlaps*"
+              ],
+              "text": "This lever opens or closes the cowl flaps, small doors at the back of the engine cover. Open, they let more cooling air through the engine. Closed, the aircraft slips through the air more easily.",
+              "context": "The pilot opens them on the ground and in the climb, when the engine gets hot, and closes them in the cruise."
+            },
+            {
+              "id": "throttle-choke",
+              "name": "Choke lever",
+              "type": "lever",
+              "match": [
+                "ENGINE_Lever_Choke*"
+              ],
+              "text": "This lever helps a cold engine start. Pulled out, it gives the engine a richer mixture of fuel and air, the way a car's old-style choke does.",
+              "context": "The pilot uses it for the start and then pushes it back. Only some small engines have it."
+            },
+            {
+              "id": "throttle-support",
+              "name": "Lever support / idle control (support part)",
+              "type": "lever",
+              "match": [
+                "*Lever_Support*"
+              ],
+              "text": "This is the housing or support piece of a lever, named 'Lever Support'. It carries the lever it is named after and has no function of its own.",
+              "context": "The lever it belongs to (propeller, idle control or similar) does the work."
+            },
+            {
+              "id": "lever-tension",
+              "name": "Lever friction / tension knobs",
+              "type": "knob",
+              "match": [
+                "MV_ENGINE_Knob_*Tension*"
+              ],
+              "text": "These knobs set how stiff the throttle, propeller or mixture lever is to move. A stiffer lever stays where the pilot puts it.",
+              "context": "They are friction adjusters; the pilot tightens them so the lever does not creep during the flight."
+            }
+          ]
+        },
+        {
+          "id": "start-ignition",
+          "name": "Starter, ignition and magnetos",
+          "src": "g1",
+          "text": "These controls get the engine going: the starter turns it over, and the ignition or magnetos make the sparks that light the fuel.",
+          "context": "They are used in the engine start and in the checks before take-off. Piston engines have magnetos on a key-like switch; jet engines have starters and igniters.",
+          "controls": [
+            {
+              "id": "magneto",
+              "name": "Magneto switch(es) / ignition key",
+              "type": "switch",
+              "match": [
+                "ELECTRICAL_Switch_Magneto*",
+                "ENGINE_Switch_Magneto*",
+                "IgnitionSelector_Switch*",
+                "Mag_*Selector*",
+                "*Magneto*",
+                "Base_Lever_Magnetos*"
+              ],
+              "text": "This switch works like a car's ignition key. It turns the two magnetos (small generators that make the sparks for a piston engine) on or off, and in its last position it turns the starter motor. The number tells which engine it is for.",
+              "context": "The pilot turns it to start the engine, and checks each magneto alone before take-off. Turned to off, it stops the sparks and the engine."
+            },
+            {
+              "id": "starter-switch",
+              "name": "Starter switch(es)",
+              "type": "switch",
+              "match": [
+                "ENGINE_Switch_Starter*",
+                "ENGINESTART_SWITCH_STARTER*",
+                "ENGINE_Push_Starter*",
+                "starter_switch*",
+                "starter_cover*",
+                "Starter_Switch*"
+              ],
+              "text": "This switch makes the starter turn the engine. The starter is a motor (or on a jet, a turbine) that spins the engine until it runs on its own. Some have a cover that protects the switch.",
+              "context": "It comes after the battery, the fuel and the ignition in the engine start. The pilot releases it or switches it off once the engine runs."
+            },
+            {
+              "id": "ignition",
+              "name": "Ignition switch(es)",
+              "type": "switch",
+              "match": [
+                "ENGINE_Switch_Ignition*",
+                "ENGINESTART_SWITCH_IGNITION*",
+                "ignition_switch*",
+                "ignition_cover*",
+                "Ignition_*"
+              ],
+              "text": "This switch turns on the igniters that light the fuel inside the engine. Without sparks, the fuel does not burn.",
+              "context": "The pilot switches it on for the engine start, and on some aircraft for flight in rain or ice as a precaution."
+            },
+            {
+              "id": "primer",
+              "name": "Engine primer",
+              "type": "lever",
+              "match": [
+                "ENGINE_Lever_Primer*",
+                "ENGINE_Switch_Primer*"
+              ],
+              "text": "This control pumps a little fuel into the engine to help a cold engine start. The pilot works it a few times before starting.",
+              "context": "It is used only for cold starts of some piston engines."
+            },
+            {
+              "id": "alternate-air",
+              "name": "Alternate Air switch(es)",
+              "type": "switch",
+              "match": [
+                "ENGINE_Switch_AlternateAir*"
+              ],
+              "text": "This switch opens a second way for air to reach the engine, if the normal air intake is blocked, for example by ice.",
+              "context": "It is an emergency control. The pilot uses it only if the engine power drops because of a blocked intake."
+            },
+            {
+              "id": "carb-heat",
+              "name": "Carburettor heat / engine de-ice lever",
+              "type": "lever",
+              "match": [
+                "DEICE_Lever_Engine*",
+                "DEICE_Push_Engine*"
+              ],
+              "text": "This control sends warm air to the engine's intake to melt or prevent ice there. Ice in the intake can choke a piston engine.",
+              "context": "The pilot uses it in damp, cold air and before landing, as the aircraft's checklist says."
+            },
+            {
+              "id": "egt-knob",
+              "name": "EGT knob",
+              "type": "knob",
+              "match": [
+                "INSTRUMENT_Knob_EGT*"
+              ],
+              "text": "EGT is the temperature of the hot exhaust gas. This knob belongs to the gauge that shows it, for example to set a reference mark on it.",
+              "context": "The pilot uses the exhaust temperature to lean the mixture in the cruise."
+            },
+            {
+              "id": "engine-monitor",
+              "name": "Engine monitor knobs and buttons",
+              "type": "knob",
+              "match": [
+                "ENGINE_MONITOR_*"
+              ],
+              "text": "These controls belong to the engine monitor, a small screen that shows engine numbers such as temperatures and pressures. The knob chooses which value is shown, and the buttons page left or right.",
+              "context": "The pilot looks at it during the start and the flight to see that the engine is healthy."
+            },
+            {
+              "id": "oil-lever",
+              "name": "Oil lever",
+              "type": "lever",
+              "match": [
+                "Oil_Lever*"
+              ],
+              "text": "The simulator names this part 'Oil lever'. It belongs to the engine's oil system; the node name is all that can be said for sure about it.",
+              "context": "Its exact job depends on the aircraft."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "fuel",
+      "where": "other",
+      "name": "Fuel system",
+      "text": "These controls decide which tank feeds the engine and whether the fuel pumps run. Small planes have a selector and a pump switch; larger aircraft have several pumps and valves.",
+      "panels": [
+        {
+          "id": "fuel-pumps-valves",
+          "name": "Fuel pumps, valves and selector",
+          "src": "g1",
+          "text": "Pumps move fuel from the tanks to the engine. Valves open or close the fuel lines. A selector chooses which tank is used.",
+          "context": "The pilot checks them before the start and changes tanks in flight when needed. If the fuel does not reach the engine, the engine stops.",
+          "controls": [
+            {
+              "id": "fuel-pump",
+              "name": "Fuel pump switch(es)",
+              "type": "switch",
+              "match": [
+                "FUEL_Switch_Pump*",
+                "FUEL_Lever_Pump*",
+                "BoosterPump_Switch*",
+                "aux_fpump_switch*",
+                "LH_pump_switch*",
+                "RH_pump_switch*"
+              ],
+              "text": "This switch turns on an electric fuel pump. The pump pushes fuel from the tank to the engine. It is a helper next to the pump driven by the engine itself.",
+              "context": "The pilot switches it on for the start, the take-off and the landing, or when the engine pump fails. The number tells which pump it is."
+            },
+            {
+              "id": "fuel-cutoff",
+              "name": "Fuel Cutoff switch(es)",
+              "type": "switch",
+              "match": [
+                "FUEL_Switch_Cutoff",
+                "FUEL_Switch_Cutoff_?",
+                "FUEL_Switch_Cutoff_?_*",
+                "FUEL_Push_RunStop*",
+                "emerg_fuelctrl_*",
+                "Cutoff_Lever_*"
+              ],
+              "text": "This switch lets fuel flow to the engine or cuts it off. Cutoff means that the fuel is stopped and the engine runs down. On some aircraft it is a push button or has a cover.",
+              "context": "The pilot opens the fuel for the engine start and closes it to shut the engine down. It also acts as an emergency stop."
+            },
+            {
+              "id": "fuel-selector",
+              "name": "Fuel selector",
+              "type": "selector",
+              "match": [
+                "FUEL_Switch_Selector*",
+                "FUEL_Knob_Selector*",
+                "switch_fuel_selector*",
+                "decal_lever_fuelSelector*"
+              ],
+              "text": "This selector chooses which fuel tank feeds the engine, for example the left tank, the right tank, both, or off. A decal part is only the printed label next to it.",
+              "context": "The pilot switches tanks in flight to keep the aircraft balanced, and sets it to off for the shut-down on some aircraft."
+            },
+            {
+              "id": "fuel-valve",
+              "name": "Fuel system valve knob",
+              "type": "knob",
+              "match": [
+                "FuelSystemValve*_Knob*",
+                "Dummy_FuelSystemValve*",
+                "FUEL_Switch_Valve*"
+              ],
+              "text": "This knob opens or closes a valve in the fuel lines. With the valve open, fuel can flow. Closed, the line is shut.",
+              "context": "The pilot opens it before the engine start and closes it for a shut-down or an emergency."
+            },
+            {
+              "id": "fuel-crossfeed",
+              "name": "Crossfeed switch(es)",
+              "type": "switch",
+              "match": [
+                "FUEL_Switch_Crossfeed*",
+                "FUEL_Switch_Cutoff_Crossfeed*",
+                "FUEL_Push_Balance*"
+              ],
+              "text": "This switch lets one side's tank feed the other side's engine (crossfeed), or moves fuel between the sides to balance them.",
+              "context": "The pilot uses it if one side runs low or a pump fails. In normal flight it stays off."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "lights",
+      "where": "other",
+      "name": "Lights",
+      "text": "These switches and knobs turn the aircraft's lights on and off: outside lights so others can see the aircraft, and cockpit lights so the pilot can read the panel.",
+      "panels": [
+        {
+          "id": "exterior-lights",
+          "name": "Exterior lights",
+          "src": "g1",
+          "text": "Lights on the outside of the aircraft. Some light the runway for the pilot, others only make the aircraft visible to others.",
+          "context": "Pilots follow a routine: beacon on before the engine start, navigation lights always at night, landing lights for take-off and landing, strobes on the runway and in flight.",
+          "controls": [
+            {
+              "id": "light-beacon",
+              "name": "Beacon light switch",
+              "type": "switch",
+              "match": [
+                "LIGHTING_Switch_Light_Beacon*",
+                "LIGHTING_Push_Light_Beacon*",
+                "LIGHTING_Switch_Light_BEACON*",
+                "navbeacon_switch*",
+                "RotatingBeacon_Switch*"
+              ],
+              "text": "This switch turns on the beacon, a red flashing or rotating light on the aircraft. It warns people on the ground that the engine is about to start or is running.",
+              "context": "The pilot switches it on before the engine start and off after the shut-down. Some switches are combined with the navigation lights."
+            },
+            {
+              "id": "light-nav",
+              "name": "Navigation light switch(es)",
+              "type": "switch",
+              "match": [
+                "LIGHTING_Switch_Light_Nav*",
+                "navstrobe_switch*",
+                "LHPos_Switch*",
+                "RHPos_Switch*"
+              ],
+              "text": "This switch turns on the navigation lights: a red light on the left wing tip, a green one on the right and a white one at the tail. They show other pilots which way the aircraft is heading.",
+              "context": "They are on whenever the aircraft flies at night or in poor light. The left and right position lights can have their own switches."
+            },
+            {
+              "id": "light-strobe",
+              "name": "Strobe light switch(es)",
+              "type": "switch",
+              "match": [
+                "LIGHTING_Switch_Light_Strobe*"
+              ],
+              "text": "This switch turns on the strobe lights, very bright white flashes on the wing tips and tail. They make the aircraft easy to see for others.",
+              "context": "The pilot switches them on when entering the runway and leaves them on in flight. They are often switched off in the dark in clouds, where the flashes would dazzle."
+            },
+            {
+              "id": "light-landing",
+              "name": "Landing light switch(es)",
+              "type": "switch",
+              "match": [
+                "LIGHTING_Switch_Light_Landing*",
+                "ovhd_landing_switch*",
+                "ovhd_switch_rwy*",
+                "ovhd_switch_turnoff*",
+                "LIGHTING_Switch_Light_LANDING*"
+              ],
+              "text": "This switch turns on the landing lights, bright lamps that shine forward and light the runway ahead. Larger aircraft also have runway turn-off lights and similar lamps on their own switches.",
+              "context": "The pilot switches them on for take-off and landing, and at times in flight so that other aircraft see the aircraft."
+            },
+            {
+              "id": "light-taxi",
+              "name": "Taxi light switch(es)",
+              "type": "switch",
+              "match": [
+                "LIGHTING_Switch_Light_Taxi*"
+              ],
+              "text": "This switch turns on the taxi light, a lamp that lights the ground in front of the aircraft while it rolls slowly to and from the runway.",
+              "context": "The pilot uses it on the ground at night and switches it off before the take-off if the landing light takes over."
+            },
+            {
+              "id": "light-wing",
+              "name": "Wing light switch(es)",
+              "type": "switch",
+              "match": [
+                "LIGHTING_Switch_Light_Wing*",
+                "LIGHTING_Push_Light_Wing*"
+              ],
+              "text": "This switch turns on the wing lights, lamps that shine on the leading edge of the wings. They let the pilot see ice on the wing at night.",
+              "context": "The pilot uses them in clouds at night or when ice is a risk."
+            },
+            {
+              "id": "light-pulse",
+              "name": "Pulse light switch",
+              "type": "switch",
+              "match": [
+                "LIGHTING_Switch_Light_Pulse*"
+              ],
+              "text": "This switch makes the landing light flash on and off in a pulsing rhythm. The flashing catches the eye of other pilots better than a steady light.",
+              "context": "The pilot uses it when flying near other aircraft or into a busy airfield."
+            },
+            {
+              "id": "light-elt",
+              "name": "Light ELT switch",
+              "type": "switch",
+              "match": [
+                "LIGHTING_Switch_ELT*"
+              ],
+              "text": "The simulator lists this switch under the lights, with the name ELT. ELT is the emergency transmitter. The node name is all that is said about it.",
+              "context": "See the ELT switch in the safety equipment for what the ELT is."
+            },
+            {
+              "id": "light-cabin",
+              "name": "Cabin / dome light switch(es)",
+              "type": "switch",
+              "match": [
+                "LIGHTING_Switch_Light_Cabin*",
+                "LIGHTING_Switch_Cabin*",
+                "LIGHTING_Knob_Cabin*",
+                "LIGHTING_Switch_Light_CABIN*"
+              ],
+              "text": "This control turns the cabin light on and off, or makes it brighter and dimmer. The cabin light is the lamp that lights the inside of the cabin where people sit.",
+              "context": "At night the pilot keeps it dim or off, so that the eyes stay used to the dark and the outside stays visible."
+            }
+          ]
+        },
+        {
+          "id": "interior-lights",
+          "name": "Panel, instrument and cockpit lights",
+          "src": "g1",
+          "text": "Lights inside the cockpit: lights for the instruments and panels and for the flight deck.",
+          "context": "Pilots dim the lights at night so that their eyes stay used to the dark and the screens are not too bright.",
+          "controls": [
+            {
+              "id": "light-panel",
+              "name": "Panel light knob(s)",
+              "type": "knob",
+              "match": [
+                "LIGHTING_Knob_Panel*",
+                "LIGHTING_Switch_Light_Panel*",
+                "LIGHTING_Knob_Potentiometer*",
+                "LIGHTING_Knob_Instruments*",
+                "LIGHTING_Knob_Flood*",
+                "LIGHTING_Switch_Dimmer*"
+              ],
+              "text": "Turning this knob makes the lights on the instrument panel brighter or darker. It works like the dimmer of a lamp.",
+              "context": "The pilot turns it up for flying at night and down in the dark so that the eyes can see outside. In daylight the lights are off."
+            },
+            {
+              "id": "light-glareshield",
+              "name": "Glareshield light knob",
+              "type": "knob",
+              "match": [
+                "LIGHTING_Knob_Glareshield*",
+                "LIGHTING_Switch_Light_GLARESHIELD*"
+              ],
+              "text": "This knob sets the brightness of the lights on the glareshield, the shelf just below the windscreen. It works like a dimmer.",
+              "context": "The pilot uses it for night flying so that the shelf, and the autopilot controls often placed there, can be read."
+            },
+            {
+              "id": "light-avionics",
+              "name": "Avionics, pedestal, radio light knobs",
+              "type": "knob",
+              "match": [
+                "LIGHTING_Knob_Avionics*",
+                "LIGHTING_Knob_Pedestal*",
+                "LIGHTING_Knob_Radio*",
+                "LIGHTING_Knob_PFD*",
+                "AUDIO_Knob_Dimming*",
+                "LIGHTING_Knob_AuxDimmer*",
+                "LIGHTING_Knob_Placards*",
+                "LIGHTING_Knob_MFD*",
+                "LIGHTING_Knob_Map*",
+                "LIGHTING_Knob_LowerDisplay*"
+              ],
+              "text": "These knobs set the brightness of one group of lights: the avionics, the pedestal, the radios, a screen or the printed placards. Turning them one way makes the lights brighter.",
+              "context": "The pilot sets them at night. Which group of lights each knob serves is in its name."
+            },
+            {
+              "id": "light-pilot",
+              "name": "Pilot / copilot reading light",
+              "type": "knob",
+              "match": [
+                "LIGHTING_Knob_Light_Pilot*",
+                "LIGHTING_Knob_Light_Copilot*",
+                "LIGHTING_Push_Cockpit*"
+              ],
+              "text": "This control turns on or dims the light for the pilot or the copilot, for example to read a chart. The name tells which seat.",
+              "context": "The pilot uses it at night to read a chart or a checklist."
+            },
+            {
+              "id": "light-other-switch",
+              "name": "Other light switches (generic)",
+              "type": "switch",
+              "match": [
+                "LIGHTING_Switch_Light_*"
+              ],
+              "text": "This is a light switch that the simulator names only as 'Light'. The name after it says which light, for example Panel or Glareshield.",
+              "context": "What it does exactly depends on the aircraft."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "anti-ice",
+      "where": "other",
+      "name": "Anti-ice and de-ice",
+      "text": "Ice on a wing or on a measuring tube is dangerous. These controls heat or warm the parts that must stay free of ice.",
+      "panels": [
+        {
+          "id": "pitot-heat",
+          "name": "Pitot and probe heat",
+          "src": "g1",
+          "text": "Heaters for the small tubes outside the aircraft that measure speed and for other probes, so that they do not freeze.",
+          "context": "The pilot switches them on before the take-off in cold or wet air, and in flight when there is a risk of ice. A frozen tube would give wrong speed readings.",
+          "controls": [
+            {
+              "id": "pitot-heat",
+              "name": "Pitot Heat switch(es)",
+              "type": "switch",
+              "match": [
+                "DEICE_Switch_PitotHeat*",
+                "DEICE_Switch_Pitot_*",
+                "Pitot_Heat_Switch*",
+                "DA??_switch_pitot_heat*",
+                "DEICESYSTEM_SWITCH_PITOT*",
+                "HeatingPitot_Switch*",
+                "HeatingPitot*"
+              ],
+              "text": "This switch heats the pitot tube, the small tube on the aircraft that measures speed. Heating keeps ice from blocking it.",
+              "context": "The pilot switches it on before take-off in cold or wet air and leaves it on in clouds or rain. Wrong speed readings are the sign of a frozen tube."
+            }
+          ]
+        },
+        {
+          "id": "ice-protection",
+          "name": "Airframe, propeller and stall warning heat",
+          "src": "g1",
+          "text": "These controls warm or protect the wings, the propeller and some sensors against ice.",
+          "context": "The pilot uses them in clouds when the outside air is near freezing. They take electricity or engine heat, so they are not left on without a reason.",
+          "controls": [
+            {
+              "id": "deice-airframe",
+              "name": "Airframe de-ice switch",
+              "type": "switch",
+              "match": [
+                "DEICE_Switch_Airframe*",
+                "DEICE_Knob_Wing*",
+                "DEICESYSTEM_SWITCH_AIRFRAME*",
+                "anti_ice_switch*",
+                "DEICE_Push_Airframe*"
+              ],
+              "text": "This control heats or inflates the leading edges of the wings and tail so that ice melts or breaks off. Ice would make the aircraft heavier and the wing less able to lift.",
+              "context": "The pilot switches it on when flying through clouds in cold air. It does not make up for staying out of heavy icing."
+            },
+            {
+              "id": "deice-prop",
+              "name": "Propeller de-ice switch",
+              "type": "switch",
+              "match": [
+                "DEICE_Switch_Propeller*",
+                "DEICESYSTEM_SWITCH_PROP*",
+                "prop_deice_switch*"
+              ],
+              "text": "This switch heats the blades of the propeller so that ice does not build up on them.",
+              "context": "The pilot uses it together with the other ice protection in clouds near freezing."
+            },
+            {
+              "id": "deice-stall",
+              "name": "Stall warning heat switch",
+              "type": "switch",
+              "match": [
+                "DEICE_Switch_StallWarning*"
+              ],
+              "text": "This switch heats the stall warning sensor on the wing. The sensor tells the pilot the wing is about to lose lift, and it must not freeze.",
+              "context": "It is switched on with the pitot heat in cold or wet air."
+            },
+            {
+              "id": "defrost",
+              "name": "Defrost / windshield heat",
+              "type": "button",
+              "match": [
+                "Defrost_Push*",
+                "Heating_Lever*"
+              ],
+              "text": "This control warms the air that blows on the windshield to clear mist or ice, or sets the cabin heating. The names say 'Defrost' and 'Heating'.",
+              "context": "The pilot uses it when the windows fog up in damp or cold air."
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

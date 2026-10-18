@@ -1,0 +1,1538 @@
+{
+  "format": "joypro-cockpit-guide",
+  "version": 1,
+  "id": "dcs-ah-64d.part2",
+  "partOf": "dcs-ah-64d",
+  "areas": [
+    {
+      "id": "plt-left-console",
+      "where": "left-console",
+      "name": "Pilot left console",
+      "seat": 1,
+      "text": "The panel beside the pilot's left leg. It has the start controls, the lights, the emergency buttons and the stores jettison buttons.",
+      "panels": [
+        {
+          "id": "plt-power-quadrant",
+          "name": "Power quadrant panel (pilot seat)",
+          "db": "power-quadrant-panel",
+          "src": "m1",
+          "page": "117",
+          "text": "This panel holds the controls to start the helicopter: the battery switch, the APU button, the two engine start switches, the rotor brake and the two power levers.",
+          "context": "The pilot uses it first when starting up and last when shutting down. The CPG's power levers in the front seat are linked to these levers.",
+          "controls": [
+            {
+              "id": "rtr-brk",
+              "name": "RTR BRK switch (rotor brake)",
+              "type": "switch3",
+              "match": [
+                "pnt_314",
+                "item:power-quadrant-panel:1"
+              ],
+              "text": "This switch controls the rotor brake, a brake that holds the big rotor still or slows it down. It can only be used when the power levers are at IDLE or lower.",
+              "context": "While the brake is on, the power levers cannot be pushed beyond IDLE. It is used in strong wind or on a ship.",
+              "positions": [
+                {
+                  "name": "OFF",
+                  "text": "The brake is released."
+                },
+                {
+                  "name": "BRK",
+                  "text": "The brake holds with low pressure, to stop the rotor sooner when shutting down in strong wind or on a rolling ship."
+                },
+                {
+                  "name": "LOCK",
+                  "text": "The brake holds with high pressure to keep the rotor from turning, for example during engine start in strong wind."
+                }
+              ],
+              "src": "m1",
+              "page": "117"
+            },
+            {
+              "id": "mstr-ign",
+              "name": "MSTR IGN knob (master ignition)",
+              "type": "switch3",
+              "match": [
+                "pnt_315",
+                "item:power-quadrant-panel:2"
+              ],
+              "text": "This knob connects the helicopter to electricity from the battery or from an outside power source. It is the first thing to switch on.",
+              "context": "Almost everything electrical needs it. The battery also gives emergency power if the main supply fails.",
+              "positions": [
+                {
+                  "name": "OFF",
+                  "text": "The battery is disconnected."
+                },
+                {
+                  "name": "BATT",
+                  "text": "The battery feeds the helicopter."
+                },
+                {
+                  "name": "EXT PWR",
+                  "text": "Power from an outside source such as a ground power cart can feed the helicopter."
+                }
+              ],
+              "src": "m1",
+              "page": "117"
+            },
+            {
+              "id": "frict",
+              "name": "FRICT lever (power lever friction)",
+              "type": "lever",
+              "match": [
+                "pnt_633",
+                "item:power-quadrant-panel:3"
+              ],
+              "text": "This lever is meant to make the power levers stiffer or looser to move. In DCS it is not implemented.",
+              "context": "It is part of the power quadrant, next to the engine start switches.",
+              "src": "m1",
+              "page": "117"
+            },
+            {
+              "id": "apu-button",
+              "name": "APU button (with cover)",
+              "type": "button",
+              "match": [
+                "pnt_400",
+                "pnt_401",
+                "item:power-quadrant-panel:4"
+              ],
+              "text": "This button starts or stops the APU, a small extra engine that makes electricity and air for starting the main engines. An ON light shows when the APU runs.",
+              "context": "The APU is started before the main engines. A cover over the button has to be opened first.",
+              "src": "m1",
+              "page": "117"
+            },
+            {
+              "id": "eng1-start",
+              "name": "ENG 1 START switch",
+              "type": "switch3",
+              "match": [
+                "pnt_317",
+                "item:power-quadrant-panel:5"
+              ],
+              "text": "This switch starts engine 1, the left engine. A short push to START begins an automatic start. IGN ORIDE spins the engine without ignition.",
+              "context": "The start runs by itself and the starter turns off at 52 % core speed. The switch returns to OFF after the start has been triggered.",
+              "positions": [
+                {
+                  "name": "START",
+                  "text": "Starts the automatic start of the engine; the switch is only held there briefly."
+                },
+                {
+                  "name": "OFF",
+                  "text": "Normal rest position."
+                },
+                {
+                  "name": "IGN ORIDE",
+                  "text": "Spins the engine with the air starter but without fuel and ignition; moving it to OFF afterwards also aborts a start."
+                }
+              ],
+              "src": "m1",
+              "page": "117"
+            },
+            {
+              "id": "eng2-start",
+              "name": "ENG 2 START switch",
+              "type": "switch3",
+              "match": [
+                "pnt_318",
+                "item:power-quadrant-panel:5"
+              ],
+              "text": "This switch starts engine 2, the right engine, in the same way as the other start switch.",
+              "context": "The start order and the rest of the procedure are in the start-up checklist of the manual.",
+              "positions": [
+                {
+                  "name": "START",
+                  "text": "Starts the automatic start of engine 2."
+                },
+                {
+                  "name": "OFF",
+                  "text": "Normal rest position."
+                },
+                {
+                  "name": "IGN ORIDE",
+                  "text": "Spins engine 2 with the air starter without ignition."
+                }
+              ],
+              "src": "m1",
+              "page": "117"
+            },
+            {
+              "id": "eng-power-levers",
+              "name": "ENG POWER levers (left and right)",
+              "type": "lever",
+              "match": [
+                "pnt_398",
+                "pnt_399",
+                "item:power-quadrant-panel:6",
+                "control:panel.lever.power"
+              ],
+              "text": "These two levers control the fuel for each engine, like gas pedals. The levers also decide who regulates the engine: the computer, or the pilot by hand.",
+              "context": "A detent (a catch) stops the lever at IDLE and FLY, so it is not moved past by accident. The lever in the front seat moves with these.",
+              "positions": [
+                {
+                  "name": "OFF",
+                  "text": "No fuel goes to the engine."
+                },
+                {
+                  "name": "IDLE",
+                  "text": "The engine runs at idle; the computer stops regulating the rotor speed."
+                },
+                {
+                  "name": "FLY",
+                  "text": "The normal flight position: the computer keeps the rotor at the correct speed and shares the load between the engines."
+                },
+                {
+                  "name": "LOCK OUT",
+                  "text": "Emergency position: the computer is bypassed and the pilot controls the engine fuel by hand."
+                }
+              ],
+              "src": "m1",
+              "page": "118"
+            }
+          ]
+        },
+        {
+          "id": "plt-tail-wheel-nvs",
+          "name": "Tail wheel / NVS mode panel (pilot seat)",
+          "db": "tail-wheel-nvs-mode-panel",
+          "src": "m1",
+          "page": "115",
+          "text": "This panel has two controls: the lock of the little tail wheel and the mode of the night vision system for this seat.",
+          "context": "The tail wheel is locked for take-off and landing so the helicopter rolls straight. The pilot uses the night vision mode when the picture from the nose cameras is shown in the helmet display.",
+          "controls": [
+            {
+              "id": "tail-wheel",
+              "name": "TAIL WHEEL button (lock / unlock)",
+              "type": "button",
+              "match": [
+                "pnt_308",
+                "item:tail-wheel-nvs-mode-panel:1"
+              ],
+              "text": "This button locks or unlocks the tail wheel. A light says UNLOCK while the wheel is free to swivel.",
+              "context": "A locked wheel keeps the tail straight on a take-off or landing run; unlocked it can swivel for turning on the ground. There is a button with the same job on the collective lever. This is the pilot seat copy; the CPG in the front seat has an own one.",
+              "src": "m1",
+              "page": "115"
+            },
+            {
+              "id": "nvs-mode",
+              "name": "NVS MODE switch (night vision sensor)",
+              "type": "switch3",
+              "match": [
+                "pnt_309",
+                "item:tail-wheel-nvs-mode-panel:2"
+              ],
+              "text": "This switch turns the night vision camera of this seat on and chooses how it points. The camera chosen by default for this seat is the PNVS (the night-flying camera in the nose).",
+              "context": "NVS means night vision system. The picture is shown on the helmet display (the small screen in front of one eye).",
+              "positions": [
+                {
+                  "name": "FIXED",
+                  "text": "The camera is switched on and looks straight ahead and slightly down, whatever the head does."
+                },
+                {
+                  "name": "NORM",
+                  "text": "The camera follows where the helmet looks."
+                },
+                {
+                  "name": "OFF",
+                  "text": "The camera is switched off and stowed."
+                }
+              ],
+              "src": "m1",
+              "page": "115"
+            }
+          ]
+        },
+        {
+          "id": "plt-emergency-panel",
+          "name": "Emergency panel (pilot seat)",
+          "db": "emergency-panel",
+          "src": "m1",
+          "page": "116",
+          "text": "This panel puts four emergency actions on single buttons, so the crew does not need to hunt through screen pages. In DCS none of the four does anything yet.",
+          "context": "Each is meant for an emergency: calling on the emergency radio frequency, sending the emergency transponder code, wiping secret data and getting emergency hydraulic pressure. The pilot would reach for them only in trouble.",
+          "controls": [
+            {
+              "id": "guard-button",
+              "name": "GUARD button",
+              "type": "button",
+              "match": [
+                "pnt_310",
+                "item:emergency-panel:1"
+              ],
+              "text": "This button is meant to tune the UHF radio to the guard frequency, 243.000 MHz, the standard emergency channel. In DCS the manual lists it as not implemented.",
+              "context": "An ON light would show the button has been pressed in either seat.",
+              "src": "m1",
+              "page": "116"
+            },
+            {
+              "id": "xpndr-button",
+              "name": "XPNDR button (transponder emergency)",
+              "type": "button",
+              "match": [
+                "pnt_311",
+                "item:emergency-panel:2"
+              ],
+              "text": "This button is meant to set the transponder to the emergency code 7700. A transponder is the radio box that answers radar questions with a code number. In DCS it is not implemented.",
+              "context": "The code 7700 tells air traffic control that the aircraft has an emergency.",
+              "src": "m1",
+              "page": "116"
+            },
+            {
+              "id": "zeroize-switch",
+              "name": "ZEROIZE switch",
+              "type": "switch2",
+              "match": [
+                "pnt_312",
+                "item:emergency-panel:3"
+              ],
+              "text": "This switch is meant to erase the secret radio codes and stored map points, so an enemy cannot use them. In DCS it is not implemented.",
+              "context": "It is for the case that the helicopter is forced down in hostile territory.",
+              "positions": [
+                {
+                  "name": "ON",
+                  "text": "Meant to start the erasing of codes and stored points; not implemented in DCS."
+                },
+                {
+                  "name": "OFF",
+                  "text": "Normal position."
+                }
+              ],
+              "src": "m1",
+              "page": "116"
+            },
+            {
+              "id": "emerg-hyd",
+              "name": "EMERG HYD button (emergency hydraulics)",
+              "type": "button",
+              "match": [
+                "pnt_313",
+                "item:emergency-panel:4"
+              ],
+              "text": "This button is meant to switch on emergency hydraulic pressure. Hydraulics is oil under high pressure that moves the heavy parts. In DCS it is not implemented.",
+              "context": "In real life it would give pressure for a very short time to make an emergency landing.",
+              "src": "m1",
+              "page": "116"
+            }
+          ]
+        },
+        {
+          "id": "plt-stores-jettison",
+          "name": "Stores jettison panel (pilot seat)",
+          "db": "stores-jettison-panel",
+          "src": "m1",
+          "page": "119",
+          "text": "This panel lets the crew drop weapons from chosen wing stations in an emergency, to make the helicopter lighter or to get rid of a hung weapon.",
+          "context": "Each station button arms one wing station for dropping. Then the JETT button drops all armed stations. Only the seat that armed a station can disarm it; either seat can press JETT.",
+          "controls": [
+            {
+              "id": "jett-stations",
+              "name": "Station buttons L/R OUTBD and INBD",
+              "type": "button",
+              "match": [
+                "pnt_319",
+                "pnt_320",
+                "pnt_321",
+                "pnt_322",
+                "item:stores-jettison-panel:1",
+                "item:stores-jettison-panel:2",
+                "item:stores-jettison-panel:3",
+                "item:stores-jettison-panel:4"
+              ],
+              "text": "These four buttons stand for four weapon stations on the wings: left outboard, left inboard, right inboard and right outboard. Pressing one arms or disarms that station for dropping; a light on the button shows it is armed.",
+              "context": "Outboard means farther out along the wing.",
+              "count": 4,
+              "src": "m1",
+              "page": "119"
+            },
+            {
+              "id": "jett-tips",
+              "name": "L TIP and R TIP buttons",
+              "type": "button",
+              "match": [
+                "pnt_323",
+                "pnt_325",
+                "item:stores-jettison-panel:5",
+                "item:stores-jettison-panel:7"
+              ],
+              "text": "These two buttons for the wing tips are on the panel but have no function.",
+              "context": "The manual says so explicitly.",
+              "count": 2,
+              "src": "m1",
+              "page": "119"
+            },
+            {
+              "id": "jett-button",
+              "name": "JETT button (jettison)",
+              "type": "button",
+              "match": [
+                "pnt_324",
+                "item:stores-jettison-panel:6"
+              ],
+              "text": "Pressing this button drops the weapons from all stations that were armed with the station buttons.",
+              "context": "Unlike the guarded emergency jettison button on the collective lever, which drops everything, this one drops only the chosen stations.",
+              "src": "m1",
+              "page": "119"
+            }
+          ]
+        },
+        {
+          "id": "plt-exterior-interior-lighting",
+          "name": "Exterior / interior lighting panel (pilot seat)",
+          "db": "exterior-interior-lighting-panel",
+          "src": "m1",
+          "page": "119",
+          "text": "This panel controls the lights outside the helicopter and the lights inside the pilot cockpit.",
+          "context": "The pilot sets the lights at night and for formation flying. The test button checks that the signal lights work.",
+          "controls": [
+            {
+              "id": "nav-lights",
+              "name": "NAV switch (navigation lights)",
+              "type": "switch3",
+              "match": [
+                "pnt_326",
+                "item:exterior-interior-lighting-panel:1"
+              ],
+              "text": "This switch sets the navigation lights, the red, green and white lights that show other aircraft which way the helicopter is going.",
+              "context": "The red and green lights sit on the engine housings and the white one on the tail.",
+              "positions": [
+                {
+                  "name": "BRT",
+                  "text": "The navigation lights are bright."
+                },
+                {
+                  "name": "OFF",
+                  "text": "The navigation lights are off."
+                },
+                {
+                  "name": "DIM",
+                  "text": "The navigation lights are dim."
+                }
+              ],
+              "src": "m1",
+              "page": "119"
+            },
+            {
+              "id": "signal-knob",
+              "name": "SIGNAL knob (cockpit signal lights)",
+              "type": "knob",
+              "match": [
+                "pnt_327",
+                "item:exterior-interior-lighting-panel:2"
+              ],
+              "text": "This knob sets the brightness of the small warning and status lights in the cockpit at night. It does nothing while they are set to day brightness.",
+              "context": "Turning it to RST sets the night levels, if the PRIMARY knob is not OFF and the FLOOD knob is below half.",
+              "src": "m1",
+              "page": "119"
+            },
+            {
+              "id": "primary-knob",
+              "name": "PRIMARY knob (instrument backlighting)",
+              "type": "knob",
+              "match": [
+                "pnt_328",
+                "item:exterior-interior-lighting-panel:3"
+              ],
+              "text": "This knob sets the brightness of the lights behind the main instrument markings. Turned to OFF it sends the signal lights back to day brightness.",
+              "context": "It is used at night together with the flood light.",
+              "src": "m1",
+              "page": "119"
+            },
+            {
+              "id": "form-knob",
+              "name": "FORM knob (formation lights)",
+              "type": "knob",
+              "match": [
+                "pnt_329",
+                "item:exterior-interior-lighting-panel:4"
+              ],
+              "text": "This knob sets the brightness of the formation lights on the wing tips, the tail boom and the tail fin.",
+              "context": "Formation lights help the crews see each other when flying in a group at night.",
+              "src": "m1",
+              "page": "120"
+            },
+            {
+              "id": "flood-knob",
+              "name": "FLOOD knob (cockpit flood lights)",
+              "type": "knob",
+              "match": [
+                "pnt_330",
+                "item:exterior-interior-lighting-panel:5"
+              ],
+              "text": "This knob sets the brightness of the cockpit flood lights, which light the whole cockpit. Turned beyond half it sends the signal lights back to day brightness.",
+              "context": "It lights the cockpit as a whole, while the PRIMARY knob lights the instrument markings.",
+              "src": "m1",
+              "page": "120"
+            },
+            {
+              "id": "stby-inst-knob",
+              "name": "STBY INST knob (standby instrument lights)",
+              "type": "knob",
+              "match": [
+                "pnt_331",
+                "item:exterior-interior-lighting-panel:6"
+              ],
+              "text": "This knob sets the brightness of the light on the standby instruments.",
+              "context": "These are the backup dials for when the main displays fail.",
+              "src": "m1",
+              "page": "120"
+            },
+            {
+              "id": "anti-coll",
+              "name": "ANTI COLL switch (anti-collision lights)",
+              "type": "switch3",
+              "match": [
+                "pnt_332",
+                "item:exterior-interior-lighting-panel:7"
+              ],
+              "text": "This switch controls the flashing lights on the engine housings that help other aircraft to see the helicopter.",
+              "context": "They flash alternately, as set by the switch.",
+              "positions": [
+                {
+                  "name": "WHT",
+                  "text": "The lights flash white."
+                },
+                {
+                  "name": "OFF",
+                  "text": "The lights are off."
+                },
+                {
+                  "name": "RED",
+                  "text": "The lights flash red."
+                }
+              ],
+              "src": "m1",
+              "page": "120"
+            },
+            {
+              "id": "press-to-test",
+              "name": "PRESS TO TEST button (signal lights)",
+              "type": "button",
+              "match": [
+                "pnt_333",
+                "item:exterior-interior-lighting-panel:8"
+              ],
+              "text": "Pressing this button lights up all the signal lights at once, so the pilot can see that none is burned out.",
+              "context": "It is a quick check when sitting down in the cockpit.",
+              "src": "m1",
+              "page": "120"
+            }
+          ]
+        },
+        {
+          "id": "plt-free-air-temperature",
+          "name": "Free air temperature gauge (pilot seat)",
+          "db": "free-air-temperature-gauge",
+          "src": "m1",
+          "page": "120",
+          "text": "This is a thermometer for the outside air. Its probe pokes out through the fuselage to the outside.",
+          "context": "It is only a gauge and has no switches.",
+          "controls": [
+            {
+              "id": "fat-gauge",
+              "name": "Free air temperature gauge (outside air)",
+              "type": "gauge",
+              "match": [
+                "item:free-air-temperature-gauge:1",
+                "item:free-air-temperature-gauge:2"
+              ],
+              "text": "This dial shows the temperature of the air outside in degrees Celsius. The big marks are 10 degrees apart and the small ones 2 degrees apart.",
+              "context": "The probe reaches through the fuselage, so the value is the temperature measured outside the pilot cockpit.",
+              "src": "m1",
+              "page": "120"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "plt-right-console",
+      "where": "right-console",
+      "name": "Pilot right console",
+      "seat": 1,
+      "text": "The panel beside the pilot's right leg. It holds the communications panel with the volume knobs, plus the canopy door and some fittings.",
+      "panels": [
+        {
+          "id": "plt-communications-panel",
+          "name": "Communications panel (pilot seat)",
+          "db": "communications-panel",
+          "src": "m1",
+          "page": "121",
+          "text": "This panel sets how loud each radio and warning voice is in the helmet of the pilot, and how the intercom microphone works.",
+          "context": "The intercom is the phone line between the two crew members. The radios are for talking to other aircraft and ground units. Each seat has its own panel, so each crew member sets own volumes.",
+          "controls": [
+            {
+              "id": "radio-volume",
+              "name": "Radio volume knobs VHF, UHF, FM1, FM2, HF",
+              "type": "knob",
+              "match": [
+                "pnt_334",
+                "pnt_335",
+                "pnt_336",
+                "pnt_337",
+                "pnt_338",
+                "item:communications-panel:1",
+                "item:communications-panel:2",
+                "item:communications-panel:3",
+                "item:communications-panel:4",
+                "item:communications-panel:5"
+              ],
+              "text": "Each of these five knobs sets how loud one radio sounds in the headset of the pilot. Turning clockwise makes it louder; pulling the knob outward mutes that radio.",
+              "context": "The five radios are named VHF, UHF, FM1, FM2 and HF. Pulling a knob out also removes the monitoring mark of that radio on the EUFD.",
+              "count": 5,
+              "src": "m1",
+              "page": "121"
+            },
+            {
+              "id": "squelch-switches",
+              "name": "SQL squelch switches (VHF, UHF, FM1, FM2, HF)",
+              "type": "switch",
+              "match": [
+                "pnt_339",
+                "pnt_340",
+                "pnt_341",
+                "pnt_342",
+                "pnt_343",
+                "item:communications-panel:6"
+              ],
+              "text": "Squelch cuts the hiss of a radio when nobody talks. Each of these five switches turns the squelch of one radio on or off. An asterisk on the EUFD marks the radios with squelch on.",
+              "context": "A tap forward or aft toggles it. The setting is shown on the EUFD in both seats.",
+              "count": 5,
+              "src": "m1",
+              "page": "122"
+            },
+            {
+              "id": "sens-knob",
+              "name": "SENS knob (voice activation sensitivity)",
+              "type": "knob",
+              "match": [
+                "pnt_345",
+                "item:communications-panel:7"
+              ],
+              "text": "This knob sets how loudly a person must speak before the microphone switches on by itself. It matters only in the VOX setting of the ICS switch.",
+              "context": "Turning it clockwise makes the microphone react to a quieter voice.",
+              "src": "m1",
+              "page": "122"
+            },
+            {
+              "id": "master-volume",
+              "name": "MASTER volume knob",
+              "type": "knob",
+              "match": [
+                "pnt_344",
+                "item:communications-panel:8"
+              ],
+              "text": "This knob sets the overall loudness of everything in the helmet. Turn it clockwise for louder.",
+              "context": "It works on top of the single volume knobs.",
+              "src": "m1",
+              "page": "122"
+            },
+            {
+              "id": "ics-mode",
+              "name": "ICS mode switch (intercom microphone)",
+              "type": "switch3",
+              "match": [
+                "pnt_346",
+                "item:communications-panel:9"
+              ],
+              "text": "This switch decides when the microphone of this seat is open on the intercom.",
+              "context": "PTT stands for push-to-talk. The switch on the cyclic stick does the pushing.",
+              "positions": [
+                {
+                  "name": "PTT",
+                  "text": "The microphone is only on while the push-to-talk switch (or the floor button) is pressed."
+                },
+                {
+                  "name": "VOX",
+                  "text": "The microphone switches on by itself when the voice is loud enough, or while push-to-talk is pressed."
+                },
+                {
+                  "name": "HOT MIC",
+                  "text": "The microphone is always on."
+                }
+              ],
+              "src": "m1",
+              "page": "122"
+            },
+            {
+              "id": "ident-button",
+              "name": "IDENT button",
+              "type": "button",
+              "match": [
+                "pnt_347",
+                "item:communications-panel:10"
+              ],
+              "text": "This button is meant to make the helicopter stand out on an air traffic radar for a moment by its transponder. In DCS it is not implemented.",
+              "context": "The transponder is the radio box that answers radar questions with a code.",
+              "src": "m1",
+              "page": "122"
+            },
+            {
+              "id": "iff-volume",
+              "name": "IFF volume knob",
+              "type": "knob",
+              "match": [
+                "pnt_348",
+                "item:communications-panel:11"
+              ],
+              "text": "This knob would set the volume of the sound from the IFF, the system that answers friend-or-foe questions. In DCS it is not implemented.",
+              "context": "The manual lists it as not implemented.",
+              "src": "m1",
+              "page": "122"
+            },
+            {
+              "id": "rlwr-volume",
+              "name": "RLWR volume knob",
+              "type": "knob",
+              "match": [
+                "pnt_349",
+                "item:communications-panel:12"
+              ],
+              "text": "This knob sets the volume of the spoken warnings from the radar and laser warning receiver. Turn it clockwise for louder.",
+              "context": "The receiver tells the crew when an enemy radar or laser looks at the helicopter.",
+              "src": "m1",
+              "page": "122"
+            },
+            {
+              "id": "ata-volume",
+              "name": "ATA volume knob",
+              "type": "knob",
+              "match": [
+                "pnt_350",
+                "item:communications-panel:13"
+              ],
+              "text": "This knob is on the panel but has no function in the game.",
+              "context": "The manual says that this knob has no function.",
+              "src": "m1",
+              "page": "122"
+            },
+            {
+              "id": "vcr-volume",
+              "name": "VCR volume knob",
+              "type": "knob",
+              "match": [
+                "pnt_351",
+                "item:communications-panel:14"
+              ],
+              "text": "This knob would set the sound level of a video recorder playback. Pulling it would mute it. In DCS it is not implemented.",
+              "context": "The manual lists it as not implemented.",
+              "src": "m1",
+              "page": "122"
+            },
+            {
+              "id": "adf-volume",
+              "name": "ADF volume knob",
+              "type": "knob",
+              "match": [
+                "pnt_352",
+                "item:communications-panel:15"
+              ],
+              "text": "This knob sets the volume of the ADF audio, the radio that points to ground beacons. On this helicopter that audio channel also carries the spoken alerts of the missile warning system. Pulling it mutes.",
+              "context": "The CMWS/NAV switch on the CMWS panel decides whether this channel carries the beacon sound or the missile alerts.",
+              "src": "m1",
+              "page": "122"
+            }
+          ]
+        },
+        {
+          "id": "plt-cockpit-fittings",
+          "name": "Sun visors and canopy door (pilot seat)",
+          "src": "m1",
+          "page": "121",
+          "text": "These are the fittings of the pilot's cockpit that are not part of a system: two sun visors that shade the eyes, and the canopy door.",
+          "context": "They are bits of equipment of the pilot cockpit that the game lets you click. The manual does not describe the sun visors.",
+          "controls": [
+            {
+              "id": "sunvisor-left",
+              "name": "Left sun visor",
+              "type": "other",
+              "match": [
+                "pnt_849"
+              ],
+              "text": "This is a sun visor on the left side, a shade against bright sunlight. The manual does not describe it; the game names it 'Left Sunvisor'.",
+              "context": "It has no connection to any system.",
+              "src": "m1",
+              "page": "105"
+            },
+            {
+              "id": "sunvisor-right",
+              "name": "Right sun visor",
+              "type": "other",
+              "match": [
+                "pnt_850"
+              ],
+              "text": "This is the matching sun visor on the right side. The manual does not describe it; the game names it 'Right Sunvisor'.",
+              "context": "It has no connection to any system.",
+              "src": "m1",
+              "page": "105"
+            },
+            {
+              "id": "plt-canopy",
+              "name": "PLT canopy door (open / close)",
+              "type": "switch2",
+              "match": [
+                "pnt_796"
+              ],
+              "text": "This opens or closes the canopy door next to the pilot, the glass door used to climb in.",
+              "context": "The EUFD can show an advisory message when the canopy door is not latched.",
+              "positions": [
+                {
+                  "name": "OPEN",
+                  "text": "The canopy door is open."
+                },
+                {
+                  "name": "CLOSE",
+                  "text": "The canopy door is closed."
+                }
+              ],
+              "src": "m1",
+              "page": "121"
+            },
+            {
+              "id": "plt-m4-trigger",
+              "name": "PLT M4 trigger",
+              "type": "button",
+              "match": [
+                "pnt_827"
+              ],
+              "text": "The manual's picture of the right console shows an M4 rifle there. This is the trigger of that rifle in the game.",
+              "context": "The manual does not describe the rifle controls further.",
+              "src": "m1",
+              "page": "121"
+            },
+            {
+              "id": "plt-m4-safety",
+              "name": "PLT M4 safety",
+              "type": "switch",
+              "match": [
+                "pnt_828"
+              ],
+              "text": "This is the safety catch of the M4 rifle in the pilot cockpit.",
+              "context": "The manual does not describe it; the game names it 'PLT M4 Safety'.",
+              "src": "m1",
+              "page": "121"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "plt-cmws-area",
+      "where": "right-side",
+      "name": "Pilot CMWS panel",
+      "seat": 1,
+      "text": "A small panel on the right side of the pilot cockpit for the missile warning system.",
+      "panels": [
+        {
+          "id": "plt-cmws",
+          "name": "CMWS control panel (pilot seat only)",
+          "db": "cmws-control-panel",
+          "src": "m1",
+          "page": "630",
+          "text": "The CMWS is the missile warning system. It watches with sensors for missiles fired at the helicopter and can drop flares (hot burning decoys for heat-seeking missiles) by itself.",
+          "context": "Only the pilot seat has this panel. The manual advises setting the CMWS/NAV switch to CMWS in an area where missile threats are expected.",
+          "controls": [
+            {
+              "id": "cmws-display",
+              "name": "Control indicator display",
+              "type": "display",
+              "match": [
+                "item:cmws-control-panel:1"
+              ],
+              "text": "This small display shows how many flares and chaff are left, a ring of arrows for the direction of a detected missile, and lights that say flares are being dropped and the system is ready.",
+              "context": "The manual gives up to 60 flares and up to 30 chaff.",
+              "src": "m1",
+              "page": "631"
+            },
+            {
+              "id": "cmws-power",
+              "name": "CMWS power / test switch",
+              "type": "switch3",
+              "match": [
+                "pnt_610",
+                "item:cmws-control-panel:2"
+              ],
+              "text": "This switch turns the missile warning system on or off and runs a self-test.",
+              "context": "A self-test also runs by itself after switch-on. The TEST position springs back.",
+              "positions": [
+                {
+                  "name": "OFF",
+                  "text": "The system is off."
+                },
+                {
+                  "name": "ON",
+                  "text": "The system is on and tests itself."
+                },
+                {
+                  "name": "TEST",
+                  "text": "Starts a self-test; held only for a moment."
+                }
+              ],
+              "src": "m1",
+              "page": "630"
+            },
+            {
+              "id": "cmws-audio",
+              "name": "CMWS audio knob",
+              "type": "knob",
+              "match": [
+                "pnt_611"
+              ],
+              "text": "This knob is labelled AUDIO. The manual lists it as having no function; the game names it 'CMWS Audio Volume Knob'.",
+              "context": "The volume of the missile alerts is set with the ADF knob on the communications panel.",
+              "src": "m1",
+              "page": "630"
+            },
+            {
+              "id": "cmws-lamp",
+              "name": "CMWS LAMP knob",
+              "type": "knob",
+              "match": [
+                "pnt_612",
+                "item:cmws-control-panel:4"
+              ],
+              "text": "Turning this knob makes the display of the panel brighter or darker.",
+              "context": "It is set for day or night flying.",
+              "src": "m1",
+              "page": "630"
+            },
+            {
+              "id": "cmws-arm",
+              "name": "CMWS ARM / SAFE switch (flare dispensers)",
+              "type": "switch2",
+              "match": [
+                "pnt_614",
+                "item:cmws-control-panel:5"
+              ],
+              "text": "This switch arms or safes the flare dispensers. Flares can only be dropped when it is on ARM, and only in the air.",
+              "context": "On the ground nothing is dispensed, whatever the switch says.",
+              "positions": [
+                {
+                  "name": "ARM",
+                  "text": "Flares can be dropped automatically on a missile threat or by hand."
+                },
+                {
+                  "name": "SAFE",
+                  "text": "No flare is dropped."
+                }
+              ],
+              "src": "m1",
+              "page": "630"
+            },
+            {
+              "id": "cmws-mode",
+              "name": "CMWS / NAV switch",
+              "type": "switch2",
+              "match": [
+                "pnt_615",
+                "item:cmws-control-panel:6"
+              ],
+              "text": "This switch decides what the ADF audio channel carries in both seats: the spoken missile alerts or the sound of the ADF radio.",
+              "context": "ADF is the radio that points to beacons on the ground. In a dangerous area the switch should be on CMWS.",
+              "positions": [
+                {
+                  "name": "CMWS",
+                  "text": "The channel carries the missile alerts."
+                },
+                {
+                  "name": "NAV",
+                  "text": "The channel carries the ADF radio sound; missile alerts are not heard."
+                }
+              ],
+              "src": "m1",
+              "page": "631"
+            },
+            {
+              "id": "cmws-jett",
+              "name": "CMWS JETTISON switch (with cover)",
+              "type": "guard",
+              "match": [
+                "pnt_618",
+                "pnt_617",
+                "item:cmws-control-panel:7"
+              ],
+              "text": "This guarded switch drops all the flares from the tail dispensers at once in an emergency. The cover must be lifted first.",
+              "context": "The system does not need to be armed for this.",
+              "src": "m1",
+              "page": "631"
+            },
+            {
+              "id": "cmws-bypass",
+              "name": "CMWS BYPASS / AUTO switch",
+              "type": "switch2",
+              "match": [
+                "pnt_616",
+                "item:cmws-control-panel:8"
+              ],
+              "text": "This switch decides whether the system may drop flares by itself when it sees a missile. Warnings are spoken either way.",
+              "context": "Flares can always be dropped by hand with the FLARE button on the cyclic.",
+              "positions": [
+                {
+                  "name": "BYPASS",
+                  "text": "No automatic flares; only the cyclic FLARE button drops flares."
+                },
+                {
+                  "name": "AUTO",
+                  "text": "The system drops flares by itself on a missile threat, and the button also works."
+                }
+              ],
+              "src": "m1",
+              "page": "631"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "plt-hotas",
+      "where": "hotas",
+      "name": "Pilot cyclic and collective",
+      "seat": 1,
+      "text": "The cyclic stick and the collective lever of the pilot, with all the switches on their grips.",
+      "panels": [
+        {
+          "id": "plt-cyclic-grip",
+          "name": "Cyclic grip (pilot seat)",
+          "src": "m1",
+          "page": "136",
+          "text": "The cyclic is the stick between the knees. Its grip carries many switches, so that the hand can fly, talk on the radio, drop decoys and fire the weapons without letting go.",
+          "context": "The cyclic grips of the pilot and of the CPG are the same in form and function. The switches here cover radios, decoys, weapons and the helmet display.",
+          "controls": [
+            {
+              "id": "force-trim-hold",
+              "name": "Force Trim / Hold Mode switch",
+              "type": "hat",
+              "match": [
+                "control:stick.hat.ftr"
+              ],
+              "text": "This four-way switch under the thumb handles the force trim and the hold modes. Force trim is the system that makes the stick and the pedals stay where they are put. Held forward, it lets go of that hold; left and right turn attitude hold and altitude hold on or off; aft switches both off.",
+              "context": "The pilot uses it to let the helicopter keep its attitude or height for a moment, and to move the stick freely when needed. When the switch is let go, the trim holds the new stick position.",
+              "src": "m1",
+              "page": "136"
+            },
+            {
+              "id": "weapon-action",
+              "name": "Weapon Action Switch (WAS)",
+              "type": "hat",
+              "match": [
+                "control:stick.hat.was"
+              ],
+              "text": "This four-way switch picks the weapon: forward the gun, left the rockets, right the missiles. Pressing the same direction a second time puts the weapon away again. The aft position has no function.",
+              "context": "Choosing a weapon is called actioning it. Neither seat has priority: the seat that actioned a weapon last gets the weapon. The pilot then fires it with the trigger.",
+              "src": "m1",
+              "page": "137"
+            },
+            {
+              "id": "symbology-select",
+              "name": "Symbology Select switch",
+              "type": "hat",
+              "match": [
+                "control:stick.hat.symbology"
+              ],
+              "text": "This four-way switch with a push chooses what the helmet display shows for flying: forward is transition and cruise, aft is hover and bob-up. Pressing in brings up the flight page on the left MPD.",
+              "context": "Both seats always show the same symbol mode, whichever switch changed it. The four modes are cruise, transition, hover and bob-up.",
+              "src": "m1",
+              "page": "137"
+            },
+            {
+              "id": "ptt-rts",
+              "name": "PTT / RTS switch (radio and intercom)",
+              "type": "hat",
+              "match": [
+                "control:stick.hat.comm"
+              ],
+              "text": "This switch under the thumb is the push-to-talk button. Left transmits on the chosen radio, right talks on the intercom to the other seat and to the ground crew, and a push moves the radio choice to the next radio.",
+              "context": "The chosen radio is shown on the EUFD (RTS means radio transmit select). The same choice can be made with the RTS rocker next to that screen.",
+              "src": "m1",
+              "page": "137"
+            },
+            {
+              "id": "chaff-button",
+              "name": "Chaff dispense (C) button",
+              "type": "button",
+              "match": [
+                "control:stick.button.chaff"
+              ],
+              "text": "This button throws out chaff, small strips of metal that confuse a radar-guided missile. In program mode it releases a stored series of strips; in manual mode it releases one cartridge.",
+              "context": "The chaff dispenser must be armed first, which is only possible in the air.",
+              "src": "m1",
+              "page": "137"
+            },
+            {
+              "id": "flare-button",
+              "name": "Flare dispense (FLARE) button",
+              "type": "button",
+              "match": [
+                "control:stick.button.flare"
+              ],
+              "text": "This button throws out flares, hot burning decoys that lure heat-seeking missiles away. It releases one stored flare program.",
+              "context": "It works in addition to the automatic dispensing of the missile warning system, and only when the flare system is armed in the air.",
+              "src": "m1",
+              "page": "138"
+            },
+            {
+              "id": "weapon-trigger",
+              "name": "Weapon trigger (two stages, guarded)",
+              "type": "trigger",
+              "match": [
+                "control:stick.trigger"
+              ],
+              "text": "This trigger fires the weapon that the pilot has chosen. The first stage fires if no performance or safety inhibits are present; the second stage fires if no safety inhibits are present. A flip guard covers it.",
+              "context": "The master arm on the armament panel must be on ARM. An inhibit is a rule that blocks firing, such as weight on the wheels.",
+              "src": "m1",
+              "page": "138"
+            },
+            {
+              "id": "trigger-guard",
+              "name": "Trigger guard (cover)",
+              "type": "guard",
+              "match": [
+                "control:stick.guard.trigger"
+              ],
+              "text": "This is the flip cover over the weapon trigger. Open it before firing and close it afterwards.",
+              "context": "It stops the trigger being pulled by accident.",
+              "src": "m1",
+              "page": "138"
+            },
+            {
+              "id": "fmc-release",
+              "name": "FMC release button",
+              "type": "button",
+              "match": [
+                "control:stick.pinky.button"
+              ],
+              "text": "This button under the little finger switches off the flight management computer help for pitch, roll, yaw and the collective. The flight management computer is the computer that keeps the helicopter steady.",
+              "context": "The help can be switched on again from the Utility page on the MPD.",
+              "src": "m1",
+              "page": "138"
+            },
+            {
+              "id": "cyclic-stick",
+              "name": "Cyclic (the stick)",
+              "type": "axis",
+              "match": [
+                "control:stick.gimbal"
+              ],
+              "text": "The cyclic is the stick in front of the seat. Moving it tilts the rotor and so the helicopter: forward, back, left or right.",
+              "context": "It is the main flight control together with the collective and the pedals.",
+              "src": "m1",
+              "page": "136"
+            },
+            {
+              "id": "cyclic-parts-swch",
+              "name": "Four-way switches of the cyclic (3D parts)",
+              "type": "other",
+              "match": [
+                "pilot_cyclic_1_swch_*"
+              ],
+              "text": "In the 3D cockpit the game models the four-way switches of the grip as separate clickable parts, all labelled 'swch'. They are the force trim, weapon action, symbology and radio switches described above.",
+              "context": "Which part is which is shown in the controls of this panel.",
+              "count": 4,
+              "src": "m1",
+              "page": "136"
+            },
+            {
+              "id": "cyclic-parts-btn",
+              "name": "Buttons of the cyclic (3D parts)",
+              "type": "other",
+              "match": [
+                "pilot_cyclic_1_btn_*"
+              ],
+              "text": "The game models the buttons of the cyclic grip as clickable parts, all labelled 'btn': chaff, flare, FMC release and the cage button, which has no function.",
+              "context": "The 3D parts are not named one by one in the game.",
+              "count": 4,
+              "src": "m1",
+              "page": "138"
+            },
+            {
+              "id": "cyclic-part-trigger",
+              "name": "Weapon trigger (3D part)",
+              "type": "trigger",
+              "match": [
+                "pilot_cyclic_1_trgr"
+              ],
+              "text": "This is the clickable trigger on the cyclic grip in the 3D cockpit. It does the same as the weapon trigger above.",
+              "context": "Its guard is a separate clickable part.",
+              "src": "m1",
+              "page": "138"
+            },
+            {
+              "id": "cyclic-part-cap",
+              "name": "Trigger guard (3D part)",
+              "type": "guard",
+              "match": [
+                "pilot_cyclic_1_cap"
+              ],
+              "text": "This is the clickable flip cover over the trigger on the cyclic grip in the 3D cockpit.",
+              "context": "It does the same as the trigger guard above.",
+              "src": "m1",
+              "page": "138"
+            }
+          ]
+        },
+        {
+          "id": "plt-collective-flight-grip",
+          "name": "Collective: flight grip (pilot seat)",
+          "src": "m1",
+          "page": "138",
+          "text": "The collective is the lever at the left of the seat. Its flight grip holds the critical switches: jettison, searchlight, night vision choice, stabilator, tail wheel and engine chop.",
+          "context": "The flight grip is the part of the lever the hand holds while flying. The pilot and the CPG have the same grip, except that the BUCS trigger works only in the CPG seat.",
+          "controls": [
+            {
+              "id": "jettison-button",
+              "name": "Emergency jettison (JETT) button (guarded)",
+              "type": "button",
+              "match": [
+                "control:collective.button.jettison"
+              ],
+              "text": "This guarded button drops all weapons from the wing stations at once. The guard has to be flipped up first.",
+              "context": "It is for an emergency when the helicopter must be lighter. The stores jettison panel can drop single stations instead.",
+              "src": "m1",
+              "page": "138"
+            },
+            {
+              "id": "boresight-polarity",
+              "name": "Boresight / Polarity switch",
+              "type": "switch3",
+              "match": [
+                "control:collective.switch.boresight"
+              ],
+              "text": "This switch changes the infrared picture between white-hot and black-hot. The left position, boresight, has no function.",
+              "context": "Polarity means whether warm things are shown white or black. It applies to the night camera of this seat.",
+              "positions": [
+                {
+                  "name": "B/S",
+                  "text": "Boresight: no function."
+                },
+                {
+                  "name": "CENTER",
+                  "text": "Neutral position."
+                },
+                {
+                  "name": "PLRT",
+                  "text": "Switches the infrared picture between white-hot and black-hot."
+                }
+              ],
+              "src": "m1",
+              "page": "138"
+            },
+            {
+              "id": "searchlight-switch",
+              "name": "Searchlight switch",
+              "type": "switch3",
+              "match": [
+                "control:collective.switch.searchlight"
+              ],
+              "text": "This switch turns the searchlight under the fuselage on, off, or sends it back into its stowed position.",
+              "context": "From STOW the switch springs back to OFF. The light cannot be moved for one minute after STOW.",
+              "positions": [
+                {
+                  "name": "ON",
+                  "text": "The searchlight is on."
+                },
+                {
+                  "name": "OFF",
+                  "text": "The searchlight is off."
+                },
+                {
+                  "name": "STOW",
+                  "text": "The searchlight retracts into its stowed position."
+                }
+              ],
+              "src": "m1",
+              "page": "138"
+            },
+            {
+              "id": "searchlight-position",
+              "name": "Searchlight position switch",
+              "type": "hat",
+              "match": [
+                "control:collective.hat.searchlight"
+              ],
+              "text": "This four-way switch aims the searchlight: forward turns it forward and up, back turns it down and back, left and right turn it sideways.",
+              "context": "It moves the light bulb, not the switch of the light itself.",
+              "src": "m1",
+              "page": "139"
+            },
+            {
+              "id": "nvs-select",
+              "name": "NVS Select switch",
+              "type": "switch2",
+              "match": [
+                "control:collective.switch.nvs"
+              ],
+              "text": "This switch chooses which camera feeds the night vision picture of this seat: the TADS (the targeting camera in the nose) or the PNVS (the pilot's night camera in the nose).",
+              "context": "Either seat can change the choice. The frame in the helmet display then shows the movement limits of the chosen camera.",
+              "positions": [
+                {
+                  "name": "TADS",
+                  "text": "The targeting camera is the night vision sensor of this seat."
+                },
+                {
+                  "name": "PNVS",
+                  "text": "The pilot's night camera is the night vision sensor of this seat."
+                }
+              ],
+              "src": "m1",
+              "page": "139"
+            },
+            {
+              "id": "stabilator-switch",
+              "name": "Stabilator control switch",
+              "type": "switch3",
+              "match": [
+                "control:collective.switch.stabilator"
+              ],
+              "text": "This switch moves the stabilator, the small wing at the tail, by hand: nose-down or nose-up. Pressing it in sets the stabilator back to automatic.",
+              "context": "Normally the stabilator is automatic. Moving the switch forward or back puts it in manual mode.",
+              "positions": [
+                {
+                  "name": "ND",
+                  "text": "Moves the trailing edge down, so the nose pitches down; switches to manual."
+                },
+                {
+                  "name": "NU",
+                  "text": "Moves the trailing edge up, so the nose pitches up; switches to manual."
+                },
+                {
+                  "name": "RESET",
+                  "text": "Pressing in resets the stabilator to automatic."
+                }
+              ],
+              "src": "m1",
+              "page": "139"
+            },
+            {
+              "id": "chop-button",
+              "name": "Engine CHOP button (guarded)",
+              "type": "button",
+              "match": [
+                "control:collective.button.chop"
+              ],
+              "text": "This guarded button is meant to bring both engines back to idle power in a hurry. Pressing it again would restore the power. In DCS it is not implemented.",
+              "context": "It has a guard to prevent accidental use.",
+              "src": "m1",
+              "page": "139"
+            },
+            {
+              "id": "tail-wheel-button",
+              "name": "Tail wheel lock / unlock button",
+              "type": "button",
+              "match": [
+                "control:collective.button.tailwheel"
+              ],
+              "text": "This button locks or unlocks the tail wheel, the same as the button on the tail wheel panel. A light on that panel shows UNLOCK while the wheel is free.",
+              "context": "The wheel should be locked before lift-off and unlocked for turning on the ground.",
+              "src": "m1",
+              "page": "139"
+            },
+            {
+              "id": "collective-lever",
+              "name": "Collective (the lever)",
+              "type": "axis",
+              "match": [
+                "control:collective.axis.main"
+              ],
+              "text": "The collective is the lever at the left of the seat. Pulling it up makes the main rotor blades bite harder, so the helicopter climbs; lowering it makes the helicopter sink.",
+              "context": "It is used together with the cyclic stick and the pedals.",
+              "src": "m1",
+              "page": "136"
+            }
+          ]
+        },
+        {
+          "id": "plt-collective-mission-grip",
+          "name": "Collective: mission grip (pilot seat)",
+          "src": "m1",
+          "page": "140",
+          "text": "The mission grip is the second grip on the collective. It holds the controls for the radar, the cursor on the screens and the choice of sight.",
+          "context": "The thumb works the cursor pad and the sight switch, so the target work can be done without taking the hand off the flight controls.",
+          "controls": [
+            {
+              "id": "fcr-mode",
+              "name": "FCR mode switch",
+              "type": "hat",
+              "match": [
+                "control:collective.hat.fcr_mode"
+              ],
+              "text": "This four-way switch picks the mode of the fire control radar, the radar on the mast above the rotor. Forward is ground targets, right is the radar map, aft is air targets and left is the terrain profile.",
+              "context": "It works while the radar is the chosen sight and is not scanning. Pressing the radar map direction again shows or hides the terrain video underlay.",
+              "src": "m1",
+              "page": "140"
+            },
+            {
+              "id": "fcr-scan-size",
+              "name": "FCR scan size switch",
+              "type": "hat",
+              "match": [
+                "control:collective.hat.fcr_scan_size"
+              ],
+              "text": "This four-way switch sets how wide the radar looks: wide (right), medium (aft), narrow (left) or zoom (forward). The exact widths depend on whether the radar looks for ground or air targets.",
+              "context": "The manual gives, for ground modes, 90, 45, 30 and 15 degrees. The setting is used while the radar is not scanning.",
+              "src": "m1",
+              "page": "140"
+            },
+            {
+              "id": "cursor-controller",
+              "name": "Cursor controller / enter",
+              "type": "other",
+              "match": [
+                "control:collective.ministick"
+              ],
+              "text": "This little pad under the thumb moves the cursor on the MPD screens, so a button on the screen can be picked without reaching for it. Pressing it in picks what the cursor is on.",
+              "context": "It works like a mouse pointer for the MPD pages.",
+              "src": "m1",
+              "page": "141"
+            },
+            {
+              "id": "sight-select",
+              "name": "Sight Select switch",
+              "type": "hat",
+              "match": [
+                "control:collective.hat.sight_select"
+              ],
+              "text": "This four-way switch chooses the sight for aiming: forward the helmet sight, left the radar, right the targeting camera TADS, aft the link function that points one sensor at the other's target. As the pilot, only the head-mounted display and the radar can be picked here; the targeting camera TADS is not available.",
+              "context": "The sight is where the weapons look. The radar sight brings up the radar page on the left MPD.",
+              "src": "m1",
+              "page": "141"
+            },
+            {
+              "id": "cursor-display-select",
+              "name": "Cursor display select button",
+              "type": "button",
+              "match": [
+                "control:collective.button.cursor_display"
+              ],
+              "text": "This button jumps the cursor to the centre of the other MPD screen.",
+              "context": "It saves moving the cursor across the cockpit with the pad.",
+              "src": "m1",
+              "page": "141"
+            },
+            {
+              "id": "fcr-scan",
+              "name": "FCR scan switch",
+              "type": "switch3",
+              "match": [
+                "control:collective.switch.fcr_scan"
+              ],
+              "text": "This switch starts a radar scan: forward one single scan burst, aft a continuous scan. A second move stops the scan in progress.",
+              "context": "The radar cannot transmit with the weight on the wheels, unless the ground override of the armament panel is on.",
+              "positions": [
+                {
+                  "name": "S-SCAN",
+                  "text": "Starts a single scan burst; moving it again stops a scan in progress."
+                },
+                {
+                  "name": "CENTER",
+                  "text": "Neutral position."
+                },
+                {
+                  "name": "C-SCAN",
+                  "text": "Starts a continuous scan until stopped or another sight is chosen."
+                }
+              ],
+              "src": "m1",
+              "page": "141"
+            },
+            {
+              "id": "cued-search",
+              "name": "Cued search (CUED) button",
+              "type": "button",
+              "match": [
+                "control:collective.button.cued_search"
+              ],
+              "text": "This button is meant for a cued search of the radar. In DCS it is not implemented.",
+              "context": "The manual lists it as not implemented.",
+              "src": "m1",
+              "page": "141"
+            },
+            {
+              "id": "missile-advance",
+              "name": "Missile advance button",
+              "type": "button",
+              "match": [
+                "control:collective.button.missile_advance"
+              ],
+              "text": "This button steps to the next Hellfire missile in the series. A Hellfire is the helicopter's guided anti-tank missile.",
+              "context": "It only works when the missile mode on the weapon page is set to MAN, for manual.",
+              "src": "m1",
+              "page": "141"
+            },
+            {
+              "id": "alt-cursor-enter",
+              "name": "Alternate cursor enter trigger",
+              "type": "trigger",
+              "match": [
+                "control:collective.button.cursor_enter"
+              ],
+              "text": "This trigger under the grip picks the item under the cursor, as an alternative to pushing the cursor pad itself.",
+              "context": "It is used together with the cursor pad.",
+              "src": "m1",
+              "page": "141"
+            }
+          ]
+        },
+        {
+          "id": "plt-collective-parts",
+          "name": "Collective grip parts as modelled (pilot seat)",
+          "src": "m1",
+          "page": "138",
+          "text": "The game models the collective grips as many separate clickable parts. This entry groups them by kind.",
+          "context": "The functions of the parts are explained in the flight grip and mission grip panels.",
+          "controls": [
+            {
+              "id": "collective-parts-switch",
+              "name": "Switches of the collective (3D parts)",
+              "type": "other",
+              "match": [
+                "pilot_cs_switch*"
+              ],
+              "text": "The game models the switches and four-way pads of the collective grips as separate clickable parts, all labelled 'switch'. They stand for the switches described in the other two panels of the collective.",
+              "context": "The 3D parts are not named one by one in the game.",
+              "count": 10,
+              "src": "m1",
+              "page": "138"
+            },
+            {
+              "id": "collective-parts-btn",
+              "name": "Buttons of the collective (3D parts)",
+              "type": "other",
+              "match": [
+                "pilot_cs_btn*"
+              ],
+              "text": "The game models the buttons of the collective grips as clickable parts, all labelled 'btn'. They are the jettison, chop, tail wheel, cursor display, cued search and missile advance buttons.",
+              "context": "The 3D parts are not named one by one in the game.",
+              "count": 6,
+              "src": "m1",
+              "page": "138"
+            },
+            {
+              "id": "collective-parts-trigger",
+              "name": "Triggers of the collective (3D parts)",
+              "type": "trigger",
+              "match": [
+                "pilot_cs_trigger*"
+              ],
+              "text": "The game models the two triggers of the collective as clickable parts. One is the alternate cursor enter trigger of the mission grip; the other is the BUCS trigger, which is not implemented.",
+              "context": "BUCS is the back-up control system. The manual says its trigger works only in the CPG seat, and even there it is marked not implemented.",
+              "count": 2,
+              "src": "m1",
+              "page": "139"
+            },
+            {
+              "id": "collective-parts-cap",
+              "name": "Guard covers of the collective (3D parts)",
+              "type": "guard",
+              "match": [
+                "pilot_cs_cap*"
+              ],
+              "text": "The game models the guard covers over the guarded buttons of the collective as clickable parts. The emergency jettison button and the engine chop button have such covers.",
+              "context": "A cover must be flipped up before its button can be pressed.",
+              "count": 3,
+              "src": "m1",
+              "page": "138"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

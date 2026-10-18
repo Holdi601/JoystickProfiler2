@@ -10,19 +10,20 @@ namespace JoyPro.Engine
 {
     // engine cockpits pictures ...: the cockpit pictures made on this PC from the user's own games (docs/cockpits.md
     // "Pictures from your games"). They are kept under <data>\GameData\CockpitPictures\<game> and never shipped.
-    //   cockpits pictures build [--game DCS|XPlane12|MSFS2020|IL2Game|NuclearOption|all] [--aircraft <name>[,<name>...]] [--force] [--out <folder>]
+    //   cockpits pictures build [--game DCS|XPlane12|MSFS2020|IL2Game|NuclearOption|WarThunder|StarCitizen|all] [--aircraft <name>[,<name>...]] [--force] [--out <folder>]
     //   cockpits pictures status [--out <folder>]
     internal static partial class Program
     {
-        private static readonly string[] PictureGames = { "DCS", "XPlane12", "MSFS2020", "NuclearOption", "IL2Game", "WarThunder" };
+        private static readonly string[] PictureGames = { "DCS", "XPlane12", "MSFS2020", "NuclearOption", "IL2Game", "WarThunder", "StarCitizen" };
 
         private static int CockpitsPictures(List<string> rest, string outPath, bool textOutput)
         {
             string action = rest.Count == 0 ? "status" : rest[0].ToLowerInvariant();
             List<string> args = rest.Skip(1).ToList();
             string root = PopOptionValue(args, "--out");
+            // (--out is also the engine's general output option: it may arrive as outPath)
             if (string.IsNullOrWhiteSpace(root))
-                root = CockpitPictureSet.Root();
+                root = !string.IsNullOrWhiteSpace(outPath) ? outPath : CockpitPictureSet.Root();
             switch (action)
             {
                 case "build":
@@ -30,8 +31,10 @@ namespace JoyPro.Engine
                 case "status":
                 case "list":
                     return CockpitsPicturesStatus(root, textOutput);
+                case "check":
+                    return CockpitsPicturesCheck(args, root, textOutput);
                 default:
-                    return Fail("Unknown cockpits pictures action: " + action + " (build, status)");
+                    return Fail("Unknown cockpits pictures action: " + action + " (build, status, check)");
             }
         }
 
@@ -92,6 +95,7 @@ namespace JoyPro.Engine
                             OutRoot = outRoot,
                             WorkDir = work,
                             Force = force,
+                            ViewFilter = Environment.GetEnvironmentVariable("JOYPRO_PICTURE_VIEWS") ?? string.Empty,
                             CommandList = plane => GameDataPaths.DbFile("DCS", plane + ".html"),
                             Progress = (cur, total, phase, item) => EngineProgress.Report(cur, total, phase, item),
                             Cancelled = () => EngineProgress.CancelRequested
@@ -112,6 +116,7 @@ namespace JoyPro.Engine
                             XPlaneRoot = install.InstallPath,
                             OutRoot = outRoot,
                             Force = force,
+                            ViewFilter = Environment.GetEnvironmentVariable("JOYPRO_PICTURE_VIEWS") ?? string.Empty,
                             Progress = (cur, total, phase, item) => EngineProgress.Report(cur, total, phase, item),
                             Cancelled = () => EngineProgress.CancelRequested
                         };
@@ -198,6 +203,33 @@ namespace JoyPro.Engine
                         List<WarThunderCockpitPictures.SetResult> results = WarThunderCockpitPictures.Build(job);
                         AddReport(report, game, results.Select(r => new PictureResult { Plane = r.Plane, Folder = r.Folder, Views = r.Views, Callouts = r.Callouts, Skipped = r.Skipped, Error = r.Error, Notes = r.Notes }).ToList(), textOutput);
                     }
+                    else if (game == "StarCitizen")
+                    {
+                        // Read only, never while the game runs (StarCitizenCockpitPictures checks it again).
+                        string running = StarCitizenP4k.RunningGame();
+                        if (running.Length > 0)
+                        {
+                            string note = "Star Citizen is running (" + running + "): close Star Citizen first.";
+                            report.Add(new { Game = game, Built = 0, Skipped = 0, Failed = 0, Note = note });
+                            if (textOutput)
+                                Console.WriteLine(CockpitManualPages.GameName(game) + ": " + note);
+                            continue;
+                        }
+                        StarCitizenCockpitPictures.Job job = new StarCitizenCockpitPictures.Job
+                        {
+                            GameRoot = install.InstallPath,
+                            OutRoot = outRoot,
+                            CacheFolder = Path.Combine(DeviceCatalog.DataRoot(), "Cache", "StarCitizen"),
+                            Force = force,
+                            ViewFilter = Environment.GetEnvironmentVariable("JOYPRO_PICTURE_VIEWS") ?? string.Empty,
+                            Zstd = UnpackZstd,
+                            Progress = (cur, total, phase, item) => EngineProgress.Report(cur, total, phase, item),
+                            Cancelled = () => EngineProgress.CancelRequested
+                        };
+                        job.Only.AddRange(only);
+                        List<StarCitizenCockpitPictures.SetResult> results = StarCitizenCockpitPictures.Build(job);
+                        AddReport(report, game, results.Select(r => new PictureResult { Plane = r.Plane, Folder = r.Folder, Views = r.Views, Callouts = r.Callouts, Skipped = r.Skipped, Error = r.Error, Notes = r.Notes }).ToList(), textOutput);
+                    }
                     if (EngineProgress.CancelRequested)
                         break;
                 }
@@ -217,6 +249,193 @@ namespace JoyPro.Engine
             if (!textOutput)
                 Console.WriteLine(EngineSerialization.ToJson(new { Root = root, Games = report, Warnings = warnings }));
             return 0;
+        }
+
+        // cockpits pictures check [--game G] [--aircraft a,b] [--write] [--drop]: the quality gate on sets already there
+        // (screenshots, picture packs, older builds): every picture measured and rated; --write keeps the ratings in
+        // pictures.json ("quality" per view and per set), --drop also leaves out the panel pictures below the gate.
+        private static int CockpitsPicturesCheck(List<string> args, string root, bool textOutput)
+        {
+            string gameOption = PopOptionValue(args, "--game") ?? "all";
+            string aircraft = PopOptionValue(args, "--aircraft") ?? string.Empty;
+            bool write = PopFlag(args, "--write");
+            bool drop = PopFlag(args, "--drop");
+            List<string> only = aircraft.Split(',').Select(x => x.Trim()).Where(x => x.Length > 0).ToList();
+            List<object> report = new List<object>();
+            if (!Directory.Exists(root))
+                return Fail("No cockpit pictures in " + root);
+            foreach (string gameFolder in Directory.GetDirectories(root).OrderBy(x => x, StringComparer.OrdinalIgnoreCase))
+            {
+                string game = Path.GetFileName(gameFolder);
+                if (!string.Equals(gameOption, "all", StringComparison.OrdinalIgnoreCase) && !gameOption.Split(',').Any(g => string.Equals(g.Trim(), game, StringComparison.OrdinalIgnoreCase)))
+                    continue;
+                foreach (string setFolder in Directory.GetDirectories(gameFolder).OrderBy(x => x, StringComparer.OrdinalIgnoreCase))
+                {
+                    string manifest = Path.Combine(setFolder, "pictures.json");
+                    if (!File.Exists(manifest))
+                        continue;
+                    string set = Path.GetFileName(setFolder);
+                    if (only.Count > 0 && !only.Any(o => set.IndexOf(o, StringComparison.OrdinalIgnoreCase) >= 0))
+                        continue;
+                    try
+                    {
+                        report.Add(CheckSet(game, setFolder, write, drop, textOutput));
+                    }
+                    catch (Exception ex)
+                    {
+                        report.Add(new { Game = game, Set = set, Error = ex.Message });
+                        if (textOutput)
+                            Console.WriteLine(game + "/" + set + ": FAILED " + ex.Message);
+                    }
+                }
+            }
+            if (!textOutput)
+                Console.WriteLine(EngineSerialization.ToJson(new { Root = root, Sets = report }));
+            return 0;
+        }
+
+        private static object CheckSet(string game, string folder, bool write, bool drop, bool textOutput)
+        {
+            string manifest = Path.Combine(folder, "pictures.json");
+            Dictionary<string, object> root = MiniJson.Parse(File.ReadAllText(manifest, System.Text.Encoding.UTF8)) as Dictionary<string, object>;
+            if (root == null)
+                throw new InvalidDataException("pictures.json is not a JSON object");
+            bool screenshot = string.Equals(DeviceCatalog.Text(root, "source"), "screenshot", StringComparison.OrdinalIgnoreCase);
+            List<object> views = root.ContainsKey("views") ? root["views"] as List<object> : null;
+            views = views ?? new List<object>();
+            List<object> kept = new List<object>();
+            List<int> scores = new List<int>();
+            int overview = -1, dropped = 0;
+            List<string> worst = new List<string>();
+            foreach (Dictionary<string, object> v in views.OfType<Dictionary<string, object>>())
+            {
+                string kind = DeviceCatalog.Text(v, "kind");
+                string image = Path.Combine(folder, DeviceCatalog.Text(v, "image"));
+                string mask = DeviceCatalog.Text(v, "mask");
+                PictureMetrics m = File.Exists(image) ? MeasureFile(image, mask.Length > 0 ? Path.Combine(folder, mask) : null) : null;
+                if (m == null)
+                {
+                    // A listed picture that is missing (or does not open): reported; --drop leaves it out of the list.
+                    worst.Add(DeviceCatalog.Text(v, "id") + " " + (File.Exists(image) ? "does not open" : "picture missing") + (drop ? " (left out)" : string.Empty));
+                    if (drop)
+                    {
+                        dropped++;
+                        continue;
+                    }
+                    kept.Add(v);
+                    continue;
+                }
+                int score = PictureQuality.Rate(m, kind);
+                if (drop && kind == "panel" && score < PictureQuality.Keep)
+                {
+                    dropped++;
+                    worst.Add(DeviceCatalog.Text(v, "id") + " " + score.ToString(CultureInfo.InvariantCulture) + " (left out)");
+                    continue;
+                }
+                if (kind == "overview" && overview < 0)
+                    overview = score;
+                scores.Add(score);
+                if (score < PictureQuality.Good)
+                    worst.Add(DeviceCatalog.Text(v, "id") + " " + score.ToString(CultureInfo.InvariantCulture) + (m.Problems.Count > 0 ? " (" + string.Join(", ", m.Problems) + ")" : string.Empty));
+                v["quality"] = score;
+                if (m.Problems.Count > 0)
+                    v["problems"] = m.Problems.Cast<object>().ToList();
+                else
+                    v.Remove("problems");
+                // JoyPro's line drawing of a screenshot or of a poor picture is not shown.
+                if (screenshot || score < PictureQuality.Good || kind == "overview")
+                    v["drawingReadable"] = false;
+                kept.Add(v);
+            }
+            bool low = PictureQuality.LowSet(overview < 0 ? 0 : overview, scores);
+            if (write)
+            {
+                root["views"] = kept;
+                root["quality"] = new Dictionary<string, object>
+                {
+                    { "score", Math.Max(0, overview) },
+                    { "mean", scores.Count == 0 ? 0 : (int)Math.Round(scores.Average()) },
+                    { "low", low },
+                    { "views", scores.Count },
+                    { "dropped", dropped },
+                    { "merged", 0 },
+                    { "checked", DateTime.UtcNow.ToString("yyyy-MM-ddTHH:mm:ssZ", CultureInfo.InvariantCulture) }
+                };
+                File.WriteAllText(manifest, EngineSerialization.ToJson(root), new System.Text.UTF8Encoding(false));
+            }
+            if (textOutput)
+                Console.WriteLine(game + "/" + Path.GetFileName(folder) + ": overview " + overview + ", mean " + (scores.Count == 0 ? 0 : (int)Math.Round(scores.Average())) + (low ? ", LOW QUALITY" : string.Empty) +
+                                  (worst.Count > 0 ? "; poor: " + string.Join("; ", worst.Take(8)) + (worst.Count > 8 ? " ..." : string.Empty) : string.Empty));
+            return new { Game = game, Set = Path.GetFileName(folder), Overview = overview, Mean = scores.Count == 0 ? 0 : (int)Math.Round(scores.Average()), Low = low, Views = scores.Count, Dropped = dropped, Poor = worst };
+        }
+
+        // A picture file (PNG, or JPEG with its mask PNG) measured by the quality gate; null when it cannot be read.
+        private static PictureMetrics MeasureFile(string image, string mask)
+        {
+            if (!File.Exists(image))
+                return null;
+            try
+            {
+                return MeasureBitmap(image, mask);
+            }
+            catch (Exception)
+            {
+                return null;
+            }
+        }
+
+        private static PictureMetrics MeasureBitmap(string image, string mask)
+        {
+            using (System.Drawing.Bitmap bmp = new System.Drawing.Bitmap(image))
+            {
+                int w = bmp.Width, h = bmp.Height;
+                byte[] rgba = new byte[w * h * 4];
+                System.Drawing.Imaging.BitmapData data = bmp.LockBits(new System.Drawing.Rectangle(0, 0, w, h), System.Drawing.Imaging.ImageLockMode.ReadOnly, System.Drawing.Imaging.PixelFormat.Format32bppArgb);
+                try
+                {
+                    byte[] row = new byte[w * 4];
+                    for (int y = 0; y < h; y++)
+                    {
+                        System.Runtime.InteropServices.Marshal.Copy(data.Scan0 + y * data.Stride, row, 0, row.Length);
+                        for (int x = 0; x < w; x++)
+                        {
+                            int o = (y * w + x) * 4;
+                            rgba[o] = row[x * 4 + 2];
+                            rgba[o + 1] = row[x * 4 + 1];
+                            rgba[o + 2] = row[x * 4];
+                            rgba[o + 3] = row[x * 4 + 3];
+                        }
+                    }
+                }
+                finally
+                {
+                    bmp.UnlockBits(data);
+                }
+                if (mask != null && File.Exists(mask))
+                {
+                    using (System.Drawing.Bitmap mb = new System.Drawing.Bitmap(mask))
+                    {
+                        if (mb.Width == w && mb.Height == h)
+                        {
+                            for (int y = 0; y < h; y++)
+                                for (int x = 0; x < w; x++)
+                                    rgba[(y * w + x) * 4 + 3] = mb.GetPixel(x, y).R;
+                        }
+                    }
+                }
+                return PictureQuality.Measure(rgba, w, h, 4);
+            }
+        }
+
+        private static byte[] UnpackZstd(byte[] data, int offset, int length)
+        {
+            using (MemoryStream packed = new MemoryStream(data, offset, length))
+            using (ZstdSharp.DecompressionStream z = new ZstdSharp.DecompressionStream(packed))
+            using (MemoryStream raw = new MemoryStream())
+            {
+                z.CopyTo(raw);
+                return raw.ToArray();
+            }
         }
 
         private sealed class PictureResult

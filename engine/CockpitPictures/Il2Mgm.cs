@@ -361,6 +361,17 @@ namespace JoyPro.CockpitPictures
             return pose;
         }
 
+        // The argument values a track has keys at (the control's positions or the ends of its travel).
+        public static List<double> KeyTimes(Track t)
+        {
+            List<double> times = new List<double>();
+            if (t.Keys == null || t.Keys.Length < KeySize || t.Keys.Length % KeySize != 0)
+                return times;
+            for (int k = 0; k + KeySize <= t.Keys.Length; k += KeySize)
+                times.Add(BitConverter.ToSingle(t.Keys, k));
+            return times;
+        }
+
         // A track's transform at a value: position (floats at 8), rotation (shorts at 20: x, y, z, w; the model's
         // quaternions turn the other way than the column-vector convention), scale (shorts at 28, 1000 = 1).
         public static double[] KeyAt(Track t, double value)

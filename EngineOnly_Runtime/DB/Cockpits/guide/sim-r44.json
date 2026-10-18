@@ -1,0 +1,448 @@
+{
+  "format": "joypro-cockpit-guide",
+  "version": 1,
+  "id": "sim-r44",
+  "title": "Robinson R44 Raven I / II",
+  "variants": [
+    "r44-raven-ii"
+  ],
+  "games": [
+    "MSFS2020",
+    "MSFS2024"
+  ],
+  "sets": [],
+  "sources": [
+    {
+      "id": "c1",
+      "title": "JoyPro cockpit catalog",
+      "kind": "reference"
+    },
+    {
+      "id": "s1",
+      "title": "Robinson R44 (Wikipedia)",
+      "url": "https://en.wikipedia.org/wiki/Robinson_R44",
+      "kind": "web"
+    },
+    {
+      "id": "x1",
+      "title": "X-Plane R22 Beta II Pilot Operating Manual (Laminar Research)",
+      "file": "Aircraft/Laminar Research/Robinson R22 Beta II/X-Plane_R22_Pilot_Operating_Manual.pdf",
+      "kind": "manual"
+    },
+    {
+      "id": "fn",
+      "title": "JoyPro function tables MSFS2020/2024 and X-Plane 11/12 (DB/Functions)",
+      "kind": "reference"
+    }
+  ],
+  "intro": "The Robinson R44 is a small four-seat piston helicopter. Its cockpit has a single T-bar cyclic between the front seats, a collective lever with a twist-grip throttle at the left of each front seat and an instrument console in the middle.",
+  "areas": [
+    {
+      "id": "front-center",
+      "where": "front-center",
+      "name": "Instrument console",
+      "text": "The dashboard in the middle of the cockpit with the dials for speed, height, horizon, climb rate and engine and rotor speed, plus the warning lights.",
+      "panels": [
+        {
+          "id": "instrument-panel",
+          "name": "Instrument console",
+          "db": "instrument-panel",
+          "src": "x1",
+          "page": "21",
+          "text": "This console holds the flight dials and the engine gauges, together with the warning and annunciator lights that tell the pilot when something is wrong.",
+          "context": "The pilot watches the rotor and engine gauges closely, because the rotor must turn at the right speed for the helicopter to fly.",
+          "controls": [
+            {
+              "id": "vsi",
+              "name": "Vertical speed indicator",
+              "type": "gauge",
+              "match": [
+                "item:instrument-panel:1"
+              ],
+              "text": "This dial shows how fast the helicopter climbs or sinks.",
+              "context": "The pilot uses it to hold a steady climb or descent.",
+              "src": "x1",
+              "page": "21"
+            },
+            {
+              "id": "ai",
+              "name": "Attitude indicator",
+              "type": "gauge",
+              "match": [
+                "item:instrument-panel:2"
+              ],
+              "text": "This dial shows the artificial horizon: whether the nose is up or down and whether the helicopter leans to a side.",
+              "context": "The pilot uses it when the real horizon cannot be seen.",
+              "src": "x1",
+              "page": "21"
+            },
+            {
+              "id": "asi",
+              "name": "Airspeed indicator",
+              "type": "gauge",
+              "match": [
+                "item:instrument-panel:3"
+              ],
+              "text": "This dial shows how fast the helicopter flies through the air.",
+              "context": "The pilot checks the speed in every phase of the flight.",
+              "src": "x1",
+              "page": "21"
+            },
+            {
+              "id": "tach",
+              "name": "Engine and rotor tachometer",
+              "type": "gauge",
+              "match": [
+                "item:instrument-panel:4"
+              ],
+              "text": "This dial has two needles. One shows how fast the engine turns and the other how fast the main rotor turns, in revolutions per minute (RPM). They normally stay together.",
+              "context": "The pilot keeps the needles in the green range. If the rotor turns too slowly, the helicopter cannot fly.",
+              "src": "x1",
+              "page": "21"
+            },
+            {
+              "id": "map",
+              "name": "Manifold pressure indicator",
+              "type": "gauge",
+              "match": [
+                "item:instrument-panel:5"
+              ],
+              "text": "This dial shows the manifold pressure, how hard air is pushed into the piston engine. It tells the pilot how much power the engine is giving.",
+              "context": "The pilot watches it so that the power does not go above the limit.",
+              "src": "x1",
+              "page": "21"
+            },
+            {
+              "id": "alt",
+              "name": "Altimeter",
+              "type": "gauge",
+              "match": [
+                "item:instrument-panel:6"
+              ],
+              "text": "This dial shows the height above sea level.",
+              "context": "The pilot sets the local air pressure on it so the height reads right.",
+              "src": "x1",
+              "page": "21"
+            },
+            {
+              "id": "annunciators",
+              "name": "Annunciator lights",
+              "type": "light",
+              "match": [
+                "item:instrument-panel:7"
+              ],
+              "count": 5,
+              "text": "These lights tell about the clutch, the main rotor gearbox (MR temp and chip), low fuel, low rotor rpm and carbon monoxide.",
+              "context": "A lit light is a call to action. For example, low rpm means the pilot must lower the collective at once.",
+              "src": "x1",
+              "page": "21"
+            },
+            {
+              "id": "warning-lights",
+              "name": "Warning lights",
+              "type": "light",
+              "match": [
+                "item:instrument-panel:8"
+              ],
+              "count": 3,
+              "text": "These lights show a failed alternator (ALT), low oil pressure (OIL) and that the governor is off (GOV OFF).",
+              "context": "The pilot reads the light and follows the checklist for it.",
+              "src": "x1",
+              "page": "21"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "overhead",
+      "where": "overhead",
+      "name": "Overhead: rotor brake",
+      "text": "The ceiling area above the pilot, with the rotor brake.",
+      "panels": [
+        {
+          "id": "rotor-brake",
+          "name": "Main rotor brake",
+          "db": "console",
+          "src": "x1",
+          "page": "26",
+          "text": "The main rotor is the big spinning wing on top. After the engine has stopped, the rotor brake stops it faster by pressing on its drive.",
+          "context": "The pilot uses it at the end of the flight, after the engine shut down. It stays off in flight.",
+          "controls": [
+            {
+              "id": "rotor-brake-item",
+              "name": "Main rotor brake",
+              "type": "handle",
+              "match": [
+                "item:console:9"
+              ],
+              "text": "Pulling this handle presses a brake onto the rotor drive so that the rotor stops turning sooner after the engine is off.",
+              "context": "The pilot uses it only after shutdown on the ground and never in flight.",
+              "src": "x1",
+              "page": "26"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "center-pedestal",
+      "where": "center-pedestal",
+      "name": "Lower console",
+      "text": "The console between and below the seats with the starter key, the electric switches, the engine gauges and the engine controls.",
+      "panels": [
+        {
+          "id": "console",
+          "name": "Switch panel and lower console",
+          "db": "console",
+          "src": "x1",
+          "page": "26",
+          "text": "This area holds the starter key, the electrical switches, the carburettor temperature gauge, the engine gauges, and the mixture, carburettor heat and fuel valve controls.",
+          "context": "The pilot uses it for the start-up and shutdown, and the carburettor heat when ice might form.",
+          "controls": [
+            {
+              "id": "starter-key",
+              "name": "Starter key",
+              "type": "selector",
+              "match": [
+                "item:console:1"
+              ],
+              "positions": [
+                {
+                  "name": "OFF",
+                  "text": "Both magnetos are off and the engine is stopped."
+                },
+                {
+                  "name": "R",
+                  "text": "Only the right magneto works; used for a check."
+                },
+                {
+                  "name": "L",
+                  "text": "Only the left magneto works; used for a check."
+                },
+                {
+                  "name": "BOTH",
+                  "text": "Both magnetos work. This is the normal running position."
+                },
+                {
+                  "name": "START",
+                  "text": "The starter turns the engine; the key springs back to BOTH."
+                }
+              ],
+              "text": "This key switch works the magnetos, the two spark makers of the piston engine, and the starter. Turning it to START spins the engine.",
+              "context": "After the engine runs, the pilot leaves the key on BOTH, and it springs back from START.",
+              "src": "x1",
+              "page": "26"
+            },
+            {
+              "id": "electrical",
+              "name": "Electrical panel",
+              "type": "switch",
+              "match": [
+                "item:console:2"
+              ],
+              "text": "These switches connect the battery and the alternator to the electric system, run the clutch and turn on the lights.",
+              "context": "The pilot switches the battery on first. The clutch connects the engine to the rotor after the start.",
+              "src": "x1",
+              "page": "26"
+            },
+            {
+              "id": "carb-temp",
+              "name": "Carburettor temperature gauge",
+              "type": "gauge",
+              "match": [
+                "item:console:3"
+              ],
+              "text": "This gauge shows the temperature of the air in the carburettor, the part that mixes fuel and air. A cold reading means ice could form.",
+              "context": "Ice in the carburettor can stop the engine, so the pilot watches this gauge and uses carburettor heat if needed.",
+              "src": "x1",
+              "page": "26"
+            },
+            {
+              "id": "engine-cluster",
+              "name": "Engine instrument cluster",
+              "type": "gauge",
+              "match": [
+                "item:console:4"
+              ],
+              "text": "This group of small dials shows the oil pressure and temperature, the fuel amount, the cylinder head temperature (CHT) and the ammeter, which shows the electric current.",
+              "context": "The pilot checks them during the start and during the flight to see that the engine is healthy.",
+              "src": "x1",
+              "page": "26"
+            },
+            {
+              "id": "cyclic-friction",
+              "name": "Cyclic friction control",
+              "type": "knob",
+              "match": [
+                "item:console:5"
+              ],
+              "text": "This knob sets how stiff the cyclic stick feels. Turning it makes the stick harder to move, so it stays where the pilot puts it.",
+              "context": "Friction can help the pilot hold the stick steady, but too much makes it hard to fly.",
+              "src": "x1",
+              "page": "26"
+            },
+            {
+              "id": "mixture",
+              "name": "Mixture control",
+              "type": "knob",
+              "match": [
+                "item:console:6"
+              ],
+              "text": "This control sets the fuel-to-air mixture of the engine, from rich to idle cut-off. Pulling it all the way stops the engine.",
+              "context": "The pilot sets it rich for the start and the flight, and pulls it to cut-off to stop the engine.",
+              "src": "x1",
+              "page": "26"
+            },
+            {
+              "id": "carb-heat",
+              "name": "Carburettor heat control",
+              "type": "knob",
+              "match": [
+                "item:console:7"
+              ],
+              "text": "Pulling this control warms the air going into the carburettor to melt ice.",
+              "context": "The pilot uses it when the gauge shows that ice could form. It costs a little engine power.",
+              "src": "x1",
+              "page": "26"
+            },
+            {
+              "id": "fuel-valve",
+              "name": "Fuel shutoff valve",
+              "type": "knob",
+              "match": [
+                "item:console:8"
+              ],
+              "text": "This control opens or closes the fuel line from the tanks to the engine.",
+              "context": "It stays on in normal flight. The pilot closes it in an emergency or after the flight.",
+              "src": "x1",
+              "page": "26"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "hotas",
+      "where": "hotas",
+      "name": "Cyclic, collective and pedals",
+      "text": "The controls for the pilot's hands and feet: the T-bar cyclic, the collective with its throttle and the pedals.",
+      "panels": [
+        {
+          "id": "grip-cyclic",
+          "name": "T-bar cyclic",
+          "text": "The cyclic is a column in the middle between the front seats with a T-shaped bar on top. The pilot holds it with the right hand. A push-to-talk trigger sits on the bar.",
+          "context": "The pilot steers the helicopter's direction in the air with it.",
+          "controls": [
+            {
+              "id": "cyc-gimbal",
+              "name": "T-bar cyclic",
+              "type": "other",
+              "match": [
+                "control:stick.gimbal"
+              ],
+              "text": "Moving the cyclic forward tilts the rotor so the helicopter moves forward. Moving it back goes backwards and moving it sideways goes sideways.",
+              "context": "It does not change the height. It changes the direction the helicopter moves in."
+            },
+            {
+              "id": "cyc-ptt",
+              "name": "Push-to-talk",
+              "type": "trigger",
+              "match": [
+                "control:stick.trigger"
+              ],
+              "text": "Pressing this trigger on the cyclic bar makes the radio send while it is held.",
+              "context": "The pilot uses it to talk to the controller."
+            }
+          ]
+        },
+        {
+          "id": "grip-collective",
+          "name": "Collective with throttle",
+          "text": "The collective is the lever at the left of the pilot's seat. The left hand holds it. The twist grip on its end is the engine throttle.",
+          "context": "The collective sets the lift, and the twist grip sets the engine power.",
+          "controls": [
+            {
+              "id": "coll-main",
+              "name": "Collective",
+              "type": "axis",
+              "match": [
+                "control:collective.axis.main"
+              ],
+              "text": "Pulling this lever up makes the rotor blades bite the air harder, so the helicopter climbs. Lowering it makes the helicopter sink.",
+              "context": "The pilot lifts the lever to lift off and lowers it to land."
+            },
+            {
+              "id": "coll-twist",
+              "name": "Twist-grip throttle",
+              "type": "other",
+              "match": [
+                "control:collective.axis.throttle_twist"
+              ],
+              "text": "Twisting the grip on the end of the collective changes the engine power. It is linked to the collective, and the governor helps hold the rotor speed.",
+              "context": "The pilot adjusts it so the rotor speed stays in the green range."
+            },
+            {
+              "id": "coll-governor",
+              "name": "Governor switch",
+              "type": "switch2",
+              "match": [
+                "control:collective.switch.governor"
+              ],
+              "positions": [
+                {
+                  "name": "on",
+                  "text": "The governor keeps the rotor speed by itself."
+                },
+                {
+                  "name": "off",
+                  "text": "The governor is off and the pilot works the throttle by hand."
+                }
+              ],
+              "text": "This switch at the end of the collective turns the governor on or off. The governor is a helper that holds the rotor speed by moving the throttle by itself.",
+              "context": "The governor is on in normal flight. If it is off, the pilot must hold the rotor speed with the throttle by hand."
+            },
+            {
+              "id": "coll-light",
+              "name": "Landing lights switch",
+              "type": "switch2",
+              "match": [
+                "control:collective.switch.landing_light"
+              ],
+              "positions": [
+                {
+                  "name": "on",
+                  "text": "The landing lights are on."
+                },
+                {
+                  "name": "off",
+                  "text": "The landing lights are off."
+                }
+              ],
+              "text": "This switch on the collective turns the landing light on or off.",
+              "context": "The pilot uses the landing light to see the ground in the dark."
+            }
+          ]
+        },
+        {
+          "id": "grip-pedals",
+          "name": "Anti-torque pedals",
+          "text": "The two pedals at the pilot's feet on the floor of the cockpit.",
+          "context": "The pilot turns the helicopter's nose left and right with them.",
+          "controls": [
+            {
+              "id": "pedals",
+              "name": "Anti-torque pedals",
+              "type": "pedal",
+              "match": [
+                "control:pedals.axis.rudder"
+              ],
+              "text": "Pushing a pedal changes the pitch of the tail rotor blades. The tail rotor is the small rotor at the back, and the pedals turn the nose left or right.",
+              "context": "The pilot uses them to keep the helicopter pointed straight and to turn it while hovering."
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

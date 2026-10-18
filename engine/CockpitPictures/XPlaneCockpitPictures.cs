@@ -18,6 +18,7 @@ namespace JoyPro.CockpitPictures
     internal static class XPlaneCockpitPictures
     {
         private const double Feet = 0.3048;
+        internal static bool FlipDds = Environment.GetEnvironmentVariable("JOYPRO_XP_FLIPDDS") != "0";
 
         public sealed class Job
         {
@@ -158,6 +159,9 @@ namespace JoyPro.CockpitPictures
                     continue;
                 }
                 List<string> names = Names(acf, p);
+                // An AI-only model next to the flyable one ("A330_AI.acf": no cockpit of its own).
+                if (IsAiOnly(acf, acfs))
+                    continue;
                 if (job.Only.Count > 0 && !job.Only.Any(o => names.Any(n => n.IndexOf(o, StringComparison.OrdinalIgnoreCase) >= 0)))
                     continue;
                 string key = Regex.Replace(Path.GetFileNameWithoutExtension(acf), "[^A-Za-z0-9_\\-]", "_");
@@ -185,7 +189,23 @@ namespace JoyPro.CockpitPictures
             return results;
         }
 
-        private static readonly Regex SkipObject = new Regex("glass|broken|lights?\\.obj|_lit\\.|pilot|passenger|prop(_|\\.|disc)|bobble|shadow|reflect|people|crew|wheel_?chock|tie_?down|cover", RegexOptions.IgnoreCase | RegexOptions.Compiled);
+        // Objects that are not the cockpit: glass, the figures (pilots, helmets, passengers; not the pilot's panels and
+        // instruments such as "F-14D_panels_pilot.obj"), props, shadows, covers.
+        internal static bool IsAiOnly(string acf, IEnumerable<string> all)
+        {
+            string name = Path.GetFileNameWithoutExtension(acf);
+            if (!Regex.IsMatch(name, "[_\\- ]AI$", RegexOptions.IgnoreCase))
+                return false;
+            string dir = Path.GetDirectoryName(acf);
+            return all.Any(o => !string.Equals(o, acf, StringComparison.OrdinalIgnoreCase) && string.Equals(Path.GetDirectoryName(o), dir, StringComparison.OrdinalIgnoreCase));
+        }
+
+        private static readonly Regex SkipObject = new Regex("glass|broken|lights?\\.obj|_lit\\.|(^|[_\\-])(pilots?|copilots?|helmets?|passengers?|people|crew|figures?|persons?)\\.obj$|^(pilots?|helmets?|passengers?)[_\\-]|prop(_|\\.|disc)|bobble|shadow|reflect|wheel_?chock|tie_?down|cover", RegexOptions.IgnoreCase | RegexOptions.Compiled);
+
+        internal static bool Skipped(string objectFile)
+        {
+            return SkipObject.IsMatch(Path.GetFileName(objectFile ?? string.Empty));
+        }
 
         private static void BuildOne(Job job, string acf, Dictionary<string, string> p, string folder, string version, SetResult r)
         {
@@ -223,7 +243,7 @@ namespace JoyPro.CockpitPictures
                     {
                         continue;
                     }
-                    bool draw = obj.Texture.Length > 0 && !SkipObject.IsMatch(Path.GetFileName(file));
+                    bool draw = obj.Texture.Length > 0 && !Skipped(file);
                     int material = -1;
                     bool flipFromPng = true;
                     if (draw)
@@ -244,7 +264,7 @@ namespace JoyPro.CockpitPictures
                             {
                                 img = null;
                             }
-                            SceneMaterial sm = new SceneMaterial { Name = Path.GetFileName(texKey), Albedo = img, AlphaTest = true, FlipV = !dds };
+                            SceneMaterial sm = new SceneMaterial { Name = Path.GetFileName(texKey), Albedo = img, AlphaTest = true, FlipV = FlipDds || !dds };
                             if (img != null)
                                 sm.Color = new[] { img.Mean[0], img.Mean[1], img.Mean[2] };
                             material = scene.Materials.Count;
@@ -330,7 +350,7 @@ namespace JoyPro.CockpitPictures
                     scene.Bounds(g.Value, out mn, out mx);
                     if ((mx - mn).Length > 1.5)
                         continue;
-                    CockpitGrip cg = new CockpitGrip { Device = g.Key, Meshes = g.Value, Pivot = (mn + mx) * 0.5 };
+                    CockpitGrip cg = new CockpitGrip { Device = g.Key, Meshes = g.Value, Pivot = (mn + mx) * 0.5, Animation = new ControlAnimation { Source = "dataref", Name = g.Key == "stick" ? "sim/cockpit2/controls/yoke_pitch_ratio, yoke_roll_ratio" : "sim/cockpit2/engine/actuators/throttle_ratio" } };
                     gripList.Add(cg);
                 }
                 // The grip nearest to the pilot of each kind (both yokes move together).
@@ -348,7 +368,7 @@ namespace JoyPro.CockpitPictures
                     if (g == null)
                         continue;
                     if (!g.Parts.Any(x => x.Label == gp.Key.Label))
-                        g.Parts.Add(new CockpitCallout { Id = gp.Key.Id, Label = gp.Key.Label, Position = gp.Key.Position, Kind = "part", Commands = gp.Key.Commands });
+                        g.Parts.Add(new CockpitCallout { Id = gp.Key.Id, Label = gp.Key.Label, Position = gp.Key.Position, Kind = "part", Commands = gp.Key.Commands, Animation = gp.Key.Animation, GameKind = gp.Key.GameKind });
                     callouts.Remove(gp.Key);
                 }
                 List<CockpitViewPlan> views = CockpitViews.Plan(scene, head, callouts, gripList, job.Width);
@@ -424,6 +444,8 @@ namespace JoyPro.CockpitPictures
                 c0.Commands.Add(new CalloutCommand { Name = cmd, Category = "X-Plane command", Id = cmd });
             foreach (string d in m.Datarefs)
                 c0.Commands.Add(new CalloutCommand { Name = d, Category = "X-Plane dataref", Id = d });
+            c0.GameKind = m.Kind;
+            c0.Animation = m.Animation();
             list.Add(c0);
             return c0;
         }

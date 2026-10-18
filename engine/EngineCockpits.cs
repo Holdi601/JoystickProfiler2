@@ -83,6 +83,8 @@ namespace JoyPro.Engine
         // cockpits coverage
         // cockpits drawings
         // cockpits pictures build|status ...  (EngineCockpitPictures.cs)
+        // cockpits guide <aircraft> [<variant>] [--lang de] [--search words] [--no-pictures]   the cockpit guide as a tree
+        // cockpits guide --coverage [--game G] [--no-pictures]   per variant: its guide, picture set and what is explained
         private static int RunCockpits(List<string> command, string outPath, bool textOutput)
         {
             string action = command.Count == 0 ? "list" : command[0].ToLowerInvariant();
@@ -112,8 +114,10 @@ namespace JoyPro.Engine
                     return CockpitsDrawings(catalog, outPath, textOutput);
                 case "pictures":
                     return CockpitsPictures(rest, outPath, textOutput);
+                case "guide":
+                    return CockpitsGuide(catalog, rest, outPath, textOutput);
                 default:
-                    return Fail("Unknown cockpits action: " + action + " (list, search, get, check, render, compare, photos, coverage, drawings, pictures)");
+                    return Fail("Unknown cockpits action: " + action + " (list, search, get, check, render, compare, photos, coverage, drawings, pictures, guide)");
             }
         }
 
@@ -359,6 +363,8 @@ namespace JoyPro.Engine
             bool complete = !PopFlag(rest, "--structure");
             List<string> problems = catalog.Check(names.Count > 0 ? new HashSet<string>(names.Keys, StringComparer.OrdinalIgnoreCase) : null, complete);
             problems.AddRange(CockpitManualPages.CheckDrawings(catalog));
+            // The cockpit guide (DB\Cockpits\guide): its rules and that its variants exist.
+            problems.AddRange(CockpitGuideLibrary.Load(CockpitGuideLibrary.FolderOf(catalog.Folder)).Check(catalog).Select(p => "guide: " + p));
             // Every variant's sheets build and every drawn part lies inside its drawing.
             foreach (CockpitAircraft a in catalog.Aircraft)
             {
@@ -429,6 +435,7 @@ namespace JoyPro.Engine
                 options.Pictures = CockpitPictureSet.For(v);
                 options.PictureMode = pictures;
             }
+            options.Guide = CockpitGuideTree.Build(catalog, v, options.Pictures, CockpitGuideLibrary.For(catalog.Folder));
             List<ManualPage> all = CockpitManualPages.Build(catalog, v, options);
             string w = which.ToLowerInvariant();
             List<ManualPage> pages = all.Where(p =>
@@ -656,6 +663,22 @@ namespace JoyPro.Engine
                     }
                 }
             }
+            // Every game command the profile binds for the variant's games and aircraft (the cockpit guide ties them to the
+            // game's cockpit controls: a DCS command id, an X-Plane command, an IL-2 action, an MSFS event).
+            List<object> commands = new List<object>();
+            foreach (Relation r in InternalDataManagement.AllRelations.Values)
+            {
+                if (r == null || r.NODES == null)
+                    continue;
+                Bind b = r.bind;
+                string input = b == null ? string.Empty : (!string.IsNullOrWhiteSpace(b.JAxis) ? b.JAxis : b.JButton ?? string.Empty);
+                foreach (CockpitGameRef g in games)
+                {
+                    foreach (var n in r.NODES.Where(n => n != null && !string.IsNullOrEmpty(n.ID) && string.Equals(n.Game ?? "DCS", g.Game, StringComparison.OrdinalIgnoreCase) &&
+                                                         (g.Plane.Length == 0 || n.AIRCRAFT == null || n.AIRCRAFT.Count == 0 || n.GetStateAircraft(g.Plane) == PlaneState.ACTIVE)))
+                        commands.Add(new { g.Game, Id = n.ID, Relation = r.NAME, Device = b == null ? string.Empty : b.Joystick ?? string.Empty, Input = input });
+                }
+            }
             if (textOutput)
             {
                 EmitPayload("Compare: " + v.Aircraft.Id + "/" + v.Id + " | functions with a relation: " + matched.ToString(CultureInfo.InvariantCulture) + "/" + total.ToString(CultureInfo.InvariantCulture) +
@@ -663,8 +686,122 @@ namespace JoyPro.Engine
             }
             else
             {
-                EmitPayload(EngineSerialization.ToJson(new { Aircraft = v.Aircraft.Id, Variant = v.Id, Matched = matched, Total = total, Functions = rows }), outPath);
+                EmitPayload(EngineSerialization.ToJson(new { Aircraft = v.Aircraft.Id, Variant = v.Id, Matched = matched, Total = total, Functions = rows, Commands = commands }), outPath);
             }
+            return 0;
+        }
+
+        // The cockpit guide of a variant (docs/cockpits.md "The cockpit guide"): areas > panels > controls with what each
+        // does, the bigger picture, the positions, the game's commands and where each is shown on the manual pages.
+        private static int CockpitsGuide(CockpitCatalog catalog, List<string> rest, string outPath, bool textOutput)
+        {
+            string language = PopOptionValue(rest, "--lang") ?? string.Empty;
+            string search = PopOptionValue(rest, "--search") ?? string.Empty;
+            bool noPictures = PopFlag(rest, "--no-pictures");
+            string onlyGame = PopOptionValue(rest, "--game");
+            if (PopFlag(rest, "--coverage"))
+                return CockpitsGuideCoverage(catalog, onlyGame, noPictures, language, outPath, textOutput);
+            string error;
+            CockpitVariant v = CockpitVariantOf(catalog, rest, "guide", out error);
+            if (v == null)
+                return Fail(error);
+            CockpitPictureSet pictures = noPictures ? null : CockpitPictureSet.For(v);
+            CockpitGuideTree tree = CockpitGuideTree.Build(catalog, v, pictures, CockpitGuideLibrary.For(catalog.Folder), language);
+            List<CockpitGuideNode> hits = search.Length > 0 ? tree.Search(search) : null;
+            Func<CockpitGuideNode, object> node = null;
+            node = n => new
+            {
+                n.Kind, n.Key, n.Name, n.Type, n.Text, n.Context, n.Note, n.Where, n.Count, n.Source, n.Shared, n.Generic,
+                Positions = n.Positions.Select(p => new { p.Name, p.Text }).ToList(),
+                Hits = n.Hits.Select(h => new { h.Page, h.Tag, h.N, h.Label }).ToList(),
+                Commands = n.Commands.Select(c => new { c.Name, c.Category, c.Id }).ToList(),
+                n.Fns, n.ControlIds,
+                Children = n.Children.Select(node).ToList()
+            };
+            if (textOutput)
+            {
+                StringBuilder sb = new StringBuilder();
+                sb.AppendLine("Cockpit guide: " + v.Aircraft.Id + "/" + v.Id + " | guide: " + (tree.HasGuide ? tree.GuideId : "(none)") + " | language: " + tree.Language +
+                              " | pictures: " + (pictures == null ? "-" : pictures.Game + "/" + System.IO.Path.GetFileName(pictures.Folder)) + " | areas: " + tree.Roots.Count.ToString(CultureInfo.InvariantCulture) + " | controls: " + tree.Controls.ToString(CultureInfo.InvariantCulture) +
+                              ", explained: " + tree.Explained.ToString(CultureInfo.InvariantCulture) + " | game controls: " + tree.GameControlsExplained.ToString(CultureInfo.InvariantCulture) +
+                              "/" + tree.GameControls.ToString(CultureInfo.InvariantCulture) + (pictures == null ? " (no pictures on this PC)" : string.Empty));
+                Action<CockpitGuideNode, int> write = null;
+                write = (n, depth) =>
+                {
+                    if (hits != null && !hits.Contains(n) && !n.Descendants().Any(hits.Contains))
+                        return;
+                    string pad = new string(' ', 2 + depth * 2);
+                    sb.AppendLine(pad + (n.Kind == "area" ? "# " : n.Kind == "panel" ? "## " : "- ") + n.Name + (n.Type.Length > 0 ? " [" + n.Type + "]" : string.Empty) +
+                                  (n.Hits.Count > 0 ? " @" + string.Join(",", n.Hits.Where(h => h.Page.Length > 0).Select(h => h.Page + (h.Tag.Length > 0 ? "#" + h.Tag : string.Empty)).Distinct().Take(3)) : string.Empty));
+                    if (n.Text.Length > 0)
+                        sb.AppendLine(pad + "    " + n.Text);
+                    if (n.Context.Length > 0)
+                        sb.AppendLine(pad + "    > " + n.Context);
+                    if (n.Note.Length > 0)
+                        sb.AppendLine(pad + "    (" + n.Note + ")");
+                    foreach (CockpitGuidePosition p in n.Positions)
+                        sb.AppendLine(pad + "    * " + p.Name + (p.Text.Length > 0 ? ": " + p.Text : string.Empty));
+                    foreach (CockpitGuideNode c in n.Children)
+                        write(c, depth + 1);
+                };
+                foreach (CockpitGuideNode r in tree.Roots)
+                    write(r, 0);
+                EmitPayload(sb.ToString(), outPath);
+            }
+            else
+            {
+                EmitPayload(EngineSerialization.ToJson(new
+                {
+                    Aircraft = v.Aircraft.Id, Variant = v.Id, Guide = tree.GuideId, tree.Title, tree.Intro, tree.Language,
+                    Pictures = pictures == null ? string.Empty : pictures.Game + "/" + System.IO.Path.GetFileName(pictures.Folder),
+                    Controls = tree.Controls, tree.Explained, tree.GameControls, tree.GameControlsExplained,
+                    Sources = tree.Sources.Select(x => new { x.Id, x.Title, x.Url, x.File }).ToList(),
+                    Areas = tree.Roots.Select(node).ToList(),
+                    Found = hits == null ? null : hits.Select(h => h.Key).ToList()
+                }), outPath);
+            }
+            return 0;
+        }
+
+        // cockpits guide --coverage [--game G]: per variant its guide, its picture set and how much is explained.
+        private static int CockpitsGuideCoverage(CockpitCatalog catalog, string onlyGame, bool noPictures, string language, string outPath, bool textOutput)
+        {
+            CockpitGuideLibrary library = CockpitGuideLibrary.For(catalog.Folder);
+            List<object> rows = new List<object>();
+            StringBuilder sb = new StringBuilder();
+            int controls = 0, explained = 0, game = 0, gameExplained = 0, guided = 0, templated = 0;
+            foreach (CockpitAircraft a in catalog.Listed)
+            {
+                foreach (CockpitVariant raw in a.Variants)
+                {
+                    CockpitVariant v = catalog.Resolve(raw);
+                    if (!string.IsNullOrWhiteSpace(onlyGame) && !v.Games.Any(g => CockpitCatalog.GameMatches(g.Game, onlyGame)))
+                        continue;
+                    CockpitPictureSet pictures = noPictures ? null : CockpitPictureSet.For(v);
+                    CockpitGuideTree tree = CockpitGuideTree.Build(catalog, v, pictures, library, language);
+                    string set = pictures == null ? string.Empty : pictures.Game + "/" + System.IO.Path.GetFileName(pictures.Folder);
+                    int c = tree.Controls, e = tree.Explained;
+                    controls += c;
+                    explained += e;
+                    templated += tree.Templated;
+                    game += tree.GameControls;
+                    gameExplained += tree.GameControlsExplained;
+                    if (tree.HasGuide)
+                        guided++;
+                    string games = string.Join(",", v.Games.Select(g => g.Game).Distinct());
+                    rows.Add(new { Aircraft = a.Id, Variant = v.Id, Games = games, Guide = tree.GuideId, Pictures = set, Controls = c, Explained = e, tree.GameControls, tree.GameControlsExplained });
+                    sb.AppendLine("  " + a.Id + "/" + v.Id + " | " + games + " | guide: " + (tree.HasGuide ? tree.GuideId : "-") + " | pictures: " + (set.Length > 0 ? set : "-") +
+                                  " | controls " + e.ToString(CultureInfo.InvariantCulture) + "/" + c.ToString(CultureInfo.InvariantCulture) + " explained | game controls " +
+                                  tree.GameControlsExplained.ToString(CultureInfo.InvariantCulture) + "/" + tree.GameControls.ToString(CultureInfo.InvariantCulture));
+                }
+            }
+            if (textOutput)
+                EmitPayload("Cockpit guide coverage" + (string.IsNullOrWhiteSpace(onlyGame) ? string.Empty : " (" + onlyGame + ")") + ": variants " + rows.Count.ToString(CultureInfo.InvariantCulture) +
+                            ", with a guide " + guided.ToString(CultureInfo.InvariantCulture) + " | controls explained " + explained.ToString(CultureInfo.InvariantCulture) + "/" + controls.ToString(CultureInfo.InvariantCulture) +
+                            ", with a general description " + templated.ToString(CultureInfo.InvariantCulture) +
+                            " | game controls explained " + gameExplained.ToString(CultureInfo.InvariantCulture) + "/" + game.ToString(CultureInfo.InvariantCulture) + Environment.NewLine + sb, outPath);
+            else
+                EmitPayload(EngineSerialization.ToJson(new { Variants = rows.Count, Guided = guided, Controls = controls, Explained = explained, Templated = templated, GameControls = game, GameControlsExplained = gameExplained, Rows = rows }), outPath);
             return 0;
         }
 

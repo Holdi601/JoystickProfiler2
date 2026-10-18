@@ -1,0 +1,86 @@
+{
+  "format": "joypro-cockpit-guide",
+  "version": 1,
+  "id": "dcs-ka-50-bs2",
+  "inherits": "dcs-ka-50-3",
+  "title": "Ka-50 Black Shark 2 (DCS)",
+  "variants": [
+    "ka-50-bs2"
+  ],
+  "games": [
+    "DCS"
+  ],
+  "sets": [
+    "DCS/Ka-50"
+  ],
+  "sources": [
+    {
+      "id": "m2",
+      "title": "DCS Black Shark 2 Flight Manual (EN)",
+      "file": "Mods/aircraft/Ka-50/Doc/DCS BS2 Flight Manual EN.pdf"
+    }
+  ],
+  "remove": [
+    "engine-levers/door"
+  ],
+  "areas": [
+    {
+      "id": "left-forward",
+      "where": "front-left",
+      "name": "Left forward panel",
+      "text": "This is the left part of the dashboard under the shield. It holds the round gauges and the warning lamps.",
+      "panels": [
+        {
+          "id": "left-forward",
+          "name": "Left forward panel (flight gauges and warning lamps)",
+          "db": "left-forward-panel",
+          "text": "This is the panel of round gauges and warning lamps left of the middle of the dashboard. It shows the helicopter's attitude, height, speed and the most important warnings.",
+          "context": "The HUD shows most flight numbers, but these gauges are the backup and show some extra information. The pilot scans them all the time during a flight.",
+          "controls": [
+            {
+              "id": "defense-mode",
+              "name": "Defense system mode select",
+              "type": "selector",
+              "match": [
+                "BKO-PTR",
+                "item:left-forward-panel:17"
+              ],
+              "text": "In the Black Shark 2 this selector has no function. It is labelled for the missile warning system and the laser jammer, the onboard defense system.",
+              "context": "The Black Shark 2 manual lists it on the left forward panel and says it does nothing.",
+              "src": "m2",
+              "page": "87"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "hotas",
+      "where": "hotas",
+      "name": "Cyclic, collective and pedals",
+      "text": "The flight controls and the grips. The cyclic is in front of the pilot and the collective is at the left. Both have buttons for the weapons and sensors.",
+      "panels": [
+        {
+          "id": "collective",
+          "name": "Collective and its head",
+          "text": "The collective is the lever at the left of the pilot. Lifting it makes the helicopter climb and lowering it makes the helicopter sink. The head of the lever has buttons and switches.",
+          "context": "The pilot uses the left hand on the collective. The buttons at the head control the Shkval, the weapons selection, the landing light and the autopilot modes.",
+          "controls": [
+            {
+              "id": "hardpoint-hat",
+              "name": "Hardpoint selector hat",
+              "type": "hat",
+              "match": [
+                "control:collective.hat.hardpoint"
+              ],
+              "text": "This four-way hat chooses which weapon stations are used. Left picks the outer ones, right picks the inner ones and down picks all of them.",
+              "context": "A hardpoint is a place under the wing where weapons hang. The up position is for air-to-air missiles, but it has no function in the Black Shark 2.",
+              "src": "m2",
+              "page": "83"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

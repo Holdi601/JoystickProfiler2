@@ -1,0 +1,624 @@
+{
+  "format": "joypro-cockpit-guide",
+  "version": 1,
+  "id": "dcs-a-10c-ii-part4",
+  "partOf": "dcs-a-10c-ii",
+  "areas": [
+    {
+      "id": "circuit-breakers",
+      "where": "center-pedestal",
+      "name": "Circuit breaker panels",
+      "text": "Two panels of circuit breakers. The game shows them in its own view named 'center pedestal'; the manual does not name their position.",
+      "panels": [
+        {
+          "id": "cbp-1",
+          "name": "Circuit breaker panel (1)",
+          "src": "m1",
+          "page": "194",
+          "text": "The first panel of circuit breakers: safety switches for the electrics, radios, instruments and generators.",
+          "context": "A circuit breaker pops out when its equipment draws too much power. Pushing it back in restores the power. The manual does not give the position of the panel; the game shows it in its own view.",
+          "controls": [
+            {
+              "id": "cb-jett",
+              "name": "EXT STORES JETT circuit breaker",
+              "type": "switch",
+              "match": [
+                "PTR-CBP-EXT-STORES-JETT-?"
+              ],
+              "count": 2,
+              "text": "A circuit breaker is a safety switch that cuts power when something draws too much. It pops out and can be pushed back in. This one is labelled EXT STORES JETT and protects the circuits of the emergency jettison that drops all weapons.",
+              "context": "Two breakers, numbered 1 and 2, stand for the two circuits."
+            },
+            {
+              "id": "cb-uhf",
+              "name": "UHF COMM circuit breaker",
+              "type": "switch",
+              "match": [
+                "PTR-CBP-UHF-COMM"
+              ],
+              "text": "A circuit breaker is a safety switch that cuts power when something draws too much. It pops out and can be pushed back in. This one is labelled UHF COMM and protects the UHF radio.",
+              "context": "If it is out, the UHF radio does not work."
+            },
+            {
+              "id": "cb-sai",
+              "name": "STBY ATT IND circuit breaker",
+              "type": "switch",
+              "match": [
+                "PTR-CBP-STBY-ATT-IND"
+              ],
+              "text": "A circuit breaker is a safety switch that cuts power when something draws too much. It pops out and can be pushed back in. This one is labelled STBY ATT IND and protects the standby attitude indicator, the backup horizon gauge.",
+              "context": "If it is out, the backup gauge loses power."
+            },
+            {
+              "id": "cb-intercom",
+              "name": "INTER COMM circuit breaker",
+              "type": "switch",
+              "match": [
+                "PTR-CBP-INTER-COMM"
+              ],
+              "text": "A circuit breaker is a safety switch that cuts power when something draws too much. It pops out and can be pushed back in. This one is labelled INTER COMM and protects the intercom, the sound mixer of the cockpit.",
+              "context": "If it is out, the intercom panel goes quiet."
+            },
+            {
+              "id": "cb-master-caut",
+              "name": "MASTER CAUT circuit breaker",
+              "type": "switch",
+              "match": [
+                "PTR-CBP-MASTER-CAUT"
+              ],
+              "text": "A circuit breaker is a safety switch that cuts power when something draws too much. It pops out and can be pushed back in. This one is labelled MASTER CAUT and protects the MASTER CAUTION light.",
+              "context": "If it is out, the master caution light cannot come on."
+            },
+            {
+              "id": "cb-gen-cont",
+              "name": "GENERATOR CONT L / R circuit breaker",
+              "type": "switch",
+              "match": [
+                "PTR-CBP-GENERATOR-CONT-?"
+              ],
+              "count": 2,
+              "text": "A circuit breaker is a safety switch that cuts power when something draws too much. It pops out and can be pushed back in. This one is labelled GENERATOR CONT L / R and protects the control of the left and right engine generator.",
+              "context": "Without it, the matching generator cannot be switched on properly."
+            },
+            {
+              "id": "cb-pitot",
+              "name": "PITOT HEAT AC circuit breaker",
+              "type": "switch",
+              "match": [
+                "PTR-CBP-PITOT-HEAT-AC"
+              ],
+              "text": "A circuit breaker is a safety switch that cuts power when something draws too much. It pops out and can be pushed back in. This one is labelled PITOT HEAT AC and protects the heater of the speed tube (pitot), which runs on AC power.",
+              "context": "If it is out, the tube may ice over in cold air."
+            },
+            {
+              "id": "cb-iff",
+              "name": "IFF circuit breaker",
+              "type": "switch",
+              "match": [
+                "PTR-CBP-IFF"
+              ],
+              "text": "A circuit breaker is a safety switch that cuts power when something draws too much. It pops out and can be pushed back in. This one is labelled IFF and protects the IFF, the radio box that answers who-are-you questions.",
+              "context": "If it is out, the IFF has no power."
+            },
+            {
+              "id": "cb-conv-l",
+              "name": "CONVERTER L circuit breaker",
+              "type": "switch",
+              "match": [
+                "PTR-CBP-CONVERTER-L"
+              ],
+              "text": "A circuit breaker is a safety switch that cuts power when something draws too much. It pops out and can be pushed back in. This one is labelled CONVERTER L and protects the left electric converter, a box that changes one kind of electricity into another.",
+              "context": "The caution panel shows L-CONV if the left converter fails."
+            },
+            {
+              "id": "cb-aux-ess",
+              "name": "AUX ESS BUS 0A / 0B / 0C circuit breaker",
+              "type": "switch",
+              "match": [
+                "PTR-CBP-AUX-ESS-BUS-0?"
+              ],
+              "count": 3,
+              "text": "A circuit breaker is a safety switch that cuts power when something draws too much. It pops out and can be pushed back in. This one is labelled AUX ESS BUS 0A / 0B / 0C and protects three groups of power lines (buses) for the most important equipment.",
+              "context": "These feed essential equipment, so they matter when other power is lost."
+            },
+            {
+              "id": "cb-bat-trans",
+              "name": "BATTERY BUS TRANS circuit breaker",
+              "type": "switch",
+              "match": [
+                "PTR-CBP-BATTERY-BUS-TRANS"
+              ],
+              "text": "A circuit breaker is a safety switch that cuts power when something draws too much. It pops out and can be pushed back in. This one is labelled BATTERY BUS TRANS and protects the transfer of power to the battery bus.",
+              "context": "A bus is a group of electric lines that feed a set of equipment."
+            },
+            {
+              "id": "cb-inv-pwr",
+              "name": "INVERTER PWR circuit breaker",
+              "type": "switch",
+              "match": [
+                "PTR-CBP-INVERTER-PWR"
+              ],
+              "text": "A circuit breaker is a safety switch that cuts power when something draws too much. It pops out and can be pushed back in. This one is labelled INVERTER PWR and protects the power of the inverter, which turns battery electricity into the kind some instruments need.",
+              "context": "The caution panel shows INST INV if the inverter does not supply power."
+            },
+            {
+              "id": "cb-inv-cont",
+              "name": "INVERTER CONT circuit breaker",
+              "type": "switch",
+              "match": [
+                "PTR-CBP-INVERTER-CONT"
+              ],
+              "text": "A circuit breaker is a safety switch that cuts power when something draws too much. It pops out and can be pushed back in. This one is labelled INVERTER CONT and protects the control of the inverter.",
+              "context": "It belongs together with the inverter power breaker."
+            },
+            {
+              "id": "cb-aux-tie",
+              "name": "AUX ESS BUS TIE circuit breaker",
+              "type": "switch",
+              "match": [
+                "PTR-CBP-AUX-ESS-BUS-TIE"
+              ],
+              "text": "A circuit breaker is a safety switch that cuts power when something draws too much. It pops out and can be pushed back in. This one is labelled AUX ESS BUS TIE and protects the link (tie) between the auxiliary essential buses.",
+              "context": "The manual does not describe it further."
+            }
+          ]
+        },
+        {
+          "id": "cbp-2",
+          "name": "Circuit breaker panel (2)",
+          "src": "m1",
+          "page": "194",
+          "text": "The second panel of circuit breakers: safety switches for flight controls, engine start, fuel and bleed air.",
+          "context": "The manual does not describe these breakers one by one; the texts follow the printed labels.",
+          "controls": [
+            {
+              "id": "cb-ail-disc",
+              "name": "AILERON DISC L / R circuit breaker",
+              "type": "switch",
+              "match": [
+                "PTR-CBP-AILERON-DISC-?"
+              ],
+              "count": 2,
+              "text": "A circuit breaker is a safety switch that cuts power when something draws too much. It pops out and can be pushed back in. This one is labelled AILERON DISC L / R and protects the aileron disconnect circuits on the left and right side.",
+              "context": "Ailerons are the movable parts of the wings that make the plane roll."
+            },
+            {
+              "id": "cb-sps",
+              "name": "SPS & RUDDER AUTH LIMIT circuit breaker",
+              "type": "switch",
+              "match": [
+                "PTR-CBP-SPS-RUDDER-AUTH-LIM"
+              ],
+              "text": "A circuit breaker is a safety switch that cuts power when something draws too much. It pops out and can be pushed back in. This one is labelled SPS & RUDDER AUTH LIMIT and protects a circuit the label calls SPS and rudder authority limit.",
+              "context": "The manual does not explain what this breaker feeds."
+            },
+            {
+              "id": "cb-elev-disc",
+              "name": "ELEVATION DISC L / R circuit breaker",
+              "type": "switch",
+              "match": [
+                "PTR-CBP-ELEVATION-DISC-?"
+              ],
+              "count": 2,
+              "text": "A circuit breaker is a safety switch that cuts power when something draws too much. It pops out and can be pushed back in. This one is labelled ELEVATION DISC L / R and protects the elevation disconnect circuits on the left and right side.",
+              "context": "The label says elevation; the elevators are the tail parts that make the nose go up and down."
+            },
+            {
+              "id": "cb-ail-tab",
+              "name": "AILERON TAB L / R circuit breaker",
+              "type": "switch",
+              "match": [
+                "PTR-CBP-AILERON-TAB-?"
+              ],
+              "count": 2,
+              "text": "A circuit breaker is a safety switch that cuts power when something draws too much. It pops out and can be pushed back in. This one is labelled AILERON TAB L / R and protects the trim tab circuits of the left and right aileron.",
+              "context": "The tabs are small flaps on the ailerons that are used by the manual reversion system."
+            },
+            {
+              "id": "cb-eng-start",
+              "name": "ENGINE START L / R circuit breaker",
+              "type": "switch",
+              "match": [
+                "PTR-CBP-ENGINE-START-?"
+              ],
+              "count": 2,
+              "text": "A circuit breaker is a safety switch that cuts power when something draws too much. It pops out and can be pushed back in. This one is labelled ENGINE START L / R and protects the start circuits of the left and right engine.",
+              "context": "Without them the engine start may not work."
+            },
+            {
+              "id": "cb-emer-flap",
+              "name": "EMER FLAP circuit breaker",
+              "type": "switch",
+              "match": [
+                "PTR-CBP-EMER-FLAP"
+              ],
+              "text": "A circuit breaker is a safety switch that cuts power when something draws too much. It pops out and can be pushed back in. This one is labelled EMER FLAP and protects the emergency flap circuit.",
+              "context": "It belongs to the flap emergency retract function."
+            },
+            {
+              "id": "cb-apu-cont",
+              "name": "APU CONT circuit breaker",
+              "type": "switch",
+              "match": [
+                "PTR-CBP-APU-CONT"
+              ],
+              "text": "A circuit breaker is a safety switch that cuts power when something draws too much. It pops out and can be pushed back in. This one is labelled APU CONT and protects the control of the APU, the small helper engine.",
+              "context": "Without it, the APU cannot be controlled."
+            },
+            {
+              "id": "cb-emer-trim",
+              "name": "EMER TRIM circuit breaker",
+              "type": "switch",
+              "match": [
+                "PTR-CBP-EMER-TRIM"
+              ],
+              "text": "A circuit breaker is a safety switch that cuts power when something draws too much. It pops out and can be pushed back in. This one is labelled EMER TRIM and protects the emergency trim circuit.",
+              "context": "It belongs to the emergency trim buttons of the emergency flight control panel."
+            },
+            {
+              "id": "cb-ignitor",
+              "name": "ENG IGNITOR L/R-1 and L/R-2 circuit breaker",
+              "type": "switch",
+              "match": [
+                "PTR-CBP-ANG-IGNITOR-?"
+              ],
+              "count": 2,
+              "text": "A circuit breaker is a safety switch that cuts power when something draws too much. It pops out and can be pushed back in. This one is labelled ENG IGNITOR L/R-1 and L/R-2 and protects the ignitors of the engines, the spark makers that light the fuel.",
+              "context": "Two breakers, numbered 1 and 2, exist for the two ignitor circuits."
+            },
+            {
+              "id": "cb-land-gear",
+              "name": "LAND GEAR circuit breaker",
+              "type": "switch",
+              "match": [
+                "PTR-CBP-LAND-GEAR"
+              ],
+              "text": "A circuit breaker is a safety switch that cuts power when something draws too much. It pops out and can be pushed back in. This one is labelled LAND GEAR and protects the landing gear circuit.",
+              "context": "If it is out, the landing gear cannot be controlled normally."
+            },
+            {
+              "id": "cb-fuel-shutoff",
+              "name": "EMER FUEL SHUTOFF ENG L / R circuit breaker",
+              "type": "switch",
+              "match": [
+                "PTR-CBP-EMER-FUEL-SHUTOFF-ENG-?"
+              ],
+              "count": 2,
+              "text": "A circuit breaker is a safety switch that cuts power when something draws too much. It pops out and can be pushed back in. This one is labelled EMER FUEL SHUTOFF ENG L / R and protects the emergency fuel shut-off valves of the left and right engine.",
+              "context": "The valves close the fuel to the engine, for example when a fire handle is pulled."
+            },
+            {
+              "id": "cb-dc-fuel",
+              "name": "DC FUEL PUMP circuit breaker",
+              "type": "switch",
+              "match": [
+                "PTR-CBP-DC-FUEL-PUMP"
+              ],
+              "text": "A circuit breaker is a safety switch that cuts power when something draws too much. It pops out and can be pushed back in. This one is labelled DC FUEL PUMP and protects the DC (battery type) electricity for a fuel pump.",
+              "context": "The manual does not describe it further."
+            },
+            {
+              "id": "cb-bleed-cont",
+              "name": "BLEED AIR CONT L / R circuit breaker",
+              "type": "switch",
+              "match": [
+                "PTR-CBP-BLEED-AIR-CONT-?"
+              ],
+              "count": 2,
+              "text": "A circuit breaker is a safety switch that cuts power when something draws too much. It pops out and can be pushed back in. This one is labelled BLEED AIR CONT L / R and protects the control of the bleed air of the left and right engine.",
+              "context": "Bleed air is hot air taken from the engine for heating and pressure."
+            }
+          ]
+        },
+        {
+          "id": "view-options",
+          "name": "Game view options",
+          "text": "A control that only exists in the game, to make the cockpit view clearer.",
+          "context": "It is not part of the real aircraft.",
+          "controls": [
+            {
+              "id": "hide-stick",
+              "name": "Hide Stick toggle",
+              "type": "switch",
+              "match": [
+                "stick_visibility_PNT"
+              ],
+              "text": "Clicking this hides or shows the control stick in the game's 3D view. This helps when the stick would block the view of the instruments.",
+              "context": "The game calls it 'Hide Stick toggle'. It has no effect on the flying."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "hotas",
+      "where": "hotas",
+      "name": "Stick and throttle",
+      "text": "The grips of the control stick and the two throttle levers. The buttons and switches on them are the ones the pilot uses most often in a fight.",
+      "panels": [
+        {
+          "id": "stick",
+          "name": "Stick (control stick grip)",
+          "text": "The control stick moves the plane's nose and wings. The buttons and hats on its grip let the pilot work the weapons, sensors, trim and countermeasures without letting go.",
+          "context": "HOTAS means hands on throttle and stick. In a fight the pilot rarely lets go of the grips, so the most used functions sit under the fingers.",
+          "controls": [
+            {
+              "id": "stick-gimbal",
+              "name": "Control stick (pitch and roll)",
+              "type": "axis",
+              "match": [
+                "control:stick.gimbal"
+              ],
+              "text": "Pushing and pulling the stick moves the nose down and up. Moving it left and right rolls the wings to one side.",
+              "context": "The stick is linked by rods and cables to the control surfaces, and also drives the hydraulic helpers."
+            },
+            {
+              "id": "stick-trigger",
+              "name": "Trigger",
+              "type": "trigger",
+              "match": [
+                "STICK-BTN-TRIGGER",
+                "control:stick.trigger"
+              ],
+              "text": "The trigger has two stages. The first stage turns on the precision attitude help (PAC) for the gun. Pressing fully fires the big GAU-8 cannon.",
+              "context": "The master arm and the GUN/PAC switch on the armament panel must be set first."
+            },
+            {
+              "id": "stick-weapon",
+              "name": "Weapon release button",
+              "type": "button",
+              "match": [
+                "STICK-BTN-WEAPON",
+                "control:stick.weapon_release"
+              ],
+              "text": "This red button drops or fires the selected weapon (a bomb or a missile). Holding it keeps the release going.",
+              "context": "The master arm switch must be on ARM."
+            },
+            {
+              "id": "stick-tms",
+              "name": "Target Management Switch (TMS)",
+              "type": "hat",
+              "match": [
+                "STICK-BTN-TMS",
+                "control:stick.hat.tms"
+              ],
+              "text": "This four-way hat on the top right of the grip selects and marks targets. Its function depends on which screen or sensor is in control (the sensor of interest).",
+              "context": "A short press forward hooks or tracks a target, aft releases it, and long presses mark the target as the sensor point of interest (SPI)."
+            },
+            {
+              "id": "stick-dms",
+              "name": "Data Management Switch (DMS)",
+              "type": "hat",
+              "match": [
+                "STICK-BTN-DMS",
+                "control:stick.hat.dms"
+              ],
+              "text": "This four-way hat on the top left of the grip changes data on the sensor in control: it can zoom, change steerpoints, change the map scale or the helmet display brightness.",
+              "context": "Short and long presses do different things, so the pilot can work screens and sensors with the thumb."
+            },
+            {
+              "id": "stick-trim",
+              "name": "Trim switch",
+              "type": "hat",
+              "match": [
+                "STICK-BTN-TRIM",
+                "control:stick.hat.trim"
+              ],
+              "text": "This four-way hat on top of the grip trims the plane. Forward trims the nose down, aft trims it up, left and right trim the roll.",
+              "context": "Trim removes the pressure from the stick, so the plane flies straight on its own. The emergency trim buttons are on the left console."
+            },
+            {
+              "id": "stick-cms",
+              "name": "Countermeasures Switch (CMS)",
+              "type": "hat",
+              "match": [
+                "control:stick.hat.cms"
+              ],
+              "text": "This four-way switch at the lower right of the grip releases chaff and flares (decoys against missiles). Pressing it activates or stops the chosen program.",
+              "context": "Forward drops one flare, aft one chaff, left six flares and right six chaff. Long presses change the program."
+            },
+            {
+              "id": "stick-nws",
+              "name": "Nosewheel Steering button (NWS)",
+              "type": "button",
+              "match": [
+                "STICK-BTN-NWS",
+                "control:stick.button.index_lower"
+              ],
+              "text": "This button below the trigger turns the nose wheel steering on or off, like power steering of a car. In the air it has other jobs, such as firing the pointer laser.",
+              "context": "It also frees the plane from the tanker after refuelling."
+            },
+            {
+              "id": "stick-mmcb",
+              "name": "Master Mode Control Button (MMCB)",
+              "type": "button",
+              "match": [
+                "STICK-BTN-MMC",
+                "control:stick.pinky.button"
+              ],
+              "text": "This button at the lower back of the grip changes the HUD mode. A short press toggles the HUD mode, a long press selects the air-to-air mode.",
+              "context": "It is pressed with the little finger."
+            },
+            {
+              "id": "stick-paddle",
+              "name": "Paddle switch (emergency disconnect)",
+              "type": "lever",
+              "match": [
+                "control:stick.pinky.lever"
+              ],
+              "text": "While this lever at the lower front of the grip is held, the SAS, the anti-skid and the autopilot are switched off.",
+              "context": "The pilot uses it to take control at once."
+            },
+            {
+              "id": "stick-targ",
+              "name": "Grip button TARG (game part)",
+              "type": "button",
+              "match": [
+                "STICK-BTN-TARG"
+              ],
+              "text": "The game names this part of the grip 'BTN TARG' and gives it no further description.",
+              "context": "The manual does not describe it."
+            }
+          ]
+        },
+        {
+          "id": "throttle-grip",
+          "name": "Throttle (split throttle grips)",
+          "text": "The two throttle levers are moved with the left hand. The buttons and switches on them work the radio, the speed brakes, the sensors and the lights.",
+          "context": "The right throttle grip carries the slew control and the coolie hat. The left grip has the speed brake, the mic switch and other switches.",
+          "controls": [
+            {
+              "id": "thr-left",
+              "name": "Left throttle",
+              "type": "axis",
+              "match": [
+                "control:throttle.axis.left"
+              ],
+              "text": "This lever sets the power of the left engine from IDLE to MAX. Moving it from OFF to IDLE over the hump starts the engine; pulling it back to OFF shuts it down.",
+              "context": "The pilot normally moves both levers together."
+            },
+            {
+              "id": "thr-right",
+              "name": "Right throttle",
+              "type": "axis",
+              "match": [
+                "control:throttle.axis.right"
+              ],
+              "text": "This lever sets the power of the right engine from IDLE to MAX. Moving it from OFF to IDLE over the hump starts the engine; pulling it back to OFF shuts it down.",
+              "context": "Moving the levers differently can help to turn the plane or when one engine is damaged."
+            },
+            {
+              "id": "thr-mic",
+              "name": "Mic switch (radio transmit)",
+              "type": "hat",
+              "match": [
+                "TRTL-R-HAT-MIC",
+                "control:throttle.hat.mic"
+              ],
+              "text": "This four-way switch on the left throttle starts talking on a radio: forward for the VHF/AM radio, aft for the VHF/FM radio, down for the UHF radio.",
+              "context": "The intercom panel's rotary dial matters for the VHF/AM position."
+            },
+            {
+              "id": "thr-speedbrake",
+              "name": "Speed brake switch",
+              "type": "switch3",
+              "match": [
+                "TRTL-R-TMB-BRAKES",
+                "control:throttle.speedbrake"
+              ],
+              "positions": [
+                {
+                  "name": "Forward",
+                  "text": "The speed brakes retract."
+                },
+                {
+                  "name": "Center",
+                  "text": "The speed brakes hold their position."
+                },
+                {
+                  "name": "Aft",
+                  "text": "The speed brakes extend."
+                }
+              ],
+              "text": "This slide switch opens or closes the speed brakes, panels that open into the wind to slow the plane down.",
+              "context": "In the middle the brakes stay where they are."
+            },
+            {
+              "id": "thr-boat",
+              "name": "Boat switch",
+              "type": "switch3",
+              "match": [
+                "TRTL-R-TMB-BOAT",
+                "control:throttle.boat"
+              ],
+              "positions": [
+                {
+                  "name": "Forward",
+                  "text": "Black hot picture."
+                },
+                {
+                  "name": "Center",
+                  "text": "Targeting pod CCD camera; for the Maverick it forces correlation."
+                },
+                {
+                  "name": "Aft",
+                  "text": "White hot picture."
+                }
+              ],
+              "text": "This slide switch changes the picture of the targeting camera (TGP) between black-hot and white-hot, or for the Maverick missile camera. In the middle it does another job.",
+              "context": "Black-hot shows hot things dark, white-hot shows them bright."
+            },
+            {
+              "id": "thr-china",
+              "name": "China hat",
+              "type": "rocker",
+              "match": [
+                "TRTL-R-TMB-CHINA",
+                "control:throttle.china"
+              ],
+              "text": "This two-way switch on the front of the left throttle grip is worked with the index finger. It changes the field of view of the sensor, re-cages the cursor or slaves sensors to the steerpoint.",
+              "context": "Short and long presses do different things."
+            },
+            {
+              "id": "thr-pinky",
+              "name": "Pinky switch (exterior lights)",
+              "type": "switch3",
+              "match": [
+                "control:throttle.pinky.lever"
+              ],
+              "positions": [
+                {
+                  "name": "Forward",
+                  "text": "Position lights steady and dim, strobes off."
+                },
+                {
+                  "name": "Center",
+                  "text": "All exterior lights are off."
+                },
+                {
+                  "name": "Aft",
+                  "text": "Lights follow the light control panel."
+                }
+              ],
+              "text": "This three-position switch at the back of the left grip turns all outside lights off or lets them follow the light panel, or sets a dim default.",
+              "context": "The manual says the pinky switch may override the light panel."
+            },
+            {
+              "id": "thr-laap",
+              "name": "Left throttle button (autopilot)",
+              "type": "button",
+              "match": [
+                "TRTL-BTN-RED-L",
+                "control:throttle.button.laap"
+              ],
+              "text": "This button on the inner side of the left grip switches the chosen autopilot mode on or off.",
+              "context": "It does the same as the autopilot engage button on the LASTE panel."
+            },
+            {
+              "id": "thr-slew",
+              "name": "Slew control",
+              "type": "other",
+              "match": [
+                "TRTL-R-HAT-SLEW",
+                "control:throttle.ministick"
+              ],
+              "text": "This small stick on the right throttle grip moves a cursor or a sensor head: on the map, on the targeting pod, on the HUD or on a Maverick missile.",
+              "context": "It senses force instead of movement. What it moves depends on which screen is in control."
+            },
+            {
+              "id": "thr-coolie",
+              "name": "Coolie hat",
+              "type": "hat",
+              "match": [
+                "TRTL-R-HAT-COOLIE",
+                "control:throttle.coolie"
+              ],
+              "text": "This four-way hat on the right throttle chooses which screen or sensor the other switches control, and cycles screen pages.",
+              "context": "Up goes to the HUD, down to the helmet sight, left and right to the left or right screen. Long presses give quick looks at messages and status."
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

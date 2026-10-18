@@ -1,0 +1,1604 @@
+{
+  "format": "joypro-cockpit-guide",
+  "version": 1,
+  "id": "hornet-fa-18f",
+  "title": "F/A-18F Super Hornet, front seat (Falcon BMS and other games)",
+  "variants": [
+    "fa-18f"
+  ],
+  "games": [
+    "FalconBMS",
+    "WarThunder"
+  ],
+  "sets": [],
+  "sources": [
+    {
+      "id": "c1",
+      "title": "JoyPro cockpit catalog",
+      "kind": "reference"
+    },
+    {
+      "id": "m1",
+      "title": "DCS F/A-18C Early Access Guide (EN), used for facts shared by all Hornets",
+      "file": "Mods/aircraft/FA-18C/Doc/DCS FA-18C Early Access Guide EN.pdf"
+    },
+    {
+      "id": "ff1",
+      "title": "Boeing F/A-18E/F Super Hornet (Wikipedia): F/A-18F",
+      "file": "https://en.wikipedia.org/wiki/Boeing_F/A-18E/F_Super_Hornet"
+    },
+    {
+      "id": "w3",
+      "title": "Boeing F/A-18E/F Super Hornet (Wikipedia)",
+      "file": "https://en.wikipedia.org/wiki/Boeing_F/A-18E/F_Super_Hornet"
+    }
+  ],
+  "intro": "The F/A-18F Super Hornet is the larger, newer Hornet: a two-seat jet that flies as a fighter and an attack plane from carriers and airfields. This guide describes the front seat. In front of the pilot is a glass screen called the HUD, a touch screen for data entry below it, two screens with buttons around them (the DDIs) and a large colour display in the centre. The side consoles hold the engine start, electricity, air and light switches. The stick is in the middle and the two throttles on the left. Where the catalog lists a panel as on the C/D Hornet, this guide explains it the same way.",
+  "areas": [
+    {
+      "id": "hud-ufcd",
+      "where": "glareshield",
+      "name": "HUD, up-front display and HUD controls",
+      "text": "The top centre of the cockpit: the HUD in front of the pilot's eyes, with the touch screen for data entry below it and the HUD control panel.",
+      "panels": [
+        {
+          "id": "touch-sensitive-ufcd",
+          "name": "Touch-sensitive UFCD (up-front control display)",
+          "db": "touch-sensitive-ufcd",
+          "src": "w3",
+          "text": "The data entry display below the HUD. A colour touch screen with soft keys takes the place of the keypad of the older Hornets; the radio channel knobs stay.",
+          "context": "The pilot sets radios, autopilot, IFF, TACAN and datalink here, and types in numbers.",
+          "controls": [
+            {
+              "id": "ufcd-screen",
+              "name": "Up-front control display (touch screen)",
+              "type": "display",
+              "match": [
+                "item:touch-sensitive-ufcd:1"
+              ],
+              "text": "A colour touch screen below the HUD. On the older Hornets this place holds a keypad; here the pilot touches soft keys on the screen to set radios, autopilot, IFF, TACAN, datalink and to enter data.",
+              "context": "It is the pilot's text entry point for the whole aircraft, now shown on a screen that can change its keys."
+            },
+            {
+              "id": "ufcd-keys",
+              "name": "Scratchpad and keypad area",
+              "type": "keypad",
+              "match": [
+                "item:touch-sensitive-ufcd:2"
+              ],
+              "text": "Digits and letters on the touch screen, with a scratchpad where the typed entry appears.",
+              "context": "The pilot types frequencies, channels and other numbers here and confirms them."
+            },
+            {
+              "id": "ufcd-comm",
+              "name": "COMM 1 / COMM 2 channel knobs",
+              "type": "knob",
+              "match": [
+                "item:touch-sensitive-ufcd:3"
+              ],
+              "text": "Two knobs that pick the channel and the volume of the two radios. They stay real knobs next to the touch screen, as on the older Hornets.",
+              "context": "The pilot uses them to switch between stored radio stations and to set loudness.",
+              "count": 2
+            },
+            {
+              "id": "ufcd-aoa",
+              "name": "AoA indexer",
+              "type": "indicator",
+              "match": [
+                "item:touch-sensitive-ufcd:4"
+              ],
+              "text": "Lights beside the HUD that show during a landing approach whether the plane is flying too slow, just right or too fast (AoA means angle of attack, how steeply the wing meets the air).",
+              "context": "They help the pilot fly the right approach speed, especially for carrier landings."
+            }
+          ]
+        },
+        {
+          "id": "hud-control-panel",
+          "name": "HUD control panel",
+          "db": "hud-control-panel",
+          "src": "m1",
+          "page": "49",
+          "text": "A row of knobs and switches under the keypad that set how the HUD looks and where its height number comes from.",
+          "context": "The pilot sets the brightness for the light outside and picks the height source for the flight.",
+          "controls": [
+            {
+              "id": "hud-reject",
+              "name": "HUD symbology reject switch (NORM / REJ 1 / REJ 2)",
+              "type": "switch3",
+              "match": [
+                "item:hud-control-panel:1"
+              ],
+              "positions": [
+                {
+                  "name": "NORM",
+                  "text": "The HUD shows all its symbols."
+                },
+                {
+                  "name": "REJ 1",
+                  "text": "The first step removes some of the HUD symbols."
+                },
+                {
+                  "name": "REJ 2",
+                  "text": "The second step removes more of the HUD symbols."
+                }
+              ],
+              "text": "This switch clears the HUD in two steps when it is too cluttered. The HUD is the glass screen in front of the pilot's eyes. NORM shows everything and REJ 1 and REJ 2 take away more and more of the marks.",
+              "context": "The pilot uses it when too many marks cover the view."
+            },
+            {
+              "id": "hud-bright",
+              "name": "HUD symbology brightness knob",
+              "type": "knob",
+              "match": [
+                "item:hud-control-panel:2"
+              ],
+              "text": "This knob makes the marks on the HUD brighter or dimmer.",
+              "context": "The pilot sets it so that the HUD can be read against the sky or the ground, together with the DAY / NIGHT selector."
+            },
+            {
+              "id": "hud-aoa-knob",
+              "name": "AOA indexer control knob",
+              "type": "knob",
+              "match": [
+                "item:hud-control-panel:3"
+              ],
+              "text": "This knob dims the AOA indexer lights beside the HUD. They show during landing whether the plane is too slow or too fast.",
+              "context": "The pilot dims them for night landings so they do not dazzle."
+            },
+            {
+              "id": "hud-dn",
+              "name": "HUD brightness selector (DAY / NIGHT)",
+              "type": "switch2",
+              "match": [
+                "item:hud-control-panel:4"
+              ],
+              "positions": [
+                {
+                  "name": "DAY",
+                  "text": "The HUD marks use the bright range."
+                },
+                {
+                  "name": "NIGHT",
+                  "text": "The HUD marks use the dim range."
+                }
+              ],
+              "text": "This switch chooses the brightness range of the HUD marks, a bright range for day and a dim range for night.",
+              "context": "It works together with the HUD brightness knob."
+            },
+            {
+              "id": "hud-alt",
+              "name": "ALT switch (BARO / RDR)",
+              "type": "switch2",
+              "match": [
+                "item:hud-control-panel:5"
+              ],
+              "positions": [
+                {
+                  "name": "BARO",
+                  "text": "Height is taken from the air pressure."
+                },
+                {
+                  "name": "RDR",
+                  "text": "Height is taken from the radar altimeter, above the ground."
+                }
+              ],
+              "text": "This switch chooses where the height number comes from. BARO is the barometric altitude (from the air pressure). RDR is the radar altitude (the real height above the ground). The choice applies to the HUD and to the mission computer.",
+              "context": "Radar altitude is useful low over the ground, barometric altitude at higher levels."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "left-main",
+      "where": "front-left",
+      "name": "Left main panel",
+      "text": "The left part of the main panel in front of the pilot: the master caution light, the engine fire light and the weapon master controls.",
+      "panels": [
+        {
+          "id": "left-glareshield-master-arm-and-warnings",
+          "name": "Left glareshield: master arm and warnings",
+          "db": "left-glareshield-master-arm-and-warnings",
+          "src": "m1",
+          "page": "39",
+          "text": "The lights and switches at the top left of the main panel: master caution, left engine fire, the weapon master mode and the master arm switch.",
+          "context": "The pilot sees the warnings here at once. Before a fight the pilot picks the mode and arms the plane.",
+          "controls": [
+            {
+              "id": "master-caution",
+              "name": "MASTER CAUTION light",
+              "type": "light",
+              "match": [
+                "item:left-glareshield-master-arm-and-warnings:1"
+              ],
+              "text": "A yellow light that comes on when any system reports a caution, a problem that needs attention soon but is not an emergency. Pressing it switches the light off and clears the alert, so a new caution can light it again.",
+              "context": "The pilot sees it light up, reads on the screens which system is meant, and presses it to reset. Red FIRE lights are far more urgent than this one."
+            },
+            {
+              "id": "fire-left",
+              "name": "LEFT ENG FIRE light",
+              "type": "button",
+              "match": [
+                "item:left-glareshield-master-arm-and-warnings:2"
+              ],
+              "text": "A red warning light for the left engine. Pressing it shuts off the fuel to that engine. It lights when a fire is detected.",
+              "context": "In an engine fire it is the first button to press."
+            },
+            {
+              "id": "master-mode",
+              "name": "A/A and A/G master mode buttons",
+              "type": "button",
+              "match": [
+                "item:left-glareshield-master-arm-and-warnings:3"
+              ],
+              "text": "Two lit buttons that choose what the plane is set up to do. A/A (air to air) prepares it to fight other aircraft. A/G (air to ground) prepares it to attack targets on the ground. Pressing a lit button again switches it off and the plane returns to NAV, plain navigation.",
+              "context": "The pilot picks the mode before using weapons, and the HUD and screens then show the pages for that job. Weapons still need the MASTER ARM switch in ARM.",
+              "count": 2
+            },
+            {
+              "id": "master-arm-sw",
+              "name": "MASTER ARM switch",
+              "type": "switch2",
+              "match": [
+                "item:left-glareshield-master-arm-and-warnings:4"
+              ],
+              "positions": [
+                {
+                  "name": "ARM",
+                  "text": "The weapons can be released, fired or jettisoned."
+                },
+                {
+                  "name": "SAFE",
+                  "text": "Nothing can be released; the setting for taxiing, take-off and landing."
+                }
+              ],
+              "text": "This is the main safety switch for the weapons. In SAFE nothing can be fired or dropped. In ARM the weapons are live and can be released or jettisoned.",
+              "context": "The pilot moves it to ARM only when the weapons are about to be used and back to SAFE afterwards."
+            },
+            {
+              "id": "emerg-jett",
+              "name": "EMERG JETT (emergency jettison) button",
+              "type": "button",
+              "match": [
+                "item:left-glareshield-master-arm-and-warnings:5"
+              ],
+              "text": "A button that drops the external stores (bombs, missiles, fuel tanks) in an emergency to make the plane lighter. It works with the master arm switch in ARM.",
+              "context": "It is an emergency tool; the selective jettison knob on the left vertical panel is the careful version."
+            }
+          ]
+        },
+        {
+          "id": "left-vertical-panel",
+          "name": "Left vertical panel (gear, flaps, brakes)",
+          "db": "left-vertical-panel",
+          "src": "m1",
+          "page": "57",
+          "text": "The tall strip at the lower left of the main panel. It holds the landing gear handle, the flap switch, the brake handle, the hook bypass switch and the jettison knob.",
+          "context": "The pilot uses it for take-off and landing: wheels down, flaps set, brakes ready. It is also where weapons can be dropped selectively in an emergency.",
+          "controls": [
+            {
+              "id": "canopy-jett",
+              "name": "Canopy jettison handle",
+              "type": "handle",
+              "match": [
+                "item:left-vertical-panel:1"
+              ],
+              "text": "A black-and-yellow handle by the canopy sill. Pulling it back throws the canopy, the clear glass roof, off the plane.",
+              "context": "It is the emergency way to get the canopy off, for example when the pilot has to leave the plane quickly."
+            },
+            {
+              "id": "flap-sw",
+              "name": "FLAP switch (AUTO / HALF / FULL)",
+              "type": "switch3",
+              "match": [
+                "item:left-vertical-panel:2"
+              ],
+              "positions": [
+                {
+                  "name": "AUTO",
+                  "text": "The flight control computer moves the flaps by itself as speed changes."
+                },
+                {
+                  "name": "HALF",
+                  "text": "The flaps are held at a half-out position chosen by the pilot."
+                },
+                {
+                  "name": "FULL",
+                  "text": "The flaps are set fully out for the most lift at low speed."
+                }
+              ],
+              "text": "This switch tells the flight control computer how to move the flaps. Flaps are parts of the wing that slide out to give more lift at low speed.",
+              "context": "The pilot uses it around take-off and landing, when the plane flies slowly and needs the extra lift."
+            },
+            {
+              "id": "launch-bar",
+              "name": "LAUNCH BAR switch (EXTEND / RETRACT)",
+              "type": "switch2",
+              "match": [
+                "item:left-vertical-panel:3"
+              ],
+              "positions": [
+                {
+                  "name": "EXTEND",
+                  "text": "The launch bar is lowered so that it can connect to the catapult."
+                },
+                {
+                  "name": "RETRACT",
+                  "text": "The launch bar is folded up for normal flight and airfield take-offs."
+                }
+              ],
+              "text": "The launch bar is a short bar under the nose wheel that hooks into the catapult of an aircraft carrier. This switch lowers it or folds it away. It only moves while the plane stands on its wheels.",
+              "context": "The pilot extends it before a catapult launch from a carrier and retracts it afterwards."
+            },
+            {
+              "id": "ldg-taxi",
+              "name": "LDG / TAXI LIGHT switch",
+              "type": "switch2",
+              "match": [
+                "item:left-vertical-panel:4"
+              ],
+              "positions": [
+                {
+                  "name": "ON",
+                  "text": "The light on the nose gear is on."
+                },
+                {
+                  "name": "OFF",
+                  "text": "The light is off."
+                }
+              ],
+              "text": "This switch turns the bright light on the nose landing gear on or off. It lights the runway ahead when landing and taxiing at night. It works with the landing gear down.",
+              "context": "The pilot uses it on the ground at night and on the approach to land."
+            },
+            {
+              "id": "hook-bypass",
+              "name": "HOOK BYPASS switch (CARRIER / FIELD)",
+              "type": "switch2",
+              "match": [
+                "item:left-vertical-panel:5"
+              ],
+              "positions": [
+                {
+                  "name": "CARRIER",
+                  "text": "The approach lights flash as a warning if the hook is up; the setting for carrier landings."
+                },
+                {
+                  "name": "FIELD",
+                  "text": "No hook warning; the setting for landing on an airfield."
+                }
+              ],
+              "text": "This switch tells the plane whether the next landing is on a carrier or on a normal airfield. In CARRIER the approach lights beside the HUD flash when the arresting hook is still up. Lowering the hook moves the switch to CARRIER.",
+              "context": "The pilot uses FIELD for runway landings, where no hook is needed, and CARRIER for landings on a ship."
+            },
+            {
+              "id": "gear-handle",
+              "name": "Landing gear control handle",
+              "type": "handle",
+              "match": [
+                "item:left-vertical-panel:6"
+              ],
+              "positions": [
+                {
+                  "name": "UP",
+                  "text": "The wheels fold into the plane."
+                },
+                {
+                  "name": "DN",
+                  "text": "The wheels are lowered and locked down."
+                }
+              ],
+              "text": "Push this handle up and the wheels fold into the plane. Push it down and the wheels come out. A red light in the handle shows while the wheels are on the move. Turning the handle and pulling it brings the wheels down in an emergency.",
+              "context": "The pilot raises the wheels after take-off to fly faster and lowers them before landing. The gear lights confirm that the wheels are down and locked."
+            },
+            {
+              "id": "anti-skid",
+              "name": "ANTI SKID switch",
+              "type": "switch2",
+              "match": [
+                "item:left-vertical-panel:7"
+              ],
+              "positions": [
+                {
+                  "name": "ON",
+                  "text": "The wheels are protected from locking up under braking."
+                },
+                {
+                  "name": "OFF",
+                  "text": "The anti-skid protection is off, as for carrier operations."
+                }
+              ],
+              "text": "This switch turns the anti-skid system on or off. Anti-skid stops the wheels from locking up when the pilot brakes hard, like the ABS of a car.",
+              "context": "It is on for landings at airfields and off for landings on an aircraft carrier."
+            },
+            {
+              "id": "sel-jett-knob",
+              "name": "SELECTIVE JETTISON knob",
+              "type": "selector",
+              "match": [
+                "item:left-vertical-panel:8"
+              ],
+              "positions": [
+                {
+                  "name": "L FUS MSL",
+                  "text": "Picks the missile on the left side of the fuselage."
+                },
+                {
+                  "name": "SAFE",
+                  "text": "Nothing is picked; selective jettison is off."
+                },
+                {
+                  "name": "R FUS MSL",
+                  "text": "Picks the missile on the right side of the fuselage."
+                },
+                {
+                  "name": "RACK/LCHR",
+                  "text": "Picks the weapon racks and launchers."
+                },
+                {
+                  "name": "STORES",
+                  "text": "Picks the stores on the stations chosen with the station buttons."
+                }
+              ],
+              "text": "This big knob picks what the pilot wants to drop in an emergency: nothing, one of the fuselage missiles, the racks and launchers, or the stores on the stations chosen with the station buttons. The JETT button in its centre then does the dropping.",
+              "context": "It is the careful version of the emergency jettison button: the pilot drops only what has to go and keeps the rest."
+            },
+            {
+              "id": "park-brake",
+              "name": "Emergency / parking brake handle",
+              "type": "handle",
+              "match": [
+                "item:left-vertical-panel:9"
+              ],
+              "positions": [
+                {
+                  "name": "STOW",
+                  "text": "The handle is pushed in and the parking brake is off."
+                },
+                {
+                  "name": "EMERG",
+                  "text": "The handle is used as an emergency brake."
+                },
+                {
+                  "name": "PARK",
+                  "text": "The parking brake is set and holds the plane."
+                }
+              ],
+              "text": "A handle that holds the wheel brakes on. Turning it a quarter turn to the left and pulling it sets the parking brake, so the plane stays put when parked. It also works as the emergency brake.",
+              "context": "The pilot sets it when parking and releases it before taxiing. It is the same idea as the handbrake of a car."
+            },
+            {
+              "id": "brake-gauge",
+              "name": "Brake accumulator pressure gauge",
+              "type": "gauge",
+              "match": [
+                "item:left-vertical-panel:10"
+              ],
+              "text": "A round gauge that shows the pressure stored for the brakes. The brakes need this stored pressure when the hydraulic pump is not working. The red part of the scale marks too little pressure.",
+              "context": "The pilot checks it before taxiing to be sure the brakes will work, and when the parking brake is used."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "centre-displays",
+      "where": "front-center",
+      "name": "Centre displays",
+      "text": "The big displays in the middle of the main panel: two 5 by 5 inch side screens and a large 8 by 8 inch colour screen between them.",
+      "panels": [
+        {
+          "id": "two-ddis-and-the-8-x-8-inch-mpcd",
+          "name": "Two DDIs and the 8 x 8 inch MPCD",
+          "db": "two-ddis-and-the-8-x-8-inch-mpcd",
+          "src": "w3",
+          "text": "The left and right DDIs (multi-function screens with 20 buttons around each) and a large colour screen in the centre. The standby instruments sit with them.",
+          "context": "These screens show radar, weapons, sensor pictures, maps and system pages. The Block III Super Hornet has one large touch display instead.",
+          "controls": [
+            {
+              "id": "f-ldd",
+              "name": "Left DDI (5 x 5 inch display with 20 pushbuttons)",
+              "type": "display",
+              "match": [
+                "item:two-ddis-and-the-8-x-8-inch-mpcd:1"
+              ],
+              "text": "The left of the two side screens. It shows radar, weapon (stores), targeting camera (FLIR) or system pages. Around its edge are 20 pushbuttons that each pick the word printed next to them on the screen.",
+              "context": "The pilot works most of the plane through this screen and the right one."
+            },
+            {
+              "id": "f-mpcd",
+              "name": "Multipurpose colour display (MPCD, 8 x 8 inch)",
+              "type": "display",
+              "match": [
+                "item:two-ddis-and-the-8-x-8-inch-mpcd:2"
+              ],
+              "text": "A large colour screen in the centre of the panel. It shows a map, the HSI (heading and course display) and a picture of the situation around the plane. Buttons around the edge pick the page.",
+              "context": "In the Block III version of the Super Hornet this centre area is one big touch display instead."
+            },
+            {
+              "id": "f-rdd",
+              "name": "Right DDI (5 x 5 inch display with 20 pushbuttons)",
+              "type": "display",
+              "match": [
+                "item:two-ddis-and-the-8-x-8-inch-mpcd:3"
+              ],
+              "text": "The right of the two side screens. It shows radar, targeting pod or system pages, and has 20 pushbuttons around its edge.",
+              "context": "Pilots often keep the radar or targeting camera here and the weapons page on the left."
+            },
+            {
+              "id": "f-standby",
+              "name": "Standby instruments",
+              "type": "gauge",
+              "match": [
+                "item:two-ddis-and-the-8-x-8-inch-mpcd:4"
+              ],
+              "text": "Backup instruments that work on their own: a small artificial horizon, a height gauge and a speed gauge.",
+              "context": "They matter when the main screens fail."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "right-main",
+      "where": "front-right",
+      "name": "Right main panel",
+      "text": "The right part of the main panel: the engine and fuel display, the right engine fire light and the radar warning display.",
+      "panels": [
+        {
+          "id": "engine-and-fuel-display",
+          "name": "Engine and fuel display",
+          "db": "engine-and-fuel-display",
+          "src": "w3",
+          "text": "The engine and fuel display (EFD) and the threat azimuth display on the right of the panel.",
+          "context": "The pilot watches the engine numbers during start-up and in flight, and glances at the radar warning display when a threat is near.",
+          "controls": [
+            {
+              "id": "f-efd",
+              "name": "Engine fuel display (EFD)",
+              "type": "display",
+              "match": [
+                "item:engine-and-fuel-display:1"
+              ],
+              "text": "A display with the engine numbers: rpm, temperature, fuel flow, nozzle position, oil, and the amount of fuel left.",
+              "context": "The pilot watches it during engine start and in flight, much like the IFEI of the older Hornets."
+            },
+            {
+              "id": "f-fire-right",
+              "name": "RIGHT ENG FIRE light",
+              "type": "button",
+              "match": [
+                "item:engine-and-fuel-display:2"
+              ],
+              "text": "A red warning light for the right engine. Pressing it shuts off the fuel to that engine.",
+              "context": "It works like the left engine fire light."
+            },
+            {
+              "id": "f-rwr",
+              "name": "RWR azimuth indicator (ALR-67)",
+              "type": "display",
+              "match": [
+                "item:engine-and-fuel-display:3"
+              ],
+              "text": "A round display of the radar warning receiver. It shows in which direction enemy radars are looking at the plane.",
+              "context": "A symbol close to the centre is closer or more dangerous than one at the edge."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "right-vertical",
+      "where": "front-right",
+      "name": "Right vertical panel",
+      "text": "The tall panel at the lower right of the main instrument panel.",
+      "panels": [
+        {
+          "id": "right-vertical-panel",
+          "name": "Right vertical panel (hook, wings, radar altimeter)",
+          "db": "right-vertical-panel",
+          "src": "m1",
+          "page": "63",
+          "text": "The tall strip at the lower right of the main panel. It has the hook handle, the wing fold handle, the height-above-ground gauge, the hydraulic gauge and the electronics cooling switch.",
+          "context": "The pilot uses the hook for carrier landings and the wing fold handle on the ground, mostly on a carrier deck.",
+          "controls": [
+            {
+              "id": "hook-handle",
+              "name": "Arresting hook handle",
+              "type": "handle",
+              "match": [
+                "item:right-vertical-panel:1"
+              ],
+              "positions": [
+                {
+                  "name": "UP",
+                  "text": "The hook is raised and stowed."
+                },
+                {
+                  "name": "DOWN",
+                  "text": "The hook is lowered and ready to catch a wire."
+                }
+              ],
+              "text": "This handle lowers or raises the arresting hook, the strong hook at the tail that catches a wire on the deck of an aircraft carrier to stop the plane. A HOOK light shows while the handle and the hook disagree.",
+              "context": "The pilot lowers it before a carrier landing."
+            },
+            {
+              "id": "radalt",
+              "name": "RADAR altimeter",
+              "type": "gauge",
+              "match": [
+                "item:right-vertical-panel:2"
+              ],
+              "text": "A gauge that shows the height above the ground from a radar beam pointed downward. The scale runs up to 5,000 feet. A marker called the low altitude index can be set to warn when the plane is lower than the pilot wants.",
+              "context": "It is most useful low over land or sea and during the landing approach. A test button checks the instrument."
+            },
+            {
+              "id": "hyd-gauge",
+              "name": "Hydraulic pressure indicator",
+              "type": "gauge",
+              "match": [
+                "item:right-vertical-panel:3"
+              ],
+              "text": "A gauge with two needles that show the pressure in the two hydraulic systems, HYD 1 and HYD 2. Hydraulics is oil under high pressure that moves heavy parts such as the control surfaces and the landing gear.",
+              "context": "The pilot checks it after engine start and in flight. Low pressure means a problem with the systems that move the controls."
+            },
+            {
+              "id": "wing-fold",
+              "name": "Wing fold handle (FOLD / HOLD / SPREAD)",
+              "type": "handle",
+              "match": [
+                "item:right-vertical-panel:4"
+              ],
+              "positions": [
+                {
+                  "name": "FOLD",
+                  "text": "The outer wings fold up."
+                },
+                {
+                  "name": "HOLD",
+                  "text": "The wings stay where they are."
+                },
+                {
+                  "name": "SPREAD",
+                  "text": "The outer wings spread out and are locked for flight."
+                }
+              ],
+              "text": "The outer wings of the Hornet can fold up to save space on an aircraft carrier. The handle is pulled and turned to fold or spread them, and pushed in to lock it.",
+              "context": "It is used on the ground, mostly on a carrier deck. The wings must be spread and locked before take-off."
+            },
+            {
+              "id": "av-cool",
+              "name": "AV COOL switch (avionics cooling)",
+              "type": "switch2",
+              "match": [
+                "item:right-vertical-panel:5"
+              ],
+              "positions": [
+                {
+                  "name": "NORM",
+                  "text": "The normal cooling of the electronics is used."
+                },
+                {
+                  "name": "EMERG",
+                  "text": "The emergency cooling supply is used, for example after an FCS HOT caution."
+                }
+              ],
+              "text": "This switch controls the cooling air for the plane's electronics (the avionics). In NORM the normal cooling is used. EMERG selects an emergency cooling supply.",
+              "context": "The pilot moves it to EMERG when a flight control system hot caution (FCS HOT) appears."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "left-console",
+      "where": "left-console",
+      "name": "Left console",
+      "text": "The side shelf to the left of the pilot. It holds the exterior lights, the engine start controls and the flight control panel.",
+      "panels": [
+        {
+          "id": "exterior-lights-panel",
+          "name": "Exterior lights panel",
+          "db": "exterior-lights-panel",
+          "src": "m1",
+          "page": "61",
+          "text": "Three controls for the lights outside the plane: the position lights, the formation lights and the strobe lights.",
+          "context": "They work together with the exterior lights master switch on the left throttle.",
+          "controls": [
+            {
+              "id": "pos-lights",
+              "name": "POSITION lights knob",
+              "type": "knob",
+              "match": [
+                "item:exterior-lights-panel:1"
+              ],
+              "positions": [
+                {
+                  "name": "OFF",
+                  "text": "The position lights are off."
+                },
+                {
+                  "name": "BRT",
+                  "text": "The position lights are at their brightest."
+                }
+              ],
+              "text": "This knob turns the position lights (the coloured lights on the wing tips and the tail) on and sets their brightness.",
+              "context": "Position lights show other pilots which way the plane is pointing. They are used at night and in formation."
+            },
+            {
+              "id": "form-lights",
+              "name": "FORMATION lights knob",
+              "type": "knob",
+              "match": [
+                "item:exterior-lights-panel:2"
+              ],
+              "positions": [
+                {
+                  "name": "OFF",
+                  "text": "The formation lights are off."
+                },
+                {
+                  "name": "BRT",
+                  "text": "The formation lights are at their brightest."
+                }
+              ],
+              "text": "This knob turns the formation lights on and sets their brightness. The Hornet has eight of them along the body, glowing dimly.",
+              "context": "They help pilots keep a close formation at night."
+            },
+            {
+              "id": "strobe-sw",
+              "name": "STROBE lights switch (BRT / OFF / DIM)",
+              "type": "switch3",
+              "match": [
+                "item:exterior-lights-panel:3"
+              ],
+              "positions": [
+                {
+                  "name": "BRT",
+                  "text": "The strobes flash brightly."
+                },
+                {
+                  "name": "OFF",
+                  "text": "The strobes are off."
+                },
+                {
+                  "name": "DIM",
+                  "text": "The strobes flash dimly."
+                }
+              ],
+              "text": "This switch controls the red flashing lights on the two tails, the anti-collision strobes.",
+              "context": "The strobes make the plane easy to see for other aircraft. The pilot sets the brightness to suit the light conditions."
+            }
+          ]
+        },
+        {
+          "id": "apu-engine-crank-panel",
+          "name": "APU and engine crank panel",
+          "db": "apu-engine-crank-panel",
+          "src": "m1",
+          "page": "61",
+          "text": "Controls for the first engine start. The APU is a small helper engine that makes air; that air spins the big engine so it can start.",
+          "context": "The pilot starts the APU, waits for the READY light and then cranks one engine.",
+          "controls": [
+            {
+              "id": "apu-sw",
+              "name": "APU switch (ON / OFF)",
+              "type": "switch2",
+              "match": [
+                "item:apu-engine-crank-panel:1"
+              ],
+              "positions": [
+                {
+                  "name": "ON",
+                  "text": "The APU starts and runs."
+                },
+                {
+                  "name": "OFF",
+                  "text": "The APU is off."
+                }
+              ],
+              "text": "This switch starts the APU, a small helper engine in the plane. It makes electricity and compressed air so the main engines can be started without a ground cart.",
+              "context": "It is the first step of a self-contained engine start. The APU switches itself off a short while after both generators are working."
+            },
+            {
+              "id": "apu-ready",
+              "name": "APU READY light",
+              "type": "light",
+              "match": [
+                "item:apu-engine-crank-panel:2"
+              ],
+              "text": "A light that shows the APU is running well enough to start an engine.",
+              "context": "The pilot waits for it before using the engine crank switch."
+            },
+            {
+              "id": "eng-crank",
+              "name": "Engine CRANK switch (L / OFF / R)",
+              "type": "switch3",
+              "match": [
+                "item:apu-engine-crank-panel:3"
+              ],
+              "positions": [
+                {
+                  "name": "L",
+                  "text": "Opens the starter air to the left engine."
+                },
+                {
+                  "name": "OFF",
+                  "text": "No engine is cranked."
+                },
+                {
+                  "name": "R",
+                  "text": "Opens the starter air to the right engine."
+                }
+              ],
+              "text": "This switch spins one of the two engines with air from the APU. L spins the left engine, R the right. The engine turning is the first part of starting it.",
+              "context": "It comes after the APU is ready. The switch goes back to OFF by itself when the engine's generator takes over."
+            }
+          ]
+        },
+        {
+          "id": "fcs-panel",
+          "name": "Flight control system (FCS) panel",
+          "db": "fcs-panel",
+          "src": "m1",
+          "page": "62",
+          "text": "Controls for the flight control computers that sit between the stick and the control surfaces: rudder trim and take-off trim.",
+          "context": "The pilot uses the take-off trim button during the start-up checks.",
+          "controls": [
+            {
+              "id": "rud-trim",
+              "name": "RUD TRIM knob (rudder trim)",
+              "type": "knob",
+              "match": [
+                "item:fcs-panel:1"
+              ],
+              "text": "This knob shifts the neutral point of the rudder, the tail surface that turns the nose left and right, electrically. The rudder pedals themselves do not move.",
+              "context": "The pilot uses it to keep the plane flying straight without pushing on a pedal."
+            },
+            {
+              "id": "to-trim",
+              "name": "T/O TRIM button (take-off trim)",
+              "type": "button",
+              "match": [
+                "item:fcs-panel:2"
+              ],
+              "text": "On the ground, pressing this button sets the controls for take-off. It tips the tail surfaces to 12 degrees nose up. Trim means small adjustments so the plane flies straight without the pilot holding the stick.",
+              "context": "The pilot presses it during the start-up checks, before taxiing."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "right-console",
+      "where": "right-console",
+      "name": "Right console",
+      "text": "The side shelf to the right of the pilot. It has the electric power switches, the air system, the cockpit lights and the sensor power.",
+      "panels": [
+        {
+          "id": "electrical-panel",
+          "name": "Electrical panel",
+          "db": "electrical-panel",
+          "src": "m1",
+          "page": "66",
+          "text": "Switches for the plane's electricity: the two generators and the battery switch, with a gauge for the battery voltage.",
+          "context": "The pilot sets these first when starting the plane, because most other systems need electricity.",
+          "controls": [
+            {
+              "id": "bat-sw",
+              "name": "BATTERY switch (ON / OFF / ORIDE)",
+              "type": "switch3",
+              "match": [
+                "item:electrical-panel:4"
+              ],
+              "positions": [
+                {
+                  "name": "ON",
+                  "text": "The batteries are connected and give power."
+                },
+                {
+                  "name": "OFF",
+                  "text": "The batteries are disconnected."
+                },
+                {
+                  "name": "ORIDE",
+                  "text": "Override: the emergency battery is forced on."
+                }
+              ],
+              "text": "This switch connects the batteries to the plane. A battery stores electricity for when the engines are off. ORIDE (override) forces the emergency battery on.",
+              "context": "It is one of the first switches the pilot moves, because the plane needs electricity to start."
+            },
+            {
+              "id": "gen-l",
+              "name": "L GEN switch (left generator)",
+              "type": "switch2",
+              "match": [
+                "item:electrical-panel:1"
+              ],
+              "positions": [
+                {
+                  "name": "NORM",
+                  "text": "The left generator is on line and feeds the electric system."
+                },
+                {
+                  "name": "OFF",
+                  "text": "The left generator is switched off."
+                }
+              ],
+              "text": "This switch connects the left engine's generator to the plane's electric system or switches it off. A generator makes electricity while its engine runs.",
+              "context": "Both generators are on in normal flight. The pilot turns one off only for a fault."
+            },
+            {
+              "id": "gen-r",
+              "name": "R GEN switch (right generator)",
+              "type": "switch2",
+              "match": [
+                "item:electrical-panel:2"
+              ],
+              "positions": [
+                {
+                  "name": "NORM",
+                  "text": "The right generator is on line and feeds the electric system."
+                },
+                {
+                  "name": "OFF",
+                  "text": "The right generator is switched off."
+                }
+              ],
+              "text": "This switch connects the right engine's generator to the plane's electric system or switches it off.",
+              "context": "Like the left one, it is on in normal flight and off only for a fault."
+            },
+            {
+              "id": "bat-volt",
+              "name": "Battery voltmeter",
+              "type": "gauge",
+              "match": [
+                "item:electrical-panel:3"
+              ],
+              "text": "A gauge that shows the voltage of the two batteries: U for the utility battery and E for the emergency battery. Voltage tells how full a battery is.",
+              "context": "The pilot checks it at the start. A low reading means little reserve if the generators fail."
+            }
+          ]
+        },
+        {
+          "id": "ecs-panel",
+          "name": "ECS panel (environmental control: air, heat, ice)",
+          "db": "ecs-panel",
+          "src": "m1",
+          "page": "67",
+          "text": "Switches and knobs for the air in the cockpit and for keeping ice away: the hot air from the engines, the engine anti-ice and the heated probes.",
+          "context": "The pilot sets the air system at the start-up. The ice switches are needed in cold, wet weather.",
+          "controls": [
+            {
+              "id": "bleed-air",
+              "name": "BLEED AIR knob",
+              "type": "selector",
+              "match": [
+                "item:ecs-panel:1"
+              ],
+              "positions": [
+                {
+                  "name": "R OFF",
+                  "text": "The right engine's bleed air is shut off."
+                },
+                {
+                  "name": "BOTH",
+                  "text": "Both engines supply bleed air."
+                },
+                {
+                  "name": "L OFF",
+                  "text": "The left engine's bleed air is shut off."
+                },
+                {
+                  "name": "OFF",
+                  "text": "No bleed air is used."
+                },
+                {
+                  "name": "AUG",
+                  "text": "The AUG (augment) position; the catalog gives no more detail."
+                }
+              ],
+              "text": "This knob chooses where the cockpit air system gets hot air. Bleed air is hot air taken from the engines for heating, pressure and de-icing. It can use both engines or one, or be switched off.",
+              "context": "The pilot sets it in the start-up. AUG is a further position of the knob; the catalog gives no more detail."
+            },
+            {
+              "id": "anti-ice",
+              "name": "ENG ANTI-ICE switch (ON / OFF / TEST)",
+              "type": "switch3",
+              "match": [
+                "item:ecs-panel:2"
+              ],
+              "positions": [
+                {
+                  "name": "ON",
+                  "text": "Hot air flows through the engine inlets to keep them ice-free."
+                },
+                {
+                  "name": "OFF",
+                  "text": "The engine anti-ice is off."
+                },
+                {
+                  "name": "TEST",
+                  "text": "Tests the system; the switch springs back."
+                }
+              ],
+              "text": "This switch sends hot air to the engine air inlets so that no ice forms on them. Ice can break off and damage an engine.",
+              "context": "The pilot turns it on in cold, wet air or clouds."
+            },
+            {
+              "id": "pitot-heat",
+              "name": "PITOT HEAT switch (ON / AUTO)",
+              "type": "switch2",
+              "match": [
+                "item:ecs-panel:3"
+              ],
+              "positions": [
+                {
+                  "name": "ON",
+                  "text": "The heaters are on."
+                },
+                {
+                  "name": "AUTO",
+                  "text": "The heaters switch on when the plane is airborne."
+                }
+              ],
+              "text": "This switch heats the pitot tubes, the small tubes outside that measure speed, so they do not freeze.",
+              "context": "In AUTO the heat comes on by itself when the plane is flying. The pilot uses ON on the ground in icy conditions."
+            }
+          ]
+        },
+        {
+          "id": "interior-lights-panel",
+          "name": "Interior lights panel",
+          "db": "interior-lights-panel",
+          "src": "m1",
+          "page": "67",
+          "text": "Knobs for the lights inside the cockpit and a switch to test the warning lights.",
+          "context": "The pilot sets the lights for day or night. At night with night vision goggles the MODE switch is set to NVG.",
+          "controls": [
+            {
+              "id": "cons-light",
+              "name": "CONSOLES lights knob",
+              "type": "knob",
+              "match": [
+                "item:interior-lights-panel:1"
+              ],
+              "positions": [
+                {
+                  "name": "OFF",
+                  "text": "The console lights are off."
+                },
+                {
+                  "name": "BRT",
+                  "text": "The console lights are at their brightest."
+                }
+              ],
+              "text": "This knob sets the brightness of the lights on the side consoles and the circuit breaker panels.",
+              "context": "The pilot uses it for flying at night."
+            },
+            {
+              "id": "inst-light",
+              "name": "INST PNL lights knob (instrument panel)",
+              "type": "knob",
+              "match": [
+                "item:interior-lights-panel:2"
+              ],
+              "positions": [
+                {
+                  "name": "OFF",
+                  "text": "The panel lights are off."
+                },
+                {
+                  "name": "BRT",
+                  "text": "The panel lights are at their brightest."
+                }
+              ],
+              "text": "This knob sets the brightness of the lighting of the instrument panel, the keypad (UFC) and the vertical panels.",
+              "context": "The pilot dims it at night so the glow does not dazzle the eyes."
+            },
+            {
+              "id": "flood-light",
+              "name": "FLOOD lights knob",
+              "type": "knob",
+              "match": [
+                "item:interior-lights-panel:3"
+              ],
+              "positions": [
+                {
+                  "name": "OFF",
+                  "text": "The flood lights are off."
+                },
+                {
+                  "name": "BRT",
+                  "text": "The flood lights are at their brightest."
+                }
+              ],
+              "text": "This knob controls the white flood lights that light up the whole cockpit. They are off when night vision goggles are used.",
+              "context": "It is a general cockpit light for reading charts and finding switches at night."
+            },
+            {
+              "id": "light-mode",
+              "name": "MODE switch (NVG / NITE / DAY)",
+              "type": "switch3",
+              "match": [
+                "item:interior-lights-panel:4"
+              ],
+              "positions": [
+                {
+                  "name": "NVG",
+                  "text": "Lights are set for use with night vision goggles."
+                },
+                {
+                  "name": "NITE",
+                  "text": "Lights are dimmed for night flying without goggles."
+                },
+                {
+                  "name": "DAY",
+                  "text": "Lights are at their daytime brightness."
+                }
+              ],
+              "text": "This switch sets the lighting mode of the whole cockpit. NITE and NVG dim the warning lights. NVG stands for night vision goggles, a pair of goggles that make the dark visible.",
+              "context": "The pilot picks the setting to suit the light and the use of goggles."
+            },
+            {
+              "id": "chart-light",
+              "name": "CHART light knob",
+              "type": "knob",
+              "match": [
+                "item:interior-lights-panel:5"
+              ],
+              "positions": [
+                {
+                  "name": "OFF",
+                  "text": "The chart light is off."
+                },
+                {
+                  "name": "BRT",
+                  "text": "The chart light is at its brightest."
+                }
+              ],
+              "text": "This knob controls a small light on the canopy arch that lets the pilot read a paper chart or map at night.",
+              "context": "It is used on night flights, when a paper chart is read."
+            },
+            {
+              "id": "warn-caut-knob",
+              "name": "WARN / CAUT lights knob",
+              "type": "knob",
+              "match": [
+                "item:interior-lights-panel:6"
+              ],
+              "positions": [
+                {
+                  "name": "RESET",
+                  "text": "The warning lights return to their standard brightness."
+                },
+                {
+                  "name": "BRT",
+                  "text": "The warning lights are at their brightest."
+                }
+              ],
+              "text": "This knob sets the brightness of the warning, caution and advisory lights. A turn to RESET restores the standard brightness.",
+              "context": "The pilot dims the lights at night so that they do not dazzle but remain visible."
+            },
+            {
+              "id": "lt-test",
+              "name": "LT TEST switch (TEST / OFF)",
+              "type": "switch2",
+              "match": [
+                "item:interior-lights-panel:7"
+              ],
+              "positions": [
+                {
+                  "name": "TEST",
+                  "text": "The warning lights, the approach indicator and the engine display light up."
+                },
+                {
+                  "name": "OFF",
+                  "text": "The normal position, no test."
+                }
+              ],
+              "text": "This switch lights up all the warning lights, the approach indicator lights and the engine display at once to show that they work.",
+              "context": "The pilot uses it during the start-up checks to find burnt-out lights."
+            }
+          ]
+        },
+        {
+          "id": "sensors-panel",
+          "name": "Sensors panel",
+          "db": "sensors-panel",
+          "src": "m1",
+          "page": "68",
+          "text": "Switches that give power to the plane's sensors: the inertial navigation, the radar, the targeting pod and the laser.",
+          "context": "The pilot switches them on during the start-up. They need time to warm up and align before the flight.",
+          "controls": [
+            {
+              "id": "ins-knob",
+              "name": "INS knob (OFF / CV / GND / NAV / IFA)",
+              "type": "selector",
+              "match": [
+                "item:sensors-panel:1"
+              ],
+              "positions": [
+                {
+                  "name": "OFF",
+                  "text": "The INS is off."
+                },
+                {
+                  "name": "CV",
+                  "text": "The INS aligns on a moving aircraft carrier."
+                },
+                {
+                  "name": "GND",
+                  "text": "The INS aligns on the ground."
+                },
+                {
+                  "name": "NAV",
+                  "text": "The INS is in normal navigation operation."
+                },
+                {
+                  "name": "IFA",
+                  "text": "The INS aligns in flight."
+                }
+              ],
+              "text": "This knob switches on the INS, the inertial navigation system. It always knows where the plane is by feeling its own movements. The knob picks how the INS is aligned first, on a carrier (CV), on the ground (GND), or in flight (IFA), and NAV is normal navigation.",
+              "context": "The pilot sets it early in the start-up. The INS needs time to align before the plane can navigate well."
+            },
+            {
+              "id": "radar-knob",
+              "name": "RADAR knob (OFF / STBY / OPR / EMERG)",
+              "type": "selector",
+              "match": [
+                "item:sensors-panel:2"
+              ],
+              "positions": [
+                {
+                  "name": "OFF",
+                  "text": "The radar is off."
+                },
+                {
+                  "name": "STBY",
+                  "text": "The radar warms up and waits."
+                },
+                {
+                  "name": "OPR",
+                  "text": "The radar is working and sending its beam."
+                },
+                {
+                  "name": "EMERG",
+                  "text": "The emergency setting of the radar."
+                }
+              ],
+              "text": "This knob gives power to the radar. STBY (standby) warms the radar up without sending a beam. OPR (operate) sends the beam out. EMERG is an emergency setting.",
+              "context": "The pilot warms the radar up in STBY while still on the ground, and switches to OPR when it should search."
+            },
+            {
+              "id": "flir-sw",
+              "name": "FLIR switch (ON / STBY / OFF)",
+              "type": "switch3",
+              "match": [
+                "item:sensors-panel:3"
+              ],
+              "positions": [
+                {
+                  "name": "ON",
+                  "text": "The pod is on and working."
+                },
+                {
+                  "name": "STBY",
+                  "text": "The pod is on stand-by and warming up."
+                },
+                {
+                  "name": "OFF",
+                  "text": "The pod is off."
+                }
+              ],
+              "text": "This switch gives power to the targeting pod under the plane (an ATFLIR or Litening pod). The pod is a camera with a zoom that sees heat in the dark and carries a laser.",
+              "context": "The pilot switches it to STBY to warm it up before the mission, then to ON for use."
+            },
+            {
+              "id": "ltdr-sw",
+              "name": "LTD/R switch (laser ARM / SAFE)",
+              "type": "switch2",
+              "match": [
+                "item:sensors-panel:4"
+              ],
+              "positions": [
+                {
+                  "name": "ARM",
+                  "text": "The laser can fire when the pilot uses it."
+                },
+                {
+                  "name": "SAFE",
+                  "text": "The laser cannot fire."
+                }
+              ],
+              "text": "This switch arms the laser of the targeting pod. The laser measures distance and marks targets for laser-guided bombs. The switch has to be lifted before it moves.",
+              "context": "It is kept in SAFE until the pilot is about to use the laser."
+            },
+            {
+              "id": "lst-sw",
+              "name": "LST / NFLR switch (ON / OFF)",
+              "type": "switch2",
+              "match": [
+                "item:sensors-panel:5"
+              ],
+              "positions": [
+                {
+                  "name": "ON",
+                  "text": "The equipment is powered."
+                },
+                {
+                  "name": "OFF",
+                  "text": "The equipment is off."
+                }
+              ],
+              "text": "This switch gives power to the laser spot tracker, which finds the spot where another laser points, or to the navigation FLIR, a night-vision camera for flying.",
+              "context": "The pilot turns it on when this equipment is needed."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "hotas",
+      "where": "hotas",
+      "name": "Stick and throttle",
+      "text": "The grips of the control stick and the throttles, with the buttons and switches that the pilot can use without letting go.",
+      "panels": [
+        {
+          "id": "stick",
+          "name": "Stick (control stick grip)",
+          "text": "The stick between the pilot's knees steers the plane. The buttons and switches on its grip can be used without letting go.",
+          "context": "In a fight the pilot flies and works the weapons and sensors with the grips alone.",
+          "controls": [
+            {
+              "id": "stick-gimbal",
+              "name": "Control stick (pitch and roll)",
+              "type": "axis",
+              "match": [
+                "control:stick.gimbal"
+              ],
+              "text": "The stick between the pilot's knees. Pushing it forward or pulling it back tips the nose down or up (pitch). Moving it left or right rolls the plane to that side (roll).",
+              "context": "It is the main flying control, held with the right hand. The buttons on its grip let the pilot work weapons and sensors without letting go."
+            },
+            {
+              "id": "stick-trigger",
+              "name": "Trigger switch",
+              "type": "trigger",
+              "match": [
+                "control:stick.trigger"
+              ],
+              "text": "The trigger on the front of the grip, pressed with the index finger. It fires the gun or launches an air-to-air missile.",
+              "context": "It works only when the master arm switch is set to ARM and a weapon is chosen."
+            },
+            {
+              "id": "stick-pickle",
+              "name": "Weapon release button (pickle)",
+              "type": "button",
+              "match": [
+                "control:stick.weapon_release"
+              ],
+              "text": "The red button at the top left of the grip, pressed with the thumb. Holding it releases the bombs or missiles for ground targets.",
+              "context": "The pilot uses it in air-to-ground mode with master arm in ARM. The name pickle is pilot slang for this button."
+            },
+            {
+              "id": "stick-nws",
+              "name": "Undesignate / nosewheel steering button",
+              "type": "button",
+              "match": [
+                "control:stick.button.index_lower"
+              ],
+              "text": "The button below the trigger. On the ground it turns on the nosewheel steering, and holding it gives a stronger steering response. In the air it clears a target mark (undesignate) or breaks the radar lock on a target.",
+              "context": "On the ground the pilot steers the front wheel with the pedals once it is on. In flight it undoes the last target choice."
+            },
+            {
+              "id": "stick-scs",
+              "name": "Sensor control switch (SCS)",
+              "type": "hat",
+              "match": [
+                "control:stick.hat.scs"
+              ],
+              "text": "A small four-way switch on top of the grip that springs back. Each direction hands the cursor of the throttle designator to a screen: forward to the HUD, back to the centre display, left to the left DDI and right to the right DDI. In air-to-air mode, forward and back also start close-combat radar modes.",
+              "context": "The pilot uses it constantly to choose which screen the cursor works on. The exact action depends on the mode and the game."
+            },
+            {
+              "id": "stick-trim",
+              "name": "Pitch and roll trim switch",
+              "type": "hat",
+              "match": [
+                "control:stick.hat.trim"
+              ],
+              "text": "A four-way switch on the grip. Forward trims the nose down and back trims it up. Left or right trims the plane to roll to that side. Trim means small adjustments so the plane flies straight without the pilot holding the stick.",
+              "context": "The pilot trims after changing speed or load, so the stick does not have to be held with force."
+            },
+            {
+              "id": "stick-recce",
+              "name": "RECCE / event mark button",
+              "type": "button",
+              "match": [
+                "control:stick.button.recce"
+              ],
+              "text": "A small button on the grip head. Its job depends on the version: on the original A/B it marks an event for reconnaissance, and where a helmet display exists it blanks that display.",
+              "context": "It is not used often. This guide does not give more details because the catalog describes it only in these two ways."
+            },
+            {
+              "id": "stick-weapon",
+              "name": "Weapon select switch",
+              "type": "hat",
+              "match": [
+                "control:stick.hat.weapon_select"
+              ],
+              "text": "A four-way switch with a push on the left of the grip. In air-to-air mode, each direction picks a weapon: forward a Sparrow missile, pressing in a Sidewinder missile, back the gun. A right press picks the AIM-120 AMRAAM missile on jets that can carry it.",
+              "context": "The pilot uses it to switch weapons quickly in a fight without taking a hand off the controls."
+            },
+            {
+              "id": "stick-paddle",
+              "name": "Autopilot / nosewheel steering disengage paddle",
+              "type": "lever",
+              "match": [
+                "control:stick.pinky.lever"
+              ],
+              "text": "A paddle lever under the grip at the front of the stick, pressed with the little finger. It switches off the nosewheel steering and the autopilot at once. Pulling the stick fully back with it lifts the limit on the g-forces (g-lim override).",
+              "context": "It is the quick way to take back full control from the autopilot or to stop the front wheel steering."
+            }
+          ]
+        },
+        {
+          "id": "throttle",
+          "name": "Throttles (two engine levers)",
+          "text": "The two throttle levers on the left, one for each engine. The switches on the grips are used without leaving the throttles.",
+          "context": "The pilot flies with the right hand on the stick and the left hand on the throttles.",
+          "controls": [
+            {
+              "id": "thr-left",
+              "name": "Left throttle (engine power)",
+              "type": "axis",
+              "match": [
+                "control:throttle.axis.left"
+              ],
+              "text": "The lever for the left engine. Pushing it forward gives more power and pulling it back less. The positions are OFF, IDLE, MIL (full power without afterburner) and the afterburner range. The move from OFF to IDLE is the start of the engine and back is the stop.",
+              "context": "The pilot holds both throttles in the left hand. Afterburner is extra fuel burned at the back of the engine for much more push."
+            },
+            {
+              "id": "thr-right",
+              "name": "Right throttle (engine power)",
+              "type": "axis",
+              "match": [
+                "control:throttle.axis.right"
+              ],
+              "text": "The lever for the right engine. It works like the left one, with OFF, IDLE, MIL and the afterburner range. The move from OFF to IDLE starts the engine.",
+              "context": "The two levers are usually moved together, but each engine can be controlled alone."
+            },
+            {
+              "id": "thr-dispense",
+              "name": "Dispense switch (countermeasures)",
+              "type": "switch3",
+              "match": [
+                "control:throttle.switch.dispense"
+              ],
+              "positions": [
+                {
+                  "name": "FWD",
+                  "text": "Starts countermeasure program 5; with the dispenser in BYPASS it releases one chaff."
+                },
+                {
+                  "name": "CENTER",
+                  "text": "Nothing is released."
+                },
+                {
+                  "name": "AFT",
+                  "text": "Starts the program set on the EW page; with the dispenser in BYPASS it releases one flare."
+                }
+              ],
+              "text": "A fore-and-aft switch on top of the left throttle. It releases countermeasures, decoys that fool enemy missiles: chaff (clouds of metal strips for radar missiles) and flares (hot burning decoys for heat-seeking missiles).",
+              "context": "The pilot uses it when a missile threatens the plane. With the dispenser on BYPASS it releases a single chaff or a single flare."
+            },
+            {
+              "id": "thr-comm",
+              "name": "COMM switch (radio transmit)",
+              "type": "hat",
+              "match": [
+                "control:throttle.hat.mic"
+              ],
+              "text": "A switch on the left throttle grip, pressed with the thumb to talk on a radio. Forward transmits on COMM 1 and back on COMM 2. On jets with a MIDS radio, the other two directions transmit on MIDS A and MIDS B.",
+              "context": "The pilot talks to the tower, the tanker and other pilots with it. The radios themselves are set on the keypad under the HUD."
+            },
+            {
+              "id": "thr-speedbrake",
+              "name": "Speed brake switch",
+              "type": "switch3",
+              "match": [
+                "control:throttle.speedbrake"
+              ],
+              "positions": [
+                {
+                  "name": "AFT",
+                  "text": "The speed brake extends while the switch is held."
+                },
+                {
+                  "name": "CENTER",
+                  "text": "The speed brake stays where it is; the switch is off."
+                },
+                {
+                  "name": "FWD",
+                  "text": "The speed brake retracts."
+                }
+              ],
+              "text": "A slide switch on the left throttle grip. It opens and closes the speed brake, panels that open into the wind and slow the plane down. The thumb moves it aft to extend and forward to retract.",
+              "context": "The pilot uses it to slow down or to lose speed during the approach. Above 400 knots the speed brake slowly closes by itself."
+            },
+            {
+              "id": "thr-cage",
+              "name": "CAGE / UNCAGE button",
+              "type": "button",
+              "match": [
+                "control:throttle.cage"
+              ],
+              "text": "A button on the right throttle grip. In plain navigation it cages or uncages the velocity vector, the HUD mark that shows where the plane is going. With a heat-seeking Sidewinder it works the seeker, and with a Maverick missile it cages or uncages the seeker.",
+              "context": "To cage means to hold the seeker looking straight ahead, to uncage means to let it look around and track."
+            },
+            {
+              "id": "thr-tdc",
+              "name": "Throttle designator controller (TDC)",
+              "type": "other",
+              "match": [
+                "control:throttle.ministick"
+              ],
+              "text": "A small pressure-sensitive nub on the right throttle grip, moved with the thumb. Pushing it slews a cursor on a screen or moves a sensor. Pressing straight down designates (picks) what is under the cursor, selects a menu option, or locks a target.",
+              "context": "It is the pilot's mouse. The screen it controls is chosen with the sensor control switch on the stick."
+            },
+            {
+              "id": "thr-antenna",
+              "name": "Antenna elevation control",
+              "type": "wheel",
+              "match": [
+                "control:throttle.wheel.ant_elev"
+              ],
+              "text": "A thumbwheel on the right throttle grip. It tilts the radar beam up and down, so the radar looks higher or lower in the sky.",
+              "context": "The pilot uses it to search for aircraft above or below the plane's nose."
+            },
+            {
+              "id": "thr-raid",
+              "name": "RAID / FLIR FOV select button",
+              "type": "button",
+              "match": [
+                "control:throttle.button.raid_fov"
+              ],
+              "text": "A button on the outside of the right throttle grip. Its job depends on the mode: it changes the zoom (field of view, FOV) of the targeting camera or Maverick missile, or sets the radar to RAID mode for looking closely at a group of aircraft. With an anti-radar HARM missile it picks the next target.",
+              "context": "The pilot presses it to zoom a sensor picture or to look closer at radar contacts."
+            },
+            {
+              "id": "thr-atc",
+              "name": "ATC engage / disengage button",
+              "type": "button",
+              "match": [
+                "control:throttle.button.atc"
+              ],
+              "text": "A button on the inside of the left throttle grip. ATC is the automatic throttle control, which moves the throttles by itself. The catalog names two modes: approach mode, and cruise mode which holds the airspeed.",
+              "context": "The pilot uses it to let the plane hold the speed on its own, for example on the approach to land."
+            },
+            {
+              "id": "thr-ext-lights",
+              "name": "Exterior lights master switch",
+              "type": "switch2",
+              "match": [
+                "control:throttle.switch.ext_lights"
+              ],
+              "positions": [
+                {
+                  "name": "FWD",
+                  "text": "The exterior lights are on."
+                },
+                {
+                  "name": "AFT",
+                  "text": "The exterior lights are off."
+                }
+              ],
+              "text": "A switch on the outside of the left throttle grip. It turns the plane's outside lights on or off together. The single light controls are on the left console.",
+              "context": "Forward is on and aft is off. The pilot uses it for take-off, landing and night flying."
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

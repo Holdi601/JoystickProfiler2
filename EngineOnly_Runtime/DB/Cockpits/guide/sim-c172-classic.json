@@ -1,0 +1,706 @@
+{
+  "format": "joypro-cockpit-guide",
+  "version": 1,
+  "id": "sim-c172-classic",
+  "title": "Cessna 172 Skyhawk with steam gauges (cockpit)",
+  "variants": [
+    "c172-classic"
+  ],
+  "games": [
+    "MSFS2020",
+    "MSFS2024",
+    "XPlane11",
+    "XPlane12",
+    "FSX",
+    "P3D5"
+  ],
+  "sets": [],
+  "intro": "The Cessna 172 is the most famous small training aeroplane: four seats, a high wing and one piston engine with a fixed propeller. The cockpit has round (analogue) instruments, a control wheel in front of each front seat, and push-pull knobs for throttle and mixture in the middle of the lower panel. There is no propeller lever, because the propeller cannot change its pitch.",
+  "sources": [
+    {
+      "id": "c1",
+      "title": "JoyPro cockpit catalog",
+      "kind": "reference"
+    },
+    {
+      "id": "s1",
+      "title": "Cessna 172 (Wikipedia)",
+      "url": "https://en.wikipedia.org/wiki/Cessna_172"
+    },
+    {
+      "id": "s2",
+      "title": "X-Plane 12 Desktop Manual",
+      "url": "https://www.x-plane.com/manuals/desktop/"
+    },
+    {
+      "id": "x1",
+      "title": "X-Plane C172 SP Pilot Operating Manual (Laminar Research)",
+      "file": "H:/SteamLibrary/steamapps/common/X-Plane 12/Aircraft/Laminar Research/Cessna 172 SP/X-Plane_C172_Pilot_Operating_Manual.pdf"
+    },
+    {
+      "id": "g1",
+      "title": "Cessna 172 POH (public knowledge)"
+    },
+    {
+      "id": "g2",
+      "title": "Cessna 172S NAV III (G1000) POH (public knowledge)"
+    },
+    {
+      "id": "fn",
+      "title": "JoyPro function tables MSFS2020/2024 and X-Plane 11/12 (DB/Functions)"
+    }
+  ],
+  "areas": [
+    {
+      "id": "glareshield",
+      "where": "glareshield",
+      "name": "Annunciator panel",
+      "text": "A small row of warning lights above the main instruments.",
+      "panels": [
+        {
+          "id": "annunciators",
+          "name": "Annunciator panel",
+          "db": "annunciators",
+          "src": "x1",
+          "page": "29",
+          "text": "A small board of warning lights above the main instruments. Each light has a word on it and comes on when something is wrong.",
+          "context": "The pilot glances at it regularly. In the normal flight all the lights are dark.",
+          "controls": [
+            {
+              "id": "fuel-low",
+              "name": "L FUEL R",
+              "type": "light",
+              "match": [
+                "item:annunciators:1"
+              ],
+              "text": "These lights come on when the fuel in the left or right tank is low. L is the left tank and R the right.",
+              "context": "The pilot should land and refuel when a fuel warning shows."
+            },
+            {
+              "id": "oil-press",
+              "name": "OIL PRESS",
+              "type": "light",
+              "match": [
+                "item:annunciators:2"
+              ],
+              "text": "This light comes on when the oil pressure of the engine is too low. Engine oil is needed to lubricate the moving parts.",
+              "context": "If this light stays on, the pilot should land as soon as possible."
+            },
+            {
+              "id": "vacuum",
+              "name": "L VAC R",
+              "type": "light",
+              "match": [
+                "item:annunciators:3"
+              ],
+              "text": "These lights come on when the vacuum (suction) from the left or right pump is low. The suction drives some of the gyro instruments.",
+              "context": "If it stays on, the attitude and heading indicators may fail."
+            },
+            {
+              "id": "volts",
+              "name": "VOLTS",
+              "type": "light",
+              "match": [
+                "item:annunciators:4"
+              ],
+              "text": "This light comes on when the electrical voltage is low. It means the aircraft's electricity supply is not working well.",
+              "context": "The pilot checks the electrical switches and the ammeter when it shows."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "front-left",
+      "where": "front-left",
+      "name": "Flight instruments and engine gauges",
+      "text": "The pilot's flight instruments in a T shape, and the secondary instruments next to them.",
+      "panels": [
+        {
+          "id": "flight-instruments",
+          "name": "Primary flight instruments (six-pack)",
+          "db": "flight-instruments",
+          "src": "x1",
+          "page": "15",
+          "text": "Six round instruments in a standard layout, the classic T. They show the speed, the nose up-down attitude, the height, the turn, the compass heading and the climb rate.",
+          "context": "The pilot flies with them by looking at them in a constant scan.",
+          "controls": [
+            {
+              "id": "asi",
+              "name": "Airspeed indicator",
+              "type": "gauge",
+              "match": [
+                "item:flight-instruments:1"
+              ],
+              "text": "This gauge shows how fast the aircraft moves through the air, in knots. Coloured arcs mark the safe ranges (white for flaps, green for normal, yellow for care).",
+              "context": "The pilot watches it constantly. Too slow and the wing stops lifting."
+            },
+            {
+              "id": "attitude",
+              "name": "Attitude indicator",
+              "type": "gauge",
+              "match": [
+                "item:flight-instruments:2"
+              ],
+              "text": "This gauge shows whether the nose points up or down and whether the wings are level. It is also called the artificial horizon and is driven by the vacuum system.",
+              "context": "It is the most useful instrument in the clouds, where the pilot cannot see the real horizon."
+            },
+            {
+              "id": "altimeter",
+              "name": "Altimeter",
+              "type": "gauge",
+              "match": [
+                "item:flight-instruments:3"
+              ],
+              "text": "This gauge shows the height above sea level. A small window and knob set the local air pressure so the reading is right.",
+              "context": "The pilot sets the pressure before the flight."
+            },
+            {
+              "id": "turn-coord",
+              "name": "Turn coordinator",
+              "type": "gauge",
+              "match": [
+                "item:flight-instruments:4"
+              ],
+              "text": "This gauge shows how fast the aircraft turns and, with a ball in a tube, whether the turn is balanced.",
+              "context": "The pilot keeps the ball in the middle with the rudder pedals."
+            },
+            {
+              "id": "heading",
+              "name": "Heading indicator",
+              "type": "gauge",
+              "match": [
+                "item:flight-instruments:5"
+              ],
+              "text": "This gauge shows the compass direction the nose points to, driven by a gyro. It has a heading bug that the pilot can set.",
+              "context": "The pilot sets it to the magnetic compass every so often, as gyros drift."
+            },
+            {
+              "id": "vsi",
+              "name": "Vertical speed indicator",
+              "type": "gauge",
+              "match": [
+                "item:flight-instruments:6"
+              ],
+              "text": "This gauge shows how fast the aircraft climbs or sinks, in feet per minute.",
+              "context": "The pilot uses it to hold a steady climb or descent."
+            }
+          ]
+        },
+        {
+          "id": "secondary-instruments",
+          "name": "Secondary instruments",
+          "db": "secondary-instruments",
+          "src": "x1",
+          "page": "18",
+          "text": "The clock, the fuel gauges, the engine gauges, the tachometer and the navigation receivers next to the flight instruments.",
+          "context": "The pilot checks the engine and the fuel here and uses the navigation instruments to follow radio beams.",
+          "controls": [
+            {
+              "id": "chrono",
+              "name": "Chronometer",
+              "type": "gauge",
+              "match": [
+                "item:secondary-instruments:1"
+              ],
+              "text": "This clock shows the time, the flight time and a timer.",
+              "context": "The pilot times legs of the flight with it."
+            },
+            {
+              "id": "fuel-gauges",
+              "name": "Fuel quantity gauges",
+              "type": "gauge",
+              "match": [
+                "item:secondary-instruments:2"
+              ],
+              "text": "These gauges show how much fuel is in the left and right tank.",
+              "context": "The pilot checks them before and during the flight."
+            },
+            {
+              "id": "engine-gauges",
+              "name": "Engine gauges: EGT / fuel flow, oil, vacuum, ammeter",
+              "type": "gauge",
+              "match": [
+                "item:secondary-instruments:3"
+              ],
+              "text": "These gauges show the engine's exhaust gas temperature and fuel flow, the oil temperature and pressure, the vacuum pressure and the electrical current (ammeter).",
+              "context": "The pilot checks that all values are in the green range."
+            },
+            {
+              "id": "tach",
+              "name": "Tachometer",
+              "type": "gauge",
+              "match": [
+                "item:secondary-instruments:4"
+              ],
+              "text": "This gauge shows how fast the engine turns, in revolutions per minute, and an hour meter of the engine's running time.",
+              "context": "The pilot reads it to set the power and to check the engine."
+            },
+            {
+              "id": "vor1",
+              "name": "VOR1 / ILS receiver (CDI)",
+              "type": "gauge",
+              "match": [
+                "item:secondary-instruments:5"
+              ],
+              "text": "This gauge shows whether the aircraft is left or right of a chosen radio beam (VOR), or of the landing beam of a runway (ILS). It also shows up or down for the glideslope.",
+              "context": "The pilot follows the needle to stay on the beam."
+            },
+            {
+              "id": "vor2",
+              "name": "VOR2 receiver",
+              "type": "gauge",
+              "match": [
+                "item:secondary-instruments:6"
+              ],
+              "text": "The second radio beam instrument. It works like the first one with another radio.",
+              "context": "The pilot uses it to cross-check a position."
+            },
+            {
+              "id": "adf",
+              "name": "ADF receiver",
+              "type": "gauge",
+              "match": [
+                "item:secondary-instruments:7"
+              ],
+              "text": "This gauge points to a ground radio beacon (NDB), so the pilot knows in which direction it lies.",
+              "context": "The pilot flies toward the beacon by keeping the needle ahead."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "front-center",
+      "where": "front-center",
+      "name": "Avionics stack",
+      "text": "The radios, the navigators, the transponder and the autopilot in the middle of the panel.",
+      "panels": [
+        {
+          "id": "avionics",
+          "name": "Avionics stack",
+          "db": "avionics",
+          "src": "x1",
+          "page": "22",
+          "text": "The column of radios in the middle of the panel: the audio panel, two GPS navigators with radios, the transponder and the autopilot.",
+          "context": "The pilot uses them to talk to air traffic control, to navigate and to let the autopilot fly.",
+          "controls": [
+            {
+              "id": "audio",
+              "name": "Audio switching panel",
+              "type": "button",
+              "match": [
+                "item:avionics:1"
+              ],
+              "text": "This panel chooses which radio the pilot talks on and which radios can be heard.",
+              "context": "The pilot selects the right radio before transmitting."
+            },
+            {
+              "id": "gns530",
+              "name": "GNS 530 (COM1 / NAV1 / GPS)",
+              "type": "display",
+              "match": [
+                "item:avionics:2"
+              ],
+              "text": "A satellite navigator with a screen and a radio. It shows a map and the flight plan and has the first communication and navigation radio.",
+              "context": "The pilot uses it to navigate and to tune radio frequencies."
+            },
+            {
+              "id": "gns430",
+              "name": "GNS 430 (COM2 / NAV2 / GPS)",
+              "type": "display",
+              "match": [
+                "item:avionics:3"
+              ],
+              "text": "The second satellite navigator with a screen and radios. It works like the first one.",
+              "context": "The pilot uses it as a second navigator and radio."
+            },
+            {
+              "id": "xpdr",
+              "name": "Transponder",
+              "type": "keypad",
+              "match": [
+                "item:avionics:4"
+              ],
+              "text": "The transponder is a radio box that answers questions from radar. The pilot sets the four-number code that air traffic control gives and the mode.",
+              "context": "The code lets the radar identify the aircraft."
+            },
+            {
+              "id": "autopilot",
+              "name": "Autopilot (KAP 140)",
+              "type": "button",
+              "match": [
+                "item:avionics:5"
+              ],
+              "text": "The autopilot panel has buttons for AP, HDG, NAV, APR, REV and ALT and keys for the up and down changes. It holds a heading, a height or follows a radio beam.",
+              "context": "The pilot switches it on to relieve the work during a long flight."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "front-left-low",
+      "where": "front-left",
+      "name": "Switch panel and lower panel",
+      "text": "The switches under the instruments with the key switch, the master switch, the lights and the engine knobs.",
+      "panels": [
+        {
+          "id": "switch-panel",
+          "name": "Switch panel and lower panel",
+          "db": "switch-panel",
+          "src": "x1",
+          "page": "25",
+          "text": "The row of switches under the instruments with the ignition key, the master switch, the fuel pump, the lights and the avionics switches, plus the throttle and mixture knobs, flap lever, trim wheel and fuel selector.",
+          "context": "The pilot uses these controls for the whole flight, from the engine start to shut-down.",
+          "controls": [
+            {
+              "id": "ignition",
+              "name": "Ignition / magneto key switch",
+              "type": "selector",
+              "match": [
+                "item:switch-panel:1"
+              ],
+              "positions": [
+                {
+                  "name": "OFF",
+                  "text": "The magnetos are off and the engine stops."
+                },
+                {
+                  "name": "R",
+                  "text": "Only the right magneto gives sparks."
+                },
+                {
+                  "name": "L",
+                  "text": "Only the left magneto gives sparks."
+                },
+                {
+                  "name": "BOTH",
+                  "text": "Both magnetos work, the normal setting."
+                },
+                {
+                  "name": "START",
+                  "text": "The starter turns the engine. It springs back to BOTH on release."
+                }
+              ],
+              "text": "This key switch turns on the magnetos (the sparks of the engine) and the starter. The pilot turns the key to START to crank the engine, then it springs back to BOTH.",
+              "context": "It works like the ignition key of a car, but the engine has two magnetos for safety."
+            },
+            {
+              "id": "master",
+              "name": "Master switch (ALT / BAT)",
+              "type": "switch2",
+              "match": [
+                "item:switch-panel:2"
+              ],
+              "positions": [
+                {
+                  "name": "ON",
+                  "text": "The battery and the alternator are connected."
+                },
+                {
+                  "name": "OFF",
+                  "text": "The electricity is disconnected."
+                }
+              ],
+              "text": "This is the master switch of the aircraft's electricity. One half is the battery (BAT) and the other half the alternator (ALT), which makes electricity while the engine runs.",
+              "context": "It is switched on first before starting the engine."
+            },
+            {
+              "id": "fuel-pump",
+              "name": "Fuel pump switch",
+              "type": "switch2",
+              "match": [
+                "item:switch-panel:3"
+              ],
+              "positions": [
+                {
+                  "name": "ON",
+                  "text": "The electric fuel pump runs."
+                },
+                {
+                  "name": "OFF",
+                  "text": "The electric fuel pump is off."
+                }
+              ],
+              "text": "This switch turns on the electric fuel pump, which pushes fuel to the engine in addition to the engine's own pump.",
+              "context": "It is used for the start and for take-off and landing as a safety."
+            },
+            {
+              "id": "lights",
+              "name": "Beacon, landing, taxi, nav, strobe switches",
+              "type": "switch",
+              "match": [
+                "item:switch-panel:4"
+              ],
+              "text": "These switches control the lights outside the aircraft: beacon, landing, taxi, navigation and strobe.",
+              "context": "The pilot uses them to be seen by others and to see the runway at night."
+            },
+            {
+              "id": "avionics-bus",
+              "name": "Avionics bus 1 / bus 2 switches",
+              "type": "switch",
+              "match": [
+                "item:switch-panel:5"
+              ],
+              "text": "These switches give electricity to the radios and navigation equipment (avionics), which sit on two supply lines called buses.",
+              "context": "They are switched on after the engine starts."
+            },
+            {
+              "id": "throttle",
+              "name": "Throttle knob",
+              "type": "knob",
+              "match": [
+                "item:switch-panel:6"
+              ],
+              "text": "This black knob in the middle of the lower panel controls the engine power. Pushing it in gives more power, pulling it out gives less.",
+              "context": "The pilot pushes it fully in for take-off and pulls it back for landing."
+            },
+            {
+              "id": "mixture",
+              "name": "Mixture knob",
+              "type": "knob",
+              "match": [
+                "item:switch-panel:7"
+              ],
+              "text": "This red knob sets how much fuel mixes with the air. Fully in is rich (lots of fuel), pulling out leans the mixture, and fully out cuts the engine off.",
+              "context": "The pilot leans it at high altitude, where the air is thin. Pulling it fully out stops the engine."
+            },
+            {
+              "id": "flaps",
+              "name": "Flap lever and indicator",
+              "type": "lever",
+              "match": [
+                "item:switch-panel:8"
+              ],
+              "positions": [
+                {
+                  "name": "UP",
+                  "text": "The flaps are folded in."
+                },
+                {
+                  "name": "10",
+                  "text": "Flaps at 10 degrees."
+                },
+                {
+                  "name": "20",
+                  "text": "Flaps at 20 degrees."
+                },
+                {
+                  "name": "FULL",
+                  "text": "Full flaps, used for landing."
+                }
+              ],
+              "text": "This lever sets the flaps, the parts of the wing that extend for more lift at low speed. An indicator shows the setting.",
+              "context": "The pilot extends the flaps for take-off and landing."
+            },
+            {
+              "id": "trim-wheel",
+              "name": "Elevator trim wheel",
+              "type": "wheel",
+              "match": [
+                "item:switch-panel:9"
+              ],
+              "text": "This wheel between the seats trims the elevator, the flap on the tail that pitches the nose. An indicator shows the setting.",
+              "context": "The pilot trims so the aircraft keeps its speed without pushing on the control wheel."
+            },
+            {
+              "id": "fuel-selector",
+              "name": "Fuel selector",
+              "type": "selector",
+              "match": [
+                "item:switch-panel:10"
+              ],
+              "positions": [
+                {
+                  "name": "LEFT",
+                  "text": "Only the left tank feeds the engine."
+                },
+                {
+                  "name": "BOTH",
+                  "text": "Both tanks feed the engine."
+                },
+                {
+                  "name": "RIGHT",
+                  "text": "Only the right tank feeds the engine."
+                }
+              ],
+              "text": "This selector chooses which tank feeds the engine: the left, both or the right tank.",
+              "context": "BOTH is the normal setting for flying; the pilot uses the single tanks only for special cases."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "hotas",
+      "where": "hotas",
+      "name": "Control wheel, engine knobs and pedals",
+      "text": "The controls that match your yoke, throttle and pedals: the control wheel, the throttle and mixture knobs, the trim wheel, the flap switch and the pedals.",
+      "panels": [
+        {
+          "id": "yoke",
+          "name": "Control wheel",
+          "src": "x1",
+          "page": "15",
+          "text": "The control wheel in front of each seat with a push-to-talk switch on the pilot's wheel.",
+          "context": "The pilot flies by pushing and pulling the wheel and turning it.",
+          "controls": [
+            {
+              "id": "yoke-gimbal",
+              "name": "Control wheel",
+              "type": "axis",
+              "match": [
+                "control:yoke.gimbal"
+              ],
+              "text": "Pushing the wheel forward and pulling back moves the elevator and pitches the nose down and up. Turning the wheel rolls the aircraft left and right.",
+              "context": "It is the main control for flying by hand."
+            },
+            {
+              "id": "ptt",
+              "name": "Push-to-talk switch",
+              "type": "button",
+              "match": [
+                "control:yoke.button.ptt"
+              ],
+              "text": "A switch on the left horn of the pilot's wheel. Pressing it transmits on the radio while it is held.",
+              "context": "The pilot presses it before talking."
+            }
+          ]
+        },
+        {
+          "id": "engine-controls",
+          "name": "Engine knobs, trim and flaps",
+          "src": "x1",
+          "page": "25",
+          "text": "The push-pull knobs for throttle, mixture and carburettor heat, the trim wheel and the flap switch, as they match a throttle device.",
+          "context": "The pilot handles them throughout the flight.",
+          "controls": [
+            {
+              "id": "throttle-hotas",
+              "name": "Throttle",
+              "type": "axis",
+              "match": [
+                "control:quadrant.axis.lever.1"
+              ],
+              "text": "The black push-pull knob in the middle of the lower panel. Pushing it in gives more engine power.",
+              "context": "The pilot pushes it in for take-off and pulls it out for landing."
+            },
+            {
+              "id": "mixture-hotas",
+              "name": "Mixture",
+              "type": "axis",
+              "match": [
+                "control:quadrant.axis.lever.2"
+              ],
+              "text": "The red push-pull knob to the right of the throttle. It sets the fuel and air mixture from rich to idle cut-off. It has a vernier, a fine adjustment by twisting.",
+              "context": "Pulling it fully out stops the engine."
+            },
+            {
+              "id": "carb-heat",
+              "name": "Carburettor heat",
+              "type": "knob",
+              "match": [
+                "control:quadrant.knob.carb_heat"
+              ],
+              "text": "A push-pull knob next to the throttle. Pulling it sends hot air to the carburettor (the part that mixes fuel and air) to melt ice that may form there.",
+              "context": "The pilot uses it in damp air and when reducing the power, as ice can form in the carburettor."
+            },
+            {
+              "id": "trim-hotas",
+              "name": "Elevator trim wheel",
+              "type": "wheel",
+              "match": [
+                "control:quadrant.wheel.pitch_trim"
+              ],
+              "text": "The vertical wheel in the centre console between the seats. Forward trims the nose down, aft trims it up.",
+              "context": "Trim removes the force from the control wheel."
+            },
+            {
+              "id": "flaps-hotas",
+              "name": "Wing flap switch",
+              "type": "switch3",
+              "match": [
+                "control:panel.switch.flaps"
+              ],
+              "positions": [
+                {
+                  "name": "up",
+                  "text": "Flaps up one step."
+                },
+                {
+                  "name": "center",
+                  "text": "The lever stays in the middle, no movement."
+                },
+                {
+                  "name": "down",
+                  "text": "Flaps down one step."
+                }
+              ],
+              "text": "The electric flap lever on the lower right panel. Moving it up retracts the flaps one step, moving it down extends them one step.",
+              "context": "The pilot uses it for take-off and landing."
+            }
+          ]
+        },
+        {
+          "id": "pedals-fuel",
+          "name": "Pedals, parking brake and fuel selector",
+          "src": "x1",
+          "page": "25",
+          "text": "The rudder pedals with the toe brakes, the parking brake handle and the fuel selector valve between the seats.",
+          "context": "They steer the aircraft on the ground, hold it while parked and choose the fuel tank.",
+          "controls": [
+            {
+              "id": "pedals",
+              "name": "Rudder pedals",
+              "type": "axis",
+              "match": [
+                "control:pedals.axis.rudder"
+              ],
+              "text": "The pedals move the rudder left and right. The toe brakes on top of the pedals brake the left and right wheels. The pedals also steer the nose wheel a few degrees.",
+              "context": "The pedals keep the aircraft straight on the runway."
+            },
+            {
+              "id": "park-brake",
+              "name": "Parking brake handle",
+              "type": "lever",
+              "match": [
+                "control:panel.handle.parking_brake"
+              ],
+              "text": "The handle under the lower left panel. Pulling it with the toe brakes pressed sets the parking brake, pushing it releases it.",
+              "context": "It holds the aircraft while parked."
+            },
+            {
+              "id": "fuel-valve",
+              "name": "Fuel selector valve",
+              "type": "selector",
+              "match": [
+                "control:panel.selector.fuel"
+              ],
+              "positions": [
+                {
+                  "name": "left",
+                  "text": "Left tank."
+                },
+                {
+                  "name": "right",
+                  "text": "Right tank."
+                },
+                {
+                  "name": "center",
+                  "text": "Both tanks."
+                },
+                {
+                  "name": "off",
+                  "text": "Fuel off."
+                }
+              ],
+              "text": "The fuel selector valve on the floor between the seats. It chooses the left tank, the right tank, both tanks or shuts the fuel off.",
+              "context": "The pilot sets it to both tanks for flight and to off when the aircraft is shut down."
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

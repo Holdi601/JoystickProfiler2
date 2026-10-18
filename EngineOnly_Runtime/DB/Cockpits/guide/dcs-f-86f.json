@@ -1,0 +1,990 @@
+{
+  "format": "joypro-cockpit-guide",
+  "version": 1,
+  "id": "dcs-f-86f",
+  "title": "F-86F Sabre (DCS)",
+  "variants": [
+    "f-86f"
+  ],
+  "games": [
+    "DCS"
+  ],
+  "sets": [
+    "DCS/F-86F_Sabre"
+  ],
+  "sources": [
+    {
+      "id": "m1",
+      "title": "DCS F-86F Flight Manual (EN)",
+      "file": "Mods/aircraft/F-86/Doc/DCS F-86F Flight Manual EN.pdf"
+    }
+  ],
+  "intro": "The F-86F Sabre is an early jet fighter from the 1950s with swept wings, one jet engine and a bubble canopy. It has no computers to speak of, so most things are set with plain switches and handles. The instrument panel is in front, the engine and fuel switches are on the walls to the left and right, and the weapon switches are on the block between the knees. The gunsight on top of the panel has a small radar that measures the distance to the enemy.",
+  "areas": [
+    {
+      "id": "glareshield",
+      "where": "glareshield",
+      "name": "Gunsight and missile panel",
+      "text": "The top of the instrument panel holds the gunsight, the missile control panel to its left and the rear-view mirror. The pilot looks through the sight to aim every weapon.",
+      "panels": [
+        {
+          "id": "a-4-sight",
+          "name": "A-4 gunsight (radar-ranging gyro sight)",
+          "db": "a-4-sight",
+          "src": "m1",
+          "page": "240",
+          "text": "The A-4 sight is the pilot's aiming device. It projects a small ring of dots onto a glass plate in front of the pilot, and the pilot lays the ring over the target.",
+          "context": "It works for the guns, the rockets, the bombs and the missiles. A computer and a gyro inside move the ring so that the bullets are aimed ahead of a moving target. A small radar measures how far away the target is.",
+          "controls": [
+            {
+              "id": "reflector",
+              "name": "Reflector glass",
+              "type": "display",
+              "match": [
+                "item:a-4-sight:1"
+              ],
+              "text": "This is the clear glass plate in front of the pilot's eyes. The aiming ring is shown on it, so the pilot sees ring and target together.",
+              "context": "Everything the sight calculates ends up as the picture on this glass. It is not clickable in the game.",
+              "src": "m1",
+              "page": "240"
+            },
+            {
+              "id": "reticle",
+              "name": "Sight reticle image (ring of diamonds)",
+              "type": "display",
+              "match": [
+                "item:a-4-sight:2"
+              ],
+              "text": "This is the aiming mark itself: a centre dot inside a circle of ten small diamonds. The pilot keeps the target inside the circle.",
+              "context": "The size of the circle shows the distance to the target, and the computer moves the whole mark to correct for the target's speed and for gravity.",
+              "src": "m1",
+              "page": "240"
+            },
+            {
+              "id": "caging-lever",
+              "name": "Sight mechanical caging lever",
+              "type": "switch2",
+              "match": [
+                "Sight_mechanical_caging_lever",
+                "item:a-4-sight:3"
+              ],
+              "positions": [
+                {
+                  "name": "CAGE",
+                  "text": "The gyro is locked and the mark stays still. Used on the ground, for ground attacks and if the sight computer fails."
+                },
+                {
+                  "name": "UNCAGE",
+                  "text": "The gyro is free and the sight works normally with its computer."
+                }
+              ],
+              "text": "This lever locks the spinning gyro inside the sight (caging it) or sets it free. A locked gyro keeps the aiming mark still.",
+              "context": "The pilot cages it for taxiing, take-off, landing and for attacks on ground targets. Uncaged, the sight works with its computer in air combat.",
+              "src": "m1",
+              "page": "240"
+            },
+            {
+              "id": "dimmer",
+              "name": "Sight reticle dimmer control knob",
+              "type": "knob",
+              "match": [
+                "Sight_reticle_dimmer_control_knob",
+                "item:a-4-sight:4"
+              ],
+              "text": "Turning this knob makes the aiming mark brighter or dimmer. Turned all the way to DIM it protects the small lamp.",
+              "context": "The pilot dims it when the sight is not in use and brightens it when the sun or a bright sky makes the mark hard to see.",
+              "src": "m1",
+              "page": "240"
+            },
+            {
+              "id": "wingspan",
+              "name": "Wing span adjustment knob",
+              "type": "knob",
+              "match": [
+                "Wing_span_adjustment_knob",
+                "item:a-4-sight:5"
+              ],
+              "text": "This knob tells the sight how wide the enemy aircraft is, from 30 to 120 feet. The sight uses the width to work out the distance.",
+              "context": "A small fighter is much narrower than a big bomber. The pilot sets the width first; then the size of the ring on the target gives the range.",
+              "src": "m1",
+              "page": "241"
+            },
+            {
+              "id": "radar-sweep",
+              "name": "Radar range sweep rheostat knob",
+              "type": "knob",
+              "match": [
+                "Radar_range_sweep",
+                "item:a-4-sight:6"
+              ],
+              "text": "This knob sets how strong the little ranging radar is. A weaker radar sees less far, which stops it from locking onto the ground.",
+              "context": "MAXIMUM is the normal setting at the start of an attack. The manual advises turning it down at low altitude and keeping radar ranging off on the ground.",
+              "src": "m1",
+              "page": "241"
+            },
+            {
+              "id": "radar-light",
+              "name": "Radar target indicator light",
+              "type": "light",
+              "match": [
+                "item:a-4-sight:7"
+              ],
+              "text": "This light comes on when the sight's radar has found a target and is following it. Its brightness can be adjusted.",
+              "context": "When it is lit, the sight shows the radar distance on its range dial instead of a distance the pilot sets by hand.",
+              "src": "m1",
+              "page": "241"
+            },
+            {
+              "id": "range-dial",
+              "name": "Sight range dial",
+              "type": "gauge",
+              "match": [
+                "item:a-4-sight:8"
+              ],
+              "text": "This small dial shows the distance to the target in hundreds of feet, from 600 to 6,000 feet.",
+              "context": "The distance comes from the radar or from the pilot's hand setting. It helps the pilot decide when the target is close enough to shoot.",
+              "src": "m1",
+              "page": "241"
+            },
+            {
+              "id": "bombing-altimeter",
+              "name": "Bombing altimeter (index altitude handle)",
+              "type": "gauge",
+              "match": [
+                "Bombing_Altimeter_Handler1",
+                "item:a-4-sight:9"
+              ],
+              "text": "This is a height gauge fitted to the left side of the sight. It has movable pointers that the pilot sets to the height at which to drop the bomb.",
+              "context": "It belongs to the manual pip bombing method. The pilot uses it during a bombing dive so that the release height and the pull-out height stay in view.",
+              "src": "m1",
+              "page": "228"
+            },
+            {
+              "id": "target-altitude",
+              "name": "Bombing altimeter target altitude knob",
+              "type": "knob",
+              "match": [
+                "Target_altitude_knob"
+              ],
+              "text": "This knob moves a thin red pointer on the bombing altimeter to the height of the target above sea level.",
+              "context": "The bombing altimeter measures height above sea level, so the pilot enters the target's own height with this knob before the attack.",
+              "src": "m1",
+              "page": "228"
+            }
+          ]
+        },
+        {
+          "id": "missile-control-panel",
+          "name": "Missile control panel (GAR-8)",
+          "db": "missile-control-panel",
+          "src": "m1",
+          "page": "238",
+          "text": "This small panel sits to the left of the sight. It holds four controls for the heat-seeking missiles (GAR-8) that the F-86F can carry.",
+          "context": "The pilot also needs the gun-missile selector switch on the centre pedestal set to MISSILE before a missile can fly. The trigger on the stick then launches it.",
+          "controls": [
+            {
+              "id": "g-limit",
+              "name": "G-limit light",
+              "type": "light",
+              "match": [
+                "G_LIMIT",
+                "item:missile-control-panel:1"
+              ],
+              "text": "This light comes on when the plane is pulling too hard in a turn for a missile to be launched. Pushing it tests the bulb; turning it with the mouse wheel changes the brightness.",
+              "context": "A missile cannot follow a launch from a very tight turn. The light warns the pilot to ease off before pressing the trigger.",
+              "src": "m1",
+              "page": "238"
+            },
+            {
+              "id": "missile-switch",
+              "name": "Missile control switch",
+              "type": "switch3",
+              "match": [
+                "MISSILE_Switch_LH-RH-SALVO",
+                "item:missile-control-panel:2"
+              ],
+              "positions": [
+                {
+                  "name": "LH & RH",
+                  "text": "The left missile is launched first, then the right one."
+                },
+                {
+                  "name": "RH",
+                  "text": "The right missile is launched first, then the left one."
+                },
+                {
+                  "name": "SALVO",
+                  "text": "Both missiles are launched at the same time."
+                }
+              ],
+              "text": "This switch chooses in which order the two missiles are launched, or whether both go together.",
+              "context": "The pilot picks it before the fight. The missile trigger on the stick then fires the missiles as set here.",
+              "src": "m1",
+              "page": "238"
+            },
+            {
+              "id": "safe-launch",
+              "name": "SAFE LAUNCH button",
+              "type": "button",
+              "match": [
+                "MISSILE_PANEL_SAFE_LAUNCH",
+                "item:missile-control-panel:3"
+              ],
+              "text": "Pressing this button launches both missiles without letting them guide themselves. They simply fly off in a straight line.",
+              "context": "The normal launch uses the missile trigger on the stick; this button is a separate way to fire both missiles.",
+              "src": "m1",
+              "page": "238"
+            },
+            {
+              "id": "tone-volume",
+              "name": "Tone volume knob",
+              "type": "knob",
+              "match": [
+                "MISSILE_PANEL_TONE_VOLUME",
+                "item:missile-control-panel:4"
+              ],
+              "text": "This knob sets how loud the missile's tone is in the pilot's headset. The tone tells the pilot that the missile is searching or has found a target.",
+              "context": "The pilot listens to the tone to know when the missile sees a hot target, so a good volume matters before launching.",
+              "src": "m1",
+              "page": "238"
+            }
+          ]
+        },
+        {
+          "id": "mirror",
+          "name": "Rear-view mirror",
+          "src": "m1",
+          "page": "76",
+          "text": "A mirror lets the pilot look behind the plane without turning around. The game gives it a switch of its own.",
+          "context": "A fighter pilot who cannot see an enemy behind loses the fight. The mirror helps the player check the tail.",
+          "controls": [
+            {
+              "id": "mirrors",
+              "name": "Rear-view mirror toggle",
+              "type": "switch",
+              "match": [
+                "MIRRORS"
+              ],
+              "text": "The game names this control 'Toggle Mirrors'. It switches the cockpit rear-view mirror view on or off.",
+              "context": "The manual lists a rear-vision mirror in the cockpit but does not describe this switch further.",
+              "src": "m1",
+              "page": "76"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "front-left",
+      "where": "front-left",
+      "name": "Left side of the instrument panel",
+      "text": "The left of the instrument panel holds the landing gear handle, the canopy switch and the manual pip control unit that is used for dive bombing.",
+      "panels": [
+        {
+          "id": "landing-gear",
+          "name": "Landing gear controls",
+          "src": "m1",
+          "page": "119",
+          "text": "These controls move the wheels up and down and hold them still on the ground. The wheels are called the landing gear.",
+          "context": "The pilot lowers the gear before landing and raises it after take-off. The other handles here are for emergencies and for parking.",
+          "controls": [
+            {
+              "id": "gear-handle",
+              "name": "Landing gear handle",
+              "type": "switch2",
+              "match": [
+                "Landing_Gear_Handle",
+                "item:instrument-panel:29"
+              ],
+              "positions": [
+                {
+                  "name": "UP",
+                  "text": "The utility hydraulics fold the wheels away into the plane."
+                },
+                {
+                  "name": "DOWN",
+                  "text": "The utility hydraulics push the wheels out and lock them."
+                }
+              ],
+              "text": "Move this handle to raise or lower the wheels. The round wheel-shaped end lights up while the gear or its doors are not locked.",
+              "context": "The pilot lowers the gear for landing and raises it after take-off. On the ground a safety switch stops the gear from folding up while the plane's weight is on it.",
+              "src": "m1",
+              "page": "119"
+            },
+            {
+              "id": "gear-emerg-up",
+              "name": "Landing gear emergency-up button",
+              "type": "button",
+              "match": [
+                "EMERG_UP",
+                "item:instrument-panel:32"
+              ],
+              "text": "This guarded button overrides the safety switch so the gear can be folded up on the ground. It is not for normal flying.",
+              "context": "The manual says to use it only on the ground. In the game the gear handle must be at UP first, otherwise the gear does not retract.",
+              "src": "m1",
+              "page": "123"
+            },
+            {
+              "id": "parking-brake",
+              "name": "Parking brake handle",
+              "type": "handle",
+              "match": [
+                "Parking_Brake"
+              ],
+              "text": "This handle sets or releases the parking brake, which holds the wheels still while the plane is parked.",
+              "context": "The pilot sets it when stopping and releases it before taxiing. The manual shows it in the utility hydraulic scheme but does not give it a section of its own.",
+              "src": "m1",
+              "page": "175"
+            }
+          ]
+        },
+        {
+          "id": "canopy-switch",
+          "name": "Canopy switch",
+          "src": "m1",
+          "page": "62",
+          "text": "This switch opens and closes the canopy, the clear glass roof over the cockpit.",
+          "context": "The pilot uses it on the ground to climb in and out and closes the canopy before take-off. The seal that keeps the canopy tight is filled with air from the engine.",
+          "controls": [
+            {
+              "id": "canopy-sw",
+              "name": "Canopy switch",
+              "type": "switch3",
+              "match": [
+                "Cockpit_Switch_ON-OFF"
+              ],
+              "positions": [
+                {
+                  "name": "OPEN",
+                  "text": "The canopy motor opens the canopy. The motor stops by itself when the canopy is fully open."
+                },
+                {
+                  "name": "OFF",
+                  "text": "The motor is off and the canopy is locked where it is."
+                },
+                {
+                  "name": "CLOSE",
+                  "text": "The canopy closes while the pilot holds the switch; it springs back to OFF when let go."
+                }
+              ],
+              "text": "Move this switch to make the canopy slide open or closed. In the middle the canopy stays where it is and is locked.",
+              "context": "It is guarded with a cover and sits above the left forward console. If it is moved to CLOSE in flight, the canopy seal lets its air out and the cockpit loses pressure until the switch is released.",
+              "src": "m1",
+              "page": "62"
+            }
+          ]
+        },
+        {
+          "id": "manual-pip",
+          "name": "Manual pip control unit (bombing)",
+          "src": "m1",
+          "page": "226",
+          "text": "This box lets the pilot move the aiming mark in the sight by hand so that dive bombs land on the target.",
+          "context": "It is only used for dive bombing with the manual pip method. The pilot picks a dial for the starting height, sets the dive angle and reads off the height at which to let go of the bomb.",
+          "controls": [
+            {
+              "id": "pip-switch",
+              "name": "Manual pip control switch",
+              "type": "switch2",
+              "match": [
+                "BOMB_NORMAL_Switch"
+              ],
+              "positions": [
+                {
+                  "name": "BOMB",
+                  "text": "The sight mark is locked by the electric cage at an angle chosen with the control knob, from 0 to 174 mils."
+                },
+                {
+                  "name": "NORMAL",
+                  "text": "The sight works normally."
+                }
+              ],
+              "text": "This switch decides who controls the aiming mark. In NORMAL the sight works as usual, in BOMB the mark is held where the knob puts it.",
+              "context": "The pilot sets it to BOMB for a dive bombing run and back to NORMAL for guns and rockets.",
+              "src": "m1",
+              "page": "226"
+            },
+            {
+              "id": "pip-knob",
+              "name": "Manual pip control knob",
+              "type": "knob",
+              "match": [
+                "PIP_adjustment_knob"
+              ],
+              "text": "Turn this knob so that its white pointer lines up with the dive angle on the dial. This moves the aiming mark to the right place.",
+              "context": "The pilot reads the bomb release height off the dial next to the same pointer.",
+              "src": "m1",
+              "page": "226"
+            },
+            {
+              "id": "pip-dials",
+              "name": "Calibrated dials (presets)",
+              "type": "switch",
+              "match": [
+                "Templates_rotation_helper"
+              ],
+              "text": "The unit has four dials with dive angles and release heights. One is fixed and the others fold out; the mouse buttons flip through them.",
+              "context": "The pilot picks the dial that fits the starting height above the target, for example 15,000 feet.",
+              "src": "m1",
+              "page": "226"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "front-center",
+      "where": "front-center",
+      "name": "Main instrument panel",
+      "text": "The big panel in front of the pilot has the flying instruments, the engine gauges and the warning lights. Most of it is looked at, not touched; a few knobs and buttons can be clicked.",
+      "panels": [
+        {
+          "id": "flight-instruments",
+          "name": "Flight instruments",
+          "db": "instrument-panel",
+          "src": "m1",
+          "page": "80",
+          "text": "These gauges tell the pilot how the plane is flying: which way it points, how fast, how high and whether it climbs or turns.",
+          "context": "The pilot scans them all the time. The attitude indicator and the altimeter matter most in cloud, when nothing outside shows which way is up.",
+          "controls": [
+            {
+              "id": "directional-indicator",
+              "name": "Directional indicator (heading) with course knob",
+              "type": "gauge",
+              "match": [
+                "DIRECTIONAL_INDICATOR",
+                "item:instrument-panel:7"
+              ],
+              "text": "This is the heading instrument: it shows which way the plane points, from 0 to 360 degrees. The game calls the knob at its lower left 'Compass Correction'.",
+              "context": "A magnetic sensor in the left wing keeps the gyro of the instrument aligned with north. The manual says the knob at the lower left turns the course index to a chosen heading.",
+              "src": "m1",
+              "page": "87"
+            },
+            {
+              "id": "fast-slave",
+              "name": "Compass fast slaving button",
+              "type": "button",
+              "match": [
+                "Directional_Indicator_Fast_Slaving_Switch",
+                "item:instrument-panel:9"
+              ],
+              "text": "Pushing this button makes the heading instrument catch up with the magnetic compass quickly. It is labelled COMPASS FAST SLAVE.",
+              "context": "The pilot uses it in straight, level flight after hard manoeuvres, when the heading is off. The manual asks for at least 10 minutes between two uses.",
+              "src": "m1",
+              "page": "90"
+            },
+            {
+              "id": "accelerometer",
+              "name": "Accelerometer (G-meter) with reset knob",
+              "type": "gauge",
+              "match": [
+                "Accelerometer_button",
+                "item:instrument-panel:10"
+              ],
+              "text": "This gauge shows how hard the plane is pushing the pilot into the seat in turns (G). Two extra pointers remember the highest and lowest values. The knob at its lower left resets them.",
+              "context": "The red marks show the safe limits, about +7 and -3 G. The reset knob, labelled PUSH TO SET, puts the memory pointers back to 1 G.",
+              "src": "m1",
+              "page": "92"
+            },
+            {
+              "id": "attitude",
+              "name": "Attitude indicator (J-8) with cage and pitch trim knobs",
+              "type": "gauge",
+              "match": [
+                "PITCH_ TRIM_ KNOB",
+                "PULL_TO_CAGE",
+                "item:instrument-panel:11"
+              ],
+              "text": "This is the artificial horizon. It shows whether the nose is up or down and whether the wings are level. The knob at the lower right cages the gyro, the one at the lower left moves the small plane up or down.",
+              "context": "Pulling the caging knob and letting it go quickly stands the gyro upright again. The pilot does this only in level flight.",
+              "src": "m1",
+              "page": "94"
+            },
+            {
+              "id": "vvi",
+              "name": "Vertical velocity indicator",
+              "type": "gauge",
+              "match": [
+                "item:instrument-panel:22"
+              ],
+              "text": "This gauge shows how fast the plane climbs or sinks, in feet per minute.",
+              "context": "A needle at the 1 means about 1,000 feet per minute. The pilot uses it to hold the height in turns and to fly a steady descent.",
+              "src": "m1",
+              "page": "109"
+            },
+            {
+              "id": "turn-slip",
+              "name": "Turn-and-slip indicator",
+              "type": "gauge",
+              "match": [
+                "item:instrument-panel:23"
+              ],
+              "text": "This gauge has a needle that shows how fast the plane is turning and a ball that shows whether the turn is clean or skidding.",
+              "context": "The pilot keeps the ball in the middle by using the rudder. On the ground the needle moves in turns, which is a quick check that it works.",
+              "src": "m1",
+              "page": "110"
+            },
+            {
+              "id": "altimeter",
+              "name": "Altimeter with pressure setting knob",
+              "type": "gauge",
+              "match": [
+                "Altimeter_Pressure",
+                "item:instrument-panel:24"
+              ],
+              "text": "This is the height gauge. The knob at its lower left sets the local air pressure, which shows in a small window, so that the height reads correctly.",
+              "context": "Three pointers show hundreds, thousands and tens of thousands of feet. A striped disc shows when the plane is below 16,700 feet.",
+              "src": "m1",
+              "page": "111"
+            },
+            {
+              "id": "clock",
+              "name": "Clock with winding knob and stopwatch button",
+              "type": "gauge",
+              "match": [
+                "Clock_button_*",
+                "item:instrument-panel:25"
+              ],
+              "text": "This is a mechanical clock with a stopwatch. The left knob winds and sets the clock, the right knob starts, stops and resets the stopwatch.",
+              "context": "In the game the clock is already set at the start of the mission. The stopwatch times parts of the flight.",
+              "src": "m1",
+              "page": "114"
+            },
+            {
+              "id": "adf-indicator",
+              "name": "Radio compass indicator with VAR knob",
+              "type": "gauge",
+              "match": [
+                "Rotating_compass_cart_Helper",
+                "item:instrument-panel:30"
+              ],
+              "text": "This dial has a needle that points toward the radio station tuned on the radio compass. The VAR knob turns the scale.",
+              "context": "If the needle points straight up, the plane is flying toward the station. The pilot turns the scale so the heading is at the top and the needle then gives the compass bearing.",
+              "src": "m1",
+              "page": "120"
+            },
+            {
+              "id": "airspeed",
+              "name": "Airspeed indicator",
+              "type": "gauge",
+              "match": [
+                "item:instrument-panel:31"
+              ],
+              "text": "This gauge shows how fast the plane moves through the air, in knots. A second red-and-yellow hand shows the highest allowed speed.",
+              "context": "A yellow mark at 185 knots is the top speed for flying with gear and flaps down; a red mark at 600 knots is the top speed of all.",
+              "src": "m1",
+              "page": "121"
+            },
+            {
+              "id": "machmeter",
+              "name": "Machmeter",
+              "type": "gauge",
+              "match": [
+                "item:instrument-panel:33"
+              ],
+              "text": "This gauge shows the speed as a fraction of the speed of sound, called the Mach number. 1.0 is the speed of sound.",
+              "context": "At high speed the Mach number tells the pilot more than the airspeed in knots does, because the plane starts to shake and become hard to control near the speed of sound.",
+              "src": "m1",
+              "page": "124"
+            }
+          ]
+        },
+        {
+          "id": "engine-gauges",
+          "name": "Engine, electrical and hydraulic gauges",
+          "src": "m1",
+          "page": "80",
+          "text": "These gauges show the health of the engine, the fuel, the electricity and the hydraulics (the oil under pressure that moves the controls).",
+          "context": "The pilot checks them during start-up and glances at them in flight to see that every system works as it should.",
+          "controls": [
+            {
+              "id": "hyd-gauge",
+              "name": "Hydraulic pressure gauge",
+              "type": "gauge",
+              "match": [
+                "item:instrument-panel:1"
+              ],
+              "text": "This gauge shows the pressure of one of the three hydraulic systems, from 0 to 4,000 PSI. The selector switch next to it chooses which one.",
+              "context": "The two booster systems help the pilot move the stick; the utility system moves the gear, brakes and speed brakes. The pilot checks all three on the ground.",
+              "src": "m1",
+              "page": "81"
+            },
+            {
+              "id": "hyd-selector",
+              "name": "Hydraulic pressure gauge selector switch",
+              "type": "switch3",
+              "match": [
+                "Hydraulic_Pressure_Gage_Selector_Switch",
+                "item:instrument-panel:3"
+              ],
+              "positions": [
+                {
+                  "name": "UTILITY",
+                  "text": "The gauge shows the utility system that moves the gear, wheel brakes, nosewheel steering and speed brakes."
+                },
+                {
+                  "name": "NORMAL",
+                  "text": "The gauge shows the normal booster system that helps move the control surfaces."
+                },
+                {
+                  "name": "ALTERNATE",
+                  "text": "The gauge shows the backup booster system."
+                }
+              ],
+              "text": "This switch chooses which hydraulic system the pressure gauge shows.",
+              "context": "During the checks after engine start the pilot moves it through the three positions and reads the pressure each time.",
+              "src": "m1",
+              "page": "83"
+            },
+            {
+              "id": "oil-press",
+              "name": "Oil pressure gauge",
+              "type": "gauge",
+              "match": [
+                "item:instrument-panel:15"
+              ],
+              "text": "This gauge shows the pressure of the engine oil in PSI. The oil keeps the engine parts from grinding.",
+              "context": "A green band marks the normal range. Low oil pressure means the engine is in danger.",
+              "src": "m1",
+              "page": "102"
+            },
+            {
+              "id": "tach",
+              "name": "Tachometer (turbine RPM)",
+              "type": "gauge",
+              "match": [
+                "item:instrument-panel:17"
+              ],
+              "text": "This gauge shows how fast the engine turns, in percent. 100 percent is the engine's top speed.",
+              "context": "A long pointer reads above 50 percent and a short one reads lower values during start-up. The engine idles at about 32 to 34 percent.",
+              "src": "m1",
+              "page": "104"
+            },
+            {
+              "id": "egt",
+              "name": "Exhaust temperature gauge (EGT)",
+              "type": "gauge",
+              "match": [
+                "item:instrument-panel:18"
+              ],
+              "text": "This gauge shows how hot the gases leaving the engine are, in degrees Celsius.",
+              "context": "The pilot watches it in the start and when giving full power, because too much heat damages the engine. A red mark shows the military thrust limit of 690 degrees.",
+              "src": "m1",
+              "page": "105"
+            },
+            {
+              "id": "fuel-flow",
+              "name": "Fuel flow meter",
+              "type": "gauge",
+              "match": [
+                "item:instrument-panel:19"
+              ],
+              "text": "This gauge shows how much fuel the engine burns, in pounds per hour.",
+              "context": "During engine start the pilot checks that it does not climb too high. In flight it shows how fast the fuel is running out.",
+              "src": "m1",
+              "page": "106"
+            },
+            {
+              "id": "fuel-qty",
+              "name": "Fuel quantity gauge",
+              "type": "gauge",
+              "match": [
+                "item:instrument-panel:20"
+              ],
+              "text": "This gauge shows how much fuel is left in the plane's own tanks, in pounds.",
+              "context": "The needle only starts to fall when the drop tanks are empty, because the engine uses them first. The gauge corrects for the density of the fuel by itself.",
+              "src": "m1",
+              "page": "107"
+            },
+            {
+              "id": "cabin-alt",
+              "name": "Cabin pressure altimeter",
+              "type": "gauge",
+              "match": [
+                "item:instrument-panel:21"
+              ],
+              "text": "This gauge shows the height that the air pressure inside the cockpit corresponds to, in thousands of feet.",
+              "context": "The pilot watches it at high altitude to see that the cockpit pressurization works.",
+              "src": "m1",
+              "page": "108"
+            },
+            {
+              "id": "loadmeter",
+              "name": "Loadmeter",
+              "type": "gauge",
+              "match": [
+                "item:instrument-panel:26"
+              ],
+              "text": "This gauge, labelled LOAD, shows how much of its power the electrical system is giving out, in percent.",
+              "context": "A high reading means many things are switched on. It helps the pilot judge how hard the generator is working.",
+              "src": "m1",
+              "page": "116"
+            },
+            {
+              "id": "voltmeter",
+              "name": "Voltmeter",
+              "type": "gauge",
+              "match": [
+                "item:instrument-panel:28"
+              ],
+              "text": "This gauge shows the voltage of the electrical system, from 0 to 30 volts.",
+              "context": "After engine start the pilot expects about 28.5 volts when the generator is running.",
+              "src": "m1",
+              "page": "118"
+            },
+            {
+              "id": "emergency-fuel",
+              "name": "Emergency fuel switch",
+              "type": "switch2",
+              "match": [
+                "Emergency_Fuel_Switch",
+                "item:instrument-panel:34"
+              ],
+              "positions": [
+                {
+                  "name": "OFF",
+                  "text": "The normal fuel control is in charge. This is the position for all normal flying."
+                },
+                {
+                  "name": "ON",
+                  "text": "The emergency fuel control takes over from the main one."
+                }
+              ],
+              "text": "This switch hands the fuel control of the engine to a backup system. It should stay OFF in normal flying.",
+              "context": "Pilots use it only when the main fuel system really fails. With it ON, pushing the throttle forward quickly can make the engine stall or go out.",
+              "src": "m1",
+              "page": "126"
+            }
+          ]
+        },
+        {
+          "id": "warning-lights",
+          "name": "Warning lights and test buttons",
+          "src": "m1",
+          "page": "101",
+          "text": "These coloured lights tell the pilot that something is wrong. Each one is a push-to-test light: pushing it shows that the bulb works.",
+          "context": "A lit light after engine start is a reason to stop and check. The fire lights and the generator light are the most important.",
+          "controls": [
+            {
+              "id": "main-inv-light",
+              "name": "Main instrument inverter failure light",
+              "type": "light",
+              "match": [
+                "Main_Instrument_Failure_Warning_Light",
+                "item:instrument-panel:2"
+              ],
+              "text": "This amber light comes on when the main inverter that powers the gyro instruments has failed. An inverter changes battery-type electricity into the kind these instruments use.",
+              "context": "The pilot then moves the instrument power switch on the centre pedestal to ALTERNATE to use the spare inverter. The light stays on while ALTERNATE is selected.",
+              "src": "m1",
+              "page": "82"
+            },
+            {
+              "id": "both-inv-light",
+              "name": "Both instrument inverters failure light",
+              "type": "light",
+              "match": [
+                "Both_Instrument_Failure_Warning_Light",
+                "item:instrument-panel:4"
+              ],
+              "text": "This red light comes on when the spare inverter has failed too, so both of the inverters that power the gyro instruments are dead.",
+              "context": "Then the attitude indicator, the directional indicator and the pressure gauges stop working.",
+              "src": "m1",
+              "page": "84"
+            },
+            {
+              "id": "radar-inv-light",
+              "name": "Main radar inverter failure light",
+              "type": "light",
+              "match": [
+                "Main_Radar_Failure_Warning_Light",
+                "item:instrument-panel:6"
+              ],
+              "text": "This amber light comes on when the inverter that powers the sight's radar and the fuel flow meter has failed.",
+              "context": "There is no spare for this inverter, so the radar ranging of the sight and the fuel flow meter then stay off.",
+              "src": "m1",
+              "page": "86"
+            },
+            {
+              "id": "alt-on-light",
+              "name": "Alternate-on warning light",
+              "type": "light",
+              "match": [
+                "Alternate-on_Warning_Light",
+                "item:instrument-panel:5"
+              ],
+              "text": "This amber light comes on when the plane's flight controls use the backup hydraulic system.",
+              "context": "It lights up when the normal system loses pressure or when the pilot switches to the backup one on purpose. On the ground it also comes on after ground power is connected.",
+              "src": "m1",
+              "page": "85"
+            },
+            {
+              "id": "takeoff-trim-light",
+              "name": "Take-off trim position light",
+              "type": "light",
+              "match": [
+                "Take-off_Position_Indicator_Light",
+                "item:instrument-panel:8"
+              ],
+              "text": "This amber light comes on briefly when the trim of the elevator, the ailerons or the rudder passes through its take-off setting.",
+              "context": "Trim is a small setting that makes the plane fly straight without holding the stick. The light only works with the normal trim switch, not with the backup switches.",
+              "src": "m1",
+              "page": "89"
+            },
+            {
+              "id": "fire-lights",
+              "name": "Fire-warning lights (forward and aft)",
+              "type": "light",
+              "match": [
+                "Fire-Warning_*_Light",
+                "item:instrument-panel:16"
+              ],
+              "text": "There are two lights. The red one means a fire was detected in the front part of the engine, the amber one means a fire at its rear part.",
+              "context": "Both can be pushed to test their bulbs. The manual says the engine has no fire extinguishing system of its own.",
+              "count": 2,
+              "src": "m1",
+              "page": "103"
+            },
+            {
+              "id": "fire-test",
+              "name": "Fire-warning light test button",
+              "type": "button",
+              "match": [
+                "Fire-Warning Light Test Button",
+                "item:instrument-panel:14"
+              ],
+              "text": "Hold this button to test the fire detection system. When it works, both fire lights come on within about 10 seconds.",
+              "context": "It only checks that the wires of the detectors are connected. Before the test, the pilot pushes the lights themselves to check their bulbs.",
+              "src": "m1",
+              "page": "101"
+            },
+            {
+              "id": "gen-light",
+              "name": "Generator warning light",
+              "type": "light",
+              "match": [
+                "Generator_Warning_Light",
+                "item:instrument-panel:27"
+              ],
+              "text": "This red light comes on when the generator is not feeding the plane's electricity. The generator makes electricity while the engine runs.",
+              "context": "Then the battery powers the rest, so the pilot switches off what is not needed to save it. The light is also on when the generator switch is OFF.",
+              "src": "m1",
+              "page": "117"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "front-right",
+      "where": "front-right",
+      "name": "Upper right of the instrument panel",
+      "text": "The upper right corner of the instrument panel holds the switches of the low-altitude bombing system.",
+      "panels": [
+        {
+          "id": "labs",
+          "name": "LABS switch panel (low-altitude bombing system)",
+          "db": "labs-switch-panel",
+          "src": "m1",
+          "page": "223",
+          "text": "This small panel switches on the low-altitude bombing system. LABS lets the plane throw a bomb up and forward in a climb, and drops it at the right moment on its own.",
+          "context": "It is a special way of bombing from low level. The pilot needs the three switches and the dive-and-roll indicator below them.",
+          "controls": [
+            {
+              "id": "labs-panel",
+              "name": "LABS switch panel",
+              "type": "other",
+              "match": [
+                "item:instrument-panel:12"
+              ],
+              "text": "This is the group of three switches that run the low-altitude bombing system. Each switch has its own entry in this panel.",
+              "context": "The system needs power from several electrical buses and the single-phase inverter.",
+              "src": "m1",
+              "page": "99"
+            },
+            {
+              "id": "labs-cage",
+              "name": "LABS gyro caging switch",
+              "type": "switch2",
+              "match": [
+                "LABS_Selector_Switch_1",
+                "item:labs-switch-panel:1"
+              ],
+              "positions": [
+                {
+                  "name": "UNCAGE",
+                  "text": "The gyro is free and measures how far the plane has pitched and rolled."
+                },
+                {
+                  "name": "CAGE",
+                  "text": "The gyro is locked and both pointers of the dive-and-roll indicator read zero."
+                }
+              ],
+              "text": "This switch locks or frees the spinning gyro of the bombing system.",
+              "context": "The pilot frees it (UNCAGE) in level flight just before a bombing run. Otherwise it stays caged.",
+              "src": "m1",
+              "page": "224"
+            },
+            {
+              "id": "labs-start",
+              "name": "LABS start switch",
+              "type": "switch2",
+              "match": [
+                "LABS_Selector_Switch_2",
+                "item:labs-switch-panel:2"
+              ],
+              "positions": [
+                {
+                  "name": "ON",
+                  "text": "The system is powered. The sight mark is lit and the timer motor is on."
+                },
+                {
+                  "name": "OFF",
+                  "text": "The system is switched off."
+                }
+              ],
+              "text": "This switch turns the low-altitude bombing system on. When it is on, the sight mark lights up and the timer motor runs.",
+              "context": "The pilot turns it on before the bombing run, then selects LABS with the change-over switch.",
+              "src": "m1",
+              "page": "224"
+            },
+            {
+              "id": "labs-changeover",
+              "name": "LABS change-over switch",
+              "type": "switch2",
+              "match": [
+                "LABS_Selector_Switch_3",
+                "item:labs-switch-panel:3"
+              ],
+              "positions": [
+                {
+                  "name": "LABS",
+                  "text": "The sight mark is caged by electricity and the LABS gyro is switched on."
+                },
+                {
+                  "name": "A-4",
+                  "text": "The sight works normally for guns, bombs and rockets."
+                }
+              ],
+              "text": "This switch chooses how the pilot aims bombs: with the normal A-4 sight, or with the low-altitude bombing system.",
+              "context": "At LABS the sight mark is locked still and the pilot flies by the dive-and-roll indicator. The A-4 position is the normal use for guns, rockets and bombs.",
+              "src": "m1",
+              "page": "224"
+            },
+            {
+              "id": "labs-indicator",
+              "name": "LABS dive-and-roll indicator",
+              "type": "gauge",
+              "match": [
+                "item:instrument-panel:13"
+              ],
+              "text": "This gauge sits under the LABS switches. A vertical pointer shows how much the plane is rolled and a horizontal pointer shows how much its nose is pitched.",
+              "context": "It only works when LABS is on, the change-over switch is at LABS and the gyro is uncaged. The pilot flies so that both pointers stay at the preset values.",
+              "src": "m1",
+              "page": "100"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

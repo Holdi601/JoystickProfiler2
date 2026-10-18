@@ -1,0 +1,617 @@
+{
+  "format": "joypro-cockpit-guide",
+  "version": 1,
+  "id": "msfs2024-common-part4",
+  "partOf": "msfs2024-common",
+  "areas": [
+    {
+      "id": "airliner",
+      "where": "overhead",
+      "name": "Airliner systems",
+      "text": "These controls belong to big airliners and transport aircraft. Their cockpits have separate panels for the left pilot (captain) and the right pilot (first officer) and an overhead panel full of switches. The name of the event says what it is.",
+      "panels": [
+        {
+          "id": "airliner-displays",
+          "name": "Displays and warning panels (ECAM, EFIS, EFB)",
+          "text": "Airliners show system information on large screens. These controls change the page shown, clear messages and set the map or the tablet.",
+          "context": "The pilots call up the page they need, such as engines, fuel, hydraulics or flight controls, and clear messages when they have dealt with them.",
+          "src": "g1",
+          "controls": [
+            {
+              "id": "ecam",
+              "name": "ECAM and system page buttons",
+              "type": "button",
+              "match": [
+                "AIRLINER_ECAM_*",
+                "AIRLINER_*EFIS*",
+                "AIRLINER_ND_*",
+                "AIRLINER_*EFB*",
+                "AIRLINER_DCDU*",
+                "AIRLINER_HUD_*",
+                "AIRLINER_SCREEN_*",
+                "AIRLINER_ANN*",
+                "AIRLINER_*DMC*",
+                "AIRLINER_MINS_*",
+                "AIRLINER_TERR_*",
+                "INSTRUMENT_CPT_EFB_*",
+                "INSTRUMENT_FO_EFB_*",
+                "HANDLING_EFB_HIDE",
+                "AIRLINER_ANNLT_TOGGLE"
+              ],
+              "text": "These buttons choose the page of the system display (ECAM shows engines, fuel, hydraulics, doors and more), set the map or switch the pilot's tablet (EFB) pages.",
+              "context": "The ECAM is the airliner's main system screen. The pilot calls up the page they want to check."
+            }
+          ]
+        },
+        {
+          "id": "airliner-fmgs",
+          "name": "Flight control unit and flight management",
+          "text": "The panel under the windscreen and the route computer set the targets that the autopilot flies: speed, heading, height and route.",
+          "context": "The pilots type the route in the computer, and use the panel to set the next target.",
+          "src": "g1",
+          "controls": [
+            {
+              "id": "airliner-fcu",
+              "name": "FCU, FMGS and autopilot push buttons",
+              "type": "button",
+              "match": [
+                "AIRLINER_FMGS*",
+                "AIRLINER_FCU_*",
+                "AIRLINER_AP?_PUSH",
+                "AIRLINER_ALT_PUSH",
+                "AIRLINER_APPR_PUSH",
+                "AIRLINER_SPDMACH",
+                "AIRLINER_KNOB_AUTOPILOT_*"
+              ],
+              "text": "These buttons and knobs set the targets of the autopilot and of the route computer, like speed, altitude and heading, or hand control to a specific autopilot.",
+              "context": "The names are those of the airliner's own panel. Which exist depends on the aircraft family."
+            }
+          ]
+        },
+        {
+          "id": "airliner-comm",
+          "name": "Airliner radio and audio panels",
+          "text": "Airliners have separate panels for tuning radios and for choosing which radios the pilot hears. Each pilot has an audio panel.",
+          "context": "Radios on an airliner are VHF (for the tower), HF (long range), satellite and cabin radios. The panels let the pilot pick the radio, set the volume and speak into it.",
+          "src": "g1",
+          "controls": [
+            {
+              "id": "airliner-radios",
+              "name": "Radio tuning and audio panel buttons",
+              "type": "button",
+              "match": [
+                "AIRLINER_ACP_*",
+                "AIRLINER_*_VOL*",
+                "AIRLINER_COMM_*",
+                "AIRLINER_COM?_*",
+                "AIRLINER_VHF*",
+                "AIRLINER_RADIO_*",
+                "AIRLINER_TCP_*",
+                "AIRLINER_AUDIOPANEL_*",
+                "AIRLINER_BOEING_AUDIO*",
+                "AIRLINER_CPT_COMM*",
+                "AIRLINER_FO_COMM*",
+                "AIRLINER_*_COMM_*",
+                "AIRLINER_CPT_COM_*",
+                "AIRLINER_FO_COM_*",
+                "AIRLINER_CPT_BTN_*",
+                "AIRLINER_FO_BTN_*",
+                "AIRLINER_*_VOL_SEL*",
+                "AIRLINER_ADF*",
+                "AIRLINER_VHF_*",
+                "AIRLINER_GND_HF_DATA",
+                "AIRLINER_CPT_*_KP_*",
+                "AIRLINER_FO_*_KP_*",
+                "AIRLINER_VHF*_KP_*",
+                "AIRLINER_COMM_KP_*"
+              ],
+              "text": "These buttons and knobs tune the radios and set what the pilot hears: they switch a radio's sound on, change its volume or pick which radio the microphone uses.",
+              "context": "A pilot keeps the VHF radio on to listen to the tower, and switches the others on when they are needed. Which radios exist depends on the aircraft."
+            },
+            {
+              "id": "airliner-tcas",
+              "name": "TCAS and transponder",
+              "type": "button",
+              "match": [
+                "AIRLINER_TCAS_*",
+                "AIRLINER_ATC_*",
+                "AIRLINER_WX_*",
+                "AIRLINER_GPWS_*",
+                "AIRLINER_WXR_*"
+              ],
+              "text": "TCAS warns about other aircraft that come too close. The transponder control sets its mode. The weather radar controls tilt and mode of the radar. GPWS warns about the ground.",
+              "context": "These are safety systems that give the pilot warnings and advice. The pilot sets their mode before flight."
+            }
+          ]
+        },
+        {
+          "id": "airliner-systems",
+          "name": "Airliner overhead systems",
+          "text": "The overhead panel holds the switches of the aircraft's systems: air conditioning, fire protection, hydraulics, electricity, fuel and anti-ice.",
+          "context": "The pilots go through the overhead panel in a set order when preparing the aircraft, and use it for faults in flight.",
+          "src": "g1",
+          "controls": [
+            {
+              "id": "airliner-apu",
+              "name": "APU controls",
+              "type": "switch",
+              "match": [
+                "AIRLINER_APU_*",
+                "AIRLINER_ELEC_APU_GEN",
+                "AIRLINER_FIRE_APU*",
+                "AIRLINER_APU*",
+                "INSTRUMENT_FIRE_APU_TEST",
+                "AIRLINER_AIR_APU_BLEED",
+                "AIRLINER_APU_AGENT*",
+                "AIRLINER_APU_EXTING_RESET"
+              ],
+              "text": "These controls start and run the APU, a small extra engine in the tail. They also test the APU fire protection or release its extinguisher.",
+              "context": "The APU supplies electricity and air before the main engines run. The pilot starts it first when preparing the aircraft."
+            },
+            {
+              "id": "airliner-fire",
+              "name": "Fire handles and agents",
+              "type": "handle",
+              "match": [
+                "AIRLINER_FIRE_*",
+                "AIRLINER_ENG?_FIRE_HANDLE",
+                "AIRLINER_ENG?_AGENT*",
+                "AIRLINER_ENG?_AGT*",
+                "AIRLINER_*_AG?",
+                "AIRLINER_FIRE?_*",
+                "AIRLINER_FIRE_ENG*",
+                "AIRLINER_ENG?_FIRE_LATCH",
+                "AIRLINER_ENGINE_FIRE_TEST",
+                "AIRLINER_ENG_APU_FIRE_LATCH"
+              ],
+              "text": "A fire handle shuts off fuel and power of an engine when pulled. Agent buttons release the fire extinguisher into that engine. Covers keep them from being used by mistake.",
+              "context": "The pilots pull the handle only after a fire warning and after the checklist."
+            },
+            {
+              "id": "airliner-engine",
+              "name": "Engine start, cutoff and FADEC",
+              "type": "switch",
+              "match": [
+                "AIRLINER_ENG?_CUTOFF",
+                "AIRLINER_ENG_*",
+                "AIRLINER_FADEC*",
+                "AIRLINER_OVH_ENG*",
+                "AIRLINER_OVH_FADEC*",
+                "AIRLINER_SVC_ENG*",
+                "AIRLINER_MAN_START_*",
+                "AIRLINER_THR_*",
+                "AIRLINER_ENG?_ATDISCO",
+                "AIRLINER_FCU_SEL_*"
+              ],
+              "text": "These controls start an engine, cut off its fuel to stop it, or set the engine control computer (FADEC). FADEC is the computer that runs the engine's fuel and power by itself.",
+              "context": "The pilot uses the start switch to start an engine and the fuel cutoff to stop it. The numbers are the engines."
+            },
+            {
+              "id": "airliner-air",
+              "name": "Air conditioning, bleed and packs",
+              "type": "switch",
+              "match": [
+                "AIRLINER_AIR_COND_*",
+                "AIRLINER_AIRCOND_*",
+                "AIRLINER_PACK*",
+                "AIRLINER_AC_ENG*_BLEED",
+                "AIRLINER_AC_PACK*",
+                "AIRLINER_AC_HOT_AIR",
+                "AIRLINER_AC_RAM_AIR*",
+                "AIRLINER_AC_XBLEED",
+                "AIRLINER_OVH_AIR_*",
+                "AIRLINER_HOT_AIR*",
+                "AIRLINER_RAM_AIR",
+                "AIRLINER_GND_COOL",
+                "AIRLINER_ENGINE_BLEED_*",
+                "AIRLINER_ENG?_BLEED",
+                "AIRLINER_AIR_APU_BLEED",
+                "AIRLINER_BLEED*",
+                "AIRLINER_XBLEED*",
+                "AIRLINER_ENG?_BLEED",
+                "AIRLINER_ENG?_WING_BLEED_VALVE"
+              ],
+              "text": "These switches control the cabin air: air conditioning packs, bleed air from the engines (hot air taken from the engine for heating, pressure and de-icing), hot air and ram air (air from outside for emergencies).",
+              "context": "The pilots switch the packs and bleed air on for the start and flight. The ram air switch is for an emergency when the packs fail."
+            },
+            {
+              "id": "airliner-ice",
+              "name": "Anti-ice and probe heat",
+              "type": "switch",
+              "match": [
+                "AIRLINER_ICE_*",
+                "AIRLINER_ENG?_ICE",
+                "AIRLINER_ANTI_ICE_*",
+                "AIRLINER_OVH_ANTI_ICE_*",
+                "AIRLINER_PROBE_HEAT",
+                "AIRLINER_WINDOW_HEAT_*",
+                "AIRLINER_WINDSHIELD_*"
+              ],
+              "text": "These switches keep ice off the engines, wings, the measuring probes and the windows by heating them.",
+              "context": "The pilots switch them on in clouds in cold air. They need engine power, so they are not used without a reason."
+            },
+            {
+              "id": "airliner-hyd",
+              "name": "Hydraulic pumps",
+              "type": "switch",
+              "match": [
+                "AIRLINER_HYD*",
+                "AIRLINER_HYDRAULIC_*"
+              ],
+              "text": "Hydraulics is oil under high pressure that moves heavy parts such as the landing gear, flaps and control surfaces. These switches turn pumps on and off.",
+              "context": "The pilots check hydraulic pressure before flight. The pumps run during the flight."
+            },
+            {
+              "id": "airliner-fuel",
+              "name": "Airliner fuel pumps and valves",
+              "type": "switch",
+              "match": [
+                "AIRLINER_FUEL_*",
+                "AIRLINER_GUARD_FUEL*",
+                "AIRLINER_AFT_ISO_VALVE",
+                "AIRLINER_FUEL?*"
+              ],
+              "text": "Airliners have many tanks. These switches turn the fuel pumps of each tank on and off, open the valves between tanks and allow the engines on one side to take fuel from the other (crossfeed).",
+              "context": "The pilots control the fuel flow and the balance of the tanks from the overhead panel."
+            },
+            {
+              "id": "airliner-flightcontrols",
+              "name": "Flight control computers and spoilers",
+              "type": "switch",
+              "match": [
+                "AIRLINER_FLT_CTL*",
+                "AIRLINER_FTL_CTL*",
+                "AIRLINER_FCTL*",
+                "AIRLINER_FTL_CTL*",
+                "AIRLINER_ELAC*",
+                "AIRLINER_TURB_DAMP",
+                "AIRLINER_SPLR_*",
+                "AIRLINER_ELEVATORTRIM",
+                "AIRLINER_RUDDER_TRIM"
+              ],
+              "text": "Airliners move their control surfaces through computers (fly-by-wire). These switches turn the computers on or off, or the gust-damping helpers.",
+              "context": "They are normally left in the automatic setting. The pilot switches them off or on only after a fault."
+            },
+            {
+              "id": "airliner-nav",
+              "name": "Inertial navigation (IRS / ADIRS)",
+              "type": "selector",
+              "match": [
+                "AIRLINER_IRS_*",
+                "AIRLINER_ADIR*",
+                "AIRLINER_IR?",
+                "AIRLINER_OVH_ADR*",
+                "AIRLINER_OVH_IR*",
+                "AIRLINER_AIR_DATA_*"
+              ],
+              "text": "The inertial reference system (IRS) always knows where the plane is by feeling every movement. These switches set its mode: off, align (find its position), navigate.",
+              "context": "The pilot starts the alignment at the start of the preparation, so the system is ready when the aircraft moves."
+            },
+            {
+              "id": "airliner-electric",
+              "name": "Airliner electrical panel",
+              "type": "switch",
+              "match": [
+                "AIRLINER_ELEC_*",
+                "AIRLINER_EXT_PWR_*",
+                "AIRLINER_EMER_GEN*",
+                "AIRLINER_BATT_*",
+                "AIRLINER_GEN*",
+                "AIRLINER_IDG*",
+                "AIRLINER_ELEC_DRIVE*",
+                "AIRLINER_ELEC*"
+              ],
+              "text": "These switches control the aircraft's electrical sources: batteries, engine generators, the APU generator, ground power and the links between the buses (groups of electric lines).",
+              "context": "The pilots connect sources one by one when preparing the aircraft."
+            },
+            {
+              "id": "airliner-cabin",
+              "name": "Cabin, passenger and cockpit comfort",
+              "type": "switch",
+              "match": [
+                "AIRLINER_PAX_SYS",
+                "AIRLINER_IFEC",
+                "AIRLINER_MASK_MAN_*",
+                "AIRLINER_WASTE_FO",
+                "AIRLINER_*_ARMREST",
+                "AIRLINER_*_TRAY_CLICK",
+                "AIRLINER_*_WINDOW_PIN",
+                "AIRLINER_*_AIRVENT_SLIDER",
+                "AIRLINER_VENT_EXTRACT",
+                "AIRLINER_COCKPITDOOR",
+                "AIRLINER_BULK_ISO_VALVE",
+                "AIRLINER_EMER_*"
+              ],
+              "text": "These controls belong to the passenger systems and the crew comfort items: the passenger announcement system, entertainment, oxygen masks, the armrests, tray tables, window pins and ventilation.",
+              "context": "They are secondary to flying, and each aircraft has its own set."
+            },
+            {
+              "id": "airliner-misc",
+              "name": "Other airliner controls",
+              "type": "switch",
+              "match": [
+                "AIRLINER_*",
+                "AILRINER_*"
+              ],
+              "text": "These events belong to further airliner controls. The name tells which control it is. What it does depends on the aircraft.",
+              "context": "They are part of the airliner's own panels. Their exact use is explained in the aircraft's manual."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "simulator",
+      "where": "other",
+      "name": "Simulator helpers",
+      "text": "These are not real aircraft controls. They are conveniences of the simulator, such as hiding the yoke or running the start-up checklist automatically.",
+      "panels": [
+        {
+          "id": "sim-helpers",
+          "name": "Yoke hider, autostart and other helpers",
+          "text": "Helpers of the simulator that real aircraft do not have. They make the game easier to use.",
+          "context": "The pilot can use them to see the instruments better or to skip the long start-up.",
+          "src": "g1",
+          "controls": [
+            {
+              "id": "yoke-hider",
+              "name": "Yoke hider",
+              "type": "button",
+              "match": [
+                "HANDLING_YOKE_HIDER_*",
+                "HANDLING_HIDER",
+                "HANDLING_HANDLING_YOKE*",
+                "HANDLING_YOKE_VISIBILITY_*",
+                "HANDLING_STICK_HIDER",
+                "HANDLING_ELEVATORTRIM_YOKE",
+                "HANDLING_YOKE_*"
+              ],
+              "text": "This simulator helper hides the yoke (the control wheel) so that it no longer blocks the view of the instruments. The aircraft does not have such a control.",
+              "context": "It only changes what is drawn on the screen. The controls of the aircraft keep working."
+            },
+            {
+              "id": "autostart",
+              "name": "Autostart (automatic start-up procedure)",
+              "type": "button",
+              "match": [
+                "PROCEDURE_AUTOSTART",
+                "PROCEDURE_AUTO_START_SHUTDOWN",
+                "PROCEDURE_STANDALONE_AUTO_START_SHUTDOWN"
+              ],
+              "text": "This simulator helper runs the engine start-up procedure by itself. It flips the switches in the right order. It also stops the engines again. A real aircraft does not have this control.",
+              "context": "It is useful to skip a long start. A pilot who wants to learn the start-up does it by hand."
+            },
+            {
+              "id": "sim-procedure",
+              "name": "Procedure events (simulator-internal helpers)",
+              "type": "other",
+              "match": [
+                "PROCEDURE_*"
+              ],
+              "text": "Events whose name starts with PROCEDURE belong to the simulator's built-in procedures and simulations, such as message loggers, key event capture, lights, trim, wipers or pressure handling. They are not switches of a real aircraft; the rest of the name tells what the procedure is about.",
+              "context": "The aircraft's own simulation uses them; pilots rarely bind them to a button."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "other-events",
+      "where": "other",
+      "name": "Other events by name",
+      "text": "Events that fit no panel above. Each is named after the part of the aircraft it belongs to, such as lights, ice protection, instruments or the autopilot. What exactly it does depends on the aircraft.",
+      "panels": [
+        {
+          "id": "late-light-other",
+          "name": "Other lights",
+          "text": "The simulator has more events of this kind than the panels above describe. They are listed here by their name only.",
+          "context": "Each aircraft has its own set; the event name tells which part it belongs to.",
+          "src": "g1",
+          "controls": [
+            {
+              "id": "light-other",
+              "name": "Other lighting controls",
+              "type": "switch",
+              "match": [
+                "LIGHTING_*"
+              ],
+              "text": "These events belong to further lights of the aircraft. The name tells which light, and what it does depends on the aircraft.",
+              "context": "Lights are grouped by use; pilots handle them in the same order on each flight."
+            }
+          ]
+        },
+        {
+          "id": "late-deice-other",
+          "name": "Other ice protection",
+          "text": "The simulator has more events of this kind than the panels above describe. They are listed here by their name only.",
+          "context": "Each aircraft has its own set; the event name tells which part it belongs to.",
+          "src": "g1",
+          "controls": [
+            {
+              "id": "deice-other",
+              "name": "Other de-ice controls",
+              "type": "switch",
+              "match": [
+                "DEICE_*"
+              ],
+              "text": "These events belong to further ice protection equipment. The name tells which, and what it does depends on the aircraft.",
+              "context": "Ice protection is used in cold, wet air; the pilot checks it during the climb."
+            }
+          ]
+        },
+        {
+          "id": "late-ap-other",
+          "name": "Other autopilot events",
+          "text": "The simulator has more events of this kind than the panels above describe. They are listed here by their name only.",
+          "context": "Each aircraft has its own set; the event name tells which part it belongs to.",
+          "src": "g1",
+          "controls": [
+            {
+              "id": "ap-other",
+              "name": "Other autopilot controls",
+              "type": "button",
+              "match": [
+                "AUTOPILOT_*"
+              ],
+              "text": "These events belong to further autopilot or display controls. The name tells which one. What it does depends on the aircraft.",
+              "context": "They are part of the same panel as the others."
+            }
+          ]
+        },
+        {
+          "id": "late-instrument-misc",
+          "name": "Other instrument events",
+          "text": "The simulator has more events of this kind than the panels above describe. They are listed here by their name only.",
+          "context": "Each aircraft has its own set; the event name tells which part it belongs to.",
+          "src": "g1",
+          "controls": [
+            {
+              "id": "instrument-misc",
+              "name": "Other instrument controls",
+              "type": "button",
+              "match": [
+                "INSTRUMENT_*",
+                "SAFETY_ATTITUDE*"
+              ],
+              "text": "These events belong to other instrument controls such as buttons on a gauge or screen, a test or a reset. The name tells which instrument. What it does depends on the aircraft.",
+              "context": "They are small adjustments the pilot makes before or during flight."
+            }
+          ]
+        },
+        {
+          "id": "late-elec",
+          "name": "Other electrical events",
+          "text": "The simulator has more events of this kind than the panels above describe. They are listed here by their name only.",
+          "context": "Each aircraft has its own set; the event name tells which part it belongs to.",
+          "src": "g1",
+          "controls": [
+            {
+              "id": "other-elec",
+              "name": "Other electrical events",
+              "type": "other",
+              "match": [
+                "ELECTRICAL_*"
+              ],
+              "text": "These events belong to the aircraft's electrical system. The name says which part, such as a bus, a breaker or a switch of a specific system. What it does depends on the aircraft.",
+              "context": "Only a few aircraft have these (other electrical events). The cockpit pages list them with the name that the simulator gives."
+            }
+          ]
+        },
+        {
+          "id": "late-engine",
+          "name": "Other engine events",
+          "text": "The simulator has more events of this kind than the panels above describe. They are listed here by their name only.",
+          "context": "Each aircraft has its own set; the event name tells which part it belongs to.",
+          "src": "g1",
+          "controls": [
+            {
+              "id": "other-engine",
+              "name": "Other engine events",
+              "type": "other",
+              "match": [
+                "ENGINE_*"
+              ],
+              "text": "These events belong to the engine controls or equipment. The name says which one. What it does depends on the aircraft.",
+              "context": "Only a few aircraft have these (other engine events). The cockpit pages list them with the name that the simulator gives."
+            }
+          ]
+        },
+        {
+          "id": "late-fuel",
+          "name": "Other fuel events",
+          "text": "The simulator has more events of this kind than the panels above describe. They are listed here by their name only.",
+          "context": "Each aircraft has its own set; the event name tells which part it belongs to.",
+          "src": "g1",
+          "controls": [
+            {
+              "id": "other-fuel",
+              "name": "Other fuel events",
+              "type": "other",
+              "match": [
+                "FUEL_*"
+              ],
+              "text": "These events belong to the fuel system: pumps, valves, tanks or levers. The name says which one. What it does depends on the aircraft.",
+              "context": "Only a few aircraft have these (other fuel events). The cockpit pages list them with the name that the simulator gives."
+            }
+          ]
+        },
+        {
+          "id": "late-handling",
+          "name": "Other handling events",
+          "text": "The simulator has more events of this kind than the panels above describe. They are listed here by their name only.",
+          "context": "Each aircraft has its own set; the event name tells which part it belongs to.",
+          "src": "g1",
+          "controls": [
+            {
+              "id": "other-handling",
+              "name": "Other handling events",
+              "type": "other",
+              "match": [
+                "HANDLING_*"
+              ],
+              "text": "These events belong to the flying controls and their helpers: trim, flaps, pedals, hiders and similar. The name says which one. What it does depends on the aircraft.",
+              "context": "Only a few aircraft have these (other handling events). The cockpit pages list them with the name that the simulator gives."
+            }
+          ]
+        },
+        {
+          "id": "late-navcom",
+          "name": "Other radio and navigation events",
+          "text": "The simulator has more events of this kind than the panels above describe. They are listed here by their name only.",
+          "context": "Each aircraft has its own set; the event name tells which part it belongs to.",
+          "src": "g1",
+          "controls": [
+            {
+              "id": "other-navcom",
+              "name": "Other radio and navigation events",
+              "type": "other",
+              "match": [
+                "NAVCOM_*"
+              ],
+              "text": "These events belong to the radios and navigation equipment. The name says which one. What it does depends on the aircraft.",
+              "context": "Only a few aircraft have these (other radio and navigation events). The cockpit pages list them with the name that the simulator gives."
+            }
+          ]
+        },
+        {
+          "id": "late-radio",
+          "name": "Other radio events",
+          "text": "The simulator has more events of this kind than the panels above describe. They are listed here by their name only.",
+          "context": "Each aircraft has its own set; the event name tells which part it belongs to.",
+          "src": "g1",
+          "controls": [
+            {
+              "id": "other-radio",
+              "name": "Other radio events",
+              "type": "other",
+              "match": [
+                "RADIO_*"
+              ],
+              "text": "These events belong to radios. The name says which one. What it does depends on the aircraft.",
+              "context": "Only a few aircraft have these (other radio events). The cockpit pages list them with the name that the simulator gives."
+            }
+          ]
+        },
+        {
+          "id": "late-fire",
+          "name": "Fire protection events",
+          "text": "The simulator has more events of this kind than the panels above describe. They are listed here by their name only.",
+          "context": "Each aircraft has its own set; the event name tells which part it belongs to.",
+          "src": "g1",
+          "controls": [
+            {
+              "id": "other-fire",
+              "name": "Fire protection events",
+              "type": "other",
+              "match": [
+                "FIRE_*"
+              ],
+              "text": "These events belong to the fire protection system: detectors, extinguishers and their tests. The name says which one. What it does depends on the aircraft.",
+              "context": "Only a few aircraft have these (fire protection events). The cockpit pages list them with the name that the simulator gives."
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

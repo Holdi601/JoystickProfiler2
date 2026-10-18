@@ -500,7 +500,7 @@ namespace JoyPro.CockpitPictures
                             scene.Bounds(gm, out gmn, out gmx);
                             if ((gmx - gmn).Length < 1.2)
                             {
-                                yoke = new CockpitGrip { Device = "stick", Meshes = gm.ToList(), Pivot = (gmn + gmx) * 0.5 };
+                                yoke = new CockpitGrip { Device = "stick", Meshes = gm.ToList(), Pivot = (gmn + gmx) * 0.5, Animation = new ControlAnimation { Source = "model node", Name = name } };
                                 continue;
                             }
                         }
@@ -534,11 +534,11 @@ namespace JoyPro.CockpitPictures
                         kind = char.ToUpperInvariant(kind[0]) + kind.Substring(1).ToLowerInvariant();
                     if (yoke == null && Regex.IsMatch(name, "^HANDLING_(Yoke|Stick|Cyclic)(_1|_L|_Left)?$|^(YOKE|STICK)(_LEFT|_L|_1)?$", RegexOptions.IgnoreCase))
                     {
-                        yoke = new CockpitGrip { Device = "stick", Meshes = ms.ToList(), Pivot = at };
+                        yoke = new CockpitGrip { Device = "stick", Meshes = ms.ToList(), Pivot = at, Animation = new ControlAnimation { Source = "model node", Name = name } };
                         continue;
                     }
                     if (throttle == null && Regex.IsMatch(name, "^(ENGINE|HANDLING)_(Lever_Throttle|Throttle|Lever_Collective|Collective)(_1)?$|^LEVER_THROTTLE(_1|_HANDLE)?$", RegexOptions.IgnoreCase))
-                        throttle = new CockpitGrip { Device = "throttle", Meshes = ms.ToList(), Pivot = at };
+                        throttle = new CockpitGrip { Device = "throttle", Meshes = ms.ToList(), Pivot = at, Animation = new ControlAnimation { Source = "model node", Name = name } };
                     // The other pilot's yoke or stick is no control of a panel.
                     if (kind == "Yoke" || kind == "Stick" || kind == "Cyclic" || callouts.Any(c => c.Id == name))
                         continue;
@@ -551,6 +551,9 @@ namespace JoyPro.CockpitPictures
                         foreach (string e in events.Distinct().Take(6))
                             co.Commands.Add(new CalloutCommand { Name = e, Category = "MSFS event", Id = e });
                     }
+                    // What moves: the animated node (its behaviour template drives it where the interior names one).
+                    co.Animation = new ControlAnimation { Source = byBehaviour && template.Length > 0 ? "behaviour" : "model node", Name = byBehaviour && template.Length > 0 ? name + " (" + template + ")" : name };
+                    co.GameKind = (kind + " " + (byBehaviour ? template : string.Empty)).Trim();
                     callouts.Add(co);
                 }
 
@@ -587,7 +590,7 @@ namespace JoyPro.CockpitPictures
                         int node = NodeOf(g, c.Id);
                         if (node >= 0 && meshesOfNode.TryGetValue(node, out cm) && cm.Count > 0 && cm.All(onYoke.Contains))
                         {
-                            yoke.Parts.Add(new CockpitCallout { Id = c.Id, Label = c.Label, Position = c.Position, Kind = "part", Commands = c.Commands });
+                            yoke.Parts.Add(new CockpitCallout { Id = c.Id, Label = c.Label, Position = c.Position, Kind = "part", Commands = c.Commands, Animation = c.Animation, GameKind = c.GameKind });
                             callouts.Remove(c);
                         }
                     }
@@ -597,7 +600,7 @@ namespace JoyPro.CockpitPictures
                     grips.Add(throttle);
                     CockpitCallout self = callouts.FirstOrDefault(c => throttle.Meshes.SequenceEqual(meshesOfNode.ContainsKey(NodeOf(g, c.Id)) ? meshesOfNode[NodeOf(g, c.Id)] : new List<int>()));
                     if (self != null)
-                        throttle.Parts.Add(new CockpitCallout { Id = self.Id, Label = self.Label, Position = self.Position, Kind = "part", Commands = self.Commands });
+                        throttle.Parts.Add(new CockpitCallout { Id = self.Id, Label = self.Label, Position = self.Position, Kind = "part", Commands = self.Commands, Animation = self.Animation, GameKind = self.GameKind });
                 }
                 List<CockpitViewPlan> plans = CockpitViews.Plan(scene, head, callouts, grips, job.Width);
                 if (job.ViewFilter.Length > 0)

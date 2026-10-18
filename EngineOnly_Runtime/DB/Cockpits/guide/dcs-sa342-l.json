@@ -1,0 +1,330 @@
+{
+  "format": "joypro-cockpit-guide",
+  "version": 1,
+  "id": "dcs-sa342-l",
+  "title": "SA 342L / L1 / Minigun Gazelle (DCS)",
+  "inherits": "dcs-sa342",
+  "remove": [
+    "hot3-panel",
+    "copilot-controls",
+    "copilot-video-stick"
+  ],
+  "variants": [
+    "sa342l",
+    "sa342-mistral",
+    "sa342-minigun"
+  ],
+  "games": [
+    "DCS"
+  ],
+  "sets": [],
+  "sources": [
+    {
+      "id": "m2",
+      "title": "DCS SA342L Addendum (EN)",
+      "file": "Mods/aircraft/SA342/Doc/DCS SA342L Addendum_en.pdf"
+    },
+    {
+      "id": "m5",
+      "title": "DCS SA342 Mistral Addendum (EN)",
+      "file": "Mods/aircraft/SA342/Doc/DCS SA342Mistral Addendum_en.pdf"
+    }
+  ],
+  "intro": "These are the gun, rocket and anti-aircraft versions of the SA 342 Gazelle: the SA 342L with a 20 mm gun and rockets, the SA 342L1 with Mistral missiles and a version with a door minigun. They share the cockpit of the SA 342M, but have no HOT3 missile panel and no second seat. They add a fold-down pilot sight and the weapons command boxes on the centre console.",
+  "areas": [
+    {
+      "id": "center-console",
+      "where": "center-pedestal",
+      "name": "Centre console (weapon boxes)",
+      "text": "On the SA 342L versions the centre console also carries the weapons command boxes.",
+      "panels": [
+        {
+          "id": "weapons-command-boxes",
+          "name": "Weapons Command Boxes",
+          "db": "weapons-command-boxes",
+          "src": "m2",
+          "page": "13",
+          "text": "The boxes on the centre console for the power and the arming of the gun and rocket pylons (or the Mistral missile pylons).",
+          "context": "The pilot sets them before an attack. The gun, the rockets or the missiles fire only when the power switch is on and the pylon switch is on ARM.",
+          "controls": [
+            {
+              "id": "wcb-power",
+              "name": "Power switch",
+              "type": "switch3",
+              "match": [
+                "item:weapons-command-boxes:1"
+              ],
+              "positions": [
+                {
+                  "name": "A (arret)",
+                  "text": "The weapons command boxes are off."
+                },
+                {
+                  "name": "M (marche)",
+                  "text": "The weapons command boxes are on."
+                },
+                {
+                  "name": "S (standby)",
+                  "text": "The weapons command boxes wait in standby."
+                }
+              ],
+              "text": "The main switch of the weapons command boxes. A is off, M is on and S is standby.",
+              "context": "It is one of the conditions to fire: the AC 115 V bus has power, the pilot sight is out and the master arm switch is on.",
+              "src": "m2",
+              "page": "13"
+            },
+            {
+              "id": "wcb-na",
+              "name": "Not available",
+              "type": "other",
+              "match": [
+                "item:weapons-command-boxes:2"
+              ],
+              "text": "A control on the box that is listed as not available. It has no function.",
+              "context": "The addendum names it in the picture of the box without giving it a task.",
+              "src": "m2",
+              "page": "13"
+            },
+            {
+              "id": "wcb-brightness",
+              "name": "Brightness setting",
+              "type": "knob",
+              "match": [
+                "item:weapons-command-boxes:3"
+              ],
+              "text": "A knob that sets how bright the displays of the box are.",
+              "context": "The pilot turns it up in daylight and down at night.",
+              "src": "m2",
+              "page": "13"
+            },
+            {
+              "id": "wcb-left-cover",
+              "name": "Left pylon activation switch cover",
+              "type": "guard",
+              "match": [
+                "item:weapons-command-boxes:4"
+              ],
+              "text": "A small cover over the switch of the left pylon. It stops the switch from being moved by mistake.",
+              "context": "The pilot lifts it before arming the left pylon.",
+              "src": "m2",
+              "page": "13"
+            },
+            {
+              "id": "wcb-right-cover",
+              "name": "Right pylon activation switch cover",
+              "type": "guard",
+              "match": [
+                "item:weapons-command-boxes:5"
+              ],
+              "text": "A small cover over the switch of the right pylon. It stops the switch from being moved by mistake.",
+              "context": "The pilot lifts it before arming the right pylon.",
+              "src": "m2",
+              "page": "13"
+            },
+            {
+              "id": "wcb-lamps",
+              "name": "Activation lamps",
+              "type": "light",
+              "match": [
+                "item:weapons-command-boxes:6"
+              ],
+              "text": "Green lamps. A lamp shines when its pylon is armed and ready to fire.",
+              "context": "On the SA 342L, an armed right pylon means the gun is ready and an armed left pylon means the rockets are ready.",
+              "src": "m2",
+              "page": "15"
+            },
+            {
+              "id": "wcb-ripple",
+              "name": "Ripple selection switch",
+              "type": "switch",
+              "match": [
+                "item:weapons-command-boxes:7"
+              ],
+              "text": "A switch to choose single shots or a ripple (a quick series). The addendum says it is not available in this version.",
+              "context": "It has no function in DCS for now.",
+              "src": "m2",
+              "page": "13"
+            },
+            {
+              "id": "wcb-trigger-lamp",
+              "name": "Trigger lamp",
+              "type": "light",
+              "match": [
+                "item:weapons-command-boxes:8"
+              ],
+              "text": "A red lamp of the box. The addendum lists it as the trigger lamp and does not describe it further.",
+              "context": "It belongs to the firing circuit of the box.",
+              "src": "m2",
+              "page": "13"
+            },
+            {
+              "id": "wcb-displays",
+              "name": "Display screens",
+              "type": "display",
+              "match": [
+                "item:weapons-command-boxes:9"
+              ],
+              "text": "Two small displays that show the ammunition left per pylon. For example, 8 rockets at the left pylon and 240 gun rounds at the right pylon.",
+              "context": "The pilot reads here how much ammunition is left.",
+              "src": "m2",
+              "page": "15"
+            },
+            {
+              "id": "wcb-left-switch",
+              "name": "Left pylon activation switch",
+              "type": "switch2",
+              "match": [
+                "item:weapons-command-boxes:10"
+              ],
+              "positions": [
+                {
+                  "name": "ARM (armed)",
+                  "text": "The left pylon is armed and its green lamp shines."
+                },
+                {
+                  "name": "SAFE",
+                  "text": "The left pylon is safe."
+                }
+              ],
+              "text": "The switch that arms the left pylon. On the SA 342L the left pylon carries the SNEB rockets; on the Mistral version it carries Mistral missiles.",
+              "context": "The green lamp shows that the pylon is armed.",
+              "src": "m2",
+              "page": "14"
+            },
+            {
+              "id": "wcb-right-switch",
+              "name": "Right pylon activation switch",
+              "type": "switch2",
+              "match": [
+                "item:weapons-command-boxes:11"
+              ],
+              "positions": [
+                {
+                  "name": "ARM (armed)",
+                  "text": "The right pylon is armed and its green lamp shines."
+                },
+                {
+                  "name": "SAFE",
+                  "text": "The right pylon is safe."
+                }
+              ],
+              "text": "The switch that arms the right pylon. On the SA 342L the right pylon carries the gun; on the Mistral version it carries Mistral missiles.",
+              "context": "If both switches are armed on the SA 342L, only the right pylon counts as armed. On the Mistral version, both armed pylons fire in the order outer right, outer left, inner right, inner left.",
+              "src": "m2",
+              "page": "17"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "pilot-sight-area",
+      "where": "glareshield",
+      "name": "Pilot sight",
+      "text": "The fold-down sight sits in front of the pilot, above the main panel.",
+      "panels": [
+        {
+          "id": "pilot-sight",
+          "name": "Pilot Sight",
+          "db": "pilot-sight",
+          "src": "m2",
+          "page": "8",
+          "text": "The fold-down reflector sight with the aiming mark for the pilot's weapons.",
+          "context": "The pilot deploys it before using the gun, the rockets or the Mistral missiles.",
+          "controls": [
+            {
+              "id": "sight",
+              "name": "Pilot sight",
+              "type": "other",
+              "match": [
+                "item:pilot-sight:1"
+              ],
+              "positions": [
+                {
+                  "name": "STOWED",
+                  "text": "The sight is folded away."
+                },
+                {
+                  "name": "DEPLOYED",
+                  "text": "The sight is out and shows the aiming mark."
+                }
+              ],
+              "text": "A fold-down reflector sight (a glass plate that shows an aiming mark) for the pilot's weapons. It is deployed by clicking it with the mouse or with the I key. Deployed, it shows the aiming mark for the gun, the rockets or the Mistral missile.",
+              "context": "The sight must be out before the weapons can fire.",
+              "src": "m2",
+              "page": "8"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "pilot-seat",
+      "where": "hotas",
+      "name": "Pilot: cyclic, collective and pedals",
+      "seat": 1,
+      "text": "The pilot sits on the right. The right hand holds the cyclic stick, the left hand the collective lever. The feet work the pedals.",
+      "panels": [
+        {
+          "id": "pilot-cyclic",
+          "name": "Cyclic, collective and pedals (pilot)",
+          "src": "m2",
+          "page": "3",
+          "text": "The stick, the lever and the pedals with the buttons and switches on them. The weapon firing button is added in this version.",
+          "context": "The pilot flies the helicopter with them and fires the weapons from the grip.",
+          "controls": [
+            {
+              "id": "fire-button",
+              "name": "Weapon firing button",
+              "type": "button",
+              "match": [
+                "control:stick.button.fire"
+              ],
+              "text": "A red button under a cover on the top of the pilot's grip, worked with the thumb. On the SA 342L and the Minigun version it fires the 20 mm gun of the right pylon or the SNEB rockets of the left pylon. On the SA 342L1 Mistral version it launches a Mistral missile from the armed pylon.",
+              "context": "The weapon fires only when the master arm switch, the weapons command box, the pilot sight and the pylon switch are all set.",
+              "src": "m2",
+              "page": "3"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "door-minigun",
+      "where": "hotas",
+      "name": "Door minigun (Minigun version)",
+      "seat": 1,
+      "text": "The Minigun version carries a minigun at the door that the gunner fires.",
+      "panels": [
+        {
+          "id": "door-minigun",
+          "name": "Door minigun",
+          "text": "The trigger and the safety cover of the door minigun.",
+          "context": "Only the Minigun version of the Gazelle has these controls.",
+          "controls": [
+            {
+              "id": "minigun-trigger",
+              "name": "Minigun firing trigger",
+              "type": "trigger",
+              "match": [
+                "control:panel.trigger.minigun"
+              ],
+              "text": "The trigger on the door-mounted minigun, in the hand of the gunner. Pressing it fires the minigun. This control exists only in the Minigun version.",
+              "context": "The gunner fires the gun out of the open door."
+            },
+            {
+              "id": "minigun-guard",
+              "name": "Minigun safety cover guard",
+              "type": "guard",
+              "match": [
+                "control:panel.guard.minigun"
+              ],
+              "text": "A safety cover on the door minigun. Operating it switches the minigun safety on and off. This control exists only in the Minigun version.",
+              "context": "The gunner switches the safety off before firing."
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

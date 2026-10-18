@@ -114,7 +114,7 @@ from `Dta\languagecore_f.pbo`'s `stringtable.xml` (`str_usract_` + the action in
 keys and keep a name made from the id). Kept: the flight actions above, the ones of JoyPro's function list and LaunchCM,
 NextCM, Eject, EngineToggle; the analogue halves of JoyPro's axis relations (`HeliCollective*Cont`,
 `HeliThrottlePos/Neg`) are no buttons. The player profile, when there is one, adds actions of mods and those the default
-preset does not list (Eject). Fresh build on the dev PC: 51 actions (= the development list; before: 37).
+preset does not list (Eject). Fresh build on a test PC: 51 actions (= the development list; before: 37).
 
 ## Safe write
 Rewrite only lines matching `^key<FlightAction>\[\]=\{...\};$`. In each: remove codes that belong to devices JoyPro manages (device type JB/JA/JP with that device's offset, and combos whose main input is on those devices), keep keyboard, mouse, TrackIR and XInput codes, append the new codes. Map devices via the instance GUID in `JoysticksList`; if a device is missing, warn and ask the user to start Arma once with it; a disabled device that gets binds is enabled. The JoysticksList arrays and properties and the top-level game options are edited only as described above; every other byte stays.

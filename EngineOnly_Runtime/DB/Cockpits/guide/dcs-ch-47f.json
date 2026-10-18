@@ -1,0 +1,2881 @@
+{
+  "format": "joypro-cockpit-guide",
+  "version": 1,
+  "id": "dcs-ch-47f",
+  "title": "CH-47F Chinook Block 1 (DCS)",
+  "variants": [
+    "ch-47f"
+  ],
+  "games": [
+    "DCS"
+  ],
+  "sets": [
+    "DCS/CH-47Fbl1"
+  ],
+  "sources": [
+    {
+      "id": "m1",
+      "title": "DCS CH-47F Early Access Guide (EN)",
+      "file": "Mods/aircraft/CH-47F/Doc/DCS CH-47F Early Access Guide EN.pdf"
+    }
+  ],
+  "intro": "The CH-47F Chinook is a big transport helicopter with two rotors, one at the front and one at the back, instead of one big rotor and a small tail rotor. Two pilots sit side by side: the Pilot in the right seat and the Copilot in the left seat. A flight engineer works in the cabin behind them. The cockpit is a glass cockpit: five colour screens and two keypad units replace most round dials, and the engines, fuel, electricity and lights are switched on the big overhead panel. The circuit breaker walls are behind the seats, and the cabin has extra hand controls for the ramp, the fuel valves, the hoist and the cargo hooks.",
+  "areas": [
+    {
+      "id": "instrument-panel",
+      "where": "front-center",
+      "name": "Instrument panel",
+      "text": "The big panel right in front of both pilots. It holds the five screens, the fire handles, the warning buttons, the clock, the radar altimeter and a few backup instruments.",
+      "panels": [
+        {
+          "id": "warning-lights",
+          "name": "BAT LOW light and MASTER CAUTION buttons",
+          "src": "m1",
+          "page": "30",
+          "text": "These are the cockpit's attention lights. One tells that the battery is nearly empty, the two big buttons tell that a screen shows a warning message.",
+          "context": "The pilots glance at them while flying. The words that say what is wrong appear on the multi-function screens.",
+          "controls": [
+            {
+              "id": "bat-low",
+              "name": "BAT LOW light",
+              "type": "light",
+              "match": [
+                "MAIN_BAT_LOW",
+                "item:instrument-panel:5"
+              ],
+              "text": "This light comes on when the battery is almost empty and no other power source is feeding the electrical system. The game also lets the pilot click it.",
+              "context": "The manual says it lights when neither DC bus is powered and the battery voltage has dropped below 20 volts. A bus is a group of electric lines that feed a set of equipment.",
+              "src": "m1",
+              "page": "30"
+            },
+            {
+              "id": "master-caution",
+              "name": "MASTER CAUTION lighted pushbuttons",
+              "type": "button",
+              "match": [
+                "MAIN_MCAUTION_*",
+                "item:instrument-panel:6"
+              ],
+              "text": "There are two of these big lighted buttons, one in front of each pilot. A light says: look at the screens, something needs your attention. Pressing a button puts the light out and stops the spoken warning.",
+              "context": "The warning texts are shown on the multi-function screens. The Acknowledge button on the cyclic grip does the same job without taking a hand off the stick.",
+              "count": 2,
+              "src": "m1",
+              "page": "31"
+            }
+          ]
+        },
+        {
+          "id": "fire-pull-handles",
+          "name": "FIRE PULL handles",
+          "db": "fire-pull-handles",
+          "src": "m1",
+          "page": "31",
+          "text": "Two red handles for engine fires. A handle lights up when its engine compartment is on fire. Pulling it shuts off the fuel to that engine and readies the fire extinguishers.",
+          "context": "FIRE 1 belongs to the left engine and FIRE 2 to the right engine. After pulling, the pilot turns the handle to fire one of two extinguisher bottles.",
+          "controls": [
+            {
+              "id": "fire-1",
+              "name": "FIRE 1 PULL handle (left engine)",
+              "type": "handle",
+              "match": [
+                "MAIN_ENG1_FIRE_HDL",
+                "item:fire-pull-handles:1"
+              ],
+              "text": "This handle lights up when the game detects a fire in the left engine. Pulling it out cuts the fuel to the left engine and prepares the fire extinguishing system.",
+              "context": "After the pull, turning the handle fires an extinguisher bottle into the engine compartment. The Lamp Test button lights the handle to show it works.",
+              "positions": [
+                {
+                  "name": "IN",
+                  "text": "The handle is pushed in and horizontal; the engine is fed normally."
+                },
+                {
+                  "name": "PULLED",
+                  "text": "The handle is out: the fuel to the left engine is off and the extinguishers are armed."
+                },
+                {
+                  "name": "LEFT",
+                  "text": "Turned counterclockwise after pulling: the forward fire bottle empties into the engine compartment."
+                },
+                {
+                  "name": "RIGHT",
+                  "text": "Turned clockwise after pulling: the aft fire bottle empties into the engine compartment."
+                }
+              ],
+              "src": "m1",
+              "page": "31"
+            },
+            {
+              "id": "fire-2",
+              "name": "FIRE 2 PULL handle (right engine)",
+              "type": "handle",
+              "match": [
+                "MAIN_ENG2_FIRE_HDL",
+                "item:fire-pull-handles:2"
+              ],
+              "text": "This handle lights up when the game detects a fire in the right engine. Pulling it out cuts the fuel to the right engine and prepares the fire extinguishing system.",
+              "context": "It works exactly like FIRE 1, only for the right engine. Both handles must be in and horizontal before the engines are started.",
+              "positions": [
+                {
+                  "name": "IN",
+                  "text": "The handle is pushed in and horizontal; the engine is fed normally."
+                },
+                {
+                  "name": "PULLED",
+                  "text": "The handle is out: the fuel to the right engine is off and the extinguishers are armed."
+                },
+                {
+                  "name": "LEFT",
+                  "text": "Turned counterclockwise after pulling: the forward fire bottle empties into the engine compartment."
+                },
+                {
+                  "name": "RIGHT",
+                  "text": "Turned clockwise after pulling: the aft fire bottle empties into the engine compartment."
+                }
+              ],
+              "src": "m1",
+              "page": "31"
+            }
+          ]
+        },
+        {
+          "id": "mfd-screens",
+          "name": "Multi-function displays (the five screens)",
+          "src": "m1",
+          "page": "62",
+          "text": "The big glass screens are the main instruments. Each one can show any page: flight numbers, map, engines, fuel. The buttons around each screen choose the page.",
+          "context": "There are two screens in front of each pilot and one in the middle that both pilots share. Many things that other aircraft do with switches are done through these screens.",
+          "controls": [
+            {
+              "id": "mfd-copilot",
+              "name": "Copilot MFDs (two screens)",
+              "type": "display",
+              "match": [
+                "item:instrument-panel:1"
+              ],
+              "text": "These two screens sit in front of the Copilot, in the left seat. Each is a colour screen with buttons around its edge.",
+              "context": "The manual says every screen can show every page. The Copilot picks pages with the buttons around the screen or with the cursor of the cyclic grip.",
+              "src": "m1",
+              "page": "62"
+            },
+            {
+              "id": "mfd-center",
+              "name": "Center MFD (shared screen)",
+              "type": "display",
+              "match": [
+                "item:instrument-panel:2"
+              ],
+              "text": "This fifth screen sits in the middle of the panel, between the two pilots. Both pilots can use it.",
+              "context": "It is the same kind of screen as the other four, so any page can be shown on it. Next to it are the two fire handles.",
+              "src": "m1",
+              "page": "62"
+            },
+            {
+              "id": "mfd-pilot",
+              "name": "Pilot MFDs (two screens)",
+              "type": "display",
+              "match": [
+                "item:instrument-panel:3"
+              ],
+              "text": "These two screens sit in front of the Pilot, in the right seat. Each is a colour screen with buttons around its edge.",
+              "context": "The manual names pages such as VSD (the page with the flight numbers), HSD (the map page) and INST (engine and fuel pages) that any screen can show.",
+              "src": "m1",
+              "page": "62"
+            }
+          ]
+        },
+        {
+          "id": "mfd-copilot-outboard",
+          "name": "Copilot outboard MFD (buttons and knobs)",
+          "src": "m1",
+          "page": "62",
+          "text": "This is the frame of the outer screen on the Copilot's side: 32 buttons around the edge, a power knob and three small rockers.",
+          "context": "Every one of the five screens has the same set of controls. This is the one for the Copilot outboard MFD.",
+          "controls": [
+            {
+              "id": "keys-top",
+              "name": "T1-T7 (top buttons, Copilot outboard MFD)",
+              "type": "button",
+              "match": [
+                "MFD-CL-KEY-T*"
+              ],
+              "text": "These 7 buttons run along the top edge of the outer screen on the Copilot's side. Each button picks the word printed above it on the screen, so the same button does different things on different pages.",
+              "context": "The manual numbers them T1 to T7 from left to right. On the Copilot outboard MFD the page names are drawn on the screen above each key; for example T1 selects the VSD page.",
+              "count": 7,
+              "src": "m1",
+              "page": "62"
+            },
+            {
+              "id": "keys-left",
+              "name": "L1-L9 (left buttons, Copilot outboard MFD)",
+              "type": "button",
+              "match": [
+                "MFD-CL-KEY-L*"
+              ],
+              "text": "These 9 buttons run down the left edge of the outer screen on the Copilot's side. Each button picks the word printed next to it on the screen.",
+              "context": "The manual numbers them L1 at the top to L9 at the bottom. The Copilot uses them to open menus and change settings of the page on the Copilot outboard MFD.",
+              "count": 9,
+              "src": "m1",
+              "page": "62"
+            },
+            {
+              "id": "keys-right",
+              "name": "R1-R9 (right buttons, Copilot outboard MFD)",
+              "type": "button",
+              "match": [
+                "MFD-CL-KEY-R*"
+              ],
+              "text": "These 9 buttons run down the right edge of the outer screen on the Copilot's side. Each button picks the word printed next to it on the screen.",
+              "context": "The manual numbers them R1 at the top to R9 at the bottom. On the Copilot outboard MFD they work together with the left buttons to operate the current page.",
+              "count": 9,
+              "src": "m1",
+              "page": "62"
+            },
+            {
+              "id": "keys-bottom",
+              "name": "B1-B7 (bottom buttons, Copilot outboard MFD)",
+              "type": "button",
+              "match": [
+                "MFD-CL-KEY-B*"
+              ],
+              "text": "These 7 buttons run along the bottom edge of the outer screen on the Copilot's side. Each button picks the word printed above it at the bottom of the screen.",
+              "context": "The manual numbers them B1 to B7 from left to right. B1 opens the HSD map page, and B6 switches the Copilot outboard MFD between a full-screen and a half-screen page.",
+              "count": 7,
+              "src": "m1",
+              "page": "62"
+            },
+            {
+              "id": "power",
+              "name": "Power knob (Copilot outboard MFD)",
+              "type": "selector",
+              "match": [
+                "MFD-CL-PWR-*"
+              ],
+              "text": "This knob switches the outer screen on the Copilot's side on and off and chooses its brightness mode.",
+              "context": "The pilots turn the screens on early, because the display pages are needed for almost everything. The setting NVG makes the Copilot outboard MFD dim enough for night vision goggles.",
+              "positions": [
+                {
+                  "name": "OFF",
+                  "text": "The screen is switched off."
+                },
+                {
+                  "name": "NVG",
+                  "text": "The screen is on, with the lower brightness made for night vision goggles."
+                },
+                {
+                  "name": "NORM",
+                  "text": "The screen is on, with the normal daytime brightness."
+                }
+              ],
+              "src": "m1",
+              "page": "62"
+            },
+            {
+              "id": "backlight",
+              "name": "BK LT BRT rocker (Copilot outboard MFD)",
+              "type": "rocker",
+              "match": [
+                "MFD-CL-BCKLT-*"
+              ],
+              "text": "This small rocker makes the picture of the outer screen on the Copilot's side brighter or darker. Pressing one end of it raises the brightness and the other end lowers it.",
+              "context": "It changes the brightness only inside the range the power knob chose. This is the outer screen of the left seat. If the screen is too bright at night, this is the control to use.",
+              "count": 2,
+              "src": "m1",
+              "page": "63"
+            },
+            {
+              "id": "video-brightness",
+              "name": "VID BRT rocker (Copilot outboard MFD)",
+              "type": "rocker",
+              "match": [
+                "MFD-CL-VID-BRT-*"
+              ],
+              "text": "This rocker is meant to change the brightness of the video or map picture that lies behind the symbols on the outer screen on the Copilot's side. The manual marks it as not implemented.",
+              "context": "It would let a pilot dim a bright map without dimming the symbols on top of it. In the current game version the Copilot outboard MFD ignores it.",
+              "count": 2,
+              "src": "m1",
+              "page": "63"
+            },
+            {
+              "id": "video-contrast",
+              "name": "VID CON rocker (Copilot outboard MFD)",
+              "type": "rocker",
+              "match": [
+                "MFD-CL-VID-CNT-*"
+              ],
+              "text": "This rocker is meant to change the contrast of the video or map picture behind the symbols on the outer screen on the Copilot's side. The manual marks it as not implemented.",
+              "context": "Contrast is the difference between light and dark parts of a picture. In the current game version the Copilot outboard MFD ignores this rocker.",
+              "count": 2,
+              "src": "m1",
+              "page": "63"
+            }
+          ]
+        },
+        {
+          "id": "mfd-copilot-inboard",
+          "name": "Copilot inboard MFD (buttons and knobs)",
+          "src": "m1",
+          "page": "62",
+          "text": "This is the frame of the inner screen on the Copilot's side: 32 buttons around the edge, a power knob and three small rockers.",
+          "context": "Every one of the five screens has the same set of controls. This is the one for the Copilot inboard MFD.",
+          "controls": [
+            {
+              "id": "keys-top",
+              "name": "T1-T7 (top buttons, Copilot inboard MFD)",
+              "type": "button",
+              "match": [
+                "MFD-CR-KEY-T*"
+              ],
+              "text": "These 7 buttons run along the top edge of the inner screen on the Copilot's side. Each button picks the word printed above it on the screen, so the same button does different things on different pages.",
+              "context": "The manual numbers them T1 to T7 from left to right. On the Copilot inboard MFD the page names are drawn on the screen above each key; for example T1 selects the VSD page.",
+              "count": 7,
+              "src": "m1",
+              "page": "62"
+            },
+            {
+              "id": "keys-left",
+              "name": "L1-L9 (left buttons, Copilot inboard MFD)",
+              "type": "button",
+              "match": [
+                "MFD-CR-KEY-L*"
+              ],
+              "text": "These 9 buttons run down the left edge of the inner screen on the Copilot's side. Each button picks the word printed next to it on the screen.",
+              "context": "The manual numbers them L1 at the top to L9 at the bottom. The Copilot uses them to open menus and change settings of the page on the Copilot inboard MFD.",
+              "count": 9,
+              "src": "m1",
+              "page": "62"
+            },
+            {
+              "id": "keys-right",
+              "name": "R1-R9 (right buttons, Copilot inboard MFD)",
+              "type": "button",
+              "match": [
+                "MFD-CR-KEY-R*"
+              ],
+              "text": "These 9 buttons run down the right edge of the inner screen on the Copilot's side. Each button picks the word printed next to it on the screen.",
+              "context": "The manual numbers them R1 at the top to R9 at the bottom. On the Copilot inboard MFD they work together with the left buttons to operate the current page.",
+              "count": 9,
+              "src": "m1",
+              "page": "62"
+            },
+            {
+              "id": "keys-bottom",
+              "name": "B1-B7 (bottom buttons, Copilot inboard MFD)",
+              "type": "button",
+              "match": [
+                "MFD-CR-KEY-B*"
+              ],
+              "text": "These 7 buttons run along the bottom edge of the inner screen on the Copilot's side. Each button picks the word printed above it at the bottom of the screen.",
+              "context": "The manual numbers them B1 to B7 from left to right. B1 opens the HSD map page, and B6 switches the Copilot inboard MFD between a full-screen and a half-screen page.",
+              "count": 7,
+              "src": "m1",
+              "page": "62"
+            },
+            {
+              "id": "power",
+              "name": "Power knob (Copilot inboard MFD)",
+              "type": "selector",
+              "match": [
+                "MFD-CR-PWR-*"
+              ],
+              "text": "This knob switches the inner screen on the Copilot's side on and off and chooses its brightness mode.",
+              "context": "The pilots turn the screens on early, because the display pages are needed for almost everything. The setting NVG makes the Copilot inboard MFD dim enough for night vision goggles.",
+              "positions": [
+                {
+                  "name": "OFF",
+                  "text": "The screen is switched off."
+                },
+                {
+                  "name": "NVG",
+                  "text": "The screen is on, with the lower brightness made for night vision goggles."
+                },
+                {
+                  "name": "NORM",
+                  "text": "The screen is on, with the normal daytime brightness."
+                }
+              ],
+              "src": "m1",
+              "page": "62"
+            },
+            {
+              "id": "backlight",
+              "name": "BK LT BRT rocker (Copilot inboard MFD)",
+              "type": "rocker",
+              "match": [
+                "MFD-CR-BCKLT-*"
+              ],
+              "text": "This small rocker makes the picture of the inner screen on the Copilot's side brighter or darker. Pressing one end of it raises the brightness and the other end lowers it.",
+              "context": "It changes the brightness only inside the range the power knob chose. This is the inner screen of the left seat. If the screen is too bright at night, this is the control to use.",
+              "count": 2,
+              "src": "m1",
+              "page": "63"
+            },
+            {
+              "id": "video-brightness",
+              "name": "VID BRT rocker (Copilot inboard MFD)",
+              "type": "rocker",
+              "match": [
+                "MFD-CR-VID-BRT-*"
+              ],
+              "text": "This rocker is meant to change the brightness of the video or map picture that lies behind the symbols on the inner screen on the Copilot's side. The manual marks it as not implemented.",
+              "context": "It would let a pilot dim a bright map without dimming the symbols on top of it. In the current game version the Copilot inboard MFD ignores it.",
+              "count": 2,
+              "src": "m1",
+              "page": "63"
+            },
+            {
+              "id": "video-contrast",
+              "name": "VID CON rocker (Copilot inboard MFD)",
+              "type": "rocker",
+              "match": [
+                "MFD-CR-VID-CNT-*"
+              ],
+              "text": "This rocker is meant to change the contrast of the video or map picture behind the symbols on the inner screen on the Copilot's side. The manual marks it as not implemented.",
+              "context": "Contrast is the difference between light and dark parts of a picture. In the current game version the Copilot inboard MFD ignores this rocker.",
+              "count": 2,
+              "src": "m1",
+              "page": "63"
+            }
+          ]
+        },
+        {
+          "id": "mfd-center",
+          "name": "Center MFD (buttons and knobs)",
+          "src": "m1",
+          "page": "62",
+          "text": "This is the frame of the middle screen shared by both pilots: 32 buttons around the edge, a power knob and three small rockers.",
+          "context": "Every one of the five screens has the same set of controls. This is the one for the Center MFD.",
+          "controls": [
+            {
+              "id": "keys-top",
+              "name": "T1-T7 (top buttons, Center MFD)",
+              "type": "button",
+              "match": [
+                "MFD-CTR-KEY-T*"
+              ],
+              "text": "These 7 buttons run along the top edge of the middle screen shared by both pilots. Each button picks the word printed above it on the screen, so the same button does different things on different pages.",
+              "context": "The manual numbers them T1 to T7 from left to right. On the Center MFD the page names are drawn on the screen above each key; for example T1 selects the VSD page.",
+              "count": 7,
+              "src": "m1",
+              "page": "62"
+            },
+            {
+              "id": "keys-left",
+              "name": "L1-L9 (left buttons, Center MFD)",
+              "type": "button",
+              "match": [
+                "MFD-CTR-KEY-L*"
+              ],
+              "text": "These 9 buttons run down the left edge of the middle screen shared by both pilots. Each button picks the word printed next to it on the screen.",
+              "context": "The manual numbers them L1 at the top to L9 at the bottom. Either pilot uses them to open menus and change settings of the page on the Center MFD.",
+              "count": 9,
+              "src": "m1",
+              "page": "62"
+            },
+            {
+              "id": "keys-right",
+              "name": "R1-R9 (right buttons, Center MFD)",
+              "type": "button",
+              "match": [
+                "MFD-CTR-KEY-R*"
+              ],
+              "text": "These 9 buttons run down the right edge of the middle screen shared by both pilots. Each button picks the word printed next to it on the screen.",
+              "context": "The manual numbers them R1 at the top to R9 at the bottom. On the Center MFD they work together with the left buttons to operate the current page.",
+              "count": 9,
+              "src": "m1",
+              "page": "62"
+            },
+            {
+              "id": "keys-bottom",
+              "name": "B1-B7 (bottom buttons, Center MFD)",
+              "type": "button",
+              "match": [
+                "MFD-CTR-KEY-B*"
+              ],
+              "text": "These 7 buttons run along the bottom edge of the middle screen shared by both pilots. Each button picks the word printed above it at the bottom of the screen.",
+              "context": "The manual numbers them B1 to B7 from left to right. B1 opens the HSD map page, and B6 switches the Center MFD between a full-screen and a half-screen page.",
+              "count": 7,
+              "src": "m1",
+              "page": "62"
+            },
+            {
+              "id": "power",
+              "name": "Power knob (Center MFD)",
+              "type": "selector",
+              "match": [
+                "MFD-CTR-PWR-*"
+              ],
+              "text": "This knob switches the middle screen shared by both pilots on and off and chooses its brightness mode.",
+              "context": "The pilots turn the screens on early, because the display pages are needed for almost everything. The setting NVG makes the Center MFD dim enough for night vision goggles.",
+              "positions": [
+                {
+                  "name": "OFF",
+                  "text": "The screen is switched off."
+                },
+                {
+                  "name": "NVG",
+                  "text": "The screen is on, with the lower brightness made for night vision goggles."
+                },
+                {
+                  "name": "NORM",
+                  "text": "The screen is on, with the normal daytime brightness."
+                }
+              ],
+              "src": "m1",
+              "page": "62"
+            },
+            {
+              "id": "backlight",
+              "name": "BK LT BRT rocker (Center MFD)",
+              "type": "rocker",
+              "match": [
+                "MFD-CTR-BCKLT-*"
+              ],
+              "text": "This small rocker makes the picture of the middle screen shared by both pilots brighter or darker. Pressing one end of it raises the brightness and the other end lowers it.",
+              "context": "It changes the brightness only inside the range the power knob chose. This is the shared screen in the middle. If the screen is too bright at night, this is the control to use.",
+              "count": 2,
+              "src": "m1",
+              "page": "63"
+            },
+            {
+              "id": "video-brightness",
+              "name": "VID BRT rocker (Center MFD)",
+              "type": "rocker",
+              "match": [
+                "MFD-CTR-VID-BRT-*"
+              ],
+              "text": "This rocker is meant to change the brightness of the video or map picture that lies behind the symbols on the middle screen shared by both pilots. The manual marks it as not implemented.",
+              "context": "It would let a pilot dim a bright map without dimming the symbols on top of it. In the current game version the Center MFD ignores it.",
+              "count": 2,
+              "src": "m1",
+              "page": "63"
+            },
+            {
+              "id": "video-contrast",
+              "name": "VID CON rocker (Center MFD)",
+              "type": "rocker",
+              "match": [
+                "MFD-CTR-VID-CNT-*"
+              ],
+              "text": "This rocker is meant to change the contrast of the video or map picture behind the symbols on the middle screen shared by both pilots. The manual marks it as not implemented.",
+              "context": "Contrast is the difference between light and dark parts of a picture. In the current game version the Center MFD ignores this rocker.",
+              "count": 2,
+              "src": "m1",
+              "page": "63"
+            }
+          ]
+        },
+        {
+          "id": "mfd-pilot-inboard",
+          "name": "Pilot inboard MFD (buttons and knobs)",
+          "src": "m1",
+          "page": "62",
+          "text": "This is the frame of the inner screen on the Pilot's side: 32 buttons around the edge, a power knob and three small rockers.",
+          "context": "Every one of the five screens has the same set of controls. This is the one for the Pilot inboard MFD.",
+          "controls": [
+            {
+              "id": "keys-top",
+              "name": "T1-T7 (top buttons, Pilot inboard MFD)",
+              "type": "button",
+              "match": [
+                "MFD-PL-KEY-T*"
+              ],
+              "text": "These 7 buttons run along the top edge of the inner screen on the Pilot's side. Each button picks the word printed above it on the screen, so the same button does different things on different pages.",
+              "context": "The manual numbers them T1 to T7 from left to right. On the Pilot inboard MFD the page names are drawn on the screen above each key; for example T1 selects the VSD page.",
+              "count": 7,
+              "src": "m1",
+              "page": "62"
+            },
+            {
+              "id": "keys-left",
+              "name": "L1-L9 (left buttons, Pilot inboard MFD)",
+              "type": "button",
+              "match": [
+                "MFD-PL-KEY-L*"
+              ],
+              "text": "These 9 buttons run down the left edge of the inner screen on the Pilot's side. Each button picks the word printed next to it on the screen.",
+              "context": "The manual numbers them L1 at the top to L9 at the bottom. The Pilot uses them to open menus and change settings of the page on the Pilot inboard MFD.",
+              "count": 9,
+              "src": "m1",
+              "page": "62"
+            },
+            {
+              "id": "keys-right",
+              "name": "R1-R9 (right buttons, Pilot inboard MFD)",
+              "type": "button",
+              "match": [
+                "MFD-PL-KEY-R*"
+              ],
+              "text": "These 9 buttons run down the right edge of the inner screen on the Pilot's side. Each button picks the word printed next to it on the screen.",
+              "context": "The manual numbers them R1 at the top to R9 at the bottom. On the Pilot inboard MFD they work together with the left buttons to operate the current page.",
+              "count": 9,
+              "src": "m1",
+              "page": "62"
+            },
+            {
+              "id": "keys-bottom",
+              "name": "B1-B7 (bottom buttons, Pilot inboard MFD)",
+              "type": "button",
+              "match": [
+                "MFD-PL-KEY-B*"
+              ],
+              "text": "These 7 buttons run along the bottom edge of the inner screen on the Pilot's side. Each button picks the word printed above it at the bottom of the screen.",
+              "context": "The manual numbers them B1 to B7 from left to right. B1 opens the HSD map page, and B6 switches the Pilot inboard MFD between a full-screen and a half-screen page.",
+              "count": 7,
+              "src": "m1",
+              "page": "62"
+            },
+            {
+              "id": "power",
+              "name": "Power knob (Pilot inboard MFD)",
+              "type": "selector",
+              "match": [
+                "MFD-PL-PWR-*"
+              ],
+              "text": "This knob switches the inner screen on the Pilot's side on and off and chooses its brightness mode.",
+              "context": "The pilots turn the screens on early, because the display pages are needed for almost everything. The setting NVG makes the Pilot inboard MFD dim enough for night vision goggles.",
+              "positions": [
+                {
+                  "name": "OFF",
+                  "text": "The screen is switched off."
+                },
+                {
+                  "name": "NVG",
+                  "text": "The screen is on, with the lower brightness made for night vision goggles."
+                },
+                {
+                  "name": "NORM",
+                  "text": "The screen is on, with the normal daytime brightness."
+                }
+              ],
+              "src": "m1",
+              "page": "62"
+            },
+            {
+              "id": "backlight",
+              "name": "BK LT BRT rocker (Pilot inboard MFD)",
+              "type": "rocker",
+              "match": [
+                "MFD-PL-BCKLT-*"
+              ],
+              "text": "This small rocker makes the picture of the inner screen on the Pilot's side brighter or darker. Pressing one end of it raises the brightness and the other end lowers it.",
+              "context": "It changes the brightness only inside the range the power knob chose. This is the inner screen of the right seat. If the screen is too bright at night, this is the control to use.",
+              "count": 2,
+              "src": "m1",
+              "page": "63"
+            },
+            {
+              "id": "video-brightness",
+              "name": "VID BRT rocker (Pilot inboard MFD)",
+              "type": "rocker",
+              "match": [
+                "MFD-PL-VID-BRT-*"
+              ],
+              "text": "This rocker is meant to change the brightness of the video or map picture that lies behind the symbols on the inner screen on the Pilot's side. The manual marks it as not implemented.",
+              "context": "It would let a pilot dim a bright map without dimming the symbols on top of it. In the current game version the Pilot inboard MFD ignores it.",
+              "count": 2,
+              "src": "m1",
+              "page": "63"
+            },
+            {
+              "id": "video-contrast",
+              "name": "VID CON rocker (Pilot inboard MFD)",
+              "type": "rocker",
+              "match": [
+                "MFD-PL-VID-CNT-*"
+              ],
+              "text": "This rocker is meant to change the contrast of the video or map picture behind the symbols on the inner screen on the Pilot's side. The manual marks it as not implemented.",
+              "context": "Contrast is the difference between light and dark parts of a picture. In the current game version the Pilot inboard MFD ignores this rocker.",
+              "count": 2,
+              "src": "m1",
+              "page": "63"
+            }
+          ]
+        },
+        {
+          "id": "mfd-pilot-outboard",
+          "name": "Pilot outboard MFD (buttons and knobs)",
+          "src": "m1",
+          "page": "62",
+          "text": "This is the frame of the outer screen on the Pilot's side: 32 buttons around the edge, a power knob and three small rockers.",
+          "context": "Every one of the five screens has the same set of controls. This is the one for the Pilot outboard MFD.",
+          "controls": [
+            {
+              "id": "keys-top",
+              "name": "T1-T7 (top buttons, Pilot outboard MFD)",
+              "type": "button",
+              "match": [
+                "MFD-PR-KEY-T*"
+              ],
+              "text": "These 7 buttons run along the top edge of the outer screen on the Pilot's side. Each button picks the word printed above it on the screen, so the same button does different things on different pages.",
+              "context": "The manual numbers them T1 to T7 from left to right. On the Pilot outboard MFD the page names are drawn on the screen above each key; for example T1 selects the VSD page.",
+              "count": 7,
+              "src": "m1",
+              "page": "62"
+            },
+            {
+              "id": "keys-left",
+              "name": "L1-L9 (left buttons, Pilot outboard MFD)",
+              "type": "button",
+              "match": [
+                "MFD-PR-KEY-L*"
+              ],
+              "text": "These 9 buttons run down the left edge of the outer screen on the Pilot's side. Each button picks the word printed next to it on the screen.",
+              "context": "The manual numbers them L1 at the top to L9 at the bottom. The Pilot uses them to open menus and change settings of the page on the Pilot outboard MFD.",
+              "count": 9,
+              "src": "m1",
+              "page": "62"
+            },
+            {
+              "id": "keys-right",
+              "name": "R1-R9 (right buttons, Pilot outboard MFD)",
+              "type": "button",
+              "match": [
+                "MFD-PR-KEY-R*"
+              ],
+              "text": "These 9 buttons run down the right edge of the outer screen on the Pilot's side. Each button picks the word printed next to it on the screen.",
+              "context": "The manual numbers them R1 at the top to R9 at the bottom. On the Pilot outboard MFD they work together with the left buttons to operate the current page.",
+              "count": 9,
+              "src": "m1",
+              "page": "62"
+            },
+            {
+              "id": "keys-bottom",
+              "name": "B1-B7 (bottom buttons, Pilot outboard MFD)",
+              "type": "button",
+              "match": [
+                "MFD-PR-KEY-B*"
+              ],
+              "text": "These 7 buttons run along the bottom edge of the outer screen on the Pilot's side. Each button picks the word printed above it at the bottom of the screen.",
+              "context": "The manual numbers them B1 to B7 from left to right. B1 opens the HSD map page, and B6 switches the Pilot outboard MFD between a full-screen and a half-screen page.",
+              "count": 7,
+              "src": "m1",
+              "page": "62"
+            },
+            {
+              "id": "power",
+              "name": "Power knob (Pilot outboard MFD)",
+              "type": "selector",
+              "match": [
+                "MFD-PR-PWR-*"
+              ],
+              "text": "This knob switches the outer screen on the Pilot's side on and off and chooses its brightness mode.",
+              "context": "The pilots turn the screens on early, because the display pages are needed for almost everything. The setting NVG makes the Pilot outboard MFD dim enough for night vision goggles.",
+              "positions": [
+                {
+                  "name": "OFF",
+                  "text": "The screen is switched off."
+                },
+                {
+                  "name": "NVG",
+                  "text": "The screen is on, with the lower brightness made for night vision goggles."
+                },
+                {
+                  "name": "NORM",
+                  "text": "The screen is on, with the normal daytime brightness."
+                }
+              ],
+              "src": "m1",
+              "page": "62"
+            },
+            {
+              "id": "backlight",
+              "name": "BK LT BRT rocker (Pilot outboard MFD)",
+              "type": "rocker",
+              "match": [
+                "MFD-PR-BCKLT-*"
+              ],
+              "text": "This small rocker makes the picture of the outer screen on the Pilot's side brighter or darker. Pressing one end of it raises the brightness and the other end lowers it.",
+              "context": "It changes the brightness only inside the range the power knob chose. This is the outer screen of the right seat. If the screen is too bright at night, this is the control to use.",
+              "count": 2,
+              "src": "m1",
+              "page": "63"
+            },
+            {
+              "id": "video-brightness",
+              "name": "VID BRT rocker (Pilot outboard MFD)",
+              "type": "rocker",
+              "match": [
+                "MFD-PR-VID-BRT-*"
+              ],
+              "text": "This rocker is meant to change the brightness of the video or map picture that lies behind the symbols on the outer screen on the Pilot's side. The manual marks it as not implemented.",
+              "context": "It would let a pilot dim a bright map without dimming the symbols on top of it. In the current game version the Pilot outboard MFD ignores it.",
+              "count": 2,
+              "src": "m1",
+              "page": "63"
+            },
+            {
+              "id": "video-contrast",
+              "name": "VID CON rocker (Pilot outboard MFD)",
+              "type": "rocker",
+              "match": [
+                "MFD-PR-VID-CNT-*"
+              ],
+              "text": "This rocker is meant to change the contrast of the video or map picture behind the symbols on the outer screen on the Pilot's side. The manual marks it as not implemented.",
+              "context": "Contrast is the difference between light and dark parts of a picture. In the current game version the Pilot outboard MFD ignores this rocker.",
+              "count": 2,
+              "src": "m1",
+              "page": "63"
+            }
+          ]
+        },
+        {
+          "id": "standby-instruments",
+          "name": "Standby instruments and radar warning display",
+          "src": "m1",
+          "page": "30",
+          "text": "These are small backup instruments that keep working when the big screens fail, plus the display that shows enemy radar.",
+          "context": "The pilots use the standby compass and standby displays only when the main systems fail; the radar warning display is watched in combat.",
+          "controls": [
+            {
+              "id": "standby-compass",
+              "name": "Standby compass",
+              "type": "gauge",
+              "match": [
+                "item:instrument-panel:4"
+              ],
+              "text": "This is an old-fashioned magnetic compass. It always points to magnetic north and needs no electricity to work.",
+              "context": "The crew uses it as a backup for heading when the power fails or the navigation system is not trustworthy. The manual says it should not be relied on for precise navigation.",
+              "src": "m1",
+              "page": "30"
+            },
+            {
+              "id": "compass-knob",
+              "name": "Standby compass brightness knob",
+              "type": "knob",
+              "match": [
+                "COMPASS_KNOB"
+              ],
+              "text": "Turning this knob changes how brightly the face of the standby compass is lit.",
+              "context": "It is used at night so the compass can be read without blinding the pilots.",
+              "src": "m1",
+              "page": "30"
+            },
+            {
+              "id": "sfd-display",
+              "name": "Standby flight displays (SFD)",
+              "type": "display",
+              "match": [
+                "item:instrument-panel:7"
+              ],
+              "text": "These small screens are the backup flying instruments. They show whether the helicopter is level, how fast it flies and how high it is.",
+              "context": "They have their own small power path, so they keep showing the basic flight numbers if the large screens go dark.",
+              "src": "m1",
+              "page": "30"
+            },
+            {
+              "id": "sfd-menu",
+              "name": "SFD menu button",
+              "type": "button",
+              "match": [
+                "SFD?_M",
+                "SFD?_M"
+              ],
+              "text": "This is a button on one of the two standby flight displays. The game names it the menu or access button of the display; the manual does not describe it.",
+              "context": "There are two standby displays, and each one has this button. The game gives them the callout names SFD1_M and SFD2_M.",
+              "count": 2,
+              "src": "m1"
+            },
+            {
+              "id": "sfd-knob",
+              "name": "SFD adjustment knob",
+              "type": "knob",
+              "match": [
+                "SFD?_KNOB"
+              ],
+              "text": "This is a knob on one of the two standby flight displays. The game names it the adjustment knob of the display; the manual does not describe it.",
+              "context": "There are two standby displays, and each has one. The game gives them the callout names SFD1_KNOB and SFD2_KNOB.",
+              "count": 2,
+              "src": "m1"
+            },
+            {
+              "id": "stick-indicator",
+              "name": "Longitudinal stick position indicator",
+              "type": "gauge",
+              "match": [
+                "item:instrument-panel:9"
+              ],
+              "text": "This gauge shows how far forward or back the cyclic stick is. The mark N in the middle means neutral.",
+              "context": "The scale goes from plus 8 inches (stick forward) to minus 8 inches (stick back). The Lighting Panel on the overhead has a knob for its light.",
+              "src": "m1",
+              "page": "34"
+            },
+            {
+              "id": "apr39",
+              "name": "APR-39 indicator (radar warning display)",
+              "type": "display",
+              "match": [
+                "item:instrument-panel:8"
+              ],
+              "text": "This round screen shows when an enemy radar is looking at the helicopter, and it also shows missile threats. Up to 7 threats can be shown at once.",
+              "context": "It is part of the helicopter's self-protection equipment, which the manual describes in its chapter about survivability. The plus symbol shows that the receiver is working.",
+              "src": "m1",
+              "page": "126"
+            },
+            {
+              "id": "apr39-bril",
+              "name": "APR-39 BRIL knob",
+              "type": "knob",
+              "match": [
+                "RWR_BRIL_KNOB"
+              ],
+              "text": "This knob changes the brightness of the radar warning display.",
+              "context": "It is turned down at night so the display does not dazzle the pilots.",
+              "src": "m1",
+              "page": "126"
+            },
+            {
+              "id": "apr39-day-night",
+              "name": "APR-39 MA DAY/NIGHT switch",
+              "type": "switch",
+              "match": [
+                "RWR_DAY_SW"
+              ],
+              "text": "The manual says this switch has no function. The game still lets the pilot flip it between a day and a night setting.",
+              "context": "The brightness of the radar warning display is set with the BRIL knob next to it.",
+              "src": "m1",
+              "page": "126"
+            }
+          ]
+        },
+        {
+          "id": "chronometer",
+          "name": "Chronometer (clock)",
+          "db": "chronometer",
+          "src": "m1",
+          "page": "32",
+          "text": "This is the digital clock of the cockpit. It shows the world time and a second time, and it can run as a stopwatch or a countdown timer.",
+          "context": "The crew uses it to time legs of the flight and to count down to an arrival time.",
+          "controls": [
+            {
+              "id": "gmt-display",
+              "name": "GMT display",
+              "type": "display",
+              "match": [
+                "item:chronometer:1"
+              ],
+              "text": "This row of numbers shows the world time (Greenwich Mean Time) as hours, minutes and seconds.",
+              "context": "World time is the same everywhere, so crews use it to agree on times.",
+              "src": "m1",
+              "page": "32"
+            },
+            {
+              "id": "selectable-display",
+              "name": "Selectable display",
+              "type": "display",
+              "match": [
+                "item:chronometer:2"
+              ],
+              "text": "This second row shows either world time, local time or a stopwatch time, depending on the clock mode.",
+              "context": "As a stopwatch it counts minutes and seconds up to 59:59, and then hours and minutes.",
+              "src": "m1",
+              "page": "32"
+            },
+            {
+              "id": "clock-mode",
+              "name": "Clock mode indicator",
+              "type": "indicator",
+              "match": [
+                "item:chronometer:3"
+              ],
+              "text": "This small marker says which time the second row is showing: GMT, LT (local time) or ET (elapsed time).",
+              "context": "It changes every time the SELECT button is pressed.",
+              "src": "m1",
+              "page": "32"
+            },
+            {
+              "id": "select-button",
+              "name": "SELECT button",
+              "type": "button",
+              "match": [
+                "M880_SEL",
+                "item:chronometer:4"
+              ],
+              "text": "This button changes what the second row shows. It also moves to the next number when the time is being set. Holding it for 3 seconds tests the display.",
+              "context": "In the stopwatch mode it also switches off the alarm of a finished countdown.",
+              "src": "m1",
+              "page": "32"
+            },
+            {
+              "id": "control-button",
+              "name": "CONTROL button",
+              "type": "button",
+              "match": [
+                "M880_CTL",
+                "item:chronometer:5"
+              ],
+              "text": "In stopwatch mode this button starts the timer, stops it and resets it: first press starts, second press stops, third press resets. When a time is being set it raises the flashing number by one.",
+              "context": "Pressing SELECT and CONTROL together lets the crew set the time or a countdown.",
+              "src": "m1",
+              "page": "32"
+            },
+            {
+              "id": "clock-dim",
+              "name": "DIM control knob",
+              "type": "knob",
+              "match": [
+                "M880_DIM",
+                "item:chronometer:6"
+              ],
+              "text": "Turning this knob makes the clock display brighter or darker.",
+              "context": "It is turned down at night so the clock does not dazzle the pilots.",
+              "src": "m1",
+              "page": "32"
+            }
+          ]
+        },
+        {
+          "id": "radar-altimeter",
+          "name": "Radar altimeter",
+          "db": "radar-altimeter",
+          "src": "m1",
+          "page": "33",
+          "text": "This gauge shows how high the helicopter is above the ground, measured with radio waves. It reads from 0 to 1,500 feet.",
+          "context": "The pilots use it for hovering and landing, and it is the backup if the screens fail. Two small bugs can be set to warn when the helicopter is too low or too high.",
+          "controls": [
+            {
+              "id": "ralt-hi-light",
+              "name": "HI indicator light",
+              "type": "light",
+              "match": [
+                "item:radar-altimeter:1"
+              ],
+              "text": "This light comes on when the helicopter is higher than the upper height the pilot has set.",
+              "context": "The upper height is set with the HI setting knob on the same instrument.",
+              "src": "m1",
+              "page": "33"
+            },
+            {
+              "id": "ralt-lo-light",
+              "name": "LO indicator light",
+              "type": "light",
+              "match": [
+                "item:radar-altimeter:2"
+              ],
+              "text": "This light comes on when the helicopter is lower than the lowest height the pilot has set.",
+              "context": "It is set with the LO knob and warns the pilot about getting too close to the ground.",
+              "src": "m1",
+              "page": "33"
+            },
+            {
+              "id": "ralt-scale",
+              "name": "Altitude scale",
+              "type": "gauge",
+              "match": [
+                "item:radar-altimeter:3"
+              ],
+              "text": "This is the printed ring around the gauge. It runs from 0 to 1,500 feet and is finely divided near the ground.",
+              "context": "Small marks near the ground help to read the height exactly while hovering.",
+              "src": "m1",
+              "page": "33"
+            },
+            {
+              "id": "ralt-analog",
+              "name": "Analog altitude indicator",
+              "type": "gauge",
+              "match": [
+                "item:radar-altimeter:4"
+              ],
+              "text": "This pointer moves along the ring and shows the height above the ground.",
+              "context": "It works together with the number readout in the middle.",
+              "src": "m1",
+              "page": "33"
+            },
+            {
+              "id": "ralt-digital",
+              "name": "Digital altitude indicator",
+              "type": "display",
+              "match": [
+                "item:radar-altimeter:5"
+              ],
+              "text": "This number shows the height above the ground in feet. A red OFF flag appears when the radar altimeter has no power.",
+              "context": "It is useful for the final part of a landing, when exact height matters.",
+              "src": "m1",
+              "page": "33"
+            },
+            {
+              "id": "ralt-lo-knob",
+              "name": "LO setting knob",
+              "type": "knob",
+              "match": [
+                "RALT_LO_SET_KNOB",
+                "item:radar-altimeter:6"
+              ],
+              "text": "This knob moves the low mark L on the ring. The LO light comes on when the helicopter sinks below that height.",
+              "context": "The pilot sets it to the lowest height he or she wants to accept.",
+              "src": "m1",
+              "page": "33"
+            },
+            {
+              "id": "ralt-hi-knob",
+              "name": "HI setting knob (click to test)",
+              "type": "knob",
+              "match": [
+                "RALT_HI_SET_KNOB",
+                "item:radar-altimeter:7"
+              ],
+              "text": "This knob moves the high mark H on the ring. The game says that a left mouse click tests the instrument and the mouse wheel sets the high mark.",
+              "context": "The HI light comes on when the helicopter climbs above the high mark.",
+              "src": "m1",
+              "page": "33"
+            },
+            {
+              "id": "ralt-dimmer",
+              "name": "Radar altimeter brightness knob",
+              "type": "knob",
+              "match": [
+                "MAIN_RALT_DIMMER",
+                "item:instrument-panel:12"
+              ],
+              "text": "This knob sets how bright the number and the HI and LO lights of the radar altimeter are.",
+              "context": "It sits directly under the radar altimeter and is turned down at night.",
+              "src": "m1",
+              "page": "33"
+            }
+          ]
+        },
+        {
+          "id": "parking-brake",
+          "name": "Parking brake handle",
+          "src": "m1",
+          "page": "35",
+          "text": "This handle holds the wheel brakes on, so the helicopter stays put when parked. The pilot does not have to keep pressing the pedals.",
+          "context": "The pilot presses the brake pedals first and then pulls the handle out. Pressing the pedals again releases it.",
+          "controls": [
+            {
+              "id": "parking-brake",
+              "name": "Parking brake handle",
+              "type": "handle",
+              "match": [
+                "MAIN_PARKING_BRAKE",
+                "item:instrument-panel:10"
+              ],
+              "text": "Pull this handle out while pressing the brake pedals and the wheels stay braked after the pedals are released. A new press on the pedals makes the handle snap back in.",
+              "context": "It is used whenever the helicopter stands on the ground with the rotors turning, for example during engine start.",
+              "positions": [
+                {
+                  "name": "IN",
+                  "text": "The parking brake is off."
+                },
+                {
+                  "name": "OUT",
+                  "text": "The parking brake holds the wheels; pedal pressure is no longer needed."
+                }
+              ],
+              "src": "m1",
+              "page": "35"
+            }
+          ]
+        },
+        {
+          "id": "air-handles",
+          "name": "Air control handles",
+          "db": "air-control-handles",
+          "src": "m1",
+          "page": "35",
+          "text": "These handles are meant to let in warm or fresh air: to clear the windshield and to heat the cabin. The game does not use them yet.",
+          "context": "In the real helicopter they are used in cold or humid weather. The manual marks them as not implemented.",
+          "controls": [
+            {
+              "id": "cockpit-air",
+              "name": "COCKPIT AIR handles",
+              "type": "handle",
+              "match": [
+                "item:instrument-panel:11"
+              ],
+              "text": "There is one handle at each end of the instrument panel, one for the Pilot and one for the Copilot. Pulled out, they let more warm or fresh air into that pilot's side of the cockpit.",
+              "context": "The manual marks these handles as not implemented, so they do nothing in the game.",
+              "src": "m1",
+              "page": "36"
+            },
+            {
+              "id": "defog",
+              "name": "DEFOG OR DEFROST handle",
+              "type": "handle",
+              "match": [
+                "item:air-control-handles:1"
+              ],
+              "text": "When pulled out, warm or fresh air flows across the windshield and the door windows. The further the handle is pulled, the more air flows.",
+              "context": "It is meant to clear fog or ice from the windows. The manual marks it as not implemented.",
+              "src": "m1",
+              "page": "35"
+            },
+            {
+              "id": "cabin-air",
+              "name": "CABIN AIR handle",
+              "type": "handle",
+              "match": [
+                "item:air-control-handles:2"
+              ],
+              "text": "When pulled out, warm or fresh air flows into the cabin at the back. The further it is pulled, the more air flows.",
+              "context": "It is meant to heat or ventilate the passenger area. The manual marks it as not implemented.",
+              "src": "m1",
+              "page": "35"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "canted-console",
+      "where": "front-center",
+      "name": "Canted console",
+      "text": "The sloping panel under the instrument panel, between the pilots. It holds the two keypad units (CDUs), the flight control panel and the emergency radio switches.",
+      "panels": [
+        {
+          "id": "cdu-lighting",
+          "name": "CDU lighting control panel",
+          "db": "cdu-lighting-control-panel",
+          "src": "m1",
+          "page": "37",
+          "text": "This small panel has two brightness knobs for the keypad units and one button that lights every warning light at once to test the bulbs.",
+          "context": "The pilots use the knobs at night. The test button is pressed during the checks before start.",
+          "controls": [
+            {
+              "id": "cdu1-brightness",
+              "name": "CDU 1 brightness knob",
+              "type": "knob",
+              "match": [
+                "CDU_1_DIMMER",
+                "item:cdu-lighting-control-panel:1"
+              ],
+              "text": "This knob changes the backlight of the keypad of CDU 1, the Copilot's keypad unit on the left side.",
+              "context": "A CDU is a keypad with a small screen where the crew types numbers. The knob only changes the light of the keys.",
+              "src": "m1",
+              "page": "37"
+            },
+            {
+              "id": "cdu2-brightness",
+              "name": "CDU 2 brightness knob",
+              "type": "knob",
+              "match": [
+                "CDU_2_DIMMER",
+                "item:cdu-lighting-control-panel:2"
+              ],
+              "text": "This knob changes the backlight of the keypad of CDU 2, the Pilot's keypad unit on the right side.",
+              "context": "It is turned down for night flying, like the knob for CDU 1.",
+              "src": "m1",
+              "page": "37"
+            },
+            {
+              "id": "lamp-test",
+              "name": "LAMP TEST button",
+              "type": "button",
+              "match": [
+                "LAMPS_TEST",
+                "item:cdu-lighting-control-panel:3"
+              ],
+              "text": "Pressing this button lights up all the indicator lights in the cockpit at once, so the crew can see that no bulb is broken.",
+              "context": "The manual lists, among others, the fire handles, the APU RDY light, the UTIL PRES light and the jump lights as lights it tests.",
+              "src": "m1",
+              "page": "37"
+            }
+          ]
+        },
+        {
+          "id": "emer-aux",
+          "name": "Emergency / Auxiliary control panel",
+          "db": "emergency-auxiliary-control-panel",
+          "src": "m1",
+          "page": "38",
+          "text": "This panel has four switches for fast radio and transponder settings. They work even without the keypad units.",
+          "context": "In an emergency the crew can tune the radios to the emergency channels with one flick of a switch.",
+          "controls": [
+            {
+              "id": "ident",
+              "name": "IDENT switch",
+              "type": "switch",
+              "match": [
+                "EAUX_IFF_IDENT",
+                "item:emergency-auxiliary-control-panel:1"
+              ],
+              "text": "Pushing this switch briefly makes the helicopter's transponder (a radio box that answers a radar's question \"who are you\") highlight its position. The manual marks it as not implemented.",
+              "context": "It is used when a controller asks for an identification pulse.",
+              "src": "m1",
+              "page": "38"
+            },
+            {
+              "id": "man-norm-guard",
+              "name": "MAN/NORM/GUARD switch",
+              "type": "switch3",
+              "match": [
+                "EAUX_RADIO_MODE",
+                "item:emergency-auxiliary-control-panel:2"
+              ],
+              "text": "This switch decides how the radios are controlled. GUARD tunes three radios to their emergency channels at once.",
+              "context": "In normal flights it stays at NORM so the radios are set through the keypad units.",
+              "positions": [
+                {
+                  "name": "MAN",
+                  "text": "The VHF-AM/FM radio (V3) is controlled by hand on the ARC-186 control panel."
+                },
+                {
+                  "name": "NORM",
+                  "text": "All radios are set through the keypad units (CDUs)."
+                },
+                {
+                  "name": "GUARD",
+                  "text": "The FM radio is tuned to 40.500 MHz, the UHF radio to 243.000 MHz and the VHF radio to 121.500 MHz, the emergency channels."
+                }
+              ],
+              "src": "m1",
+              "page": "38"
+            },
+            {
+              "id": "emer-off-hold",
+              "name": "EMER/OFF/HOLD switch",
+              "type": "switch3",
+              "match": [
+                "EAUX_EMER",
+                "item:emergency-auxiliary-control-panel:3"
+              ],
+              "text": "This switch prepares the transponder for an emergency or prevents its secret codes from being erased after shutdown.",
+              "context": "EMER sets the standard emergency code 7700. In the checklist before start it stays at OFF.",
+              "positions": [
+                {
+                  "name": "EMER",
+                  "text": "The transponder is switched on and set to the emergency code 7700."
+                },
+                {
+                  "name": "OFF",
+                  "text": "The transponder works normally and is set through the keypad units."
+                },
+                {
+                  "name": "HOLD",
+                  "text": "Keeps the secret IFF Mode 4 codes after shutdown. The manual marks it as not implemented."
+                }
+              ],
+              "src": "m1",
+              "page": "38"
+            },
+            {
+              "id": "zero",
+              "name": "ZERO switch",
+              "type": "switch2",
+              "match": [
+                "EAUX_ZERO",
+                "item:emergency-auxiliary-control-panel:4"
+              ],
+              "text": "This switch is meant to erase all navigation, radio and transponder data in one move. The manual marks it as not implemented.",
+              "context": "It is used to destroy secret data, for example before the aircraft is lost. The checklist keeps it at OFF.",
+              "positions": [
+                {
+                  "name": "OFF",
+                  "text": "Nothing is erased."
+                },
+                {
+                  "name": "ZERO",
+                  "text": "All navigation, radio and transponder data would be erased. Not implemented."
+                }
+              ],
+              "src": "m1",
+              "page": "38"
+            }
+          ]
+        },
+        {
+          "id": "afcs",
+          "name": "AFCS control panel (flight control system)",
+          "db": "afcs-control-panel",
+          "src": "m1",
+          "page": "74",
+          "text": "This panel controls the automatic helpers that keep the helicopter steady, and the trim motors that balance the cyclic.",
+          "context": "The pilots set it before flying. In the checklist the cyclic trim is set to AUTO and the SYSTEM SEL knob is switched on for flight.",
+          "controls": [
+            {
+              "id": "flt-dir",
+              "name": "FLT DIR button",
+              "type": "button",
+              "match": [
+                "AFCS_FLT_DIR",
+                "item:afcs-control-panel:1"
+              ],
+              "text": "Pressing this button connects the flight director to the automatic flight control. The flight director is a helper that works out which way to fly. A light named CPLR shows that the link is made.",
+              "context": "The link only works when a flight director mode is chosen on the keypad. The release button on the cyclic grip cuts it again.",
+              "src": "m1",
+              "page": "74"
+            },
+            {
+              "id": "trim-fwd",
+              "name": "CYCLIC TRIM FWD switch",
+              "type": "switch3",
+              "match": [
+                "AFCS_FWD",
+                "item:afcs-control-panel:2"
+              ],
+              "text": "While held, this switch moves the front trim actuator (a motor that shifts the balance of the cyclic stick) out or in. It only works when the trim is set to MANUAL.",
+              "context": "It is spring loaded and always returns to the middle.",
+              "positions": [
+                {
+                  "name": "EXT",
+                  "text": "While held here, the front actuator extends."
+                },
+                {
+                  "name": "Center",
+                  "text": "The middle position; the switch springs back here."
+                },
+                {
+                  "name": "RET",
+                  "text": "While held here, the front actuator retracts."
+                }
+              ],
+              "src": "m1",
+              "page": "74"
+            },
+            {
+              "id": "trim-aft",
+              "name": "CYCLIC TRIM AFT switch",
+              "type": "switch3",
+              "match": [
+                "AFCS_AFT",
+                "item:afcs-control-panel:3"
+              ],
+              "text": "While held, this switch moves the rear trim actuator out or in. It only works when the trim is set to MANUAL.",
+              "context": "It is spring loaded and always returns to the middle.",
+              "positions": [
+                {
+                  "name": "EXT",
+                  "text": "While held here, the rear actuator extends."
+                },
+                {
+                  "name": "Center",
+                  "text": "The middle position; the switch springs back here."
+                },
+                {
+                  "name": "RET",
+                  "text": "While held here, the rear actuator retracts."
+                }
+              ],
+              "src": "m1",
+              "page": "74"
+            },
+            {
+              "id": "trim-mode",
+              "name": "CYCLIC TRIM AUTO/MANUAL switch",
+              "type": "switch2",
+              "match": [
+                "AFCS_MODE",
+                "item:afcs-control-panel:4"
+              ],
+              "text": "This switch decides who moves the trim actuators: the flight control computers by themselves or the pilots with the FWD and AFT switches.",
+              "context": "The checklist before start sets it to AUTO.",
+              "positions": [
+                {
+                  "name": "AUTO",
+                  "text": "The two flight control computers move the actuators automatically."
+                },
+                {
+                  "name": "MANUAL",
+                  "text": "The actuators move only when the pilot uses the FWD and AFT switches."
+                }
+              ],
+              "src": "m1",
+              "page": "74"
+            },
+            {
+              "id": "system-sel",
+              "name": "SYSTEM SEL knob",
+              "type": "selector",
+              "match": [
+                "AFCS_SYSTEM",
+                "item:afcs-control-panel:5"
+              ],
+              "text": "This knob switches the two flight control computers on or off. With both on, the helicopter flies steadier.",
+              "context": "The checklist before start leaves it at OFF. The trim switches still work with the computers off.",
+              "positions": [
+                {
+                  "name": "OFF",
+                  "text": "Both flight control computers are off."
+                },
+                {
+                  "name": "1",
+                  "text": "Only computer 1 is on."
+                },
+                {
+                  "name": "BOTH",
+                  "text": "Both computers are on."
+                },
+                {
+                  "name": "2",
+                  "text": "Only computer 2 is on."
+                }
+              ],
+              "src": "m1",
+              "page": "74"
+            }
+          ]
+        },
+        {
+          "id": "cdu-copilot",
+          "name": "Copilot CDU (CDU 1, left)",
+          "src": "m1",
+          "page": "68",
+          "text": "This is the Copilot's keypad unit, called CDU 1. It has a small colour screen, six keys down each side, a full keyboard and a row of page keys.",
+          "context": "The crew uses it to type in flight plans, radio frequencies and settings. The screen shows a page, and the keys next to the screen pick the lines.",
+          "controls": [
+            {
+              "id": "lsk-left",
+              "name": "LSK L1-L6 (left line keys, CDU 1)",
+              "type": "button",
+              "match": [
+                "CDU-LEFT-LSK-L1-349",
+                "CDU-LEFT-LSK-L3-351",
+                "CDU-LEFT-LSK-L2-350",
+                "CDU-LEFT-LSK-L4-352",
+                "CDU-LEFT-LSK-L5-353",
+                "CDU-LEFT-LSK-L6-354"
+              ],
+              "text": "These 6 keys sit down the left side of the screen of the Copilot. Each key picks the line of text next to it, or puts the typed text into that line. This one is on CDU 1, the unit of the Copilot.",
+              "context": "The keys are numbered L1 at the top to L6 at the bottom. The manual calls them line select keys; on CDU 1 they work together with the typing line at the bottom of the screen.",
+              "count": 6,
+              "src": "m1",
+              "page": "69"
+            },
+            {
+              "id": "lsk-right",
+              "name": "LSK R1-R6 (right line keys, CDU 1)",
+              "type": "button",
+              "match": [
+                "CDU-LEFT-LSK-R1-355",
+                "CDU-LEFT-LSK-R4-358",
+                "CDU-LEFT-LSK-R3-357",
+                "CDU-LEFT-LSK-R2-356",
+                "CDU-LEFT-LSK-R6-360",
+                "CDU-LEFT-LSK-R5-359"
+              ],
+              "text": "These 6 keys sit down the right side of the screen of the Copilot. Each key picks the line of text next to it. This one is on CDU 1, the unit of the Copilot.",
+              "context": "The keys are numbered R1 at the top to R6 at the bottom. If the game asks for a confirmation, the same key is pressed a second time on CDU 1.",
+              "count": 6,
+              "src": "m1",
+              "page": "69"
+            },
+            {
+              "id": "page-keys",
+              "name": "Page keys MSN FPLN FD IDX DIR SNSR CNI STAT (CDU 1)",
+              "type": "button",
+              "match": [
+                "CDU-LEFT-KEY-342",
+                "CDU-LEFT-KEY-343",
+                "CDU-LEFT-KEY-344",
+                "CDU-LEFT-KEY-345",
+                "CDU-LEFT-KEY-346",
+                "CDU-LEFT-KEY-347",
+                "CDU-LEFT-KEY-363",
+                "CDU-LEFT-KEY-416"
+              ],
+              "text": "These 8 keys each open one page on the screen of the Copilot: MSN (mission), FPLN (flight plan), FD (flight director), IDX (index of more pages), DIR (direct-to), SNSR (sensors), CNI (radios, navigation and IFF) and STAT (status). This one is on CDU 1, the unit of the Copilot.",
+              "context": "The page keys are the quick way through the pages of CDU 1. Pages that are used less often are reached through the IDX page.",
+              "count": 8,
+              "src": "m1",
+              "page": "69"
+            },
+            {
+              "id": "mark",
+              "name": "MARK key (CDU 1)",
+              "type": "button",
+              "match": [
+                "CDU-LEFT-KEY-382"
+              ],
+              "text": "Pressing this key writes the helicopter's present position into the typing line and saves it as a new marked point. This one is on CDU 1, the unit of the Copilot.",
+              "context": "The saved points are numbered 90 to 99. It is useful to remember a spot, for example a landing zone, on CDU 1.",
+              "src": "m1",
+              "page": "69"
+            },
+            {
+              "id": "pad",
+              "name": "PAD key (CDU 1)",
+              "type": "button",
+              "match": [
+                "CDU-LEFT-KEY-364"
+              ],
+              "text": "This key saves what is in the typing line and then clears the line. This one is on CDU 1, the unit of the Copilot.",
+              "context": "The typing line is called the scratchpad. The PAD key on CDU 1 keeps a number for later use.",
+              "src": "m1",
+              "page": "69"
+            },
+            {
+              "id": "clr",
+              "name": "CLR key (CDU 1)",
+              "type": "button",
+              "match": [
+                "CDU-LEFT-KEY-369"
+              ],
+              "text": "This key deletes the text or message in the typing line of the screen. This one is on CDU 1, the unit of the Copilot.",
+              "context": "It is also how the crew cancels an action that asked for confirmation, and how an INVALID ENTRY message is removed on CDU 1.",
+              "src": "m1",
+              "page": "69"
+            },
+            {
+              "id": "no-func-keys",
+              "name": "Keys WPN, MFD DATA, TDL, ASE, DATA and blank (CDU 1)",
+              "type": "button",
+              "match": [
+                "CDU-LEFT-KEY-348",
+                "CDU-LEFT-KEY-370",
+                "CDU-LEFT-KEY-412",
+                "CDU-LEFT-KEY-413",
+                "CDU-LEFT-KEY-414",
+                "CDU-LEFT-KEY-415"
+              ],
+              "text": "These 6 keys do nothing useful in the current game version. The manual says WPN has no function and that MFD DATA, TDL, ASE and DATA are not implemented; the blank key has no function. This one is on CDU 1, the unit of the Copilot.",
+              "context": "They are printed on CDU 1 because the real keypad has them.",
+              "count": 6,
+              "src": "m1",
+              "page": "69"
+            },
+            {
+              "id": "line-scroll",
+              "name": "Left and right arrow keys (CDU 1)",
+              "type": "button",
+              "match": [
+                "CDU-LEFT-KEY-365",
+                "CDU-LEFT-KEY-366"
+              ],
+              "text": "These two keys scroll text sideways when a line is longer than the screen, and move the typing cursor left and right. This one is on CDU 1, the unit of the Copilot.",
+              "context": "A short press scrolls a step and holding the key scrolls on and on, on CDU 1.",
+              "count": 2,
+              "src": "m1",
+              "page": "69"
+            },
+            {
+              "id": "page-scroll",
+              "name": "Up and down arrow keys (CDU 1)",
+              "type": "button",
+              "match": [
+                "CDU-LEFT-KEY-367",
+                "CDU-LEFT-KEYt-368"
+              ],
+              "text": "These two keys scroll the page up and down. When a page has several parts, they also move to the next or earlier part. This one is on CDU 1, the unit of the Copilot.",
+              "context": "The number in the top right of the screen tells which part of a multi-part page is shown on CDU 1.",
+              "count": 2,
+              "src": "m1",
+              "page": "69"
+            },
+            {
+              "id": "brt-dim",
+              "name": "BRT and DIM keys (CDU 1)",
+              "type": "button",
+              "match": [
+                "CDU-LEFT-KEY-BRT-361",
+                "CDU-LEFT-KEY-DIM-362"
+              ],
+              "text": "These two keys make the screen of CDU 1 a little brighter (BRT) or darker (DIM) with each press.",
+              "context": "They change the screen itself; the knobs on the lighting panel change the backlight of the keys. It is the same on both units; this entry is for CDU 1.",
+              "count": 2,
+              "src": "m1",
+              "page": "69"
+            },
+            {
+              "id": "letters",
+              "name": "Letter keys A-Z and SP (CDU 1)",
+              "type": "button",
+              "match": [
+                "CDU-LEFT-KEY-A-384",
+                "CDU-LEFT-KEY-B-385",
+                "CDU-LEFT-KEY-C-386",
+                "CDU-LEFT-KEY-D-387",
+                "CDU-LEFT-KEY-E-388",
+                "CDU-LEFT-KEY-F-389",
+                "CDU-LEFT-KEY-G-390",
+                "CDU-LEFT-KEY-T-403",
+                "CDU-LEFT-KEY-M-396",
+                "CDU-LEFT-KEY-U-404",
+                "CDU-LEFT-KEY-N-397",
+                "CDU-LEFT-KEY-H-391",
+                "CDU-LEFT-KEY-I-392",
+                "CDU-LEFT-KEY-J-393",
+                "CDU-LEFT-KEY-K-394",
+                "CDU-LEFT-KEY-L-395",
+                "CDU-LEFT-KEY-O-398",
+                "CDU-LEFT-KEY-V-405",
+                "CDU-LEFT-KEY-P-399",
+                "CDU-LEFT-KEY-W-406",
+                "CDU-LEFT-KEY-Q-400",
+                "CDU-LEFT-KEY-X-407",
+                "CDU-LEFT-KEY-R-401",
+                "CDU-LEFT-KEY-Y-408",
+                "CDU-LEFT-KEY-S-402",
+                "CDU-LEFT-KEY-Z-409",
+                "CDU-LEFT-KEY-410"
+              ],
+              "text": "These 27 keys type letters into the typing line, and the SP key types a blank space. This one is on CDU 1, the unit of the Copilot.",
+              "context": "They are used for names such as waypoints and airfield codes on CDU 1.",
+              "count": 27,
+              "src": "m1",
+              "page": "69"
+            },
+            {
+              "id": "digits",
+              "name": "Number keys 0-9 and dot (CDU 1)",
+              "type": "button",
+              "match": [
+                "CDU-LEFT-KEY-1-371",
+                "CDU-LEFT-KEY-2-372",
+                "CDU-LEFT-KEY-3-373",
+                "CDU-LEFT-KEY-4-374",
+                "CDU-LEFT-KEY-5-375",
+                "CDU-LEFT-KEY-6-376",
+                "CDU-LEFT-KEY-7-377",
+                "CDU-LEFT-KEY-8-378",
+                "CDU-LEFT-KEY-0-380",
+                "CDU-LEFT-KEY-9-379",
+                "CDU-LEFT-KEY-dot-381"
+              ],
+              "text": "These 11 keys type the digits 0 to 9 and a decimal point into the typing line. This one is on CDU 1, the unit of the Copilot.",
+              "context": "They are used for frequencies, altitudes and coordinates on CDU 1. The typed number goes to a line when a line key is pressed.",
+              "count": 11,
+              "src": "m1",
+              "page": "69"
+            },
+            {
+              "id": "slash-dash",
+              "name": "Slash and dash keys (CDU 1)",
+              "type": "button",
+              "match": [
+                "CDU-LEFT-KEY-383",
+                "CDU-LEFT-KEY-411"
+              ],
+              "text": "The slash key separates several values typed in one go. The dash key, entered into a line, deletes the value there or puts back its standard value. This one is on CDU 1, the unit of the Copilot.",
+              "context": "These two keys are the helpers for data entry on CDU 1.",
+              "count": 2,
+              "src": "m1",
+              "page": "69"
+            },
+            {
+              "id": "mf-knob",
+              "name": "Multi-function knob (CDU 1)",
+              "type": "knob",
+              "match": [
+                "MFK2_KNOB_*"
+              ],
+              "text": "This double knob changes a value on the screen without typing: the outer ring in big steps and the inner knob in small steps. The manual marks it as not implemented. This one is on CDU 1, the unit of the Copilot.",
+              "context": "The game offers the outer ring and the inner knob as separate clicks on CDU 1.",
+              "count": 2,
+              "src": "m1",
+              "page": "70"
+            }
+          ]
+        },
+        {
+          "id": "cdu-pilot",
+          "name": "Pilot CDU (CDU 2, right)",
+          "src": "m1",
+          "page": "68",
+          "text": "This is the Pilot's keypad unit, called CDU 2. It has a small colour screen, six keys down each side, a full keyboard and a row of page keys.",
+          "context": "The crew uses it to type in flight plans, radio frequencies and settings. The screen shows a page, and the keys next to the screen pick the lines.",
+          "controls": [
+            {
+              "id": "lsk-left",
+              "name": "LSK L1-L6 (left line keys, CDU 2)",
+              "type": "button",
+              "match": [
+                "CDU-RIGHT-LSK-L1-424",
+                "CDU-RIGHT-LSK-L2-425",
+                "CDU-RIGHT-LSK-L3-426",
+                "CDU-RIGHT-LSK-L4-427",
+                "CDU-RIGHT-LSK-L5-428",
+                "CDU-RIGHT-LSK-L6-429"
+              ],
+              "text": "These 6 keys sit down the left side of the screen of the Pilot. Each key picks the line of text next to it, or puts the typed text into that line. This one is on CDU 2, the unit of the Pilot.",
+              "context": "The keys are numbered L1 at the top to L6 at the bottom. The manual calls them line select keys; on CDU 2 they work together with the typing line at the bottom of the screen.",
+              "count": 6,
+              "src": "m1",
+              "page": "69"
+            },
+            {
+              "id": "lsk-right",
+              "name": "LSK R1-R6 (right line keys, CDU 2)",
+              "type": "button",
+              "match": [
+                "CDU-RIGHT-LSK-R2-431",
+                "CDU-RIGHT-LSK-R1-430",
+                "CDU-RIGHT-LSK-R4-433",
+                "CDU-RIGHT-LSK-R3-432",
+                "CDU-RIGHT-LSK-R6-435",
+                "CDU-RIGHT-LSK-R5-434"
+              ],
+              "text": "These 6 keys sit down the right side of the screen of the Pilot. Each key picks the line of text next to it. This one is on CDU 2, the unit of the Pilot.",
+              "context": "The keys are numbered R1 at the top to R6 at the bottom. If the game asks for a confirmation, the same key is pressed a second time on CDU 2.",
+              "count": 6,
+              "src": "m1",
+              "page": "69"
+            },
+            {
+              "id": "page-keys",
+              "name": "Page keys MSN FPLN FD IDX DIR SNSR CNI STAT (CDU 2)",
+              "type": "button",
+              "match": [
+                "CDU-RIGHT-KEY-420",
+                "CDU-RIGHT-KEY-421",
+                "CDU-RIGHT-KEY-422",
+                "CDU-RIGHT-KEY-417",
+                "CDU-RIGHT-KEY-418",
+                "CDU-RIGHT-KEY-419",
+                "CDU-RIGHT-KEY-438",
+                "CDU-RIGHT-KEY-492"
+              ],
+              "text": "These 8 keys each open one page on the screen of the Pilot: MSN (mission), FPLN (flight plan), FD (flight director), IDX (index of more pages), DIR (direct-to), SNSR (sensors), CNI (radios, navigation and IFF) and STAT (status). This one is on CDU 2, the unit of the Pilot.",
+              "context": "The page keys are the quick way through the pages of CDU 2. Pages that are used less often are reached through the IDX page.",
+              "count": 8,
+              "src": "m1",
+              "page": "69"
+            },
+            {
+              "id": "mark",
+              "name": "MARK key (CDU 2)",
+              "type": "button",
+              "match": [
+                "CDU-RIGHT-KEY-457"
+              ],
+              "text": "Pressing this key writes the helicopter's present position into the typing line and saves it as a new marked point. This one is on CDU 2, the unit of the Pilot.",
+              "context": "The saved points are numbered 90 to 99. It is useful to remember a spot, for example a landing zone, on CDU 2.",
+              "src": "m1",
+              "page": "69"
+            },
+            {
+              "id": "pad",
+              "name": "PAD key (CDU 2)",
+              "type": "button",
+              "match": [
+                "CDU-RIGHT-KEY-439"
+              ],
+              "text": "This key saves what is in the typing line and then clears the line. This one is on CDU 2, the unit of the Pilot.",
+              "context": "The typing line is called the scratchpad. The PAD key on CDU 2 keeps a number for later use.",
+              "src": "m1",
+              "page": "69"
+            },
+            {
+              "id": "clr",
+              "name": "CLR key (CDU 2)",
+              "type": "button",
+              "match": [
+                "CDU-RIGHT-KEY-444"
+              ],
+              "text": "This key deletes the text or message in the typing line of the screen. This one is on CDU 2, the unit of the Pilot.",
+              "context": "It is also how the crew cancels an action that asked for confirmation, and how an INVALID ENTRY message is removed on CDU 2.",
+              "src": "m1",
+              "page": "69"
+            },
+            {
+              "id": "no-func-keys",
+              "name": "Keys WPN, MFD DATA, TDL, ASE, DATA and blank (CDU 2)",
+              "type": "button",
+              "match": [
+                "CDU-RIGHT-KEY-487",
+                "CDU-RIGHT-KEY-488",
+                "CDU-RIGHT-KEY-489",
+                "CDU-RIGHT-KEY-423",
+                "CDU-RIGHT-KEY-445",
+                "CDU-RIGHT-KEY-490"
+              ],
+              "text": "These 6 keys do nothing useful in the current game version. The manual says WPN has no function and that MFD DATA, TDL, ASE and DATA are not implemented; the blank key has no function. This one is on CDU 2, the unit of the Pilot.",
+              "context": "They are printed on CDU 2 because the real keypad has them.",
+              "count": 6,
+              "src": "m1",
+              "page": "69"
+            },
+            {
+              "id": "line-scroll",
+              "name": "Left and right arrow keys (CDU 2)",
+              "type": "button",
+              "match": [
+                "CDU-RIGHT-KEY-440",
+                "CDU-RIGHT-KEY-441"
+              ],
+              "text": "These two keys scroll text sideways when a line is longer than the screen, and move the typing cursor left and right. This one is on CDU 2, the unit of the Pilot.",
+              "context": "A short press scrolls a step and holding the key scrolls on and on, on CDU 2.",
+              "count": 2,
+              "src": "m1",
+              "page": "69"
+            },
+            {
+              "id": "page-scroll",
+              "name": "Up and down arrow keys (CDU 2)",
+              "type": "button",
+              "match": [
+                "CDU-RIGHT-KEY-442",
+                "CDU-RIGHT-KEY-443"
+              ],
+              "text": "These two keys scroll the page up and down. When a page has several parts, they also move to the next or earlier part. This one is on CDU 2, the unit of the Pilot.",
+              "context": "The number in the top right of the screen tells which part of a multi-part page is shown on CDU 2.",
+              "count": 2,
+              "src": "m1",
+              "page": "69"
+            },
+            {
+              "id": "brt-dim",
+              "name": "BRT and DIM keys (CDU 2)",
+              "type": "button",
+              "match": [
+                "CDU-RIGHT-KEY-BRT-436",
+                "CDU-RIGHT-KEY-DIM-437"
+              ],
+              "text": "These two keys make the screen of CDU 2 a little brighter (BRT) or darker (DIM) with each press.",
+              "context": "They change the screen itself; the knobs on the lighting panel change the backlight of the keys. It is the same on both units; this entry is for CDU 2.",
+              "count": 2,
+              "src": "m1",
+              "page": "69"
+            },
+            {
+              "id": "letters",
+              "name": "Letter keys A-Z and SP (CDU 2)",
+              "type": "button",
+              "match": [
+                "CDU-RIGHT-KEY-O-473",
+                "CDU-RIGHT-KEY-K-469",
+                "CDU-RIGHT-KEY-L-470",
+                "CDU-RIGHT-KEY-H-466",
+                "CDU-RIGHT-KEY-A-459",
+                "CDU-RIGHT-KEY-I-467",
+                "CDU-RIGHT-KEY-B-460",
+                "CDU-RIGHT-KEY-J-468",
+                "CDU-RIGHT-KEY-C-461",
+                "CDU-RIGHT-KEY-D-462",
+                "CDU-RIGHT-KEY-V-480",
+                "CDU-RIGHT-KEY-W-481",
+                "CDU-RIGHT-KEY-P-474",
+                "CDU-RIGHT-KEY-X-482",
+                "CDU-RIGHT-KEY-Q-475",
+                "CDU-RIGHT-KEY-Y-483",
+                "CDU-RIGHT-KEY-R-476",
+                "CDU-RIGHT-KEY-E-463",
+                "CDU-RIGHT-KEY-F-464",
+                "CDU-RIGHT-KEY-G-465",
+                "CDU-RIGHT-KEY-Z-484",
+                "CDU-RIGHT-KEY-S-477",
+                "CDU-RIGHT-KEY-T-478",
+                "CDU-RIGHT-KEY-M-471",
+                "CDU-RIGHT-KEY-U-479",
+                "CDU-RIGHT-KEY-N-472",
+                "CDU-RIGHT-KEY-485"
+              ],
+              "text": "These 27 keys type letters into the typing line, and the SP key types a blank space. This one is on CDU 2, the unit of the Pilot.",
+              "context": "They are used for names such as waypoints and airfield codes on CDU 2.",
+              "count": 27,
+              "src": "m1",
+              "page": "69"
+            },
+            {
+              "id": "digits",
+              "name": "Number keys 0-9 and dot (CDU 2)",
+              "type": "button",
+              "match": [
+                "CDU-RIGHT-KEY-5-450",
+                "CDU-RIGHT-KEY-2-447",
+                "CDU-RIGHT-KEY-6-451",
+                "CDU-RIGHT-KEY-3-448",
+                "CDU-RIGHT-KEY-0-455",
+                "CDU-RIGHT-KEY-8-453",
+                "CDU-RIGHT-KEY-9-454",
+                "CDU-RIGHT-KEY-1-446",
+                "CDU-RIGHT-KEY-4-449",
+                "CDU-RIGHT-KEY-7-452",
+                "CDU-RIGHT-KEY-dot-456"
+              ],
+              "text": "These 11 keys type the digits 0 to 9 and a decimal point into the typing line. This one is on CDU 2, the unit of the Pilot.",
+              "context": "They are used for frequencies, altitudes and coordinates on CDU 2. The typed number goes to a line when a line key is pressed.",
+              "count": 11,
+              "src": "m1",
+              "page": "69"
+            },
+            {
+              "id": "slash-dash",
+              "name": "Slash and dash keys (CDU 2)",
+              "type": "button",
+              "match": [
+                "CDU-RIGHT-KEY-458",
+                "CDU-RIGHT-KEY-486"
+              ],
+              "text": "The slash key separates several values typed in one go. The dash key, entered into a line, deletes the value there or puts back its standard value. This one is on CDU 2, the unit of the Pilot.",
+              "context": "These two keys are the helpers for data entry on CDU 2.",
+              "count": 2,
+              "src": "m1",
+              "page": "69"
+            },
+            {
+              "id": "mf-knob",
+              "name": "Multi-function knob (CDU 2)",
+              "type": "knob",
+              "match": [
+                "MFK1_KNOB_*"
+              ],
+              "text": "This double knob changes a value on the screen without typing: the outer ring in big steps and the inner knob in small steps. The manual marks it as not implemented. This one is on CDU 2, the unit of the Pilot.",
+              "context": "The game offers the outer ring and the inner knob as separate clicks on CDU 2.",
+              "count": 2,
+              "src": "m1",
+              "page": "70"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "center-console",
+      "where": "center-pedestal",
+      "name": "Center console",
+      "text": "The panel between and behind the two seats. It holds the crew audio panels, the manual VHF radio panel, the steering panel, the countermeasures panel and the two MFCU hand grips.",
+      "panels": [
+        {
+          "id": "audio-pilot",
+          "name": "Pilot control audio panel (ICS 1)",
+          "db": "control-audio-panels",
+          "src": "m1",
+          "page": "41",
+          "text": "This panel is the volume and microphone control of the Pilot. It decides what that person hears and where their voice goes.",
+          "context": "Every crew station has such a panel. This one belongs to the Pilot; the panels do not influence each other.",
+          "controls": [
+            {
+              "id": "radio-volumes",
+              "name": "F1 U2 V3 H4 F5 radio volume knobs (Pilot)",
+              "type": "knob",
+              "match": [
+                "ICS1_R1",
+                "ICS1_R2",
+                "ICS1_R3",
+                "ICS1_R4",
+                "ICS1_R5",
+                "item:control-audio-panels:1",
+                "item:control-audio-panels:2",
+                "item:control-audio-panels:3",
+                "item:control-audio-panels:4",
+                "item:control-audio-panels:5"
+              ],
+              "text": "These 5 knobs set how loud each radio is in the headset of the Pilot: F1 (FM radio), U2 (UHF), V3 (VHF), H4 (HF) and F5 (second FM radio). Turning clockwise is louder and pulling the knob out mutes that radio.",
+              "context": "Each crew member sets the volumes on their own panel (Pilot); it only changes what that person hears.",
+              "count": 5,
+              "src": "m1",
+              "page": "41"
+            },
+            {
+              "id": "spare",
+              "name": "Unused knob (Pilot)",
+              "type": "knob",
+              "match": [
+                "ICS1_R6",
+                "item:control-audio-panels:6"
+              ],
+              "text": "The sixth knob in the row on the panel of the Pilot is not used. The manual says it has no function.",
+              "context": "It is on the Pilot panel only because the real panel has it.",
+              "src": "m1",
+              "page": "41"
+            },
+            {
+              "id": "rwr-volume",
+              "name": "RWR volume knob (Pilot)",
+              "type": "knob",
+              "match": [
+                "ICS1_R7",
+                "item:control-audio-panels:7"
+              ],
+              "text": "This knob sets how loud the spoken warnings of the radar warning receiver are in the headset of the Pilot. Pulling it out mutes them.",
+              "context": "The warnings come from the APR-39 system. The Pilot knob only affects that crew member.",
+              "src": "m1",
+              "page": "41"
+            },
+            {
+              "id": "operation-buttons",
+              "name": "ICS VOX HOT MIC CALL buttons (Pilot)",
+              "type": "button",
+              "match": [
+                "ICS1_ICS",
+                "ICS1_VOX",
+                "ICS1_HOT",
+                "ICS1_CALL",
+                "item:control-audio-panels:8"
+              ],
+              "text": "These 4 buttons choose how the microphone of the Pilot is opened: ICS, VOX (opens when you speak), HOT MIC (always open) and CALL (speaks to everybody while held). The ICS button has no function.",
+              "context": "VOX and HOT MIC need a hold of two seconds. The panel of Pilot keeps its own settings.",
+              "count": 4,
+              "src": "m1",
+              "page": "41"
+            },
+            {
+              "id": "nav-volumes",
+              "name": "VOR/ILS TACAN ADF MB/CAWS volume knobs (Pilot)",
+              "type": "knob",
+              "match": [
+                "ICS1_N1",
+                "ICS1_N2",
+                "ICS1_N3",
+                "ICS1_N4",
+                "item:control-audio-panels:9",
+                "item:control-audio-panels:10",
+                "item:control-audio-panels:11",
+                "item:control-audio-panels:12"
+              ],
+              "text": "These 4 knobs set how loud the sounds of the navigation receivers are for the Pilot: VOR/ILS, TACAN, ADF and the marker beacon with the aural warning tones (CAWS). Pulling a knob out mutes it.",
+              "context": "VOR, TACAN and ADF are ground radio beacons the crew can listen to. The settings of the Pilot panel affect only that person.",
+              "count": 4,
+              "src": "m1",
+              "page": "41"
+            },
+            {
+              "id": "tx-select",
+              "name": "Transmit Select knob TX (Pilot)",
+              "type": "selector",
+              "match": [
+                "ICS1_TX",
+                "item:control-audio-panels:13"
+              ],
+              "text": "This knob decides where the voice of the Pilot goes when the microphone is keyed: private line, intercom or one of the radios.",
+              "context": "For the pilots the key is the transmit switch on the cyclic grip. The other crew members use a push-to-talk switch on their microphone cord. This knob is on the panel of the Pilot.",
+              "positions": [
+                {
+                  "name": "PVT",
+                  "text": "Private: only the crew members on the same private intercom line hear the voice."
+                },
+                {
+                  "name": "ICS",
+                  "text": "The voice goes to everybody on the aircraft intercom."
+                },
+                {
+                  "name": "1",
+                  "text": "The voice goes out over the FM radio F1."
+                },
+                {
+                  "name": "2",
+                  "text": "The voice goes out over the UHF radio U2."
+                },
+                {
+                  "name": "3",
+                  "text": "The voice goes out over the VHF radio V3."
+                },
+                {
+                  "name": "4",
+                  "text": "The voice goes out over the HF radio H4."
+                },
+                {
+                  "name": "5",
+                  "text": "The voice goes out over the second FM radio F5."
+                },
+                {
+                  "name": "RMT",
+                  "text": "The voice goes out over the radio picked with the switch on the thrust control grip. Only the pilots' panels have this."
+                },
+                {
+                  "name": "BU",
+                  "text": "The voice goes over the intercom or the backup radio chosen on the miscellaneous switch panel."
+                }
+              ],
+              "src": "m1",
+              "page": "42"
+            },
+            {
+              "id": "master-volume",
+              "name": "Master volume knob MVOL/VOX (Pilot)",
+              "type": "knob",
+              "match": [
+                "ICS1_VOL",
+                "item:control-audio-panels:14"
+              ],
+              "text": "This knob sets the overall loudness of everything in the headset of the Pilot. When VOX mode is on, it sets how loud one has to speak to open the microphone instead.",
+              "context": "It is the knob to turn first if the whole headset is too quiet or too loud (Pilot).",
+              "src": "m1",
+              "page": "42"
+            }
+          ]
+        },
+        {
+          "id": "audio-copilot",
+          "name": "Copilot control audio panel (ICS 2)",
+          "src": "m1",
+          "page": "41",
+          "text": "This panel is the volume and microphone control of the Copilot. It decides what that person hears and where their voice goes.",
+          "context": "Every crew station has such a panel. This one belongs to the Copilot; the panels do not influence each other.",
+          "controls": [
+            {
+              "id": "radio-volumes",
+              "name": "F1 U2 V3 H4 F5 radio volume knobs (Copilot)",
+              "type": "knob",
+              "match": [
+                "ICS2_R1",
+                "ICS2_R2",
+                "ICS2_R3",
+                "ICS2_R4",
+                "ICS2_R5"
+              ],
+              "text": "These 5 knobs set how loud each radio is in the headset of the Copilot: F1 (FM radio), U2 (UHF), V3 (VHF), H4 (HF) and F5 (second FM radio). Turning clockwise is louder and pulling the knob out mutes that radio.",
+              "context": "Each crew member sets the volumes on their own panel (Copilot); it only changes what that person hears.",
+              "count": 5,
+              "src": "m1",
+              "page": "41"
+            },
+            {
+              "id": "spare",
+              "name": "Unused knob (Copilot)",
+              "type": "knob",
+              "match": [
+                "ICS2_R6"
+              ],
+              "text": "The sixth knob in the row on the panel of the Copilot is not used. The manual says it has no function.",
+              "context": "It is on the Copilot panel only because the real panel has it.",
+              "src": "m1",
+              "page": "41"
+            },
+            {
+              "id": "rwr-volume",
+              "name": "RWR volume knob (Copilot)",
+              "type": "knob",
+              "match": [
+                "ICS2_R7"
+              ],
+              "text": "This knob sets how loud the spoken warnings of the radar warning receiver are in the headset of the Copilot. Pulling it out mutes them.",
+              "context": "The warnings come from the APR-39 system. The Copilot knob only affects that crew member.",
+              "src": "m1",
+              "page": "41"
+            },
+            {
+              "id": "operation-buttons",
+              "name": "ICS VOX HOT MIC CALL buttons (Copilot)",
+              "type": "button",
+              "match": [
+                "ICS2_ICS",
+                "ICS2_VOX",
+                "ICS2_HOT",
+                "ICS2_CALL"
+              ],
+              "text": "These 4 buttons choose how the microphone of the Copilot is opened: ICS, VOX (opens when you speak), HOT MIC (always open) and CALL (speaks to everybody while held). The ICS button has no function.",
+              "context": "VOX and HOT MIC need a hold of two seconds. The panel of Copilot keeps its own settings.",
+              "count": 4,
+              "src": "m1",
+              "page": "41"
+            },
+            {
+              "id": "nav-volumes",
+              "name": "VOR/ILS TACAN ADF MB/CAWS volume knobs (Copilot)",
+              "type": "knob",
+              "match": [
+                "ICS2_N1",
+                "ICS2_N2",
+                "ICS2_N3",
+                "ICS2_N4"
+              ],
+              "text": "These 4 knobs set how loud the sounds of the navigation receivers are for the Copilot: VOR/ILS, TACAN, ADF and the marker beacon with the aural warning tones (CAWS). Pulling a knob out mutes it.",
+              "context": "VOR, TACAN and ADF are ground radio beacons the crew can listen to. The settings of the Copilot panel affect only that person.",
+              "count": 4,
+              "src": "m1",
+              "page": "41"
+            },
+            {
+              "id": "tx-select",
+              "name": "Transmit Select knob TX (Copilot)",
+              "type": "selector",
+              "match": [
+                "ICS2_TX"
+              ],
+              "text": "This knob decides where the voice of the Copilot goes when the microphone is keyed: private line, intercom or one of the radios.",
+              "context": "For the pilots the key is the transmit switch on the cyclic grip. The other crew members use a push-to-talk switch on their microphone cord. This knob is on the panel of the Copilot.",
+              "positions": [
+                {
+                  "name": "PVT",
+                  "text": "Private: only the crew members on the same private intercom line hear the voice."
+                },
+                {
+                  "name": "ICS",
+                  "text": "The voice goes to everybody on the aircraft intercom."
+                },
+                {
+                  "name": "1",
+                  "text": "The voice goes out over the FM radio F1."
+                },
+                {
+                  "name": "2",
+                  "text": "The voice goes out over the UHF radio U2."
+                },
+                {
+                  "name": "3",
+                  "text": "The voice goes out over the VHF radio V3."
+                },
+                {
+                  "name": "4",
+                  "text": "The voice goes out over the HF radio H4."
+                },
+                {
+                  "name": "5",
+                  "text": "The voice goes out over the second FM radio F5."
+                },
+                {
+                  "name": "RMT",
+                  "text": "The voice goes out over the radio picked with the switch on the thrust control grip. Only the pilots' panels have this."
+                },
+                {
+                  "name": "BU",
+                  "text": "The voice goes over the intercom or the backup radio chosen on the miscellaneous switch panel."
+                }
+              ],
+              "src": "m1",
+              "page": "42"
+            },
+            {
+              "id": "master-volume",
+              "name": "Master volume knob MVOL/VOX (Copilot)",
+              "type": "knob",
+              "match": [
+                "ICS2_VOL"
+              ],
+              "text": "This knob sets the overall loudness of everything in the headset of the Copilot. When VOX mode is on, it sets how loud one has to speak to open the microphone instead.",
+              "context": "It is the knob to turn first if the whole headset is too quiet or too loud (Copilot).",
+              "src": "m1",
+              "page": "42"
+            }
+          ]
+        },
+        {
+          "id": "audio-troop",
+          "name": "Troop commander control audio panel (ICS 3)",
+          "src": "m1",
+          "page": "41",
+          "text": "This panel is the volume and microphone control of the troop commander. It decides what that person hears and where their voice goes.",
+          "context": "Every crew station has such a panel. This one belongs to the troop commander; the panels do not influence each other.",
+          "controls": [
+            {
+              "id": "radio-volumes",
+              "name": "F1 U2 V3 H4 F5 radio volume knobs (Troop commander)",
+              "type": "knob",
+              "match": [
+                "ICS3_R1",
+                "ICS3_R2",
+                "ICS3_R3",
+                "ICS3_R4",
+                "ICS3_R5"
+              ],
+              "text": "These 5 knobs set how loud each radio is in the headset of the troop commander: F1 (FM radio), U2 (UHF), V3 (VHF), H4 (HF) and F5 (second FM radio). Turning clockwise is louder and pulling the knob out mutes that radio.",
+              "context": "Each crew member sets the volumes on their own panel (Troop commander); it only changes what that person hears.",
+              "count": 5,
+              "src": "m1",
+              "page": "41"
+            },
+            {
+              "id": "spare",
+              "name": "Unused knob (Troop commander)",
+              "type": "knob",
+              "match": [
+                "ICS3_R6"
+              ],
+              "text": "The sixth knob in the row on the panel of the troop commander is not used. The manual says it has no function.",
+              "context": "It is on the Troop commander panel only because the real panel has it.",
+              "src": "m1",
+              "page": "41"
+            },
+            {
+              "id": "rwr-volume",
+              "name": "RWR volume knob (Troop commander)",
+              "type": "knob",
+              "match": [
+                "ICS3_R7"
+              ],
+              "text": "This knob sets how loud the spoken warnings of the radar warning receiver are in the headset of the troop commander. Pulling it out mutes them.",
+              "context": "The warnings come from the APR-39 system. The Troop commander knob only affects that crew member.",
+              "src": "m1",
+              "page": "41"
+            },
+            {
+              "id": "operation-buttons",
+              "name": "ICS VOX HOT MIC CALL buttons (Troop commander)",
+              "type": "button",
+              "match": [
+                "ICS3_ICS",
+                "ICS3_VOX",
+                "ICS3_HOT",
+                "ICS3_CALL"
+              ],
+              "text": "These 4 buttons choose how the microphone of the troop commander is opened: ICS, VOX (opens when you speak), HOT MIC (always open) and CALL (speaks to everybody while held). The ICS button has no function.",
+              "context": "VOX and HOT MIC need a hold of two seconds. The panel of Troop commander keeps its own settings.",
+              "count": 4,
+              "src": "m1",
+              "page": "41"
+            },
+            {
+              "id": "nav-volumes",
+              "name": "VOR/ILS TACAN ADF MB/CAWS volume knobs (Troop commander)",
+              "type": "knob",
+              "match": [
+                "ICS3_N1",
+                "ICS3_N2",
+                "ICS3_N3",
+                "ICS3_N4"
+              ],
+              "text": "These 4 knobs set how loud the sounds of the navigation receivers are for the troop commander: VOR/ILS, TACAN, ADF and the marker beacon with the aural warning tones (CAWS). Pulling a knob out mutes it.",
+              "context": "VOR, TACAN and ADF are ground radio beacons the crew can listen to. The settings of the Troop commander panel affect only that person.",
+              "count": 4,
+              "src": "m1",
+              "page": "41"
+            },
+            {
+              "id": "tx-select",
+              "name": "Transmit Select knob TX (Troop commander)",
+              "type": "selector",
+              "match": [
+                "ICS3_TX"
+              ],
+              "text": "This knob decides where the voice of the troop commander goes when the microphone is keyed: private line, intercom or one of the radios.",
+              "context": "For the pilots the key is the transmit switch on the cyclic grip. The other crew members use a push-to-talk switch on their microphone cord. This knob is on the panel of the troop commander.",
+              "positions": [
+                {
+                  "name": "PVT",
+                  "text": "Private: only the crew members on the same private intercom line hear the voice."
+                },
+                {
+                  "name": "ICS",
+                  "text": "The voice goes to everybody on the aircraft intercom."
+                },
+                {
+                  "name": "1",
+                  "text": "The voice goes out over the FM radio F1."
+                },
+                {
+                  "name": "2",
+                  "text": "The voice goes out over the UHF radio U2."
+                },
+                {
+                  "name": "3",
+                  "text": "The voice goes out over the VHF radio V3."
+                },
+                {
+                  "name": "4",
+                  "text": "The voice goes out over the HF radio H4."
+                },
+                {
+                  "name": "5",
+                  "text": "The voice goes out over the second FM radio F5."
+                },
+                {
+                  "name": "RMT",
+                  "text": "The voice goes out over the radio picked with the switch on the thrust control grip. Only the pilots' panels have this."
+                },
+                {
+                  "name": "BU",
+                  "text": "The voice goes over the intercom or the backup radio chosen on the miscellaneous switch panel."
+                }
+              ],
+              "src": "m1",
+              "page": "42"
+            },
+            {
+              "id": "master-volume",
+              "name": "Master volume knob MVOL/VOX (Troop commander)",
+              "type": "knob",
+              "match": [
+                "ICS3_VOL"
+              ],
+              "text": "This knob sets the overall loudness of everything in the headset of the troop commander. When VOX mode is on, it sets how loud one has to speak to open the microphone instead.",
+              "context": "It is the knob to turn first if the whole headset is too quiet or too loud (Troop commander).",
+              "src": "m1",
+              "page": "42"
+            }
+          ]
+        },
+        {
+          "id": "arc186",
+          "name": "ARC-186 control panel (manual VHF radio)",
+          "src": "m1",
+          "page": "79",
+          "text": "This is the hand control panel of the VHF radio V3. With it the crew sets the radio by hand, without the keypad units.",
+          "context": "It is used when the MAN/NORM/GUARD switch is at MAN. The checklist sets its Mode Select knob to TR and the frequency knobs as needed.",
+          "controls": [
+            {
+              "id": "arc-volume",
+              "name": "Volume knob (ARC-186)",
+              "type": "knob",
+              "match": [
+                "ARC186_VOLUME"
+              ],
+              "text": "Turning this knob makes the V3 radio louder or quieter.",
+              "context": "It is separate from the volume knobs on the crew audio panels.",
+              "src": "m1",
+              "page": "79"
+            },
+            {
+              "id": "arc-squelch",
+              "name": "Squelch / TONE switch (ARC-186)",
+              "type": "switch",
+              "match": [
+                "ARC186_SQUELCH"
+              ],
+              "text": "This switch is named Squelch / TONE by the game. Squelch cuts the hiss of a radio when nobody talks.",
+              "context": "The manual does not describe the positions of this switch.",
+              "src": "m1",
+              "page": "79"
+            },
+            {
+              "id": "arc-freq-selectors",
+              "name": "Manual frequency selectors 1-4 (ARC-186)",
+              "type": "knob",
+              "match": [
+                "ARC186_FREQ?"
+              ],
+              "text": "These 4 rotary selectors set the frequency digits by hand. The game names them the frequency selectors 1st to 4th.",
+              "context": "The manual calls them the manual frequency rotaries. The checklist sets them as needed.",
+              "count": 4,
+              "src": "m1",
+              "page": "79"
+            },
+            {
+              "id": "arc-mode",
+              "name": "Frequency Mode dial (ARC-186)",
+              "type": "selector",
+              "match": [
+                "ARC186_MODE"
+              ],
+              "text": "The game names this dial the Frequency Mode dial. The manual mentions a Mode Select knob that is set to TR, and a Frequency Control knob; it does not say which game dial is which.",
+              "context": "It is one of the two main dials of the ARC-186 panel.",
+              "src": "m1",
+              "page": "79"
+            },
+            {
+              "id": "arc-freq-dial",
+              "name": "Frequency Selection dial (ARC-186)",
+              "type": "selector",
+              "match": [
+                "ARC186_FREQEMER"
+              ],
+              "text": "The game names this dial the Frequency Selection dial. The manual mentions a Frequency Control knob; it does not say which game dial is which.",
+              "context": "It is one of the two main dials of the ARC-186 panel.",
+              "src": "m1",
+              "page": "79"
+            },
+            {
+              "id": "arc-preset",
+              "name": "Preset Channel selector (ARC-186)",
+              "type": "selector",
+              "match": [
+                "ARC186_PRESET"
+              ],
+              "text": "This selector picks a stored radio channel, like the station buttons of a car radio.",
+              "context": "The manual does not list the channels.",
+              "src": "m1",
+              "page": "79"
+            },
+            {
+              "id": "arc-load",
+              "name": "Load button (ARC-186)",
+              "type": "button",
+              "match": [
+                "ARC186_LOAD"
+              ],
+              "text": "The game names this button Load. The manual does not describe it.",
+              "context": "It is part of the ARC-186 panel, the hand control of the V3 radio.",
+              "src": "m1",
+              "page": "79"
+            }
+          ]
+        },
+        {
+          "id": "ase-panel",
+          "name": "ASE control panel (countermeasures)",
+          "src": "m1",
+          "page": "126",
+          "text": "This panel arms the decoy dispensers and sets the loudness of the threat warnings. The dispensers throw out chaff (metal strips that confuse radar) and flares (hot decoys for heat-seeking missiles).",
+          "context": "The checklist keeps the ARM/SAFE switch at SAFE. The decoys are dispensed with the switch on the cyclic grip.",
+          "controls": [
+            {
+              "id": "ase-arm",
+              "name": "ARM/SAFE switch",
+              "type": "switch2",
+              "match": [
+                "ASE_ARM"
+              ],
+              "text": "This switch allows or blocks the dispensing of chaff and flares. A light next to it shows when they are armed.",
+              "context": "The dispensers never fire while the helicopter stands on its wheels, whatever the switch says.",
+              "positions": [
+                {
+                  "name": "ARM",
+                  "text": "Chaff and flares can be dispensed."
+                },
+                {
+                  "name": "SAFE",
+                  "text": "Dispensing is blocked."
+                }
+              ],
+              "src": "m1",
+              "page": "126"
+            },
+            {
+              "id": "ase-bypass",
+              "name": "BYPASS/NORMAL switch",
+              "type": "switch2",
+              "match": [
+                "ASE_BYPASS1"
+              ],
+              "text": "This switch controls whether the missile warning system may fire flares by itself.",
+              "context": "Missile alert sounds are heard in both positions.",
+              "positions": [
+                {
+                  "name": "BYPASS",
+                  "text": "Automatic flare firing is off and the on-the-ground block is bypassed, so flares are only fired by hand."
+                },
+                {
+                  "name": "NORMAL",
+                  "text": "The missile warning system may fire flares automatically, but only when airborne."
+                }
+              ],
+              "src": "m1",
+              "page": "126"
+            },
+            {
+              "id": "ase-jett-cover",
+              "name": "JETTISON switch cover",
+              "type": "cover",
+              "match": [
+                "ASE_JETT_COVER"
+              ],
+              "text": "This is the small guard over the JETTISON switch. It stops the switch from being moved by accident.",
+              "context": "The checklist keeps the cover down.",
+              "src": "m1",
+              "page": "126"
+            },
+            {
+              "id": "ase-jett",
+              "name": "JETTISON switch",
+              "type": "switch",
+              "match": [
+                "ASE_JETT"
+              ],
+              "text": "This switch drops all flares from the tail dispensers at once in an emergency.",
+              "context": "If the missile warning system is off, the BYPASS/NORMAL switch must be at BYPASS for this to work.",
+              "src": "m1",
+              "page": "126"
+            },
+            {
+              "id": "ase-vol",
+              "name": "RWR VOL knob",
+              "type": "knob",
+              "match": [
+                "ASE_VOL"
+              ],
+              "text": "This knob sets the overall loudness of the radar warning and missile warning sounds on the intercom.",
+              "context": "Turning clockwise makes it louder. Each crew member can also set their own RWR knob.",
+              "src": "m1",
+              "page": "126"
+            }
+          ]
+        },
+        {
+          "id": "steering",
+          "name": "Steering control panel",
+          "db": "steering-control-panel",
+          "src": "m1",
+          "page": "40",
+          "text": "This panel steers the helicopter on the ground with the rear wheels, and it lets ground crews tow it.",
+          "context": "The rear wheels normally stay locked straight. The checklist sets SWIVEL to LOCK and leaves the knob centered.",
+          "controls": [
+            {
+              "id": "swivel",
+              "name": "SWIVEL switch",
+              "type": "switch3",
+              "match": [
+                "STEER_SWIVEL",
+                "item:steering-control-panel:1"
+              ],
+              "text": "This switch decides whether the rear wheels are locked straight, free to turn or turned by the steering motor.",
+              "context": "A tow crew uses UNLOCK so the helicopter can be pushed around. During taxi the pilot uses STEER.",
+              "positions": [
+                {
+                  "name": "STEER",
+                  "text": "The steering knob works and the steering motor turns the rear right wheel; the rear left wheel rolls freely."
+                },
+                {
+                  "name": "UNLOCK",
+                  "text": "Both rear wheels turn freely, so the helicopter can be towed."
+                },
+                {
+                  "name": "LOCK",
+                  "text": "Both rear wheels are centered and locked once the weight is off them."
+                }
+              ],
+              "src": "m1",
+              "page": "40"
+            },
+            {
+              "id": "steer-knob",
+              "name": "Steering control knob",
+              "type": "knob",
+              "match": [
+                "STEER_KNOB",
+                "item:steering-control-panel:2"
+              ],
+              "text": "Turning this knob turns the nose of the helicopter on the ground in the direction of the turn. The further it is turned, the tighter the turn.",
+              "context": "It works only when SWIVEL is at STEER. The game also offers click commands for left, right and centre.",
+              "src": "m1",
+              "page": "40"
+            }
+          ]
+        },
+        {
+          "id": "misc-switches",
+          "name": "Miscellaneous switch control panel",
+          "db": "miscellaneous-switch-control-panel",
+          "src": "m1",
+          "page": "39",
+          "text": "This panel has three unrelated controls: a test for the cruise guide indicator, a choice of backup radios and a switch for which antennas the radios use.",
+          "context": "They are checked or set during the checks before start; the backup radio choice matters only if the main radio control unit fails.",
+          "controls": [
+            {
+              "id": "cgi-test",
+              "name": "CGI TEST switch",
+              "type": "switch3",
+              "match": [
+                "MISC_CGI_TEST",
+                "item:miscellaneous-switch-control-panel:1"
+              ],
+              "text": "This switch tests the cruise guide indicator (CGI), a pointer shown on the vertical situation page of the screens. It springs back to the middle.",
+              "context": "In the test the pointer on the vertical situation page should move to a white test band. The checklist keeps the switch at OFF.",
+              "positions": [
+                {
+                  "name": "FWD",
+                  "text": "Tests the cruise guide circuits of the front rotor."
+                },
+                {
+                  "name": "OFF",
+                  "text": "The normal, spring-centered position."
+                },
+                {
+                  "name": "AFT",
+                  "text": "Tests the cruise guide circuits of the rear rotor."
+                }
+              ],
+              "src": "m1",
+              "page": "39"
+            },
+            {
+              "id": "bkup-rad",
+              "name": "BKUP RAD SEL switch",
+              "type": "switch2",
+              "match": [
+                "MISC_BKUP_RAD",
+                "item:miscellaneous-switch-control-panel:2"
+              ],
+              "text": "This switch decides which radio each pilot gets if the interface control unit (the box that normally connects pilots and radios) fails.",
+              "context": "In that backup mode only the Pilot and the Copilot can talk on a radio. The other crew members keep only the intercom.",
+              "positions": [
+                {
+                  "name": "CPLT VHF-PLT UHF",
+                  "text": "The Pilot gets the UHF radio (U2) and the Copilot gets the VHF radio (V3)."
+                },
+                {
+                  "name": "CPLT UHF-PLT VHF",
+                  "text": "The Pilot gets the VHF radio (V3) and the Copilot gets the UHF radio (U2)."
+                }
+              ],
+              "src": "m1",
+              "page": "40"
+            },
+            {
+              "id": "ant-sel",
+              "name": "ANT SEL button",
+              "type": "button",
+              "match": [
+                "MISC_ANT_SEL",
+                "item:miscellaneous-switch-control-panel:3"
+              ],
+              "text": "Each press of this button swaps which of two antennas the FM radio (F1) and the VHF radio (V3) use, one on the top and one on the bottom of the fuselage. One of two lights shows the choice.",
+              "context": "A different antenna can help when the helicopter's body blocks the signal in the current position.",
+              "src": "m1",
+              "page": "40"
+            }
+          ]
+        },
+        {
+          "id": "mfcu",
+          "name": "Multi-function control units (MFCU grips)",
+          "src": "m1",
+          "page": "60",
+          "text": "These are two small hand grips on the center console, one for each pilot. They are meant to let the pilot who is not flying work the screens without touching the flight controls.",
+          "context": "The grips work in three modes (display, map, HUD). The manual says the current game version has not implemented these modes yet.",
+          "controls": [
+            {
+              "id": "mfcu-s1",
+              "name": "S1 cursor control switch (MFCU)",
+              "type": "other",
+              "match": [
+                "MFCU?_S1_*"
+              ],
+              "text": "This is the main stick of the MFCU grip. It is meant to move the pointer on the screens and to select what is under it by pressing it down. The manual marks the mode as not implemented.",
+              "context": "The game gives each of the two grips three callouts for it: sideways, forward-back and pressing down.",
+              "count": 2,
+              "src": "m1",
+              "page": "60"
+            },
+            {
+              "id": "mfcu-s2",
+              "name": "S2 cursor display select switch (MFCU)",
+              "type": "other",
+              "match": [
+                "MFCU?_S2_*"
+              ],
+              "text": "This switch is meant to choose on which screen the pointer shows. The manual marks it as not implemented.",
+              "context": "Each of the two grips has one, with a sideways and a forward-back callout.",
+              "count": 2,
+              "src": "m1",
+              "page": "60"
+            },
+            {
+              "id": "mfcu-s3",
+              "name": "S3 map range select switch (MFCU)",
+              "type": "other",
+              "match": [
+                "MFCU?_S3_*"
+              ],
+              "text": "This switch is meant to change how much of the map is shown, which is called the map range. The manual marks it as not implemented.",
+              "context": "Each of the two grips has one. In HUD mode the manual lists it as the HUD settings control.",
+              "count": 2,
+              "src": "m1",
+              "page": "60"
+            },
+            {
+              "id": "mfcu-s4",
+              "name": "S4 cursor mode select button (MFCU)",
+              "type": "button",
+              "match": [
+                "MFCU?_S4"
+              ],
+              "text": "This button is meant to change the mode of the pointer. The manual marks it as not implemented.",
+              "context": "Each of the two grips has one. In HUD mode the manual says this button has no function; the other buttons S5 and S6 are the same.",
+              "count": 2,
+              "src": "m1",
+              "page": "60"
+            },
+            {
+              "id": "mfcu-s5",
+              "name": "S5 menu option select switch (MFCU)",
+              "type": "other",
+              "match": [
+                "MFCU?_S5"
+              ],
+              "text": "This switch is meant to choose among menu entries on the screens. The manual marks it as not implemented.",
+              "context": "Each of the two grips has one. The manual calls it the menu option select switch, used in display and map modes; in HUD mode it has no function.",
+              "count": 2,
+              "src": "m1",
+              "page": "60"
+            },
+            {
+              "id": "mfcu-s6",
+              "name": "S6 map re-center button (MFCU)",
+              "type": "button",
+              "match": [
+                "MFCU?_S6"
+              ],
+              "text": "This button is meant to bring the map back to the helicopter's position. The manual marks it as not implemented.",
+              "context": "Each of the two grips has one. The manual calls it the map re-center button, used in map mode; in HUD mode it has no function.",
+              "count": 2,
+              "src": "m1",
+              "page": "60"
+            },
+            {
+              "id": "mfcu-r1",
+              "name": "R1 menu scroll / HUD brightness switch (MFCU)",
+              "type": "other",
+              "match": [
+                "MFCU?_R1"
+              ],
+              "text": "This is a rolling switch on the grip. It is meant to scroll through menus and, in HUD mode, to change the brightness of the helmet display. The manual marks it as not implemented.",
+              "context": "Each of the two grips has one.",
+              "count": 2,
+              "src": "m1",
+              "page": "61"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

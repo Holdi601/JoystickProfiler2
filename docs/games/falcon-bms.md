@@ -1,6 +1,6 @@
 # Falcon BMS 4.38, Falcon 4.0 / Allied Force, Tiny Combat Arena
 
-Tags: **[OBS]** seen in real files on the dev PC · **[OBS-bin]** seen in the installed binaries (BMS exe/PDB type info, the launcher 2.4.2.6 assemblies), looked at for interoperability only, nothing modified · **[SRC]** official docs/source · **[INF]** inferred. Research 2026-09-30; BMS had never been run on the dev PC, so the generated files below are known from the binaries, not from user files.
+Tags: **[OBS]** seen in real files on a test PC · **[OBS-bin]** seen in the installed binaries (BMS exe/PDB type info, the launcher 2.4.2.6 assemblies), looked at for interoperability only, nothing modified · **[SRC]** official docs/source · **[INF]** inferred. Research 2026-09-30; BMS had never been run on a test PC, so the generated files below are known from the binaries, not from user files.
 
 ## JoyPro integration (`engine bms`, experimental)
 - Config path = `<BMS>\User\Config` (found via `HKLM\SOFTWARE\WOW6432Node\Benchmark Sims\*\baseDir` and `X:\Falcon BMS*`, newest first). JoyPro edits only the launcher's `Setup.v100.* {GUID}.xml` files; the launcher builds key file, axismapping.dat, joystick.cal and DeviceSorting.txt from them on its next Launch. The legacy key-file workflow is not written.

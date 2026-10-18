@@ -1,0 +1,2081 @@
+{
+  "format": "joypro-cockpit-guide",
+  "version": 1,
+  "id": "dcs-mig-15bis-part2",
+  "partOf": "dcs-mig-15bis",
+  "areas": [
+    {
+      "id": "left-console",
+      "where": "left-console",
+      "name": "Left console",
+      "text": "The left wall of the cockpit holds the throttle console, the engine and fuel switches, the flare buttons, the oxygen controls, the trim switches and the radio tuning panel.",
+      "panels": [
+        {
+          "id": "throttle-console",
+          "name": "Throttle console",
+          "db": "throttle-console",
+          "src": "m1",
+          "page": "86",
+          "text": "The throttle console on the left holds the throttle, the flap handle, the engine start button, the fuel shut-off lever and several backup handles.",
+          "context": "The pilot uses the shut-off lever and the start button together with the throttle to start the engine. The other handles are used before and during the flight.",
+          "controls": [
+            {
+              "id": "flap-handle",
+              "name": "Flaps control handle",
+              "type": "selector",
+              "match": [
+                "pnt_207",
+                "item:throttle-console:1"
+              ],
+              "positions": [
+                {
+                  "name": "RETRACT",
+                  "text": "The flaps are pulled up."
+                },
+                {
+                  "name": "NEUTRAL",
+                  "text": "The flaps stay where they are."
+                },
+                {
+                  "name": "20 degrees",
+                  "text": "The flaps go to the take-off setting of 20 degrees."
+                },
+                {
+                  "name": "55 degrees",
+                  "text": "The flaps go to the landing setting of 55 degrees."
+                }
+              ],
+              "text": "This handle moves the flaps. Flaps are parts of the wing that slide out for more lift at low speed.",
+              "context": "For take-off the pilot lowers them to 20 degrees, for landing to 55 degrees. The manual says to wait a moment at 20 degrees before going on to 55.",
+              "src": "m1",
+              "page": "87"
+            },
+            {
+              "id": "aileron-trim",
+              "name": "Aileron trim tab switch",
+              "type": "switch3",
+              "match": [
+                "pnt_142",
+                "item:throttle-console:4"
+              ],
+              "positions": [
+                {
+                  "name": "LEFT",
+                  "text": "The trim tab moves to the left."
+                },
+                {
+                  "name": "OFF",
+                  "text": "The switch is in the middle and nothing moves."
+                },
+                {
+                  "name": "RIGHT",
+                  "text": "The trim tab moves to the right."
+                }
+              ],
+              "text": "This switch moves the small trim tab on the aileron to the left or to the right. It trims the plane's roll so it flies level without holding the stick.",
+              "context": "It springs back to the middle when released.",
+              "src": "m1",
+              "page": "88"
+            },
+            {
+              "id": "fire-cover",
+              "name": "Engine fire extinguisher button cover",
+              "type": "guard",
+              "match": [
+                "pnt_136"
+              ],
+              "text": "This cover protects the fire extinguisher button from being pressed by mistake.",
+              "context": "It is opened when the fire warning light comes on.",
+              "src": "m1",
+              "page": "155"
+            },
+            {
+              "id": "fire-button",
+              "name": "Engine fire extinguisher button",
+              "type": "button",
+              "match": [
+                "pnt_137"
+              ],
+              "text": "Pressing this button sprays carbon dioxide gas into the engine area to put out a fire.",
+              "context": "The manual says the pilot first closes the fuel shut-off valve, then opens the cover and presses the button.",
+              "src": "m1",
+              "page": "155"
+            },
+            {
+              "id": "fire-test",
+              "name": "Engine fire warning light test button",
+              "type": "button",
+              "match": [
+                "pnt_138"
+              ],
+              "text": "Pressing this button checks the fire warning light. The light should come on while it is pressed.",
+              "context": "The light is labelled FIRE and comes on when the heat in the engine area reaches 120 to 140 degrees.",
+              "src": "m1",
+              "page": "154"
+            },
+            {
+              "id": "fire-unit",
+              "name": "Fire extinguishing control unit",
+              "type": "other",
+              "match": [
+                "item:throttle-console:5"
+              ],
+              "text": "This is the group of the fire light, its test button and the guarded extinguisher button.",
+              "context": "Each of its parts has its own entry in this panel.",
+              "src": "m1",
+              "page": "88"
+            },
+            {
+              "id": "left-gear-handle",
+              "name": "Left main landing gear emergency unlock handle",
+              "type": "handle",
+              "match": [
+                "pnt_209",
+                "item:throttle-console:6"
+              ],
+              "text": "Pulling this handle mechanically releases the lock that holds the left main wheel up. The wheel can then fall down.",
+              "context": "It is used when the normal system cannot lower the gear.",
+              "src": "m1",
+              "page": "88"
+            },
+            {
+              "id": "booster-gauge",
+              "name": "Hydraulic actuator pressure gauge",
+              "type": "gauge",
+              "match": [
+                "item:throttle-console:7"
+              ],
+              "text": "This gauge, labelled HYDRO BOOSTER, shows the pressure in the hydraulic booster of the ailerons.",
+              "context": "The booster is the oil pressure that helps the pilot move the ailerons.",
+              "src": "m1",
+              "page": "88"
+            },
+            {
+              "id": "booster-handle",
+              "name": "Hydraulic actuator control handle",
+              "type": "switch2",
+              "match": [
+                "pnt_203",
+                "item:throttle-console:8"
+              ],
+              "positions": [
+                {
+                  "name": "ON",
+                  "text": "The hydraulic aileron booster helps the pilot."
+                },
+                {
+                  "name": "OFF",
+                  "text": "The booster is off and the pilot feels the full air forces."
+                }
+              ],
+              "text": "Pulling this handle back switches off the hydraulic aid for the ailerons. The pilot then feels the air forces on the stick.",
+              "context": "The stick then becomes heavier as the speed rises, and its travel becomes limited at a certain speed.",
+              "src": "m1",
+              "page": "89"
+            },
+            {
+              "id": "friction-lever",
+              "name": "Throttle friction lever",
+              "type": "lever",
+              "match": [
+                "pnt_204",
+                "item:throttle-console:10"
+              ],
+              "text": "This lever would set how stiff the throttle is to move. It is not simulated.",
+              "context": "In DCS it has no effect on the throttle.",
+              "src": "m1",
+              "page": "89"
+            },
+            {
+              "id": "shutoff-lever",
+              "name": "Engine shut-off valve lever",
+              "type": "lever",
+              "match": [
+                "pnt_208",
+                "item:throttle-console:11"
+              ],
+              "positions": [
+                {
+                  "name": "OPEN",
+                  "text": "Fuel flows to the engine nozzles."
+                },
+                {
+                  "name": "CLOSE",
+                  "text": "The fuel to the nozzles is cut and the engine stops."
+                }
+              ],
+              "text": "This lever opens or closes the fuel to the engine nozzles. Closed, the engine gets no fuel and stops.",
+              "context": "The pilot opens it in steps during the engine start. Closing it stops the engine, for instance in a fire.",
+              "src": "m1",
+              "page": "89"
+            }
+          ]
+        },
+        {
+          "id": "left-electrical",
+          "name": "Left electrical distribution panel",
+          "db": "left-electrical-panel",
+          "src": "m1",
+          "page": "85",
+          "text": "This panel has the switches for the engine start, the fuel pumps and the engine instruments. Each is a circuit breaker that can be switched on and off.",
+          "context": "The pilot switches them on one after another before starting the engine. The manual's engine start checklist gives the order.",
+          "controls": [
+            {
+              "id": "air-restart",
+              "name": "Engine air restart switch",
+              "type": "switch2",
+              "match": [
+                "pnt_149",
+                "item:left-electrical-panel:1"
+              ],
+              "positions": [
+                {
+                  "name": "ON",
+                  "text": "The ignition for the air restart is on."
+                },
+                {
+                  "name": "OFF",
+                  "text": "The air restart ignition is off."
+                }
+              ],
+              "text": "This switch turns on the ignition for restarting the engine in the air. It is called the air start switch.",
+              "context": "After a restart the pilot must switch it off. A red lamp on the instrument panel reminds the pilot while it is on.",
+              "src": "m1",
+              "page": "63"
+            },
+            {
+              "id": "ignition",
+              "name": "Ignition / primer pump switch",
+              "type": "switch2",
+              "match": [
+                "pnt_120",
+                "item:left-electrical-panel:2"
+              ],
+              "positions": [
+                {
+                  "name": "ON",
+                  "text": "The ignition, the start pump and the nozzle solenoids are on."
+                },
+                {
+                  "name": "OFF",
+                  "text": "They are off."
+                }
+              ],
+              "text": "This switch turns on the ignition, the starting fuel pump and the solenoids of the fuel nozzles. They are the parts that light the fuel at the start.",
+              "context": "It is the third step of the engine preparation, after the engine instruments switch.",
+              "src": "m1",
+              "page": "193"
+            },
+            {
+              "id": "booster-pump",
+              "name": "Booster pump switch",
+              "type": "switch2",
+              "match": [
+                "pnt_115",
+                "item:left-electrical-panel:3"
+              ],
+              "positions": [
+                {
+                  "name": "ON",
+                  "text": "The booster pump and start panel are on."
+                },
+                {
+                  "name": "OFF",
+                  "text": "They are off."
+                }
+              ],
+              "text": "This switch turns on the fuel booster pump and the start panel. The pump pushes fuel toward the engine.",
+              "context": "After it is on, the red engine start prohibited lamp goes out, which shows that the pump works.",
+              "src": "m1",
+              "page": "193"
+            },
+            {
+              "id": "isolation-lamp",
+              "name": "Isolation valve lamp",
+              "type": "light",
+              "match": [
+                "item:left-electrical-panel:4"
+              ],
+              "text": "This green lamp lights up when the isolating valve of the engine fuel control is active.",
+              "context": "The lamp is used in the engine check to see that the valve works.",
+              "src": "m1",
+              "page": "84"
+            },
+            {
+              "id": "isolation-switch",
+              "name": "Isolating valve switch",
+              "type": "switch2",
+              "match": [
+                "pnt_118",
+                "item:left-electrical-panel:5"
+              ],
+              "positions": [
+                {
+                  "name": "ON",
+                  "text": "The isolating valve is active and the green lamp is lit."
+                },
+                {
+                  "name": "OFF",
+                  "text": "The isolating valve is not active."
+                }
+              ],
+              "text": "This switch turns off the barostat, a part of the engine fuel control that adjusts the fuel to altitude and speed. A green lamp shows when it is off.",
+              "context": "The pilot checks it during the engine test and uses it if the engine speed drops in flight. The manual says to switch it off only after landing.",
+              "src": "m1",
+              "page": "198"
+            },
+            {
+              "id": "engine-instruments-switch",
+              "name": "Engine instruments switch",
+              "type": "switch2",
+              "match": [
+                "pnt_116",
+                "item:left-electrical-panel:6"
+              ],
+              "positions": [
+                {
+                  "name": "ON",
+                  "text": "The engine gauges and lights have power."
+                },
+                {
+                  "name": "OFF",
+                  "text": "They are without power."
+                }
+              ],
+              "text": "This switch turns on the engine gauges and some cockpit lights.",
+              "context": "It is the first switch in the start-up checklist. The generator off lamp and the start prohibited lamp come on at once.",
+              "src": "m1",
+              "page": "193"
+            },
+            {
+              "id": "transfer-pump",
+              "name": "Second tank pump indication switch (transfer pump)",
+              "type": "switch2",
+              "match": [
+                "pnt_117",
+                "item:left-electrical-panel:7"
+              ],
+              "positions": [
+                {
+                  "name": "ON",
+                  "text": "The transfer pump and its signal are on."
+                },
+                {
+                  "name": "OFF",
+                  "text": "The pump is off."
+                }
+              ],
+              "text": "This switch turns on the fuel transfer pump that feeds the second tank. It switches the warning lamp of the second tank on as well.",
+              "context": "The manual says the pump must be switched off when the second tank is empty, to protect the pump.",
+              "src": "m1",
+              "page": "75"
+            }
+          ]
+        },
+        {
+          "id": "left-side-panel",
+          "name": "Left side controls",
+          "db": "left-side",
+          "src": "m1",
+          "page": "82",
+          "text": "This is the wall of the cockpit at the pilot's left. It holds the speed brake switch, the signal flares, the reloading buttons, the trim and the lights.",
+          "context": "The pilot uses these controls from time to time. They are listed in the order of the manual.",
+          "controls": [
+            {
+              "id": "speedbrake-switch",
+              "name": "Speed brake extension switch with lamp",
+              "type": "switch2",
+              "match": [
+                "pnt_125",
+                "item:left-side:1"
+              ],
+              "positions": [
+                {
+                  "name": "CLOSE",
+                  "text": "The speed brakes are retracted."
+                },
+                {
+                  "name": "OPEN",
+                  "text": "The speed brakes are held open."
+                }
+              ],
+              "text": "This switch holds the speed brakes open. Speed brakes are flaps that open into the wind to slow the plane down.",
+              "context": "It is for longer use, when holding the button on the stick would be tiresome. The lamp shows that the brakes are not fully closed.",
+              "src": "m1",
+              "page": "83"
+            },
+            {
+              "id": "flare-switch",
+              "name": "Signal flare switch",
+              "type": "switch2",
+              "match": [
+                "pnt_129",
+                "item:left-side:2"
+              ],
+              "positions": [
+                {
+                  "name": "ON",
+                  "text": "The flare buttons can fire."
+                },
+                {
+                  "name": "OFF",
+                  "text": "The flare buttons are disabled."
+                }
+              ],
+              "text": "This switch makes the signal flare buttons ready. Without it the buttons do nothing.",
+              "context": "Signal flares are coloured lights fired from the plane for signalling.",
+              "src": "m1",
+              "page": "153"
+            },
+            {
+              "id": "rsi-panel",
+              "name": "RSI-6 radio control panel (see its own panel)",
+              "type": "other",
+              "match": [
+                "item:left-side:3"
+              ],
+              "text": "This item stands for the tuning panel of the receiver on the left wall. It has its own panel in this guide.",
+              "context": "The knobs of the panel are listed there.",
+              "src": "m1",
+              "page": "83"
+            },
+            {
+              "id": "flare-buttons",
+              "name": "Flare release buttons (yellow, green, red, white)",
+              "type": "button",
+              "match": [
+                "pnt_130",
+                "pnt_131",
+                "pnt_132",
+                "pnt_133",
+                "item:left-side:4"
+              ],
+              "text": "There are four buttons, one for each flare colour: yellow, green, red and white. Pressing one fires a flare of that colour.",
+              "context": "The flare switch must be ON first. The launcher holds four flares.",
+              "count": 4,
+              "src": "m1",
+              "page": "153"
+            },
+            {
+              "id": "ark-near-select",
+              "name": "ARK-5 near beacon select panel (channels 1 to 3)",
+              "type": "switch",
+              "match": [
+                "pnt_146",
+                "pnt_147",
+                "pnt_148",
+                "item:left-side:5"
+              ],
+              "text": "Three switches pick one of three stored frequencies for near radio beacons. The channels are set in the Mission Editor.",
+              "context": "The manual warns that only one of them may be switched on at a time.",
+              "count": 3,
+              "src": "m1",
+              "page": "184"
+            },
+            {
+              "id": "brake-gauge",
+              "name": "Dual-pointer brake pressure gauge",
+              "type": "gauge",
+              "match": [
+                "item:left-side:6"
+              ],
+              "text": "This gauge shows the air pressure in the left and right wheel brakes.",
+              "context": "It shows how hard the pilot is braking.",
+              "src": "m1",
+              "page": "83"
+            },
+            {
+              "id": "panel-light",
+              "name": "Instrument panel light (ARUFOSH UV lamp)",
+              "type": "light",
+              "match": [
+                "item:left-side:7"
+              ],
+              "text": "This is an ultraviolet lamp that makes the paint on the gauges glow at night.",
+              "context": "It lights the instrument panel. The brightness is set with the UV lamp rheostats on the right wall.",
+              "src": "m1",
+              "page": "83"
+            },
+            {
+              "id": "near-far",
+              "name": "ARK-5 near-far NDB switch (homing)",
+              "type": "switch2",
+              "match": [
+                "pnt_123",
+                "item:left-side:8"
+              ],
+              "positions": [
+                {
+                  "name": "NEAR",
+                  "text": "The radio compass uses the stored near beacon channels."
+                },
+                {
+                  "name": "FAR",
+                  "text": "The radio compass uses the frequency tuned by hand."
+                }
+              ],
+              "text": "This switch makes the ARK-5 radio compass jump between a far beacon and the stored near beacons.",
+              "context": "Far beacons are tuned by hand on the ARK-5 panel, near beacons come from the three stored channels.",
+              "src": "m1",
+              "page": "84"
+            },
+            {
+              "id": "gun-reload",
+              "name": "Gun reloading panel (NR-23 top, NR-23 bottom, N-37D)",
+              "type": "button",
+              "match": [
+                "pnt_090",
+                "pnt_091",
+                "pnt_092",
+                "item:left-side:9"
+              ],
+              "text": "Three buttons reload the guns with compressed air: the top NR-23, the bottom NR-23 and the N-37D. Each is held until its ready lamp comes on.",
+              "context": "A red gun ready lamp on the armament panel shows when a gun is loaded.",
+              "count": 3,
+              "src": "m1",
+              "page": "84"
+            },
+            {
+              "id": "trim-neutral-lamp",
+              "name": "Elevator trim tab neutral position lamp",
+              "type": "light",
+              "match": [
+                "item:left-side:10"
+              ],
+              "text": "This lamp lights up when the elevator trim tab is in its neutral position.",
+              "context": "The pilot can see with the lamp whether the plane's nose trim is neutral.",
+              "src": "m1",
+              "page": "84"
+            },
+            {
+              "id": "nav-lights",
+              "name": "Navigation light switch",
+              "type": "switch2",
+              "match": [
+                "pnt_111",
+                "item:left-side:11"
+              ],
+              "positions": [
+                {
+                  "name": "ON",
+                  "text": "The navigation lights are on."
+                },
+                {
+                  "name": "OFF",
+                  "text": "The navigation lights are off."
+                }
+              ],
+              "text": "This switch turns on the three outside navigation lights: red on the left, green on the right, white at the tail. It is labelled ANO.",
+              "context": "They show other pilots at night where the plane is and which way it flies.",
+              "src": "m1",
+              "page": "163"
+            },
+            {
+              "id": "elevator-trim",
+              "name": "Elevator trim tab control button",
+              "type": "switch3",
+              "match": [
+                "pnt_114",
+                "item:left-side:12"
+              ],
+              "positions": [
+                {
+                  "name": "PULL (CLIMB)",
+                  "text": "The trim tab moves toward nose up."
+                },
+                {
+                  "name": "OFF",
+                  "text": "The switch is in the middle and nothing moves."
+                },
+                {
+                  "name": "PUSH (DESCEND)",
+                  "text": "The trim tab moves toward nose down."
+                }
+              ],
+              "text": "This switch trims the plane's nose up or down. Pulling it trims for climb, pushing it trims for descent. It springs back to the middle.",
+              "context": "Trim is a small setting that lets the plane fly straight without holding the stick. The switch is not on the stick of the MiG-15.",
+              "src": "m1",
+              "page": "84"
+            },
+            {
+              "id": "left-elec-pointer",
+              "name": "Left electrical distribution panel (see its own panel)",
+              "type": "other",
+              "match": [
+                "item:left-side:13"
+              ],
+              "text": "This item stands for the panel with the engine and fuel switches. It has its own panel in this guide.",
+              "context": "The switches are listed there.",
+              "src": "m1",
+              "page": "84"
+            },
+            {
+              "id": "throttle-console-pointer",
+              "name": "Throttle console (see its own panel)",
+              "type": "other",
+              "match": [
+                "item:left-side:14"
+              ],
+              "text": "This item stands for the throttle console. It has its own panel in this guide.",
+              "context": "The throttle, flaps handle and fire controls are listed there.",
+              "src": "m1",
+              "page": "85"
+            },
+            {
+              "id": "rsi-ark-switch",
+              "name": "RSI-ARK telephone output switch",
+              "type": "switch2",
+              "match": [
+                "pnt_140",
+                "item:left-side:15"
+              ],
+              "positions": [
+                {
+                  "name": "RECEIVE",
+                  "text": "Only the RSI-6 radio receiver is heard."
+                },
+                {
+                  "name": "ARC",
+                  "text": "The ARK-5 and the radio receiver are heard together."
+                }
+              ],
+              "text": "This switch decides what the pilot hears in the headset: the radio only, or the radio together with the call signs of the ARK-5 beacon.",
+              "context": "Receive-only gives a cleaner radio signal. The ARK position lets the pilot hear the beacon's letters at the same time.",
+              "src": "m1",
+              "page": "172"
+            },
+            {
+              "id": "oxygen-supply-valve",
+              "name": "Oxygen supply valve",
+              "type": "wheel",
+              "match": [
+                "pnt_141",
+                "item:left-side:16"
+              ],
+              "text": "This valve opens the oxygen flow from the bottles. Turned to the left, it lets oxygen through.",
+              "context": "It is open on the pre-flight check. The pilot can then breathe with the mask.",
+              "src": "m1",
+              "page": "191"
+            },
+            {
+              "id": "oxygen-regulator",
+              "name": "KP-14 oxygen regulator (air diluter valve)",
+              "type": "knob",
+              "match": [
+                "pnt_143",
+                "item:left-side:17"
+              ],
+              "text": "This regulator mixes cockpit air and oxygen for the mask. Its diluter valve must be open (OPEN). Closed, it gives pure oxygen.",
+              "context": "The game assumes that the mask is always on the pilot's face, so the diluter valve open is needed or the pilot may faint within 30 to 40 seconds.",
+              "src": "m1",
+              "page": "157"
+            },
+            {
+              "id": "oxygen-relief",
+              "name": "KR-14 pressure relief valve with emergency oxygen valve",
+              "type": "wheel",
+              "match": [
+                "pnt_243",
+                "item:left-side:18"
+              ],
+              "text": "This valve lowers the oxygen pressure from the bottles before it goes to the regulator. Its emergency valve gives oxygen continuously.",
+              "context": "The manual says to use the emergency oxygen in a fire or smoke at high altitude: turn it fully left.",
+              "src": "m1",
+              "page": "158"
+            }
+          ]
+        },
+        {
+          "id": "rsi-6m1-remote",
+          "name": "RSI-6M1 receiver remote control",
+          "db": "rsi-6m1-remote",
+          "src": "m1",
+          "page": "172",
+          "text": "This panel on the left wall tunes the radio receiver. It has a tuning knob and a volume knob.",
+          "context": "The tuning knob also sets the transmitter to the same wave. The pilot reads the channel under a fixed mark.",
+          "controls": [
+            {
+              "id": "rsi-tuning",
+              "name": "Channel selector knob (TUNING)",
+              "type": "knob",
+              "match": [
+                "pnt_128",
+                "item:rsi-6m1-remote:1"
+              ],
+              "text": "This knob tunes the radio to a wave number between 150 and 200. A disk shows the chosen channel.",
+              "context": "The transmitter follows the receiver when this knob is turned. Holding the left shift key turns it ten times faster.",
+              "src": "m1",
+              "page": "172"
+            },
+            {
+              "id": "rsi-disk",
+              "name": "Channel disk",
+              "type": "indicator",
+              "match": [
+                "item:rsi-6m1-remote:2"
+              ],
+              "text": "This disk turns with the tuning knob and shows the chosen channel.",
+              "context": "The number 5 on the disk stands for wave 150, 6 for 160 and 0 for 200.",
+              "src": "m1",
+              "page": "172"
+            },
+            {
+              "id": "rsi-mark",
+              "name": "Fixed mark",
+              "type": "indicator",
+              "match": [
+                "item:rsi-6m1-remote:3"
+              ],
+              "text": "This small arrow is the reading mark. The channel under it is the one tuned.",
+              "context": "The pilot reads the channel number under this mark.",
+              "src": "m1",
+              "page": "172"
+            },
+            {
+              "id": "rsi-volume",
+              "name": "Volume knob",
+              "type": "knob",
+              "match": [
+                "pnt_126",
+                "item:rsi-6m1-remote:4"
+              ],
+              "text": "Turning this knob clockwise makes the radio receiver louder.",
+              "context": "The label LOUD marks the louder direction and QUIET the quieter one.",
+              "src": "m1",
+              "page": "172"
+            }
+          ]
+        },
+        {
+          "id": "panel-light-knob",
+          "name": "Panel light knob",
+          "src": "m1",
+          "page": "159",
+          "text": "This knob on the left side sets how bright the cockpit lamp for the left panels is.",
+          "context": "The lamp lights the panels of the left side at night.",
+          "controls": [
+            {
+              "id": "panels-rheostat",
+              "name": "Panels light rheostat",
+              "type": "knob",
+              "match": [
+                "pnt_220"
+              ],
+              "text": "The game names this knob 'Panels Light Rheostat'. A rheostat is a dimmer knob for lights.",
+              "context": "The manual lists a rheostat for the white cockpit lamp of the left panels but does not give this knob a section of its own.",
+              "src": "m1",
+              "page": "159"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "left-side",
+      "where": "left-side",
+      "name": "Left canopy handle",
+      "text": "A handle at the left edge of the canopy opens the canopy from inside.",
+      "panels": [
+        {
+          "id": "canopy-left",
+          "name": "Left canopy lever",
+          "src": "m1",
+          "page": "22",
+          "text": "The canopy is the clear roof over the cockpit. This lever on the left unlocks it so that it can slide back.",
+          "context": "The pilot opens the canopy on the ground to climb in or out. The manual says it can be opened with the left or the right handle.",
+          "controls": [
+            {
+              "id": "canopy-left-lever",
+              "name": "Left canopy lever",
+              "type": "lever",
+              "match": [
+                "pnt_223"
+              ],
+              "text": "Moving this lever lets the canopy open. The game names it 'Left Canopy Lever, OPEN'.",
+              "context": "The canopy is opened with the left or right lever; a lever at the back closes it.",
+              "src": "m1",
+              "page": "22"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "right-side",
+      "where": "right-side",
+      "name": "Right canopy handle and emergency gear handle",
+      "text": "On the right edge of the cockpit are the canopy lever and the handle for lowering the nose and right wheel in an emergency.",
+      "panels": [
+        {
+          "id": "canopy-right",
+          "name": "Canopy levers and canopy jettison",
+          "src": "m1",
+          "page": "94",
+          "text": "These levers open and close the canopy, the clear roof over the cockpit. The jettison handle throws the canopy off in an emergency.",
+          "context": "The pilot opens the canopy on the ground. In an emergency the canopy must be thrown off before the seat can be ejected.",
+          "controls": [
+            {
+              "id": "canopy-right-lever",
+              "name": "Right canopy lever (canopy handle)",
+              "type": "lever",
+              "match": [
+                "pnt_222",
+                "item:right-side:3"
+              ],
+              "text": "Moving this lever lets the canopy open. The game names it 'Right Canopy Lever, OPEN'.",
+              "context": "The canopy is opened with the left or the right lever.",
+              "src": "m1",
+              "page": "94"
+            },
+            {
+              "id": "canopy-aft-lever",
+              "name": "Aft canopy lever (close)",
+              "type": "lever",
+              "match": [
+                "pnt_224"
+              ],
+              "text": "This lever at the rear closes the canopy. The game names it 'Aft Canopy Lever, CLOSE'.",
+              "context": "The manual says the canopy is closed by operating the rear lock with the upper aft handle.",
+              "src": "m1",
+              "page": "22"
+            },
+            {
+              "id": "canopy-jettison",
+              "name": "Emergency canopy jettison handle",
+              "type": "handle",
+              "match": [
+                "pnt_221"
+              ],
+              "text": "Pulling this handle throws the canopy off. The game names it 'Emergency Canopy Jettison'.",
+              "context": "The manual says the canopy can be jettisoned only from the closed position and that the seat can be ejected only after the canopy is gone.",
+              "src": "m1",
+              "page": "23"
+            },
+            {
+              "id": "gear-right-handle",
+              "name": "Nose and right gear emergency lock handle",
+              "type": "handle",
+              "match": [
+                "pnt_210",
+                "item:right-side:12"
+              ],
+              "text": "Pulling this handle mechanically opens the locks that hold the nose wheel and the right main wheel up. The wheels can then fall down.",
+              "context": "It is used when the normal system cannot lower the gear.",
+              "src": "m1",
+              "page": "94"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "right-console",
+      "where": "right-console",
+      "name": "Right console",
+      "text": "The right wall holds the electrical switches, the radio compass, the air tank gauges with the emergency valves, the lamps and the valves for cockpit air.",
+      "panels": [
+        {
+          "id": "right-electrical",
+          "name": "Right electrical distribution panel",
+          "db": "right-electrical-panel",
+          "src": "m1",
+          "page": "95",
+          "text": "This panel has 14 switches that turn the plane's electrical equipment on and off. Each is a circuit breaker.",
+          "context": "Before the flight the pilot turns on all switches needed, except the battery switch (until the engine runs) and the weapons.",
+          "controls": [
+            {
+              "id": "re-landing-light",
+              "name": "Landing light switch (ФАРА)",
+              "type": "switch2",
+              "match": [
+                "pnt_151",
+                "item:right-electrical-panel:1"
+              ],
+              "positions": [
+                {
+                  "name": "ON",
+                  "text": "The landing light circuit has power."
+                },
+                {
+                  "name": "OFF",
+                  "text": "The landing light circuit is off."
+                }
+              ],
+              "text": "This switch gives power to the landing light. The game names it 'Nose Light Master Switch'.",
+              "context": "The landing light is also switched on with its own switch on the instrument panel.",
+              "src": "m1",
+              "page": "95"
+            },
+            {
+              "id": "re-radio",
+              "name": "Radio switch (РАДИО)",
+              "type": "switch2",
+              "match": [
+                "pnt_158",
+                "item:right-electrical-panel:2"
+              ],
+              "positions": [
+                {
+                  "name": "ON",
+                  "text": "The radio has power."
+                },
+                {
+                  "name": "OFF",
+                  "text": "The radio is off."
+                }
+              ],
+              "text": "This switch gives power to the RSI-6K radio.",
+              "context": "The radio must be on before the pilot can talk or listen.",
+              "src": "m1",
+              "page": "95"
+            },
+            {
+              "id": "re-rv2",
+              "name": "RV-2 radio altimeter switch (РВ-2)",
+              "type": "switch2",
+              "match": [
+                "pnt_160",
+                "item:right-electrical-panel:3"
+              ],
+              "positions": [
+                {
+                  "name": "ON",
+                  "text": "The radio altimeter has power."
+                },
+                {
+                  "name": "OFF",
+                  "text": "The radio altimeter is off."
+                }
+              ],
+              "text": "This switch gives power to the radio altimeter.",
+              "context": "The pilot also turns on the gauge itself on the instrument panel.",
+              "src": "m1",
+              "page": "188"
+            },
+            {
+              "id": "re-ark",
+              "name": "ARK and marker switch (АРК МАРКЕР)",
+              "type": "switch2",
+              "match": [
+                "pnt_159",
+                "item:right-electrical-panel:4"
+              ],
+              "positions": [
+                {
+                  "name": "ON",
+                  "text": "The radio compass and marker receiver have power."
+                },
+                {
+                  "name": "OFF",
+                  "text": "They are off."
+                }
+              ],
+              "text": "This switch gives power to the ARK-5 radio compass and the marker beacon receiver. The game names it 'ARC Switch'.",
+              "context": "Both need this switch before the pilot can navigate with them.",
+              "src": "m1",
+              "page": "182"
+            },
+            {
+              "id": "re-camera",
+              "name": "S-13 gun camera switch (Ф.П.-С13)",
+              "type": "switch2",
+              "match": [
+                "pnt_164",
+                "item:right-electrical-panel:5"
+              ],
+              "positions": [
+                {
+                  "name": "ON",
+                  "text": "The gun camera has power."
+                },
+                {
+                  "name": "OFF",
+                  "text": "The gun camera is off."
+                }
+              ],
+              "text": "This switch gives power to the gun camera that films the shooting.",
+              "context": "The camera is switched on while a gun trigger is pressed.",
+              "src": "m1",
+              "page": "151"
+            },
+            {
+              "id": "re-sight",
+              "name": "ASP-3N gunsight switch (ПРИЦЕЛ)",
+              "type": "switch2",
+              "match": [
+                "pnt_163",
+                "item:right-electrical-panel:6"
+              ],
+              "positions": [
+                {
+                  "name": "ON",
+                  "text": "The gunsight has power."
+                },
+                {
+                  "name": "OFF",
+                  "text": "The gunsight is off."
+                }
+              ],
+              "text": "This switch gives power to the gunsight.",
+              "context": "The manual says to switch it on 10 minutes before the sight is used, and to switch the sight off for take-off, taxiing and landing.",
+              "src": "m1",
+              "page": "148"
+            },
+            {
+              "id": "re-n37",
+              "name": "N-37 cannon switch (Н-37)",
+              "type": "switch2",
+              "match": [
+                "pnt_162",
+                "item:right-electrical-panel:7"
+              ],
+              "positions": [
+                {
+                  "name": "ON",
+                  "text": "The 37 mm cannon has power."
+                },
+                {
+                  "name": "OFF",
+                  "text": "The 37 mm cannon is off."
+                }
+              ],
+              "text": "This switch gives power to the 37 millimetre cannon.",
+              "context": "It is one of the weapon switches, which stay off for the engine start.",
+              "src": "m1",
+              "page": "95"
+            },
+            {
+              "id": "re-nr23",
+              "name": "NR-23 cannons switch (НР-23)",
+              "type": "switch2",
+              "match": [
+                "pnt_161",
+                "item:right-electrical-panel:8"
+              ],
+              "positions": [
+                {
+                  "name": "ON",
+                  "text": "The 23 mm cannons have power."
+                },
+                {
+                  "name": "OFF",
+                  "text": "The 23 mm cannons are off."
+                }
+              ],
+              "text": "This switch gives power to the two 23 millimetre cannons.",
+              "context": "Like the other weapon switches it stays off for the engine start and goes on before an attack.",
+              "src": "m1",
+              "page": "95"
+            },
+            {
+              "id": "re-emergency-tank",
+              "name": "Emergency tank release switch (АВАРИЙН. СБРОС БАК.)",
+              "type": "switch2",
+              "match": [
+                "pnt_156",
+                "item:right-electrical-panel:9"
+              ],
+              "positions": [
+                {
+                  "name": "ON",
+                  "text": "The emergency release circuit has power."
+                },
+                {
+                  "name": "OFF",
+                  "text": "The emergency release circuit is off."
+                }
+              ],
+              "text": "This switch gives power to the emergency release circuit for bombs and drop tanks. The game names it 'Emergency Drop Switch'.",
+              "context": "The emergency release button on the armament panel needs it to work.",
+              "src": "m1",
+              "page": "95"
+            },
+            {
+              "id": "re-bombs",
+              "name": "Bombs switch (БОМБЫ)",
+              "type": "switch2",
+              "match": [
+                "pnt_157",
+                "item:right-electrical-panel:10"
+              ],
+              "positions": [
+                {
+                  "name": "ON",
+                  "text": "The bomb circuit has power."
+                },
+                {
+                  "name": "OFF",
+                  "text": "The bomb circuit is off."
+                }
+              ],
+              "text": "This switch gives power to the bomb circuit.",
+              "context": "It is a weapon switch, which stays off for the engine start.",
+              "src": "m1",
+              "page": "95"
+            },
+            {
+              "id": "re-agk",
+              "name": "AGK-47B / DGMK switch (АГК-47Б ДГМК)",
+              "type": "switch2",
+              "match": [
+                "pnt_155",
+                "item:right-electrical-panel:11"
+              ],
+              "positions": [
+                {
+                  "name": "ON",
+                  "text": "The artificial horizon and gyro compass have power."
+                },
+                {
+                  "name": "OFF",
+                  "text": "They are off."
+                }
+              ],
+              "text": "This switch gives power to the artificial horizon and the gyro compass.",
+              "context": "Both gyro instruments need it before they work.",
+              "src": "m1",
+              "page": "95"
+            },
+            {
+              "id": "re-trimmers",
+              "name": "Trimmers switch (ТРИММ.)",
+              "type": "switch2",
+              "match": [
+                "pnt_154",
+                "item:right-electrical-panel:12"
+              ],
+              "positions": [
+                {
+                  "name": "ON",
+                  "text": "The trim motors have power."
+                },
+                {
+                  "name": "OFF",
+                  "text": "The trim motors are off."
+                }
+              ],
+              "text": "This switch gives power to the motors that move the trim tabs. The game names it 'Trim Master Switch'.",
+              "context": "Without it the trim switches do nothing.",
+              "src": "m1",
+              "page": "95"
+            },
+            {
+              "id": "re-generator",
+              "name": "DC generator switch (ГЕНЕР.)",
+              "type": "switch2",
+              "match": [
+                "pnt_153",
+                "item:right-electrical-panel:13"
+              ],
+              "positions": [
+                {
+                  "name": "ON",
+                  "text": "The generator is connected."
+                },
+                {
+                  "name": "OFF",
+                  "text": "The generator is disconnected."
+                }
+              ],
+              "text": "This switch connects the generator to the electrical system. The generator makes electricity while the engine runs.",
+              "context": "The manual says it should be ON before the engine start.",
+              "src": "m1",
+              "page": "190"
+            },
+            {
+              "id": "re-battery",
+              "name": "Battery switch (АККУМ.)",
+              "type": "switch2",
+              "match": [
+                "pnt_152",
+                "item:right-electrical-panel:14"
+              ],
+              "positions": [
+                {
+                  "name": "ON",
+                  "text": "The battery is connected."
+                },
+                {
+                  "name": "OFF",
+                  "text": "The battery is disconnected."
+                }
+              ],
+              "text": "This switch connects the onboard battery (accumulator) to the electrical system. The game names it 'Accumulator Switch'.",
+              "context": "The manual says it is off while ground power is used and turned on after the engine has started.",
+              "src": "m1",
+              "page": "190"
+            }
+          ]
+        },
+        {
+          "id": "right-side-panel",
+          "name": "Right side controls",
+          "db": "right-side",
+          "src": "m1",
+          "page": "93",
+          "text": "This is the wall of the cockpit at the pilot's right. It holds lamps, the pitot heater switch, the cockpit air valves and the ultraviolet lamp knobs.",
+          "context": "Most of these items are used once or not at all. The most important are the pitot heater and the cockpit air.",
+          "controls": [
+            {
+              "id": "cockpit-lamp",
+              "name": "KLS-39 cockpit lamp",
+              "type": "light",
+              "match": [
+                "item:right-side:1"
+              ],
+              "text": "This lamp lights the right electrical panel and the right horizontal panel at night.",
+              "context": "It is not clickable in the game.",
+              "src": "m1",
+              "page": "94"
+            },
+            {
+              "id": "uv-lamp",
+              "name": "ARUFOSH UV lamp",
+              "type": "light",
+              "match": [
+                "item:right-side:2"
+              ],
+              "text": "This ultraviolet lamp makes the special paint on the gauge needles glow at night.",
+              "context": "It lights the instrument panel. It is not clickable in the game.",
+              "src": "m1",
+              "page": "94"
+            },
+            {
+              "id": "air-recharge",
+              "name": "Emergency air tanks recharge valve",
+              "type": "wheel",
+              "match": [
+                "pnt_186",
+                "item:right-side:4"
+              ],
+              "text": "The game names this valve 'Emergency System Filling Valve'. The manual's valve of this kind is used to fill the emergency air tanks on the ground, which the game does not simulate.",
+              "context": "The manual also says it can give the brakes air from the emergency tanks if the main air system fails.",
+              "src": "m1",
+              "page": "94"
+            },
+            {
+              "id": "ark-pointer",
+              "name": "ARK-5 control panel (see its own panel)",
+              "type": "other",
+              "match": [
+                "item:right-side:5"
+              ],
+              "text": "This item stands for the control panel of the ARK-5 radio compass. It has its own panel in this guide.",
+              "context": "The switches are listed there.",
+              "src": "m1",
+              "page": "94"
+            },
+            {
+              "id": "buzzer",
+              "name": "MRP-48P system buzzer",
+              "type": "other",
+              "match": [
+                "item:right-side:6"
+              ],
+              "text": "This buzzer sounds when the plane flies over a radio marker beacon. It has no switch.",
+              "context": "The marker lamp on the instrument panel lights up at the same time.",
+              "src": "m1",
+              "page": "94"
+            },
+            {
+              "id": "mask-bag",
+              "name": "Oxygen mask bag",
+              "type": "other",
+              "match": [
+                "item:right-side:7"
+              ],
+              "text": "This bag stores the oxygen mask. Taking out the mask is not animated in the game.",
+              "context": "The game assumes the pilot always wears the mask.",
+              "src": "m1",
+              "page": "94"
+            },
+            {
+              "id": "microphone-panel",
+              "name": "Micro telephone panel",
+              "type": "other",
+              "match": [
+                "item:right-side:8"
+              ],
+              "text": "This panel connects the pilot's helmet headset to the plane's wired radio.",
+              "context": "It has no controls to operate in the game.",
+              "src": "m1",
+              "page": "94"
+            },
+            {
+              "id": "cockpit-air-valve",
+              "name": "Cockpit air supply valve",
+              "type": "wheel",
+              "match": [
+                "pnt_187",
+                "item:right-side:9"
+              ],
+              "text": "This valve lets warm or cold air from the engine into the cockpit. It also fills the seal of the canopy with air.",
+              "context": "Turned toward closed it lets the air out of the canopy seal before the canopy is opened. Further open it first gives cold air, then warmer air.",
+              "src": "m1",
+              "page": "120"
+            },
+            {
+              "id": "uv-rheostats",
+              "name": "UV lamp rheostats (left and right)",
+              "type": "knob",
+              "match": [
+                "pnt_184",
+                "pnt_185",
+                "item:right-side:10"
+              ],
+              "text": "Two knobs set how bright the left and right ultraviolet lamps are. The game names them 'Left UV Light Rheostat' and 'Right UV Light Rheostat'.",
+              "context": "The ultraviolet light makes the paint on the gauge needles glow.",
+              "count": 2,
+              "src": "m1",
+              "page": "94"
+            },
+            {
+              "id": "map-holder",
+              "name": "Map holder",
+              "type": "other",
+              "match": [
+                "item:right-side:11"
+              ],
+              "text": "This is a holder for a map. The manual says it cannot be used in the simulation.",
+              "context": "It has no function in DCS, so the pilot can ignore it.",
+              "src": "m1",
+              "page": "94"
+            },
+            {
+              "id": "horizontal-pointer",
+              "name": "Right side horizontal panel (see its own panel)",
+              "type": "other",
+              "match": [
+                "item:right-side:13"
+              ],
+              "text": "This item stands for the panel with the air and hydraulic gauges and the emergency valves. It has its own panel in this guide.",
+              "context": "Its gauges and valves are listed there.",
+              "src": "m1",
+              "page": "94"
+            },
+            {
+              "id": "right-elec-pointer",
+              "name": "Right electrical distribution panel (see its own panel)",
+              "type": "other",
+              "match": [
+                "item:right-side:14"
+              ],
+              "text": "This item stands for the panel with the 14 electrical switches. It has its own panel in this guide.",
+              "context": "The switches are listed there.",
+              "src": "m1",
+              "page": "95"
+            },
+            {
+              "id": "pitot-heater",
+              "name": "Pitot and clock heater switch",
+              "type": "switch2",
+              "match": [
+                "pnt_081",
+                "item:right-side:15"
+              ],
+              "positions": [
+                {
+                  "name": "ON",
+                  "text": "The pitot tube and clock are heated."
+                },
+                {
+                  "name": "OFF",
+                  "text": "They are not heated."
+                }
+              ],
+              "text": "This switch heats the pitot tube, the small tube on the wing that measures airspeed, and the clock, so that they do not freeze.",
+              "context": "The pilot switches it on when flying in cold air or cloud.",
+              "src": "m1",
+              "page": "95"
+            }
+          ]
+        },
+        {
+          "id": "right-horizontal",
+          "name": "Right side horizontal panel",
+          "db": "right-horizontal-panel",
+          "src": "m1",
+          "page": "96",
+          "text": "This panel holds the gauges for the air tanks and the hydraulic system, and the valves for lowering gear and flaps by compressed air in an emergency.",
+          "context": "The pilot normally only looks at the gauges. The valves are for emergencies when the normal system fails.",
+          "controls": [
+            {
+              "id": "emerg-gear-gauge",
+              "name": "Emergency landing gear pneumatic pressure gauge",
+              "type": "gauge",
+              "match": [
+                "item:right-horizontal-panel:1"
+              ],
+              "text": "This gauge, labelled AIR, shows the pressure in the air tanks used to lower the main wheels in an emergency, up to 80.",
+              "context": "The air tanks sit inside the legs of the main landing gear.",
+              "src": "m1",
+              "page": "96"
+            },
+            {
+              "id": "emerg-gear-cover",
+              "name": "Emergency gears valve cover",
+              "type": "guard",
+              "match": [
+                "pnt_166"
+              ],
+              "text": "This cover protects the emergency landing gear valve from being turned by mistake.",
+              "context": "It is opened before the valve is used.",
+              "src": "m1",
+              "page": "96"
+            },
+            {
+              "id": "emerg-gear-valve",
+              "name": "Emergency landing gear extension valve",
+              "type": "wheel",
+              "match": [
+                "pnt_167",
+                "item:right-horizontal-panel:2"
+              ],
+              "text": "Turning this valve lets compressed air push the landing gear down.",
+              "context": "It is the way to get the wheels down when the normal hydraulics fail.",
+              "src": "m1",
+              "page": "96"
+            },
+            {
+              "id": "utility-hyd-gauge",
+              "name": "Utility hydraulic pressure gauge",
+              "type": "gauge",
+              "match": [
+                "item:right-horizontal-panel:3"
+              ],
+              "text": "This gauge, labelled HYDRAULICS, shows the pressure of the main hydraulic system, up to 250.",
+              "context": "The pilot checks it during the hydraulic test after the engine start.",
+              "src": "m1",
+              "page": "96"
+            },
+            {
+              "id": "emerg-flaps-gauge",
+              "name": "Emergency flaps pneumatic pressure gauge",
+              "type": "gauge",
+              "match": [
+                "item:right-horizontal-panel:4"
+              ],
+              "text": "This gauge, labelled AIR, shows the pressure in the air tank used to lower the flaps in an emergency, up to 80.",
+              "context": "Its scale also helps to check the emergency tank when it is charged.",
+              "src": "m1",
+              "page": "96"
+            },
+            {
+              "id": "emerg-flaps-cover",
+              "name": "Emergency flaps valve cover",
+              "type": "guard",
+              "match": [
+                "pnt_170"
+              ],
+              "text": "This cover protects the emergency flap valve from being turned by mistake.",
+              "context": "It is opened before the valve is used.",
+              "src": "m1",
+              "page": "96"
+            },
+            {
+              "id": "emerg-flaps-valve",
+              "name": "Emergency flaps extension valve",
+              "type": "wheel",
+              "match": [
+                "pnt_171",
+                "item:right-horizontal-panel:5"
+              ],
+              "text": "Turning this valve lets compressed air push the flaps out. They go only to 55 degrees.",
+              "context": "It is the way to get the flaps down when the normal hydraulics fail.",
+              "src": "m1",
+              "page": "96"
+            },
+            {
+              "id": "main-pneumatic-gauge",
+              "name": "Main pneumatic system pressure gauge",
+              "type": "gauge",
+              "match": [
+                "item:right-horizontal-panel:6"
+              ],
+              "text": "This gauge, labelled AIR, shows the pressure in the main air system, up to 250.",
+              "context": "The main air system serves the wheel brakes, the canopy seal and the gun reloading.",
+              "src": "m1",
+              "page": "97"
+            }
+          ]
+        },
+        {
+          "id": "ark-5",
+          "name": "ARK-5 radio compass (K-7 control panel)",
+          "db": "ark-5-panel",
+          "src": "m1",
+          "page": "179",
+          "text": "The ARK-5 is a radio receiver that points to a radio beacon on the ground. The needle on the instrument panel shows the direction to it.",
+          "context": "The pilot tunes it, listens for the beacon's call letters and then switches to compass mode. The panel also holds the volume and light knobs.",
+          "controls": [
+            {
+              "id": "ark-tlg",
+              "name": "TLG-TLF receiver mode switch",
+              "type": "switch2",
+              "match": [
+                "pnt_173",
+                "item:ark-5-panel:1"
+              ],
+              "positions": [
+                {
+                  "name": "TLG",
+                  "text": "The receiver accepts unmodulated telegraph signals."
+                },
+                {
+                  "name": "TLF",
+                  "text": "The receiver accepts modulated telephone signals."
+                }
+              ],
+              "text": "This switch picks the type of signal the receiver hears: telephone (TLF) or telegraph (TLG).",
+              "context": "The manual says that almost all radio stations, and all beacons in DCS, work in phone mode.",
+              "src": "m1",
+              "page": "180"
+            },
+            {
+              "id": "ark-range",
+              "name": "Frequency range selector",
+              "type": "switch",
+              "match": [
+                "pnt_177",
+                "item:ark-5-panel:2"
+              ],
+              "text": "This switch picks one of three frequency ranges: 150 to 310, 310 to 640 or 640 to 1300 kHz.",
+              "context": "The pilot picks the range that holds the beacon's frequency, then tunes with the crank.",
+              "src": "m1",
+              "page": "180"
+            },
+            {
+              "id": "ark-scale",
+              "name": "Frequency range indicator",
+              "type": "indicator",
+              "match": [
+                "item:ark-5-panel:3"
+              ],
+              "text": "This window shows three rotating scales, one for each range, with a pointer for the tuned frequency.",
+              "context": "The scale of the chosen range is the one to read.",
+              "src": "m1",
+              "page": "180"
+            },
+            {
+              "id": "ark-light",
+              "name": "Backlight knob (ILLUMINATION)",
+              "type": "knob",
+              "match": [
+                "pnt_181",
+                "item:ark-5-panel:4"
+              ],
+              "text": "This knob sets how bright the light of the panel is. The game names it 'Scale Light Knob'.",
+              "context": "A lit scale helps reading at night.",
+              "src": "m1",
+              "page": "180"
+            },
+            {
+              "id": "ark-volume",
+              "name": "Volume knob",
+              "type": "knob",
+              "match": [
+                "pnt_180",
+                "item:ark-5-panel:5"
+              ],
+              "text": "This knob sets how loud the beacon's call letters sound in the headset.",
+              "context": "The manual says to turn it fully to the right when tuning.",
+              "src": "m1",
+              "page": "180"
+            },
+            {
+              "id": "ark-meter",
+              "name": "Receiver tuning meter",
+              "type": "gauge",
+              "match": [
+                "item:ark-5-panel:6"
+              ],
+              "text": "The arrow of this meter shows how strong the received signal is.",
+              "context": "The pilot turns the tuning crank until the arrow reaches its highest value.",
+              "src": "m1",
+              "page": "180"
+            },
+            {
+              "id": "ark-loop",
+              "name": "Loop L-R spring-return knob",
+              "type": "knob",
+              "match": [
+                "pnt_178",
+                "item:ark-5-panel:7"
+              ],
+              "text": "This knob turns the antenna frame to the left (L) or the right (R) by hand when the mode switch is at LOOP. It springs back when released.",
+              "context": "The needle on the instrument panel moves with it. The pilot uses it to check the setup and to search the beacon by hand.",
+              "src": "m1",
+              "page": "181"
+            },
+            {
+              "id": "ark-mode",
+              "name": "ARK-5 mode selector switch",
+              "type": "selector",
+              "match": [
+                "pnt_174",
+                "item:ark-5-panel:8"
+              ],
+              "positions": [
+                {
+                  "name": "OFF",
+                  "text": "The ARK-5 is off."
+                },
+                {
+                  "name": "COMP.",
+                  "text": "The receiver works as an automatic direction finder."
+                },
+                {
+                  "name": "ANT.",
+                  "text": "The antenna mode makes the call letters easiest to hear."
+                },
+                {
+                  "name": "LOOP",
+                  "text": "The antenna frame is turned by hand."
+                }
+              ],
+              "text": "This switch turns the ARK-5 on and picks its mode. In COMP the needle points to the beacon, ANT is for listening to the call letters, LOOP is for turning the antenna by hand.",
+              "context": "The manual says to wait one or two minutes after switching on for the tubes to warm up.",
+              "src": "m1",
+              "page": "181"
+            },
+            {
+              "id": "ark-on-lamp",
+              "name": "ARK-5 on lamp",
+              "type": "light",
+              "match": [
+                "item:ark-5-panel:9"
+              ],
+              "text": "This lamp lights up when the ARK-5 is on, in any position except OFF.",
+              "context": "It shows that the set has power.",
+              "src": "m1",
+              "page": "181"
+            },
+            {
+              "id": "ark-crank",
+              "name": "Precise tuning crank",
+              "type": "wheel",
+              "match": [
+                "pnt_175",
+                "item:ark-5-panel:10"
+              ],
+              "text": "Turning this crank tunes the receiver exactly to the beacon's frequency.",
+              "context": "The pilot watches the tuning meter and the sound while turning. The crank is turned with the mouse over its centre.",
+              "src": "m1",
+              "page": "181"
+            },
+            {
+              "id": "ark-take-control",
+              "name": "ARK-5 take control button",
+              "type": "button",
+              "match": [
+                "pnt_182"
+              ],
+              "text": "The game names this button 'ARK-5 Take Control Button - Push to take control'. The manual does not describe it.",
+              "context": "It belongs to the ARK-5 panel.",
+              "src": "m1",
+              "page": "179"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "rear",
+      "where": "rear",
+      "name": "Back of the cockpit",
+      "text": "Behind the seat are the radio transmitter and receiver units, the air network valves and a first aid kit.",
+      "panels": [
+        {
+          "id": "cockpit-back-side",
+          "name": "Cockpit back side",
+          "db": "cockpit-back-side",
+          "src": "m1",
+          "page": "97",
+          "text": "This is the shelf behind the pilot's seat. It holds the radio units and some air valves that the pilot can turn.",
+          "context": "The pilot rarely touches it. The transmitter handles are used when the transmitter is tuned to a different wave from the receiver.",
+          "controls": [
+            {
+              "id": "air-valves",
+              "name": "Air network valve and cockpit air supply valve",
+              "type": "wheel",
+              "match": [
+                "pnt_242",
+                "item:cockpit-back-side:1"
+              ],
+              "text": "The game names one valve here 'Air Net Valve'. The manual lists an air network valve and a cockpit air supply valve on the back wall.",
+              "context": "Both belong to the air system that serves the brakes, the canopy seal and the gun reloading.",
+              "src": "m1",
+              "page": "97"
+            },
+            {
+              "id": "cockpit-filling-valve",
+              "name": "Cockpit filling valve",
+              "type": "wheel",
+              "match": [
+                "pnt_241"
+              ],
+              "text": "The game names this knob 'Cockpit Filling Valve'. The manual does not describe a valve of this name.",
+              "context": "The manual mentions a cockpit pressurization valve behind the seat that is used in ground maintenance, which the game does not simulate.",
+              "src": "m1",
+              "page": "125"
+            },
+            {
+              "id": "lamp-sockets",
+              "name": "Portable lamp sockets",
+              "type": "other",
+              "match": [
+                "item:cockpit-back-side:2"
+              ],
+              "text": "These sockets would connect a portable lamp. The manual says they are not modelled.",
+              "context": "They have no function in DCS, so the pilot can ignore them.",
+              "src": "m1",
+              "page": "97"
+            },
+            {
+              "id": "rsi-6k",
+              "name": "RSI-6K transmitter",
+              "type": "other",
+              "match": [
+                "item:cockpit-back-side:3"
+              ],
+              "text": "This is the box of the radio transmitter. Its knobs and locks are listed in this panel.",
+              "context": "The transmitter and the receiver together form the RSI-6 radio set.",
+              "src": "m1",
+              "page": "98"
+            },
+            {
+              "id": "tx-wave-knob",
+              "name": "Transmitter wave control handle",
+              "type": "knob",
+              "match": [
+                "pnt_232"
+              ],
+              "text": "This knob sets the wave number of the transmitter. The game names it 'RSI-6K Wave Control Handle'.",
+              "context": "Normally the transmitter follows the receiver's tuning knob. The pilot can set a different wave for talking than for listening.",
+              "src": "m1",
+              "page": "168"
+            },
+            {
+              "id": "tx-wave-lock",
+              "name": "Transmitter wave lock",
+              "type": "switch2",
+              "match": [
+                "pnt_233"
+              ],
+              "positions": [
+                {
+                  "name": "Lock",
+                  "text": "The wave knob is locked."
+                },
+                {
+                  "name": "Unlock",
+                  "text": "The wave knob can be turned."
+                }
+              ],
+              "text": "This lock holds the transmitter wave knob in place, so that it cannot shift in strong vibrations.",
+              "context": "The lock is toggled with a mouse click.",
+              "src": "m1",
+              "page": "169"
+            },
+            {
+              "id": "tx-antenna-knob",
+              "name": "Antenna tuning knob",
+              "type": "knob",
+              "match": [
+                "pnt_230"
+              ],
+              "text": "This knob matches the antenna to the transmitter's wave. The game names it 'RSI-6K Antenna Control Handle'.",
+              "context": "A meter on the transmitter shows when the tuning is right: the arrow swings fully to the right.",
+              "src": "m1",
+              "page": "169"
+            },
+            {
+              "id": "tx-antenna-lock",
+              "name": "Antenna tuning lock",
+              "type": "switch2",
+              "match": [
+                "pnt_231"
+              ],
+              "positions": [
+                {
+                  "name": "Lock",
+                  "text": "The antenna knob is locked."
+                },
+                {
+                  "name": "Unlock",
+                  "text": "The antenna knob can be turned."
+                }
+              ],
+              "text": "This lock holds the antenna tuning knob in place, so that it cannot shift in strong vibrations.",
+              "context": "The lock is toggled with a mouse click.",
+              "src": "m1",
+              "page": "169"
+            },
+            {
+              "id": "tx-forced",
+              "name": "RSI-6K forced mode switch",
+              "type": "switch2",
+              "match": [
+                "pnt_240"
+              ],
+              "positions": [
+                {
+                  "name": "ON",
+                  "text": "The transmitter sends with increased power."
+                },
+                {
+                  "name": "OFF",
+                  "text": "The transmitter sends with normal power."
+                }
+              ],
+              "text": "This switch makes the radio transmitter send with more power, 8 to 10 watts instead of 6 to 8. This reaches farther.",
+              "context": "The manual recommends the forced mode for emergencies only, because it wears out the transmitter tubes faster.",
+              "src": "m1",
+              "page": "169"
+            },
+            {
+              "id": "rsi-6m1",
+              "name": "RSI-6M1 receiver",
+              "type": "other",
+              "match": [
+                "item:cockpit-back-side:4"
+              ],
+              "text": "This is the box of the radio receiver. It has no knobs of its own; it is tuned from the panel on the left wall.",
+              "context": "It only shows the tuned wave number on a small window.",
+              "src": "m1",
+              "page": "98"
+            },
+            {
+              "id": "first-aid",
+              "name": "First aid kit",
+              "type": "other",
+              "match": [
+                "item:cockpit-back-side:5"
+              ],
+              "text": "The first aid kit is a box behind the seat. The manual says it is not simulated.",
+              "context": "It has no function in DCS, so the pilot can ignore it.",
+              "src": "m1",
+              "page": "98"
+            }
+          ]
+        },
+        {
+          "id": "ventilation",
+          "name": "Ventilation valve",
+          "src": "m1",
+          "page": "122",
+          "text": "This valve lets fresh outside air into the cockpit through a duct to the right of the gunsight.",
+          "context": "The manual says it is helpful at low altitude in hot weather, and in the game to blow out cockpit smoke after a fire.",
+          "controls": [
+            {
+              "id": "vent-valve",
+              "name": "Ventilation valve",
+              "type": "knob",
+              "match": [
+                "pnt_086"
+              ],
+              "text": "Turning this valve opens or closes the supply of fresh air to the cockpit.",
+              "context": "It works up to about 2,000 metres. When the cockpit is pressurized a check valve shuts the line automatically.",
+              "src": "m1",
+              "page": "122"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "hotas",
+      "where": "hotas",
+      "name": "Stick and throttle",
+      "text": "The stick stands between the pilot's knees and the throttle sits on the left wall. The firing buttons are on the stick; the radio and the sight range are on the throttle handle.",
+      "panels": [
+        {
+          "id": "stick",
+          "name": "Control stick",
+          "src": "m1",
+          "page": "48",
+          "text": "The control stick steers the plane up, down, left and right. The buttons on the grip fire the guns, release bombs and open the speed brakes.",
+          "context": "All the weapon buttons are on the stick, but trim is not: the pilot uses small switches on the left wall for that.",
+          "controls": [
+            {
+              "id": "stick-axis",
+              "name": "Flight control stick",
+              "type": "axis",
+              "match": [
+                "control:stick.gimbal"
+              ],
+              "text": "Pushing the stick forward or pulling it back tips the nose down or up. Moving it left or right rolls the plane.",
+              "context": "A hydraulic booster helps move the ailerons. If the booster is switched off, the pilot feels the full air forces in roll.",
+              "src": "m1",
+              "page": "48"
+            },
+            {
+              "id": "stick-n37-cover",
+              "name": "Guns safety cover",
+              "type": "guard",
+              "match": [
+                "pnt_196",
+                "control:stick.guard.n37"
+              ],
+              "text": "This cover protects the fire button of the large N-37D cannon. It is flipped up before the button can be pressed.",
+              "context": "The manual says to uncover it before an attack, which also means the trigger guard is in the armed position.",
+              "src": "m1",
+              "page": "149"
+            },
+            {
+              "id": "stick-n37",
+              "name": "N-37D cannon fire button",
+              "type": "button",
+              "match": [
+                "pnt_193",
+                "control:stick.button.n37"
+              ],
+              "text": "Pressing this button on the top of the grip fires the 37 millimetre N-37D cannon.",
+              "context": "The cannon needs power from the N-37 switch on the right panel and a loaded gun.",
+              "src": "m1",
+              "page": "48"
+            },
+            {
+              "id": "stick-nr23",
+              "name": "NR-23 cannon fire button (trigger)",
+              "type": "trigger",
+              "match": [
+                "control:stick.trigger"
+              ],
+              "text": "This trigger on the front of the grip fires the two 23 millimetre NR-23 cannons.",
+              "context": "The gun camera records while either gun button is pressed.",
+              "src": "m1",
+              "page": "48"
+            },
+            {
+              "id": "stick-airbrake",
+              "name": "Speed brake extension button",
+              "type": "button",
+              "match": [
+                "pnt_198",
+                "control:stick.button.airbrake"
+              ],
+              "text": "While this button is held, the speed brakes are open. Speed brakes are flaps that open into the wind to slow the plane down.",
+              "context": "Releasing the button lets them close again. For longer use there is a switch on the left wall.",
+              "src": "m1",
+              "page": "48"
+            },
+            {
+              "id": "stick-release",
+              "name": "Bomb and fuel tank release button",
+              "type": "button",
+              "match": [
+                "pnt_195",
+                "control:stick.weapon_release"
+              ],
+              "text": "Pressing this button drops the bombs or the drop tanks in the normal (tactical) way. It may have a safety cap.",
+              "context": "The bomb arming switch on the armament panel decides whether the bombs are armed when they fall.",
+              "src": "m1",
+              "page": "48"
+            },
+            {
+              "id": "stick-brake",
+              "name": "Brake control lever",
+              "type": "lever",
+              "match": [
+                "control:stick.lever.brake"
+              ],
+              "text": "This lever on the rear of the grip brakes the wheels. The harder it is pulled, the stronger the braking.",
+              "context": "The pedals give different braking on each side. The brakes work with compressed air.",
+              "src": "m1",
+              "page": "126"
+            }
+          ]
+        },
+        {
+          "id": "throttle",
+          "name": "Throttle handle",
+          "src": "m1",
+          "text": "The throttle handle on the left wall controls the engine power. It carries the start button, the radio button and the sight range grip.",
+          "context": "The shut-off lever on the throttle console is used with the throttle to start and stop the engine.",
+          "controls": [
+            {
+              "id": "throttle-axis",
+              "name": "Engine throttle",
+              "type": "axis",
+              "match": [
+                "control:throttle.axis.main",
+                "item:throttle-console:2"
+              ],
+              "text": "Pushing this lever forward gives the engine more thrust, pulling it back gives less. The handle can also be twisted to set the gunsight range.",
+              "context": "The manual says never to move the throttle faster than about 1.5 seconds for its full range, so the engine does not choke.",
+              "src": "m1",
+              "page": "88"
+            },
+            {
+              "id": "start-cover",
+              "name": "Engine start button cover (throttle)",
+              "type": "guard",
+              "match": [
+                "pnt_214",
+                "control:throttle.guard.start"
+              ],
+              "text": "This cover on the throttle handle protects the engine start button. It is flipped open before starting.",
+              "context": "In the start-up checklist the cover is opened before the start button is pressed.",
+              "src": "m1",
+              "page": "194"
+            },
+            {
+              "id": "start-button",
+              "name": "Engine start button (throttle)",
+              "type": "button",
+              "match": [
+                "pnt_200",
+                "control:throttle.button.start",
+                "item:throttle-console:3"
+              ],
+              "text": "Pressing this button on the throttle handle for 1 to 2 seconds starts the engine's start sequence.",
+              "context": "The throttle must be fully back. The manual says that with a shorter press the engine will not start.",
+              "src": "m1",
+              "page": "194"
+            },
+            {
+              "id": "sight-range-lock",
+              "name": "Gunsight range twist lock",
+              "type": "lever",
+              "match": [
+                "control:throttle.lock.range"
+              ],
+              "text": "This lock on the throttle handle holds the range twist grip in place or frees it.",
+              "context": "The twist grip sets the target distance in the gunsight.",
+              "src": "m1",
+              "page": "50"
+            },
+            {
+              "id": "sight-range-twist",
+              "name": "Gunsight target distance knob (twist grip)",
+              "type": "knob",
+              "match": [
+                "pnt_201",
+                "control:throttle.twist.range"
+              ],
+              "text": "Twisting the throttle handle changes the size of the ring of diamonds in the sight. The pilot adjusts it until the ring just frames the target.",
+              "context": "The size of the ring tells the sight how far away the target is, so it can aim the guns ahead of it.",
+              "src": "m1",
+              "page": "145"
+            },
+            {
+              "id": "mic-button",
+              "name": "Microphone button",
+              "type": "button",
+              "match": [
+                "pnt_202",
+                "control:throttle.hat.mic",
+                "item:throttle-console:9"
+              ],
+              "text": "Hold this button on the throttle handle to talk on the radio. It is the push-to-talk button of the RSI-6K transmitter.",
+              "context": "While it is held, the radio works as a transmitter. Releasing it lets the pilot listen again.",
+              "src": "m1",
+              "page": "89"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

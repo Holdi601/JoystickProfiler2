@@ -466,7 +466,7 @@ engine profile save "C:\profiles\my_setup.pr0file"
   engine relations auto-assign [--grip <device|VID:PID>=<grip id>]... [--add-device <catalog id>]... [--ignore-device <device>]... [--relation <name>]... [--max-modifiers 0|1|2] [--overwrite [--include-missing]] [--no-style] [--explain <relation>]... [--dry-run]
   engine devices kb [list [query] | show <id> | identify [--grip <device>=<grip id>]... [--add-device <id>]...]   (device catalog for Auto Assign)
   engine devices reference [list [query] | identify --vidpid <VID:PID> --name <HID name> [--instance <name>] [--buttons <n>] [--hats <n>] [--axes X,Y,RZ] | show <id> [--base <id>] [--svg <file>] [--light] [--no-badges] | check [query] | photos [query] [--coverage] | photo-add --model <id> --url <https photo on the maker's host> --view <front|side|back|top|base|three-quarter|sheet> [--page <url>] [--confidence <c>] [--shows a,b] [--sha256 <hex>] | layout-check | drawings [query] [--check] [--model <id> [--view <v>] --svg <file> | --png <file>] [--light] [--drawing-style lines|cel] [--drawing-preset <p>]]   (device reference pictures: catalog, identification and the question to ask, JoyPro's schematic with markers, photo references, curated marker positions, JoyPro's own drawings of the devices)
-  engine cockpits [list [query] [--game G] [--era E] [--role R] [--nation N] [--category fixed-wing|helicopter|space|fiction|real] | search <text> [--limit n] | get <aircraft> [<variant>] [--json] | check | render <aircraft> [<variant>] --png <file> [--device <d>] [--style dark|light] [--print-width <px>] [--drawing-only] | compare <aircraft> [<variant>] [--game G] | photos [query] [--coverage] | coverage | drawings | pictures build [--game DCS|XPlane12|MSFS2020|IL2Game|NuclearOption|all] [--aircraft <name>,...] [--force] [--out <folder>] | pictures status]
+  engine cockpits [list [query] [--game G] [--era E] [--role R] [--nation N] [--category fixed-wing|helicopter|space|fiction|real] | search <text> [--limit n] | get <aircraft> [<variant>] [--json] | check | render <aircraft> [<variant>] --png <file> [--device <d>] [--style dark|light] [--print-width <px>] [--drawing-only] | compare <aircraft> [<variant>] [--game G] | photos [query] [--coverage] | coverage | drawings | pictures build [--game DCS|XPlane12|MSFS2020|IL2Game|NuclearOption|all] [--aircraft <name>,...] [--force] [--out <folder>] | pictures status | pictures check [--game G] [--aircraft <name>,...] [--write] [--drop]]
   engine binds list [filter]
   engine binds show <bind-or-relation>
   engine binds set <bind-or-relation> [--device <name>] [--input <value>] [--format dcs|il2] [--modifier <name>] [--clear-modifiers] [--clear-input] [--inverted true|false] [--slider true|false] [--curvature <csv>] [--deadzone <value>] [--saturation-x <value>] [--saturation-y <value>] [--double-tap true|false]
@@ -5929,7 +5929,7 @@ Examples:
 engine --help
 ```
 
-### `engine cockpits [list [query] [--game G] [--era E] [--role R] [--nation N] [--category fixed-wing|helicopter|space|fiction|real] | search <text> [--limit n] | get <aircraft> [<variant>] [--json] | check | render <aircraft> [<variant>] --png <file> [--device <d>] [--style dark|light] [--print-width <px>] [--drawing-only] | compare <aircraft> [<variant>] [--game G] | photos [query] [--coverage] | coverage | drawings | pictures build [--game DCS|XPlane12|MSFS2020|IL2Game|NuclearOption|all] [--aircraft <name>,...] [--force] [--out <folder>] | pictures status]`
+### `engine cockpits [list [query] [--game G] [--era E] [--role R] [--nation N] [--category fixed-wing|helicopter|space|fiction|real] | search <text> [--limit n] | get <aircraft> [<variant>] [--json] | check | render <aircraft> [<variant>] --png <file> [--device <d>] [--style dark|light] [--print-width <px>] [--drawing-only] | compare <aircraft> [<variant>] [--game G] | photos [query] [--coverage] | coverage | drawings | pictures build [--game DCS|XPlane12|MSFS2020|IL2Game|NuclearOption|all] [--aircraft <name>,...] [--force] [--out <folder>] | pictures status | pictures check [--game G] [--aircraft <name>,...] [--write] [--drop]]`
 What it does: Runs this command operation.
 
 Arguments and example values:
@@ -5957,6 +5957,8 @@ Arguments and example values:
 - `--force`: Command argument. See examples for typical values.
 - `--out`: Global option: write result output to file path instead of terminal.
 - `<folder>`: Command argument. See examples for typical values.
+- `--write`: Command argument. See examples for typical values.
+- `--drop`: Command argument. See examples for typical values.
 
 Examples:
 ```powershell

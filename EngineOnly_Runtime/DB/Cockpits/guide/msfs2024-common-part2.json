@@ -1,0 +1,687 @@
+{
+  "format": "joypro-cockpit-guide",
+  "version": 1,
+  "id": "msfs2024-common-part2",
+  "partOf": "msfs2024-common",
+  "areas": [
+    {
+      "id": "radios",
+      "where": "center-pedestal",
+      "name": "Radios and transponder",
+      "text": "These controls are for talking to air traffic control and other aircraft, for tuning navigation radios and for the transponder. Small planes have one small radio stack; airliners have separate panels for each.",
+      "panels": [
+        {
+          "id": "com-radios",
+          "name": "COM radios (voice radios)",
+          "text": "COM radios are the voice radios. The pilot tunes a frequency, the radio's 'station number', and talks to the tower or other aircraft.",
+          "context": "The pilot tunes the tower frequency before take-off and changes it as the flight goes on. Most aircraft have two COM radios, called COM1 and COM2.",
+          "src": "g1",
+          "controls": [
+            {
+              "id": "com-volume",
+              "name": "COM volume knob(s)",
+              "type": "knob",
+              "match": [
+                "NAVCOM_COM?_VOLUME",
+                "RADIO_COM_VOLUME*",
+                "RADIO_POWER_VOLUME",
+                "RADIO_PILOT_VOLUME",
+                "RADIO_COPILOT_VOLUME",
+                "NAVCOM_PILOT_VOLUME",
+                "NAVCOM_AUDIO_PILOT_VOLUME"
+              ],
+              "text": "This knob sets how loud the radio is in the headset. In many aircraft, turning it on also switches the radio on.",
+              "context": "The pilot sets it so that voices are clear. If it is turned fully down, the pilot hears nothing from that radio."
+            },
+            {
+              "id": "com-swap",
+              "name": "COM swap button(s)",
+              "type": "button",
+              "match": [
+                "NAVCOM_COM?_SWAP",
+                "RADIO_COM_SWAP",
+                "RADIO_COM_NAV_SWAP",
+                "RADIO_FREQUENCY_SWAP_*",
+                "HANDLING_RADIO_COM?_SWAP",
+                "HANDLING_RADIO_NAV?_SWAP"
+              ],
+              "text": "A radio keeps two frequencies: the active one it is using and a standby one it will use next. This button swaps them.",
+              "context": "The pilot types the next frequency in as standby and swaps it in when needed, for example when the tower hands the aircraft to another station."
+            },
+            {
+              "id": "com-freq",
+              "name": "COM frequency knobs (MHz and kHz)",
+              "type": "knob",
+              "match": [
+                "NAVCOM_COM?_MHZ",
+                "NAVCOM_COM?_KHZ",
+                "RADIO_FREQUENCY_MHZ",
+                "RADIO_FREQUENCY_KHZ",
+                "RADIO_FREQUENCY_MHZ_*",
+                "RADIO_FREQUENCY_KHZ_*",
+                "RADIO_COM_?"
+              ],
+              "text": "These knobs set the frequency of the radio. One knob changes the whole megahertz part (the number before the dot), the other the smaller kilohertz part (after the dot).",
+              "context": "Air traffic control gives a frequency like 118.30. The pilot turns the two knobs until the display shows it."
+            },
+            {
+              "id": "com-test",
+              "name": "COM test button(s)",
+              "type": "button",
+              "match": [
+                "NAVCOM_COM?_TEST",
+                "NAVCOM_NAV?_TEST",
+                "RADIO_PANEL_VHF_TEST_*",
+                "NAV_PANEL_NAV_TEST_*",
+                "ADF_PANEL_ADF_TEST_*"
+              ],
+              "text": "A test button checks the radio. Pressed, it makes the radio play a test tone or show a test display, so the pilot knows that it works.",
+              "context": "The pilot uses it during the checks before flight."
+            },
+            {
+              "id": "com-transmit",
+              "name": "COM transmit / push-to-talk",
+              "type": "button",
+              "match": [
+                "NAVCOM_COM?_TRANSMIT",
+                "NAVCOM_AUDIO_TRANSMIT",
+                "RADIO_PUSH_TO_TALK*",
+                "RADIO_PTT_*",
+                "HANDLING_PTT_*",
+                "COM_PANEL_PTT_*",
+                "AUDIO_*MICRO*",
+                "COM_PANEL_MIC_SELECT_*"
+              ],
+              "text": "A push-to-talk button opens the microphone while it is held. A microphone selector chooses which radio the voice goes out on.",
+              "context": "A pilot holds the push-to-talk button when speaking on the radio and lets go to listen."
+            },
+            {
+              "id": "com-panel",
+              "name": "Radio panel (receivers and tuning)",
+              "type": "button",
+              "match": [
+                "COM_PANEL_*",
+                "RADIO_PANEL_*",
+                "RADIO_#",
+                "RADIO_?",
+                "RADIO_VHF*",
+                "RADIO_HF*",
+                "INSTRUMENT_ACD_*"
+              ],
+              "text": "These controls belong to the radio panel of larger aircraft: choosing which radios the pilot listens to, tuning VHF, HF or satellite radios, and sensitivity.",
+              "context": "Airliners have several radios and the pilot or the first officer picks and listens to the ones they need."
+            },
+            {
+              "id": "nav-radio-misc",
+              "name": "NAV radio controls",
+              "type": "knob",
+              "match": [
+                "NAVCOM_NAV?_*",
+                "NAV_PANEL_*",
+                "RADIO_NAV*",
+                "NAVCOM_NAV_*"
+              ],
+              "text": "NAV radios receive signals from beacons on the ground that tell the aircraft its direction to them. These controls set the frequency, swap it, set the volume or test the radio.",
+              "context": "The pilot tunes them to the beacon of the route or of the runway to be landed on. Most aircraft have two, NAV1 and NAV2."
+            },
+            {
+              "id": "adf-radio",
+              "name": "ADF radio (direction finder)",
+              "type": "knob",
+              "match": [
+                "NAVCOM_ADF*",
+                "RADIO_ADF*",
+                "ADF_*",
+                "INSTRUMENT_ADF*",
+                "NAVCOM_ADF_*"
+              ],
+              "text": "The ADF is an old radio that points to a ground transmitter called an NDB. These controls tune it, set its volume or modes.",
+              "context": "The needle of its instrument shows the direction of the transmitter. It is seldom used today but is found in many older and simulated aircraft."
+            }
+          ]
+        },
+        {
+          "id": "transponder",
+          "name": "Transponder",
+          "text": "The transponder is a radio box that answers the questions of air traffic control radars with a four-digit code, so that the controller sees the aircraft on the screen.",
+          "context": "The pilot sets the code the controller gives. Before take-off it is switched from standby to on, so that the aircraft shows up on radar.",
+          "src": "g1",
+          "controls": [
+            {
+              "id": "xpdr-mode",
+              "name": "Transponder mode (OFF, STBY, ON, ALT)",
+              "type": "selector",
+              "match": [
+                "NAVCOM_TRANSPONDER_MODE",
+                "NAVCOM_TRANSPONDER_FUNC",
+                "NAVCOM_TRANSPONDER_ON",
+                "NAVCOM_TRANSPONDER_OFF",
+                "NAVCOM_TRANSPONDER_ALT",
+                "NAVCOM_TRANSPONDER_STBY",
+                "XPDR_PANEL_XPDR_MODE",
+                "XPDR_PANEL_XPDR_OPERATING_MODE",
+                "XPDR_PANEL_SYS_SELEC",
+                "XPDR_PANEL_ALT_SOURCE",
+                "XPDR_PANEL_ORIENTATION",
+                "INSTRUMENT_TRANSPONDER_*"
+              ],
+              "text": "This control sets what the transponder does: off, standby (ready but silent), on, or with height reporting. In the ALT position it also sends the aircraft's height.",
+              "context": "The pilot has it in standby on the ground and switches it on or to ALT for the flight. The names of the events here show the mode they set."
+            },
+            {
+              "id": "xpdr-code",
+              "name": "Transponder code digits",
+              "type": "keypad",
+              "match": [
+                "NAVCOM_TRANSPONDER_CODE*",
+                "NAVCOM_TRANSPONDER_?",
+                "RADIO_TRANSPONDER_CODE_*",
+                "XPDR_PANEL_XPDR_?"
+              ],
+              "text": "These controls type or turn the four digits of the code. The code is a number that air traffic control gives to the pilot.",
+              "context": "The pilot sets the code when told by the controller. Some code numbers have special meanings, such as for emergencies, so the pilot only sets them when told."
+            },
+            {
+              "id": "xpdr-keys",
+              "name": "Transponder keys (IDENT, VFR, CLR, ENTER)",
+              "type": "button",
+              "match": [
+                "NAVCOM_TRANSPONDER_IDT",
+                "NAVCOM_TRANSPONDER_IDENTIFY",
+                "NAVCOM_TRANSPONDER_VFR",
+                "NAVCOM_TRANSPONDER_CLR",
+                "NAVCOM_TRANSPONDER_ENTER",
+                "NAVCOM_TRANSPONDER_CRSR",
+                "NAVCOM_TRANSPONDER_STARTSTOP",
+                "XPDR_PANEL_*",
+                "NAVCOM_TRANSPONDER_*",
+                "RADIO_TRANSPONDER_*"
+              ],
+              "text": "IDT is short for IDENT: pressed, it makes the aircraft's signal stand out on the controller's screen for a short time. VFR sets the standard code for flying by sight. CLR clears the digits typed, ENTER confirms them.",
+              "context": "The pilot presses IDENT only when the controller asks for it. The other keys are used when setting a new code."
+            }
+          ]
+        },
+        {
+          "id": "audio-panel",
+          "name": "Audio panel and intercom",
+          "text": "The audio panel chooses which radios the pilot hears and which radio the voice is sent on. The intercom is the phone line between the people in the aircraft.",
+          "context": "On big aircraft each pilot has an audio panel. In small planes it is one panel with a button per radio.",
+          "src": "g1",
+          "controls": [
+            {
+              "id": "audio-select",
+              "name": "Receiver and speaker buttons",
+              "type": "button",
+              "match": [
+                "NAVCOM_AUDIO_COM?_RECEIVE",
+                "NAVCOM_AUDIO_NAV?_RECEIVE",
+                "NAVCOM_AUDIO_SPEAKER",
+                "NAVCOM_AUDIO_AUX",
+                "NAVCOM_AUDIO_DME*",
+                "NAVCOM_AUDIO_ADF*",
+                "NAVCOM_AUDIO_MARKER*",
+                "NAVCOM_MARKER*",
+                "NAVCOM_SPEAKER",
+                "NAVCOM_NAV?_SOUND",
+                "NAVCOM_ADF?_SOUND",
+                "AUDIO_*",
+                "INSTRUMENT_ACP_*",
+                "RADIO_SPEAKER*",
+                "RADIO_DME",
+                "RADIO_ADF",
+                "RADIO_MKR",
+                "RADIO_IDENT",
+                "NAVCOM_AUDIO_*"
+              ],
+              "text": "Each button switches the sound of one receiver on or off in the headset: a COM radio, a NAV radio, the DME (distance measuring), the ADF, the marker beacons or the cabin speaker.",
+              "context": "The pilot picks the radios to listen to. A marker beacon receiver gives a beep when the aircraft flies over a marker on the approach path to a runway."
+            },
+            {
+              "id": "intercom",
+              "name": "Intercom (ICS)",
+              "type": "button",
+              "match": [
+                "NAVCOM_AUDIO_INTERCOM",
+                "NAVCOM_AUDIO_ICS",
+                "RADIO_ICS",
+                "RADIO_ICS_*",
+                "RADIO_INTERCOM",
+                "INSTRUMENT_MIC*",
+                "INSTRUMENT_MUS*",
+                "RADIO_MUSIC_VOLUME"
+              ],
+              "text": "The intercom is the phone line between the pilot and passengers or crew. These controls switch it on, set its volume or the music input.",
+              "context": "It lets the people in a noisy aircraft talk to each other through the headsets."
+            }
+          ]
+        },
+        {
+          "id": "gps-comnav",
+          "name": "GPS units with radios (GNS 430 and GNS 530 type)",
+          "text": "These are small units that combine a GPS navigation computer with a COM and a NAV radio, with buttons and knobs on their face. The events are named AS430 and AS530, after the two unit sizes.",
+          "context": "The pilot enters a route, picks direct-to, shows the map and tunes the radios on one unit. Most small aircraft with such a unit have one or two.",
+          "src": "g1",
+          "controls": [
+            {
+              "id": "gns-freq",
+              "name": "GPS unit frequency knobs and swap",
+              "type": "knob",
+              "match": [
+                "AS430_*COM_VLOC_*",
+                "AS530_*COM_VLOC_*",
+                "AS430_*COMSWAP",
+                "AS530_*COMSWAP",
+                "AS430_*NAVSWAP",
+                "AS530_*NAVSWAP",
+                "AS430_*VOLUME",
+                "AS530_*VOLUME",
+                "AS430_*TEST",
+                "AS530_*TEST"
+              ],
+              "text": "These controls tune the radios in the GPS unit. Knobs set the frequency, the swap button exchanges the standby and active frequency, volume knobs set loudness and test buttons check the radio.",
+              "context": "COM is the voice radio; NAV (also called VLOC) receives navigation beacons. The pilot tunes a standby frequency and then swaps it in."
+            },
+            {
+              "id": "gns-knobs",
+              "name": "GPS unit page knobs (inner and outer)",
+              "type": "knob",
+              "match": [
+                "AS430_*GPS_INNER",
+                "AS430_*GPS_OUTER",
+                "AS530_*GPS_INNER",
+                "AS530_*GPS_OUTER",
+                "AS430_*RANGE*",
+                "AS530_*RANGE*",
+                "INSTRUMENT_RANGE_ZOOM_*",
+                "AS430_*CRSR",
+                "AS530_*CRSR",
+                "AS430_*C_V*",
+                "AS530_*C_V*"
+              ],
+              "text": "The big double knob of a GPS unit changes pages (outer ring) and selects things on a page (inner ring). Pushing the inner knob switches the cursor on. The range button or knob zooms the map.",
+              "context": "The pilot uses them for almost everything on the unit: looking through the pages, entering letters of a place and zooming the map."
+            },
+            {
+              "id": "gns-keys",
+              "name": "GPS unit buttons (ENT, MENU, FPL, CLR, MSG ...)",
+              "type": "button",
+              "match": [
+                "AS430_*",
+                "AS530_*"
+              ],
+              "text": "These are the buttons of a GPS unit. ENT confirms, MENU opens a menu, FPL shows the flight plan, DIRECT-TO steers straight to a point, CLR clears or goes back, MSG shows messages, CDI switches which navigation source steers the course needle, OBS sets the course and PROC lists approach procedures.",
+              "context": "Pilots enter the flight plan before a flight. In flight they use the unit to see where they are and where to turn."
+            }
+          ]
+        },
+        {
+          "id": "g1000",
+          "name": "Glass cockpit with PFD and MFD (G1000 type)",
+          "text": "A glass cockpit replaces round gauges with large screens: the PFD (the main flight display) and the MFD (the multi-function display, with map and engine data). Buttons and knobs sit around the screens.",
+          "context": "The buttons below a screen are called softkeys: each one does what the word on the screen above it says, so its function changes with the page. The events are named AS1000.",
+          "src": "g1",
+          "controls": [
+            {
+              "id": "g1k-softkeys",
+              "name": "Softkeys and range controls",
+              "type": "button",
+              "match": [
+                "AS1000_*_SOFTKEY_*",
+                "AS1000_*SOFTKEY*",
+                "INSTRUMENT_MFD_*_SOFTKEY*",
+                "INSTRUMENT_PFD_*_SOFTKEY*",
+                "INSTRUMENT_SOFTKEYS_*",
+                "AS1000_*RANGE*",
+                "AS1000_FUNCTION_*",
+                "INSTRUMENT_EIS_PUSH_*",
+                "INSTRUMENT_PFDCTRL_*"
+              ],
+              "text": "The row of buttons along the bottom edge of the screen. Each button does what the label on the screen above it says. The range controls zoom the map.",
+              "context": "The pilot changes screen pages, switches things on the display and chooses map layers with them."
+            },
+            {
+              "id": "g1k-audio",
+              "name": "Audio panel buttons",
+              "type": "button",
+              "match": [
+                "AS1000_*_MIDCOM",
+                "AS1000_AS1000_COM_SWITCH*"
+              ],
+              "text": "These buttons belong to the audio panel in the middle of the unit. They select which radios the pilot listens to and talks on, the speaker, the intercom and the marker beacon sound.",
+              "context": "A MIDCOM is the audio panel that sits between the two screens. The pilot keeps the radio they use on."
+            },
+            {
+              "id": "g1k-ap",
+              "name": "Autopilot keys on the screen unit",
+              "type": "button",
+              "match": [
+                "AS1000_AUTOPILOT_*",
+                "AS1000_ALTITUDE_*",
+                "AS1000_HEADING_*",
+                "AS1000_*_AUTOPILOT_*",
+                "AS1000_MFD_?_AP_*",
+                "AS1000_MFD_?_ALTITUDE*",
+                "AS1000_MFD_?_APPROACH*",
+                "AS1000_MFD_?_BACKCOURSE*",
+                "AS1000_MFD_?_FD_*",
+                "AS1000_MFD_?_FLC*",
+                "AS1000_MFD_?_HEADING*",
+                "AS1000_MFD_?_NAV_MODE",
+                "AS1000_MFD_?_VNAV*",
+                "AS1000_MFD_?_VS_*"
+              ],
+              "text": "These buttons and knobs set up the autopilot: AP switches it on, HDG holds a heading, ALT holds a height, NAV follows a route, APR flies an approach, VS holds a climb or sink rate and the knobs set the heading and the altitude.",
+              "context": "The autopilot is the system that can hold the plane's height, heading or path. These keys are on the screen unit, not on a separate panel."
+            },
+            {
+              "id": "g1k-radio",
+              "name": "Radio and navigation knobs",
+              "type": "knob",
+              "match": [
+                "AS1000_COM_*",
+                "AS1000_NAV_*",
+                "AS1000_BARO_*",
+                "AS1000_COURSE_*",
+                "AS1000_MFD_?_COM*",
+                "AS1000_MFD_?_NAV_*",
+                "AS1000_MFD_?_BARO",
+                "AS1000_MFD_?_COURSE*"
+              ],
+              "text": "These knobs on the screen unit tune the COM and NAV radios, set their volume, swap standby and active frequencies, set the air pressure for the altimeter and set the course.",
+              "context": "Each knob has a push function and a turn function, often with a big and a small ring for the large and the small part of the number."
+            },
+            {
+              "id": "g1k-fms",
+              "name": "FMS keys and knobs",
+              "type": "button",
+              "match": [
+                "AS1000_*"
+              ],
+              "text": "These are the keys and knobs of the flight management system, the built-in route computer: ENT confirms, MENU opens a menu, FPL shows the flight plan, DIRECT-TO steers straight to a point, CLR clears, PROC lists procedures and the big FMS knob changes pages.",
+              "context": "The pilot enters the route here before flight and uses it in flight to see the way."
+            },
+            {
+              "id": "g3000-keys",
+              "name": "G3000-type touch controller and keys",
+              "type": "button",
+              "match": [
+                "AS3000_*",
+                "INSTRUMENT_TSC_*"
+              ],
+              "text": "These controls belong to a large glass cockpit with a touch screen controller (named AS3000). They have softkeys for pages, knobs for frequencies and the multifunction knob, and buttons for lower and upper display pages.",
+              "context": "The pilot uses the touch controller in the middle for radios and route, and the keys for pages on the large displays."
+            },
+            {
+              "id": "gtn-touch",
+              "name": "Touch unit knobs and keys (GTN type)",
+              "type": "button",
+              "match": [
+                "AS3X_*",
+                "AS650_*",
+                "AS5_*",
+                "AS510_*",
+                "AS_VIGILUS_*"
+              ],
+              "text": "These are the knobs and keys beside a touch screen navigation unit. The knobs change frequencies and pages; the keys such as DIRECT-TO, MENU and BACK jump to common screens.",
+              "context": "The pilot does most of the work on the touch screen. The knobs are for quick changes."
+            },
+            {
+              "id": "small-radio-units",
+              "name": "Other radio units (frequency, volume, swap, test)",
+              "type": "knob",
+              "match": [
+                "AS196_*",
+                "AS87_*",
+                "AS_??_*",
+                "AS8030_*"
+              ],
+              "text": "These are the knobs and buttons of a smaller radio or transponder unit: set the frequency or code, change the volume, swap the standby frequency, test the unit or confirm an entry.",
+              "context": "Older and simpler aircraft use such units for their voice radio."
+            }
+          ]
+        },
+        {
+          "id": "radio-unit-keys",
+          "name": "Panel radio with keys (COM unit)",
+          "text": "A panel radio is a small box with a display and a few keys for the voice radio. The keys are named after what is printed on them.",
+          "context": "The pilot types or turns in the frequency and uses the keys to store or recall frequencies. Several small aircraft have such a radio.",
+          "src": "g1",
+          "controls": [
+            {
+              "id": "radio-keys",
+              "name": "Radio keys (ENT, CLR, FUNC, MEM, MON, COM)",
+              "type": "button",
+              "match": [
+                "RADIO_CLR",
+                "RADIO_COM",
+                "RADIO_ENT",
+                "RADIO_FUNC",
+                "RADIO_MEM",
+                "RADIO_MON",
+                "RADIO_KNOB_PUSH_SQ",
+                "RADIO_KNOB_*",
+                "NAVCOM_AS_*",
+                "NAVCOM_SQUELCH_*",
+                "NAVCOM_DME?_SOUND",
+                "AS_21_*",
+                "NAVCOM_DME*"
+              ],
+              "text": "These are the keys and knobs of a panel radio. ENT confirms a typed number, CLR clears it, FUNC changes what the display shows or sets, MEM works with stored frequencies and MON is the monitor key. Pushing the knob can switch the squelch (it cuts the hiss of the radio when nobody talks).",
+              "context": "The names are the printed key names. What a key does in detail depends on the radio of the aircraft."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "autopilot",
+      "where": "glareshield",
+      "name": "Navigation and autopilot",
+      "text": "The autopilot is the system that can hold the plane's height, heading or path so the pilot does not have to. Its panel sits in the middle under the windscreen. These controls choose what it holds and set the numbers.",
+      "panels": [
+        {
+          "id": "ap-panel",
+          "name": "Autopilot panel (modes)",
+          "text": "Buttons that switch the autopilot on and choose its job: hold a heading, hold a height, follow a radio course, fly an approach or climb at a steady rate.",
+          "context": "The pilot first sets the target numbers (heading, height) and then presses the mode button. Pressing it again usually switches the mode off.",
+          "src": "g1",
+          "controls": [
+            {
+              "id": "ap-master",
+              "name": "Autopilot master / engage and disconnect",
+              "type": "button",
+              "match": [
+                "AUTOPILOT_AP_?",
+                "AUTOPILOT_AP_MASTER",
+                "AUTOPILOT_AUTOPILOT",
+                "AUTOPILOT_AUTOPILOT_ENGAGE_*",
+                "AUTOPILOT_AP_DISCONNECT_*",
+                "AUTOPILOT_YOKE_AUTOPILOT_DISCONNECT_*",
+                "HANDLING_AP_DISCONNECT_*",
+                "HANDLING_ROLL_PITCH_AP_DISENGAGE",
+                "AS1000_*AP*"
+              ],
+              "text": "This button switches the autopilot on. A disconnect button on the yoke or stick switches it off at once, so the pilot flies by hand again.",
+              "context": "The pilot switches it on after take-off and off before the landing. If the autopilot does something unexpected, the pilot presses disconnect."
+            },
+            {
+              "id": "ap-heading",
+              "name": "Heading mode and heading knob",
+              "type": "knob",
+              "match": [
+                "AUTOPILOT_HEADING",
+                "AUTOPILOT_HEADING_MODE",
+                "AUTOPILOT_HEADING_SYNC",
+                "AUTOPILOT_HEADING_SELECTOR"
+              ],
+              "text": "The heading is the compass direction the aircraft points to. The knob sets the target heading (the heading bug), the mode button tells the autopilot to turn the aircraft to it, and SYNC sets the bug to the present heading.",
+              "context": "The pilot uses it to follow the directions of air traffic control, such as 'turn right heading 090'."
+            },
+            {
+              "id": "ap-altitude",
+              "name": "Altitude hold and altitude setting",
+              "type": "knob",
+              "match": [
+                "AUTOPILOT_ALTITUDE",
+                "AUTOPILOT_ALTITUDE_*",
+                "AUTOPILOT_ALTITUDE_BUTTON",
+                "AUTOPILOT_ALTITUDE_SYNC",
+                "AUTOPILOT_ALTITUDE_HOLD",
+                "AUTOPILOT_ALTITUDE_MODE",
+                "AUTOPILOT_ALTITUDE_SELECTOR",
+                "AS1000_*ALTITUDE*"
+              ],
+              "text": "The altitude knob sets the height the autopilot should reach, and the altitude button makes it hold the present height or climb to the set one.",
+              "context": "The pilot sets the height that air traffic control has given. The autopilot then levels off by itself."
+            },
+            {
+              "id": "ap-vs",
+              "name": "Vertical speed mode",
+              "type": "button",
+              "match": [
+                "AUTOPILOT_VS_MODE",
+                "AUTOPILOT_VS_SELECTOR",
+                "AUTOPILOT_VERTICALSPEED",
+                "AUTOPILOT_VERTICALSPEED_*"
+              ],
+              "text": "Vertical speed is how fast the aircraft climbs or sinks. This control makes the autopilot climb or sink at a steady rate, and the wheel or buttons change the rate.",
+              "context": "Pilots use it for a steady climb or descent to a given height."
+            },
+            {
+              "id": "ap-flc",
+              "name": "Flight level change / speed",
+              "type": "button",
+              "match": [
+                "AUTOPILOT_FLC_BUTTON",
+                "AUTOPILOT_SPEED",
+                "AUTOPILOT_SPEED_*",
+                "AUTOPILOT_SPEEDMACH_MODE",
+                "AUTOPILOT_SPEEDTOGGLE_MODE",
+                "AUTOPILOT_IAS*",
+                "AUTOPILOT_AUTOTHROTTLE_*",
+                "ENGINE_AT_*",
+                "AIRLINER_SPDMACH"
+              ],
+              "text": "Flight level change makes the autopilot climb or descend to the set height while holding a set speed. The speed controls set the target speed, and the automatic throttle moves the power levers itself.",
+              "context": "Airliners use it to fly climbs and descents. The speed can be shown in knots or as a Mach number (a fraction of the speed of sound)."
+            },
+            {
+              "id": "ap-nav",
+              "name": "NAV, approach, localizer and VNAV modes",
+              "type": "button",
+              "match": [
+                "AUTOPILOT_NAV_MODE",
+                "AUTOPILOT_NAVIGATION",
+                "AUTOPILOT_LNAV_MODE",
+                "AUTOPILOT_VNAV_MODE",
+                "AUTOPILOT_APPROACH_BUTTON",
+                "AUTOPILOT_APPROACH_MODE",
+                "AUTOPILOT_APPROACH",
+                "AUTOPILOT_LOCALIZER_BUTTON",
+                "AUTOPILOT_BACKCOURSE_BUTTON",
+                "AUTOPILOT_REV",
+                "AUTOPILOT_TRANSFER_MODE"
+              ],
+              "text": "These buttons make the autopilot follow a radio course or the programmed route (NAV, LNAV), follow the descent path of the route computer (VNAV), or fly the final approach to a runway (APR). Back-course flies an approach from the other end.",
+              "context": "The pilot arms them before the approach. The autopilot then follows the radio beams that lead to the runway (the ILS: radio beams at a runway that guide the plane down to land in bad weather)."
+            },
+            {
+              "id": "ap-level",
+              "name": "Wing leveller / bank / yaw damper",
+              "type": "button",
+              "match": [
+                "AUTOPILOT_LEVEL_MODE",
+                "AUTOPILOT_LVL_MODE",
+                "AUTOPILOT_BANK_BUTTON",
+                "AUTOPILOT_BANK_LIMIT",
+                "AUTOPILOT_YD_BUTTON",
+                "AS1000_*YD*"
+              ],
+              "text": "The wing leveller keeps the wings level. The bank button limits how steeply the autopilot tilts the aircraft in turns. The yaw damper (YD) smooths out sideways swings of the nose.",
+              "context": "These make the ride calm and comfortable for passengers."
+            },
+            {
+              "id": "ap-fd",
+              "name": "Flight director",
+              "type": "button",
+              "match": [
+                "AUTOPILOT_FD_?_MODE",
+                "AUTOPILOT_FLIGHT_DIRECTOR"
+              ],
+              "text": "The flight director shows the pilot, as marks on the attitude display, which way to steer to follow the selected modes. It does not fly the plane; the pilot follows the marks.",
+              "context": "The pilot can fly by hand along the marks, or switch the autopilot on and watch it follow them."
+            },
+            {
+              "id": "ap-course",
+              "name": "Course knob(s) (CRS)",
+              "type": "knob",
+              "match": [
+                "AUTOPILOT_COURSE_*",
+                "AUTOPILOT_COURSE_DYN_*"
+              ],
+              "text": "The course knob sets the course the pilot wants to follow, the direction of a radio beam or of a route leg. The SYNC button sets it to the present value.",
+              "context": "The needle on the instrument shows if the aircraft is left or right of the chosen course."
+            },
+            {
+              "id": "ap-baro",
+              "name": "Barometer setting (BARO)",
+              "type": "knob",
+              "match": [
+                "AUTOPILOT_BARO_*",
+                "AUTOPILOT_CONTROL_PANEL_*_BARO*",
+                "AUTOPILOT_AUTOPILOT_PUSH_STD_*",
+                "AIRLINER_*BARO*",
+                "EFIS_BARO*"
+              ],
+              "text": "This knob sets the air pressure for the altimeter, the height gauge. STD sets the standard pressure for flying high up.",
+              "context": "The pilot sets the local pressure given by the airport. High up, all aircraft use the same standard setting."
+            },
+            {
+              "id": "ap-kap",
+              "name": "Autopilot panel of the KAP type",
+              "type": "button",
+              "match": [
+                "AUTOPILOT_KAP*"
+              ],
+              "text": "These are the buttons and knobs of one type of autopilot panel (named KAP). They are the usual mode keys: AP (on), HDG (heading), NAV, APR (approach), REV (reverse), ALT (altitude), UP and DN (change the vertical rate), BARO and ARM, plus two knobs.",
+              "context": "The pilot sets the heading and the altitude, then presses the mode keys. The exact use depends on the aircraft."
+            }
+          ]
+        },
+        {
+          "id": "fms",
+          "name": "Flight management computer keypad (FMC / CDU)",
+          "text": "A keypad with a small screen where the pilot types the route, performance numbers and more. The screen has line keys at its sides.",
+          "context": "The pilot enters the route and the numbers before flight; during flight the computer uses them to steer the autopilot.",
+          "src": "g1",
+          "controls": [
+            {
+              "id": "fmc-keys",
+              "name": "FMC keyboard and function keys",
+              "type": "keypad",
+              "match": [
+                "FMC_*"
+              ],
+              "text": "These are the letter and number keys, line select keys and page keys of the flight management computer, plus function keys such as EXEC, CLR, DEL and INIT.",
+              "context": "The pilot types a route, checks it on the screen and presses EXEC to accept it."
+            },
+            {
+              "id": "efis-panel",
+              "name": "EFIS control panel",
+              "type": "button",
+              "match": [
+                "EFIS_*",
+                "AIRLINER_EFIS_*",
+                "AIRLINER_CPT_EFIS_*",
+                "AIRLINER_FO_EFIS_*"
+              ],
+              "text": "The EFIS panel chooses what the pilot's screens show: the map range, the type of map data such as waypoints or airports, the air pressure setting and the minimums.",
+              "context": "Each pilot has one. They switch map layers on and off to see what they need."
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

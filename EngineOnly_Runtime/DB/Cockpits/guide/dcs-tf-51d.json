@@ -1,0 +1,262 @@
+{
+  "format": "joypro-cockpit-guide",
+  "version": 1,
+  "id": "dcs-tf-51d",
+  "title": "TF-51D Mustang trainer (DCS)",
+  "inherits": "dcs-p-51d",
+  "remove": [
+    "left-extras/arm-rest"
+  ],
+  "variants": [
+    "tf-51d"
+  ],
+  "games": [
+    "DCS"
+  ],
+  "sets": [
+    "DCS/TF-51D"
+  ],
+  "sources": [
+    {
+      "id": "m1",
+      "title": "DCS P-51D Flight Manual (EN), TF-51D copy",
+      "file": "Mods/aircraft/TF-51D/Doc/DCS P-51D Flight Manual EN.pdf"
+    }
+  ],
+  "intro": "The TF-51D is the two-seat training version of the Mustang. Its cockpit has the same layout as the P-51D: gunsight and gauges in front, engine levers and trim on the left wall, electrics and radios on the right wall. This guide adds only what differs, namely the clickable IFF radio and homing adapter controls on the right console. All other panels are the same as in the P-51D guide.",
+  "areas": [
+    {
+      "id": "right-console",
+      "where": "right-console",
+      "name": "Right console",
+      "text": "The right wall of the cockpit holds the electrical panel, the canopy handles, the oxygen regulator, the recognition light switches and the radios.",
+      "panels": [
+        {
+          "id": "iff",
+          "name": "SCR-695-A IFF radio",
+          "db": "scr-695-a-iff-radio",
+          "src": "m1",
+          "page": "97",
+          "text": "IFF stands for identification friend or foe. This radio answers an automatic call from friendly radars with a coded signal. That way the friend is known. In the TF-51D cockpit of the game, its switches can be clicked.",
+          "context": "The manual belongs to the P-51D and says the IFF set is not operational there. It does not say what the clickable IFF controls of the TF-51D do in the game.",
+          "controls": [
+            {
+              "id": "iff-code",
+              "name": "IFF code selector (CODE 1 to 6)",
+              "type": "selector",
+              "match": [
+                "pnt_139",
+                "pnt_139_*",
+                "item:scr-695-a-iff-radio:1"
+              ],
+              "positions": [
+                {
+                  "name": "CODE 1",
+                  "text": "IFF code 1 is selected."
+                },
+                {
+                  "name": "CODE 2",
+                  "text": "IFF code 2 is selected."
+                },
+                {
+                  "name": "CODE 3",
+                  "text": "IFF code 3 is selected."
+                },
+                {
+                  "name": "CODE 4",
+                  "text": "IFF code 4 is selected."
+                },
+                {
+                  "name": "CODE 5",
+                  "text": "IFF code 5 is selected."
+                },
+                {
+                  "name": "CODE 6",
+                  "text": "IFF code 6 is selected."
+                }
+              ],
+              "text": "This switch picks one of six codes that the IFF set answers with. The game names it 'IFF Code Selector' and its positions 'IFF CODE 1' to 'IFF CODE 6'.",
+              "context": "Friendly forces would agree on the code in advance. The manual mentions six code settings and gives no further detail.",
+              "src": "m1",
+              "page": "97"
+            },
+            {
+              "id": "iff-emergency",
+              "name": "IFF emergency (distress signal) switch",
+              "type": "switch2",
+              "match": [
+                "pnt_143",
+                "pnt_143_*",
+                "item:scr-695-a-iff-radio:2"
+              ],
+              "positions": [
+                {
+                  "name": "ON",
+                  "text": "The IFF set transmits the distress signal."
+                },
+                {
+                  "name": "OFF",
+                  "text": "No distress signal is sent."
+                }
+              ],
+              "text": "This switch sends a distress signal with the IFF set. The game names it 'IFF Distress Signal'.",
+              "context": "It is meant for an emergency. The manual says the emergency switch is for transmitting a distress signal.",
+              "src": "m1",
+              "page": "97"
+            },
+            {
+              "id": "iff-on-off",
+              "name": "IFF ON-OFF power switch",
+              "type": "switch2",
+              "match": [
+                "pnt_140",
+                "pnt_140_*",
+                "item:scr-695-a-iff-radio:3"
+              ],
+              "positions": [
+                {
+                  "name": "ON",
+                  "text": "The IFF set is powered."
+                },
+                {
+                  "name": "OFF",
+                  "text": "The IFF set is off."
+                }
+              ],
+              "text": "This switch turns the IFF set on and off. The game names it 'IFF Power On/Off'.",
+              "context": "The IFF set only answers when it is on.",
+              "src": "m1",
+              "page": "97"
+            },
+            {
+              "id": "iff-time",
+              "name": "IFF TIME / OFF / ON switch",
+              "type": "switch3",
+              "match": [
+                "pnt_141",
+                "pnt_141_*",
+                "item:scr-695-a-iff-radio:4"
+              ],
+              "positions": [
+                {
+                  "name": "TIME",
+                  "text": "The TIME position. The manual does not explain it."
+                },
+                {
+                  "name": "OFF",
+                  "text": "The switch is off."
+                },
+                {
+                  "name": "ON",
+                  "text": "The switch is on."
+                }
+              ],
+              "text": "The manual names a TIME ON-OFF switch for the IFF set, and the game has a three-way switch with TIME, OFF and ON. The manual does not say what the time function does.",
+              "context": "It belongs to the IFF set. What it changes in the TF-51D is not documented in the manual.",
+              "src": "m1",
+              "page": "97"
+            },
+            {
+              "id": "iff-detonator-circuit",
+              "name": "IFF detonator circuit switch",
+              "type": "switch2",
+              "match": [
+                "pnt_142"
+              ],
+              "positions": [
+                {
+                  "name": "ON",
+                  "text": "The switch is on. The manual does not describe what this changes."
+                },
+                {
+                  "name": "OFF",
+                  "text": "The switch is off."
+                }
+              ],
+              "text": "The game names this switch 'IFF Detonator Circuit On/Off'. The manual lists IFF destructor controls among the equipment powered by the electrical system, but does not describe them.",
+              "context": "It belongs to the IFF set. Nothing more is documented in the manual.",
+              "src": "m1",
+              "page": "45"
+            },
+            {
+              "id": "iff-detonator-buttons",
+              "name": "IFF detonator buttons (left and right)",
+              "type": "button",
+              "match": [
+                "pnt_145",
+                "pnt_146"
+              ],
+              "count": 2,
+              "text": "The game names these two buttons 'IFF Detonator Left' and 'IFF Detonator Right'. The manual does not describe them, so nothing more can be said for sure.",
+              "context": "They sit with the IFF controls. The manual only mentions IFF destructor controls as electrically powered equipment.",
+              "src": "m1",
+              "page": "45"
+            }
+          ]
+        },
+        {
+          "id": "homing-adapter",
+          "name": "AN/ARA-8 homing adapter",
+          "db": "an-ara-8-homing-adapter",
+          "src": "m1",
+          "page": "98",
+          "text": "This adapter lets the pilot steer toward a radio transmitter. It gives short beeps in the headset: one beep pattern for a transmitter on the left, another for the right. In the TF-51D cockpit of the game, its two switches can be clicked.",
+          "context": "The manual belongs to the P-51D and says the homing adapter is not operational there. It does not say what the TF-51D switches do in the game.",
+          "controls": [
+            {
+              "id": "homing-mode",
+              "name": "Homing adapter mode switch",
+              "type": "switch",
+              "match": [
+                "pnt_152",
+                "item:an-ara-8-homing-adapter:1"
+              ],
+              "positions": [
+                {
+                  "name": "HOMING",
+                  "text": "Homing beeps are heard in the headset and no VHF voice."
+                },
+                {
+                  "name": "COMM.",
+                  "text": "The adapter is not homing and VHF voice is heard."
+                },
+                {
+                  "name": "TRANS.",
+                  "text": "The adapter makes the radio send a beacon signal for other aircraft."
+                }
+              ],
+              "text": "This switch sets the adapter to homing, to normal radio talk or to sending a beacon signal. The manual names the labels HOMING, COMM. and TRANS.",
+              "context": "In HOMING mode no voice from the VHF radio is heard. The game names this control 'Homing Adapter Mode Switch'.",
+              "src": "m1",
+              "page": "98"
+            },
+            {
+              "id": "homing-signal",
+              "name": "Homing adapter CW / MCW switch",
+              "type": "switch",
+              "match": [
+                "pnt_153",
+                "pnt_153_*",
+                "item:an-ara-8-homing-adapter:2"
+              ],
+              "positions": [
+                {
+                  "name": "CW",
+                  "text": "Homing on a continuous wave signal."
+                },
+                {
+                  "name": "MCW",
+                  "text": "Homing on a modulated continuous wave signal."
+                }
+              ],
+              "text": "This switch chooses the type of signal to home on: continuous wave (CW) or modulated continuous wave (MCW).",
+              "context": "It has to match the type of the radio station the pilot homes on. The game names the positions 'Homing Adapter CW' and 'Homing Adapter MCW'.",
+              "src": "m1",
+              "page": "98"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

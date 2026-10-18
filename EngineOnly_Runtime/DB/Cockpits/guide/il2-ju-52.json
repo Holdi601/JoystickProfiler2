@@ -1,0 +1,303 @@
+{
+  "format": "joypro-cockpit-guide",
+  "version": 1,
+  "id": "il2-ju-52",
+  "title": "Junkers Ju 52/3m g4e (IL-2)",
+  "variants": [
+    "ju-52-3m-g4e"
+  ],
+  "games": [
+    "IL2Game"
+  ],
+  "sets": [],
+  "sources": [
+    {
+      "id": "c1",
+      "title": "JoyPro cockpit catalog (from the IL-2 and real aircraft manuals)",
+      "kind": "reference"
+    }
+  ],
+  "intro": "The Ju 52/3m was a German three-engined transport plane. Two pilots sit side by side with a throttle quadrant between the seats. With fixed-pitch propellers and manual mixture the power is read from the RPM gauges, and braking is done through the throttles.",
+  "areas": [
+    {
+      "id": "instruments",
+      "where": "front-center",
+      "name": "Instrument panel",
+      "text": "The flight instruments and the engine gauges are in front of the pilots.",
+      "panels": [
+        {
+          "id": "main-panel",
+          "name": "Instrument panel",
+          "db": "main-panel",
+          "src": "c1",
+          "text": "This is the main panel. It holds the flight instruments and the gauges of the three BMW 132 engines.",
+          "context": "The pilots read the power of each engine from the RPM gauges.",
+          "controls": [
+            {
+              "id": "airspeed",
+              "name": "Airspeed indicator",
+              "type": "gauge",
+              "match": [
+                "item:main-panel:1"
+              ],
+              "text": "This dial shows how fast the plane moves through the air. The scale is in kilometres per hour (km/h).",
+              "context": "The pilot watches it all the time. Too slow and the wings stop carrying the plane; too fast and the plane can be damaged. It matters most at take-off and landing."
+            },
+            {
+              "id": "altimeter",
+              "name": "Altimeter",
+              "type": "gauge",
+              "match": [
+                "item:main-panel:2"
+              ],
+              "text": "This dial shows how high the plane is, measured from the air pressure. The needles work like the hands of a clock, one for the hundreds and one for the thousands of metres.",
+              "context": "The pilot checks it to stay clear of the ground and to hold the height the mission needs."
+            },
+            {
+              "id": "variometer",
+              "name": "Variometer (climb and descent indicator)",
+              "type": "gauge",
+              "match": [
+                "item:main-panel:3"
+              ],
+              "text": "This dial shows how fast the plane climbs or sinks.",
+              "context": "The pilot watches it to hold a steady climb or descent."
+            },
+            {
+              "id": "turn-slip",
+              "name": "Turn and slip indicator",
+              "type": "gauge",
+              "match": [
+                "item:main-panel:4"
+              ],
+              "text": "This instrument has a needle that shows how fast the plane turns and a ball that shows whether it skids sideways. The pilot keeps the ball in the middle with the rudder.",
+              "context": "It is one of the basic flight instruments, used in clouds and for turning."
+            },
+            {
+              "id": "compass",
+              "name": "Compass",
+              "type": "gauge",
+              "match": [
+                "item:main-panel:5"
+              ],
+              "text": "This is the magnetic compass. It shows the direction the plane is heading, like a hiking compass.",
+              "context": "The pilot uses it to hold a course."
+            },
+            {
+              "id": "tacho-ju52",
+              "name": "Tachometers (three engines)",
+              "type": "gauge",
+              "match": [
+                "item:main-panel:6"
+              ],
+              "text": "These dials show how fast each of the three engines turns, in revolutions per minute (RPM).",
+              "context": "With fixed-pitch propellers the pilot reads the power of each engine from the RPM."
+            },
+            {
+              "id": "boost-multi",
+              "name": "Boost gauges",
+              "type": "gauge",
+              "match": [
+                "item:main-panel:7"
+              ],
+              "text": "These gauges show the boost of each engine, the pressure with which the supercharger pushes air into the engine. More boost means more power.",
+              "context": "The throttle levers set the boost. The pilot compares the engines to keep them in step."
+            },
+            {
+              "id": "oil-nacelle",
+              "name": "Oil gauges on the nacelles",
+              "type": "gauge",
+              "match": [
+                "item:main-panel:8"
+              ],
+              "text": "These gauges for the wing engines' fuel and oil sit on the engine housings (nacelles) outside the cockpit and are read through the side windows.",
+              "context": "The pilot or co-pilot reads them through the side windows."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "pedestal",
+      "where": "center-pedestal",
+      "name": "Throttle quadrant",
+      "text": "The three throttle levers and the mixture levers sit between the seats.",
+      "panels": [
+        {
+          "id": "throttle-quadrant",
+          "name": "Throttle quadrant",
+          "db": "throttle-quadrant",
+          "src": "c1",
+          "text": "This is the quadrant between the two seats with the three throttle levers and the mixture levers.",
+          "context": "The pilots use the throttles to brake on the ground: the catalog says in IL-2 a throttle below 20 per cent applies the brakes.",
+          "controls": [
+            {
+              "id": "throttle-ju52-l",
+              "name": "Left engine throttle",
+              "type": "lever",
+              "match": [
+                "item:throttle-quadrant:1"
+              ],
+              "text": "This lever makes the left engine stronger or weaker. The catalog says that in IL-2 below 20 per cent the lever also applies the left wheel brake.",
+              "context": "The three throttle levers sit between the two pilots' seats."
+            },
+            {
+              "id": "throttle-ju52-c",
+              "name": "Centre engine throttle",
+              "type": "lever",
+              "match": [
+                "item:throttle-quadrant:2"
+              ],
+              "text": "This lever makes the centre engine (in the nose) stronger or weaker. The catalog says that in IL-2 below 20 per cent the lever applies both wheel brakes.",
+              "context": "The Ju 52 brakes through the throttles, which is unusual."
+            },
+            {
+              "id": "throttle-ju52-r",
+              "name": "Right engine throttle",
+              "type": "lever",
+              "match": [
+                "item:throttle-quadrant:3"
+              ],
+              "text": "This lever makes the right engine stronger or weaker. The catalog says that in IL-2 below 20 per cent the lever also applies the right wheel brake.",
+              "context": "Moving the left and right levers apart steers the plane on the ground."
+            },
+            {
+              "id": "mixture-pl",
+              "name": "Mixture levers",
+              "type": "lever",
+              "match": [
+                "item:throttle-quadrant:4"
+              ],
+              "text": "These levers set how much fuel goes into the air of the engines, the mixture. The pilot leans them out as the plane climbs because the air gets thinner.",
+              "context": "They sit with the throttles on the Ju 52 quadrant."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "side",
+      "where": "left-side",
+      "name": "Stabilizer and flaps",
+      "text": "The large handwheel and the flap control are at the side.",
+      "panels": [
+        {
+          "id": "stabilizer-flaps",
+          "name": "Stabilizer and flap controls",
+          "db": "stabilizer-flaps",
+          "src": "c1",
+          "text": "This is a large handwheel for the stabilizer trim and the flap control. They are linked, so the stabilizer moves when the flaps do.",
+          "context": "The pilot uses them for take-off and landing.",
+          "controls": [
+            {
+              "id": "stab-hw",
+              "name": "Stabilizer handwheel",
+              "type": "wheel",
+              "match": [
+                "item:stabilizer-flaps:1"
+              ],
+              "text": "This large handwheel trims the stabilizer, the small wing at the tail. Trim is a small adjustment so the plane flies level without the pilot holding the controls.",
+              "context": "On the Ju 52 it is linked with the flaps."
+            },
+            {
+              "id": "flap-control",
+              "name": "Flap control",
+              "type": "lever",
+              "match": [
+                "item:stabilizer-flaps:2"
+              ],
+              "text": "This control raises and lowers the flaps. Flaps are parts of the wing that slide out to give more lift at low speed.",
+              "context": "The pilot lowers them for take-off and landing and raises them in normal flight."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "hotas",
+      "where": "hotas",
+      "name": "Control column and throttle",
+      "text": "These are the controls on the pilot's stick or yoke and on the left-hand throttle side that JoyPro can assign to a joystick or throttle.",
+      "panels": [
+        {
+          "id": "yoke",
+          "name": "Control column and yoke",
+          "src": "c1",
+          "text": "This is the control column with its yoke or wheel and the buttons on it.",
+          "context": "The pilot flies with it; on the bombers the bomb release is on it.",
+          "controls": [
+            {
+              "id": "gimbal",
+              "name": "Control wheel",
+              "type": "axis",
+              "match": [
+                "control:yoke.gimbal"
+              ],
+              "text": "This is the control column with a wheel or yoke. Pushing and pulling it tilts the plane's nose down and up, turning the wheel rolls the plane. In the game: pitch: Pitch; roll: Roll.",
+              "context": "It is the pilot's main flight control. On the larger planes it replaces the stick."
+            }
+          ]
+        },
+        {
+          "id": "throttle",
+          "name": "Throttle quadrant controls",
+          "src": "c1",
+          "text": "These are the three throttle levers and the mixture levers between the pilots' seats, and the stabilizer handwheel beside the pilot.",
+          "context": "The pilot sets engine power with them and brakes on the ground through the throttles.",
+          "controls": [
+            {
+              "id": "axis-left",
+              "name": "Left engine throttle",
+              "type": "axis",
+              "match": [
+                "control:throttle.axis.left"
+              ],
+              "text": "This is the throttle of the left engine. It makes that engine stronger or weaker. In the game: axis: Left engine; below 20%: left brake.",
+              "context": "On a twin-engined plane the pilot moves both throttles together for straight flight and one at a time to turn on the ground."
+            },
+            {
+              "id": "axis-main",
+              "name": "Centre engine throttle",
+              "type": "axis",
+              "match": [
+                "control:throttle.axis.main"
+              ],
+              "text": "This is the throttle, the lever that makes the engine stronger or weaker, like the gas pedal of a car. In the game: axis: Centre engine; below 20%: both brakes.",
+              "context": "The pilot works it with the left hand: forward for take-off and fighting, back for landing."
+            },
+            {
+              "id": "axis-right",
+              "name": "Right engine throttle",
+              "type": "axis",
+              "match": [
+                "control:throttle.axis.right"
+              ],
+              "text": "This is the throttle of the right engine. It makes that engine stronger or weaker. In the game: axis: Right engine; below 20%: right brake.",
+              "context": "Holding one throttle back while the other stays open helps to steer on the ground and to fly straight when the engines pull unevenly."
+            },
+            {
+              "id": "axis-mixture",
+              "name": "Mixture control",
+              "type": "axis",
+              "match": [
+                "control:throttle.axis.mixture"
+              ],
+              "text": "This lever sets the mixture, how much fuel goes into the engine's air. Moving it leans the mixture, which means less fuel for the air. In the game: axis: Lean the mixture above 1 km.",
+              "context": "The pilot leans the engine as the plane climbs, because the air gets thinner."
+            },
+            {
+              "id": "wheel-trim",
+              "name": "Stabilizer handwheel",
+              "type": "wheel",
+              "match": [
+                "control:throttle.wheel.trim"
+              ],
+              "text": "This handwheel trims the plane. Trim is a small adjustment so the plane flies level without the pilot holding the controls. In the game: up: Stabilizer nose down; down: Stabilizer nose up.",
+              "context": "The pilot turns it after take-off and when speed or load changes."
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

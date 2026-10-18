@@ -1,0 +1,844 @@
+{
+  "format": "joypro-cockpit-guide",
+  "version": 1,
+  "id": "sim-a350",
+  "title": "Airbus A350 (MSFS)",
+  "variants": [
+    "a350-900"
+  ],
+  "games": [
+    "MSFS2020",
+    "MSFS2024"
+  ],
+  "sets": [],
+  "sources": [
+    {
+      "id": "c1",
+      "title": "JoyPro cockpit catalog",
+      "kind": "reference"
+    },
+    {
+      "id": "w1",
+      "title": "Airbus A350 (Wikipedia)",
+      "url": "https://en.wikipedia.org/wiki/Airbus_A350",
+      "kind": "web"
+    },
+    {
+      "id": "f2",
+      "title": "Airbus A350 flight deck (public descriptions: Airbus, FCOM knowledge, iniBuilds A350 docs)",
+      "kind": "reference"
+    }
+  ],
+  "intro": "The Airbus A350 is a big long-range passenger jet with two engines. Its cockpit has six large screens, a small stick on each outer side instead of a control wheel, and two thrust levers on the pedestal in between. The computers fly the aircraft with the pilots telling them what they want.",
+  "areas": [
+    {
+      "id": "glareshield",
+      "where": "glareshield",
+      "name": "Glareshield",
+      "text": "The strip right under the windscreen. It holds the autopilot's control panel and the two warning lights that get the pilots' attention.",
+      "panels": [
+        {
+          "id": "glareshield",
+          "name": "Glareshield: FCU and EFIS control panels",
+          "db": "glareshield",
+          "src": "f2",
+          "text": "This strip holds the panel where the pilots tell the autopilot what to do: how fast, which way, how high. The two small panels at the ends run each pilot's own screen.",
+          "context": "The pilots use it all flight long: after take-off to switch on the autopilot, in the climb and descent to set new targets, and on the approach to land. Pushing or pulling a knob chooses who decides the value.",
+          "controls": [
+            {
+              "id": "master-lights",
+              "name": "MASTER WARN and MASTER CAUT lights",
+              "type": "light",
+              "match": [
+                "item:glareshield:1"
+              ],
+              "text": "These big lights come on when something on the aircraft needs the crew's attention. The red one means a warning, the amber one a caution. Pressing a light silences the sound and resets it.",
+              "context": "When one lights up the pilots look at the engine and warning screen to read what is wrong, then deal with it.",
+              "src": "f2"
+            },
+            {
+              "id": "efis",
+              "name": "EFIS control panels (one for each pilot)",
+              "type": "selector",
+              "match": [
+                "item:glareshield:2"
+              ],
+              "text": "This panel sets what a pilot's own screens show: the air pressure for the altimeter, the type of map, how far the map looks, and extra guides such as the flight director.",
+              "context": "Each pilot has one, so the two screens can show different things. ND stands for navigation display, the moving-map screen.",
+              "src": "f2"
+            },
+            {
+              "id": "spd-mach",
+              "name": "SPD/MACH knob",
+              "type": "knob",
+              "match": [
+                "item:glareshield:3"
+              ],
+              "positions": [
+                {
+                  "name": "PUSH",
+                  "text": "Managed: the flight computer chooses the speed from the flight plan."
+                },
+                {
+                  "name": "PULL",
+                  "text": "Selected: the aircraft flies the speed the pilot has set."
+                }
+              ],
+              "text": "Turning this knob sets the speed the autopilot should fly. Pushing the knob lets the flight computer pick the speed by itself (managed). Pulling it makes the aircraft fly the speed the pilot has typed (selected).",
+              "context": "Push for managed, pull for selected is the rule for all the knobs in this row. Mach is speed measured against the speed of sound, which airliners use high up.",
+              "src": "f2"
+            },
+            {
+              "id": "hdg-trk",
+              "name": "HDG/TRK knob",
+              "type": "knob",
+              "match": [
+                "item:glareshield:4"
+              ],
+              "positions": [
+                {
+                  "name": "PUSH",
+                  "text": "Managed: the aircraft follows the route of the flight plan."
+                },
+                {
+                  "name": "PULL",
+                  "text": "Selected: the aircraft turns to the heading or track set on the knob."
+                }
+              ],
+              "text": "Turning this knob sets the direction the autopilot should fly. Pushing it lets the aircraft follow the planned route (managed). Pulling it makes the aircraft fly the direction set on the knob (selected).",
+              "context": "Heading is where the nose points, track is the real path over the ground. The pilot pulls the knob when air traffic control gives a new direction to fly.",
+              "src": "f2"
+            },
+            {
+              "id": "ap-athr",
+              "name": "AP 1, AP 2 and A/THR pushbuttons",
+              "type": "button",
+              "match": [
+                "item:glareshield:5"
+              ],
+              "count": 3,
+              "text": "These buttons switch on the autopilot (AP 1 or AP 2), which flies the aircraft, and the autothrust (A/THR), which works the engine power by itself.",
+              "context": "The pilots switch them on soon after take-off. Only one autopilot flies at a time, and a second one can be armed for the landing.",
+              "src": "f2"
+            },
+            {
+              "id": "alt-vs",
+              "name": "ALT knob and V/S knob",
+              "type": "knob",
+              "match": [
+                "item:glareshield:6"
+              ],
+              "count": 2,
+              "text": "The ALT knob sets the height the aircraft should climb or descend to. The V/S knob sets how fast it climbs or sinks, or the angle of the climb path (FPA).",
+              "context": "Controllers give a height in the climb and descent, and the pilot types it here. The autopilot levels off by itself at that height.",
+              "src": "f2"
+            },
+            {
+              "id": "loc-appr-exped",
+              "name": "LOC, APPR and EXPED pushbuttons",
+              "type": "button",
+              "match": [
+                "item:glareshield:7"
+              ],
+              "count": 3,
+              "text": "LOC makes the autopilot follow the runway's sideways radio beam. APPR also follows the downward beam to the runway. EXPED makes the aircraft climb or descend faster towards the target height.",
+              "context": "LOC and APPR are used when flying an instrument approach to land. EXPED is used when the controller asks for a quick climb or descent.",
+              "src": "f2"
+            },
+            {
+              "id": "fcu-backup",
+              "name": "FCU backup panel",
+              "type": "other",
+              "match": [
+                "item:glareshield:8"
+              ],
+              "text": "This is a spare version of the autopilot panel, below the glareshield. It lets the pilot type the speed, heading and height if the main panel fails.",
+              "context": "It is a backup that is normally not touched. Airliners have such spares so that one broken part does not stop the flight.",
+              "src": "f2"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "displays",
+      "where": "front-center",
+      "name": "Six display units",
+      "text": "The big screens in the middle of the dashboard: one set of flight instruments for each pilot, a map for each pilot and two screens for the engines and systems.",
+      "panels": [
+        {
+          "id": "displays",
+          "name": "Display units",
+          "db": "displays",
+          "src": "f2",
+          "text": "Six identical screens replace the dozens of round dials of older airliners. Each one can show different pages, and they are shared between the two pilots.",
+          "context": "The pilots look at the outer screens for flying and at the inner screens for navigation. The middle screens show the engines, warnings and system pages.",
+          "controls": [
+            {
+              "id": "cpt-pfd",
+              "name": "Captain outer display: PFD",
+              "type": "display",
+              "match": [
+                "item:displays:1"
+              ],
+              "text": "This screen in front of the captain shows how the aircraft is flying: its tilt, speed, height and climb rate. It also shows what the autopilot is doing. The OIS part is a computer area for documents.",
+              "context": "PFD stands for primary flight display. The captain looks at it all the time while flying.",
+              "src": "f2"
+            },
+            {
+              "id": "cpt-nd",
+              "name": "Captain inner display: ND",
+              "type": "display",
+              "match": [
+                "item:displays:2"
+              ],
+              "text": "This screen shows a moving map with the route, other aircraft nearby and the weather. It can also show a side view of the route and an area for other pages.",
+              "context": "ND stands for navigation display. The keyboard unit on the pedestal and the EFIS panel change what it shows.",
+              "src": "f2"
+            },
+            {
+              "id": "ewd",
+              "name": "Upper centre display: EWD",
+              "type": "display",
+              "match": [
+                "item:displays:3"
+              ],
+              "text": "This screen shows the engines' numbers and the warning messages. A red or amber message here means a problem the crew should read.",
+              "context": "EWD stands for engine and warning display. It is the first place the pilots look when an alert sounds.",
+              "src": "f2"
+            },
+            {
+              "id": "sd",
+              "name": "Lower centre display: SD",
+              "type": "display",
+              "match": [
+                "item:displays:4"
+              ],
+              "text": "This screen shows pictures of the aircraft's systems, such as fuel, electricity and hydraulics, and also the checklists.",
+              "context": "SD stands for system display. The pilots choose the page with the ECAM control panel on the pedestal.",
+              "src": "f2"
+            },
+            {
+              "id": "fo-nd",
+              "name": "First officer inner display: ND",
+              "type": "display",
+              "match": [
+                "item:displays:5"
+              ],
+              "text": "This is the moving-map screen of the first officer, the second pilot. It shows the route, nearby traffic and weather, and can be set differently from the captain's.",
+              "context": "It works like the captain's map screen, so each pilot can choose a different map range.",
+              "src": "f2"
+            },
+            {
+              "id": "fo-pfd",
+              "name": "First officer outer display: PFD",
+              "type": "display",
+              "match": [
+                "item:displays:6"
+              ],
+              "text": "This screen in front of the first officer shows the flight instruments: tilt, speed, height and climb rate. The OIS part is a computer area for documents.",
+              "context": "Two pilots each have their own copy, so each can check the other's numbers.",
+              "src": "f2"
+            },
+            {
+              "id": "isis",
+              "name": "Standby instrument (ISIS)",
+              "type": "display",
+              "match": [
+                "item:displays:7"
+              ],
+              "text": "This small screen is the emergency flight instrument. It shows tilt, speed and height on its own, with its own power.",
+              "context": "If the big screens fail, the pilots use it to keep flying. It is a backup that works separately from the main system.",
+              "src": "f2"
+            },
+            {
+              "id": "gear-autobrake",
+              "name": "Landing gear lever and autobrake",
+              "type": "lever",
+              "match": [
+                "item:displays:8"
+              ],
+              "positions": [
+                {
+                  "name": "UP",
+                  "text": "The wheels are folded into the aircraft for flight."
+                },
+                {
+                  "name": "DOWN",
+                  "text": "The wheels are out and locked for take-off and landing."
+                }
+              ],
+              "text": "Moving this lever lowers the wheels or folds them away. The autobrake buttons next to it set how hard the brakes work by themselves after landing.",
+              "context": "The wheels go up after take-off to fly faster and down before landing. The autobrake is armed before landing so the aircraft slows down smoothly.",
+              "src": "f2"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "overhead",
+      "where": "overhead",
+      "name": "Overhead panel",
+      "text": "The panel in the ceiling above the pilots. It holds the switches for the aircraft's systems, such as electricity, fuel, air and lights.",
+      "panels": [
+        {
+          "id": "overhead-panel",
+          "name": "Overhead panel",
+          "db": "overhead-panel",
+          "src": "f2",
+          "text": "This is the control board for the aircraft's inner workings: electricity, fuel, hydraulic oil, cabin air, fire fighting and lights. Most of the time it stays quiet.",
+          "context": "The pilots set it up at the start and rarely touch it in flight. Its lights stay off when everything is fine, so a lit light draws attention.",
+          "controls": [
+            {
+              "id": "adirs",
+              "name": "ADIRS panel",
+              "type": "selector",
+              "match": [
+                "item:overhead-panel:1"
+              ],
+              "positions": [
+                {
+                  "name": "OFF",
+                  "text": "The unit is switched off."
+                },
+                {
+                  "name": "NAV",
+                  "text": "The unit works fully and gives position, heading and attitude."
+                },
+                {
+                  "name": "ATT",
+                  "text": "Only the tilt and heading are given, as an emergency mode."
+                }
+              ],
+              "text": "This panel switches on the system that knows how the aircraft is tilted, where it is pointing and how fast and high it flies. Each of its knobs has OFF, NAV and ATT.",
+              "context": "The pilots switch it to NAV at the start, and it needs a few minutes to find its bearings. Without it the screens have no flight data.",
+              "src": "f2"
+            },
+            {
+              "id": "flt-ctl",
+              "name": "Flight controls panel",
+              "type": "switch",
+              "match": [
+                "item:overhead-panel:2"
+              ],
+              "text": "These buttons switch on the flight control computers, called PRIM and SEC. They turn the stick movements into movements of the wing and tail flaps.",
+              "context": "The computers sit between the pilot's hand and the control surfaces. They need to be on for the aircraft to fly normally.",
+              "src": "f2"
+            },
+            {
+              "id": "fire",
+              "name": "Engine and APU fire panel",
+              "type": "handle",
+              "match": [
+                "item:overhead-panel:3"
+              ],
+              "text": "This panel is for fire on an engine or the small helper engine in the tail (APU). Pulling a fire button shuts off its fuel, and the extinguisher bottles can then be fired.",
+              "context": "The pilots use it only in a real fire emergency, after a fire warning and the checklist.",
+              "src": "f2"
+            },
+            {
+              "id": "elec",
+              "name": "Electrical panel",
+              "type": "switch",
+              "match": [
+                "item:overhead-panel:4"
+              ],
+              "text": "This panel decides where the electricity comes from: the batteries, the engine generators or a ground plug. Each source has its own button.",
+              "context": "The pilots use it first when getting into the cockpit, and lights on it show when a source fails.",
+              "src": "f2"
+            },
+            {
+              "id": "hyd-fuel",
+              "name": "Hydraulic and fuel panels",
+              "type": "switch",
+              "match": [
+                "item:overhead-panel:5"
+              ],
+              "text": "The hydraulic buttons switch the pumps that push oil under pressure to move heavy parts like flaps and wheels. The fuel buttons switch the fuel pumps and the cross feed between the tanks.",
+              "context": "The pilots check them during start-up. A light shows if a pump is off or has a problem.",
+              "src": "f2"
+            },
+            {
+              "id": "air-cond",
+              "name": "Air conditioning and pressurization",
+              "type": "switch",
+              "match": [
+                "item:overhead-panel:6"
+              ],
+              "text": "These buttons run the air packs that cool and freshen the cabin air, take hot air from the engines (bleed air) and keep the cabin pressure comfortable at height.",
+              "context": "The pressure control mostly works by itself. The pilots check this panel during start-up and when the cabin needs attention.",
+              "src": "f2"
+            },
+            {
+              "id": "ext-lights",
+              "name": "External lights panel",
+              "type": "switch",
+              "match": [
+                "item:overhead-panel:7"
+              ],
+              "text": "These switches control the lights outside the aircraft: flashing strobe lights, the red beacon, position lights, and the bright landing and taxi lights.",
+              "context": "The pilots switch them on in steps: beacon before engine start, taxi light on the ground, landing lights for take-off and landing.",
+              "src": "f2"
+            },
+            {
+              "id": "apu",
+              "name": "APU panel",
+              "type": "switch",
+              "match": [
+                "item:overhead-panel:8"
+              ],
+              "text": "The APU is a small extra engine in the tail. This panel starts it with two buttons: the MASTER SW and the START button. The APU makes electricity and air before the big engines run.",
+              "context": "The pilots start it early so the cabin has power and air while the main engines are not yet running.",
+              "src": "f2"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "pedestal",
+      "where": "center-pedestal",
+      "name": "Pedestal",
+      "text": "The raised block between the two pilots. It holds the thrust levers, the flap and speed brake levers, the engine start switches, the radios and the keyboards.",
+      "panels": [
+        {
+          "id": "pedestal",
+          "name": "Centre pedestal",
+          "db": "pedestal",
+          "src": "f2",
+          "text": "This block between the seats is where the pilots set engine power and the aircraft's shape for take-off and landing. It also has two keyboards and the radios.",
+          "context": "Both pilots can reach it. The thrust levers are the most used part of it in every flight.",
+          "controls": [
+            {
+              "id": "kccu-capt",
+              "name": "KCCU (captain)",
+              "type": "keypad",
+              "match": [
+                "item:pedestal:1"
+              ],
+              "text": "This is the keyboard with a trackball for the captain. It lets the captain type and point on the navigation screen like on a computer.",
+              "context": "KCCU stands for keyboard and cursor control unit. It is used to enter the flight plan and change settings on the screens.",
+              "src": "f2"
+            },
+            {
+              "id": "kccu-fo",
+              "name": "KCCU (first officer)",
+              "type": "keypad",
+              "match": [
+                "item:pedestal:2"
+              ],
+              "text": "This is the keyboard with a trackball for the first officer, the second pilot. It works the screens like the captain's unit does.",
+              "context": "Each pilot has one, so both can use the screens at the same time.",
+              "src": "f2"
+            },
+            {
+              "id": "thrust-levers",
+              "name": "Thrust levers",
+              "type": "lever",
+              "match": [
+                "item:pedestal:3"
+              ],
+              "positions": [
+                {
+                  "name": "IDLE",
+                  "text": "The engines run at their lowest power."
+                },
+                {
+                  "name": "CL",
+                  "text": "The climb position. The autothrust manages the power up to this limit."
+                },
+                {
+                  "name": "FLX MCT",
+                  "text": "A reduced take-off power, or the maximum power for continuous use."
+                },
+                {
+                  "name": "TOGA",
+                  "text": "Full take-off or go-around power."
+                }
+              ],
+              "text": "These two levers set the engine power. They have stops, called detents, for idle, climb (CL), flex or maximum continuous (FLX MCT) and take-off power (TOGA). The A/THR buttons switch the autothrust off.",
+              "context": "In flight the autothrust moves the engine power but the levers stay put in the climb detent. The levers show the maximum the computers may use.",
+              "src": "f2"
+            },
+            {
+              "id": "speedbrake",
+              "name": "Speed brake lever",
+              "type": "lever",
+              "match": [
+                "item:pedestal:4"
+              ],
+              "text": "Pulling this lever back lifts panels on the wings that spoil the airflow. The aircraft then slows down and sinks faster. Another position arms the panels to open by themselves on landing.",
+              "context": "The pilots use it to descend steeply or slow down. Armed on the ground, it helps the wheels grip the runway.",
+              "src": "f2"
+            },
+            {
+              "id": "flaps",
+              "name": "Flaps lever",
+              "type": "lever",
+              "match": [
+                "item:pedestal:5"
+              ],
+              "positions": [
+                {
+                  "name": "0",
+                  "text": "Flaps and slats are in. This is the cruise shape of the wing."
+                },
+                {
+                  "name": "1",
+                  "text": "The first step, used for take-off and the first stage of approach."
+                },
+                {
+                  "name": "2",
+                  "text": "The next step for more lift at lower speed."
+                },
+                {
+                  "name": "3",
+                  "text": "A larger step used on the approach."
+                },
+                {
+                  "name": "FULL",
+                  "text": "The full setting for landing, giving the most lift and drag."
+                }
+              ],
+              "text": "This lever moves the flaps and slats, the parts of the wing that slide out to give more lift at low speed. It has fixed positions from 0 to FULL.",
+              "context": "The pilots set a little flap for take-off and more of it for landing so the aircraft can fly slowly and stay safe.",
+              "src": "f2"
+            },
+            {
+              "id": "eng-master",
+              "name": "ENG MASTER switches and ENG START selector",
+              "type": "switch",
+              "match": [
+                "item:pedestal:6"
+              ],
+              "text": "The ENG MASTER switches turn the fuel to an engine on or off. The start selector chooses between starting the engine, running it normally or turning it over without fuel.",
+              "context": "To start an engine, the pilot chooses the start mode and then switches the master on. At the end of the flight the master is switched off to stop the engine.",
+              "src": "f2"
+            },
+            {
+              "id": "ecam-panel",
+              "name": "ECAM control panel",
+              "type": "button",
+              "match": [
+                "item:pedestal:7"
+              ],
+              "text": "These keys choose the page shown on the system screen and move through the checklists. ECAM is the system that shows the aircraft's state and tells the crew what to do.",
+              "context": "When a warning appears, the pilots use these keys to work through the messages one after another.",
+              "src": "f2"
+            },
+            {
+              "id": "radios",
+              "name": "Radio management panels",
+              "type": "keypad",
+              "match": [
+                "item:pedestal:8"
+              ],
+              "text": "These panels set the frequencies of the radios, which the pilots use to talk to the controllers and to tune radio beacons.",
+              "context": "The pilots set the frequency given by the controller. The radios are used on every flight.",
+              "src": "f2"
+            },
+            {
+              "id": "rudder-trim-panel",
+              "name": "Rudder trim panel",
+              "type": "knob",
+              "match": [
+                "item:pedestal:9"
+              ],
+              "text": "This panel has a knob to trim the rudder (the vertical flap on the tail) so that the aircraft flies straight, and a RESET button that sets the trim back to zero.",
+              "context": "Trim means a small constant adjustment. It is used when engine power is uneven, for example if one engine is weaker.",
+              "src": "f2"
+            },
+            {
+              "id": "park-brake-item",
+              "name": "PARK BRK handle",
+              "type": "handle",
+              "match": [
+                "item:pedestal:10"
+              ],
+              "positions": [
+                {
+                  "name": "OFF",
+                  "text": "The parking brake is released and the wheels can roll."
+                },
+                {
+                  "name": "ON",
+                  "text": "The parking brake holds the wheels."
+                }
+              ],
+              "text": "This handle sets the parking brake, which holds the wheels still while the aircraft stands.",
+              "context": "The pilots set it before the engines are started and when parked, so the aircraft does not roll away.",
+              "src": "f2"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "hotas",
+      "where": "hotas",
+      "name": "Side-stick, thrust levers and pedals",
+      "text": "The controls the pilot's hands and feet use most: the side-stick, the thrust levers on the pedestal and the pedals.",
+      "panels": [
+        {
+          "id": "grip-sidestick",
+          "name": "Side-stick",
+          "text": "The side-stick is the small joystick on the outer side of each pilot. It is the controller the pilot moves to change the aircraft's tilt and roll.",
+          "context": "Each pilot has one, and the aircraft has no big control wheel. The computers turn the stick movement into movements of the control surfaces.",
+          "controls": [
+            {
+              "id": "stick-gimbal",
+              "name": "Side-stick",
+              "type": "other",
+              "match": [
+                "control:stick.gimbal"
+              ],
+              "text": "Moving the stick forward or back tilts the nose down or up. Moving it left or right rolls the aircraft. It springs back to the middle when let go.",
+              "context": "Airbus computers read how hard and how far the stick is moved and fly the aircraft from that. The pilot asks for a change and the computers do it."
+            },
+            {
+              "id": "stick-trigger",
+              "name": "Radio communication trigger",
+              "type": "trigger",
+              "match": [
+                "control:stick.trigger"
+              ],
+              "text": "Pressing this trigger, under the index finger, makes the radio send. While it is pressed, the pilot's voice goes out to the controller.",
+              "context": "It is like the push-to-talk button of a walkie-talkie."
+            },
+            {
+              "id": "stick-takeover",
+              "name": "Takeover / autopilot disconnect pushbutton",
+              "type": "button",
+              "match": [
+                "control:stick.button.takeover"
+              ],
+              "text": "Pressing this red button on the stick switches the autopilot off. Holding it takes control of the aircraft if the other pilot is also moving a stick.",
+              "context": "Each side-stick moves independently, so this button decides who flies. The pilot uses it to take over from the autopilot or the other pilot."
+            }
+          ]
+        },
+        {
+          "id": "grip-quadrant",
+          "name": "Thrust levers and pedestal controls",
+          "text": "These are the levers and handles on the pedestal that the pilot's hand reaches for. They set engine power, the flaps, the speed brakes and the engine start.",
+          "context": "In a flight the hand moves between them often: thrust levers at take-off and landing, flaps on the approach, speed brakes in the descent.",
+          "controls": [
+            {
+              "id": "lever-1",
+              "name": "Thrust lever 1",
+              "type": "axis",
+              "match": [
+                "control:quadrant.axis.lever.1"
+              ],
+              "text": "This is the left thrust lever for engine 1. Pushing it forward gives the engine more power, pulling it back gives it less. It has stops, called detents, at IDLE, CL, FLX/MCT and TOGA.",
+              "context": "The pilot pushes it to the TOGA stop to take off or to go around. In flight it stays in the CL stop while the autothrust adjusts the power."
+            },
+            {
+              "id": "lever-2",
+              "name": "Thrust lever 2",
+              "type": "axis",
+              "match": [
+                "control:quadrant.axis.lever.2"
+              ],
+              "text": "This is the right thrust lever for engine 2. It works like the left one and has the same stops from IDLE to TOGA.",
+              "context": "The pilot normally moves both levers together, so both engines give the same power."
+            },
+            {
+              "id": "athr-disc",
+              "name": "A/THR instinctive disconnect pushbuttons",
+              "type": "button",
+              "match": [
+                "control:quadrant.button.athr_disc"
+              ],
+              "text": "These red buttons on the side of each thrust lever switch the autothrust off. Holding one down for a long time keeps the autothrust off for the rest of the flight.",
+              "context": "The pilot presses one to take over the engine power by hand quickly, for example when the autothrust does something unexpected."
+            },
+            {
+              "id": "reverse",
+              "name": "Reverse thrust latching levers",
+              "type": "lever",
+              "match": [
+                "control:quadrant.lever.reverse"
+              ],
+              "text": "These small levers in front of the thrust levers are lifted with the fingers to send the engine's push forward instead of back. This helps the aircraft slow down after landing.",
+              "context": "They can only be lifted when the thrust levers are at idle, and the pilot uses them just after touchdown."
+            },
+            {
+              "id": "speedbrake-grip",
+              "name": "Speed brake lever",
+              "type": "lever",
+              "match": [
+                "control:quadrant.lever.speedbrake"
+              ],
+              "text": "Moving this lever back opens the speed brakes, the wing panels that slow the aircraft. Moving it forward closes them. Lifting it arms the ground spoilers, which open by themselves on landing.",
+              "context": "It is on the left of the thrust levers. The pilot uses it in the descent to lose speed and arms it before landing."
+            },
+            {
+              "id": "flaps-grip",
+              "name": "Flaps lever",
+              "type": "lever",
+              "match": [
+                "control:quadrant.lever.flaps"
+              ],
+              "text": "Moving this lever forward or back selects the next flap position by one step: 0, 1, 2, 3 or FULL.",
+              "context": "It sits on the right of the pedestal. The pilot moves it step by step when the speed falls on the approach."
+            },
+            {
+              "id": "pitch-trim",
+              "name": "Pitch trim wheels",
+              "type": "wheel",
+              "match": [
+                "control:quadrant.wheel.pitch_trim"
+              ],
+              "text": "These two wheels beside the thrust levers move the trim of the stabilizer, the small wing at the tail, by hand. Turning forward trims the nose down and back trims it up.",
+              "context": "In the Airbus the computers normally do the trimming. The wheels are the manual way, which the pilot rarely uses."
+            },
+            {
+              "id": "eng-master-1",
+              "name": "ENG MASTER 1",
+              "type": "switch2",
+              "match": [
+                "control:quadrant.switch.eng_master_1"
+              ],
+              "positions": [
+                {
+                  "name": "on",
+                  "text": "Fuel flows to engine 1, which starts or keeps running."
+                },
+                {
+                  "name": "off",
+                  "text": "The fuel is cut and engine 1 shuts down."
+                }
+              ],
+              "text": "This switch turns the fuel to engine 1 on or off. It has a lever lock, so it cannot be moved by accident.",
+              "context": "Switching it on during the start supplies fuel to the engine. Switching it off at the end of the flight stops the engine."
+            },
+            {
+              "id": "eng-master-2",
+              "name": "ENG MASTER 2",
+              "type": "switch2",
+              "match": [
+                "control:quadrant.switch.eng_master_2"
+              ],
+              "positions": [
+                {
+                  "name": "on",
+                  "text": "Fuel flows to engine 2, which starts or keeps running."
+                },
+                {
+                  "name": "off",
+                  "text": "The fuel is cut and engine 2 shuts down."
+                }
+              ],
+              "text": "This switch turns the fuel to engine 2 on or off. It has a lever lock like the one for engine 1.",
+              "context": "It is used in the same way as ENG MASTER 1, for the right engine."
+            },
+            {
+              "id": "eng-mode",
+              "name": "ENG MODE selector",
+              "type": "selector",
+              "match": [
+                "control:quadrant.selector.eng_mode"
+              ],
+              "positions": [
+                {
+                  "name": "CRANK",
+                  "text": "The engine is turned over without fuel, dry or wet."
+                },
+                {
+                  "name": "NORM",
+                  "text": "Normal operation. The ignition is off and relights automatically if needed."
+                },
+                {
+                  "name": "IGN/START",
+                  "text": "The start sequence is armed and the ignition is on."
+                }
+              ],
+              "text": "This selector sits between the two ENG MASTER switches. It picks between turning the engine over without fuel (CRANK), normal running (NORM) and starting the engine (IGN/START).",
+              "context": "The pilot turns it to IGN/START to start an engine and back to NORM afterwards. CRANK is used to blow out or clear an engine."
+            },
+            {
+              "id": "rudder-trim",
+              "name": "RUD TRIM rotary selector and RESET",
+              "type": "knob",
+              "match": [
+                "control:quadrant.knob.rudder_trim"
+              ],
+              "text": "Turning this knob trims the rudder to the right or to the left. Pressing the RESET button puts the trim back at zero.",
+              "context": "The pilot uses it to keep the aircraft flying straight when it pulls to one side."
+            },
+            {
+              "id": "park-brake-grip",
+              "name": "PARK BRK handle",
+              "type": "knob",
+              "match": [
+                "control:quadrant.knob.parking_brake"
+              ],
+              "positions": [
+                {
+                  "name": "on",
+                  "text": "The parking brake is set and holds the wheels."
+                },
+                {
+                  "name": "off",
+                  "text": "The parking brake is released."
+                }
+              ],
+              "text": "This handle at the back of the pedestal turns to set the parking brake or to release it.",
+              "context": "The pilot sets it when the aircraft stands still and releases it before taxiing."
+            }
+          ]
+        },
+        {
+          "id": "grip-panel",
+          "name": "Panel handles and pedals",
+          "text": "These are the controls the pilot reaches on the dashboard and the floor: the landing gear lever, the steering wheel for the nose wheel and the rudder pedals.",
+          "context": "They are used on the ground and for landing: the pilot steers on the ground with the tiller and pedals, and puts the gear down before landing.",
+          "controls": [
+            {
+              "id": "gear-grip",
+              "name": "Landing gear lever",
+              "type": "lever",
+              "match": [
+                "control:panel.lever.gear"
+              ],
+              "positions": [
+                {
+                  "name": "up",
+                  "text": "The landing gear folds up into the aircraft."
+                },
+                {
+                  "name": "down",
+                  "text": "The landing gear comes down and locks."
+                }
+              ],
+              "text": "Moving this lever up folds the wheels away after take-off. Moving it down lowers them for landing. It sits on the centre panel, right of the lower screen.",
+              "context": "The pilot lowers the gear on the approach and checks the three green lights that show the wheels are down and locked."
+            },
+            {
+              "id": "tiller",
+              "name": "Nosewheel steering hand wheel (tiller)",
+              "type": "wheel",
+              "match": [
+                "control:panel.wheel.tiller"
+              ],
+              "text": "Turning this small wheel on the side console steers the front wheel left or right, up to a large angle. Pressing it disconnects the pedals from the steering.",
+              "context": "The pilot uses it for tight turns when taxiing slowly. It is just like the steering wheel of a car for the nose wheel."
+            },
+            {
+              "id": "rudder-pedals",
+              "name": "Rudder pedals",
+              "type": "pedal",
+              "match": [
+                "control:pedals.axis.rudder"
+              ],
+              "text": "Pushing a pedal with the foot turns the rudder, the vertical flap on the tail, to the left or right. The tops of the pedals are the toe brakes for the wheels on each side.",
+              "context": "On the ground the pedals also steer the front wheel a little. In the air the pilot uses them to keep the aircraft flying straight."
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

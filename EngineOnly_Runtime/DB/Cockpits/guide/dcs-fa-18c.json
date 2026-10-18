@@ -1,0 +1,1711 @@
+{
+  "format": "joypro-cockpit-guide",
+  "version": 1,
+  "id": "dcs-fa-18c",
+  "title": "F/A-18C Hornet (DCS)",
+  "variants": [
+    "fa-18c-lot-20"
+  ],
+  "games": [
+    "DCS"
+  ],
+  "sets": [
+    "DCS/FA-18C_hornet"
+  ],
+  "sources": [
+    {
+      "id": "m1",
+      "title": "DCS F/A-18C Early Access Guide (EN)",
+      "file": "Mods/aircraft/FA-18C/Doc/DCS FA-18C Early Access Guide EN.pdf"
+    }
+  ],
+  "intro": "The F/A-18C Hornet is a one-seat jet fighter and attack plane that flies from airfields and from aircraft carriers. In front of the pilot are a glass screen called the HUD, a keypad (the UFC), two big colour screens (the DDIs) and a colour map screen (the AMPCD). The left and right consoles hold the engine start, electricity, air and light switches. The control stick is in the middle and the two throttles are on the left; both carry many buttons for the weapons and sensors.",
+  "areas": [
+    {
+      "id": "left-instrument-panel",
+      "where": "front-left",
+      "name": "Left instrument panel",
+      "text": "The upper left part of the main panel in front of the pilot. It has the left screen, the engine and fuel display, the weapon master controls and the fire and caution lights.",
+      "panels": [
+        {
+          "id": "warning-lights",
+          "name": "Master caution, fire and warning lights",
+          "src": "m1",
+          "page": "42",
+          "text": "These lights and buttons tell the pilot that something is wrong. A red FIRE button means a fire, a yellow light means 'look at this soon'.",
+          "context": "The pilot glances at this corner all the time. When a light comes on, the pilot reads the text on the screens to find out what is wrong.",
+          "controls": [
+            {
+              "id": "master-caution",
+              "name": "MASTER CAUTION light and reset button",
+              "type": "button",
+              "match": [
+                "pnt_14",
+                "item:left-instrument-panel:1"
+              ],
+              "text": "A yellow light that comes on when any caution light or caution message turns on, together with a warning tone. Pressing it puts the light out and silences the tone.",
+              "context": "The pilot presses it after reading the problem on the screen. The button also moves the list of caution messages on, so the next one can be read.",
+              "src": "m1",
+              "page": "42"
+            },
+            {
+              "id": "fire-left",
+              "name": "LEFT ENG/AMAD FIRE light-button with guard",
+              "type": "button",
+              "match": [
+                "pnt_11",
+                "item:left-instrument-panel:2"
+              ],
+              "text": "A red button that lights up when the sensors find a fire in the left engine or its gearbox bay. A flap guards the button so it is not pressed by accident.",
+              "context": "The pilot lifts the guard and presses the button. That shuts off the fuel to that engine and readies the fire bottle. Pressing it again opens the fuel again.",
+              "src": "m1",
+              "page": "42"
+            },
+            {
+              "id": "fire-ext",
+              "name": "Fire extinguisher pushbutton (READY / DISCH)",
+              "type": "button",
+              "match": [
+                "pnt_46",
+                "item:left-instrument-panel:3"
+              ],
+              "text": "This button empties the fire bottle into the burning engine bay. It has two lights: a yellow READY light and a green DISCH light.",
+              "context": "It works only when READY is on, and READY comes on after a FIRE button was pressed. After the bottle is emptied the DISCH light comes on.",
+              "src": "m1",
+              "page": "43"
+            },
+            {
+              "id": "left-advisory",
+              "name": "Left warning/caution advisory lights",
+              "type": "light",
+              "match": [
+                "item:left-instrument-panel:8"
+              ],
+              "text": "A block of small lights next to the left screen: L BLEED, R BLEED, SPD BRK, STBY, L BAR, REC, XMIT, GO and NO GO. Each one has its own meaning, for example SPD BRK means the speed brake is not fully closed.",
+              "context": "The pilot only reads them; there is nothing to press. REC and XMIT belong to the jammer, L BAR to the catapult launch bar, and the two BLEED lights to hot-air leaks.",
+              "src": "m1",
+              "page": "42"
+            }
+          ]
+        },
+        {
+          "id": "master-arm",
+          "name": "Master arm and master mode panel",
+          "src": "m1",
+          "text": "This panel decides whether the weapons may be used. It holds the master arm switch, the A/A and A/G mode buttons and the emergency jettison button.",
+          "context": "Before a fight the pilot picks the mode and arms the plane. After the fight the pilot sets the switch back to SAFE.",
+          "controls": [
+            {
+              "id": "master-mode",
+              "name": "Master mode buttons A/A and A/G",
+              "type": "button",
+              "match": [
+                "pnt_458",
+                "pnt_459",
+                "item:left-instrument-panel:4"
+              ],
+              "count": 2,
+              "text": "Two buttons that tell the plane what the pilot wants to do. A/A means air to air, to fight other aircraft. A/G means air to ground, to hit targets on the ground.",
+              "context": "Without either button the plane is in NAV, the normal flying mode. Everything on the screens and the HUD changes to fit the chosen mode. Pressing the lit button again returns to NAV.",
+              "src": "m1",
+              "page": "40"
+            },
+            {
+              "id": "master-arm-sw",
+              "name": "MASTER ARM switch",
+              "type": "switch2",
+              "match": [
+                "pnt_49",
+                "item:left-instrument-panel:5"
+              ],
+              "positions": [
+                {
+                  "name": "ARM",
+                  "text": "The weapons can be released or jettisoned."
+                },
+                {
+                  "name": "SAFE",
+                  "text": "Nothing can be released; the safe setting for taxiing, take-off and landing."
+                }
+              ],
+              "text": "This is the main safety switch for the weapons. In SAFE nothing can be fired or dropped. In ARM the weapons are ready.",
+              "context": "The pilot moves it to ARM only when the weapons are about to be used. The same switch also decides whether stores can be jettisoned (dropped in an emergency).",
+              "src": "m1",
+              "page": "40"
+            },
+            {
+              "id": "emerg-jett",
+              "name": "EMERG JETT (emergency jettison) button",
+              "type": "button",
+              "match": [
+                "pnt_50",
+                "item:left-instrument-panel:6"
+              ],
+              "text": "This button drops the heavy things under the wings and belly all at once, without aiming. It is used in an emergency to make the plane lighter and faster to fly.",
+              "context": "Pressing it works on stations 2, 3, 5, 7 and 8. The manual says the button must be held about 0.4 seconds before it acts.",
+              "src": "m1",
+              "page": "40"
+            },
+            {
+              "id": "aux-release",
+              "name": "AUX REL (auxiliary release) switch",
+              "type": "switch",
+              "match": [
+                "pnt_258"
+              ],
+              "positions": [
+                {
+                  "name": "ENABLE",
+                  "text": "The auxiliary release is switched on; the manual gives no details."
+                },
+                {
+                  "name": "NORM",
+                  "text": "The normal setting."
+                }
+              ],
+              "text": "A switch with the positions ENABLE and NORM. NORM is the normal setting. The manual does not describe this switch; the game names it 'Auxiliary Release Switch'.",
+              "context": "It is part of the weapon release system on the left instrument panel. The pilot leaves it in NORM during normal flying.",
+              "src": "m1"
+            }
+          ]
+        },
+        {
+          "id": "jettison-select",
+          "name": "Station jettison select buttons and gear/flap lights",
+          "src": "m1",
+          "page": "40",
+          "text": "A small panel with five buttons for the weapon stations and three green lights for the wheels. Below them two more lights show the flaps.",
+          "context": "The buttons pick which weapon stations drop something when the pilot uses the selective jettison knob. The lights tell the pilot if the wheels are down and locked.",
+          "controls": [
+            {
+              "id": "stn-select",
+              "name": "Station jettison select buttons CTR, LI, RI, LO, RO",
+              "type": "button",
+              "match": [
+                "pnt_153",
+                "pnt_155",
+                "pnt_157",
+                "pnt_159",
+                "pnt_161"
+              ],
+              "count": 5,
+              "text": "Five buttons, one for each weapon station: centre, left inboard, right inboard, left outboard, right outboard. Pressing one lights it and chooses that station.",
+              "context": "After choosing stations the pilot sets the selective jettison knob and presses JETT. The same buttons also pick weapons in the backup air-to-ground modes.",
+              "src": "m1",
+              "page": "40"
+            },
+            {
+              "id": "gear-flap-lights",
+              "name": "Landing gear and flap position lights",
+              "type": "indicator",
+              "match": [
+                "item:left-instrument-panel:7"
+              ],
+              "text": "Three green lights NOSE, LEFT and RIGHT show that each wheel is down and locked. The flap lights show whether the flaps follow the switch setting.",
+              "context": "A green flap light means the speed is low enough for the flight computer to move the flaps as the FLAP switch asks. FLAPS shows that it cannot, for example above 250 knots.",
+              "src": "m1",
+              "page": "40"
+            }
+          ]
+        },
+        {
+          "id": "left-ddi",
+          "name": "Left DDI (left display screen)",
+          "src": "m1",
+          "page": "39",
+          "text": "The left of the two big colour screens. It shows pages for weapons, radar, engine data, checklists and more. Twenty buttons around its edge pick what is shown.",
+          "context": "Most of the pilot's work with the plane happens on this screen and the right one. The buttons around the edge change meaning with the page shown.",
+          "controls": [
+            {
+              "id": "ldd-bright-sel",
+              "name": "Left DDI brightness selector (OFF / NIGHT / DAY)",
+              "type": "switch3",
+              "match": [
+                "pnt_51",
+                "item:left-instrument-panel:9"
+              ],
+              "positions": [
+                {
+                  "name": "OFF",
+                  "text": "The screen is off."
+                },
+                {
+                  "name": "NIGHT",
+                  "text": "The screen is on, with a dimmer brightness range."
+                },
+                {
+                  "name": "DAY",
+                  "text": "The screen is on, with a brighter brightness range."
+                }
+              ],
+              "text": "This knob turns the left screen on and chooses how bright it can get. OFF switches the screen off.",
+              "context": "The pilot turns it out of OFF while starting the plane. NIGHT gives a dimmer range for dark cockpits and DAY a brighter one.",
+              "src": "m1",
+              "page": "39"
+            },
+            {
+              "id": "ldd-bright",
+              "name": "Left DDI BRT (brightness) knob",
+              "type": "knob",
+              "match": [
+                "pnt_52",
+                "item:left-instrument-panel:13"
+              ],
+              "text": "Turning this knob clockwise makes the symbols and text on the left screen brighter. Turning it back makes them dimmer.",
+              "context": "The pilot sets it for the light in the cockpit, bright in sunshine and low at night.",
+              "src": "m1",
+              "page": "39"
+            },
+            {
+              "id": "ldd-contrast",
+              "name": "Left DDI CONT (contrast) knob",
+              "type": "knob",
+              "match": [
+                "pnt_53",
+                "item:left-instrument-panel:11"
+              ],
+              "text": "This knob is meant to change how strongly the symbols stand out from the dark background of the left screen.",
+              "context": "The manual says this knob is not implemented, so in DCS it has no effect.",
+              "src": "m1",
+              "page": "39"
+            },
+            {
+              "id": "ldd-pb",
+              "name": "Left DDI pushbuttons 1-20",
+              "type": "button",
+              "match": [
+                "pnt_54",
+                "pnt_55",
+                "pnt_56",
+                "pnt_57",
+                "pnt_58",
+                "pnt_59",
+                "pnt_60",
+                "pnt_61",
+                "pnt_62",
+                "pnt_63",
+                "pnt_64",
+                "pnt_65",
+                "pnt_66",
+                "pnt_67",
+                "pnt_68",
+                "pnt_69",
+                "pnt_70",
+                "pnt_72",
+                "pnt_73",
+                "pnt_75",
+                "item:left-instrument-panel:10"
+              ],
+              "count": 20,
+              "text": "These 20 buttons sit around the edge of the left screen. Each one picks the word printed next to it on the screen, so the same button does different things on different pages.",
+              "context": "Button 1 is the lowest on the left side; the numbering goes clockwise. The pilot uses them to change pages: weapons, radar, targeting camera, fuel and more.",
+              "src": "m1",
+              "page": "39"
+            }
+          ]
+        },
+        {
+          "id": "ifei",
+          "name": "IFEI (integrated fuel/engine indicator)",
+          "db": "integrated-fuel-engine-indicator-ifei",
+          "src": "m1",
+          "page": "41",
+          "text": "A small screen with numbers for both engines, the fuel in the tanks and the clock. Five buttons and a knob around it change what it shows.",
+          "context": "The pilot watches it during engine start to see the engines wake up, and in flight to know how much fuel is left.",
+          "controls": [
+            {
+              "id": "ifei-display",
+              "name": "IFEI engine displays (RPM, TEMP, FF, NOZ, OIL)",
+              "type": "display",
+              "match": [
+                "item:left-instrument-panel:12",
+                "item:integrated-fuel-engine-indicator-ifei:1",
+                "item:integrated-fuel-engine-indicator-ifei:2",
+                "item:integrated-fuel-engine-indicator-ifei:3",
+                "item:integrated-fuel-engine-indicator-ifei:4",
+                "item:integrated-fuel-engine-indicator-ifei:5"
+              ],
+              "text": "Two columns of numbers, one per engine. RPM is how fast the engine turns, in percent. TEMP is the exhaust heat. FF is fuel use, NOZ is how far the nozzle at the back is open and OIL is the oil pressure.",
+              "context": "During start-up the pilot compares these numbers with the values in the checklist before starting the second engine. Afterburner use is not shown in RPM or FF.",
+              "src": "m1",
+              "page": "41"
+            },
+            {
+              "id": "ifei-fuel",
+              "name": "IFEI fuel counters (T, I and BINGO)",
+              "type": "display",
+              "match": [
+                "item:integrated-fuel-engine-indicator-ifei:6",
+                "item:integrated-fuel-engine-indicator-ifei:7",
+                "item:integrated-fuel-engine-indicator-ifei:8"
+              ],
+              "text": "Three number counters for fuel. The top one T is all fuel including outside tanks, the middle one I is fuel inside the plane. The lowest is the BINGO value, the fuel level at which the pilot must head home.",
+              "context": "The pilot sets BINGO with the arrow buttons. When the fuel falls to that value, the plane gives a caution message and a voice alert.",
+              "src": "m1",
+              "page": "41"
+            },
+            {
+              "id": "ifei-clock",
+              "name": "IFEI clock and elapsed time",
+              "type": "display",
+              "match": [
+                "item:integrated-fuel-engine-indicator-ifei:9",
+                "item:integrated-fuel-engine-indicator-ifei:10"
+              ],
+              "text": "A clock that shows local time or Zulu time (the world standard time), and a stopwatch called ET (elapsed time).",
+              "context": "The ZONE button switches the clock between the two times. The ET button starts, stops and resets the stopwatch.",
+              "src": "m1",
+              "page": "41"
+            },
+            {
+              "id": "ifei-mode",
+              "name": "IFEI MODE button",
+              "type": "button",
+              "match": [
+                "pnt_168"
+              ],
+              "text": "This button changes what the IFEI is doing. Two presses open the screen for setting the date and time.",
+              "context": "While setting the time, the QTY button moves between hours, minutes, time offset and year, and the arrow buttons change the value.",
+              "src": "m1",
+              "page": "41"
+            },
+            {
+              "id": "ifei-qty",
+              "name": "IFEI QTY (quantity) button",
+              "type": "button",
+              "match": [
+                "pnt_169"
+              ],
+              "text": "Each press shows the fuel of other tanks: first all fuel, then pairs of tanks one after another, up to the centreline tank.",
+              "context": "The pilot uses it to see how much fuel is in a certain tank. A letter next to the number says which tank is shown.",
+              "src": "m1",
+              "page": "41"
+            },
+            {
+              "id": "ifei-arrows",
+              "name": "IFEI up and down arrow buttons",
+              "type": "button",
+              "match": [
+                "pnt_170",
+                "pnt_171"
+              ],
+              "count": 2,
+              "text": "Two buttons with an arrow up and an arrow down. They raise or lower the value that is being set, for example the BINGO fuel number.",
+              "context": "BINGO can be changed only while the normal fuel display (T and I) is shown.",
+              "src": "m1",
+              "page": "41"
+            },
+            {
+              "id": "ifei-zone",
+              "name": "IFEI ZONE button",
+              "type": "button",
+              "match": [
+                "pnt_172"
+              ],
+              "text": "Press this button and the clock switches between local time and Zulu time. Zulu time is the same all over the world.",
+              "context": "The pilot uses Zulu time when the mission plan is written in Zulu.",
+              "src": "m1",
+              "page": "41"
+            },
+            {
+              "id": "ifei-et",
+              "name": "IFEI ET (elapsed time) button",
+              "type": "button",
+              "match": [
+                "pnt_173"
+              ],
+              "text": "This button works like a stopwatch. One press starts it, the second press pauses, the third press resumes. Holding it down sets the stopwatch back to zero.",
+              "context": "The pilot can time a leg of the flight or a turn with it.",
+              "src": "m1",
+              "page": "41"
+            },
+            {
+              "id": "ifei-bright",
+              "name": "IFEI BRT (brightness) knob",
+              "type": "knob",
+              "match": [
+                "pnt_174"
+              ],
+              "text": "This knob sets how bright the IFEI is, but only when the lighting MODE switch is on NITE or NVG.",
+              "context": "In the DAY setting of the MODE switch the knob has no effect.",
+              "src": "m1",
+              "page": "41"
+            }
+          ]
+        },
+        {
+          "id": "display-selectors",
+          "name": "Display selector switches",
+          "src": "m1",
+          "text": "Three switches on the left instrument panel with labelled positions: HMD/LDDI/RDDI, HUD/LDDI/RDDI and MAN/OFF/AUTO. The manual does not describe them.",
+          "context": "They are part of the cockpit's display and video equipment. The game lets the pilot click them, but the manual gives no details.",
+          "controls": [
+            {
+              "id": "sel-hmd",
+              "name": "Selector switch HMD / LDDI / RDDI",
+              "type": "switch3",
+              "match": [
+                "pnt_175"
+              ],
+              "positions": [
+                {
+                  "name": "HMD",
+                  "text": "Labelled HMD (helmet display); the manual gives no details."
+                },
+                {
+                  "name": "LDDI",
+                  "text": "Labelled LDDI (left screen); the manual gives no details."
+                },
+                {
+                  "name": "RDDI",
+                  "text": "Labelled RDDI (right screen); the manual gives no details."
+                }
+              ],
+              "text": "A three-position switch labelled HMD, LDDI and RDDI. The manual does not describe it; the game names it 'Selector Switch, HMD/LDDI/RDDI'.",
+              "context": "It sits on the left instrument panel next to the display controls. The pilot does not need it for a normal flight.",
+              "src": "m1"
+            },
+            {
+              "id": "sel-hud",
+              "name": "Selector switch HUD / LDDI / RDDI",
+              "type": "switch3",
+              "match": [
+                "pnt_176"
+              ],
+              "positions": [
+                {
+                  "name": "HUD",
+                  "text": "Labelled HUD; the manual gives no details."
+                },
+                {
+                  "name": "LDDI",
+                  "text": "Labelled LDDI (left screen); the manual gives no details."
+                },
+                {
+                  "name": "RDDI",
+                  "text": "Labelled RDDI (right screen); the manual gives no details."
+                }
+              ],
+              "text": "A three-position switch labelled HUD, LDDI and RDDI. The manual does not describe it; the game names it 'Selector Switch, HUD/LDIR/RDDI'.",
+              "context": "It sits next to the first selector switch. The pilot does not need it for a normal flight.",
+              "src": "m1"
+            },
+            {
+              "id": "sel-mode",
+              "name": "Mode selector switch MAN / OFF / AUTO",
+              "type": "switch3",
+              "match": [
+                "pnt_314"
+              ],
+              "positions": [
+                {
+                  "name": "MAN",
+                  "text": "Labelled MAN (manual); the manual gives no details."
+                },
+                {
+                  "name": "OFF",
+                  "text": "Labelled OFF; the manual gives no details."
+                },
+                {
+                  "name": "AUTO",
+                  "text": "Labelled AUTO (automatic); the manual gives no details."
+                }
+              ],
+              "text": "A three-position switch labelled MAN, OFF and AUTO. The manual does not describe it; the game names it 'Mode Selector Switch'.",
+              "context": "It sits on the left instrument panel. The pilot does not need it for a normal flight.",
+              "src": "m1"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "left-vertical",
+      "where": "front-left",
+      "name": "Left vertical panel",
+      "text": "The tall panel at the lower left of the main instrument panel, with the handles for wheels, flaps and brakes.",
+      "panels": [
+        {
+          "id": "left-vertical-panel",
+          "name": "Left vertical panel (gear, flaps, brakes)",
+          "db": "left-vertical-panel",
+          "src": "m1",
+          "page": "57",
+          "text": "The strip at the lower left of the main panel. It holds the landing gear handle, the flap switch, the brake handle, the hook bypass and the jettison knob.",
+          "context": "The pilot uses it for take-off and landing: wheels down, flaps set, brakes ready. It is also where weapons can be dropped in an emergency.",
+          "controls": [
+            {
+              "id": "gear-handle",
+              "name": "Landing gear control handle (wheel-shaped)",
+              "type": "handle",
+              "match": [
+                "pnt_226",
+                "item:left-vertical-panel:6"
+              ],
+              "positions": [
+                {
+                  "name": "UP",
+                  "text": "The wheels fold into the plane."
+                },
+                {
+                  "name": "DN",
+                  "text": "The wheels are lowered and locked down."
+                }
+              ],
+              "text": "Pull this handle up and the wheels fold away. Push it down and the wheels come out. A red light in the handle shows while the wheels are moving.",
+              "context": "The wheels can go up only when the plane is off the ground and the launch bar is in. Turning the handle 90 degrees and pulling it brings the wheels down in an emergency (mouse wheel in the game).",
+              "src": "m1",
+              "page": "57"
+            },
+            {
+              "id": "downlock",
+              "name": "Down lock override button",
+              "type": "button",
+              "match": [
+                "pnt_229"
+              ],
+              "text": "A button that unlocks the landing gear handle so it can be moved up even when the safety lock holds it down.",
+              "context": "The pilot would use it when the lock holds the handle although the plane is flying.",
+              "src": "m1",
+              "page": "57"
+            },
+            {
+              "id": "tone-silence",
+              "name": "Warning tone silence button",
+              "type": "button",
+              "match": [
+                "pnt_230"
+              ],
+              "text": "Pressing this button stops the warning tone, for example the tone that sounds when the wheels are not down.",
+              "context": "The pilot uses it when the warning is already understood and the sound is in the way.",
+              "src": "m1",
+              "page": "57"
+            },
+            {
+              "id": "launch-bar",
+              "name": "Launch bar switch (EXTEND / RETRACT)",
+              "type": "switch2",
+              "match": [
+                "pnt_233",
+                "item:left-vertical-panel:3"
+              ],
+              "positions": [
+                {
+                  "name": "EXTEND",
+                  "text": "The launch bar goes down so it can hook onto the catapult."
+                },
+                {
+                  "name": "RETRACT",
+                  "text": "The launch bar goes back up and is locked."
+                }
+              ],
+              "text": "On an aircraft carrier the plane is shot into the air by a catapult. This switch puts down the launch bar under the nose that hooks the plane to the catapult.",
+              "context": "The pilot extends it before the catapult launch. The green L BAR light shows it is down. With the bar out, the nose wheel cannot be folded away.",
+              "src": "m1",
+              "page": "58"
+            },
+            {
+              "id": "flap-sw",
+              "name": "FLAP switch (AUTO / HALF / FULL)",
+              "type": "switch3",
+              "match": [
+                "pnt_234",
+                "item:left-vertical-panel:2"
+              ],
+              "positions": [
+                {
+                  "name": "AUTO",
+                  "text": "The flight computer sets the flaps by itself, depending on speed and angle of attack."
+                },
+                {
+                  "name": "HALF",
+                  "text": "Take-off and landing setting with medium flaps below 250 knots."
+                },
+                {
+                  "name": "FULL",
+                  "text": "Take-off and landing setting with the most flaps below 250 knots."
+                }
+              ],
+              "text": "This switch tells the flight computer how much of the wing's flaps to use. The flaps are parts of the wing that give more lift at low speed.",
+              "context": "AUTO is for normal flight. HALF and FULL are for take-off and landing, below 250 knots. Above that speed the computer pulls the flaps in again and a FLAPS light shows.",
+              "src": "m1",
+              "page": "58"
+            },
+            {
+              "id": "sel-jett-knob",
+              "name": "Selective jettison knob",
+              "type": "selector",
+              "match": [
+                "pnt_236",
+                "item:left-vertical-panel:8"
+              ],
+              "positions": [
+                {
+                  "name": "L FUS MSL",
+                  "text": "The missile on the left fuselage is dropped."
+                },
+                {
+                  "name": "SAFE",
+                  "text": "Nothing can be jettisoned with this knob."
+                },
+                {
+                  "name": "R FUS MSL",
+                  "text": "The missile on the right fuselage is dropped."
+                },
+                {
+                  "name": "RACK/LCHR",
+                  "text": "The racks and launchers of the chosen stations are dropped with their load."
+                },
+                {
+                  "name": "STORES",
+                  "text": "Only the stores (weapons and tanks) of the chosen stations are dropped."
+                }
+              ],
+              "text": "A knob that chooses what is dropped when the JETT button in its middle is pressed. SAFE blocks it. Other positions pick a fuselage missile, or the stores or the racks of the stations picked before.",
+              "context": "It works only when the landing gear is up and locked and the MASTER ARM switch is on ARM.",
+              "src": "m1",
+              "page": "58"
+            },
+            {
+              "id": "sel-jett-btn",
+              "name": "JETT (selective jettison) pushbutton",
+              "type": "button",
+              "match": [
+                "pnt_235"
+              ],
+              "text": "The button in the middle of the selective jettison knob. Pressing it drops whatever the knob and the station buttons have chosen.",
+              "context": "It does nothing unless the master arm switch is on ARM and the wheels are up and locked.",
+              "src": "m1",
+              "page": "58"
+            },
+            {
+              "id": "ldg-taxi",
+              "name": "LDG/TAXI LIGHT switch",
+              "type": "switch2",
+              "match": [
+                "pnt_237",
+                "item:left-vertical-panel:4"
+              ],
+              "positions": [
+                {
+                  "name": "ON",
+                  "text": "The light is on, if the wheels are down."
+                },
+                {
+                  "name": "OFF",
+                  "text": "The light is off."
+                }
+              ],
+              "text": "This switch turns the big white light on the nose wheel on or off. It lights the runway ahead.",
+              "context": "The light comes on only when the landing gear handle is down and the wheels are down.",
+              "src": "m1",
+              "page": "58"
+            },
+            {
+              "id": "anti-skid",
+              "name": "ANTI SKID switch",
+              "type": "switch2",
+              "match": [
+                "pnt_238",
+                "item:left-vertical-panel:7"
+              ],
+              "positions": [
+                {
+                  "name": "ON",
+                  "text": "Anti-skid is working."
+                },
+                {
+                  "name": "OFF",
+                  "text": "Anti-skid is off; used for carrier operations."
+                }
+              ],
+              "text": "Anti-skid stops the wheels from locking when braking, like the ABS of a car. This switch turns it on or off.",
+              "context": "It is used for landing on airfields. On an aircraft carrier it is switched off.",
+              "src": "m1",
+              "page": "59"
+            },
+            {
+              "id": "hook-bypass",
+              "name": "HOOK BYPASS switch (FIELD / CARRIER)",
+              "type": "switch2",
+              "match": [
+                "pnt_239",
+                "item:left-vertical-panel:5"
+              ],
+              "positions": [
+                {
+                  "name": "FIELD",
+                  "text": "The AOA indexer lights stay steady even with the hook up."
+                },
+                {
+                  "name": "CARRIER",
+                  "text": "The AOA indexer lights flash if the hook is up."
+                }
+              ],
+              "text": "This switch changes how the angle-of-attack lights next to the HUD behave when the tail hook is up. On a carrier the hook must be down, so the lights warn by flashing.",
+              "context": "When the hook is lowered the switch moves to CARRIER by itself. The pilot sets FIELD for landing on a normal airfield.",
+              "src": "m1",
+              "page": "59"
+            },
+            {
+              "id": "park-brake",
+              "name": "Emergency / parking brake handle",
+              "type": "handle",
+              "match": [
+                "pnt_240",
+                "item:left-vertical-panel:9"
+              ],
+              "text": "A T-shaped handle. Turned a quarter turn and pulled out, it holds the wheel brakes on while the plane is parked. It is also the emergency brake if the normal brakes fail.",
+              "context": "On the ground the pilot releases it before moving. If it is set and the engines are run up, a PARK BRK caution appears.",
+              "src": "m1",
+              "page": "59"
+            },
+            {
+              "id": "brake-gauge",
+              "name": "Brake accumulator pressure gauge",
+              "type": "gauge",
+              "match": [
+                "item:left-vertical-panel:10"
+              ],
+              "text": "A round gauge for the brake reserve pressure. 3,000 psi is normal. The red area below 2,000 psi means the brake reserve is low.",
+              "context": "The reserve is what the emergency and parking brake use. The pilot checks it on the ground.",
+              "src": "m1",
+              "page": "59"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "center-instrument-panel",
+      "where": "front-center",
+      "name": "Center instrument panel",
+      "text": "The middle of the main panel: the HUD at the top, the UFC keypad, the HUD control panel, the colour display and the defence controls below.",
+      "panels": [
+        {
+          "id": "hud-aoa",
+          "name": "Head-up display and angle of attack indexer",
+          "src": "m1",
+          "page": "44",
+          "text": "At the top, in the pilot's line of sight, is the glass screen called the HUD (head-up display). The lights on its left side are the AOA indexer.",
+          "context": "The pilot looks through the HUD at the world and at the same time reads speed, height and aiming marks. The indexer helps in landing.",
+          "controls": [
+            {
+              "id": "hud",
+              "name": "HUD (head-up display)",
+              "type": "display",
+              "match": [
+                "item:center-instrument-panel:2"
+              ],
+              "text": "A clear glass plate in front of the pilot's eyes. Green numbers and marks are projected onto it, so the pilot reads speed, height, heading and aim without looking down.",
+              "context": "It is the main flying instrument and shows weapon and navigation information as well. It cannot be clicked; its brightness is set on the HUD control panel.",
+              "src": "m1",
+              "page": "44"
+            },
+            {
+              "id": "aoa-indexer",
+              "name": "AOA indexer lights",
+              "type": "light",
+              "match": [
+                "item:center-instrument-panel:1"
+              ],
+              "text": "Three lighted symbols left of the HUD that show whether the plane is flying too slow, right or too fast for landing. 'AOA' is the angle at which the wing meets the air.",
+              "context": "It works only with the wheels down and the plane in the air. The pilot uses it on final approach to hold the right speed.",
+              "src": "m1",
+              "page": "44"
+            }
+          ]
+        },
+        {
+          "id": "ufc",
+          "name": "UFC (up-front controller)",
+          "db": "up-front-controller",
+          "src": "m1",
+          "page": "45",
+          "text": "The keypad and small text screens below the HUD. The pilot types numbers here, for example radio channels, and picks systems like the autopilot, TACAN and ILS.",
+          "context": "It works together with the two big screens and the colour display below. Pressing a function button shows its choices in the five option windows.",
+          "controls": [
+            {
+              "id": "ufc-scratch",
+              "name": "Scratchpad and option windows",
+              "type": "display",
+              "match": [
+                "item:up-front-controller:1",
+                "item:up-front-controller:12"
+              ],
+              "text": "The scratchpad is a text line that shows what the pilot types on the keypad. The five option windows beside it show choices of four letters each.",
+              "context": "The pilot types a number, checks it in the scratchpad and sends it with ENT. If the entry is not valid, ERROR flashes.",
+              "src": "m1",
+              "page": "46"
+            },
+            {
+              "id": "ufc-adf",
+              "name": "ADF function select switch (1 / OFF / 2)",
+              "type": "switch3",
+              "match": [
+                "pnt_107",
+                "item:up-front-controller:2"
+              ],
+              "positions": [
+                {
+                  "name": "1",
+                  "text": "ADF uses the COMM 1 radio."
+                },
+                {
+                  "name": "OFF",
+                  "text": "ADF is off."
+                },
+                {
+                  "name": "2",
+                  "text": "ADF uses the COMM 2 radio."
+                }
+              ],
+              "text": "Switches the direction finder on. ADF points to a radio station on the ground. It uses either the COMM 1 or the COMM 2 radio.",
+              "context": "The centre position switches ADF off.",
+              "src": "m1",
+              "page": "46"
+            },
+            {
+              "id": "ufc-comm1-vol",
+              "name": "COMM 1 volume knob",
+              "type": "knob",
+              "match": [
+                "pnt_108",
+                "item:up-front-controller:3"
+              ],
+              "text": "Turning this knob up from OFF switches the COMM 1 radio on and sets how loud it is. Turned fully back, the radio is off.",
+              "context": "COMM 1 and COMM 2 are the two radios for talking to the tower and other aircraft.",
+              "src": "m1",
+              "page": "46"
+            },
+            {
+              "id": "ufc-comm1-chan",
+              "name": "COMM 1 channel selector knob and display",
+              "type": "knob",
+              "match": [
+                "pnt_124",
+                "item:up-front-controller:5",
+                "item:up-front-controller:4"
+              ],
+              "text": "Turning this knob picks a stored radio channel from 1 to 20, or special channels M, G and C. The small window above it shows the channel. Pulling the knob lets the pilot change the frequency on the keypad.",
+              "context": "A channel is like a station button on a car radio. The pilot picks the channel that the mission plan gives.",
+              "src": "m1",
+              "page": "46"
+            },
+            {
+              "id": "ufc-comm2-vol",
+              "name": "COMM 2 volume knob",
+              "type": "knob",
+              "match": [
+                "pnt_123",
+                "item:up-front-controller:6"
+              ],
+              "text": "Turning this knob up from OFF switches the COMM 2 radio on and sets its volume.",
+              "context": "COMM 2 is the second radio. Many pilots use it for a second contact, for example the tower while COMM 1 is on another frequency.",
+              "src": "m1",
+              "page": "46"
+            },
+            {
+              "id": "ufc-comm2-chan",
+              "name": "COMM 2 channel selector knob and display",
+              "type": "knob",
+              "match": [
+                "pnt_126",
+                "item:up-front-controller:8",
+                "item:up-front-controller:7"
+              ],
+              "text": "Picks a stored channel for the COMM 2 radio from 1 to 20, or the special channels M, G and C. The window beside it shows the choice. Pulling the knob opens the frequency for typing.",
+              "context": "It works exactly like the COMM 1 knob, only for the second radio.",
+              "src": "m1",
+              "page": "46"
+            },
+            {
+              "id": "ufc-emcon",
+              "name": "EMCON pushbutton",
+              "type": "button",
+              "match": [
+                "pnt_110",
+                "item:up-front-controller:9"
+              ],
+              "text": "EMCON means 'emissions control'. The button is meant to stop the plane from sending out radio and radar signals so enemies cannot find it.",
+              "context": "The manual says it currently has no function in DCS.",
+              "src": "m1",
+              "page": "46"
+            },
+            {
+              "id": "ufc-bright",
+              "name": "UFC brightness knob (DIM / BRT)",
+              "type": "knob",
+              "match": [
+                "pnt_109",
+                "item:up-front-controller:10"
+              ],
+              "text": "Turning this knob clockwise makes the option windows and the scratchpad brighter.",
+              "context": "The pilot sets it to be readable in sunlight and not too bright at night.",
+              "src": "m1",
+              "page": "46"
+            },
+            {
+              "id": "ufc-options",
+              "name": "Option select pushbuttons 1-5",
+              "type": "button",
+              "match": [
+                "pnt_100",
+                "pnt_101",
+                "pnt_102",
+                "pnt_103",
+                "pnt_106",
+                "item:up-front-controller:11"
+              ],
+              "count": 5,
+              "text": "Five buttons, one beside each option window. Pressing one picks or unpicks the choice written in its window.",
+              "context": "A chosen option gets a colon in front of it. For the autopilot this is how a mode like heading hold is switched on.",
+              "src": "m1",
+              "page": "46"
+            },
+            {
+              "id": "ufc-digits",
+              "name": "Keyboard keys 0-9",
+              "type": "keypad",
+              "match": [
+                "pnt_111",
+                "pnt_112",
+                "pnt_113",
+                "pnt_114",
+                "pnt_115",
+                "pnt_116",
+                "pnt_117",
+                "pnt_118",
+                "pnt_119",
+                "pnt_120",
+                "item:up-front-controller:13"
+              ],
+              "count": 10,
+              "text": "Ten keys with digits; some also show letters. Pressing a key puts that number into the scratchpad.",
+              "context": "The pilot uses them for radio frequencies, TACAN channels, ILS channels and waypoints. Trailing zeros must be typed as well.",
+              "src": "m1",
+              "page": "46"
+            },
+            {
+              "id": "ufc-clr",
+              "name": "CLR (clear) key",
+              "type": "button",
+              "match": [
+                "pnt_47_121"
+              ],
+              "text": "Wipes out what is typed. One press clears the scratchpad. A second press clears the option windows.",
+              "context": "Used when a number was typed wrongly or after an ERROR.",
+              "src": "m1",
+              "page": "46"
+            },
+            {
+              "id": "ufc-ent",
+              "name": "ENT (enter) key",
+              "type": "button",
+              "match": [
+                "pnt_47_122"
+              ],
+              "text": "Sends the number from the scratchpad to the system it belongs to. If it is accepted, the scratchpad blinks once.",
+              "context": "The last key of every entry: type, check, then press ENT.",
+              "src": "m1",
+              "page": "47"
+            },
+            {
+              "id": "ufc-ip",
+              "name": "UFC I/P pushbutton",
+              "type": "button",
+              "match": [
+                "pnt_99"
+              ],
+              "text": "A button on the UFC labelled I/P. The manual does not describe it; the game names it 'UFC I/P Pushbutton'.",
+              "context": "It is part of the keypad, next to the option select buttons.",
+              "src": "m1",
+              "page": "45"
+            },
+            {
+              "id": "ufc-ap",
+              "name": "A/P (autopilot) function button",
+              "type": "button",
+              "match": [
+                "pnt_128",
+                "item:up-front-controller:14"
+              ],
+              "text": "Shows the autopilot choices in the option windows, for example ATTH (hold the angle), HSEL (hold a heading), BALT and RALT (hold the height). Pressing A/P itself does not switch the autopilot on.",
+              "context": "The autopilot is switched on by picking a mode with an option button. The paddle switch on the stick switches it off.",
+              "src": "m1",
+              "page": "47"
+            },
+            {
+              "id": "ufc-tcn",
+              "name": "TCN (TACAN) function button",
+              "type": "button",
+              "match": [
+                "pnt_130"
+              ],
+              "text": "Shows the TACAN settings. TACAN is a radio beacon on the ground or a ship that tells the plane its direction and distance to it.",
+              "context": "With TCN the pilot types the TACAN channel and picks the mode, then uses ON/OFF to switch it on. This is often used to find the aircraft carrier.",
+              "src": "m1",
+              "page": "48"
+            },
+            {
+              "id": "ufc-ils",
+              "name": "ILS function button",
+              "type": "button",
+              "match": [
+                "pnt_131"
+              ],
+              "text": "Shows the ILS settings. ILS is a pair of radio beams at a runway or carrier that guides the plane down to land.",
+              "context": "The pilot types the channel (1 to 20) and switches ILS on with the ON/OFF button. The ILS must also be boxed on the HSI page to show on the HUD.",
+              "src": "m1",
+              "page": "48"
+            },
+            {
+              "id": "ufc-others",
+              "name": "IFF, D/L and BCN function buttons",
+              "type": "button",
+              "match": [
+                "pnt_129",
+                "pnt_132",
+                "pnt_133"
+              ],
+              "count": 3,
+              "text": "Three more function buttons. IFF is the transponder that answers 'friend or foe' questions. D/L is the datalink that shares data with other aircraft. BCN is the beacon.",
+              "context": "Each one shows the settings of its system in the option windows. The manual treats them in later chapters.",
+              "src": "m1",
+              "page": "47"
+            },
+            {
+              "id": "ufc-onoff",
+              "name": "ON/OFF function button",
+              "type": "button",
+              "match": [
+                "pnt_134"
+              ],
+              "text": "Switches on or off the system that was chosen with a function button, for example TACAN or ILS.",
+              "context": "When the system is on, the word ON appears in the scratchpad.",
+              "src": "m1",
+              "page": "48"
+            }
+          ]
+        },
+        {
+          "id": "hud-control-panel",
+          "name": "HUD control panel",
+          "db": "hud-control-panel",
+          "src": "m1",
+          "page": "49",
+          "text": "A row of knobs and switches under the UFC that set how the HUD looks and where its height numbers come from.",
+          "context": "The pilot sets the brightness for the light outside and picks the attitude and altitude sources for the flight.",
+          "controls": [
+            {
+              "id": "hud-reject",
+              "name": "HUD symbology reject switch (NORM / REJ 1 / REJ 2)",
+              "type": "switch3",
+              "match": [
+                "pnt_140",
+                "item:hud-control-panel:1"
+              ],
+              "positions": [
+                {
+                  "name": "NORM",
+                  "text": "All the normal marks are shown."
+                },
+                {
+                  "name": "REJ 1",
+                  "text": "Some marks, such as Mach number, g and the airspeed and altitude boxes, are removed."
+                },
+                {
+                  "name": "REJ 2",
+                  "text": "All REJ 1 marks plus the heading scale and more are removed."
+                }
+              ],
+              "text": "This switch removes marks from the HUD when it is too crowded. NORM shows everything, REJ 1 removes a first group, REJ 2 removes more.",
+              "context": "REJ 1 removes e.g. Mach number, g and bank angle; REJ 2 also removes the heading scale. The pilot uses it for a cleaner view.",
+              "src": "m1",
+              "page": "49"
+            },
+            {
+              "id": "hud-bright",
+              "name": "HUD symbology brightness knob",
+              "type": "knob",
+              "match": [
+                "pnt_141",
+                "item:hud-control-panel:2"
+              ],
+              "text": "Turn this knob to make the green HUD marks brighter or dimmer.",
+              "context": "It works together with the DAY/NIGHT switch, which sets the brightness range.",
+              "src": "m1",
+              "page": "49"
+            },
+            {
+              "id": "hud-dn",
+              "name": "HUD symbology brightness selector (DAY / NIGHT)",
+              "type": "switch2",
+              "match": [
+                "pnt_142",
+                "item:hud-control-panel:4"
+              ],
+              "positions": [
+                {
+                  "name": "DAY",
+                  "text": "The maximum symbol brightness is available."
+                },
+                {
+                  "name": "NIGHT",
+                  "text": "The symbols stay at a reduced brightness."
+                }
+              ],
+              "text": "Chooses the range of brightness for the HUD marks. DAY allows the brightest marks, NIGHT keeps them dimmer.",
+              "context": "The pilot uses NIGHT in the dark so the marks do not dazzle.",
+              "src": "m1",
+              "page": "49"
+            },
+            {
+              "id": "hud-black",
+              "name": "HUD black level knob",
+              "type": "knob",
+              "match": [
+                "pnt_143"
+              ],
+              "text": "A knob labelled 'Black Level' on the HUD control panel. The manual does not describe it; the game calls it 'Black Level Control Knob'.",
+              "context": "It belongs to the HUD video picture settings next to the balance knob.",
+              "src": "m1",
+              "page": "49"
+            },
+            {
+              "id": "hud-video",
+              "name": "HUD video control switch (W/B / VID / OFF)",
+              "type": "switch3",
+              "match": [
+                "pnt_144"
+              ],
+              "positions": [
+                {
+                  "name": "W/B",
+                  "text": "Labelled W/B; the manual gives no details."
+                },
+                {
+                  "name": "VID",
+                  "text": "Labelled VID (video); the manual gives no details."
+                },
+                {
+                  "name": "OFF",
+                  "text": "The video setting is off."
+                }
+              ],
+              "text": "A three-position switch for the video picture on the HUD. The manual does not describe it; the game calls it 'HUD Video Control Switch'.",
+              "context": "It is on the HUD control panel with the black level and balance knobs.",
+              "src": "m1",
+              "page": "49"
+            },
+            {
+              "id": "hud-balance",
+              "name": "HUD balance knob",
+              "type": "knob",
+              "match": [
+                "pnt_145"
+              ],
+              "text": "A knob labelled 'Balance' on the HUD control panel. The manual does not describe it; the game calls it 'Balance Control Knob'.",
+              "context": "It belongs to the HUD video picture settings next to the black level knob.",
+              "src": "m1",
+              "page": "49"
+            },
+            {
+              "id": "hud-aoa-knob",
+              "name": "AOA indexer control knob",
+              "type": "knob",
+              "match": [
+                "pnt_146",
+                "item:hud-control-panel:3"
+              ],
+              "text": "This knob is meant to dim the AOA indexer lights next to the HUD.",
+              "context": "The manual says it currently has no function.",
+              "src": "m1",
+              "page": "49"
+            },
+            {
+              "id": "hud-att",
+              "name": "Attitude selector switch (INS / AUTO / STBY)",
+              "type": "switch3",
+              "match": [
+                "pnt_148"
+              ],
+              "positions": [
+                {
+                  "name": "INS",
+                  "text": "The attitude comes from the inertial navigation system."
+                },
+                {
+                  "name": "AUTO",
+                  "text": "The plane picks the source itself; the normal setting."
+                },
+                {
+                  "name": "STBY",
+                  "text": "The standby attitude instrument is used."
+                }
+              ],
+              "text": "Chooses where the plane's attitude (nose up or down, wings level or tilted) comes from for the HUD: the inertial navigation system, the standby instrument or automatically.",
+              "context": "The start-up checklist sets it to AUTO. STBY forces the standby instrument to be used.",
+              "src": "m1",
+              "page": "98"
+            },
+            {
+              "id": "hud-alt",
+              "name": "Altitude switch (BARO / RDR)",
+              "type": "switch2",
+              "match": [
+                "pnt_147",
+                "item:hud-control-panel:5"
+              ],
+              "positions": [
+                {
+                  "name": "BARO",
+                  "text": "The height comes from air pressure (barometric)."
+                },
+                {
+                  "name": "RDR",
+                  "text": "The height above the ground comes from the radar altimeter."
+                }
+              ],
+              "text": "Chooses how the HUD measures height: BARO uses air pressure and RDR uses the radar altimeter, which measures the height above the ground.",
+              "context": "When RDR is chosen the HUD shows an R next to the altitude. Above 5,000 feet the radar altimeter does not work and the HUD goes back to BARO with a flashing B.",
+              "src": "m1",
+              "page": "49"
+            }
+          ]
+        },
+        {
+          "id": "ampcd",
+          "name": "AMPCD (center colour display)",
+          "db": "mpcd",
+          "src": "m1",
+          "page": "50",
+          "text": "The colour screen in the middle of the panel, also called MPCD. It shows the moving map and other pages. The rocker switches around it set its look.",
+          "context": "It shows the map and the position of the plane. The pilot picks pages with the buttons around its edge.",
+          "controls": [
+            {
+              "id": "ampcd-screen",
+              "name": "AMPCD screen",
+              "type": "display",
+              "match": [
+                "item:center-instrument-panel:5"
+              ],
+              "text": "A colour screen in the middle of the panel. It shows the HSI (a map-like page with the route), situation pages and other menus.",
+              "context": "It is driven by the map computer for the HSI page and by the left DDI for the other pages.",
+              "src": "m1",
+              "page": "50"
+            },
+            {
+              "id": "ampcd-off-bright",
+              "name": "AMPCD OFF/BRT knob",
+              "type": "knob",
+              "match": [
+                "pnt_203",
+                "item:mpcd:1"
+              ],
+              "text": "Turning this knob out of OFF switches the colour display on. Turning it further makes the picture brighter.",
+              "context": "It sets the brightness only when the day/night rocker is on DAY. With NGT the screen sets its own brightness.",
+              "src": "m1",
+              "page": "50"
+            },
+            {
+              "id": "ampcd-daynight",
+              "name": "AMPCD day/night rocker (DAY / NGT)",
+              "type": "rocker",
+              "match": [
+                "pnt_177_1",
+                "pnt_177_2",
+                "item:mpcd:2"
+              ],
+              "positions": [
+                {
+                  "name": "DAY",
+                  "text": "The pilot sets the brightness with the knob."
+                },
+                {
+                  "name": "NGT",
+                  "text": "The brightness is automatic."
+                }
+              ],
+              "text": "A rocker switch with two sides. DAY: the knob sets the brightness. NGT: the screen sets its brightness itself.",
+              "context": "With the HSI page shown the brightness is always automatic.",
+              "src": "m1",
+              "page": "50"
+            },
+            {
+              "id": "ampcd-sym",
+              "name": "AMPCD symbology rocker",
+              "type": "rocker",
+              "match": [
+                "pnt_179_1",
+                "pnt_179_2",
+                "item:mpcd:3"
+              ],
+              "positions": [
+                {
+                  "name": "UP",
+                  "text": "Narrower, sharper, dimmer symbols."
+                },
+                {
+                  "name": "DOWN",
+                  "text": "Wider, brighter, less sharp symbols."
+                }
+              ],
+              "text": "Pressing the top half makes the lines and letters thinner, sharper and dimmer. Pressing the bottom half makes them wider and brighter.",
+              "context": "Each press makes a small step.",
+              "src": "m1",
+              "page": "50"
+            },
+            {
+              "id": "ampcd-gain",
+              "name": "AMPCD gain rocker",
+              "type": "rocker",
+              "match": [
+                "pnt_180_1",
+                "pnt_180_2",
+                "item:mpcd:4"
+              ],
+              "positions": [
+                {
+                  "name": "UP",
+                  "text": "The background video gets brighter."
+                },
+                {
+                  "name": "DOWN",
+                  "text": "The background video gets darker."
+                }
+              ],
+              "text": "Pressing the top half makes the background picture of the screen brighter. The bottom half makes it darker.",
+              "context": "It matters when the screen shows a video picture, such as the map behind the symbols.",
+              "src": "m1",
+              "page": "50"
+            },
+            {
+              "id": "ampcd-contrast",
+              "name": "AMPCD contrast rocker",
+              "type": "rocker",
+              "match": [
+                "pnt_182_1",
+                "pnt_182_2",
+                "item:mpcd:5"
+              ],
+              "positions": [
+                {
+                  "name": "UP",
+                  "text": "More contrast."
+                },
+                {
+                  "name": "DOWN",
+                  "text": "Less contrast."
+                }
+              ],
+              "text": "Pressing the top half increases the contrast, the difference between light and dark. The bottom half reduces it.",
+              "context": "The pilot adjusts it in small steps until the page is easy to read.",
+              "src": "m1",
+              "page": "50"
+            },
+            {
+              "id": "ampcd-pb",
+              "name": "AMPCD pushbuttons 1-20",
+              "type": "button",
+              "match": [
+                "pnt_183",
+                "pnt_184",
+                "pnt_185",
+                "pnt_186",
+                "pnt_187",
+                "pnt_188",
+                "pnt_189",
+                "pnt_190",
+                "pnt_191",
+                "pnt_192",
+                "pnt_193",
+                "pnt_194",
+                "pnt_195",
+                "pnt_196",
+                "pnt_197",
+                "pnt_198",
+                "pnt_199",
+                "pnt_200",
+                "pnt_201",
+                "pnt_202"
+              ],
+              "count": 20,
+              "text": "These 20 buttons sit around the edge of the colour display. Each one picks the word written next to it on the screen, so the same button does different things on different pages.",
+              "context": "Button 1 is the lowest on the left; the numbering goes clockwise. The pilot uses them to change pages and to work in the map.",
+              "src": "m1",
+              "page": "50"
+            },
+            {
+              "id": "hdg-set",
+              "name": "HDG (heading) set switch",
+              "type": "rocker",
+              "match": [
+                "pnt_312",
+                "item:mpcd:6"
+              ],
+              "positions": [
+                {
+                  "name": "UP",
+                  "text": "The heading number increases while it is held."
+                },
+                {
+                  "name": "DOWN",
+                  "text": "The heading number decreases while it is held."
+                }
+              ],
+              "text": "Held up it turns the heading marker on the HSI map page to larger numbers, held down to smaller numbers. The marker shows the direction the pilot wants to fly.",
+              "context": "The autopilot's heading select (HSEL) mode uses this marker. The switch springs back to the centre.",
+              "src": "m1",
+              "page": "51"
+            },
+            {
+              "id": "crs-set",
+              "name": "CRS (course) set switch",
+              "type": "rocker",
+              "match": [
+                "pnt_313"
+              ],
+              "positions": [
+                {
+                  "name": "UP",
+                  "text": "The course number increases while it is held."
+                },
+                {
+                  "name": "DOWN",
+                  "text": "The course number decreases while it is held."
+                }
+              ],
+              "text": "Held up it turns the course line on the HSI page to larger numbers, held down to smaller numbers. The course line is the path that the pilot wants to follow to a point.",
+              "context": "It springs back to the centre. The game puts it to the right of the colour display; it is the pair of the heading set switch.",
+              "src": "m1",
+              "page": "51"
+            }
+          ]
+        },
+        {
+          "id": "alr67",
+          "name": "ALR-67 radar warning control panel",
+          "src": "m1",
+          "page": "413",
+          "text": "A panel of lit buttons and knobs under the colour display. It controls the radar warning receiver, the device that tells the pilot when an enemy radar looks at the plane.",
+          "context": "The pilot switches it on in the start-up. The azimuth indicator on the right instrument panel shows the result.",
+          "controls": [
+            {
+              "id": "alr-power",
+              "name": "ALR-67 POWER pushbutton",
+              "type": "button",
+              "match": [
+                "pnt_277"
+              ],
+              "text": "Switches the radar warning receiver on or off. When it comes on, the lights in the other buttons come on as well.",
+              "context": "The pilot switches it on before the mission and leaves it on.",
+              "src": "m1",
+              "page": "413"
+            },
+            {
+              "id": "alr-display",
+              "name": "ALR-67 DISPLAY pushbutton",
+              "type": "button",
+              "match": [
+                "pnt_275"
+              ],
+              "text": "Limits the display to the six most important threats when pressed. Pressing again returns to the full display.",
+              "context": "The manual calls this function LIMIT. An L appears on the radar warning display while limiting is on.",
+              "src": "m1",
+              "page": "413"
+            },
+            {
+              "id": "alr-offset",
+              "name": "ALR-67 OFFSET pushbutton",
+              "type": "button",
+              "match": [
+                "pnt_269"
+              ],
+              "text": "When symbols lie on top of each other on the display, this button spreads them apart so they can be read.",
+              "context": "An ENABLE light in the button shows that the option is on. Pressing the button again turns it off.",
+              "src": "m1",
+              "page": "414"
+            },
+            {
+              "id": "alr-special",
+              "name": "ALR-67 SPECIAL pushbutton",
+              "type": "button",
+              "match": [
+                "pnt_272"
+              ],
+              "text": "A button labelled SPECIAL. The manual does not describe it; the game names it 'ALR-67 SPECIAL Pushbutton'.",
+              "context": "It lights up together with the other buttons when the receiver is on.",
+              "src": "m1",
+              "page": "413"
+            },
+            {
+              "id": "alr-bit",
+              "name": "ALR-67 BIT pushbutton",
+              "type": "button",
+              "match": [
+                "pnt_266"
+              ],
+              "text": "BIT means built-in test. The button makes the receiver show its own test status on the display. A FAIL light comes on when a test finds a fault.",
+              "context": "The pilot can check the receiver this way. Pressing the button again turns the test display off.",
+              "src": "m1",
+              "page": "414"
+            },
+            {
+              "id": "alr-dis-type",
+              "name": "ALR-67 DIS TYPE switch (N / I / A / U / F)",
+              "type": "selector",
+              "match": [
+                "pnt_261"
+              ],
+              "positions": [
+                {
+                  "name": "N",
+                  "text": "Priority setting N."
+                },
+                {
+                  "name": "I",
+                  "text": "Priority setting I."
+                },
+                {
+                  "name": "A",
+                  "text": "Priority setting A."
+                },
+                {
+                  "name": "U",
+                  "text": "Priority setting U."
+                },
+                {
+                  "name": "F",
+                  "text": "Priority setting F."
+                }
+              ],
+              "text": "Chooses which kinds of radar the display shows most prominently. The letter chosen appears in the middle of the display.",
+              "context": "The manual lists the letters N, I, A, U and F as the priority setting but gives no details of each.",
+              "src": "m1",
+              "page": "413"
+            },
+            {
+              "id": "alr-dmr",
+              "name": "ALR-67 DMR knob",
+              "type": "knob",
+              "match": [
+                "pnt_263"
+              ],
+              "text": "A knob on the panel. The manual lists a dimmer knob for the lamps of this panel; the game names this one 'DMR Control Knob'.",
+              "context": "For the dimmer the manual says: clockwise is brighter, counterclockwise is dimmer.",
+              "src": "m1",
+              "page": "414"
+            },
+            {
+              "id": "alr-audio",
+              "name": "ALR-67 AUDIO knob",
+              "type": "knob",
+              "match": [
+                "pnt_262"
+              ],
+              "text": "A volume knob for the radar warning sounds. The game says that it has no function.",
+              "context": "The sound level is set on the audio panel on the left console instead (RWR volume).",
+              "src": "m1",
+              "page": "413"
+            }
+          ]
+        },
+        {
+          "id": "icmcp",
+          "name": "Countermeasures and jammer controls",
+          "src": "m1",
+          "page": "407",
+          "text": "Switches for the decoys (chaff and flares) and for the jammer that confuses enemy radar. They sit in the lower centre of the panel.",
+          "context": "The pilot switches them on before entering a combat area. During the fight the decoys are released with the dispense switch on the throttle.",
+          "controls": [
+            {
+              "id": "disp-sw",
+              "name": "DISPENSER switch (BYPASS / ON / OFF)",
+              "type": "switch3",
+              "match": [
+                "pnt_517"
+              ],
+              "positions": [
+                {
+                  "name": "BYPASS",
+                  "text": "Skips the programs: forward releases two chaff, aft releases two flares."
+                },
+                {
+                  "name": "ON",
+                  "text": "The decoy system works with its programs; a test runs for about five seconds."
+                },
+                {
+                  "name": "OFF",
+                  "text": "The decoy system is off."
+                }
+              ],
+              "text": "The main power switch of the decoy system. Chaff are clouds of tiny metal strips against radar missiles. Flares are hot burning lights against heat-seeking missiles.",
+              "context": "In ON the programs work. In BYPASS the throttle dispense switch always releases chaff (forward) or flares (aft). The ECM JETT button works even in OFF.",
+              "src": "m1",
+              "page": "407"
+            },
+            {
+              "id": "ecm-jett",
+              "name": "ECM JETT (dispenser jettison) button",
+              "type": "button",
+              "match": [
+                "pnt_515"
+              ],
+              "text": "Pressing this button releases all the chaff and flares at once. It works only when the plane is in the air.",
+              "context": "It is an emergency button. The button lights up when it is pressed.",
+              "src": "m1",
+              "page": "407"
+            },
+            {
+              "id": "ecm-mode",
+              "name": "ECM mode switch (XMIT / REC / BIT / STBY / OFF)",
+              "type": "selector",
+              "match": [
+                "pnt_248"
+              ],
+              "positions": [
+                {
+                  "name": "XMIT",
+                  "text": "The jammer is allowed to jam when a radar locks on."
+                },
+                {
+                  "name": "REC",
+                  "text": "The jammer listens for radar locks and warns."
+                },
+                {
+                  "name": "BIT",
+                  "text": "The test position; the manual says it is not implemented."
+                },
+                {
+                  "name": "STBY",
+                  "text": "The jammer warms up but does not send."
+                },
+                {
+                  "name": "OFF",
+                  "text": "The jammer is off."
+                }
+              ],
+              "text": "Controls the ALQ-165 jammer. A jammer sends false echoes to fool enemy radars so they lose their lock on the plane.",
+              "context": "STBY warms it up first (about five minutes). REC makes it listen for radars. XMIT lets it jam. The pilot keeps it off in close fights because missiles may home in on jamming.",
+              "src": "m1",
+              "page": "416"
+            },
+            {
+              "id": "cabin-gauge",
+              "name": "Cabin pressure gauge",
+              "type": "gauge",
+              "match": [
+                "item:center-instrument-panel:6"
+              ],
+              "text": "A gauge in the lower instrument group that shows the air pressure inside the cabin.",
+              "context": "The manual says the rest of this group is about the defensive systems.",
+              "src": "m1",
+              "page": "51"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

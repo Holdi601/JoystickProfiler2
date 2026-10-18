@@ -827,7 +827,7 @@ namespace JoyPro.Engine.Games
                 }
                 string temp = path + ".joypro-tmp";
                 File.WriteAllText(temp, text, encoding);
-                File.Replace(temp, path, null);
+                SafeFileIo.ReplaceFile(temp, path);
                 return true;
             }
             catch (Exception ex)

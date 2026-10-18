@@ -1112,6 +1112,8 @@ public sealed partial class MainWindowViewModel : ViewModelBase
     {
         OnPropertyChanged(nameof(IsStartStage));
         BusyProgress.OnStartPage = value == UiStage.Start;
+        if (value != UiStage.Start)
+            OnStartPageLeft();
         OnPropertyChanged(nameof(IsRelationsStage));
         if (value == UiStage.Relations)
             BuilderOnScreen();
@@ -3454,6 +3456,8 @@ public sealed partial class MainWindowViewModel : ViewModelBase
             RefreshRelationValidationState();
             // The Binds page lists every relation (bound or not): keep it in step with the relation list.
             RebuildVisibleBinds();
+            // The aircraft chips' tooltips name the aircraft as the modules do.
+            _ = LoadRelationAircraftNamesAsync();
             return;
         }
 
@@ -3698,6 +3702,7 @@ public sealed partial class MainWindowViewModel : ViewModelBase
                         ? "<none>"
                         : string.Join(", ", games.OrderBy(v => v, StringComparer.OrdinalIgnoreCase)),
                     Planes = planes.Count.ToString(CultureInfo.InvariantCulture),
+                    PlaneIds = planes.ToList(),
                     Groups = groups.Count == 0
                         ? "<none>"
                         : string.Join(", ", groups.Distinct(StringComparer.OrdinalIgnoreCase)),

@@ -1,0 +1,293 @@
+{
+  "format": "joypro-cockpit-guide",
+  "version": 1,
+  "id": "il2-fokker-dr1",
+  "title": "Fokker Dr.I (IL-2)",
+  "variants": [
+    "fokker-dr-i"
+  ],
+  "games": [
+    "IL2Game"
+  ],
+  "sets": [],
+  "sources": [
+    {
+      "id": "c1",
+      "title": "JoyPro cockpit catalog (from the IL-2 and real aircraft manuals)",
+      "kind": "reference"
+    }
+  ],
+  "intro": "The Fokker Dr.I was a German triplane fighter of the First World War. The cockpit is tiny and open behind the gun breeches, with almost no instruments. Power is managed by the throttle on the stick grip, the fuel lever and the blip switch.",
+  "areas": [
+    {
+      "id": "guns",
+      "where": "glareshield",
+      "name": "Gun breeches and sights",
+      "text": "The two machine guns and their sights sit right in front of the pilot.",
+      "panels": [
+        {
+          "id": "gun-breeches",
+          "name": "Gun breeches and sights",
+          "db": "gun-breeches",
+          "src": "c1",
+          "text": "These are the rear ends of the two machine guns and the sights between them.",
+          "context": "The pilot clears jams with the charging handles and aims with the sights.",
+          "controls": [
+            {
+              "id": "spandau-l",
+              "name": "Left Spandau breech",
+              "type": "other",
+              "match": [
+                "item:gun-breeches:1"
+              ],
+              "text": "This is the rear end of the left machine gun, the breech, with a charging handle. The pilot cocks the gun with the handle and uses it to clear a jam.",
+              "context": "The guns sit right in front of the pilot. The pilot fires them with the triggers on the stick."
+            },
+            {
+              "id": "spandau-r",
+              "name": "Right Spandau breech",
+              "type": "other",
+              "match": [
+                "item:gun-breeches:2"
+              ],
+              "text": "This is the rear end of the right machine gun, the breech, with a charging handle. The pilot cocks the gun with the handle. This copy sits in the panel “Gun breeches and sights”.",
+              "context": "The guns sit right in front of the pilot. The pilot fires them with the triggers on the stick. This copy belongs to the panel “Gun breeches and sights”."
+            },
+            {
+              "id": "ring-bead",
+              "name": "Ring-and-bead sight",
+              "type": "other",
+              "match": [
+                "item:gun-breeches:3"
+              ],
+              "text": "This is a simple open sight between the guns: a ring at the rear and a bead at the front. The pilot lines up the bead in the ring with the target to aim.",
+              "context": "It is how First World War pilots aimed before reflector sights existed."
+            },
+            {
+              "id": "oigee",
+              "name": "Oigee optical sight (when fitted)",
+              "type": "other",
+              "match": [
+                "item:gun-breeches:4"
+              ],
+              "text": "This is a tube sight between the guns. It is fitted in some planes. The pilot looks through it to aim at the target.",
+              "context": "It is an alternative to the ring-and-bead sight between the guns."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "instruments",
+      "where": "front-center",
+      "name": "Instruments",
+      "text": "A few small instruments sit under the gun breeches.",
+      "panels": [
+        {
+          "id": "instruments",
+          "name": "Instruments",
+          "db": "instruments",
+          "src": "c1",
+          "text": "These are the few instruments of the triplane: the engine speed, the fuel pressure, the ignition switch and the compass.",
+          "context": "The pilot has little to read, so most of the flying is done by feel.",
+          "controls": [
+            {
+              "id": "tacho",
+              "name": "Tachometer",
+              "type": "gauge",
+              "match": [
+                "item:instruments:1"
+              ],
+              "text": "This dial shows how fast the engine turns, in revolutions per minute (RPM).",
+              "context": "The pilot watches it all the time to keep the engine in its safe range."
+            },
+            {
+              "id": "fuel-press",
+              "name": "Fuel pressure gauge",
+              "type": "gauge",
+              "match": [
+                "item:instruments:2"
+              ],
+              "text": "This dial shows the pressure of the fuel. In the First World War planes it shows the pressure in the fuel tank that pushes the fuel to the engine.",
+              "context": "If the pressure drops, the pilot pumps it up again with the hand pump."
+            },
+            {
+              "id": "magneto-ww1",
+              "name": "Magneto (ignition) switch",
+              "type": "selector",
+              "match": [
+                "item:instruments:3"
+              ],
+              "text": "This switch turns the ignition of the engine on and off. The ignition makes the sparks that set the fuel alight.",
+              "context": "The pilot switches it on for the start. Switching it off stops the engine."
+            },
+            {
+              "id": "compass",
+              "name": "Compass",
+              "type": "gauge",
+              "match": [
+                "item:instruments:4"
+              ],
+              "text": "This is the magnetic compass. It shows the direction the plane is heading, like a hiking compass.",
+              "context": "The pilot uses it to hold a course."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "left",
+      "where": "left-side",
+      "name": "Engine controls",
+      "text": "The levers and the hand pump for the rotary engine are on the left.",
+      "panels": [
+        {
+          "id": "engine-controls",
+          "name": "Engine controls",
+          "db": "engine-controls",
+          "src": "c1",
+          "text": "These are the controls of the rotary engine: the throttle lever, the fuel fine-adjustment lever, the hand pump and the fuel cock.",
+          "context": "A rotary engine needs a few controls; the main one is on the stick grip.",
+          "controls": [
+            {
+              "id": "throttle-ww1",
+              "name": "Throttle lever",
+              "type": "lever",
+              "match": [
+                "item:engine-controls:1"
+              ],
+              "text": "This lever sets the engine power. The catalog describes it as air and power for the rotary engine.",
+              "context": "On the Dr.I the main throttle is on the stick grip (see the grip controls); this entry is the lever in the cockpit."
+            },
+            {
+              "id": "fuel-fine",
+              "name": "Fuel fine-adjustment lever",
+              "type": "lever",
+              "match": [
+                "item:engine-controls:2"
+              ],
+              "text": "This lever sets the fuel-air mixture of the rotary engine (a type of engine in which the cylinders spin around with the propeller). It makes fine adjustments of how rich the mixture is.",
+              "context": "The pilot works it together with the throttle to keep the Oberursel engine running smoothly."
+            },
+            {
+              "id": "fuel-pump",
+              "name": "Fuel pressure hand pump",
+              "type": "handle",
+              "match": [
+                "item:engine-controls:3"
+              ],
+              "text": "This handle is a hand pump. Moving it builds up pressure in the fuel tank, which pushes the fuel to the engine.",
+              "context": "The pilot pumps it before the start and again if the fuel pressure gauge shows too little."
+            },
+            {
+              "id": "fuel-cock-wide",
+              "name": "Fuel cock selector",
+              "type": "selector",
+              "match": [
+                "item:engine-controls:4"
+              ],
+              "text": "This selector is the fuel tap. It decides which tank feeds the engine. The catalog names the choice main or reserve tank.",
+              "context": "The pilot opens it before starting and switches to the reserve when the main tank runs dry."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "hotas",
+      "where": "hotas",
+      "name": "Stick and throttle",
+      "text": "These are the controls on the pilot's stick or yoke and on the left-hand throttle side that JoyPro can assign to a joystick or throttle.",
+      "panels": [
+        {
+          "id": "stick",
+          "name": "Control stick",
+          "src": "c1",
+          "text": "This is the control stick and the buttons on its grip.",
+          "context": "The pilot flies with it and fires and drops the weapons from it.",
+          "controls": [
+            {
+              "id": "trigger",
+              "name": "Main trigger",
+              "type": "trigger",
+              "match": [
+                "control:stick.trigger"
+              ],
+              "text": "This is the main trigger on the stick grip, pressed with the index finger. It fires the main guns of the plane. In the game: press: Fire both Spandau guns.",
+              "context": "The pilot presses it when the target sits in the gunsight. The ammunition counters on the instrument panel show how much is left."
+            },
+            {
+              "id": "button-thumb-1",
+              "name": "Left gun thumb trigger",
+              "type": "button",
+              "match": [
+                "control:stick.button.thumb.1"
+              ],
+              "text": "This button on the stick grip is pressed with the thumb. It fires the plane's cannons, the heavier guns. In the game: press: Fire the left gun.",
+              "context": "Cannons hit harder than machine guns. The pilot uses them for the decisive burst on a target."
+            },
+            {
+              "id": "button-thumb-2",
+              "name": "Right gun thumb trigger",
+              "type": "button",
+              "match": [
+                "control:stick.button.thumb.2"
+              ],
+              "text": "This is a second thumb trigger on the stick grip. It fires the right-hand gun alone. In the game: press: Fire the right gun.",
+              "context": "Firing one gun at a time lets the pilot keep firing if the other gun jams."
+            },
+            {
+              "id": "button-blip",
+              "name": "Blip switch",
+              "type": "button",
+              "match": [
+                "control:stick.button.blip"
+              ],
+              "text": "This button in the centre of the stick grip cuts the ignition for a moment, which is called a blip. A rotary engine cannot be slowed gently, so the pilot blips it to lose power. In the game: press: Cut the ignition (blip the engine).",
+              "context": "The pilot uses it for landing and taxiing, when full power is too much."
+            },
+            {
+              "id": "gimbal",
+              "name": "Control stick",
+              "type": "axis",
+              "match": [
+                "control:stick.gimbal"
+              ],
+              "text": "This is the control stick (or control column). Moving it forward and back tilts the plane's nose down and up, moving it left and right rolls the plane. In the game: pitch: Pitch; roll: Roll.",
+              "context": "It is the pilot's main flight control. Everything else in the cockpit supports it."
+            }
+          ]
+        },
+        {
+          "id": "throttle",
+          "name": "Throttle and left-hand controls",
+          "src": "c1",
+          "text": "These are the throttle levers and the other controls the pilot's left hand reaches on the left side.",
+          "context": "The pilot sets engine power, propeller, trim, flaps and gear with the left hand.",
+          "controls": [
+            {
+              "id": "axis-main",
+              "name": "Throttle (left handgrip)",
+              "type": "axis",
+              "match": [
+                "control:throttle.axis.main"
+              ],
+              "text": "This is the throttle, the lever that makes the engine stronger or weaker, like the gas pedal of a car. In the game: axis: Engine power (Oberursel Ur.II).",
+              "context": "The pilot works it with the left hand: forward for take-off and fighting, back for landing."
+            },
+            {
+              "id": "axis-mixture",
+              "name": "Fuel / mixture lever",
+              "type": "axis",
+              "match": [
+                "control:throttle.axis.mixture"
+              ],
+              "text": "This lever sets the mixture, how much fuel goes into the engine's air. Moving it leans the mixture, which means less fuel for the air. In the game: axis: Fuel-air mixture of the rotary.",
+              "context": "The pilot leans the engine as the plane climbs, because the air gets thinner."
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

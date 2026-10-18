@@ -13,9 +13,9 @@ using JoyPro.Logging;
 namespace JoyPro.Gui.ViewModels;
 
 // Live input on the pages that show binds and pictures (docs/ui/live-input.md):
-// - Binds page, "Follow input": pressing a button (or moving an axis a long way) selects the relation bound to it;
-//   pressing it again steps through all relations on that input, the ones without modifiers first. Not while Record
-//   runs, a text box has the focus or the picture (Visual Assign) is open.
+// - Binds and Relations pages, "Follow input": pressing a button (or moving an axis a long way) selects the relation
+//   bound to it; pressing it again steps through all relations on that input, the ones without modifiers first. Not
+//   while Record runs, a text box has the focus or the picture (Visual Assign) is open.
 // - Visual Assign and the Layout page's device pictures: the pressed input's marker, its row in the lists and its
 //   line light up while it is held; an axis shows a small live bar.
 // One DirectInput monitor feeds both while one of them is on screen; it stops when the page is left, the window is
@@ -32,7 +32,7 @@ public sealed partial class MainWindowViewModel
     // The live state of the device on the picture (Visual Assign / Layout page); the canvases draw it.
     public LiveInputState WorkspaceLiveInput { get; } = new();
 
-    // Settings > Binds and the Binds page's toggle: on by default.
+    // Settings > Binds and the toggles of the Binds and Relations pages: on by default.
     [ObservableProperty]
     private bool followInputOnBinds = true;
 
@@ -44,7 +44,7 @@ public sealed partial class MainWindowViewModel
     [ObservableProperty]
     private bool isTextInputFocused;
 
-    // "BTN 8 on L-VPC Stick WarBRD: Gear (1/3)", shown for a moment over the bind list.
+    // "BTN 8 on L-VPC Stick WarBRD: Gear (1/3)", shown for a moment over the bind or relation list.
     [ObservableProperty]
     private string followInputToast = string.Empty;
 
@@ -52,6 +52,10 @@ public sealed partial class MainWindowViewModel
 
     // The monitor runs (tests).
     internal bool IsLiveInputMonitoring => liveInputCts != null;
+
+    // Follow input moved the selection (and so the list) under the mouse: the window holds tooltips back until the
+    // mouse really moves, so none pops up over the card that slid under a resting pointer.
+    public event EventHandler? FollowInputJumped;
 
     partial void OnFollowInputToastChanged(string value) => OnPropertyChanged(nameof(HasFollowInputToast));
 
@@ -74,7 +78,8 @@ public sealed partial class MainWindowViewModel
     // Visual Assign is open on the Binds page, or the Layout page shows a device picture.
     private bool WorkspacePictureOnScreen => (IsBindsStage && OpenVisualAssignMode) || (IsLayoutStage && IsDevicePicturesSection);
 
-    private bool FollowInputWanted => IsBindsStage && FollowInputOnBinds;
+    // The Binds page and the Relations page follow the input (one switch for both).
+    private bool FollowInputWanted => (IsBindsStage || IsRelationsStage) && FollowInputOnBinds;
 
     internal void UpdateLiveInputMonitor()
     {
@@ -168,11 +173,12 @@ public sealed partial class MainWindowViewModel
     }
 
     private bool CanFollowInput() =>
-        FollowInputWanted && !OpenVisualAssignMode && !IsRecordingInput && !IsTextInputFocused;
+        FollowInputWanted && !(IsBindsStage && OpenVisualAssignMode) && !IsRecordingInput && !IsTextInputFocused;
 
     // ---- Follow input: select the relation(s) bound to the input ----
 
-    // The relations bound to the input on that device: without modifiers first, then with, each in list order.
+    // The relations bound to the input on that device: without modifiers first, then with, each in the order of the
+    // list on screen (the Relations page's list there, else the bind list).
     internal List<(string Relation, bool Shifted)> RelationsOnInput(string device, string input)
     {
         string token = (input ?? string.Empty).Trim();
@@ -188,7 +194,7 @@ public sealed partial class MainWindowViewModel
                             SameDeviceName(b.Device, device))
                 .ToList();
         }
-        List<string> order = Binds.Select(b => b.RelationName).ToList();
+        List<string> order = IsRelationsStage ? Relations.Select(r => r.Name).ToList() : Binds.Select(b => b.RelationName).ToList();
         int Position(string relation)
         {
             int index = order.FindIndex(r => string.Equals(r, relation, StringComparison.OrdinalIgnoreCase));
@@ -220,6 +226,20 @@ public sealed partial class MainWindowViewModel
             : 0;
         lastFollow = (device, input, index);
         (string relation, bool shifted) = relations[index];
+        bool shown = IsRelationsStage ? FollowOnRelationsPage(relation) : FollowOnBindsPage(relation);
+        string what = relation;
+        if (shifted)
+            what = T("{0} (with modifier)", what);
+        if (relations.Count > 1)
+            what = T("{0} ({1}/{2})", what, index + 1, relations.Count);
+        if (!shown)
+            what = T("{0} - hidden by the group filter", what);
+        ShowFollowToast(T("{0} on {1}: {2}", label, deviceName, what));
+    }
+
+    // Selects the relation's row of the bind list; false when the filters hide it.
+    private bool FollowOnBindsPage(string relation)
+    {
         BindListItem? row = FindBindRow(relation);
         if (row == null && (BindSearchText.Length > 0 || BindDeviceFilterText.Length > 0))
         {
@@ -229,16 +249,34 @@ public sealed partial class MainWindowViewModel
             row = FindBindRow(relation);
         }
         if (row != null && !ReferenceEquals(SelectedBind, row))
+        {
+            FollowInputJumped?.Invoke(this, EventArgs.Empty);
             SelectedBind = row;
-        string what = relation;
-        if (shifted)
-            what = T("{0} (with modifier)", what);
-        if (relations.Count > 1)
-            what = T("{0} ({1}/{2})", what, index + 1, relations.Count);
-        if (row == null)
-            what = T("{0} - hidden by the group filter", what);
-        ShowFollowToast(T("{0} on {1}: {2}", label, deviceName, what));
+        }
+        return row != null;
     }
+
+    // Selects (and opens) the relation's card on the Relations page; false when the filters hide it.
+    private bool FollowOnRelationsPage(string relation)
+    {
+        RelationListItem? card = FindRelationCard(relation);
+        if (card == null && RelationSearchText.Length > 0)
+        {
+            // Hidden by the search: show the whole list again.
+            RelationSearchText = string.Empty;
+            card = FindRelationCard(relation);
+        }
+        if (card != null && !ReferenceEquals(SelectedRelation, card))
+        {
+            FollowInputJumped?.Invoke(this, EventArgs.Empty);
+            SelectedRelation = card;
+        }
+        return card != null;
+    }
+
+    private RelationListItem? FindRelationCard(string relation) =>
+        Relations.FirstOrDefault(r => string.Equals(r.Name, relation, StringComparison.Ordinal)) ??
+        Relations.FirstOrDefault(r => string.Equals(r.Name, relation, StringComparison.OrdinalIgnoreCase));
 
     private BindListItem? FindBindRow(string relation) =>
         Binds.FirstOrDefault(b => string.Equals(b.RelationName, relation, StringComparison.OrdinalIgnoreCase));

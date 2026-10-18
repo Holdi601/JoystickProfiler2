@@ -1,0 +1,3518 @@
+{
+  "format": "joypro-cockpit-guide",
+  "version": 1,
+  "id": "dcs-mosquito",
+  "title": "DH.98 Mosquito FB Mk VI (DCS)",
+  "variants": [
+    "mosquito-fb-mk-vi"
+  ],
+  "games": [
+    "DCS"
+  ],
+  "sets": [
+    "DCS/MosquitoFBMkVI"
+  ],
+  "sources": [
+    {
+      "id": "m1",
+      "title": "DCS DH Mosquito FB.VI Flight Manual (EN)",
+      "file": "Mods/aircraft/MosquitoFBMkVI/Doc/DCS DH Mosquito FB.VI Flight Manual EN.pdf"
+    }
+  ],
+  "intro": "The de Havilland Mosquito FB Mk VI is a British twin-engine fighter-bomber of the Second World War, with two piston engines and two propellers. The pilot and the navigator sit side by side. The pilot is on the left and the navigator slightly behind on the right. Most pilot controls are on the front panel and the left wall. The navigator has the old radio set behind the seats. Many controls come in pairs for the left (port) and right (starboard) engine.",
+  "areas": [
+    {
+      "id": "glareshield",
+      "where": "glareshield",
+      "name": "Gunsight",
+      "text": "The gunsight is on top of the instrument panel right in front of the pilot's eyes.",
+      "panels": [
+        {
+          "id": "gunsight",
+          "name": "Mk II optical gunsight",
+          "db": "optical-gunsight-mk-ii",
+          "src": "m1",
+          "page": "74",
+          "text": "The gunsight is the aiming device. A glass in front of the pilot's eyes shows a lit ring. The pilot lays the enemy plane inside the ring and fires.",
+          "context": "The sight is a Barr and Stroud Mk II. Two knobs let the pilot tell it how far the target is and how wide it is, so the ring fits the target.",
+          "controls": [
+            {
+              "id": "sight-glass",
+              "name": "Sight glass",
+              "type": "other",
+              "match": [
+                "item:optical-gunsight-mk-ii:1"
+              ],
+              "text": "This is the glass with the lit aiming ring. The pilot looks through it and the ring seems to float in the sky.",
+              "context": "The brightness of the ring is set with the sight dimmer on the right side of the panel.",
+              "src": "m1",
+              "page": "74"
+            },
+            {
+              "id": "sight-range",
+              "name": "Target distance knob",
+              "type": "knob",
+              "match": [
+                "GUNSIGHT_RANGE",
+                "item:optical-gunsight-mk-ii:2"
+              ],
+              "text": "This upper knob on the sight shaft sets the distance to the target, from 0 to 500 yards. The ring changes size to match.",
+              "context": "The pilot sets it to the estimated distance before firing.",
+              "src": "m1",
+              "page": "74"
+            },
+            {
+              "id": "sight-span",
+              "name": "Target wingspan knob",
+              "type": "knob",
+              "match": [
+                "GUNSIGHT_BASE",
+                "item:optical-gunsight-mk-ii:3"
+              ],
+              "text": "This lower knob sets the wingspan of the target, from 40 to 100 feet. The ring then shows what size the target looks at that distance.",
+              "context": "The span of an enemy fighter or bomber is turned in before firing.",
+              "src": "m1",
+              "page": "74"
+            },
+            {
+              "id": "sight-light",
+              "name": "Sight reticle intensity (dimmer)",
+              "type": "knob",
+              "match": [
+                "GUNSIGHT_ILLUM",
+                "item:front-instrument-panel:13"
+              ],
+              "text": "Turning this knob makes the lit aiming ring brighter or dimmer.",
+              "context": "The pilot sets the ring so it can be seen against the light outside.",
+              "src": "m1",
+              "page": "51"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "front-center",
+      "where": "front-center",
+      "name": "Front instrument panel",
+      "text": "The front instrument panel is straight ahead. It holds the flight dials, the engine dials in pairs, the start controls, the gear and flap levers and the bomb and gun controls.",
+      "panels": [
+        {
+          "id": "flight-instr",
+          "name": "Flight instruments",
+          "db": "front-instrument-panel",
+          "src": "m1",
+          "page": "50",
+          "text": "These dials tell the pilot how fast, how high and in which direction the plane flies, and whether it is level, turning or sliding sideways.",
+          "context": "The pilot watches them all the time. In cloud or at night they replace the view outside.",
+          "controls": [
+            {
+              "id": "clock",
+              "name": "Clock Mk IV with reference crown knobs",
+              "type": "gauge",
+              "match": [
+                "item:front-instrument-panel:1",
+                "CLK_REF_FINE",
+                "CLK_REF_COARSE",
+                "CLK_PINION"
+              ],
+              "text": "The clock shows the time in hours, minutes and seconds. It has an eight-day spring drive. The game lets the pilot click its crown and reference knobs to wind it and set the hands.",
+              "context": "The pilot sets it to the correct time before a flight.",
+              "src": "m1",
+              "page": "70"
+            },
+            {
+              "id": "asi",
+              "name": "Airspeed indicator Mk IX F (speedmeter)",
+              "type": "gauge",
+              "match": [
+                "item:front-instrument-panel:12"
+              ],
+              "text": "This dial shows how fast the plane flies through the air, in miles per hour. The outer scale goes from 60 to 280 mph and the inner scale from 280 to 480.",
+              "context": "The pilot checks it all the time, especially for the speed limits of wheels and flaps.",
+              "src": "m1",
+              "page": "54"
+            },
+            {
+              "id": "horizon",
+              "name": "Artificial horizon Mk 1C",
+              "type": "gauge",
+              "match": [],
+              "text": "This dial shows a line standing for the horizon. The line tilts and moves as the plane banks and pitches. A scale below shows the bank angle up to 60 degrees.",
+              "context": "It is the main instrument for flying straight and level in cloud or at night. It reacts instantly.",
+              "src": "m1",
+              "page": "54"
+            },
+            {
+              "id": "vsi",
+              "name": "Vertical speed indicator",
+              "type": "gauge",
+              "match": [],
+              "text": "This dial shows how fast the plane climbs or sinks, up to 4000 feet per minute. In level flight the needle shows zero.",
+              "context": "It reacts with a small delay, so the pilot should expect a short lag.",
+              "src": "m1",
+              "page": "56"
+            },
+            {
+              "id": "altimeter",
+              "name": "Altimeter Mk XIV A with pressure knob",
+              "type": "gauge",
+              "match": [
+                "ALTIMETER"
+              ],
+              "text": "This dial shows the height above sea level. It has three pointers: hundreds, thousands and tens of thousands of feet. The knob under it sets the air pressure at sea level.",
+              "context": "The pilot sets the pressure of the day to get a correct height.",
+              "src": "m1",
+              "page": "57"
+            },
+            {
+              "id": "gyro",
+              "name": "Gyrocompass Mk 1A with setting and cage knob",
+              "type": "gauge",
+              "match": [
+                "DIRECTIONAL_GYRO"
+              ],
+              "text": "This dial shows the heading from a spinning gyro. The knob below sets its heading against the magnetic compass and also cages (locks) the gyro.",
+              "context": "The gyro does not find north by itself. The pilot sets it from the magnetic compass now and then, and cages it when taxiing, landing or doing aerobatics.",
+              "src": "m1",
+              "page": "58"
+            },
+            {
+              "id": "compass",
+              "name": "P.8.M magnetic compass and its ring",
+              "type": "gauge",
+              "match": [
+                "item:front-instrument-panel:3",
+                "COMPASS_RING"
+              ],
+              "text": "This is a plain magnetic compass on its own bracket at the bottom left of the dashboard. The game also lets the pilot click its ring.",
+              "context": "The gyrocompass is set against this compass.",
+              "src": "m1",
+              "page": "59"
+            },
+            {
+              "id": "turn-slip",
+              "name": "Turn and slip indicator Mk IB",
+              "type": "gauge",
+              "match": [],
+              "text": "This instrument shows how fast the plane turns and whether it slides sideways. It has a spinning gyro for the turn and a pendulum for the slip.",
+              "context": "The pilot uses it to make smooth, coordinated turns at a standard rate.",
+              "src": "m1",
+              "page": "60"
+            },
+            {
+              "id": "ri-repeater",
+              "name": "R.I. compass repeater with knob",
+              "type": "gauge",
+              "match": [
+                "item:front-instrument-panel:9",
+                "RMOTE_COMPASS"
+              ],
+              "text": "This dial repeats the heading of the remote-indicating compass. The game lets the pilot turn a knob on it.",
+              "context": "The two R.I. compass switches on the left wall belong to this system.",
+              "src": "m1",
+              "page": "53"
+            },
+            {
+              "id": "df-indicator",
+              "name": "Direction finder indicator",
+              "type": "gauge",
+              "match": [
+                "item:front-instrument-panel:25"
+              ],
+              "text": "The manual lists a direction finder indicator on the front panel but does not describe it.",
+              "context": "A direction finder shows the direction of a radio station.",
+              "src": "m1",
+              "page": "51"
+            }
+          ]
+        },
+        {
+          "id": "engine-instr",
+          "name": "Engine instruments",
+          "db": "front-instrument-panel",
+          "src": "m1",
+          "page": "65",
+          "text": "The Mosquito has two engines, so most dials come in pairs. They show the temperature of the coolant and the oil, the oil and fuel pressure, the boost and the engine speed.",
+          "context": "The pilot watches the left and right dials and compares them, because a difference warns of trouble in one engine.",
+          "controls": [
+            {
+              "id": "coolant",
+              "name": "Coolant temperature gauges Mk VIII",
+              "type": "gauge",
+              "match": [
+                "item:front-instrument-panel:2"
+              ],
+              "count": 2,
+              "text": "These two dials show the temperature of the coolant, the liquid that cools each engine. They show from 40 to 140 degrees Celsius.",
+              "context": "The needles and labels are lit for night flying.",
+              "src": "m1",
+              "page": "67"
+            },
+            {
+              "id": "oil-temp",
+              "name": "Oil temperature gauges",
+              "type": "gauge",
+              "match": [
+                "item:front-instrument-panel:4"
+              ],
+              "count": 2,
+              "text": "The inner yellow dials show the temperature of the oil of each engine, from 0 to 120 degrees Celsius.",
+              "context": "The manual says an overworked engine shows abnormal oil values before it fails.",
+              "src": "m1",
+              "page": "66"
+            },
+            {
+              "id": "oil-press",
+              "name": "Oil pressure gauges",
+              "type": "gauge",
+              "match": [
+                "item:front-instrument-panel:5"
+              ],
+              "count": 2,
+              "text": "The outer red dials show the oil pressure of each engine, from 0 to 150 psi.",
+              "context": "The pilot must react at once if the pressure is abnormal.",
+              "src": "m1",
+              "page": "66"
+            },
+            {
+              "id": "fuel-lamps",
+              "name": "Fuel pressure warning lights",
+              "type": "light",
+              "match": [
+                "item:front-instrument-panel:6"
+              ],
+              "count": 2,
+              "text": "These two lamps next to the boost gauges light up when the pressure of the main fuel pump drops below 10 psi.",
+              "context": "A lit lamp means the fuel pump of that engine has a problem.",
+              "src": "m1",
+              "page": "65"
+            },
+            {
+              "id": "boost",
+              "name": "Boost pressure gauges Mk III L",
+              "type": "gauge",
+              "match": [
+                "item:front-instrument-panel:7"
+              ],
+              "count": 2,
+              "text": "These two dials show how hard air is pushed into each engine, compared with the outside air. The maximum is plus 24 psi.",
+              "context": "More boost means more power. The pilot watches it when pushing the throttles.",
+              "src": "m1",
+              "page": "65"
+            },
+            {
+              "id": "rpm",
+              "name": "RPM indicators (tachometers Mk IX G)",
+              "type": "gauge",
+              "match": [
+                "item:front-instrument-panel:8"
+              ],
+              "count": 2,
+              "text": "These two dials show how fast each engine and propeller turn. The small needle counts thousands and the large needle hundreds.",
+              "context": "The RPM levers set this speed.",
+              "src": "m1",
+              "page": "64"
+            },
+            {
+              "id": "triple",
+              "name": "Triple pressure gauge (pneumatic gauge Mk IC)",
+              "type": "gauge",
+              "match": [
+                "item:front-instrument-panel:29"
+              ],
+              "text": "This gauge combines three readings in one dial: the pressure of the air system, and the pressure at each of the two wheel brakes.",
+              "context": "At normal pressures the needles form a typical shape, which makes a quick check easy.",
+              "src": "m1",
+              "page": "63"
+            },
+            {
+              "id": "lr-lamp",
+              "name": "Long range pump pressure warning lamp",
+              "type": "light",
+              "match": [
+                "item:front-instrument-panel:22"
+              ],
+              "text": "This lamp lights when the fuel pressure from the external long-range tank drops. It means that tank is empty and its pump should be turned off.",
+              "context": "A small cover protects the lamp.",
+              "src": "m1",
+              "page": "68"
+            },
+            {
+              "id": "lr-lamp-cover",
+              "name": "Long range pump lamp cover",
+              "type": "cover",
+              "match": [
+                "LR_PUMP_LAMP_COVER"
+              ],
+              "text": "This is a spring-loaded or hinged cover over the long range pump warning lamp. It stops the control from being operated by accident.",
+              "context": "The pilot opens it to see the lamp.",
+              "src": "m1",
+              "page": "68"
+            },
+            {
+              "id": "boost-cutout",
+              "name": "Boost cut-out lever",
+              "type": "lever",
+              "match": [
+                "BOOST_ CUT-OUT",
+                "item:front-instrument-panel:10"
+              ],
+              "text": "This lever would cut the limit on engine boost for a short time. A red sign says it is not corrected for the Merlin 25 engines, so it does not work in this plane.",
+              "context": "The game has a command for it but the manual says the lever has no function.",
+              "src": "m1",
+              "page": "66"
+            }
+          ]
+        },
+        {
+          "id": "engine-start",
+          "name": "Engine start and magneto controls (J.B.A. panel)",
+          "db": "front-instrument-panel",
+          "src": "m1",
+          "page": "51",
+          "text": "This panel at the top of the dashboard starts and runs the engines. The electric master switch powers the plane. Four magneto switches give the engines their sparks. Each engine has a starter button and a booster coil button.",
+          "context": "To start an engine the manual has the pilot switch on the ignition and press the starter and booster coil buttons together, no longer than 20 seconds at a time. The ground crew works the priming pump.",
+          "controls": [
+            {
+              "id": "master",
+              "name": "Electrical master switch (Electrical services switch)",
+              "type": "switch2",
+              "match": [
+                "MASTER_SWITCH",
+                "item:front-instrument-panel:16"
+              ],
+              "positions": [
+                {
+                  "name": "ON",
+                  "text": "The switch is on."
+                },
+                {
+                  "name": "OFF",
+                  "text": "The switch is off."
+                }
+              ],
+              "text": "This switch gives electric power from the battery to the whole plane. It is combined with the magneto switches.",
+              "context": "The manual switches it on before the start and checks that the voltmeter shows 24 volts.",
+              "src": "m1",
+              "page": "104"
+            },
+            {
+              "id": "magnetos",
+              "name": "Magneto switches (port 1 and 2, starboard 1 and 2)",
+              "type": "switch",
+              "match": [
+                "PORT_1",
+                "PORT_2",
+                "STBD_1",
+                "STBD_2",
+                "item:front-instrument-panel:15"
+              ],
+              "count": 4,
+              "text": "These four toggle switches turn on the ignition: two for each engine. A magneto is a small generator that makes the sparks that light the fuel. A gang bar can flip all four at once.",
+              "context": "They are on for the start and flying, and off to stop the engines.",
+              "src": "m1",
+              "page": "52"
+            },
+            {
+              "id": "starter-l",
+              "name": "Starter button: port (left) engine",
+              "type": "button",
+              "match": [
+                "STARTER_LEFT",
+                "item:front-instrument-panel:17"
+              ],
+              "text": "Pressing this button spins the left engine with the electric starter so it can start.",
+              "context": "The manual says to hold it together with the booster coil button, for no more than 20 seconds with 30 seconds rest.",
+              "src": "m1",
+              "page": "53"
+            },
+            {
+              "id": "starter-l-cover",
+              "name": "Starter button cover: port engine",
+              "type": "cover",
+              "match": [
+                "STARTER_COVER_LEFT"
+              ],
+              "text": "This is a spring-loaded or hinged cover over the left engine's starter button. It stops the control from being operated by accident.",
+              "context": "It is lifted before pressing the starter button.",
+              "src": "m1",
+              "page": "53"
+            },
+            {
+              "id": "booster-l",
+              "name": "Booster coil button: port engine",
+              "type": "button",
+              "match": [
+                "BOOSTER_LEFT"
+              ],
+              "text": "This button powers the booster coil, which makes strong sparks for starting the left engine.",
+              "context": "It is pressed together with the starter button while the engine turns.",
+              "src": "m1",
+              "page": "53"
+            },
+            {
+              "id": "booster-l-cover",
+              "name": "Booster coil button cover: port engine",
+              "type": "cover",
+              "match": [
+                "BOOSTER_COVER_LEFT"
+              ],
+              "text": "This is a spring-loaded or hinged cover over the left engine's booster coil button. It stops the control from being operated by accident.",
+              "context": "It is lifted before the booster button is used.",
+              "src": "m1",
+              "page": "53"
+            },
+            {
+              "id": "starter-r",
+              "name": "Starter button: starboard (right) engine",
+              "type": "button",
+              "match": [
+                "STARTER_RIGHT"
+              ],
+              "text": "Pressing this button spins the right engine with the electric starter so it can start.",
+              "context": "It works like the left starter button, for the right engine.",
+              "src": "m1",
+              "page": "53"
+            },
+            {
+              "id": "starter-r-cover",
+              "name": "Starter button cover: starboard engine",
+              "type": "cover",
+              "match": [
+                "STARTER_COVER_RIGHT"
+              ],
+              "text": "This is a spring-loaded or hinged cover over the right engine's starter button. It stops the control from being operated by accident.",
+              "context": "It is lifted before pressing the starter button.",
+              "src": "m1",
+              "page": "53"
+            },
+            {
+              "id": "booster-r",
+              "name": "Booster coil button: starboard engine",
+              "type": "button",
+              "match": [
+                "BOOSTER_RIGHT"
+              ],
+              "text": "This button powers the booster coil for the right engine's start.",
+              "context": "It is pressed together with the right starter button.",
+              "src": "m1",
+              "page": "53"
+            },
+            {
+              "id": "booster-r-cover",
+              "name": "Booster coil button cover: starboard engine",
+              "type": "cover",
+              "match": [
+                "BOOSTER_COVER_RIGHT"
+              ],
+              "text": "This is a spring-loaded or hinged cover over the right engine's booster coil button. It stops the control from being operated by accident.",
+              "context": "It is lifted before the booster button is used.",
+              "src": "m1",
+              "page": "53"
+            },
+            {
+              "id": "feather-l",
+              "name": "Feathering button: port engine",
+              "type": "button",
+              "match": [
+                "AIRSCREW_LH",
+                "item:front-instrument-panel:21"
+              ],
+              "text": "Pressing this button turns the left propeller blades edge-on to the wind (feathering). A feathered propeller stops turning and makes much less drag.",
+              "context": "It is used when an engine fails. The button holds in until the feathering is complete and then springs out.",
+              "src": "m1",
+              "page": "121"
+            },
+            {
+              "id": "feather-r",
+              "name": "Feathering button: starboard engine",
+              "type": "button",
+              "match": [
+                "AIRSCREW_RH"
+              ],
+              "text": "Pressing this button turns the right propeller blades edge-on to the wind (feathering).",
+              "context": "It is the right-hand partner of the left feathering button. A second press brings the propeller back (unfeathering).",
+              "src": "m1",
+              "page": "121"
+            },
+            {
+              "id": "rad-l",
+              "name": "Radiator flap switch: port engine",
+              "type": "switch2",
+              "match": [
+                "RAD_FLAP_LH",
+                "item:front-instrument-panel:19"
+              ],
+              "positions": [
+                {
+                  "name": "UP",
+                  "text": "The radiator flap is closed."
+                },
+                {
+                  "name": "DOWN",
+                  "text": "The radiator flap is open."
+                }
+              ],
+              "text": "This toggle switch opens or closes the radiator flap of the left engine. The radiator is the cooler for the engine's coolant. Up is closed and down is open.",
+              "context": "The flaps are closed for the start and warm-up and opened as the engine gets hot.",
+              "src": "m1",
+              "page": "68"
+            },
+            {
+              "id": "rad-r",
+              "name": "Radiator flap switch: starboard engine",
+              "type": "switch2",
+              "match": [
+                "RAD_FLAP_RH"
+              ],
+              "positions": [
+                {
+                  "name": "UP",
+                  "text": "The radiator flap is closed."
+                },
+                {
+                  "name": "DOWN",
+                  "text": "The radiator flap is open."
+                }
+              ],
+              "text": "This toggle switch opens or closes the radiator flap of the right engine. Up is closed and down is open.",
+              "context": "Open flaps cool better but give more drag.",
+              "src": "m1",
+              "page": "68"
+            },
+            {
+              "id": "air-filter",
+              "name": "Tropical air filter switch",
+              "type": "switch2",
+              "match": [
+                "AIR_FILTER"
+              ],
+              "positions": [
+                {
+                  "name": "ON",
+                  "text": "The switch is on."
+                },
+                {
+                  "name": "OFF",
+                  "text": "The switch is off."
+                }
+              ],
+              "text": "This switch puts an air filter in the engine air intake. The filter keeps dust and sand out in hot dry places.",
+              "context": "It is used in tropical or dusty conditions.",
+              "src": "m1",
+              "page": "68"
+            }
+          ]
+        },
+        {
+          "id": "hydraulics",
+          "name": "Hydraulic controls (gear, flaps, bomb doors)",
+          "db": "front-instrument-panel",
+          "src": "m1",
+          "page": "61",
+          "text": "Three levers on the left of the panel work the landing gear, the flaps and the bomb bay doors with hydraulics, which is oil under high pressure that moves heavy parts. Safety catches (gates) stop the levers from moving by accident.",
+          "context": "The upper lever position closes the bomb doors or pulls the gear and flaps in. The lower position opens the doors or puts the gear and flaps out. Notices next to the levers give the highest speeds for gear and flaps out.",
+          "controls": [
+            {
+              "id": "chassis",
+              "name": "CHASSIS lever (undercarriage)",
+              "type": "lever",
+              "match": [
+                "CHASSIS",
+                "item:front-instrument-panel:24"
+              ],
+              "positions": [
+                {
+                  "name": "UP",
+                  "text": "The landing gear is retracted."
+                },
+                {
+                  "name": "DOWN",
+                  "text": "The landing gear is extended."
+                }
+              ],
+              "text": "This lever raises and lowers the landing gear, the wheels. Up pulls the wheels in and down puts them out.",
+              "context": "The pilot raises the gear after take-off and lowers it before landing. The gear indicator shows the result.",
+              "src": "m1",
+              "page": "61"
+            },
+            {
+              "id": "chassis-gate",
+              "name": "CHASSIS lever safety catch (gate)",
+              "type": "switch2",
+              "match": [
+                "CHASSIS_GATE"
+              ],
+              "positions": [
+                {
+                  "name": "Engaged",
+                  "text": "The gate holds the lever."
+                },
+                {
+                  "name": "Released",
+                  "text": "The lever is free to move."
+                }
+              ],
+              "text": "This small catch locks the gear lever so it cannot move by accident. The pilot releases it before moving the lever.",
+              "context": "The manual says the selector must be neutral with the safety catch engaged during the start.",
+              "src": "m1",
+              "page": "104"
+            },
+            {
+              "id": "flaps",
+              "name": "FLAPS lever",
+              "type": "lever",
+              "match": [
+                "FLAPS"
+              ],
+              "positions": [
+                {
+                  "name": "UP",
+                  "text": "The flaps are retracted."
+                },
+                {
+                  "name": "DOWN",
+                  "text": "The flaps are extended."
+                }
+              ],
+              "text": "This lever moves the flaps. Flaps are parts of the wing that move down to give more lift at low speed. Up pulls them in and down puts them out.",
+              "context": "The flaps are used for take-off and landing. Notices show the highest speed with flaps out.",
+              "src": "m1",
+              "page": "61"
+            },
+            {
+              "id": "flaps-gate",
+              "name": "FLAPS lever safety catch (gate)",
+              "type": "switch2",
+              "match": [
+                "FLAPS_GATE"
+              ],
+              "positions": [
+                {
+                  "name": "Engaged",
+                  "text": "The gate holds the lever."
+                },
+                {
+                  "name": "Released",
+                  "text": "The lever is free to move."
+                }
+              ],
+              "text": "This small catch locks the flaps lever so it cannot move by accident.",
+              "context": "The pilot releases it before moving the lever.",
+              "src": "m1",
+              "page": "61"
+            },
+            {
+              "id": "bomb-doors",
+              "name": "BOMB DOORS lever",
+              "type": "lever",
+              "match": [
+                "BOMB_DOORS"
+              ],
+              "positions": [
+                {
+                  "name": "UP",
+                  "text": "The bomb bay doors are closed."
+                },
+                {
+                  "name": "DOWN",
+                  "text": "The bomb bay doors are open."
+                }
+              ],
+              "text": "This lever opens and closes the doors of the bomb bay under the fuselage. Down opens them and up closes them.",
+              "context": "The doors must be open to drop bombs from the bay. To jettison the bombs, the manual puts the lever down.",
+              "src": "m1",
+              "page": "61"
+            },
+            {
+              "id": "gear-ind",
+              "name": "Undercarriage position indicator",
+              "type": "indicator",
+              "match": [
+                "item:front-instrument-panel:34"
+              ],
+              "text": "This indicator has lamps for UP and DOWN. The UP windows light when the gear is retracted and the DOWN windows when it is extended.",
+              "context": "A switch on the throttle lever stops the DOWN lights from burning while parked.",
+              "src": "m1",
+              "page": "62"
+            },
+            {
+              "id": "uc-blind",
+              "name": "Undercarriage indicator curtain (blind)",
+              "type": "knob",
+              "match": [
+                "UC_BLIND"
+              ],
+              "text": "This is a curtain on the upper part of the gear indicator. The pilot moves it to dim the lights at night.",
+              "context": "The game calls this control uc blind. It belongs to the gear indicator.",
+              "src": "m1",
+              "page": "62"
+            },
+            {
+              "id": "flaps-ind",
+              "name": "Flaps position indicator",
+              "type": "gauge",
+              "match": [
+                "item:front-instrument-panel:33"
+              ],
+              "text": "This dial shows how far the flaps are out, from 0 degrees (up) to 70 degrees.",
+              "context": "The pilot checks it during take-off and landing.",
+              "src": "m1",
+              "page": "63"
+            }
+          ]
+        },
+        {
+          "id": "front-trim-lights",
+          "name": "Rudder and aileron trim, landing lights",
+          "db": "front-instrument-panel",
+          "src": "m1",
+          "page": "67",
+          "text": "These controls on the front panel set the trim of the rudder and ailerons and switch the two landing lights. Trim means a small adjustment so the plane flies straight without the pilot pushing the controls.",
+          "context": "The manual sets the rudder trim slightly right and the aileron trim neutral before take-off, because the engines twist the plane.",
+          "controls": [
+            {
+              "id": "rudder-trim",
+              "name": "Rudder trim hand knob",
+              "type": "knob",
+              "match": [
+                "RUDDER_TRIM",
+                "item:front-instrument-panel:18",
+                "control:throttle.knob.rudder_trim"
+              ],
+              "text": "This knob sets the rudder trim, which holds the nose left or right. It also acts as an indicator. An upward arrow means the trim tab is set to port (left) and a downward arrow to starboard (right).",
+              "context": "The manual puts it slightly right before take-off.",
+              "src": "m1",
+              "page": "67"
+            },
+            {
+              "id": "aileron-trim",
+              "name": "Aileron trim",
+              "type": "knob",
+              "match": [
+                "AILERON_TRIM",
+                "item:front-instrument-panel:30",
+                "control:throttle.knob.aileron_trim"
+              ],
+              "text": "This switch sets the aileron trim, which holds one wing a little lower or higher. The ailerons are the control surfaces that roll the plane.",
+              "context": "The manual sets it to neutral before take-off.",
+              "src": "m1",
+              "page": "103"
+            },
+            {
+              "id": "land-port",
+              "name": "Landing light switch: port",
+              "type": "switch2",
+              "match": [
+                "PORT",
+                "item:front-instrument-panel:35"
+              ],
+              "positions": [
+                {
+                  "name": "ON",
+                  "text": "The switch is on."
+                },
+                {
+                  "name": "OFF",
+                  "text": "The switch is off."
+                }
+              ],
+              "text": "This switch turns on the left landing light, a lamp that lights the runway when landing.",
+              "context": "The port and starboard lights have their own switches.",
+              "src": "m1",
+              "page": "71"
+            },
+            {
+              "id": "land-stbd",
+              "name": "Landing light switch: starboard",
+              "type": "switch2",
+              "match": [
+                "STBD"
+              ],
+              "positions": [
+                {
+                  "name": "ON",
+                  "text": "The switch is on."
+                },
+                {
+                  "name": "OFF",
+                  "text": "The switch is off."
+                }
+              ],
+              "text": "This switch turns on the right landing light.",
+              "context": "It is the right-hand partner of the left landing light switch.",
+              "src": "m1",
+              "page": "71"
+            }
+          ]
+        },
+        {
+          "id": "bomb-gun",
+          "name": "Gun master switch, bomb panel and camera",
+          "src": "m1",
+          "page": "72",
+          "text": "The gun master switch arms the guns. The bomb panel on the right of the instrument panel chooses which bombs or tanks are dropped and how they are fused. Switches here also change the stick button between camera and bombs.",
+          "context": "The bomb panel sits under a curved protective cover. The pilot lifts it, picks the stations, sets the fuses and then presses the release button on the control column.",
+          "controls": [
+            {
+              "id": "gun-master",
+              "name": "Gun master switch (SAFE / ON)",
+              "type": "switch2",
+              "match": [
+                "GUN_MASTER",
+                "item:front-instrument-panel:27"
+              ],
+              "positions": [
+                {
+                  "name": "SAFE",
+                  "text": "The guns cannot fire."
+                },
+                {
+                  "name": "ON",
+                  "text": "The guns are armed."
+                }
+              ],
+              "text": "This switch arms the guns. In SAFE nothing fires. In ON the triggers on the control column fire the cannons and machine guns.",
+              "context": "The manual says to open the cover first and then flip the switch. All guns are fired by air pressure and electricity.",
+              "src": "m1",
+              "page": "72"
+            },
+            {
+              "id": "gun-master-cover",
+              "name": "Gun master switch cover",
+              "type": "cover",
+              "match": [
+                "GUN_MASTER_COVER"
+              ],
+              "text": "This is a spring-loaded or hinged cover over the gun master switch. It stops the control from being operated by accident.",
+              "context": "It is opened before arming the guns.",
+              "src": "m1",
+              "page": "72"
+            },
+            {
+              "id": "bomb-panel",
+              "name": "Bomb panel (armament control panel)",
+              "type": "other",
+              "match": [
+                "item:front-instrument-panel:23"
+              ],
+              "text": "This is the whole panel with the weapon selection and fuze switches. Its switches are listed as separate entries.",
+              "context": "An emergency jettison button on it drops the external tanks and bombs without arming them.",
+              "src": "m1",
+              "page": "73"
+            },
+            {
+              "id": "bomb-panel-lock",
+              "name": "Bomb panel protective cover",
+              "type": "cover",
+              "match": [
+                "BOMB_PANEL_LOCK",
+                "item:front-instrument-panel:26"
+              ],
+              "text": "This is a spring-loaded or hinged cover over the bomb panel. It stops the control from being operated by accident.",
+              "context": "The manual keeps it closed and all the switches off until the pilot needs them.",
+              "src": "m1",
+              "page": "73"
+            },
+            {
+              "id": "changeover",
+              "name": "Button changeover (camera / bombs)",
+              "type": "switch2",
+              "match": [
+                "CINE_CAMERA"
+              ],
+              "positions": [
+                {
+                  "name": "OFF",
+                  "text": "The button works the camera."
+                },
+                {
+                  "name": "ON",
+                  "text": "The button works the bombs."
+                }
+              ],
+              "text": "This switch sets what the push-button on the control column does. In OFF it works the camera. In ON it drops bombs.",
+              "context": "The game calls it cine camera.",
+              "src": "m1",
+              "page": "73"
+            },
+            {
+              "id": "wing-bombs",
+              "name": "Wing bombs or tanks switches 1 and 2",
+              "type": "switch2",
+              "match": [
+                "WING_BOMBS_OR_TANKS_1",
+                "WING_BOMBS_OR_TANKS_2"
+              ],
+              "count": 2,
+              "positions": [
+                {
+                  "name": "ON",
+                  "text": "The switch is on."
+                },
+                {
+                  "name": "OFF",
+                  "text": "The switch is off."
+                }
+              ],
+              "text": "These two toggle switches pick the underwing bombs or tanks that will be dropped. One is for each wing.",
+              "context": "The pilot turns them on for the stations to release.",
+              "src": "m1",
+              "page": "73"
+            },
+            {
+              "id": "bay-bombs",
+              "name": "Fuselage bombs switches 3 and 4",
+              "type": "switch2",
+              "match": [
+                "FUSELAGE_BOMBS_3",
+                "FUSELAGE_BOMBS_4"
+              ],
+              "count": 2,
+              "positions": [
+                {
+                  "name": "ON",
+                  "text": "The switch is on."
+                },
+                {
+                  "name": "OFF",
+                  "text": "The switch is off."
+                }
+              ],
+              "text": "These two toggle switches pick the bombs in the bomb bay under the fuselage that will be dropped.",
+              "context": "The bomb doors must be open for these bombs to leave the plane.",
+              "src": "m1",
+              "page": "73"
+            },
+            {
+              "id": "fuze-nose",
+              "name": "All bombs nose fusing switch",
+              "type": "switch2",
+              "match": [
+                "ALL_BOMBS_NOSE"
+              ],
+              "positions": [
+                {
+                  "name": "ON",
+                  "text": "The switch is on."
+                },
+                {
+                  "name": "OFF",
+                  "text": "The switch is off."
+                }
+              ],
+              "text": "This switch arms the nose fuze of the bombs. A fuze is the part that makes a bomb explode.",
+              "context": "The lower pair of switches selects nose or tail fuzing. The left one is the nose.",
+              "src": "m1",
+              "page": "73"
+            },
+            {
+              "id": "fuze-tail",
+              "name": "All bombs tail fusing switch",
+              "type": "switch2",
+              "match": [
+                "ALL_BOMBS_TAIL"
+              ],
+              "positions": [
+                {
+                  "name": "ON",
+                  "text": "The switch is on."
+                },
+                {
+                  "name": "OFF",
+                  "text": "The switch is off."
+                }
+              ],
+              "text": "This switch arms the tail fuze of the bombs.",
+              "context": "It is the right-hand one of the two fuzing switches.",
+              "src": "m1",
+              "page": "73"
+            },
+            {
+              "id": "jett-cont",
+              "name": "Jettison containers button",
+              "type": "button",
+              "match": [
+                "JETTISON_CONTAINERS"
+              ],
+              "text": "This button drops the small bomb containers from the bay. The manual says to do this first when jettisoning the bombs.",
+              "context": "It has its own cover. The bomb release button then drops the other bombs and tanks unarmed.",
+              "src": "m1",
+              "page": "73"
+            },
+            {
+              "id": "jett-cont-cover",
+              "name": "Jettison containers button cover",
+              "type": "cover",
+              "match": [
+                "JETTISON_CONTAINERS_COVER"
+              ],
+              "text": "This is a spring-loaded or hinged cover over the container jettison button. It stops the control from being operated by accident.",
+              "context": "It is lifted before pressing the button.",
+              "src": "m1",
+              "page": "73"
+            },
+            {
+              "id": "door-lamp-cover",
+              "name": "Bomb doors light cover",
+              "type": "cover",
+              "match": [
+                "BOMB_DOOR_LAMP_COVER"
+              ],
+              "text": "This is a spring-loaded or hinged cover over the lamp that shows the state of the bomb doors. It stops the control from being operated by accident.",
+              "context": "The manual mentions a warning light that shows when the bomb doors open.",
+              "src": "m1",
+              "page": "61"
+            },
+            {
+              "id": "footage",
+              "name": "Footage indicator scale",
+              "type": "knob",
+              "match": [
+                "FOOTAGE",
+                "item:front-instrument-panel:31"
+              ],
+              "text": "The manual lists a footage indicator without a description. The game lets the pilot turn its scale knob.",
+              "context": "It belongs to the camera equipment that the changeover switch also controls.",
+              "src": "m1",
+              "page": "48"
+            },
+            {
+              "id": "exposure",
+              "name": "Footage indicator exposure switch (cloudy / sunny)",
+              "type": "switch2",
+              "match": [
+                "EXPOSURE"
+              ],
+              "positions": [
+                {
+                  "name": "Cloudy",
+                  "text": "The camera exposes for cloudy light."
+                },
+                {
+                  "name": "Sunny",
+                  "text": "The camera exposes for sunny light."
+                }
+              ],
+              "text": "This switch sets the camera exposure for cloudy or sunny weather.",
+              "context": "It makes the pictures taken by the camera brighter or darker.",
+              "src": "m1",
+              "page": "48"
+            }
+          ]
+        },
+        {
+          "id": "oxy-deice",
+          "name": "Oxygen regulator and de-icing pump",
+          "db": "front-instrument-panel",
+          "src": "m1",
+          "page": "71",
+          "text": "The oxygen regulator gives the pilot oxygen to breathe at height. The de-icing pump sprays a liquid to keep ice off the windscreen.",
+          "context": "The pilot opens the oxygen supply for high flights. The de-icing system sprays glycol, which is an anti-freeze liquid.",
+          "controls": [
+            {
+              "id": "oxy-valve",
+              "name": "Pilot's oxygen regulator valve",
+              "type": "switch2",
+              "match": [
+                "VALVE",
+                "item:front-instrument-panel:28"
+              ],
+              "positions": [
+                {
+                  "name": "ON",
+                  "text": "Oxygen flows to the mask."
+                },
+                {
+                  "name": "OFF",
+                  "text": "The oxygen is shut off."
+                }
+              ],
+              "text": "This valve on the pilot's oxygen regulator opens and closes the oxygen. The regulator gives the pilot oxygen at a breathable pressure. Two dials show the flow and the quantity left.",
+              "context": "The left dial shows the flow rate for the height, for example 15 for 15 000 feet. The right dial shows how much oxygen remains.",
+              "src": "m1",
+              "page": "71"
+            },
+            {
+              "id": "glycol",
+              "name": "De-icing glycol pump",
+              "type": "button",
+              "match": [
+                "GLYCOL_PUMP",
+                "item:front-instrument-panel:32"
+              ],
+              "text": "Pushing this pump handle sprays anti-freeze liquid (glycol) on the windscreen to keep ice away.",
+              "context": "The pilot uses it in icing weather.",
+              "src": "m1",
+              "page": "51"
+            }
+          ]
+        },
+        {
+          "id": "front-lights",
+          "name": "Lighting dimmers and ultra-violet lamps",
+          "src": "m1",
+          "page": "82",
+          "text": "These knobs set the brightness of the cockpit flood lamps and panel lights. Ultra-violet (UV) lamps make the glowing marks on the dials easy to read at night.",
+          "context": "They are used for night flying. The UV lamps have a rotating rim that switches their UV filter on or off.",
+          "controls": [
+            {
+              "id": "left-illum",
+              "name": "Left flood lamp dimmer",
+              "type": "knob",
+              "match": [
+                "LEFT_SIDE_ILLUM"
+              ],
+              "text": "Turning this knob makes the flood lamp on the left side of the cockpit brighter or dimmer. A rheostat is a dimmer knob.",
+              "context": "It is one of several flood lamp rheostats along the walls.",
+              "src": "m1",
+              "page": "69"
+            },
+            {
+              "id": "right-illum",
+              "name": "Right flood lamp dimmer",
+              "type": "knob",
+              "match": [
+                "RIGHT_SIDE_ILLUM"
+              ],
+              "text": "Turning this knob makes the flood lamp on the right side of the cockpit brighter or dimmer. A rheostat is a dimmer knob.",
+              "context": "It is the partner of the left flood lamp dimmer.",
+              "src": "m1",
+              "page": "69"
+            },
+            {
+              "id": "compass-illum",
+              "name": "Compass flood light dimmer",
+              "type": "knob",
+              "match": [
+                "COMPASS_ILLUM",
+                "item:cockpit-left-side:12"
+              ],
+              "text": "Turning this knob makes the light on the compass brighter or dimmer. A rheostat is a dimmer knob.",
+              "context": "The left side list names it the compass flood light rheostat.",
+              "src": "m1",
+              "page": "77"
+            },
+            {
+              "id": "boxb-illum",
+              "name": "Box B (J.B.B.) panel flood light dimmer",
+              "type": "knob",
+              "match": [
+                "BOX_B_ILLUM",
+                "item:front-instrument-panel:20"
+              ],
+              "text": "Turning this knob makes the flood light of the J.B.B. panel on the right brighter or dimmer. A rheostat is a dimmer knob.",
+              "context": "The manual's panel list names a flood light JBB panel dimmer.",
+              "src": "m1",
+              "page": "51"
+            },
+            {
+              "id": "bomb-illum",
+              "name": "Bomb panel flood light dimmer",
+              "type": "knob",
+              "match": [
+                "BOMB_PANEL_ILLUM"
+              ],
+              "text": "Turning this knob makes the light on the bomb panel brighter or dimmer. A rheostat is a dimmer knob.",
+              "context": "It lets the pilot read the bomb panel at night.",
+              "src": "m1",
+              "page": "69"
+            },
+            {
+              "id": "emerg-illum",
+              "name": "Emergency flood light dimmer",
+              "type": "knob",
+              "match": [
+                "EMERG_ILLUM",
+                "item:cockpit-left-side:10"
+              ],
+              "text": "Turning this knob makes the emergency flood light brighter or dimmer. A rheostat is a dimmer knob.",
+              "context": "The game names it the emergency flood light dimmer.",
+              "src": "m1",
+              "page": "69"
+            },
+            {
+              "id": "uv-exciter",
+              "name": "UV exciter button",
+              "type": "button",
+              "match": [
+                "UV_EXCITER"
+              ],
+              "text": "The game names this button the UV exciter. The manual does not describe a button of that name.",
+              "context": "The ultraviolet lamps are switched on by the UV lighting switch on the right wall.",
+              "src": "m1",
+              "page": "82"
+            },
+            {
+              "id": "uv-switch",
+              "name": "UV lighting switch",
+              "type": "switch2",
+              "match": [
+                "UV_LIGHT_SW"
+              ],
+              "positions": [
+                {
+                  "name": "ON",
+                  "text": "The switch is on."
+                },
+                {
+                  "name": "OFF",
+                  "text": "The switch is off."
+                }
+              ],
+              "text": "This toggle switch on the starboard panel turns on the ultraviolet lighting that makes the marks on the instruments glow.",
+              "context": "Turning the rim of a UV lamp switches its UV filter on or off.",
+              "src": "m1",
+              "page": "82"
+            },
+            {
+              "id": "uv-lh",
+              "name": "Left ultra-violet lamp rim",
+              "type": "knob",
+              "match": [
+                "LH_UV_CAP",
+                "item:cockpit-left-side:9"
+              ],
+              "text": "Turning the rim of this lamp switches its UV filter on or off. The lamp makes the marks on the dials glow.",
+              "context": "It sits on the left side of the cockpit.",
+              "src": "m1",
+              "page": "82"
+            },
+            {
+              "id": "uv-rh",
+              "name": "Right ultra-violet lamp rim",
+              "type": "knob",
+              "match": [
+                "RH_UV_CAP",
+                "item:front-instrument-panel:11",
+                "item:front-instrument-panel:14"
+              ],
+              "text": "Turning the rim of this lamp switches its UV filter on or off. The panel has two UV lamps; the manual lists both.",
+              "context": "The lamps help read the instruments at night.",
+              "src": "m1",
+              "page": "67"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "left-console",
+      "where": "left-console",
+      "name": "Left side of the cockpit",
+      "text": "The left wall has the engine controls, the radio control unit, the trim wheel, the rocket switches and several small controls. The pilot works them with the left hand.",
+      "panels": [
+        {
+          "id": "engine-unit",
+          "name": "Engine control unit (throttles, RPM, mixture)",
+          "db": "engine-control-unit",
+          "src": "m1",
+          "page": "77",
+          "text": "This block on the left wall has the levers for both engines: two throttle levers, two RPM levers, the mixture lever and the blower switch. Each lever pair controls the left and right engine.",
+          "context": "The left hand works them in flight. The manual sets the throttles open half an inch, the RPM levers to maximum and the blower to MOD for the start.",
+          "controls": [
+            {
+              "id": "throttle-l",
+              "name": "Port (left) throttle lever",
+              "type": "lever",
+              "match": [
+                "THROTTLE_CONTROLE_L",
+                "item:engine-control-unit:1",
+                "control:throttle.axis.left"
+              ],
+              "text": "Pushing this lever forward makes the left engine stronger and pulling it back makes it weaker, like the gas pedal of a car.",
+              "context": "The levers for the two engines can be moved together or apart. A friction knob keeps them in place.",
+              "src": "m1",
+              "page": "77"
+            },
+            {
+              "id": "throttle-r",
+              "name": "Starboard (right) throttle lever",
+              "type": "lever",
+              "match": [
+                "THROTTLE_CONTROLE_R",
+                "control:throttle.axis.right"
+              ],
+              "text": "Pushing this lever forward makes the right engine stronger and pulling it back makes it weaker.",
+              "context": "It sits next to the left throttle lever.",
+              "src": "m1",
+              "page": "77"
+            },
+            {
+              "id": "throttle-trig",
+              "name": "Throttle lever triggers",
+              "type": "trigger",
+              "match": [
+                "THROTTLE_CONTROLE_L_TRIGER",
+                "THROTTLE_CONTROL_R_TRIGER"
+              ],
+              "count": 2,
+              "text": "The game lists a second clickable part on each throttle lever and also names it Throttle. The manual says the rocket trigger is on the right throttle lever.",
+              "context": "The manual does not say what the left trigger part does.",
+              "src": "m1",
+              "page": "129"
+            },
+            {
+              "id": "rpm-levers",
+              "name": "RPM control levers (propeller speed)",
+              "type": "lever",
+              "match": [
+                "PROPELLER_CONTROL_L",
+                "PROPELLER_CONTROL_R",
+                "item:engine-control-unit:2",
+                "item:cockpit-left-side:15",
+                "item:cockpit-left-side:16",
+                "control:throttle.lever.prop"
+              ],
+              "count": 2,
+              "text": "These two levers set the speed of the propellers and so of the engines. Forward is a high speed. The propellers are kept at the chosen speed automatically.",
+              "context": "The manual sets them to maximum for the start. For an unfeathering they are fully back.",
+              "src": "m1",
+              "page": "77"
+            },
+            {
+              "id": "fric-throttle",
+              "name": "Throttle friction control",
+              "type": "knob",
+              "match": [
+                "FRICTION_ADJUSTING_THROTTLE",
+                "item:engine-control-unit:4",
+                "item:cockpit-left-side:17"
+              ],
+              "text": "This knob makes the throttle levers stiffer or looser, so they stay where they are set.",
+              "context": "A tight friction stops the levers from creeping in vibration.",
+              "src": "m1",
+              "page": "77"
+            },
+            {
+              "id": "fric-prop",
+              "name": "Propeller friction control",
+              "type": "knob",
+              "match": [
+                "FRICTION_ADJUSTING_PROPELLER",
+                "item:engine-control-unit:3",
+                "item:cockpit-left-side:18"
+              ],
+              "text": "This knob makes the RPM levers stiffer or looser.",
+              "context": "It does for the propeller levers what the other knob does for the throttles.",
+              "src": "m1",
+              "page": "77"
+            },
+            {
+              "id": "blower",
+              "name": "Blower (supercharger) mode switch: MOD / AUTO",
+              "type": "switch2",
+              "match": [
+                "SUPERCHARJER_SWITCH",
+                "item:engine-control-unit:5",
+                "item:cockpit-left-side:4",
+                "control:throttle.switch.supercharger"
+              ],
+              "positions": [
+                {
+                  "name": "MOD",
+                  "text": "Low gear is used (the automatic switch is off)."
+                },
+                {
+                  "name": "AUTO",
+                  "text": "The supercharger changes to high gear by itself at altitude."
+                }
+              ],
+              "text": "This switch picks how the supercharger changes gears. A supercharger is a pump that pushes more air into the engine at height. In MOD it stays in low gear. In AUTO it changes to high gear by itself at height.",
+              "context": "The manual sets MOD (low gear) for the start. At altitude AUTO gives the extra power.",
+              "src": "m1",
+              "page": "106"
+            },
+            {
+              "id": "mixture",
+              "name": "Fuel mixture control lever",
+              "type": "lever",
+              "match": [
+                "MIXTURE",
+                "item:engine-control-unit:6",
+                "item:cockpit-left-side:3",
+                "control:throttle.lever.mixture"
+              ],
+              "text": "This lever sets how much fuel is mixed into the air that goes to the engines. Rich means more fuel, weak means less fuel.",
+              "context": "The game has commands for rich and weak. The pilot leans the mixture for economy.",
+              "src": "m1",
+              "page": "77"
+            }
+          ]
+        },
+        {
+          "id": "radio-unit",
+          "name": "Radio control unit (VHF)",
+          "db": "radio-control-unit",
+          "src": "m1",
+          "page": "78",
+          "text": "This box on the left side picks the radio channel. Four buttons A, B, C and D choose a fixed frequency each. A switch chooses between receiving, transmitting and a push-to-talk mode.",
+          "context": "The pilot picks the channel for the person to talk to. The manual says A is for ground and other aircraft, B for the control tower, C for a homing beacon and D for ground direction finding stations.",
+          "controls": [
+            {
+              "id": "chan-a",
+              "name": "Channel button A",
+              "type": "button",
+              "match": [
+                "RCTRL_A"
+              ],
+              "text": "Pressing this button picks channel A. Only one channel can be on at a time.",
+              "context": "The manual says A is usually used to talk to ground command points and other aircraft.",
+              "src": "m1",
+              "page": "78"
+            },
+            {
+              "id": "chan-b",
+              "name": "Channel button B",
+              "type": "button",
+              "match": [
+                "RCTRL_B"
+              ],
+              "text": "Pressing this button picks the radio channel B.",
+              "context": "The manual says B is the main channel for air traffic control stations, used for take-off and landing instructions.",
+              "src": "m1",
+              "page": "78"
+            },
+            {
+              "id": "chan-c",
+              "name": "Channel button C",
+              "type": "button",
+              "match": [
+                "RCTRL_C"
+              ],
+              "text": "Pressing this button picks the radio channel C.",
+              "context": "The manual says C is often used to reach a homing station or radio beacon.",
+              "src": "m1",
+              "page": "78"
+            },
+            {
+              "id": "chan-d",
+              "name": "Channel button D",
+              "type": "button",
+              "match": [
+                "RCTRL_D"
+              ],
+              "text": "Pressing this button picks the radio channel D.",
+              "context": "The manual says D is usually used to talk to ground direction finding stations.",
+              "src": "m1",
+              "page": "78"
+            },
+            {
+              "id": "chan-buttons",
+              "name": "Channel selection buttons",
+              "type": "button",
+              "match": [
+                "item:radio-control-unit:1"
+              ],
+              "text": "The four channel buttons A to D together select the channel. The game lists each one on its own.",
+              "context": "The selected channel lamp shows which one is on.",
+              "src": "m1",
+              "page": "78"
+            },
+            {
+              "id": "radio-off",
+              "name": "Radio OFF button",
+              "type": "button",
+              "match": [
+                "RCTRL_OFF",
+                "item:radio-control-unit:2"
+              ],
+              "text": "Pressing this button turns the radio off.",
+              "context": "Pressing a channel button turns it on again.",
+              "src": "m1",
+              "page": "78"
+            },
+            {
+              "id": "radio-vol",
+              "name": "Radio volume knob",
+              "type": "knob",
+              "match": [
+                "RCTRL_VOL",
+                "item:radio-control-unit:6"
+              ],
+              "text": "Turning this knob makes the headphones louder or quieter.",
+              "context": "The pilot sets it so voices are easy to hear.",
+              "src": "m1",
+              "page": "79"
+            },
+            {
+              "id": "radio-dim",
+              "name": "Light filter (dimmer) switch",
+              "type": "switch2",
+              "match": [
+                "RCTRL_DIM",
+                "item:radio-control-unit:3"
+              ],
+              "positions": [
+                {
+                  "name": "Position 0",
+                  "text": "The first of the two positions of the dimmer switch."
+                },
+                {
+                  "name": "Position 1",
+                  "text": "The second of the two positions of the dimmer switch."
+                }
+              ],
+              "text": "This control sets the brightness of the channel lamps. A dimmer lamp is useful at night or in cloud.",
+              "context": "The manual calls it the light filter knob.",
+              "src": "m1",
+              "page": "79"
+            },
+            {
+              "id": "radio-mode",
+              "name": "Mode switch (R / T / REM)",
+              "type": "switch3",
+              "match": [
+                "RCTRL_T",
+                "item:radio-control-unit:7"
+              ],
+              "positions": [
+                {
+                  "name": "R",
+                  "text": "The radio is always receiving."
+                },
+                {
+                  "name": "REM",
+                  "text": "Manual mode: the push-to-talk button on the throttle transmits."
+                },
+                {
+                  "name": "T",
+                  "text": "The radio transmits; it springs back to R when released."
+                }
+              ],
+              "text": "This switch picks how the radio works: R for always receiving, T for always transmitting, and REM for push-to-talk with the button on the throttle.",
+              "context": "The T position springs back to R when released. REM is the normal mode, where the pilot presses the push-to-talk button to speak.",
+              "src": "m1",
+              "page": "79"
+            },
+            {
+              "id": "radio-lock",
+              "name": "Mode locking switch",
+              "type": "switch2",
+              "match": [
+                "RCTRL_TLOCK",
+                "item:radio-control-unit:8"
+              ],
+              "positions": [
+                {
+                  "name": "Forward",
+                  "text": "The mode switch is locked in the transmit-receive mode."
+                },
+                {
+                  "name": "Rear",
+                  "text": "The switch is held in R and can be pushed to T."
+                }
+              ],
+              "text": "This latch locks the mode switch. Forward, the switch is locked in the transmit-receive mode. In the rear position, the mode switch is held at R and can be pushed to T to transmit.",
+              "context": "In the rear position the mode switch cannot go to REM. The latch gives a fallback if the push-to-talk button fails.",
+              "src": "m1",
+              "page": "79"
+            },
+            {
+              "id": "radio-lamps",
+              "name": "Selected channel and receive/transmit indicators",
+              "type": "light",
+              "match": [
+                "item:radio-control-unit:4",
+                "item:radio-control-unit:5"
+              ],
+              "count": 2,
+              "text": "These lamps show the selected channel and whether the radio is receiving or transmitting.",
+              "context": "The pilot glances at them to check the channel.",
+              "src": "m1",
+              "page": "79"
+            },
+            {
+              "id": "radio-body",
+              "name": "Radio unit",
+              "type": "other",
+              "match": [
+                "item:cockpit-left-side:19"
+              ],
+              "text": "This is the whole radio control unit on the left wall. Its buttons, knob and switches have their own entries.",
+              "context": "The radio equipment itself sits behind the seats.",
+              "src": "m1",
+              "page": "77"
+            }
+          ]
+        },
+        {
+          "id": "left-wall",
+          "name": "Left wall controls",
+          "db": "cockpit-left-side",
+          "src": "m1",
+          "page": "76",
+          "text": "These controls on the left wall include the elevator trim wheel, the push-to-talk button, the wing tank jettison, the seat harness release, the arm rest and the beam approach switches.",
+          "context": "The pilot uses the trim wheel in flight. The harness release is used when the pilot must leave the plane.",
+          "controls": [
+            {
+              "id": "elev-trim",
+              "name": "Elevator trim wheel",
+              "type": "wheel",
+              "match": [
+                "TRIM_WHEEL",
+                "control:throttle.wheel.elevator_trim"
+              ],
+              "text": "This wheel on the left of the seat sets the elevator trim, which holds the nose up or down without the pilot pushing the stick.",
+              "context": "A trim tab indicator shows the setting. The manual sets it slightly nose down before take-off.",
+              "src": "m1",
+              "page": "79"
+            },
+            {
+              "id": "trim-ind",
+              "name": "Elevator trim tab indicator",
+              "type": "gauge",
+              "match": [
+                "item:cockpit-left-side:8"
+              ],
+              "text": "This indicator shows how the elevator trim is set. An arrow at the front of the scale means set for a dive and at the rear means set for a climb.",
+              "context": "The pilot checks it before take-off.",
+              "src": "m1",
+              "page": "80"
+            },
+            {
+              "id": "ptt",
+              "name": "Push-to-talk button (SCR-522)",
+              "type": "button",
+              "match": [
+                "PTT_ES",
+                "item:cockpit-left-side:5",
+                "control:throttle.hat.mic"
+              ],
+              "text": "While this button is pressed, the pilot transmits on the radio. Released, the radio listens.",
+              "context": "It works when the radio unit's mode switch is on REM.",
+              "src": "m1",
+              "page": "79"
+            },
+            {
+              "id": "ba-switch",
+              "name": "Beam approach switch",
+              "type": "switch2",
+              "match": [
+                "BA_SW",
+                "item:cockpit-left-side:6",
+                "item:devices-switch-box:1"
+              ],
+              "positions": [
+                {
+                  "name": "ON",
+                  "text": "The switch is on."
+                },
+                {
+                  "name": "OFF",
+                  "text": "The switch is off."
+                }
+              ],
+              "text": "This switch turns on the beam approach equipment, a radio aid that helps the pilot line up with a runway in bad weather.",
+              "context": "The beam approach volume knob sets how loud its signal is.",
+              "src": "m1",
+              "page": "81"
+            },
+            {
+              "id": "ba-volume",
+              "name": "Beam approach volume knob",
+              "type": "knob",
+              "match": [
+                "BA_VOLUME",
+                "item:cockpit-left-side:11"
+              ],
+              "text": "Turning this knob makes the beam approach signal louder or quieter in the headphones.",
+              "context": "The manual calls it the beam approach rheostat.",
+              "src": "m1",
+              "page": "81"
+            },
+            {
+              "id": "ri-switches",
+              "name": "R.I. compass switches",
+              "type": "switch2",
+              "match": [
+                "REPEATER_COMPASS_SW1",
+                "REPEATER_COMPASS_SW2",
+                "item:cockpit-left-side:7",
+                "item:devices-switch-box:2"
+              ],
+              "count": 2,
+              "positions": [
+                {
+                  "name": "ON",
+                  "text": "The switch is on."
+                },
+                {
+                  "name": "OFF",
+                  "text": "The switch is off."
+                }
+              ],
+              "text": "These switches turn on the R.I. compass system, which feeds the repeater compass on the front panel.",
+              "context": "There are two switches on the left side, in the devices switch box.",
+              "src": "m1",
+              "page": "81"
+            },
+            {
+              "id": "tank-jett-cover",
+              "name": "Wing tank jettison button cover",
+              "type": "cover",
+              "match": [
+                "WING_TANK_JETTSON_COVER"
+              ],
+              "text": "This is a spring-loaded or hinged cover over the wing tank jettison button. It stops the control from being operated by accident.",
+              "context": "The manual says to lift the cover and press the button.",
+              "src": "m1",
+              "page": "82"
+            },
+            {
+              "id": "tank-jett",
+              "name": "Wing tank jettison button",
+              "type": "button",
+              "match": [
+                "WING_TANK_JETTSON",
+                "item:cockpit-left-side:13"
+              ],
+              "text": "Pressing this button drops the drop tanks from under the wings.",
+              "context": "It is used when the tanks are empty or in an emergency.",
+              "src": "m1",
+              "page": "82"
+            },
+            {
+              "id": "harness",
+              "name": "Pilot harness release lever",
+              "type": "switch2",
+              "match": [
+                "HARNESS_LEVER",
+                "item:cockpit-left-side:1"
+              ],
+              "positions": [
+                {
+                  "name": "Lock",
+                  "text": "The harness is locked."
+                },
+                {
+                  "name": "Release",
+                  "text": "The harness is released."
+                }
+              ],
+              "text": "This lever locks and releases the pilot's seat harness, the belts that hold the pilot in the seat.",
+              "context": "The pilot releases it to get out of the seat.",
+              "src": "m1",
+              "page": "83"
+            },
+            {
+              "id": "seat-handle",
+              "name": "Pilot's seat adjusting handle (not modelled)",
+              "type": "handle",
+              "match": [
+                "item:cockpit-left-side:2"
+              ],
+              "text": "This handle would adjust the pilot's seat. The manual says it is not modelled in the game.",
+              "context": "It has no effect in the game, so the pilot cannot move the seat.",
+              "src": "m1",
+              "page": "83"
+            },
+            {
+              "id": "arm-l",
+              "name": "Left arm rest",
+              "type": "switch2",
+              "match": [
+                "ARMREST_LEFT"
+              ],
+              "positions": [
+                {
+                  "name": "Up",
+                  "text": "The arm rest is up."
+                },
+                {
+                  "name": "Down",
+                  "text": "The arm rest is down."
+                }
+              ],
+              "text": "This control raises or lowers the pilot's left arm rest.",
+              "context": "The game has commands for arm rest up and down.",
+              "src": "m1",
+              "page": "76"
+            },
+            {
+              "id": "arm-r",
+              "name": "Right arm rest",
+              "type": "switch2",
+              "match": [
+                "ARMREST_RIGHT"
+              ],
+              "positions": [
+                {
+                  "name": "Up",
+                  "text": "The arm rest is up."
+                },
+                {
+                  "name": "Down",
+                  "text": "The arm rest is down."
+                }
+              ],
+              "text": "This control raises or lowers the pilot's right arm rest.",
+              "context": "It is the partner of the left arm rest.",
+              "src": "m1",
+              "page": "76"
+            },
+            {
+              "id": "plates",
+              "name": "Engine and undercarriage data plates",
+              "type": "other",
+              "match": [
+                "item:cockpit-left-side:14"
+              ],
+              "text": "These are metal plates with printed data about the engines and the landing gear. The manual lists them but does not describe them.",
+              "context": "They are only for reading; they cannot be operated.",
+              "src": "m1",
+              "page": "77"
+            }
+          ]
+        },
+        {
+          "id": "rockets",
+          "name": "Rocket controls",
+          "src": "m1",
+          "page": "75",
+          "text": "These switches arm and fire the unguided rockets under the wings. The master switch powers the rocket circuits, the salvo switch picks one at a time or all together and a trigger fires.",
+          "context": "The manual says to switch the main rocket switch on and then fire with the trigger on the right throttle lever. A salvo fires many rockets at once.",
+          "controls": [
+            {
+              "id": "rx-master",
+              "name": "Rockets master switch",
+              "type": "switch2",
+              "match": [
+                "RX_MASTER_SW"
+              ],
+              "positions": [
+                {
+                  "name": "ON",
+                  "text": "The switch is on."
+                },
+                {
+                  "name": "OFF",
+                  "text": "The switch is off."
+                }
+              ],
+              "text": "This switch powers the rocket control circuits. Nothing can be fired with it off.",
+              "context": "The manual turns it on before using rockets.",
+              "src": "m1",
+              "page": "129"
+            },
+            {
+              "id": "rx-salvo",
+              "name": "Rocket salvo switch",
+              "type": "switch2",
+              "match": [
+                "RX_SALVO_SW"
+              ],
+              "positions": [
+                {
+                  "name": "ON",
+                  "text": "The rockets launch in a salvo."
+                },
+                {
+                  "name": "OFF",
+                  "text": "The rockets launch singly."
+                }
+              ],
+              "text": "This switch picks the salvo mode. When it is on (down), the rockets are fired together in a salvo.",
+              "context": "When it is off the rockets leave one at a time.",
+              "src": "m1",
+              "page": "75"
+            },
+            {
+              "id": "rx-fire",
+              "name": "Rocket firing switch (trigger)",
+              "type": "button",
+              "match": [
+                "RX_RELEASE_SW"
+              ],
+              "text": "This control fires the rockets. The manual says the trigger is on the right throttle lever.",
+              "context": "The rocket master switch must be on.",
+              "src": "m1",
+              "page": "129"
+            },
+            {
+              "id": "rx-step",
+              "name": "Rockets manual button",
+              "type": "button",
+              "match": [
+                "RX_STEP_SW"
+              ],
+              "text": "The game names this button the rockets manual button. The manual does not describe it.",
+              "context": "It belongs to the rocket controls.",
+              "src": "m1",
+              "page": "129"
+            }
+          ]
+        },
+        {
+          "id": "window-l",
+          "name": "Left window lock",
+          "src": "m1",
+          "page": "109",
+          "text": "The cockpit has small side windows that can be opened. This lock holds the left window shut or lets it open.",
+          "context": "The manual has the pilot open the cockpit window during an external-power engine start to talk to the ground crew.",
+          "controls": [
+            {
+              "id": "win-l",
+              "name": "Left window lock",
+              "type": "switch2",
+              "match": [
+                "WINDOW_LOCK_LEFT"
+              ],
+              "positions": [
+                {
+                  "name": "Open",
+                  "text": "The left window can be opened."
+                },
+                {
+                  "name": "Close",
+                  "text": "The left window is closed."
+                }
+              ],
+              "text": "This lock holds the left side window of the cockpit closed or lets it be opened.",
+              "context": "The game has commands to open and close the left window.",
+              "src": "m1",
+              "page": "109"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "right-console",
+      "where": "right-console",
+      "name": "Right side of the cockpit",
+      "text": "The right wall is the navigator's side. It holds the switch panel, the fire extinguisher buttons, the oxygen controls, the gauges, the door and the radio power switches.",
+      "panels": [
+        {
+          "id": "switches-top",
+          "name": "Switches panel (top right)",
+          "db": "cockpit-right-side",
+          "src": "m1",
+          "page": "86",
+          "text": "This panel on the right wall holds switches for the gun camera, the navigation lights, the pitot heat, the fuel pump of the long-range tank, the gunsight light and the IFF. Buttons to its right fire the engine fire extinguishers.",
+          "context": "The pilot and navigator reach it from their seats. The IFF self-destruct buttons are not implemented in the game.",
+          "controls": [
+            {
+              "id": "switch-panel",
+              "name": "Switches panel",
+              "type": "other",
+              "match": [
+                "item:cockpit-right-side:10"
+              ],
+              "text": "This is the whole top panel of switches on the right wall. The switches are listed as separate entries.",
+              "context": "The manual lists its functions on page 86.",
+              "src": "m1",
+              "page": "86"
+            },
+            {
+              "id": "camera-sw",
+              "name": "Camera gun switch",
+              "type": "switch2",
+              "match": [
+                "CAMERA_GUN_SW"
+              ],
+              "positions": [
+                {
+                  "name": "ON",
+                  "text": "The switch is on."
+                },
+                {
+                  "name": "OFF",
+                  "text": "The switch is off."
+                }
+              ],
+              "text": "This switch turns on the gun camera, a camera in the nose that films where the guns point.",
+              "context": "The camera also works when the guns fire.",
+              "src": "m1",
+              "page": "86"
+            },
+            {
+              "id": "nav-sw",
+              "name": "Navigation lights switch",
+              "type": "switch2",
+              "match": [
+                "NAV_LIGHTS_SW"
+              ],
+              "positions": [
+                {
+                  "name": "ON",
+                  "text": "The switch is on."
+                },
+                {
+                  "name": "OFF",
+                  "text": "The switch is off."
+                }
+              ],
+              "text": "This switch turns on the coloured position lights on the outside of the plane, so others can see it at night.",
+              "context": "They are used at night or in poor light.",
+              "src": "m1",
+              "page": "86"
+            },
+            {
+              "id": "pitot-sw",
+              "name": "Pitot head heater switch",
+              "type": "switch2",
+              "match": [
+                "PITOT_HEAD_SW"
+              ],
+              "positions": [
+                {
+                  "name": "ON",
+                  "text": "The switch is on."
+                },
+                {
+                  "name": "OFF",
+                  "text": "The switch is off."
+                }
+              ],
+              "text": "This switch heats the pitot head, the small tube outside that measures speed. The heat stops ice from blocking it.",
+              "context": "The pilot switches it on in cold or wet air.",
+              "src": "m1",
+              "page": "86"
+            },
+            {
+              "id": "lr-pump-sw",
+              "name": "Long range fuel pump switch",
+              "type": "switch2",
+              "match": [
+                "LR_FUEL_PUMP_SW"
+              ],
+              "positions": [
+                {
+                  "name": "ON",
+                  "text": "The switch is on."
+                },
+                {
+                  "name": "OFF",
+                  "text": "The switch is off."
+                }
+              ],
+              "text": "This switch runs the pump of the long-range (drop) fuel tank. The tank's fuel is pumped into the engine system.",
+              "context": "The manual says to turn the pump off as soon as the warning lamp comes on, which means the tank is empty.",
+              "src": "m1",
+              "page": "102"
+            },
+            {
+              "id": "reflector-sw",
+              "name": "Reflector gunsight switch",
+              "type": "switch2",
+              "match": [
+                "REFLECTOR_SIGHT_SW"
+              ],
+              "positions": [
+                {
+                  "name": "ON",
+                  "text": "The switch is on."
+                },
+                {
+                  "name": "OFF",
+                  "text": "The switch is off."
+                }
+              ],
+              "text": "This switch turns on the light of the reflector gunsight.",
+              "context": "The brightness is set with the sight dimmer on the front panel.",
+              "src": "m1",
+              "page": "86"
+            },
+            {
+              "id": "iff-sw",
+              "name": "IFF radio switch",
+              "type": "switch2",
+              "match": [
+                "IFF_SW"
+              ],
+              "positions": [
+                {
+                  "name": "ON",
+                  "text": "The switch is on."
+                },
+                {
+                  "name": "OFF",
+                  "text": "The switch is off."
+                }
+              ],
+              "text": "This switch turns on the IFF set, a radio box that answers the question who are you from other radars and stations.",
+              "context": "The IFF is the friend-or-foe identification set.",
+              "src": "m1",
+              "page": "86"
+            },
+            {
+              "id": "ext-port",
+              "name": "Port engine fire extinguisher button",
+              "type": "button",
+              "match": [
+                "PORT_EXTG_BTN"
+              ],
+              "text": "Pressing this button sets off the fire extinguisher of the left engine.",
+              "context": "The pilot uses it when a fire warning shows for that engine.",
+              "src": "m1",
+              "page": "86"
+            },
+            {
+              "id": "ext-port-cover",
+              "name": "Port extinguisher button cover",
+              "type": "cover",
+              "match": [
+                "PORT_EXTG_BTN_COVER"
+              ],
+              "text": "This is a spring-loaded or hinged cover over the left engine fire extinguisher button. It stops the control from being operated by accident.",
+              "context": "The cover is lifted before the button is pressed.",
+              "src": "m1",
+              "page": "86"
+            },
+            {
+              "id": "ext-stbd",
+              "name": "Starboard engine fire extinguisher button",
+              "type": "button",
+              "match": [
+                "STBD_EXTG_BTN"
+              ],
+              "text": "Pressing this button sets off the fire extinguisher of the right engine.",
+              "context": "It is the right-hand partner of the left extinguisher button.",
+              "src": "m1",
+              "page": "86"
+            },
+            {
+              "id": "ext-stbd-cover",
+              "name": "Starboard extinguisher button cover",
+              "type": "cover",
+              "match": [
+                "STBD_EXTG_BTN_COVER"
+              ],
+              "text": "This is a spring-loaded or hinged cover over the right engine fire extinguisher button. It stops the control from being operated by accident.",
+              "context": "The cover is lifted before the button is pressed.",
+              "src": "m1",
+              "page": "86"
+            },
+            {
+              "id": "iff-det-1",
+              "name": "IFF detonator button (left)",
+              "type": "button",
+              "match": [
+                "ARI_DETONATE_1"
+              ],
+              "text": "This button is one of two that would blow up the IFF set to keep it from the enemy. The manual says IFF self-destruct is not implemented.",
+              "context": "The game names it radio detonator left.",
+              "src": "m1",
+              "page": "86"
+            },
+            {
+              "id": "iff-det-cover",
+              "name": "IFF detonator cover",
+              "type": "cover",
+              "match": [
+                "ARI_DETONATE_COVER"
+              ],
+              "text": "This is a spring-loaded or hinged cover over the two IFF detonator buttons. It stops the control from being operated by accident.",
+              "context": "The cover is lifted before the button is pressed.",
+              "src": "m1",
+              "page": "86"
+            },
+            {
+              "id": "iff-det-2",
+              "name": "IFF detonator button (right)",
+              "type": "button",
+              "match": [
+                "ARI_DETONATE_2"
+              ],
+              "text": "This button is the second one that would blow up the IFF set. It is not implemented in the game.",
+              "context": "The game names it radio detonator right.",
+              "src": "m1",
+              "page": "86"
+            }
+          ]
+        },
+        {
+          "id": "ident",
+          "name": "Identification lights and morse key",
+          "db": "cockpit-right-side",
+          "src": "m1",
+          "page": "88",
+          "text": "These controls are for signalling with lights and a key. The identification lamps are coloured lamps on the plane. The morse key sends short and long flashes.",
+          "context": "They are used for identifying the plane to friendly forces and for signalling by light.",
+          "controls": [
+            {
+              "id": "id-lamps",
+              "name": "Identification light switches",
+              "type": "switch",
+              "match": [
+                "DOWN_IDENT_LIGHTS_SW",
+                "DOWNWARD_LEVER",
+                "UPWARD_LEVER",
+                "NAV_HEAD_LAMP_SW",
+                "item:cockpit-right-side:4"
+              ],
+              "count": 4,
+              "text": "These four switches set the identification lamps: the colour and mode of the lamps that shine downward and upward, and the mode of the head lamp. The game lists them as separate controls.",
+              "context": "The identification lights selector is listed in the manual. The manual does not describe the single switches.",
+              "src": "m1",
+              "page": "84"
+            },
+            {
+              "id": "morse",
+              "name": "Identification switchbox and morse key",
+              "type": "button",
+              "match": [
+                "MORSE_KEY",
+                "item:cockpit-right-side:5"
+              ],
+              "text": "This is a key like a telegraph key. The game files it under exterior lights and communications. It is used to send morse signals, which are short and long flashes or tones.",
+              "context": "The manual lists it together with the identification switchbox.",
+              "src": "m1",
+              "page": "88"
+            },
+            {
+              "id": "resin",
+              "name": "Resin lamp switch",
+              "type": "switch2",
+              "match": [
+                "RESIN_LIGHT_SW",
+                "item:cockpit-right-side:3"
+              ],
+              "positions": [
+                {
+                  "name": "ON",
+                  "text": "The switch is on."
+                },
+                {
+                  "name": "OFF",
+                  "text": "The switch is off."
+                }
+              ],
+              "text": "The manual calls this the UV resin lamp switch. It turns on a resin lamp. The manual does not describe the lamp further.",
+              "context": "It is one of the cockpit lights of the right wall.",
+              "src": "m1",
+              "page": "89"
+            }
+          ]
+        },
+        {
+          "id": "right-wall",
+          "name": "Right wall gauges, oxygen and doors",
+          "db": "cockpit-right-side",
+          "src": "m1",
+          "page": "84",
+          "text": "The right wall has the oxygen valve and regulator, the gauges for voltage, air temperature and the fuel tanks, the intercom jack, the wiper knob and the cabin door handles.",
+          "context": "The navigator sits on this side. The door has a normal handle and a red-painted jettison handle for an emergency.",
+          "controls": [
+            {
+              "id": "oxy-hp",
+              "name": "High pressure oxygen master valve",
+              "type": "switch2",
+              "match": [
+                "OXY_VALVE",
+                "item:cockpit-right-side:1"
+              ],
+              "positions": [
+                {
+                  "name": "Open",
+                  "text": "Oxygen flows from the bottles."
+                },
+                {
+                  "name": "Closed",
+                  "text": "The oxygen is shut off."
+                }
+              ],
+              "text": "This is the master valve for the oxygen bottles. Opening it lets oxygen flow from the bottles into the system.",
+              "context": "It is opened before a high flight.",
+              "src": "m1",
+              "page": "85"
+            },
+            {
+              "id": "oxy-co",
+              "name": "Co-pilot oxygen regulator",
+              "type": "switch2",
+              "match": [
+                "STBD_OXY_VALVE",
+                "item:cockpit-right-side:2"
+              ],
+              "positions": [
+                {
+                  "name": "ON",
+                  "text": "Oxygen flows to the mask."
+                },
+                {
+                  "name": "OFF",
+                  "text": "The oxygen is shut off."
+                }
+              ],
+              "text": "This is the oxygen regulator of the second crew member. The manual says it is similar to the pilot's.",
+              "context": "It has a valve like the pilot's.",
+              "src": "m1",
+              "page": "85"
+            },
+            {
+              "id": "voltmeter",
+              "name": "Voltmeter",
+              "type": "gauge",
+              "match": [
+                "item:cockpit-right-side:6"
+              ],
+              "text": "This dial shows the voltage of the electric system. The manual wants 24 volts with a full battery.",
+              "context": "The pilot checks it after switching on the master switch.",
+              "src": "m1",
+              "page": "87"
+            },
+            {
+              "id": "gen-lamp",
+              "name": "Generator warning lamp",
+              "type": "light",
+              "match": [
+                "item:cockpit-right-side:7"
+              ],
+              "text": "This lamp lights when the generator does not charge the system. A generator makes electricity while the engine runs.",
+              "context": "The manual lists it on the right wall.",
+              "src": "m1",
+              "page": "84"
+            },
+            {
+              "id": "wiper",
+              "name": "Windscreen wiper rheostat",
+              "type": "knob",
+              "match": [
+                "WIPER_RT",
+                "item:cockpit-right-side:8"
+              ],
+              "text": "This knob works the windscreen wiper. Counter-clockwise stops it and clockwise starts it.",
+              "context": "It is used in rain, to keep the windscreen clear.",
+              "src": "m1",
+              "page": "91"
+            },
+            {
+              "id": "air-temp",
+              "name": "Air temperature gauge",
+              "type": "gauge",
+              "match": [
+                "item:cockpit-right-side:9"
+              ],
+              "text": "This gauge shows the temperature of the outside air, from minus 70 to plus 30 degrees Celsius.",
+              "context": "The pilot reads how cold the air outside is.",
+              "src": "m1",
+              "page": "87"
+            },
+            {
+              "id": "fuel-gauges",
+              "name": "Fuel tank gauges Mk IV",
+              "type": "gauge",
+              "match": [
+                "item:cockpit-right-side:11"
+              ],
+              "text": "These gauges show the fuel in the inner, centre and outer wing tanks, in gallons.",
+              "context": "They are on the starboard side of the cockpit.",
+              "src": "m1",
+              "page": "86"
+            },
+            {
+              "id": "intercom-jack",
+              "name": "Intercom jack",
+              "type": "other",
+              "match": [
+                "item:cockpit-right-side:12"
+              ],
+              "text": "This is a socket where the headset cable of the intercom plugs in.",
+              "context": "The intercom is the voice line between pilot and navigator.",
+              "src": "m1",
+              "page": "88"
+            },
+            {
+              "id": "door-jettison",
+              "name": "Door jettison handle",
+              "type": "handle",
+              "match": [
+                "DOOR_JETTISON",
+                "item:cockpit-right-side:13",
+                "item:entrance-door:2"
+              ],
+              "text": "Pulling this red-painted handle releases the pins that hold the entrance door, so the door falls away.",
+              "context": "The manual says to use it for an emergency exit and not to touch the normal handle.",
+              "src": "m1",
+              "page": "46"
+            },
+            {
+              "id": "door-handle",
+              "name": "Entrance door handle",
+              "type": "handle",
+              "match": [
+                "DOOR_LOCK",
+                "item:cockpit-right-side:14",
+                "item:entrance-door:4"
+              ],
+              "text": "This is the normal handle of the entrance door. Turning it lets the door be opened or closed.",
+              "context": "It is used when climbing in and out.",
+              "src": "m1",
+              "page": "89"
+            },
+            {
+              "id": "door",
+              "name": "Entrance door",
+              "type": "other",
+              "match": [
+                "item:entrance-door:1"
+              ],
+              "text": "This is the door the crew use to get in and out of the plane.",
+              "context": "In an emergency it is jettisoned.",
+              "src": "m1",
+              "page": "89"
+            },
+            {
+              "id": "pump-handle",
+              "name": "Emergency pump handle",
+              "type": "handle",
+              "match": [
+                "item:entrance-door:3"
+              ],
+              "text": "The manual lists an emergency pump handle with the entrance door. It says a hand pump is under the seat for use if the standard hydraulic pumps fail.",
+              "context": "Hydraulics is oil under pressure that moves heavy parts such as the landing gear.",
+              "src": "m1",
+              "page": "46"
+            },
+            {
+              "id": "antenna-wheel",
+              "name": "Antenna position control wheel",
+              "type": "wheel",
+              "match": [
+                "item:cockpit-right-side:15"
+              ],
+              "text": "The manual lists a wheel to control the position of the antenna. It is described as the antenna control.",
+              "context": "The swivel antenna is behind the navigator.",
+              "src": "m1",
+              "page": "91"
+            },
+            {
+              "id": "aerial-brake",
+              "name": "Aerial winch brake lever",
+              "type": "switch2",
+              "match": [
+                "AERIAL_BRAKE"
+              ],
+              "positions": [
+                {
+                  "name": "ON",
+                  "text": "The winch brake is on."
+                },
+                {
+                  "name": "OFF",
+                  "text": "The winch brake is off."
+                }
+              ],
+              "text": "This lever brakes the aerial winch, the reel that lets out a long trailing wire used by the radio.",
+              "context": "The wire can be reeled out or in with the winch handle in the rear seat.",
+              "src": "m1",
+              "page": "91"
+            }
+          ]
+        },
+        {
+          "id": "radio-power",
+          "name": "Radio power units and transmitter type switch",
+          "src": "m1",
+          "page": "96",
+          "text": "These switches on the right control the power supplies for the old radio set (the T.1154 transmitter and R.1155 receiver) and the transmitter type.",
+          "context": "The navigator switches them on to use the old radio set. The manual does not describe these three switches.",
+          "controls": [
+            {
+              "id": "ht-unit",
+              "name": "HT power unit switch",
+              "type": "switch2",
+              "match": [
+                "HT_UNIT_SW"
+              ],
+              "positions": [
+                {
+                  "name": "ON",
+                  "text": "The switch is on."
+                },
+                {
+                  "name": "OFF",
+                  "text": "The switch is off."
+                }
+              ],
+              "text": "This switch turns on the high-tension power unit of the radio set. High tension means a high voltage that old radio tubes need.",
+              "context": "The T.1154 and R.1155 radio set uses it.",
+              "src": "m1",
+              "page": "96"
+            },
+            {
+              "id": "lt-unit",
+              "name": "LT power unit switch",
+              "type": "switch2",
+              "match": [
+                "LT_UNIT_SW"
+              ],
+              "positions": [
+                {
+                  "name": "ON",
+                  "text": "The switch is on."
+                },
+                {
+                  "name": "OFF",
+                  "text": "The switch is off."
+                }
+              ],
+              "text": "This switch turns on the low-tension power unit of the radio set, the low voltage supply.",
+              "context": "It belongs to the same radio set as the HT unit.",
+              "src": "m1",
+              "page": "96"
+            },
+            {
+              "id": "t-type",
+              "name": "Transmitter type F switch",
+              "type": "switch2",
+              "match": [
+                "T_T_F_SW"
+              ],
+              "positions": [
+                {
+                  "name": "ON",
+                  "text": "The switch is on."
+                },
+                {
+                  "name": "OFF",
+                  "text": "The switch is off."
+                }
+              ],
+              "text": "The game names this switch the transmitter type F switch. The manual does not describe it.",
+              "context": "It is part of the radio power unit group.",
+              "src": "m1",
+              "page": "96"
+            }
+          ]
+        },
+        {
+          "id": "window-r",
+          "name": "Right window lock",
+          "src": "m1",
+          "page": "109",
+          "text": "This lock holds the right side window of the cockpit shut or lets it open.",
+          "context": "It works like the left window lock.",
+          "controls": [
+            {
+              "id": "win-r",
+              "name": "Right window lock",
+              "type": "switch2",
+              "match": [
+                "WINDOW_LOCK_RIGHT"
+              ],
+              "positions": [
+                {
+                  "name": "Open",
+                  "text": "The right window can be opened."
+                },
+                {
+                  "name": "Close",
+                  "text": "The right window is closed."
+                }
+              ],
+              "text": "This lock holds the right side window of the cockpit closed or lets it be opened.",
+              "context": "The game has commands to open and close the right window.",
+              "src": "m1",
+              "page": "109"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "rear",
+      "where": "rear",
+      "name": "Navigator's station (behind the seats)",
+      "text": "Behind and beside the pilot's seat, the navigator has the old radio set (the R.1155 receiver and the T.1154 transmitter), the IFF set, the fuel taps, the engine cut-outs and a few other controls.",
+      "panels": [
+        {
+          "id": "r1155",
+          "name": "R.1155 receiver",
+          "db": "r-1155",
+          "src": "m1",
+          "page": "97",
+          "text": "The R.1155 is the radio receiver of the old radio set behind the pilot's seat. The navigator tunes it to listen to radio stations and to find directions.",
+          "context": "The navigator reaches the radio set behind the pilot's armoured backrest. The receiver works together with the T.1154 transmitter.",
+          "controls": [
+            {
+              "id": "r-range",
+              "name": "Frequency range switch",
+              "type": "selector",
+              "match": [
+                "FREQUENCIES",
+                "item:r-1155:1"
+              ],
+              "text": "This switch picks the frequency band the receiver listens to.",
+              "context": "The pilot chooses the band first and then tunes.",
+              "src": "m1",
+              "page": "97"
+            },
+            {
+              "id": "r-het",
+              "name": "Heterodyne switch",
+              "type": "switch2",
+              "match": [
+                "HETI",
+                "item:r-1155:2"
+              ],
+              "positions": [
+                {
+                  "name": "ON",
+                  "text": "The switch is on."
+                },
+                {
+                  "name": "OFF",
+                  "text": "The switch is off."
+                }
+              ],
+              "text": "This switch turns on the heterodyne, a part that lets the receiver hear morse code beeps.",
+              "context": "It is used when listening for morse signals.",
+              "src": "m1",
+              "page": "97"
+            },
+            {
+              "id": "r-vol",
+              "name": "Volume control",
+              "type": "knob",
+              "match": [
+                "INCREASE_VOLUME",
+                "item:r-1155:3"
+              ],
+              "text": "Turning this knob makes the receiver louder or quieter.",
+              "context": "It sets how loud the signal is in the headphones.",
+              "src": "m1",
+              "page": "97"
+            },
+            {
+              "id": "r-amp",
+              "name": "Meter amplitude knob",
+              "type": "knob",
+              "match": [
+                "METER_AMPLITUDE",
+                "item:r-1155:4"
+              ],
+              "text": "This knob sets the amplitude, or size, of the signal shown by the meter.",
+              "context": "The manual lists it as part of the receiver controls.",
+              "src": "m1",
+              "page": "97"
+            },
+            {
+              "id": "r-filter",
+              "name": "Filter switch",
+              "type": "switch2",
+              "match": [
+                "FILTER",
+                "item:r-1155:5"
+              ],
+              "positions": [
+                {
+                  "name": "ON",
+                  "text": "The switch is on."
+                },
+                {
+                  "name": "OFF",
+                  "text": "The switch is off."
+                }
+              ],
+              "text": "This switch turns a filter on or off. A filter cuts unwanted noise from the signal.",
+              "context": "It is used when reception is poor and noisy.",
+              "src": "m1",
+              "page": "97"
+            },
+            {
+              "id": "r-balance",
+              "name": "Meter balance knob",
+              "type": "knob",
+              "match": [
+                "METER_BALANCE",
+                "item:r-1155:6"
+              ],
+              "text": "This knob sets the balance of the receiver meter. The manual lists it as meter balance and does not describe it further.",
+              "context": "It is one of the three meter controls of the receiver.",
+              "src": "m1",
+              "page": "97"
+            },
+            {
+              "id": "r-lamp",
+              "name": "Setting indicator lamp",
+              "type": "light",
+              "match": [
+                "item:r-1155:7"
+              ],
+              "text": "This lamp is on the receiver and shows its setting. The manual does not describe it more.",
+              "context": "The navigator looks at it while tuning the receiver.",
+              "src": "m1",
+              "page": "97"
+            },
+            {
+              "id": "r-aural",
+              "name": "Aural sense switch",
+              "type": "switch2",
+              "match": [
+                "AURAL_SENSE",
+                "item:r-1155:8"
+              ],
+              "positions": [
+                {
+                  "name": "Left",
+                  "text": "The left sense is chosen."
+                },
+                {
+                  "name": "Right",
+                  "text": "The right sense is chosen."
+                }
+              ],
+              "text": "This switch picks left or right for the aural sense, a way of hearing from which side a signal comes.",
+              "context": "It helps the navigator know which way is the radio station.",
+              "src": "m1",
+              "page": "97"
+            },
+            {
+              "id": "r-sens",
+              "name": "Meter deflection sensitivity switch",
+              "type": "switch2",
+              "match": [
+                "METER_DEFLECTOR",
+                "item:r-1155:9"
+              ],
+              "positions": [
+                {
+                  "name": "High",
+                  "text": "The meter reacts strongly."
+                },
+                {
+                  "name": "Low",
+                  "text": "The meter reacts weakly."
+                }
+              ],
+              "text": "This switch sets how strongly the meter needle moves, high or low.",
+              "context": "A high setting shows weak signals more clearly.",
+              "src": "m1",
+              "page": "97"
+            },
+            {
+              "id": "r-freq-sw",
+              "name": "Meter frequency switch",
+              "type": "switch2",
+              "match": [
+                "SWITCH_SPEED",
+                "item:r-1155:10"
+              ],
+              "positions": [
+                {
+                  "name": "High",
+                  "text": "The meter works at the high frequency."
+                },
+                {
+                  "name": "Low",
+                  "text": "The meter works at the low frequency."
+                }
+              ],
+              "text": "This switch has a high and a low setting for the meter frequency. The manual lists it without a description.",
+              "context": "It is one of the meter controls of the receiver.",
+              "src": "m1",
+              "page": "97"
+            },
+            {
+              "id": "r-master",
+              "name": "Master selector switch",
+              "type": "selector",
+              "match": [
+                "R1155_MASTER",
+                "item:r-1155:11"
+              ],
+              "text": "This is the main switch of the receiver. It picks how the receiver works.",
+              "context": "The manual lists it as the master selector switch.",
+              "src": "m1",
+              "page": "97"
+            },
+            {
+              "id": "r-coarse",
+              "name": "Frequency tuning knob",
+              "type": "knob",
+              "match": [
+                "LOW_RANGE",
+                "item:r-1155:12"
+              ],
+              "text": "This knob tunes the receiver to a frequency. Frequency is the station number the radio listens to.",
+              "context": "It is the main tuning knob. The fine tuning knob comes after it.",
+              "src": "m1",
+              "page": "97"
+            },
+            {
+              "id": "r-fine",
+              "name": "Frequency fine tuning knob",
+              "type": "knob",
+              "match": [
+                "HIGH_RANGE",
+                "item:r-1155:13"
+              ],
+              "text": "This knob makes small changes to the tuning, to hit the station exactly.",
+              "context": "It is used after the main tuning knob.",
+              "src": "m1",
+              "page": "97"
+            }
+          ]
+        },
+        {
+          "id": "t1154",
+          "name": "T.1154 transmitter",
+          "db": "transmitter-t-1154",
+          "src": "m1",
+          "page": "98",
+          "text": "The T.1154 is the radio transmitter of the old radio set. Setting it needs many adjustments of tuning knobs and switches, because it has to be matched to the antenna.",
+          "context": "The navigator picks a frequency range and sets the tuning controls. The morse key sends signals with it.",
+          "controls": [
+            {
+              "id": "t-range",
+              "name": "Frequency range switch",
+              "type": "selector",
+              "match": [
+                "FREQUENCY_RANGE",
+                "item:transmitter-t-1154:1"
+              ],
+              "text": "This switch picks the frequency band the transmitter works in.",
+              "context": "The band is chosen first before tuning.",
+              "src": "m1",
+              "page": "98"
+            },
+            {
+              "id": "t-master",
+              "name": "Master switch S5",
+              "type": "selector",
+              "match": [
+                "S5",
+                "item:transmitter-t-1154:19"
+              ],
+              "text": "This is the master switch of the transmitter. The game labels it S5.",
+              "context": "The manual lists it as the master switch.",
+              "src": "m1",
+              "page": "98"
+            },
+            {
+              "id": "t-osc",
+              "name": "Master oscillator tuning controls (C2, C4, C17) and dials",
+              "type": "knob",
+              "match": [
+                "C2",
+                "C4",
+                "C17",
+                "item:transmitter-t-1154:2",
+                "item:transmitter-t-1154:5",
+                "item:transmitter-t-1154:8",
+                "item:transmitter-t-1154:3",
+                "item:transmitter-t-1154:6",
+                "item:transmitter-t-1154:9",
+                "item:transmitter-t-1154:10",
+                "item:transmitter-t-1154:13"
+              ],
+              "count": 3,
+              "text": "These three knobs set the frequency of the transmitter's oscillator, the part that makes the radio wave. There is one knob for each range and a dial next to each.",
+              "context": "The knob of the chosen range is turned until its dial shows the wanted setting.",
+              "src": "m1",
+              "page": "98"
+            },
+            {
+              "id": "t-vernier",
+              "name": "Vernier adjustment (C2 and C4)",
+              "type": "knob",
+              "match": [
+                "C2_V",
+                "C4_V",
+                "item:transmitter-t-1154:4",
+                "item:transmitter-t-1154:7"
+              ],
+              "count": 2,
+              "text": "A vernier is a fine adjustment. These two knobs make small changes to the tuning knobs for the first two ranges.",
+              "context": "They help to set the frequency exactly.",
+              "src": "m1",
+              "page": "98"
+            },
+            {
+              "id": "t-presets",
+              "name": "Condenser preset knobs (C2, C4, C17)",
+              "type": "switch",
+              "match": [
+                "C2_B",
+                "C4_B",
+                "C17_B"
+              ],
+              "count": 3,
+              "text": "The game lists three preset knobs for the tuning condensers. The manual does not describe them.",
+              "context": "They belong to the three tuning controls of the oscillator.",
+              "src": "m1",
+              "page": "98"
+            },
+            {
+              "id": "t-output",
+              "name": "Output tuning controls (C15, C16, L6)",
+              "type": "knob",
+              "match": [
+                "C15",
+                "C16",
+                "L6",
+                "item:transmitter-t-1154:11",
+                "item:transmitter-t-1154:14",
+                "item:transmitter-t-1154:16"
+              ],
+              "count": 3,
+              "text": "These knobs tune the output stage of the transmitter to the antenna. Two are condensers, C15 and C16, and one is an inductance control, L6.",
+              "context": "They are turned for the strongest output.",
+              "src": "m1",
+              "page": "98"
+            },
+            {
+              "id": "t-taps",
+              "name": "Tap switches (S3, S4, S6, S7) and their presets (C15_B, C16_B)",
+              "type": "selector",
+              "match": [
+                "S3",
+                "S4",
+                "S6",
+                "S7",
+                "C15_B",
+                "C16_B",
+                "item:transmitter-t-1154:12",
+                "item:transmitter-t-1154:15",
+                "item:transmitter-t-1154:17",
+                "item:transmitter-t-1154:18"
+              ],
+              "count": 6,
+              "text": "These switches choose a tap, a connection point on a coil, to match the transmitter to the antenna and frequency. The manual lists three tap switches and an anode tap switch.",
+              "context": "The manual does not explain their settings.",
+              "src": "m1",
+              "page": "98"
+            },
+            {
+              "id": "t-aerial",
+              "name": "Aerial selector switch (J type)",
+              "type": "switch",
+              "match": [
+                "J_TYPE"
+              ],
+              "text": "The game names this switch the aerial selector switch (J type). It chooses how the radio set uses its antenna.",
+              "context": "The manual shows an antenna mode switch between the transmitter and the receiver.",
+              "src": "m1",
+              "page": "96"
+            },
+            {
+              "id": "t-key",
+              "name": "Morse key",
+              "type": "button",
+              "match": [
+                "KEY_ES"
+              ],
+              "text": "Pressing this key makes the transmitter send a signal. Short and long presses make morse code.",
+              "context": "It is how the navigator sends a message with the T.1154.",
+              "src": "m1",
+              "page": "96"
+            }
+          ]
+        },
+        {
+          "id": "iff",
+          "name": "ARI 5083 IFF (friend or foe set)",
+          "db": "iff-ari-5083",
+          "src": "m1",
+          "page": "99",
+          "text": "IFF means identification, friend or foe. The set answers the question who are you from other radars, so friendly forces know the plane is a friend.",
+          "context": "The manual shows a power switch, a guarded detonator switch and a channel selector for this set.",
+          "controls": [
+            {
+              "id": "iff-power",
+              "name": "IFF power switch",
+              "type": "switch2",
+              "match": [
+                "IFF966_OPER",
+                "item:iff-ari-5083:1"
+              ],
+              "positions": [
+                {
+                  "name": "ON",
+                  "text": "The switch is on."
+                },
+                {
+                  "name": "OFF",
+                  "text": "The switch is off."
+                }
+              ],
+              "text": "This switch gives electric power to the IFF set.",
+              "context": "The set only answers when it is on.",
+              "src": "m1",
+              "page": "99"
+            },
+            {
+              "id": "iff-det-cover-r",
+              "name": "IFF detonator switch cover",
+              "type": "cover",
+              "match": [
+                "IFF966_DETONATE_COVER"
+              ],
+              "text": "This is a spring-loaded or hinged cover over the IFF detonator switch. It stops the control from being operated by accident.",
+              "context": "The cover is lifted before the switch is used.",
+              "src": "m1",
+              "page": "99"
+            },
+            {
+              "id": "iff-det",
+              "name": "IFF detonator switch (guarded)",
+              "type": "switch2",
+              "match": [
+                "IFF966_DETONATE",
+                "item:iff-ari-5083:2"
+              ],
+              "positions": [
+                {
+                  "name": "ON",
+                  "text": "The switch is on."
+                },
+                {
+                  "name": "OFF",
+                  "text": "The switch is off."
+                }
+              ],
+              "text": "This switch would blow up the IFF set so it cannot fall into enemy hands. It is protected by a cover.",
+              "context": "The manual lists it under a protective cover. It is a last-resort switch.",
+              "src": "m1",
+              "page": "99"
+            },
+            {
+              "id": "iff-chan",
+              "name": "IFF channel selector",
+              "type": "selector",
+              "match": [
+                "IFF966_CHAN",
+                "item:iff-ari-5083:3"
+              ],
+              "text": "This selector picks the channel of the IFF set.",
+              "context": "The manual does not explain the channel settings.",
+              "src": "m1",
+              "page": "99"
+            }
+          ]
+        },
+        {
+          "id": "fuel-oil",
+          "name": "Fuel cocks, engine cut-outs and tank controls",
+          "src": "m1",
+          "page": "92",
+          "text": "These controls behind the pilot's seat handle the fuel and oil for the two engines: the fuel taps, the buttons that cut off an engine, the fuel transfer tap, the tank air pressure valve and the extra oil supply levers.",
+          "context": "The manual starts the engines on the outer tanks, warms up on the main tanks, and takes off on the fullest tanks.",
+          "controls": [
+            {
+              "id": "fuel-cock-l",
+              "name": "Fuel cock: port engine",
+              "type": "selector",
+              "match": [
+                "FUEL_COCKS_LEFT"
+              ],
+              "text": "This tap controls the fuel from the tanks to the left engine's fuel pump. Up is off. Right selects the outer tanks. Left selects the main supply.",
+              "context": "The pilot or navigator changes the tanks as they empty.",
+              "src": "m1",
+              "page": "92"
+            },
+            {
+              "id": "fuel-cock-r",
+              "name": "Fuel cock: starboard engine",
+              "type": "selector",
+              "match": [
+                "FUEL_COCKS_RIGHT"
+              ],
+              "text": "This tap controls the fuel from the tanks to the right engine's fuel pump, with the same positions as the left one.",
+              "context": "The manual sets both to OUTER TANKS for the engine start.",
+              "src": "m1",
+              "page": "92"
+            },
+            {
+              "id": "cutout-l",
+              "name": "Engine cut-out button: port",
+              "type": "button",
+              "match": [
+                "CUT-OUT_PORT"
+              ],
+              "text": "Pressing this button cuts off the fuel to the left engine, which stops it.",
+              "context": "The manual says the slow-running cut-outs are pulled to stop the engines.",
+              "src": "m1",
+              "page": "92"
+            },
+            {
+              "id": "cutout-r",
+              "name": "Engine cut-out button: starboard",
+              "type": "button",
+              "match": [
+                "CUT-OUT_STBD"
+              ],
+              "text": "Pressing this button cuts off the fuel to the right engine, which stops it.",
+              "context": "It is the right-hand partner of the left cut-out button.",
+              "src": "m1",
+              "page": "92"
+            },
+            {
+              "id": "transfer",
+              "name": "Fuel transfer cock",
+              "type": "switch2",
+              "match": [
+                "TRANSFER_COCK"
+              ],
+              "positions": [
+                {
+                  "name": "Open",
+                  "text": "Fuel moves from the drop tanks to the outer wing tanks."
+                },
+                {
+                  "name": "Closed",
+                  "text": "No fuel is transferred."
+                }
+              ],
+              "text": "When this tap is open, the pumps move fuel from the underwing drop tanks into the outer wing tanks.",
+              "context": "The manual says to open it soon after take-off and to close it when the drop tanks are empty.",
+              "src": "m1",
+              "page": "92"
+            },
+            {
+              "id": "tank-press",
+              "name": "Fuel tank pressurization valve",
+              "type": "switch2",
+              "match": [
+                "TANK_PRS"
+              ],
+              "positions": [
+                {
+                  "name": "Open",
+                  "text": "The tanks are pressurized by the air flow."
+                },
+                {
+                  "name": "Closed",
+                  "text": "The tanks are not pressurized."
+                }
+              ],
+              "text": "This valve lets the air flow press on the fuel tanks, which keeps the fuel supply steady.",
+              "context": "The manual keeps the pressure venting cock open for the start.",
+              "src": "m1",
+              "page": "95"
+            },
+            {
+              "id": "oil-aux-port",
+              "name": "Auxiliary oil supply lever: port",
+              "type": "switch2",
+              "match": [
+                "OIL_SUPPLY_PORT"
+              ],
+              "positions": [
+                {
+                  "name": "ON",
+                  "text": "The auxiliary oil supply is open."
+                },
+                {
+                  "name": "OFF",
+                  "text": "The auxiliary oil supply is closed."
+                }
+              ],
+              "text": "This lever opens the extra oil supply valve for the left engine, so oil can come from an external supply.",
+              "context": "The valves let the engine take oil from additional tanks.",
+              "src": "m1",
+              "page": "94"
+            },
+            {
+              "id": "oil-aux-stbd",
+              "name": "Auxiliary oil supply lever: starboard",
+              "type": "switch2",
+              "match": [
+                "OIL_SUPPLY_STBD"
+              ],
+              "positions": [
+                {
+                  "name": "ON",
+                  "text": "The auxiliary oil supply is open."
+                },
+                {
+                  "name": "OFF",
+                  "text": "The auxiliary oil supply is closed."
+                }
+              ],
+              "text": "This lever opens the extra oil supply valve for the right engine.",
+              "context": "It is the right-hand partner of the left lever.",
+              "src": "m1",
+              "page": "94"
+            },
+            {
+              "id": "dilute-l",
+              "name": "Engine oil dilution button: port",
+              "type": "button",
+              "match": [
+                "OIL_DILUTION_LEFT"
+              ],
+              "text": "Pressing this button mixes some fuel into the oil of the left engine. Thinner oil flows better in the cold.",
+              "context": "It is used before a cold start in freezing weather. The manual says each engine can be diluted separately.",
+              "src": "m1",
+              "page": "94"
+            },
+            {
+              "id": "dilute-r",
+              "name": "Engine oil dilution button: starboard",
+              "type": "button",
+              "match": [
+                "OIL_DILUTION_RIGHT"
+              ],
+              "text": "Pressing this button mixes some fuel into the oil of the right engine.",
+              "context": "It is the right-hand partner of the left button.",
+              "src": "m1",
+              "page": "94"
+            }
+          ]
+        },
+        {
+          "id": "nav-misc",
+          "name": "Navigator controls and lights",
+          "src": "m1",
+          "page": "90",
+          "text": "These are the other controls at the navigator's station: heating for the cabin and the guns, the hydraulic emergency selector, the armoured headrest lock, the aerial winch and the lights.",
+          "context": "The navigator has these behind the pilot, where the radio equipment is.",
+          "controls": [
+            {
+              "id": "cabin-heater",
+              "name": "Cabin heater lever",
+              "type": "switch2",
+              "match": [
+                "CABIN_HEATER_LV"
+              ],
+              "positions": [
+                {
+                  "name": "ON",
+                  "text": "Warm air enters the cabin."
+                },
+                {
+                  "name": "OFF",
+                  "text": "The heater is shut."
+                }
+              ],
+              "text": "This lever lets warm air from the engine into the cabin to heat it.",
+              "context": "The manual says the cockpit heating works by a duct and a lever, with warm air from the engine.",
+              "src": "m1",
+              "page": "95"
+            },
+            {
+              "id": "gun-heater",
+              "name": "Gun heater lever (weapon heating lever)",
+              "type": "switch2",
+              "match": [
+                "GUN_HEATER_LV"
+              ],
+              "positions": [
+                {
+                  "name": "ON",
+                  "text": "Warm air goes to the guns."
+                },
+                {
+                  "name": "OFF",
+                  "text": "No warm air goes to the guns."
+                }
+              ],
+              "text": "This lever lets warm air from the engine reach the guns, so they do not freeze at height.",
+              "context": "The manual puts the weapon heating lever to the right of the second crew seat.",
+              "src": "m1",
+              "page": "90"
+            },
+            {
+              "id": "hyd-selector",
+              "name": "Hydraulic emergency selector (emergency knob)",
+              "type": "switch",
+              "match": [
+                "HYDR_SELECTOR"
+              ],
+              "text": "The game calls this knob the emergency knob. It sits in a normal position. The manual lists the undercarriage emergency knob as checked in its normal position before the start.",
+              "context": "The manual does not describe the emergency use further.",
+              "src": "m1",
+              "page": "104"
+            },
+            {
+              "id": "headrest",
+              "name": "Armoured headrest lock",
+              "type": "button",
+              "match": [
+                "ARMOR_HEADREST"
+              ],
+              "text": "This button locks the armoured headrest, a plate behind the head that protects against bullets.",
+              "context": "The game calls it the armour headrest lock.",
+              "src": "m1",
+              "page": "77"
+            },
+            {
+              "id": "aerial-reel",
+              "name": "Aerial winch reel lock",
+              "type": "button",
+              "match": [
+                "AERIAL_REEL"
+              ],
+              "text": "This button locks the reel of the aerial winch, which holds the trailing radio wire.",
+              "context": "A locked reel does not let out more wire.",
+              "src": "m1",
+              "page": "91"
+            },
+            {
+              "id": "aerial-winch",
+              "name": "Aerial winch handle",
+              "type": "button",
+              "match": [
+                "AERIAL_WINCH"
+              ],
+              "text": "This handle turns the aerial winch to reel the trailing wire out or in. The game has a command for each direction.",
+              "context": "The long wire is used for radio at long range.",
+              "src": "m1",
+              "page": "91"
+            },
+            {
+              "id": "loop-lock",
+              "name": "Loop antenna lock",
+              "type": "switch2",
+              "match": [
+                "LOOP_ANT_LOCKS"
+              ],
+              "positions": [
+                {
+                  "name": "Lock",
+                  "text": "The loop antenna is locked."
+                },
+                {
+                  "name": "Unlock",
+                  "text": "The loop antenna can be turned."
+                }
+              ],
+              "text": "This lock holds the loop antenna still or lets it turn. The loop antenna is a ring antenna that helps find the direction of a radio station.",
+              "context": "The navigator unlocks it to turn it and locks it again.",
+              "src": "m1",
+              "page": "96"
+            },
+            {
+              "id": "loop-scale",
+              "name": "Loop antenna scale knob",
+              "type": "knob",
+              "match": [
+                "LOOP_ANT"
+              ],
+              "text": "Turning this knob turns the loop antenna and moves the scale that shows its direction.",
+              "context": "The manual lists the antenna controls behind the seats.",
+              "src": "m1",
+              "page": "96"
+            },
+            {
+              "id": "chart-illum",
+              "name": "Chart flood light dimmer",
+              "type": "knob",
+              "match": [
+                "CHART_ILLUM"
+              ],
+              "text": "Turning this knob makes the light over the navigator's chart brighter or dimmer. A rheostat is a dimmer knob.",
+              "context": "It helps the navigator read the map at night.",
+              "src": "m1",
+              "page": "69"
+            },
+            {
+              "id": "rear-illum",
+              "name": "Rear (loop antenna) flood light dimmer",
+              "type": "knob",
+              "match": [
+                "REAR_ILLUM"
+              ],
+              "text": "Turning this knob makes the flood light near the loop antenna brighter or dimmer. A rheostat is a dimmer knob.",
+              "context": "It is used when the cabin is dark at night.",
+              "src": "m1",
+              "page": "69"
+            },
+            {
+              "id": "dome-illum",
+              "name": "Roof dome light dimmer",
+              "type": "knob",
+              "match": [
+                "DOME_ILLUM"
+              ],
+              "text": "Turning this knob makes the dome light in the roof brighter or dimmer. A rheostat is a dimmer knob.",
+              "context": "It lights the whole cabin when the dome light is on.",
+              "src": "m1",
+              "page": "69"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "hotas",
+      "where": "hotas",
+      "name": "Control column and engine levers",
+      "text": "The pilot holds the control column with the right hand, with the firing buttons on the grip. The left hand works the engine levers on the left wall.",
+      "panels": [
+        {
+          "id": "stick",
+          "name": "Control column grip",
+          "src": "m1",
+          "page": "44",
+          "text": "The Mosquito has a control column instead of a stick. The grip carries the triggers for the guns, the camera and bomb button and the wheel brake lever.",
+          "context": "Pulling the column back and pushing it forward moves the elevators, and turning the grip left and right moves the ailerons.",
+          "controls": [
+            {
+              "id": "g-column",
+              "name": "Control column",
+              "type": "other",
+              "match": [
+                "control:stick.gimbal",
+                "item:cockpit-left-side:20"
+              ],
+              "text": "Pulling the column back makes the nose go up and pushing it forward makes the nose go down. Turning it left or right rolls the plane.",
+              "context": "The grip has all the firing buttons and the brake lever.",
+              "src": "m1",
+              "page": "77"
+            },
+            {
+              "id": "g-cannon",
+              "name": "Cannon trigger",
+              "type": "trigger",
+              "match": [
+                "GUN_FIRING",
+                "control:stick.trigger"
+              ],
+              "text": "This trigger on the grip fires the four 20 mm cannons in the belly of the plane.",
+              "context": "The gun master switch must be on. The cannons fire with air pressure and electricity.",
+              "src": "m1",
+              "page": "44"
+            },
+            {
+              "id": "g-mg",
+              "name": "Machine-gun push-switch",
+              "type": "button",
+              "match": [
+                "MACHINEGUN_FIRING",
+                "control:stick.button.mg"
+              ],
+              "text": "This push-switch on top of the column fires the four .303 machine guns in the nose.",
+              "context": "The gun master switch must be on.",
+              "src": "m1",
+              "page": "44"
+            },
+            {
+              "id": "g-camera",
+              "name": "Camera gun and bomb push-switch",
+              "type": "button",
+              "match": [
+                "CAMERA_GUN",
+                "control:stick.button.camera",
+                "control:stick.weapon_release"
+              ],
+              "text": "This push-switch next to the gun firing switch works the camera gun for practice. With the button changeover on the bomb panel set to ON, the same button releases the bombs.",
+              "context": "The game names its command camera bomb. The manual says the camera also runs when the guns fire.",
+              "src": "m1",
+              "page": "73"
+            },
+            {
+              "id": "g-brake",
+              "name": "Brake lever and parking catch",
+              "type": "lever",
+              "match": [
+                "BRAKE_LEVER",
+                "BRAKE_CATCH",
+                "control:stick.lever.brake"
+              ],
+              "text": "Squeezing this lever on the grip brakes the wheels with air. A catch can hold the lever so the brakes stay on when parked. The rudder pedals decide which wheel brakes more.",
+              "context": "The manual says the brakes are Dunlop pneumatic brakes controlled by the lever on the stick.",
+              "src": "m1",
+              "page": "44"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

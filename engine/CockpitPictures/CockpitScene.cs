@@ -18,6 +18,9 @@ namespace JoyPro.CockpitPictures
         // Named groups of meshes (indices into Meshes): "stick", "throttle", "collective" ...
         public Dictionary<string, List<int>> Groups = new Dictionary<string, List<int>>(StringComparer.OrdinalIgnoreCase);
         public List<string> Warnings = new List<string>();
+        // Animated controls of the model that are not callouts of a picture (pictures.json "controls" gets them too,
+        // with their place on every picture they are in).
+        public List<CockpitCallout> Controls = new List<CockpitCallout>();
         // The model's node tree where the reader has one: the meshes under each node, the names and the parents.
         public Dictionary<int, List<int>> NodeMeshes = new Dictionary<int, List<int>>();
         public List<string> NodeNames = new List<string>();

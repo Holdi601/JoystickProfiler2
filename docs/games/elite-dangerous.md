@@ -1,6 +1,6 @@
 # Elite Dangerous (live 4.x client: Odyssey and Horizons-live)
 
-Tags: **[OBS]** seen in real files on the dev PC · **[OBS-bin]** strings in `EliteDangerous64.exe` 2026.09.03 · **[SRC]** official files shipped with the game (`ControlSchemes\Help.txt`, `DeviceButtonMaps\Readme.txt`) · **[SRC-3p]** third-party tools/forums (EDRefCard, marwatk/elite-dangerous-bindings, Steam/Frontier threads) · **[INF]** inferred · **[UNVERIFIED]** needs a check with the game. Research 2026-10-01; the game was not started.
+Tags: **[OBS]** seen in real files on a test PC · **[OBS-bin]** strings in `EliteDangerous64.exe` 2026.09.03 · **[SRC]** official files shipped with the game (`ControlSchemes\Help.txt`, `DeviceButtonMaps\Readme.txt`) · **[SRC-3p]** third-party tools/forums (EDRefCard, marwatk/elite-dangerous-bindings, Steam/Frontier threads) · **[INF]** inferred · **[UNVERIFIED]** needs a check with the game. Research 2026-10-01; the game was not started.
 
 Integrated as `engine elite` (experimental; Ship preset, edited in place as described in "How JoyPro should export"; half-axis binds and modifiers stay on clean). Research helpers: `C:\Temp\jp2-elite\elite_catalog.py` (catalog), `elite_user_binds.py` (bind summary).
 
@@ -10,10 +10,10 @@ Integrated as `engine elite` (experimental; Ship preset, edited in place as desc
 
 | Path | Content |
 |---|---|
-| `%LOCALAPPDATA%\Frontier Developments\Elite Dangerous\Options\Bindings\<Preset>.<Major>.<Minor>.binds` | user presets; exe format `%s.%u.%u.%s` [OBS-bin]; dev PC: `Custom.4.2.binds` (66 351 B) [OBS] |
+| `%LOCALAPPDATA%\Frontier Developments\Elite Dangerous\Options\Bindings\<Preset>.<Major>.<Minor>.binds` | user presets; exe format `%s.%u.%u.%s` [OBS-bin]; test PC: `Custom.4.2.binds` (66 351 B) [OBS] |
 | `...\Bindings\StartPreset.4.start` | active preset per control category (below) [OBS] |
 | `...\Bindings\StartPreset.start` | one-line form, used by the legacy 3.8 client for `<Preset>.3.0.binds` [INF; 3.0 file names: SRC-3p marwatk]; the 4.x exe still has the name because the other option folders use it (`Options\Audio\StartPreset.start` = `Custom`, `Graphics` = `High`) [OBS] |
-| `...\Bindings\BindingLoadingErrors.log` | written when a preset fails to load ("There where errors when loading preset file:", "Missing devices:") [OBS-bin]; absent on the dev PC = last load was clean [OBS] |
+| `...\Bindings\BindingLoadingErrors.log` | written when a preset fails to load ("There where errors when loading preset file:", "Missing devices:") [OBS-bin]; absent on a test PC = last load was clean [OBS] |
 | `...\Bindings\DeviceButtonMaps\<MappingName>.buttonMap` | display names for buttons only (`<Root><Joy_1>B1</Joy_1></Root>`) [SRC Readme] |
 | `<product>\ControlSchemes\*.binds` | 30 stock presets (`KeyboardMouseOnly`, `SaitekX56`, `ThrustMasterHOTASWarthog`, `GenericJoystick`, `Empty`, ...); `PresetName` = file stem, `SortOrder="0"`, no version attributes except `1.8` on two files, 26 of 30 with UTF-8 BOM [OBS] |
 | `<product>\ControlSchemes\DeviceMappings.xml` | symbolic device names → VID/PID (below) [OBS] |
@@ -22,8 +22,8 @@ Integrated as `engine elite` (experimental; Ship preset, edited in place as desc
 `DeviceDefaults.xml` in the product folder is the graphics-card table, not input. The binding definitions (categories, defaults) are not in loose files, and JoyPro does not read the game's packed data (`Win64\00..0f\<sha1>`, no documented format); the element names come from the stock `.binds` presets and the `.binds` the game writes for the user. [OBS]
 
 ### StartPreset.4.start
-Four preset names, LF-separated, no trailing newline. Dev PC: `Custom`, `Custom`, `KeyboardMouseOnly`, `KeyboardMouseOnly` (49 B). [OBS]
-Line order = **General, Ship, SRV, OnFoot**: the exe has the binding flags `HiddenInGeneralControls`, `HiddenInShipControls`, `HiddenInSRVControls`, `HiddenInOnFootControls` and telemetry `&GeneralScheme= &ShipScheme= &SRVScheme= &OnFootScheme=` in that order [OBS-bin]; Odyssey's controls menu has one preset drop-down each for General, Ship, SRV and On Foot [SRC-3p]. Each category takes its elements from its own preset file, so on the dev PC SRV and on-foot use the stock `KeyboardMouseOnly` scheme and the SRV/on-foot elements in `Custom.4.2.binds` are inactive (they equal the stock values). [INF]
+Four preset names, LF-separated, no trailing newline. Test PC: `Custom`, `Custom`, `KeyboardMouseOnly`, `KeyboardMouseOnly` (49 B). [OBS]
+Line order = **General, Ship, SRV, OnFoot**: the exe has the binding flags `HiddenInGeneralControls`, `HiddenInShipControls`, `HiddenInSRVControls`, `HiddenInOnFootControls` and telemetry `&GeneralScheme= &ShipScheme= &SRVScheme= &OnFootScheme=` in that order [OBS-bin]; Odyssey's controls menu has one preset drop-down each for General, Ship, SRV and On Foot [SRC-3p]. Each category takes its elements from its own preset file, so on a test PC SRV and on-foot use the stock `KeyboardMouseOnly` scheme and the SRV/on-foot elements in `Custom.4.2.binds` are inactive (they equal the stock values). [INF]
 
 ### Versions and when the game writes
 - Root attributes `MajorVersion`/`MinorVersion` match the file name. 4.x = live client (Odyssey and Horizons-live), 3.0 = legacy 3.8 client. [OBS, SRC-3p]
@@ -72,7 +72,7 @@ UTF-8 without BOM, `<?xml version="1.0" encoding="UTF-8" ?>`, CRLF, tab indentat
 ### Input names [SRC Help.txt, OBS]
 | Elite key | Meaning | JoyPro bind |
 |---|---|---|
-| `Joy_1` .. `Joy_N` | button, 1-based; Help.txt lists 1-32, the dev PC has `Joy_41` | `JOY_BTN<n>` [INF] |
+| `Joy_1` .. `Joy_N` | button, 1-based; Help.txt lists 1-32, a test PC has `Joy_41` | `JOY_BTN<n>` [INF] |
 | `Joy_POV<h>Up/Right/Down/Left` | hat 1-4, four directions, no diagonals | `JOY_BTN_POV<h>_U/R/D/L`; diagonals cannot be written |
 | `Joy_XAxis Joy_YAxis Joy_ZAxis Joy_RXAxis Joy_RYAxis Joy_RZAxis` | DirectInput axes | `JOY_X .. JOY_RZ` |
 | `Joy_UAxis`, `Joy_VAxis` | sliders 0 and 1 [INF] | `JOY_SLIDER1`, `JOY_SLIDER2` [INF] |
@@ -153,7 +153,6 @@ Not managed: mouse settings, SRV/on-foot settings (other presets), `EnableRumble
 - Devices listed in `DeviceMappings.xml` are written by their **symbolic name** instead (`<T16000M><PID>B10A</PID><VID>044F</VID></T16000M>`, `<Alternative>` entries, e.g. `ThrustMasterWarthogJoystick`, `SaitekX56Throttle`, `VPCThrottle` = 3344:0197, `VPCPanel` = 3344:0259). [OBS file; SRC-3p marwatk: "either the 8-digit hex form or one of the game's named IDs"] An exporter must check this table first (VID/PID case-insensitive, Alternatives included).
 - Identical devices (same VID/PID): an extra attribute `DeviceIndex` on the slot and on `<Modifier>` [OBS-bin name; SRC-3p EDRefCard `xmlBinding.get('DeviceIndex', 0)`, marwatk "identical devices, such as dual sticks, are handled with device indices"]. How the index is assigned (enumeration/USB port order) is undocumented and users report swaps after changing USB ports [SRC-3p Steam 2022] → JoyPro cannot map an index to a DirectInput instance GUID. **Limitation:** skip export to a VID/PID that more than one connected device has. Absent attribute = index 0. [INF]
 - **A device that is referenced but not connected makes the game ignore the whole preset** (falls back, `BindingLoadingErrors.log`: `Missing devices: ...`) [SRC-3p Steam 2019, community guides; exe has "Missing devices: " and "Failed to set controls preset."; `IgnoreMissingDevices` exists but is undocumented → UNVERIFIED for the 2026 build].
-- Dev PC: `25BB00D8` (CLSE VPC V.F.X F14, Roll/Pitch) is referenced but not connected now; the other four are connected. Full mapping: `C:\Temp\jp2-elite\user_binds_summary.txt`. [OBS]
 
 | Id | Device (DirectInput OEMName) | Connected | Joystick binds |
 |---|---|---|---|
@@ -216,7 +215,7 @@ Not managed: mouse settings, SRV/on-foot settings (other presets), `EnableRumble
 7. **Clean** (`--mode clean`): on the devices the export writes, set slots of **flight=yes** elements that hold a joystick bind of that device and are not part of the profile to `Device="{NoDevice}" Key=""` (remove their `<Modifier>`/`<Hold>` children), axes to `{NoDevice}` with `Inverted 0` / `Deadzone 0.00000000`. **Nuke** (`--nuke-untouched-devices`): the same for flight=yes slots on joystick devices the export does not use. Both never touch flight=no elements (UI, camera, SRV, on foot, colonisation), keyboard/mouse/GamePad slots, or slots of other devices. Clearing a disconnected device's binds is allowed and removes the missing-device problem.
 8. **Keyboard** binds only with `--include-keyboard`, only for flight=yes elements, using `Key_*` names; never clear keyboard slots in clean/nuke.
 9. **Never touch SRV or on-foot elements** (`srv`, `on_foot` categories), even though their names (`SteeringAxis`, `HumanoidJumpButton`, ...) sit in the same file.
-10. **Import:** joystick slots of flight=yes elements become binds; half-axis keys (`Pos_/Neg_Joy_*`) and placeholder devices (`GenericJoystick`, `GamePad`, `XB360 Pad`) are skipped with a warning; modifiers on half axes (the VKB hat binds on the dev PC) cannot be represented.
+10. **Import:** joystick slots of flight=yes elements become binds; half-axis keys (`Pos_/Neg_Joy_*`) and placeholder devices (`GenericJoystick`, `GamePad`, `XB360 Pad`) are skipped with a warning; modifiers on half axes (the VKB hat binds on a test PC) cannot be represented.
 11. Test plan before enabling writes: export to a copy of `Custom.4.2.binds`, compare byte-for-byte outside the edited slots, then one real start of the game with all referenced devices connected and `BindingLoadingErrors.log` absent.
 
 Blockers for a safe exporter: none in the format. Open points: `DeviceIndex` assignment (identical devices are skipped) and the missing-device rule for the 2026 build. New elements of later builds come in with `engine elite refresh-db` once the game has written them to a preset.

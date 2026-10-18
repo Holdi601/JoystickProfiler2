@@ -31,6 +31,7 @@ public sealed class RelationListItem : CommunityToolkit.Mvvm.ComponentModel.Obse
                 OnPropertyChanged(nameof(BindDevice));
                 OnPropertyChanged(nameof(BindLabel));
                 OnPropertyChanged(nameof(BindTooltip));
+                OnPropertyChanged(nameof(BindInputPart));
             }
         }
     }
@@ -47,12 +48,31 @@ public sealed class RelationListItem : CommunityToolkit.Mvvm.ComponentModel.Obse
             {
                 OnPropertyChanged(nameof(BindLabel));
                 OnPropertyChanged(nameof(BindTooltip));
+                OnPropertyChanged(nameof(ModifierChips));
+                OnPropertyChanged(nameof(HasModifierChips));
             }
         }
     }
 
     // "WarBRD · BTN 8 · Shift A": which device, which input, which modifiers (an input alone says nothing).
     public string BindLabel => IsBound ? DisplayText.BindLabel(BindDeviceFull, BindInputRaw, Modifiers) : string.Empty;
+
+    // The card shows the device (it may shorten), the input after it, and every modifier as its own chip: the input
+    // and the modifiers are never cut off. " · BTN 8" (the input part of the key cap).
+    public string BindInputPart
+    {
+        get
+        {
+            string key = DisplayText.Input(BindInputRaw);
+            if (!IsBound || key.Length == 0)
+                return string.Empty;
+            return (BindDevice.Length > 0 ? " · " : string.Empty) + DeviceMarkerText.ShortLabel(key);
+        }
+    }
+
+    public IReadOnlyList<string> ModifierChips => Modifiers.Select(m => (m ?? string.Empty).Trim()).Where(m => m.Length > 0 && !m.StartsWith('<')).ToList();
+
+    public bool HasModifierChips => IsBound && ModifierChips.Count > 0;
 
     public string BindTooltip => IsBound ? DisplayText.BindTooltip(BindDeviceFull, BindInputRaw, Modifiers) : T("Not on a button or axis yet: bind it on the Binds page");
 
@@ -69,7 +89,10 @@ public sealed class RelationListItem : CommunityToolkit.Mvvm.ComponentModel.Obse
         set
         {
             if (SetProperty(ref games, value ?? string.Empty))
+            {
                 OnPropertyChanged(nameof(GameList));
+                OnPropertyChanged(nameof(PlanesTooltip));
+            }
         }
     }
 
@@ -82,9 +105,53 @@ public sealed class RelationListItem : CommunityToolkit.Mvvm.ComponentModel.Obse
             {
                 OnPropertyChanged(nameof(PlanesText));
                 OnPropertyChanged(nameof(HasPlanes));
+                OnPropertyChanged(nameof(PlanesTooltip));
             }
         }
     }
+
+    private IReadOnlyList<string> planeIds = [];
+
+    // The aircraft of its switched-on actions as the engine names them ("FA-18C_hornet"), for the chip's tooltip.
+    public IReadOnlyList<string> PlaneIds
+    {
+        get => planeIds;
+        set
+        {
+            if (SetProperty(ref planeIds, value ?? []))
+                OnPropertyChanged(nameof(PlanesTooltip));
+        }
+    }
+
+    // The aircraft names as the modules call them ("F/A-18C Hornet"), set by the main window once it has them.
+    public static IReadOnlyDictionary<string, string> AircraftNames { get; set; } = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
+
+    // Tooltip of the "19 aircraft" chip: every aircraft by its readable name; beyond MaxTooltipAircraft "+N more".
+    public const int MaxTooltipAircraft = 40;
+
+    // A game without aircraft lists itself as its one "aircraft" ("IL2Game"): named as the game.
+    public string PlanesTooltip => AircraftListText(PlaneIds, PlanesText, DisplayText.List(Games));
+
+    internal static string AircraftListText(IReadOnlyList<string> ids, string countText, IReadOnlyCollection<string>? gameIds = null)
+    {
+        HashSet<string> games = new(gameIds ?? [], StringComparer.OrdinalIgnoreCase);
+        List<string> names = ids
+            .Where(id => !string.IsNullOrWhiteSpace(id))
+            .Select(id => AircraftNames.TryGetValue(id.Trim(), out string? name) && !string.IsNullOrWhiteSpace(name) ? name.Trim()
+                : games.Contains(id.Trim()) ? DisplayText.Game(id.Trim()) : id.Trim())
+            .Distinct(StringComparer.OrdinalIgnoreCase)
+            .OrderBy(n => n, StringComparer.CurrentCultureIgnoreCase)
+            .ToList();
+        if (names.Count == 0)
+            return countText;
+        string list = string.Join(", ", names.Take(MaxTooltipAircraft));
+        if (names.Count > MaxTooltipAircraft)
+            list = T("{0} +{1} more", list, names.Count - MaxTooltipAircraft);
+        return T("{0}:\n{1}", countText, list);
+    }
+
+    // The readable names arrived: the tooltip follows.
+    internal void RefreshAircraftNames() => OnPropertyChanged(nameof(PlanesTooltip));
 
     public string Groups { get; set; } = string.Empty;
 

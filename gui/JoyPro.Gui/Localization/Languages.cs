@@ -172,9 +172,14 @@ public static class Languages
         };
     }
 
-    // The UI font stack of a language: Bahnschrift (JoyPro's font; Latin, Greek, Cyrillic), then Segoe UI, then the
-    // Windows CJK UI font of that language first (Han characters look different in Japanese, Chinese and Korean).
-    public static string FontStack(LanguageInfo language)
+    // The UI font stack of a language: Bahnschrift (JoyPro's font; Latin with Latin Extended, Greek, Cyrillic), then
+    // Segoe UI, then the Windows CJK UI font of that language first (Han characters look different in Japanese, Chinese
+    // and Korean), then Segoe UI Symbol and Emoji for the arrows and media signs of some texts (↻ ⇕ ⏮ ⏺), which none of
+    // the text fonts has. Every character of every language file is in this chain (FontCoverageTests).
+    public static string FontStack(LanguageInfo language) => "Bahnschrift, Segoe UI, " + FallbackFonts(language);
+
+    // The fonts after a page's own font: the CJK fonts of the language, then the symbol fonts.
+    public static string FallbackFonts(LanguageInfo language)
     {
         string cjk = language.Code switch
         {
@@ -184,7 +189,7 @@ public static class Languages
             "ko" => "Malgun Gothic, Yu Gothic UI, Microsoft YaHei UI",
             _ => "Yu Gothic UI, Microsoft YaHei UI, Malgun Gothic"
         };
-        return "Bahnschrift, Segoe UI, " + cjk;
+        return cjk + ", Segoe UI Symbol, Segoe UI Emoji";
     }
 
     // How many forms a translation of a plural text lists in this language.

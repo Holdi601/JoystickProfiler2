@@ -1,7 +1,7 @@
 # Microsoft Flight Simulator 2020 / 2024 (experimental; 2020 verified in game 2026-10-10 by `tools\e2e\games\MsfsCurves.ps1`: binds, Sensitivity page, buttons and axis curves in a flight; 2024 verified in the sim 2026-10-10 by `tools\e2e\games\Msfs2024Settings.ps1`: presets as a Community2024 package, random vJoy axes and buttons and the per-action curve override show in Controls)
 
 ## Two games: MSFS 2020 and MSFS 2024
-JoyPro handles the two sims as two games side by side (both can be installed; the dev PC has both on Steam):
+JoyPro handles the two sims as two games side by side (both can be installed; a test PC has both on Steam):
 
 | | MSFS 2020 (`MSFS2020`) | MSFS 2024 (`MSFS2024`) |
 |---|---|---|
@@ -10,7 +10,7 @@ JoyPro handles the two sims as two games side by side (both can be installed; th
 | Export target (`paths`) | the Steam `remote` folders of app 1250410 (`inputprofile_*`) | JoyPro's preset package `Community2024\joypro-input-profiles`, then the Steam `remote` folders of app 2537590 |
 | Process (export refused while it runs) | `FlightSimulator` | `FlightSimulator2024` |
 | Catalog | `DB\MSFS2020\actions.tsv` | `DB\MSFS2024\actions.tsv` |
-| Aircraft list | `DB\MSFS2020\aircraft.tsv` (44 aircraft on the dev PC) | `DB\MSFS2024\aircraft.tsv` (81) |
+| Aircraft list | `DB\MSFS2020\aircraft.tsv` (44 aircraft on a test PC) | `DB\MSFS2024\aircraft.tsv` (81) |
 | `refresh-db` reads | MSFS 2020's presets (`<install>\Input`, its Official packages) and locPak | MSFS 2024's presets (`fs-input-profiles`, `asobo-input-profiles-pc`) and locPak |
 
 Both use the same code (`engine\Games\MsfsIntegration.cs`, one instance per sim) and file reader, so either game
@@ -93,7 +93,7 @@ import|scan`, GUI import wizard) read what the user set up in the sim (`engine\G
   int32 length + UTF-16LE) lists the containers; `<folder GUID>\container.<n>` lists the blobs (uint32 4, int32 count;
   per blob 64 UTF-16 characters of name, file GUID, the GUID again); a blob is the file named by its GUID (32 hex
   digits). Format as the Store-save tools document it [SRC XGP-save-extractor]; not checked against a real MSFS Store
-  install (none on the dev PC). Every listed blob whose content is an input profile is read (plain XML, UTF-16 with BOM,
+  install (none on a test PC). Every listed blob whose content is an input profile is read (plain XML, UTF-16 with BOM,
   or zlib/gzip-compressed, decompressed into `<data>\Cache\MSFS\wgs`); an index of another layout makes JoyPro check
   every GUID-named file instead (warning). The engine is a .NET Framework program: paths over 260 characters are not
   read (a real blob path is about 205 characters plus the user name).
@@ -119,9 +119,8 @@ import|scan`, GUI import wizard) read what the user set up in the sim (`engine\G
   way. Tests: `JOYPRO_TEST_MSFS_HOME` (stand-in `Local`, `Roaming`, `Steam` folders), `JOYPRO_NO_CATALOG_BUILD=1`;
   `engine\tests\smoke\msfsuserprofiles.ps1`, `gui\JoyPro.Gui.Tests\MsfsProfileImportTests.cs`, journey scenario
   `msfs-store-import`.
-- **Dev PC (2026-10-17):** MSFS 2020 and 2024 on Steam, no Store install. 2020: 9 `inputprofile_*` (7 devices, 2
-  gamepad); 2024: the remote folder holds only `profile_00`, `localprofile`, `datausage` (no custom preset was ever
-  saved), and Community2024 has no JoyPro package. Where MSFS 2024 writes a custom preset made in Controls was not
+- **Steam installs (2026-10-17):** 2020 keeps one `inputprofile_*` per device; a 2024 remote folder without a saved
+  custom preset holds only `profile_00`, `localprofile`, `datausage`. Where MSFS 2024 writes a custom preset made in Controls was not
   checked in the sim (the docs above expect `inputprofile_*` in the remote folder; the 2024 exe has no literal
   `inputprofile_` string, so this stays an assumption).
 
@@ -182,7 +181,7 @@ AIRCRAFT, BASIC_CONTROL(_HELICOPTER/_LIGHTER_THAN_AIR), INSTRUMENTS_CONTROL, PLA
 - KEY codes: buttons N-1, first hat up/right/down/left 256-259 (no diagonals), full axes X/Y/Z 1026/1042/1058, Rx/Ry/Rz 770/786/802, sliders 514/530. The last KEY of a combination is the main input, other buttons of the same device are modifiers; axes take no modifiers. Half axes are not read.
 - New actions: 2024 files already list all actions of their category (an action outside the category is reported and skipped); in 2020 files the action is added to the context it has in the other profiles of the folder, else PLANE (with a warning).
 - Primary/Secondary: at most two input combinations per action; a third is reported and skipped.
-- Ownership (`merge-overwrite` replaces only JoyPro's combinations) and backups live in `%LOCALAPPDATA%\JoyPro\Ownership\MSFS` and `...\Backups\MSFS`, never in the Steam-synced folder. `clean` only changes profiles of devices that JoyPro binds in the export.
+- Ownership (`merge-overwrite` replaces only JoyPro's combinations) and backups live in `%LOCALAPPDATA%\JoyPro\Ownership\MSFS` and `...\Backups\MSFS`, never in the Steam-synced folder. `clean` only changes profiles of devices that JoyPro binds in the export. The backups copy the bytes (`SafeFileIo`), and JoyPro's package folder loses an EFS "encrypted" mark before the export: a Store-version export failed with "The specified file could not be encrypted." (2.1.0 report) when `File.Copy` tried to keep a preset's encryption ([backups](../backups.md)).
 - Catalog: `DB\MSFS2020\actions.tsv` and `DB\MSFS2024\actions.tsv` (each started as the same list: flight-context actions of MSFS 2024 airplane + helicopter exports and MSFS 2020 profiles). Input actions belong to contexts (AIRCRAFT, HELICOPTER, GLIDER, ...), not to an aircraft: a 2024 export lists every action of its contexts whatever aircraft is loaded, so the catalog is not tied to the test aircraft (Cessna 185). Axis actions are recognized by name (`AXIS`, `*_SET` of throttle/mixture/prop/surfaces).
 - Refresh from the game: `engine msfs2020 refresh-db` / `engine msfs2024 refresh-db` (no path; GUI: Games > DB refresh without a source) reads the sims' own data, read only (`engine\Games\MsfsGameData.cs`): the device presets Asobo ships (MSFS 2024 `<install>\Packages\fs-input-profiles` and `asobo-input-profiles-pc`, `InputProfiles\**\*.xml`; MSFS 2020 `<install>\Input`; Store installs under the `InstalledPackagesPath` of UserCfg.opt, `Official*\*`) and adds every flight-context action they bind; new actions get the Controls menu name from `fs-base\en-US.locPak` (`INPUT.KEY_...`), known ones keep their title (import names relations after it) unless it is the raw event name (below). `--path <folder>` reads exported profiles instead.
   **Readable titles (since 2026-10-12):** the locPak writes the menu names in capitals; the catalog takes them in title
@@ -195,7 +194,7 @@ AIRCRAFT, BASIC_CONTROL(_HELICOPTER/_LIGHTER_THAN_AIR), INSTRUMENTS_CONTROL, PLA
   after the new title. The lists already on a PC get the readable titles with the next `refresh-db` (GUI: Games > DB
   refresh); nothing is renamed on load. Where the locPak is: Steam `<MSFS 2024 install>\Packages\fs-base\en-US.locPak`
   (2.2 MB, 2026-10), MSFS 2020 `%APPDATA%\Microsoft Flight Simulator\Packages\Official\Steam\fs-base\en-US.locPak` (the
-  `InstalledPackagesPath` of UserCfg.opt). Fresh build on the dev PC (2026-10-12, temp data folder): MSFS 2024 1715
+  `InstalledPackagesPath` of UserCfg.opt). Fresh build on a test PC (2026-10-12, temp data folder): MSFS 2024 1715
   menu names + 52 from the event name, MSFS 2020 1555 + 201. Every search hit carries the event id next to the title
   (`Id`); the relation editor finds the primary flight axes first (docs/relation-builder.md "Primary axes"). **Since 2026-10-12 the refresh also adds every flight event the
   locPak names but no preset binds** (most aircraft systems: autopilot, radios, lights, fuel, engines, G1000 and GPS
@@ -205,7 +204,7 @@ AIRCRAFT, BASIC_CONTROL(_HELICOPTER/_LIGHTER_THAN_AIR), INSTRUMENTS_CONTROL, PLA
   multiplayer, the on-foot character, failures and blockages, recording; the context is LIGHTER_THAN_AIR (airship,
   balloon, burner), HELICOPTER (heli, rotor, collective, cyclic, auto hover), GLIDER (water ballast, tow plane), PLANE
   (the plane-only systems of the presets: liquid dropping, grapple hook, skydive lights, G limiter, ...), else AIRCRAFT.
-  Fresh build on the dev PC (2026-10-12): MSFS 2024 1739 actions (presets 360 + 1379 named), MSFS 2020 1580; of the
+  Fresh build on a test PC (2026-10-12): MSFS 2024 1739 actions (presets 360 + 1379 named), MSFS 2020 1580; of the
   development list (from real exports) 1343 / 1195 ids are rebuilt, and the guessed context matches it for 91 % of the
   locPak-only events (most others are MSFS 2020 INSTRUMENTS_CONTROL rows of the shared development list). Check 2026-10-10 (2024 build of 2026-10-04): the 720 presets of both sims bind 1197 actions; every flight-context one was already in the catalog except 4 MSFS 2020 PLANE actions (back to fly, flashlight, pushback, UI window mode), now added. The locPak names 2736 KEY_ events; most of the rest are camera, menu, debug, VR and SimConnect-only events (e.g. `KEY_AXIS_THROTTLE_SET`; the 2024 Controls menu offers `KEY_THROTTLE_AXIS_SET_EX1`).
 
@@ -232,7 +231,7 @@ ships with JoyPro as DCS's plane list does, and is written only when it changes,
     are the variants (the sim's TITLE). Packed packages: the `aircraft.cfg` paths in `layout.json` (category from the
     SimObjects folder: `Rotorcraft` = helicopter).
   - **MSFS 2024 streams its aircraft:** `Official2024\Steam` is empty and `StreamedPackages\<package>` holds only
-    cached, encrypted `.fsarchive` parts, so there is no readable aircraft.cfg. The owned packages are listed in the
+    cached `.fsarchive` parts, so there is no readable aircraft.cfg. The owned packages are listed in the
     content list `<UserCfg folder>\<id>\Content.xml` (`<Package name="fs24-asobo-aircraft-c152" active="Activated"/>`,
     also `UserDisabled` / `SystemDisabled`). JoyPro takes the activated `-aircraft-` packages that are no livery, no AI
     traffic (`passiveaircraft`), no base or shared package (`fs-base-*`, `*-common`, `simattachmentlib`, `trainings`,
@@ -260,7 +259,7 @@ MSFS has per-aircraft input settings, but JoyPro cannot write them:
   presets come only with the aircraft's own package: the SDK puts them in an `inputs` folder beside
   `attachments/common/liveries/presets` of the aircraft's SimObject (`SimObjects\Airplanes\<aircraft>\inputs`), and the
   exe allows input profile asset groups only under `InputProfiles`, `SimObjects` or `SimAttachments` [SRC SDK "Aircraft
-  Input Profile Package Setup", OBS exe]. Official aircraft are streamed and encrypted, so JoyPro cannot add files to
+  Input Profile Package Setup", OBS exe]. Official aircraft are streamed, so JoyPro cannot add files to
   them. [INF, not tried] A Community package that overlays `SimObjects\<cat>\<aircraft>\inputs` of another package
   might be picked up, but it was not tested in the sim and could also break the aircraft's SimObject; JoyPro does not do it.
 - **So the export (both sims) writes one set of binds per device for every aircraft:** the relations for all aircraft,

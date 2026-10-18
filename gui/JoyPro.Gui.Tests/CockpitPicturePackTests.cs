@@ -250,7 +250,7 @@ public sealed class CockpitPicturePackTests
             Release(part, "cockpit-pictures-wt-v1-part2", [("WarThunder", "f_16a", 2)], []);
         }
 
-        // Local: E:\...\cockpit-packs and cockpit-packs-wt with its part in it.
+        // Local: <release folder>\cockpit-packs and cockpit-packs-wt with its part in it.
         string local = Temp("packs-releases");
         string localWt = Path.Combine(local, "cockpit-packs-wt"), localPart = Path.Combine(localWt, "cockpit-pictures-wt-v1-part2");
         Releases(Path.Combine(local, "cockpit-packs"), localWt, localPart);
@@ -627,7 +627,7 @@ public sealed class CockpitPicturePackTests
     }
 
     // Opt-in check of a pack release before it is published (JOYPRO_CHECK_PICTURE_FEED = its main folder, e.g.
-    // E:\JoyProWork\release\cockpit-packs): every feed is read, every pack's zip is where its feed is and has its size.
+    // <release folder>\cockpit-packs): every feed is read, every pack's zip is where its feed is and has its size.
     [Fact]
     public async Task OptIn_LocalRelease_EveryFeedAndEveryAssetIsThere()
     {

@@ -1,0 +1,1367 @@
+{
+  "format": "joypro-cockpit-guide",
+  "version": 1,
+  "id": "dcs-ah-64d.part3",
+  "partOf": "dcs-ah-64d",
+  "areas": [
+    {
+      "id": "cpg-instrument-panel",
+      "where": "front-center",
+      "name": "CPG instrument panel",
+      "seat": 2,
+      "text": "The panel in front of the CPG in the front seat. It has the two MPD screens, the EUFD text screen, the warning buttons, the fire panel and the armament panel.",
+      "panels": [
+        {
+          "id": "cpg-master-warning-caution",
+          "name": "Master Warning / Master Caution buttons (CPG seat)",
+          "db": "master-warning-caution",
+          "src": "m1",
+          "page": "124",
+          "text": "These are two big lighted buttons that call for attention. The warning button is for danger, the caution button is for a less urgent problem.",
+          "context": "The words that say what is wrong appear on the EUFD, the small text screen. The CPG (copilot/gunner) reads them there and presses the button to acknowledge.",
+          "controls": [
+            {
+              "id": "mstr-warn",
+              "name": "MSTR WARN button (master warning)",
+              "type": "button",
+              "match": [
+                "pnt_805",
+                "item:master-warning-caution:1"
+              ],
+              "text": "This button flashes when something dangerous happens, for example an engine fire. Pressing it puts out its light and stops the spoken warning in the headset. This entry is for the CPG's master warning and caution buttons.",
+              "context": "The EUFD shows which warning it is. The manual says the voice message stops in both seats, while only the light of the CPG (copilot/gunner) goes out. This is the CPG seat copy; the pilot in the rear seat has an own one.",
+              "src": "m1",
+              "page": "124"
+            },
+            {
+              "id": "mstr-caut",
+              "name": "MSTR CAUT button (master caution)",
+              "type": "button",
+              "match": [
+                "pnt_807",
+                "item:master-warning-caution:2"
+              ],
+              "text": "This button lights up when something is wrong but not immediately dangerous, for example a failure in the electrical system. Pressing it puts out the light and stops the warning tone. This entry is for the CPG's master warning and caution buttons.",
+              "context": "The EUFD shows the caution message. The tone stops in the seat where the button is pressed, so the CPG (copilot/gunner) acknowledges it on the own button. This is the CPG seat copy; the pilot in the rear seat has an own one.",
+              "src": "m1",
+              "page": "124"
+            }
+          ]
+        },
+        {
+          "id": "cpg-eufd",
+          "name": "Enhanced Upfront Display, EUFD (CPG seat)",
+          "db": "mpd-eufd",
+          "src": "m1",
+          "page": "155",
+          "text": "The EUFD is a small text screen with a few buttons beside it. It lists warnings, shows the radios with their frequencies and shows fuel, transponder code and the clock.",
+          "context": "It keeps working on battery power alone, unlike the big screens. The CPG (copilot/gunner) looks at it for warnings and to see which radio is selected for talking.",
+          "controls": [
+            {
+              "id": "eufd-display",
+              "name": "EUFD text display",
+              "type": "display",
+              "match": [
+                "item:mpd-eufd:2"
+              ],
+              "text": "This is the lit text screen itself. It has three columns for messages (warnings, cautions and advisories), a block that shows the five radios, and a line with fuel, transponder and time. This entry is for the CPG's EUFD.",
+              "context": "A warning message comes with the flashing MSTR WARN button and a voice, a caution with the MSTR CAUT button and a tone. This one belongs to the CPG (copilot/gunner).",
+              "src": "m1",
+              "page": "155"
+            },
+            {
+              "id": "wca-rocker",
+              "name": "WCA rocker (scroll messages)",
+              "type": "rocker",
+              "match": [
+                "pnt_263-1",
+                "pnt_263-2"
+              ],
+              "text": "This rocker scrolls the message columns up or down. The CPG (copilot/gunner) needs it when a column holds eight or more messages, more than the screen can show at once.",
+              "context": "WCA stands for warnings, cautions and advisories. A double arrow on the screen tells that more messages wait out of sight. Pressing the top half scrolls one way, the bottom half the other. It belongs to the CPG's EUFD.",
+              "src": "m1",
+              "page": "155"
+            },
+            {
+              "id": "idm-rocker",
+              "name": "IDM rocker (datalink radio select)",
+              "type": "rocker",
+              "match": [
+                "pnt_262-1",
+                "pnt_262-2"
+              ],
+              "text": "This rocker picks which radio sends data messages. A datalink is the way aircraft share positions and targets by radio instead of by voice. This entry is for the CPG's EUFD.",
+              "context": "Small marks next to each radio on the screen show the choice. The game names this rocker IDM. The manual calls it the datalink transmit select rocker. It belongs to the CPG's EUFD.",
+              "src": "m1",
+              "page": "156"
+            },
+            {
+              "id": "rts-rocker",
+              "name": "RTS rocker (radio transmit select)",
+              "type": "rocker",
+              "match": [
+                "pnt_264-1",
+                "pnt_264-2"
+              ],
+              "text": "This rocker picks the radio that the CPG (copilot/gunner) talks on. Each press moves the choice up or down the list of radios.",
+              "context": "At the end of the list the choice wraps around to the other end. The cyclic stick also has a switch that does the same job, so the hands can stay on the controls. It belongs to the CPG's EUFD.",
+              "src": "m1",
+              "page": "156"
+            },
+            {
+              "id": "eufd-brt",
+              "name": "Brightness knob (EUFD)",
+              "type": "knob",
+              "match": [
+                "pnt_265"
+              ],
+              "text": "Turning this knob makes the EUFD screen brighter or darker.",
+              "context": "The CPG (copilot/gunner) sets it so the text can be read in bright daylight and is not too bright at night.",
+              "src": "m1",
+              "page": "156"
+            },
+            {
+              "id": "preset-button",
+              "name": "PRESET button",
+              "type": "button",
+              "match": [
+                "pnt_266"
+              ],
+              "text": "This button shows or hides a list of stored radio frequencies, like the station buttons of a car radio. This entry is for the CPG's EUFD.",
+              "context": "The crew picks a stored frequency from the list and then presses the ENTER button next to it to tune the radio. It belongs to the CPG's EUFD.",
+              "src": "m1",
+              "page": "156"
+            },
+            {
+              "id": "eufd-enter",
+              "name": "ENTER button (EUFD)",
+              "type": "button",
+              "match": [
+                "pnt_267"
+              ],
+              "text": "This button tunes the radio to the frequency that is highlighted in the preset list. This entry is for the CPG's EUFD.",
+              "context": "It is used right after the PRESET button has opened the list. It belongs to the CPG's EUFD.",
+              "src": "m1",
+              "page": "156"
+            },
+            {
+              "id": "stopwatch-button",
+              "name": "Stopwatch button",
+              "type": "button",
+              "match": [
+                "pnt_268"
+              ],
+              "text": "Press this button to start or stop the stopwatch shown above the clock. Holding it for two seconds resets the stopwatch. This entry is for the CPG's EUFD.",
+              "context": "The stopwatch of each seat is independent, so the pilot in the rear seat is not disturbed when the CPG (copilot/gunner) uses it.",
+              "src": "m1",
+              "page": "157"
+            },
+            {
+              "id": "swap-button",
+              "name": "SWAP button",
+              "type": "button",
+              "match": [
+                "pnt_269"
+              ],
+              "text": "This button swaps the active and the standby setting of the selected radio, so the radio changes to the frequency that was waiting. This entry is for the CPG's EUFD.",
+              "context": "The standby frequency is entered first, then the SWAP button switches to it. The manual says it also swaps the encryption and network settings. It belongs to the CPG's EUFD.",
+              "src": "m1",
+              "page": "157"
+            }
+          ]
+        },
+        {
+          "id": "cpg-mpd-left",
+          "name": "Left multi-purpose display, MPD (CPG seat)",
+          "db": "mpd-eufd",
+          "src": "m1",
+          "page": "164",
+          "text": "The MPD is a screen with buttons all around its edge. Each button picks the word printed next to it on the screen, so the same button does different things on different pages. This is the screen on the left in front of the CPG (copilot/gunner).",
+          "context": "The crew uses the MPD pages for the map, the weapons, the radar, the radios and the engine. The two MPDs of a seat can show different pages at once.",
+          "controls": [
+            {
+              "id": "mpd-left-screen",
+              "name": "Left MPD screen",
+              "type": "display",
+              "match": [
+                "item:mpd-eufd:1"
+              ],
+              "text": "This is the left screen itself. It shows the page chosen with the buttons around it, such as the flight page, the weapon page or the map-like situation page. This entry is for the CPG's left MPD.",
+              "context": "Because the screens are shared between flying, weapons and navigation, the CPG (copilot/gunner) keeps changing the pages during a mission.",
+              "src": "m1",
+              "page": "164"
+            },
+            {
+              "id": "mpd-left-vab-t",
+              "name": "VAB T1-T6 (top row buttons, left MPD)",
+              "type": "button",
+              "match": [
+                "pnt_88",
+                "pnt_89",
+                "pnt_90",
+                "pnt_91",
+                "pnt_92",
+                "pnt_93"
+              ],
+              "text": "These six buttons sit along the top edge of the left screen. Each one picks the option printed right below it on the screen. This entry is for the CPG's left MPD.",
+              "context": "VAB means variable action button: what it does depends on the page. T1 is at the far left and T6 at the far right. It belongs to the CPG's left MPD.",
+              "count": 6,
+              "src": "m1",
+              "page": "165"
+            },
+            {
+              "id": "mpd-left-vab-l",
+              "name": "VAB L1-L6 (left column buttons, left MPD)",
+              "type": "button",
+              "match": [
+                "pnt_80",
+                "pnt_81",
+                "pnt_82",
+                "pnt_83",
+                "pnt_84",
+                "pnt_85"
+              ],
+              "text": "These six buttons run down the left edge of the left screen. Each one picks the option printed next to it. This entry is for the CPG's left MPD.",
+              "context": "L1 is at the top and L6 at the bottom. A label with the sign > next to it means that the button asks for typed data on the keyboard unit. It belongs to the CPG's left MPD.",
+              "count": 6,
+              "src": "m1",
+              "page": "165"
+            },
+            {
+              "id": "mpd-left-vab-r",
+              "name": "VAB R1-R6 (right column buttons, left MPD)",
+              "type": "button",
+              "match": [
+                "pnt_96",
+                "pnt_97",
+                "pnt_98",
+                "pnt_99",
+                "pnt_100",
+                "pnt_101"
+              ],
+              "text": "These six buttons run down the right edge of the left screen. Each one picks the option printed next to it. This entry is for the CPG's left MPD.",
+              "context": "R1 is at the top and R6 at the bottom. What they do changes with every page. It belongs to the CPG's left MPD.",
+              "count": 6,
+              "src": "m1",
+              "page": "165"
+            },
+            {
+              "id": "mpd-left-vab-b",
+              "name": "VAB B2-B6 (bottom row buttons, left MPD)",
+              "type": "button",
+              "match": [
+                "pnt_105",
+                "pnt_106",
+                "pnt_107",
+                "pnt_108",
+                "pnt_109"
+              ],
+              "text": "These five buttons sit along the bottom edge of the left screen. Each one picks the option printed above it. This entry is for the CPG's left MPD.",
+              "context": "Together with the M button at the far left they form the bottom row. Their labels belong to the page that is shown. It belongs to the CPG's left MPD.",
+              "count": 5,
+              "src": "m1",
+              "page": "165"
+            },
+            {
+              "id": "mpd-left-m",
+              "name": "M button (B1, menu, left MPD)",
+              "type": "button",
+              "match": [
+                "pnt_110"
+              ],
+              "text": "This is the first button of the bottom row, marked M. It opens the menu page, a list of all pages the screen can show. This entry is for the CPG's left MPD.",
+              "context": "Pressing it again on the menu page opens the DMS page. The page that is shown is named in the text above this button. It belongs to the CPG's left MPD.",
+              "src": "m1",
+              "page": "165"
+            },
+            {
+              "id": "mpd-left-fcr",
+              "name": "FCR page button (left MPD)",
+              "type": "button",
+              "match": [
+                "pnt_79"
+              ],
+              "text": "This fixed button switches the screen to the FCR page, the picture of the fire control radar. That is a radar on the mast above the main rotor that finds targets. This entry is for the CPG's left MPD.",
+              "context": "It is one of six page buttons that always do the same thing, whatever page is showing. It belongs to the CPG's left MPD.",
+              "src": "m1",
+              "page": "165"
+            },
+            {
+              "id": "mpd-left-wpn",
+              "name": "WPN page button (left MPD)",
+              "type": "button",
+              "match": [
+                "pnt_78"
+              ],
+              "text": "This fixed button switches the screen to the weapon page. It shows a top-down view of the weapons on board together with the state of the sights, sensors and decoys. This entry is for the CPG's left MPD.",
+              "context": "The page changes to show more settings for a weapon as soon as that weapon is chosen. It is one of six fixed page buttons. It belongs to the CPG's left MPD.",
+              "src": "m1",
+              "page": "165"
+            },
+            {
+              "id": "mpd-left-tsd",
+              "name": "TSD page button (left MPD)",
+              "type": "button",
+              "match": [
+                "pnt_111"
+              ],
+              "text": "This fixed button switches the screen to the TSD page, the tactical situation display. It is a top-down moving map of the area around the helicopter, with the planned route and information from the sensors. This entry is for the CPG's left MPD.",
+              "context": "It is the main page for navigating. Waypoints (points on the planned route) are also handled from there. It belongs to the CPG's left MPD.",
+              "src": "m1",
+              "page": "165"
+            },
+            {
+              "id": "mpd-left-vid",
+              "name": "VID page button (left MPD)",
+              "type": "button",
+              "match": [
+                "pnt_102"
+              ],
+              "text": "This fixed button switches the screen to the video page, where the pictures and symbols of the helicopter's cameras and sensors can be viewed. This entry is for the CPG's left MPD.",
+              "context": "A video source can also be set as a background picture under other pages. It is one of six fixed page buttons. It belongs to the CPG's left MPD.",
+              "src": "m1",
+              "page": "165"
+            },
+            {
+              "id": "mpd-left-com",
+              "name": "COM page button (left MPD)",
+              "type": "button",
+              "match": [
+                "pnt_103"
+              ],
+              "text": "This fixed button switches the screen to the communications page, an overview of the radios, their stored frequencies, the datalink and the transponder. This entry is for the CPG's left MPD.",
+              "context": "The crew goes there to set up radios. Frequencies can also be tuned with the small EUFD screen. It belongs to the CPG's left MPD.",
+              "src": "m1",
+              "page": "165"
+            },
+            {
+              "id": "mpd-left-ac",
+              "name": "A/C page button (left MPD)",
+              "type": "button",
+              "match": [
+                "pnt_104"
+              ],
+              "text": "This fixed button shows the flight page when the helicopter is in the air. On the ground with its weight on the wheels it shows the engine page instead. This entry is for the CPG's left MPD.",
+              "context": "A/C stands for aircraft. It gives the crew the numbers about the helicopter itself. It belongs to the CPG's left MPD.",
+              "src": "m1",
+              "page": "165"
+            },
+            {
+              "id": "mpd-left-ast",
+              "name": "Asterisk (*) button (left MPD)",
+              "type": "button",
+              "match": [
+                "pnt_95"
+              ],
+              "text": "This button has an asterisk printed on it. In DCS it has no function. This entry is for the CPG's left MPD.",
+              "context": "The manual lists it as not implemented.",
+              "src": "m1",
+              "page": "165"
+            },
+            {
+              "id": "mpd-left-mode",
+              "name": "Mode knob DAY / NIGHT / MONO (left MPD)",
+              "type": "switch3",
+              "match": [
+                "pnt_94"
+              ],
+              "text": "This knob sets how bright and in which colours the screen looks. It has a day setting, a night setting and a one-colour setting. This entry is for the CPG's left MPD.",
+              "context": "The CPG (copilot/gunner) turns it to NIGHT or MONO when flying in the dark, so the screen does not blind the eyes or the night vision goggles.",
+              "positions": [
+                {
+                  "name": "DAY",
+                  "text": "Bright daytime picture."
+                },
+                {
+                  "name": "NIGHT",
+                  "text": "Dimmer picture for flying in the dark."
+                },
+                {
+                  "name": "MONO",
+                  "text": "Night brightness with a single-colour picture that suits night vision goggles."
+                }
+              ],
+              "src": "m1",
+              "page": "165"
+            },
+            {
+              "id": "mpd-left-brt",
+              "name": "BRT knob (left MPD)",
+              "type": "knob",
+              "match": [
+                "pnt_86"
+              ],
+              "text": "Turning this knob makes the left screen brighter or darker, within the range set by the mode knob. This entry is for the CPG's left MPD.",
+              "context": "It is the fine adjustment after DAY, NIGHT or MONO has been chosen. It belongs to the CPG's left MPD.",
+              "src": "m1",
+              "page": "165"
+            },
+            {
+              "id": "mpd-left-vid-knob",
+              "name": "VID knob (video brightness, left MPD)",
+              "type": "knob",
+              "match": [
+                "pnt_87"
+              ],
+              "text": "Turning this knob changes the brightness of the picture behind the symbols, for example the camera picture or the map, without changing the symbols. This entry is for the CPG's left MPD.",
+              "context": "It helps when the background is too bright and drowns out the writing, or too dark to see. It belongs to the CPG's left MPD.",
+              "src": "m1",
+              "page": "165"
+            }
+          ]
+        },
+        {
+          "id": "cpg-mpd-right",
+          "name": "Right multi-purpose display, MPD (CPG seat)",
+          "db": "mpd-eufd",
+          "src": "m1",
+          "page": "164",
+          "text": "The MPD is a screen with buttons all around its edge. Each button picks the word printed next to it on the screen, so the same button does different things on different pages. This is the screen on the right in front of the CPG (copilot/gunner).",
+          "context": "The crew uses the MPD pages for the map, the weapons, the radar, the radios and the engine. The two MPDs of a seat can show different pages at once.",
+          "controls": [
+            {
+              "id": "mpd-right-screen",
+              "name": "Right MPD screen",
+              "type": "display",
+              "match": [
+                "item:mpd-eufd:3"
+              ],
+              "text": "This is the right screen itself. It shows the page chosen with the buttons around it, such as the flight page, the weapon page or the map-like situation page. This entry is for the CPG's right MPD.",
+              "context": "Because the screens are shared between flying, weapons and navigation, the CPG (copilot/gunner) keeps changing the pages during a mission. It belongs to the CPG's right MPD.",
+              "src": "m1",
+              "page": "164"
+            },
+            {
+              "id": "mpd-right-vab-t",
+              "name": "VAB T1-T6 (top row buttons, right MPD)",
+              "type": "button",
+              "match": [
+                "pnt_122",
+                "pnt_123",
+                "pnt_124",
+                "pnt_125",
+                "pnt_126",
+                "pnt_127"
+              ],
+              "text": "These six buttons sit along the top edge of the right screen. Each one picks the option printed right below it on the screen. This entry is for the CPG's right MPD.",
+              "context": "VAB means variable action button: what it does depends on the page. T1 is at the far left and T6 at the far right. It belongs to the CPG's right MPD.",
+              "count": 6,
+              "src": "m1",
+              "page": "165"
+            },
+            {
+              "id": "mpd-right-vab-l",
+              "name": "VAB L1-L6 (left column buttons, right MPD)",
+              "type": "button",
+              "match": [
+                "pnt_114",
+                "pnt_115",
+                "pnt_116",
+                "pnt_117",
+                "pnt_118",
+                "pnt_119"
+              ],
+              "text": "These six buttons run down the left edge of the right screen. Each one picks the option printed next to it. This entry is for the CPG's right MPD.",
+              "context": "L1 is at the top and L6 at the bottom. A label with the sign > next to it means that the button asks for typed data on the keyboard unit. It belongs to the CPG's right MPD.",
+              "count": 6,
+              "src": "m1",
+              "page": "165"
+            },
+            {
+              "id": "mpd-right-vab-r",
+              "name": "VAB R1-R6 (right column buttons, right MPD)",
+              "type": "button",
+              "match": [
+                "pnt_130",
+                "pnt_131",
+                "pnt_132",
+                "pnt_133",
+                "pnt_134",
+                "pnt_135"
+              ],
+              "text": "These six buttons run down the right edge of the right screen. Each one picks the option printed next to it. This entry is for the CPG's right MPD.",
+              "context": "R1 is at the top and R6 at the bottom. What they do changes with every page. It belongs to the CPG's right MPD.",
+              "count": 6,
+              "src": "m1",
+              "page": "165"
+            },
+            {
+              "id": "mpd-right-vab-b",
+              "name": "VAB B2-B6 (bottom row buttons, right MPD)",
+              "type": "button",
+              "match": [
+                "pnt_139",
+                "pnt_140",
+                "pnt_141",
+                "pnt_142",
+                "pnt_143"
+              ],
+              "text": "These five buttons sit along the bottom edge of the right screen. Each one picks the option printed above it. This entry is for the CPG's right MPD.",
+              "context": "Together with the M button at the far left they form the bottom row. Their labels belong to the page that is shown. It belongs to the CPG's right MPD.",
+              "count": 5,
+              "src": "m1",
+              "page": "165"
+            },
+            {
+              "id": "mpd-right-m",
+              "name": "M button (B1, menu, right MPD)",
+              "type": "button",
+              "match": [
+                "pnt_144"
+              ],
+              "text": "This is the first button of the bottom row, marked M. It opens the menu page, a list of all pages the screen can show. This entry is for the CPG's right MPD.",
+              "context": "Pressing it again on the menu page opens the DMS page. The page that is shown is named in the text above this button. It belongs to the CPG's right MPD.",
+              "src": "m1",
+              "page": "165"
+            },
+            {
+              "id": "mpd-right-fcr",
+              "name": "FCR page button (right MPD)",
+              "type": "button",
+              "match": [
+                "pnt_113"
+              ],
+              "text": "This fixed button switches the screen to the FCR page, the picture of the fire control radar. That is a radar on the mast above the main rotor that finds targets. This entry is for the CPG's right MPD.",
+              "context": "It is one of six page buttons that always do the same thing, whatever page is showing. It belongs to the CPG's right MPD.",
+              "src": "m1",
+              "page": "165"
+            },
+            {
+              "id": "mpd-right-wpn",
+              "name": "WPN page button (right MPD)",
+              "type": "button",
+              "match": [
+                "pnt_112"
+              ],
+              "text": "This fixed button switches the screen to the weapon page. It shows a top-down view of the weapons on board together with the state of the sights, sensors and decoys. This entry is for the CPG's right MPD.",
+              "context": "The page changes to show more settings for a weapon as soon as that weapon is chosen. It is one of six fixed page buttons. It belongs to the CPG's right MPD.",
+              "src": "m1",
+              "page": "165"
+            },
+            {
+              "id": "mpd-right-tsd",
+              "name": "TSD page button (right MPD)",
+              "type": "button",
+              "match": [
+                "pnt_145"
+              ],
+              "text": "This fixed button switches the screen to the TSD page, the tactical situation display. It is a top-down moving map of the area around the helicopter, with the planned route and information from the sensors. This entry is for the CPG's right MPD.",
+              "context": "It is the main page for navigating. Waypoints (points on the planned route) are also handled from there. It belongs to the CPG's right MPD.",
+              "src": "m1",
+              "page": "165"
+            },
+            {
+              "id": "mpd-right-vid",
+              "name": "VID page button (right MPD)",
+              "type": "button",
+              "match": [
+                "pnt_136"
+              ],
+              "text": "This fixed button switches the screen to the video page, where the pictures and symbols of the helicopter's cameras and sensors can be viewed. This entry is for the CPG's right MPD.",
+              "context": "A video source can also be set as a background picture under other pages. It is one of six fixed page buttons. It belongs to the CPG's right MPD.",
+              "src": "m1",
+              "page": "165"
+            },
+            {
+              "id": "mpd-right-com",
+              "name": "COM page button (right MPD)",
+              "type": "button",
+              "match": [
+                "pnt_137"
+              ],
+              "text": "This fixed button switches the screen to the communications page, an overview of the radios, their stored frequencies, the datalink and the transponder. This entry is for the CPG's right MPD.",
+              "context": "The crew goes there to set up radios. Frequencies can also be tuned with the small EUFD screen. It belongs to the CPG's right MPD.",
+              "src": "m1",
+              "page": "165"
+            },
+            {
+              "id": "mpd-right-ac",
+              "name": "A/C page button (right MPD)",
+              "type": "button",
+              "match": [
+                "pnt_138"
+              ],
+              "text": "This fixed button shows the flight page when the helicopter is in the air. On the ground with its weight on the wheels it shows the engine page instead. This entry is for the CPG's right MPD.",
+              "context": "A/C stands for aircraft. It gives the crew the numbers about the helicopter itself. It belongs to the CPG's right MPD.",
+              "src": "m1",
+              "page": "165"
+            },
+            {
+              "id": "mpd-right-ast",
+              "name": "Asterisk (*) button (right MPD)",
+              "type": "button",
+              "match": [
+                "pnt_129"
+              ],
+              "text": "This button has an asterisk printed on it. In DCS it has no function. This entry is for the CPG's right MPD.",
+              "context": "The manual lists it as not implemented.",
+              "src": "m1",
+              "page": "165"
+            },
+            {
+              "id": "mpd-right-mode",
+              "name": "Mode knob DAY / NIGHT / MONO (right MPD)",
+              "type": "switch3",
+              "match": [
+                "pnt_128"
+              ],
+              "text": "This knob sets how bright and in which colours the screen looks. It has a day setting, a night setting and a one-colour setting. This entry is for the CPG's right MPD.",
+              "context": "The CPG (copilot/gunner) turns it to NIGHT or MONO when flying in the dark, so the screen does not blind the eyes or the night vision goggles. It belongs to the CPG's right MPD.",
+              "positions": [
+                {
+                  "name": "DAY",
+                  "text": "Bright daytime picture."
+                },
+                {
+                  "name": "NIGHT",
+                  "text": "Dimmer picture for flying in the dark."
+                },
+                {
+                  "name": "MONO",
+                  "text": "Night brightness with a single-colour picture that suits night vision goggles."
+                }
+              ],
+              "src": "m1",
+              "page": "165"
+            },
+            {
+              "id": "mpd-right-brt",
+              "name": "BRT knob (right MPD)",
+              "type": "knob",
+              "match": [
+                "pnt_120"
+              ],
+              "text": "Turning this knob makes the right screen brighter or darker, within the range set by the mode knob. This entry is for the CPG's right MPD.",
+              "context": "It is the fine adjustment after DAY, NIGHT or MONO has been chosen. It belongs to the CPG's right MPD.",
+              "src": "m1",
+              "page": "165"
+            },
+            {
+              "id": "mpd-right-vid-knob",
+              "name": "VID knob (video brightness, right MPD)",
+              "type": "knob",
+              "match": [
+                "pnt_121"
+              ],
+              "text": "Turning this knob changes the brightness of the picture behind the symbols, for example the camera picture or the map, without changing the symbols. This entry is for the CPG's right MPD.",
+              "context": "It helps when the background is too bright and drowns out the writing, or too dark to see. It belongs to the CPG's right MPD.",
+              "src": "m1",
+              "page": "165"
+            }
+          ]
+        },
+        {
+          "id": "cpg-fire-panel",
+          "name": "Fire detection / extinguishing panel (CPG seat)",
+          "db": "fire-detection-extinguishing",
+          "src": "m1",
+          "page": "106",
+          "text": "This panel deals with fire. Three covered buttons light up when a fire is found in the left engine, the right engine or the small extra engine in the back. Two more buttons put out the fire.",
+          "context": "Both seats have a copy and they work together: a button pressed in one seat is armed for both, but only the seat that pressed it can switch it off again. The CPG (copilot/gunner) uses it only in an emergency.",
+          "controls": [
+            {
+              "id": "eng1-fire",
+              "name": "ENG 1 FIRE button (with cover)",
+              "type": "button",
+              "match": [
+                "pnt_284",
+                "pnt_285",
+                "item:fire-detection-extinguishing:1"
+              ],
+              "text": "This covered button belongs to the left engine (engine 1). A yellow FIRE light comes on when a fire is detected there. After lifting the cover, the CPG (copilot/gunner) presses it to cut the engine's fuel and hot air and to arm the fire bottles.",
+              "context": "A green RDY light then shows that it is armed. The engine runs on until the fuel left in its lines is used up. The next step is to press PRI or RES. It belongs to the CPG's fire panel.",
+              "src": "m1",
+              "page": "106"
+            },
+            {
+              "id": "apu-fire",
+              "name": "APU FIRE button (with cover)",
+              "type": "button",
+              "match": [
+                "pnt_286",
+                "pnt_287",
+                "item:fire-detection-extinguishing:2"
+              ],
+              "text": "This covered button belongs to the APU, a small extra engine in the back that makes electricity and air before the main engines run. Its FIRE light comes on on a fire; pressing the button cuts the APU fuel and arms the fire bottles. This entry is for the CPG's fire panel.",
+              "context": "The green RDY light shows it is armed. The CPG (copilot/gunner) lifts the cover first, so it cannot be pressed by accident.",
+              "src": "m1",
+              "page": "106"
+            },
+            {
+              "id": "eng2-fire",
+              "name": "ENG 2 FIRE button (with cover)",
+              "type": "button",
+              "match": [
+                "pnt_288",
+                "pnt_289",
+                "item:fire-detection-extinguishing:3"
+              ],
+              "text": "This covered button belongs to the right engine (engine 2). Its yellow FIRE light shows a fire there. Pressing the button, after lifting the cover, cuts the fuel and hot air to that engine and arms the fire bottles. This entry is for the CPG's fire panel.",
+              "context": "It is the same arrangement as for engine 1. Only the seat that armed it can disarm it again. It belongs to the CPG's fire panel.",
+              "src": "m1",
+              "page": "107"
+            },
+            {
+              "id": "pri-button",
+              "name": "PRI button (primary fire bottle)",
+              "type": "button",
+              "match": [
+                "pnt_290",
+                "item:fire-detection-extinguishing:4"
+              ],
+              "text": "This button empties the primary fire extinguisher bottle into the engine or the APU that was armed with its FIRE button. This entry is for the CPG's fire panel.",
+              "context": "A DISCH light shows that the bottle is armed and ready. After the discharge the light goes out. It belongs to the CPG's fire panel.",
+              "src": "m1",
+              "page": "107"
+            },
+            {
+              "id": "res-button",
+              "name": "RES button (reserve fire bottle)",
+              "type": "button",
+              "match": [
+                "pnt_292",
+                "item:fire-detection-extinguishing:6"
+              ],
+              "text": "This button empties the second, reserve fire extinguisher bottle into the armed engine or APU. This entry is for the CPG's fire panel.",
+              "context": "It is used when the first bottle did not put the fire out.",
+              "src": "m1",
+              "page": "108"
+            },
+            {
+              "id": "fire-test",
+              "name": "TEST switch (fire detection test)",
+              "type": "switch3",
+              "match": [
+                "pnt_291",
+                "item:fire-detection-extinguishing:5"
+              ],
+              "text": "This switch tests the fire warning system. Moved to TEST 1 or TEST 2 it makes all three FIRE lights come on and the warning voices speak, which proves the detectors work. This entry is for the CPG's fire panel.",
+              "context": "It springs back to the middle when released. TEST 2 also lights the DISCH lights of both bottles. It belongs to the CPG's fire panel.",
+              "positions": [
+                {
+                  "name": "TEST 1",
+                  "text": "Tests fire detection circuit 1: the three FIRE lights, the MSTR WARN light and the warning voices appear."
+                },
+                {
+                  "name": "OFF",
+                  "text": "Middle position. The switch rests here."
+                },
+                {
+                  "name": "TEST 2",
+                  "text": "Tests circuit 2: the same signs as TEST 1, and the DISCH lights of the two bottles also come on."
+                }
+              ],
+              "src": "m1",
+              "page": "107"
+            }
+          ]
+        },
+        {
+          "id": "cpg-armament-panel",
+          "name": "Armament panel (CPG seat)",
+          "db": "armament-panel",
+          "src": "m1",
+          "page": "108",
+          "text": "This panel holds the master arm: the main safety for the weapons. While it shows SAFE nothing can be fired, not even the laser.",
+          "context": "Both seats share the state: pressing a button in one seat changes the same button in the other seat. The CPG (copilot/gunner) sets ARM only when a weapon is really to be used.",
+          "controls": [
+            {
+              "id": "a-s",
+              "name": "A/S button (ARM / SAFE)",
+              "type": "button",
+              "match": [
+                "pnt_293",
+                "item:armament-panel:1"
+              ],
+              "text": "This button switches the weapons between ARM and SAFE. Lights show the state. In ARM the weapons and the laser can be fired; in SAFE they cannot. This entry is for the CPG's armament panel.",
+              "context": "It works in the air. On the ground it needs the GND ORIDE button to be on first. It belongs to the CPG's armament panel.",
+              "positions": [
+                {
+                  "name": "ARM",
+                  "text": "The weapons and the laser range finder may be fired."
+                },
+                {
+                  "name": "SAFE",
+                  "text": "Firing the weapons and the laser is blocked."
+                }
+              ],
+              "src": "m1",
+              "page": "108"
+            },
+            {
+              "id": "gnd-oride",
+              "name": "GND ORIDE button (ground override)",
+              "type": "button",
+              "match": [
+                "pnt_294",
+                "item:armament-panel:2"
+              ],
+              "text": "This button lets the crew arm and test things while the helicopter stands on the ground, which is normally blocked for safety. Its ON light shows it is active. This entry is for the CPG's armament panel.",
+              "context": "Switching it off again sets the master arm back to SAFE and removes any chosen weapon. In flight it has no effect. It belongs to the CPG's armament panel.",
+              "positions": [
+                {
+                  "name": "ON",
+                  "text": "Arming, choosing weapons, radar transmissions and arming the chaff are allowed on the ground."
+                },
+                {
+                  "name": "OFF",
+                  "text": "The normal ground safety is back."
+                }
+              ],
+              "src": "m1",
+              "page": "108"
+            }
+          ]
+        },
+        {
+          "id": "cpg-canopy-jettison-zeroize",
+          "name": "Canopy jettison handle and master zeroize switch (CPG seat)",
+          "db": "canopy-jettison-zeroize",
+          "src": "m1",
+          "page": "109",
+          "text": "These are two emergency items on the CPG instrument panel: the handle that blows off the canopy side windows and a guarded switch that erases secret data.",
+          "context": "Both work like the ones in the pilot seat. In DCS neither is implemented.",
+          "controls": [
+            {
+              "id": "canopy-jett",
+              "name": "Canopy jettison handle (CPG)",
+              "type": "handle",
+              "match": [
+                "item:canopy-jettison-zeroize:1"
+              ],
+              "text": "Pulling this handle would blast the canopy side panels away so the crew can get out fast. A safety pin locks it on the ground. In DCS it is not implemented.",
+              "context": "Each of the three canopy jettison handles has such a pin. The manual shows one in each seat and one outside for rescue crews.",
+              "src": "m1",
+              "page": "109"
+            },
+            {
+              "id": "master-zeroize",
+              "name": "Master zeroize switch (with cover, CPG)",
+              "type": "guard",
+              "match": [
+                "pnt_802",
+                "pnt_801",
+                "item:canopy-jettison-zeroize:2"
+              ],
+              "text": "This guarded switch would erase all secret data on board if the helicopter is forced down in enemy territory. The cover must be lifted first. In DCS it is not implemented.",
+              "context": "It is the front-seat copy of the master zeroize switch.",
+              "src": "m1",
+              "page": "109"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "cpg-tedac",
+      "where": "front-center",
+      "name": "TEDAC (CPG screen between the handgrips)",
+      "seat": 2,
+      "text": "The TEDAC is the CPG's own screen in front of the CPG, between a left and a right handgrip. It shows the pictures of the nose cameras and the radar page.",
+      "panels": [
+        {
+          "id": "cpg-tedac-display",
+          "name": "TEDAC display unit, TDU (CPG seat)",
+          "db": "tedac-display-unit",
+          "src": "m1",
+          "page": "129",
+          "text": "The TEDAC display unit is the CPG's screen between his two hand grips. It shows the pictures of the nose cameras and the radar page, and has buttons and rockers around its edge.",
+          "context": "TEDAC is the short name of the TADS Electronic Display And Control. The CPG looks at it to find and track targets without looking out, and uses its buttons to set the pictures.",
+          "controls": [
+            {
+              "id": "tad-button",
+              "name": "TAD video button",
+              "type": "button",
+              "match": [
+                "pnt_150",
+                "item:tedac-display-unit:1"
+              ],
+              "text": "This button puts the picture of the targeting camera, with its aiming symbols, on the screen. If the helmet sight is chosen it shows the weapon symbols instead. It works only while the night vision mode is OFF.",
+              "context": "TADS is the targeting camera in the nose. With the night vision mode switched on, the screen repeats the helmet display and this button is blocked.",
+              "src": "m1",
+              "page": "129"
+            },
+            {
+              "id": "fcr-video-button",
+              "name": "FCR video button",
+              "type": "button",
+              "match": [
+                "pnt_151",
+                "item:tedac-display-unit:2"
+              ],
+              "text": "This button puts the radar page (FCR) on the screen. The radar functions on it can be reached only with the cursor.",
+              "context": "The cursor reaches the screen by pushing it past the inner edge of an MPD. It works only while the night vision mode is OFF.",
+              "src": "m1",
+              "page": "129"
+            },
+            {
+              "id": "pnv-button",
+              "name": "PNV video button",
+              "type": "button",
+              "match": [
+                "pnt_152",
+                "item:tedac-display-unit:3"
+              ],
+              "text": "This button shows the pilot's flight symbols and the picture of the pilot's night camera on the screen.",
+              "context": "It works only while the night vision mode of the CPG is OFF.",
+              "src": "m1",
+              "page": "129"
+            },
+            {
+              "id": "gs-button",
+              "name": "G/S (grayscale) button",
+              "type": "button",
+              "match": [
+                "pnt_153",
+                "item:tedac-display-unit:4"
+              ],
+              "text": "This button shows a pattern of gray steps. With it the CPG sets brightness and contrast of the screen correctly.",
+              "context": "It works only while the night vision mode is OFF.",
+              "src": "m1",
+              "page": "129"
+            },
+            {
+              "id": "tdu-display-knob",
+              "name": "Display mode knob (DAY / NT / OFF)",
+              "type": "switch3",
+              "match": [
+                "pnt_154",
+                "item:tedac-display-unit:5"
+              ],
+              "text": "This knob switches the TEDAC screen on and sets its brightness scale for day or night. In OFF only the screen goes dark.",
+              "context": "All TEDAC functions and buttons keep working with the screen off. Day pictures are gray, night pictures are green.",
+              "positions": [
+                {
+                  "name": "DAY",
+                  "text": "The screen is on at daytime brightness."
+                },
+                {
+                  "name": "NT",
+                  "text": "The screen is on at night brightness."
+                },
+                {
+                  "name": "OFF",
+                  "text": "The screen is off; the buttons stay functional."
+                }
+              ],
+              "src": "m1",
+              "page": "130"
+            },
+            {
+              "id": "flir-lev",
+              "name": "FLIR LEV knob (infrared level)",
+              "type": "knob",
+              "match": [
+                "pnt_149",
+                "item:tedac-display-unit:6"
+              ],
+              "text": "This knob sets the level of the infrared picture. FLIR is the infrared camera that sees heat; the level makes the picture lighter or darker.",
+              "context": "It works on the picture of the night camera or of the targeting camera.",
+              "src": "m1",
+              "page": "130"
+            },
+            {
+              "id": "flir-gain",
+              "name": "FLIR GAIN knob (infrared gain)",
+              "type": "knob",
+              "match": [
+                "pnt_148",
+                "item:tedac-display-unit:7"
+              ],
+              "text": "This knob sets the gain of the infrared picture, which is how strongly small differences in heat show up. This entry is for the CPG's TEDAC display unit.",
+              "context": "It is used together with the level knob.",
+              "src": "m1",
+              "page": "130"
+            },
+            {
+              "id": "sym-rocker",
+              "name": "SYM rocker (symbol brightness)",
+              "type": "rocker",
+              "match": [
+                "pnt_155-1",
+                "pnt_155-2",
+                "item:tedac-display-unit:8"
+              ],
+              "text": "Pressing the upper half of this rocker makes the symbols brighter, the lower half dimmer. A short press changes in small steps, a long press keeps changing.",
+              "context": "It acts on the helmet display when the helmet sight is chosen, otherwise on the TEDAC screen.",
+              "src": "m1",
+              "page": "130"
+            },
+            {
+              "id": "brt-rocker",
+              "name": "BRT rocker (brightness)",
+              "type": "rocker",
+              "match": [
+                "pnt_156-1",
+                "pnt_156-2",
+                "item:tedac-display-unit:9"
+              ],
+              "text": "Pressing the upper half of this rocker makes the whole picture brighter, the lower half darker.",
+              "context": "It acts on the helmet display when the helmet sight is chosen, otherwise on the TEDAC screen. It belongs to the CPG's TEDAC display unit.",
+              "src": "m1",
+              "page": "130"
+            },
+            {
+              "id": "con-rocker",
+              "name": "CON rocker (contrast)",
+              "type": "rocker",
+              "match": [
+                "pnt_157-1",
+                "pnt_157-2",
+                "item:tedac-display-unit:10"
+              ],
+              "text": "Pressing the upper half of this rocker raises the contrast, the lower half lowers it.",
+              "context": "It acts on the helmet display when the helmet sight is chosen, otherwise on the TEDAC screen. It is the CON rocker of the CPG's TEDAC display unit.",
+              "src": "m1",
+              "page": "130"
+            },
+            {
+              "id": "tdu-asterisk",
+              "name": "Asterisk (*) button",
+              "type": "button",
+              "match": [
+                "pnt_158",
+                "item:tedac-display-unit:11"
+              ],
+              "text": "This button puts brightness and contrast back to the normal settings.",
+              "context": "It acts on the helmet display or the TEDAC screen, depending on the chosen sight.",
+              "src": "m1",
+              "page": "130"
+            },
+            {
+              "id": "rf-rocker",
+              "name": "R/F rocker (range focus)",
+              "type": "rocker",
+              "match": [
+                "pnt_147-1",
+                "pnt_147-2",
+                "item:tedac-display-unit:12"
+              ],
+              "text": "Pressing the upper half of this rocker sets the focus of the targeting camera to longer distances, the lower half to shorter distances.",
+              "context": "A short press focuses in small steps, a long press keeps focusing.",
+              "src": "m1",
+              "page": "130"
+            },
+            {
+              "id": "el-rocker",
+              "name": "EL adjust rocker",
+              "type": "rocker",
+              "match": [
+                "pnt_146-1",
+                "pnt_146-2",
+                "item:tedac-display-unit:13"
+              ],
+              "text": "This rocker is meant to adjust the elevation (up and down). In DCS it is not implemented.",
+              "context": "The manual lists it as not implemented.",
+              "src": "m1",
+              "page": "130"
+            },
+            {
+              "id": "az-rocker",
+              "name": "AZ adjust rocker",
+              "type": "rocker",
+              "match": [
+                "pnt_163-1",
+                "pnt_163-2",
+                "item:tedac-display-unit:14"
+              ],
+              "text": "This rocker is meant to adjust the azimuth (left and right). In DCS it is not implemented.",
+              "context": "The manual lists it as not implemented.",
+              "src": "m1",
+              "page": "130"
+            },
+            {
+              "id": "azel-button",
+              "name": "AZ/EL button",
+              "type": "button",
+              "match": [
+                "pnt_162",
+                "item:tedac-display-unit:15"
+              ],
+              "text": "This button is meant to enable the boresight controls. In DCS it is not implemented.",
+              "context": "The manual lists it as not implemented.",
+              "src": "m1",
+              "page": "130"
+            },
+            {
+              "id": "acm-button",
+              "name": "ACM button",
+              "type": "button",
+              "match": [
+                "pnt_161",
+                "item:tedac-display-unit:16"
+              ],
+              "text": "This button is meant to switch on the automatic setting of the infrared picture. In DCS it is not implemented.",
+              "context": "The manual lists it as not implemented.",
+              "src": "m1",
+              "page": "130"
+            },
+            {
+              "id": "freeze-button",
+              "name": "FREEZE button",
+              "type": "button",
+              "match": [
+                "pnt_160",
+                "item:tedac-display-unit:17"
+              ],
+              "text": "This button freezes the picture on the TEDAC screen. The other screens keep their live picture.",
+              "context": "Pressing it again returns to the live picture.",
+              "src": "m1",
+              "page": "130"
+            },
+            {
+              "id": "filter-button",
+              "name": "FILTER button",
+              "type": "button",
+              "match": [
+                "pnt_159",
+                "item:tedac-display-unit:18"
+              ],
+              "text": "This button is meant to choose a filter in the infrared camera. In DCS it is not implemented.",
+              "context": "The manual lists it as not implemented.",
+              "src": "m1",
+              "page": "130"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "cpg-keyboard-unit",
+      "where": "front-left",
+      "name": "CPG keyboard unit",
+      "seat": 2,
+      "text": "A small keyboard with a one-line display for the CPG. The CPG types numbers and letters on it.",
+      "panels": [
+        {
+          "id": "cpg-keyboard-unit",
+          "name": "Keyboard unit, KU (CPG seat)",
+          "db": "keyboard-unit",
+          "src": "m1",
+          "page": "113",
+          "text": "The keyboard unit is a small keyboard with a one-line text display. The CPG (copilot/gunner) types numbers and letters on it, such as frequencies and map points, or uses it as a notepad.",
+          "context": "Typed data only goes into the helicopter's computers when an MPD button has asked for it and a prompt is shown on the KU display. Each seat has its own keyboard unit.",
+          "controls": [
+            {
+              "id": "ku-prompt",
+              "name": "KU display prompt",
+              "type": "display",
+              "match": [
+                "item:keyboard-unit:1"
+              ],
+              "text": "This part of the display tells what kind of data the computer waits for, for example a frequency, followed by a colon. This entry is for the CPG's keyboard unit.",
+              "context": "The prompt appears after the crew presses an MPD button that carries a data entry sign. It belongs to the CPG's keyboard unit.",
+              "src": "m1",
+              "page": "113"
+            },
+            {
+              "id": "ku-scratchpad",
+              "name": "KU scratchpad display",
+              "type": "display",
+              "match": [
+                "item:keyboard-unit:2"
+              ],
+              "text": "This is the line where typed characters show up. It holds 22 characters; the arrows scroll longer entries. This entry is for the CPG's keyboard unit.",
+              "context": "The new characters overwrite the old ones under the blinking cursor, like typing over text. It belongs to the CPG's keyboard unit.",
+              "src": "m1",
+              "page": "113"
+            },
+            {
+              "id": "ku-letters",
+              "name": "Letter keys A-Z",
+              "type": "keypad",
+              "match": [
+                "pnt_164",
+                "pnt_165",
+                "pnt_166",
+                "pnt_167",
+                "pnt_168",
+                "pnt_169",
+                "pnt_173",
+                "pnt_174",
+                "pnt_175",
+                "pnt_176",
+                "pnt_177",
+                "pnt_178",
+                "pnt_182",
+                "pnt_183",
+                "pnt_184",
+                "pnt_185",
+                "pnt_186",
+                "pnt_187",
+                "pnt_191",
+                "pnt_192",
+                "pnt_193",
+                "pnt_194",
+                "pnt_195",
+                "pnt_196",
+                "pnt_200",
+                "pnt_201"
+              ],
+              "text": "These 26 keys type the letters. The keys N, E, S and W have a box around them to find them fast when entering a map position. This entry is for the CPG's keyboard unit.",
+              "context": "Letters are needed for names and for map coordinates. The CPG (copilot/gunner) types them while a prompt is shown.",
+              "count": 26,
+              "src": "m1",
+              "page": "113"
+            },
+            {
+              "id": "ku-digits",
+              "name": "Digit keys 0-9",
+              "type": "keypad",
+              "match": [
+                "pnt_170",
+                "pnt_171",
+                "pnt_172",
+                "pnt_179",
+                "pnt_180",
+                "pnt_181",
+                "pnt_188",
+                "pnt_189",
+                "pnt_190",
+                "pnt_198"
+              ],
+              "text": "These ten keys type the numbers from 0 to 9.",
+              "context": "They are used for frequencies, codes and coordinates.",
+              "count": 10,
+              "src": "m1",
+              "page": "113"
+            },
+            {
+              "id": "ku-dot",
+              "name": "Decimal point key (.)",
+              "type": "keypad",
+              "match": [
+                "pnt_197"
+              ],
+              "text": "This key types the dot, the decimal point, for example in a radio frequency. This entry is for the CPG's keyboard unit.",
+              "context": "It is part of the number block.",
+              "src": "m1",
+              "page": "113"
+            },
+            {
+              "id": "ku-plusminus",
+              "name": "Plus-minus key (+/-)",
+              "type": "keypad",
+              "match": [
+                "pnt_199"
+              ],
+              "text": "This key types a plus or a minus sign in front of a number.",
+              "context": "The game labels it +/- and the manual does not describe it separately. It belongs to the CPG's keyboard unit.",
+              "src": "m1",
+              "page": "113"
+            },
+            {
+              "id": "ku-slash",
+              "name": "Slash key (/)",
+              "type": "keypad",
+              "match": [
+                "pnt_202"
+              ],
+              "text": "This key types a slash character in the scratchpad.",
+              "context": "The manual does not describe it separately; it is a data entry key. It is not the divide key of the arithmetic group. It belongs to the CPG's keyboard unit.",
+              "src": "m1",
+              "page": "113"
+            },
+            {
+              "id": "ku-arithmetic",
+              "name": "Arithmetic keys (* divide + -)",
+              "type": "keypad",
+              "match": [
+                "pnt_205",
+                "pnt_206",
+                "pnt_207",
+                "pnt_208",
+                "item:keyboard-unit:3"
+              ],
+              "text": "These four keys let the KU work as a pocket calculator: multiply, divide, add and subtract. This only works when no data prompt is shown. This entry is for the CPG's keyboard unit.",
+              "context": "Type a number, press an operator key, type a second number and press ENTER. The result appears on the scratchpad. It belongs to the CPG's keyboard unit.",
+              "count": 4,
+              "src": "m1",
+              "page": "113"
+            },
+            {
+              "id": "ku-bks",
+              "name": "BKS key (backspace)",
+              "type": "keypad",
+              "match": [
+                "pnt_203",
+                "item:keyboard-unit:8"
+              ],
+              "text": "This key erases the character left of the cursor.",
+              "context": "It is used to fix a typing mistake.",
+              "src": "m1",
+              "page": "114"
+            },
+            {
+              "id": "ku-spc",
+              "name": "SPC key (space)",
+              "type": "keypad",
+              "match": [
+                "pnt_204",
+                "item:keyboard-unit:9"
+              ],
+              "text": "This key puts an empty space at the cursor.",
+              "context": "It is used for blanks in names and messages.",
+              "src": "m1",
+              "page": "114"
+            },
+            {
+              "id": "ku-clr",
+              "name": "CLR key (clear)",
+              "type": "keypad",
+              "match": [
+                "pnt_209",
+                "item:keyboard-unit:4"
+              ],
+              "text": "This key clears everything typed on the scratchpad.",
+              "context": "It does not remove the prompt, so the computer still waits for the data. It belongs to the CPG's keyboard unit.",
+              "src": "m1",
+              "page": "114"
+            },
+            {
+              "id": "ku-arrows",
+              "name": "Scroll arrow keys (left and right)",
+              "type": "keypad",
+              "match": [
+                "pnt_210",
+                "pnt_211",
+                "item:keyboard-unit:5"
+              ],
+              "text": "These two keys move the cursor left or right along the scratchpad. This entry is for the CPG's keyboard unit.",
+              "context": "They are used to change a character in the middle, or to scroll an entry longer than the display. It belongs to the CPG's keyboard unit.",
+              "count": 2,
+              "src": "m1",
+              "page": "114"
+            },
+            {
+              "id": "ku-enter",
+              "name": "ENTER key",
+              "type": "keypad",
+              "match": [
+                "pnt_212",
+                "item:keyboard-unit:6"
+              ],
+              "text": "This key sends the typed data to the computer. If the data is not valid, the characters flash and must be corrected first. This entry is for the CPG's keyboard unit.",
+              "context": "It also gives the result of a calculation.",
+              "src": "m1",
+              "page": "114"
+            },
+            {
+              "id": "ku-brt",
+              "name": "Display brightness knob (KU)",
+              "type": "knob",
+              "match": [
+                "pnt_621",
+                "item:keyboard-unit:7"
+              ],
+              "text": "Turning this knob makes the KU display brighter or darker.",
+              "context": "The crew sets it for daylight or night.",
+              "src": "m1",
+              "page": "114"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

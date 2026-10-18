@@ -1,0 +1,745 @@
+{
+  "format": "joypro-cockpit-guide",
+  "version": 1,
+  "id": "sim-b727",
+  "title": "Boeing 727",
+  "variants": [
+    "b727-200"
+  ],
+  "games": [
+    "XPlane11",
+    "XPlane12"
+  ],
+  "sets": [],
+  "sources": [
+    {
+      "id": "c1",
+      "title": "JoyPro cockpit catalog",
+      "kind": "reference"
+    },
+    {
+      "id": "s1",
+      "title": "Chuck's Guides: FlyJSim 727-100 (cockpit layout chapter)",
+      "url": "https://chucksguides.com/aircraft/xp11/flyjsim-727-100",
+      "kind": "web"
+    },
+    {
+      "id": "s2",
+      "title": "Boeing 727 (Wikipedia)",
+      "url": "https://en.wikipedia.org/wiki/Boeing_727",
+      "kind": "web"
+    },
+    {
+      "id": "b5",
+      "title": "Boeing 727 operations manual (public knowledge)",
+      "kind": "reference"
+    },
+    {
+      "id": "fn",
+      "title": "JoyPro function tables MSFS2020/2024 and X-Plane 11/12 (DB/Functions)",
+      "kind": "reference"
+    }
+  ],
+  "intro": "The Boeing 727 is an older passenger jet with three engines, one on each side of the rear fuselage and one in the tail. It has an analogue cockpit with round dials and three crew: two pilots and a flight engineer who manages the systems on a panel at the side.",
+  "areas": [
+    {
+      "id": "glareshield",
+      "where": "glareshield",
+      "name": "Glareshield: autopilot and flight director",
+      "text": "The strip under the windscreen. It holds the autopilot switches and the master warning lights.",
+      "panels": [
+        {
+          "id": "glareshield",
+          "name": "Glareshield: autopilot and flight director",
+          "db": "glareshield",
+          "src": "b5",
+          "text": "This strip holds the simple autopilot controls of the 727: a selector for the flight director mode, the autopilot switch and the hold switches.",
+          "context": "The pilots switch the autopilot on after take-off. This old aircraft has only a few basic modes compared with modern airliners.",
+          "controls": [
+            {
+              "id": "fd-mode",
+              "name": "Flight director mode selector",
+              "type": "selector",
+              "match": [
+                "item:glareshield:1"
+              ],
+              "positions": [
+                {
+                  "name": "OFF",
+                  "text": "The flight director is off."
+                },
+                {
+                  "name": "HDG",
+                  "text": "The guide follows the heading the pilot set."
+                },
+                {
+                  "name": "VOR LOC",
+                  "text": "The guide follows a radio beacon course or a runway beam."
+                },
+                {
+                  "name": "AUTO APP",
+                  "text": "The guide follows the landing beam automatically."
+                },
+                {
+                  "name": "MAN GS",
+                  "text": "The pilot flies the landing beam by hand."
+                },
+                {
+                  "name": "GA",
+                  "text": "The guide shows the go-around path."
+                }
+              ],
+              "text": "This selector chooses what the flight director guide needles show: heading, radio beacon course, automatic or manual landing beam, or go-around.",
+              "context": "The flight director shows the pilot which way to fly. The positions are used one after another when approaching an airport.",
+              "src": "b5"
+            },
+            {
+              "id": "ap-engage",
+              "name": "Autopilot engage switch",
+              "type": "switch2",
+              "match": [
+                "item:glareshield:2"
+              ],
+              "positions": [
+                {
+                  "name": "ON",
+                  "text": "The autopilot flies the aircraft."
+                },
+                {
+                  "name": "OFF",
+                  "text": "The autopilot is off and the pilot flies."
+                }
+              ],
+              "text": "This switch turns the autopilot on or off. The autopilot flies the aircraft by itself.",
+              "context": "The pilot uses it in the cruise to rest the hands. The pilot still watches the flight.",
+              "src": "b5"
+            },
+            {
+              "id": "hold-modes",
+              "name": "Heading and altitude hold",
+              "type": "switch2",
+              "match": [
+                "item:glareshield:3"
+              ],
+              "positions": [
+                {
+                  "name": "ON",
+                  "text": "The hold mode is on."
+                },
+                {
+                  "name": "OFF",
+                  "text": "The hold mode is off."
+                }
+              ],
+              "text": "These switches make the autopilot hold the heading or the height it has right now.",
+              "context": "They are the basic autopilot modes of this old airliner: fly straight and level.",
+              "src": "b5"
+            },
+            {
+              "id": "master-warning",
+              "name": "Master warning and caution lights",
+              "type": "light",
+              "match": [
+                "item:glareshield:4"
+              ],
+              "text": "These lights come on when something needs attention. The red one means a warning and the amber one a caution.",
+              "context": "The pilots look at the labelled lights on the panels to find what is wrong.",
+              "src": "b5"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "front-left",
+      "where": "front-left",
+      "name": "Pilot instrument panels",
+      "text": "The dashboard in front of each pilot with round dials for flying.",
+      "panels": [
+        {
+          "id": "pilot-panels",
+          "name": "Pilot instrument panels",
+          "db": "pilot-panels",
+          "src": "b5",
+          "text": "Each pilot has a set of round dials that show how the aircraft is flying. The 727 has no flight screens, only mechanical dials.",
+          "context": "The pilots scan these dials all the time: the horizon, compass, speed, height and climb rate.",
+          "controls": [
+            {
+              "id": "adi",
+              "name": "ADI",
+              "type": "gauge",
+              "match": [
+                "item:pilot-panels:1"
+              ],
+              "text": "This dial shows the artificial horizon: whether the nose points up or down and whether the wings are level. It also has the flight director needles.",
+              "context": "ADI means attitude director indicator. The pilot looks at it to fly in clouds where the real horizon is not visible.",
+              "src": "b5"
+            },
+            {
+              "id": "hsi",
+              "name": "HSI",
+              "type": "gauge",
+              "match": [
+                "item:pilot-panels:2"
+              ],
+              "text": "This dial is a compass that also shows the course to a radio beacon or runway beam.",
+              "context": "HSI means horizontal situation indicator. It combines the compass and the navigation needle in one place.",
+              "src": "b5"
+            },
+            {
+              "id": "asi",
+              "name": "Airspeed / Mach indicator",
+              "type": "gauge",
+              "match": [
+                "item:pilot-panels:3"
+              ],
+              "text": "This dial shows how fast the aircraft flies through the air. It also shows the Mach number, speed compared to the speed of sound.",
+              "context": "The pilot checks it all the time because the speed must be right for flaps, take-off and landing.",
+              "src": "b5"
+            },
+            {
+              "id": "altimeter",
+              "name": "Altimeter",
+              "type": "gauge",
+              "match": [
+                "item:pilot-panels:4"
+              ],
+              "text": "This dial shows the height above sea level, using hands like a clock.",
+              "context": "The pilot sets the local air pressure on it to read the correct height.",
+              "src": "b5"
+            },
+            {
+              "id": "vsi",
+              "name": "Vertical speed indicator",
+              "type": "gauge",
+              "match": [
+                "item:pilot-panels:5"
+              ],
+              "text": "This dial shows how fast the aircraft climbs or sinks.",
+              "context": "The pilot uses it to keep a steady climb or descent.",
+              "src": "b5"
+            },
+            {
+              "id": "rmi",
+              "name": "RMI",
+              "type": "gauge",
+              "match": [
+                "item:pilot-panels:6"
+              ],
+              "text": "This dial is a compass with pointers that show the direction to radio beacons on the ground.",
+              "context": "RMI means radio magnetic indicator. The pilot reads the beacon directions from the needles.",
+              "src": "b5"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "front-center",
+      "where": "front-center",
+      "name": "Centre engine instruments",
+      "text": "The middle of the dashboard with the engine dials for the three engines, the landing gear lever and the flap indicator.",
+      "panels": [
+        {
+          "id": "centre-panel",
+          "name": "Centre engine instruments",
+          "db": "centre-panel",
+          "src": "b5",
+          "text": "The 727 has three engines, so each dial group has three needles. This panel also holds the landing gear lever and the flap gauge.",
+          "context": "The pilots watch the engine dials during start and flight, and use the gear lever for take-off and landing.",
+          "controls": [
+            {
+              "id": "epr",
+              "name": "EPR gauges",
+              "type": "gauge",
+              "match": [
+                "item:centre-panel:1"
+              ],
+              "text": "These three dials show the engine pressure ratio, a number that shows how much push each engine gives.",
+              "context": "The pilot sets the power by watching the EPR needles on take-off.",
+              "src": "b5"
+            },
+            {
+              "id": "n1n2",
+              "name": "N1 / N2 gauges",
+              "type": "gauge",
+              "match": [
+                "item:centre-panel:2"
+              ],
+              "text": "These dials show how fast the spools of each engine turn, the fan side (N1) and the core side (N2).",
+              "context": "The pilot watches them during engine start and for the limit of the engine speed.",
+              "src": "b5"
+            },
+            {
+              "id": "egt",
+              "name": "EGT gauges",
+              "type": "gauge",
+              "match": [
+                "item:centre-panel:3"
+              ],
+              "text": "These dials show the temperature of the exhaust gas of each engine.",
+              "context": "The pilot watches it, mainly during the start, so the engine does not get too hot.",
+              "src": "b5"
+            },
+            {
+              "id": "fuel-flow",
+              "name": "Fuel flow gauges",
+              "type": "gauge",
+              "match": [
+                "item:centre-panel:4"
+              ],
+              "text": "These dials show how much fuel each engine uses.",
+              "context": "The numbers help the pilot see if the engines are running normally.",
+              "src": "b5"
+            },
+            {
+              "id": "gear-lever",
+              "name": "Landing gear lever",
+              "type": "lever",
+              "match": [
+                "item:centre-panel:5"
+              ],
+              "positions": [
+                {
+                  "name": "UP",
+                  "text": "The wheels fold up."
+                },
+                {
+                  "name": "OFF",
+                  "text": "No hydraulic force on the gear."
+                },
+                {
+                  "name": "DN",
+                  "text": "The wheels are down and locked."
+                }
+              ],
+              "text": "This lever raises or lowers the wheels. The middle OFF position takes the hydraulic push off.",
+              "context": "The pilot puts the gear up after take-off and down before landing.",
+              "src": "b5"
+            },
+            {
+              "id": "flap-gauge",
+              "name": "Flap position indicator",
+              "type": "gauge",
+              "match": [
+                "item:centre-panel:6"
+              ],
+              "text": "This dial shows how far the flaps on the wings have moved out.",
+              "context": "The pilot looks at it after moving the flap lever.",
+              "src": "b5"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "overhead",
+      "where": "overhead",
+      "name": "Overhead panel",
+      "text": "The ceiling panel above the pilots with their few own switches.",
+      "panels": [
+        {
+          "id": "overhead-panel",
+          "name": "Overhead panel",
+          "db": "overhead-panel",
+          "src": "b5",
+          "text": "This panel holds the switches the pilots themselves use: lights, anti-ice, the yaw damper and the signs for the passengers. The rest of the systems are on the flight engineer's panel.",
+          "context": "The pilots use it for lights and ice protection. The flight engineer looks after the other systems.",
+          "controls": [
+            {
+              "id": "ext-lights",
+              "name": "Exterior lights",
+              "type": "switch2",
+              "match": [
+                "item:overhead-panel:1"
+              ],
+              "positions": [
+                {
+                  "name": "ON",
+                  "text": "The lights are on."
+                },
+                {
+                  "name": "OFF",
+                  "text": "The lights are off."
+                }
+              ],
+              "text": "These switches turn on the lights outside: landing lights, taxi light, the red beacon and the position lights.",
+              "context": "The pilots switch them on in steps as the aircraft starts, taxis and takes off.",
+              "src": "b5"
+            },
+            {
+              "id": "anti-ice",
+              "name": "Anti-ice and window heat",
+              "type": "switch2",
+              "match": [
+                "item:overhead-panel:2"
+              ],
+              "positions": [
+                {
+                  "name": "ON",
+                  "text": "The heat is on."
+                },
+                {
+                  "name": "OFF",
+                  "text": "The heat is off."
+                }
+              ],
+              "text": "These switches heat the windows and the engine inlets so ice cannot form on them.",
+              "context": "The pilots use them in clouds in cold air.",
+              "src": "b5"
+            },
+            {
+              "id": "yaw-damper",
+              "name": "Yaw damper",
+              "type": "switch2",
+              "match": [
+                "item:overhead-panel:3"
+              ],
+              "positions": [
+                {
+                  "name": "ON",
+                  "text": "The yaw damper works."
+                },
+                {
+                  "name": "OFF",
+                  "text": "The yaw damper is off."
+                }
+              ],
+              "text": "This switch turns on the yaw damper, a helper that stops the tail from swinging left and right.",
+              "context": "The pilot switches it on after take-off. The ride is smoother with it.",
+              "src": "b5"
+            },
+            {
+              "id": "signs",
+              "name": "Signs",
+              "type": "switch2",
+              "match": [
+                "item:overhead-panel:4"
+              ],
+              "positions": [
+                {
+                  "name": "ON",
+                  "text": "The sign is lit."
+                },
+                {
+                  "name": "OFF",
+                  "text": "The sign is off."
+                }
+              ],
+              "text": "These switches turn on the seat belt and no smoking signs in the passenger cabin.",
+              "context": "The pilots turn on the seat belt sign for take-off, landing and rough air.",
+              "src": "b5"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "right-side",
+      "where": "right-side",
+      "name": "Flight engineer panel",
+      "text": "The big panel on the right wall, behind the first officer, where the flight engineer looks after the aircraft's systems.",
+      "panels": [
+        {
+          "id": "engineer-panel",
+          "name": "Flight engineer panel",
+          "db": "engineer-panel",
+          "src": "b5",
+          "text": "The 727 has a third crew member, the flight engineer. This panel in front of the engineer holds the switches for electricity, fuel, hydraulics, air and pressure.",
+          "context": "The engineer watches and manages these systems so the two pilots can concentrate on flying.",
+          "controls": [
+            {
+              "id": "elec",
+              "name": "Electrical panel",
+              "type": "switch2",
+              "match": [
+                "item:engineer-panel:1"
+              ],
+              "positions": [
+                {
+                  "name": "ON",
+                  "text": "The generator or connection is on."
+                },
+                {
+                  "name": "OFF",
+                  "text": "The generator or connection is off."
+                }
+              ],
+              "text": "This part switches the three generators and the connections between the electric lines (the bus ties).",
+              "context": "The engineer connects each engine's generator after the start and watches the electricity.",
+              "src": "b5"
+            },
+            {
+              "id": "fuel",
+              "name": "Fuel panel",
+              "type": "switch2",
+              "match": [
+                "item:engineer-panel:2"
+              ],
+              "positions": [
+                {
+                  "name": "ON",
+                  "text": "The pump or valve is on."
+                },
+                {
+                  "name": "OFF",
+                  "text": "The pump or valve is off."
+                }
+              ],
+              "text": "This part runs the fuel pumps and the cross feed, which moves fuel between the tanks and engines.",
+              "context": "The engineer manages the tanks so the engines are always fed and the weight is balanced.",
+              "src": "b5"
+            },
+            {
+              "id": "hyd",
+              "name": "Hydraulic panel",
+              "type": "switch2",
+              "match": [
+                "item:engineer-panel:3"
+              ],
+              "positions": [
+                {
+                  "name": "ON",
+                  "text": "The pump is on."
+                },
+                {
+                  "name": "OFF",
+                  "text": "The pump is off."
+                }
+              ],
+              "text": "This part controls the hydraulic systems A and B, oil under pressure that moves flaps, wheels and control surfaces.",
+              "context": "The engineer switches the pumps on and watches the pressure.",
+              "src": "b5"
+            },
+            {
+              "id": "pneu",
+              "name": "Pneumatic and air conditioning",
+              "type": "switch2",
+              "match": [
+                "item:engineer-panel:4"
+              ],
+              "positions": [
+                {
+                  "name": "ON",
+                  "text": "The air pack or bleed is on."
+                },
+                {
+                  "name": "OFF",
+                  "text": "The air pack or bleed is off."
+                }
+              ],
+              "text": "This part works the air packs and the bleeds that take hot air from the engines for the cabin.",
+              "context": "The engineer keeps the cabin air warm and comfortable.",
+              "src": "b5"
+            },
+            {
+              "id": "pressurization",
+              "name": "Pressurization",
+              "type": "knob",
+              "match": [
+                "item:engineer-panel:5"
+              ],
+              "text": "This knob sets the cabin altitude, the height the air pressure inside the cabin feels like.",
+              "context": "The engineer sets it so the cabin stays comfortable, and adjusts it for landing.",
+              "src": "b5"
+            },
+            {
+              "id": "eng-levers",
+              "name": "Engineer thrust levers",
+              "type": "lever",
+              "match": [
+                "item:engineer-panel:6"
+              ],
+              "text": "These levers at the engineer's station can also set the engine power. The catalog notes they are not on all 727s.",
+              "context": "On aircraft that have them, the engineer can help with the power. Not every aircraft or game model has them.",
+              "src": "b5"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "hotas",
+      "where": "hotas",
+      "name": "Control wheel, thrust levers and pedals",
+      "text": "The controls for the pilot's hands and feet: the column and wheel, the three thrust levers on the stand and the pedals.",
+      "panels": [
+        {
+          "id": "grip-column",
+          "name": "Control column and wheel",
+          "text": "Each pilot has a control column with a wheel. The thumb switches and buttons on the wheel are used without letting go.",
+          "context": "The pilot flies the aircraft with the column and wheel, which are connected to the wings and tail by cables and hydraulics.",
+          "controls": [
+            {
+              "id": "col-gimbal",
+              "name": "Control column and wheel",
+              "type": "other",
+              "match": [
+                "control:yoke.gimbal"
+              ],
+              "text": "Pushing the column forward lowers the nose and pulling it back raises it. Turning the wheel left or right rolls the aircraft.",
+              "context": "The column moves the elevators on the tail and the wheel moves the ailerons and spoilers on the wings."
+            },
+            {
+              "id": "col-trim",
+              "name": "Stabilizer trim switches",
+              "type": "rocker",
+              "match": [
+                "control:yoke.rocker.stab_trim"
+              ],
+              "text": "These two thumb switches work together. Pushing them one way trims the nose down and the other way trims it up.",
+              "context": "Trim lets the aircraft fly level without constant pressure on the column."
+            },
+            {
+              "id": "col-ap-disc",
+              "name": "Autopilot disengage button",
+              "type": "button",
+              "match": [
+                "control:yoke.button.ap_disc"
+              ],
+              "text": "Pressing this thumb button on the wheel switches the autopilot off. A second press silences the warning sound.",
+              "context": "The pilot presses it to take over the flying."
+            }
+          ]
+        },
+        {
+          "id": "grip-quadrant",
+          "name": "Thrust levers and control stand handles",
+          "text": "These are the levers on the control stand that the pilot's hand reaches: three thrust levers, the reversers, the speed brake, the flaps and the engine start levers.",
+          "context": "The pilot uses them in every part of the flight. With three engines the pilot handles three thrust levers.",
+          "controls": [
+            {
+              "id": "lever1",
+              "name": "Thrust lever 1",
+              "type": "axis",
+              "match": [
+                "control:quadrant.axis.lever.1"
+              ],
+              "text": "This is the left of the three thrust levers. Pushing it forward gives engine 1 more power.",
+              "context": "The pilot normally moves all three levers together."
+            },
+            {
+              "id": "lever2",
+              "name": "Thrust lever 2",
+              "type": "axis",
+              "match": [
+                "control:quadrant.axis.lever.2"
+              ],
+              "text": "This is the centre thrust lever, for the engine in the tail. Pushing it forward gives that engine more power.",
+              "context": "The middle engine sits at the back of the fuselage."
+            },
+            {
+              "id": "lever3",
+              "name": "Thrust lever 3",
+              "type": "axis",
+              "match": [
+                "control:quadrant.axis.lever.3"
+              ],
+              "text": "This is the right thrust lever, for engine 3. Pushing it forward gives more power.",
+              "context": "It is used together with the other two levers."
+            },
+            {
+              "id": "reverse",
+              "name": "Reverse thrust levers",
+              "type": "lever",
+              "match": [
+                "control:quadrant.lever.reverse"
+              ],
+              "text": "These levers on the thrust levers are lifted and pulled back after landing. They turn the engines' push forward to slow the aircraft.",
+              "context": "The pilot uses them just after touchdown, with the brakes."
+            },
+            {
+              "id": "speedbrake",
+              "name": "Speed brake lever",
+              "type": "lever",
+              "match": [
+                "control:quadrant.lever.speedbrake"
+              ],
+              "text": "Moving this lever back opens the speed brakes, moving it forward closes them, and pulling it up arms them for landing.",
+              "context": "In the air they slow the aircraft. After landing, the full back position opens all the spoilers."
+            },
+            {
+              "id": "flaps",
+              "name": "Flap lever",
+              "type": "lever",
+              "match": [
+                "control:quadrant.lever.flaps"
+              ],
+              "text": "Moving this lever forward or back changes the flaps by one step.",
+              "context": "The pilot uses a small setting for take-off and larger settings for landing."
+            },
+            {
+              "id": "stab-trim",
+              "name": "Stabilizer trim wheels",
+              "type": "wheel",
+              "match": [
+                "control:quadrant.wheel.stab_trim"
+              ],
+              "text": "These wheels on both sides of the pedestal trim the nose by hand. Turning forward trims the nose down and back trims it up.",
+              "context": "They are the manual way to trim, next to the thumb switches on the wheel."
+            },
+            {
+              "id": "start-levers",
+              "name": "Engine start levers 1-3",
+              "type": "switch2",
+              "match": [
+                "control:quadrant.switch.start_levers"
+              ],
+              "positions": [
+                {
+                  "name": "up",
+                  "text": "IDLE: fuel is on and the engine runs."
+                },
+                {
+                  "name": "down",
+                  "text": "CUTOFF: the fuel is off and the engine stops."
+                }
+              ],
+              "count": 3,
+              "text": "These levers below the thrust levers turn the fuel to each engine on or off.",
+              "context": "The pilot moves a lever up after the engine has turned during the start, and down to stop it."
+            },
+            {
+              "id": "parking-brake",
+              "name": "Parking brake lever",
+              "type": "lever",
+              "match": [
+                "control:quadrant.lever.parking_brake"
+              ],
+              "text": "Pulling this handle on the captain's lower panel sets the parking brake, with the toe brakes pressed. Pressing the toe brakes again releases it.",
+              "context": "The pilot sets it when the aircraft is parked."
+            }
+          ]
+        },
+        {
+          "id": "grip-panel",
+          "name": "Tiller and pedals",
+          "text": "The steering wheel at the captain's side and the rudder pedals, used for the ground.",
+          "context": "The pilot steers on the ground with the tiller and pedals, and keeps straight in the air with the pedals.",
+          "controls": [
+            {
+              "id": "tiller",
+              "name": "Nosewheel steering tiller",
+              "type": "wheel",
+              "match": [
+                "control:panel.wheel.tiller"
+              ],
+              "text": "Turning this small wheel on the captain's left side steers the front wheel, like a car steering wheel but small.",
+              "context": "The pilot uses it when taxiing slowly."
+            },
+            {
+              "id": "rudder",
+              "name": "Rudder pedals",
+              "type": "pedal",
+              "match": [
+                "control:pedals.axis.rudder"
+              ],
+              "text": "Pushing a pedal turns the rudder, the vertical flap on the tail. The tops of the pedals are the toe brakes. The pedals also steer the front wheel a few degrees.",
+              "context": "The pilot keeps the aircraft straight on the runway with them."
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

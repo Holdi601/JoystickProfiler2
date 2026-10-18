@@ -151,7 +151,7 @@
       "listSource": "`general.actions`; titles from IL-2 Great Battles' list or JoyPro's wording", "listSize": "318",
       "antiCheat": "none known",
       "test": { "level": "e2e", "result": "49/49", "date": "2026-10-11", "note": "binds; curves 7/7; settings 23/23 on 2026-10-05" },
-      "open": "the game's own texts are in encrypted `.gtp` archives (not read); 60 actions without an input are missing",
+      "open": "the game's own texts are in its `.gtp` archives (not read); 60 actions without an input are missing",
       "cells": {
         "watcher": { "note": "Live watcher test 2026-10-17 (`tools\\e2e\\games\\Watchdog.ps1`): not possible yet: the first start shows the user agreement (never accepted by a test), and without a saved key mapping there is no general.actions to export to." }
       }
@@ -209,7 +209,7 @@
       "bindFile": "`Documents\\My Games\\WarThunder\\Saves\\<uid>\\production\\machine.blk` (BLK text, a diff against the preset)",
       "listSource": "`gui.vromfs.bin` / `lang.vromfs.bin` by default; JoyPro's own list with `--no-game-archives` (Settings > Games)", "listSize": "290 (116 own)",
       "devices": "128 buttons, 4 hats per device",
-      "antiCheat": "BattlEye (`aces_BE`); reading the vromfs archives is EULA-sensitive and can be switched off",
+      "antiCheat": "BattlEye (`aces_BE`); reading the vromfs archives can be switched off",
       "test": { "level": "e2e", "result": "29/29", "date": "2026-10-10", "note": "settings and binds; the watcher runs of 2026-10-11 were 32/34 and 31/32 (a WEP-hold change not seen, one sensitivity read back off by one)" },
       "open": "a green watcher run; no shipped base-preset table; cloud versions of the file"
     },
@@ -243,7 +243,7 @@
       "bindFile": "registry `HKCU\\Software\\Shockfront\\NuclearOption` (Rewired XML in REG_BINARY values)",
       "listSource": "`resources.assets` of the game", "listSize": "95",
       "devices": "unknown controllers: 128 buttons, 16 hats (Rewired); slider and hat ids not seen yet",
-      "antiCheat": "none known; the EULA allows hardware profiles; JoyPro writes the registry (backed up)",
+      "antiCheat": "none known; JoyPro writes the registry (backed up)",
       "test": { "level": "e2e", "result": "5/5", "date": "2026-10-10", "note": "pitch, roll and yaw only, no buttons" },
       "open": "buttons and hats in game; devices Rewired recognizes (non-zero GUID) are not handled",
       "cells": {
@@ -265,7 +265,7 @@
     },
     {
       "id": "Wardogs", "title": "WARDOGS", "category": "combat", "doc": "wardogs.md",
-      "bindFile": "`%LOCALAPPDATA%\\Wardogs\\Saved\\Config\\WindowsClient\\GameUserSettings.ini` (Unreal ini, obfuscated field names)",
+      "bindFile": "`%LOCALAPPDATA%\\Wardogs\\Saved\\Config\\WindowsClient\\GameUserSettings.ini` (Unreal ini, hashed field names)",
       "listSource": "your `GameUserSettings.ini` + JoyPro's axes", "listSize": "28",
       "devices": "identical devices collide",
       "antiCheat": "not verified",
@@ -293,7 +293,7 @@
       "bindFile": "`LIVE\\user\\client\\0\\Profiles\\default\\actionmaps.xml` + `attributes.xml` (XML)",
       "listSource": "`Data.p4k` (defaultProfile.xml) and your profiles", "listSize": "1103",
       "devices": "8 joystick slots; the button limit is unknown (sources conflict)",
-      "antiCheat": "Easy Anti-Cheat (the in-game test stays in the main menu)",
+      "antiCheat": "Easy Anti-Cheat",
       "test": { "level": "e2e", "result": "54/54", "date": "2026-10-10", "note": "main menu: settings, binds and curves; release run 50/50" },
       "open": "placement of `deviceoptions`; curve interpolation and exponent range; vibration versus DirectInput force feedback"
     },
@@ -437,7 +437,7 @@
       "open": "the pad buttons of flares and views; a flight",
       "cells": {
         "import": { "mark": "◐", "note": "ACE COMBAT 8: only the pad keys set in the game are read (it stores no joystick binds)." },
-        "export": { "mark": "◐", "note": "ACE COMBAT 8: JoyPro writes nothing (checksummed settings, Easy Anti-Cheat); your binds reach the game through the virtual Xbox pad." },
+        "export": { "mark": "◐", "note": "ACE COMBAT 8: JoyPro writes nothing (checksummed settings); your binds reach the game through the virtual Xbox pad." },
         "keyboard": { "mark": "—", "note": "ACE COMBAT 8: nothing is written." },
         "modifiers": { "mark": "—", "note": "ACE COMBAT 8: nothing is written." },
         "watcher": { "mark": "—", "note": "ACE COMBAT 8: nothing is written, so there is nothing to watch." },
@@ -570,7 +570,7 @@
     {
       "id": "doc:Hawx2", "title": "H.A.W.X 2", "level": "documented", "category": "arcade", "doc": "hawx.md",
       "devices": "one joystick",
-      "antiCheat": "Ubisoft DRM only",
+      "antiCheat": "none known",
       "open": "installed, but needs Ubisoft Connect with a login and a first start; at most the `settings.ini` dead zone could be set",
       "cells": { "vjoy": { "note": "Recommended: one vJoy device, binds made in the game." } }
     }

@@ -1,0 +1,107 @@
+{
+  "format": "joypro-cockpit-guide",
+  "version": 1,
+  "id": "sim-b737-max-8",
+  "title": "Boeing 737 MAX 8",
+  "inherits": "sim-b737-800",
+  "remove": [
+    "main-panels"
+  ],
+  "variants": [
+    "b737-max-8"
+  ],
+  "games": [
+    "MSFS2024",
+    "MSFS2020"
+  ],
+  "sets": [],
+  "sources": [
+    {
+      "id": "c1",
+      "title": "JoyPro cockpit catalog",
+      "kind": "reference"
+    },
+    {
+      "id": "m1",
+      "title": "Boeing 737 MAX (Wikipedia)",
+      "url": "https://en.wikipedia.org/wiki/Boeing_737_MAX",
+      "kind": "web"
+    }
+  ],
+  "intro": "The Boeing 737 MAX 8 is a newer version of the 737 passenger jet. Its cockpit is the same as the earlier 737 apart from the dashboard, where four large screens replace the six small ones.",
+  "areas": [
+    {
+      "id": "front-left",
+      "where": "front-left",
+      "name": "Captain and first officer panels",
+      "text": "The dashboard in front of each pilot. The MAX has four large screens here instead of the six small ones of the earlier 737.",
+      "panels": [
+        {
+          "id": "main-panels",
+          "name": "Captain and first officer instrument panels",
+          "db": "main-panels",
+          "src": "m1",
+          "text": "Four large landscape screens replace the six display units of the older 737. Each pilot has an outer screen for flying and an inner screen for the map and, in its lower part, engine pages.",
+          "context": "The pilots look at the outer screen for the flight and the inner screen for the route. The EFIS panel and the warning lights are right next to them.",
+          "controls": [
+            {
+              "id": "pfd",
+              "name": "Outboard display: PFD",
+              "type": "display",
+              "match": [
+                "item:main-panels:1"
+              ],
+              "text": "This large screen shows the horizon, speed, height and climb rate, and the autopilot mode line at the top. It is the main flying screen.",
+              "context": "PFD means primary flight display. Each pilot has one.",
+              "src": "m1"
+            },
+            {
+              "id": "nd",
+              "name": "Inboard display: ND",
+              "type": "display",
+              "match": [
+                "item:main-panels:2"
+              ],
+              "text": "This screen shows the map of the route. The lower part can show engine or system pages.",
+              "context": "ND means navigation display. The pilot can choose which page appears.",
+              "src": "m1"
+            },
+            {
+              "id": "isfd",
+              "name": "Integrated standby flight display",
+              "type": "display",
+              "match": [
+                "item:main-panels:3"
+              ],
+              "text": "This small screen is the emergency instrument. It shows the horizon, speed and height by itself.",
+              "context": "It keeps working if the main screens fail.",
+              "src": "m1"
+            },
+            {
+              "id": "efis",
+              "name": "EFIS control panel",
+              "type": "selector",
+              "match": [
+                "item:main-panels:4"
+              ],
+              "text": "This panel sets what the navigation screen shows: map mode, range, the minimum height for the approach (MINS) and the air pressure setting (BARO).",
+              "context": "The pilot sets the air pressure here so the altimeter reads the correct height.",
+              "src": "m1"
+            },
+            {
+              "id": "master-caution",
+              "name": "MASTER CAUTION and system annunciator",
+              "type": "light",
+              "match": [
+                "item:main-panels:5"
+              ],
+              "text": "This light comes on when a system has a small fault. The labelled lights beside it show which system. Pressing it resets the lights and recalls the message.",
+              "context": "The pilot reads which light is on and follows the checklist for it.",
+              "src": "m1"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

@@ -11,7 +11,7 @@ namespace JoyPro.Engine.Games
     // docs/games/one-device-games.md). Its exe reads Xbox pads (XInput 1.4) and the licensed flight sticks through
     // Thrustmaster's SDK only; generic DirectInput sticks are not read. JoyPro flies it with the virtual Xbox 360 pad
     // (engine vjoy mode AceCombat8 xbox) and writes nothing:
-    //  - the settings (System.sav, GVAS) end with a checksum, and the game runs under Easy Anti-Cheat; JoyPro only
+    //  - the settings (System.sav, GVAS) end with a checksum; JoyPro only
     //    reads the gamepad keys the player set (<Action>Key_Controller = an Unreal FKey name) from it;
     //  - the catalog (engine ac8 refresh-db) holds one "Pad_*" action per gamepad control with that key in the 5th
     //    column, so the virtual-pad planner pins the HOTAS input to the control the game uses. The sticks (pitch, roll,
@@ -29,7 +29,7 @@ namespace JoyPro.Engine.Games
             get
             {
                 return "Reads Xbox pads (and a few licensed sticks) only: fly it with the virtual Xbox pad (engine vjoy mode AceCombat8 xbox; needs ViGEmBus). " +
-                       "JoyPro writes nothing for this game (checksummed settings, Easy Anti-Cheat): it puts your HOTAS on the pad controls the game uses. " +
+                       "JoyPro writes nothing for this game (checksummed settings): it puts your HOTAS on the pad controls the game uses. " +
                        "In the game: Options > Controls, controller, and keep Steam Input off for the game.";
             }
         }
@@ -222,7 +222,7 @@ namespace JoyPro.Engine.Games
         {
             GameIoResult result = new GameIoResult();
             int pad = request.Bindings.Count(b => b.ActionId.StartsWith(PadPrefix, StringComparison.Ordinal));
-            result.Steps.Add(pad.ToString(CultureInfo.InvariantCulture) + " gamepad action bind(s): nothing is written (the game's settings are checksummed and it runs under Easy Anti-Cheat); " +
+            result.Steps.Add(pad.ToString(CultureInfo.InvariantCulture) + " gamepad action bind(s): nothing is written (the game's settings are checksummed); " +
                              "they reach the game through the virtual Xbox pad (engine vjoy mode " + GameId + " xbox), on the controls the game uses. " +
                              "After changing a gamepad key in the game, run engine ac8 refresh-db and engine vjoy map.");
             foreach (GameInputBinding binding in request.Bindings.Where(b => !b.ActionId.StartsWith(PadPrefix, StringComparison.Ordinal)))

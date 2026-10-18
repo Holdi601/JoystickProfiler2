@@ -17,7 +17,7 @@ namespace JoyPro.CockpitPictures
     {
         public const string ManifestName = "pictures.json";
         public const string FormatName = "joypro-cockpit-pictures";
-        public const int GeneratorVersion = 1;
+        public const int GeneratorVersion = 2;
 
         public sealed class SetInfo
         {
@@ -30,6 +30,10 @@ namespace JoyPro.CockpitPictures
             public List<string> Notes = new List<string>();
         }
 
+        // Builds the set: every view is rendered, measured (PictureQuality) and, when poor, framed again (a grip zoomed to
+        // what is drawn, the planner's other cameras); a panel or grip picture that stays poor is left out, one that looks
+        // like an earlier panel picture gives its callouts to that one. The set gets its verdict ("quality" in
+        // pictures.json).
         public static void Write(CockpitScene scene, List<CockpitViewPlan> views, string folder, SetInfo info, Action<int, int, string> progress, bool clean = true)
         {
             Directory.CreateDirectory(folder);
@@ -48,6 +52,90 @@ namespace JoyPro.CockpitPictures
                     }
                 }
             }
+            UniqueIds(views);
+            // Meshes larger than any aircraft (broken or placeholder geometry hundreds of metres across, the F-100D has
+            // some) cut slabs through every picture: left out.
+            List<int> huge = new List<int>();
+            for (int i = 0; i < scene.Meshes.Count; i++)
+            {
+                Vec3 mn, mx;
+                scene.Bounds(new[] { i }, out mn, out mx);
+                Vec3 ext = mx - mn;
+                if (ext.X > 200 || ext.Y > 200 || ext.Z > 200 || double.IsNaN(ext.X))
+                    huge.Add(i);
+            }
+            if (huge.Count > 0)
+            {
+                HashSet<int> skip = new HashSet<int>(huge);
+                List<int> all = Enumerable.Range(0, scene.Meshes.Count).Where(i => !skip.Contains(i)).ToList();
+                foreach (CockpitViewPlan v in views)
+                    v.Meshes = v.Meshes == null ? all : v.Meshes.Where(i => !skip.Contains(i)).ToList();
+            }
+            // A model without any texture (synthetic, or nothing decodable) keeps its pictures: they are all there is
+            // (the set is still rated).
+            bool keepAll = Environment.GetEnvironmentVariable("JOYPRO_PICTURE_KEEP_ALL") == "1" || !scene.Materials.Any(m => m.Albedo != null);
+            // The pictures, two at a time (the drawing's tracing is partly single-threaded).
+            ViewResult[] results = new ViewResult[views.Count];
+            int done = 0;
+            System.Threading.Tasks.Parallel.For(0, views.Count, new System.Threading.Tasks.ParallelOptions { MaxDegreeOfParallelism = 2 }, k =>
+            {
+                CockpitViewPlan v = views[k];
+                ViewResult r = RenderGated(scene, v, keepAll);
+                results[k] = r;
+                if (r != null)
+                {
+                    PngWriter.Write(Path.Combine(folder, FileName(v.Id) + ".png"), r.Rgba, r.Width, r.Height, 4);
+                    r.Rgba = null;
+                }
+                int n = System.Threading.Interlocked.Increment(ref done);
+                if (progress != null)
+                {
+                    lock (results)
+                        progress(n, views.Count, v.Title);
+                }
+            });
+            // Panel pictures that look like an earlier one (the same panel, framed for another group of its controls):
+            // the later one's callouts move to the earlier picture where they are in its frame.
+            Dictionary<string, string> mergedInto = new Dictionary<string, string>(StringComparer.Ordinal);
+            for (int k = 0; k < views.Count; k++)
+            {
+                ViewResult r = results[k];
+                if (r == null || views[k].Kind != "panel")
+                    continue;
+                for (int e = 0; e < k; e++)
+                {
+                    ViewResult keep = results[e];
+                    // The same seat, a camera at nearly the same place looking the same way, and the same look (two dark
+                    // panels elsewhere can look alike as thumbnails).
+                    if (keep == null || views[e].Kind != "panel" || views[e].Seat != views[k].Seat || !PictureQuality.SameLook(keep.Metrics, r.Metrics) ||
+                        (keep.Camera.Eye - r.Camera.Eye).Length > 0.35 || Vec3.Dot(keep.Camera.Forward, r.Camera.Forward) < 0.9)
+                        continue;
+                    if (Merge(views[e], keep, views[k], r))
+                    {
+                        mergedInto[views[k].Id] = views[e].Id;
+                        results[k] = null;
+                        try
+                        {
+                            File.Delete(Path.Combine(folder, FileName(views[k].Id) + ".png"));
+                        }
+                        catch (Exception)
+                        {
+                        }
+                    }
+                    break;
+                }
+            }
+            // The drawings (after the merges: they carry the callouts' places).
+            for (int k = 0; k < views.Count; k++)
+            {
+                if (results[k] != null)
+                    WriteDrawing(Path.Combine(folder, FileName(views[k].Id) + ".drawing.json"), info, views[k], results[k].Art, results[k].At);
+            }
+            ViewResult overviewResult = results.FirstOrDefault(x => x != null && x.View.Kind == "overview");
+            List<int> scores = results.Where(x => x != null).Select(x => x.Metrics.Score).ToList();
+            int dropped = results.Count(x => x == null) - mergedInto.Count;
+            bool low = PictureQuality.LowSet(overviewResult == null ? 0 : overviewResult.Metrics.Score, scores);
+
             StringBuilder manifest = new StringBuilder();
             Json j = new Json(manifest);
             j.Open('{');
@@ -70,101 +158,27 @@ namespace JoyPro.CockpitPictures
             foreach (string n in info.Notes)
                 j.Value(n);
             j.Close(']');
+            j.Key("quality");
+            j.Open('{');
+            j.Prop("score", overviewResult == null ? 0 : overviewResult.Metrics.Score);
+            j.Prop("mean", scores.Count == 0 ? 0 : Math.Round(scores.Average()));
+            j.Prop("low", low);
+            j.Prop("views", scores.Count);
+            j.Prop("dropped", dropped);
+            j.Prop("merged", mergedInto.Count);
+            j.Close('}');
+            WriteControls(j, scene, views, results);
             j.Key("views");
             j.Open('[');
-            // The pictures, two at a time (the drawing's tracing is partly single-threaded).
-            List<double[]>[] ats = new List<double[]>[views.Count];
-            int done = 0;
-            System.Threading.Tasks.Parallel.For(0, views.Count, new System.Threading.Tasks.ParallelOptions { MaxDegreeOfParallelism = 2 }, k =>
-            {
-                CockpitViewPlan v = views[k];
-                string file = FileName(v.Id);
-                RenderCamera big = v.Camera.Scaled(2);
-                System.Diagnostics.Stopwatch sw = System.Diagnostics.Stopwatch.StartNew();
-                RenderBuffers b = SoftwareRenderer.Render(scene, big, v.Meshes, null);
-                if (Environment.GetEnvironmentVariable("JP_PROFILE") == "1") Console.WriteLine(" render " + sw.ElapsedMilliseconds);
-                // A picture with (almost) nothing on it (a grip the model hides at rest) is left out.
-                int coveredPixels = 0;
-                for (int i = 0; i < b.Covered.Length && coveredPixels < 2000; i++)
-                {
-                    if (b.Covered[i])
-                        coveredPixels++;
-                }
-                if (coveredPixels < 2000 && v.Kind != "overview")
-                {
-                    System.Threading.Interlocked.Increment(ref done);
-                    return;
-                }
-                // The picture: the shaded render, transparent where nothing is.
-                int w = v.Camera.Width, h = v.Camera.Height;
-                byte[] rgba = new byte[w * h * 4];
-                for (int y = 0; y < h; y++)
-                {
-                    for (int x = 0; x < w; x++)
-                    {
-                        int cov = 0, r = 0, g = 0, bl = 0;
-                        for (int dy = 0; dy < 2; dy++)
-                        {
-                            for (int dx = 0; dx < 2; dx++)
-                            {
-                                int i = (2 * y + dy) * b.Width + 2 * x + dx;
-                                if (!b.Covered[i])
-                                    continue;
-                                cov++;
-                                r += b.Color[3 * i];
-                                g += b.Color[3 * i + 1];
-                                bl += b.Color[3 * i + 2];
-                            }
-                        }
-                        int o = (y * w + x) * 4;
-                        if (cov > 0)
-                        {
-                            rgba[o] = (byte)(r / cov);
-                            rgba[o + 1] = (byte)(g / cov);
-                            rgba[o + 2] = (byte)(bl / cov);
-                            rgba[o + 3] = (byte)(cov * 255 / 4);
-                        }
-                    }
-                }
-                PngWriter.Write(Path.Combine(folder, file + ".png"), rgba, w, h, 4);
-                // JoyPro's drawing of it.
-                LineArtTracer.Result art = LineArtTracer.Trace(b, v.Camera.Ortho, 2, new LineArtTracer.Settings { Labels = v.Kind != "overview" });
-                // Callouts on the picture (0..1), with whether something covers them.
-                List<double[]> at = new List<double[]>();
-                foreach (CockpitCallout c in v.Callouts)
-                {
-                    double sx, sy, depth;
-                    bool ok = v.Camera.Project(c.Position, out sx, out sy, out depth);
-                    bool hidden = false;
-                    if (ok)
-                    {
-                        int px = (int)(sx * 2), py = (int)(sy * 2);
-                        if (px >= 0 && py >= 0 && px < b.Width && py < b.Height)
-                        {
-                            float d = b.Depth[py * b.Width + px];
-                            hidden = b.Covered[py * b.Width + px] && d < depth - Math.Max(0.03, depth * 0.04);
-                        }
-                    }
-                    at.Add(ok ? new[] { sx / w, sy / h, hidden ? 1 : 0 } : new[] { -1.0, -1.0, 1 });
-                }
-                WriteDrawing(Path.Combine(folder, file + ".drawing.json"), info, v, art, at);
-                ats[k] = at;
-                int n = System.Threading.Interlocked.Increment(ref done);
-                if (progress != null)
-                {
-                    lock (ats)
-                        progress(n, views.Count, v.Title);
-                }
-            });
-            HashSet<string> left = new HashSet<string>(views.Where((x, k) => ats[k] == null).Select(x => x.Id), StringComparer.Ordinal);
             for (int k = 0; k < views.Count; k++)
             {
                 CockpitViewPlan v = views[k];
-                List<double[]> at = ats[k];
-                if (at == null)
+                ViewResult r = results[k];
+                if (r == null)
                     continue;
+                List<double[]> at = r.At;
                 string file = FileName(v.Id);
-                int w = v.Camera.Width, h = v.Camera.Height;
+                int w = r.Width, h = r.Height;
                 j.Open('{');
                 j.Prop("id", v.Id);
                 j.Prop("kind", v.Kind);
@@ -176,14 +190,44 @@ namespace JoyPro.CockpitPictures
                 j.Prop("drawing", file + ".drawing.json");
                 j.Prop("width", w);
                 j.Prop("height", h);
-                j.Prop("projection", v.Camera.Ortho ? "orthographic" : "perspective");
+                j.Prop("projection", r.Camera.Ortho ? "orthographic" : "perspective");
+                j.Prop("quality", r.Metrics.Score);
+                if (r.Metrics.Problems.Count > 0)
+                {
+                    j.Key("problems");
+                    j.Open('[');
+                    foreach (string p in r.Metrics.Problems)
+                        j.Value(p);
+                    j.Close(']');
+                }
+                if (!DrawingReadable(v, r))
+                    j.Prop("drawingReadable", false);
                 j.Key("callouts");
                 j.Open('[');
                 for (int i = 0; i < v.Callouts.Count; i++)
                 {
                     CockpitCallout c = v.Callouts[i];
-                    if (v.Kind == "overview" && i < v.Links.Count && left.Contains(v.Links[i]))
-                        continue;
+                    string link = v.Kind == "overview" && i < v.Links.Count ? v.Links[i] : null;
+                    if (link != null)
+                    {
+                        string target;
+                        if (mergedInto.TryGetValue(link, out target))
+                            link = target;
+                        int li = views.FindIndex(x => x.Id == link);
+                        if (li < 0 || results[li] == null)
+                            continue;
+                        // Two panels merged into one: one callout leads to it.
+                        bool earlier = false;
+                        for (int q = 0; q < i && !earlier; q++)
+                        {
+                            string other = q < v.Links.Count ? v.Links[q] : null;
+                            if (other != null && mergedInto.TryGetValue(other, out target))
+                                other = target;
+                            earlier = other == link;
+                        }
+                        if (earlier)
+                            continue;
+                    }
                     j.Open('{');
                     j.Prop("n", c.N);
                     j.Prop("id", c.Id);
@@ -198,8 +242,8 @@ namespace JoyPro.CockpitPictures
                         j.Prop("device", c.Device);
                     if (c.Panel.Length > 0 && v.Kind == "panel")
                         j.Prop("panel", c.PanelTitle.Length > 0 ? c.PanelTitle : c.Panel);
-                    if (v.Kind == "overview" && i < v.Links.Count)
-                        j.Prop("link", v.Links[i]);
+                    if (link != null)
+                        j.Prop("link", link);
                     if (c.Actions.Count > 0)
                         j.Prop("actions", string.Join(",", c.Actions));
                     if (c.Args.Count > 0)
@@ -226,6 +270,538 @@ namespace JoyPro.CockpitPictures
             j.Close(']');
             j.Close('}');
             File.WriteAllText(Path.Combine(folder, ManifestName), manifest.ToString(), new UTF8Encoding(false));
+            LastVerdict = new SetVerdict { Low = low, Score = overviewResult == null ? 0 : overviewResult.Metrics.Score, Views = scores.Count, Dropped = dropped, Merged = mergedInto.Count };
+            // For the build's report (the builders share the list with SetInfo; the manifest is already written).
+            string verdict = LastVerdict.Note();
+            if (verdict.Length > 0 && info.Notes != null)
+                info.Notes.Add(verdict);
+        }
+
+        // "controls": every control of the cockpit once (the callouts of the panel and grip pictures and the model's other
+        // animated controls, CockpitScene.Controls) with its kind, its animation and its place on every picture it is
+        // visible in (its own picture with its number; elsewhere where its surface is drawn at its place).
+        private static void WriteControls(Json j, CockpitScene scene, List<CockpitViewPlan> views, ViewResult[] results)
+        {
+            List<CockpitCallout> controls = new List<CockpitCallout>();
+            Dictionary<CockpitCallout, int> own = new Dictionary<CockpitCallout, int>();
+            HashSet<string> ids = new HashSet<string>(StringComparer.Ordinal);
+            for (int k = 0; k < views.Count; k++)
+            {
+                if (results[k] == null || views[k].Kind == "overview")
+                    continue;
+                foreach (CockpitCallout c in views[k].Callouts)
+                {
+                    if (own.ContainsKey(c))
+                        continue;
+                    own[c] = k;
+                    c.Seat = views[k].Seat;
+                    controls.Add(c);
+                    ids.Add(c.Seat + "|" + c.Id);
+                }
+            }
+            // The grips themselves (their picture's id after the planner's numbering: device:stick-2).
+            for (int k = 0; k < views.Count; k++)
+            {
+                CockpitCallout g = views[k].GripControl;
+                if (results[k] == null || g == null)
+                    continue;
+                g.Id = "grip:" + views[k].Id.Substring(views[k].Id.IndexOf(':') + 1);
+                g.Seat = views[k].Seat;
+                if (ids.Add(g.Seat + "|" + g.Id))
+                    controls.Add(g);
+            }
+            foreach (CockpitCallout c in scene.Controls)
+            {
+                if (ids.Add(c.Seat + "|" + c.Id))
+                    controls.Add(c);
+            }
+            j.Key("controls");
+            j.Open('[');
+            foreach (CockpitCallout c in controls)
+            {
+                j.Open('{');
+                j.Prop("id", c.Id);
+                j.Prop("label", c.Label);
+                j.Prop("kind", ControlKinds.Of(c));
+                if (c.GameKind.Length > 0)
+                    j.Prop("gameKind", c.GameKind);
+                else if (c.Kind.Length > 0)
+                    j.Prop("gameKind", c.Kind);
+                if (c.PanelTitle.Length > 0 || c.Panel.Length > 0)
+                    j.Prop("panel", c.PanelTitle.Length > 0 ? c.PanelTitle : c.Panel);
+                if (c.Device.Length > 0)
+                    j.Prop("device", c.Device);
+                j.Prop("seat", c.Seat);
+                if (c.Animation != null)
+                {
+                    j.Key("animation");
+                    j.Open('{');
+                    j.Prop("source", c.Animation.Source);
+                    j.Prop("name", c.Animation.Name);
+                    if (!double.IsNaN(c.Animation.Min))
+                        j.Prop("min", Math.Round(c.Animation.Min, 4));
+                    if (!double.IsNaN(c.Animation.Max))
+                        j.Prop("max", Math.Round(c.Animation.Max, 4));
+                    if (c.Animation.Positions.Count > 0)
+                    {
+                        j.Key("positions");
+                        j.Open('[');
+                        foreach (double p in c.Animation.Positions)
+                            j.Value(Math.Round(p, 4));
+                        j.Close(']');
+                    }
+                    j.Close('}');
+                }
+                if (c.Commands.Count > 0)
+                {
+                    j.Key("commands");
+                    j.Open('[');
+                    foreach (CalloutCommand cc in c.Commands)
+                        j.Value(cc.Id.Length > 0 ? cc.Id : cc.Name);
+                    j.Close(']');
+                }
+                j.Key("views");
+                j.Open('[');
+                for (int k = 0; k < views.Count; k++)
+                {
+                    ViewResult r = results[k];
+                    if (r == null || views[k].Seat != c.Seat)
+                        continue;
+                    int index = views[k].Callouts.IndexOf(c);
+                    double x, y;
+                    if (views[k].GripControl == c)
+                    {
+                        x = 0.5;
+                        y = 0.5;
+                    }
+                    else if (index >= 0 && index < r.At.Count && r.At[index][0] >= 0)
+                    {
+                        x = r.At[index][0];
+                        y = r.At[index][1];
+                    }
+                    else if (index >= 0 || !SpotOn(r, c.Position, out x, out y))
+                        continue;
+                    j.Open('{');
+                    j.Prop("view", views[k].Id);
+                    if (index >= 0)
+                        j.Prop("n", c.N);
+                    j.Prop("x", Math.Round(x, 4));
+                    j.Prop("y", Math.Round(y, 4));
+                    j.Close('}');
+                }
+                j.Close(']');
+                j.Close('}');
+            }
+            j.Close(']');
+        }
+
+        // Where a point is on a picture (0..1) when the picture shows a surface right there (not hidden behind something,
+        // not empty background).
+        private static bool SpotOn(ViewResult r, Vec3 p, out double x, out double y)
+        {
+            x = y = -1;
+            double sx, sy, depth;
+            if (r.Depth == null || !r.Camera.Project(p, out sx, out sy, out depth) || sx < 0 || sy < 0 || sx >= r.Width || sy >= r.Height)
+                return false;
+            int px = Math.Min(r.DepthW - 1, (int)(sx / 4)), py = Math.Min(r.DepthH - 1, (int)(sy / 4));
+            float d = r.Depth[py * r.DepthW + px];
+            if (float.IsInfinity(d) || Math.Abs(d - depth) > Math.Max(0.06, depth * 0.06))
+                return false;
+            x = sx / r.Width;
+            y = sy / r.Height;
+            return true;
+        }
+
+        // The verdict of the last set written on this thread (for the builders' reports).
+        [ThreadStatic]
+        public static SetVerdict LastVerdict;
+
+        public sealed class SetVerdict
+        {
+            public bool Low;
+            public int Score;
+            public int Views;
+            public int Dropped;
+            public int Merged;
+
+            public string Note()
+            {
+                string s = Low ? "low quality (overview " + Score.ToString(CultureInfo.InvariantCulture) + "/100)" : string.Empty;
+                if (Dropped > 0)
+                    s += (s.Length > 0 ? "; " : string.Empty) + Dropped.ToString(CultureInfo.InvariantCulture) + " unusable pictures left out";
+                if (Merged > 0)
+                    s += (s.Length > 0 ? "; " : string.Empty) + Merged.ToString(CultureInfo.InvariantCulture) + " duplicate pictures merged";
+                return s;
+            }
+        }
+
+        // Views with the same id (two groups of controls at the same place) would share their files: numbered; the
+        // overview's links follow (its n-th link to an id leads to the n-th view of that id).
+        internal static void UniqueIds(List<CockpitViewPlan> views)
+        {
+            HashSet<string> seen = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+            HashSet<string> files = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+            Dictionary<string, List<string>> finals = new Dictionary<string, List<string>>(StringComparer.OrdinalIgnoreCase);
+            foreach (CockpitViewPlan v in views)
+            {
+                string original = v.Id, id = v.Id;
+                int n = 2;
+                while (seen.Contains(id) || files.Contains(FileName(id)))
+                    id = original + "-" + (n++).ToString(CultureInfo.InvariantCulture);
+                v.Id = id;
+                seen.Add(id);
+                files.Add(FileName(id));
+                List<string> list;
+                if (!finals.TryGetValue(original, out list))
+                    finals[original] = list = new List<string>();
+                list.Add(id);
+            }
+            foreach (CockpitViewPlan o in views.Where(x => x.Kind == "overview"))
+            {
+                Dictionary<string, int> occurrence = new Dictionary<string, int>(StringComparer.OrdinalIgnoreCase);
+                for (int i = 0; i < o.Links.Count; i++)
+                {
+                    List<string> list;
+                    if (!finals.TryGetValue(o.Links[i], out list) || list.Count < 2)
+                        continue;
+                    int k;
+                    occurrence.TryGetValue(o.Links[i], out k);
+                    occurrence[o.Links[i]] = k + 1;
+                    string target = list[Math.Min(k, list.Count - 1)];
+                    if (i < o.Callouts.Count && string.Equals(o.Callouts[i].Id, o.Links[i], StringComparison.OrdinalIgnoreCase))
+                        o.Callouts[i].Id = target;
+                    o.Links[i] = target;
+                }
+            }
+        }
+
+        internal sealed class ViewResult
+        {
+            public CockpitViewPlan View;
+            public RenderCamera Camera;
+            public byte[] Rgba;
+            public int Width, Height;
+            public PictureMetrics Metrics;
+            public List<double[]> At;
+            public LineArtTracer.Result Art;
+            // Depth at a quarter of the picture's size (for callouts merged in from a duplicate).
+            public float[] Depth;
+            public int DepthW, DepthH;
+            public bool Covered2000;
+        }
+
+        // One view: rendered, measured, framed again while poor; null = left out.
+        private static ViewResult RenderGated(CockpitScene scene, CockpitViewPlan v, bool keepAll)
+        {
+            RenderBuffers best;
+            ViewResult r = RenderOnce(scene, v, v.Camera, out best);
+            if (r == null && v.Kind != "overview")
+                return null;
+            // A grip far smaller than its frame (a part of it far away, a hidden lever): zoomed to what is drawn.
+            if (r != null && v.Kind == "device" && r.Metrics.Fill < 0.3)
+            {
+                RenderCamera zoom = Refit(v.Camera, best);
+                if (zoom != null)
+                {
+                    RenderBuffers b2;
+                    ViewResult r2 = RenderOnce(scene, v, zoom, out b2);
+                    if (r2 != null && r2.Metrics.Score >= r.Metrics.Score)
+                    {
+                        r = r2;
+                        best = b2;
+                    }
+                }
+            }
+            foreach (RenderCamera alt in v.Alternatives)
+            {
+                if (r != null && r.Metrics.Score >= PictureQuality.Good)
+                    break;
+                RenderBuffers b2;
+                ViewResult r2 = RenderOnce(scene, v, alt, out b2);
+                if (r2 != null && (r == null || r2.Metrics.Score > r.Metrics.Score + 3))
+                {
+                    r = r2;
+                    best = b2;
+                }
+            }
+            if (r == null)
+                return null;
+            if (!keepAll && v.Kind != "overview" && r.Metrics.Score < PictureQuality.Keep)
+                return null;
+            // JoyPro's drawing of it.
+            r.Art = LineArtTracer.Trace(best, r.Camera.Ortho, 2, new LineArtTracer.Settings { Labels = v.Kind != "overview" });
+            return r;
+        }
+
+        private static ViewResult RenderOnce(CockpitScene scene, CockpitViewPlan v, RenderCamera camera, out RenderBuffers b)
+        {
+            RenderCamera big = camera.Scaled(2);
+            b = SoftwareRenderer.Render(scene, big, v.Meshes, LightFor(v));
+            // A picture with (almost) nothing on it (a grip the model hides at rest) is left out.
+            int coveredPixels = 0;
+            for (int i = 0; i < b.Covered.Length && coveredPixels < 2000; i++)
+            {
+                if (b.Covered[i])
+                    coveredPixels++;
+            }
+            if (coveredPixels < 2000 && v.Kind != "overview")
+                return null;
+            // The picture: the shaded render, transparent where nothing is.
+            int w = camera.Width, h = camera.Height;
+            byte[] rgba = new byte[w * h * 4];
+            for (int y = 0; y < h; y++)
+            {
+                for (int x = 0; x < w; x++)
+                {
+                    int cov = 0, red = 0, g = 0, bl = 0;
+                    for (int dy = 0; dy < 2; dy++)
+                    {
+                        for (int dx = 0; dx < 2; dx++)
+                        {
+                            int i = (2 * y + dy) * b.Width + 2 * x + dx;
+                            if (!b.Covered[i])
+                                continue;
+                            cov++;
+                            red += b.Color[3 * i];
+                            g += b.Color[3 * i + 1];
+                            bl += b.Color[3 * i + 2];
+                        }
+                    }
+                    int o = (y * w + x) * 4;
+                    if (cov > 0)
+                    {
+                        rgba[o] = (byte)(red / cov);
+                        rgba[o + 1] = (byte)(g / cov);
+                        rgba[o + 2] = (byte)(bl / cov);
+                        rgba[o + 3] = (byte)(cov * 255 / 4);
+                    }
+                }
+            }
+            Expose(rgba);
+            // Callouts on the picture (0..1), with whether something covers them.
+            List<double[]> at = new List<double[]>();
+            int visible = 0;
+            foreach (CockpitCallout c in v.Callouts)
+            {
+                double sx, sy, depth;
+                bool ok = camera.Project(c.Position, out sx, out sy, out depth);
+                bool hidden = false, inside = false;
+                if (ok)
+                {
+                    int px = (int)(sx * 2), py = (int)(sy * 2);
+                    if (px >= 0 && py >= 0 && px < b.Width && py < b.Height)
+                    {
+                        inside = true;
+                        float d = b.Depth[py * b.Width + px];
+                        hidden = b.Covered[py * b.Width + px] && d < depth - Math.Max(0.03, depth * 0.04);
+                    }
+                }
+                if (inside && !hidden)
+                    visible++;
+                at.Add(ok ? new[] { sx / w, sy / h, hidden ? 1 : 0 } : new[] { -1.0, -1.0, 1 });
+            }
+            PictureMetrics m = PictureQuality.Measure(rgba, w, h, 4);
+            m.Textured = PictureQuality.TexturedShare(b, scene);
+            if (!camera.Ortho)
+            {
+                long drawn = 0, near = 0;
+                for (int i = 0; i < b.Covered.Length; i += 5)
+                {
+                    if (!b.Covered[i])
+                        continue;
+                    drawn++;
+                    if (b.Depth[i] < camera.Near + 0.2)
+                        near++;
+                }
+                m.Near = drawn == 0 ? 0 : near / (double)drawn;
+            }
+            // The overview's callouts are the panels' places (some always behind a seat or a lever): not counted.
+            m.Visible = v.Callouts.Count == 0 || v.Kind == "overview" ? 1 : visible / (double)v.Callouts.Count;
+            PictureQuality.Rate(m, v.Kind);
+            ViewResult r = new ViewResult { View = v, Camera = camera, Rgba = rgba, Width = w, Height = h, Metrics = m, At = at };
+            // A small depth map for merging duplicates.
+            int dw = Math.Max(1, w / 4), dh = Math.Max(1, h / 4);
+            float[] dm = new float[dw * dh];
+            for (int y = 0; y < dh; y++)
+            {
+                for (int x = 0; x < dw; x++)
+                {
+                    int i = (y * 8) * b.Width + x * 8;
+                    dm[y * dw + x] = i < b.Depth.Length && b.Covered[i] ? b.Depth[i] : float.PositiveInfinity;
+                }
+            }
+            r.Depth = dm;
+            r.DepthW = dw;
+            r.DepthH = dh;
+            return r;
+        }
+
+        // A dark picture (black panels, a dim cabin) brightened like a photo's exposure: the brightest 5 % of the model
+        // reach about 225 of 255, by at most 1.5 times.
+        internal static void Expose(byte[] rgba)
+        {
+            int[] hist = new int[256];
+            int n = 0;
+            for (int o = 0; o + 3 < rgba.Length; o += 4)
+            {
+                if (rgba[o + 3] < 128)
+                    continue;
+                hist[(rgba[o] * 77 + rgba[o + 1] * 150 + rgba[o + 2] * 29) >> 8]++;
+                n++;
+            }
+            if (n < 100)
+                return;
+            int acc = 0, p95 = 255;
+            for (int i = 255; i >= 0; i--)
+            {
+                acc += hist[i];
+                if (acc >= n / 20)
+                {
+                    p95 = Math.Max(1, i);
+                    break;
+                }
+            }
+            double gain = Math.Max(1.0, Math.Min(1.5, 225.0 / p95));
+            if (gain < 1.03)
+                return;
+            for (int o = 0; o + 3 < rgba.Length; o += 4)
+            {
+                if (rgba[o + 3] == 0)
+                    continue;
+                for (int c = 0; c < 3; c++)
+                    rgba[o + c] = (byte)Math.Min(255, (int)(rgba[o + c] * gain + 0.5));
+            }
+        }
+
+        // The light of a picture: a panel or a grip is lit mostly from the camera (as a manual's figure or a photo with a
+        // flash): a vertical panel under the top light alone was drawn at 60 % of its colours, a black panel nearly black.
+        // The overview keeps the cabin's top light with a little more from the camera.
+        internal static SoftwareRenderer.Light LightFor(CockpitViewPlan v)
+        {
+            if (v.Kind == "overview")
+                return new SoftwareRenderer.Light { Ambient = 0.42, Diffuse = 0.58, Headlight = 0.28 };
+            return new SoftwareRenderer.Light { Ambient = 0.42, Diffuse = 0.36, Headlight = 0.42 };
+        }
+
+        // A perspective (or orthographic) camera turned and narrowed to the box around what the render drew.
+        internal static RenderCamera Refit(RenderCamera cam, RenderBuffers b)
+        {
+            int[] cols = new int[b.Width], rows = new int[b.Height];
+            int covered = 0;
+            for (int y = 0; y < b.Height; y++)
+            {
+                for (int x = 0; x < b.Width; x++)
+                {
+                    if (!b.Covered[y * b.Width + x])
+                        continue;
+                    cols[x]++;
+                    rows[y]++;
+                    covered++;
+                }
+            }
+            if (covered < 200)
+                return null;
+            int lo = covered / 50;
+            int x0 = Edge(cols, lo, false), x1 = Edge(cols, lo, true), y0 = Edge(rows, lo, false), y1 = Edge(rows, lo, true);
+            // In the camera's own pixels.
+            double s = cam.Width / (double)b.Width;
+            double cx = (x0 + x1 + 1) / 2.0 * s, cy = (y0 + y1 + 1) / 2.0 * s;
+            double bw = Math.Max(4, (x1 - x0 + 1) * s), bh = Math.Max(4, (y1 - y0 + 1) * s);
+            double aspect = Math.Max(0.7, Math.Min(1.4, bw / bh));
+            RenderCamera c = new RenderCamera { Ortho = cam.Ortho, Width = cam.Width, Near = cam.Near };
+            c.Height = (int)Math.Round(cam.Width / aspect);
+            double margin = 1.12;
+            if (cam.Ortho)
+            {
+                double unit = cam.HalfHeight * 2 / cam.Height;
+                c.Forward = cam.Forward;
+                c.Up = cam.Up;
+                c.Right = cam.Right;
+                c.Eye = cam.Eye + cam.Right * ((cx - cam.Width / 2.0) * unit) - cam.Up * ((cy - cam.Height / 2.0) * unit);
+                c.HalfHeight = Math.Max(bh / 2, bw / 2 / aspect) * unit * margin;
+                return c;
+            }
+            double f = cam.Focal;
+            Vec3 dir = cam.Forward * f + cam.Right * (cx - cam.Width / 2.0) - cam.Up * (cy - cam.Height / 2.0);
+            c.Eye = cam.Eye;
+            c.Aim(dir);
+            // Half the box in the old focal units, as an angle; a little extra for the turn.
+            double half = Math.Max(bh / 2, bw / 2 / aspect) / f * margin;
+            c.FovY = Math.Max(4, Math.Min(100, 2 * Math.Atan(half) * 180 / Math.PI));
+            return c;
+        }
+
+        private static int Edge(int[] counts, int skip, bool fromEnd)
+        {
+            int acc = 0;
+            if (!fromEnd)
+            {
+                for (int i = 0; i < counts.Length; i++)
+                {
+                    acc += counts[i];
+                    if (acc > skip)
+                        return i;
+                }
+                return 0;
+            }
+            for (int i = counts.Length - 1; i >= 0; i--)
+            {
+                acc += counts[i];
+                if (acc > skip)
+                    return i;
+            }
+            return counts.Length - 1;
+        }
+
+        // The callouts of a duplicate picture (dup) onto the kept one: each projected into the kept picture; false (and
+        // nothing changed) when one of them is outside its frame.
+        private static bool Merge(CockpitViewPlan keepView, ViewResult keep, CockpitViewPlan dupView, ViewResult dup)
+        {
+            List<double[]> added = new List<double[]>();
+            foreach (CockpitCallout c in dupView.Callouts)
+            {
+                double sx, sy, depth;
+                if (!keep.Camera.Project(c.Position, out sx, out sy, out depth) || sx < 0 || sy < 0 || sx >= keep.Width || sy >= keep.Height)
+                    return false;
+                int px = Math.Min(keep.DepthW - 1, (int)(sx / 4)), py = Math.Min(keep.DepthH - 1, (int)(sy / 4));
+                float d = keep.Depth[py * keep.DepthW + px];
+                bool hidden = !float.IsInfinity(d) && d < depth - Math.Max(0.03, depth * 0.04);
+                added.Add(new[] { sx / keep.Width, sy / keep.Height, hidden ? 1 : 0 });
+            }
+            int n = keepView.Callouts.Count == 0 ? 0 : keepView.Callouts.Max(c => c.N);
+            for (int i = 0; i < dupView.Callouts.Count; i++)
+            {
+                CockpitCallout c = dupView.Callouts[i];
+                if (keepView.Callouts.Any(x => x.Id == c.Id && x.Label == c.Label))
+                    continue;
+                c.N = ++n;
+                keepView.Callouts.Add(c);
+                keep.At.Add(added[i]);
+            }
+            return true;
+        }
+
+        // JoyPro's line drawing is a poster of the render: readable for a clear grip or panel, a mess for a busy
+        // perspective (a whole cockpit) or a poor picture. Then the page shows the picture in its place.
+        internal static bool DrawingReadable(CockpitViewPlan v, ViewResult r)
+        {
+            if (r.Art == null || r.Metrics.Score < PictureQuality.Good)
+                return false;
+            double mp = Math.Max(0.01, r.Art.Width * r.Art.Height / 1e6);
+            int lines = CountMoves(r.Art.Outline) + CountMoves(r.Art.Detail) + CountMoves(r.Art.Minor);
+            double perMp = lines / mp;
+            return perMp <= (v.Kind == "overview" ? 1500 : 2200);
+        }
+
+        private static int CountMoves(string d)
+        {
+            int n = 0;
+            foreach (char c in d ?? string.Empty)
+            {
+                if (c == 'M')
+                    n++;
+            }
+            return n;
         }
 
         public static string FileName(string viewId)

@@ -1,0 +1,2735 @@
+{
+  "format": "joypro-cockpit-guide",
+  "version": 1,
+  "id": "dcs-mi-8mtv2",
+  "title": "Mi-8MTV2 Magnificent Eight (DCS)",
+  "variants": [
+    "mi-8mtv2"
+  ],
+  "games": [
+    "DCS"
+  ],
+  "sets": [
+    "DCS/Mi-8MT"
+  ],
+  "sources": [
+    {
+      "id": "m1",
+      "title": "DCS Mi-8MTV2 Flight Manual (EN)",
+      "file": "Mods/aircraft/Mi-8MTV2/Doc/DCS Mi-8MTV2 FlightManual EN.pdf"
+    }
+  ],
+  "intro": "The Mi-8MTV2 is a large Russian transport helicopter with two engines and one big main rotor on top. The pilot sits in the left seat and the copilot in the right seat; a flight engineer can stand between them. The cockpit is full of small switches and many panels: the main instruments are in front, the electrical panel is on the right, the radios and the autopilot are in the middle, and the engine, fuel and fire controls are overhead. Many labels are Russian abbreviations; this guide names each part as the flight manual does.",
+  "areas": [
+    {
+      "id": "pilot-panel",
+      "where": "front-left",
+      "name": "Pilot's instrument panel and left triangular panel",
+      "text": "The main panel in front of the pilot with the flight and engine dials and the warning lamps, and the small panel beside it with the power switches of the pilot's side.",
+      "panels": [
+        {
+          "id": "left-instruments",
+          "name": "Pilot's instrument panel (left)",
+          "db": "left-instrument-panel",
+          "src": "m1",
+          "page": "67",
+          "text": "The big panel in front of the left seat. It shows the speed, height, heading, horizon, rotor and engine speed and the engine temperature, and carries the warning lamps.",
+          "context": "The pilot flies mainly by this panel. The copilot has a similar panel on the right with a few other instruments, such as the fuel gauge.",
+          "controls": [
+            {
+              "id": "taxi-light",
+              "name": "Taxi light switch (FR-100)",
+              "type": "switch2",
+              "match": [
+                "PTR-LEFT-TAXI-L-SW"
+              ],
+              "positions": [
+                {
+                  "name": "ON",
+                  "text": "The taxi light shines on the ground."
+                },
+                {
+                  "name": "OFF",
+                  "text": "The taxi light is off."
+                }
+              ],
+              "text": "This switch turns the taxi light on and off. The taxi light is a lamp under the belly that lights the ground while the helicopter rolls or hovers close to it.",
+              "context": "The manual says it saves the bulbs of the bigger search lights during ground movement. It needs its circuit breaker on the right breaker panel.",
+              "src": "m1",
+              "page": "196"
+            },
+            {
+              "id": "landing-light-left",
+              "name": "Landing / search light switch (left, pilot)",
+              "type": "switch3",
+              "match": [
+                "PTR-LEFT-TAXI-L-POS-SW",
+                "item:left-instrument-panel:1"
+              ],
+              "positions": [
+                {
+                  "name": "LIGHT",
+                  "text": "The lamp is on and can be aimed up, down, left and right."
+                },
+                {
+                  "name": "OFF",
+                  "text": "The lamp is off and stays pointing where it was."
+                },
+                {
+                  "name": "RETRACT",
+                  "text": "The lamp goes off and swings back into its housing under the nose."
+                }
+              ],
+              "text": "This switch controls the pilot's big movable lamp under the nose, called the search and landing light. In one position it shines, in the other it folds the lamp away.",
+              "context": "At night the pilot lights up the landing spot or a search area with it. The beam is aimed with the hat switch on the collective; the same arrangement exists on the copilot's side.",
+              "src": "m1",
+              "page": "196"
+            },
+            {
+              "id": "epr",
+              "name": "UR-117M engine pressure ratio (EPR) indicator",
+              "type": "gauge",
+              "match": [
+                "item:left-instrument-panel:2"
+              ],
+              "text": "This dial shows how hard each engine is working compared with the marks O (take-off), H (nominal) and K (cruise). The pilot reads it to set the power.",
+              "context": "The manual says it is only meant for outside air up to +24 degrees C; above that the pilot uses the engine tachometer instead.",
+              "src": "m1",
+              "page": "90"
+            },
+            {
+              "id": "rotor-pitch",
+              "name": "IP-21 main rotor pitch indicator",
+              "type": "gauge",
+              "match": [
+                "item:left-instrument-panel:3"
+              ],
+              "text": "This dial shows how steeply the main rotor blades are tilted, in degrees. It goes up when the collective is raised and down when it is lowered.",
+              "context": "The pilot watches it with the collective: more blade angle means more lift, and the engines add power by themselves. The scale runs from 1 to 15 degrees.",
+              "src": "m1",
+              "page": "93"
+            },
+            {
+              "id": "engine-tach",
+              "name": "ITE-2T dual engine tachometer",
+              "type": "gauge",
+              "match": [
+                "item:left-instrument-panel:4"
+              ],
+              "text": "This dial has two needles. Needle 1 shows how fast the left engine core turns, needle 2 the right one, in percent of the highest speed.",
+              "context": "The pilot compares the two needles to see that both engines share the work. The scale runs from 0 to 110 percent.",
+              "src": "m1",
+              "page": "87"
+            },
+            {
+              "id": "rotor-tach",
+              "name": "ITE-1T main rotor tachometer",
+              "type": "gauge",
+              "match": [
+                "item:left-instrument-panel:5"
+              ],
+              "text": "This dial shows how fast the big main rotor turns, in percent of its highest speed. It is one of the most important dials of the helicopter.",
+              "context": "The pilot keeps the rotor speed in the green range during the whole flight. The copilot has a second one on the right panel.",
+              "src": "m1",
+              "page": "87"
+            },
+            {
+              "id": "radalt-switch",
+              "name": "RADAR ALTIMETER power switch",
+              "type": "switch2",
+              "match": [
+                "PTR-ALTR-TMB-ONOFF",
+                "item:left-instrument-panel:6"
+              ],
+              "positions": [
+                {
+                  "name": "ON",
+                  "text": "The radar altimeter is powered and starts its self-test."
+                },
+                {
+                  "name": "OFF",
+                  "text": "The radar altimeter is off and its red flag shows."
+                }
+              ],
+              "text": "This switch turns the radar altimeter on and off. The radar altimeter is a height meter that measures the real distance to the ground below.",
+              "context": "The radar altimeter also needs its circuit breaker. After switching on it tests itself for one to two minutes before the red flag disappears.",
+              "src": "m1",
+              "page": "139"
+            },
+            {
+              "id": "airspeed",
+              "name": "US-450K airspeed indicator",
+              "type": "gauge",
+              "match": [
+                "item:left-instrument-panel:7"
+              ],
+              "text": "This dial shows how fast the helicopter moves through the air, in kilometres per hour. It reads from 0 to 450.",
+              "context": "It gets its air pressure from the left pitot tube (a small tube on the nose that measures the wind). Pilots use it to fly and land at safe speeds.",
+              "src": "m1",
+              "page": "97"
+            },
+            {
+              "id": "radalt-indicator",
+              "name": "UV-5M radar altimeter indicator",
+              "type": "gauge",
+              "match": [
+                "item:left-instrument-panel:8"
+              ],
+              "text": "This dial shows the height above the ground in metres, measured by radio waves sent down from the tail boom. It works from 0 to 750 metres.",
+              "context": "The pilot uses it for hovering, landing and low flying. A red flag shows when the instrument is off, failed or out of range.",
+              "src": "m1",
+              "page": "138"
+            },
+            {
+              "id": "radalt-test",
+              "name": "Radar altimeter TEST button",
+              "type": "button",
+              "match": [
+                "PTR-ALTR-LVR-TEST"
+              ],
+              "text": "Pressing this button makes the needle of the radar altimeter swing to the blanked area at the top of the scale. This shows that the indicator works.",
+              "context": "It is part of the radar altimeter check after power-up. When the button is released the needle returns to its normal position.",
+              "src": "m1",
+              "page": "140"
+            },
+            {
+              "id": "radalt-limit",
+              "name": "Dangerous altitude knob (SET ALTITUDE)",
+              "type": "knob",
+              "match": [
+                "PTR-ALTR-LVR-SET"
+              ],
+              "text": "This knob sets a warning height. When the helicopter sinks below it, a yellow LOW ALT lamp lights up in the knob and a warning tone sounds.",
+              "context": "The pilot sets it to a safe height for the planned flight, for example before low-level flying or approach. The manual says the warning needs a setting of at least 5 metres.",
+              "src": "m1",
+              "page": "138"
+            },
+            {
+              "id": "baro-altimeter",
+              "name": "VD-10VK pressure altimeter",
+              "type": "gauge",
+              "match": [
+                "item:left-instrument-panel:9"
+              ],
+              "text": "This dial shows the height above sea level or above the airfield, calculated from the air pressure. The long needle shows metres, the short needle thousands of metres.",
+              "context": "It is the main height instrument. The pilot sets it before take-off with the knob on the dial.",
+              "src": "m1",
+              "page": "97"
+            },
+            {
+              "id": "baro-knob",
+              "name": "Altimeter setting knob (QFE)",
+              "type": "knob",
+              "match": [
+                "PTR-ALTB-LVR-SET"
+              ],
+              "text": "This knob on the pressure altimeter sets the air pressure it uses as its starting point. Turning it moves the needles and the pressure scale.",
+              "context": "Before take-off the pilot sets the needles to zero at the airfield or to the local pressure. Two small markers can also be set for a landing site at a different height.",
+              "src": "m1",
+              "page": "98"
+            },
+            {
+              "id": "opb-indicator",
+              "name": "OPB-1R bomb sight course indicator",
+              "type": "gauge",
+              "match": [
+                "item:left-instrument-panel:10"
+              ],
+              "text": "This dial would show the course steering signals of the bomb sight that sits on the copilot's side. It belongs to the optical bomb sight.",
+              "context": "The manual says the OPB-1R bomb sight is not modelled in the simulation, so this dial has no use in DCS.",
+              "src": "m1",
+              "page": "305"
+            },
+            {
+              "id": "adf-selector",
+              "name": "ADF HF-VHF switch (ARK-9 / ARK-UD)",
+              "type": "switch2",
+              "match": [
+                "PTR-ARKSV-ARKUKV",
+                "item:left-instrument-panel:11"
+              ],
+              "positions": [
+                {
+                  "name": "ARC-9",
+                  "text": "The needle shows the direction of the ARK-9 radio beacon finder."
+                },
+                {
+                  "name": "ARC-UD",
+                  "text": "The needle shows the direction of the ARK-UD VHF homing set."
+                }
+              ],
+              "text": "This switch picks which radio direction finder moves the thin bearing needle on the heading dial. One position is the medium-wave finder ARK-9, the other the VHF homing set ARK-UD.",
+              "context": "The pilot sets it to match the radio he uses to fly to a beacon or a rescue transmitter. The game calls it the HSI radio compass selector.",
+              "src": "m1",
+              "page": "122"
+            },
+            {
+              "id": "directional-gyro",
+              "name": "UGR-4UK directional gyro (heading indicator)",
+              "type": "gauge",
+              "match": [
+                "item:left-instrument-panel:12"
+              ],
+              "text": "This round dial shows the direction the helicopter points, as a turning compass card. Needles on it point to radio beacons.",
+              "context": "It gets its heading from the GMK-1A gyro compass. The pilot uses it for navigation and for flying to a radio station.",
+              "src": "m1",
+              "page": "102"
+            },
+            {
+              "id": "course-knob",
+              "name": "Heading dial course set knob (HSI)",
+              "type": "knob",
+              "match": [
+                "PTR-PNP-LVR-SET"
+              ],
+              "text": "This knob on the heading dial sets a wanted course mark. The pilot turns it until the mark is where he wants to steer.",
+              "context": "The game labels it as the HSI course set knob. The copilot's heading dial has its own knob.",
+              "src": "m1",
+              "page": "102"
+            },
+            {
+              "id": "attitude-indicator",
+              "name": "AGB-3K attitude indicator (artificial horizon)",
+              "type": "gauge",
+              "match": [
+                "item:left-instrument-panel:13"
+              ],
+              "text": "This dial shows the artificial horizon: whether the nose is up or down and whether the helicopter leans left or right. A small ball shows sideways slip.",
+              "context": "The pilot uses it to fly in cloud or at night when the real horizon cannot be seen. A flag shows if it has no power.",
+              "src": "m1",
+              "page": "99"
+            },
+            {
+              "id": "attitude-cage",
+              "name": "Attitude indicator cage knob (CAGE)",
+              "type": "button",
+              "match": [
+                "PTR-AGB-LVR-KNOB"
+              ],
+              "text": "Pushing this knob locks the gyroscope inside the horizon dial to its starting position. The gyroscope is the spinning part that keeps the horizon steady.",
+              "context": "The manual says to press it before start, while the helicopter stands level. The pilot's horizon feeds the flight data recorder and the Doppler system.",
+              "src": "m1",
+              "page": "100"
+            },
+            {
+              "id": "attitude-pitch-knob",
+              "name": "Attitude indicator zero pitch knob",
+              "type": "knob",
+              "match": [
+                "PTR-AGB-LVR-SET"
+              ],
+              "text": "This knob moves the small aircraft symbol up or down against the horizon line. It sets which nose angle counts as level flight.",
+              "context": "The pilot adjusts it so that the picture matches how the helicopter really sits in straight and level flight.",
+              "src": "m1",
+              "page": "100"
+            },
+            {
+              "id": "hover-indicator",
+              "name": "Hover and low speed indicator (Doppler)",
+              "type": "gauge",
+              "match": [
+                "item:left-instrument-panel:14"
+              ],
+              "text": "This dial shows how fast the helicopter drifts forward, backward, sideways, up or down while it hovers or moves slowly. It uses the Doppler radar under the tail boom.",
+              "context": "The pilot uses it to hold a hover when nothing outside shows movement, for example in fog or over bare ground. An OFF lamp shows when it does not apply.",
+              "src": "m1",
+              "page": "133"
+            },
+            {
+              "id": "vsi",
+              "name": "VR-30MK vertical velocity indicator (VSI)",
+              "type": "gauge",
+              "match": [
+                "item:left-instrument-panel:15"
+              ],
+              "text": "This dial shows how fast the helicopter climbs or sinks, in metres per second. It reads plus and minus 30.",
+              "context": "The pilot watches it during climbs, descents and landing approaches.",
+              "src": "m1",
+              "page": "99"
+            },
+            {
+              "id": "vsi-knob",
+              "name": "Vertical velocity indicator adjustment knob",
+              "type": "knob",
+              "match": [
+                "PTR-VARIO-LVR-SET-L"
+              ],
+              "text": "This knob on the climb-rate dial moves the needle to zero. The pilot uses it when the needle does not rest on zero while the helicopter stands still.",
+              "context": "The pilot checks the zero setting during the preflight check.",
+              "src": "m1",
+              "page": "99"
+            },
+            {
+              "id": "flare-button",
+              "name": "UV-26 manual flare button",
+              "type": "button",
+              "match": [
+                "PTR-LSPE-BTN-UV26-START",
+                "item:left-instrument-panel:16"
+              ],
+              "text": "Pressing this button releases decoy flares from the side containers. Flares are hot burning lights that fool heat-seeking missiles.",
+              "context": "The pilot presses it when a missile threatens the helicopter. What is released follows the program set on the UV-26 panel on the right side.",
+              "src": "m1",
+              "page": "140"
+            },
+            {
+              "id": "gearbox-chips",
+              "name": "Gearbox chip annunciators",
+              "type": "light",
+              "match": [
+                "item:left-instrument-panel:17"
+              ],
+              "text": "These lamps come on when metal chips are found in the oil of the main gearbox, the intermediate gearbox or the tail rotor gearbox. Chips mean parts are wearing out.",
+              "context": "The pilot sees them as a warning that a gearbox may be failing and decides whether to land.",
+              "src": "m1",
+              "page": "68"
+            },
+            {
+              "id": "turn-indicator",
+              "name": "EUP-53 turn indicator",
+              "type": "gauge",
+              "match": [
+                "item:left-instrument-panel:18"
+              ],
+              "text": "This dial shows how fast the helicopter turns, with a ball that shows if it slips sideways. A needle moves left or right.",
+              "context": "The manual notes that in turns the needle reads more than the real bank angle, and that the needle moves around a lot, so the pilot reads the average.",
+              "src": "m1",
+              "page": "101"
+            },
+            {
+              "id": "battery-6201",
+              "name": "BATTERY IN USE and 6201 FAIL lights",
+              "type": "light",
+              "match": [
+                "item:left-instrument-panel:19"
+              ],
+              "text": "The upper lamp tells that the batteries are powering the helicopter. The lower lamp shows that the IFF answering box, called device 6201, has failed.",
+              "context": "The pilot sees at once that the generators are not delivering power, for example during engine start or in a failure.",
+              "src": "m1",
+              "page": "68"
+            },
+            {
+              "id": "engine-annunciators",
+              "name": "Engine annunciators (overspeed, oil, EEC, emergency power)",
+              "type": "light",
+              "match": [
+                "item:left-instrument-panel:20"
+              ],
+              "text": "This block of lamps warns about each engine: the power turbine runs too fast, oil pressure is low, the electronic governor is off, or emergency power is in use.",
+              "context": "The lamps for the left and right engine sit side by side, so the pilot can see which engine has the problem.",
+              "src": "m1",
+              "page": "68"
+            },
+            {
+              "id": "egt-gauge",
+              "name": "2UT-6K exhaust gas temperature indicator (PTIT)",
+              "type": "gauge",
+              "match": [
+                "item:left-instrument-panel:21"
+              ],
+              "text": "This dial shows the temperature of the hot gas inside each engine, in degrees Celsius. It has a big scale in hundreds and a small scale in steps of five.",
+              "context": "The pilot watches it during engine start and at high power, because too much heat damages the engine. Two test buttons on the left side console check the dial.",
+              "src": "m1",
+              "page": "89"
+            },
+            {
+              "id": "engine-annunciators-2",
+              "name": "Engine annunciators (chips, filter, vibration, fire)",
+              "type": "light",
+              "match": [
+                "item:left-instrument-panel:22"
+              ],
+              "text": "This block of lamps warns about each engine: metal chips in the oil, a clogged fuel filter, high vibration, too much vibration, and fire.",
+              "context": "A fire or vibration lamp tells the pilot to act quickly, for example by pressing the fire extinguisher buttons or shutting the engine down.",
+              "src": "m1",
+              "page": "68"
+            },
+            {
+              "id": "static-selector",
+              "name": "Static pressure selector (pitot tube selector)",
+              "type": "switch3",
+              "match": [
+                "PTR-STAT-PRESS",
+                "item:left-instrument-panel:23"
+              ],
+              "positions": [
+                {
+                  "name": "LEFT",
+                  "text": "The instruments use static pressure from the left ports only."
+                },
+                {
+                  "name": "COMMON",
+                  "text": "The instruments use the pressure from both sides together."
+                },
+                {
+                  "name": "RIGHT",
+                  "text": "The instruments use static pressure from the right ports only."
+                }
+              ],
+              "text": "This lever chooses which side of the helicopter delivers the outside air pressure to the instruments. It is meant as a backup if one side is blocked.",
+              "context": "The manual says the middle position (COMMON, called BOTH in the manual) combines both sides and is used normally. The valve sits in the lower left corner of the pilot's panel.",
+              "src": "m1",
+              "page": "95"
+            }
+          ]
+        },
+        {
+          "id": "left-triangular",
+          "name": "Left triangular panel (pilot power switches)",
+          "db": "left-triangular-panel",
+          "src": "m1",
+          "page": "72",
+          "text": "A small three-cornered panel next to the pilot with the power switches for his instruments, wipers, fan and ceiling lamp.",
+          "context": "The pilot switches these on during the preflight check. The matching panel on the copilot's side holds the same kind of switches.",
+          "controls": [
+            {
+              "id": "l-wiper",
+              "name": "Windshield wiper switch (left)",
+              "type": "selector",
+              "match": [
+                "PTR-LES-TMB-GLSCLN-*",
+                "item:left-triangular-panel:1"
+              ],
+              "positions": [
+                {
+                  "name": "START",
+                  "text": "Starts the wiper; it is held briefly."
+                },
+                {
+                  "name": "SPEED 1",
+                  "text": "First speed: 60 to 90 wipes per minute according to the manual."
+                },
+                {
+                  "name": "SPEED 2",
+                  "text": "Second speed: 30 to 60 wipes per minute according to the manual."
+                },
+                {
+                  "name": "OFF",
+                  "text": "The wiper is off but may stop anywhere on the glass."
+                },
+                {
+                  "name": "RESET",
+                  "text": "Moves the arm back to its rest position; springs back."
+                }
+              ],
+              "text": "This switch runs the pilot's windshield wiper, the arm that wipes rain and snow from the front window. In the game the player clicks one of five areas on the switch.",
+              "context": "The wiper circuit breakers must be on. The manual says rain and snow on the windows are not yet shown in the game. After switching off, RESET moves the arm back to its rest position.",
+              "src": "m1",
+              "page": "168"
+            },
+            {
+              "id": "spuu52-power",
+              "name": "SPUU-52 tail rotor pitch limiter power switch",
+              "type": "switch2",
+              "match": [
+                "PTR-LES-TMB-SPPU52",
+                "item:left-triangular-panel:2"
+              ],
+              "positions": [
+                {
+                  "name": "ON",
+                  "text": "The limiter is powered."
+                },
+                {
+                  "name": "OFF",
+                  "text": "The limiter is off; the right pedal can go all the way."
+                }
+              ],
+              "text": "This switch gives power to the limiter of the tail rotor angle. The limiter keeps the right pedal from going too far.",
+              "context": "The manual says to set it off if the limiter fails, which removes the limit on the right pedal.",
+              "src": "m1",
+              "page": "83"
+            },
+            {
+              "id": "l-radalt-power",
+              "name": "Radar altimeter power switch",
+              "type": "switch2",
+              "match": [
+                "item:left-triangular-panel:3"
+              ],
+              "positions": [
+                {
+                  "name": "ON",
+                  "text": "The radar altimeter has power."
+                },
+                {
+                  "name": "OFF",
+                  "text": "The radar altimeter is off."
+                }
+              ],
+              "text": "This switch powers the radar altimeter, the instrument that measures the height above the ground by radio waves.",
+              "context": "In the game the radar altimeter switch is on the pilot's instrument panel; this catalog entry lists the same function on the triangular panel.",
+              "src": "m1",
+              "page": "72"
+            },
+            {
+              "id": "ri65-power",
+              "name": "RI-65 voice warning system power switch",
+              "type": "switch2",
+              "match": [
+                "PTR-LES-TMB-RK85",
+                "item:left-triangular-panel:4"
+              ],
+              "positions": [
+                {
+                  "name": "ON",
+                  "text": "The voice warning system is on and the lamp goes out."
+                },
+                {
+                  "name": "OFF",
+                  "text": "The voice warning system is off."
+                }
+              ],
+              "text": "This switch turns on the voice warning system, which speaks warning messages in the headset.",
+              "context": "A yellow TURN ON RI-65 lamp is lit while the system is off. The system takes its power from the battery bus.",
+              "src": "m1",
+              "page": "121"
+            },
+            {
+              "id": "l-pitot-test",
+              "name": "Left pitot heater test button",
+              "type": "button",
+              "match": [
+                "PTR-LES-BTN-CONTRPVD",
+                "item:left-triangular-panel:5"
+              ],
+              "text": "Pressing this button tests the heater of the left pitot tube. The pitot tube is a small tube on the nose that measures the wind speed; the heater keeps it from icing.",
+              "context": "If the heater works, the HEATER OK lamp lights up.",
+              "src": "m1",
+              "page": "97"
+            },
+            {
+              "id": "l-heater-ok",
+              "name": "HEATER OK annunciator",
+              "type": "light",
+              "match": [
+                "item:left-triangular-panel:6"
+              ],
+              "text": "This lamp lights up when the pitot heater test shows that the heater works.",
+              "context": "It belongs to the pitot heater test button next to it.",
+              "src": "m1",
+              "page": "97"
+            },
+            {
+              "id": "turn-on-vws",
+              "name": "TURN ON RI-65 annunciator",
+              "type": "light",
+              "match": [
+                "item:left-triangular-panel:7"
+              ],
+              "text": "This lamp reminds the pilot to turn on the voice warning system. It goes out when the RI-65 switch is on.",
+              "context": "It is lit at the start because the system begins switched off.",
+              "src": "m1",
+              "page": "121"
+            },
+            {
+              "id": "vk53-power",
+              "name": "VK-53 gyro correction cutout power switch",
+              "type": "switch2",
+              "match": [
+                "PTR-LES-TMB-VK53",
+                "item:left-triangular-panel:8"
+              ],
+              "positions": [
+                {
+                  "name": "ON",
+                  "text": "The correction cutout works."
+                },
+                {
+                  "name": "OFF",
+                  "text": "The correction cutout is off."
+                }
+              ],
+              "text": "This switch powers a small helper that stops the horizon and compass gyros from collecting errors during long speed-ups, braking or banked turns.",
+              "context": "The manual says it cuts off the gyro correction whenever the turn rate is more than 0.3 degrees per second.",
+              "src": "m1",
+              "page": "107"
+            },
+            {
+              "id": "l-attitude-power",
+              "name": "Left attitude indicator (gyro horizon) power switch",
+              "type": "switch2",
+              "match": [
+                "PTR-LES-TMB-AG",
+                "item:left-triangular-panel:9"
+              ],
+              "positions": [
+                {
+                  "name": "ON",
+                  "text": "The pilot's horizon has power."
+                },
+                {
+                  "name": "OFF",
+                  "text": "The pilot's horizon is off and shows a flag."
+                }
+              ],
+              "text": "This switch gives power to the pilot's artificial horizon. Without power a warning flag shows on its face.",
+              "context": "The manual says the horizon needs about 1.5 minutes to be ready.",
+              "src": "m1",
+              "page": "100"
+            },
+            {
+              "id": "l-fan",
+              "name": "Fan power switch (pilot)",
+              "type": "switch2",
+              "match": [
+                "PTR-LES-TMB-VENT",
+                "item:left-triangular-panel:10"
+              ],
+              "positions": [
+                {
+                  "name": "ON",
+                  "text": "The fan runs."
+                },
+                {
+                  "name": "OFF",
+                  "text": "The fan is off."
+                }
+              ],
+              "text": "This switch turns on the pilot's cockpit fan, which blows air at the pilot.",
+              "context": "The cockpit has two such fans, one for each pilot.",
+              "src": "m1",
+              "page": "190"
+            },
+            {
+              "id": "l-dome-light",
+              "name": "Dome light switch (RED / OFF / WHITE)",
+              "type": "switch3",
+              "match": [
+                "PTR-LES-TMB-PLF",
+                "item:left-triangular-panel:11"
+              ],
+              "positions": [
+                {
+                  "name": "RED",
+                  "text": "The ceiling lamp shines red."
+                },
+                {
+                  "name": "OFF",
+                  "text": "The ceiling lamp is off."
+                },
+                {
+                  "name": "WHITE",
+                  "text": "The ceiling lamp shines white."
+                }
+              ],
+              "text": "This switch controls the lamp in the ceiling over the pilot. It can shine white or red.",
+              "context": "The manual says white is the main light and red the backup. The neutral position turns the lamp off.",
+              "src": "m1",
+              "page": "203"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "copilot-panel",
+      "where": "front-right",
+      "name": "Copilot's instrument panel and right triangular panel",
+      "text": "The panel in front of the copilot with its own flight dials, the fuel gauge, the clock and the Doppler displays, and the triangular panel with the copilot's power switches.",
+      "panels": [
+        {
+          "id": "right-instruments",
+          "name": "Copilot's instrument panel (right)",
+          "db": "right-instrument-panel",
+          "src": "m1",
+          "page": "69",
+          "text": "The panel in front of the right seat. It repeats the main flight dials and adds the fuel gauge, the clock, the cabin temperature dial and the Doppler displays.",
+          "context": "The copilot reads fuel and Doppler data here. The manual says the right horizon feeds the autopilot.",
+          "controls": [
+            {
+              "id": "r-airspeed",
+              "name": "US-450K airspeed indicator (copilot)",
+              "type": "gauge",
+              "match": [
+                "item:right-instrument-panel:1"
+              ],
+              "text": "This dial shows the speed through the air in kilometres per hour, the same as on the pilot's side. It reads from 0 to 450.",
+              "context": "It is fed by the right pitot tube, so the copilot can compare it with the pilot's dial.",
+              "src": "m1",
+              "page": "97"
+            },
+            {
+              "id": "r-altimeter",
+              "name": "VD-10VK pressure altimeter (copilot)",
+              "type": "gauge",
+              "match": [
+                "item:right-instrument-panel:2"
+              ],
+              "text": "This dial shows the height by air pressure. The long needle shows metres, the short needle thousands of metres.",
+              "context": "It works like the pilot's altimeter and has its own setting knob.",
+              "src": "m1",
+              "page": "97"
+            },
+            {
+              "id": "r-baro-knob",
+              "name": "Altimeter setting knob (QFE, copilot)",
+              "type": "knob",
+              "match": [
+                "PTR-ALTB-LVR-SET-R"
+              ],
+              "text": "This knob sets the starting air pressure of the copilot's altimeter and moves its needles.",
+              "context": "It is used in the preflight check like the pilot's knob.",
+              "src": "m1",
+              "page": "98"
+            },
+            {
+              "id": "r-attitude",
+              "name": "AGB-3K attitude indicator (copilot)",
+              "type": "gauge",
+              "match": [
+                "item:right-instrument-panel:3"
+              ],
+              "text": "This dial shows the artificial horizon: nose up or down and leaning left or right. It is the copilot's horizon.",
+              "context": "The manual says this horizon feeds the autopilot. If it fails, the autopilot fails too and the pilot uses the left horizon.",
+              "src": "m1",
+              "page": "99"
+            },
+            {
+              "id": "r-attitude-cage",
+              "name": "Attitude indicator cage knob (copilot)",
+              "type": "button",
+              "match": [
+                "PTR-AGB-LVR-KNOB-R"
+              ],
+              "text": "Pushing this knob locks the spinning gyroscope of the right horizon to its start position.",
+              "context": "It is pressed before start while the helicopter stands level, like on the pilot's side.",
+              "src": "m1",
+              "page": "100"
+            },
+            {
+              "id": "r-attitude-pitch-knob",
+              "name": "Attitude indicator zero pitch knob (copilot)",
+              "type": "knob",
+              "match": [
+                "PTR-AGB-LVR-SET-R"
+              ],
+              "text": "This knob moves the aircraft symbol up or down against the horizon line of the right dial.",
+              "context": "It sets which nose angle counts as level flight on this dial.",
+              "src": "m1",
+              "page": "100"
+            },
+            {
+              "id": "r-directional-gyro",
+              "name": "UGR-4UK directional gyro (copilot)",
+              "type": "gauge",
+              "match": [
+                "item:right-instrument-panel:4"
+              ],
+              "text": "This round dial shows the heading of the helicopter as a turning compass card, with needles for radio beacons.",
+              "context": "It is the copilot's twin of the pilot's heading dial and uses the same gyro compass.",
+              "src": "m1",
+              "page": "102"
+            },
+            {
+              "id": "r-course-knob",
+              "name": "Heading dial course set knob (copilot)",
+              "type": "knob",
+              "match": [
+                "PTR-PNP-LVR-SET-R"
+              ],
+              "text": "This knob on the copilot's heading dial sets a wanted course mark.",
+              "context": "The game labels it as the HSI course set knob.",
+              "src": "m1",
+              "page": "102"
+            },
+            {
+              "id": "r-vsi",
+              "name": "VR-30MK vertical velocity indicator (copilot)",
+              "type": "gauge",
+              "match": [
+                "item:right-instrument-panel:5"
+              ],
+              "text": "This dial shows the climb or sink rate in metres per second.",
+              "context": "It repeats the pilot's climb-rate dial for the copilot.",
+              "src": "m1",
+              "page": "99"
+            },
+            {
+              "id": "r-vsi-knob",
+              "name": "Vertical velocity indicator adjustment knob (copilot)",
+              "type": "knob",
+              "match": [
+                "PTR-VARIO-LVR-SET-R"
+              ],
+              "text": "This knob moves the needle of the copilot's climb-rate dial to zero.",
+              "context": "It is checked while the helicopter stands still.",
+              "src": "m1",
+              "page": "99"
+            },
+            {
+              "id": "doppler-fail",
+              "name": "DOPP FAIL annunciator (Doppler system fail)",
+              "type": "light",
+              "match": [
+                "item:right-instrument-panel:6"
+              ],
+              "text": "This lamp lights up when the Doppler speed measuring system has failed or has switched to memory mode.",
+              "context": "The manual says memory mode happens over rough water or in steep banks; the dials then show the last measured values.",
+              "src": "m1",
+              "page": "131"
+            },
+            {
+              "id": "r-rotor-tach",
+              "name": "ITE-1T main rotor tachometer (copilot)",
+              "type": "gauge",
+              "match": [
+                "item:right-instrument-panel:7"
+              ],
+              "text": "This dial shows how fast the main rotor turns, in percent of its highest speed.",
+              "context": "It repeats the pilot's rotor speed dial.",
+              "src": "m1",
+              "page": "87"
+            },
+            {
+              "id": "r-engine-tach",
+              "name": "ITE-2T dual engine tachometer (copilot)",
+              "type": "gauge",
+              "match": [
+                "item:right-instrument-panel:8"
+              ],
+              "text": "This dial has two needles for the left and right engine core speed, in percent.",
+              "context": "It repeats the pilot's engine speed dial.",
+              "src": "m1",
+              "page": "87"
+            },
+            {
+              "id": "landing-light-right",
+              "name": "Landing / search light switch (right, copilot)",
+              "type": "switch3",
+              "match": [
+                "PTR-LEFT-TAXI-R-POS-SW",
+                "item:right-instrument-panel:9"
+              ],
+              "positions": [
+                {
+                  "name": "LIGHT",
+                  "text": "The lamp is on and can be aimed."
+                },
+                {
+                  "name": "OFF",
+                  "text": "The lamp is off and keeps its direction."
+                },
+                {
+                  "name": "RETRACT",
+                  "text": "The lamp goes off and folds back into its housing."
+                }
+              ],
+              "text": "This switch controls the copilot's movable lamp under the nose, the search and landing light. In one position it shines, in another it folds away.",
+              "context": "The beam is aimed with the hat switch on the copilot's collective.",
+              "src": "m1",
+              "page": "196"
+            },
+            {
+              "id": "cabin-temp",
+              "name": "TV-1 cabin temperature indicator",
+              "type": "gauge",
+              "match": [
+                "item:right-instrument-panel:10"
+              ],
+              "text": "This dial shows the temperature in the cargo cabin in degrees Celsius.",
+              "context": "The pilot reads it when using the cabin heater.",
+              "src": "m1",
+              "page": "91"
+            },
+            {
+              "id": "doppler-coords",
+              "name": "DISS-15 coordinate indicator (digital display unit)",
+              "type": "display",
+              "match": [
+                "item:right-instrument-panel:11"
+              ],
+              "text": "This display counts how far the helicopter has flown from its start point and how far it is left or right of the planned course. It uses the Doppler speed data.",
+              "context": "The pilot sets the planned course and starts the count, then follows the numbers to a point. It has small buttons for the counters.",
+              "src": "m1",
+              "page": "135"
+            },
+            {
+              "id": "doppler-ground-speed",
+              "name": "DISS-15 ground speed and drift indicator",
+              "type": "gauge",
+              "match": [
+                "item:right-instrument-panel:12"
+              ],
+              "text": "This dial shows the speed over the ground (above 50 km/h) and the drift angle, which says how far the helicopter slides sideways.",
+              "context": "It takes over from the hover indicator when the helicopter flies faster. It has two selector knobs, one for test or work and one for land or sea.",
+              "src": "m1",
+              "page": "134"
+            },
+            {
+              "id": "fuel-gauge",
+              "name": "BE-09K (CKES-2027B) fuel quantity indicator",
+              "type": "gauge",
+              "match": [
+                "item:right-instrument-panel:13"
+              ],
+              "text": "This dial shows how much fuel is in the chosen tank, in litres. The outer scale shows the total for all tanks.",
+              "context": "The reading must be multiplied by 100 litres. The pilot checks it before start and during flight.",
+              "src": "m1",
+              "page": "93"
+            },
+            {
+              "id": "low-fuel-light",
+              "name": "270 L low fuel annunciator",
+              "type": "light",
+              "match": [
+                "item:right-instrument-panel:14"
+              ],
+              "text": "This lamp lights up when about 270 litres of fuel are left in the service tank. It is a warning to land soon.",
+              "context": "The lamp flashes with the flasher system and an audio warning also speaks.",
+              "src": "m1",
+              "page": "93"
+            },
+            {
+              "id": "fuel-meter-switch",
+              "name": "P-8UK fuel meter switch",
+              "type": "selector",
+              "match": [
+                "PTR-FUEL-LVR-MODE",
+                "item:right-instrument-panel:15"
+              ],
+              "positions": [
+                {
+                  "name": "OFF",
+                  "text": "The fuel gauge is off."
+                },
+                {
+                  "name": "SUM",
+                  "text": "The gauge shows the total fuel."
+                },
+                {
+                  "name": "LEFT",
+                  "text": "The gauge shows the left saddle tank."
+                },
+                {
+                  "name": "RIGHT",
+                  "text": "The gauge shows the right saddle tank."
+                },
+                {
+                  "name": "FEED",
+                  "text": "The gauge shows the service tank that feeds the engines."
+                },
+                {
+                  "name": "ADDITIONAL",
+                  "text": "The gauge would show an extra tank; the manual says it is not modelled."
+                }
+              ],
+              "text": "This selector chooses which tank the fuel gauge shows: off, the sum of all, the left tank, the right tank, the feed (service) tank, or an extra tank.",
+              "context": "The manual says the extra tank position is not modelled. The pilot sets it to the feed tank for flight and to the total for a check of the fuel on board.",
+              "src": "m1",
+              "page": "93"
+            },
+            {
+              "id": "clock-levers",
+              "name": "AChS-1 clock levers (left and right knob)",
+              "type": "button",
+              "match": [
+                "PTR-WATCH-LVR-L",
+                "PTR-WATCH-LVR-R",
+                "item:right-instrument-panel:16"
+              ],
+              "text": "The clock shows the time of day, a flight timer and a stopwatch. The left knob starts, stops and resets the flight timer and winds and sets the clock. The right knob runs the stopwatch.",
+              "context": "The pilot starts the flight timer at take-off. The clock has a heater for cold weather, switched on at the right side console.",
+              "src": "m1",
+              "page": "105"
+            },
+            {
+              "id": "g-meter-reset",
+              "name": "G-load indicator reset button",
+              "type": "button",
+              "match": [
+                "PTR-RSPE-TMB-WINK002"
+              ],
+              "text": "The G-meter shows how strongly the helicopter is pushed into the seat in manoeuvres. Pressing this button resets the red needles that remember the highest and lowest values.",
+              "context": "The pilot resets it before a flight to see what the flight did to the helicopter.",
+              "src": "m1",
+              "page": "108"
+            }
+          ]
+        },
+        {
+          "id": "doppler-controls",
+          "name": "DISS-15 Doppler navigator controls",
+          "src": "m1",
+          "page": "130",
+          "text": "The Doppler navigator measures the helicopter's speed over the ground with radio waves sent down from the tail boom. These controls test it and set the route counters.",
+          "context": "The pilot or the copilot uses it for hovering over bare ground and for flying a planned course. The Doppler needs its breaker and power switch on; a control panel behind the copilot has a mode selector.",
+          "controls": [
+            {
+              "id": "doppler-mode-selector",
+              "name": "Doppler control panel mode selector (test / operate)",
+              "type": "selector",
+              "match": [
+                "PTR-IND-DISS-SELECTOR"
+              ],
+              "text": "This rotary selector on the Doppler control panel behind the copilot picks a test setting or the normal working mode.",
+              "context": "The manual says positions 1 to 4 run tests without sending radio waves, and position 5 is the normal OPERATE mode that sends and measures.",
+              "src": "m1",
+              "page": "133"
+            },
+            {
+              "id": "doppler-test-work",
+              "name": "Doppler test / work switch (ground speed indicator)",
+              "type": "switch2",
+              "match": [
+                "PTR-DISS-SELECTOR-KR"
+              ],
+              "positions": [
+                {
+                  "name": "TEST",
+                  "text": "The indicator shows test values."
+                },
+                {
+                  "name": "WORK",
+                  "text": "The indicator shows real measurements."
+                }
+              ],
+              "text": "This switch on the ground speed indicator picks test or normal work. In test, the dial shows a fixed test speed and drift.",
+              "context": "The manual says the test shows 306 km/h and 15 degrees of drift.",
+              "src": "m1",
+              "page": "135"
+            },
+            {
+              "id": "doppler-land-sea",
+              "name": "Doppler land / sea switch",
+              "type": "switch2",
+              "match": [
+                "PTR-DISS-SELECTOR-SM"
+              ],
+              "positions": [
+                {
+                  "name": "LAND",
+                  "text": "Flight over land."
+                },
+                {
+                  "name": "SEA",
+                  "text": "Flight over the sea."
+                }
+              ],
+              "text": "This switch tells the Doppler if the helicopter flies over land or over the sea, because water reflects the radio waves differently.",
+              "context": "The pilot sets it to match the planned flight.",
+              "src": "m1",
+              "page": "135"
+            },
+            {
+              "id": "doppler-deviation-buttons",
+              "name": "Lateral deviation buttons (decrease, increase)",
+              "type": "button",
+              "match": [
+                "PTR-DISS-BTN-TOLE",
+                "PTR-DISS-BTN-TORI"
+              ],
+              "text": "These two buttons reset or move the counter that shows how far the helicopter is to the left or right of the planned course.",
+              "context": "The game names them the decrease and increase deviation buttons. The manual says they reset the lateral deviation counter.",
+              "count": 2,
+              "src": "m1",
+              "page": "135"
+            },
+            {
+              "id": "doppler-path-buttons",
+              "name": "Distance (path) buttons (decrease, increase)",
+              "type": "button",
+              "match": [
+                "PTR-DISS-BTN-N",
+                "PTR-DISS-BTN-V"
+              ],
+              "text": "These two buttons reset or move the counter that shows how far the helicopter has flown from its start, forward or back.",
+              "context": "The manual says they reset the distance counter.",
+              "count": 2,
+              "src": "m1",
+              "page": "135"
+            },
+            {
+              "id": "doppler-course-buttons",
+              "name": "Course angle buttons (minus, plus)",
+              "type": "button",
+              "match": [
+                "PTR-DISS-BTN-MINUS",
+                "PTR-DISS-BTN-PLUS"
+              ],
+              "text": "These two buttons set the wanted course on the course angle counter, down or up.",
+              "context": "The manual says the counter does not roll over between 0 and 360 degrees.",
+              "count": 2,
+              "src": "m1",
+              "page": "135"
+            },
+            {
+              "id": "doppler-coords-on",
+              "name": "Coordinate counter ON / OFF buttons",
+              "type": "button",
+              "match": [
+                "PTR-DISS-BTN-ON",
+                "PTR-DISS-BTN-OFF"
+              ],
+              "text": "These two buttons start and stop the counting of the flown distance and the deviation.",
+              "context": "The pilot presses ON at the start of the route.",
+              "count": 2,
+              "src": "m1",
+              "page": "135"
+            }
+          ]
+        },
+        {
+          "id": "right-triangular",
+          "name": "Right triangular panel (copilot power switches)",
+          "db": "right-triangular-panel",
+          "src": "m1",
+          "page": "77",
+          "text": "A small three-cornered panel next to the copilot with the power switches for the right instruments, the compass, the Doppler, the HF radio, the wiper and the fan.",
+          "context": "The pilots switch these on during the preflight check. Most of them power navigation devices that are used on the whole flight.",
+          "controls": [
+            {
+              "id": "r-wiper",
+              "name": "Windshield wiper switch (right)",
+              "type": "selector",
+              "match": [
+                "PTR-RES-TMB-GLSCLN-*",
+                "item:right-triangular-panel:1"
+              ],
+              "positions": [
+                {
+                  "name": "START",
+                  "text": "Starts the wiper; it is held briefly."
+                },
+                {
+                  "name": "SPEED 1",
+                  "text": "First speed: 60 to 90 wipes per minute."
+                },
+                {
+                  "name": "SPEED 2",
+                  "text": "Second speed: 30 to 60 wipes per minute."
+                },
+                {
+                  "name": "OFF",
+                  "text": "The wiper is off but may stop anywhere on the glass."
+                },
+                {
+                  "name": "RESET",
+                  "text": "Moves the arm back to its rest position; springs back."
+                }
+              ],
+              "text": "This switch runs the copilot's windshield wiper. In the game the player clicks one of five areas on the switch.",
+              "context": "It works exactly like the pilot's wiper switch. RESET moves the arm back to its rest position.",
+              "src": "m1",
+              "page": "168"
+            },
+            {
+              "id": "backlight-55v",
+              "name": "5.5V backlight switch",
+              "type": "switch2",
+              "match": [
+                "PTR-RES-TMB-LGT",
+                "item:right-triangular-panel:2"
+              ],
+              "positions": [
+                {
+                  "name": "ON",
+                  "text": "The 5.5 volt backlight is on."
+                },
+                {
+                  "name": "OFF",
+                  "text": "The 5.5 volt backlight is off."
+                }
+              ],
+              "text": "This switch turns on the 5.5 volt red backlight, the special lighting of the gauges added when the helicopter was modernised.",
+              "context": "The manual says the brightness is set with a rheostat on the right side console. The catalog lists the switch as lighting for the Doppler and Yadro-1A panels.",
+              "src": "m1",
+              "page": "206"
+            },
+            {
+              "id": "laryngophone",
+              "name": "Laryngophone (microphone) power switch",
+              "type": "switch2",
+              "match": [
+                "PTR-RES-TMB-LARING",
+                "item:right-triangular-panel:3"
+              ],
+              "positions": [
+                {
+                  "name": "ON",
+                  "text": "The microphone has power."
+                },
+                {
+                  "name": "OFF",
+                  "text": "The microphone is off."
+                }
+              ],
+              "text": "This switch gives power to the throat microphone, called a laryngophone, which picks up speech from the throat.",
+              "context": "The manual lists the microphone switch next to the intercom parts.",
+              "src": "m1",
+              "page": "111"
+            },
+            {
+              "id": "arkud-lock",
+              "name": "ARK-UD lock switch (VHF-ADF interlock)",
+              "type": "switch2",
+              "match": [
+                "PTR-RES-TMB-BLOCK",
+                "item:right-triangular-panel:4"
+              ],
+              "positions": [
+                {
+                  "name": "LOCK",
+                  "text": "The interlock is on."
+                },
+                {
+                  "name": "UNLOCK",
+                  "text": "The interlock is off."
+                }
+              ],
+              "text": "This switch locks the VHF homing set ARK-UD against the VHF radio. It prevents the radio from disturbing the homing set.",
+              "context": "The manual calls it the VHF-ADF interlock switch.",
+              "src": "m1",
+              "page": "126"
+            },
+            {
+              "id": "r-pitot-test",
+              "name": "Right pitot heater test button",
+              "type": "button",
+              "match": [
+                "PTR-LES-BTN-CONTRPVD01",
+                "item:right-triangular-panel:13"
+              ],
+              "text": "Pressing this button tests the heater of the right pitot tube. If the heater works, the HEATER OK lamp lights up.",
+              "context": "The right pitot tube feeds the copilot's speed dial.",
+              "src": "m1",
+              "page": "97"
+            },
+            {
+              "id": "r-heater-ok",
+              "name": "HEATER OK annunciator (right)",
+              "type": "light",
+              "match": [
+                "item:right-triangular-panel:12"
+              ],
+              "text": "This lamp lights up when the right pitot heater test shows that the heater works.",
+              "context": "It belongs to the test button next to it.",
+              "src": "m1",
+              "page": "97"
+            },
+            {
+              "id": "doppler-power",
+              "name": "Doppler system power switch",
+              "type": "switch2",
+              "match": [
+                "PTR-RES-TMB-DISS",
+                "item:right-triangular-panel:11"
+              ],
+              "positions": [
+                {
+                  "name": "ON",
+                  "text": "The Doppler system has power."
+                },
+                {
+                  "name": "OFF",
+                  "text": "The Doppler system is off."
+                }
+              ],
+              "text": "This switch gives power to the Doppler navigator, which measures speed over the ground with radio waves.",
+              "context": "The Doppler circuit breaker must also be on. The Doppler runs a self-check when switched on.",
+              "src": "m1",
+              "page": "136"
+            },
+            {
+              "id": "yadro-power",
+              "name": "Yadro-1A HF radio power switch",
+              "type": "switch2",
+              "match": [
+                "PTR-RES-TMB-RS",
+                "item:right-triangular-panel:10"
+              ],
+              "positions": [
+                {
+                  "name": "ON",
+                  "text": "The HF radio has power."
+                },
+                {
+                  "name": "OFF",
+                  "text": "The HF radio is off."
+                }
+              ],
+              "text": "This switch gives power to the Yadro-1A radio, a long-range radio for voice.",
+              "context": "The radio panel is on the right auxiliary panel. The manual says it needs about 2 minutes to be ready.",
+              "src": "m1",
+              "page": "115"
+            },
+            {
+              "id": "gmk-power",
+              "name": "GMK-1 gyro compass power switch",
+              "type": "switch2",
+              "match": [
+                "PTR-RES-TMB-GMK",
+                "item:right-triangular-panel:9"
+              ],
+              "positions": [
+                {
+                  "name": "ON",
+                  "text": "The gyro compass has power."
+                },
+                {
+                  "name": "OFF",
+                  "text": "The gyro compass is off."
+                }
+              ],
+              "text": "This switch gives power to the gyro compass system, which shows the heading on both heading dials.",
+              "context": "The manual says the compass system is turned on with this switch. The mode panel is on the right overhead console.",
+              "src": "m1",
+              "page": "102"
+            },
+            {
+              "id": "astro-power",
+              "name": "Astrocompass power switch",
+              "type": "switch2",
+              "match": [
+                "item:right-triangular-panel:8"
+              ],
+              "positions": [
+                {
+                  "name": "ON",
+                  "text": "Astrocompass power on; no function in DCS."
+                },
+                {
+                  "name": "OFF",
+                  "text": "Astrocompass power off."
+                }
+              ],
+              "text": "This switch would power the astrocompass, a compass that uses the stars. It is listed on the panel.",
+              "context": "The manual lists the switch but does not explain it, and the game has no control for it.",
+              "src": "m1",
+              "page": "77"
+            },
+            {
+              "id": "r-attitude-power",
+              "name": "Right attitude indicator power switch",
+              "type": "switch2",
+              "match": [
+                "PTR-RES-TMB-AG",
+                "item:right-triangular-panel:7"
+              ],
+              "positions": [
+                {
+                  "name": "ON",
+                  "text": "The right horizon has power."
+                },
+                {
+                  "name": "OFF",
+                  "text": "The right horizon is off and shows a flag."
+                }
+              ],
+              "text": "This switch gives power to the copilot's artificial horizon.",
+              "context": "The manual says the autopilot depends on this horizon.",
+              "src": "m1",
+              "page": "101"
+            },
+            {
+              "id": "r-fan",
+              "name": "Fan power switch (copilot)",
+              "type": "switch2",
+              "match": [
+                "PTR-RES-TMB-VENT",
+                "item:right-triangular-panel:6"
+              ],
+              "positions": [
+                {
+                  "name": "ON",
+                  "text": "The fan runs."
+                },
+                {
+                  "name": "OFF",
+                  "text": "The fan is off."
+                }
+              ],
+              "text": "This switch turns on the copilot's cockpit fan.",
+              "context": "The cockpit has two such fans.",
+              "src": "m1",
+              "page": "190"
+            },
+            {
+              "id": "r-dome-light",
+              "name": "Dome light switch (RED / OFF / WHITE, right)",
+              "type": "switch3",
+              "match": [
+                "PTR-RES-TMB-PLF",
+                "item:right-triangular-panel:5"
+              ],
+              "positions": [
+                {
+                  "name": "RED",
+                  "text": "The ceiling lamp shines red."
+                },
+                {
+                  "name": "OFF",
+                  "text": "The ceiling lamp is off."
+                },
+                {
+                  "name": "WHITE",
+                  "text": "The ceiling lamp shines white."
+                }
+              ],
+              "text": "This switch controls the lamp in the ceiling over the copilot. It can shine white or red.",
+              "context": "White is the main light and red the backup.",
+              "src": "m1",
+              "page": "203"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "center-console",
+      "where": "center-pedestal",
+      "name": "Center console",
+      "text": "The panel between the seats, in the middle of the cockpit. It holds the oil dials, the R-863 radio, the engine governor switches, the autopilot and the lamp test.",
+      "panels": [
+        {
+          "id": "oil-gauges",
+          "name": "Transmission and engine oil gauges",
+          "src": "m1",
+          "page": "70",
+          "text": "These dials show the temperature and pressure of the oil in the gearboxes and in each engine. Oil keeps the moving parts cool and slippery.",
+          "context": "The pilot watches them during start and flight. Low pressure or high temperature means a problem with that part.",
+          "controls": [
+            {
+              "id": "transmission-oil-gauge",
+              "name": "UIZ-6 transmission and gearbox oil indicator",
+              "type": "gauge",
+              "match": [
+                "item:center-console:1"
+              ],
+              "text": "This three-needle dial shows the oil pressure of the main gearbox and the oil temperature of the intermediate and tail rotor gearboxes.",
+              "context": "The pilot checks the readings after start and during flight to see that the drive system is healthy.",
+              "src": "m1",
+              "page": "88"
+            },
+            {
+              "id": "transmission-temp-gauge",
+              "name": "TUE-48 main transmission oil temperature",
+              "type": "gauge",
+              "match": [
+                "item:center-console:2"
+              ],
+              "text": "This dial shows the temperature of the oil in the main gearbox in degrees Celsius.",
+              "context": "The manual says the throttle may be opened from idle once this oil is at least -15 degrees C and the engine oil is warm enough.",
+              "src": "m1",
+              "page": "91"
+            },
+            {
+              "id": "left-engine-oil",
+              "name": "UIZ-3 left engine oil indicator",
+              "type": "gauge",
+              "match": [
+                "item:center-console:3"
+              ],
+              "text": "This dial shows the oil pressure and the oil temperature of the left engine.",
+              "context": "The pilot checks it during warm-up and in flight.",
+              "src": "m1",
+              "page": "88"
+            },
+            {
+              "id": "right-engine-oil",
+              "name": "UIZ-3 right engine oil indicator",
+              "type": "gauge",
+              "match": [
+                "item:center-console:4"
+              ],
+              "text": "This dial shows the oil pressure and the oil temperature of the right engine.",
+              "context": "The pilot checks it during warm-up and in flight.",
+              "src": "m1",
+              "page": "88"
+            }
+          ]
+        },
+        {
+          "id": "r863",
+          "name": "R-863 VHF/UHF command radio",
+          "src": "m1",
+          "page": "112",
+          "text": "The R-863 is the main radio of the helicopter. It talks to other aircraft and to the ground by voice, on a station number (frequency) typed in with four wheels or chosen from stored channels.",
+          "context": "The pilot first turns it on with its circuit breaker and picks the radio on the intercom box. The manual lists the stored channels as 20 presets, chosen with the channel selector on the left overhead console.",
+          "controls": [
+            {
+              "id": "r863-unit-switch",
+              "name": "R-863 unit switch (DIAL / MEMORY)",
+              "type": "switch2",
+              "match": [
+                "PTR-APP-TMB-NU",
+                "item:center-console:5"
+              ],
+              "positions": [
+                {
+                  "name": "DIAL",
+                  "text": "The frequency is set by the four wheels."
+                },
+                {
+                  "name": "MEMORY",
+                  "text": "The radio uses a stored channel instead of the wheels."
+                }
+              ],
+              "text": "This switch decides how the radio is tuned. In one position the four frequency wheels set the station number; in the other the radio uses its stored channels.",
+              "context": "The manual calls it the presets-manual switch. The stored channels are picked on the channel selector in the left overhead console.",
+              "src": "m1",
+              "page": "113"
+            },
+            {
+              "id": "r863-squelch",
+              "name": "R-863 squelch switch",
+              "type": "switch2",
+              "match": [
+                "PTR-APP-TMB-PS"
+              ],
+              "positions": [
+                {
+                  "name": "ON",
+                  "text": "The noise filter is on and the hiss is cut."
+                },
+                {
+                  "name": "OFF",
+                  "text": "The noise filter is off, so weak signals can still be heard."
+                }
+              ],
+              "text": "This switch controls the noise filter of the radio. When the filter is on, the hiss between messages is cut.",
+              "context": "The manual says to set it off at first, and to switch it off when reception is poor.",
+              "src": "m1",
+              "page": "114"
+            },
+            {
+              "id": "r863-volume",
+              "name": "R-863 volume knob",
+              "type": "knob",
+              "match": [
+                "PTR-APP-LVR-LEVEL"
+              ],
+              "text": "Turning this knob makes the radio louder or quieter, like the volume knob of a car radio.",
+              "context": "The manual says to set it to maximum and to control the loudness with the knobs on the intercom box.",
+              "src": "m1",
+              "page": "114"
+            },
+            {
+              "id": "r863-freq-wheels",
+              "name": "R-863 frequency wheels (10 MHz, 1 MHz, 100 kHz, 25 kHz)",
+              "type": "knob",
+              "match": [
+                "PTR-APP-LVR-SEL*"
+              ],
+              "text": "These four wheels set the radio's frequency, the station number, digit by digit. The first changes tens of megahertz, the next one megahertz, then 100 kilohertz, then 25 kilohertz steps.",
+              "context": "They only work when the unit switch is on DIAL. The radio covers 100 to 149.975 MHz (VHF) and 220 to 399.975 MHz (UHF).",
+              "count": 4,
+              "src": "m1",
+              "page": "113"
+            },
+            {
+              "id": "r863-arc-switch",
+              "name": "R-863 RK (ARC) switch",
+              "type": "switch2",
+              "match": [
+                "PTR-APP-TMB-RK"
+              ],
+              "positions": [
+                {
+                  "name": "ON",
+                  "text": "No effect; the manual says this switch is not used."
+                },
+                {
+                  "name": "OFF",
+                  "text": "No effect; the manual says this switch is not used."
+                }
+              ],
+              "text": "This switch is not used on this helicopter. It would have let the pilot listen to the radio compass at the same time.",
+              "context": "The manual says the radio compass is heard through the intercom instead, so this switch does nothing in DCS.",
+              "src": "m1",
+              "page": "114"
+            },
+            {
+              "id": "r863-emerg-switch",
+              "name": "R-863 emergency receiver switch",
+              "type": "switch2",
+              "match": [
+                "PTR-APP-TMB-AP"
+              ],
+              "positions": [
+                {
+                  "name": "ON",
+                  "text": "No effect; there is no emergency receiver."
+                },
+                {
+                  "name": "OFF",
+                  "text": "No effect; there is no emergency receiver."
+                }
+              ],
+              "text": "This switch would turn on an emergency receiver that listens on a distress frequency. This helicopter has no such receiver.",
+              "context": "The manual says the switch and its lamp are not used on the Mi-8MT and Mi-8MTV2.",
+              "src": "m1",
+              "page": "113"
+            },
+            {
+              "id": "r863-panel",
+              "name": "R-863 control panel (overview)",
+              "type": "other",
+              "match": [
+                "item:center-console:6",
+                "item:center-console:7"
+              ],
+              "text": "This is the block of the R-863 radio with its switches, wheels and the frequency window. The single controls are listed next to it.",
+              "context": "The copilot and pilot use it to tune the command radio.",
+              "src": "m1",
+              "page": "113"
+            }
+          ]
+        },
+        {
+          "id": "engine-governor",
+          "name": "Engine governor control panel",
+          "src": "m1",
+          "page": "70",
+          "text": "This panel holds the switches of the engines' electronic governors. A governor is a helper that keeps the engine at the right speed by itself.",
+          "context": "The pilot switches the governors on after start and uses the test and emergency power switches only in special cases. The manual describes the electronic governor check at idle with channels ST1 and ST2.",
+          "controls": [
+            {
+              "id": "eec-left",
+              "name": "Left engine EEC (electronic governor) switch",
+              "type": "switch2",
+              "match": [
+                "PTR-APP-TMB-ERD-L",
+                "item:center-console:8"
+              ],
+              "positions": [
+                {
+                  "name": "ON",
+                  "text": "The electronic governor of the left engine is on."
+                },
+                {
+                  "name": "OFF",
+                  "text": "The electronic governor of the left engine is off."
+                }
+              ],
+              "text": "This switch turns on the electronic governor of the left engine. The governor helps keep the engine speed steady.",
+              "context": "The manual calls it the electronic engine governor switch. If it fails, the pilot switches it off and the engine runs on its basic control.",
+              "src": "m1",
+              "page": "257"
+            },
+            {
+              "id": "eec-right",
+              "name": "Right engine EEC (electronic governor) switch",
+              "type": "switch2",
+              "match": [
+                "PTR-APP-TMB-ERD-R"
+              ],
+              "positions": [
+                {
+                  "name": "ON",
+                  "text": "The electronic governor of the right engine is on."
+                },
+                {
+                  "name": "OFF",
+                  "text": "The electronic governor of the right engine is off."
+                }
+              ],
+              "text": "This switch turns on the electronic governor of the right engine.",
+              "context": "It is the twin of the left switch. The pilot uses it after start and in the governor check.",
+              "src": "m1",
+              "page": "257"
+            },
+            {
+              "id": "er-left",
+              "name": "Left engine ER (emergency power) switch",
+              "type": "switch2",
+              "match": [
+                "PTR-APP-TMB-CHR-L"
+              ],
+              "positions": [
+                {
+                  "name": "ON",
+                  "text": "The emergency power circuit of the left engine is armed."
+                },
+                {
+                  "name": "OFF",
+                  "text": "The left engine runs with its normal power limit."
+                }
+              ],
+              "text": "This switch allows extra emergency power from the left engine. The manual says it raises the top engine limit a little, giving about 200 horsepower more.",
+              "context": "It is meant for the case that the other engine has failed. A lamp on the warning board shows when emergency power is active.",
+              "src": "m1",
+              "page": "55"
+            },
+            {
+              "id": "er-right",
+              "name": "Right engine ER (emergency power) switch",
+              "type": "switch2",
+              "match": [
+                "PTR-APP-TMB-CHR-R"
+              ],
+              "positions": [
+                {
+                  "name": "ON",
+                  "text": "The emergency power circuit of the right engine is armed."
+                },
+                {
+                  "name": "OFF",
+                  "text": "The right engine runs with its normal power limit."
+                }
+              ],
+              "text": "This switch allows extra emergency power from the right engine, about 200 horsepower more according to the manual.",
+              "context": "It is meant for the case that the left engine has failed.",
+              "src": "m1",
+              "page": "55"
+            },
+            {
+              "id": "ft-check-left",
+              "name": "Left engine FT check switch (ST1 / WORK / ST2)",
+              "type": "switch3",
+              "match": [
+                "PTR-APP-TMB-ST-L"
+              ],
+              "positions": [
+                {
+                  "name": "ST1",
+                  "text": "Tests governor channel 1; the switch springs back."
+                },
+                {
+                  "name": "WORK",
+                  "text": "Normal working position."
+                },
+                {
+                  "name": "ST2",
+                  "text": "Tests governor channel 2; the switch springs back."
+                }
+              ],
+              "text": "This spring switch tests the two channels of the left engine's electronic governor. It has two test positions and a middle working position.",
+              "context": "The manual describes the check at idle: first channel ST1, then channel ST2, with the lamps for rotor speed exceeding turning on. The switch is held in the test position and springs back.",
+              "src": "m1",
+              "page": "257"
+            },
+            {
+              "id": "ft-check-right",
+              "name": "Right engine FT check switch (ST1 / WORK / ST2)",
+              "type": "switch3",
+              "match": [
+                "PTR-APP-TMB-ST-R"
+              ],
+              "positions": [
+                {
+                  "name": "ST1",
+                  "text": "Tests governor channel 1; the switch springs back."
+                },
+                {
+                  "name": "WORK",
+                  "text": "Normal working position."
+                },
+                {
+                  "name": "ST2",
+                  "text": "Tests governor channel 2; the switch springs back."
+                }
+              ],
+              "text": "This spring switch tests the two channels of the right engine's electronic governor.",
+              "context": "It is used in the governor check at idle, like the left switch.",
+              "src": "m1",
+              "page": "257"
+            },
+            {
+              "id": "ct-check",
+              "name": "CT check switch (RIGHT / WORK / LEFT)",
+              "type": "switch3",
+              "match": [
+                "PTR-APP-TMB-TKLR"
+              ],
+              "positions": [
+                {
+                  "name": "LEFT",
+                  "text": "Test position for the left engine; the switch springs back."
+                },
+                {
+                  "name": "WORK",
+                  "text": "Normal working position."
+                },
+                {
+                  "name": "RIGHT",
+                  "text": "Test position for the right engine; the switch springs back."
+                }
+              ],
+              "text": "This spring switch has a left test position, a right test position and a middle working position. The game names it the CT test switch.",
+              "context": "The manual does not describe this switch; the game names it 'CT Test Switch'.",
+              "src": "m1",
+              "page": "70"
+            }
+          ]
+        },
+        {
+          "id": "lamp-test-backup",
+          "name": "Lamp test and electrical backup switches",
+          "src": "m1",
+          "page": "70",
+          "text": "This group of switches lets the pilot test the warning lamps and choose backup parts of the electrical system.",
+          "context": "The pilot uses the lamp test before start to see that no bulb is burned out. The backup switches are used in electrical failures.",
+          "controls": [
+            {
+              "id": "lamps-check-switch",
+              "name": "WARN LTS check switch (FLASHER / LAMPS / OFF)",
+              "type": "switch3",
+              "match": [
+                "PTR-APP-TMB-TEST",
+                "item:center-console:9"
+              ],
+              "positions": [
+                {
+                  "name": "FLASHER",
+                  "text": "The lamps that use the flashing circuit blink."
+                },
+                {
+                  "name": "LAMPS",
+                  "text": "All warning lamps light up as a bulb test."
+                },
+                {
+                  "name": "OFF",
+                  "text": "No test; the lamps work normally."
+                }
+              ],
+              "text": "This switch tests the warning lamps. In one position all lamps light up; in the other the flashing lamps blink.",
+              "context": "The manual says it needs the lamp test circuit breaker. The fire lamps, for example, flash when the flasher position is used.",
+              "src": "m1",
+              "page": "208"
+            },
+            {
+              "id": "transformer-36v",
+              "name": "36V transformer switch (MAIN / OFF / AUXILIARY)",
+              "type": "switch3",
+              "match": [
+                "PTR-APP-TMB-TRNS"
+              ],
+              "positions": [
+                {
+                  "name": "MAIN",
+                  "text": "The main transformer is used."
+                },
+                {
+                  "name": "OFF",
+                  "text": "The 36 volt transformer is off."
+                },
+                {
+                  "name": "AUXILIARY",
+                  "text": "The auxiliary transformer is used."
+                }
+              ],
+              "text": "This switch chooses which transformer makes the 36 volt alternating current for the instruments: the main one or the auxiliary one, or none.",
+              "context": "The manual does not describe this switch in detail; it only says that power to the 36 volt system is switched over when a generator fails.",
+              "src": "m1",
+              "page": "146"
+            },
+            {
+              "id": "net-rectifier-cover",
+              "name": "Net on rectifier switch cover",
+              "type": "cover",
+              "match": [
+                "PTR-APP-CVR-CIRC"
+              ],
+              "positions": [
+                {
+                  "name": "OPEN",
+                  "text": "The cover is up and the switch can be used."
+                },
+                {
+                  "name": "CLOSE",
+                  "text": "The cover shields the switch."
+                }
+              ],
+              "text": "This small guard covers the net-on-rectifier switch so it cannot be flipped by accident. The pilot lifts it before using the switch.",
+              "context": "Closing the cover again protects the switch.",
+              "src": "m1",
+              "page": "70"
+            },
+            {
+              "id": "net-rectifier-switch",
+              "name": "Net on rectifier switch",
+              "type": "switch2",
+              "match": [
+                "PTR-APP-TMB-CIRC"
+              ],
+              "positions": [
+                {
+                  "name": "ON",
+                  "text": "The switch is on."
+                },
+                {
+                  "name": "OFF",
+                  "text": "The switch is off."
+                }
+              ],
+              "text": "This guarded switch connects part of the on-board electrical network to the rectifiers. Rectifiers turn alternating current into direct current.",
+              "context": "The manual does not describe this switch; the game names it 'Net on Rectifier Switch'.",
+              "src": "m1",
+              "page": "70"
+            }
+          ]
+        },
+        {
+          "id": "autopilot-panel",
+          "name": "AP-34B autopilot control panel",
+          "src": "m1",
+          "page": "216",
+          "text": "This is the control panel of the autopilot, a system that helps keep the helicopter steady. It has lamp-buttons to switch each channel on and off and knobs for small corrections.",
+          "context": "The pilot normally switches on the roll-pitch channel before take-off. The altitude channel can only be switched on after it and works above 50 metres. The IN-4 dial below the panel shows how far each channel has moved.",
+          "controls": [
+            {
+              "id": "ap-heading-on",
+              "name": "Autopilot HEADING channel ON lamp-button",
+              "type": "button",
+              "match": [
+                "PTR-APP-BTN-DIRON"
+              ],
+              "text": "Pressing this lamp-button switches on the heading channel (called yaw in the manual), which holds the nose direction by using the tail rotor. The lamp shows green when it is on.",
+              "context": "Mouse wheel on the button also dims the lamp. The manual says pilots rarely use the yaw channel before take-off.",
+              "src": "m1",
+              "page": "219"
+            },
+            {
+              "id": "ap-heading-off",
+              "name": "Autopilot HEADING channel OFF lamp-button",
+              "type": "button",
+              "match": [
+                "PTR-APP-BTN-DIROFF"
+              ],
+              "text": "Pressing this lamp-button switches the heading channel off again.",
+              "context": "It is used when the pilot wants to fly the pedals himself.",
+              "src": "m1",
+              "page": "219"
+            },
+            {
+              "id": "ap-rollpitch-on",
+              "name": "Autopilot ROLL-PITCH channels ON lamp-button",
+              "type": "button",
+              "match": [
+                "PTR-APP-BTN-KTON",
+                "item:center-console:10"
+              ],
+              "text": "Pressing this lamp-button switches on the roll and pitch channels together. They keep the helicopter from rolling or tilting by itself.",
+              "context": "The manual says these channels are normally on from take-off to landing. They can be switched off with the autopilot OFF button on the cyclic.",
+              "src": "m1",
+              "page": "221"
+            },
+            {
+              "id": "ap-altitude-on",
+              "name": "Autopilot ALTITUDE channel ON lamp-button",
+              "type": "button",
+              "match": [
+                "PTR-APP-BTN-ALTON"
+              ],
+              "text": "Pressing this lamp-button switches on the altitude channel, which holds the height by moving the collective for the pilot.",
+              "context": "The manual says it cannot be switched on without the roll-pitch channel and works best in level flight above 50 metres.",
+              "src": "m1",
+              "page": "221"
+            },
+            {
+              "id": "ap-altitude-off",
+              "name": "Autopilot ALTITUDE channel OFF lamp-button",
+              "type": "button",
+              "match": [
+                "PTR-APP-BTN-ALTOFF"
+              ],
+              "text": "Pressing this lamp-button switches the altitude channel off.",
+              "context": "Moving the collective or pressing the clutch release button on the collective also switches this channel off.",
+              "src": "m1",
+              "page": "219"
+            },
+            {
+              "id": "ap-altitude-control",
+              "name": "Autopilot altitude channel control buttons (UP / DOWN)",
+              "type": "button",
+              "match": [
+                "PTR-APP-BTN-CONTR"
+              ],
+              "text": "This pair of small buttons is the control for the altitude channel. The right button moves up and the left button moves down.",
+              "context": "The manual calls the control button the check (test) button of the altitude channel.",
+              "src": "m1",
+              "page": "219"
+            },
+            {
+              "id": "ap-knobs",
+              "name": "Autopilot centering knobs (HEADING, ROLL, PITCH)",
+              "type": "knob",
+              "match": [
+                "PTR-APP-LVR-DIR",
+                "PTR-APP-LVR-K",
+                "PTR-APP-LVR-T"
+              ],
+              "text": "These three knobs make small corrections of the autopilot's neutral point for yaw, roll and pitch. One full turn moves by about 10 degrees.",
+              "context": "The manual says a crew member uses them to line the autopilot up with the helicopter, or to change the heading a little without moving the sticks.",
+              "count": 3,
+              "src": "m1",
+              "page": "222"
+            },
+            {
+              "id": "in4-indicator",
+              "name": "IN-4 autopilot trim indicator",
+              "type": "gauge",
+              "match": [
+                "item:center-console:12"
+              ],
+              "text": "This dial shows how far each autopilot channel has moved away from its middle: yaw, roll, pitch and altitude.",
+              "context": "If a needle sits at its edge, the autopilot has used up its limited range and the pilot should line it up again.",
+              "src": "m1",
+              "page": "219"
+            }
+          ]
+        },
+        {
+          "id": "spuu52",
+          "name": "SPUU-52 tail rotor pitch limiter control unit",
+          "src": "m1",
+          "page": "83",
+          "text": "This unit controls the limiter for the tail rotor. The limiter stops the right pedal from going too far, so the tail rotor and drive are not overloaded.",
+          "context": "The main power switch is on the left triangular panel. When the system is off, a red OFF lamp on this unit lights up. If it fails in flight, the pilot switches it off and flies with care.",
+          "controls": [
+            {
+              "id": "spuu52-engage",
+              "name": "SPUU-52 control engage button (red OFF lamp-button)",
+              "type": "button",
+              "match": [
+                "PTR-APP-BTN-OFF",
+                "item:center-console:11"
+              ],
+              "text": "This is the red OFF lamp-button of the limiter unit. The lamp shines when the limiter is switched off or has failed.",
+              "context": "The game names it the SPUU-52 control engage button. The switch that powers the limiter is on the left triangular panel.",
+              "src": "m1",
+              "page": "83"
+            },
+            {
+              "id": "spuu52-adjust",
+              "name": "SPUU-52 adjustment knob",
+              "type": "knob",
+              "match": [
+                "PTR-APP-LVR-ADJ"
+              ],
+              "text": "This knob sits on the limiter unit and adjusts it. The manual does not describe this knob; the game names it 'SPUU-52 Adjustment Knob'.",
+              "context": "A needle on the unit shows the limit; full left means no limit on the right pedal.",
+              "src": "m1",
+              "page": "84"
+            },
+            {
+              "id": "spuu52-test",
+              "name": "SPUU-52 test switch (P / OFF / t)",
+              "type": "switch3",
+              "match": [
+                "PTR-APP-TMB-RT"
+              ],
+              "positions": [
+                {
+                  "name": "P",
+                  "text": "One test position; the switch springs back."
+                },
+                {
+                  "name": "OFF",
+                  "text": "Middle position, no test."
+                },
+                {
+                  "name": "t",
+                  "text": "The other test position; the switch springs back."
+                }
+              ],
+              "text": "This spring switch tests the limiter. The game names the positions P and t.",
+              "context": "The manual does not describe this switch in detail.",
+              "src": "m1",
+              "page": "84"
+            }
+          ]
+        },
+        {
+          "id": "rotor-brake",
+          "name": "Rotor brake lever",
+          "src": "m1",
+          "page": "62",
+          "text": "The rotor brake holds the big main rotor still. Its lever is next to the pilot's seat.",
+          "context": "The brake is released before start and used to stop the rotor after the shutdown, or to hold it while parked.",
+          "controls": [
+            {
+              "id": "rotor-brake-lever",
+              "name": "Rotor brake handle (UP / DOWN)",
+              "type": "handle",
+              "match": [
+                "PTR-VINTBRAKE-ARM"
+              ],
+              "positions": [
+                {
+                  "name": "UP",
+                  "text": "The brake holds the rotor."
+                },
+                {
+                  "name": "DOWN",
+                  "text": "The brake is released."
+                }
+              ],
+              "text": "This handle works the rotor brake. DOWN releases the brake so the rotor can turn. UP applies it and holds the rotor.",
+              "context": "The first item of the preflight list is to put the rotor brake DOWN (unlocked). After shutdown, the brake is applied when the rotor has slowed below 15 percent.",
+              "src": "m1",
+              "page": "243"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "left-console",
+      "where": "left-console",
+      "name": "Left side console",
+      "text": "The panel at the pilot's left. It holds the red lighting dimmers, the engine test buttons, the signal flares, the voice warning remote panel, the IFF boxes and the recorders.",
+      "panels": [
+        {
+          "id": "left-red-lights",
+          "name": "Red lighting dimmers (left side console)",
+          "db": "left-side-console",
+          "src": "m1",
+          "page": "71",
+          "text": "Two knobs that set how bright the red backlight is on the pilot's side. Red light lets the pilot read the dials at night without being dazzled.",
+          "context": "The manual says group 1 and group 2 light different parts of the pilot's side: the instrument panel, the left consoles, the left triangular panel and the compass. They are used on night flights.",
+          "controls": [
+            {
+              "id": "left-red-dimmers",
+              "name": "Left side red lighting dimmers (group 1 and 2)",
+              "type": "knob",
+              "match": [
+                "PTR-LSPE-LVR-REDGRP1",
+                "PTR-LSPE-LVR-REDGRP2",
+                "item:left-side-console:1"
+              ],
+              "text": "Each knob makes the red backlight of its group brighter when turned one way and dimmer when turned the other way. Turning them down fully switches the group off.",
+              "context": "The pilot sets them at night so the dials are readable but the eyes stay used to the dark.",
+              "count": 2,
+              "src": "m1",
+              "page": "202"
+            }
+          ]
+        },
+        {
+          "id": "engine-tests",
+          "name": "Engine test buttons and warning lamps",
+          "db": "left-side-console",
+          "src": "m1",
+          "page": "71",
+          "text": "Four groups of test buttons and lamps on the left console for checking the engines' instruments: the vibration monitor, the temperature gauge and the temperature regulators.",
+          "context": "The pilot or the crew press them during the check before flight to see that the warning systems work.",
+          "controls": [
+            {
+              "id": "vibration-test",
+              "name": "IV-500E engine vibration test button",
+              "type": "button",
+              "match": [
+                "PTR-LSPE-BTN-CONTR-IV500",
+                "item:left-side-console:21"
+              ],
+              "text": "Pressing this button tests the engine vibration monitor. All four vibration warning lamps must light up while it is held.",
+              "context": "The vibration monitor warns when an engine shakes too much. The manual lists a yellow caution lamp and a red shut-off warning lamp for each engine.",
+              "src": "m1",
+              "page": "94"
+            },
+            {
+              "id": "egt-test-cold",
+              "name": "EGT gauge COLD test button",
+              "type": "button",
+              "match": [
+                "PTR-LSPE-BTN-CONTR-GRND",
+                "item:left-side-console:20"
+              ],
+              "text": "Pressing this button tests the exhaust gas temperature dial for a cold engine. With the engines off, the needles must move up to about 960 degrees and fall back when it is released.",
+              "context": "The manual calls it the COLD test button. It belongs to the 2UT-6K temperature dial on the pilot's panel.",
+              "src": "m1",
+              "page": "89"
+            },
+            {
+              "id": "egt-test-hot",
+              "name": "EGT gauge HOT test button",
+              "type": "button",
+              "match": [
+                "PTR-LSPE-BTN-CONTR-AIR"
+              ],
+              "text": "Pressing this button tests the exhaust gas temperature dial with the engines running. The needles must move toward zero and return to the real value when it is released.",
+              "context": "The manual calls it the HOT test button. It is part of the check of the temperature dial.",
+              "src": "m1",
+              "page": "89"
+            },
+            {
+              "id": "regulator-test",
+              "name": "Engine temperature regulator test buttons (left, right)",
+              "type": "button",
+              "match": [
+                "PTR-LSPE-BTN-CONTR-RTL",
+                "PTR-LSPE-BTN-CONTR-RTR",
+                "item:left-side-console:19"
+              ],
+              "text": "These two buttons test the temperature regulators of the left and the right engine. A temperature regulator is a helper that limits the engine's heat.",
+              "context": "The manual says a lamp named RT LEFT or RT RIGHT flashes on this console when the temperature limiter works.",
+              "count": 2,
+              "src": "m1",
+              "page": "50"
+            },
+            {
+              "id": "regulator-lamps",
+              "name": "Engine temperature regulator annunciators",
+              "type": "light",
+              "match": [
+                "item:left-side-console:2"
+              ],
+              "text": "These two lamps show that the temperature regulator of the left or right engine is working. They flash when the engine gets very hot and the regulator holds it back.",
+              "context": "The pilot sees them as a sign that the engine is at its heat limit.",
+              "src": "m1",
+              "page": "50"
+            }
+          ]
+        },
+        {
+          "id": "signal-flares",
+          "name": "7P-662 signal flares control panel",
+          "db": "left-side-console",
+          "src": "m1",
+          "page": "71",
+          "text": "This panel fires coloured signal flares, small rockets that make a bright coloured light in the sky. Each of the two cassettes has its own power switch and four colour buttons.",
+          "context": "The crew uses signal flares to give coloured light signals to people on the ground or to other aircraft. The manual lists the EKSR-46 signal flares among the equipment fed with power from the batteries.",
+          "controls": [
+            {
+              "id": "cassette1-power",
+              "name": "Signal flares cassette 1 power switch",
+              "type": "switch2",
+              "match": [
+                "PTR-LSPE-TMB-ALRMRKT1"
+              ],
+              "positions": [
+                {
+                  "name": "ON",
+                  "text": "Cassette 1 has power."
+                },
+                {
+                  "name": "OFF",
+                  "text": "Cassette 1 is off."
+                }
+              ],
+              "text": "This switch gives power to the first cassette of signal flares. Without power, its colour buttons do nothing.",
+              "context": "The pilot switches it on before firing a signal flare.",
+              "src": "m1",
+              "page": "71"
+            },
+            {
+              "id": "cassette1-buttons",
+              "name": "Cassette 1 launch buttons (red, green, yellow, white)",
+              "type": "button",
+              "match": [
+                "PTR-LSPE-BTN-RCKT1?"
+              ],
+              "text": "These four buttons fire a signal flare of the colour written on them (red, green, yellow or white) from the first cassette.",
+              "context": "Each flare can only be fired once, so the first cassette holds a limited supply.",
+              "count": 4,
+              "src": "m1",
+              "page": "71"
+            },
+            {
+              "id": "cassette2-power",
+              "name": "Signal flares cassette 2 power switch",
+              "type": "switch2",
+              "match": [
+                "PTR-LSPE-TMB-ALRMRKT2"
+              ],
+              "positions": [
+                {
+                  "name": "ON",
+                  "text": "Cassette 2 has power."
+                },
+                {
+                  "name": "OFF",
+                  "text": "Cassette 2 is off."
+                }
+              ],
+              "text": "This switch gives power to the second cassette of signal flares.",
+              "context": "The pilot switches it on before using the second cassette.",
+              "src": "m1",
+              "page": "71"
+            },
+            {
+              "id": "cassette2-buttons",
+              "name": "Cassette 2 launch buttons (red, green, yellow, white)",
+              "type": "button",
+              "match": [
+                "PTR-LSPE-BTN-RCKT2?",
+                "item:left-side-console:3"
+              ],
+              "text": "These four buttons fire a signal flare of the colour written on them from the second cassette.",
+              "context": "The second cassette has its own supply of flares, separate from the first.",
+              "count": 4,
+              "src": "m1",
+              "page": "71"
+            }
+          ]
+        },
+        {
+          "id": "ri65-remote",
+          "name": "RI-65B voice warning remote panel",
+          "db": "left-side-console",
+          "src": "m1",
+          "page": "120",
+          "text": "The RI-65 is the voice warning system. It speaks messages through the pilot's headset, such as a fire or a generator failure. This panel lets the pilot repeat or stop a message and test the system.",
+          "context": "The system is switched on with the RI-65 switch on the left triangular panel. A lamp there lights while it is still off.",
+          "controls": [
+            {
+              "id": "ri65-amplifier",
+              "name": "RI-65 amplifier switch",
+              "type": "switch2",
+              "match": [
+                "PTR-LSPE-TMB-RI65-AMP",
+                "item:left-side-console:6"
+              ],
+              "positions": [
+                {
+                  "name": "ON",
+                  "text": "The amplifier is on."
+                },
+                {
+                  "name": "OFF",
+                  "text": "The amplifier is off."
+                }
+              ],
+              "text": "This switch turns on the amplifier of the voice warning system. The amplifier makes the spoken messages loud enough to hear.",
+              "context": "The manual does not describe this switch; the game names it 'RI-65 Amplifier Switch'.",
+              "src": "m1",
+              "page": "121"
+            },
+            {
+              "id": "ri65-repeat",
+              "name": "RI-65 REPEAT button",
+              "type": "button",
+              "match": [
+                "PTR-LSPE-BTN-RI65-RETRY"
+              ],
+              "text": "Pressing this button plays the current voice message once more.",
+              "context": "The pilot uses it when he did not understand a message.",
+              "src": "m1",
+              "page": "121"
+            },
+            {
+              "id": "ri65-off",
+              "name": "RI-65 OFF button",
+              "type": "button",
+              "match": [
+                "PTR-LSPE-BTN-RI65-OFF"
+              ],
+              "text": "Pressing this button stops the voice message that is playing, and switches the R-863 radio from sending back to receiving.",
+              "context": "The pilot uses it to silence a message once he has understood it.",
+              "src": "m1",
+              "page": "121"
+            },
+            {
+              "id": "ri65-test",
+              "name": "RI-65 CHECK (TEST) button",
+              "type": "button",
+              "match": [
+                "PTR-LSPE-BTN-RI65-TEST"
+              ],
+              "text": "Pressing this button tests whether the voice warning system works.",
+              "context": "The pilot presses it during the check before flight.",
+              "src": "m1",
+              "page": "121"
+            }
+          ]
+        },
+        {
+          "id": "iff-panel",
+          "name": "IFF control panels 484 and 485 (device 6201)",
+          "db": "left-side-console",
+          "src": "m1",
+          "page": "71",
+          "text": "IFF means identification friend or foe. Device 6201 is a radio box that answers the question 'who are you?' from other radars with a code. These two panels control it.",
+          "context": "The manual lists the panels but does not explain the controls. The texts below follow the names the game gives them.",
+          "controls": [
+            {
+              "id": "iff-erase",
+              "name": "IFF erase button (guarded)",
+              "type": "button",
+              "match": [
+                "PTR-LSPE-BTN-EMRG-ERASE",
+                "PTR-LSPE-CVR-EMRG-ERASE"
+              ],
+              "text": "This push-button sits under a small guard cover that the pilot lifts first. The game names it 'IFF Transponder Erase Button'.",
+              "context": "The manual does not describe this button. The cover protects it from being pressed by accident.",
+              "src": "m1",
+              "page": "71"
+            },
+            {
+              "id": "iff-disaster",
+              "name": "IFF disaster (distress) switch (guarded)",
+              "type": "switch2",
+              "match": [
+                "PTR-LSPE-TMB-EMRG-MAYDAY",
+                "PTR-LSPE-CVR-EMRG-MAYDAY"
+              ],
+              "positions": [
+                {
+                  "name": "ON",
+                  "text": "The emergency setting is on."
+                },
+                {
+                  "name": "OFF",
+                  "text": "The emergency setting is off."
+                }
+              ],
+              "text": "This switch sits under a guard cover. The game names it 'IFF Transponder Disaster Switch', so it is the emergency switch of the IFF box.",
+              "context": "The manual does not describe it. The cover keeps it from being flipped by accident.",
+              "src": "m1",
+              "page": "71"
+            },
+            {
+              "id": "iff-device-mode",
+              "name": "IFF device mode switch (1 / 2)",
+              "type": "switch2",
+              "match": [
+                "PTR-LSPE-TMB-RADIO-MODE12"
+              ],
+              "positions": [
+                {
+                  "name": "1",
+                  "text": "Mode 1 is selected."
+                },
+                {
+                  "name": "2",
+                  "text": "Mode 2 is selected."
+                }
+              ],
+              "text": "This switch picks mode 1 or mode 2 of the IFF device.",
+              "context": "The manual does not describe this switch.",
+              "src": "m1",
+              "page": "71"
+            },
+            {
+              "id": "iff-work-reserve",
+              "name": "IFF device selector (WORK / RESERVE)",
+              "type": "switch2",
+              "match": [
+                "PTR-LSPE-TMB-RADIO-WRK",
+                "item:left-side-console:8",
+                "item:left-side-console:9",
+                "item:left-side-console:11"
+              ],
+              "positions": [
+                {
+                  "name": "WORK",
+                  "text": "The normal IFF unit is in use."
+                },
+                {
+                  "name": "RESERVE",
+                  "text": "The spare IFF unit is in use."
+                }
+              ],
+              "text": "This switch selects the working IFF unit or the spare (reserve) unit. A lamp named 'Set Reserve' tells the pilot to switch to the spare.",
+              "context": "The pilot uses the reserve unit when the working one has failed. A 6201 FAIL lamp on the instrument panel shows a failure.",
+              "src": "m1",
+              "page": "71"
+            },
+            {
+              "id": "iff-mode-selector",
+              "name": "IFF mode selector (AUTO / KD / +-15 / KP)",
+              "type": "selector",
+              "match": [
+                "PTR-LSPE-LVR-MODE"
+              ],
+              "positions": [
+                {
+                  "name": "AUTO",
+                  "text": "The IFF device chooses its mode by itself."
+                },
+                {
+                  "name": "KD",
+                  "text": "Mode named KD; the manual does not describe it."
+                },
+                {
+                  "name": "+-15",
+                  "text": "Mode named +-15; the manual does not describe it."
+                },
+                {
+                  "name": "KP",
+                  "text": "Mode named KP; the manual does not describe it."
+                }
+              ],
+              "text": "This rotary switch picks the working mode of the IFF device. The positions are named AUTO, KD, +-15 and KP.",
+              "context": "The manual does not explain the positions.",
+              "src": "m1",
+              "page": "71"
+            }
+          ]
+        },
+        {
+          "id": "recorders-misc",
+          "name": "Recorders, cargo auto release, lights code and horn",
+          "db": "left-side-console",
+          "src": "m1",
+          "page": "211",
+          "text": "Several small controls on the left console: the voice recorder, the flight data recorder, the automatic cargo release, the light code button and the horn.",
+          "context": "The flight recorders are only animated in the game. The cargo release and the light code are used in special tasks.",
+          "controls": [
+            {
+              "id": "p503-power",
+              "name": "P-503B voice recorder power switch",
+              "type": "switch2",
+              "match": [
+                "PTR-LSPE-TMB-REC",
+                "item:left-side-console:10"
+              ],
+              "positions": [
+                {
+                  "name": "ON",
+                  "text": "The voice recorder is on."
+                },
+                {
+                  "name": "OFF",
+                  "text": "The voice recorder is off."
+                }
+              ],
+              "text": "This switch turns on the voice recorder, a machine that records what the pilot says on the radio and the intercom.",
+              "context": "The manual says the voice recorder is not implemented, but its switch moves.",
+              "src": "m1",
+              "page": "212"
+            },
+            {
+              "id": "p503-backlight",
+              "name": "P-503B recorder backlight knob",
+              "type": "knob",
+              "match": [
+                "PTR-LSPE-LVR-LGTSEL"
+              ],
+              "text": "This knob sets the brightness of the backlight of the voice recorder panel.",
+              "context": "The pilot sets it at night, like the other panel backlights.",
+              "src": "m1",
+              "page": "212"
+            },
+            {
+              "id": "sarpp-mode",
+              "name": "SARPP-12 flight recorder mode switch (MANUAL / AUTO)",
+              "type": "switch2",
+              "match": [
+                "PTR-LSPE-TMB-CONTR-AUTMAN",
+                "item:left-side-console:18"
+              ],
+              "positions": [
+                {
+                  "name": "AUTO",
+                  "text": "The recorder starts by itself after take-off."
+                },
+                {
+                  "name": "MANUAL",
+                  "text": "The recorder runs right away."
+                }
+              ],
+              "text": "This switch controls the flight data recorder. It records height, speed and other flight numbers, like the black box of an aeroplane.",
+              "context": "The manual says the recorder is not implemented in the game but the switch and its lamp work. In AUTO it starts after take-off.",
+              "src": "m1",
+              "page": "212"
+            },
+            {
+              "id": "sarpp-lamp",
+              "name": "SARPP working annunciator",
+              "type": "light",
+              "match": [
+                "item:left-side-console:4"
+              ],
+              "text": "This lamp blinks while the flight data recorder is working.",
+              "context": "It confirms that the recorder is recording.",
+              "src": "m1",
+              "page": "211"
+            },
+            {
+              "id": "cargo-auto-release",
+              "name": "External cargo automatic release switch",
+              "type": "switch2",
+              "match": [
+                "PTR-LSPE-TMB-BRK-OUT",
+                "item:left-side-console:12"
+              ],
+              "positions": [
+                {
+                  "name": "ON",
+                  "text": "The hook opens by itself when the load touches the ground."
+                },
+                {
+                  "name": "OFF",
+                  "text": "The hook only opens with the release buttons."
+                }
+              ],
+              "text": "This switch arms the automatic release of a load that hangs under the helicopter on a cable. When the load touches the ground, the hook opens by itself.",
+              "context": "The pilot switches it on before landing a sling load. The cargo hook breakers on the right breaker panel must be on.",
+              "src": "m1",
+              "page": "215"
+            },
+            {
+              "id": "cargo-lamps",
+              "name": "Doors open, shackle open and horn on annunciators",
+              "type": "light",
+              "match": [
+                "item:left-side-console:13",
+                "item:left-side-console:14",
+                "item:left-side-console:15"
+              ],
+              "text": "These three lamps tell about the cargo doors being open, the cargo hook being open and the horn being on.",
+              "context": "The manual says the HOOK OPEN lamp lights when the cargo hook is open.",
+              "count": 3,
+              "src": "m1",
+              "page": "215"
+            },
+            {
+              "id": "nav-code",
+              "name": "Code NAV lights button",
+              "type": "button",
+              "match": [
+                "PTR-LSPE-TMB-AIR-CODE",
+                "item:left-side-console:17"
+              ],
+              "text": "Pressing and releasing this button flashes the navigation lights, so the pilot can give light signals like a Morse code.",
+              "context": "The manual calls it the navigational light code button.",
+              "src": "m1",
+              "page": "200"
+            },
+            {
+              "id": "air-horn",
+              "name": "Air horn (alarm bell) button",
+              "type": "button",
+              "match": [
+                "PTR-LSPE-TMB-AIR-SIREN",
+                "item:left-side-console:16"
+              ],
+              "text": "Pressing this button sounds an alarm bell or horn.",
+              "context": "The game names it the alarm bell button; the catalog calls it the air horn button.",
+              "src": "m1",
+              "page": "71"
+            }
+          ]
+        },
+        {
+          "id": "left-pressure-gauges",
+          "name": "Air pressure gauges (left side console)",
+          "db": "left-side-console",
+          "src": "m1",
+          "page": "94",
+          "text": "Two dials for the compressed air system: one for the air bottles and one for the wheel brakes.",
+          "context": "The compressed air works the wheel brakes. The pilot checks both dials before moving the helicopter.",
+          "controls": [
+            {
+              "id": "pneumatic-gauge",
+              "name": "MVU-10K pneumatic system pressure gauge",
+              "type": "gauge",
+              "match": [
+                "item:left-side-console:5"
+              ],
+              "text": "This dial shows how much air pressure is in the air bottles of the pneumatic system.",
+              "context": "The manual says the normal reading is 40 to 50 kg/cm2. The air is used for the wheel brakes.",
+              "src": "m1",
+              "page": "95"
+            },
+            {
+              "id": "brake-pressure-gauge",
+              "name": "MA-60K wheel brake air pressure gauge",
+              "type": "gauge",
+              "match": [
+                "item:left-side-console:7"
+              ],
+              "text": "This dial shows the air pressure in the wheel brake line while the brakes are applied.",
+              "context": "The manual says the normal reading is 30 to 36 kg/cm2 with the brakes pressed, and nothing after release.",
+              "src": "m1",
+              "page": "95"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

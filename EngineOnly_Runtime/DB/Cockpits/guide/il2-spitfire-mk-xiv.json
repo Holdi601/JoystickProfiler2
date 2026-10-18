@@ -1,0 +1,1164 @@
+{
+  "format": "joypro-cockpit-guide",
+  "version": 1,
+  "id": "il2-spitfire-mk-xiv",
+  "title": "Spitfire Mk XIV (IL-2 Great Battles)",
+  "variants": [
+    "spitfire-mk-xiv"
+  ],
+  "games": [
+    "IL2Game"
+  ],
+  "sets": [],
+  "sources": [
+    {
+      "id": "c1",
+      "title": "JoyPro cockpit catalog (from the IL-2 and real aircraft manuals)",
+      "kind": "reference"
+    },
+    {
+      "id": "m1",
+      "title": "DCS Spitfire IX Flight Manual EN",
+      "file": "Mods/aircraft/SpitfireLFMkIX/Doc/DCS Spitfire IX Flight Manual EN.pdf"
+    }
+  ],
+  "intro": "The Spitfire Mk XIV is a single-seat British fighter with a big Griffon engine and a five-blade propeller. The cockpit follows the Spitfire pattern: the standard six flying gauges in the middle, the engine gauges on the right of the dashboard, the throttle box on the left wall and the wheel and emergency controls on the right.",
+  "areas": [
+    {
+      "id": "glareshield",
+      "where": "glareshield",
+      "name": "Gunsight",
+      "text": "This is the top of the instrument panel where the gunsight sits.",
+      "panels": [
+        {
+          "id": "gunsight",
+          "name": "Gyro gunsight",
+          "db": "gunsight",
+          "src": "m1",
+          "text": "This is the gunsight on top of the instrument panel. A lit ring and a dot float on a glass plate. The pilot puts the dot on the enemy to aim the guns.",
+          "context": "In IL-2 the sight can be set for the target's wingspan and range; the pilot uses it in every attack.",
+          "controls": [
+            {
+              "id": "sight-span",
+              "name": "Span setting control",
+              "type": "knob",
+              "match": [
+                "item:gunsight:1"
+              ],
+              "text": "This sets the wingspan of the enemy plane on the gunsight. The ring then covers a plane of that wingspan at the right range.",
+              "context": "The pilot chooses the span of the likely target. When the enemy fills the ring exactly, the range is right."
+            },
+            {
+              "id": "sight-range",
+              "name": "Range control (throttle twist grip)",
+              "type": "other",
+              "match": [
+                "item:gunsight:2"
+              ],
+              "text": "This sets the distance to the target on the gunsight, so that the size of the aiming ring fits the enemy plane at that distance.",
+              "context": "Together with the wingspan setting, it makes the ring fit the target. Then the pilot knows the enemy is in the right range to open fire."
+            },
+            {
+              "id": "refl-glass",
+              "name": "Reflector glass",
+              "type": "other",
+              "match": [
+                "item:gunsight:3"
+              ],
+              "text": "This is the glass plate of the gunsight. A bright ring and a dot are projected onto it, and the pilot sees them over the view ahead.",
+              "context": "The pilot puts the dot on the enemy plane before firing. Because the aim mark floats in the pilot's view, he can aim while keeping his eyes on the target."
+            },
+            {
+              "id": "sight-mode",
+              "name": "Fixed / gyro selector lever",
+              "type": "lever",
+              "match": [
+                "item:gunsight:4"
+              ],
+              "text": "This lever picks what the gyro gunsight shows: a fixed ring, the moving gyro marks, or both.",
+              "context": "The gyro marks move to give the lead in a turn, so the pilot can aim ahead of a moving target. The fixed ring is a plain aiming mark."
+            },
+            {
+              "id": "sight-dim",
+              "name": "Dimmer",
+              "type": "knob",
+              "match": [
+                "item:gunsight:5"
+              ],
+              "text": "This knob makes the light of the gunsight brighter or darker, like a dimmer switch for the lamp.",
+              "context": "In bright daylight the pilot turns it up so the ring can be seen. At dusk the pilot turns it down so the glow does not dazzle."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "front-center",
+      "where": "front-center",
+      "name": "Instrument panel",
+      "text": "This is the panel in front of the pilot with the flight and engine gauges and the main switches.",
+      "panels": [
+        {
+          "id": "blind-flying-panel",
+          "name": "Blind-flying panel",
+          "db": "blind-flying-panel",
+          "src": "m1",
+          "text": "This is the standard panel of the six main flight gauges, the same in nearly all British planes. It lets the pilot fly by instruments alone.",
+          "context": "The pilot reads it all the time. The gauges are in the same place on every British plane, so the pilot finds them quickly.",
+          "controls": [
+            {
+              "id": "airspeed",
+              "name": "Airspeed indicator",
+              "type": "gauge",
+              "match": [
+                "item:blind-flying-panel:1"
+              ],
+              "text": "This gauge shows how fast the plane moves through the air. The needle turns further round the dial as the plane gets faster.",
+              "context": "The pilot watches it all the time. Too slow and the wings stop lifting the plane, too fast and the plane can be damaged. It shows speed through the air, not speed over the ground."
+            },
+            {
+              "id": "horizon",
+              "name": "Artificial horizon",
+              "type": "gauge",
+              "match": [
+                "item:blind-flying-panel:2"
+              ],
+              "text": "This gauge shows whether the nose of the plane points up or down and whether the wings are level. A small model plane moves in front of a line that stands for the real horizon.",
+              "context": "It helps the pilot keep the plane level in cloud or at night, when the real horizon cannot be seen. It works with a spinning gyroscope inside."
+            },
+            {
+              "id": "climb",
+              "name": "Rate of climb indicator",
+              "type": "gauge",
+              "match": [
+                "item:blind-flying-panel:3"
+              ],
+              "text": "This gauge shows how fast the plane climbs or sinks. The needle goes up from the middle when the plane climbs and down when it sinks.",
+              "context": "The pilot uses it to hold a steady climb or a steady descent, for example on the way down to land. Level flight is shown by the needle at the middle mark."
+            },
+            {
+              "id": "altimeter",
+              "name": "Altimeter",
+              "type": "gauge",
+              "match": [
+                "item:blind-flying-panel:4"
+              ],
+              "text": "This is the height gauge. Its needles show how high the plane is above the sea.",
+              "context": "The pilot checks it to stay clear of the ground and to hold the right height for a climb, a patrol or an attack. It reads the height from the air pressure outside."
+            },
+            {
+              "id": "dir-gyro",
+              "name": "Directional gyro",
+              "type": "gauge",
+              "match": [
+                "item:blind-flying-panel:5"
+              ],
+              "text": "This gauge shows the direction the plane flies in, as a compass heading. It is driven by a spinning gyroscope, so it stays steady in turns. The pilot sets it from the magnetic compass.",
+              "context": "It is easier to read than the magnetic compass, which swings about in turns. The pilot checks it against the compass now and then, because it slowly drifts."
+            },
+            {
+              "id": "turn-bank",
+              "name": "Turn and slip indicator",
+              "type": "gauge",
+              "match": [
+                "item:blind-flying-panel:6"
+              ],
+              "text": "This gauge shows how fast the plane turns and whether it turns cleanly. A needle shows the turn and a small ball in a curved glass tube shows whether the plane slips sideways.",
+              "context": "The pilot keeps the ball in the middle with the rudder pedals so that turns stay clean. It is one of the basic gauges for flying in cloud."
+            }
+          ]
+        },
+        {
+          "id": "dashboard-left",
+          "name": "Dashboard left side",
+          "db": "dashboard-left",
+          "src": "m1",
+          "text": "This is the left part of the dashboard. It holds the auxiliary controls: flaps, oxygen, wheel and trim indicators, the brake pressure gauge and the magneto switches.",
+          "context": "The pilot uses it for the start-up and for the flaps.",
+          "controls": [
+            {
+              "id": "nav-lights",
+              "name": "Navigation light switch",
+              "type": "switch",
+              "match": [
+                "item:dashboard-left:1"
+              ],
+              "text": "This switch turns the navigation lights on and off. These are coloured lights on the wings and the tail that show other pilots which way the plane is going.",
+              "context": "The pilot uses them at night so that other planes can see the aircraft. In the wing lights, red is on the left and green on the right."
+            },
+            {
+              "id": "flaps",
+              "name": "Flaps control valve",
+              "type": "lever",
+              "match": [
+                "item:dashboard-left:2"
+              ],
+              "text": "This control moves the flaps. Flaps are parts of the wing that fold down to give more lift at slow speed, for take-off and landing.",
+              "context": "The pilot lowers them for landing, so the plane can fly slower, and raises them again in fast flight. Never use them at high speed.",
+              "positions": [
+                {
+                  "name": "UP",
+                  "text": "The lever is up: the part it works is raised."
+                },
+                {
+                  "name": "DOWN",
+                  "text": "The lever is down: the part it works is lowered."
+                }
+              ]
+            },
+            {
+              "id": "oxy-supply",
+              "name": "Oxygen unit",
+              "type": "gauge",
+              "match": [
+                "item:dashboard-left:3"
+              ],
+              "text": "This gauge shows how much oxygen is left in the bottles. The pilot breathes this oxygen through a mask at high altitude.",
+              "context": "The air is too thin for breathing higher up, so the pilot needs the oxygen there. The pilot checks the gauge before and during a high flight."
+            },
+            {
+              "id": "clock",
+              "name": "Clock",
+              "type": "gauge",
+              "match": [
+                "item:dashboard-left:4"
+              ],
+              "text": "This is the clock. It shows the time of day, like a wall clock.",
+              "context": "The pilot uses it for timing, for example how long a certain course has been flown or when to be at a place. On long flights it helps to work out how much fuel is left."
+            },
+            {
+              "id": "gear-lights",
+              "name": "Undercarriage position indicator",
+              "type": "indicator",
+              "match": [
+                "item:dashboard-left:5"
+              ],
+              "text": "These indicators show the position of the landing gear, the wheels. A light or a marker tells whether the wheels are up, down and locked, or in between.",
+              "context": "The pilot looks at them after moving the gear handle, and before landing, to be sure that the wheels are down and locked. On some planes the flaps are shown there too."
+            },
+            {
+              "id": "elev-trim-ind",
+              "name": "Elevator trim position indicator",
+              "type": "gauge",
+              "match": [
+                "item:dashboard-left:6"
+              ],
+              "text": "This gauge shows where the elevator trim tab is set, towards nose up or nose down.",
+              "context": "The pilot looks at it to know how much trim is dialled in, for example before take-off or after a change of speed."
+            },
+            {
+              "id": "brake-press",
+              "name": "Brake air pressure gauge",
+              "type": "gauge",
+              "match": [
+                "item:dashboard-left:7"
+              ],
+              "text": "This gauge shows the air pressure that feeds the wheel brakes. The brakes work by compressed air, and the dial shows what is left.",
+              "context": "The pilot checks it before taxiing and landing. A triple gauge shows the air supply and the pressure of the left and right brake."
+            },
+            {
+              "id": "ignition",
+              "name": "Magneto switches",
+              "type": "switch2",
+              "match": [
+                "item:dashboard-left:8"
+              ],
+              "text": "This is the ignition switch. It turns on the magnetos, the two small generators that make the sparks in the engine. Two are fitted for safety. The positions choose none, one or both.",
+              "context": "The pilot checks each magneto on its own before take-off and then runs on both. Without a magneto switched on the engine will not run.",
+              "positions": [
+                {
+                  "name": "ON",
+                  "text": "This position switches the equipment on."
+                },
+                {
+                  "name": "OFF",
+                  "text": "This position switches the equipment off."
+                }
+              ]
+            }
+          ],
+          "page": "105"
+        },
+        {
+          "id": "dashboard-right",
+          "name": "Dashboard right side",
+          "db": "dashboard-right",
+          "src": "m1",
+          "text": "This is the right part of the dashboard. It holds the engine gauges for the Griffon engine, the supercharger switch and the fuel gauge.",
+          "context": "The pilot watches it all the time to see that the engine is healthy.",
+          "controls": [
+            {
+              "id": "voltmeter",
+              "name": "Voltmeter",
+              "type": "gauge",
+              "match": [
+                "item:dashboard-right:1"
+              ],
+              "text": "This gauge shows the voltage of the electrical system, which tells how strong the electricity is.",
+              "context": "The pilot looks at it to see that the generator and battery supply enough power for the lights, radio and other equipment."
+            },
+            {
+              "id": "rpm",
+              "name": "Tachometer",
+              "type": "gauge",
+              "match": [
+                "item:dashboard-right:2"
+              ],
+              "text": "This gauge shows how fast the engine turns, in turns per minute (RPM). The needle moves up as the engine speeds up.",
+              "context": "The pilot watches it when starting the engine and when setting power. On planes with a propeller lever, the lever sets this speed."
+            },
+            {
+              "id": "supercharger-sw",
+              "name": "Supercharger control panel",
+              "type": "switch2",
+              "match": [
+                "item:dashboard-right:3"
+              ],
+              "text": "This panel holds the supercharger switch and a lamp. The switch lets the supercharger change gear automatically (AUTO NORMAL) or holds it in M.S. The lamp shows the gear (F.S.) in use.",
+              "context": "The pilot leaves it in AUTO NORMAL for flying. The supercharger is a pump that pushes more air into the engine at height.",
+              "positions": [
+                {
+                  "name": "AUTO NORMAL",
+                  "text": "The supercharger changes gear by itself."
+                },
+                {
+                  "name": "M.S.",
+                  "text": "The supercharger gear change is no longer automatic; the catalog names this position M.S."
+                }
+              ]
+            },
+            {
+              "id": "boost",
+              "name": "Boost gauge",
+              "type": "gauge",
+              "match": [
+                "item:dashboard-right:4"
+              ],
+              "text": "This gauge shows how hard air is pushed into the engine, called boost or manifold pressure. More boost means more power from the engine.",
+              "context": "The pilot sets it with the throttle. It tells how much power the engine gives and helps stay inside the engine's limits, especially on take-off and in a fight."
+            },
+            {
+              "id": "oil-press",
+              "name": "Oil pressure indicator",
+              "type": "gauge",
+              "match": [
+                "item:dashboard-right:5"
+              ],
+              "text": "This gauge shows the pressure of the engine oil. The oil lubricates the moving parts inside the engine, and the pump needs to push it round with enough pressure.",
+              "context": "The pilot checks it right after the engine starts. If the pressure is too low or falls during flight, the engine could be damaged."
+            },
+            {
+              "id": "oil-temp",
+              "name": "Oil temperature indicator",
+              "type": "gauge",
+              "match": [
+                "item:dashboard-right:6"
+              ],
+              "text": "This gauge shows how hot the engine oil is. The oil also carries heat away from the engine.",
+              "context": "The pilot watches it to see whether the engine runs too hot, for example when climbing slowly with full power. A cooler or radiator flap can be opened to bring it down."
+            },
+            {
+              "id": "coolant-temp",
+              "name": "Coolant temperature gauge",
+              "type": "gauge",
+              "match": [
+                "item:dashboard-right:7"
+              ],
+              "text": "This gauge shows the temperature of the liquid that cools the engine. The liquid flows through the engine and then through a radiator that gives the heat to the air.",
+              "context": "If the needle goes too high, the pilot opens the radiator flaps or shutters so that more cooling air flows through. Too hot an engine can seize up."
+            },
+            {
+              "id": "fuel-level",
+              "name": "Fuel gauge",
+              "type": "gauge",
+              "match": [
+                "item:dashboard-right:8"
+              ],
+              "text": "This gauge shows how much fuel is left in the tank, like the fuel gauge of a car. Where there are several tanks, there is one gauge or one needle for each.",
+              "context": "The pilot checks it often to know how long the plane can still fly. The plane burns fuel quickly, so the reading drops visibly."
+            },
+            {
+              "id": "fuel-warn",
+              "name": "Fuel pressure warning light",
+              "type": "light",
+              "match": [
+                "item:dashboard-right:9"
+              ],
+              "text": "This is a warning light for the fuel system. It comes on when the fuel is running low or when the fuel pressure is wrong, as its name says.",
+              "context": "When it lights, the pilot checks the fuel gauges and the tank selector and plans to land soon. It is like the fuel warning light of a car."
+            }
+          ],
+          "page": "111"
+        }
+      ]
+    },
+    {
+      "id": "left-console",
+      "where": "left-console",
+      "name": "Left console",
+      "text": "This is the left side of the cockpit beside the pilot's seat. It holds the engine levers, the trim and other controls.",
+      "panels": [
+        {
+          "id": "left-side",
+          "name": "Left side",
+          "db": "left-side",
+          "src": "m1",
+          "text": "This is the left side wall of the cockpit. It holds the engine levers, the trim controls and other everyday controls within reach of the pilot's left hand.",
+          "context": "The pilot uses these controls during start-up, take-off and while flying. The catalog numbers each item on the wall.",
+          "controls": [
+            {
+              "id": "throttle",
+              "name": "Throttle control",
+              "type": "lever",
+              "match": [
+                "item:left-side:1"
+              ],
+              "text": "This lever sets how much power the engine makes. Pushing it forward gives more power and the plane goes faster, pulling it back gives less.",
+              "context": "The pilot uses it all the time, at full power for take-off and a fight and at less power for cruising. It works like the gas pedal of a car."
+            },
+            {
+              "id": "ignition",
+              "name": "Ignition switches",
+              "type": "switch",
+              "match": [
+                "item:left-side:2"
+              ],
+              "text": "This is the ignition switch. It turns on the magnetos, the two small generators that make the sparks in the engine. Two are fitted for safety. The positions choose none, one or both. The catalog lists it as 'Ignition switches' in the Left side panel.",
+              "context": "The pilot checks each magneto on its own before take-off and then runs on both. Without a magneto switched on the engine will not run. This entry is the one called 'Ignition switches'."
+            },
+            {
+              "id": "radio-ctrl",
+              "name": "Radio control unit",
+              "type": "other",
+              "match": [
+                "item:left-side:3"
+              ],
+              "text": "This is the control box of the radio. The pilot uses it to switch the radio on and to choose a channel.",
+              "context": "Radios let the pilot talk to other planes and to the ground station. The catalog lists the box without more detail."
+            },
+            {
+              "id": "cockpit-light",
+              "name": "Cockpit floodlight",
+              "type": "light",
+              "match": [
+                "item:left-side:4"
+              ],
+              "text": "This is a lamp or a control for the light in the cockpit. It lights the instruments so the pilot can read them at night.",
+              "context": "The pilot turns it on for flying in the dark and turns it down so that the light does not hide the view outside."
+            },
+            {
+              "id": "cockpit-door",
+              "name": "Cockpit door handle",
+              "type": "handle",
+              "match": [
+                "item:left-side:5"
+              ],
+              "text": "This handle opens the side door of the cockpit, the way into the plane from the wing.",
+              "context": "The pilot uses it on the ground to climb in and out."
+            },
+            {
+              "id": "cam-ind",
+              "name": "Camera gun indicator wedge plate",
+              "type": "other",
+              "match": [
+                "item:left-side:6"
+              ],
+              "text": "This is a small plate with a wedge-shaped mark that belongs to the gun camera. The catalog gives no further detail about it.",
+              "context": "The gun camera films what the guns hit, so the pilot's success can be checked later."
+            },
+            {
+              "id": "prop-lever-pair",
+              "name": "Propeller control",
+              "type": "lever",
+              "match": [
+                "item:left-side:7"
+              ],
+              "text": "This lever sets the propeller pitch, which means how sharply the blades bite the air. In practice it sets how fast the engine turns, in RPM.",
+              "context": "The pilot pushes it forward for take-off and a fight, and pulls it back a little for cruising. The RPM gauge shows the result."
+            },
+            {
+              "id": "cutoff",
+              "name": "Fuel cut-off control",
+              "type": "lever",
+              "match": [
+                "item:left-side:8"
+              ],
+              "text": "This lever cuts the fuel to the engine and so stops it. Pulling it back to the idle cut-off position shuts the engine down.",
+              "context": "The pilot uses it to stop the engine after landing and, when starting, moves it forward to let fuel flow. It is the engine's off switch."
+            },
+            {
+              "id": "bomb-push",
+              "name": "Bomb release push-button",
+              "type": "button",
+              "match": [
+                "item:left-side:9"
+              ],
+              "text": "This push-button releases the bombs. Pressing it drops the bomb from under the plane.",
+              "context": "The pilot presses it over the target. It sits on the left wall."
+            },
+            {
+              "id": "gun-fire-spit",
+              "name": "Gun firing push-button",
+              "type": "button",
+              "match": [
+                "item:left-side:10",
+                "item:left-side:28"
+              ],
+              "text": "This control belongs to the firing of the guns. The catalog lists a firing push-button and a safety catch for it, both on the control column.",
+              "context": "The pilot arms the guns with the safety catch before a fight and puts them back to safe afterwards. The firing button on the grip does the shooting.",
+              "count": 2
+            },
+            {
+              "id": "column",
+              "name": "Control column",
+              "type": "other",
+              "match": [
+                "item:left-side:11"
+              ],
+              "text": "This is the control column, the stick with the spade grip. The pilot pulls it back to climb and pushes it forward to dive, and moves it sideways to roll.",
+              "context": "It is the main flight control. The firing button, the brake lever and the safety catch sit on its grip."
+            },
+            {
+              "id": "brake-lever",
+              "name": "Brake lever",
+              "type": "lever",
+              "match": [
+                "item:left-side:12"
+              ],
+              "text": "This lever works the wheel brakes. On these planes the brake lever is on the control column; the rudder pedals decide which wheel brakes more.",
+              "context": "The pilot uses it after landing to slow down and for turns on the ground. Brakes need air pressure, which the gauge shows."
+            },
+            {
+              "id": "camera",
+              "name": "Camera push-button",
+              "type": "button",
+              "match": [
+                "item:left-side:13",
+                "item:left-side:22"
+              ],
+              "text": "This control works the gun camera, a camera that films through the gunsight. A master switch turns it on and a push-button on the control column starts it.",
+              "context": "The camera records the fight to prove hits. It is used in training and to confirm victories.",
+              "count": 2
+            },
+            {
+              "id": "friction",
+              "name": "Throttle friction adjuster",
+              "type": "knob",
+              "match": [
+                "item:left-side:14"
+              ],
+              "text": "This knob or lever makes the engine levers stiffer, so that they stay where they are put. It works like the stiffness screw of a joystick.",
+              "context": "The pilot tightens it so the throttle does not creep back by vibration, and loosens it for quick moves."
+            },
+            {
+              "id": "carb-air",
+              "name": "Air intake control",
+              "type": "lever",
+              "match": [
+                "item:left-side:15"
+              ],
+              "text": "This control picks which air the engine breathes. The air can be the cold air from the front, or filtered or warm air from inside the cowling.",
+              "context": "The pilot uses warm air to prevent ice in the carburettor, and filtered air on dusty airfields. The normal setting gives the most power."
+            },
+            {
+              "id": "oil-dilute",
+              "name": "Oil dilution push-button",
+              "type": "button",
+              "match": [
+                "item:left-side:16"
+              ],
+              "text": "This control thins the engine oil with a little fuel. Thinner oil flows better, which helps a cold engine start.",
+              "context": "The pilot uses it before switching off in cold weather, so the oil is thin at the next start. Used for a short time only."
+            },
+            {
+              "id": "fuel-pump",
+              "name": "Fuel pump ammeter test socket",
+              "type": "other",
+              "match": [
+                "item:left-side:17",
+                "item:left-side:20",
+                "item:left-side:23"
+              ],
+              "text": "This control belongs to the electric fuel pump of the engine. The catalog lists a switch, a test button and a test socket for it.",
+              "context": "The electric pump helps feed the engine at height or when the main pump struggles. The catalog gives no further detail on this part.",
+              "count": 3
+            },
+            {
+              "id": "test-button",
+              "name": "Radiator flap test push-button",
+              "type": "button",
+              "match": [
+                "item:left-side:18",
+                "item:left-side:19"
+              ],
+              "text": "This is a test push-button of the engine systems. The catalog lists it by name and gives no further detail.",
+              "context": "It is used on the ground to check the system named on the button before flight.",
+              "count": 2
+            },
+            {
+              "id": "pitot",
+              "name": "Pressure head heater switch",
+              "type": "switch",
+              "match": [
+                "item:left-side:21"
+              ],
+              "text": "This switch heats the pitot tube, the small tube on the wing that measures airspeed. The heat keeps ice from blocking it.",
+              "context": "The pilot turns it on in cloud and in cold air. Without it the airspeed gauge can freeze and show a wrong speed."
+            },
+            {
+              "id": "gen-lamp",
+              "name": "Generator failure lamp",
+              "type": "light",
+              "match": [
+                "item:left-side:24"
+              ],
+              "text": "This lamp lights up when the generator has failed.",
+              "context": "If it lights, the generator no longer makes electricity and the plane runs on the battery."
+            },
+            {
+              "id": "rudder-trim",
+              "name": "Rudder tab control",
+              "type": "wheel",
+              "match": [
+                "item:left-side:25"
+              ],
+              "text": "This control sets the rudder trim. It turns the nose a little left or right, so that the plane flies straight without the pilot pressing a rudder pedal.",
+              "context": "The engine and propeller push the plane's nose to one side, so the pilot trims it, especially for take-off and a climb."
+            },
+            {
+              "id": "elev-trim",
+              "name": "Elevator tab control",
+              "type": "wheel",
+              "match": [
+                "item:left-side:26"
+              ],
+              "text": "This wheel sets the elevator trim. The trim is a small adjustment so that the plane flies straight and level without the pilot holding the stick forward or back.",
+              "context": "The pilot turns it after changing speed or power, until the stick feels light. The wheel is on the left side of the cockpit."
+            },
+            {
+              "id": "canopy-emerg",
+              "name": "Hood jettisoning crow-bar",
+              "type": "handle",
+              "match": [
+                "item:left-side:27"
+              ],
+              "text": "This handle throws off the canopy, the clear roof over the cockpit, in an emergency. The pilot pulls it before bailing out.",
+              "context": "It is for emergencies only, for example before a crash landing or a bail-out. After it is pulled the canopy flies away and cannot be put back in flight."
+            }
+          ],
+          "page": "123"
+        },
+        {
+          "id": "throttle-quadrant",
+          "name": "Throttle quadrant",
+          "db": "throttle-quadrant",
+          "src": "m1",
+          "text": "This is the throttle quadrant, a plate on the left wall with the throttle and propeller levers, friction control and the gear horn switch.",
+          "context": "The pilot's left hand rests on the quadrant during flight.",
+          "controls": [
+            {
+              "id": "throttle",
+              "name": "Throttle lever",
+              "type": "lever",
+              "match": [
+                "item:throttle-quadrant:1"
+              ],
+              "text": "This lever sets how much power the engine makes. Pushing it forward gives more power and the plane goes faster, pulling it back gives less. The catalog lists it as 'Throttle lever' in the Throttle quadrant panel.",
+              "context": "The pilot uses it all the time, at full power for take-off and a fight and at less power for cruising. It works like the gas pedal of a car. This entry is the one called 'Throttle lever'."
+            },
+            {
+              "id": "quad-misc",
+              "name": "Lever brake",
+              "type": "other",
+              "match": [
+                "item:throttle-quadrant:2",
+                "item:throttle-quadrant:3"
+              ],
+              "text": "This is a small part of the throttle quadrant, listed by the catalog as 'Lever brake'. It holds or limits the engine levers.",
+              "context": "It belongs to the quadrant and is not used during normal flight. The catalog gives no more detail.",
+              "count": 2
+            },
+            {
+              "id": "gear-horn",
+              "name": "Undercarriage horn switch",
+              "type": "switch",
+              "match": [
+                "item:throttle-quadrant:4"
+              ],
+              "text": "This switch belongs to the horn that warns about the wheels. The horn sounds when the pilot reduces power for landing while the wheels are not down.",
+              "context": "The pilot uses the switch to quiet or test the horn. It is a safety help against landing with the wheels up."
+            },
+            {
+              "id": "throttle-grip-bomb",
+              "name": "Throttle grip with bomb button",
+              "type": "lever",
+              "match": [
+                "item:throttle-quadrant:5"
+              ],
+              "text": "This is the grip of the throttle lever. The grip carries a bomb release button. The pilot can drop the bombs without taking the hand off the throttle.",
+              "context": "The pilot moves the throttle with the whole grip and presses the bomb button with the thumb over the target."
+            },
+            {
+              "id": "prop-lever",
+              "name": "Propeller control lever",
+              "type": "lever",
+              "match": [
+                "item:throttle-quadrant:6"
+              ],
+              "text": "This lever sets the propeller pitch, which means how sharply the blades bite the air. In practice it sets how fast the engine turns, in RPM. The catalog lists it as 'Propeller control lever' in the Throttle quadrant panel.",
+              "context": "The pilot pushes it forward for take-off and a fight, and pulls it back a little for cruising. The RPM gauge shows the result. This entry is the one called 'Propeller control lever'."
+            },
+            {
+              "id": "friction",
+              "name": "Friction lever",
+              "type": "lever",
+              "match": [
+                "item:throttle-quadrant:7"
+              ],
+              "text": "This knob or lever makes the engine levers stiffer, so that they stay where they are put. It works like the stiffness screw of a joystick. The catalog lists it as 'Friction lever' in the Throttle quadrant panel.",
+              "context": "The pilot tightens it so the throttle does not creep back by vibration, and loosens it for quick moves. This entry is the one called 'Friction lever'."
+            }
+          ],
+          "page": "56"
+        }
+      ]
+    },
+    {
+      "id": "right-console",
+      "where": "right-console",
+      "name": "Right console",
+      "text": "This is the right side of the cockpit. It holds the radio, oxygen and other equipment used less often.",
+      "panels": [
+        {
+          "id": "right-side",
+          "name": "Right side",
+          "db": "right-side",
+          "src": "m1",
+          "text": "This is the right side wall of the cockpit. It holds the radio and oxygen equipment, the emergency handles and the other controls that are used less often.",
+          "context": "The pilot uses the controls on it mostly on the ground, in emergencies and for radio and oxygen. The catalog numbers each item on the wall.",
+          "controls": [
+            {
+              "id": "spare-lamps",
+              "name": "Reflector spare lamps",
+              "type": "other",
+              "match": [
+                "item:right-side:1"
+              ],
+              "text": "This is a holder for spare bulbs for the gunsight lamp.",
+              "context": "The pilot can change the bulb if the sight lamp burns out. It is only a holder and not a control."
+            },
+            {
+              "id": "signal-lights",
+              "name": "Signalling switch box",
+              "type": "switch",
+              "match": [
+                "item:right-side:2"
+              ],
+              "text": "This switch or switch box works the recognition lights, coloured signal lamps. The pilot can flash them to show who the plane is, a bit like a code made of light.",
+              "context": "Pilots use them at night or in poor light so that friendly planes and gunners can tell friend from enemy. The catalog gives no more detail."
+            },
+            {
+              "id": "hand-hyd",
+              "name": "Hand wobble pump",
+              "type": "handle",
+              "match": [
+                "item:right-side:3"
+              ],
+              "text": "This is a hand pump. The pilot works the handle back and forth to build up hydraulic pressure by hand when the engine pump cannot do it.",
+              "context": "It is the backup for moving the gear and the flaps if the normal pump fails. It takes many strokes."
+            },
+            {
+              "id": "cockpit-light",
+              "name": "Cockpit floodlight",
+              "type": "light",
+              "match": [
+                "item:right-side:4"
+              ],
+              "text": "This is a lamp or a control for the light in the cockpit. It lights the instruments so the pilot can read them at night. The catalog lists it as 'Cockpit floodlight' in the Right side panel.",
+              "context": "The pilot turns it on for flying in the dark and turns it down so that the light does not hide the view outside. This entry is the one called 'Cockpit floodlight'."
+            },
+            {
+              "id": "beam-approach",
+              "name": "Beam approach master switch",
+              "type": "switch",
+              "match": [
+                "item:right-side:5"
+              ],
+              "text": "This switch turns on the beam approach radio. It picks up radio beams that guide the pilot to the runway in bad weather.",
+              "context": "The pilot uses it for landing in cloud or fog. It needs the ground beam to work."
+            },
+            {
+              "id": "control-lock",
+              "name": "Control lock attachment lug",
+              "type": "other",
+              "match": [
+                "item:right-side:6",
+                "item:right-side:14"
+              ],
+              "text": "This is a fitting for the control lock, a gadget that holds the stick and the pedals still when the plane is parked, so the wind cannot slam them about.",
+              "context": "It is removed or stowed before flight. It is not a control in flight.",
+              "count": 2
+            },
+            {
+              "id": "oxy-tube",
+              "name": "Oxygen supply tube",
+              "type": "other",
+              "match": [
+                "item:right-side:7"
+              ],
+              "text": "This is the tube that carries the oxygen from the regulator to the pilot's mask.",
+              "context": "The pilot connects it to the mask when getting in. It is only a fitting and not something to operate."
+            },
+            {
+              "id": "iff-buttons",
+              "name": "IFF radio push-buttons",
+              "type": "button",
+              "match": [
+                "item:right-side:8"
+              ],
+              "text": "These push-buttons belong to the IFF set, a radio box that answers the 'who are you?' signal of radars with a code, so friends are known as friends.",
+              "context": "The pilot presses them to set the code or to send a call in an emergency. The catalog gives no more detail."
+            },
+            {
+              "id": "harness",
+              "name": "Harness release control",
+              "type": "lever",
+              "match": [
+                "item:right-side:9"
+              ],
+              "text": "This lever locks or frees the pilot's shoulder straps, the harness that holds the pilot in the seat.",
+              "context": "The pilot locks it for take-off and landing and frees it to lean forward and reach controls."
+            },
+            {
+              "id": "iff-master",
+              "name": "IFF radio master switch",
+              "type": "switch",
+              "match": [
+                "item:right-side:10"
+              ],
+              "text": "This switch turns the IFF set on and off. The IFF set is a radio box that answers the 'who are you?' signal of radars with a code.",
+              "context": "The pilot switches it on before take-off so the plane shows up as a friend on friendly radars."
+            },
+            {
+              "id": "incendiary",
+              "name": "Incendiary bomb",
+              "type": "other",
+              "match": [
+                "item:right-side:11"
+              ],
+              "text": "The catalog lists an 'incendiary bomb' on the right wall of the cockpit. The pilot does not use it in flight.",
+              "context": "Nothing is known about it beyond its name. It is not part of normal flying."
+            },
+            {
+              "id": "heater-plug",
+              "name": "Clothing heater plug",
+              "type": "other",
+              "match": [
+                "item:right-side:12"
+              ],
+              "text": "This is a socket for the electric cable of the pilot's heated flying suit.",
+              "context": "The pilot plugs the suit in for high flights, where it is very cold."
+            },
+            {
+              "id": "oxy-cock",
+              "name": "Oxygen supply cock",
+              "type": "knob",
+              "match": [
+                "item:right-side:13"
+              ],
+              "text": "This knob opens and closes the tap of the oxygen supply, the line that brings oxygen from the bottles.",
+              "context": "The pilot opens it before climbing high, and closes it if the oxygen leaks."
+            },
+            {
+              "id": "headset-plug",
+              "name": "Microphone / telephone socket",
+              "type": "other",
+              "match": [
+                "item:right-side:15"
+              ],
+              "text": "This is the socket for the pilot's headset, the earphones and the microphone, which links the pilot to the radio.",
+              "context": "The pilot plugs it in when getting into the plane. Without it the radio can neither be heard nor used."
+            },
+            {
+              "id": "fuel-pressurise",
+              "name": "Fuel pressurising cock",
+              "type": "handle",
+              "match": [
+                "item:right-side:16"
+              ],
+              "text": "This tap lets air pressure push on the fuel tanks. The pressure helps the fuel keep flowing to the engine at high altitude.",
+              "context": "The pilot uses it on high flights, where thin air makes the fuel flow poorly."
+            },
+            {
+              "id": "deice-pump",
+              "name": "Windscreen de-icing pump plunger",
+              "type": "handle",
+              "match": [
+                "item:right-side:17"
+              ],
+              "text": "This plunger pumps the de-icing fluid onto the windscreen. The pilot pushes it in and pulls it out by hand.",
+              "context": "The pilot uses it with the de-icing tap when ice forms on the front glass and blocks the view."
+            },
+            {
+              "id": "gear-emerg",
+              "name": "Undercarriage emergency lever",
+              "type": "lever",
+              "match": [
+                "item:right-side:18"
+              ],
+              "text": "This lever lowers the landing gear in an emergency, if the normal hydraulic way fails. It lets compressed gas from the cylinder push the wheels down.",
+              "context": "The pilot uses it only after a failure of the hydraulics. It is a one-shot, so after it is used the wheels cannot be raised again in flight."
+            },
+            {
+              "id": "co2",
+              "name": "Undercarriage emergency CO2 cylinder",
+              "type": "other",
+              "match": [
+                "item:right-side:19"
+              ],
+              "text": "This is the gas bottle (carbon dioxide) that pushes the wheels down in an emergency. The pilot cannot work it directly; it is released by the emergency lever.",
+              "context": "It belongs to the emergency gear lowering system."
+            },
+            {
+              "id": "deice-cock",
+              "name": "Windscreen de-icing fluid cock",
+              "type": "knob",
+              "match": [
+                "item:right-side:20"
+              ],
+              "text": "This knob opens the tap for the de-icing fluid. The fluid runs over the windscreen to melt ice.",
+              "context": "The pilot uses it in cold, wet air, when ice forms on the front glass."
+            },
+            {
+              "id": "jettison",
+              "name": "Drop tank jettison handle",
+              "type": "handle",
+              "match": [
+                "item:right-side:21"
+              ],
+              "text": "This handle drops the load hanging under the plane, such as a drop tank (an extra fuel tank) or bombs, all at once. Dropping a load like this is called jettisoning.",
+              "context": "The pilot pulls it to get rid of the weight in an emergency or in a fight, or to drop bombs when the normal release fails."
+            },
+            {
+              "id": "gear-handle",
+              "name": "Undercarriage control lever",
+              "type": "lever",
+              "match": [
+                "item:right-side:22"
+              ],
+              "text": "This handle or lever raises and lowers the landing gear, the wheels. UP folds the wheels away after take-off, DOWN lets them out for landing.",
+              "context": "The pilot lowers the wheels before landing and watches the gear lights to see that they are locked down. Folding them away reduces air drag in flight.",
+              "positions": [
+                {
+                  "name": "UP",
+                  "text": "The wheels fold up into the plane."
+                },
+                {
+                  "name": "DOWN",
+                  "text": "The wheels come down and lock for landing."
+                }
+              ]
+            },
+            {
+              "id": "pedal-adjust",
+              "name": "Rudder pedal adjustment wheel",
+              "type": "wheel",
+              "match": [
+                "item:right-side:23"
+              ],
+              "text": "This wheel moves the rudder pedals closer to the pilot or further away. It fits the pedals to the length of the pilot's legs.",
+              "context": "The pilot sets it on the ground before the flight so that the pedals can be pushed fully."
+            },
+            {
+              "id": "drop-tank-cock",
+              "name": "Drop tank fuel cock lever",
+              "type": "lever",
+              "match": [
+                "item:right-side:24"
+              ],
+              "text": "This lever opens or closes the fuel tap of the drop tank, the extra fuel tank under the plane.",
+              "context": "The pilot opens it on a long flight to use the fuel of the drop tank first, and closes it when the tank is empty."
+            },
+            {
+              "id": "pedal",
+              "name": "Rudder pedal",
+              "type": "pedal",
+              "match": [
+                "item:right-side:25"
+              ],
+              "text": "This is a rudder pedal. Pushing it turns the rudder at the tail and so swings the nose left or right. The pedals are used together with the stick.",
+              "context": "The pilot uses the pedals together with the stick in turns, and alone to steer on the ground."
+            },
+            {
+              "id": "iff-distress",
+              "name": "IFF radio distress switch",
+              "type": "switch",
+              "match": [
+                "item:right-side:26"
+              ],
+              "text": "This switch sends a distress signal through the IFF set. A radar operator sees the call for help.",
+              "context": "The pilot uses it in an emergency, for example when the plane is damaged and cannot get home, so rescuers find the plane."
+            }
+          ],
+          "page": "124"
+        }
+      ]
+    },
+    {
+      "id": "hotas",
+      "where": "hotas",
+      "name": "Stick and throttle",
+      "text": "This is what the pilot holds in the hands: the stick or wheel with its buttons, and the throttle and engine levers with their controls.",
+      "panels": [
+        {
+          "id": "stick",
+          "name": "Control column (spade grip)",
+          "controls": [
+            {
+              "id": "fire-3way",
+              "name": "Gun firing button (3-way)",
+              "type": "rocker",
+              "match": [
+                "control:stick.button.fire"
+              ],
+              "text": "This is the rocking firing button on top of the spade grip. Pressing the upper part fires the machine guns, the lower part fires the cannons, and the middle fires all guns together.",
+              "context": "The pilot uses the thumb. The guns first have to be armed with the safety catch, which is on the grip below the button."
+            },
+            {
+              "id": "gun-safety-grip",
+              "name": "Gun safety switch",
+              "type": "switch2",
+              "match": [
+                "control:stick.switch.gun_safety"
+              ],
+              "text": "This is the safety on the grip that makes the firing button safe or ready. With the safety on, pressing the firing button does nothing.",
+              "context": "The pilot makes the guns ready before a fight and safe again before landing, so that no shot leaves by mistake.",
+              "positions": [
+                {
+                  "name": "SAFE",
+                  "text": "The firing button is locked and no gun fires."
+                },
+                {
+                  "name": "FIRE",
+                  "text": "The firing button is ready and fires the guns."
+                }
+              ]
+            },
+            {
+              "id": "brake-grip",
+              "name": "Brake lever",
+              "type": "lever",
+              "match": [
+                "control:stick.lever.brake"
+              ],
+              "text": "This is the brake lever on the stick grip. The pilot squeezes it with the fingers to brake the wheels. The rudder pedals decide which wheel brakes more, so the plane can be steered on the ground.",
+              "context": "The pilot uses it after landing to slow down and when taxiing. The brakes need air pressure, which the brake pressure gauge shows."
+            },
+            {
+              "id": "stick",
+              "name": "Control column (spade grip)",
+              "type": "axis",
+              "match": [
+                "control:stick.gimbal"
+              ],
+              "text": "This is the control column with its spade grip, the plane's main flight control. Pulling it back lifts the nose, pushing it forward lowers the nose, and moving it sideways rolls the plane.",
+              "context": "The pilot holds it with the right hand all the time. The firing button, the brake lever and the safety catch are on its grip."
+            }
+          ],
+          "src": "c1",
+          "text": "This is the control stick (or column) that the pilot holds with the right hand. Its grip carries the trigger, the firing button and other small controls.",
+          "context": "The pilot flies the plane with it all the time and fires the weapons with the buttons on its grip. In JoyPro each control of this panel can be given a button or axis on the joystick."
+        },
+        {
+          "id": "throttle",
+          "name": "Throttle and engine levers",
+          "controls": [
+            {
+              "id": "throttle-main",
+              "name": "Throttle lever",
+              "type": "axis",
+              "match": [
+                "control:throttle.axis.main"
+              ],
+              "text": "This is the throttle lever. Pushing it forward gives the engine more power, and pulling it back gives less. It works like the gas pedal of a car.",
+              "context": "The pilot uses it all the time. In the game it is mapped to the throttle axis of the joystick."
+            },
+            {
+              "id": "prop-grip",
+              "name": "Propeller control lever",
+              "type": "lever",
+              "match": [
+                "control:throttle.lever.prop"
+              ],
+              "text": "This is the propeller lever. It sets the propeller pitch, which means how sharply the blades bite the air, and so how fast the engine turns.",
+              "context": "The pilot moves it forward for take-off and a fight and pulls it back a little for cruising. It is mapped to a lever axis of the joystick."
+            },
+            {
+              "id": "bomb-button-throttle",
+              "name": "Bomb release push-button",
+              "type": "button",
+              "match": [
+                "control:throttle.button.bomb"
+              ],
+              "text": "This is the bomb release button at the end of the throttle grip, pressed with the thumb. It drops the bombs.",
+              "context": "The pilot presses it over the target without taking the left hand from the throttle."
+            },
+            {
+              "id": "ptt-grip",
+              "name": "R/T transmit button",
+              "type": "button",
+              "match": [
+                "control:throttle.hat.mic"
+              ],
+              "text": "This is the radio talk button on the throttle lever, pressed with the thumb. While the pilot holds it, the voice goes out over the radio.",
+              "context": "The pilot presses it to call the squadron or the airfield, and releases it to listen."
+            },
+            {
+              "id": "cutoff-grip",
+              "name": "Fuel cut-off control",
+              "type": "lever",
+              "match": [
+                "control:throttle.lever.cutoff"
+              ],
+              "text": "This lever cuts the fuel to the engine and so stops it. Pulling it back to the idle cut-off position shuts the engine down. The catalog lists it as 'Fuel cut-off control' in the Throttle and engine levers panel.",
+              "context": "The pilot uses it to stop the engine after landing and moves it forward before the start."
+            },
+            {
+              "id": "elevator-trim-wheel",
+              "name": "Elevator tab control",
+              "type": "wheel",
+              "match": [
+                "control:throttle.wheel.elevator_trim"
+              ],
+              "text": "This wheel sets the elevator trim. Turning it moves the nose a little up or down, so that the plane flies straight and level without the pilot holding the stick forward or back.",
+              "context": "The pilot turns it after changing speed or power, until the stick feels light."
+            },
+            {
+              "id": "rudder-trim-wheel",
+              "name": "Rudder tab control",
+              "type": "wheel",
+              "match": [
+                "control:throttle.wheel.rudder_trim"
+              ],
+              "text": "This small wheel sets the rudder trim. Turning it moves the nose a little to the left or right, so that the plane flies straight without a rudder pedal pressed.",
+              "context": "The pilot trims the rudder for take-off and a climb, when the engine and propeller push the nose to one side."
+            },
+            {
+              "id": "sight-range-twist",
+              "name": "Throttle twist grip (gyro sight range)",
+              "type": "knob",
+              "match": [
+                "control:throttle.twist.range"
+              ],
+              "text": "This is the twist grip on the throttle. Turning it sets the range on the gyro gunsight, which means the distance to the target that the aiming ring is set for.",
+              "context": "The pilot turns it until the ring just fits around the enemy plane. Then the range is right to fire."
+            }
+          ],
+          "src": "c1",
+          "text": "These are the engine and trim controls that the pilot's left hand works: the throttle, the propeller and mixture levers, the cooling control and the trim controls.",
+          "context": "They sit on the left side of the cockpit or on a pedestal. In JoyPro each control of this panel can be given a button or axis on the joystick or the throttle."
+        }
+      ]
+    }
+  ]
+}

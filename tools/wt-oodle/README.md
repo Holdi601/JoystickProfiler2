@@ -1,8 +1,7 @@
 # JoyPro.WtOodle (War Thunder Oodle helper)
 
 Unpacks the Oodle Leviathan (and Kraken) data of War Thunder's cockpit packs for the engine's War Thunder cockpit
-pictures (`engine cockpits pictures build --game WarThunder`, docs/cockpits.md). It is only compression: no key, no
-cipher, nothing obfuscated is read.
+pictures (`engine cockpits pictures build --game WarThunder`, docs/cockpits.md). It only decompresses.
 
 - Build: `dotnet build tools\wt-oodle -c Release` (net9.0). The engine finds
   `tools\wt-oodle\bin\Release\net9.0\JoyPro.WtOodle.exe` from its own folder upwards, or the path in `JOYPRO_WT_OODLE`.

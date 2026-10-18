@@ -111,6 +111,16 @@ try {
     Assert-Match $mc2024After 'ActionName="KEY_AXIS_RUDDER_SET" ValueEvent="0.000000" Delay="0.000000" Flag="4">\n\t\t\t<Primary>' "msfs 2024 export should drop flag 4096 and the per-action <Axis/> when the override is switched off."
     Assert-Match $mc2024After '<Axis AxisName="rZ" AxisSensitivy="-50" AxisSensitivyMinus="-50" AxisNeutral="0" AxisDeadZone="25" AxisOutDeadZone="0" AxisResponseRate="-1"/>' "msfs 2024 export should move the rudder's values to the device page."
     Assert-Match $mc2024After 'ActionName="KEY_AXIS_ELEVATOR_SET" ValueEvent="0.000000" Delay="2.000000" Flag="1156">' "msfs export should keep flag 1024 when it sets invert (1028 -> 1156)."
+    # Backups and replaces do not depend on File.Copy/Replace/Move (2.1.0: "The specified file could not be encrypted."
+    # when a preset carried the EFS mark): with those failing like that (SafeFileIo test fault), the export still works.
+    $env:JOYPRO_TEST_FAULT_ENCRYPTION = "copy,replace,move"
+    try {
+        $mcEfs = Run-Engine @("--profile", $mc2024Profile, "msfs2024", "export", $mc2024, "--text")
+    } finally {
+        Remove-Item Env:JOYPRO_TEST_FAULT_ENCRYPTION -ErrorAction SilentlyContinue
+    }
+    Assert-True ($mcEfs.ExitCode -eq 0) ("msfs 2024 export with File.Copy failing (EFS) should still work: " + $mcEfs.Output)
+    Assert-NotMatch $mcEfs.Output "could not be encrypted" "msfs 2024 export must not fail or warn on an EFS copy fault."
 
     # Releasing an axis with an override leaves no stale <Axis/> behind.
     Run-Engine @("--profile", $mc2024Profile, "relations", "mass", "delete", "--relation", $mcAilerons, "--text") | Out-Null

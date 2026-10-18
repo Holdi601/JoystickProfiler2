@@ -23,7 +23,7 @@ namespace JoyPro.Gui.Tests;
 // a click on the action, and the search "pitch" with a DCS row's aircraft opened. Works on a copy of the profile and an
 // own data folder. Runs only when JOYPRO_REL_REAL_OUT names an output folder, JOYPRO_REL_REAL_ENGINE the engine.exe and
 // JOYPRO_REL_REAL_PROFILE a .pr0file; JOYPRO_REL_REAL_RELATION picks the relation (default: the first one):
-//   set JOYPRO_REL_REAL_OUT=E:\JoyProWork\relrender & set JOYPRO_REL_REAL_ENGINE=<repo>\engine\bin\x64\Debug\engine.exe &
+//   set JOYPRO_REL_REAL_OUT=<work folder>\relrender & set JOYPRO_REL_REAL_ENGINE=<repo>\engine\bin\x64\Debug\engine.exe &
 //   set JOYPRO_REL_REAL_PROFILE=<copy>.pr0file & dotnet test gui/JoyPro.Gui.Tests --filter RelationStudioRealProfileRenderTests
 // Files: relations-real-<step>-<width>.png and report.txt (what each step showed).
 [SupportedOSPlatform("windows")]

@@ -1,0 +1,4218 @@
+{
+  "format": "joypro-cockpit-guide",
+  "version": 1,
+  "id": "dcs-f-14-part3",
+  "partOf": "dcs-f-14",
+  "areas": [
+    {
+      "id": "rio-left-console",
+      "where": "left-console",
+      "name": "RIO cockpit: left console",
+      "text": "The console on the RIO's left. It has the radios, the intercom, the TACAN, the radar beacon, the sensor controls and the computer address panel.",
+      "panels": [
+        {
+          "id": "rio-left-console-misc",
+          "name": "RIO: oxygen, cooling and eject command",
+          "db": "rio-left-console-misc",
+          "src": "m2",
+          "page": "123-125,132,134",
+          "text": "A mix of controls on the RIO's left console: the oxygen switch, the air vent dial, the g-valve test button, the liquid cooling switch, the eject command lever and a storage compartment.",
+          "context": "The RIO sets the oxygen and the cooling before the flight. The eject command lever decides who ejects.",
+          "controls": [
+            {
+              "id": "rio-gvalve",
+              "name": "G-valve button (RIO)",
+              "type": "button",
+              "match": [
+                "item:rio-left-console-misc:1"
+              ],
+              "text": "This button tests the g-suit of the RIO. The g-suit squeezes the legs in hard turns.",
+              "context": "It is a check the RIO can do on the ground.",
+              "page": "123",
+              "src": "m2"
+            },
+            {
+              "id": "rio-vent",
+              "name": "Vent airflow dial (RIO)",
+              "type": "knob",
+              "match": [
+                "item:rio-left-console-misc:2"
+              ],
+              "text": "This dial sets how much air flows through the RIO's pressure suit or, if no pressure suit is worn, through the seat cushions.",
+              "context": "It is a comfort control for long flights and has no other effect.",
+              "page": "124",
+              "src": "m2"
+            },
+            {
+              "id": "rio-oxygen",
+              "name": "RIO oxygen switch",
+              "type": "switch2",
+              "match": [
+                "PNT_119",
+                "item:rio-left-console-misc:3"
+              ],
+              "positions": [
+                {
+                  "name": "ON",
+                  "text": "Oxygen flows to the RIO's mask."
+                },
+                {
+                  "name": "OFF",
+                  "text": "No oxygen flows to the mask."
+                }
+              ],
+              "text": "This switch lets oxygen flow to the RIO's mask or stops it.",
+              "context": "Oxygen is the breathing gas for high altitude.",
+              "page": "124",
+              "src": "m2"
+            },
+            {
+              "id": "rio-storage",
+              "name": "Data stowage compartment",
+              "type": "other",
+              "match": [
+                "PNT_122",
+                "item:rio-left-console-misc:4"
+              ],
+              "text": "A compartment for papers and equipment. The game names the control 'Storage'.",
+              "context": "The RIO keeps his charts and notes there.",
+              "page": "125",
+              "src": "m2"
+            },
+            {
+              "id": "rio-liquid-cooling",
+              "name": "Liquid cooling switch",
+              "type": "switch",
+              "match": [
+                "PNT_95",
+                "item:rio-left-console-misc:5"
+              ],
+              "text": "This switch turns on the liquid cooling of the AWG-9 radar and of the AIM-54 Phoenix missile. The radar circuit can be switched on without the missile circuit.",
+              "context": "It must be on for the radar before the radar is used, and for the missile before the Phoenix is prepared.",
+              "page": "132",
+              "src": "m2"
+            },
+            {
+              "id": "rio-eject-command",
+              "name": "Eject command lever",
+              "type": "lever",
+              "match": [
+                "PNT_2049",
+                "item:rio-left-console-misc:6"
+              ],
+              "positions": [
+                {
+                  "name": "PILOT",
+                  "text": "Lever forward: only the RIO ejects when the RIO pulls the handle."
+                },
+                {
+                  "name": "MCO",
+                  "text": "Lever aft: both crew members eject when the RIO pulls the handle."
+                }
+              ],
+              "text": "This lever decides what happens when the RIO ejects. In PILOT only the RIO's seat goes. In MCO both seats go. When the pilot ejects, both seats always go.",
+              "context": "The pilot's cockpit shows the lever's setting on the eject command indicator.",
+              "page": "134",
+              "src": "m2"
+            }
+          ]
+        },
+        {
+          "id": "rio-tacan",
+          "name": "RIO: TACAN control panel",
+          "db": "rio-tacan",
+          "src": "m2",
+          "page": "126-127",
+          "text": "The RIO's panel for the TACAN, a receiver for radio beacons on the ground or on ships that tell the plane its direction and distance to them.",
+          "context": "It works when the RIO holds the TACAN command. The pilot has the same panel in his cockpit.",
+          "controls": [
+            {
+              "id": "rio-tacan-ones",
+              "name": "TACAN channel lever (ones)",
+              "type": "switch",
+              "match": [
+                "PNT_8890",
+                "item:rio-tacan:1"
+              ],
+              "text": "On the RIO's panel, the inner dial of the dual channel selector sets the last digit of the TACAN channel number.",
+              "context": "The channel is the 'station number' of the beacon.",
+              "page": "126",
+              "src": "m2"
+            },
+            {
+              "id": "rio-tacan-tens",
+              "name": "TACAN channel wheel (tens)",
+              "type": "switch",
+              "match": [
+                "PNT_TACAN_OUTER_TWIST_RIO"
+              ],
+              "text": "On the RIO's panel, the outer dial of the dual channel selector sets the first two digits of the TACAN channel number.",
+              "context": "Together with the ones lever it gives the full channel, for example 63.",
+              "page": "126",
+              "src": "m2"
+            },
+            {
+              "id": "rio-tacan-xy",
+              "name": "TACAN X/Y channel switch",
+              "type": "switch",
+              "match": [
+                "PNT_372",
+                "item:rio-tacan:4"
+              ],
+              "text": "This switch chooses between the X and the Y version of the channel.",
+              "context": "The letter must match the beacon's channel.",
+              "page": "126",
+              "src": "m2"
+            },
+            {
+              "id": "rio-tacan-ni",
+              "name": "TACAN mode switch (normal / inverse)",
+              "type": "switch",
+              "match": [
+                "PNT_373"
+              ],
+              "text": "A switch with a normal and an inverse setting. The inverse setting has no function in the game.",
+              "context": "The RIO leaves it on normal, as the inverse setting does nothing.",
+              "page": "126",
+              "src": "m2"
+            },
+            {
+              "id": "rio-tacan-mode",
+              "name": "TACAN mode selector",
+              "type": "selector",
+              "match": [
+                "PNT_374",
+                "item:rio-tacan:6"
+              ],
+              "text": "On the RIO's panel, this knob chooses what the TACAN does: off, receive only, transmit and receive, or air-to-air. BCN does not work in the game.",
+              "context": "The pilot's panel has the same selector.",
+              "positions": [
+                {
+                  "name": "OFF",
+                  "text": "The TACAN is off."
+                },
+                {
+                  "name": "REC",
+                  "text": "Receive only."
+                },
+                {
+                  "name": "T/R",
+                  "text": "Transmit and receive, with the range readout."
+                },
+                {
+                  "name": "A/A",
+                  "text": "Air-to-air TACAN."
+                },
+                {
+                  "name": "BCN",
+                  "text": "Beacon mode. It does not work in the game."
+                }
+              ],
+              "page": "127",
+              "src": "m2"
+            },
+            {
+              "id": "rio-tacan-bit",
+              "name": "TACAN BIT button",
+              "type": "button",
+              "match": [
+                "PNT_371",
+                "item:rio-tacan:3"
+              ],
+              "text": "Pressing this button starts the built-in test of the TACAN. The GO and NO-GO lights show the result.",
+              "context": "It is a quick health check of the receiver before it is used.",
+              "page": "126",
+              "src": "m2"
+            },
+            {
+              "id": "rio-tacan-volume",
+              "name": "TACAN volume knob (RIO)",
+              "type": "knob",
+              "match": [
+                "PNT_375",
+                "item:rio-tacan:5"
+              ],
+              "text": "Turning this knob changes how loud the beacon's identification sound is in the RIO's headset.",
+              "context": "The sound lets the RIO check that the right beacon is tuned.",
+              "page": "127",
+              "src": "m2"
+            },
+            {
+              "id": "rio-tacan-lights",
+              "name": "TACAN GO / NO-GO lights",
+              "type": "light",
+              "match": [
+                "item:rio-tacan:2"
+              ],
+              "text": "Two lights that show the result of the TACAN built-in test.",
+              "context": "GO means it passed and NO-GO means it failed.",
+              "page": "126",
+              "src": "m2"
+            }
+          ]
+        },
+        {
+          "id": "rio-comm-tacan",
+          "name": "RIO: communication / TACAN command panel",
+          "db": "rio-comm-tacan",
+          "src": "m2",
+          "page": "127-128",
+          "text": "The panel that decides which radio the RIO's push-to-talk key sends on, which antenna the second radio uses, who holds the TACAN command, and the volume of the first radio.",
+          "context": "The RIO sets it when the crew needs another radio or hands the TACAN to or from the pilot.",
+          "controls": [
+            {
+              "id": "rio-xmtr-sel",
+              "name": "XMTR SEL switch (transmitter select)",
+              "type": "switch3",
+              "match": [
+                "PNT_381",
+                "item:rio-comm-tacan:1"
+              ],
+              "positions": [
+                {
+                  "name": "UHF 1",
+                  "text": "The RIO key sends on UHF 1 (AN/ARC-159)."
+                },
+                {
+                  "name": "BOTH",
+                  "text": "The RIO key sends on both radios."
+                },
+                {
+                  "name": "V/UHF 2",
+                  "text": "The RIO key sends on V/UHF 2 (AN/ARC-182)."
+                }
+              ],
+              "text": "This switch chooses which radio the RIO's push-to-talk key sends on: UHF 1, V/UHF 2 or both.",
+              "context": "It decides where the RIO's voice goes when he presses the transmit key.",
+              "page": "127-128",
+              "src": "m2"
+            },
+            {
+              "id": "rio-vuhf2-ant",
+              "name": "V/UHF 2 antenna switch",
+              "type": "switch2",
+              "match": [
+                "PNT_380",
+                "item:rio-comm-tacan:2"
+              ],
+              "positions": [
+                {
+                  "name": "UPR",
+                  "text": "The upper antenna is used."
+                },
+                {
+                  "name": "LWR",
+                  "text": "The lower antenna is used."
+                }
+              ],
+              "text": "This switch chooses the upper or the lower antenna for the second radio (AN/ARC-182).",
+              "context": "The RIO can change the antenna of the second radio between the one on top and the one underneath the plane.",
+              "page": "128",
+              "src": "m2"
+            },
+            {
+              "id": "rio-tacan-cmd",
+              "name": "TACAN CMD button (RIO)",
+              "type": "button",
+              "match": [
+                "PNT_135",
+                "item:rio-comm-tacan:3"
+              ],
+              "positions": [
+                {
+                  "name": "PILOT",
+                  "text": "The pilot's panel controls the TACAN."
+                },
+                {
+                  "name": "NFO",
+                  "text": "The RIO's panel controls the TACAN."
+                }
+              ],
+              "text": "This switch selects which crew member controls the TACAN beacon receiver, and shows who has it now.",
+              "context": "Only the one who holds the command can tune the TACAN.",
+              "page": "128",
+              "src": "m2"
+            },
+            {
+              "id": "rio-uhf1-volume",
+              "name": "UHF 1 volume knob (RIO)",
+              "type": "knob",
+              "match": [
+                "PNT_383",
+                "item:rio-comm-tacan:4"
+              ],
+              "text": "Turning this knob changes how loud the first radio is in the RIO's headset.",
+              "context": "The RIO sets it so that he can hear the radio.",
+              "page": "128",
+              "src": "m2"
+            },
+            {
+              "id": "rio-ky-mode",
+              "name": "KY MODE switch",
+              "type": "switch",
+              "match": [
+                "PNT_382",
+                "item:rio-comm-tacan:5"
+              ],
+              "text": "This switch is for the KY-58 secure voice device. The simulated aircraft has the KY-28, so this switch does nothing in the game.",
+              "context": "Secure voice scrambles the radio so that the enemy cannot listen.",
+              "page": "128",
+              "src": "m2"
+            }
+          ]
+        },
+        {
+          "id": "rio-vuhf2",
+          "name": "RIO: V/UHF 2 radio (AN/ARC-182)",
+          "db": "rio-vuhf2",
+          "src": "m2",
+          "page": "129-130",
+          "text": "The second radio of the plane. It covers VHF and UHF and is tuned by the RIO. It has a volume knob, a squelch switch, frequency switches and a mode selector.",
+          "context": "The second radio lets the crew talk to more stations. Its frequency is repeated on the remote indicator in the pilot's cockpit.",
+          "controls": [
+            {
+              "id": "rio-vuhf2-volume",
+              "name": "V/UHF 2 volume knob (RIO)",
+              "type": "knob",
+              "match": [
+                "PNT_350",
+                "item:rio-vuhf2:1"
+              ],
+              "text": "Turning this knob changes how loud the second radio is in the RIO's headset.",
+              "context": "The RIO sets it so that the radio is easy to hear.",
+              "page": "129",
+              "src": "m2"
+            },
+            {
+              "id": "rio-vuhf2-squelch",
+              "name": "V/UHF 2 squelch switch",
+              "type": "switch2",
+              "match": [
+                "PNT_351",
+                "item:rio-vuhf2:2"
+              ],
+              "positions": [
+                {
+                  "name": "ON",
+                  "text": "Squelch is on."
+                },
+                {
+                  "name": "OFF",
+                  "text": "Squelch is off and the radio hisses."
+                }
+              ],
+              "text": "This switch turns the squelch of the second radio on or off. Squelch cuts the hiss when nobody talks.",
+              "context": "The RIO normally leaves the squelch of V/UHF 2 switched on.",
+              "page": "129",
+              "src": "m2"
+            },
+            {
+              "id": "rio-vuhf2-freq",
+              "name": "V/UHF 2 frequency select switches",
+              "type": "switch",
+              "match": [
+                "PNT_354",
+                "PNT_355",
+                "PNT_356",
+                "PNT_357",
+                "item:rio-vuhf2:3"
+              ],
+              "count": 4,
+              "text": "Four switches that tune the second radio: the hundreds and tens of megahertz, the ones, the tenths and the 0.025 steps.",
+              "context": "The V/UHF 2 display shows what is set, and the pilot's remote indicator repeats it.",
+              "page": "129",
+              "src": "m2"
+            },
+            {
+              "id": "rio-vuhf2-am-fm",
+              "name": "V/UHF 2 FM/AM switch",
+              "type": "switch",
+              "match": [
+                "PNT_359",
+                "item:rio-vuhf2:5"
+              ],
+              "text": "This switch selects the modulation, the way the voice is put on the radio wave, within the 225.000 to 399.000 MHz band.",
+              "context": "Both stations must use the same one.",
+              "page": "129",
+              "src": "m2"
+            },
+            {
+              "id": "rio-vuhf2-brightness",
+              "name": "V/UHF 2 display brightness knob",
+              "type": "knob",
+              "match": [
+                "PNT_360",
+                "item:rio-vuhf2:6"
+              ],
+              "text": "Turning this knob makes the radio display brighter or dimmer.",
+              "context": "The RIO sets it to suit the light in the cockpit.",
+              "page": "130",
+              "src": "m2"
+            },
+            {
+              "id": "rio-vuhf2-mode",
+              "name": "V/UHF 2 mode selector",
+              "type": "selector",
+              "match": [
+                "PNT_358",
+                "item:rio-vuhf2:7"
+              ],
+              "text": "This knob chooses the operating mode of the ARC-182 radio.",
+              "context": "It is the main operating mode knob of the ARC-182 radio. The HAVE QUICK anti-jam mode is not implemented in the game.",
+              "page": "130",
+              "src": "m2"
+            },
+            {
+              "id": "rio-vuhf2-freq-mode",
+              "name": "V/UHF 2 frequency mode knob",
+              "type": "knob",
+              "match": [
+                "PNT_RIO_UHF_OUTER",
+                "item:rio-vuhf2:8"
+              ],
+              "text": "This outer dial chooses how the second radio is tuned. The inner dial picks a stored channel.",
+              "context": "Stored channels work like the station buttons of a car radio.",
+              "page": "130",
+              "src": "m2"
+            },
+            {
+              "id": "rio-vuhf2-channel",
+              "name": "V/UHF 2 preset channel selector",
+              "type": "knob",
+              "match": [
+                "PNT_352",
+                "item:rio-vuhf2:9"
+              ],
+              "text": "This knob picks one of the stored radio channels.",
+              "context": "It is used when the frequency mode is set to channels.",
+              "page": "130",
+              "src": "m2"
+            },
+            {
+              "id": "rio-vuhf2-display",
+              "name": "V/UHF 2 frequency / channel display",
+              "type": "display",
+              "match": [
+                "item:rio-vuhf2:4"
+              ],
+              "text": "The display shows the selected frequency or the preset channel.",
+              "context": "The same value is repeated on the remote indicator in the pilot's cockpit.",
+              "page": "129",
+              "src": "m2"
+            }
+          ]
+        },
+        {
+          "id": "rio-ky28",
+          "name": "RIO: KY-28 control panel (secure voice)",
+          "db": "rio-ky28",
+          "src": "m2",
+          "page": "130-131",
+          "text": "The panel for the encryption of the radio voice. Encryption scrambles the voice so that the enemy cannot understand it.",
+          "context": "The RIO uses it when talking on a secure radio net. The zeroize switch deletes all the keys.",
+          "controls": [
+            {
+              "id": "ky-zeroize-cover",
+              "name": "KY-28 ZEROIZE switch cover",
+              "type": "guard",
+              "match": [
+                "PNT_150"
+              ],
+              "text": "A cover over the zeroize switch. It must be lifted first.",
+              "context": "It protects the switch from being pressed by accident.",
+              "page": "130",
+              "src": "m2"
+            },
+            {
+              "id": "ky-zeroize",
+              "name": "KY-28 ZEROIZE button",
+              "type": "button",
+              "match": [
+                "PNT_361",
+                "item:rio-ky28:1"
+              ],
+              "text": "Pressing this clears all the encryption keys of the device. Without the keys, the device cannot be used.",
+              "context": "Without keys the device cannot decode or code the voice.",
+              "page": "130",
+              "src": "m2"
+            },
+            {
+              "id": "ky-power-mode",
+              "name": "KY-28 power / mode switch",
+              "type": "switch",
+              "match": [
+                "PNT_116",
+                "item:rio-ky28:2"
+              ],
+              "text": "This switch selects the operating mode of the KY-28, including whether it is on.",
+              "context": "The device must be on for secure voice.",
+              "page": "130",
+              "src": "m2"
+            },
+            {
+              "id": "ky-radio-select",
+              "name": "KY-28 radio selector",
+              "type": "switch",
+              "match": [
+                "PNT_115",
+                "item:rio-ky28:3"
+              ],
+              "text": "This switch chooses which radio is encrypted.",
+              "context": "Only the chosen radio sends secure voice.",
+              "page": "131",
+              "src": "m2"
+            }
+          ]
+        },
+        {
+          "id": "rio-beacon",
+          "name": "RIO: radar beacon control panel (AN/APN-154)",
+          "db": "rio-beacon",
+          "src": "m2",
+          "page": "131",
+          "text": "The panel of the radar beacon, a transponder that helps a carrier to control the plane. It has a mode selector, a test button and a power switch.",
+          "context": "The beacon is used for carrier flying, for example the automatic carrier landing.",
+          "controls": [
+            {
+              "id": "beacon-mode",
+              "name": "Beacon mode selector",
+              "type": "selector",
+              "match": [
+                "PNT_118",
+                "item:rio-beacon:1"
+              ],
+              "positions": [
+                {
+                  "name": "SINGLE",
+                  "text": "The beacon answers a single-pulse question from the carrier."
+                },
+                {
+                  "name": "DOUBLE",
+                  "text": "The beacon answers a double-pulse code."
+                },
+                {
+                  "name": "ACLS",
+                  "text": "The beacon adds the automatic carrier landing system (ACLS) for carrier landings."
+                }
+              ],
+              "text": "This knob chooses how the beacon answers the carrier: single, double or for the automatic carrier landing system (ACLS).",
+              "context": "The mode is chosen by the carrier's instructions.",
+              "page": "131",
+              "src": "m2"
+            },
+            {
+              "id": "beacon-test",
+              "name": "ACLS test button",
+              "type": "button",
+              "match": [
+                "PNT_117",
+                "item:rio-beacon:2"
+              ],
+              "text": "Pressing this button tests the system. Its green light shows a successful test, flashes when a carrier SPN-42 radar sweep is detected, and stays steady when the radar has locked on for the automatic carrier landing.",
+              "context": "The RIO uses it to check the system before the approach.",
+              "page": "131",
+              "src": "m2"
+            },
+            {
+              "id": "beacon-power",
+              "name": "Beacon power switch",
+              "type": "switch3",
+              "match": [
+                "PNT_96",
+                "item:rio-beacon:3"
+              ],
+              "positions": [
+                {
+                  "name": "PWR",
+                  "text": "The beacon is fully on."
+                },
+                {
+                  "name": "STBY",
+                  "text": "Warm-up mode. ACLS replies are on if the mode is ACLS."
+                },
+                {
+                  "name": "OFF",
+                  "text": "The beacon is off."
+                }
+              ],
+              "text": "This switch turns the power of the beacon on, to standby, or off.",
+              "context": "The beacon must be on to be controlled by the carrier.",
+              "page": "131",
+              "src": "m2"
+            }
+          ]
+        },
+        {
+          "id": "rio-ics",
+          "name": "RIO: ICS control panel",
+          "db": "rio-ics",
+          "src": "m2",
+          "page": "132-133",
+          "text": "The RIO's panel for the intercom (ICS), the phone line between the pilot and the RIO. It has a volume knob, an amplifier selector and a function switch.",
+          "context": "The pilot and the RIO talk to each other through the intercom.",
+          "controls": [
+            {
+              "id": "rio-ics-volume",
+              "name": "ICS volume knob (RIO)",
+              "type": "knob",
+              "match": [
+                "PNT_400",
+                "item:rio-ics:1"
+              ],
+              "text": "Turning this knob changes how loud the pilot's voice is in the RIO's headset.",
+              "context": "The RIO sets it so that he can hear the pilot well.",
+              "page": "133",
+              "src": "m2"
+            },
+            {
+              "id": "rio-ics-amp",
+              "name": "ICS amplifier selector (RIO)",
+              "type": "selector",
+              "match": [
+                "PNT_401",
+                "item:rio-ics:2"
+              ],
+              "positions": [
+                {
+                  "name": "B/U",
+                  "text": "The backup amplifier is used."
+                },
+                {
+                  "name": "NORM",
+                  "text": "The normal amplifier is used."
+                },
+                {
+                  "name": "EMER",
+                  "text": "The RIO's headset uses the pilot's amplifier and volume settings, and the sounds meant only for the RIO are no longer heard."
+                }
+              ],
+              "text": "This knob chooses which amplifier drives the RIO's headset. EMER uses the pilot's amplifier and volume settings.",
+              "context": "NORM is the normal setting for everyday use.",
+              "page": "133",
+              "src": "m2"
+            },
+            {
+              "id": "rio-ics-function",
+              "name": "ICS function switch (RIO)",
+              "type": "switch3",
+              "match": [
+                "PNT_402",
+                "item:rio-ics:3"
+              ],
+              "positions": [
+                {
+                  "name": "RADIO OVERRIDE",
+                  "text": "The intercom voice overrides the radio sound."
+                },
+                {
+                  "name": "HOT MIC",
+                  "text": "The microphone is always open on the intercom, without the push-to-talk button."
+                },
+                {
+                  "name": "COLD MIC",
+                  "text": "The intercom works only while the push-to-talk button is pressed."
+                }
+              ],
+              "text": "This switch decides how the intercom behaves: with priority over the radios, an always open microphone, or a microphone that is open only while a button is pressed.",
+              "context": "A hot microphone picks up the voice without a button.",
+              "page": "133",
+              "src": "m2"
+            }
+          ]
+        },
+        {
+          "id": "rio-sensor-control",
+          "name": "RIO: sensor control panel",
+          "db": "rio-sensor-control",
+          "src": "m2",
+          "page": "135-137",
+          "text": "The panel for how the radar looks around and for the television camera system (TCS). It sets the centre, width and number of bars of the radar scan, and it slaves the sensors to each other. It also has the video recorder controls.",
+          "context": "The RIO sets the scan to look where he expects the targets. The sensors can follow each other, so that the radar and the camera look the same way.",
+          "controls": [
+            {
+              "id": "sc-stabilize",
+              "name": "STABILIZE switch",
+              "type": "switch",
+              "match": [
+                "PNT_83",
+                "item:rio-sensor-control:1"
+              ],
+              "text": "This switch decides whether the radar scan pattern is kept level with the horizon (IN) or fixed to the plane (OUT). The weapon computer can override it if needed.",
+              "context": "It is part of the radar scan settings in the upper half of the panel.",
+              "page": "136",
+              "src": "m2"
+            },
+            {
+              "id": "sc-az-center",
+              "name": "Radar azimuth center knob",
+              "type": "knob",
+              "match": [
+                "PNT_82",
+                "item:rio-sensor-control:2"
+              ],
+              "text": "This knob moves the centre of the radar scan left or right of the plane's nose. It has no effect when the scan width is at its widest.",
+              "context": "Azimuth is the direction sideways.",
+              "page": "136",
+              "src": "m2"
+            },
+            {
+              "id": "sc-el-center",
+              "name": "Radar elevation center knob",
+              "type": "knob",
+              "match": [
+                "PNT_81",
+                "item:rio-sensor-control:3"
+              ],
+              "text": "This knob moves the height of the radar scan up or down. The centre mark means zero elevation.",
+              "context": "Elevation is the direction up and down.",
+              "page": "136",
+              "src": "m2"
+            },
+            {
+              "id": "sc-vsl",
+              "name": "VSL switch (vertical scan lock-on)",
+              "type": "switch3",
+              "match": [
+                "PNT_84",
+                "item:rio-sensor-control:4"
+              ],
+              "positions": [
+                {
+                  "name": "VSL HI",
+                  "text": "Momentary: starts the vertical scan lock-on mode, high. It springs back."
+                },
+                {
+                  "name": "OFF",
+                  "text": "The switch is at rest."
+                },
+                {
+                  "name": "VSL LO",
+                  "text": "Momentary: starts the vertical scan lock-on mode, low. It springs back."
+                }
+              ],
+              "text": "This switch starts the vertical scan lock-on mode (VSL) of the radar, high or low. It springs back to the middle.",
+              "context": "The pilot has the same function on the target designate switch.",
+              "page": "136",
+              "src": "m2"
+            },
+            {
+              "id": "sc-az-scan",
+              "name": "Radar azimuth scan knob",
+              "type": "knob",
+              "match": [
+                "PNT_80",
+                "item:rio-sensor-control:5"
+              ],
+              "text": "This knob chooses how wide the radar scan is sideways, in degrees to either side of the centre: 10, 20, 40 or 65.",
+              "context": "A wider scan covers more sky sideways.",
+              "page": "136",
+              "src": "m2"
+            },
+            {
+              "id": "sc-el-bars",
+              "name": "Radar elevation bars knob",
+              "type": "knob",
+              "match": [
+                "PNT_79",
+                "item:rio-sensor-control:6"
+              ],
+              "text": "This knob chooses how many bars, or rows, the radar scans up and down: 1, 2, 4 or 8.",
+              "context": "More bars cover more height up and down in one sweep.",
+              "page": "136",
+              "src": "m2"
+            },
+            {
+              "id": "sc-tcs-trim",
+              "name": "TCS trim knobs (azimuth and elevation)",
+              "type": "knob",
+              "match": [
+                "PNT_85",
+                "PNT_86",
+                "item:rio-sensor-control:7"
+              ],
+              "count": 2,
+              "text": "Two knobs that fine-tune the alignment of the television camera picture sideways and up and down.",
+              "context": "The RIO uses them to line the picture up.",
+              "page": "136",
+              "src": "m2"
+            },
+            {
+              "id": "sc-slave",
+              "name": "TCS slave switch",
+              "type": "switch",
+              "match": [
+                "PNT_89",
+                "item:rio-sensor-control:8"
+              ],
+              "text": "This switch chooses which sensor is slaved to the other, so the radar follows the television camera or the camera follows the radar.",
+              "context": "It makes both sensors look at the same thing.",
+              "page": "136",
+              "src": "m2"
+            },
+            {
+              "id": "sc-acq",
+              "name": "TCS acquisition switch",
+              "type": "switch",
+              "match": [
+                "PNT_87",
+                "item:rio-sensor-control:9"
+              ],
+              "text": "This switch chooses how the television camera system (TCS) finds a target. It has the settings AUTO SRCH, MAN and AUTO.",
+              "context": "The RIO sets it before using the camera.",
+              "page": "136-137",
+              "src": "m2"
+            },
+            {
+              "id": "sc-fov",
+              "name": "TCS field of view switch",
+              "type": "switch",
+              "match": [
+                "PNT_88",
+                "item:rio-sensor-control:10"
+              ],
+              "text": "This switch chooses the field of view of the television camera: WIDE or NAR (narrow).",
+              "context": "A narrow field of view magnifies the picture more.",
+              "page": "137",
+              "src": "m2"
+            },
+            {
+              "id": "sc-avtr-mode",
+              "name": "AVTR mode knob (record mode)",
+              "type": "knob",
+              "match": [
+                "PNT_91",
+                "item:rio-sensor-control:11"
+              ],
+              "text": "This knob chooses what the airborne video tape recorder (AVTR) records. The recorder is not modelled in DCS.",
+              "context": "The recorder is not simulated.",
+              "page": "137",
+              "src": "m2"
+            },
+            {
+              "id": "sc-record-power",
+              "name": "Record power switch",
+              "type": "switch3",
+              "match": [
+                "PNT_90",
+                "item:rio-sensor-control:13"
+              ],
+              "text": "This switch controls the airborne video tape recorder (OFF, STBY or ON). The recorder is not modelled in DCS.",
+              "context": "The recorder is not simulated in the game, so the switch changes only the cockpit.",
+              "positions": [
+                {
+                  "name": "OFF",
+                  "text": "The recorder is off."
+                },
+                {
+                  "name": "STBY",
+                  "text": "The recorder is in standby."
+                },
+                {
+                  "name": "ON",
+                  "text": "The recorder is on."
+                }
+              ],
+              "page": "137",
+              "src": "m2"
+            },
+            {
+              "id": "sc-record-reset",
+              "name": "Record reset knob",
+              "type": "knob",
+              "match": [
+                "PNT_16016"
+              ],
+              "text": "A knob of the video recorder group. In the game it has no function.",
+              "context": "The recorder is not simulated."
+            },
+            {
+              "id": "sc-avtr-display",
+              "name": "AVTR minutes display and indicator lights",
+              "type": "display",
+              "match": [
+                "item:rio-sensor-control:12",
+                "item:rio-sensor-control:14"
+              ],
+              "count": 2,
+              "text": "A display of the minutes left on the recording and lights for STBY, EOT (end of tape) and REC. They belong to the recorder, which is not modelled in DCS.",
+              "context": "They are part of the recorder group.",
+              "page": "137",
+              "src": "m2"
+            }
+          ]
+        },
+        {
+          "id": "rio-cap",
+          "name": "RIO: computer address panel (CAP)",
+          "db": "rio-cap",
+          "src": "m2",
+          "page": "138-140",
+          "text": "The CAP is a keypad with message buttons. The RIO types data into the weapon control system with it, for example positions and numbers.",
+          "context": "The category knob picks a group of messages. The message buttons then choose a message, and the keys enter the numbers.",
+          "controls": [
+            {
+              "id": "cap-keys",
+              "name": "CAP prefix and number keys",
+              "type": "keypad",
+              "match": [
+                "PNT_146",
+                "PNT_137",
+                "PNT_138",
+                "PNT_141",
+                "PNT_143",
+                "PNT_145",
+                "PNT_136",
+                "PNT_139",
+                "PNT_140",
+                "PNT_142",
+                "PNT_144",
+                "PNT_147",
+                "item:rio-cap:3"
+              ],
+              "count": 12,
+              "text": "These keys enter numbers. Most of them also carry a word that says what kind of number follows, for example LAT, SPD, ALT, RNG, LONG, HDG and BRG. N+E and S-W are the keys for the sides of a position.",
+              "context": "The keys 1 to 9 and 0 are also the numbers. The RIO uses them to enter data such as a speed, a height or a heading.",
+              "page": "140",
+              "src": "m2"
+            },
+            {
+              "id": "cap-clear",
+              "name": "CAP CLEAR button",
+              "type": "button",
+              "match": [
+                "PNT_148",
+                "item:rio-cap:1"
+              ],
+              "text": "Pressing this button clears the data that was typed in the buffer without entering it.",
+              "context": "The RIO uses it to correct a mistake.",
+              "page": "140",
+              "src": "m2"
+            },
+            {
+              "id": "cap-enter",
+              "name": "CAP ENTER button",
+              "type": "button",
+              "match": [
+                "PNT_149",
+                "item:rio-cap:2"
+              ],
+              "text": "Pressing this button puts the buffered data into the weapon control system.",
+              "context": "Nothing typed counts until it is entered.",
+              "page": "140",
+              "src": "m2"
+            },
+            {
+              "id": "cap-messages",
+              "name": "CAP message selection buttons (1-10)",
+              "type": "button",
+              "match": [
+                "PNT_127",
+                "PNT_126",
+                "PNT_125",
+                "PNT_123",
+                "PNT_124",
+                "PNT_133",
+                "PNT_132",
+                "PNT_131",
+                "PNT_130",
+                "PNT_129",
+                "item:rio-cap:4"
+              ],
+              "count": 10,
+              "text": "Ten buttons next to the message drum. Each picks the function that the drum shows beside it.",
+              "context": "The drum shows different functions for each category.",
+              "page": "140",
+              "src": "m2"
+            },
+            {
+              "id": "cap-drum",
+              "name": "CAP message indicator drum",
+              "type": "indicator",
+              "match": [
+                "item:rio-cap:5"
+              ],
+              "text": "A drum that shows the messages that can be chosen in the active category.",
+              "context": "The message buttons choose from it.",
+              "page": "140",
+              "src": "m2"
+            },
+            {
+              "id": "cap-restart",
+              "name": "CAP PGM RSTRT button",
+              "type": "button",
+              "match": [
+                "PNT_134",
+                "item:rio-cap:6"
+              ],
+              "text": "Pressing this button restarts the active program of the weapon control system.",
+              "context": "It is used if the system does not react.",
+              "page": "140",
+              "src": "m2"
+            },
+            {
+              "id": "cap-category",
+              "name": "CAP category knob",
+              "type": "selector",
+              "match": [
+                "PNT_98",
+                "item:rio-cap:7"
+              ],
+              "text": "This knob picks the active category of messages.",
+              "context": "Each category has its own list on the message drum.",
+              "page": "140",
+              "src": "m2"
+            },
+            {
+              "id": "cap-tng-nbr",
+              "name": "CAP TNG NBR button",
+              "type": "button",
+              "match": [
+                "PNT_128"
+              ],
+              "text": "This button is labelled TNG (NBR) on the CAP. Chuck's Guide says it is not simulated in the game.",
+              "context": "The game names it 'CAP TNG NBR'.",
+              "page": "51",
+              "src": "m1"
+            },
+            {
+              "id": "cap-tune-disable",
+              "name": "CAP tune disable",
+              "type": "other",
+              "match": [
+                "item:rio-cap:8"
+              ],
+              "text": "The TUNE DSBL control of the CAP. The manual says it does not work in the game.",
+              "context": "All the CAP buttons have lights that come on with the chosen function.",
+              "page": "140",
+              "src": "m2"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "rio-left-vertical",
+      "where": "left-side",
+      "name": "RIO cockpit: armament panel",
+      "text": "The upright panel on the RIO's left side. It holds the armament panel.",
+      "panels": [
+        {
+          "id": "rio-armament",
+          "name": "RIO: armament panel",
+          "db": "rio-armament",
+          "src": "m2",
+          "page": "141-145",
+          "text": "The panel where the RIO sets up the weapons for an attack on the ground and picks the stations that carry them. It also has the jettison switches, the missile options and the air-to-air launch button.",
+          "context": "The pilot's armament panel holds the master arm switch. The RIO's panel decides which stores are used or jettisoned.",
+          "controls": [
+            {
+              "id": "arm-weapon-type",
+              "name": "Weapon type wheel",
+              "type": "selector",
+              "match": [
+                "PNT_59",
+                "item:rio-armament:1"
+              ],
+              "text": "This selector chooses the type of weapon that the weapon control system uses to calculate an attack on the ground (the ballistic calculation).",
+              "context": "The computer needs the type to work out where the bomb will fall.",
+              "page": "142",
+              "src": "m2"
+            },
+            {
+              "id": "arm-attack-mode",
+              "name": "Attack mode selector",
+              "type": "selector",
+              "match": [
+                "PNT_2022",
+                "item:rio-armament:2"
+              ],
+              "text": "This selector chooses the way of attacking the ground that the plane flies.",
+              "context": "The weapon delivery follows this choice.",
+              "page": "142",
+              "src": "m2"
+            },
+            {
+              "id": "arm-elec-fuse",
+              "name": "Electrical fuse selector",
+              "type": "selector",
+              "match": [
+                "PNT_58",
+                "item:rio-armament:3"
+              ],
+              "text": "This selector chooses the electrical fuze setting for the ground weapons. A fuze decides when a bomb explodes.",
+              "context": "The RIO sets it before the attack so the weapon works as planned.",
+              "page": "142",
+              "src": "m2"
+            },
+            {
+              "id": "arm-mech-fuse",
+              "name": "Mechanical fuse selector",
+              "type": "selector",
+              "match": [
+                "PNT_63",
+                "item:rio-armament:21"
+              ],
+              "text": "This selector turns on and chooses the mechanical fuze setting for the ground weapons.",
+              "context": "It works with the electrical fuze selector.",
+              "page": "145",
+              "src": "m2"
+            },
+            {
+              "id": "arm-gun-mode",
+              "name": "A/G gun mode switch",
+              "type": "switch2",
+              "match": [
+                "PNT_62",
+                "item:rio-armament:4"
+              ],
+              "positions": [
+                {
+                  "name": "OFF",
+                  "text": "The gun is not available in the air-to-ground mode."
+                },
+                {
+                  "name": "MIXED",
+                  "text": "The gun is available in the air-to-ground mode."
+                }
+              ],
+              "text": "This switch decides whether the gun is available in the air-to-ground master mode. OFF disables the gun, and MIXED allows the gun in addition to the chosen ground weapons.",
+              "context": "OFF means the gun is not available and MIXED means it is.",
+              "page": "142",
+              "src": "m2"
+            },
+            {
+              "id": "arm-delivery",
+              "name": "Delivery mode switches (single / pairs, step / ripple)",
+              "type": "switch",
+              "match": [
+                "PNT_60",
+                "PNT_61",
+                "item:rio-armament:22"
+              ],
+              "count": 2,
+              "text": "Two switches for the release logic of ground weapons. One picks a single weapon or pairs. The other picks single-pass or multiple-pass delivery, following the quantity and interval settings (the game names it step or ripple).",
+              "context": "They decide how the bombs leave the plane.",
+              "page": "145",
+              "src": "m2"
+            },
+            {
+              "id": "arm-quantity",
+              "name": "Quantity selectors (ones and tens)",
+              "type": "selector",
+              "match": [
+                "PNT_9963",
+                "PNT_9962",
+                "item:rio-armament:5"
+              ],
+              "count": 2,
+              "text": "Two wheels that set how many ground weapons are released in one delivery, including rockets. One is for the ones and one for the tens.",
+              "context": "The RIO sets them before the attack.",
+              "page": "142",
+              "src": "m2"
+            },
+            {
+              "id": "arm-interval",
+              "name": "Interval selectors (x10 ms and x100 ms)",
+              "type": "selector",
+              "match": [
+                "PNT_9960",
+                "PNT_9961",
+                "item:rio-armament:6"
+              ],
+              "count": 2,
+              "text": "Two wheels that set the time between two releases in a ripple delivery, in milliseconds, in steps of 10 and 100.",
+              "context": "A longer interval spreads the bombs farther apart.",
+              "page": "142",
+              "src": "m2"
+            },
+            {
+              "id": "arm-stations",
+              "name": "Station select switches (1, 3, 4, 5, 6, 8)",
+              "type": "switch",
+              "match": [
+                "PNT_68",
+                "PNT_65",
+                "PNT_69",
+                "PNT_70",
+                "PNT_64",
+                "PNT_71",
+                "item:rio-armament:7",
+                "item:rio-armament:10",
+                "item:rio-armament:12",
+                "item:rio-armament:14",
+                "item:rio-armament:15",
+                "item:rio-armament:18"
+              ],
+              "count": 6,
+              "text": "Six switches, one for each of these weapon stations, which are the places under the plane that carry stores. Each switch picks its station for a jettison or for a ground weapon delivery. Stations 1 and 8 also have a B position (the lower pylon) and an SW position that does not work.",
+              "context": "A station is chosen on this panel before the jettison or the attack.",
+              "page": "142-144",
+              "src": "m2"
+            },
+            {
+              "id": "arm-tank-jett",
+              "name": "Tank jettison switches (stations 2 and 7)",
+              "type": "switch",
+              "match": [
+                "PNT_73",
+                "PNT_67",
+                "item:rio-armament:16",
+                "item:rio-armament:17"
+              ],
+              "count": 2,
+              "text": "Two switches that pick the external fuel tanks on stations 2 and 7 for a jettison. The game names them for the left tank and the right tank.",
+              "context": "A tank is dropped in an emergency to make the plane lighter.",
+              "page": "144",
+              "src": "m2"
+            },
+            {
+              "id": "arm-jett-options",
+              "name": "Jettison options switch (racks / weapons)",
+              "type": "switch2",
+              "match": [
+                "PNT_66",
+                "item:rio-armament:19"
+              ],
+              "positions": [
+                {
+                  "name": "WPNS",
+                  "text": "Only the weapons are jettisoned."
+                },
+                {
+                  "name": "MER/TER",
+                  "text": "The racks are jettisoned as well. This does not work in the modelled F-14."
+                }
+              ],
+              "text": "This switch chooses the jettison configuration: the weapons only, or the racks as well. The racks option does not work in the game.",
+              "context": "It is part of the jettison set-up.",
+              "page": "144",
+              "src": "m2"
+            },
+            {
+              "id": "arm-selective-jett",
+              "name": "Selective jettison switch (and AUX guard)",
+              "type": "switch2",
+              "match": [
+                "PNT_78",
+                "PNT_1069",
+                "item:rio-armament:20"
+              ],
+              "positions": [
+                {
+                  "name": "JETT",
+                  "text": "Normal jettison mode."
+                },
+                {
+                  "name": "AUX",
+                  "text": "Backup jettison mode. It is guarded."
+                }
+              ],
+              "text": "This switch chooses the selective jettison mode: normal, or the backup mode under a guard. The game also has a guard named 'Jettison aux guard' for it.",
+              "context": "A jettison is made on the stations that were picked.",
+              "page": "144",
+              "src": "m2"
+            },
+            {
+              "id": "arm-launch",
+              "name": "A/A launch button",
+              "type": "button",
+              "match": [
+                "PNT_74",
+                "item:rio-armament:8"
+              ],
+              "text": "Pressing this button lets the RIO launch an AIM-7 Sparrow or an AIM-54 Phoenix missile from his seat. The button lights up when the conditions for a launch (hot trigger) are met.",
+              "context": "The pilot can launch the missiles with the trigger as well.",
+              "page": "143",
+              "src": "m2"
+            },
+            {
+              "id": "arm-next-launch",
+              "name": "Next launch button",
+              "type": "button",
+              "match": [
+                "PNT_9964",
+                "item:rio-armament:13"
+              ],
+              "text": "Pressing this button makes the target that is hooked at the moment the next launch target during track-while-scan operation.",
+              "context": "A hooked target is the one the RIO has marked on the TID.",
+              "page": "143",
+              "src": "m2"
+            },
+            {
+              "id": "arm-speed-gate",
+              "name": "Missile speed gate knob",
+              "type": "knob",
+              "match": [
+                "PNT_72",
+                "item:rio-armament:9"
+              ],
+              "text": "This knob sets the position of the missile speed gate.",
+              "context": "The setting is used with the missile launch.",
+              "page": "143",
+              "src": "m2"
+            },
+            {
+              "id": "arm-missile-option",
+              "name": "Missile options switch",
+              "type": "switch",
+              "match": [
+                "PNT_75",
+                "item:rio-armament:11"
+              ],
+              "text": "This switch configures the missile launch. One setting enables the pulse-doppler mode of the AIM-7 and the other enables the active launch mode of the AIM-54.",
+              "context": "It is set before the missiles are used.",
+              "page": "143",
+              "src": "m2"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "rio-left-instruments",
+      "where": "front-left",
+      "name": "RIO cockpit: left instrument panel",
+      "text": "The left part of the RIO's instrument panel, with the height and speed gauges and the backup horizon.",
+      "panels": [
+        {
+          "id": "rio-altimeter",
+          "name": "RIO: altimeter",
+          "db": "rio-altimeter",
+          "src": "m2",
+          "page": "146-147",
+          "text": "The height gauge of the RIO. It shows the height above sea level, calculated from the air pressure.",
+          "context": "The RIO sets the local air pressure so that the gauge reads right.",
+          "controls": [
+            {
+              "id": "rio-alt-baro",
+              "name": "Altimeter pressure setting knob (RIO)",
+              "type": "knob",
+              "match": [
+                "PNT_20306",
+                "item:rio-altimeter:2"
+              ],
+              "text": "Turning this knob sets the local air pressure that the altimeter uses, in inches of mercury. It affects only this display.",
+              "context": "The RIO sets it from the weather report.",
+              "page": "147",
+              "src": "m2"
+            },
+            {
+              "id": "rio-alt-mode",
+              "name": "Altimeter mode switch (RESET / STBY)",
+              "type": "switch2",
+              "match": [
+                "PNT_20307",
+                "item:rio-altimeter:4"
+              ],
+              "positions": [
+                {
+                  "name": "RESET",
+                  "text": "Holding the switch here for about three seconds, with air data and power available, starts the normal servo-driven mode. It springs back."
+                },
+                {
+                  "name": "STBY",
+                  "text": "The altimeter works on air pressure alone (backup mode)."
+                }
+              ],
+              "text": "This switch chooses how the altimeter works. RESET is spring-loaded and returns to the middle.",
+              "context": "STBY is the backup mode that works on air pressure alone.",
+              "page": "147",
+              "src": "m2"
+            },
+            {
+              "id": "rio-alt-display",
+              "name": "Altimeter readout and pressure window",
+              "type": "display",
+              "match": [
+                "item:rio-altimeter:1",
+                "item:rio-altimeter:3"
+              ],
+              "count": 2,
+              "text": "Drums show the ten-thousands, thousands and hundreds of feet and a pointer shows the rest. A window shows the set air pressure.",
+              "context": "It is the RIO's height display.",
+              "page": "147",
+              "src": "m2"
+            }
+          ]
+        },
+        {
+          "id": "rio-airspeed-mach",
+          "name": "RIO: airspeed / Mach indicator",
+          "db": "rio-airspeed-mach",
+          "src": "m2",
+          "page": "148-149",
+          "text": "The speed gauge of the RIO. It shows how fast the plane flies through the air and the Mach number, the speed compared to the speed of sound.",
+          "context": "It is the same as the pilot's gauge. A knob sets small marks to remember speeds.",
+          "controls": [
+            {
+              "id": "rio-asi-knob",
+              "name": "Airspeed index selector knob",
+              "type": "knob",
+              "match": [
+                "PNT_254",
+                "item:rio-airspeed-mach:8"
+              ],
+              "text": "On the RIO's gauge, this knob sets the small speed marks. Pushing or pulling it picks which mark is moved.",
+              "context": "The marks remember wanted speeds for the RIO, just as on the pilot's gauge.",
+              "page": "149",
+              "src": "m2"
+            },
+            {
+              "id": "rio-asi-scales",
+              "name": "Airspeed dial and scales",
+              "type": "indicator",
+              "match": [
+                "item:rio-airspeed-mach:1",
+                "item:rio-airspeed-mach:2",
+                "item:rio-airspeed-mach:3",
+                "item:rio-airspeed-mach:4"
+              ],
+              "count": 4,
+              "text": "The dial shows the speed on an outer scale up to 200 knots, an inner scale from 200 to 850 knots, and a Mach scale.",
+              "context": "It is read like a clock face, with the speed at the marker.",
+              "page": "148-149",
+              "src": "m2"
+            },
+            {
+              "id": "rio-asi-pointers",
+              "name": "Index pointers (airspeed, Mach, safe Mach)",
+              "type": "indicator",
+              "match": [
+                "item:rio-airspeed-mach:5",
+                "item:rio-airspeed-mach:6",
+                "item:rio-airspeed-mach:7"
+              ],
+              "count": 3,
+              "text": "Marks that show a wanted speed, a wanted Mach number and the highest safe Mach number from the air data computer.",
+              "context": "The first two are set with the knob.",
+              "page": "149",
+              "src": "m2"
+            }
+          ]
+        },
+        {
+          "id": "rio-standby-attitude",
+          "name": "RIO: standby attitude indicator",
+          "db": "rio-standby-attitude",
+          "src": "m2",
+          "page": "150-151",
+          "text": "The backup artificial horizon of the RIO. It shows whether the nose is up or down and the wings level. A repeater of the first radio's frequency sits on the same panel.",
+          "context": "It works on its own, without the main systems.",
+          "controls": [
+            {
+              "id": "rio-sadi-knob",
+              "name": "Standby attitude indicator cage and trim knob",
+              "type": "knob",
+              "match": [
+                "PNT_RIO_STBY_ADI_PULL",
+                "item:rio-standby-attitude:2"
+              ],
+              "positions": [
+                {
+                  "name": "PULLED (caged)",
+                  "text": "The instrument is caged."
+                },
+                {
+                  "name": "PUSHED (uncaged)",
+                  "text": "The instrument is uncaged and works. Turning the knob trims the pitch."
+                }
+              ],
+              "text": "This knob cages the standby attitude indicator when pulled and trims its pitch when turned. Caging holds the instrument's gyroscope in place.",
+              "context": "Pushed in, the instrument is uncaged and works.",
+              "page": "150-151",
+              "src": "m2"
+            },
+            {
+              "id": "rio-sadi-flag",
+              "name": "OFF flag",
+              "type": "indicator",
+              "match": [
+                "item:rio-standby-attitude:1"
+              ],
+              "text": "A flag that appears when the instrument has no power or is caged.",
+              "context": "It tells the RIO that the picture is not valid.",
+              "page": "150",
+              "src": "m2"
+            },
+            {
+              "id": "rio-uhf-remote",
+              "name": "UHF 1 remote indicator (RIO)",
+              "type": "display",
+              "match": [
+                "PNT_406",
+                "PNT_405",
+                "item:rio-standby-attitude:3"
+              ],
+              "text": "A display that repeats the frequency or the channel of the first radio. A DIM knob sets its brightness and a TEST button starts a self-test; a correct test shows 888.888.",
+              "context": "It is the same repeater as in the pilot's cockpit.",
+              "page": "151",
+              "src": "m2"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "rio-front-panel",
+      "where": "front-center",
+      "name": "RIO cockpit: radar scope",
+      "text": "The middle of the RIO's instrument panel, with the DDD radar scope and its controls.",
+      "panels": [
+        {
+          "id": "rio-ddd",
+          "name": "RIO: detail data display (DDD) panel",
+          "db": "rio-ddd",
+          "src": "m2",
+          "page": "153-157",
+          "text": "The DDD is the radar scope of the RIO. Around it are the controls for the radar: range, mode, the pictures to show and a set of knobs for gain and thresholds.",
+          "context": "The RIO looks at the DDD to find targets with the AWG-9 radar. The TID next to it shows the bigger picture.",
+          "controls": [
+            {
+              "id": "ddd-target-size",
+              "name": "Target size switch",
+              "type": "switch",
+              "match": [
+                "PNT_36",
+                "item:rio-ddd:1"
+              ],
+              "text": "This switch chooses the target size that the radar uses to calculate the missile launch zone, to track targets and for the missile autopilot.",
+              "context": "The radar needs the target size to compute well.",
+              "page": "153",
+              "src": "m2"
+            },
+            {
+              "id": "ddd-mlc",
+              "name": "Main lobe clutter switch",
+              "type": "switch",
+              "match": [
+                "PNT_37",
+                "item:rio-ddd:2"
+              ],
+              "text": "This switch chooses how the radar processes clutter in the main lobe, the echoes from the ground in the radar beam.",
+              "context": "It helps to find targets that fly low.",
+              "page": "153",
+              "src": "m2"
+            },
+            {
+              "id": "ddd-agc",
+              "name": "Automatic gain control switch",
+              "type": "switch",
+              "match": [
+                "PNT_38",
+                "item:rio-ddd:3"
+              ],
+              "text": "This switch controls how fast the radar gain adjusts itself. In the game it has no function.",
+              "context": "Gain is how strongly the radar echoes are amplified.",
+              "page": "153",
+              "src": "m2"
+            },
+            {
+              "id": "ddd-param-amp",
+              "name": "Parametric amplifier switch",
+              "type": "switch",
+              "match": [
+                "PNT_3900",
+                "item:rio-ddd:4"
+              ],
+              "text": "This switch controls the parametric amplification of the radar. In the game it has no function.",
+              "context": "It is a radar detail that is not simulated.",
+              "page": "153",
+              "src": "m2"
+            },
+            {
+              "id": "ddd-pulse-video",
+              "name": "Pulse video knob",
+              "type": "knob",
+              "match": [
+                "PNT_24",
+                "item:rio-ddd:5"
+              ],
+              "text": "This knob sets how strongly the pulse video is shown on the DDD. It does not change the pulse-doppler picture.",
+              "context": "Pulse video is the picture of the pulse radar echoes.",
+              "page": "154",
+              "src": "m2"
+            },
+            {
+              "id": "ddd-range-buttons",
+              "name": "Range selection buttons (5, 10, 20, 50, 100, 200 NM)",
+              "type": "button",
+              "match": [
+                "PNT_40",
+                "PNT_41",
+                "PNT_42",
+                "PNT_43",
+                "PNT_44",
+                "PNT_45",
+                "item:rio-ddd:8"
+              ],
+              "count": 6,
+              "text": "Six buttons that choose the range of the radar picture, from 5 up to 200 nautical miles.",
+              "context": "A short range shows more detail close to the plane. A long range finds targets far away.",
+              "page": "154",
+              "src": "m2"
+            },
+            {
+              "id": "ddd-brightness",
+              "name": "DDD brightness knob",
+              "type": "knob",
+              "match": [
+                "PNT_23",
+                "item:rio-ddd:9"
+              ],
+              "text": "This knob sets the brightness of the DDD scope, through a polarized filter in front of the display.",
+              "context": "The RIO sets it to suit the light in the cockpit.",
+              "page": "154",
+              "src": "m2"
+            },
+            {
+              "id": "ddd-ir",
+              "name": "IR audio threshold, volume and gain knobs (no function)",
+              "type": "knob",
+              "match": [
+                "PNT_22",
+                "PNT_21",
+                "PNT_20",
+                "item:rio-ddd:10",
+                "item:rio-ddd:11",
+                "item:rio-ddd:12"
+              ],
+              "count": 3,
+              "text": "Three knobs for the infrared audio threshold, the infrared audio volume and the infrared gain. They do not work with the TCS, the television camera of the game.",
+              "context": "The infrared system of the radar scope is not simulated.",
+              "page": "154-155",
+              "src": "m2"
+            },
+            {
+              "id": "ddd-display-buttons",
+              "name": "DDD display selection buttons (radar, IFF, infrared)",
+              "type": "button",
+              "match": [
+                "PNT_19",
+                "PNT_17",
+                "PNT_18",
+                "item:rio-ddd:15"
+              ],
+              "count": 3,
+              "text": "Buttons that choose which pictures are shown on the DDD: the radar, the IFF answers (who-are-you replies) and the infrared. The infrared button does not work with the TCS.",
+              "context": "The RIO turns the pictures on and off as needed.",
+              "page": "155",
+              "src": "m2"
+            },
+            {
+              "id": "ddd-filter",
+              "name": "DDD filter button",
+              "type": "button",
+              "match": [
+                "PNT_DDD_CENTRw"
+              ],
+              "text": "A button on the DDD panel that the game names 'DDD filter'.",
+              "context": "The sources used here do not describe it in more detail."
+            },
+            {
+              "id": "ddd-wcs-buttons",
+              "name": "WCS mode buttons (radar modes)",
+              "type": "button",
+              "match": [
+                "PNT_10",
+                "PNT_11",
+                "PNT_14",
+                "PNT_12",
+                "PNT_15",
+                "PNT_9916",
+                "PNT_13",
+                "item:rio-ddd:16"
+              ],
+              "count": 7,
+              "text": "Buttons that choose the working mode of the AWG-9 radar: pulse search, track-while-scan manual and automatic, pulse-doppler search, single target tracks and range-while-scan.",
+              "context": "The mode decides how the radar finds and follows targets. The drum above shows the active mode.",
+              "page": "155",
+              "src": "m2"
+            },
+            {
+              "id": "ddd-closing-velocity",
+              "name": "Closing velocity scale switch",
+              "type": "switch",
+              "match": [
+                "PNT_35",
+                "item:rio-ddd:18"
+              ],
+              "text": "This switch chooses the closing velocity scale on the DDD in the pulse-doppler modes. Closing velocity is how fast the target comes nearer.",
+              "context": "The RIO chooses a scale that fits the situation.",
+              "page": "155",
+              "src": "m2"
+            },
+            {
+              "id": "ddd-erase",
+              "name": "Erase control knob",
+              "type": "knob",
+              "match": [
+                "PNT_25",
+                "item:rio-ddd:19"
+              ],
+              "text": "This knob sets the strength of the erase beam, which decides how fast radar returns fade from the scope.",
+              "context": "A quick fade removes old echoes.",
+              "page": "156",
+              "src": "m2"
+            },
+            {
+              "id": "ddd-pulse-gain",
+              "name": "Pulse gain control",
+              "type": "knob",
+              "match": [
+                "PNT_26",
+                "item:rio-ddd:20"
+              ],
+              "text": "This knob sets the radar gain in the pulse mode, which is how strongly the echoes are amplified. It is normally left in its detent and changed only because of clutter or jamming.",
+              "context": "The RIO touches it only when clutter or jamming makes the picture hard to read.",
+              "page": "156",
+              "src": "m2"
+            },
+            {
+              "id": "ddd-aspect",
+              "name": "Aspect switch",
+              "type": "switch",
+              "match": [
+                "PNT_34",
+                "item:rio-ddd:21"
+              ],
+              "text": "This switch selects the doppler filter regions, by the expected aspect of the target, and the pulse tracking method, edge or centroid.",
+              "context": "It depends on which way the target flies compared to the plane.",
+              "page": "156",
+              "src": "m2"
+            },
+            {
+              "id": "ddd-ccm",
+              "name": "Counter-countermeasure buttons (CCM) and thresholds (no function)",
+              "type": "button",
+              "match": [
+                "PNT_1814",
+                "PNT_1813",
+                "PNT_1812",
+                "PNT_28",
+                "PNT_27",
+                "item:rio-ddd:23",
+                "item:rio-ddd:24",
+                "item:rio-ddd:25"
+              ],
+              "count": 5,
+              "text": "Buttons and knobs of the counter-countermeasures (CCM), which help the radar against jamming: the CCM mode buttons (VGS, ALT DIFF, SPL), the JAM/JET threshold and the ACM threshold. The CCM modes and the JAM/JET knob do not work in the game. The ACM threshold sets the radar sensitivity at close range and is normally left in its detent.",
+              "context": "Jamming is the blinding of the radar by enemy transmitters.",
+              "page": "156-157",
+              "src": "m2"
+            },
+            {
+              "id": "ddd-pd-thresholds",
+              "name": "Pulse-doppler threshold knobs (clutter, clear)",
+              "type": "knob",
+              "match": [
+                "PNT_29",
+                "PNT_30",
+                "item:rio-ddd:26"
+              ],
+              "count": 2,
+              "text": "Two knobs that set the pulse-doppler video thresholds for the two halves of the DDD: CLEAR for the upper half and CLUTTER for the lower half.",
+              "context": "The thresholds decide how strong an echo must be to show on the scope.",
+              "page": "157",
+              "src": "m2"
+            },
+            {
+              "id": "ddd-lights",
+              "name": "Radar track indicator lights",
+              "type": "light",
+              "match": [
+                "item:rio-ddd:6"
+              ],
+              "text": "Lights for the tracking state in single target track: ANT TRK (the radar follows the target angle), RDROT (the target is inside the range or rate gate), JAT (the radar follows a jamming source) and IROT (the TCS angle tracking).",
+              "context": "They tell the RIO how the radar follows the target.",
+              "page": "154",
+              "src": "m2"
+            },
+            {
+              "id": "ddd-drums",
+              "name": "Range drum, WCS mode display and elevation indicator",
+              "type": "display",
+              "match": [
+                "item:rio-ddd:7",
+                "item:rio-ddd:17",
+                "item:rio-ddd:22"
+              ],
+              "count": 3,
+              "text": "Two drums and an indicator. One drum shows the selected range, one shows the active radar mode, and the elevation indicator has two needles: the left one for the real radar antenna elevation, the right one for the commanded radar elevation or the TCS elevation.",
+              "context": "The RIO reads them to know the state of the radar.",
+              "page": "154-156",
+              "src": "m2"
+            },
+            {
+              "id": "ddd-channel-wheels",
+              "name": "Transmitter and missile channel wheels",
+              "type": "wheel",
+              "match": [
+                "item:rio-ddd:13",
+                "item:rio-ddd:14"
+              ],
+              "count": 2,
+              "text": "Two wheels, labelled XMTR CHAN and MSL CHAN. They are meant to select the AWG-9 operating frequency and the guidance channel of the AIM-7 or AIM-54 missile. Both do not work in DCS.",
+              "context": "The game's picture has no callout for them.",
+              "page": "155",
+              "src": "m2"
+            },
+            {
+              "id": "ddd-scope",
+              "name": "DDD radar display",
+              "type": "display",
+              "match": [
+                "item:rio-ddd:27"
+              ],
+              "text": "The screen of the DDD, the main picture of the AWG-9 radar.",
+              "context": "Targets appear as marks on it.",
+              "page": "157",
+              "src": "m2"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "rio-center-console",
+      "where": "center-pedestal",
+      "name": "RIO cockpit: center console",
+      "text": "The middle of the RIO's cockpit, with the TID screen and the hand control unit below it.",
+      "panels": [
+        {
+          "id": "rio-tid",
+          "name": "RIO: tactical information display (TID)",
+          "db": "rio-tid",
+          "src": "m2",
+          "page": "158-160",
+          "text": "The TID is a round screen with a map-like picture of the targets around the plane. The knobs and buttons around it set what it shows, how far it looks and where the plane should steer.",
+          "context": "The RIO uses the TID to keep track of all the targets the radar finds. He marks (hooks) one with the hand control unit under it.",
+          "controls": [
+            {
+              "id": "tid-brightness",
+              "name": "TID brightness knob",
+              "type": "knob",
+              "match": [
+                "PNT_48",
+                "item:rio-tid:4"
+              ],
+              "text": "This knob sets the overall brightness of the TID.",
+              "context": "The RIO sets it to suit the light in the cockpit.",
+              "page": "159",
+              "src": "m2"
+            },
+            {
+              "id": "tid-contrast",
+              "name": "TID contrast knob",
+              "type": "knob",
+              "match": [
+                "PNT_49",
+                "item:rio-tid:2"
+              ],
+              "text": "This knob sets the contrast of the television picture shown on the TID.",
+              "context": "It matters when the TID shows the camera picture.",
+              "page": "159",
+              "src": "m2"
+            },
+            {
+              "id": "tid-buttons",
+              "name": "TID display selection buttons (8)",
+              "type": "button",
+              "match": [
+                "PNT_2004",
+                "PNT_1115",
+                "PNT_2113",
+                "PNT_1116",
+                "PNT_1117",
+                "PNT_2114",
+                "PNT_1118",
+                "PNT_226",
+                "item:rio-tid:8"
+              ],
+              "count": 8,
+              "text": "Eight buttons, each with a light, that turn parts of the TID picture on or off: the TID expand function (RID DISABLE, shown as EXPAND), altitude numbers next to the tracks (ALT NUM), extra track symbols (SYM ELEM), data link tracks (DATA LINK), jamming strobes (JAM STROBE), tracks that cannot be attacked (NON ATTACK), velocity vectors (VEL VECTOR) and the missile launch zone (LAUNCH ZONE).",
+              "context": "The launch zone is switched on by itself 60 seconds before the maximum missile launch range. The RIO picks only what he needs, so the screen does not get too crowded.",
+              "page": "159-160",
+              "src": "m2"
+            },
+            {
+              "id": "tid-range",
+              "name": "TID range selector",
+              "type": "selector",
+              "match": [
+                "PNT_2006",
+                "item:rio-tid:9"
+              ],
+              "text": "This selector chooses the scale of the TID. The range is the diameter of the area the screen shows.",
+              "context": "A larger scale shows more of the surroundings.",
+              "page": "160",
+              "src": "m2"
+            },
+            {
+              "id": "tid-mode",
+              "name": "TID mode selector",
+              "type": "selector",
+              "match": [
+                "PNT_2005",
+                "item:rio-tid:10"
+              ],
+              "text": "This selector chooses the current presentation mode of the TID.",
+              "context": "The mode changes what the symbols on the screen are relative to.",
+              "page": "160",
+              "src": "m2"
+            },
+            {
+              "id": "tid-destination",
+              "name": "Destination selector",
+              "type": "selector",
+              "match": [
+                "PNT_51",
+                "item:rio-tid:6"
+              ],
+              "text": "This selector chooses the destination that the navigation uses in the destination mode.",
+              "context": "The steering commands to the pilot then lead to this point.",
+              "page": "159",
+              "src": "m2"
+            },
+            {
+              "id": "tid-collision",
+              "name": "Collision steering button",
+              "type": "button",
+              "match": [
+                "PNT_52",
+                "item:rio-tid:7"
+              ],
+              "text": "Pressing this button selects collision steering toward the tracked target or the centre of the track-while-scan group.",
+              "context": "Collision steering tells the pilot where to fly to meet the target.",
+              "page": "159",
+              "src": "m2"
+            },
+            {
+              "id": "tid-track-hold",
+              "name": "Track hold button",
+              "type": "button",
+              "match": [
+                "PNT_53",
+                "item:rio-tid:11"
+              ],
+              "text": "Pressing this button makes the radar keep a track longer after the last echo: two minutes instead of about 14 seconds.",
+              "context": "It helps to keep a track when the radar loses the target for a while.",
+              "page": "160",
+              "src": "m2"
+            },
+            {
+              "id": "tid-nav-mode",
+              "name": "Navigation mode selector",
+              "type": "selector",
+              "match": [
+                "PNT_50",
+                "item:rio-tid:12"
+              ],
+              "text": "This selector chooses the navigation reference system and controls the alignment and operating mode of the inertial navigation system.",
+              "context": "The inertial navigation system always knows where the plane is.",
+              "page": "160",
+              "src": "m2"
+            },
+            {
+              "id": "tid-readouts",
+              "name": "INS status indicator, data readout drum and steering drum",
+              "type": "indicator",
+              "match": [
+                "item:rio-tid:1",
+                "item:rio-tid:3",
+                "item:rio-tid:5"
+              ],
+              "count": 3,
+              "positions": [
+                {
+                  "name": "STBY",
+                  "text": "Power is on but the alignment is not complete."
+                },
+                {
+                  "name": "READY",
+                  "text": "The alignment is good enough for an AIM-54 launch."
+                }
+              ],
+              "text": "An indicator that shows the alignment state of the inertial navigation system: STBY or READY. Both lights go out when an INS mode is selected. A drum shows the data source of the alphanumeric readouts, and another drum shows the steering information that the pilot gets.",
+              "context": "The RIO reads them to check the navigation and the steering.",
+              "page": "158-159",
+              "src": "m2"
+            }
+          ]
+        },
+        {
+          "id": "rio-hcu",
+          "name": "RIO: hand control unit (HCU) panel",
+          "db": "rio-hcu",
+          "src": "m2",
+          "page": "161-163",
+          "text": "The panel below the TID, with the radar and camera hand controller and the switches for the power of the weapon control system and the camera.",
+          "context": "The RIO controls the radar, the camera and the cursors with the HCU stick. The buttons choose what the stick controls.",
+          "controls": [
+            {
+              "id": "hcu-tv-ir",
+              "name": "TV/IR switch (TCS power)",
+              "type": "switch2",
+              "match": [
+                "PNT_2011",
+                "item:rio-hcu:1"
+              ],
+              "positions": [
+                {
+                  "name": "OFF/STBY",
+                  "text": "The camera system gets power but is not fully working."
+                },
+                {
+                  "name": "ON",
+                  "text": "The camera system is fully working."
+                }
+              ],
+              "text": "This switch turns the power of the television camera system on or off.",
+              "context": "The TCS is the television camera under the nose.",
+              "page": "161-162",
+              "src": "m2"
+            },
+            {
+              "id": "hcu-overtemp",
+              "name": "IR/TV overtemperature light",
+              "type": "light",
+              "match": [
+                "item:rio-hcu:2"
+              ],
+              "text": "A light that comes on when the camera system (TCS) is too hot.",
+              "context": "It warns the RIO to switch it off.",
+              "page": "162",
+              "src": "m2"
+            },
+            {
+              "id": "hcu-light-test",
+              "name": "Light test button",
+              "type": "button",
+              "match": [
+                "PNT_2014",
+                "item:rio-hcu:3"
+              ],
+              "text": "Pressing this button tests all the lights of the AWG-9 radar system.",
+              "context": "It checks that the lights work.",
+              "page": "162",
+              "src": "m2"
+            },
+            {
+              "id": "hcu-power-reset-light",
+              "name": "Power reset indicator",
+              "type": "light",
+              "match": [
+                "item:rio-hcu:4"
+              ],
+              "text": "A light that comes on when one or more of the secondary power supplies do not work.",
+              "context": "The power reset button tries to restore them.",
+              "page": "162",
+              "src": "m2"
+            },
+            {
+              "id": "hcu-power-reset",
+              "name": "Power reset button",
+              "type": "button",
+              "match": [
+                "PNT_2013",
+                "item:rio-hcu:5"
+              ],
+              "text": "Pressing this button tries to restore the secondary power supplies that are not working. If the fault stays, they stay off.",
+              "context": "The RIO presses it when the power reset light is on.",
+              "page": "162",
+              "src": "m2"
+            },
+            {
+              "id": "hcu-wcs-light",
+              "name": "WCS status indicator",
+              "type": "light",
+              "match": [
+                "item:rio-hcu:6"
+              ],
+              "text": "A light that is on while the radar is still warming up after STBY or XMT was chosen, or while XMT is chosen but transmitting is still blocked.",
+              "context": "The radar is not ready while this light is on.",
+              "page": "162",
+              "src": "m2"
+            },
+            {
+              "id": "hcu-wcs-power",
+              "name": "WCS power switch",
+              "type": "switch2",
+              "match": [
+                "PNT_2012",
+                "item:rio-hcu:7"
+              ],
+              "positions": [
+                {
+                  "name": "STBY",
+                  "text": "Gives power to the weapon control system and starts the radar warm-up without transmitting."
+                },
+                {
+                  "name": "XMT",
+                  "text": "Lets the radar transmit when the warm-up is complete."
+                }
+              ],
+              "text": "This switch controls the power of the weapon control system. XMT lets the radar transmit once it has warmed up.",
+              "context": "The displays need about 30 seconds to warm up and the radar about three minutes.",
+              "page": "162",
+              "src": "m2"
+            },
+            {
+              "id": "hcu-function-buttons",
+              "name": "Hand control function buttons",
+              "type": "selector",
+              "match": [
+                "PNT_2009",
+                "PNT_2010",
+                "PNT_2007",
+                "PNT_2008",
+                "control:stick.selector.hcu_function",
+                "item:rio-hcu:12"
+              ],
+              "count": 4,
+              "positions": [
+                {
+                  "name": "IR/TV",
+                  "text": "The stick controls the TCS direction and tracking."
+                },
+                {
+                  "name": "RDR",
+                  "text": "The stick controls the radar antenna elevation and the lock-on or return to search."
+                },
+                {
+                  "name": "DDD CURSOR",
+                  "text": "The stick moves the cursor on the DDD to mark geographic positions in the pulse radar mode."
+                },
+                {
+                  "name": "TID CURSOR",
+                  "text": "The stick moves the cursor on the TID to hook symbols."
+                }
+              ],
+              "text": "Four lit buttons left of the HCU stick that choose what the stick controls: the camera (IR/TV), the radar (RDR), the DDD cursor or the TID cursor. Only one can be on at a time.",
+              "context": "The RIO changes the button to change the use of the stick.",
+              "page": "163",
+              "src": "m2"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "rio-right-instruments-area",
+      "where": "front-right",
+      "name": "RIO cockpit: right instrument panel and knee panel",
+      "text": "The right side of the RIO's instrument panel, with the clock, the radar warning scope, the fuel total, the caution lights and the ECMD.",
+      "panels": [
+        {
+          "id": "rio-right-instruments",
+          "name": "RIO: right instrument panel",
+          "db": "rio-right-instruments",
+          "src": "m2",
+          "page": "166-175",
+          "text": "The clock, the radar warning scope, the fuel total, the master caution light, the beacon compass (BDHI) and the canopy jettison handle.",
+          "context": "The RIO reads these instruments to watch the threat and the fuel. The jettison handle is for emergencies.",
+          "controls": [
+            {
+              "id": "rio-clock-wind",
+              "name": "Clock wind / set knob (RIO)",
+              "type": "knob",
+              "match": [
+                "PNT_1052",
+                "item:rio-right-instruments:1"
+              ],
+              "text": "On the RIO's clock, turning this knob clockwise winds the clock. Pulled out and turned, it sets the hour and minute hands.",
+              "context": "The clock is a wind-up clock, so it must be wound to keep running.",
+              "page": "166-167",
+              "src": "m2"
+            },
+            {
+              "id": "rio-clock-timer",
+              "name": "Clock elapsed-time button (RIO)",
+              "type": "button",
+              "match": [
+                "PNT_1053",
+                "item:rio-right-instruments:2"
+              ],
+              "text": "On the RIO's clock, pressing this control starts, stops and resets the 1-hour elapsed time counter, like a stopwatch.",
+              "context": "The RIO uses it to time legs or runs.",
+              "page": "167",
+              "src": "m2"
+            },
+            {
+              "id": "rio-alr67-brightness",
+              "name": "ALR-67 intensity knob (RIO)",
+              "type": "knob",
+              "match": [
+                "PNT_376",
+                "item:rio-right-instruments:4"
+              ],
+              "text": "Turning this knob changes the brightness of the RIO's radar warning scope.",
+              "context": "The RIO sets the scope so it is easy to read.",
+              "page": "168",
+              "src": "m2"
+            },
+            {
+              "id": "rio-alr67-scope",
+              "name": "ALR-67 scope (status circle and threat bands)",
+              "type": "indicator",
+              "match": [
+                "item:rio-right-instruments:3",
+                "item:rio-right-instruments:5",
+                "item:rio-right-instruments:6",
+                "item:rio-right-instruments:7"
+              ],
+              "count": 4,
+              "text": "The scope of the radar warning receiver. The centre circle shows the status of the system. The outer band is for emitters that are no immediate threat, the middle band for emitters able to engage, and the inner band for direct threats.",
+              "context": "The RIO watches it for threats.",
+              "page": "167-168",
+              "src": "m2"
+            },
+            {
+              "id": "rio-fuel-total",
+              "name": "Fuel quantity totalizer",
+              "type": "display",
+              "match": [
+                "item:rio-right-instruments:8"
+              ],
+              "text": "A display that shows the total amount of fuel on board the plane.",
+              "context": "The RIO checks it during the flight.",
+              "page": "169",
+              "src": "m2"
+            },
+            {
+              "id": "rio-master-caution",
+              "name": "Master caution reset button and threat lights (RIO)",
+              "type": "button",
+              "match": [
+                "PNT_RIO_MCAUTION",
+                "item:rio-right-instruments:9"
+              ],
+              "text": "The master caution light of the RIO flashes when something new appears on the RIO's caution and advisory panel. Pressing it switches the flashing off until the next event. The same group has the threat and IFF advisory lights: IFF, RCV, XMIT, SAM, AAA, CW and AI.",
+              "context": "The caution lights tell the RIO that something needs attention.",
+              "page": "170-172",
+              "src": "m2"
+            },
+            {
+              "id": "rio-bdhi",
+              "name": "BDHI (heading and beacon indicator)",
+              "type": "gauge",
+              "match": [
+                "item:rio-right-instruments:10"
+              ],
+              "text": "A round compass display that shows the heading, the bearing pointers to the tuned stations and the TACAN range.",
+              "context": "It is the same as the pilot's BDHI.",
+              "page": "173-174",
+              "src": "m2"
+            },
+            {
+              "id": "rio-canopy-jettison",
+              "name": "RIO canopy jettison handle",
+              "type": "handle",
+              "match": [
+                "PNT_2051",
+                "item:rio-right-instruments:11"
+              ],
+              "text": "Pulling this handle throws the canopy off above the RIO. It is for emergencies, when the crew must leave the plane quickly.",
+              "context": "It is used only in an emergency.",
+              "page": "175",
+              "src": "m2"
+            }
+          ]
+        },
+        {
+          "id": "rio-caution-advisory",
+          "name": "RIO: caution-advisory panel",
+          "db": "rio-caution-advisory",
+          "src": "m2",
+          "page": "177-180",
+          "text": "The board of lights on the RIO's right knee panel. Each light names a problem or a state of the RIO's systems, such as cabin pressure, the canopy, cooling and the fuzes.",
+          "context": "The RIO reads it in flight. A master caution light flashes when a new light comes on.",
+          "controls": [
+            {
+              "id": "rio-caution-lights",
+              "name": "Caution-advisory lights",
+              "type": "light",
+              "match": [
+                "item:rio-caution-advisory:1"
+              ],
+              "text": "A board of lights for the RIO's system cautions and advisories, for example C&D HOT (overheated controls and displays), CABIN PRESS (cabin pressure too low), FUEL LOW (below 1,000 pounds in a feed group), OXY LOW, CANOPY (not down and locked), the cooling lights, NAV COMP and FILM LOW.",
+              "context": "It is the caution / warning panel for the RIO's cockpit.",
+              "page": "177-180",
+              "src": "m2"
+            }
+          ]
+        },
+        {
+          "id": "rio-ecmd",
+          "name": "RIO: electronic countermeasures display (ECMD)",
+          "db": "rio-ecmd",
+          "src": "m2",
+          "page": "181",
+          "text": "A screen for navigation data and for the threat picture of the older AN/ALR-45 warning receiver (only in the F-14A with the ALR-45). A knob sets its brightness, a button tests it and a BIT indicator shows white flags if it has failed.",
+          "context": "The RIO uses it to see navigation data and, in the older F-14A, the threats.",
+          "controls": [
+            {
+              "id": "ecmd-brightness",
+              "name": "ECMD brightness knob",
+              "type": "knob",
+              "match": [
+                "PNT_2023"
+              ],
+              "text": "This knob sets the brightness of the ECMD.",
+              "context": "The RIO sets it to suit the light in the cockpit.",
+              "page": "181",
+              "src": "m2"
+            },
+            {
+              "id": "ecmd-test",
+              "name": "ECMD test button",
+              "type": "button",
+              "match": [
+                "PNT_2024"
+              ],
+              "text": "Pressing this button starts a test of the ECMD display.",
+              "context": "It is a quick check that the display works.",
+              "page": "181",
+              "src": "m2"
+            },
+            {
+              "id": "ecmd-display",
+              "name": "ECMD display",
+              "type": "display",
+              "match": [
+                "item:rio-ecmd:1"
+              ],
+              "text": "The screen of the ECMD. It shows navigation data and, only in the F-14A with the AN/ALR-45, the threat picture.",
+              "context": "The HSD in the pilot's cockpit shows the same kind of information.",
+              "page": "181",
+              "src": "m2"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "rio-right-console",
+      "where": "right-console",
+      "name": "RIO cockpit: right console",
+      "text": "The console on the RIO's right. It has the radar warning and jammer panels, the data link, the countermeasure dispenser, the IFF panels, the lights and the LANTIRN panel.",
+      "panels": [
+        {
+          "id": "rio-rwr",
+          "name": "RIO: radar warning receiver panel (ALR-67)",
+          "db": "rio-rwr",
+          "src": "m2",
+          "page": "182-183",
+          "text": "The control panel of the radar warning receiver, which tells the crew when an enemy radar is looking at the plane. It has a power switch, a display type selector, a mode switch, a test switch and a volume knob.",
+          "context": "The RIO turns it on before flight and watches its scope in the right instrument panel.",
+          "controls": [
+            {
+              "id": "rwr-power",
+              "name": "ALR-67 power switch",
+              "type": "switch",
+              "match": [
+                "PNT_2139",
+                "item:rio-rwr:1"
+              ],
+              "text": "This switch turns the power of the radar warning receiver on or off.",
+              "context": "The receiver must be on to warn the crew.",
+              "page": "182",
+              "src": "m2"
+            },
+            {
+              "id": "rwr-display-type",
+              "name": "ALR-67 display type selector",
+              "type": "selector",
+              "match": [
+                "PNT_2136",
+                "item:rio-rwr:2"
+              ],
+              "text": "This knob chooses which kinds of threats are prioritized and displayed on the scope.",
+              "context": "The RIO picks the threats that matter most.",
+              "page": "182",
+              "src": "m2"
+            },
+            {
+              "id": "rwr-mode",
+              "name": "ALR-67 mode switch",
+              "type": "switch3",
+              "match": [
+                "PNT_2137",
+                "item:rio-rwr:3"
+              ],
+              "positions": [
+                {
+                  "name": "OFST",
+                  "text": "Momentary: while held, the offset display separates overlapping symbols. The switch springs back."
+                },
+                {
+                  "name": "OFF",
+                  "text": "The rest position in the middle."
+                },
+                {
+                  "name": "LMT",
+                  "text": "Momentary: while held, the limited display shows only the six highest-priority threats. The switch springs back."
+                }
+              ],
+              "text": "This switch gives two temporary display options while it is held, offset and limited. It springs back to the middle (OFF).",
+              "context": "OFST and LMT are the two options named on the label.",
+              "page": "182-183",
+              "src": "m2"
+            },
+            {
+              "id": "rwr-test",
+              "name": "ALR-67 test switch",
+              "type": "switch3",
+              "match": [
+                "PNT_2140",
+                "item:rio-rwr:4"
+              ],
+              "positions": [
+                {
+                  "name": "BIT",
+                  "text": "Momentary: starts the built-in test of the receiver. The switch springs back."
+                },
+                {
+                  "name": "OFF",
+                  "text": "The rest position in the middle."
+                },
+                {
+                  "name": "SPL",
+                  "text": "Momentary: while BIT page 1 is shown, holding it shows the special BIT status page, and for three seconds after release."
+                }
+              ],
+              "text": "This switch starts a built-in test (BIT) or the special test page (SPL). It springs back to the middle.",
+              "context": "The RIO runs the test to check that the receiver works.",
+              "page": "183",
+              "src": "m2"
+            },
+            {
+              "id": "rwr-volume",
+              "name": "ALR-67 volume knob (RIO)",
+              "type": "knob",
+              "match": [
+                "PNT_2138",
+                "item:rio-rwr:5"
+              ],
+              "text": "Turning this knob changes how loud the radar warning sound is in the RIO's headset.",
+              "context": "The sound warns the crew when a radar looks at the plane.",
+              "page": "183",
+              "src": "m2"
+            }
+          ]
+        },
+        {
+          "id": "rio-ddi",
+          "name": "RIO: digital data indicator (DDI)",
+          "db": "rio-ddi",
+          "src": "m2",
+          "page": "184-187",
+          "text": "A set of lights that show the commands received over the data link. The data link shares positions of friends and targets between aircraft by radio.",
+          "context": "Most of the lights depend on data link replies that DCS does not model.",
+          "controls": [
+            {
+              "id": "ddi-lights",
+              "name": "DDI command lights",
+              "type": "light",
+              "match": [
+                "item:rio-ddi:1"
+              ],
+              "text": "Lights with short words for the commands from the data link controller, for example AFT VEC and FWD VEC (being vectored to the target from the rear or the front), COL VEC (on a collision course), NO MSG, TO WAY PT, HANDOVER, ORBIT, WAVE OFF and ACL RDY. Most of them depend on messages that DCS does not model.",
+              "context": "They are mostly not simulated in the game.",
+              "page": "184-187",
+              "src": "m2"
+            }
+          ]
+        },
+        {
+          "id": "rio-decm",
+          "name": "RIO: DECM control panel (jammer AN/ALQ-126)",
+          "db": "rio-decm",
+          "src": "m2",
+          "page": "187-188",
+          "text": "The panel of the jammer. A jammer is a radio transmitter that blinds enemy radars. It has a selector for power and mode, a volume knob and a standby light.",
+          "context": "The RIO turns the jammer on when enemy radars are a threat.",
+          "controls": [
+            {
+              "id": "decm-selector",
+              "name": "DECM power / mode selector",
+              "type": "selector",
+              "match": [
+                "PNT_151",
+                "item:rio-decm:2"
+              ],
+              "text": "This knob turns the jammer on and chooses its operating mode: off, warm-up, test, receive or repeat.",
+              "context": "The jammer needs time to warm up.",
+              "positions": [
+                {
+                  "name": "OFF",
+                  "text": "Removes power from the jammer (AN/ALQ-126)."
+                },
+                {
+                  "name": "STBY",
+                  "text": "Standby warm-up mode."
+                },
+                {
+                  "name": "TEST/HOLD 3 SEC",
+                  "text": "Hold for three seconds to arm the system test."
+                },
+                {
+                  "name": "TEST/ACT",
+                  "text": "Starts the built-in test after the hold step."
+                },
+                {
+                  "name": "REC",
+                  "text": "Receives and analyses threat signals. A detected missile launch may force the system into repeat."
+                },
+                {
+                  "name": "RPT",
+                  "text": "Repeat mode: transmits programmed answers to the detected threats."
+                }
+              ],
+              "page": "188",
+              "src": "m2"
+            },
+            {
+              "id": "decm-volume",
+              "name": "DECM jammer volume knob",
+              "type": "knob",
+              "match": [
+                "PNT_9950",
+                "item:rio-decm:3"
+              ],
+              "text": "Turning this knob changes how loud the jammer audio is in the RIO's headset.",
+              "context": "The sound tells the RIO that the jammer works.",
+              "page": "188",
+              "src": "m2"
+            },
+            {
+              "id": "decm-standby",
+              "name": "DECM standby light",
+              "type": "light",
+              "match": [
+                "item:rio-decm:1"
+              ],
+              "text": "An orange light that shows the warm-up when the jammer is set to standby. Light during a test or in operation means a fault.",
+              "context": "The light goes out when the warm-up is over.",
+              "page": "187-188",
+              "src": "m2"
+            }
+          ]
+        },
+        {
+          "id": "rio-datalink",
+          "name": "RIO: data link control panel",
+          "db": "rio-datalink",
+          "src": "m2",
+          "page": "188-189",
+          "text": "The panel of the data link. The data link shares positions of friends and targets between aircraft by radio. It sets the power, the frequency and the transmission mode.",
+          "context": "The pilot sees the received commands on the VDI lights and the RIO on the DDI. The data link also serves the automatic carrier landing.",
+          "controls": [
+            {
+              "id": "dl-power",
+              "name": "Data link power switch",
+              "type": "switch3",
+              "match": [
+                "PNT_413",
+                "item:rio-datalink:3"
+              ],
+              "text": "This switch applies power to the data link and selects the link type: ON for Link 4A (a ship or an AWACS controls the aircraft) and AUX for Link 4C (up to four F-14s share tracks).",
+              "context": "The data link must be on to work.",
+              "positions": [
+                {
+                  "name": "OFF",
+                  "text": "The data link is off."
+                },
+                {
+                  "name": "ON",
+                  "text": "The data link is on in Link 4A mode: a ship or an AWACS controls the aircraft."
+                },
+                {
+                  "name": "AUX",
+                  "text": "Auxiliary mode: the Link 4C fighter-to-fighter data link."
+                }
+              ],
+              "page": "189",
+              "src": "m2"
+            },
+            {
+              "id": "dl-freq",
+              "name": "Data link frequency switches (10 MHz, 1 MHz, 100 kHz)",
+              "type": "switch",
+              "match": [
+                "PNT_196",
+                "PNT_195",
+                "PNT_197",
+                "item:rio-datalink:2"
+              ],
+              "count": 3,
+              "text": "Three switches that set the data link frequency in steps of 10 megahertz, 1 megahertz and 100 kilohertz. The first digit is fixed.",
+              "context": "All aircraft in the network must use the same frequency, between 300.0 and 324.9 MHz.",
+              "page": "189,322",
+              "src": "m2"
+            },
+            {
+              "id": "dl-antijam",
+              "name": "Data link antijam switch",
+              "type": "switch3",
+              "match": [
+                "PNT_191",
+                "item:rio-datalink:1"
+              ],
+              "text": "This switch selects the data link transmission mode: a test, the normal mode or the anti-jam mode. The game names it 'Datalink Antijam (no function)': it does nothing in DCS and should stay on NORM.",
+              "context": "The anti-jam function is not implemented in DCS.",
+              "positions": [
+                {
+                  "name": "TEST",
+                  "text": "Starts a test of the data link."
+                },
+                {
+                  "name": "NORM",
+                  "text": "Normal operating mode. This is the setting to use."
+                },
+                {
+                  "name": "A/J",
+                  "text": "Anti-jam transmission mode."
+                }
+              ],
+              "page": "188-189,322",
+              "src": "m2"
+            }
+          ]
+        },
+        {
+          "id": "rio-datalink-reply",
+          "name": "RIO: data link reply and antenna control panel",
+          "db": "rio-datalink-reply",
+          "src": "m2",
+          "page": "189-190",
+          "text": "The panel for the data link reply, its antenna and the address of the aircraft.",
+          "context": "It belongs to the data link. Some of its parts are not simulated in the game.",
+          "controls": [
+            {
+              "id": "dl-antenna",
+              "name": "Data link antenna switch",
+              "type": "switch",
+              "match": [
+                "PNT_175",
+                "item:rio-datalink-reply:1"
+              ],
+              "text": "This switch selects the upper or lower antenna for the data link and for UHF 1, which is set to the other antenna automatically. In the game it has no function.",
+              "context": "The antennas are not simulated.",
+              "page": "189",
+              "src": "m2"
+            },
+            {
+              "id": "dl-reply",
+              "name": "Data link reply switch",
+              "type": "switch",
+              "match": [
+                "PNT_176",
+                "item:rio-datalink-reply:2"
+              ],
+              "text": "This switch controls whether the aircraft answers data link messages: NORM allows answers, CANC turns the transmitter off so the data link only receives. In the game it has no function.",
+              "context": "The reply is not simulated, so the switch changes nothing.",
+              "page": "189-190",
+              "src": "m2"
+            },
+            {
+              "id": "dl-mode",
+              "name": "Data link CAINS / TAC mode switch",
+              "type": "switch2",
+              "match": [
+                "PNT_177",
+                "item:rio-datalink-reply:3"
+              ],
+              "positions": [
+                {
+                  "name": "CAINS/WAYPT",
+                  "text": "On the carrier deck: receives the waypoints and the navigation alignment data from the ship."
+                },
+                {
+                  "name": "TAC",
+                  "text": "The normal airborne mode: receives the target tracks and allows manual frequency selection."
+                }
+              ],
+              "text": "This switch chooses the data link mode: CAINS/WAYPT or TAC. It is spring-loaded to TAC and held in CAINS/WAYPT by a magnet.",
+              "context": "If data link reception or power is lost, or the plane takes off, the switch returns to TAC by itself.",
+              "page": "190,323",
+              "src": "m2"
+            },
+            {
+              "id": "dl-address",
+              "name": "Data link address thumbwheels (high and low)",
+              "type": "wheel",
+              "match": [
+                "PNT_222",
+                "PNT_223",
+                "item:rio-datalink-reply:4"
+              ],
+              "count": 2,
+              "text": "Two wheels that set the last two digits of the aircraft's data link address, the number by which the others know it. The ground crew sets the other digits.",
+              "context": "Every aircraft in the network needs its own address.",
+              "page": "190",
+              "src": "m2"
+            }
+          ]
+        },
+        {
+          "id": "rio-ale39",
+          "name": "RIO: countermeasure dispenser panel (ALE-37 / ALE-39)",
+          "db": "rio-ale39",
+          "src": "m2",
+          "page": "191-193",
+          "text": "The panel for the countermeasure dispenser. It throws out chaff (clouds of metal strips for radar missiles), flares (hot burning decoys for heat-seeking missiles) and uses the jammer as well. The game labels it AN/ALE-37 and the F-14 manual AN/ALE-39.",
+          "context": "The RIO sets the power and the mode and presses the release switches in a fight. The pilot can also dispense with a button on his stick.",
+          "controls": [
+            {
+              "id": "ale-counters",
+              "name": "Inventory counters (chaff, flare, jammer)",
+              "type": "display",
+              "match": [
+                "PNT_386",
+                "PNT_385",
+                "PNT_399",
+                "item:rio-ale39:1"
+              ],
+              "count": 3,
+              "text": "Three counters that show how many chaff, flares and jammer loads are left. They are set by hand by pushing in and turning the knob under each counter.",
+              "context": "The RIO watches them so as not to run out.",
+              "page": "191",
+              "src": "m2"
+            },
+            {
+              "id": "ale-power",
+              "name": "ALE power and mode switch",
+              "type": "switch3",
+              "match": [
+                "PNT_390",
+                "item:rio-ale39:2"
+              ],
+              "positions": [
+                {
+                  "name": "AUTO(CHAFF)/MAN",
+                  "text": "Manual release, plus automatic chaff release when the threat detection finds a threat."
+                },
+                {
+                  "name": "MAN",
+                  "text": "Manual release only."
+                },
+                {
+                  "name": "OFF",
+                  "text": "The dispenser is off."
+                }
+              ],
+              "text": "This switch gives the dispenser power and chooses the mode: automatic chaff with manual release, manual release only, or off.",
+              "context": "The dispenser must be on to work.",
+              "page": "192",
+              "src": "m2"
+            },
+            {
+              "id": "ale-salvo",
+              "name": "Flare salvo button",
+              "type": "button",
+              "match": [
+                "PNT_391",
+                "item:rio-ale39:3"
+              ],
+              "text": "Pressing this button enables the rapid firing of all the flares. In the real plane it is a switch that must be lifted to move it to ON.",
+              "context": "It is used when a heat-seeking missile is close.",
+              "page": "192",
+              "src": "m2"
+            },
+            {
+              "id": "ale-flare-mode",
+              "name": "Flare mode switch",
+              "type": "switch3",
+              "match": [
+                "PNT_398",
+                "item:rio-ale39:4"
+              ],
+              "positions": [
+                {
+                  "name": "MULT",
+                  "text": "Each flare command releases one flare from each launcher section that holds flares."
+                },
+                {
+                  "name": "NORM",
+                  "text": "Each flare command releases one flare in total."
+                },
+                {
+                  "name": "PILOT",
+                  "text": "The pilot's DLC button on the stick releases flares. In the other positions it releases chaff."
+                }
+              ],
+              "text": "This switch chooses how flares are released. It also decides what the pilot's DLC button on the stick releases in the air: flares in PILOT, otherwise chaff.",
+              "context": "MULT and NORM change how many flares one command releases.",
+              "page": "192",
+              "src": "m2"
+            },
+            {
+              "id": "ale-release",
+              "name": "Countermeasure release switches (chaff, flare, jammer)",
+              "type": "switch3",
+              "match": [
+                "PNT_389",
+                "PNT_388",
+                "PNT_387",
+                "item:rio-ale39:5"
+              ],
+              "count": 3,
+              "positions": [
+                {
+                  "name": "PRGM",
+                  "text": "Program release. The switch must be lifted to reach it; a short push starts the programmed release."
+                },
+                {
+                  "name": "STBY",
+                  "text": "The rest position in the middle: no release."
+                },
+                {
+                  "name": "SGL",
+                  "text": "Single release."
+                }
+              ],
+              "text": "Three switches, one for chaff, one for flares and one for the jammer. Pushed one way, they start the programmed release, and pushed the other way, a single release. They spring back to the middle.",
+              "context": "The RIO uses them to throw out decoys by hand.",
+              "page": "192",
+              "src": "m2"
+            }
+          ]
+        },
+        {
+          "id": "rio-ale39-programmer",
+          "name": "RIO: countermeasure programmer",
+          "db": "rio-ale39-programmer",
+          "src": "m2",
+          "page": "194-195",
+          "text": "The panel where the RIO sets the programs of the jammer, the chaff and the flares: how many of them are released and at what intervals. It also tells the dispenser what is loaded.",
+          "context": "The program is set before the flight. A reset button loads it.",
+          "controls": [
+            {
+              "id": "prog-jammer",
+              "name": "Jammer program thumbwheels",
+              "type": "wheel",
+              "match": [
+                "PNT_204",
+                "PNT_211",
+                "PNT_213",
+                "PNT_212",
+                "item:rio-ale39-programmer:1"
+              ],
+              "count": 4,
+              "text": "Wheels that set the jammer program: the quantity of jammers released per program (QTY) and the interval in seconds between releases (INTV).",
+              "context": "The interval is the time between two releases.",
+              "page": "195",
+              "src": "m2"
+            },
+            {
+              "id": "prog-chaff",
+              "name": "Chaff program thumbwheels",
+              "type": "wheel",
+              "match": [
+                "PNT_214",
+                "PNT_215",
+                "PNT_203",
+                "PNT_202",
+                "item:rio-ale39-programmer:2"
+              ],
+              "count": 4,
+              "text": "Wheels that set the chaff program: the number of chaff in a burst (B-QTY) and the time between bursts (B-INTV), and the number of salvos (S-QTY) and the time between salvos (S-INTV). Some settings can be C (continuous) or R (random).",
+              "context": "A burst and a salvo are two different kinds of programs.",
+              "page": "195",
+              "src": "m2"
+            },
+            {
+              "id": "prog-flare",
+              "name": "Flare program thumbwheels",
+              "type": "wheel",
+              "match": [
+                "PNT_205",
+                "PNT_210",
+                "item:rio-ale39-programmer:3"
+              ],
+              "count": 2,
+              "text": "Wheels that set the flare program: the quantity of flares released per program (QTY) and the interval between releases (INTV).",
+              "context": "The interval is the time between two flares.",
+              "page": "195",
+              "src": "m2"
+            },
+            {
+              "id": "prog-load",
+              "name": "Load control thumbwheels (L10, L20, R10, R20)",
+              "type": "wheel",
+              "match": [
+                "PNT_206",
+                "PNT_207",
+                "PNT_209",
+                "PNT_208",
+                "item:rio-ale39-programmer:4"
+              ],
+              "count": 4,
+              "text": "Four wheels that tell the dispenser what is loaded in each part of the left and the right launcher.",
+              "context": "The dispenser needs this to count the items.",
+              "page": "195",
+              "src": "m2"
+            },
+            {
+              "id": "prog-reset",
+              "name": "Programmer reset button",
+              "type": "button",
+              "match": [
+                "PNT_216",
+                "item:rio-ale39-programmer:5"
+              ],
+              "text": "Pressing this button loads the programmed settings into the dispenser and puts the sequencer switches back to their start positions.",
+              "context": "It is pressed after the wheels are set.",
+              "page": "195",
+              "src": "m2"
+            }
+          ]
+        },
+        {
+          "id": "rio-aai",
+          "name": "RIO: AAI control panel (IFF interrogator)",
+          "db": "rio-aai",
+          "src": "m2",
+          "page": "193-194",
+          "text": "The panel of the IFF interrogator (AN/APX-76). IFF is the radio 'who are you?' system: the interrogator asks other aircraft and shows their answers. In DCS this whole panel does not work, because of limits in the game's IFF.",
+          "context": "In the real plane the RIO uses it to tell friends from unknown aircraft before a launch.",
+          "controls": [
+            {
+              "id": "aai-m4-override",
+              "name": "M4 alarm override switch",
+              "type": "switch",
+              "match": [
+                "PNT_AAI_M4",
+                "item:rio-aai:1"
+              ],
+              "text": "In the real plane this switch turns off the Mode 4 tone alarm in the RIO's headset. The panel does not work in DCS.",
+              "context": "The tone would otherwise sound again and again.",
+              "page": "193",
+              "src": "m2"
+            },
+            {
+              "id": "aai-test",
+              "name": "Test / challenge CC switch",
+              "type": "switch3",
+              "match": [
+                "PNT_AAI_TEST",
+                "item:rio-aai:2"
+              ],
+              "positions": [
+                {
+                  "name": "TEST",
+                  "text": "Momentary: asks the plane's own transponder. With matching codes, two solid lines appear on the DDD at 3 and 4 miles."
+                },
+                {
+                  "name": "center",
+                  "text": "The rest position in the middle."
+                },
+                {
+                  "name": "CHAL CC",
+                  "text": "Momentary: starts a 10-second challenge. Only answers with the right mode and code show on the DDD."
+                }
+              ],
+              "text": "This switch tests the interrogator or starts a challenge. It springs back to the middle. The panel does not work in DCS.",
+              "context": "The RIO uses it for a challenge.",
+              "page": "193",
+              "src": "m2"
+            },
+            {
+              "id": "aai-code",
+              "name": "Interrogation mode and code thumbwheels",
+              "type": "wheel",
+              "match": [
+                "PNT_AAI_MODE",
+                "PNT_AAI_CODE_THOUSAND",
+                "PNT_AAI_CODE_HUNDRED",
+                "PNT_AAI_CODE_TEN",
+                "PNT_AAI_CODE_UNI",
+                "item:rio-aai:3"
+              ],
+              "count": 5,
+              "text": "Five thumbwheels. The first sets the interrogation mode and the last four set the code digits.",
+              "context": "The code must match the one the other aircraft uses.",
+              "page": "194",
+              "src": "m2"
+            },
+            {
+              "id": "aai-lights",
+              "name": "Challenge and fault lights",
+              "type": "light",
+              "match": [
+                "item:rio-aai:4",
+                "item:rio-aai:5"
+              ],
+              "count": 2,
+              "text": "The CHAL light is on during an interrogation. The FAULT light shows a fault of the AN/APX-76.",
+              "context": "They tell the RIO that the interrogator works.",
+              "page": "194",
+              "src": "m2"
+            }
+          ]
+        },
+        {
+          "id": "rio-iff",
+          "name": "RIO: IFF transponder control panel (AN/APX-72)",
+          "db": "rio-iff",
+          "src": "m2",
+          "page": "198-200",
+          "text": "The panel of the IFF transponder. IFF is the radio 'who are you?' system: the transponder answers questions from radars with a code number. This panel sets the modes and the codes.",
+          "context": "The crew sets it before flight so that friendly radars know who the plane is.",
+          "controls": [
+            {
+              "id": "iff-master",
+              "name": "IFF master selector",
+              "type": "selector",
+              "match": [
+                "PNT_184",
+                "item:rio-iff:6"
+              ],
+              "positions": [
+                {
+                  "name": "OFF",
+                  "text": "No power."
+                },
+                {
+                  "name": "STBY",
+                  "text": "Standby, ready for immediate use when a mode is switched on."
+                },
+                {
+                  "name": "LOW",
+                  "text": "Low sensitivity: answers only strong interrogations from nearby."
+                },
+                {
+                  "name": "NORM",
+                  "text": "Normal answering."
+                },
+                {
+                  "name": "EMER",
+                  "text": "Emergency answers to Modes 1, 2 and 3/A and a normal answer to Mode C, whatever the mode switches say."
+                }
+              ],
+              "text": "This knob sets the state of the transponder: off, standby, low sensitivity, normal or emergency.",
+              "context": "NORM is the normal setting for everyday use.",
+              "page": "199",
+              "src": "m2"
+            },
+            {
+              "id": "iff-m4",
+              "name": "IFF Mode 4 switch",
+              "type": "switch2",
+              "match": [
+                "PNT_181",
+                "item:rio-iff:1"
+              ],
+              "positions": [
+                {
+                  "name": "ON",
+                  "text": "Mode 4 is on."
+                },
+                {
+                  "name": "OUT",
+                  "text": "Mode 4 is out."
+                }
+              ],
+              "text": "This switch turns Mode 4, the secure cipher mode, on or out.",
+              "context": "Mode 4 answers with an encrypted code.",
+              "page": "198",
+              "src": "m2"
+            },
+            {
+              "id": "iff-m4-audio",
+              "name": "IFF Mode 4 audio / light switch",
+              "type": "switch3",
+              "match": [
+                "PNT_161",
+                "item:rio-iff:2"
+              ],
+              "positions": [
+                {
+                  "name": "AUDIO",
+                  "text": "A tone and a light show a Mode 4 reply."
+                },
+                {
+                  "name": "OUT",
+                  "text": "No monitoring."
+                },
+                {
+                  "name": "LIGHT",
+                  "text": "Only a light shows a Mode 4 reply."
+                }
+              ],
+              "text": "This switch chooses how the Mode 4 replies are monitored: with a tone, with a light, or not.",
+              "context": "It helps the crew to know when a reply is sent.",
+              "page": "198-199",
+              "src": "m2"
+            },
+            {
+              "id": "iff-m4-code",
+              "name": "IFF Mode 4 code selector",
+              "type": "selector",
+              "match": [
+                "PNT_183",
+                "item:rio-iff:3"
+              ],
+              "positions": [
+                {
+                  "name": "ZERO",
+                  "text": "Erases both ciphers."
+                },
+                {
+                  "name": "B",
+                  "text": "Uses cipher B."
+                },
+                {
+                  "name": "A",
+                  "text": "Uses cipher A."
+                },
+                {
+                  "name": "HOLD",
+                  "text": "Does not work."
+                }
+              ],
+              "text": "This knob chooses which cipher code is used for Mode 4.",
+              "context": "The codes are set by the briefing.",
+              "page": "199",
+              "src": "m2"
+            },
+            {
+              "id": "iff-reply-light",
+              "name": "IFF reply light / button",
+              "type": "button",
+              "match": [
+                "PNT_186",
+                "item:rio-iff:4"
+              ],
+              "text": "A light that comes on when a Mode 4 reply is made and sent. Pressing it tests the light.",
+              "context": "It shows that the transponder answers.",
+              "page": "199",
+              "src": "m2"
+            },
+            {
+              "id": "iff-test-light",
+              "name": "IFF test light / button",
+              "type": "button",
+              "match": [
+                "PNT_185",
+                "item:rio-iff:5"
+              ],
+              "text": "A light that comes on after a successful mode test. Pressing it tests the light.",
+              "context": "It is used with the test switches.",
+              "page": "199",
+              "src": "m2"
+            },
+            {
+              "id": "iff-modes",
+              "name": "IFF mode switches (M1, M2, M3/A, MC)",
+              "type": "switch3",
+              "match": [
+                "PNT_162",
+                "PNT_163",
+                "PNT_164",
+                "PNT_165",
+                "item:rio-iff:7"
+              ],
+              "count": 4,
+              "positions": [
+                {
+                  "name": "TEST",
+                  "text": "The mode is tested."
+                },
+                {
+                  "name": "ON",
+                  "text": "The mode is on."
+                },
+                {
+                  "name": "OUT",
+                  "text": "The mode is out."
+                }
+              ],
+              "text": "Four switches, one for each of the Modes 1, 2, 3/A and C. TEST tests the mode (the TEST light shows success), ON enables it and OUT disables it.",
+              "context": "The modes are different kinds of questions that can be answered.",
+              "page": "200",
+              "src": "m2"
+            },
+            {
+              "id": "iff-rad",
+              "name": "IFF RAD test / out / mon switch",
+              "type": "switch3",
+              "match": [
+                "PNT_166",
+                "item:rio-iff:8"
+              ],
+              "positions": [
+                {
+                  "name": "RAD TEST",
+                  "text": "Not used by the crew."
+                },
+                {
+                  "name": "OUT",
+                  "text": "Test and monitoring are off."
+                },
+                {
+                  "name": "MON",
+                  "text": "Monitors the Modes 1, 2, 3 and C: the TEST light comes on when a reply is sent."
+                }
+              ],
+              "text": "This switch controls the ground test and the monitoring of the replies that are not Mode 4.",
+              "context": "It is used in the checks before the flight.",
+              "page": "200",
+              "src": "m2"
+            },
+            {
+              "id": "iff-ident",
+              "name": "IFF ident / out / mic switch",
+              "type": "switch3",
+              "match": [
+                "PNT_167",
+                "item:rio-iff:9"
+              ],
+              "positions": [
+                {
+                  "name": "IDENT",
+                  "text": "Momentary: lets the identification replies go out for 15 to 30 seconds after release."
+                },
+                {
+                  "name": "OUT",
+                  "text": "The identification is off."
+                },
+                {
+                  "name": "MIC",
+                  "text": "The identification goes out when the UHF transmit key is pressed."
+                }
+              ],
+              "text": "This switch controls the identification function of the Modes 1 to 3. IDENT sends a special mark for a short time.",
+              "context": "The crew presses it when a controller asks for an identification.",
+              "page": "200",
+              "src": "m2"
+            },
+            {
+              "id": "iff-codes",
+              "name": "IFF code thumbwheels (Mode 1 and Mode 3)",
+              "type": "wheel",
+              "match": [
+                "PNT_201",
+                "PNT_200",
+                "PNT_199",
+                "PNT_198",
+                "PNT_2261",
+                "PNT_2262",
+                "item:rio-iff:10"
+              ],
+              "count": 6,
+              "text": "Six wheels that set the codes: two digits for Mode 1 and four digits for Mode 3.",
+              "context": "The codes are given in the briefing.",
+              "page": "200",
+              "src": "m2"
+            }
+          ]
+        },
+        {
+          "id": "rio-iff-antenna-test",
+          "name": "RIO: IFF antenna control / test panel",
+          "db": "rio-iff-antenna-test",
+          "src": "m2",
+          "page": "201",
+          "text": "The panel for the IFF antenna, the test of the indicator lights and the DDI, and the ground cooling.",
+          "context": "The IFF antenna can be chosen here, the DDI and the indicator lights can be tested, and outside air can cool the electronics on the ground.",
+          "controls": [
+            {
+              "id": "iff-antenna",
+              "name": "IFF antenna switch",
+              "type": "switch2",
+              "match": [
+                "item:rio-iff-antenna-test:1"
+              ],
+              "positions": [
+                {
+                  "name": "AUTO",
+                  "text": "The antenna is chosen automatically."
+                },
+                {
+                  "name": "LWR",
+                  "text": "The lower antenna is used."
+                }
+              ],
+              "text": "This switch chooses the antenna that the IFF transponder uses.",
+              "context": "AUTO lets the system choose the antenna by itself.",
+              "page": "201",
+              "src": "m2"
+            },
+            {
+              "id": "iff-light-test",
+              "name": "Indicator light / DDI BIT switch",
+              "type": "switch",
+              "match": [
+                "item:rio-iff-antenna-test:2"
+              ],
+              "text": "This switch starts the built-in test of the DDI and tests the indicator lights of the RIO's cockpit.",
+              "context": "It checks that the lights work.",
+              "page": "201",
+              "src": "m2"
+            },
+            {
+              "id": "ground-cooling",
+              "name": "Ground cooling switch",
+              "type": "switch3",
+              "match": [
+                "item:rio-iff-antenna-test:3"
+              ],
+              "positions": [
+                {
+                  "name": "OBC/CABIN",
+                  "text": "Outside air goes into the cabin and the electronics cooling, with less performance of the onboard checkout."
+                },
+                {
+                  "name": "OFF",
+                  "text": "No outside air is used."
+                },
+                {
+                  "name": "AWG-9/AIM-54",
+                  "text": "Outside air cools the AWG-9 and the AIM-54 better and is no longer sent into the cabin."
+                }
+              ],
+              "text": "This switch turns on the cooling by outside air while the plane is on the ground.",
+              "context": "The ground crew's air supply is needed for it.",
+              "page": "201",
+              "src": "m2"
+            }
+          ]
+        },
+        {
+          "id": "rio-mcb-test",
+          "name": "RIO: mid compression bypass (MCB) test panel (F-14A)",
+          "db": "rio-mcb-test",
+          "src": "m2",
+          "page": "202",
+          "text": "A panel to test the mid compression bypass circuits of the engines. It exists on the F-14A.",
+          "context": "It exists only on the F-14A. Two lights show the result of the test.",
+          "controls": [
+            {
+              "id": "mcb-switch",
+              "name": "MCB test switch",
+              "type": "switch",
+              "match": [
+                "PNT_MCB",
+                "item:rio-mcb-test:2"
+              ],
+              "text": "This switch starts the test of the mid compression bypass circuits of the engines.",
+              "context": "A bypass is a way for air to go around part of the engine.",
+              "page": "202",
+              "src": "m2"
+            },
+            {
+              "id": "mcb-lights",
+              "name": "MCB left and right test lights",
+              "type": "light",
+              "match": [
+                "item:rio-mcb-test:1"
+              ],
+              "text": "Two lights that come on during the test to show that the circuits of the left and the right engine work.",
+              "context": "They show the result of the test.",
+              "page": "202",
+              "src": "m2"
+            }
+          ]
+        },
+        {
+          "id": "rio-interior-lights",
+          "name": "RIO: interior light control panel",
+          "db": "rio-interior-lights",
+          "src": "m2",
+          "page": "196-197",
+          "text": "The panel for the lights in the RIO's cockpit. It has thumbwheels for the instrument and console lights and switches for the flood lights.",
+          "context": "The RIO uses it for night flying.",
+          "controls": [
+            {
+              "id": "rl-instrument",
+              "name": "Instrument lighting thumbwheel (RIO)",
+              "type": "wheel",
+              "match": [
+                "PNT_193",
+                "item:rio-interior-lights:1"
+              ],
+              "text": "This wheel sets how brightly the instrument panel is lit: 0 is off, 1 to 14 is increasing brightness.",
+              "context": "The RIO sets it for night flying so the instruments in the rear cockpit are readable.",
+              "page": "196",
+              "src": "m2"
+            },
+            {
+              "id": "rl-white",
+              "name": "White flood switch (RIO)",
+              "type": "switch3",
+              "match": [
+                "PNT_159",
+                "item:rio-interior-lights:2"
+              ],
+              "text": "This switch turns on the white flood light, a bright light for the whole cockpit.",
+              "context": "It is used when the RIO needs to see everything.",
+              "positions": [
+                {
+                  "name": "OFF",
+                  "text": "The white flood light is off. The switch is locked here unless it is pulled out."
+                },
+                {
+                  "name": "DIM",
+                  "text": "Dim white flood light."
+                },
+                {
+                  "name": "BRT",
+                  "text": "Bright white flood light."
+                }
+              ],
+              "page": "196",
+              "src": "m2"
+            },
+            {
+              "id": "rl-console",
+              "name": "Console lighting thumbwheel (RIO)",
+              "type": "wheel",
+              "match": [
+                "PNT_192",
+                "item:rio-interior-lights:3"
+              ],
+              "text": "On the RIO's panel, this wheel sets the brightness of the console lights and the red flood light: 0 is all off, 1 to 14 is increasing brightness.",
+              "context": "The RIO sets it for night flying so the consoles are readable.",
+              "page": "197",
+              "src": "m2"
+            },
+            {
+              "id": "rl-red",
+              "name": "Red flood switch (RIO)",
+              "type": "switch3",
+              "match": [
+                "PNT_194",
+                "item:rio-interior-lights:4"
+              ],
+              "positions": [
+                {
+                  "name": "DIM",
+                  "text": "Dim red console flood light."
+                },
+                {
+                  "name": "MED",
+                  "text": "Medium red console flood light."
+                },
+                {
+                  "name": "BRT",
+                  "text": "Bright red flood light on the instruments and console."
+                }
+              ],
+              "text": "This switch gives the RIO's cockpit a red flood light, with three brightness settings. Red light does not spoil the night vision.",
+              "context": "It is the usual cockpit light of the RIO for night flying.",
+              "page": "197",
+              "src": "m2"
+            }
+          ]
+        },
+        {
+          "id": "rio-data-adf",
+          "name": "RIO: data / ADF switch",
+          "db": "rio-data-adf",
+          "src": "m2",
+          "page": "197",
+          "text": "A switch that decides whether the navigation data and the ADF symbols are shown on the HSD and the ECMD. ADF is a radio direction finder.",
+          "context": "The game's picture has no callout for this switch.",
+          "controls": [
+            {
+              "id": "data-adf",
+              "name": "Data / ADF switch",
+              "type": "switch3",
+              "match": [
+                "item:rio-data-adf:1"
+              ],
+              "positions": [
+                {
+                  "name": "BOTH",
+                  "text": "The ADF bug and the navigation data block are shown."
+                },
+                {
+                  "name": "DATA",
+                  "text": "Only the navigation data block is shown."
+                },
+                {
+                  "name": "OFF",
+                  "text": "Neither is shown."
+                }
+              ],
+              "text": "This switch controls the display of the navigation data and the ADF symbols on the HSD and the ECMD.",
+              "context": "The RIO picks what he wants to see.",
+              "page": "197",
+              "src": "m2"
+            }
+          ]
+        },
+        {
+          "id": "rio-lantirn",
+          "name": "RIO: LANTIRN control panel",
+          "db": "rio-lantirn",
+          "src": "m2",
+          "page": "424-425",
+          "text": "The panel for the LANTIRN pod, a targeting pod with a camera and a laser. It has the power switch, the mode, the laser arm switch and the video choice. Beside it sits the fixed LANTIRN stick.",
+          "context": "The RIO uses the pod to find and mark ground targets. The stick on this console steers it.",
+          "controls": [
+            {
+              "id": "lantirn-power",
+              "name": "LANTIRN power switch",
+              "type": "switch3",
+              "match": [
+                "PNT_667",
+                "item:rio-lantirn:1"
+              ],
+              "positions": [
+                {
+                  "name": "OFF",
+                  "text": "The pod has no power."
+                },
+                {
+                  "name": "IMU",
+                  "text": "Only the inertial measurement unit is powered. This has no function in DCS."
+                },
+                {
+                  "name": "POD",
+                  "text": "The whole pod is powered. Starting from cold, the power-up takes about 8 minutes."
+                }
+              ],
+              "text": "This switch turns the pod on: off, only the inertial unit, or the whole pod.",
+              "context": "The pod needs power before it can be used.",
+              "page": "424-425",
+              "src": "m2"
+            },
+            {
+              "id": "lantirn-mode",
+              "name": "LANTIRN operate mode button (unstow)",
+              "type": "button",
+              "match": [
+                "PNT_669",
+                "item:rio-lantirn:2"
+              ],
+              "positions": [
+                {
+                  "name": "STBY",
+                  "text": "The pod is in standby."
+                },
+                {
+                  "name": "OPER",
+                  "text": "The pod is operating."
+                }
+              ],
+              "text": "This button takes the pod out of standby so that it works. The game names it 'Operate Mode (Unstow)'.",
+              "context": "The pod is in standby (STBY) until it is operated (OPER).",
+              "page": "425",
+              "src": "m2"
+            },
+            {
+              "id": "lantirn-laser-light",
+              "name": "Laser armed light",
+              "type": "light",
+              "match": [
+                "item:rio-lantirn:3"
+              ],
+              "text": "A light that is on when the laser is armed.",
+              "context": "The laser can fire only when armed.",
+              "page": "425",
+              "src": "m2"
+            },
+            {
+              "id": "lantirn-laser-arm",
+              "name": "LANTIRN laser arm switch",
+              "type": "switch2",
+              "match": [
+                "PNT_668",
+                "item:rio-lantirn:4"
+              ],
+              "positions": [
+                {
+                  "name": "ARM",
+                  "text": "The laser is armed."
+                },
+                {
+                  "name": "SAFE",
+                  "text": "The laser is safe."
+                }
+              ],
+              "text": "This switch arms the laser of the pod. A laser is a light beam that measures distance and guides bombs.",
+              "context": "The laser stays safe until it is armed.",
+              "page": "425",
+              "src": "m2"
+            },
+            {
+              "id": "lantirn-video",
+              "name": "Video output toggle (TCS / LANTIRN)",
+              "type": "button",
+              "match": [
+                "PNT_670",
+                "item:rio-lantirn:5"
+              ],
+              "positions": [
+                {
+                  "name": "FLIR",
+                  "text": "The pod video is shown."
+                },
+                {
+                  "name": "TCS",
+                  "text": "The TCS video is shown."
+                }
+              ],
+              "text": "Pressing this button switches the video that goes to the TID and the VDI between the pod (FLIR) and the television camera system (TCS).",
+              "context": "FLIR is the pod's infrared camera.",
+              "page": "425",
+              "src": "m2"
+            },
+            {
+              "id": "lantirn-faults",
+              "name": "Pod fault lights",
+              "type": "light",
+              "match": [
+                "item:rio-lantirn:6"
+              ],
+              "text": "Four lights for the error states of the pod. They are not implemented in DCS.",
+              "context": "They have no function in DCS, so the RIO can ignore them.",
+              "page": "425",
+              "src": "m2"
+            },
+            {
+              "id": "lantirn-ibit",
+              "name": "LANTIRN IBIT button",
+              "type": "button",
+              "match": [
+                "PNT_671",
+                "item:rio-lantirn:7"
+              ],
+              "text": "This button starts the initiated built-in test (IBIT) of the pod. It is not implemented in DCS.",
+              "context": "It has no function in DCS, so the RIO can ignore it.",
+              "page": "425",
+              "src": "m2"
+            },
+            {
+              "id": "lantirn-stick",
+              "name": "LANTIRN control stick (fixed grip)",
+              "type": "other",
+              "match": [
+                "item:rio-lantirn:8"
+              ],
+              "text": "A fixed grip with hats, a trigger and buttons for the pod. Its controls are listed under the RIO's hand controls.",
+              "context": "The RIO steers the pod with it.",
+              "page": "425",
+              "src": "m2"
+            }
+          ]
+        },
+        {
+          "id": "rio-elec-test-cabin-air",
+          "name": "RIO: electrical test panel and cabin air lever",
+          "db": "rio-elec-test-cabin-air",
+          "src": "m2",
+          "page": "203-205",
+          "text": "The electrical power system test panel is for the ground crew and does nothing in DCS. The lever splits the cabin air or sends all of it to the canopy.",
+          "context": "The game's picture has no callout for the lever.",
+          "controls": [
+            {
+              "id": "rio-canopy-air",
+              "name": "Canopy defog / cabin air lever (RIO)",
+              "type": "lever",
+              "match": [
+                "item:rio-elec-test-cabin-air:1"
+              ],
+              "positions": [
+                {
+                  "name": "CABIN AIR",
+                  "text": "The normal position: about 70 % of the air goes through the cockpit diffusers and 30 % through the canopy diffusers."
+                },
+                {
+                  "name": "CANOPY DEFOG",
+                  "text": "All the air goes through the canopy diffusers to clear the canopy."
+                }
+              ],
+              "text": "On the RIO's side this lever shares the cabin air between the cabin and the canopy, or sends all of it to the canopy to clear a misted glass.",
+              "context": "The lever is the same as the pilot's.",
+              "page": "205",
+              "src": "m2"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "rio-canopy-handle-area",
+      "where": "right-side",
+      "name": "RIO cockpit: canopy control handle",
+      "text": "The canopy handle on the right wall of the RIO's cockpit.",
+      "panels": [
+        {
+          "id": "rio-canopy-control",
+          "name": "RIO: canopy control handle",
+          "db": "rio-canopy-control",
+          "src": "m2",
+          "page": "206",
+          "text": "The RIO's copy of the canopy handle on the right wall. It opens, holds and closes the canopy, the glass roof.",
+          "context": "It does the same as the pilot's handle.",
+          "controls": [
+            {
+              "id": "rio-canopy-handle",
+              "name": "Canopy control handle (RIO)",
+              "type": "handle",
+              "match": [
+                "item:rio-canopy-control:1"
+              ],
+              "positions": [
+                {
+                  "name": "BOOST",
+                  "text": "Closes the canopy with extra power, used in cold weather or against a strong headwind."
+                },
+                {
+                  "name": "CLOSE",
+                  "text": "Closes the canopy. This is the normal position during flight."
+                },
+                {
+                  "name": "HOLD",
+                  "text": "Holds the canopy at its present position, if it is not closed."
+                },
+                {
+                  "name": "OPEN",
+                  "text": "Opens the canopy."
+                },
+                {
+                  "name": "AUX OPEN",
+                  "text": "Lets the canopy be opened by hand if the system pressure is too low."
+                }
+              ],
+              "text": "The RIO's copy of the canopy handle opens, holds or closes the glass roof over his seat. The game's picture has no callout for it.",
+              "context": "The RIO uses it at the start and the end of a flight.",
+              "page": "206",
+              "src": "m2"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "rio-other",
+      "where": "other",
+      "name": "RIO cockpit: seat, kneeboard and mirror",
+      "text": "Smaller items of the RIO's cockpit: the ejection seat safety, the kneeboard, the mirror and the grease pencils.",
+      "panels": [
+        {
+          "id": "rio-seat",
+          "name": "RIO: ejection seat",
+          "src": "m1",
+          "text": "The RIO's ejection seat can shoot him out of the plane in an emergency. A lever arms the seat or makes it safe.",
+          "context": "The RIO arms the seat during the start-up checks.",
+          "controls": [
+            {
+              "id": "rio-seat-safety",
+              "name": "RIO ejection seat arming handle (safety)",
+              "type": "switch2",
+              "match": [
+                "PNT_Seat_Safety"
+              ],
+              "text": "This lever arms the RIO's ejection seat or makes it safe. A seat that is disarmed cannot be fired.",
+              "context": "The game names it 'Seat Safety'. The start-up checks say to arm it by putting the handle down.",
+              "positions": [
+                {
+                  "name": "UP",
+                  "text": "Disarmed: the seat cannot be fired."
+                },
+                {
+                  "name": "DOWN",
+                  "text": "Armed: the seat is ready to fire."
+                }
+              ],
+              "page": "172",
+              "src": "m1"
+            }
+          ],
+          "page": "172"
+        },
+        {
+          "id": "rio-kneeboard",
+          "name": "RIO: kneeboard and pen",
+          "src": "m2",
+          "text": "A kneeboard is a notes board strapped to the leg. In the game it holds checklists or a clipboard with the usual DCS kneeboard pages, and a pen.",
+          "context": "The RIO uses it to write down notes and to look at maps and checklists.",
+          "controls": [
+            {
+              "id": "rio-kb-config",
+              "name": "Kneeboard configuration (RIO)",
+              "type": "button",
+              "match": [
+                "PNT_KB_CLAMP_RIO"
+              ],
+              "text": "The clamp at the top of the RIO's kneeboard. Clicking it switches the kneeboard between the checklists and the clipboard.",
+              "context": "The checklists are a shortened version of the real pocket checklist.",
+              "page": "1226-1227",
+              "src": "m2"
+            },
+            {
+              "id": "rio-kb-pen",
+              "name": "Pen (RIO)",
+              "type": "button",
+              "match": [
+                "PNT_PEN_CLICK_RIO"
+              ],
+              "text": "The pen for the kneeboard. Clicking it picks the pen up or puts it down.",
+              "context": "The RIO can write notes on the kneeboard with it."
+            },
+            {
+              "id": "rio-kb-cover",
+              "name": "Kneeboard plastic cover (RIO)",
+              "type": "button",
+              "match": [
+                "PNT_KNEEBOARD_PLASTIC_COVER_RIO"
+              ],
+              "text": "The plastic cover of the RIO's kneeboard. The game shows it under its object name.",
+              "context": "The sources used here do not describe what a click does."
+            },
+            {
+              "id": "rio-kb-clipboard",
+              "name": "Kneeboard clipboard (RIO)",
+              "type": "button",
+              "match": [
+                "PNT_KNEEBOARD_CLIPBOARD_RIO"
+              ],
+              "text": "The clipboard configuration of the RIO's kneeboard, with the familiar DCS kneeboard pages. Clicking the left or right side of a page turns the pages.",
+              "context": "The game shows this control under its object name.",
+              "page": "1227",
+              "src": "m2"
+            }
+          ],
+          "page": "1226-1227"
+        },
+        {
+          "id": "rio-mirror-grease",
+          "name": "RIO: mirror and grease pencils",
+          "src": "g1",
+          "text": "The RIO has a rear-view mirror with an adjusting knob and two grease pencils that can be shown or hidden. A grease pencil is a wax crayon for writing on a flat surface.",
+          "context": "They are conveniences of the game. They do not change how the plane flies.",
+          "controls": [
+            {
+              "id": "rio-mirror",
+              "name": "RIO mirror adjust",
+              "type": "knob",
+              "match": [
+                "PNT_RIO_MIRROR_MOVE"
+              ],
+              "text": "Clicking this knob tilts the RIO's mirror so that he can look behind the plane.",
+              "context": "It is a comfort setting and has no other effect on the plane."
+            },
+            {
+              "id": "rio-grease-left",
+              "name": "Grease pencil, left (RIO, show / hide)",
+              "type": "switch",
+              "match": [
+                "PNT_RIO_GreasePencil_L"
+              ],
+              "text": "This switch shows or hides the grease pencil on the left side of the RIO's cockpit.",
+              "context": "It is only a visual element and does not change the flight."
+            },
+            {
+              "id": "rio-grease-right",
+              "name": "Grease pencil, right (RIO, show / hide)",
+              "type": "switch",
+              "match": [
+                "PNT_RIO_GreasePencil_R"
+              ],
+              "text": "This switch shows or hides the grease pencil on the right side of the RIO's cockpit.",
+              "context": "It is only a visual element and does not change the flight."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "rio-hotas",
+      "where": "hotas",
+      "name": "RIO: hand controls and foot buttons",
+      "text": "The controls the RIO uses without looking: the HCU stick for the radar and camera, the LANTIRN stick, the chaff and flare hats and the foot buttons.",
+      "panels": [
+        {
+          "id": "rio-hcu-stick",
+          "name": "RIO: HCU stick (hand control unit)",
+          "src": "m2",
+          "text": "The HCU stick on the RIO's centre console is used with the right hand. It is a small stick with a trigger and buttons. What it controls is chosen with the function buttons.",
+          "context": "The stick moves only while the trigger is held at half action. It drives the camera, the radar gate or the cursors on the DDD and the TID.",
+          "controls": [
+            {
+              "id": "hcu-ministick",
+              "name": "HCU stick (slew)",
+              "type": "axis",
+              "match": [
+                "control:stick.ministick"
+              ],
+              "text": "Moving the stick slews what the function button selected: the camera (TCS), the radar acquisition gate, the DDD cursor or the TID cursor. Left and right move it sideways, forward and back move it up and down or in range.",
+              "context": "It moves only while the trigger is held at half action."
+            },
+            {
+              "id": "hcu-trigger",
+              "name": "HCU trigger",
+              "type": "trigger",
+              "match": [
+                "item:rio-hcu:11"
+              ],
+              "text": "A two-stage trigger on the front of the stick. The first stage is HALF ACTION and the second is FULL ACTION. What they do depends on the chosen function: for example target acquisition or hooking a symbol.",
+              "context": "In the TCS mode full action is the camera lock-on. In the radar mode it is the lock-on for a single target track. In the DDD mode it marks the cursor position and in the TID mode it hooks the symbol under the cursor.",
+              "page": "163",
+              "src": "m2"
+            },
+            {
+              "id": "hcu-mrl",
+              "name": "MRL button (manual rapid lock-on)",
+              "type": "button",
+              "match": [
+                "control:stick.button.mrl",
+                "item:rio-hcu:8"
+              ],
+              "text": "A button on the right side of the stick. It selects the manual rapid lock-on, which locks onto a target within the antenna limits out to 5 nautical miles. It overrides all other radar modes except PLM and VSL.",
+              "context": "It is a quick way to lock a close target.",
+              "page": "163",
+              "src": "m2"
+            },
+            {
+              "id": "hcu-offset",
+              "name": "OFFSET button",
+              "type": "button",
+              "match": [
+                "control:stick.button.offset",
+                "item:rio-hcu:9"
+              ],
+              "text": "A button on the stick. It offsets the TID picture to the point that is hooked at the moment.",
+              "context": "The hooked point is the symbol the RIO has marked.",
+              "page": "163",
+              "src": "m2"
+            },
+            {
+              "id": "hcu-elevation-wheel",
+              "name": "Antenna elevation thumbwheel",
+              "type": "wheel",
+              "match": [
+                "control:stick.wheel.ant_elev",
+                "item:rio-hcu:10"
+              ],
+              "text": "A thumbwheel on the stick. It fine-tunes the radar antenna elevation while a single target lock-on is being acquired.",
+              "context": "It is used for fine aiming of the radar.",
+              "page": "163",
+              "src": "m2"
+            }
+          ],
+          "page": "161-163"
+        },
+        {
+          "id": "rio-cms-hats",
+          "name": "RIO: chaff / flare dispense switches",
+          "db": "rio-cms-switches",
+          "src": "m2",
+          "page": "152",
+          "text": "Two mirrored hats on the centre handhold of the RIO's cockpit. They throw out chaff and flares and start the jammer.",
+          "context": "The hats are an alternative to the dispenser panel on the right console.",
+          "controls": [
+            {
+              "id": "cms-left-hat",
+              "name": "Left dispense hat",
+              "type": "hat",
+              "match": [
+                "control:stick.hat.cms",
+                "item:rio-cms-switches:1"
+              ],
+              "positions": [
+                {
+                  "name": "UP",
+                  "text": "A single chaff."
+                },
+                {
+                  "name": "DOWN",
+                  "text": "The chaff program."
+                },
+                {
+                  "name": "INBOARD",
+                  "text": "The jammer program."
+                },
+                {
+                  "name": "OUTBOARD",
+                  "text": "The flare program."
+                }
+              ],
+              "text": "A four-way hat. Up releases a single chaff and down starts the chaff program. Inboard starts the jammer program and outboard starts the flare program.",
+              "context": "Chaff is a cloud of metal strips for radar missiles. Flares are hot burning decoys for heat-seeking missiles.",
+              "page": "152",
+              "src": "m2"
+            },
+            {
+              "id": "cms-right-hat",
+              "name": "Right dispense hat",
+              "type": "hat",
+              "match": [
+                "item:rio-cms-switches:2"
+              ],
+              "positions": [
+                {
+                  "name": "UP",
+                  "text": "A single chaff."
+                },
+                {
+                  "name": "DOWN",
+                  "text": "The chaff program."
+                },
+                {
+                  "name": "INBOARD",
+                  "text": "The jammer program."
+                },
+                {
+                  "name": "OUTBOARD",
+                  "text": "The flare program."
+                }
+              ],
+              "text": "The mirrored twin of the left hat, with the same functions.",
+              "context": "The RIO can use whichever hand is free.",
+              "page": "152",
+              "src": "m2"
+            }
+          ]
+        },
+        {
+          "id": "rio-lantirn-stick",
+          "name": "RIO: LANTIRN control stick",
+          "src": "m2",
+          "text": "A fixed grip on the RIO's right console, used with the right thumb and fingers. It steers the LANTIRN pod, a targeting pod with a camera and a laser, and fires its laser.",
+          "context": "The pod finds and marks ground targets. The panel next to the stick holds the power and the laser arm switch.",
+          "controls": [
+            {
+              "id": "ls-slew",
+              "name": "LANTIRN stick: slew hat",
+              "type": "hat",
+              "match": [
+                "control:throttle.ministick"
+              ],
+              "text": "The centre hat of the stick. Moving it slews the pod left and right and up and down. Pressing it switches between white hot and black hot, two ways of showing heat as light or dark.",
+              "context": "It aims the pod's camera at the target.",
+              "page": "426",
+              "src": "m2"
+            },
+            {
+              "id": "ls-s3",
+              "name": "LANTIRN stick: S3 hat",
+              "type": "hat",
+              "match": [
+                "control:throttle.hat.s3"
+              ],
+              "text": "The left four-way hat on the stick head. Up starts a point track and down starts an area track. Left and right step through the waypoints.",
+              "context": "A track makes the pod follow the target by itself.",
+              "page": "426",
+              "src": "m2"
+            },
+            {
+              "id": "ls-s4",
+              "name": "LANTIRN stick: S4 hat",
+              "type": "hat",
+              "match": [
+                "control:throttle.hat.s4"
+              ],
+              "text": "The right four-way hat on the stick head. Up, right and down pick the quick modes QADL/QHUD, QDES and QSNO, and pressing it steps the declutter level. With the slider it changes the gain, the level, the laser code digits or the focus.",
+              "context": "The slider decides what the hat does.",
+              "page": "426-427",
+              "src": "m2"
+            },
+            {
+              "id": "ls-fov",
+              "name": "LANTIRN stick: FOV button",
+              "type": "button",
+              "match": [
+                "control:throttle.button.fov"
+              ],
+              "text": "The red button on top of the stick. Each press cycles through the three fields of view of the pod, which are how wide an area the picture shows.",
+              "context": "A narrow field of view magnifies the picture more.",
+              "page": "427",
+              "src": "m2"
+            },
+            {
+              "id": "ls-mode",
+              "name": "LANTIRN stick: mode hat",
+              "type": "hat",
+              "match": [
+                "control:throttle.hat.mode"
+              ],
+              "text": "A two-way hat on the side of the stick. Pressing it switches the pod mode between air-to-ground and air-to-air.",
+              "context": "The mode decides what the pod looks for.",
+              "page": "427",
+              "src": "m2"
+            },
+            {
+              "id": "ls-slider",
+              "name": "LANTIRN stick: slider",
+              "type": "slider",
+              "match": [
+                "control:throttle.slider.gain"
+              ],
+              "text": "A two-way slider on the left of the stick head. It springs back to the middle. Forward selects manual or automatic gain, and aft selects the laser code or, held, the focus. It changes what the S4 hat does.",
+              "context": "It decides what the S4 hat controls.",
+              "page": "427",
+              "src": "m2"
+            },
+            {
+              "id": "ls-trigger",
+              "name": "LANTIRN stick: trigger",
+              "type": "trigger",
+              "match": [
+                "control:throttle.trigger"
+              ],
+              "text": "A two-stage trigger on the front of the stick. The first stage lases the target by hand and the second stage fires the laser and marks the point as a designated target.",
+              "context": "Lasing means lighting the target with the laser beam.",
+              "page": "427",
+              "src": "m2"
+            },
+            {
+              "id": "ls-laser-latch",
+              "name": "LANTIRN stick: latched laser button",
+              "type": "button",
+              "match": [
+                "control:throttle.button.laser_latch"
+              ],
+              "text": "A button on the front of the stick. Pressing it fires the laser for 60 seconds. Pressing again restarts the 60 seconds. A press and release of the first trigger stage stops it.",
+              "context": "It keeps the laser on without holding the trigger.",
+              "page": "427",
+              "src": "m2"
+            }
+          ],
+          "page": "425-427"
+        },
+        {
+          "id": "rio-footwells",
+          "name": "RIO: foot buttons (footwells)",
+          "db": "rio-footwells",
+          "src": "m2",
+          "page": "164-165",
+          "text": "Two foot buttons in the RIO's footwells. They let him talk on the intercom or the radio with his feet, so his hands stay on the controls.",
+          "context": "The left foot button is for the intercom, the right one is for the radio.",
+          "controls": [
+            {
+              "id": "foot-ics",
+              "name": "ICS foot button",
+              "type": "button",
+              "match": [
+                "control:pedals.button.ics",
+                "item:rio-footwells:1"
+              ],
+              "text": "The button on the left footrest. Pressing it talks to the pilot over the intercom with a cold microphone, which is open only while pressed.",
+              "context": "It is the RIO's way to speak to the pilot without using his hands.",
+              "page": "164",
+              "src": "m2"
+            },
+            {
+              "id": "foot-mic",
+              "name": "Mic foot button",
+              "type": "button",
+              "match": [
+                "control:pedals.button.mic",
+                "item:rio-footwells:2"
+              ],
+              "text": "The button on the right footrest. Pressing it transmits on UHF 1, V/UHF 2 or both, depending on the transmitter selection.",
+              "context": "It is the push-to-talk for the radios.",
+              "page": "165",
+              "src": "m2"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

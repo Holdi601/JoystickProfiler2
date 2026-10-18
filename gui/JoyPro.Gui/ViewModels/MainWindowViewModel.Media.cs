@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Text.Json;
 using System.Threading.Tasks;
 using Avalonia.Media.Imaging;
@@ -146,6 +147,22 @@ public sealed partial class MainWindowViewModel
     private static bool IsIconSource(MediaIndex index, string gameId) =>
         (index.GameCoverKinds.TryGetValue(gameId, out string? kind) && string.Equals(kind, "logo", StringComparison.OrdinalIgnoreCase)) ||
         (index.GameCoverSources.TryGetValue(gameId, out string? source) && string.Equals(source, "exe-icon", StringComparison.OrdinalIgnoreCase));
+
+    private bool relationAircraftNamesLoaded;
+
+    // The readable aircraft names for the "19 aircraft" chips of the relation cards (once per run).
+    private async Task LoadRelationAircraftNamesAsync()
+    {
+        if (relationAircraftNamesLoaded || !allRelations.Any(r => r.PlaneIds.Count > 0))
+            return;
+        relationAircraftNamesLoaded = true;
+        MediaIndex index = await GetMediaIndexAsync();
+        if (index.AircraftNames.Count == 0)
+            return;
+        RelationListItem.AircraftNames = new Dictionary<string, string>(index.AircraftNames, StringComparer.OrdinalIgnoreCase);
+        foreach (RelationListItem relation in allRelations)
+            relation.RefreshAircraftNames();
+    }
 
     // The aircraft's name as the module calls it ("F/A-18C Hornet" for FA-18C_hornet), or the DB name.
     private async Task<string> AircraftDisplayNameAsync(string plane)

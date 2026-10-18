@@ -1,0 +1,269 @@
+{
+  "format": "joypro-cockpit-guide",
+  "version": 1,
+  "id": "sim-pitts",
+  "title": "Pitts Special (S-2S / S-1S)",
+  "variants": [
+    "pitts-s2s"
+  ],
+  "games": [
+    "MSFS2020",
+    "MSFS2024"
+  ],
+  "sets": [],
+  "sources": [
+    {
+      "id": "c1",
+      "title": "JoyPro cockpit catalog",
+      "kind": "reference"
+    },
+    {
+      "id": "s1",
+      "title": "Pitts Special (Wikipedia)",
+      "kind": "reference",
+      "url": "https://en.wikipedia.org/wiki/Pitts_Special"
+    },
+    {
+      "id": "q1",
+      "title": "Pitts S-2S (public knowledge: single-seat aerobatic biplane)",
+      "kind": "reference"
+    },
+    {
+      "id": "fn",
+      "title": "JoyPro function tables MSFS2020/2024 and X-Plane 11/12 (DB/Functions)",
+      "kind": "reference"
+    }
+  ],
+  "intro": "The Pitts Special is a small aerobatic biplane, a plane with two wings on each side that is made for stunt flying. The pilot sits in a tiny cockpit with a stick in the centre, and flies the two-seat version from the rear seat. The engine levers are on the left side.",
+  "areas": [
+    {
+      "id": "instrument-panel",
+      "where": "front-center",
+      "name": "Instrument panel",
+      "text": "The compact panel in front of the pilot.",
+      "panels": [
+        {
+          "id": "instrument-panel",
+          "name": "Instrument panel",
+          "db": "instrument-panel",
+          "src": "q1",
+          "text": "A small, compact panel with the few instruments that an aerobatic plane needs: speed, height, load, engine speed and engine health.",
+          "context": "The plane is made for stunt flying, so there are few dials, and the pilot flies mostly by looking outside.",
+          "controls": [
+            {
+              "id": "asi",
+              "name": "Airspeed indicator",
+              "type": "gauge",
+              "match": [
+                "item:instrument-panel:1"
+              ],
+              "text": "This dial shows how fast the plane moves through the air.",
+              "context": "The pilot watches it on take-off, landing and in stunts.",
+              "src": "q1"
+            },
+            {
+              "id": "alt",
+              "name": "Altimeter",
+              "type": "gauge",
+              "match": [
+                "item:instrument-panel:2"
+              ],
+              "text": "This dial shows the height of the plane above sea level.",
+              "context": "The pilot keeps a safe height for the stunts.",
+              "src": "q1"
+            },
+            {
+              "id": "gmeter",
+              "name": "G-meter",
+              "type": "gauge",
+              "match": [
+                "item:instrument-panel:3"
+              ],
+              "text": "This dial shows the load factor, how strongly the pilot is pushed into the seat during turns and pulls. 1 is the normal pull of gravity.",
+              "context": "It shows how hard the pilot is pulling the plane in stunts.",
+              "src": "q1"
+            },
+            {
+              "id": "tach",
+              "name": "Tachometer",
+              "type": "gauge",
+              "match": [
+                "item:instrument-panel:4"
+              ],
+              "text": "This dial shows how fast the engine turns, in revolutions per minute (RPM).",
+              "context": "The engine speed tells the pilot how much power the engine gives.",
+              "src": "q1"
+            },
+            {
+              "id": "manifold",
+              "name": "Manifold pressure gauge",
+              "type": "gauge",
+              "match": [
+                "item:instrument-panel:5"
+              ],
+              "text": "This dial shows how hard air is pushed into the engine, which tells how much power it makes.",
+              "context": "The pilot uses it together with the propeller lever to set the power.",
+              "src": "q1"
+            },
+            {
+              "id": "oil",
+              "name": "Oil temperature / pressure gauge",
+              "type": "gauge",
+              "match": [
+                "item:instrument-panel:6"
+              ],
+              "text": "This dial shows the temperature and the pressure of the engine oil.",
+              "context": "Oil keeps the engine parts from wearing out; the pilot checks it after starting.",
+              "src": "q1"
+            },
+            {
+              "id": "magneto",
+              "name": "Magneto switch",
+              "type": "selector",
+              "match": [
+                "item:instrument-panel:7"
+              ],
+              "positions": [
+                {
+                  "name": "OFF",
+                  "text": "The magnetos are off and the engine stops."
+                },
+                {
+                  "name": "R",
+                  "text": "Only the right magneto works."
+                },
+                {
+                  "name": "L",
+                  "text": "Only the left magneto works."
+                },
+                {
+                  "name": "BOTH",
+                  "text": "Both magnetos work, the normal setting for flight."
+                }
+              ],
+              "text": "This switch turns the magnetos on. Magnetos are small generators that make the sparks for the engine, and there are two for safety.",
+              "context": "The pilot sets it to BOTH for normal flight.",
+              "src": "q1"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "left-side",
+      "where": "left-side",
+      "name": "Left side: engine levers and trim",
+      "text": "The left side of the cockpit with the engine levers, the trim and the fuel control.",
+      "panels": [
+        {
+          "id": "left-side",
+          "name": "Left side console",
+          "db": "left-side",
+          "src": "q1",
+          "text": "The engine levers, the trim and the fuel control on the left side of the pilot.",
+          "context": "The pilot's left hand rests on the throttle while the right hand holds the stick.",
+          "controls": [
+            {
+              "id": "throttle",
+              "name": "Throttle lever",
+              "type": "axis",
+              "match": [
+                "item:left-side:1",
+                "control:quadrant.axis.lever.1"
+              ],
+              "text": "This lever sets how much power the engine gives. Pushing it forward gives more power.",
+              "context": "The pilot pushes it forward for take-off.",
+              "src": "q1"
+            },
+            {
+              "id": "prop",
+              "name": "Propeller lever",
+              "type": "axis",
+              "match": [
+                "item:left-side:2",
+                "control:quadrant.axis.lever.2"
+              ],
+              "text": "This lever sets the propeller speed, which means how sharply the blades bite the air.",
+              "context": "The pilot sets it to match the power wanted from the engine.",
+              "src": "q1"
+            },
+            {
+              "id": "mixture",
+              "name": "Mixture lever",
+              "type": "axis",
+              "match": [
+                "item:left-side:3",
+                "control:quadrant.axis.lever.3"
+              ],
+              "text": "This lever sets how much fuel is mixed with the air, from rich (more fuel) to lean and cut-off, which stops the engine.",
+              "context": "The pilot makes the mixture leaner at higher altitudes, where the air is thinner.",
+              "src": "q1"
+            },
+            {
+              "id": "trim",
+              "name": "Elevator trim lever",
+              "type": "lever",
+              "match": [
+                "item:left-side:4",
+                "control:quadrant.lever.trim"
+              ],
+              "text": "This small lever trims the nose up or down. Trim removes the steady push on the stick.",
+              "context": "The pilot uses it after changing speed.",
+              "src": "q1"
+            },
+            {
+              "id": "fuel",
+              "name": "Fuel selector / pump",
+              "type": "selector",
+              "match": [
+                "item:left-side:5"
+              ],
+              "text": "This control selects the fuel supply to the engine and the fuel pump, which helps to move the fuel.",
+              "context": "It is part of the fuel system of the engine.",
+              "src": "q1"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "hotas",
+      "where": "hotas",
+      "name": "Control stick and pedals",
+      "text": "The controls the pilot holds or pushes with the feet.",
+      "panels": [
+        {
+          "id": "grips",
+          "name": "Control stick and pedals",
+          "src": "q1",
+          "text": "The controls the pilot holds or pushes with the feet.",
+          "context": "The Pitts reacts quickly to small movements of the stick.",
+          "controls": [
+            {
+              "id": "gimbal",
+              "name": "Control stick",
+              "type": "axis",
+              "match": [
+                "control:stick.gimbal"
+              ],
+              "text": "Pushing the stick forward points the nose down, pulling it back points it up. Moving it sideways rolls the plane left or right, with ailerons on both wings.",
+              "context": "A biplane has two wings on each side, and ailerons on all of them make it roll very fast.",
+              "src": "q1"
+            },
+            {
+              "id": "pedals",
+              "name": "Rudder pedals",
+              "type": "pedal",
+              "match": [
+                "control:pedals.axis.rudder"
+              ],
+              "text": "The pedals move the rudder on the tail to point the nose left or right. The tops of the pedals are the toe brakes for the left and right wheels.",
+              "context": "On the ground the brakes are used with the feet.",
+              "src": "q1"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

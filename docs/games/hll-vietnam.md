@@ -68,7 +68,7 @@ action ids and Unreal key names only), unless an Oodle library may be used to re
 
 ### Oodle (user decision 2026-10-12: like the device photos, with the user's consent)
 The game's input assets are Oodle-compressed. Until 2026-10-11 the refresh silently decompressed them with an
-`oo2core_*_win64.dll` it found next to *another* installed game (on the dev PC: Battlefield 6). Now:
+`oo2core_*_win64.dll` it found next to *another* installed game (on a test PC: Battlefield 6). Now:
 
 1. **The game's own library** (an `oo2core_*_win64.dll` inside Hell Let Loose: Vietnam's folder) is used without a
    question. The build of 2026-10 ships none (Oodle is linked into the game's executable; checked 2026-10-12: no
@@ -84,7 +84,7 @@ The game's input assets are Oodle-compressed. Until 2026-10-11 the refresh silen
    loads it **from where it is** (never copied), only in the refresh process, and logs it (steps and `JoyProLog`).
    Without it (no yes, no file, or `JOYPRO_OODLE_DLL=none` in tests) nothing is loaded.
 4. **Fallback: JoyPro's own table** (the pad keys of the three layouts and the pilot keys). In Xbox-pad mode only the
-   pad keys matter, so the fallback is complete for that mode. Fresh build on the dev PC without the yes: 28 actions,
+   pad keys matter, so the fallback is complete for that mode. Fresh build on a test PC without the yes: 28 actions,
    the same rows the game files gave with the borrowed library (the two medic pad actions were added to the table).
 
 Tests: `smoke\hllv.ps1` (a synthetic Steam library with a stand-in library: no load without `--oodle-dll`, a load
@@ -93,7 +93,7 @@ attempt with it, the fallback either way, the game's own library first) and the 
 
 The reader (with the game's own library or the allowed one):
 
-1. Open `<install>\HLLVietnam\Content\Paks\HLLVietnam-Windows.utoc/.ucas` (IoStore TOC version 8, not encrypted) with
+1. Open `<install>\HLLVietnam\Content\Paks\HLLVietnam-Windows.utoc/.ucas` (IoStore TOC version 8) with
    `UnrealIoStore`. It reads the directory index, decompresses the Oodle blocks and reads the Zen packages with
    unversioned properties.
 2. Take the Enhanced Input assets under `/Content/_WFL/Input/`:
@@ -109,7 +109,7 @@ The reader (with the game's own library or the allowed one):
    only for the refresh.
 5. Without one, JoyPro writes its built-in table of the layouts above (build of 2026-10) and says so in the steps.
 
-Measured on the dev PC on 2026-10-11 with the borrowed DLL: 313 mappings and 28 actions in 0.26 s.
+Measured on a test PC on 2026-10-11 with the borrowed DLL: 313 mappings and 28 actions in 0.26 s.
 
 ## Keyboard file
 `%LOCALAPPDATA%\HLLVietnam\Saved\SaveGames\EnhancedInputUserSettings.sav` (UE GVAS). Only changed mappings are stored.
@@ -138,8 +138,8 @@ What JoyPro writes:
 The game only lists keyboard and mouse keys in its key selector, and gamepad keys are not player-mappable. That is why
 JoyPro does not write gamepad binds (`IGameGamepadBinds` is not implemented).
 
-## Menu check with the virtual pad (2026-10-11, `tools\e2e\games\HllVietnamXbox.ps1`)
-Unattended, menus only (EasyAntiCheat): JoyPro's xbox mode with vJoy standing in for the HOTAS (relations on
+## Menu check with the virtual pad (2026-10-11)
+Menus only: JoyPro's xbox mode with vJoy standing in for the HOTAS (relations on
 `Pad_*` actions, `vjoy mode HLLVietnam xbox`, `vjoy map`, `forwarder-config`, `JoyPro.VJoy run --xbox-sink vigem`).
 Checked: the planner pins layout A (Medic = A, Stability hold = B, Supply drop = D-pad right, cyclic pitch = left
 stick Y), XInput shows the pad and the forwarded stick, the pad's A passes "PRESS ANY BUTTON TO CONTINUE", B opens QUIT
@@ -156,5 +156,5 @@ A there).
 - Layout A with the virtual pad: collective on the triggers, cyclic, yaw, stability (B), supply drop.
 - Whether the right-stick yaw/look overlap in layout A disturbs flying.
 
-Research: real files and IoStore containers on the dev PC (read-only), worldeka HLLV flight stick guide,
+Research: real files and IoStore containers on a test PC (read-only), worldeka HLLV flight stick guide,
 hllvtools.com/helicopter-controls.

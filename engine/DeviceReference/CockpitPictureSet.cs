@@ -36,6 +36,13 @@ namespace JoyPro.DeviceReference
         // The version of the picture pack the set came from; 0: made on this PC.
         public int PackVersion;
         public List<CockpitPictureView> Views = new List<CockpitPictureView>();
+        // The quality gate's verdict when the set was made (pictures.json "quality", docs/cockpits.md "Picture quality"):
+        // the overview's score (0..100, -1 = not rated) and "low" (nothing usable): another game's set is shown first.
+        public int QualityScore = -1;
+        public bool LowQuality;
+        // Every control of the cockpit once (pictures.json "controls", docs/cockpits.md "Animated controls"): its kind,
+        // what moves it in the game's files and its place on each picture it is visible in.
+        public List<CockpitPictureControl> Controls = new List<CockpitPictureControl>();
 
         public bool FromPack { get { return PackVersion > 0; } }
 
@@ -64,6 +71,40 @@ namespace JoyPro.DeviceReference
             };
             set.Planes = Strings(root, "planes");
             set.Notes = Strings(root, "notes");
+            Dictionary<string, object> quality = DeviceCatalog.Object(root, "quality");
+            if (quality != null)
+            {
+                set.QualityScore = (int)Number(quality, "score", -1);
+                set.LowQuality = quality.ContainsKey("low") && quality["low"] is bool && (bool)quality["low"];
+            }
+            foreach (Dictionary<string, object> c in DeviceCatalog.Objects(root, "controls"))
+            {
+                CockpitPictureControl control = new CockpitPictureControl
+                {
+                    Id = DeviceCatalog.Text(c, "id"),
+                    Label = DeviceCatalog.Text(c, "label"),
+                    Kind = DeviceCatalog.Text(c, "kind"),
+                    GameKind = DeviceCatalog.Text(c, "gameKind"),
+                    Panel = DeviceCatalog.Text(c, "panel"),
+                    Device = DeviceCatalog.Text(c, "device"),
+                    Seat = (int)Number(c, "seat", 1)
+                };
+                Dictionary<string, object> a = DeviceCatalog.Object(c, "animation");
+                if (a != null)
+                {
+                    control.AnimationSource = DeviceCatalog.Text(a, "source");
+                    control.AnimationName = DeviceCatalog.Text(a, "name");
+                    control.Min = Number(a, "min", double.NaN);
+                    control.Max = Number(a, "max", double.NaN);
+                    object positions;
+                    if (a.TryGetValue("positions", out positions) && positions is List<object>)
+                        control.Positions.AddRange(((List<object>)positions).Select(x => Convert.ToDouble(x, CultureInfo.InvariantCulture)));
+                }
+                control.Commands.AddRange(Strings(c, "commands"));
+                foreach (Dictionary<string, object> at in DeviceCatalog.Objects(c, "views"))
+                    control.Views.Add(new CockpitPictureSpot { View = DeviceCatalog.Text(at, "view"), N = (int)Number(at, "n", 0), X = Number(at, "x", -1), Y = Number(at, "y", -1) });
+                set.Controls.Add(control);
+            }
             foreach (Dictionary<string, object> v in DeviceCatalog.Objects(root, "views"))
             {
                 CockpitPictureView view = new CockpitPictureView
@@ -79,6 +120,8 @@ namespace JoyPro.DeviceReference
                     Drawing = Path.Combine(folder, DeviceCatalog.Text(v, "drawing")),
                     Width = Number(v, "width", 1),
                     Height = Number(v, "height", 1),
+                    Quality = (int)Number(v, "quality", -1),
+                    DrawingReadable = !(v.ContainsKey("drawingReadable") && v["drawingReadable"] is bool && !(bool)v["drawingReadable"]),
                     Set = set
                 };
                 foreach (Dictionary<string, object> c in DeviceCatalog.Objects(v, "callouts"))
@@ -96,6 +139,13 @@ namespace JoyPro.DeviceReference
                         Panel = DeviceCatalog.Text(c, "panel"),
                         Link = DeviceCatalog.Text(c, "link")
                     };
+                    callout.Positions = CockpitCatalog.Strings(c, "positions").ToList();
+                    if (callout.Positions.Count == 0)
+                    {
+                        int states = (int)Number(c, "states", 0);
+                        for (int i = 1; states >= 2 && states <= 12 && i <= states; i++)
+                            callout.Positions.Add("Position " + i.ToString(CultureInfo.InvariantCulture));
+                    }
                     foreach (Dictionary<string, object> cmd in DeviceCatalog.Objects(c, "commands"))
                         callout.Commands.Add(new CockpitPictureCommand { Name = DeviceCatalog.Text(cmd, "name"), Category = DeviceCatalog.Text(cmd, "category"), Id = DeviceCatalog.Text(cmd, "id") });
                     view.Callouts.Add(callout);
@@ -178,12 +228,46 @@ namespace JoyPro.DeviceReference
             if (!Directory.Exists(root))
                 return null;
             CockpitPictureSet found = null;
+            // A good set first (in the order of the games); a low-quality one only when no game has a better one.
+            Locate(v, game => Index(Path.Combine(root, game)), (game, folder) =>
+            {
+                CockpitPictureSet s = Cached(Path.Combine(root, game, folder));
+                if (s == null || s.LowQuality)
+                    return false;
+                found = s;
+                return true;
+            });
+            if (found != null)
+                return found;
             Locate(v, game => Index(Path.Combine(root, game)), (game, folder) =>
             {
                 found = Cached(Path.Combine(root, game, folder));
                 return found != null;
             });
             return found;
+        }
+
+        // Every set of a variant, one per game folder: the good ones in the order of the games, then the low-quality
+        // ones (the Cockpits page offers the choice when there are several: "Pictures from").
+        public static List<CockpitPictureSet> AllFor(CockpitVariant v, string root = null)
+        {
+            root = root ?? Root();
+            List<CockpitPictureSet> found = new List<CockpitPictureSet>();
+            if (!Directory.Exists(root))
+                return found;
+            foreach (string game in Games.Concat(new[] { "MSFS2020" }).Distinct())
+            {
+                string only = game;
+                Locate(v, g => string.Equals(g, only, StringComparison.OrdinalIgnoreCase) ? Index(Path.Combine(root, g)) : new Dictionary<string, string>(), (g, folder) =>
+                {
+                    CockpitPictureSet s = Cached(Path.Combine(root, g, folder));
+                    if (s == null || found.Any(x => string.Equals(x.Folder, s.Folder, StringComparison.OrdinalIgnoreCase)))
+                        return false;
+                    found.Add(s);
+                    return true;
+                });
+            }
+            return found.Where(x => !x.LowQuality).Concat(found.Where(x => x.LowQuality)).ToList();
         }
 
         // The game folder and the set folder of a variant by the indexes of the game folders (normalised aircraft name ->
@@ -518,8 +602,42 @@ namespace JoyPro.DeviceReference
         public string Drawing = string.Empty;
         public double Width = 1;
         public double Height = 1;
+        // The quality gate's score of the picture (0..100, -1 = not rated) and whether JoyPro's line drawing of it is
+        // readable (a busy perspective or a poor picture is not: the drawing mode shows the picture then).
+        public int Quality = -1;
+        public bool DrawingReadable = true;
         public List<CockpitPictureCallout> Callouts = new List<CockpitPictureCallout>();
         public CockpitPictureSet Set;
+    }
+
+    // A control of the cockpit (pictures.json "controls"): Kind is JoyPro's (button, switch-2, switch-3, switch-N,
+    // rotary, lever, axis, grip, screen, cover, ...), GameKind the game's own; the animation's source (draw argument,
+    // dataref, animation argument, animated node, behaviour, interaction point, model node) and name, its range (NaN:
+    // not known) and a switch's positions; the commands to bind; where it is on the pictures (N: its number there).
+    public sealed class CockpitPictureControl
+    {
+        public string Id = string.Empty;
+        public string Label = string.Empty;
+        public string Kind = string.Empty;
+        public string GameKind = string.Empty;
+        public string Panel = string.Empty;
+        public string Device = string.Empty;
+        public int Seat = 1;
+        public string AnimationSource = string.Empty;
+        public string AnimationName = string.Empty;
+        public double Min = double.NaN;
+        public double Max = double.NaN;
+        public List<double> Positions = new List<double>();
+        public List<string> Commands = new List<string>();
+        public List<CockpitPictureSpot> Views = new List<CockpitPictureSpot>();
+    }
+
+    public sealed class CockpitPictureSpot
+    {
+        public string View = string.Empty;
+        public int N;
+        public double X = -1;
+        public double Y = -1;
     }
 
     public sealed class CockpitPictureCallout
@@ -535,6 +653,8 @@ namespace JoyPro.DeviceReference
         public string Panel = string.Empty;
         public string Link = string.Empty;
         public List<CockpitPictureCommand> Commands = new List<CockpitPictureCommand>();
+        // The positions (states) of an animated part where the set knows them ("positions": names, or "states": a count).
+        public List<string> Positions = new List<string>();
     }
 
     public sealed class CockpitPictureCommand

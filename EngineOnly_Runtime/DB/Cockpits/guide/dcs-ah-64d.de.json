@@ -1,0 +1,2320 @@
+{
+  "format": "joypro-cockpit-guide-text",
+  "version": 1,
+  "guide": "dcs-ah-64d",
+  "language": "de",
+  "title": "AH-64D Apache Block II (DCS)",
+  "intro": "Der AH-64D Apache ist ein Kampfhubschrauber mit zwei Besatzungsmitgliedern hintereinander: Der Pilot sitzt hinten, der Copilot/Schütze (CPG) vorn. Jeder Sitz hat einen eigenen Steuerknüppel (Cyclic), einen eigenen Kollektivhebel und viele Bedienfelder, und beide Sitze blicken durch eine Helmanzeige. Der Pilot fliegt; der CPG bedient vor allem die Sensoren und Waffen mit dem TEDAC-Bildschirm und dessen zwei Handgriffen. Die Sitze teilen sich viele gleiche Bedienfelder, zum Beispiel die Multifunktionsbildschirme, das Feuer-Bedienfeld und das Lautstärke-Bedienfeld der Funkgeräte.",
+  "areas": {
+    "plt-instrument-panel": {
+      "name": "Instrumententafel des Piloten",
+      "text": "Die Tafel direkt vor dem Piloten auf dem hinteren Sitz. Sie hat die zwei großen MPD-Bildschirme, den kleinen EUFD-Textbildschirm, die Warntasten, das Feuer-Bedienfeld und ein paar Reserve-Anzeigen."
+    },
+    "plt-keyboard-unit": {
+      "name": "Tastatureinheit des Piloten",
+      "text": "Eine kleine Tastatur mit einer einzeiligen Anzeige links vom Piloten. Der Pilot tippt darauf Zahlen und Buchstaben."
+    },
+    "plt-left-console": {
+      "name": "Linke Konsole des Piloten",
+      "text": "Das Bedienfeld neben dem linken Bein des Piloten. Es hat die Starttasten, die Lichter, die Notfalltasten und die Abwurftasten für Außenlasten."
+    },
+    "plt-right-console": {
+      "name": "Rechte Konsole des Piloten",
+      "text": "Das Bedienfeld neben dem rechten Bein des Piloten. Es enthält das Kommunikationsfeld mit den Lautstärkeknöpfen sowie die Kabinendachtür und einige Einbauten."
+    },
+    "plt-cmws-area": {
+      "name": "CMWS-Feld des Piloten",
+      "text": "Ein kleines Bedienfeld auf der rechten Seite des Pilotencockpits für das Raketenwarnsystem."
+    },
+    "plt-hotas": {
+      "name": "Steuerknüppel (Cyclic) und Kollektivhebel des Piloten",
+      "text": "Der Steuerknüppel (Cyclic) und der Kollektivhebel des Piloten, mit allen Schaltern an ihren Griffen."
+    },
+    "cpg-instrument-panel": {
+      "name": "Instrumententafel des CPG",
+      "text": "Die Tafel vor dem CPG auf dem vorderen Sitz. Sie hat die zwei MPD-Bildschirme, den EUFD-Textbildschirm, die Warntasten, das Feuer-Bedienfeld und das Waffen-Bedienfeld."
+    },
+    "cpg-tedac": {
+      "name": "TEDAC (Bildschirm des CPG zwischen den Handgriffen)",
+      "text": "Das TEDAC ist der eigene Bildschirm des CPG vor ihm, zwischen einem linken und einem rechten Handgriff. Es zeigt die Bilder der Nasenkameras und die Radarseite."
+    },
+    "cpg-keyboard-unit": {
+      "name": "Tastatureinheit des CPG",
+      "text": "Eine kleine Tastatur mit einer einzeiligen Anzeige für den CPG. Der CPG tippt darauf Zahlen und Buchstaben."
+    },
+    "cpg-left-console": {
+      "name": "Linke Konsole des CPG",
+      "text": "Das Bedienfeld neben dem linken Bein des CPG. Es hat die Leistungshebel, die Lichter, die Notfalltasten und die Abwurftasten für Außenlasten."
+    },
+    "cpg-right-console": {
+      "name": "Rechte Konsole des CPG",
+      "text": "Das Bedienfeld neben dem rechten Bein des CPG. Es enthält das Kommunikationsfeld, den Scheibenwischer, den Prozessorwahlschalter und einige Einbauten."
+    },
+    "cpg-hotas": {
+      "name": "Steuerknüppel (Cyclic), Kollektivhebel und TEDAC-Griffe des CPG",
+      "text": "Der Steuerknüppel (Cyclic) und der Kollektivhebel des CPG, dazu die zwei festen Handgriffe auf beiden Seiten des TEDAC-Bildschirms."
+    }
+  },
+  "panels": {
+    "plt-master-warning-caution": {
+      "name": "Tasten MASTER WARNING / MASTER CAUTION (Pilotensitz)",
+      "text": "Das sind zwei große, beleuchtete Tasten, die Aufmerksamkeit verlangen. Die Warntaste steht für Gefahr, die Cautiontaste für ein weniger dringendes Problem.",
+      "context": "Die Worte, die sagen, was los ist, erscheinen auf dem EUFD, dem kleinen Textbildschirm. Der Pilot liest sie dort und drückt die Taste zur Bestätigung."
+    },
+    "plt-eufd": {
+      "name": "Enhanced Upfront Display, EUFD (Pilotensitz)",
+      "text": "Das EUFD ist ein kleiner Textbildschirm mit ein paar Tasten daneben. Es listet Warnungen auf, zeigt die Funkgeräte mit ihren Frequenzen und zeigt Kraftstoff, Transpondercode und die Uhrzeit.",
+      "context": "Anders als die großen Bildschirme arbeitet es auch allein mit Batteriestrom. Der Pilot schaut dort nach Warnungen und danach, welches Funkgerät zum Sprechen gewählt ist."
+    },
+    "plt-mpd-left": {
+      "name": "Linke Multifunktionsanzeige, MPD (Pilotensitz)",
+      "text": "Das MPD ist ein Bildschirm mit Tasten rundherum am Rand. Jede Taste wählt das Wort, das daneben auf dem Bildschirm steht, deshalb tut dieselbe Taste auf verschiedenen Seiten Verschiedenes. Das ist der Bildschirm links vor dem Piloten.",
+      "context": "Die Besatzung nutzt die MPD-Seiten für die Karte, die Waffen, das Radar, die Funkgeräte und die Triebwerke. Die zwei MPDs eines Sitzes können gleichzeitig verschiedene Seiten zeigen."
+    },
+    "plt-mpd-right": {
+      "name": "Rechte Multifunktionsanzeige, MPD (Pilotensitz)",
+      "text": "Das MPD ist ein Bildschirm mit Tasten rundherum am Rand. Jede Taste wählt das Wort, das daneben auf dem Bildschirm steht, deshalb tut dieselbe Taste auf verschiedenen Seiten Verschiedenes. Das ist der Bildschirm rechts vor dem Piloten.",
+      "context": "Die Besatzung nutzt die MPD-Seiten für die Karte, die Waffen, das Radar, die Funkgeräte und die Triebwerke. Die zwei MPDs eines Sitzes können gleichzeitig verschiedene Seiten zeigen."
+    },
+    "plt-fire-panel": {
+      "name": "Feuererkennungs- und Löschfeld (Pilotensitz)",
+      "text": "Dieses Bedienfeld kümmert sich um Feuer. Drei abgedeckte Tasten leuchten, wenn im linken Triebwerk, im rechten Triebwerk oder im kleinen Zusatztriebwerk hinten ein Feuer erkannt wird. Zwei weitere Tasten löschen das Feuer.",
+      "context": "Beide Sitze haben eine Kopie, und sie arbeiten zusammen: Eine Taste, die in einem Sitz gedrückt wird, ist für beide scharf, aber nur der Sitz, der sie gedrückt hat, kann sie wieder ausschalten. Der Pilot nutzt es nur im Notfall."
+    },
+    "plt-armament-panel": {
+      "name": "Waffen-Bedienfeld (Pilotensitz)",
+      "text": "Dieses Bedienfeld enthält den Master Arm: die Hauptsicherung der Waffen. Solange sie SAFE zeigt, kann nichts abgefeuert werden, nicht einmal der Laser.",
+      "context": "Beide Sitze teilen den Zustand: Drückt man eine Taste in einem Sitz, ändert sich dieselbe Taste im anderen Sitz. Der Pilot stellt ARM nur ein, wenn wirklich eine Waffe eingesetzt werden soll."
+    },
+    "plt-video-panel": {
+      "name": "Video-Bedienfeld (Pilotensitz)",
+      "text": "Dieses Bedienfeld stellt ein, wie hell das Bild und die Symbole in der Helmanzeige des Piloten sind, dem kleinen Bildschirm vor einem Auge. Es stimmt auch das Bild der Infrarotkamera ab.",
+      "context": "Nachts fliegt der Pilot meist mit Blick auf diese Helmanzeige, deshalb muss die Helligkeit stimmen. Die Infrarotkamera (FLIR) sieht Wärme statt Licht."
+    },
+    "plt-check-overspeed-gen-reset": {
+      "name": "Bedienfeld Überdrehzahl-Test / Generator-Rückstellung (Pilotensitz)",
+      "text": "Dieses Bedienfeld hat zwei Testschalter für den Überdrehzahlschutz der Triebwerke und einen Schalter, der einen Generator neu startet. Ein Generator macht Strom, solange das Triebwerk läuft.",
+      "context": "Die Generator-Rückstellung ist für den Fall, dass die Bildschirme nach einem Stromausfall dunkel blieben. Die Überdrehzahltests sind in DCS nicht umgesetzt."
+    },
+    "plt-standby-instruments": {
+      "name": "Reserveinstrumente (Pilotensitz)",
+      "text": "Das sind altmodische Reserve-Anzeigen, die keinen Computer brauchen: ein kleiner künstlicher Horizont, eine Fahrtanzeige, eine Höhenanzeige und ein Kompass.",
+      "context": "Der Pilot schaut auf sie, wenn die Hauptanzeigen ausfallen. Die zwei Knöpfe daran sind der Arretierknopf des Horizonts und die Druckeinstellung der Höhenanzeige."
+    },
+    "plt-canopy-jettison-zeroize": {
+      "name": "Kabinendach-Abwurfgriff, MASTER-ZEROIZE-Schalter und Feststellbremse (Pilotensitz)",
+      "text": "Das sind drei Notfall- oder Park-Griffe auf der Instrumententafel: der Griff, der die seitlichen Scheiben des Kabinendachs abwirft, ein gesicherter Schalter, der geheime Daten löscht, und der Griff der Feststellbremse.",
+      "context": "Der Dachgriff und der Zeroize-Schalter sind für Notfälle und in DCS nicht umgesetzt. Der Griff der Feststellbremse wird bei jedem Halt am Boden benutzt."
+    },
+    "plt-windshield-wiper": {
+      "name": "Scheibenwischer- und Entnebelungsfeld (Pilotensitz)",
+      "text": "Dieses Bedienfeld hat den Wischer für die Frontscheibe (das vordere Fenster) und eine Entnebelungstaste für beschlagene Seitenscheiben des Kabinendachs.",
+      "context": "Es wird bei Regen oder beschlagenen Scheiben benutzt. In DCS ist die Entnebelungstaste nicht umgesetzt."
+    },
+    "plt-keyboard-unit": {
+      "name": "Tastatureinheit, KU (Pilotensitz)",
+      "text": "Die Tastatureinheit ist eine kleine Tastatur mit einer einzeiligen Textanzeige. Der Pilot tippt darauf Zahlen und Buchstaben, etwa Frequenzen und Kartenpunkte, oder nutzt sie als Notizblock.",
+      "context": "Getippte Daten gehen nur dann in die Computer des Hubschraubers, wenn eine MPD-Taste sie angefordert hat und eine Eingabeaufforderung auf der KU-Anzeige steht. Jeder Sitz hat seine eigene Tastatureinheit."
+    },
+    "plt-power-quadrant": {
+      "name": "Leistungshebel-Bedienfeld (Pilotensitz)",
+      "text": "Dieses Bedienfeld enthält die Bedienelemente zum Starten des Hubschraubers: den Batterieschalter, die APU-Taste, die zwei Triebwerks-Startschalter, die Rotorbremse und die zwei Leistungshebel.",
+      "context": "Der Pilot nutzt es zuerst beim Anlassen und zuletzt beim Abstellen. Die Leistungshebel des CPG auf dem vorderen Sitz sind mit diesen Hebeln gekoppelt."
+    },
+    "plt-tail-wheel-nvs": {
+      "name": "Spornrad- und NVS-Moduswahl-Feld (Pilotensitz)",
+      "text": "Dieses Bedienfeld hat zwei Bedienelemente: die Sperre des kleinen Spornrads und den Modus des Nachtsichtsystems für diesen Sitz.",
+      "context": "Das Spornrad wird für Start und Landung gesperrt, damit der Hubschrauber geradeaus rollt. Den Nachtsichtmodus nutzt der Pilot, wenn das Bild der Nasenkameras in der Helmanzeige gezeigt wird."
+    },
+    "plt-emergency-panel": {
+      "name": "Notfall-Bedienfeld (Pilotensitz)",
+      "text": "Dieses Bedienfeld legt vier Notfallaktionen auf einzelne Tasten, damit die Besatzung nicht durch Bildschirmseiten suchen muss. In DCS tut noch keine der vier etwas.",
+      "context": "Jede ist für einen Notfall gedacht: den Notfall-Funkkanal rufen, den Notfall-Transpondercode senden, geheime Daten löschen und Notdruck für die Hydraulik holen. Der Pilot greift nur in Not danach."
+    },
+    "plt-stores-jettison": {
+      "name": "Abwurf-Bedienfeld für Außenlasten (Pilotensitz)",
+      "text": "Mit diesem Bedienfeld wirft die Besatzung im Notfall Waffen von gewählten Flügelstationen ab, um den Hubschrauber leichter zu machen oder eine hängende Waffe loszuwerden.",
+      "context": "Jede Stationstaste macht eine Flügelstation zum Abwurf scharf. Dann wirft die JETT-Taste alle scharfen Stationen ab. Nur der Sitz, der eine Station scharf gemacht hat, kann sie entschärfen; beide Sitze können JETT drücken."
+    },
+    "plt-exterior-interior-lighting": {
+      "name": "Außen- und Innenbeleuchtungsfeld (Pilotensitz)",
+      "text": "Dieses Bedienfeld steuert die Lichter außen am Hubschrauber und die Lichter im Cockpit des Piloten.",
+      "context": "Der Pilot stellt die Lichter nachts und beim Formationsflug ein. Die Testtaste prüft, ob die Signallichter funktionieren."
+    },
+    "plt-free-air-temperature": {
+      "name": "Außenlufttemperaturanzeige (Pilotensitz)",
+      "text": "Das ist ein Thermometer für die Außenluft. Sein Fühler ragt durch den Rumpf nach draußen.",
+      "context": "Es ist nur eine Anzeige und hat keine Schalter."
+    },
+    "plt-communications-panel": {
+      "name": "Kommunikationsfeld (Pilotensitz)",
+      "text": "Dieses Bedienfeld stellt ein, wie laut jedes Funkgerät und jede Warnstimme im Helm des Piloten ist und wie das Bordsprechanlagen-Mikrofon arbeitet.",
+      "context": "Die Bordsprechanlage (Intercom) ist die Telefonleitung zwischen den beiden Besatzungsmitgliedern. Die Funkgeräte dienen dem Sprechen mit anderen Luftfahrzeugen und Bodeneinheiten. Jeder Sitz hat sein eigenes Feld, so dass jedes Besatzungsmitglied eigene Lautstärken einstellt."
+    },
+    "plt-cockpit-fittings": {
+      "name": "Sonnenblenden und Kabinendachtür (Pilotensitz)",
+      "text": "Das sind die Einbauten im Cockpit des Piloten, die zu keinem System gehören: zwei Sonnenblenden, die die Augen beschatten, und die Kabinendachtür.",
+      "context": "Es sind Ausrüstungsteile des Pilotencockpits, die das Spiel anklickbar macht. Das Handbuch beschreibt die Sonnenblenden nicht."
+    },
+    "plt-cmws": {
+      "name": "CMWS-Bedienfeld (nur Pilotensitz)",
+      "text": "Das CMWS ist das Raketenwarnsystem. Es späht mit Sensoren nach Raketen, die auf den Hubschrauber abgefeuert werden, und kann von selbst Flares (heiß brennende Täuschkörper gegen wärmesuchende Raketen) abwerfen.",
+      "context": "Nur der Pilotensitz hat dieses Bedienfeld. Das Handbuch rät, den CMWS/NAV-Schalter in einem Gebiet, in dem Raketenbedrohung erwartet wird, auf CMWS zu stellen."
+    },
+    "plt-cyclic-grip": {
+      "name": "Cyclic-Griff (Pilotensitz)",
+      "text": "Das Cyclic ist der Steuerknüppel zwischen den Knien. Sein Griff trägt viele Schalter, damit die Hand fliegen, funken, Täuschkörper abwerfen und die Waffen abfeuern kann, ohne loszulassen.",
+      "context": "Die Cyclic-Griffe des Piloten und des CPG sind in Form und Funktion gleich. Die Schalter hier decken Funkgeräte, Täuschkörper, Waffen und die Helmanzeige ab."
+    },
+    "plt-collective-flight-grip": {
+      "name": "Kollektivhebel: Flug-Griff (Pilotensitz)",
+      "text": "Der Kollektivhebel ist der Hebel links vom Sitz. Sein Flug-Griff trägt die wichtigen Schalter: Abwurf, Suchscheinwerfer, Nachtsichtwahl, Stabilator, Spornrad und Triebwerks-Chop.",
+      "context": "Der Flug-Griff ist der Teil des Hebels, den die Hand beim Fliegen hält. Pilot und CPG haben denselben Griff, nur dass der BUCS-Abzug nur im CPG-Sitz funktioniert."
+    },
+    "plt-collective-mission-grip": {
+      "name": "Kollektivhebel: Einsatz-Griff (Pilotensitz)",
+      "text": "Der Einsatz-Griff ist der zweite Griff am Kollektivhebel. Er enthält die Bedienelemente für das Radar, den Cursor auf den Bildschirmen und die Wahl des Visiers.",
+      "context": "Der Daumen bedient das Cursor-Feld und den Visierschalter, so dass die Zielarbeit ohne Loslassen der Flugsteuerung erledigt werden kann."
+    },
+    "plt-collective-parts": {
+      "name": "Griffteile des Kollektivhebels, wie modelliert (Pilotensitz)",
+      "text": "Das Spiel modelliert die Kollektivgriffe als viele einzelne anklickbare Teile. Dieser Eintrag fasst sie nach Art zusammen.",
+      "context": "Die Funktionen der Teile sind in den Bedienfeldern Flug-Griff und Einsatz-Griff erklärt."
+    },
+    "cpg-master-warning-caution": {
+      "name": "Tasten MASTER WARNING / MASTER CAUTION (CPG-Sitz)",
+      "text": "Das sind zwei große, beleuchtete Tasten, die Aufmerksamkeit verlangen. Die Warntaste steht für Gefahr, die Cautiontaste für ein weniger dringendes Problem.",
+      "context": "Die Worte, die sagen, was los ist, erscheinen auf dem EUFD, dem kleinen Textbildschirm. Der CPG (Copilot/Schütze) liest sie dort und drückt die Taste zur Bestätigung."
+    },
+    "cpg-eufd": {
+      "name": "Enhanced Upfront Display, EUFD (CPG-Sitz)",
+      "text": "Das EUFD ist ein kleiner Textbildschirm mit ein paar Tasten daneben. Es listet Warnungen auf, zeigt die Funkgeräte mit ihren Frequenzen und zeigt Kraftstoff, Transpondercode und die Uhrzeit.",
+      "context": "Anders als die großen Bildschirme arbeitet es auch allein mit Batteriestrom. Der CPG (Copilot/Schütze) schaut dort nach Warnungen und danach, welches Funkgerät zum Sprechen gewählt ist."
+    },
+    "cpg-mpd-left": {
+      "name": "Linke Multifunktionsanzeige, MPD (CPG-Sitz)",
+      "text": "Das MPD ist ein Bildschirm mit Tasten rundherum am Rand. Jede Taste wählt das Wort, das daneben auf dem Bildschirm steht, deshalb tut dieselbe Taste auf verschiedenen Seiten Verschiedenes. Das ist der Bildschirm links vor dem CPG (Copilot/Schütze).",
+      "context": "Die Besatzung nutzt die MPD-Seiten für die Karte, die Waffen, das Radar, die Funkgeräte und die Triebwerke. Die zwei MPDs eines Sitzes können gleichzeitig verschiedene Seiten zeigen."
+    },
+    "cpg-mpd-right": {
+      "name": "Rechte Multifunktionsanzeige, MPD (CPG-Sitz)",
+      "text": "Das MPD ist ein Bildschirm mit Tasten rundherum am Rand. Jede Taste wählt das Wort, das daneben auf dem Bildschirm steht, deshalb tut dieselbe Taste auf verschiedenen Seiten Verschiedenes. Das ist der Bildschirm rechts vor dem CPG (Copilot/Schütze).",
+      "context": "Die Besatzung nutzt die MPD-Seiten für die Karte, die Waffen, das Radar, die Funkgeräte und die Triebwerke. Die zwei MPDs eines Sitzes können gleichzeitig verschiedene Seiten zeigen."
+    },
+    "cpg-fire-panel": {
+      "name": "Feuererkennungs- und Löschfeld (CPG-Sitz)",
+      "text": "Dieses Bedienfeld kümmert sich um Feuer. Drei abgedeckte Tasten leuchten, wenn im linken Triebwerk, im rechten Triebwerk oder im kleinen Zusatztriebwerk hinten ein Feuer erkannt wird. Zwei weitere Tasten löschen das Feuer.",
+      "context": "Beide Sitze haben eine Kopie, und sie arbeiten zusammen: Eine Taste, die in einem Sitz gedrückt wird, ist für beide scharf, aber nur der Sitz, der sie gedrückt hat, kann sie wieder ausschalten. Der CPG (Copilot/Schütze) nutzt es nur im Notfall."
+    },
+    "cpg-armament-panel": {
+      "name": "Waffen-Bedienfeld (CPG-Sitz)",
+      "text": "Dieses Bedienfeld enthält den Master Arm: die Hauptsicherung der Waffen. Solange sie SAFE zeigt, kann nichts abgefeuert werden, nicht einmal der Laser.",
+      "context": "Beide Sitze teilen den Zustand: Drückt man eine Taste in einem Sitz, ändert sich dieselbe Taste im anderen Sitz. Der CPG (Copilot/Schütze) stellt ARM nur ein, wenn wirklich eine Waffe eingesetzt werden soll."
+    },
+    "cpg-canopy-jettison-zeroize": {
+      "name": "Kabinendach-Abwurfgriff und MASTER-ZEROIZE-Schalter (CPG-Sitz)",
+      "text": "Das sind zwei Notfall-Teile auf der Instrumententafel des CPG: der Griff, der die seitlichen Scheiben des Kabinendachs abwirft, und ein gesicherter Schalter, der geheime Daten löscht.",
+      "context": "Beide funktionieren wie die im Pilotensitz. In DCS ist keiner von beiden umgesetzt."
+    },
+    "cpg-tedac-display": {
+      "name": "TEDAC-Anzeigeeinheit, TDU (CPG-Sitz)",
+      "text": "Die TEDAC-Anzeigeeinheit ist der Bildschirm des CPG zwischen seinen zwei Handgriffen. Sie zeigt die Bilder der Nasenkameras und die Radarseite und hat Tasten und Wippen rundherum am Rand.",
+      "context": "TEDAC ist die Kurzform von TADS Electronic Display And Control. Der CPG schaut darauf, um Ziele zu finden und zu verfolgen, ohne nach draußen zu sehen, und stellt mit den Tasten die Bilder ein."
+    },
+    "cpg-keyboard-unit": {
+      "name": "Tastatureinheit, KU (CPG-Sitz)",
+      "text": "Die Tastatureinheit ist eine kleine Tastatur mit einer einzeiligen Textanzeige. Der CPG (Copilot/Schütze) tippt darauf Zahlen und Buchstaben, etwa Frequenzen und Kartenpunkte, oder nutzt sie als Notizblock.",
+      "context": "Getippte Daten gehen nur dann in die Computer des Hubschraubers, wenn eine MPD-Taste sie angefordert hat und eine Eingabeaufforderung auf der KU-Anzeige steht. Jeder Sitz hat seine eigene Tastatureinheit."
+    },
+    "cpg-power-quadrant": {
+      "name": "Leistungshebel-Bedienfeld (CPG-Sitz)",
+      "text": "Der CPG hat vom Leistungshebel-Bedienfeld nur die zwei ENG-POWER-Hebel. Sie steuern den Kraftstoff für jedes Triebwerk, wie Gaspedale.",
+      "context": "Sie sind mit den Hebeln des Piloten gekoppelt: Bewegt ein Besatzungsmitglied einen Hebel, bewegt sich derselbe Hebel im anderen Sitz mit."
+    },
+    "cpg-tail-wheel-nvs": {
+      "name": "Spornrad- und NVS-Moduswahl-Feld (CPG-Sitz)",
+      "text": "Dieses Bedienfeld hat zwei Bedienelemente: die Sperre des kleinen Spornrads und den Modus des Nachtsichtsystems für diesen Sitz.",
+      "context": "Das Spornrad wird für Start und Landung gesperrt, damit der Hubschrauber geradeaus rollt. Den Nachtsichtmodus nutzt der CPG (Copilot/Schütze), wenn das Bild der Nasenkameras in der Helmanzeige gezeigt wird."
+    },
+    "cpg-emergency-panel": {
+      "name": "Notfall-Bedienfeld (CPG-Sitz)",
+      "text": "Dieses Bedienfeld legt vier Notfallaktionen auf einzelne Tasten, damit die Besatzung nicht durch Bildschirmseiten suchen muss. In DCS tut noch keine der vier etwas.",
+      "context": "Jede ist für einen Notfall gedacht: den Notfall-Funkkanal rufen, den Notfall-Transpondercode senden, geheime Daten löschen und Notdruck für die Hydraulik holen. Der CPG (Copilot/Schütze) greift nur in Not danach."
+    },
+    "cpg-stores-jettison": {
+      "name": "Abwurf-Bedienfeld für Außenlasten (CPG-Sitz)",
+      "text": "Mit diesem Bedienfeld wirft die Besatzung im Notfall Waffen von gewählten Flügelstationen ab, um den Hubschrauber leichter zu machen oder eine hängende Waffe loszuwerden.",
+      "context": "Jede Stationstaste macht eine Flügelstation zum Abwurf scharf. Dann wirft die JETT-Taste alle scharfen Stationen ab. Nur der Sitz, der eine Station scharf gemacht hat, kann sie entschärfen; beide Sitze können JETT drücken."
+    },
+    "cpg-interior-lighting": {
+      "name": "Innenbeleuchtungsfeld (CPG-Sitz)",
+      "text": "Dieses Bedienfeld stellt die Lichter im Cockpit des CPG ein und hat eine Testtaste für die Signallichter.",
+      "context": "Es ist das Gegenstück im vorderen Sitz zum Beleuchtungsfeld des Piloten, aber ohne die Lichter außen am Hubschrauber."
+    },
+    "cpg-communications-panel": {
+      "name": "Kommunikationsfeld (CPG-Sitz)",
+      "text": "Dieses Bedienfeld stellt ein, wie laut jedes Funkgerät und jede Warnstimme im Helm des CPG (Copilot/Schütze) ist und wie das Bordsprechanlagen-Mikrofon arbeitet.",
+      "context": "Die Bordsprechanlage (Intercom) ist die Telefonleitung zwischen den beiden Besatzungsmitgliedern. Die Funkgeräte dienen dem Sprechen mit anderen Luftfahrzeugen und Bodeneinheiten. Jeder Sitz hat sein eigenes Feld, so dass jedes Besatzungsmitglied eigene Lautstärken einstellt."
+    },
+    "cpg-windshield-wiper": {
+      "name": "Scheibenwischer- und Entnebelungsfeld (CPG-Sitz)",
+      "text": "Dieses Bedienfeld hat den Wischer für die Frontscheibe (das vordere Fenster) und eine Entnebelungstaste für beschlagene Seitenscheiben des Kabinendachs.",
+      "context": "Es wird bei Regen oder beschlagenen Scheiben benutzt. In DCS ist die Entnebelungstaste nicht umgesetzt."
+    },
+    "cpg-processor-select": {
+      "name": "Prozessorwahl-Feld (CPG-Sitz)",
+      "text": "Dieses Bedienfeld wählt, welcher der zwei Systemprozessoren, der Hauptcomputer des Hubschraubers, die Führung hat. In DCS ist es nicht umgesetzt.",
+      "context": "Es ist eine Sicherheitseinrichtung: Ein zweiter Computer kann übernehmen, wenn der erste ausfällt."
+    },
+    "cpg-cockpit-fittings": {
+      "name": "Kabinendachtür, M4-Gewehr und Knüppel-Klappmechanismus (CPG-Sitz)",
+      "text": "Das sind Einbauten des vorderen Cockpits, die das Spiel anklickbar macht: die Kabinendachtür, ein M4-Gewehr und ein Schalter zum Klappen des Knüppels.",
+      "context": "Keines davon ist ein Flugsystem. Das Handbuch beschreibt weder die Gewehr-Bedienelemente noch den Schalter zum Klappen des Knüppels."
+    },
+    "cpg-cyclic-grip": {
+      "name": "Cyclic-Griff (CPG-Sitz)",
+      "text": "Das Cyclic ist der Steuerknüppel zwischen den Knien. Sein Griff trägt viele Schalter, damit die Hand fliegen, funken, Täuschkörper abwerfen und die Waffen abfeuern kann, ohne loszulassen.",
+      "context": "Die Cyclic-Griffe des Piloten und des CPG sind in Form und Funktion gleich. Die Schalter hier decken Funkgeräte, Täuschkörper, Waffen und die Helmanzeige ab."
+    },
+    "cpg-collective-flight-grip": {
+      "name": "Kollektivhebel: Flug-Griff (CPG-Sitz)",
+      "text": "Der Kollektivhebel ist der Hebel links vom Sitz. Sein Flug-Griff trägt die wichtigen Schalter: Abwurf, Suchscheinwerfer, Nachtsichtwahl, Stabilator, Spornrad und Triebwerks-Chop.",
+      "context": "Der Flug-Griff ist der Teil des Hebels, den die Hand beim Fliegen hält. Pilot und CPG haben denselben Griff, nur dass der BUCS-Abzug nur im CPG-Sitz funktioniert."
+    },
+    "cpg-collective-mission-grip": {
+      "name": "Kollektivhebel: Einsatz-Griff (CPG-Sitz)",
+      "text": "Der Einsatz-Griff ist der zweite Griff am Kollektivhebel. Er enthält die Bedienelemente für das Radar, den Cursor auf den Bildschirmen und die Wahl des Visiers.",
+      "context": "Der Daumen bedient das Cursor-Feld und den Visierschalter, so dass die Zielarbeit ohne Loslassen der Flugsteuerung erledigt werden kann."
+    },
+    "cpg-collective-parts": {
+      "name": "Griffteile des Kollektivhebels, wie modelliert (CPG-Sitz)",
+      "text": "Das Spiel modelliert die Kollektivgriffe als viele einzelne anklickbare Teile. Dieser Eintrag fasst sie nach Art zusammen.",
+      "context": "Die Funktionen der Teile sind in den Bedienfeldern Flug-Griff und Einsatz-Griff erklärt."
+    },
+    "cpg-tedac-left-grip": {
+      "name": "TEDAC-Linksgriff, LHG (CPG-Sitz)",
+      "text": "Der linke Handgriff ist der feste Griff links vom TEDAC-Bildschirm. Er trägt die Schalter für die Zielkamera, die Waffen, das Radar und den Cursor.",
+      "context": "Viele seiner Schalter kopieren die am Cyclic und Kollektivhebel des CPG, damit der CPG arbeiten kann, ohne die Flugsteuerung zu berühren, während der Pilot fliegt."
+    },
+    "cpg-tedac-right-grip": {
+      "name": "TEDAC-Rechtsgriff, RHG (CPG-Sitz)",
+      "text": "Der rechte Handgriff ist der feste Griff rechts vom TEDAC-Bildschirm. Er trägt die Schalter für die Radar-Scangröße, die Visierwahl, den Steuerknopf zum Verfolgen mit dem Visier und den Laserabzug.",
+      "context": "Mit beiden Handgriffen kann der CPG ein Ziel suchen und markieren, während der Pilot die Flugsteuerung hat."
+    }
+  },
+  "controls": {
+    "plt-master-warning-caution/mstr-warn": {
+      "name": "MSTR-WARN-Taste (Hauptwarnung)",
+      "text": "Diese Taste blinkt, wenn etwas Gefährliches passiert, zum Beispiel ein Triebwerksbrand. Drückt man sie, geht ihr Licht aus und die gesprochene Warnung im Kopfhörer verstummt.",
+      "context": "Das EUFD zeigt, um welche Warnung es geht. Laut Handbuch verstummt die Sprachmeldung in beiden Sitzen, während nur das Licht des Piloten ausgeht. Dies ist die Kopie am Pilotensitz; der CPG auf dem vorderen Sitz hat eine eigene."
+    },
+    "plt-master-warning-caution/mstr-caut": {
+      "name": "MSTR-CAUT-Taste (Hauptwarnleuchte Caution)",
+      "text": "Diese Taste leuchtet, wenn etwas nicht stimmt, aber nicht sofort gefährlich ist, zum Beispiel ein Fehler im Stromsystem. Drückt man sie, geht das Licht aus und der Warnton verstummt.",
+      "context": "Das EUFD zeigt die Caution-Meldung. Der Ton verstummt im Sitz, in dem die Taste gedrückt wird, deshalb bestätigt der Pilot sie an der eigenen Taste. Dies ist die Kopie am Pilotensitz; der CPG auf dem vorderen Sitz hat eine eigene."
+    },
+    "plt-eufd/eufd-display": {
+      "name": "EUFD-Textanzeige",
+      "text": "Das ist der beleuchtete Textbildschirm selbst. Er hat drei Spalten für Meldungen (Warnungen, Cautions und Hinweise), einen Block mit den fünf Funkgeräten und eine Zeile mit Kraftstoff, Transponder und Uhrzeit.",
+      "context": "Eine Warnmeldung kommt mit der blinkenden MSTR-WARN-Taste und einer Stimme, eine Caution mit der MSTR-CAUT-Taste und einem Ton. Diese Anzeige gehört dem Piloten."
+    },
+    "plt-eufd/wca-rocker": {
+      "name": "WCA-Wippe (Meldungen blättern)",
+      "text": "Diese Wippe blättert die Meldungsspalten nach oben oder unten. Der Pilot braucht sie, wenn eine Spalte acht oder mehr Meldungen enthält, mehr als der Bildschirm auf einmal zeigen kann.",
+      "context": "WCA steht für Warnungen, Cautions und Hinweise (warnings, cautions, advisories). Ein Doppelpfeil auf dem Bildschirm zeigt, dass weitere Meldungen außer Sicht warten. Die obere Hälfte blättert in die eine Richtung, die untere in die andere."
+    },
+    "plt-eufd/idm-rocker": {
+      "name": "IDM-Wippe (Funkgerät für Datenverbindung wählen)",
+      "text": "Diese Wippe wählt, welches Funkgerät Datennachrichten sendet. Eine Datenverbindung (Datalink) ist die Art, wie Luftfahrzeuge Positionen und Ziele per Funk statt per Sprache austauschen.",
+      "context": "Kleine Markierungen neben jedem Funkgerät auf dem Bildschirm zeigen die Wahl. Das Spiel nennt diese Wippe IDM. Das Handbuch nennt sie die Wippe zur Wahl des Datalink-Senders."
+    },
+    "plt-eufd/rts-rocker": {
+      "name": "RTS-Wippe (Sendefunkgerät wählen)",
+      "text": "Diese Wippe wählt das Funkgerät, auf dem der Pilot spricht. Jeder Druck bewegt die Auswahl in der Liste der Funkgeräte nach oben oder unten.",
+      "context": "Am Ende der Liste springt die Auswahl ans andere Ende. Der Steuerknüppel hat außerdem einen Schalter mit derselben Aufgabe, so dass die Hände an den Steuerelementen bleiben können."
+    },
+    "plt-eufd/eufd-brt": {
+      "name": "Helligkeitsregler (EUFD)",
+      "text": "Dreht man diesen Knopf, wird das EUFD heller oder dunkler.",
+      "context": "Der Pilot stellt ihn so ein, dass der Text im hellen Tageslicht lesbar und nachts nicht zu hell ist."
+    },
+    "plt-eufd/preset-button": {
+      "name": "PRESET-Taste",
+      "text": "Diese Taste zeigt eine Liste gespeicherter Funkfrequenzen an oder blendet sie aus, wie die Senderstasten eines Autoradios.",
+      "context": "Die Besatzung wählt eine gespeicherte Frequenz aus der Liste und drückt dann die ENTER-Taste daneben, um das Funkgerät abzustimmen."
+    },
+    "plt-eufd/eufd-enter": {
+      "name": "ENTER-Taste (EUFD)",
+      "text": "Diese Taste stimmt das Funkgerät auf die Frequenz ab, die in der Preset-Liste markiert ist.",
+      "context": "Sie wird direkt benutzt, nachdem die PRESET-Taste die Liste geöffnet hat."
+    },
+    "plt-eufd/stopwatch-button": {
+      "name": "Stoppuhr-Taste",
+      "text": "Diese Taste startet oder stoppt die Stoppuhr, die über der Uhrzeit angezeigt wird. Hält man sie zwei Sekunden gedrückt, wird die Stoppuhr zurückgesetzt.",
+      "context": "Die Stoppuhr jedes Sitzes ist unabhängig, deshalb wird der CPG auf dem vorderen Sitz nicht gestört, wenn der Pilot sie benutzt."
+    },
+    "plt-eufd/swap-button": {
+      "name": "SWAP-Taste",
+      "text": "Diese Taste tauscht die aktive und die Bereitschaftseinstellung des gewählten Funkgeräts. Das Funkgerät wechselt so auf die Frequenz, die gewartet hat.",
+      "context": "Zuerst wird die Bereitschaftsfrequenz eingegeben, dann schaltet die SWAP-Taste auf sie um. Laut Handbuch tauscht sie auch die Verschlüsselungs- und Netzeinstellungen."
+    },
+    "plt-mpd-left/mpd-left-screen": {
+      "name": "Linker MPD-Bildschirm",
+      "text": "Das ist der linke Bildschirm selbst. Er zeigt die Seite, die mit den Tasten rundherum gewählt wurde, etwa die Flugseite, die Waffenseite oder die kartenähnliche Lageseite.",
+      "context": "Weil die Bildschirme für Fliegen, Waffen und Navigation genutzt werden, wechselt der Pilot während eines Einsatzes ständig die Seiten."
+    },
+    "plt-mpd-left/mpd-left-vab-t": {
+      "name": "VAB T1-T6 (obere Tastenreihe, linkes MPD)",
+      "text": "Diese sechs Tasten sitzen am oberen Rand des linken Bildschirms. Jede wählt die Option, die direkt darunter auf dem Bildschirm steht.",
+      "context": "VAB bedeutet variable Aktionstaste (variable action button): Was sie tut, hängt von der Seite ab. T1 ist ganz links und T6 ganz rechts."
+    },
+    "plt-mpd-left/mpd-left-vab-l": {
+      "name": "VAB L1-L6 (linke Tastenspalte, linkes MPD)",
+      "text": "Diese sechs Tasten laufen am linken Rand des linken Bildschirms entlang. Jede wählt die Option, die daneben steht.",
+      "context": "L1 ist oben und L6 unten. Ein Zeichen > neben einer Beschriftung bedeutet, dass die Taste getippte Daten an der Tastatureinheit verlangt."
+    },
+    "plt-mpd-left/mpd-left-vab-r": {
+      "name": "VAB R1-R6 (rechte Tastenspalte, linkes MPD)",
+      "text": "Diese sechs Tasten laufen am rechten Rand des linken Bildschirms entlang. Jede wählt die Option, die daneben steht.",
+      "context": "R1 ist oben und R6 unten. Was sie tun, ändert sich mit jeder Seite."
+    },
+    "plt-mpd-left/mpd-left-vab-b": {
+      "name": "VAB B2-B6 (untere Tastenreihe, linkes MPD)",
+      "text": "Diese fünf Tasten sitzen am unteren Rand des linken Bildschirms. Jede wählt die Option, die darüber steht.",
+      "context": "Zusammen mit der M-Taste ganz links bilden sie die untere Reihe. Ihre Beschriftungen gehören zur gezeigten Seite."
+    },
+    "plt-mpd-left/mpd-left-m": {
+      "name": "M-Taste (B1, Menü, linkes MPD)",
+      "text": "Das ist die erste Taste der unteren Reihe, mit M beschriftet. Sie öffnet die Menüseite, eine Liste aller Seiten, die der Bildschirm zeigen kann.",
+      "context": "Drückt man sie auf der Menüseite noch einmal, öffnet sich die DMS-Seite. Die gezeigte Seite steht im Text über dieser Taste."
+    },
+    "plt-mpd-left/mpd-left-fcr": {
+      "name": "FCR-Seitentaste (linkes MPD)",
+      "text": "Diese feste Taste schaltet den Bildschirm auf die FCR-Seite, das Bild des Feuerleitradars. Das ist ein Radar auf dem Mast über dem Hauptrotor, das Ziele findet.",
+      "context": "Sie ist eine von sechs Seitentasten, die immer dasselbe tun, egal welche Seite gerade zu sehen ist."
+    },
+    "plt-mpd-left/mpd-left-wpn": {
+      "name": "WPN-Seitentaste (linkes MPD)",
+      "text": "Diese feste Taste schaltet den Bildschirm auf die Waffenseite. Sie zeigt eine Ansicht von oben auf die Waffen an Bord, dazu den Zustand der Visiere, Sensoren und Täuschkörper.",
+      "context": "Sobald eine Waffe gewählt ist, zeigt die Seite weitere Einstellungen für diese Waffe. Sie ist eine von sechs festen Seitentasten."
+    },
+    "plt-mpd-left/mpd-left-tsd": {
+      "name": "TSD-Seitentaste (linkes MPD)",
+      "text": "Diese feste Taste schaltet den Bildschirm auf die TSD-Seite, die taktische Lageanzeige (tactical situation display). Das ist eine Karte von oben, die sich mitbewegt, mit der geplanten Route und Angaben der Sensoren.",
+      "context": "Sie ist die wichtigste Seite zum Navigieren. Auch Wegpunkte (Punkte auf der geplanten Route) werden von dort aus bearbeitet."
+    },
+    "plt-mpd-left/mpd-left-vid": {
+      "name": "VID-Seitentaste (linkes MPD)",
+      "text": "Diese feste Taste schaltet den Bildschirm auf die Videoseite, auf der die Bilder und Symbole der Kameras und Sensoren des Hubschraubers angesehen werden können.",
+      "context": "Eine Videoquelle kann auch als Hintergrundbild unter anderen Seiten eingestellt werden. Sie ist eine von sechs festen Seitentasten."
+    },
+    "plt-mpd-left/mpd-left-com": {
+      "name": "COM-Seitentaste (linkes MPD)",
+      "text": "Diese feste Taste schaltet den Bildschirm auf die Kommunikationsseite, eine Übersicht über die Funkgeräte, ihre gespeicherten Frequenzen, die Datenverbindung und den Transponder.",
+      "context": "Dort richtet die Besatzung die Funkgeräte ein. Frequenzen lassen sich auch mit dem kleinen EUFD-Bildschirm abstimmen."
+    },
+    "plt-mpd-left/mpd-left-ac": {
+      "name": "A/C-Seitentaste (linkes MPD)",
+      "text": "Diese feste Taste zeigt die Flugseite, wenn der Hubschrauber in der Luft ist. Am Boden, wenn das Gewicht auf den Rädern ruht, zeigt sie stattdessen die Triebwerksseite.",
+      "context": "A/C steht für Luftfahrzeug (aircraft). Sie gibt der Besatzung die Zahlen über den Hubschrauber selbst."
+    },
+    "plt-mpd-left/mpd-left-ast": {
+      "name": "Sterntaste (*) (linkes MPD)",
+      "text": "Auf dieser Taste ist ein Stern aufgedruckt. In DCS hat sie keine Funktion.",
+      "context": "Das Handbuch führt sie als nicht umgesetzt auf."
+    },
+    "plt-mpd-left/mpd-left-mode": {
+      "name": "Moduswähler DAY / NIGHT / MONO (linkes MPD)",
+      "text": "Dieser Drehknopf legt fest, wie hell und in welchen Farben der Bildschirm aussieht. Er hat eine Tageseinstellung, eine Nachteinstellung und eine Einfarben-Einstellung.",
+      "context": "Der Pilot dreht ihn bei Flügen im Dunkeln auf NIGHT oder MONO, damit der Bildschirm weder die Augen noch das Nachtsichtgerät blendet.",
+      "positions": {
+        "DAY": "Helles Tagesbild.",
+        "NIGHT": "Gedämpftes Bild für Flüge im Dunkeln.",
+        "MONO": "Nachthelligkeit mit einfarbigem Bild, das zu Nachtsichtbrillen passt."
+      }
+    },
+    "plt-mpd-left/mpd-left-brt": {
+      "name": "BRT-Knopf (linkes MPD)",
+      "text": "Dreht man diesen Knopf, wird der linke Bildschirm heller oder dunkler, innerhalb des Bereichs, den der Moduswähler vorgibt.",
+      "context": "Er ist die Feineinstellung, nachdem DAY, NIGHT oder MONO gewählt wurde."
+    },
+    "plt-mpd-left/mpd-left-vid-knob": {
+      "name": "VID-Knopf (Videohelligkeit, linkes MPD)",
+      "text": "Dreht man diesen Knopf, ändert sich die Helligkeit des Bildes hinter den Symbolen, zum Beispiel des Kamerabildes oder der Karte, ohne dass sich die Symbole ändern.",
+      "context": "Er hilft, wenn der Hintergrund zu hell ist und die Schrift überstrahlt, oder zu dunkel, um etwas zu sehen."
+    },
+    "plt-mpd-right/mpd-right-screen": {
+      "name": "Rechter MPD-Bildschirm",
+      "text": "Das ist der rechte Bildschirm selbst. Er zeigt die Seite, die mit den Tasten rundherum gewählt wurde, etwa die Flugseite, die Waffenseite oder die kartenähnliche Lageseite.",
+      "context": "Weil die Bildschirme für Fliegen, Waffen und Navigation genutzt werden, wechselt der Pilot während eines Einsatzes ständig die Seiten. Es gehört zum rechten MPD des Piloten."
+    },
+    "plt-mpd-right/mpd-right-vab-t": {
+      "name": "VAB T1-T6 (obere Tastenreihe, rechtes MPD)",
+      "text": "Diese sechs Tasten sitzen am oberen Rand des rechten Bildschirms. Jede wählt die Option, die direkt darunter auf dem Bildschirm steht.",
+      "context": "VAB bedeutet variable Aktionstaste (variable action button): Was sie tut, hängt von der Seite ab. T1 ist ganz links und T6 ganz rechts. Es gehört zum rechten MPD des Piloten."
+    },
+    "plt-mpd-right/mpd-right-vab-l": {
+      "name": "VAB L1-L6 (linke Tastenspalte, rechtes MPD)",
+      "text": "Diese sechs Tasten laufen am linken Rand des rechten Bildschirms entlang. Jede wählt die Option, die daneben steht.",
+      "context": "L1 ist oben und L6 unten. Ein Zeichen > neben einer Beschriftung bedeutet, dass die Taste getippte Daten an der Tastatureinheit verlangt. Es gehört zum rechten MPD des Piloten."
+    },
+    "plt-mpd-right/mpd-right-vab-r": {
+      "name": "VAB R1-R6 (rechte Tastenspalte, rechtes MPD)",
+      "text": "Diese sechs Tasten laufen am rechten Rand des rechten Bildschirms entlang. Jede wählt die Option, die daneben steht.",
+      "context": "R1 ist oben und R6 unten. Was sie tun, ändert sich mit jeder Seite. Es gehört zum rechten MPD des Piloten."
+    },
+    "plt-mpd-right/mpd-right-vab-b": {
+      "name": "VAB B2-B6 (untere Tastenreihe, rechtes MPD)",
+      "text": "Diese fünf Tasten sitzen am unteren Rand des rechten Bildschirms. Jede wählt die Option, die darüber steht.",
+      "context": "Zusammen mit der M-Taste ganz links bilden sie die untere Reihe. Ihre Beschriftungen gehören zur gezeigten Seite. Es gehört zum rechten MPD des Piloten."
+    },
+    "plt-mpd-right/mpd-right-m": {
+      "name": "M-Taste (B1, Menü, rechtes MPD)",
+      "text": "Das ist die erste Taste der unteren Reihe, mit M beschriftet. Sie öffnet die Menüseite, eine Liste aller Seiten, die der Bildschirm zeigen kann. Dies gilt für das rechte MPD des Piloten.",
+      "context": "Drückt man sie auf der Menüseite noch einmal, öffnet sich die DMS-Seite. Die gezeigte Seite steht im Text über dieser Taste. Es gehört zum rechten MPD des Piloten."
+    },
+    "plt-mpd-right/mpd-right-fcr": {
+      "name": "FCR-Seitentaste (rechtes MPD)",
+      "text": "Diese feste Taste schaltet den Bildschirm auf die FCR-Seite, das Bild des Feuerleitradars. Das ist ein Radar auf dem Mast über dem Hauptrotor, das Ziele findet. Dies gilt für das rechte MPD des Piloten.",
+      "context": "Sie ist eine von sechs Seitentasten, die immer dasselbe tun, egal welche Seite gerade zu sehen ist. Es gehört zum rechten MPD des Piloten."
+    },
+    "plt-mpd-right/mpd-right-wpn": {
+      "name": "WPN-Seitentaste (rechtes MPD)",
+      "text": "Diese feste Taste schaltet den Bildschirm auf die Waffenseite. Sie zeigt eine Ansicht von oben auf die Waffen an Bord, dazu den Zustand der Visiere, Sensoren und Täuschkörper. Dies gilt für das rechte MPD des Piloten.",
+      "context": "Sobald eine Waffe gewählt ist, zeigt die Seite weitere Einstellungen für diese Waffe. Sie ist eine von sechs festen Seitentasten. Es gehört zum rechten MPD des Piloten."
+    },
+    "plt-mpd-right/mpd-right-tsd": {
+      "name": "TSD-Seitentaste (rechtes MPD)",
+      "text": "Diese feste Taste schaltet den Bildschirm auf die TSD-Seite, die taktische Lageanzeige (tactical situation display). Das ist eine Karte von oben, die sich mitbewegt, mit der geplanten Route und Angaben der Sensoren. Dies gilt für das rechte MPD des Piloten.",
+      "context": "Sie ist die wichtigste Seite zum Navigieren. Auch Wegpunkte (Punkte auf der geplanten Route) werden von dort aus bearbeitet. Es gehört zum rechten MPD des Piloten."
+    },
+    "plt-mpd-right/mpd-right-vid": {
+      "name": "VID-Seitentaste (rechtes MPD)",
+      "text": "Diese feste Taste schaltet den Bildschirm auf die Videoseite, auf der die Bilder und Symbole der Kameras und Sensoren des Hubschraubers angesehen werden können. Dies gilt für das rechte MPD des Piloten.",
+      "context": "Eine Videoquelle kann auch als Hintergrundbild unter anderen Seiten eingestellt werden. Sie ist eine von sechs festen Seitentasten. Es gehört zum rechten MPD des Piloten."
+    },
+    "plt-mpd-right/mpd-right-com": {
+      "name": "COM-Seitentaste (rechtes MPD)",
+      "text": "Diese feste Taste schaltet den Bildschirm auf die Kommunikationsseite, eine Übersicht über die Funkgeräte, ihre gespeicherten Frequenzen, die Datenverbindung und den Transponder. Dies gilt für das rechte MPD des Piloten.",
+      "context": "Dort richtet die Besatzung die Funkgeräte ein. Frequenzen lassen sich auch mit dem kleinen EUFD-Bildschirm abstimmen. Es gehört zum rechten MPD des Piloten."
+    },
+    "plt-mpd-right/mpd-right-ac": {
+      "name": "A/C-Seitentaste (rechtes MPD)",
+      "text": "Diese feste Taste zeigt die Flugseite, wenn der Hubschrauber in der Luft ist. Am Boden, wenn das Gewicht auf den Rädern ruht, zeigt sie stattdessen die Triebwerksseite. Dies gilt für das rechte MPD des Piloten.",
+      "context": "A/C steht für Luftfahrzeug (aircraft). Sie gibt der Besatzung die Zahlen über den Hubschrauber selbst. Es gehört zum rechten MPD des Piloten."
+    },
+    "plt-mpd-right/mpd-right-ast": {
+      "name": "Sterntaste (*) (rechtes MPD)",
+      "text": "Auf dieser Taste ist ein Stern aufgedruckt. In DCS hat sie keine Funktion. Dies gilt für das rechte MPD des Piloten.",
+      "context": "Das Handbuch führt sie als nicht umgesetzt auf."
+    },
+    "plt-mpd-right/mpd-right-mode": {
+      "name": "Moduswähler DAY / NIGHT / MONO (rechtes MPD)",
+      "text": "Dieser Drehknopf legt fest, wie hell und in welchen Farben der Bildschirm aussieht. Er hat eine Tageseinstellung, eine Nachteinstellung und eine Einfarben-Einstellung. Dies gilt für das rechte MPD des Piloten.",
+      "context": "Der Pilot dreht ihn bei Flügen im Dunkeln auf NIGHT oder MONO, damit der Bildschirm weder die Augen noch das Nachtsichtgerät blendet. Es gehört zum rechten MPD des Piloten.",
+      "positions": {
+        "DAY": "Helles Tagesbild.",
+        "NIGHT": "Gedämpftes Bild für Flüge im Dunkeln.",
+        "MONO": "Nachthelligkeit mit einfarbigem Bild, das zu Nachtsichtbrillen passt."
+      }
+    },
+    "plt-mpd-right/mpd-right-brt": {
+      "name": "BRT-Knopf (rechtes MPD)",
+      "text": "Dreht man diesen Knopf, wird der rechte Bildschirm heller oder dunkler, innerhalb des Bereichs, den der Moduswähler vorgibt.",
+      "context": "Er ist die Feineinstellung, nachdem DAY, NIGHT oder MONO gewählt wurde. Es gehört zum rechten MPD des Piloten."
+    },
+    "plt-mpd-right/mpd-right-vid-knob": {
+      "name": "VID-Knopf (Videohelligkeit, rechtes MPD)",
+      "text": "Dreht man diesen Knopf, ändert sich die Helligkeit des Bildes hinter den Symbolen, zum Beispiel des Kamerabildes oder der Karte, ohne dass sich die Symbole ändern. Dies gilt für das rechte MPD des Piloten.",
+      "context": "Er hilft, wenn der Hintergrund zu hell ist und die Schrift überstrahlt, oder zu dunkel, um etwas zu sehen. Es gehört zum rechten MPD des Piloten."
+    },
+    "plt-fire-panel/eng1-fire": {
+      "name": "ENG-1-FIRE-Taste (mit Abdeckung)",
+      "text": "Diese abgedeckte Taste gehört zum linken Triebwerk (Triebwerk 1). Ein gelbes FIRE-Licht leuchtet, wenn dort ein Feuer erkannt wird. Nach dem Anheben der Abdeckung drückt der Pilot sie, um Kraftstoff und Heißluft des Triebwerks abzusperren und die Löschflaschen scharf zu machen.",
+      "context": "Ein grünes RDY-Licht zeigt dann, dass sie scharf ist. Das Triebwerk läuft weiter, bis der Kraftstoff in seinen Leitungen verbraucht ist. Der nächste Schritt ist, PRI oder RES zu drücken."
+    },
+    "plt-fire-panel/apu-fire": {
+      "name": "APU-FIRE-Taste (mit Abdeckung)",
+      "text": "Diese abgedeckte Taste gehört zur APU, einem kleinen Zusatztriebwerk hinten, das Strom und Luft macht, bevor die Haupttriebwerke laufen. Ihr FIRE-Licht leuchtet bei einem Feuer; drückt man die Taste, wird der APU-Kraftstoff abgesperrt und die Löschflaschen werden scharf gemacht.",
+      "context": "Das grüne RDY-Licht zeigt, dass sie scharf ist. Der Pilot hebt zuerst die Abdeckung an, damit sie nicht aus Versehen gedrückt wird."
+    },
+    "plt-fire-panel/eng2-fire": {
+      "name": "ENG-2-FIRE-Taste (mit Abdeckung)",
+      "text": "Diese abgedeckte Taste gehört zum rechten Triebwerk (Triebwerk 2). Ihr gelbes FIRE-Licht zeigt dort ein Feuer an. Nach dem Anheben der Abdeckung sperrt ein Druck auf die Taste Kraftstoff und Heißluft zu diesem Triebwerk ab und macht die Löschflaschen scharf.",
+      "context": "Es ist dieselbe Anordnung wie bei Triebwerk 1. Nur der Sitz, der sie scharf gemacht hat, kann sie wieder entschärfen."
+    },
+    "plt-fire-panel/pri-button": {
+      "name": "PRI-Taste (Hauptlöschflasche)",
+      "text": "Diese Taste entleert die Haupt-Löschflasche in das Triebwerk oder die APU, die mit ihrer FIRE-Taste scharf gemacht wurde.",
+      "context": "Ein DISCH-Licht zeigt, dass die Flasche scharf und bereit ist. Nach der Entleerung geht das Licht aus."
+    },
+    "plt-fire-panel/res-button": {
+      "name": "RES-Taste (Reserve-Löschflasche)",
+      "text": "Diese Taste entleert die zweite, die Reserve-Löschflasche in das scharf gemachte Triebwerk oder die APU.",
+      "context": "Sie wird benutzt, wenn die erste Flasche das Feuer nicht gelöscht hat."
+    },
+    "plt-fire-panel/fire-test": {
+      "name": "TEST-Schalter (Feuererkennung prüfen)",
+      "text": "Dieser Schalter prüft das Feuerwarnsystem. Auf TEST 1 oder TEST 2 gestellt, leuchten alle drei FIRE-Lichter und die Warnstimmen sprechen, was beweist, dass die Melder arbeiten.",
+      "context": "Er springt beim Loslassen in die Mitte zurück. TEST 2 lässt auch die DISCH-Lichter beider Flaschen leuchten.",
+      "positions": {
+        "TEST 1": "Prüft Feuermeldekreis 1: Die drei FIRE-Lichter, das MSTR-WARN-Licht und die Warnstimmen erscheinen.",
+        "OFF": "Mittelstellung. Der Schalter ruht hier.",
+        "TEST 2": "Prüft Kreis 2: dieselben Zeichen wie bei TEST 1, und zusätzlich leuchten die DISCH-Lichter der beiden Flaschen."
+      }
+    },
+    "plt-armament-panel/a-s": {
+      "name": "A/S-Taste (ARM / SAFE)",
+      "text": "Diese Taste schaltet die Waffen zwischen ARM und SAFE um. Lichter zeigen den Zustand. In ARM können Waffen und Laser abgefeuert werden; in SAFE nicht.",
+      "context": "Sie funktioniert in der Luft. Am Boden muss zuerst die GND-ORIDE-Taste eingeschaltet sein.",
+      "positions": {
+        "ARM": "Die Waffen und der Laser-Entfernungsmesser dürfen abgefeuert werden.",
+        "SAFE": "Das Abfeuern der Waffen und des Lasers ist gesperrt."
+      }
+    },
+    "plt-armament-panel/gnd-oride": {
+      "name": "GND-ORIDE-Taste (Bodenfreigabe)",
+      "text": "Diese Taste lässt die Besatzung Dinge scharf machen und testen, während der Hubschrauber am Boden steht, was aus Sicherheitsgründen sonst gesperrt ist. Ihr ON-Licht zeigt, dass sie aktiv ist.",
+      "context": "Schaltet man sie wieder aus, geht der Master Arm zurück auf SAFE und eine gewählte Waffe wird abgewählt. Im Flug hat sie keine Wirkung.",
+      "positions": {
+        "ON": "Scharfmachen, Waffenwahl, Radarsendungen und das Scharfmachen der Düppel (Chaff) sind am Boden erlaubt.",
+        "OFF": "Die normale Bodensicherung ist wieder da."
+      }
+    },
+    "plt-video-panel/ihadss-brt": {
+      "name": "IHADSS-BRT-Knopf (Helmanzeige-Helligkeit)",
+      "text": "Dreht man diesen Knopf, wird das Bild in der Helmanzeige heller oder dunkler. IHADSS ist der Name des Helmanzeigesystems.",
+      "context": "Am echten Bedienfeld sitzen die Knöpfe BRT und CON ineinander. Der äußere ist die Helligkeit."
+    },
+    "plt-video-panel/ihadss-con": {
+      "name": "IHADSS-CON-Knopf (Helmanzeige-Kontrast)",
+      "text": "Dreht man diesen Knopf, ändert sich der Kontrast des Helmanzeigebildes, also der Unterschied zwischen hellen und dunklen Teilen.",
+      "context": "Er ist der innere Knopf des Paares, neben dem Helligkeitsknopf."
+    },
+    "plt-video-panel/sym-brt": {
+      "name": "SYM-BRT-Knopf (Symbolhelligkeit)",
+      "text": "Dieser Knopf stellt die Helligkeit der Symbole (Zahlen und Zeichen) in der Helmanzeige ein, getrennt vom Kamerabild dahinter.",
+      "context": "So bleiben die Symbole lesbar, ohne dass das Bild zu hell wird."
+    },
+    "plt-video-panel/acm-switch": {
+      "name": "ACM-Schalter (automatischer Kontrastmodus)",
+      "text": "Dieser Schalter soll, wenn er an ist, das Infrarotbild seinen Pegel und seine Verstärkung selbst einstellen lassen. In DCS ist er nicht umgesetzt.",
+      "context": "Ist er aus, wird der FLIR-Knopf daneben benutzt.",
+      "positions": {
+        "ACM": "Automatische Einstellung des Infrarotbildes (nicht umgesetzt).",
+        "OFF": "Der FLIR-Knopf stellt das Bild von Hand ein."
+      }
+    },
+    "plt-video-panel/flir-lvl": {
+      "name": "FLIR-LVL-Knopf (Infrarot-Pegel)",
+      "text": "Dieser Knopf stellt den Pegel des Infrarotkamerabildes ein, was es insgesamt heller oder dunkler macht.",
+      "context": "Das Bild kommt von der Nachtkamera des Piloten oder von der Zielkamera. Er ist der äußere Knopf eines Paares."
+    },
+    "plt-video-panel/flir-gain": {
+      "name": "FLIR-GAIN-Knopf (Infrarot-Verstärkung)",
+      "text": "Dieser Knopf stellt die Verstärkung des Infrarotbildes ein, also wie stark kleine Wärmeunterschiede hervortreten.",
+      "context": "Er ist der innere Knopf des Paares und wird zusammen mit dem Pegelknopf benutzt."
+    },
+    "plt-check-overspeed-gen-reset/ckt-a": {
+      "name": "CKT-A-Schalter (Überdrehzahl-Testkreis A)",
+      "text": "Dieser Schalter soll einen der zwei Kreise testen, die verhindern, dass ein Triebwerk zu schnell läuft. In DCS ist er nicht umgesetzt.",
+      "context": "Er springt beim Loslassen in die Mittelstellung zurück.",
+      "positions": {
+        "ENG 1": "Soll den Kreis für Triebwerk 1 testen; nicht umgesetzt.",
+        "OFF": "Mittelstellung. Der Schalter ruht hier.",
+        "ENG 2": "Soll den Kreis für Triebwerk 2 testen; nicht umgesetzt."
+      }
+    },
+    "plt-check-overspeed-gen-reset/ckt-b": {
+      "name": "CKT-B-Schalter (Überdrehzahl-Testkreis B)",
+      "text": "Dieser Schalter soll den zweiten Kreis testen, der verhindert, dass ein Triebwerk zu schnell läuft. In DCS ist er nicht umgesetzt.",
+      "context": "Er ist der Zwilling des CKT-A-Schalters und springt in die Mitte zurück.",
+      "positions": {
+        "ENG 1": "Soll Kreis B für Triebwerk 1 testen; nicht umgesetzt.",
+        "OFF": "Mittelstellung. Der Schalter ruht hier.",
+        "ENG 2": "Soll Kreis B für Triebwerk 2 testen; nicht umgesetzt."
+      }
+    },
+    "plt-check-overspeed-gen-reset/gen-rst": {
+      "name": "GEN-RST-Schalter (Generator zurücksetzen)",
+      "text": "Dieser Schalter startet einen der zwei Generatoren nach einem Stromausfall neu. Ein Generator macht den Strom des Hubschraubers, solange sein Triebwerk läuft.",
+      "context": "Laut Handbuch ist er für den Fall gedacht, dass die MPD-Bildschirme nach einem Stromausfall nicht arbeiten.",
+      "positions": {
+        "GEN 1": "Setzt Generator 1 zurück.",
+        "OFF": "Mittelstellung. Der Schalter ruht hier.",
+        "GEN 2": "Setzt Generator 2 zurück."
+      }
+    },
+    "plt-standby-instruments/sai": {
+      "name": "Reserve-Fluglageanzeiger (künstlicher Horizont)",
+      "text": "Diese runde Anzeige zeigt, ob die Nase oben oder unten ist und ob die Flügel waagerecht sind, mit einer weißen Hälfte für den Himmel und einer schwarzen für den Boden. Sie hat auch eine Kugel und einen Balken für Kurve und Schieben.",
+      "context": "Sie ist die Reserve für die Hauptanzeigen. Eine gelbe OFF-Flagge erscheint, wenn sie arretiert ist oder keinen Strom hat."
+    },
+    "plt-standby-instruments/sai-cage": {
+      "name": "PULL-TO-CAGE-Knopf (Reservehorizont)",
+      "text": "Zieht man diesen Knopf heraus, wird der Horizont waagerecht festgesetzt; das heißt Arretieren (Caging). Dreht man ihn, bewegt sich das kleine Flugzeugsymbol auf der Anzeige nach oben oder unten.",
+      "context": "Das Arretieren wird benutzt, wenn der Horizont nach harten Manövern abgewandert ist. Solange er arretiert ist, erscheint eine gelbe OFF-Flagge."
+    },
+    "plt-standby-instruments/standby-airspeed": {
+      "name": "Reserve-Fahrtmesser",
+      "text": "Diese Anzeige zeigt, wie schnell sich der Hubschrauber durch die Luft bewegt, von 0 bis 250 Knoten. Sie arbeitet mit dem Luftdruck vom rechten Pitotrohr (Staurohr), einem kleinen Rohr außen.",
+      "context": "Sie ist die Reserve, falls die Hauptanzeige der Fluggeschwindigkeit ausfällt."
+    },
+    "plt-standby-instruments/standby-altimeter": {
+      "name": "Reserve-Höhenmesser (Höhenanzeige)",
+      "text": "Diese Anzeige zeigt die Höhe über dem Meeresspiegel, bis 20.000 Fuß. Sie misst den Luftdruck draußen.",
+      "context": "Ein kleines Fenster zeigt die örtliche Druckeinstellung in Zoll Quecksilbersäule."
+    },
+    "plt-standby-instruments/baro-knob": {
+      "name": "Knopf für die barometrische Einstellung",
+      "text": "Dreht man diesen Knopf, wird der örtliche Luftdruck im kleinen Fenster der Höhenanzeige eingestellt, damit sie die richtige Höhe anzeigt.",
+      "context": "Der Pilot nimmt den Druck, den der Tower oder der Wetterbericht nennt (QNH)."
+    },
+    "plt-standby-instruments/standby-compass": {
+      "name": "Reserve-Magnetkompass",
+      "text": "Das ist ein einfacher Kompass, der den Kurs anhand des Erdmagnetismus zeigt.",
+      "context": "Der Pilot nutzt ihn nur, wenn der Strom oder das Navigationssystem ausgefallen ist. Er ist nicht genau."
+    },
+    "plt-canopy-jettison-zeroize/canopy-jett": {
+      "name": "Kabinendach-Abwurfgriff",
+      "text": "Zieht man diesen Griff, würden die Seitenteile des Kabinendachs weggesprengt, damit die Besatzung schnell aussteigen kann. Am Boden sperrt ihn ein Sicherungsstift. In DCS ist er nicht umgesetzt.",
+      "context": "Jedes Besatzungsmitglied könnte ihn ziehen, und Rettungskräfte haben außen einen Griff."
+    },
+    "plt-canopy-jettison-zeroize/master-zeroize": {
+      "name": "MASTER-ZEROIZE-Schalter (mit Abdeckung)",
+      "text": "Dieser gesicherte Schalter würde alle geheimen Daten an Bord löschen, etwa Funkcodes, falls der Hubschrauber unter Feinden notlanden muss. In DCS ist er nicht umgesetzt.",
+      "context": "Die Abdeckung oben muss zuerst angehoben werden, damit er nicht aus Versehen umgelegt wird."
+    },
+    "plt-canopy-jettison-zeroize/park-brake": {
+      "name": "PARK-BRAKE-Griff (Feststellbremse)",
+      "text": "Zieht man diesen Griff heraus, bleiben die Radbremsen an, so dass der Hubschrauber stehen bleibt, ohne dass der Pilot die Pedale drückt. Drückt man die Bremspedale noch einmal, springt er zurück und löst die Bremsen.",
+      "context": "Zum Setzen drückt der Pilot zuerst die Pedale, zieht den Griff und lässt dann die Pedale los. Der Griff lässt sich auch ohne Bremsdruck herausziehen, deshalb beweist seine Stellung allein nicht, dass die Bremsen an sind.",
+      "positions": {
+        "IN": "Vorn verstaut: Die Bremsen sind gelöst.",
+        "OUT": "Herausgezogen: Die Bremsen werden gehalten, sobald die Pedale gedrückt wurden."
+      }
+    },
+    "plt-windshield-wiper/defog-button": {
+      "name": "DEFOG-Taste (Entnebelung)",
+      "text": "Diese Taste soll warme Luft gegen die Seitenscheiben des Kabinendachs blasen, um Beschlag zu entfernen. In DCS ist sie nicht umgesetzt.",
+      "context": "Das Handbuch führt sie als nicht umgesetzt auf."
+    },
+    "plt-windshield-wiper/wiper-knob": {
+      "name": "WINDSHIELD-WIPER-Knopf (Scheibenwischer)",
+      "text": "Dieser Knopf schaltet den Scheibenwischer aus, auf langsam oder schnell oder schickt ihn zurück an seinen Parkplatz.",
+      "context": "Der Pilot nutzt ihn bei Regen. Hält man ihn auf PARK, fährt der Wischer in seine Ruhestellung, und der Knopf springt beim Loslassen auf OFF zurück.",
+      "positions": {
+        "PARK": "Gedrückt halten, damit der Wischer in seine Parkstellung fährt; der Knopf springt auf OFF zurück.",
+        "OFF": "Der Wischer bleibt stehen, wo er ist.",
+        "LO": "Der Wischer bewegt sich langsam.",
+        "HI": "Der Wischer bewegt sich schnell."
+      }
+    },
+    "plt-keyboard-unit/ku-prompt": {
+      "name": "KU-Anzeige: Eingabeaufforderung",
+      "text": "Dieser Teil der Anzeige sagt, welche Art von Daten der Computer erwartet, zum Beispiel eine Frequenz, gefolgt von einem Doppelpunkt.",
+      "context": "Die Aufforderung erscheint, nachdem die Besatzung eine MPD-Taste mit einem Dateneingabe-Zeichen gedrückt hat."
+    },
+    "plt-keyboard-unit/ku-scratchpad": {
+      "name": "KU-Notizzeile (Scratchpad)",
+      "text": "Das ist die Zeile, in der getippte Zeichen erscheinen. Sie fasst 22 Zeichen; die Pfeile blättern bei längeren Eingaben.",
+      "context": "Die neuen Zeichen überschreiben die alten unter dem blinkenden Cursor, wie beim Überschreiben von Text."
+    },
+    "plt-keyboard-unit/ku-letters": {
+      "name": "Buchstabentasten A-Z",
+      "text": "Diese 26 Tasten tippen die Buchstaben. Die Tasten N, E, S und W haben einen Rahmen, damit man sie bei der Eingabe einer Kartenposition schnell findet.",
+      "context": "Buchstaben braucht man für Namen und für Kartenkoordinaten. Der Pilot tippt sie, während eine Aufforderung angezeigt wird."
+    },
+    "plt-keyboard-unit/ku-digits": {
+      "name": "Zifferntasten 0-9",
+      "text": "Diese zehn Tasten tippen die Zahlen von 0 bis 9.",
+      "context": "Sie werden für Frequenzen, Codes und Koordinaten benutzt."
+    },
+    "plt-keyboard-unit/ku-dot": {
+      "name": "Dezimalpunkt-Taste (.)",
+      "text": "Diese Taste tippt den Punkt, den Dezimalpunkt, zum Beispiel in einer Funkfrequenz.",
+      "context": "Sie gehört zum Zahlenblock."
+    },
+    "plt-keyboard-unit/ku-plusminus": {
+      "name": "Plus-Minus-Taste (+/-)",
+      "text": "Diese Taste tippt ein Plus- oder Minuszeichen vor eine Zahl.",
+      "context": "Das Spiel beschriftet sie mit +/-, und das Handbuch beschreibt sie nicht gesondert."
+    },
+    "plt-keyboard-unit/ku-slash": {
+      "name": "Schrägstrich-Taste (/)",
+      "text": "Diese Taste tippt ein Schrägstrich-Zeichen in die Notizzeile.",
+      "context": "Das Handbuch beschreibt sie nicht gesondert; sie ist eine Dateneingabetaste. Sie ist nicht die Teilen-Taste der Rechentasten."
+    },
+    "plt-keyboard-unit/ku-arithmetic": {
+      "name": "Rechentasten (* Teilen + -)",
+      "text": "Mit diesen vier Tasten arbeitet die KU wie ein Taschenrechner: malnehmen, teilen, addieren und subtrahieren. Das geht nur, wenn keine Dateneingabe-Aufforderung angezeigt wird.",
+      "context": "Man tippt eine Zahl, drückt eine Rechentaste, tippt eine zweite Zahl und drückt ENTER. Das Ergebnis erscheint in der Notizzeile."
+    },
+    "plt-keyboard-unit/ku-bks": {
+      "name": "BKS-Taste (Rücktaste)",
+      "text": "Diese Taste löscht das Zeichen links vom Cursor.",
+      "context": "Sie dient dazu, einen Tippfehler zu beheben."
+    },
+    "plt-keyboard-unit/ku-spc": {
+      "name": "SPC-Taste (Leerzeichen)",
+      "text": "Diese Taste setzt ein Leerzeichen an die Cursorstelle.",
+      "context": "Sie wird für Leerstellen in Namen und Nachrichten benutzt."
+    },
+    "plt-keyboard-unit/ku-clr": {
+      "name": "CLR-Taste (Löschen)",
+      "text": "Diese Taste löscht alles, was in der Notizzeile getippt wurde.",
+      "context": "Die Aufforderung bleibt dabei bestehen, der Computer wartet also weiter auf die Daten."
+    },
+    "plt-keyboard-unit/ku-arrows": {
+      "name": "Blätterpfeil-Tasten (links und rechts)",
+      "text": "Diese zwei Tasten bewegen den Cursor nach links oder rechts entlang der Notizzeile.",
+      "context": "Man nutzt sie, um ein Zeichen in der Mitte zu ändern oder eine Eingabe zu blättern, die länger als die Anzeige ist."
+    },
+    "plt-keyboard-unit/ku-enter": {
+      "name": "ENTER-Taste",
+      "text": "Diese Taste schickt die getippten Daten an den Computer. Sind die Daten ungültig, blinken die Zeichen und müssen zuerst korrigiert werden.",
+      "context": "Sie gibt auch das Ergebnis einer Rechnung aus."
+    },
+    "plt-keyboard-unit/ku-brt": {
+      "name": "Helligkeitsregler der Anzeige (KU)",
+      "text": "Dreht man diesen Knopf, wird die KU-Anzeige heller oder dunkler.",
+      "context": "Die Besatzung stellt ihn für Tag oder Nacht ein."
+    },
+    "plt-power-quadrant/rtr-brk": {
+      "name": "RTR-BRK-Schalter (Rotorbremse)",
+      "text": "Dieser Schalter bedient die Rotorbremse, eine Bremse, die den großen Rotor festhält oder abbremst. Sie ist nur nutzbar, wenn die Leistungshebel auf IDLE oder tiefer stehen.",
+      "context": "Solange die Bremse an ist, lassen sich die Leistungshebel nicht über IDLE hinausschieben. Man nutzt sie bei starkem Wind oder auf einem Schiff.",
+      "positions": {
+        "OFF": "Die Bremse ist gelöst.",
+        "BRK": "Die Bremse hält mit niedrigem Druck, um den Rotor beim Abstellen bei starkem Wind oder auf einem schaukelnden Schiff früher zu stoppen.",
+        "LOCK": "Die Bremse hält mit hohem Druck, damit sich der Rotor nicht dreht, zum Beispiel beim Triebwerksstart bei starkem Wind."
+      }
+    },
+    "plt-power-quadrant/mstr-ign": {
+      "name": "MSTR-IGN-Knopf (Hauptzündung)",
+      "text": "Dieser Drehknopf verbindet den Hubschrauber mit Strom aus der Batterie oder aus einer externen Stromquelle. Er ist das Erste, was man einschaltet.",
+      "context": "Fast alles Elektrische braucht ihn. Die Batterie liefert auch Notstrom, falls die Hauptversorgung ausfällt.",
+      "positions": {
+        "OFF": "Die Batterie ist abgetrennt.",
+        "BATT": "Die Batterie versorgt den Hubschrauber.",
+        "EXT PWR": "Strom aus einer externen Quelle, etwa einem Bodenstromwagen, kann den Hubschrauber versorgen."
+      }
+    },
+    "plt-power-quadrant/frict": {
+      "name": "FRICT-Hebel (Reibung der Leistungshebel)",
+      "text": "Dieser Hebel soll die Leistungshebel schwerer oder leichter beweglich machen. In DCS ist er nicht umgesetzt.",
+      "context": "Er gehört zum Leistungshebel-Bedienfeld, neben den Triebwerks-Startschaltern."
+    },
+    "plt-power-quadrant/apu-button": {
+      "name": "APU-Taste (mit Abdeckung)",
+      "text": "Diese Taste startet oder stoppt die APU, ein kleines Zusatztriebwerk, das Strom und Luft zum Starten der Haupttriebwerke macht. Ein ON-Licht zeigt, wenn die APU läuft.",
+      "context": "Die APU wird vor den Haupttriebwerken gestartet. Eine Abdeckung über der Taste muss zuerst geöffnet werden."
+    },
+    "plt-power-quadrant/eng1-start": {
+      "name": "ENG-1-START-Schalter",
+      "text": "Dieser Schalter startet Triebwerk 1, das linke Triebwerk. Ein kurzer Druck auf START beginnt einen automatischen Start. IGN ORIDE dreht das Triebwerk ohne Zündung durch.",
+      "context": "Der Start läuft von allein, und der Anlasser schaltet bei 52 % Kerndrehzahl ab. Der Schalter geht nach dem Auslösen des Starts auf OFF zurück.",
+      "positions": {
+        "START": "Löst den automatischen Triebwerksstart aus; der Schalter wird nur kurz dort gehalten.",
+        "OFF": "Normale Ruhestellung.",
+        "IGN ORIDE": "Dreht das Triebwerk mit dem Luftstarter durch, aber ohne Kraftstoff und Zündung; ein späteres Umlegen auf OFF bricht auch einen Start ab."
+      }
+    },
+    "plt-power-quadrant/eng2-start": {
+      "name": "ENG-2-START-Schalter",
+      "text": "Dieser Schalter startet Triebwerk 2, das rechte Triebwerk, auf dieselbe Weise wie der andere Startschalter.",
+      "context": "Die Startreihenfolge und der übrige Ablauf stehen in der Anlass-Checkliste des Handbuchs.",
+      "positions": {
+        "START": "Löst den automatischen Start von Triebwerk 2 aus.",
+        "OFF": "Normale Ruhestellung.",
+        "IGN ORIDE": "Dreht Triebwerk 2 mit dem Luftstarter ohne Zündung durch."
+      }
+    },
+    "plt-power-quadrant/eng-power-levers": {
+      "name": "ENG-POWER-Hebel (links und rechts)",
+      "text": "Diese zwei Hebel steuern den Kraftstoff für jedes Triebwerk, wie Gaspedale. Die Hebel entscheiden auch, wer das Triebwerk regelt: der Computer oder der Pilot von Hand.",
+      "context": "Eine Raste stoppt den Hebel bei IDLE und FLY, damit er nicht aus Versehen darüber hinaus bewegt wird. Der Hebel auf dem vorderen Sitz bewegt sich mit diesen mit.",
+      "positions": {
+        "OFF": "Es geht kein Kraftstoff zum Triebwerk.",
+        "IDLE": "Das Triebwerk läuft im Leerlauf; der Computer regelt die Rotordrehzahl nicht mehr.",
+        "FLY": "Die normale Flugstellung: Der Computer hält den Rotor auf der richtigen Drehzahl und verteilt die Last auf die Triebwerke.",
+        "LOCK OUT": "Notstellung: Der Computer wird umgangen, und der Pilot steuert den Triebwerkskraftstoff von Hand."
+      }
+    },
+    "plt-tail-wheel-nvs/tail-wheel": {
+      "name": "TAIL-WHEEL-Taste (sperren / entsperren)",
+      "text": "Diese Taste sperrt oder entsperrt das Spornrad. Ein Licht zeigt UNLOCK, solange sich das Rad frei drehen kann.",
+      "context": "Ein gesperrtes Rad hält das Heck beim Start- oder Landelauf geradeaus; entsperrt kann es sich beim Wenden am Boden drehen. Am Kollektivhebel gibt es eine Taste mit derselben Aufgabe. Dies ist die Kopie am Pilotensitz; der CPG auf dem vorderen Sitz hat eine eigene."
+    },
+    "plt-tail-wheel-nvs/nvs-mode": {
+      "name": "NVS-MODE-Schalter (Nachtsichtsensor)",
+      "text": "Dieser Schalter schaltet die Nachtsichtkamera dieses Sitzes ein und bestimmt, wie sie zeigt. Die Kamera, die für diesen Sitz standardmäßig gewählt ist, ist die PNVS (die Kamera für den Nachtflug in der Nase).",
+      "context": "NVS bedeutet Nachtsichtsystem (night vision system). Das Bild wird in der Helmanzeige gezeigt (dem kleinen Bildschirm vor einem Auge).",
+      "positions": {
+        "FIXED": "Die Kamera ist an und blickt geradeaus und leicht nach unten, egal was der Kopf macht.",
+        "NORM": "Die Kamera folgt dem Blick des Helms.",
+        "OFF": "Die Kamera ist aus und verstaut."
+      }
+    },
+    "plt-emergency-panel/guard-button": {
+      "name": "GUARD-Taste",
+      "text": "Diese Taste soll das UHF-Funkgerät auf die Guard-Frequenz 243.000 MHz abstimmen, den üblichen Notkanal. In DCS führt das Handbuch sie als nicht umgesetzt auf.",
+      "context": "Ein ON-Licht würde zeigen, dass die Taste in einem der beiden Sitze gedrückt wurde."
+    },
+    "plt-emergency-panel/xpndr-button": {
+      "name": "XPNDR-Taste (Transponder-Notfall)",
+      "text": "Diese Taste soll den Transponder auf den Notfallcode 7700 stellen. Ein Transponder ist das Funkgerät, das Radarfragen mit einer Codenummer beantwortet. In DCS ist sie nicht umgesetzt.",
+      "context": "Der Code 7700 sagt der Flugverkehrskontrolle, dass das Luftfahrzeug in Not ist."
+    },
+    "plt-emergency-panel/zeroize-switch": {
+      "name": "ZEROIZE-Schalter",
+      "text": "Dieser Schalter soll die geheimen Funkcodes und gespeicherten Kartenpunkte löschen, damit ein Feind sie nicht nutzen kann. In DCS ist er nicht umgesetzt.",
+      "context": "Er ist für den Fall gedacht, dass der Hubschrauber in Feindesland notlanden muss.",
+      "positions": {
+        "ON": "Soll das Löschen von Codes und gespeicherten Punkten starten; in DCS nicht umgesetzt.",
+        "OFF": "Normalstellung."
+      }
+    },
+    "plt-emergency-panel/emerg-hyd": {
+      "name": "EMERG-HYD-Taste (Not-Hydraulik)",
+      "text": "Diese Taste soll den Notdruck der Hydraulik einschalten. Hydraulik ist Öl unter hohem Druck, das die schweren Teile bewegt. In DCS ist sie nicht umgesetzt.",
+      "context": "In Wirklichkeit würde sie für sehr kurze Zeit Druck für eine Notlandung liefern."
+    },
+    "plt-stores-jettison/jett-stations": {
+      "name": "Stationstasten L/R OUTBD und INBD",
+      "text": "Diese vier Tasten stehen für vier Waffenstationen an den Flügeln: links außen, links innen, rechts innen und rechts außen. Ein Druck macht die Station für den Abwurf scharf oder entschärft sie; ein Licht auf der Taste zeigt, dass sie scharf ist.",
+      "context": "Outboard bedeutet weiter außen am Flügel."
+    },
+    "plt-stores-jettison/jett-tips": {
+      "name": "Tasten L TIP und R TIP",
+      "text": "Diese zwei Tasten für die Flügelspitzen sind auf dem Bedienfeld, haben aber keine Funktion.",
+      "context": "Das Handbuch sagt das ausdrücklich."
+    },
+    "plt-stores-jettison/jett-button": {
+      "name": "JETT-Taste (Abwurf)",
+      "text": "Drückt man diese Taste, werden die Waffen aller Stationen abgeworfen, die mit den Stationstasten scharf gemacht wurden.",
+      "context": "Anders als die gesicherte Not-Abwurftaste am Kollektivhebel, die alles abwirft, wirft diese nur die gewählten Stationen ab."
+    },
+    "plt-exterior-interior-lighting/nav-lights": {
+      "name": "NAV-Schalter (Positionslichter)",
+      "text": "Dieser Schalter stellt die Positionslichter ein, die roten, grünen und weißen Lichter, die anderen Luftfahrzeugen zeigen, wohin der Hubschrauber fliegt.",
+      "context": "Die roten und grünen Lichter sitzen an den Triebwerksgehäusen und das weiße am Heck.",
+      "positions": {
+        "BRT": "Die Positionslichter sind hell.",
+        "OFF": "Die Positionslichter sind aus.",
+        "DIM": "Die Positionslichter sind gedimmt."
+      }
+    },
+    "plt-exterior-interior-lighting/signal-knob": {
+      "name": "SIGNAL-Knopf (Signallichter im Cockpit)",
+      "text": "Dieser Knopf stellt nachts die Helligkeit der kleinen Warn- und Statuslichter im Cockpit ein. Er tut nichts, solange sie auf Tageshelligkeit stehen.",
+      "context": "Auf RST gedreht, stellt er die Nachtwerte ein, wenn der PRIMARY-Knopf nicht auf OFF steht und der FLOOD-Knopf unter der Hälfte."
+    },
+    "plt-exterior-interior-lighting/primary-knob": {
+      "name": "PRIMARY-Knopf (Instrumentenbeleuchtung)",
+      "text": "Dieser Knopf stellt die Helligkeit der Lichter hinter den Hauptmarkierungen der Instrumente ein. Auf OFF gedreht, schickt er die Signallichter zurück auf Tageshelligkeit.",
+      "context": "Er wird nachts zusammen mit dem Flutlicht benutzt."
+    },
+    "plt-exterior-interior-lighting/form-knob": {
+      "name": "FORM-Knopf (Formationslichter)",
+      "text": "Dieser Knopf stellt die Helligkeit der Formationslichter an den Flügelspitzen, dem Heckausleger und der Heckflosse ein.",
+      "context": "Formationslichter helfen den Besatzungen, sich nachts im Verband zu sehen."
+    },
+    "plt-exterior-interior-lighting/flood-knob": {
+      "name": "FLOOD-Knopf (Cockpit-Flutlicht)",
+      "text": "Dieser Knopf stellt die Helligkeit des Cockpit-Flutlichts ein, das das ganze Cockpit beleuchtet. Über die Hälfte gedreht, schickt er die Signallichter zurück auf Tageshelligkeit.",
+      "context": "Es beleuchtet das Cockpit als Ganzes, während der PRIMARY-Knopf die Markierungen der Instrumente beleuchtet."
+    },
+    "plt-exterior-interior-lighting/stby-inst-knob": {
+      "name": "STBY-INST-Knopf (Beleuchtung der Reserveinstrumente)",
+      "text": "Dieser Knopf stellt die Helligkeit des Lichts auf den Reserveinstrumenten ein.",
+      "context": "Das sind die Reserve-Anzeigen für den Fall, dass die Hauptanzeigen ausfallen."
+    },
+    "plt-exterior-interior-lighting/anti-coll": {
+      "name": "ANTI-COLL-Schalter (Antikollisionslichter)",
+      "text": "Dieser Schalter steuert die Blinklichter an den Triebwerksgehäusen, die anderen Luftfahrzeugen helfen, den Hubschrauber zu sehen.",
+      "context": "Sie blinken abwechselnd, so wie der Schalter es einstellt.",
+      "positions": {
+        "WHT": "Die Lichter blinken weiß.",
+        "OFF": "Die Lichter sind aus.",
+        "RED": "Die Lichter blinken rot."
+      }
+    },
+    "plt-exterior-interior-lighting/press-to-test": {
+      "name": "PRESS-TO-TEST-Taste (Signallichter)",
+      "text": "Drückt man diese Taste, leuchten alle Signallichter auf einmal, damit der Pilot sieht, dass keines durchgebrannt ist.",
+      "context": "Das ist ein schneller Check, wenn man sich ins Cockpit setzt."
+    },
+    "plt-free-air-temperature/fat-gauge": {
+      "name": "Außenlufttemperaturanzeige (Außenluft)",
+      "text": "Diese Anzeige zeigt die Temperatur der Außenluft in Grad Celsius. Die großen Striche liegen 10 Grad auseinander und die kleinen 2 Grad.",
+      "context": "Der Fühler reicht durch den Rumpf, deshalb ist der Wert die Temperatur, die außerhalb des Pilotencockpits gemessen wird."
+    },
+    "plt-communications-panel/radio-volume": {
+      "name": "Funk-Lautstärkeknöpfe VHF, UHF, FM1, FM2, HF",
+      "text": "Jeder dieser fünf Knöpfe stellt ein, wie laut ein Funkgerät im Kopfhörer des Piloten klingt. Im Uhrzeigersinn drehen macht es lauter; den Knopf herausziehen schaltet dieses Funkgerät stumm.",
+      "context": "Die fünf Funkgeräte heißen VHF, UHF, FM1, FM2 und HF. Zieht man einen Knopf heraus, verschwindet auch die Überwachungsmarkierung dieses Funkgeräts auf dem EUFD."
+    },
+    "plt-communications-panel/squelch-switches": {
+      "name": "SQL-Squelch-Schalter (VHF, UHF, FM1, FM2, HF)",
+      "text": "Der Squelch schneidet das Rauschen eines Funkgeräts ab, wenn niemand spricht. Jeder dieser fünf Schalter schaltet den Squelch eines Funkgeräts ein oder aus. Ein Sternchen auf dem EUFD markiert die Funkgeräte mit eingeschaltetem Squelch.",
+      "context": "Ein Antippen nach vorn oder hinten schaltet um. Die Einstellung wird auf dem EUFD in beiden Sitzen angezeigt."
+    },
+    "plt-communications-panel/sens-knob": {
+      "name": "SENS-Knopf (Empfindlichkeit der Sprachaktivierung)",
+      "text": "Dieser Knopf stellt ein, wie laut jemand sprechen muss, bevor sich das Mikrofon von selbst einschaltet. Er spielt nur in der Stellung VOX des ICS-Schalters eine Rolle.",
+      "context": "Im Uhrzeigersinn gedreht, reagiert das Mikrofon auch auf eine leisere Stimme."
+    },
+    "plt-communications-panel/master-volume": {
+      "name": "MASTER-Lautstärkeknopf",
+      "text": "Dieser Knopf stellt die Gesamtlautstärke von allem im Helm ein. Im Uhrzeigersinn drehen macht es lauter.",
+      "context": "Er wirkt zusätzlich zu den einzelnen Lautstärkeknöpfen."
+    },
+    "plt-communications-panel/ics-mode": {
+      "name": "ICS-Modusschalter (Intercom-Mikrofon)",
+      "text": "Dieser Schalter bestimmt, wann das Mikrofon dieses Sitzes in der Bordsprechanlage offen ist.",
+      "context": "PTT steht für Sprechtaste (push-to-talk). Den Druck übernimmt der Schalter am Steuerknüppel.",
+      "positions": {
+        "PTT": "Das Mikrofon ist nur an, solange die Sprechtaste (oder die Bodentaste) gedrückt ist.",
+        "VOX": "Das Mikrofon schaltet sich von selbst ein, wenn die Stimme laut genug ist, oder solange die Sprechtaste gedrückt ist.",
+        "HOT MIC": "Das Mikrofon ist immer an."
+      }
+    },
+    "plt-communications-panel/ident-button": {
+      "name": "IDENT-Taste",
+      "text": "Diese Taste soll den Hubschrauber über seinen Transponder für einen Moment auf einem Flugverkehrsradar hervorheben. In DCS ist sie nicht umgesetzt.",
+      "context": "Der Transponder ist das Funkgerät, das Radarfragen mit einem Code beantwortet."
+    },
+    "plt-communications-panel/iff-volume": {
+      "name": "IFF-Lautstärkeknopf",
+      "text": "Dieser Knopf würde die Lautstärke des Tons vom IFF einstellen, dem System, das Freund-Feind-Fragen beantwortet. In DCS ist er nicht umgesetzt.",
+      "context": "Das Handbuch führt ihn als nicht umgesetzt auf."
+    },
+    "plt-communications-panel/rlwr-volume": {
+      "name": "RLWR-Lautstärkeknopf",
+      "text": "Dieser Knopf stellt die Lautstärke der gesprochenen Warnungen des Radar- und Laserwarnempfängers ein. Im Uhrzeigersinn drehen macht es lauter.",
+      "context": "Der Empfänger sagt der Besatzung, wenn ein feindliches Radar oder ein Laser den Hubschrauber anstrahlt."
+    },
+    "plt-communications-panel/ata-volume": {
+      "name": "ATA-Lautstärkeknopf",
+      "text": "Dieser Knopf ist auf dem Bedienfeld, hat aber im Spiel keine Funktion.",
+      "context": "Das Handbuch sagt, dass dieser Knopf keine Funktion hat."
+    },
+    "plt-communications-panel/vcr-volume": {
+      "name": "VCR-Lautstärkeknopf",
+      "text": "Dieser Knopf würde die Lautstärke der Wiedergabe eines Videorekorders einstellen. Herausgezogen würde er stumm schalten. In DCS ist er nicht umgesetzt.",
+      "context": "Das Handbuch führt ihn als nicht umgesetzt auf."
+    },
+    "plt-communications-panel/adf-volume": {
+      "name": "ADF-Lautstärkeknopf",
+      "text": "Dieser Knopf stellt die Lautstärke des ADF-Tons ein, des Funkempfängers, der auf Bodenfunkfeuer zeigt. Auf diesem Hubschrauber trägt dieser Tonkanal auch die gesprochenen Warnungen des Raketenwarnsystems. Herausgezogen schaltet er stumm.",
+      "context": "Der CMWS/NAV-Schalter am CMWS-Feld entscheidet, ob dieser Kanal den Funkfeuerton oder die Raketenwarnungen trägt."
+    },
+    "plt-cockpit-fittings/sunvisor-left": {
+      "name": "Linke Sonnenblende",
+      "text": "Das ist eine Sonnenblende auf der linken Seite, ein Schutz gegen grelles Sonnenlicht. Das Handbuch beschreibt sie nicht; das Spiel nennt sie 'Left Sunvisor'.",
+      "context": "Sie hat keine Verbindung zu einem System."
+    },
+    "plt-cockpit-fittings/sunvisor-right": {
+      "name": "Rechte Sonnenblende",
+      "text": "Das ist die passende Sonnenblende auf der rechten Seite. Das Handbuch beschreibt sie nicht; das Spiel nennt sie 'Right Sunvisor'.",
+      "context": "Sie hat keine Verbindung zu einem System."
+    },
+    "plt-cockpit-fittings/plt-canopy": {
+      "name": "PLT-Kabinendachtür (öffnen / schließen)",
+      "text": "Das öffnet oder schließt die Kabinendachtür neben dem Piloten, die gläserne Tür zum Einsteigen.",
+      "context": "Das EUFD kann einen Hinweis anzeigen, wenn die Kabinendachtür nicht verriegelt ist.",
+      "positions": {
+        "OPEN": "Die Kabinendachtür ist offen.",
+        "CLOSE": "Die Kabinendachtür ist geschlossen."
+      }
+    },
+    "plt-cockpit-fittings/plt-m4-trigger": {
+      "name": "PLT-M4-Abzug",
+      "text": "Das Bild des Handbuchs von der rechten Konsole zeigt dort ein M4-Gewehr. Dies ist der Abzug dieses Gewehrs im Spiel.",
+      "context": "Das Handbuch beschreibt die Gewehr-Bedienelemente nicht weiter."
+    },
+    "plt-cockpit-fittings/plt-m4-safety": {
+      "name": "PLT-M4-Sicherung",
+      "text": "Das ist der Sicherungshebel des M4-Gewehrs im Cockpit des Piloten.",
+      "context": "Das Handbuch beschreibt ihn nicht; das Spiel nennt ihn 'PLT M4 Safety'."
+    },
+    "plt-cmws/cmws-display": {
+      "name": "Kontrollanzeige",
+      "text": "Diese kleine Anzeige zeigt, wie viele Flares und Chaff (Düppel) noch da sind, einen Ring aus Pfeilen für die Richtung einer erkannten Rakete und Lichter, die sagen, dass Flares abgeworfen werden und das System bereit ist.",
+      "context": "Das Handbuch nennt bis zu 60 Flares und bis zu 30 Chaff."
+    },
+    "plt-cmws/cmws-power": {
+      "name": "CMWS-Strom- / Testschalter",
+      "text": "Dieser Schalter schaltet das Raketenwarnsystem ein oder aus und startet einen Selbsttest.",
+      "context": "Ein Selbsttest läuft auch nach dem Einschalten von selbst. Die Stellung TEST springt zurück.",
+      "positions": {
+        "OFF": "Das System ist aus.",
+        "ON": "Das System ist an und prüft sich selbst.",
+        "TEST": "Startet einen Selbsttest; wird nur einen Moment gehalten."
+      }
+    },
+    "plt-cmws/cmws-audio": {
+      "name": "CMWS-AUDIO-Knopf",
+      "text": "Dieser Knopf ist mit AUDIO beschriftet. Das Handbuch führt ihn als ohne Funktion auf; das Spiel nennt ihn 'CMWS Audio Volume Knob'.",
+      "context": "Die Lautstärke der Raketenwarnungen wird mit dem ADF-Knopf am Kommunikationsfeld eingestellt."
+    },
+    "plt-cmws/cmws-lamp": {
+      "name": "CMWS-LAMP-Knopf",
+      "text": "Dreht man diesen Knopf, wird die Anzeige des Bedienfelds heller oder dunkler.",
+      "context": "Er wird für Tag- oder Nachtflug eingestellt."
+    },
+    "plt-cmws/cmws-arm": {
+      "name": "CMWS-ARM/SAFE-Schalter (Flare-Werfer)",
+      "text": "Dieser Schalter macht die Flare-Werfer scharf oder sicher. Flares können nur abgeworfen werden, wenn er auf ARM steht, und nur in der Luft.",
+      "context": "Am Boden wird nichts abgeworfen, egal was der Schalter sagt.",
+      "positions": {
+        "ARM": "Flares können bei einer Raketenbedrohung automatisch oder von Hand abgeworfen werden.",
+        "SAFE": "Es wird kein Flare abgeworfen."
+      }
+    },
+    "plt-cmws/cmws-mode": {
+      "name": "CMWS/NAV-Schalter",
+      "text": "Dieser Schalter entscheidet, was der ADF-Tonkanal in beiden Sitzen trägt: die gesprochenen Raketenwarnungen oder den Ton des ADF-Funkgeräts.",
+      "context": "ADF ist der Funkempfänger, der auf Bodenfunkfeuer zeigt. In einem gefährlichen Gebiet sollte der Schalter auf CMWS stehen.",
+      "positions": {
+        "CMWS": "Der Kanal trägt die Raketenwarnungen.",
+        "NAV": "Der Kanal trägt den Ton des ADF-Funkgeräts; Raketenwarnungen sind nicht zu hören."
+      }
+    },
+    "plt-cmws/cmws-jett": {
+      "name": "CMWS-JETTISON-Schalter (mit Abdeckung)",
+      "text": "Dieser gesicherte Schalter wirft im Notfall alle Flares aus den Heckwerfern auf einmal ab. Die Abdeckung muss zuerst angehoben werden.",
+      "context": "Das System muss dafür nicht scharf gemacht sein."
+    },
+    "plt-cmws/cmws-bypass": {
+      "name": "CMWS-BYPASS/AUTO-Schalter",
+      "text": "Dieser Schalter entscheidet, ob das System von selbst Flares abwerfen darf, wenn es eine Rakete sieht. Gewarnt wird in beiden Fällen mit Stimme.",
+      "context": "Flares können immer von Hand mit der FLARE-Taste am Cyclic abgeworfen werden.",
+      "positions": {
+        "BYPASS": "Keine automatischen Flares; nur die FLARE-Taste am Cyclic wirft Flares ab.",
+        "AUTO": "Das System wirft bei einer Raketenbedrohung selbst Flares ab, und die Taste funktioniert auch."
+      }
+    },
+    "plt-cyclic-grip/force-trim-hold": {
+      "name": "Force-Trim- / Hold-Mode-Schalter",
+      "text": "Dieser Vierwegeschalter unter dem Daumen bedient die Kraft-Trimmung (Force Trim) und die Haltemodi. Force Trim ist das System, das Knüppel und Pedale dort lässt, wo sie hingestellt wurden. Nach vorn gehalten gibt er diesen Halt frei; links und rechts schalten Lagehaltung und Höhenhaltung ein oder aus; nach hinten schaltet beide aus.",
+      "context": "Der Pilot nutzt ihn, um den Hubschrauber kurz seine Lage oder Höhe halten zu lassen und den Knüppel bei Bedarf frei zu bewegen. Lässt man den Schalter los, hält die Trimmung die neue Knüppelstellung."
+    },
+    "plt-cyclic-grip/weapon-action": {
+      "name": "Waffenwahlschalter (Weapon Action Switch, WAS)",
+      "text": "Dieser Vierwegeschalter wählt die Waffe: nach vorn die Bordkanone, nach links die Raketen, nach rechts die Lenkflugkörper. Drückt man dieselbe Richtung ein zweites Mal, wird die Waffe wieder weggelegt. Die Stellung nach hinten hat keine Funktion.",
+      "context": "Eine Waffe zu wählen heißt, sie zu \"aktionieren\" (actioning). Kein Sitz hat Vorrang: Der Sitz, der zuletzt eine Waffe aktioniert hat, bekommt die Waffe. Der Pilot feuert sie dann mit dem Abzug ab."
+    },
+    "plt-cyclic-grip/symbology-select": {
+      "name": "Symbology-Select-Schalter",
+      "text": "Dieser Vierwegeschalter mit Druckfunktion wählt, was die Helmanzeige zum Fliegen zeigt: nach vorn Übergang und Reiseflug, nach hinten Schweben und Bob-up. Eindrücken ruft die Flugseite auf dem linken MPD auf.",
+      "context": "Beide Sitze zeigen immer denselben Symbolmodus, egal welcher Schalter ihn geändert hat. Die vier Modi sind Reiseflug, Übergang, Schweben und Bob-up."
+    },
+    "plt-cyclic-grip/ptt-rts": {
+      "name": "PTT/RTS-Schalter (Funk und Intercom)",
+      "text": "Dieser Schalter unter dem Daumen ist die Sprechtaste (push-to-talk). Links sendet auf dem gewählten Funkgerät, rechts spricht über die Bordsprechanlage zum anderen Sitz und zur Bodenmannschaft, und ein Druck schaltet die Funkgerätewahl zum nächsten Funkgerät weiter.",
+      "context": "Das gewählte Funkgerät wird auf dem EUFD gezeigt (RTS bedeutet Sendefunkgerät wählen, radio transmit select). Dieselbe Wahl geht mit der RTS-Wippe neben diesem Bildschirm."
+    },
+    "plt-cyclic-grip/chaff-button": {
+      "name": "Chaff-Abwurf-Taste (C)",
+      "text": "Diese Taste wirft Chaff (Düppel) aus, kleine Metallstreifen, die eine radargelenkte Rakete verwirren. Im Programmmodus gibt sie eine gespeicherte Folge von Streifen ab; im manuellen Modus eine Patrone.",
+      "context": "Der Chaff-Werfer muss zuerst scharf gemacht werden, was nur in der Luft möglich ist."
+    },
+    "plt-cyclic-grip/flare-button": {
+      "name": "Flare-Abwurf-Taste (FLARE)",
+      "text": "Diese Taste wirft Flares aus, heiß brennende Täuschkörper, die wärmesuchende Raketen weglocken. Sie gibt ein gespeichertes Flare-Programm ab.",
+      "context": "Sie wirkt zusätzlich zum automatischen Abwurf des Raketenwarnsystems und nur, wenn das Flare-System in der Luft scharf gemacht ist."
+    },
+    "plt-cyclic-grip/weapon-trigger": {
+      "name": "Waffenabzug (zweistufig, gesichert)",
+      "text": "Dieser Abzug feuert die Waffe ab, die der Pilot gewählt hat. Die erste Stufe feuert, wenn keine Leistungs- oder Sicherheitssperren vorliegen; die zweite feuert, wenn keine Sicherheitssperren vorliegen. Eine Klappe deckt ihn ab.",
+      "context": "Der Master Arm am Waffen-Bedienfeld muss auf ARM stehen. Eine Sperre (Inhibit) ist eine Regel, die das Feuern blockiert, etwa Gewicht auf den Rädern."
+    },
+    "plt-cyclic-grip/trigger-guard": {
+      "name": "Abzugsschutz (Abdeckung)",
+      "text": "Das ist die Klappe über dem Waffenabzug. Man öffnet sie vor dem Feuern und schließt sie danach.",
+      "context": "Sie verhindert, dass der Abzug aus Versehen gezogen wird."
+    },
+    "plt-cyclic-grip/fmc-release": {
+      "name": "FMC-Release-Taste",
+      "text": "Diese Taste unter dem kleinen Finger schaltet die Hilfe des Flugmanagement-Computers für Nicken, Rollen, Gieren und den Kollektivhebel aus. Der Flugmanagement-Computer ist der Computer, der den Hubschrauber ruhig hält.",
+      "context": "Die Hilfe kann auf der Utility-Seite des MPD wieder eingeschaltet werden."
+    },
+    "plt-cyclic-grip/cyclic-stick": {
+      "name": "Cyclic (der Steuerknüppel)",
+      "text": "Das Cyclic ist der Steuerknüppel vor dem Sitz. Bewegt man ihn, neigt sich der Rotor und damit der Hubschrauber: vorwärts, rückwärts, nach links oder nach rechts.",
+      "context": "Zusammen mit dem Kollektivhebel und den Pedalen ist er die wichtigste Flugsteuerung."
+    },
+    "plt-cyclic-grip/cyclic-parts-swch": {
+      "name": "Vierwegeschalter des Cyclic (3D-Teile)",
+      "text": "Im 3D-Cockpit modelliert das Spiel die Vierwegeschalter des Griffs als einzelne anklickbare Teile, alle mit 'swch' beschriftet. Es sind die oben beschriebenen Schalter für Force Trim, Waffenwahl, Symbolik und Funk.",
+      "context": "Welches Teil welches ist, zeigen die Bedienelemente dieses Bedienfelds."
+    },
+    "plt-cyclic-grip/cyclic-parts-btn": {
+      "name": "Tasten des Cyclic (3D-Teile)",
+      "text": "Das Spiel modelliert die Tasten des Cyclic-Griffs als anklickbare Teile, alle mit 'btn' beschriftet: Chaff, Flare, FMC Release und die Cage-Taste, die keine Funktion hat.",
+      "context": "Die 3D-Teile sind im Spiel nicht einzeln benannt."
+    },
+    "plt-cyclic-grip/cyclic-part-trigger": {
+      "name": "Waffenabzug (3D-Teil)",
+      "text": "Das ist der anklickbare Abzug am Cyclic-Griff im 3D-Cockpit. Er tut dasselbe wie der oben beschriebene Waffenabzug.",
+      "context": "Seine Abdeckung ist ein eigenes anklickbares Teil."
+    },
+    "plt-cyclic-grip/cyclic-part-cap": {
+      "name": "Abzugsschutz (3D-Teil)",
+      "text": "Das ist die anklickbare Klappe über dem Abzug am Cyclic-Griff im 3D-Cockpit.",
+      "context": "Sie tut dasselbe wie der oben beschriebene Abzugsschutz."
+    },
+    "plt-collective-flight-grip/jettison-button": {
+      "name": "Not-Abwurftaste (JETT) (gesichert)",
+      "text": "Diese gesicherte Taste wirft alle Waffen von den Flügelstationen auf einmal ab. Die Abdeckung muss zuerst hochgeklappt werden.",
+      "context": "Sie ist für einen Notfall gedacht, wenn der Hubschrauber leichter werden muss. Das Abwurf-Bedienfeld kann stattdessen einzelne Stationen abwerfen."
+    },
+    "plt-collective-flight-grip/boresight-polarity": {
+      "name": "Boresight- / Polarity-Schalter",
+      "text": "Dieser Schalter wechselt das Infrarotbild zwischen weiß-heiß und schwarz-heiß. Die linke Stellung, Boresight, hat keine Funktion.",
+      "context": "Polarität heißt, ob warme Dinge weiß oder schwarz gezeigt werden. Sie gilt für die Nachtkamera dieses Sitzes.",
+      "positions": {
+        "B/S": "Boresight: keine Funktion.",
+        "CENTER": "Neutralstellung.",
+        "PLRT": "Schaltet das Infrarotbild zwischen weiß-heiß und schwarz-heiß um."
+      }
+    },
+    "plt-collective-flight-grip/searchlight-switch": {
+      "name": "Suchscheinwerfer-Schalter",
+      "text": "Dieser Schalter schaltet den Suchscheinwerfer unter dem Rumpf an, aus oder schickt ihn zurück in seine verstaute Stellung.",
+      "context": "Von STOW springt der Schalter auf OFF zurück. Nach STOW kann der Scheinwerfer eine Minute lang nicht bewegt werden.",
+      "positions": {
+        "ON": "Der Suchscheinwerfer ist an.",
+        "OFF": "Der Suchscheinwerfer ist aus.",
+        "STOW": "Der Suchscheinwerfer fährt in seine verstaute Stellung ein."
+      }
+    },
+    "plt-collective-flight-grip/searchlight-position": {
+      "name": "Suchscheinwerfer-Positionsschalter",
+      "text": "Dieser Vierwegeschalter richtet den Suchscheinwerfer aus: nach vorn dreht er ihn nach vorn und oben, nach hinten nach unten und zurück, links und rechts drehen ihn zur Seite.",
+      "context": "Er bewegt die Lampe, nicht den Schalter des Lichts selbst."
+    },
+    "plt-collective-flight-grip/nvs-select": {
+      "name": "NVS-Select-Schalter",
+      "text": "Dieser Schalter wählt, welche Kamera das Nachtsichtbild dieses Sitzes speist: die TADS (die Zielkamera in der Nase) oder die PNVS (die Nachtkamera des Piloten in der Nase).",
+      "context": "Jeder Sitz kann die Wahl ändern. Der Rahmen in der Helmanzeige zeigt dann die Bewegungsgrenzen der gewählten Kamera.",
+      "positions": {
+        "TADS": "Die Zielkamera ist der Nachtsichtsensor dieses Sitzes.",
+        "PNVS": "Die Nachtkamera des Piloten ist der Nachtsichtsensor dieses Sitzes."
+      }
+    },
+    "plt-collective-flight-grip/stabilator-switch": {
+      "name": "Stabilator-Steuerschalter",
+      "text": "Dieser Schalter bewegt den Stabilator, den kleinen Flügel am Heck, von Hand: Nase nach unten oder Nase nach oben. Eindrücken stellt den Stabilator wieder auf automatisch.",
+      "context": "Normalerweise ist der Stabilator automatisch. Bewegt man den Schalter nach vorn oder hinten, geht er in den manuellen Modus.",
+      "positions": {
+        "ND": "Bewegt die Hinterkante nach unten, so dass die Nase nach unten nickt; schaltet auf manuell.",
+        "NU": "Bewegt die Hinterkante nach oben, so dass die Nase nach oben nickt; schaltet auf manuell.",
+        "RESET": "Eindrücken stellt den Stabilator auf automatisch zurück."
+      }
+    },
+    "plt-collective-flight-grip/chop-button": {
+      "name": "Triebwerks-CHOP-Taste (gesichert)",
+      "text": "Diese gesicherte Taste soll beide Triebwerke schnell auf Leerlaufleistung zurückbringen. Ein zweiter Druck würde die Leistung wiederherstellen. In DCS ist sie nicht umgesetzt.",
+      "context": "Sie hat eine Abdeckung, um ungewollte Benutzung zu verhindern."
+    },
+    "plt-collective-flight-grip/tail-wheel-button": {
+      "name": "Spornrad-Taste (sperren / entsperren)",
+      "text": "Diese Taste sperrt oder entsperrt das Spornrad, genau wie die Taste am Spornrad-Bedienfeld. Ein Licht an jenem Bedienfeld zeigt UNLOCK, solange das Rad frei ist.",
+      "context": "Das Rad sollte vor dem Abheben gesperrt und zum Wenden am Boden entsperrt werden."
+    },
+    "plt-collective-flight-grip/collective-lever": {
+      "name": "Kollektivhebel (der Hebel)",
+      "text": "Der Kollektivhebel ist der Hebel links vom Sitz. Zieht man ihn hoch, packen die Blätter des Hauptrotors stärker zu, und der Hubschrauber steigt; senkt man ihn, sinkt der Hubschrauber.",
+      "context": "Er wird zusammen mit dem Steuerknüppel (Cyclic) und den Pedalen benutzt."
+    },
+    "plt-collective-mission-grip/fcr-mode": {
+      "name": "FCR-Modusschalter",
+      "text": "Dieser Vierwegeschalter wählt den Modus des Feuerleitradars, des Radars auf dem Mast über dem Rotor. Nach vorn sind es Bodenziele, nach rechts die Radarkarte, nach hinten Luftziele und nach links das Geländeprofil.",
+      "context": "Er wirkt, solange das Radar das gewählte Visier ist und nicht scannt. Drückt man die Richtung der Radarkarte noch einmal, wird das Geländevideo darunter ein- oder ausgeblendet."
+    },
+    "plt-collective-mission-grip/fcr-scan-size": {
+      "name": "FCR-Scangrößenschalter",
+      "text": "Dieser Vierwegeschalter stellt ein, wie weit das Radar blickt: weit (rechts), mittel (hinten), schmal (links) oder Zoom (vorn). Die genauen Breiten hängen davon ab, ob das Radar Boden- oder Luftziele sucht.",
+      "context": "Das Handbuch nennt für die Bodenmodi 90, 45, 30 und 15 Grad. Die Einstellung wird benutzt, solange das Radar nicht scannt."
+    },
+    "plt-collective-mission-grip/cursor-controller": {
+      "name": "Cursor-Steuerung / Enter",
+      "text": "Dieses kleine Feld unter dem Daumen bewegt den Cursor auf den MPD-Bildschirmen, so dass man eine Taste auf dem Bildschirm wählen kann, ohne hinzugreifen. Eindrücken wählt, worauf der Cursor steht.",
+      "context": "Es funktioniert wie ein Mauszeiger für die MPD-Seiten."
+    },
+    "plt-collective-mission-grip/sight-select": {
+      "name": "Sight-Select-Schalter (Visierwahl)",
+      "text": "Dieser Vierwegeschalter wählt das Visier zum Zielen: nach vorn das Helmvisier, nach links das Radar, nach rechts die Zielkamera TADS, nach hinten die Link-Funktion, die einen Sensor auf das Ziel des anderen richtet. Als Pilot lassen sich hier nur die Helmanzeige und das Radar wählen; die Zielkamera TADS ist nicht verfügbar.",
+      "context": "Das Visier ist der Ort, auf den die Waffen blicken. Das Radar-Visier ruft die Radarseite auf dem linken MPD auf."
+    },
+    "plt-collective-mission-grip/cursor-display-select": {
+      "name": "Cursor-Display-Select-Taste",
+      "text": "Diese Taste springt mit dem Cursor in die Mitte des anderen MPD-Bildschirms.",
+      "context": "Sie spart das Bewegen des Cursors über das Cockpit hinweg mit dem Feld."
+    },
+    "plt-collective-mission-grip/fcr-scan": {
+      "name": "FCR-Scan-Schalter",
+      "text": "Dieser Schalter startet einen Radarscan: nach vorn ein einzelner Scan-Stoß, nach hinten ein Dauerscan. Eine zweite Bewegung stoppt den laufenden Scan.",
+      "context": "Das Radar kann nicht senden, solange das Gewicht auf den Rädern ruht, es sei denn, die Bodenfreigabe des Waffen-Bedienfelds ist an.",
+      "positions": {
+        "S-SCAN": "Startet einen einzelnen Scan-Stoß; ein erneutes Bewegen stoppt einen laufenden Scan.",
+        "CENTER": "Neutralstellung.",
+        "C-SCAN": "Startet einen Dauerscan, bis er gestoppt oder ein anderes Visier gewählt wird."
+      }
+    },
+    "plt-collective-mission-grip/cued-search": {
+      "name": "Cued-Search-Taste (CUED)",
+      "text": "Diese Taste ist für eine geführte Suche (cued search) des Radars gedacht. In DCS ist sie nicht umgesetzt.",
+      "context": "Das Handbuch führt sie als nicht umgesetzt auf."
+    },
+    "plt-collective-mission-grip/missile-advance": {
+      "name": "Missile-Advance-Taste (Lenkflugkörper weiterschalten)",
+      "text": "Diese Taste schaltet zur nächsten Hellfire-Rakete in der Reihe weiter. Eine Hellfire ist die gelenkte Panzerabwehrrakete des Hubschraubers.",
+      "context": "Sie wirkt nur, wenn der Raketenmodus auf der Waffenseite auf MAN (manuell) steht."
+    },
+    "plt-collective-mission-grip/alt-cursor-enter": {
+      "name": "Alternativer Cursor-Enter-Abzug",
+      "text": "Dieser Abzug unter dem Griff wählt das Element unter dem Cursor, als Alternative zum Eindrücken des Cursor-Feldes selbst.",
+      "context": "Er wird zusammen mit dem Cursor-Feld benutzt."
+    },
+    "plt-collective-parts/collective-parts-switch": {
+      "name": "Schalter des Kollektivhebels (3D-Teile)",
+      "text": "Das Spiel modelliert die Schalter und Vierwegefelder der Kollektivgriffe als einzelne anklickbare Teile, alle mit 'switch' beschriftet. Sie stehen für die Schalter, die in den anderen zwei Bedienfeldern des Kollektivhebels beschrieben sind.",
+      "context": "Die 3D-Teile sind im Spiel nicht einzeln benannt."
+    },
+    "plt-collective-parts/collective-parts-btn": {
+      "name": "Tasten des Kollektivhebels (3D-Teile)",
+      "text": "Das Spiel modelliert die Tasten der Kollektivgriffe als anklickbare Teile, alle mit 'btn' beschriftet. Es sind die Tasten für Abwurf, Chop, Spornrad, Cursor-Anzeige, Cued Search und Missile Advance.",
+      "context": "Die 3D-Teile sind im Spiel nicht einzeln benannt."
+    },
+    "plt-collective-parts/collective-parts-trigger": {
+      "name": "Abzüge des Kollektivhebels (3D-Teile)",
+      "text": "Das Spiel modelliert die zwei Abzüge des Kollektivhebels als anklickbare Teile. Einer ist der alternative Cursor-Enter-Abzug des Einsatz-Griffs; der andere ist der BUCS-Abzug, der nicht umgesetzt ist.",
+      "context": "BUCS ist das Reservesteuersystem (back-up control system). Laut Handbuch funktioniert sein Abzug nur im CPG-Sitz, und selbst dort ist er als nicht umgesetzt vermerkt."
+    },
+    "plt-collective-parts/collective-parts-cap": {
+      "name": "Schutzabdeckungen des Kollektivhebels (3D-Teile)",
+      "text": "Das Spiel modelliert die Schutzabdeckungen über den gesicherten Tasten des Kollektivhebels als anklickbare Teile. Die Not-Abwurftaste und die Triebwerks-Chop-Taste haben solche Abdeckungen.",
+      "context": "Eine Abdeckung muss hochgeklappt werden, bevor ihre Taste gedrückt werden kann."
+    },
+    "cpg-master-warning-caution/mstr-warn": {
+      "name": "MSTR-WARN-Taste (Hauptwarnung)",
+      "text": "Diese Taste blinkt, wenn etwas Gefährliches passiert, zum Beispiel ein Triebwerksbrand. Drückt man sie, geht ihr Licht aus und die gesprochene Warnung im Kopfhörer verstummt. Dies gilt für die Tasten MASTER WARNING und MASTER CAUTION des CPG.",
+      "context": "Das EUFD zeigt, um welche Warnung es geht. Laut Handbuch verstummt die Sprachmeldung in beiden Sitzen, während nur das Licht des CPG (Copilot/Schütze) ausgeht. Dies ist die Kopie am CPG-Sitz; der Pilot auf dem hinteren Sitz hat eine eigene."
+    },
+    "cpg-master-warning-caution/mstr-caut": {
+      "name": "MSTR-CAUT-Taste (Hauptwarnleuchte Caution)",
+      "text": "Diese Taste leuchtet, wenn etwas nicht stimmt, aber nicht sofort gefährlich ist, zum Beispiel ein Fehler im Stromsystem. Drückt man sie, geht das Licht aus und der Warnton verstummt. Dies gilt für die Tasten MASTER WARNING und MASTER CAUTION des CPG.",
+      "context": "Das EUFD zeigt die Caution-Meldung. Der Ton verstummt im Sitz, in dem die Taste gedrückt wird, deshalb bestätigt der CPG (Copilot/Schütze) sie an der eigenen Taste. Dies ist die Kopie am CPG-Sitz; der Pilot auf dem hinteren Sitz hat eine eigene."
+    },
+    "cpg-eufd/eufd-display": {
+      "name": "EUFD-Textanzeige",
+      "text": "Das ist der beleuchtete Textbildschirm selbst. Er hat drei Spalten für Meldungen (Warnungen, Cautions und Hinweise), einen Block mit den fünf Funkgeräten und eine Zeile mit Kraftstoff, Transponder und Uhrzeit. Dies gilt für das EUFD des CPG.",
+      "context": "Eine Warnmeldung kommt mit der blinkenden MSTR-WARN-Taste und einer Stimme, eine Caution mit der MSTR-CAUT-Taste und einem Ton. Diese Anzeige gehört dem CPG (Copilot/Schütze)."
+    },
+    "cpg-eufd/wca-rocker": {
+      "name": "WCA-Wippe (Meldungen blättern)",
+      "text": "Diese Wippe blättert die Meldungsspalten nach oben oder unten. Der CPG (Copilot/Schütze) braucht sie, wenn eine Spalte acht oder mehr Meldungen enthält, mehr als der Bildschirm auf einmal zeigen kann.",
+      "context": "WCA steht für Warnungen, Cautions und Hinweise (warnings, cautions, advisories). Ein Doppelpfeil auf dem Bildschirm zeigt, dass weitere Meldungen außer Sicht warten. Die obere Hälfte blättert in die eine Richtung, die untere in die andere. Es gehört zum EUFD des CPG."
+    },
+    "cpg-eufd/idm-rocker": {
+      "name": "IDM-Wippe (Funkgerät für Datenverbindung wählen)",
+      "text": "Diese Wippe wählt, welches Funkgerät Datennachrichten sendet. Eine Datenverbindung (Datalink) ist die Art, wie Luftfahrzeuge Positionen und Ziele per Funk statt per Sprache austauschen. Dies gilt für das EUFD des CPG.",
+      "context": "Kleine Markierungen neben jedem Funkgerät auf dem Bildschirm zeigen die Wahl. Das Spiel nennt diese Wippe IDM. Das Handbuch nennt sie die Wippe zur Wahl des Datalink-Senders. Es gehört zum EUFD des CPG."
+    },
+    "cpg-eufd/rts-rocker": {
+      "name": "RTS-Wippe (Sendefunkgerät wählen)",
+      "text": "Diese Wippe wählt das Funkgerät, auf dem der CPG (Copilot/Schütze) spricht. Jeder Druck bewegt die Auswahl in der Liste der Funkgeräte nach oben oder unten.",
+      "context": "Am Ende der Liste springt die Auswahl ans andere Ende. Der Steuerknüppel hat außerdem einen Schalter mit derselben Aufgabe, so dass die Hände an den Steuerelementen bleiben können. Es gehört zum EUFD des CPG."
+    },
+    "cpg-eufd/eufd-brt": {
+      "name": "Helligkeitsregler (EUFD)",
+      "text": "Dreht man diesen Knopf, wird das EUFD heller oder dunkler.",
+      "context": "Der CPG (Copilot/Schütze) stellt ihn so ein, dass der Text im hellen Tageslicht lesbar und nachts nicht zu hell ist."
+    },
+    "cpg-eufd/preset-button": {
+      "name": "PRESET-Taste",
+      "text": "Diese Taste zeigt eine Liste gespeicherter Funkfrequenzen an oder blendet sie aus, wie die Senderstasten eines Autoradios. Dies gilt für das EUFD des CPG.",
+      "context": "Die Besatzung wählt eine gespeicherte Frequenz aus der Liste und drückt dann die ENTER-Taste daneben, um das Funkgerät abzustimmen. Es gehört zum EUFD des CPG."
+    },
+    "cpg-eufd/eufd-enter": {
+      "name": "ENTER-Taste (EUFD)",
+      "text": "Diese Taste stimmt das Funkgerät auf die Frequenz ab, die in der Preset-Liste markiert ist. Dies gilt für das EUFD des CPG.",
+      "context": "Sie wird direkt benutzt, nachdem die PRESET-Taste die Liste geöffnet hat. Es gehört zum EUFD des CPG."
+    },
+    "cpg-eufd/stopwatch-button": {
+      "name": "Stoppuhr-Taste",
+      "text": "Diese Taste startet oder stoppt die Stoppuhr, die über der Uhrzeit angezeigt wird. Hält man sie zwei Sekunden gedrückt, wird die Stoppuhr zurückgesetzt. Dies gilt für das EUFD des CPG.",
+      "context": "Die Stoppuhr jedes Sitzes ist unabhängig, deshalb wird der Pilot auf dem hinteren Sitz nicht gestört, wenn der CPG (Copilot/Schütze) sie benutzt."
+    },
+    "cpg-eufd/swap-button": {
+      "name": "SWAP-Taste",
+      "text": "Diese Taste tauscht die aktive und die Bereitschaftseinstellung des gewählten Funkgeräts. Das Funkgerät wechselt so auf die Frequenz, die gewartet hat. Dies gilt für das EUFD des CPG.",
+      "context": "Zuerst wird die Bereitschaftsfrequenz eingegeben, dann schaltet die SWAP-Taste auf sie um. Laut Handbuch tauscht sie auch die Verschlüsselungs- und Netzeinstellungen. Es gehört zum EUFD des CPG."
+    },
+    "cpg-mpd-left/mpd-left-screen": {
+      "name": "Linker MPD-Bildschirm",
+      "text": "Das ist der linke Bildschirm selbst. Er zeigt die Seite, die mit den Tasten rundherum gewählt wurde, etwa die Flugseite, die Waffenseite oder die kartenähnliche Lageseite. Dies gilt für das linke MPD des CPG.",
+      "context": "Weil die Bildschirme für Fliegen, Waffen und Navigation genutzt werden, wechselt der CPG (Copilot/Schütze) während eines Einsatzes ständig die Seiten."
+    },
+    "cpg-mpd-left/mpd-left-vab-t": {
+      "name": "VAB T1-T6 (obere Tastenreihe, linkes MPD)",
+      "text": "Diese sechs Tasten sitzen am oberen Rand des linken Bildschirms. Jede wählt die Option, die direkt darunter auf dem Bildschirm steht. Dies gilt für das linke MPD des CPG.",
+      "context": "VAB bedeutet variable Aktionstaste (variable action button): Was sie tut, hängt von der Seite ab. T1 ist ganz links und T6 ganz rechts. Es gehört zum linken MPD des CPG."
+    },
+    "cpg-mpd-left/mpd-left-vab-l": {
+      "name": "VAB L1-L6 (linke Tastenspalte, linkes MPD)",
+      "text": "Diese sechs Tasten laufen am linken Rand des linken Bildschirms entlang. Jede wählt die Option, die daneben steht. Dies gilt für das linke MPD des CPG.",
+      "context": "L1 ist oben und L6 unten. Ein Zeichen > neben einer Beschriftung bedeutet, dass die Taste getippte Daten an der Tastatureinheit verlangt. Es gehört zum linken MPD des CPG."
+    },
+    "cpg-mpd-left/mpd-left-vab-r": {
+      "name": "VAB R1-R6 (rechte Tastenspalte, linkes MPD)",
+      "text": "Diese sechs Tasten laufen am rechten Rand des linken Bildschirms entlang. Jede wählt die Option, die daneben steht. Dies gilt für das linke MPD des CPG.",
+      "context": "R1 ist oben und R6 unten. Was sie tun, ändert sich mit jeder Seite. Es gehört zum linken MPD des CPG."
+    },
+    "cpg-mpd-left/mpd-left-vab-b": {
+      "name": "VAB B2-B6 (untere Tastenreihe, linkes MPD)",
+      "text": "Diese fünf Tasten sitzen am unteren Rand des linken Bildschirms. Jede wählt die Option, die darüber steht. Dies gilt für das linke MPD des CPG.",
+      "context": "Zusammen mit der M-Taste ganz links bilden sie die untere Reihe. Ihre Beschriftungen gehören zur gezeigten Seite. Es gehört zum linken MPD des CPG."
+    },
+    "cpg-mpd-left/mpd-left-m": {
+      "name": "M-Taste (B1, Menü, linkes MPD)",
+      "text": "Das ist die erste Taste der unteren Reihe, mit M beschriftet. Sie öffnet die Menüseite, eine Liste aller Seiten, die der Bildschirm zeigen kann. Dies gilt für das linke MPD des CPG.",
+      "context": "Drückt man sie auf der Menüseite noch einmal, öffnet sich die DMS-Seite. Die gezeigte Seite steht im Text über dieser Taste. Es gehört zum linken MPD des CPG."
+    },
+    "cpg-mpd-left/mpd-left-fcr": {
+      "name": "FCR-Seitentaste (linkes MPD)",
+      "text": "Diese feste Taste schaltet den Bildschirm auf die FCR-Seite, das Bild des Feuerleitradars. Das ist ein Radar auf dem Mast über dem Hauptrotor, das Ziele findet. Dies gilt für das linke MPD des CPG.",
+      "context": "Sie ist eine von sechs Seitentasten, die immer dasselbe tun, egal welche Seite gerade zu sehen ist. Es gehört zum linken MPD des CPG."
+    },
+    "cpg-mpd-left/mpd-left-wpn": {
+      "name": "WPN-Seitentaste (linkes MPD)",
+      "text": "Diese feste Taste schaltet den Bildschirm auf die Waffenseite. Sie zeigt eine Ansicht von oben auf die Waffen an Bord, dazu den Zustand der Visiere, Sensoren und Täuschkörper. Dies gilt für das linke MPD des CPG.",
+      "context": "Sobald eine Waffe gewählt ist, zeigt die Seite weitere Einstellungen für diese Waffe. Sie ist eine von sechs festen Seitentasten. Es gehört zum linken MPD des CPG."
+    },
+    "cpg-mpd-left/mpd-left-tsd": {
+      "name": "TSD-Seitentaste (linkes MPD)",
+      "text": "Diese feste Taste schaltet den Bildschirm auf die TSD-Seite, die taktische Lageanzeige (tactical situation display). Das ist eine Karte von oben, die sich mitbewegt, mit der geplanten Route und Angaben der Sensoren. Dies gilt für das linke MPD des CPG.",
+      "context": "Sie ist die wichtigste Seite zum Navigieren. Auch Wegpunkte (Punkte auf der geplanten Route) werden von dort aus bearbeitet. Es gehört zum linken MPD des CPG."
+    },
+    "cpg-mpd-left/mpd-left-vid": {
+      "name": "VID-Seitentaste (linkes MPD)",
+      "text": "Diese feste Taste schaltet den Bildschirm auf die Videoseite, auf der die Bilder und Symbole der Kameras und Sensoren des Hubschraubers angesehen werden können. Dies gilt für das linke MPD des CPG.",
+      "context": "Eine Videoquelle kann auch als Hintergrundbild unter anderen Seiten eingestellt werden. Sie ist eine von sechs festen Seitentasten. Es gehört zum linken MPD des CPG."
+    },
+    "cpg-mpd-left/mpd-left-com": {
+      "name": "COM-Seitentaste (linkes MPD)",
+      "text": "Diese feste Taste schaltet den Bildschirm auf die Kommunikationsseite, eine Übersicht über die Funkgeräte, ihre gespeicherten Frequenzen, die Datenverbindung und den Transponder. Dies gilt für das linke MPD des CPG.",
+      "context": "Dort richtet die Besatzung die Funkgeräte ein. Frequenzen lassen sich auch mit dem kleinen EUFD-Bildschirm abstimmen. Es gehört zum linken MPD des CPG."
+    },
+    "cpg-mpd-left/mpd-left-ac": {
+      "name": "A/C-Seitentaste (linkes MPD)",
+      "text": "Diese feste Taste zeigt die Flugseite, wenn der Hubschrauber in der Luft ist. Am Boden, wenn das Gewicht auf den Rädern ruht, zeigt sie stattdessen die Triebwerksseite. Dies gilt für das linke MPD des CPG.",
+      "context": "A/C steht für Luftfahrzeug (aircraft). Sie gibt der Besatzung die Zahlen über den Hubschrauber selbst. Es gehört zum linken MPD des CPG."
+    },
+    "cpg-mpd-left/mpd-left-ast": {
+      "name": "Sterntaste (*) (linkes MPD)",
+      "text": "Auf dieser Taste ist ein Stern aufgedruckt. In DCS hat sie keine Funktion. Dies gilt für das linke MPD des CPG.",
+      "context": "Das Handbuch führt sie als nicht umgesetzt auf."
+    },
+    "cpg-mpd-left/mpd-left-mode": {
+      "name": "Moduswähler DAY / NIGHT / MONO (linkes MPD)",
+      "text": "Dieser Drehknopf legt fest, wie hell und in welchen Farben der Bildschirm aussieht. Er hat eine Tageseinstellung, eine Nachteinstellung und eine Einfarben-Einstellung. Dies gilt für das linke MPD des CPG.",
+      "context": "Der CPG (Copilot/Schütze) dreht ihn bei Flügen im Dunkeln auf NIGHT oder MONO, damit der Bildschirm weder die Augen noch das Nachtsichtgerät blendet.",
+      "positions": {
+        "DAY": "Helles Tagesbild.",
+        "NIGHT": "Gedämpftes Bild für Flüge im Dunkeln.",
+        "MONO": "Nachthelligkeit mit einfarbigem Bild, das zu Nachtsichtbrillen passt."
+      }
+    },
+    "cpg-mpd-left/mpd-left-brt": {
+      "name": "BRT-Knopf (linkes MPD)",
+      "text": "Dreht man diesen Knopf, wird der linke Bildschirm heller oder dunkler, innerhalb des Bereichs, den der Moduswähler vorgibt. Dies gilt für das linke MPD des CPG.",
+      "context": "Er ist die Feineinstellung, nachdem DAY, NIGHT oder MONO gewählt wurde. Es gehört zum linken MPD des CPG."
+    },
+    "cpg-mpd-left/mpd-left-vid-knob": {
+      "name": "VID-Knopf (Videohelligkeit, linkes MPD)",
+      "text": "Dreht man diesen Knopf, ändert sich die Helligkeit des Bildes hinter den Symbolen, zum Beispiel des Kamerabildes oder der Karte, ohne dass sich die Symbole ändern. Dies gilt für das linke MPD des CPG.",
+      "context": "Er hilft, wenn der Hintergrund zu hell ist und die Schrift überstrahlt, oder zu dunkel, um etwas zu sehen. Es gehört zum linken MPD des CPG."
+    },
+    "cpg-mpd-right/mpd-right-screen": {
+      "name": "Rechter MPD-Bildschirm",
+      "text": "Das ist der rechte Bildschirm selbst. Er zeigt die Seite, die mit den Tasten rundherum gewählt wurde, etwa die Flugseite, die Waffenseite oder die kartenähnliche Lageseite. Dies gilt für das rechte MPD des CPG.",
+      "context": "Weil die Bildschirme für Fliegen, Waffen und Navigation genutzt werden, wechselt der CPG (Copilot/Schütze) während eines Einsatzes ständig die Seiten. Es gehört zum rechten MPD des CPG."
+    },
+    "cpg-mpd-right/mpd-right-vab-t": {
+      "name": "VAB T1-T6 (obere Tastenreihe, rechtes MPD)",
+      "text": "Diese sechs Tasten sitzen am oberen Rand des rechten Bildschirms. Jede wählt die Option, die direkt darunter auf dem Bildschirm steht. Dies gilt für das rechte MPD des CPG.",
+      "context": "VAB bedeutet variable Aktionstaste (variable action button): Was sie tut, hängt von der Seite ab. T1 ist ganz links und T6 ganz rechts. Es gehört zum rechten MPD des CPG."
+    },
+    "cpg-mpd-right/mpd-right-vab-l": {
+      "name": "VAB L1-L6 (linke Tastenspalte, rechtes MPD)",
+      "text": "Diese sechs Tasten laufen am linken Rand des rechten Bildschirms entlang. Jede wählt die Option, die daneben steht. Dies gilt für das rechte MPD des CPG.",
+      "context": "L1 ist oben und L6 unten. Ein Zeichen > neben einer Beschriftung bedeutet, dass die Taste getippte Daten an der Tastatureinheit verlangt. Es gehört zum rechten MPD des CPG."
+    },
+    "cpg-mpd-right/mpd-right-vab-r": {
+      "name": "VAB R1-R6 (rechte Tastenspalte, rechtes MPD)",
+      "text": "Diese sechs Tasten laufen am rechten Rand des rechten Bildschirms entlang. Jede wählt die Option, die daneben steht. Dies gilt für das rechte MPD des CPG.",
+      "context": "R1 ist oben und R6 unten. Was sie tun, ändert sich mit jeder Seite. Es gehört zum rechten MPD des CPG."
+    },
+    "cpg-mpd-right/mpd-right-vab-b": {
+      "name": "VAB B2-B6 (untere Tastenreihe, rechtes MPD)",
+      "text": "Diese fünf Tasten sitzen am unteren Rand des rechten Bildschirms. Jede wählt die Option, die darüber steht. Dies gilt für das rechte MPD des CPG.",
+      "context": "Zusammen mit der M-Taste ganz links bilden sie die untere Reihe. Ihre Beschriftungen gehören zur gezeigten Seite. Es gehört zum rechten MPD des CPG."
+    },
+    "cpg-mpd-right/mpd-right-m": {
+      "name": "M-Taste (B1, Menü, rechtes MPD)",
+      "text": "Das ist die erste Taste der unteren Reihe, mit M beschriftet. Sie öffnet die Menüseite, eine Liste aller Seiten, die der Bildschirm zeigen kann. Dies gilt für das rechte MPD des CPG.",
+      "context": "Drückt man sie auf der Menüseite noch einmal, öffnet sich die DMS-Seite. Die gezeigte Seite steht im Text über dieser Taste. Es gehört zum rechten MPD des CPG."
+    },
+    "cpg-mpd-right/mpd-right-fcr": {
+      "name": "FCR-Seitentaste (rechtes MPD)",
+      "text": "Diese feste Taste schaltet den Bildschirm auf die FCR-Seite, das Bild des Feuerleitradars. Das ist ein Radar auf dem Mast über dem Hauptrotor, das Ziele findet. Dies gilt für das rechte MPD des CPG.",
+      "context": "Sie ist eine von sechs Seitentasten, die immer dasselbe tun, egal welche Seite gerade zu sehen ist. Es gehört zum rechten MPD des CPG."
+    },
+    "cpg-mpd-right/mpd-right-wpn": {
+      "name": "WPN-Seitentaste (rechtes MPD)",
+      "text": "Diese feste Taste schaltet den Bildschirm auf die Waffenseite. Sie zeigt eine Ansicht von oben auf die Waffen an Bord, dazu den Zustand der Visiere, Sensoren und Täuschkörper. Dies gilt für das rechte MPD des CPG.",
+      "context": "Sobald eine Waffe gewählt ist, zeigt die Seite weitere Einstellungen für diese Waffe. Sie ist eine von sechs festen Seitentasten. Es gehört zum rechten MPD des CPG."
+    },
+    "cpg-mpd-right/mpd-right-tsd": {
+      "name": "TSD-Seitentaste (rechtes MPD)",
+      "text": "Diese feste Taste schaltet den Bildschirm auf die TSD-Seite, die taktische Lageanzeige (tactical situation display). Das ist eine Karte von oben, die sich mitbewegt, mit der geplanten Route und Angaben der Sensoren. Dies gilt für das rechte MPD des CPG.",
+      "context": "Sie ist die wichtigste Seite zum Navigieren. Auch Wegpunkte (Punkte auf der geplanten Route) werden von dort aus bearbeitet. Es gehört zum rechten MPD des CPG."
+    },
+    "cpg-mpd-right/mpd-right-vid": {
+      "name": "VID-Seitentaste (rechtes MPD)",
+      "text": "Diese feste Taste schaltet den Bildschirm auf die Videoseite, auf der die Bilder und Symbole der Kameras und Sensoren des Hubschraubers angesehen werden können. Dies gilt für das rechte MPD des CPG.",
+      "context": "Eine Videoquelle kann auch als Hintergrundbild unter anderen Seiten eingestellt werden. Sie ist eine von sechs festen Seitentasten. Es gehört zum rechten MPD des CPG."
+    },
+    "cpg-mpd-right/mpd-right-com": {
+      "name": "COM-Seitentaste (rechtes MPD)",
+      "text": "Diese feste Taste schaltet den Bildschirm auf die Kommunikationsseite, eine Übersicht über die Funkgeräte, ihre gespeicherten Frequenzen, die Datenverbindung und den Transponder. Dies gilt für das rechte MPD des CPG.",
+      "context": "Dort richtet die Besatzung die Funkgeräte ein. Frequenzen lassen sich auch mit dem kleinen EUFD-Bildschirm abstimmen. Es gehört zum rechten MPD des CPG."
+    },
+    "cpg-mpd-right/mpd-right-ac": {
+      "name": "A/C-Seitentaste (rechtes MPD)",
+      "text": "Diese feste Taste zeigt die Flugseite, wenn der Hubschrauber in der Luft ist. Am Boden, wenn das Gewicht auf den Rädern ruht, zeigt sie stattdessen die Triebwerksseite. Dies gilt für das rechte MPD des CPG.",
+      "context": "A/C steht für Luftfahrzeug (aircraft). Sie gibt der Besatzung die Zahlen über den Hubschrauber selbst. Es gehört zum rechten MPD des CPG."
+    },
+    "cpg-mpd-right/mpd-right-ast": {
+      "name": "Sterntaste (*) (rechtes MPD)",
+      "text": "Auf dieser Taste ist ein Stern aufgedruckt. In DCS hat sie keine Funktion. Dies gilt für das rechte MPD des CPG.",
+      "context": "Das Handbuch führt sie als nicht umgesetzt auf."
+    },
+    "cpg-mpd-right/mpd-right-mode": {
+      "name": "Moduswähler DAY / NIGHT / MONO (rechtes MPD)",
+      "text": "Dieser Drehknopf legt fest, wie hell und in welchen Farben der Bildschirm aussieht. Er hat eine Tageseinstellung, eine Nachteinstellung und eine Einfarben-Einstellung. Dies gilt für das rechte MPD des CPG.",
+      "context": "Der CPG (Copilot/Schütze) dreht ihn bei Flügen im Dunkeln auf NIGHT oder MONO, damit der Bildschirm weder die Augen noch das Nachtsichtgerät blendet. Es gehört zum rechten MPD des CPG.",
+      "positions": {
+        "DAY": "Helles Tagesbild.",
+        "NIGHT": "Gedämpftes Bild für Flüge im Dunkeln.",
+        "MONO": "Nachthelligkeit mit einfarbigem Bild, das zu Nachtsichtbrillen passt."
+      }
+    },
+    "cpg-mpd-right/mpd-right-brt": {
+      "name": "BRT-Knopf (rechtes MPD)",
+      "text": "Dreht man diesen Knopf, wird der rechte Bildschirm heller oder dunkler, innerhalb des Bereichs, den der Moduswähler vorgibt. Dies gilt für das rechte MPD des CPG.",
+      "context": "Er ist die Feineinstellung, nachdem DAY, NIGHT oder MONO gewählt wurde. Es gehört zum rechten MPD des CPG."
+    },
+    "cpg-mpd-right/mpd-right-vid-knob": {
+      "name": "VID-Knopf (Videohelligkeit, rechtes MPD)",
+      "text": "Dreht man diesen Knopf, ändert sich die Helligkeit des Bildes hinter den Symbolen, zum Beispiel des Kamerabildes oder der Karte, ohne dass sich die Symbole ändern. Dies gilt für das rechte MPD des CPG.",
+      "context": "Er hilft, wenn der Hintergrund zu hell ist und die Schrift überstrahlt, oder zu dunkel, um etwas zu sehen. Es gehört zum rechten MPD des CPG."
+    },
+    "cpg-fire-panel/eng1-fire": {
+      "name": "ENG-1-FIRE-Taste (mit Abdeckung)",
+      "text": "Diese abgedeckte Taste gehört zum linken Triebwerk (Triebwerk 1). Ein gelbes FIRE-Licht leuchtet, wenn dort ein Feuer erkannt wird. Nach dem Anheben der Abdeckung drückt der CPG (Copilot/Schütze) sie, um Kraftstoff und Heißluft des Triebwerks abzusperren und die Löschflaschen scharf zu machen.",
+      "context": "Ein grünes RDY-Licht zeigt dann, dass sie scharf ist. Das Triebwerk läuft weiter, bis der Kraftstoff in seinen Leitungen verbraucht ist. Der nächste Schritt ist, PRI oder RES zu drücken. Es gehört zum Feuer-Bedienfeld des CPG."
+    },
+    "cpg-fire-panel/apu-fire": {
+      "name": "APU-FIRE-Taste (mit Abdeckung)",
+      "text": "Diese abgedeckte Taste gehört zur APU, einem kleinen Zusatztriebwerk hinten, das Strom und Luft macht, bevor die Haupttriebwerke laufen. Ihr FIRE-Licht leuchtet bei einem Feuer; drückt man die Taste, wird der APU-Kraftstoff abgesperrt und die Löschflaschen werden scharf gemacht. Dies gilt für das Feuer-Bedienfeld des CPG.",
+      "context": "Das grüne RDY-Licht zeigt, dass sie scharf ist. Der CPG (Copilot/Schütze) hebt zuerst die Abdeckung an, damit sie nicht aus Versehen gedrückt wird."
+    },
+    "cpg-fire-panel/eng2-fire": {
+      "name": "ENG-2-FIRE-Taste (mit Abdeckung)",
+      "text": "Diese abgedeckte Taste gehört zum rechten Triebwerk (Triebwerk 2). Ihr gelbes FIRE-Licht zeigt dort ein Feuer an. Nach dem Anheben der Abdeckung sperrt ein Druck auf die Taste Kraftstoff und Heißluft zu diesem Triebwerk ab und macht die Löschflaschen scharf. Dies gilt für das Feuer-Bedienfeld des CPG.",
+      "context": "Es ist dieselbe Anordnung wie bei Triebwerk 1. Nur der Sitz, der sie scharf gemacht hat, kann sie wieder entschärfen. Es gehört zum Feuer-Bedienfeld des CPG."
+    },
+    "cpg-fire-panel/pri-button": {
+      "name": "PRI-Taste (Hauptlöschflasche)",
+      "text": "Diese Taste entleert die Haupt-Löschflasche in das Triebwerk oder die APU, die mit ihrer FIRE-Taste scharf gemacht wurde. Dies gilt für das Feuer-Bedienfeld des CPG.",
+      "context": "Ein DISCH-Licht zeigt, dass die Flasche scharf und bereit ist. Nach der Entleerung geht das Licht aus. Es gehört zum Feuer-Bedienfeld des CPG."
+    },
+    "cpg-fire-panel/res-button": {
+      "name": "RES-Taste (Reserve-Löschflasche)",
+      "text": "Diese Taste entleert die zweite, die Reserve-Löschflasche in das scharf gemachte Triebwerk oder die APU. Dies gilt für das Feuer-Bedienfeld des CPG.",
+      "context": "Sie wird benutzt, wenn die erste Flasche das Feuer nicht gelöscht hat."
+    },
+    "cpg-fire-panel/fire-test": {
+      "name": "TEST-Schalter (Feuererkennung prüfen)",
+      "text": "Dieser Schalter prüft das Feuerwarnsystem. Auf TEST 1 oder TEST 2 gestellt, leuchten alle drei FIRE-Lichter und die Warnstimmen sprechen, was beweist, dass die Melder arbeiten. Dies gilt für das Feuer-Bedienfeld des CPG.",
+      "context": "Er springt beim Loslassen in die Mitte zurück. TEST 2 lässt auch die DISCH-Lichter beider Flaschen leuchten. Es gehört zum Feuer-Bedienfeld des CPG.",
+      "positions": {
+        "TEST 1": "Prüft Feuermeldekreis 1: Die drei FIRE-Lichter, das MSTR-WARN-Licht und die Warnstimmen erscheinen.",
+        "OFF": "Mittelstellung. Der Schalter ruht hier.",
+        "TEST 2": "Prüft Kreis 2: dieselben Zeichen wie bei TEST 1, und zusätzlich leuchten die DISCH-Lichter der beiden Flaschen."
+      }
+    },
+    "cpg-armament-panel/a-s": {
+      "name": "A/S-Taste (ARM / SAFE)",
+      "text": "Diese Taste schaltet die Waffen zwischen ARM und SAFE um. Lichter zeigen den Zustand. In ARM können Waffen und Laser abgefeuert werden; in SAFE nicht. Dies gilt für das Waffen-Bedienfeld des CPG.",
+      "context": "Sie funktioniert in der Luft. Am Boden muss zuerst die GND-ORIDE-Taste eingeschaltet sein. Es gehört zum Waffen-Bedienfeld des CPG.",
+      "positions": {
+        "ARM": "Die Waffen und der Laser-Entfernungsmesser dürfen abgefeuert werden.",
+        "SAFE": "Das Abfeuern der Waffen und des Lasers ist gesperrt."
+      }
+    },
+    "cpg-armament-panel/gnd-oride": {
+      "name": "GND-ORIDE-Taste (Bodenfreigabe)",
+      "text": "Diese Taste lässt die Besatzung Dinge scharf machen und testen, während der Hubschrauber am Boden steht, was aus Sicherheitsgründen sonst gesperrt ist. Ihr ON-Licht zeigt, dass sie aktiv ist. Dies gilt für das Waffen-Bedienfeld des CPG.",
+      "context": "Schaltet man sie wieder aus, geht der Master Arm zurück auf SAFE und eine gewählte Waffe wird abgewählt. Im Flug hat sie keine Wirkung. Es gehört zum Waffen-Bedienfeld des CPG.",
+      "positions": {
+        "ON": "Scharfmachen, Waffenwahl, Radarsendungen und das Scharfmachen der Düppel (Chaff) sind am Boden erlaubt.",
+        "OFF": "Die normale Bodensicherung ist wieder da."
+      }
+    },
+    "cpg-canopy-jettison-zeroize/canopy-jett": {
+      "name": "Kabinendach-Abwurfgriff (CPG)",
+      "text": "Zieht man diesen Griff, würden die Seitenteile des Kabinendachs weggesprengt, damit die Besatzung schnell aussteigen kann. Am Boden sperrt ihn ein Sicherungsstift. In DCS ist er nicht umgesetzt.",
+      "context": "Jeder der drei Kabinendach-Abwurfgriffe hat so einen Stift. Das Handbuch zeigt einen in jedem Sitz und einen außen für Rettungskräfte."
+    },
+    "cpg-canopy-jettison-zeroize/master-zeroize": {
+      "name": "MASTER-ZEROIZE-Schalter (mit Abdeckung, CPG)",
+      "text": "Dieser gesicherte Schalter würde alle geheimen Daten an Bord löschen, falls der Hubschrauber in Feindesland notlanden muss. Die Abdeckung muss zuerst angehoben werden. In DCS ist er nicht umgesetzt.",
+      "context": "Er ist die Kopie des MASTER-ZEROIZE-Schalters im vorderen Sitz."
+    },
+    "cpg-tedac-display/tad-button": {
+      "name": "TAD-Videotaste",
+      "text": "Diese Taste legt das Bild der Zielkamera mit ihren Zielsymbolen auf den Bildschirm. Ist das Helmvisier gewählt, zeigt sie stattdessen die Waffensymbole. Sie funktioniert nur, solange der Nachtsichtmodus auf OFF steht.",
+      "context": "TADS ist die Zielkamera in der Nase. Ist der Nachtsichtmodus eingeschaltet, wiederholt der Bildschirm die Helmanzeige, und diese Taste ist gesperrt."
+    },
+    "cpg-tedac-display/fcr-video-button": {
+      "name": "FCR-Videotaste",
+      "text": "Diese Taste legt die Radarseite (FCR) auf den Bildschirm. Die Radarfunktionen darauf sind nur mit dem Cursor erreichbar.",
+      "context": "Der Cursor gelangt auf den Bildschirm, indem man ihn über den inneren Rand eines MPD hinausschiebt. Die Taste funktioniert nur, solange der Nachtsichtmodus auf OFF steht."
+    },
+    "cpg-tedac-display/pnv-button": {
+      "name": "PNV-Videotaste",
+      "text": "Diese Taste zeigt die Flugsymbole des Piloten und das Bild der Nachtkamera des Piloten auf dem Bildschirm.",
+      "context": "Sie funktioniert nur, solange der Nachtsichtmodus des CPG auf OFF steht."
+    },
+    "cpg-tedac-display/gs-button": {
+      "name": "G/S-Taste (Graustufen)",
+      "text": "Diese Taste zeigt ein Muster aus Grautreppen. Damit stellt der CPG Helligkeit und Kontrast des Bildschirms richtig ein.",
+      "context": "Sie funktioniert nur, solange der Nachtsichtmodus auf OFF steht."
+    },
+    "cpg-tedac-display/tdu-display-knob": {
+      "name": "Anzeigemodus-Knopf (DAY / NT / OFF)",
+      "text": "Dieser Knopf schaltet den TEDAC-Bildschirm ein und stellt seine Helligkeitsstufe für Tag oder Nacht ein. In OFF wird nur der Bildschirm dunkel.",
+      "context": "Alle TEDAC-Funktionen und Tasten arbeiten bei ausgeschaltetem Bildschirm weiter. Tagbilder sind grau, Nachtbilder sind grün.",
+      "positions": {
+        "DAY": "Der Bildschirm ist an, mit Tageshelligkeit.",
+        "NT": "Der Bildschirm ist an, mit Nachthelligkeit.",
+        "OFF": "Der Bildschirm ist aus; die Tasten bleiben funktionsfähig."
+      }
+    },
+    "cpg-tedac-display/flir-lev": {
+      "name": "FLIR-LEV-Knopf (Infrarot-Pegel)",
+      "text": "Dieser Knopf stellt den Pegel des Infrarotbildes ein. FLIR ist die Infrarotkamera, die Wärme sieht; der Pegel macht das Bild heller oder dunkler.",
+      "context": "Er wirkt auf das Bild der Nachtkamera oder der Zielkamera."
+    },
+    "cpg-tedac-display/flir-gain": {
+      "name": "FLIR-GAIN-Knopf (Infrarot-Verstärkung)",
+      "text": "Dieser Knopf stellt die Verstärkung des Infrarotbildes ein, also wie stark kleine Wärmeunterschiede hervortreten. Dies gilt für die TEDAC-Anzeigeeinheit des CPG.",
+      "context": "Er wird zusammen mit dem Pegelknopf benutzt."
+    },
+    "cpg-tedac-display/sym-rocker": {
+      "name": "SYM-Wippe (Symbolhelligkeit)",
+      "text": "Drückt man die obere Hälfte dieser Wippe, werden die Symbole heller, die untere Hälfte dunkler. Ein kurzer Druck ändert in kleinen Schritten, ein langer Druck ändert weiter.",
+      "context": "Sie wirkt auf die Helmanzeige, wenn das Helmvisier gewählt ist, sonst auf den TEDAC-Bildschirm."
+    },
+    "cpg-tedac-display/brt-rocker": {
+      "name": "BRT-Wippe (Helligkeit)",
+      "text": "Drückt man die obere Hälfte dieser Wippe, wird das ganze Bild heller, die untere Hälfte dunkler.",
+      "context": "Sie wirkt auf die Helmanzeige, wenn das Helmvisier gewählt ist, sonst auf den TEDAC-Bildschirm. Sie gehört zur TEDAC-Anzeigeeinheit des CPG."
+    },
+    "cpg-tedac-display/con-rocker": {
+      "name": "CON-Wippe (Kontrast)",
+      "text": "Drückt man die obere Hälfte dieser Wippe, steigt der Kontrast, die untere Hälfte senkt ihn.",
+      "context": "Sie wirkt auf die Helmanzeige, wenn das Helmvisier gewählt ist, sonst auf den TEDAC-Bildschirm. Es ist die CON-Wippe der TEDAC-Anzeigeeinheit des CPG."
+    },
+    "cpg-tedac-display/tdu-asterisk": {
+      "name": "Sterntaste (*)",
+      "text": "Diese Taste stellt Helligkeit und Kontrast wieder auf die normalen Werte.",
+      "context": "Sie wirkt auf die Helmanzeige oder den TEDAC-Bildschirm, je nach gewähltem Visier."
+    },
+    "cpg-tedac-display/rf-rocker": {
+      "name": "R/F-Wippe (Entfernungsfokus)",
+      "text": "Drückt man die obere Hälfte dieser Wippe, wird der Fokus der Zielkamera auf größere Entfernungen gestellt, die untere Hälfte auf kleinere.",
+      "context": "Ein kurzer Druck fokussiert in kleinen Schritten, ein langer Druck fokussiert weiter."
+    },
+    "cpg-tedac-display/el-rocker": {
+      "name": "EL-Einstellwippe",
+      "text": "Diese Wippe soll die Elevation (hoch und runter) einstellen. In DCS ist sie nicht umgesetzt.",
+      "context": "Das Handbuch führt sie als nicht umgesetzt auf."
+    },
+    "cpg-tedac-display/az-rocker": {
+      "name": "AZ-Einstellwippe",
+      "text": "Diese Wippe soll den Azimut (links und rechts) einstellen. In DCS ist sie nicht umgesetzt.",
+      "context": "Das Handbuch führt sie als nicht umgesetzt auf."
+    },
+    "cpg-tedac-display/azel-button": {
+      "name": "AZ/EL-Taste",
+      "text": "Diese Taste soll die Boresight-Bedienelemente freigeben. In DCS ist sie nicht umgesetzt.",
+      "context": "Das Handbuch führt sie als nicht umgesetzt auf."
+    },
+    "cpg-tedac-display/acm-button": {
+      "name": "ACM-Taste",
+      "text": "Diese Taste soll die automatische Einstellung des Infrarotbildes einschalten. In DCS ist sie nicht umgesetzt.",
+      "context": "Das Handbuch führt sie als nicht umgesetzt auf."
+    },
+    "cpg-tedac-display/freeze-button": {
+      "name": "FREEZE-Taste",
+      "text": "Diese Taste friert das Bild auf dem TEDAC-Bildschirm ein. Die anderen Bildschirme behalten ihr Livebild.",
+      "context": "Ein erneuter Druck kehrt zum Livebild zurück."
+    },
+    "cpg-tedac-display/filter-button": {
+      "name": "FILTER-Taste",
+      "text": "Diese Taste soll einen Filter in der Infrarotkamera wählen. In DCS ist sie nicht umgesetzt.",
+      "context": "Das Handbuch führt sie als nicht umgesetzt auf."
+    },
+    "cpg-keyboard-unit/ku-prompt": {
+      "name": "KU-Anzeige: Eingabeaufforderung",
+      "text": "Dieser Teil der Anzeige sagt, welche Art von Daten der Computer erwartet, zum Beispiel eine Frequenz, gefolgt von einem Doppelpunkt. Dies gilt für die Tastatureinheit des CPG.",
+      "context": "Die Aufforderung erscheint, nachdem die Besatzung eine MPD-Taste mit einem Dateneingabe-Zeichen gedrückt hat. Es gehört zur Tastatureinheit des CPG."
+    },
+    "cpg-keyboard-unit/ku-scratchpad": {
+      "name": "KU-Notizzeile (Scratchpad)",
+      "text": "Das ist die Zeile, in der getippte Zeichen erscheinen. Sie fasst 22 Zeichen; die Pfeile blättern bei längeren Eingaben. Dies gilt für die Tastatureinheit des CPG.",
+      "context": "Die neuen Zeichen überschreiben die alten unter dem blinkenden Cursor, wie beim Überschreiben von Text. Es gehört zur Tastatureinheit des CPG."
+    },
+    "cpg-keyboard-unit/ku-letters": {
+      "name": "Buchstabentasten A-Z",
+      "text": "Diese 26 Tasten tippen die Buchstaben. Die Tasten N, E, S und W haben einen Rahmen, damit man sie bei der Eingabe einer Kartenposition schnell findet. Dies gilt für die Tastatureinheit des CPG.",
+      "context": "Buchstaben braucht man für Namen und für Kartenkoordinaten. Der CPG (Copilot/Schütze) tippt sie, während eine Aufforderung angezeigt wird."
+    },
+    "cpg-keyboard-unit/ku-digits": {
+      "name": "Zifferntasten 0-9",
+      "text": "Diese zehn Tasten tippen die Zahlen von 0 bis 9.",
+      "context": "Sie werden für Frequenzen, Codes und Koordinaten benutzt."
+    },
+    "cpg-keyboard-unit/ku-dot": {
+      "name": "Dezimalpunkt-Taste (.)",
+      "text": "Diese Taste tippt den Punkt, den Dezimalpunkt, zum Beispiel in einer Funkfrequenz. Dies gilt für die Tastatureinheit des CPG.",
+      "context": "Sie gehört zum Zahlenblock."
+    },
+    "cpg-keyboard-unit/ku-plusminus": {
+      "name": "Plus-Minus-Taste (+/-)",
+      "text": "Diese Taste tippt ein Plus- oder Minuszeichen vor eine Zahl.",
+      "context": "Das Spiel beschriftet sie mit +/-, und das Handbuch beschreibt sie nicht gesondert. Es gehört zur Tastatureinheit des CPG."
+    },
+    "cpg-keyboard-unit/ku-slash": {
+      "name": "Schrägstrich-Taste (/)",
+      "text": "Diese Taste tippt ein Schrägstrich-Zeichen in die Notizzeile.",
+      "context": "Das Handbuch beschreibt sie nicht gesondert; sie ist eine Dateneingabetaste. Sie ist nicht die Teilen-Taste der Rechentasten. Es gehört zur Tastatureinheit des CPG."
+    },
+    "cpg-keyboard-unit/ku-arithmetic": {
+      "name": "Rechentasten (* Teilen + -)",
+      "text": "Mit diesen vier Tasten arbeitet die KU wie ein Taschenrechner: malnehmen, teilen, addieren und subtrahieren. Das geht nur, wenn keine Dateneingabe-Aufforderung angezeigt wird. Dies gilt für die Tastatureinheit des CPG.",
+      "context": "Man tippt eine Zahl, drückt eine Rechentaste, tippt eine zweite Zahl und drückt ENTER. Das Ergebnis erscheint in der Notizzeile. Es gehört zur Tastatureinheit des CPG."
+    },
+    "cpg-keyboard-unit/ku-bks": {
+      "name": "BKS-Taste (Rücktaste)",
+      "text": "Diese Taste löscht das Zeichen links vom Cursor.",
+      "context": "Sie dient dazu, einen Tippfehler zu beheben."
+    },
+    "cpg-keyboard-unit/ku-spc": {
+      "name": "SPC-Taste (Leerzeichen)",
+      "text": "Diese Taste setzt ein Leerzeichen an die Cursorstelle.",
+      "context": "Sie wird für Leerstellen in Namen und Nachrichten benutzt."
+    },
+    "cpg-keyboard-unit/ku-clr": {
+      "name": "CLR-Taste (Löschen)",
+      "text": "Diese Taste löscht alles, was in der Notizzeile getippt wurde.",
+      "context": "Die Aufforderung bleibt dabei bestehen, der Computer wartet also weiter auf die Daten. Es gehört zur Tastatureinheit des CPG."
+    },
+    "cpg-keyboard-unit/ku-arrows": {
+      "name": "Blätterpfeil-Tasten (links und rechts)",
+      "text": "Diese zwei Tasten bewegen den Cursor nach links oder rechts entlang der Notizzeile. Dies gilt für die Tastatureinheit des CPG.",
+      "context": "Man nutzt sie, um ein Zeichen in der Mitte zu ändern oder eine Eingabe zu blättern, die länger als die Anzeige ist. Es gehört zur Tastatureinheit des CPG."
+    },
+    "cpg-keyboard-unit/ku-enter": {
+      "name": "ENTER-Taste",
+      "text": "Diese Taste schickt die getippten Daten an den Computer. Sind die Daten ungültig, blinken die Zeichen und müssen zuerst korrigiert werden. Dies gilt für die Tastatureinheit des CPG.",
+      "context": "Sie gibt auch das Ergebnis einer Rechnung aus."
+    },
+    "cpg-keyboard-unit/ku-brt": {
+      "name": "Helligkeitsregler der Anzeige (KU)",
+      "text": "Dreht man diesen Knopf, wird die KU-Anzeige heller oder dunkler.",
+      "context": "Die Besatzung stellt ihn für Tag oder Nacht ein."
+    },
+    "cpg-power-quadrant/eng-power-levers": {
+      "name": "ENG-POWER-Hebel (CPG)",
+      "text": "Diese zwei Hebel stellen den Kraftstofffluss für jedes Triebwerk ein, wie im hinteren Sitz. OFF ist kein Kraftstoff, IDLE ist das Triebwerk im langsamen Lauf, FLY ist die normale Flugeinstellung.",
+      "context": "Um einen Hebel über eine Raste zu bewegen, braucht der Fingerheber des CPG Strom im Hubschrauber, weil er über elektrische Schalter arbeitet.",
+      "positions": {
+        "OFF": "Es geht kein Kraftstoff zum Triebwerk.",
+        "IDLE": "Das Triebwerk läuft im Leerlauf.",
+        "FLY": "Die normale Flugstellung: Der Computer regelt das Triebwerk.",
+        "LOCK OUT": "Notstellung: Der Computer wird umgangen, und das Triebwerk wird von Hand gesteuert."
+      }
+    },
+    "cpg-tail-wheel-nvs/tail-wheel": {
+      "name": "TAIL-WHEEL-Taste (sperren / entsperren)",
+      "text": "Diese Taste sperrt oder entsperrt das Spornrad. Ein Licht zeigt UNLOCK, solange sich das Rad frei drehen kann. Dies gilt für das Spornrad- und NVS-Moduswahl-Feld des CPG.",
+      "context": "Ein gesperrtes Rad hält das Heck beim Start- oder Landelauf geradeaus; entsperrt kann es sich beim Wenden am Boden drehen. Am Kollektivhebel gibt es eine Taste mit derselben Aufgabe. Dies ist die Kopie am CPG-Sitz; der Pilot auf dem hinteren Sitz hat eine eigene."
+    },
+    "cpg-tail-wheel-nvs/nvs-mode": {
+      "name": "NVS-MODE-Schalter (Nachtsichtsensor)",
+      "text": "Dieser Schalter schaltet die Nachtsichtkamera dieses Sitzes ein und bestimmt, wie sie zeigt. Die Kamera, die für diesen Sitz standardmäßig gewählt ist, ist die TADS (die Zielkamera in der Nase).",
+      "context": "NVS bedeutet Nachtsichtsystem (night vision system). Das Bild wird in der Helmanzeige gezeigt (dem kleinen Bildschirm vor einem Auge). Es gehört zum Spornrad- und NVS-Moduswahl-Feld des CPG.",
+      "positions": {
+        "FIXED": "Die Kamera ist an und blickt geradeaus und leicht nach unten, egal was der Kopf macht.",
+        "NORM": "Die Kamera folgt dem Blick des Helms.",
+        "OFF": "Die Kamera ist aus und verstaut."
+      }
+    },
+    "cpg-emergency-panel/guard-button": {
+      "name": "GUARD-Taste",
+      "text": "Diese Taste soll das UHF-Funkgerät auf die Guard-Frequenz 243.000 MHz abstimmen, den üblichen Notkanal. In DCS führt das Handbuch sie als nicht umgesetzt auf. Dies gilt für das Notfall-Bedienfeld des CPG.",
+      "context": "Ein ON-Licht würde zeigen, dass die Taste in einem der beiden Sitze gedrückt wurde. Es gehört zum Notfall-Bedienfeld des CPG."
+    },
+    "cpg-emergency-panel/xpndr-button": {
+      "name": "XPNDR-Taste (Transponder-Notfall)",
+      "text": "Diese Taste soll den Transponder auf den Notfallcode 7700 stellen. Ein Transponder ist das Funkgerät, das Radarfragen mit einer Codenummer beantwortet. In DCS ist sie nicht umgesetzt. Dies gilt für das Notfall-Bedienfeld des CPG.",
+      "context": "Der Code 7700 sagt der Flugverkehrskontrolle, dass das Luftfahrzeug in Not ist. Es gehört zum Notfall-Bedienfeld des CPG."
+    },
+    "cpg-emergency-panel/zeroize-switch": {
+      "name": "ZEROIZE-Schalter",
+      "text": "Dieser Schalter soll die geheimen Funkcodes und gespeicherten Kartenpunkte löschen, damit ein Feind sie nicht nutzen kann. In DCS ist er nicht umgesetzt. Dies gilt für das Notfall-Bedienfeld des CPG.",
+      "context": "Er ist für den Fall gedacht, dass der Hubschrauber in Feindesland notlanden muss. Es gehört zum Notfall-Bedienfeld des CPG.",
+      "positions": {
+        "ON": "Soll das Löschen von Codes und gespeicherten Punkten starten; in DCS nicht umgesetzt.",
+        "OFF": "Normalstellung."
+      }
+    },
+    "cpg-emergency-panel/emerg-hyd": {
+      "name": "EMERG-HYD-Taste (Not-Hydraulik)",
+      "text": "Diese Taste soll den Notdruck der Hydraulik einschalten. Hydraulik ist Öl unter hohem Druck, das die schweren Teile bewegt. In DCS ist sie nicht umgesetzt. Dies gilt für das Notfall-Bedienfeld des CPG.",
+      "context": "In Wirklichkeit würde sie für sehr kurze Zeit Druck für eine Notlandung liefern. Es gehört zum Notfall-Bedienfeld des CPG."
+    },
+    "cpg-stores-jettison/jett-stations": {
+      "name": "Stationstasten L/R OUTBD und INBD",
+      "text": "Diese vier Tasten stehen für vier Waffenstationen an den Flügeln: links außen, links innen, rechts innen und rechts außen. Ein Druck macht die Station für den Abwurf scharf oder entschärft sie; ein Licht auf der Taste zeigt, dass sie scharf ist. Dies gilt für das Abwurf-Bedienfeld des CPG.",
+      "context": "Outboard bedeutet weiter außen am Flügel."
+    },
+    "cpg-stores-jettison/jett-tips": {
+      "name": "Tasten L TIP und R TIP",
+      "text": "Diese zwei Tasten für die Flügelspitzen sind auf dem Bedienfeld, haben aber keine Funktion. Dies gilt für das Abwurf-Bedienfeld des CPG.",
+      "context": "Das Handbuch sagt das ausdrücklich."
+    },
+    "cpg-stores-jettison/jett-button": {
+      "name": "JETT-Taste (Abwurf)",
+      "text": "Drückt man diese Taste, werden die Waffen aller Stationen abgeworfen, die mit den Stationstasten scharf gemacht wurden. Dies gilt für das Abwurf-Bedienfeld des CPG.",
+      "context": "Anders als die gesicherte Not-Abwurftaste am Kollektivhebel, die alles abwirft, wirft diese nur die gewählten Stationen ab. Es gehört zum Abwurf-Bedienfeld des CPG."
+    },
+    "cpg-interior-lighting/signal-knob": {
+      "name": "SIGNAL-Knopf (CPG)",
+      "text": "Dieser Knopf stellt nachts die Helligkeit der kleinen Warn- und Statuslichter im Cockpit ein. Er tut nichts, solange sie auf Tageshelligkeit stehen. Dies gilt für das Beleuchtungsfeld des CPG.",
+      "context": "Auf RST gedreht, stellt er die Nachtwerte ein, wenn der PRIMARY-Knopf nicht auf OFF steht und der FLOOD-Knopf unter der Hälfte. Er gehört zum Beleuchtungsfeld des CPG."
+    },
+    "cpg-interior-lighting/primary-knob": {
+      "name": "PRIMARY-Knopf (CPG)",
+      "text": "Dieser Knopf stellt die Helligkeit der Lichter hinter den Instrumentenmarkierungen im vorderen Sitz ein. Auf OFF gedreht, schickt er die Signallichter zurück auf Tageshelligkeit.",
+      "context": "Er wird nachts zusammen mit dem Flutlicht benutzt."
+    },
+    "cpg-interior-lighting/flood-knob": {
+      "name": "FLOOD-Knopf (CPG)",
+      "text": "Dieser Knopf stellt die Helligkeit des Flutlichts ein, das das vordere Cockpit beleuchtet. Über die Hälfte gedreht, schickt er die Signallichter zurück auf Tageshelligkeit.",
+      "context": "Es beleuchtet das Cockpit als Ganzes, während der PRIMARY-Knopf die Markierungen der Instrumente beleuchtet. Er gehört zum Beleuchtungsfeld des CPG."
+    },
+    "cpg-interior-lighting/press-to-test": {
+      "name": "PRESS-TO-TEST-Taste (CPG)",
+      "text": "Drückt man diese Taste, leuchten alle Signallichter des vorderen Sitzes auf einmal, damit der CPG sieht, dass keines durchgebrannt ist.",
+      "context": "Das ist ein schneller Check der Warnlichter."
+    },
+    "cpg-communications-panel/radio-volume": {
+      "name": "Funk-Lautstärkeknöpfe VHF, UHF, FM1, FM2, HF",
+      "text": "Jeder dieser fünf Knöpfe stellt ein, wie laut ein Funkgerät im Kopfhörer des CPG (Copilot/Schütze) klingt. Im Uhrzeigersinn drehen macht es lauter; den Knopf herausziehen schaltet dieses Funkgerät stumm.",
+      "context": "Die fünf Funkgeräte heißen VHF, UHF, FM1, FM2 und HF. Zieht man einen Knopf heraus, verschwindet auch die Überwachungsmarkierung dieses Funkgeräts auf dem EUFD. Es gehört zum Kommunikationsfeld des CPG."
+    },
+    "cpg-communications-panel/squelch-switches": {
+      "name": "SQL-Squelch-Schalter (VHF, UHF, FM1, FM2, HF)",
+      "text": "Der Squelch schneidet das Rauschen eines Funkgeräts ab, wenn niemand spricht. Jeder dieser fünf Schalter schaltet den Squelch eines Funkgeräts ein oder aus. Ein Sternchen auf dem EUFD markiert die Funkgeräte mit eingeschaltetem Squelch. Dies gilt für das Kommunikationsfeld des CPG.",
+      "context": "Ein Antippen nach vorn oder hinten schaltet um. Die Einstellung wird auf dem EUFD in beiden Sitzen angezeigt. Es gehört zum Kommunikationsfeld des CPG."
+    },
+    "cpg-communications-panel/sens-knob": {
+      "name": "SENS-Knopf (Empfindlichkeit der Sprachaktivierung)",
+      "text": "Dieser Knopf stellt ein, wie laut jemand sprechen muss, bevor sich das Mikrofon von selbst einschaltet. Er spielt nur in der Stellung VOX des ICS-Schalters eine Rolle. Dies gilt für das Kommunikationsfeld des CPG.",
+      "context": "Im Uhrzeigersinn gedreht, reagiert das Mikrofon auch auf eine leisere Stimme. Es gehört zum Kommunikationsfeld des CPG."
+    },
+    "cpg-communications-panel/master-volume": {
+      "name": "MASTER-Lautstärkeknopf",
+      "text": "Dieser Knopf stellt die Gesamtlautstärke von allem im Helm ein. Im Uhrzeigersinn drehen macht es lauter. Dies gilt für das Kommunikationsfeld des CPG.",
+      "context": "Er wirkt zusätzlich zu den einzelnen Lautstärkeknöpfen."
+    },
+    "cpg-communications-panel/ics-mode": {
+      "name": "ICS-Modusschalter (Intercom-Mikrofon)",
+      "text": "Dieser Schalter bestimmt, wann das Mikrofon dieses Sitzes in der Bordsprechanlage offen ist. Dies gilt für das Kommunikationsfeld des CPG.",
+      "context": "PTT steht für Sprechtaste (push-to-talk). Den Druck übernimmt der Schalter am Steuerknüppel. Es gehört zum Kommunikationsfeld des CPG.",
+      "positions": {
+        "PTT": "Das Mikrofon ist nur an, solange die Sprechtaste (oder die Bodentaste) gedrückt ist.",
+        "VOX": "Das Mikrofon schaltet sich von selbst ein, wenn die Stimme laut genug ist, oder solange die Sprechtaste gedrückt ist.",
+        "HOT MIC": "Das Mikrofon ist immer an."
+      }
+    },
+    "cpg-communications-panel/ident-button": {
+      "name": "IDENT-Taste",
+      "text": "Diese Taste soll den Hubschrauber über seinen Transponder für einen Moment auf einem Flugverkehrsradar hervorheben. In DCS ist sie nicht umgesetzt. Dies gilt für das Kommunikationsfeld des CPG.",
+      "context": "Der Transponder ist das Funkgerät, das Radarfragen mit einem Code beantwortet. Es gehört zum Kommunikationsfeld des CPG."
+    },
+    "cpg-communications-panel/iff-volume": {
+      "name": "IFF-Lautstärkeknopf",
+      "text": "Dieser Knopf würde die Lautstärke des Tons vom IFF einstellen, dem System, das Freund-Feind-Fragen beantwortet. In DCS ist er nicht umgesetzt. Dies gilt für das Kommunikationsfeld des CPG.",
+      "context": "Das Handbuch führt ihn als nicht umgesetzt auf."
+    },
+    "cpg-communications-panel/rlwr-volume": {
+      "name": "RLWR-Lautstärkeknopf",
+      "text": "Dieser Knopf stellt die Lautstärke der gesprochenen Warnungen des Radar- und Laserwarnempfängers ein. Im Uhrzeigersinn drehen macht es lauter. Dies gilt für das Kommunikationsfeld des CPG.",
+      "context": "Der Empfänger sagt der Besatzung, wenn ein feindliches Radar oder ein Laser den Hubschrauber anstrahlt. Es gehört zum Kommunikationsfeld des CPG."
+    },
+    "cpg-communications-panel/ata-volume": {
+      "name": "ATA-Lautstärkeknopf",
+      "text": "Dieser Knopf ist auf dem Bedienfeld, hat aber im Spiel keine Funktion.",
+      "context": "Das Handbuch sagt, dass dieser Knopf keine Funktion hat."
+    },
+    "cpg-communications-panel/vcr-volume": {
+      "name": "VCR-Lautstärkeknopf",
+      "text": "Dieser Knopf würde die Lautstärke der Wiedergabe eines Videorekorders einstellen. Herausgezogen würde er stumm schalten. In DCS ist er nicht umgesetzt. Dies gilt für das Kommunikationsfeld des CPG.",
+      "context": "Das Handbuch führt ihn als nicht umgesetzt auf."
+    },
+    "cpg-communications-panel/adf-volume": {
+      "name": "ADF-Lautstärkeknopf",
+      "text": "Dieser Knopf stellt die Lautstärke des ADF-Tons ein, des Funkempfängers, der auf Bodenfunkfeuer zeigt. Auf diesem Hubschrauber trägt dieser Tonkanal auch die gesprochenen Warnungen des Raketenwarnsystems. Herausgezogen schaltet er stumm. Dies gilt für das Kommunikationsfeld des CPG.",
+      "context": "Der CMWS/NAV-Schalter am CMWS-Feld entscheidet, ob dieser Kanal den Funkfeuerton oder die Raketenwarnungen trägt. Es gehört zum Kommunikationsfeld des CPG."
+    },
+    "cpg-windshield-wiper/defog-button": {
+      "name": "DEFOG-Taste (Entnebelung)",
+      "text": "Diese Taste soll warme Luft gegen die Seitenscheiben des Kabinendachs blasen, um Beschlag zu entfernen. In DCS ist sie nicht umgesetzt. Dies gilt für das Scheibenwischerfeld des CPG.",
+      "context": "Das Handbuch führt sie als nicht umgesetzt auf."
+    },
+    "cpg-windshield-wiper/wiper-knob": {
+      "name": "WINDSHIELD-WIPER-Knopf (Scheibenwischer)",
+      "text": "Dieser Knopf schaltet den Scheibenwischer aus, auf langsam oder schnell oder schickt ihn zurück an seinen Parkplatz. Dies gilt für das Scheibenwischerfeld des CPG.",
+      "context": "Der CPG (Copilot/Schütze) nutzt ihn bei Regen. Hält man ihn auf PARK, fährt der Wischer in seine Ruhestellung, und der Knopf springt beim Loslassen auf OFF zurück.",
+      "positions": {
+        "PARK": "Gedrückt halten, damit der Wischer in seine Parkstellung fährt; der Knopf springt auf OFF zurück.",
+        "OFF": "Der Wischer bleibt stehen, wo er ist.",
+        "LO": "Der Wischer bewegt sich langsam.",
+        "HI": "Der Wischer bewegt sich schnell."
+      }
+    },
+    "cpg-processor-select/processor-select": {
+      "name": "PROCESSOR-SELECT-Schalter (SP 1 / AUTO / SP 2)",
+      "text": "Dieser Schalter wählt den Hauptcomputer: SP1 oder SP2 von Hand, oder AUTO, damit der Hubschrauber von selbst umschaltet, wenn der Hauptcomputer ausfällt. Zwei Lichter zeigen, welcher der Hauptcomputer ist. In DCS ist er nicht umgesetzt.",
+      "context": "Das Handbuch führt das ganze Bedienfeld als nicht umgesetzt auf.",
+      "positions": {
+        "SP 1": "Wählt Systemprozessor 1 als Hauptcomputer.",
+        "AUTO": "Der Hubschrauber schaltet von selbst um, wenn der Hauptcomputer ausfällt.",
+        "SP 2": "Wählt Systemprozessor 2 als Hauptcomputer."
+      }
+    },
+    "cpg-cockpit-fittings/cpg-canopy": {
+      "name": "CPG-Kabinendachtür (öffnen / schließen)",
+      "text": "Das öffnet oder schließt die Kabinendachtür neben dem CPG, die gläserne Tür zum Einsteigen.",
+      "context": "Das EUFD kann einen Hinweis anzeigen, wenn die Kabinendachtür nicht verriegelt ist. Sie gehört zu den Einbauten des CPG-Cockpits.",
+      "positions": {
+        "OPEN": "Die Kabinendachtür ist offen.",
+        "CLOSE": "Die Kabinendachtür ist geschlossen."
+      }
+    },
+    "cpg-cockpit-fittings/cpg-m4-trigger": {
+      "name": "CPG-M4-Abzug",
+      "text": "Das Bild des Handbuchs von der rechten Konsole zeigt dort ein M4-Gewehr. Dies ist der Abzug dieses Gewehrs im Spiel, für den vorderen Sitz.",
+      "context": "Das Handbuch beschreibt die Gewehr-Bedienelemente nicht weiter."
+    },
+    "cpg-cockpit-fittings/cpg-m4-safety": {
+      "name": "CPG-M4-Sicherung",
+      "text": "Das ist der Sicherungshebel des M4-Gewehrs im vorderen Cockpit.",
+      "context": "Das Handbuch beschreibt ihn nicht; das Spiel nennt ihn 'CPG M4 Safety'."
+    },
+    "cpg-cockpit-fittings/stick-folding": {
+      "name": "Knüppel-Klappmechanismus (UP / DOWN)",
+      "text": "Das Spiel nennt diesen Schalter 'Stick Folding, UP/DOWN'. Das Handbuch beschreibt ihn nicht, deshalb ist seine genaue Wirkung hier nicht bekannt.",
+      "context": "Er gehört nicht zu den im Handbuch beschriebenen Flugsystemen.",
+      "positions": {
+        "UP": "Die obere Stellung des Schalters.",
+        "DOWN": "Die untere Stellung des Schalters."
+      }
+    },
+    "cpg-cyclic-grip/force-trim-hold": {
+      "name": "Force-Trim- / Hold-Mode-Schalter",
+      "text": "Dieser Vierwegeschalter unter dem Daumen bedient die Kraft-Trimmung (Force Trim) und die Haltemodi. Force Trim ist das System, das Knüppel und Pedale dort lässt, wo sie hingestellt wurden. Nach vorn gehalten gibt er diesen Halt frei; links und rechts schalten Lagehaltung und Höhenhaltung ein oder aus; nach hinten schaltet beide aus. Dies gilt für den Cyclic-Griff des CPG.",
+      "context": "Der CPG (Copilot/Schütze) nutzt ihn, um den Hubschrauber kurz seine Lage oder Höhe halten zu lassen und den Knüppel bei Bedarf frei zu bewegen. Lässt man den Schalter los, hält die Trimmung die neue Knüppelstellung."
+    },
+    "cpg-cyclic-grip/weapon-action": {
+      "name": "Waffenwahlschalter (Weapon Action Switch, WAS)",
+      "text": "Dieser Vierwegeschalter wählt die Waffe: nach vorn die Bordkanone, nach links die Raketen, nach rechts die Lenkflugkörper. Drückt man dieselbe Richtung ein zweites Mal, wird die Waffe wieder weggelegt. Die Stellung nach hinten hat keine Funktion. Dies gilt für den Cyclic-Griff des CPG.",
+      "context": "Eine Waffe zu wählen heißt, sie zu \"aktionieren\" (actioning). Kein Sitz hat Vorrang: Der Sitz, der zuletzt eine Waffe aktioniert hat, bekommt die Waffe. Der CPG (Copilot/Schütze) feuert sie dann mit dem Abzug ab."
+    },
+    "cpg-cyclic-grip/symbology-select": {
+      "name": "Symbology-Select-Schalter",
+      "text": "Dieser Vierwegeschalter mit Druckfunktion wählt, was die Helmanzeige zum Fliegen zeigt: nach vorn Übergang und Reiseflug, nach hinten Schweben und Bob-up. Eindrücken ruft die Flugseite auf dem linken MPD auf. Dies gilt für den Cyclic-Griff des CPG.",
+      "context": "Beide Sitze zeigen immer denselben Symbolmodus, egal welcher Schalter ihn geändert hat. Die vier Modi sind Reiseflug, Übergang, Schweben und Bob-up. Es gehört zum Cyclic-Griff des CPG."
+    },
+    "cpg-cyclic-grip/ptt-rts": {
+      "name": "PTT/RTS-Schalter (Funk und Intercom)",
+      "text": "Dieser Schalter unter dem Daumen ist die Sprechtaste (push-to-talk). Links sendet auf dem gewählten Funkgerät, rechts spricht über die Bordsprechanlage zum anderen Sitz und zur Bodenmannschaft, und ein Druck schaltet die Funkgerätewahl zum nächsten Funkgerät weiter. Dies gilt für den Cyclic-Griff des CPG.",
+      "context": "Das gewählte Funkgerät wird auf dem EUFD gezeigt (RTS bedeutet Sendefunkgerät wählen, radio transmit select). Dieselbe Wahl geht mit der RTS-Wippe neben diesem Bildschirm. Es gehört zum Cyclic-Griff des CPG."
+    },
+    "cpg-cyclic-grip/chaff-button": {
+      "name": "Chaff-Abwurf-Taste (C)",
+      "text": "Diese Taste wirft Chaff (Düppel) aus, kleine Metallstreifen, die eine radargelenkte Rakete verwirren. Im Programmmodus gibt sie eine gespeicherte Folge von Streifen ab; im manuellen Modus eine Patrone. Dies gilt für den Cyclic-Griff des CPG.",
+      "context": "Der Chaff-Werfer muss zuerst scharf gemacht werden, was nur in der Luft möglich ist. Es gehört zum Cyclic-Griff des CPG."
+    },
+    "cpg-cyclic-grip/flare-button": {
+      "name": "Flare-Abwurf-Taste (FLARE)",
+      "text": "Diese Taste wirft Flares aus, heiß brennende Täuschkörper, die wärmesuchende Raketen weglocken. Sie gibt ein gespeichertes Flare-Programm ab. Dies gilt für den Cyclic-Griff des CPG.",
+      "context": "Sie wirkt zusätzlich zum automatischen Abwurf des Raketenwarnsystems und nur, wenn das Flare-System in der Luft scharf gemacht ist. Es gehört zum Cyclic-Griff des CPG."
+    },
+    "cpg-cyclic-grip/weapon-trigger": {
+      "name": "Waffenabzug (zweistufig, gesichert)",
+      "text": "Dieser Abzug feuert die Waffe ab, die der CPG (Copilot/Schütze) gewählt hat. Die erste Stufe feuert, wenn keine Leistungs- oder Sicherheitssperren vorliegen; die zweite feuert, wenn keine Sicherheitssperren vorliegen. Eine Klappe deckt ihn ab.",
+      "context": "Der Master Arm am Waffen-Bedienfeld muss auf ARM stehen. Eine Sperre (Inhibit) ist eine Regel, die das Feuern blockiert, etwa Gewicht auf den Rädern. Es gehört zum Cyclic-Griff des CPG."
+    },
+    "cpg-cyclic-grip/trigger-guard": {
+      "name": "Abzugsschutz (Abdeckung)",
+      "text": "Das ist die Klappe über dem Waffenabzug. Man öffnet sie vor dem Feuern und schließt sie danach. Dies gilt für den Cyclic-Griff des CPG.",
+      "context": "Sie verhindert, dass der Abzug aus Versehen gezogen wird."
+    },
+    "cpg-cyclic-grip/fmc-release": {
+      "name": "FMC-Release-Taste",
+      "text": "Diese Taste unter dem kleinen Finger schaltet die Hilfe des Flugmanagement-Computers für Nicken, Rollen, Gieren und den Kollektivhebel aus. Der Flugmanagement-Computer ist der Computer, der den Hubschrauber ruhig hält. Dies gilt für den Cyclic-Griff des CPG.",
+      "context": "Die Hilfe kann auf der Utility-Seite des MPD wieder eingeschaltet werden. Es gehört zum Cyclic-Griff des CPG."
+    },
+    "cpg-cyclic-grip/cyclic-stick": {
+      "name": "Cyclic (der Steuerknüppel)",
+      "text": "Das Cyclic ist der Steuerknüppel vor dem Sitz. Bewegt man ihn, neigt sich der Rotor und damit der Hubschrauber: vorwärts, rückwärts, nach links oder nach rechts. Dies gilt für den Cyclic-Griff des CPG.",
+      "context": "Zusammen mit dem Kollektivhebel und den Pedalen ist er die wichtigste Flugsteuerung. Es gehört zum Cyclic-Griff des CPG."
+    },
+    "cpg-cyclic-grip/cyclic-parts-swch": {
+      "name": "Vierwegeschalter des Cyclic (3D-Teile)",
+      "text": "Im 3D-Cockpit modelliert das Spiel die Vierwegeschalter des Griffs als einzelne anklickbare Teile, alle mit 'swch' beschriftet. Es sind die oben beschriebenen Schalter für Force Trim, Waffenwahl, Symbolik und Funk. Dies gilt für den Cyclic-Griff des CPG.",
+      "context": "Welches Teil welches ist, zeigen die Bedienelemente dieses Bedienfelds."
+    },
+    "cpg-cyclic-grip/cyclic-parts-btn": {
+      "name": "Tasten des Cyclic (3D-Teile)",
+      "text": "Das Spiel modelliert die Tasten des Cyclic-Griffs als anklickbare Teile, alle mit 'btn' beschriftet: Chaff, Flare, FMC Release und die Cage-Taste, die keine Funktion hat. Dies gilt für den Cyclic-Griff des CPG.",
+      "context": "Die 3D-Teile sind im Spiel nicht einzeln benannt."
+    },
+    "cpg-cyclic-grip/cyclic-part-trigger": {
+      "name": "Waffenabzug (3D-Teil)",
+      "text": "Das ist der anklickbare Abzug am Cyclic-Griff im 3D-Cockpit. Er tut dasselbe wie der oben beschriebene Waffenabzug. Dies gilt für den Cyclic-Griff des CPG.",
+      "context": "Seine Abdeckung ist ein eigenes anklickbares Teil."
+    },
+    "cpg-collective-flight-grip/jettison-button": {
+      "name": "Not-Abwurftaste (JETT) (gesichert)",
+      "text": "Diese gesicherte Taste wirft alle Waffen von den Flügelstationen auf einmal ab. Die Abdeckung muss zuerst hochgeklappt werden. Dies gilt für den Flug-Griff des Kollektivhebels des CPG.",
+      "context": "Sie ist für einen Notfall gedacht, wenn der Hubschrauber leichter werden muss. Das Abwurf-Bedienfeld kann stattdessen einzelne Stationen abwerfen. Es gehört zum Flug-Griff des Kollektivhebels des CPG."
+    },
+    "cpg-collective-flight-grip/boresight-polarity": {
+      "name": "Boresight- / Polarity-Schalter",
+      "text": "Dieser Schalter wechselt das Infrarotbild zwischen weiß-heiß und schwarz-heiß. Die linke Stellung, Boresight, hat keine Funktion. Dies gilt für den Flug-Griff des Kollektivhebels des CPG.",
+      "context": "Polarität heißt, ob warme Dinge weiß oder schwarz gezeigt werden. Sie gilt für die Nachtkamera dieses Sitzes. Es gehört zum Flug-Griff des Kollektivhebels des CPG.",
+      "positions": {
+        "B/S": "Boresight: keine Funktion.",
+        "CENTER": "Neutralstellung.",
+        "PLRT": "Schaltet das Infrarotbild zwischen weiß-heiß und schwarz-heiß um."
+      }
+    },
+    "cpg-collective-flight-grip/searchlight-switch": {
+      "name": "Suchscheinwerfer-Schalter",
+      "text": "Dieser Schalter schaltet den Suchscheinwerfer unter dem Rumpf an, aus oder schickt ihn zurück in seine verstaute Stellung. Dies gilt für den Flug-Griff des Kollektivhebels des CPG.",
+      "context": "Von STOW springt der Schalter auf OFF zurück. Nach STOW kann der Scheinwerfer eine Minute lang nicht bewegt werden. Es gehört zum Flug-Griff des Kollektivhebels des CPG.",
+      "positions": {
+        "ON": "Der Suchscheinwerfer ist an.",
+        "OFF": "Der Suchscheinwerfer ist aus.",
+        "STOW": "Der Suchscheinwerfer fährt in seine verstaute Stellung ein."
+      }
+    },
+    "cpg-collective-flight-grip/searchlight-position": {
+      "name": "Suchscheinwerfer-Positionsschalter",
+      "text": "Dieser Vierwegeschalter richtet den Suchscheinwerfer aus: nach vorn dreht er ihn nach vorn und oben, nach hinten nach unten und zurück, links und rechts drehen ihn zur Seite. Dies gilt für den Flug-Griff des Kollektivhebels des CPG.",
+      "context": "Er bewegt die Lampe, nicht den Schalter des Lichts selbst. Es gehört zum Flug-Griff des Kollektivhebels des CPG."
+    },
+    "cpg-collective-flight-grip/nvs-select": {
+      "name": "NVS-Select-Schalter",
+      "text": "Dieser Schalter wählt, welche Kamera das Nachtsichtbild dieses Sitzes speist: die TADS (die Zielkamera in der Nase) oder die PNVS (die Nachtkamera des Piloten in der Nase). Dies gilt für den Flug-Griff des Kollektivhebels des CPG.",
+      "context": "Jeder Sitz kann die Wahl ändern. Der Rahmen in der Helmanzeige zeigt dann die Bewegungsgrenzen der gewählten Kamera. Es gehört zum Flug-Griff des Kollektivhebels des CPG.",
+      "positions": {
+        "TADS": "Die Zielkamera ist der Nachtsichtsensor dieses Sitzes.",
+        "PNVS": "Die Nachtkamera des Piloten ist der Nachtsichtsensor dieses Sitzes."
+      }
+    },
+    "cpg-collective-flight-grip/stabilator-switch": {
+      "name": "Stabilator-Steuerschalter",
+      "text": "Dieser Schalter bewegt den Stabilator, den kleinen Flügel am Heck, von Hand: Nase nach unten oder Nase nach oben. Eindrücken stellt den Stabilator wieder auf automatisch. Dies gilt für den Flug-Griff des Kollektivhebels des CPG.",
+      "context": "Normalerweise ist der Stabilator automatisch. Bewegt man den Schalter nach vorn oder hinten, geht er in den manuellen Modus. Es gehört zum Flug-Griff des Kollektivhebels des CPG.",
+      "positions": {
+        "ND": "Bewegt die Hinterkante nach unten, so dass die Nase nach unten nickt; schaltet auf manuell.",
+        "NU": "Bewegt die Hinterkante nach oben, so dass die Nase nach oben nickt; schaltet auf manuell.",
+        "RESET": "Eindrücken stellt den Stabilator auf automatisch zurück."
+      }
+    },
+    "cpg-collective-flight-grip/chop-button": {
+      "name": "Triebwerks-CHOP-Taste (gesichert)",
+      "text": "Diese gesicherte Taste soll beide Triebwerke schnell auf Leerlaufleistung zurückbringen. Ein zweiter Druck würde die Leistung wiederherstellen. In DCS ist sie nicht umgesetzt. Dies gilt für den Flug-Griff des Kollektivhebels des CPG.",
+      "context": "Sie hat eine Abdeckung, um ungewollte Benutzung zu verhindern."
+    },
+    "cpg-collective-flight-grip/tail-wheel-button": {
+      "name": "Spornrad-Taste (sperren / entsperren)",
+      "text": "Diese Taste sperrt oder entsperrt das Spornrad, genau wie die Taste am Spornrad-Bedienfeld. Ein Licht an jenem Bedienfeld zeigt UNLOCK, solange das Rad frei ist. Dies gilt für den Flug-Griff des Kollektivhebels des CPG.",
+      "context": "Das Rad sollte vor dem Abheben gesperrt und zum Wenden am Boden entsperrt werden. Es gehört zum Flug-Griff des Kollektivhebels des CPG."
+    },
+    "cpg-collective-flight-grip/collective-lever": {
+      "name": "Kollektivhebel (der Hebel)",
+      "text": "Der Kollektivhebel ist der Hebel links vom Sitz. Zieht man ihn hoch, packen die Blätter des Hauptrotors stärker zu, und der Hubschrauber steigt; senkt man ihn, sinkt der Hubschrauber. Dies gilt für den Flug-Griff des Kollektivhebels des CPG.",
+      "context": "Er wird zusammen mit dem Steuerknüppel (Cyclic) und den Pedalen benutzt."
+    },
+    "cpg-collective-mission-grip/fcr-mode": {
+      "name": "FCR-Modusschalter",
+      "text": "Dieser Vierwegeschalter wählt den Modus des Feuerleitradars, des Radars auf dem Mast über dem Rotor. Nach vorn sind es Bodenziele, nach rechts die Radarkarte, nach hinten Luftziele und nach links das Geländeprofil. Dies gilt für den Einsatz-Griff des Kollektivhebels des CPG.",
+      "context": "Er wirkt, solange das Radar das gewählte Visier ist und nicht scannt. Drückt man die Richtung der Radarkarte noch einmal, wird das Geländevideo darunter ein- oder ausgeblendet. Es gehört zum Einsatz-Griff des Kollektivhebels des CPG."
+    },
+    "cpg-collective-mission-grip/fcr-scan-size": {
+      "name": "FCR-Scangrößenschalter",
+      "text": "Dieser Vierwegeschalter stellt ein, wie weit das Radar blickt: weit (rechts), mittel (hinten), schmal (links) oder Zoom (vorn). Die genauen Breiten hängen davon ab, ob das Radar Boden- oder Luftziele sucht. Dies gilt für den Einsatz-Griff des Kollektivhebels des CPG.",
+      "context": "Das Handbuch nennt für die Bodenmodi 90, 45, 30 und 15 Grad. Die Einstellung wird benutzt, solange das Radar nicht scannt. Es gehört zum Einsatz-Griff des Kollektivhebels des CPG."
+    },
+    "cpg-collective-mission-grip/cursor-controller": {
+      "name": "Cursor-Steuerung / Enter",
+      "text": "Dieses kleine Feld unter dem Daumen bewegt den Cursor auf den MPD-Bildschirmen, so dass man eine Taste auf dem Bildschirm wählen kann, ohne hinzugreifen. Eindrücken wählt, worauf der Cursor steht. Dies gilt für den Einsatz-Griff des Kollektivhebels des CPG.",
+      "context": "Es funktioniert wie ein Mauszeiger für die MPD-Seiten."
+    },
+    "cpg-collective-mission-grip/sight-select": {
+      "name": "Sight-Select-Schalter (Visierwahl)",
+      "text": "Dieser Vierwegeschalter wählt das Visier zum Zielen: nach vorn das Helmvisier, nach links das Radar, nach rechts die Zielkamera TADS, nach hinten die Link-Funktion, die einen Sensor auf das Ziel des anderen richtet. Der CPG kann auch das TADS-Visier wählen, die Zielkamera in der Nase.",
+      "context": "Das Visier ist der Ort, auf den die Waffen blicken. Das Radar-Visier ruft die Radarseite auf dem linken MPD auf. Es gehört zum Einsatz-Griff des Kollektivhebels des CPG."
+    },
+    "cpg-collective-mission-grip/cursor-display-select": {
+      "name": "Cursor-Display-Select-Taste",
+      "text": "Diese Taste springt mit dem Cursor in die Mitte des anderen MPD-Bildschirms. Dies gilt für den Einsatz-Griff des Kollektivhebels des CPG.",
+      "context": "Sie spart das Bewegen des Cursors über das Cockpit hinweg mit dem Feld."
+    },
+    "cpg-collective-mission-grip/fcr-scan": {
+      "name": "FCR-Scan-Schalter",
+      "text": "Dieser Schalter startet einen Radarscan: nach vorn ein einzelner Scan-Stoß, nach hinten ein Dauerscan. Eine zweite Bewegung stoppt den laufenden Scan. Dies gilt für den Einsatz-Griff des Kollektivhebels des CPG.",
+      "context": "Das Radar kann nicht senden, solange das Gewicht auf den Rädern ruht, es sei denn, die Bodenfreigabe des Waffen-Bedienfelds ist an. Es gehört zum Einsatz-Griff des Kollektivhebels des CPG.",
+      "positions": {
+        "S-SCAN": "Startet einen einzelnen Scan-Stoß; ein erneutes Bewegen stoppt einen laufenden Scan.",
+        "CENTER": "Neutralstellung.",
+        "C-SCAN": "Startet einen Dauerscan, bis er gestoppt oder ein anderes Visier gewählt wird."
+      }
+    },
+    "cpg-collective-mission-grip/cued-search": {
+      "name": "Cued-Search-Taste (CUED)",
+      "text": "Diese Taste ist für eine geführte Suche (cued search) des Radars gedacht. In DCS ist sie nicht umgesetzt. Dies gilt für den Einsatz-Griff des Kollektivhebels des CPG.",
+      "context": "Das Handbuch führt sie als nicht umgesetzt auf."
+    },
+    "cpg-collective-mission-grip/missile-advance": {
+      "name": "Missile-Advance-Taste (Lenkflugkörper weiterschalten)",
+      "text": "Diese Taste schaltet zur nächsten Hellfire-Rakete in der Reihe weiter. Eine Hellfire ist die gelenkte Panzerabwehrrakete des Hubschraubers. Dies gilt für den Einsatz-Griff des Kollektivhebels des CPG.",
+      "context": "Sie wirkt nur, wenn der Raketenmodus auf der Waffenseite auf MAN (manuell) steht. Es gehört zum Einsatz-Griff des Kollektivhebels des CPG."
+    },
+    "cpg-collective-mission-grip/alt-cursor-enter": {
+      "name": "Alternativer Cursor-Enter-Abzug",
+      "text": "Dieser Abzug unter dem Griff wählt das Element unter dem Cursor, als Alternative zum Eindrücken des Cursor-Feldes selbst. Dies gilt für den Einsatz-Griff des Kollektivhebels des CPG.",
+      "context": "Er wird zusammen mit dem Cursor-Feld benutzt."
+    },
+    "cpg-collective-parts/collective-parts-switch": {
+      "name": "Schalter des Kollektivhebels (3D-Teile)",
+      "text": "Das Spiel modelliert die Schalter und Vierwegefelder der Kollektivgriffe als einzelne anklickbare Teile, alle mit 'switch' beschriftet. Sie stehen für die Schalter, die in den anderen zwei Bedienfeldern des Kollektivhebels beschrieben sind. Dies gilt für die Griffteile des Kollektivhebels des CPG.",
+      "context": "Die 3D-Teile sind im Spiel nicht einzeln benannt."
+    },
+    "cpg-collective-parts/collective-parts-btn": {
+      "name": "Tasten des Kollektivhebels (3D-Teile)",
+      "text": "Das Spiel modelliert die Tasten der Kollektivgriffe als anklickbare Teile, alle mit 'btn' beschriftet. Es sind die Tasten für Abwurf, Chop, Spornrad, Cursor-Anzeige, Cued Search und Missile Advance. Dies gilt für die Griffteile des Kollektivhebels des CPG.",
+      "context": "Die 3D-Teile sind im Spiel nicht einzeln benannt."
+    },
+    "cpg-collective-parts/collective-parts-trigger": {
+      "name": "Abzüge des Kollektivhebels (3D-Teile)",
+      "text": "Das Spiel modelliert die zwei Abzüge des Kollektivhebels als anklickbare Teile. Einer ist der alternative Cursor-Enter-Abzug des Einsatz-Griffs; der andere ist der BUCS-Abzug, der nicht umgesetzt ist. Dies gilt für die Griffteile des Kollektivhebels des CPG.",
+      "context": "BUCS ist das Reservesteuersystem (back-up control system). Laut Handbuch funktioniert sein Abzug nur im CPG-Sitz, und selbst dort ist er als nicht umgesetzt vermerkt. Es gehört zu den Griffteilen des Kollektivhebels des CPG."
+    },
+    "cpg-collective-parts/collective-parts-cap": {
+      "name": "Schutzabdeckungen des Kollektivhebels (3D-Teile)",
+      "text": "Das Spiel modelliert die Schutzabdeckungen über den gesicherten Tasten des Kollektivhebels als anklickbare Teile. Die Not-Abwurftaste und die Triebwerks-Chop-Taste haben solche Abdeckungen. Dies gilt für die Griffteile des Kollektivhebels des CPG.",
+      "context": "Eine Abdeckung muss hochgeklappt werden, bevor ihre Taste gedrückt werden kann. Es gehört zu den Griffteilen des Kollektivhebels des CPG."
+    },
+    "cpg-tedac-left-grip/iat-ofs": {
+      "name": "Image-Auto-Track- / Offset-Schalter",
+      "text": "Dieser Schalter steuert die automatische Verfolgung der Zielkamera. IAT lässt sie dem Ziel unter dem Zielkreuz von selbst folgen. OFS kehrt zu einer Verfolgung zurück oder gibt sie auf.",
+      "context": "Ein kurzer Druck auf OFS bringt das Zielkreuz zur Verfolgung zurück oder gibt die Verfolgung auf; ein langer Druck gibt alle Verfolgungen auf.",
+      "positions": {
+        "IAT": "Startet die automatische Verfolgung des Ziels unter dem Zielkreuz.",
+        "CENTER": "Neutralstellung.",
+        "OFS": "Offset: Ein kurzer Druck kehrt zur Verfolgung zurück oder gibt sie auf; ein langer Druck gibt alle Verfolgungen auf."
+      }
+    },
+    "cpg-tedac-left-grip/tads-fov": {
+      "name": "TADS-Sichtfeldschalter",
+      "text": "Dieser Vierwegeschalter zoomt die Zielkamera: weit (rechts), mittel (hinten), schmal (links) und ein elektronischer 2:1-Zoom (vorn).",
+      "context": "Eine schmale Sicht zeigt einen kleinen Bereich genauer."
+    },
+    "cpg-tedac-left-grip/tads-sensor": {
+      "name": "TADS-Sensorwahlschalter",
+      "text": "Dieser Schalter wählt, welche Kamera des Zielsystems benutzt wird: die Infrarotkamera (FLIR) oder die Tageslicht-Fernsehkamera. Die dritte Stellung hat keine Funktion.",
+      "context": "Die Wahl wird auf FLIR gezwungen, solange der Nachtsichtmodus auf NORM oder FIXED steht.",
+      "positions": {
+        "FLIR": "Die Infrarotkamera, die Wärme sieht.",
+        "TV": "Die Tageslicht-Fernsehkamera.",
+        "DVO": "Keine Funktion."
+      }
+    },
+    "cpg-tedac-left-grip/lhg-was": {
+      "name": "Waffenwahlschalter (WAS, linker Handgriff)",
+      "text": "Dieser Vierwegeschalter wählt die Waffe: nach vorn die Bordkanone, nach links die Raketen, nach rechts die Lenkflugkörper. Drückt man dieselbe Richtung noch einmal, wird die Waffe weggelegt. Hinten hat keine Funktion.",
+      "context": "Eine hier gewählte Waffe wird mit dem Abzug dieses linken Handgriffs abgefeuert. Am Boden braucht es zuerst die Bodenfreigabe des Master Arm."
+    },
+    "cpg-tedac-left-grip/store-update": {
+      "name": "Store- / Update-Schalter",
+      "text": "Dieser Schalter speichert eine Ziel- oder Wegpunktposition an der Stelle, auf die das gewählte Visier blickt. Die andere Richtung würde die Position des Hubschraubers aktualisieren; sie ist nicht umgesetzt.",
+      "context": "Ein Wegpunkt ist ein Punkt auf der geplanten Route. Der Schalter arbeitet mit der Point-Seite der TSD-Karte zusammen.",
+      "positions": {
+        "STORE": "Speichert einen Zielpunkt an der Position des gewählten Visiers.",
+        "CENTER": "Neutralstellung.",
+        "UPDT": "Soll die Position aktualisieren; nicht umgesetzt."
+      }
+    },
+    "cpg-tedac-left-grip/lhg-fcr-mode": {
+      "name": "FCR-Modusschalter (linker Handgriff)",
+      "text": "Dieser Vierwegeschalter wählt den Radarmodus: nach vorn Bodenziele, nach rechts Radarkarte, nach hinten Luftziele, nach links Geländeprofil.",
+      "context": "Er wirkt, solange das Radar das gewählte Visier ist und nicht scannt."
+    },
+    "cpg-tedac-left-grip/lhg-cursor": {
+      "name": "Cursor-Steuerung / Enter (linker Handgriff)",
+      "text": "Dieses kleine Feld unter dem Daumen bewegt den Cursor über die MPD-Bildschirme und über die Radarseite auf dem TEDAC-Bildschirm. Eindrücken wählt, worauf der Cursor steht.",
+      "context": "Auf dem TEDAC-Bildschirm ist die Radarseite nur mit diesem Cursor erreichbar, da dieser Bildschirm keine Tasten rundherum hat."
+    },
+    "cpg-tedac-left-grip/lhg-cursor-display": {
+      "name": "Cursor-Display-Select-Taste",
+      "text": "Diese Taste springt mit dem Cursor in die Mitte des anderen MPD-Bildschirms. Dies gilt für den TEDAC-Linksgriff des CPG.",
+      "context": "Sie spart das Bewegen des Cursors über das Cockpit hinweg mit dem Feld."
+    },
+    "cpg-tedac-left-grip/lhg-trigger": {
+      "name": "Waffenabzug (linker Handgriff, zweistufig)",
+      "text": "Dieser Abzug am linken Handgriff feuert die Waffe ab, die mit dem Schalter des linken Handgriffs gewählt wurde. Die erste Stufe feuert, wenn keine Leistungs- oder Sicherheitssperren vorliegen; die zweite, wenn keine Sicherheitssperren vorliegen.",
+      "context": "Der Master-Arm-Schalter muss auf ARM stehen, damit die Waffe feuert."
+    },
+    "cpg-tedac-left-grip/lhg-scan": {
+      "name": "FCR-Scan-Schalter (linker Handgriff)",
+      "text": "Dieser Schalter startet einen Radarscan: S-SCAN einen einzelnen Scan-Stoß, C-SCAN einen Dauerscan. Eine Bewegung zu einer der Seiten während eines Scans stoppt ihn.",
+      "context": "Das Radar arbeitet nur, wenn das Radar das gewählte Visier ist. Am Boden braucht es die Bodenfreigabe.",
+      "positions": {
+        "S-SCAN": "Startet einen einzelnen Scan-Stoß.",
+        "CENTER": "Neutralstellung.",
+        "C-SCAN": "Startet einen Dauerscan, bis er gestoppt wird."
+      }
+    },
+    "cpg-tedac-left-grip/lhg-cued": {
+      "name": "CUED-Suchtaste",
+      "text": "Diese Taste soll die Mittellinie des Radars auf die geführte Richtung (cued) ausrichten. In DCS ist sie nicht umgesetzt.",
+      "context": "Das Handbuch führt die Cued-Search-Taste als nicht umgesetzt auf."
+    },
+    "cpg-tedac-left-grip/lmc-button": {
+      "name": "Taste für Linear Motion Compensation (LMC)",
+      "text": "Diese Taste schaltet den Ausgleich der Geradeausbewegung (Linear Motion Compensation) der Zielkamera ein oder aus. So folgt die Kamera einem Ziel ruhiger, wenn sich der Hubschrauber geradeaus bewegt.",
+      "context": "Das Handbuch zeigt sie auf der gegenüberliegenden Seite des Griffs von den Hauptschaltern."
+    },
+    "cpg-tedac-right-grip/rhg-scan-size": {
+      "name": "FCR-Scangrößenschalter (rechter Handgriff)",
+      "text": "Dieser Vierwegeschalter stellt ein, wie weit das Radar blickt: weit (rechts), mittel (hinten), schmal (links) und Zoom (vorn).",
+      "context": "Er wirkt, solange das Radar das gewählte Visier ist und nicht scannt. Er gehört zum TEDAC-Rechtsgriff des CPG."
+    },
+    "cpg-tedac-right-grip/c-scope": {
+      "name": "C-SCOPE-Taste",
+      "text": "Diese Taste blendet die Radar-C-Scope-Überlagerung im CPG-Sitz ein oder aus.",
+      "context": "Die Überlagerung fügt dem Bild die Radarsymbole hinzu."
+    },
+    "cpg-tedac-right-grip/flir-polarity": {
+      "name": "FLIR-Polaritätstaste",
+      "text": "Diese Taste wechselt das Infrarotbild zwischen weiß-heiß und schwarz-heiß.",
+      "context": "Weiß-heiß zeigt warme Dinge hell, schwarz-heiß zeigt warme Dinge dunkel."
+    },
+    "cpg-tedac-right-grip/laser-tracker": {
+      "name": "Laser-Tracker-Schalter (LT)",
+      "text": "Dieser Schalter steuert den Laserpunkt-Verfolger, mit dem die Zielkamera einen vom Laser beleuchteten Punkt finden und verfolgen kann. In A und M ist der Laser-Entfernungsmesser des Hubschraubers gesperrt.",
+      "context": "In der mittleren Stellung ist der Laser-Tracker aus, und der eigene Laser des Hubschraubers darf feuern.",
+      "positions": {
+        "A": "Automatische Laserpunkt-Verfolgung; der Laser-Entfernungsmesser ist gesperrt.",
+        "O": "Aus: Der Tracker ist aus, und der Laser-Entfernungsmesser darf feuern.",
+        "M": "Manuelle Laserpunkt-Verfolgung; der Laser-Entfernungsmesser ist gesperrt."
+      }
+    },
+    "cpg-tedac-right-grip/rhg-sight-select": {
+      "name": "Sight-Select-Schalter (rechter Handgriff)",
+      "text": "Dieser Vierwegeschalter wählt das Visier zum Zielen: nach vorn das Helmvisier, nach links das Radar, nach rechts die Zielkamera, nach hinten die Link-Funktion.",
+      "context": "Der CPG kann jedes der Visiere nutzen. Das Radar-Visier ruft die Radarseite auf dem linken MPD auf."
+    },
+    "cpg-tedac-right-grip/sight-slave": {
+      "name": "Sight-Slave-Taste",
+      "text": "Diese Taste lässt das gewählte Visier der Aufschaltquelle folgen, zum Beispiel dem nächsten Ziel des Radars, oder löst es, damit es von Hand bewegt werden kann.",
+      "context": "Ein Visier zu lösen heißt, es zu \"entkoppeln\" (de-slaving)."
+    },
+    "cpg-tedac-right-grip/man-trk": {
+      "name": "Manueller Visier-Verfolger (MAN TRK)",
+      "text": "Dieser kleine Daumenhebel bewegt das gewählte Visier (die Zielkamera oder das Radar) von Hand, wenn es nicht gekoppelt ist.",
+      "context": "Er wird auch Daumen-Kraftsteller (thumb force controller) genannt."
+    },
+    "cpg-tedac-right-grip/display-zoom": {
+      "name": "Display-Zoom-Taste",
+      "text": "Diese Taste schaltet das gezoomte Radarformat ein oder aus, solange das Radar das gewählte Visier ist.",
+      "context": "Das Spiel beschreibt sie als Anzeige der Radar-Zielinformationen des nächsten Ziels zum Schießen (next-to-shoot)."
+    },
+    "cpg-tedac-right-grip/rhg-trigger": {
+      "name": "LRFD-Abzug (zweistufig)",
+      "text": "Dieser Abzug an der Vorderseite des rechten Handgriffs feuert den Laser-Entfernungsmesser und Zielbeleuchter ab. Stufe eins feuert einen kurzen Laserpuls, um die Entfernung zu messen; Stufe zwei feuert einen Dauerstrahl, um ein Ziel zu markieren.",
+      "context": "Der Master Arm muss auf ARM stehen, und der Laser muss Strom haben. Der Laser kann ein Ziel für lasergelenkte Waffen markieren."
+    },
+    "cpg-tedac-right-grip/mtt-promote": {
+      "name": "MTT-Verfolgungs-Hochstufungsschalter",
+      "text": "Dieser Schalter schaltet durch die Ziele, die die Kamera gleichzeitig verfolgt: nach vorn geht es zum vorigen, nach hinten zum nächsten. Das gewählte Ziel wird das Hauptziel.",
+      "context": "Das Spiel beschriftet ihn mit 'Spare Switch, PREVIOUS/NEXT'. Er zählt nur im Mehrziel-Verfolgungsmodus.",
+      "positions": {
+        "-": "Stuft die vorige Verfolgung zum Hauptziel hoch.",
+        "CENTER": "Neutralstellung.",
+        "+": "Stuft die nächste Verfolgung zum Hauptziel hoch."
+      }
+    },
+    "cpg-tedac-right-grip/rhg-cursor-enter": {
+      "name": "Cursor-Enter-Taste",
+      "text": "Diese Taste wählt das Element unter dem Cursor, als Alternative zum Eindrücken des Cursor-Feldes selbst.",
+      "context": "Sie wird zusammen mit dem Cursor-Feld des linken Handgriffs benutzt."
+    },
+    "cpg-tedac-right-grip/iat-polarity": {
+      "name": "Polaritätsschalter des Image Auto Tracker (IAT)",
+      "text": "Dieser Schalter soll die Polarität für den Image Auto Tracker einstellen. In DCS ist er nicht umgesetzt.",
+      "context": "Das Handbuch führt ihn als nicht umgesetzt auf.",
+      "positions": {
+        "W": "Weiße Polarität.",
+        "A": "Automatische Polarität.",
+        "B": "Schwarze Polarität."
+      }
+    },
+    "cpg-tedac-right-grip/hdd-hod": {
+      "name": "HDD/HOD-Wahltaste",
+      "text": "Diese Taste hat in DCS keine Funktion; das Spiel sagt, sie werde derzeit nicht benutzt.",
+      "context": "Das Handbuch führt die Taste für die Kopf-unten-Anzeige (heads-down display) als ohne Funktion auf; das Spiel sagt, sie werde derzeit nicht benutzt."
+    },
+    "cpg-tedac-right-grip/rhg-missile-advance": {
+      "name": "Missile-Advance-Taste (rechter Handgriff)",
+      "text": "Diese Taste auf der Rückseite des rechten TEDAC-Griffs schaltet zur nächsten Hellfire-Rakete weiter. Eine Hellfire ist die gelenkte Panzerabwehrrakete des Hubschraubers, und diese Taste wählt, welche als Nächste abgefeuert wird.",
+      "context": "Sie tut dasselbe wie die Missile-Advance-Taste am Kollektivhebel des CPG und funktioniert, wenn der Raketenmodus auf der Waffenseite auf MAN (manuell) steht."
+    }
+  }
+}

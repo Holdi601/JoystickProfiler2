@@ -121,7 +121,7 @@ read only): the action names from the game config, class `CfgDefaultKeysMapping`
 flight actions (`Heli*`, `Flaps*`, `LandGear*`, `AutoHover*`, `LaunchCM`, `NextCM`), the actions of JoyPro's function
 list, and JoyPro's choice of weapons, view and radio actions a HOTAS carries (look, optics, zoom toggles, push to talk,
 eject, get out); the analogue halves of JoyPro's axis relations (`*Cont`, `HeliThrottlePos/Neg`) are no buttons. A
-profile, when there is one, adds what mods define. Fresh build on the dev PC: OA 68, Arma 2 66 actions (= the
+profile, when there is one, adds what mods define. Fresh build on a test PC: OA 68, Arma 2 66 actions (= the
 development lists; before: 20 / 19 without a first start).
 
 JoyPro axis relations (composites):

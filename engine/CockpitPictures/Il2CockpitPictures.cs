@@ -400,6 +400,8 @@ namespace JoyPro.CockpitPictures
                 };
                 c.Args.Add(arg.ToString(CultureInfo.InvariantCulture));
                 c.Commands.AddRange(text.Commands);
+                c.Animation = ArgAnimation(model, arg);
+                c.GameKind = text.Kind;
                 // A control on a grip (the trigger on the stick, a button on the throttle) is the grip's part.
                 CockpitGrip on = null;
                 foreach (KeyValuePair<Il2Mgm.Node, CockpitGrip> g in gripRoots)
@@ -412,7 +414,7 @@ namespace JoyPro.CockpitPictures
                 if (on != null)
                 {
                     if (!on.Parts.Any(x => x.Label == c.Label))
-                        on.Parts.Add(new CockpitCallout { Id = c.Id, Label = c.Label, Position = c.Position, Kind = "part", Commands = c.Commands, Args = c.Args });
+                        on.Parts.Add(new CockpitCallout { Id = c.Id, Label = c.Label, Position = c.Position, Kind = "part", Commands = c.Commands, Args = c.Args, Animation = c.Animation, GameKind = c.GameKind });
                     continue;
                 }
                 if (ThrottleArgs(model).Contains(arg) && grips.Any(g => g.Device == "throttle"))
@@ -498,6 +500,10 @@ namespace JoyPro.CockpitPictures
             Tuple<Il2Mgm.Node, List<int>, Vec3, double> main = parts.OrderByDescending(x => buttons.Any(b => Il2Mgm.IsUnder(b, x.Item1)) ? 1 : 0).ThenByDescending(x => x.Item4).First();
             List<Tuple<Il2Mgm.Node, List<int>, Vec3, double>> near = parts.Where(x => (x.Item3 - main.Item3).Length < 0.3).ToList();
             CockpitGrip g = new CockpitGrip { Device = device, Meshes = near.SelectMany(x => x.Item2).Distinct().ToList() };
+            // Its arguments (the stick: pitch 406 and roll 407; the throttles' levers).
+            g.Animation = ArgAnimation(model, args[0]);
+            if (args.Length > 1)
+                g.Animation.Name = string.Join(",", args.Select(a => a.ToString(CultureInfo.InvariantCulture)));
             Vec3 a0, a1;
             scene.Bounds(g.Meshes, out a0, out a1);
             g.Pivot = (a0 + a1) * 0.5;
@@ -566,6 +572,23 @@ namespace JoyPro.CockpitPictures
 
         // Where an argument's parts are: the middle of the nodes' geometry (or of what hangs under them, or their
         // pivots); for parts far apart, the first node's.
+        // The control argument's travel: the argument values its animation tracks have keys at (a switch's positions
+        // when there are a few distinct ones).
+        internal static ControlAnimation ArgAnimation(Il2Mgm model, int arg)
+        {
+            List<double> times = model.Animations.Where(a => a.Arg == arg).SelectMany(a => a.Tracks).SelectMany(Il2Mgm.KeyTimes)
+                .Where(t => !double.IsNaN(t) && !double.IsInfinity(t)).Select(t => Math.Round(t, 4)).Distinct().OrderBy(t => t).ToList();
+            ControlAnimation an = new ControlAnimation { Source = "animation argument", Name = arg.ToString(CultureInfo.InvariantCulture) };
+            if (times.Count > 0)
+            {
+                an.Min = times[0];
+                an.Max = times[times.Count - 1];
+                if (times.Count >= 2 && times.Count <= 6)
+                    an.Positions.AddRange(times);
+            }
+            return an;
+        }
+
         private static Vec3? Centre(Il2Mgm model, CockpitScene scene, Dictionary<Il2Mgm.Node, List<int>> nodeMeshes, List<Il2Mgm.Node> nodes)
         {
             List<Vec3> centres = new List<Vec3>();

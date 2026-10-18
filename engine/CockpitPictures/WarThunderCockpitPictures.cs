@@ -499,6 +499,8 @@ namespace JoyPro.CockpitPictures
                     };
                     co.Args.Add(kv.Value);
                     co.Commands.Add(new CalloutCommand { Name = kv.Value, Category = "War Thunder model node", Id = kv.Value });
+                    co.Animation = new ControlAnimation { Source = "animated node", Name = kv.Value };
+                    co.GameKind = text.Kind;
                     string area = CockpitViews.AreaOf(at, head);
                     co.Panel = area;
                     co.PanelTitle = XPlaneCockpitPictures.AreaTitle(area);
@@ -841,7 +843,7 @@ namespace JoyPro.CockpitPictures
                     g.Pivot = (a + b) * 0.5;
                     continue;
                 }
-                grips.Add(new CockpitGrip { Device = device, Meshes = meshes, Pivot = (a + b) * 0.5 });
+                grips.Add(new CockpitGrip { Device = device, Meshes = meshes, Pivot = (a + b) * 0.5, Animation = new ControlAnimation { Source = "animated node", Name = root >= 0 && root < skel.Names.Count ? skel.Names[root] : string.Empty } });
             }
         }
 

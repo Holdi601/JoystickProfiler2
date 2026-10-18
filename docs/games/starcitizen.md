@@ -111,7 +111,7 @@ the file). Keys are the game's Attr names:
 | `IFCS_Setting_StickyThrottleEnabled`, `..._SpeedLimiterOn`, `..._CoupledEnabled`, `..._GSafeEnabled`, `..._GSafeDisabledByBoost`, `..._AutoPrecisionModeEnabled`, `..._SpacebrakeEnablesBoost` | flight defaults | 0, 1, 1, 1, 1, 1, 1 |
 | `InvertYController` | Invert flight controller (gamepad, view pitch) | 0 |
 
-Ranges are not in the game files (the menu limits are in the encrypted DataCore): the model's ranges are guesses
+Ranges are not in the game's readable files: the model's ranges are guesses
 (unverified). Mouse, VJoy, head tracking and on-foot settings are out of scope.
 
 ## Verification

@@ -579,7 +579,12 @@ namespace JoyPro.Engine.Games
                 if (request.DryRun)
                     result.Steps.Add("Dry run: presets would be created in " + package + " for devices without one.");
                 else
+                {
+                    // JoyPro's own package: files that carry the EFS "encrypted" mark (a folder copied from another
+                    // PC, an encrypted AppData) cannot be backed up or written where Windows cannot encrypt.
+                    MsfsCommunityPackage.ClearEncryption(package);
                     MsfsCommunityPackage.EnsureDevicePresets(package, exportDevices, result);
+                }
             }
             List<MsfsProfileFile> profiles = LoadSelectedProfiles(request.ConfigPath, result.Errors, result.Warnings);
             if (result.Errors.Count > 0)
@@ -635,8 +640,16 @@ namespace JoyPro.Engine.Games
                 GameOwnershipStore.Save(ownershipKey, GameId, owned);
                 if (profile.ChangedActions == 0 && profile.ChangedAxes == 0)
                     continue;
-                BackUp(profile.FilePath, result);
-                profile.Save(profile.FilePath);
+                try
+                {
+                    BackUp(profile.FilePath, result);
+                    profile.Save(profile.FilePath);
+                }
+                catch (IOException ex) when (SafeFileIo.IsEncryptionFailure(ex))
+                {
+                    result.Errors.Add((ex is EncryptionTargetException ? ex : SafeFileIo.Explain(ex, profile.FilePath)).Message);
+                    return result;
+                }
                 result.FilesWritten.Add(profile.FilePath);
                 changedFiles++;
             }
@@ -971,7 +984,7 @@ namespace JoyPro.Engine.Games
         private static void BackUp(string profilePath, GameIoResult result)
         {
             string backup = Path.Combine(JoyProDataFolder("Backups"), Path.GetFileName(profilePath) + "." + DateTime.Now.ToString("yyyyMMdd-HHmmss", CultureInfo.InvariantCulture) + ".jpbak");
-            File.Copy(profilePath, backup, true);
+            SafeFileIo.CopyFile(profilePath, backup, true, ownTarget: true);
             GameBackups.Protect(profilePath, result.Warnings);
             result.Steps.Add("Backup: " + backup);
         }

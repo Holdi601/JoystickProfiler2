@@ -84,6 +84,61 @@ public sealed class NoviceGuiTests
         Assert.Contains("--replace", Assert.Single(fake.Calls, c => Seq(c, "warthunder", "import")));
     }
 
+    // Tester report (2.1.0): after an import the Start page's games were gone until JoyPro was restarted. The cards stay
+    // under the import's result (success, failure, an exception), and leaving the page closes the result.
+    [Fact]
+    public async Task ImportWizard_TheGamesStayOnTheStartPage_AfterEveryImport()
+    {
+        NoviceFakeEngine fake = new();
+        MainWindowViewModel vm = CreateVm(fake);
+        await vm.RefreshGameCardsCommand.ExecuteAsync(null);
+        vm.CurrentStage = UiStage.Start;
+        GameCardItem warThunder = vm.GameCards.Single(c => c.GameId == "WarThunder");
+        Assert.True(vm.ShowGameCardList);
+
+        // Choosing how: the options take the cards' place (Back brings them).
+        vm.StartImportWizardCommand.Execute(warThunder);
+        Assert.False(vm.ShowGameCardList);
+
+        // Success: the result over the cards.
+        await vm.RunImportWizardCommand.ExecuteAsync(null);
+        Assert.True(vm.IsImportWizardDoneStep);
+        Assert.True(vm.ShowGameCardList);
+        Assert.NotEmpty(vm.GameCards);
+        Assert.Equal(UiStage.Start, vm.CurrentStage);
+
+        // Away and back: the result is closed, the games are there (the card keeps "Imported hh:mm").
+        vm.CurrentStage = UiStage.Relations;
+        vm.CurrentStage = UiStage.Start;
+        Assert.True(vm.IsImportWizardPickStep);
+        Assert.True(vm.ShowGameCardList);
+        Assert.StartsWith("Imported", warThunder.Result);
+
+        // Failure: the same.
+        fake.FailImport = true;
+        vm.StartImportWizardCommand.Execute(warThunder);
+        await vm.RunImportWizardCommand.ExecuteAsync(null);
+        Assert.True(vm.ImportWizardFailed);
+        Assert.True(vm.ShowGameCardList);
+        Assert.Equal(UiStage.Start, vm.CurrentStage);
+
+        // The engine call throws: still a result, still the games.
+        fake.FailImport = false;
+        fake.ThrowOnImport = true;
+        vm.RestartImportWizardCommand.Execute(null);
+        vm.StartImportWizardCommand.Execute(warThunder);
+        await vm.RunImportWizardCommand.ExecuteAsync(null);
+        Assert.True(vm.IsImportWizardDoneStep);
+        Assert.True(vm.ImportWizardFailed);
+        Assert.True(vm.ShowGameCardList);
+        Assert.Equal(UiStage.Start, vm.CurrentStage);
+
+        // Close: the plain cards.
+        vm.RestartImportWizardCommand.Execute(null);
+        Assert.True(vm.IsImportWizardPickStep);
+        Assert.True(vm.ShowGameCardList);
+    }
+
     [Fact]
     public async Task ImportWizard_Dcs_LooksFirstWithScan()
     {
@@ -428,13 +483,21 @@ public sealed class NoviceGuiTests
         // The answer to "db check-updates" when set (else the default: DCS updated).
         public string? CheckUpdates { get; set; }
 
+        // "<game> import" ends with exit code 1 / throws.
+        public bool FailImport { get; set; }
+
+        public bool ThrowOnImport { get; set; }
+
         public Task<EngineCommandResult> RunAsync(string engineExePath, IReadOnlyList<string> arguments, CancellationToken cancellationToken = default)
         {
             lock (Calls)
                 Calls.Add(arguments.ToArray());
+            bool import = arguments.Count > 1 && arguments.Contains("import");
+            if (import && ThrowOnImport)
+                throw new InvalidOperationException("The engine could not be started.");
             return Task.FromResult(new EngineCommandResult
             {
-                ExitCode = 0,
+                ExitCode = import && FailImport ? 1 : 0,
                 Duration = TimeSpan.FromMilliseconds(1),
                 StandardOutput = CheckUpdates != null && Seq(arguments, "db", "check-updates") ? CheckUpdates : Output(arguments),
                 StandardError = string.Empty,

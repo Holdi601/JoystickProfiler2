@@ -1,0 +1,2774 @@
+{
+  "format": "joypro-cockpit-guide",
+  "version": 1,
+  "id": "dcs-oh-58d-part2",
+  "partOf": "dcs-oh-58d",
+  "areas": [
+    {
+      "id": "cpo-instruments",
+      "where": "front-left",
+      "name": "Copilot instrument panel",
+      "seat": 2,
+      "text": "The dashboard in front of the copilot, on the left. It has the copilot's screen, its auxiliary panel, the panel for the mast-mounted sight, the air vent and the smoke grenade buttons.",
+      "panels": [
+        {
+          "id": "cpo-vent",
+          "name": "Cockpit air vents",
+          "src": "m1",
+          "text": "These are the pull knobs of the cockpit air vents. Pulling a knob lets fresh air in for that crew member.",
+          "context": "The manual does not describe the air vents. The game names them 'Pilot Air Vent Pull' and 'Copilot Air Vent Pull'.",
+          "controls": [
+            {
+              "id": "cpo-vent",
+              "name": "Copilot air vent (pull knob)",
+              "type": "knob",
+              "match": [
+                "HLP_CPO_VENT"
+              ],
+              "text": "This knob is the copilot's air vent. The game calls it 'Copilot Air Vent Pull'. The manual does not describe it.",
+              "context": "It is a comfort control and has no part in flying.",
+              "src": "m1"
+            }
+          ]
+        },
+        {
+          "id": "cpo-copilot-mfd",
+          "name": "Copilot Multifunction Display (MFD)",
+          "src": "m1",
+          "text": "This is the copilot's multi-function screen: a screen with buttons around its edge. The words next to the buttons change from page to page.",
+          "context": "It carries the sensor pages of the mast-mounted sight as well as the flight, map, radio and weapons pages. It works independently of the pilot's screen. The copilot can also switch it to the L2MUMS pages with the INIT button.",
+          "controls": [
+            {
+              "id": "lr-keys",
+              "name": "Line address keys L1-L5 and R1-R5",
+              "type": "button",
+              "match": [
+                "HLP_LMFD_L?",
+                "HLP_LMFD_R?",
+                "item:copilot-mfd:1"
+              ],
+              "text": "These ten buttons sit on the left and right edge of the copilot's screen, counted from the top. Each one picks the word printed next to it on the screen, so what it does depends on the page.",
+              "context": "The copilot uses them to work the page being shown, for example to choose a laser code on the MMS page or to start typing a value on the keyboard.",
+              "count": 10,
+              "page": "71",
+              "src": "m1"
+            },
+            {
+              "id": "mode-keys",
+              "name": "Mode keys B1-B4 (bottom buttons)",
+              "type": "button",
+              "match": [
+                "HLP_LMFD_B?"
+              ],
+              "text": "These four buttons along the bottom edge jump straight to the main pages: B1 the flight page (VSD, or hover page), B2 the HSD page, B3 the MMS page for the sight and B4 the COMM page for the radios.",
+              "context": "The manual says the main pages can be reached from any other page. The copilot mostly keeps this screen on the MMS page.",
+              "count": 4,
+              "page": "72",
+              "src": "m1"
+            },
+            {
+              "id": "init-key",
+              "name": "INIT button (bottom centre of the copilot MFD)",
+              "type": "button",
+              "match": [
+                "HLP_LMFD_INIT"
+              ],
+              "text": "On the copilot's screen this centre button switches the screen between the normal display system and the L2MUMS pages. L2MUMS is a system that sends video between aircraft.",
+              "context": "Only the copilot's screen can show the L2MUMS pages. Do not confuse the button with the INIT switch on the copilot's auxiliary panel.",
+              "page": "71",
+              "src": "m1"
+            },
+            {
+              "id": "brt",
+              "name": "BRT (brightness rocker)",
+              "type": "rocker",
+              "match": [
+                "HLP_LMFD_BRT",
+                "item:copilot-mfd:2"
+              ],
+              "text": "This rocker makes the picture of the copilot's screen brighter or darker.",
+              "context": "The copilot sets the brightness to the light outside. The CNT rocker changes the contrast.",
+              "page": "56",
+              "src": "m1"
+            },
+            {
+              "id": "cnt",
+              "name": "CNT (contrast rocker)",
+              "type": "rocker",
+              "match": [
+                "HLP_LMFD_CNT",
+                "item:copilot-mfd:3"
+              ],
+              "text": "This rocker changes the contrast of the copilot's screen, the difference between the light and the dark parts of the picture.",
+              "context": "It works together with the BRT rocker to get a picture that is easy to read.",
+              "page": "56",
+              "src": "m1"
+            },
+            {
+              "id": "man-nvg",
+              "name": "Display mode selector (MAN / NVG)",
+              "type": "switch2",
+              "match": [
+                "HLP_LMFD_MAN_NVG",
+                "item:copilot-mfd:4"
+              ],
+              "text": "This switch changes the copilot's screen picture between a daylight setting and one made for night-vision goggles.",
+              "context": "The copilot sets NVG when flying with night-vision goggles.",
+              "positions": [
+                {
+                  "name": "MAN",
+                  "text": "The normal daylight picture."
+                },
+                {
+                  "name": "NVG",
+                  "text": "A picture that is made to be used with night-vision goggles."
+                }
+              ],
+              "page": "56",
+              "src": "m1"
+            },
+            {
+              "id": "prim-bkup",
+              "name": "Display source selector (PRIMARY / BACKUP)",
+              "type": "switch2",
+              "match": [
+                "HLP_LMFD_PRIM_BKUP",
+                "item:copilot-mfd:5"
+              ],
+              "text": "This switch chooses which of the two main computers feeds the copilot's screen. Primary uses the normal one, Backup the other.",
+              "context": "The copilot uses Backup if the normal computer fails.",
+              "positions": [
+                {
+                  "name": "PRIMARY",
+                  "text": "The screen uses its normal computer."
+                },
+                {
+                  "name": "BACKUP",
+                  "text": "The screen uses the other computer, for when the first one fails."
+                }
+              ],
+              "page": "56",
+              "src": "m1"
+            },
+            {
+              "id": "video-gain",
+              "name": "Video gain switch (MMS picture)",
+              "type": "button",
+              "match": [
+                "HLP_MMS_VID_GAIN_BUTTON",
+                "item:mms-control-panel:6"
+              ],
+              "text": "This switch, which the game files with the sight controls, changes the gain of the camera picture on the copilot's screen. Gain is how strongly the picture signal is amplified.",
+              "context": "The copilot sets it while looking through the mast-mounted sight, to get a clear picture.",
+              "page": "143",
+              "src": "m1"
+            },
+            {
+              "id": "video-level",
+              "name": "Video level switch (MMS picture)",
+              "type": "button",
+              "match": [
+                "HLP_MMS_VID_LEVEL_BUTTON",
+                "item:mms-control-panel:7"
+              ],
+              "text": "This switch changes the video level of the camera picture on the copilot's screen. The manual lists it without more detail.",
+              "context": "The copilot uses it together with the gain and focus switches to get a clear picture from the sight.",
+              "page": "143",
+              "src": "m1"
+            },
+            {
+              "id": "video-focus",
+              "name": "Video focus switch (MMS picture)",
+              "type": "button",
+              "match": [
+                "HLP_MMS_VID_FOC_BUTTON",
+                "item:mms-control-panel:8"
+              ],
+              "text": "This switch focuses the camera picture of the sight on the copilot's screen, as the focus ring of a camera does.",
+              "context": "The copilot uses it while looking at a target through the sight.",
+              "page": "143",
+              "src": "m1"
+            }
+          ],
+          "page": "56"
+        },
+        {
+          "id": "cpo-copilot-mfd-aux",
+          "name": "Copilot MFD Auxiliary Control Panel",
+          "src": "m1",
+          "text": "This panel next to the copilot's screen holds a row of switches. Three of them do something in DCS: the WPN/ASE button, the IDM/INIT switch and the linear motion compensation switch.",
+          "context": "The manual says the other switches here have no function in DCS: the low frequency gain limiting, the L2MUM type 1 switch, the TIS integration switch and the leveling equalization.",
+          "controls": [
+            {
+              "id": "wpn-ase",
+              "name": "WPN/ASE button",
+              "type": "button",
+              "match": [
+                "HLP_CPOAuxCP_WPN_ASE",
+                "item:copilot-mfd-aux-panel:2"
+              ],
+              "text": "This button opens the Weapons page on the copilot's screen, or the page that sets up the defensive equipment (ASE). Pressing it again moves through the copilot's sparse weapons pages, if weapons are carried.",
+              "context": "The copilot uses it to check and select the weapons he controls.",
+              "page": "70",
+              "src": "m1"
+            },
+            {
+              "id": "idm-init",
+              "name": "IDM/INIT switch",
+              "type": "switch3",
+              "match": [
+                "HLP_CPOAuxCP_IDM_INIT",
+                "item:copilot-mfd-aux-panel:3"
+              ],
+              "text": "Pushed to INIT, this switch opens the Initial 1 page on the copilot's screen. The IDM position has no function in DCS. It springs back to the centre.",
+              "context": "The copilot uses INIT to reach the start-up pages of his screen.",
+              "positions": [
+                {
+                  "name": "IDM",
+                  "text": "No function in DCS."
+                },
+                {
+                  "name": "CENTER",
+                  "text": "The rest position."
+                },
+                {
+                  "name": "INIT",
+                  "text": "Opens the Initial 1 page on the copilot's screen."
+                }
+              ],
+              "page": "70",
+              "src": "m1"
+            },
+            {
+              "id": "lmc",
+              "name": "Linear motion compensation switch (LMC)",
+              "type": "switch2",
+              "match": [
+                "HLP_CPOAuxCP_LMC",
+                "item:copilot-mfd-aux-panel:6"
+              ],
+              "text": "This switch turns linear motion compensation on or off. It helps the mast-mounted sight keep its view steady while the sight is in manual mode.",
+              "context": "The copilot uses it only when the sight is in manual mode.",
+              "positions": [
+                {
+                  "name": "ON",
+                  "text": "Linear motion compensation is on."
+                },
+                {
+                  "name": "OFF",
+                  "text": "Linear motion compensation is off."
+                }
+              ],
+              "page": "70",
+              "src": "m1"
+            },
+            {
+              "id": "alfgl",
+              "name": "ALFGL switch (automatic low frequency gain limiting)",
+              "type": "switch2",
+              "match": [
+                "HLP_CPOAuxCP_ALFGL",
+                "item:copilot-mfd-aux-panel:1"
+              ],
+              "text": "The manual says this switch has no function in DCS. It is the automatic low frequency gain limiting switch.",
+              "context": "The switch can be clicked, but nothing happens in the simulation.",
+              "positions": [
+                {
+                  "name": "ON",
+                  "text": "No function in DCS."
+                },
+                {
+                  "name": "OFF",
+                  "text": "No function in DCS."
+                }
+              ],
+              "page": "70",
+              "src": "m1"
+            },
+            {
+              "id": "l2mum",
+              "name": "L2MUM switch (type 1 ON / BYPASS)",
+              "type": "switch2",
+              "match": [
+                "HLP_CPOAuxCP_L2MUM",
+                "item:copilot-mfd-aux-panel:4"
+              ],
+              "text": "The manual says this switch has no function in DCS. It belongs to the L2MUM system, which sends video between aircraft.",
+              "context": "Clicking it only moves the switch. The L2MUM pages are reached with the INIT button of the copilot's screen.",
+              "positions": [
+                {
+                  "name": "ON",
+                  "text": "No function in DCS."
+                },
+                {
+                  "name": "OFF",
+                  "text": "No function in DCS."
+                }
+              ],
+              "page": "70",
+              "src": "m1"
+            },
+            {
+              "id": "tis",
+              "name": "TIS integration switch",
+              "type": "switch2",
+              "match": [
+                "HLP_CPOAuxCP_TIS",
+                "item:copilot-mfd-aux-panel:5"
+              ],
+              "text": "The manual says the TIS integration switch has no function in DCS. TIS is the thermal imaging sensor of the sight.",
+              "context": "Clicking it only moves the switch. The thermal camera is chosen with a button on the copilot's grip.",
+              "positions": [
+                {
+                  "name": "ON",
+                  "text": "No function in DCS."
+                },
+                {
+                  "name": "OFF",
+                  "text": "No function in DCS."
+                }
+              ],
+              "page": "70",
+              "src": "m1"
+            },
+            {
+              "id": "ale",
+              "name": "ALE switch (automatic leveling equalization)",
+              "type": "switch2",
+              "match": [
+                "HLP_CPOAuxCP_ALE",
+                "item:copilot-mfd-aux-panel:7"
+              ],
+              "text": "The manual says this switch has no function in DCS. It is the automatic leveling equalization switch.",
+              "context": "The panel's other switches that do something are the WPN/ASE button, the IDM/INIT switch and the LMC switch.",
+              "positions": [
+                {
+                  "name": "ON",
+                  "text": "No function in DCS."
+                },
+                {
+                  "name": "OFF",
+                  "text": "No function in DCS."
+                }
+              ],
+              "page": "70",
+              "src": "m1"
+            }
+          ],
+          "page": "70"
+        },
+        {
+          "id": "cpo-mms-panel",
+          "name": "Mast Mounted Sight System Control Panel (MMS)",
+          "src": "m1",
+          "text": "This panel runs the mast-mounted sight, the ball above the rotor that holds a TV camera, a thermal camera and a laser. It switches the sight on and off, picks its mode and sets the laser and the picture.",
+          "context": "The copilot uses this panel together with the buttons on his cyclic grip. The sight is how the crew finds and marks targets from behind cover.",
+          "controls": [
+            {
+              "id": "mode",
+              "name": "MMS Mode Selector",
+              "type": "selector",
+              "match": [
+                "HLP_MMS_MODE_ROTATOR",
+                "item:mms-control-panel:13"
+              ],
+              "text": "This knob switches the mast-mounted sight on and chooses what it does. The game has the positions OFF, STOW, PREFLT, PREPT, FWD and SRCH.",
+              "context": "The copilot turns it to FWD to get the sight working looking forward, and to STOW at the end of the flight so the sight parks itself before it is switched off.",
+              "positions": [
+                {
+                  "name": "OFF",
+                  "text": "The sight is off. It may be turned off after the screen says the stow is complete."
+                },
+                {
+                  "name": "STOW",
+                  "text": "The sight turns to its travel position and gets ready to be switched off."
+                },
+                {
+                  "name": "PREFLT",
+                  "text": "The pre-flight mode, for set-up tests. It is largely not working in DCS."
+                },
+                {
+                  "name": "PREPT",
+                  "text": "The sight turns to a chosen waypoint, control point or target point."
+                },
+                {
+                  "name": "FWD",
+                  "text": "The sight is slaved to the way the helicopter points, looking forward."
+                },
+                {
+                  "name": "SRCH",
+                  "text": "The search mode of the sight."
+                }
+              ],
+              "page": "147",
+              "src": "m1"
+            },
+            {
+              "id": "laser",
+              "name": "Laser switch (MMS laser power)",
+              "type": "switch3",
+              "match": [
+                "HLP_MMS_POWER_SWITCH",
+                "item:mms-control-panel:1"
+              ],
+              "text": "This switch controls the laser rangefinder and designator in the sight. It has the positions ARM, STBY (standby) and OFF.",
+              "context": "The copilot arms the laser only when it is needed. The manual warns not to fire the laser within 10 degrees of the tail, because the tail inhibits are not reliable.",
+              "positions": [
+                {
+                  "name": "ARM",
+                  "text": "The laser can be fired."
+                },
+                {
+                  "name": "STBY",
+                  "text": "The laser is on standby."
+                },
+                {
+                  "name": "OFF",
+                  "text": "The laser is off."
+                }
+              ],
+              "page": "143",
+              "src": "m1"
+            },
+            {
+              "id": "code-list",
+              "name": "Code List button (laser codes)",
+              "type": "button",
+              "match": [
+                "HLP_MMS_LASERCODE_LIST",
+                "item:mms-control-panel:2"
+              ],
+              "text": "Pressing this button opens the Laser Codes page on the copilot's screen. On that page the eight preset laser codes can be changed.",
+              "context": "The copilot sets the laser code to match the weapon or the friendly unit that will look for the laser light.",
+              "page": "146",
+              "src": "m1"
+            },
+            {
+              "id": "first-last",
+              "name": "First/Last switch",
+              "type": "switch2",
+              "match": [
+                "HLP_MMS_FIRST_LAST_SWITCH",
+                "item:mms-control-panel:3"
+              ],
+              "text": "The manual says this switch is not functional in DCS.",
+              "context": "It sits on the sight panel. The manual lists it as not functional in DCS.",
+              "positions": [
+                {
+                  "name": "FIRST",
+                  "text": "No function in DCS."
+                },
+                {
+                  "name": "LAST",
+                  "text": "No function in DCS."
+                }
+              ],
+              "page": "143",
+              "src": "m1"
+            },
+            {
+              "id": "mfd-symb",
+              "name": "MFD symbol intensity switch",
+              "type": "rocker",
+              "match": [
+                "HLP_MMS_VID_MFD_BUTTON",
+                "item:mms-control-panel:4"
+              ],
+              "text": "This rocker makes the symbols that are drawn on the copilot's screen brighter or dimmer.",
+              "context": "The copilot sets it so the symbols can be read against the camera picture.",
+              "page": "143",
+              "src": "m1"
+            },
+            {
+              "id": "mms-symb",
+              "name": "MMS symbol intensity switch",
+              "type": "rocker",
+              "match": [
+                "HLP_MMS_VID_MMS_BUTTON",
+                "item:mms-control-panel:5"
+              ],
+              "text": "This rocker makes the symbols that the sight itself puts on its picture brighter or dimmer.",
+              "context": "The copilot uses it together with the MFD symbol intensity rocker.",
+              "page": "143",
+              "src": "m1"
+            },
+            {
+              "id": "auto-symb",
+              "name": "Symbol intensity auto/manual switch",
+              "type": "switch2",
+              "match": [
+                "HLP_MMS_AUTO_SYMB_SWITCH",
+                "item:mms-control-panel:9"
+              ],
+              "text": "The manual says this switch is not functional in DCS.",
+              "context": "It is one of four auto/manual switches on the sight panel, and none of them works in DCS.",
+              "positions": [
+                {
+                  "name": "AUTO",
+                  "text": "No function in DCS."
+                },
+                {
+                  "name": "MANUAL",
+                  "text": "No function in DCS."
+                }
+              ],
+              "page": "143",
+              "src": "m1"
+            },
+            {
+              "id": "auto-gain",
+              "name": "Video gain auto/manual switch",
+              "type": "switch2",
+              "match": [
+                "HLP_MMS_AUTO_GAIN_SWITCH",
+                "item:mms-control-panel:10"
+              ],
+              "text": "The manual says this switch is not functional in DCS.",
+              "context": "The switch can be clicked, but nothing happens in the simulation. The gain is set with the video gain rocker.",
+              "positions": [
+                {
+                  "name": "AUTO",
+                  "text": "No function in DCS."
+                },
+                {
+                  "name": "MANUAL",
+                  "text": "No function in DCS."
+                }
+              ],
+              "page": "143",
+              "src": "m1"
+            },
+            {
+              "id": "auto-level",
+              "name": "Video level auto/manual switch",
+              "type": "switch2",
+              "match": [
+                "HLP_MMS_AUTO_LEVEL_SWITCH",
+                "item:mms-control-panel:11"
+              ],
+              "text": "The manual says this switch is not functional in DCS.",
+              "context": "The switch can be clicked, but nothing happens in the simulation. The level is set with the video level rocker.",
+              "positions": [
+                {
+                  "name": "AUTO",
+                  "text": "No function in DCS."
+                },
+                {
+                  "name": "MANUAL",
+                  "text": "No function in DCS."
+                }
+              ],
+              "page": "143",
+              "src": "m1"
+            },
+            {
+              "id": "auto-focus",
+              "name": "Video focus auto/manual switch",
+              "type": "switch2",
+              "match": [
+                "HLP_MMS_AUTO_FOC_SWITCH",
+                "item:mms-control-panel:12"
+              ],
+              "text": "The manual says this switch is not functional in DCS.",
+              "context": "The switch can be clicked, but nothing happens in the simulation. The focus is set with the video focus rocker.",
+              "positions": [
+                {
+                  "name": "AUTO",
+                  "text": "No function in DCS."
+                },
+                {
+                  "name": "MANUAL",
+                  "text": "No function in DCS."
+                }
+              ],
+              "page": "143",
+              "src": "m1"
+            }
+          ],
+          "page": "143"
+        },
+        {
+          "id": "cpo-m4",
+          "name": "Copilot personal weapon (M4 carbine)",
+          "src": "m1",
+          "text": "The copilot can take a hand-held M4 carbine out of its holder and shoot it out of the cabin. This panel has the latch that holds the rifle.",
+          "context": "The weapon can be used with the mouse or with VR hand controllers. With the mouse, the cockpit mouse mode may have to be toggled to switch between aiming the weapon and clicking the cockpit.",
+          "controls": [
+            {
+              "id": "m4-latch",
+              "name": "M4 stow/deploy latch",
+              "type": "button",
+              "match": [
+                "HLP_M4_strap"
+              ],
+              "text": "This is the latch that holds the M4 rifle. Clicking it lets the copilot take the rifle out and aim it outside the helicopter. The game command is 'M4 Stow/Deploy'.",
+              "context": "The manual explains the two ways of using the rifle: with VR controllers, or with the mouse for aiming and firing.",
+              "page": "233",
+              "src": "m1"
+            }
+          ],
+          "page": "233"
+        },
+        {
+          "id": "cpo-smoke",
+          "name": "Smoke grenade buttons",
+          "src": "m1",
+          "text": "These buttons drop smoke grenades from the helicopter. The game has three buttons, one for each drop command: left, centre and right. The buttons are coloured violet, green and yellow.",
+          "context": "The manual does not describe the smoke grenades. The game names the three commands 'Smoke Grenade - Drop Left', 'Center' and 'Right'.",
+          "controls": [
+            {
+              "id": "smoke-green",
+              "name": "Smoke grenade button, green (Drop Left)",
+              "type": "button",
+              "match": [
+                "HLP_GREEN_GRENADE"
+              ],
+              "text": "This button drops the green smoke grenade. The game command for it is 'Smoke Grenade - Drop Left'. A smoke grenade makes a cloud of coloured smoke.",
+              "context": "The green button is the left one of the three. The manual does not describe the smoke grenades.",
+              "src": "m1"
+            },
+            {
+              "id": "smoke-yellow",
+              "name": "Smoke grenade button, yellow (Drop Center)",
+              "type": "button",
+              "match": [
+                "HLP_YELLOW_GRENADE"
+              ],
+              "text": "This button drops the yellow smoke grenade. The game command for it is 'Smoke Grenade - Drop Center'. A smoke grenade makes a cloud of coloured smoke.",
+              "context": "The yellow button is the one in the middle. The manual does not describe the smoke grenades.",
+              "src": "m1"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "cpo-dash-center",
+      "where": "front-center",
+      "name": "Dashboard centre",
+      "seat": 2,
+      "text": "The middle of the dashboard, between the two crew members. It holds the engine instruments, the standby instruments, the radio display and the missile warning display.",
+      "panels": [
+        {
+          "id": "cpo-mpd",
+          "name": "Multiparameter Display (MPD)",
+          "src": "m1",
+          "text": "The Multiparameter Display is the engine and fuel instrument block. Tall light scales show transmission and oil pressure and temperature, fuel quantity and the gas generator speed (NG). Boxes at the right show numbers.",
+          "context": "The pilot checks it during the start and the flight. A WRN light comes on at every start and goes out when it is reset. The switches below the display test the lights and choose which values are shown.",
+          "controls": [
+            {
+              "id": "bit-reset",
+              "name": "BIT/Reset switch (WRN light reset)",
+              "type": "switch3",
+              "match": [
+                "item:multiparameter-display:1"
+              ],
+              "text": "This switch clears the WRN light that comes on at every start. Pushed to RESET it resets the light, pushed to BIT it starts the built-in test. It springs back to the centre.",
+              "context": "If the WRN light stays on after the reset, the manual says the helicopter needs a check, and a message in the boxes at the right names the fault.",
+              "positions": [
+                {
+                  "name": "BIT",
+                  "text": "Starts the built-in test (a self-check)."
+                },
+                {
+                  "name": "CENTER",
+                  "text": "The rest position."
+                },
+                {
+                  "name": "RESET",
+                  "text": "Resets the WRN light."
+                }
+              ],
+              "page": "51",
+              "src": "m1"
+            },
+            {
+              "id": "test",
+              "name": "Test/Digit switch",
+              "type": "switch3",
+              "match": [
+                "item:multiparameter-display:2"
+              ],
+              "text": "Pushed to TEST, this switch lights all the lights of the display and the tall scales so they can be checked. It springs back to the centre.",
+              "context": "The pilot uses the test to see that no light is burnt out. The manual does not describe the DIGIT OFF position.",
+              "positions": [
+                {
+                  "name": "TEST",
+                  "text": "Tests the lights of the display and the tall scales."
+                },
+                {
+                  "name": "CENTER",
+                  "text": "The rest position."
+                },
+                {
+                  "name": "DIGIT OFF",
+                  "text": "The manual does not describe this position; the game names it 'DIGIT OFF'."
+                }
+              ],
+              "page": "51",
+              "src": "m1"
+            },
+            {
+              "id": "select",
+              "name": "MPD Selector switch",
+              "type": "switch3",
+              "match": [
+                "item:multiparameter-display:3"
+              ],
+              "text": "This switch chooses which two values are shown in the boxes at the right of the display. A green light below a tall scale shows which values are chosen. It springs back to the centre.",
+              "context": "At start-up the pilot sets it to show the rotor and engine speed (NR/NP), and later the fuel quantity and engine torque.",
+              "positions": [
+                {
+                  "name": "UP",
+                  "text": "Moves the choice one way along the scales."
+                },
+                {
+                  "name": "CENTER",
+                  "text": "The rest position."
+                },
+                {
+                  "name": "DOWN",
+                  "text": "Moves the choice the other way along the scales."
+                }
+              ],
+              "page": "51",
+              "src": "m1"
+            },
+            {
+              "id": "brt",
+              "name": "Brightness dial (MPD)",
+              "type": "knob",
+              "match": [
+                "item:multiparameter-display:4"
+              ],
+              "text": "Turning this dial makes the engine instrument block brighter or darker.",
+              "context": "The pilot sets it to suit the light in the cockpit.",
+              "page": "51",
+              "src": "m1"
+            },
+            {
+              "id": "backup",
+              "name": "MFD Backup button",
+              "type": "button",
+              "match": [
+                "item:multiparameter-display:5"
+              ],
+              "text": "Pressing this button shows or hides a row of basic helicopter information at the top of the multi-function screens. It includes engine speed, engine torque and mast torque.",
+              "context": "These backup readings stay on the screens on every page when they are switched on, so the pilot always has the main engine values in view.",
+              "page": "73",
+              "src": "m1"
+            }
+          ],
+          "page": "51"
+        },
+        {
+          "id": "cpo-standby",
+          "name": "Standby instruments",
+          "src": "m1",
+          "text": "These are the simple backup instruments on the dashboard: the airspeed indicator, the altimeter, the compass and the attitude indicator. The FADEC switch for the engine computer sits above the airspeed indicator.",
+          "context": "They work without the screens, so the pilot can still fly if the screens fail. The standby airspeed indicator needs no electric power at all.",
+          "controls": [
+            {
+              "id": "fadec-switch",
+              "name": "FADEC Auto/Manual switch",
+              "type": "switch2",
+              "match": [
+                "HLP_FADEC_BUTTON"
+              ],
+              "text": "This switch chooses between the automatic and the manual mode of the engine computer (the FADEC). In AUTO the computer holds the rotor speed. In MAN the throttle controls the fuel directly.",
+              "context": "The pilot checks at start-up that it is on AUTO. If it goes to manual, the manual says to set the throttle quickly to about 76 per cent and then adjust it by hand.",
+              "positions": [
+                {
+                  "name": "AUTO",
+                  "text": "The engine computer governs the fuel above 65 per cent throttle and keeps the rotor speed. Below that the 'Check Throttle' message shows."
+                },
+                {
+                  "name": "MAN",
+                  "text": "The throttle controls the fuel. Only the overspeed protection stays active."
+                }
+              ],
+              "page": "45",
+              "src": "m1"
+            }
+          ],
+          "page": "53"
+        },
+        {
+          "id": "cpo-rfd",
+          "name": "Remote Frequency Display (RFD)",
+          "src": "m1",
+          "text": "The Remote Frequency Display shows the radios: which radio each crew member talks on, its channel and its frequency. It is mostly a display and cannot change the radios by itself.",
+          "context": "The crew changes channels and frequencies with the screens, the keyboard and the channel and radio select switches. The RFD shows the result.",
+          "controls": [
+            {
+              "id": "rfd-display",
+              "name": "Radio list, channel and frequency displays",
+              "type": "display",
+              "match": [
+                "item:remote-frequency-display:1",
+                "item:remote-frequency-display:2",
+                "item:remote-frequency-display:3"
+              ],
+              "text": "The display lists the radios: FM1, UHF, VHF, a fourth that is not used and FM2. Next to each is its channel, M for a manually set frequency or 01 to 19, and its frequency.",
+              "context": "The crew reads the RFD to see what each radio is set to.",
+              "page": "165",
+              "src": "m1"
+            },
+            {
+              "id": "rfd-arrows",
+              "name": "Selected radio arrows (copilot and pilot)",
+              "type": "indicator",
+              "match": [
+                "item:remote-frequency-display:4",
+                "item:remote-frequency-display:5"
+              ],
+              "text": "An arrow beside a radio shows who will talk on it. A left arrow means the copilot is set to transmit on that radio, a right arrow means the pilot.",
+              "context": "The arrow moves when a crew member picks another radio with the radio select switch.",
+              "page": "165",
+              "src": "m1"
+            },
+            {
+              "id": "rfd-ciph-ind",
+              "name": "CIPH mode indicator",
+              "type": "indicator",
+              "match": [
+                "item:remote-frequency-display:7"
+              ],
+              "text": "This indicator shows the cipher mode, the mode in which the radio talk is scrambled for secrecy.",
+              "context": "The manual only lists the indicator and the two selectors next to it.",
+              "page": "165",
+              "src": "m1"
+            },
+            {
+              "id": "rfd-ciph-pilot",
+              "name": "Pilot CIPH mode selector (right cipher button)",
+              "type": "button",
+              "match": [
+                "item:remote-frequency-display:9"
+              ],
+              "text": "This is the right-hand cipher button. The manual calls the matching selector the 'Pilot CIPH mode selector'. It sets the cipher mode for the pilot.",
+              "context": "On the display the right side belongs to the pilot, as the right arrow shows.",
+              "page": "165",
+              "src": "m1"
+            },
+            {
+              "id": "rfd-ciph-copilot",
+              "name": "Copilot CIPH mode selector (left cipher button)",
+              "type": "button",
+              "match": [
+                "HLP_RFD_LCIPHER",
+                "item:remote-frequency-display:8"
+              ],
+              "text": "This is the left-hand cipher button. The manual calls the matching selector the 'Copilot CIPH mode selector'. It sets the cipher mode for the copilot.",
+              "context": "On the display the left side belongs to the copilot, as the left arrow shows.",
+              "page": "165",
+              "src": "m1"
+            },
+            {
+              "id": "rfd-brt",
+              "name": "Brightness rheostat (RFD)",
+              "type": "knob",
+              "match": [
+                "HLP_RFD_BRT",
+                "item:remote-frequency-display:6"
+              ],
+              "text": "Turning this dial makes the Remote Frequency Display brighter or darker.",
+              "context": "The crew sets it to suit the light in the cockpit.",
+              "page": "165",
+              "src": "m1"
+            },
+            {
+              "id": "rfd-test",
+              "name": "Test button (RFD)",
+              "type": "button",
+              "match": [
+                "item:remote-frequency-display:10"
+              ],
+              "text": "Holding this button shows a test pattern on the Remote Frequency Display, so the crew can check that all parts of the display work.",
+              "context": "The display shows the pattern only while the button is held.",
+              "page": "165",
+              "src": "m1"
+            }
+          ],
+          "page": "165"
+        },
+        {
+          "id": "cpo-cmws-ci",
+          "name": "CMWS Control Indicator",
+          "src": "m1",
+          "text": "This panel is the display and control unit of the missile warning system (CMWS). It shows the system status and from which side a missile threat is coming. It has a power knob and two dials.",
+          "context": "The CMWS finds approaching missiles and can fire flares by itself. Installing the infrared jammer in the mission editor removes the CMWS. The manual says a ground safety switch stops its use on the ground.",
+          "controls": [
+            {
+              "id": "power",
+              "name": "OFF/ON/TEST knob (CMWS)",
+              "type": "selector",
+              "match": [
+                "HLP_CI_PWR_KNOB",
+                "item:cmws-control-indicator:1"
+              ],
+              "text": "This knob switches the missile warning system on and starts its self-tests. Turning it momentarily to TEST starts the built-in test again.",
+              "context": "At the start-up the crew turns it to ON, and the system runs its own self-test.",
+              "positions": [
+                {
+                  "name": "OFF",
+                  "text": "The warning system is off."
+                },
+                {
+                  "name": "ON",
+                  "text": "The system is on and runs its start-up self-tests."
+                },
+                {
+                  "name": "TEST",
+                  "text": "Starts the built-in test; it springs back."
+                }
+              ],
+              "page": "172",
+              "src": "m1"
+            },
+            {
+              "id": "audio",
+              "name": "AUDIO dial (CMWS)",
+              "type": "knob",
+              "match": [
+                "HLP_CI_AUDIO_KNOB",
+                "item:cmws-control-indicator:2"
+              ],
+              "text": "Turning this dial changes the volume of the spoken warnings of the missile warning system.",
+              "context": "The crew sets it so the voice can be heard over the engine noise and the radio.",
+              "page": "172",
+              "src": "m1"
+            },
+            {
+              "id": "lamp",
+              "name": "LAMP dial (CMWS)",
+              "type": "knob",
+              "match": [
+                "HLP_CI_LAMP_KNOB",
+                "item:cmws-control-indicator:3"
+              ],
+              "text": "Turning this dial makes the display of the missile warning panel brighter or darker.",
+              "context": "The crew sets it to suit the light in the cockpit.",
+              "page": "172",
+              "src": "m1"
+            },
+            {
+              "id": "status",
+              "name": "STATUS display and THREAT display",
+              "type": "display",
+              "match": [
+                "item:cmws-control-indicator:4",
+                "item:cmws-control-indicator:5"
+              ],
+              "text": "The status display shows messages about the state of the missile warning system. The threat display flashes a quadrant when a threat is found from that side.",
+              "context": "The crew looks at the threat display to see which side an approaching missile is on.",
+              "page": "172",
+              "src": "m1"
+            },
+            {
+              "id": "lights",
+              "name": "DISPENSING and READY lights",
+              "type": "light",
+              "match": [
+                "item:cmws-control-indicator:6",
+                "item:cmws-control-indicator:7"
+              ],
+              "text": "The DISPENSING light shows that flares are being dropped right now. The READY light shows that the system is ready to drop them.",
+              "context": "They show the state of the automatic defence. The auto or bypass switch on the CMWS control panel decides if it drops flares by itself.",
+              "page": "172",
+              "src": "m1"
+            }
+          ],
+          "page": "172"
+        }
+      ]
+    },
+    {
+      "id": "cpo-center-console",
+      "where": "center-pedestal",
+      "name": "Centre console",
+      "seat": 2,
+      "text": "The console between the two seats. It holds the weapons safety panel, the keyboard, the flight helper panel, the missile warning panel and the intercom and radio panels.",
+      "panels": [
+        {
+          "id": "cpo-acp",
+          "name": "Armament Control Panel (ACP)",
+          "src": "m1",
+          "text": "The Armament Control Panel is the weapons safety panel on the centre console. It has the master arm switch, the gun arm switch, a status light and the switches that drop the weapon pylons.",
+          "context": "Nothing fires until the pilot arms it here. The manual says the weapon pylons get power only when the master arm switch is at STANDBY or ARMED.",
+          "controls": [
+            {
+              "id": "master",
+              "name": "Master Arm switch (OFF / STANDBY / ARMED)",
+              "type": "switch3",
+              "match": [
+                "HLP_ACP_MASTER_SWITCH",
+                "item:armament-control-panel:1"
+              ],
+              "text": "This is the main safety switch of the weapons. Nothing can be fired while it is off. It also sends power to the weapon pylons when it is moved out of the OFF position.",
+              "context": "The crew sets it to STANDBY after the start-up and to ARMED shortly before shooting. The manual's gun procedure begins with setting it to ARMED.",
+              "positions": [
+                {
+                  "name": "OFF",
+                  "text": "The weapon pylons get no power."
+                },
+                {
+                  "name": "STANDBY",
+                  "text": "The pylons have power. The firing procedure sets ARMED before shooting."
+                },
+                {
+                  "name": "ARMED",
+                  "text": "The weapons are armed and can be fired."
+                }
+              ],
+              "page": "140",
+              "src": "m1"
+            },
+            {
+              "id": "gun",
+              "name": "Gun Arm switch (SAFE / ARMED / RECOCK)",
+              "type": "switch3",
+              "match": [
+                "item:armament-control-panel:2"
+              ],
+              "text": "This switch arms the gun and cocks it. After the gun is reloaded at an airfield or rearm point, it must be recocked before it can fire. To recock, hold the switch at RECOCK and let go; it springs back to ARMED.",
+              "context": "The pilot recocks the gun before shooting if it has been reloaded or newly fitted. The game calls this the Gun Switch.",
+              "positions": [
+                {
+                  "name": "SAFE",
+                  "text": "The gun is safe and will not fire."
+                },
+                {
+                  "name": "ARMED",
+                  "text": "The gun is armed."
+                },
+                {
+                  "name": "RECOCK",
+                  "text": "Cocks the gun again; it springs back to ARMED."
+                }
+              ],
+              "page": "234",
+              "src": "m1"
+            },
+            {
+              "id": "master-light",
+              "name": "Master Arm status indicator",
+              "type": "indicator",
+              "match": [
+                "item:armament-control-panel:3"
+              ],
+              "text": "This light shows the state of the master arm switch.",
+              "context": "The crew looks at it to be sure the weapons are safe or armed as intended.",
+              "page": "140",
+              "src": "m1"
+            },
+            {
+              "id": "left-guard",
+              "name": "Left pylon jettison switch guard",
+              "type": "guard",
+              "match": [
+                "HLP_ACP_LEFT_COVER"
+              ],
+              "text": "This is the small cover over the left pylon jettison switch. It stops the switch from being pressed by accident. The game lets the pilot open and close it.",
+              "context": "It must be open before the left jettison switch can be moved.",
+              "page": "140",
+              "src": "m1"
+            },
+            {
+              "id": "left-jett",
+              "name": "Left pylon jettison switch",
+              "type": "switch",
+              "match": [
+                "HLP_ACP_LEFT_SWITCH",
+                "item:armament-control-panel:4"
+              ],
+              "text": "This switch drops the weapons that hang on the left pylon. The jettison is for emergencies.",
+              "context": "It sits under a guard. The panel has a matching switch for the right pylon.",
+              "page": "140",
+              "src": "m1"
+            },
+            {
+              "id": "right-guard",
+              "name": "Right pylon jettison switch guard",
+              "type": "guard",
+              "match": [
+                "HLP_ACP_RIGHT_COVER"
+              ],
+              "text": "This is the small cover over the right pylon jettison switch. It stops the switch from being pressed by accident. The game lets the pilot open and close it.",
+              "context": "It must be open before the right jettison switch can be moved.",
+              "page": "140",
+              "src": "m1"
+            },
+            {
+              "id": "right-jett",
+              "name": "Right pylon jettison switch",
+              "type": "switch",
+              "match": [
+                "HLP_ACP_RIGHT_SWITCH"
+              ],
+              "text": "This switch drops the weapons that hang on the right pylon. The jettison is for emergencies.",
+              "context": "It sits under a guard. The panel has a matching switch for the left pylon.",
+              "page": "140",
+              "src": "m1"
+            }
+          ],
+          "page": "140"
+        },
+        {
+          "id": "cpo-mfk",
+          "name": "Multifunction Keyboard (MFK)",
+          "src": "m1",
+          "text": "The Multifunction Keyboard is the keyboard for typing numbers and letters into the helicopter's computers. It sits on the centre console and both crew members share it.",
+          "context": "The keyboard works with the screens. A screen button starts data entry, then the typing goes into the screen that asked for it. Only one entry can be active at a time.",
+          "controls": [
+            {
+              "id": "digits",
+              "name": "Number keys 0-9, decimal point and minus",
+              "type": "keypad",
+              "match": [
+                "HLP_MFK_0",
+                "HLP_MFK_1",
+                "HLP_MFK_2",
+                "HLP_MFK_3",
+                "HLP_MFK_4",
+                "HLP_MFK_5",
+                "HLP_MFK_6",
+                "HLP_MFK_7",
+                "HLP_MFK_8",
+                "HLP_MFK_9",
+                "HLP_MFK_DOT",
+                "HLP_MFK_MINUS",
+                "item:multifunction-keyboard:1"
+              ],
+              "text": "These keys type numbers, a decimal point and a minus sign. The game names them 'Num 0' to 'Num 9', 'Num Decimal' and 'Minus/Hyphen'.",
+              "context": "The crew types frequencies, codes, coordinates and other values with them after picking a field on a screen.",
+              "count": 12,
+              "page": "58",
+              "src": "m1"
+            },
+            {
+              "id": "letters",
+              "name": "Letter keys A-Z",
+              "type": "keypad",
+              "match": [
+                "HLP_MFK_A",
+                "HLP_MFK_B",
+                "HLP_MFK_C",
+                "HLP_MFK_D",
+                "HLP_MFK_E",
+                "HLP_MFK_F",
+                "HLP_MFK_H",
+                "HLP_MFK_I",
+                "HLP_MFK_J",
+                "HLP_MFK_K",
+                "HLP_MFK_L",
+                "HLP_MFK_M",
+                "HLP_MFK_O",
+                "HLP_MFK_P",
+                "HLP_MFK_Q",
+                "HLP_MFK_R",
+                "HLP_MFK_S",
+                "HLP_MFK_T",
+                "HLP_MFK_V",
+                "HLP_MFK_W",
+                "HLP_MFK_X",
+                "HLP_MFK_Y",
+                "HLP_MFK_Z",
+                "item:multifunction-keyboard:2"
+              ],
+              "text": "These keys type letters. The game names them 'Alpha A' to 'Alpha Z'.",
+              "context": "The crew uses them for names, such as the name of a point or a message.",
+              "count": 23,
+              "page": "58",
+              "src": "m1"
+            },
+            {
+              "id": "enter",
+              "name": "ENTER key",
+              "type": "button",
+              "match": [
+                "HLP_MFK_ENTER",
+                "item:multifunction-keyboard:4"
+              ],
+              "text": "This key confirms what has been typed. What exactly happens depends on the kind of entry that is active.",
+              "context": "After the typing the crew presses it to hand the value to the screen. If the value is not valid, the screen shows ERR.",
+              "page": "58",
+              "src": "m1"
+            },
+            {
+              "id": "clear",
+              "name": "CLEAR key",
+              "type": "button",
+              "match": [
+                "HLP_MFK_CLR",
+                "item:multifunction-keyboard:5"
+              ],
+              "text": "This key clears everything that has been typed so far. The game calls it 'Line Clear'.",
+              "context": "The crew uses it to start the typing again after a mistake.",
+              "page": "58",
+              "src": "m1"
+            },
+            {
+              "id": "cursor",
+              "name": "Cursor keys (left and right arrows)",
+              "type": "button",
+              "match": [
+                "HLP_MFK_ARROW_LEFT",
+                "item:multifunction-keyboard:6"
+              ],
+              "text": "These two keys move the cursor in the typed text. The left arrow also deletes the character before it; the game calls it 'Backspace'. The right arrow adds a space if it is at the end of the text.",
+              "context": "The crew uses them to correct a typing error without clearing everything.",
+              "page": "58",
+              "src": "m1"
+            },
+            {
+              "id": "iff",
+              "name": "IFF key",
+              "type": "button",
+              "match": [
+                "HLP_MFK_IFF",
+                "item:multifunction-keyboard:3"
+              ],
+              "text": "This key opens IFF page 1 on the copilot's screen. IFF is the friend-or-foe radio box that answers radar questions.",
+              "context": "The crew uses the IFF page to set the codes of the IFF box.",
+              "page": "58",
+              "src": "m1"
+            },
+            {
+              "id": "ident",
+              "name": "IDNT key (identify)",
+              "type": "button",
+              "match": [
+                "HLP_MFK_IDNT"
+              ],
+              "text": "This key makes the IFF box send its identification. The game calls it 'Ident'.",
+              "context": "The manual only says that the key broadcasts the IFF identification.",
+              "page": "58",
+              "src": "m1"
+            },
+            {
+              "id": "blank",
+              "name": "BLANK key (space)",
+              "type": "button",
+              "match": [
+                "HLP_MFK_BLANK"
+              ],
+              "text": "This key puts a blank space into the typed text. The game calls it 'Space'.",
+              "context": "The crew uses it inside names that need a space.",
+              "page": "58",
+              "src": "m1"
+            },
+            {
+              "id": "tune-scan",
+              "name": "TUNE and SCAN keys",
+              "type": "button",
+              "match": [
+                "HLP_MFK_TUNE",
+                "HLP_MFK_SCAN"
+              ],
+              "text": "The manual says the TUNE key and the SCAN key have no function.",
+              "context": "The keys can be pressed, but nothing happens in the simulation.",
+              "count": 2,
+              "page": "58",
+              "src": "m1"
+            },
+            {
+              "id": "zero-guard",
+              "name": "Zeroize switch guard",
+              "type": "guard",
+              "match": [
+                "HLP_MFK_GUARD_ZERO"
+              ],
+              "text": "This is the cover over the zeroize switch of the keyboard. The game lets the crew open and close it.",
+              "context": "The manual does not describe the zeroize switch or its cover.",
+              "src": "m1",
+              "page": "58"
+            },
+            {
+              "id": "zero",
+              "name": "Zeroize switch",
+              "type": "switch2",
+              "match": [
+                "HLP_MFK_CODE"
+              ],
+              "text": "The game names this switch 'Zeroize Switch' with the positions ON and OFF. The manual does not describe it.",
+              "context": "It sits under a cover on the keyboard panel.",
+              "positions": [
+                {
+                  "name": "ON",
+                  "text": "On, as the game names it."
+                },
+                {
+                  "name": "OFF",
+                  "text": "Off, as the game names it."
+                }
+              ],
+              "src": "m1",
+              "page": "58"
+            }
+          ],
+          "page": "58"
+        },
+        {
+          "id": "cpo-scas",
+          "name": "SCAS Control Panel (stability and force trim)",
+          "src": "m1",
+          "text": "This panel runs the helicopter's flight helpers. SCAS is a system that keeps the helicopter steady and smooth. The panel also has the switches for the hydraulics and for force trim, the magnetic brake that holds the stick.",
+          "context": "The manual's start-up list turns on the SCAS power switch and then the pitch/roll and yaw switches after the engine is running. Force trim does not affect the pedals or the collective.",
+          "controls": [
+            {
+              "id": "force-trim",
+              "name": "Force Trim switch",
+              "type": "switch2",
+              "match": [
+                "item:scas-control-panel:1"
+              ],
+              "text": "This switch turns force trim on or off. Force trim is a magnetic brake that holds the stick (the cyclic) where the pilot puts it.",
+              "context": "With force trim on, the stick stays in place without pressure from the pilot. The pilot can interrupt it with the trim release button on the cyclic to set a new position.",
+              "positions": [
+                {
+                  "name": "ON",
+                  "text": "Force trim holds the cyclic in place."
+                },
+                {
+                  "name": "OFF",
+                  "text": "The cyclic moves freely, with no magnetic hold."
+                }
+              ],
+              "page": "42",
+              "src": "m1"
+            },
+            {
+              "id": "hyd",
+              "name": "Hydraulic System switch",
+              "type": "switch2",
+              "match": [
+                "item:scas-control-panel:2"
+              ],
+              "text": "This switch turns the helicopter's hydraulic boost on or off. The hydraulic system is oil under pressure that helps move the controls.",
+              "context": "The pilot has it on for normal flight. It is one of the switches the pilot checks on this panel before the engine start.",
+              "positions": [
+                {
+                  "name": "ON",
+                  "text": "The hydraulic boost works."
+                },
+                {
+                  "name": "OFF",
+                  "text": "The hydraulic boost is off."
+                }
+              ],
+              "page": "42",
+              "src": "m1"
+            },
+            {
+              "id": "pitch-roll",
+              "name": "SCAS Pitch/Roll Engage switch",
+              "type": "switch2",
+              "match": [
+                "item:scas-control-panel:3"
+              ],
+              "text": "This switch turns on the SCAS channels for pitch and roll. These channels smooth out the nose-up and nose-down and the sideways tilting of the helicopter.",
+              "context": "The pilot sets it to ON during start-up, after the SCAS power switch.",
+              "positions": [
+                {
+                  "name": "ON",
+                  "text": "The pitch and roll channels of the SCAS are engaged."
+                },
+                {
+                  "name": "OFF",
+                  "text": "The pitch and roll channels are off."
+                }
+              ],
+              "page": "31",
+              "src": "m1"
+            },
+            {
+              "id": "yaw",
+              "name": "SCAS Yaw Engage switch",
+              "type": "switch2",
+              "match": [
+                "item:scas-control-panel:4"
+              ],
+              "text": "This switch turns on the SCAS channel for yaw, the turning of the nose to the left or right.",
+              "context": "The manual's start-up list sets it to ON right after the pitch/roll switch.",
+              "positions": [
+                {
+                  "name": "ON",
+                  "text": "The yaw channel of the SCAS is engaged."
+                },
+                {
+                  "name": "OFF",
+                  "text": "The yaw channel is off."
+                }
+              ],
+              "page": "31",
+              "src": "m1"
+            },
+            {
+              "id": "scas-power",
+              "name": "SCAS Power switch",
+              "type": "switch2",
+              "match": [
+                "item:scas-control-panel:5"
+              ],
+              "text": "This switch gives power to the SCAS. The engage switches for pitch/roll and yaw only work after it is on.",
+              "context": "It is the first of the three SCAS switches that the pilot turns on during the start-up list.",
+              "positions": [
+                {
+                  "name": "ON",
+                  "text": "The SCAS has power."
+                },
+                {
+                  "name": "OFF",
+                  "text": "The SCAS has no power."
+                }
+              ],
+              "page": "31",
+              "src": "m1"
+            },
+            {
+              "id": "scas-test",
+              "name": "SCAS Test button",
+              "type": "button",
+              "match": [
+                "item:scas-control-panel:6"
+              ],
+              "text": "Pressing this button starts a test of the SCAS.",
+              "context": "The manual lists the button but does not describe the test in detail.",
+              "page": "42",
+              "src": "m1"
+            }
+          ],
+          "page": "42"
+        },
+        {
+          "id": "cpo-cmws-cp",
+          "name": "CMWS Control Panel",
+          "src": "m1",
+          "text": "This small panel at the rear left of the centre console controls what the missile warning system (CMWS) does when it finds a missile threat. Flares are heat decoys that fool heat-seeking missiles.",
+          "context": "The CMWS can drop flares by itself. These two switches decide if it may do so.",
+          "controls": [
+            {
+              "id": "arm-safe",
+              "name": "ARM/SAFE switch (CMWS)",
+              "type": "switch2",
+              "match": [
+                "HLP_CMWS_ARM_SAFE",
+                "item:cmws-control-panel:1"
+              ],
+              "text": "This switch decides if the missile warning system may drop flares at all. In SAFE it cannot drop any.",
+              "context": "The crew puts it to ARM for a flight in which flares may be needed.",
+              "positions": [
+                {
+                  "name": "ARM",
+                  "text": "The system may dispense flares."
+                },
+                {
+                  "name": "SAFE",
+                  "text": "Dispensing flares is blocked."
+                }
+              ],
+              "page": "171",
+              "src": "m1"
+            },
+            {
+              "id": "auto-bypass",
+              "name": "AUTO/BYPASS switch (CMWS)",
+              "type": "switch2",
+              "match": [
+                "HLP_CMWS_AUTO_BYPASS",
+                "item:cmws-control-panel:2"
+              ],
+              "text": "This switch decides if the system drops flares by itself when it finds a threat. In BYPASS it does not, and the control indicator shows BYPASS.",
+              "context": "In AUTO the helicopter defends itself without help from the crew. In BYPASS the crew must drop flares by hand with the flare button on the pilot's grip.",
+              "positions": [
+                {
+                  "name": "AUTO",
+                  "text": "The system dispenses flares by itself when it finds a threat."
+                },
+                {
+                  "name": "BYPASS",
+                  "text": "No automatic dispensing; the display shows BYPASS."
+                }
+              ],
+              "page": "171",
+              "src": "m1"
+            }
+          ],
+          "page": "171"
+        },
+        {
+          "id": "cpo-cscp-pilot",
+          "name": "Pilot Communications System Control Panel (CSCP)",
+          "src": "m1",
+          "text": "This is the pilot's panel for the intercom and the radios. It sets the headset volume, the volume of each radio, the intercom mode and which radio the pilot talks on.",
+          "context": "The communication system lets the crew talk to each other and, through four radios, to others outside. The pilot also has a radio select switch and a channel select switch on the collective grip.",
+          "controls": [
+            {
+              "id": "volume",
+              "name": "Volume Control knob (pilot)",
+              "type": "knob",
+              "match": [
+                "HLP_PILOTCSC_VOL"
+              ],
+              "text": "This knob sets how loud everything is in the pilot's headset.",
+              "context": "The pilot sets it once for a comfortable level.",
+              "page": "162",
+              "src": "m1"
+            },
+            {
+              "id": "monitor",
+              "name": "Radio monitor switches 1-5 (pilot)",
+              "type": "knob",
+              "match": [
+                "HLP_PILOTCSC_MON?"
+              ],
+              "text": "These five knobs set the volume of each radio in the pilot's headset: FM1, UHF, VHF, a fourth that is not used, and FM2. In the game a left click turns a radio off or on (inhibit) and the mouse wheel changes its volume. A pulled knob mutes the radio.",
+              "context": "The pilot turns down a radio that is too noisy and keeps the ones needed for the mission.",
+              "count": 5,
+              "page": "162",
+              "src": "m1"
+            },
+            {
+              "id": "ics-rotary",
+              "name": "ICS Rotary switch (pilot)",
+              "type": "selector",
+              "match": [
+                "HLP_PILOTCSC_ROTARY"
+              ],
+              "text": "This switch chooses how the pilot's intercom works. With it in NORM, the pilot must press the ICS key to talk to the other crew member.",
+              "context": "The manual describes only NORM, which needs the ICS key, and VOX, which is voice activated. It does not describe HOT MIC.",
+              "positions": [
+                {
+                  "name": "HOT MIC",
+                  "text": "The manual does not describe this position; the game names it HOT MIC."
+                },
+                {
+                  "name": "ICS OFF",
+                  "text": "The intercom is off."
+                },
+                {
+                  "name": "NORM",
+                  "text": "The pilot must key the ICS to talk."
+                },
+                {
+                  "name": "VOX",
+                  "text": "The intercom is voice activated."
+                }
+              ],
+              "page": "162",
+              "src": "m1"
+            },
+            {
+              "id": "vox",
+              "name": "VOX Control knob (pilot)",
+              "type": "knob",
+              "match": [
+                "HLP_PILOTCSC_VOX"
+              ],
+              "text": "This knob sets the voice-activated intercom. It decides how loudly the pilot must talk before the intercom starts.",
+              "context": "The pilot uses it with the ICS rotary switch in the VOX position.",
+              "page": "162",
+              "src": "m1"
+            },
+            {
+              "id": "transmit",
+              "name": "Transmit Selector switch (pilot)",
+              "type": "selector",
+              "match": [
+                "HLP_PILOTCSC_TRANSMIT"
+              ],
+              "text": "This switch picks the radio the pilot talks on: 1 (FM1), 2 (UHF), 3 (VHF), 4 (not used), 5 (FM2) or the intercom (ICS). In the RMT position the radio is picked with the radio select switch on the collective grip.",
+              "context": "The pilot usually leaves it on RMT and chooses the radio from the collective grip.",
+              "positions": [
+                {
+                  "name": "1 (FM1)",
+                  "text": "Talks on the first FM radio."
+                },
+                {
+                  "name": "2 (UHF)",
+                  "text": "Talks on the UHF radio."
+                },
+                {
+                  "name": "3 (VHF)",
+                  "text": "Talks on the VHF radio."
+                },
+                {
+                  "name": "4 (N/A)",
+                  "text": "A radio that is not used."
+                },
+                {
+                  "name": "5 (FM2)",
+                  "text": "Talks on the second FM radio."
+                },
+                {
+                  "name": "ICS",
+                  "text": "Talks on the intercom only."
+                },
+                {
+                  "name": "RMT",
+                  "text": "The radio is picked remotely by the select switch on the grip."
+                }
+              ],
+              "page": "162",
+              "src": "m1"
+            }
+          ],
+          "page": "162"
+        },
+        {
+          "id": "cpo-cscp-copilot",
+          "name": "Copilot Communications System Control Panel (CSCP)",
+          "src": "m1",
+          "text": "This is the copilot's own panel for the intercom and the radios. It has the same knobs as the pilot's panel and also the channel select switch.",
+          "context": "The copilot talks on the radios through this panel. The remote frequency display shows with a left arrow which radio the copilot has chosen.",
+          "controls": [
+            {
+              "id": "volume",
+              "name": "Volume Control knob (copilot)",
+              "type": "knob",
+              "match": [
+                "HLP_CPOCSC_VOL",
+                "item:communications-control-panel:1"
+              ],
+              "text": "This knob sets how loud everything is in the copilot's headset.",
+              "context": "The copilot sets it once for a comfortable level.",
+              "page": "162",
+              "src": "m1"
+            },
+            {
+              "id": "monitor",
+              "name": "Radio monitor switches 1-5 (copilot)",
+              "type": "knob",
+              "match": [
+                "HLP_CPOCSC_MON",
+                "HLP_CPOCSC_MON?",
+                "item:communications-control-panel:2"
+              ],
+              "text": "These five knobs set the volume of each radio in the copilot's headset: FM1, UHF, VHF, a fourth that is not used, and FM2. In the game a left click turns a radio off or on (inhibit) and the mouse wheel changes its volume.",
+              "context": "The copilot turns down a radio that is too loud and keeps the ones needed for the mission.",
+              "count": 5,
+              "page": "162",
+              "src": "m1"
+            },
+            {
+              "id": "nav",
+              "name": "NAV A and NAV B knobs (copilot)",
+              "type": "knob",
+              "match": [
+                "HLP_CPOCSC_NAV_?",
+                "item:communications-control-panel:3"
+              ],
+              "text": "The manual says the NAV switches are not used in the OH-58D. The game names the two copilot knobs 'Radio Monitor NAV A / NAV B Audio Output'.",
+              "context": "They can be clicked, but they have no job in flying the helicopter.",
+              "count": 2,
+              "page": "162",
+              "src": "m1"
+            },
+            {
+              "id": "ics-rotary",
+              "name": "ICS Rotary switch (copilot)",
+              "type": "selector",
+              "match": [
+                "HLP_CPOCSC_ROTARY",
+                "item:communications-control-panel:4"
+              ],
+              "text": "This switch chooses how the copilot's intercom works. The game names it 'ICS Rotary Switch'. With NORM chosen, the manual says the ICS key must be pressed to talk.",
+              "context": "The pilot's panel lists the positions HOT MIC, ICS OFF, NORM and VOX; the copilot's panel is the same kind of switch.",
+              "page": "162",
+              "src": "m1"
+            },
+            {
+              "id": "vox",
+              "name": "VOX Control knob (copilot)",
+              "type": "knob",
+              "match": [
+                "HLP_CPOCSC_VOX",
+                "item:communications-control-panel:5"
+              ],
+              "text": "This knob sets the voice-activated intercom for the copilot, which is how loudly he must talk before the intercom starts.",
+              "context": "It is used with the intercom switch in its voice position.",
+              "page": "162",
+              "src": "m1"
+            },
+            {
+              "id": "transmit",
+              "name": "Transmit Selector switch (copilot)",
+              "type": "selector",
+              "match": [
+                "HLP_CPOCSC_TRANSMIT",
+                "item:communications-control-panel:6"
+              ],
+              "text": "This switch picks the radio the copilot talks on: 1 (FM1), 2 (UHF), 3 (VHF), 4 (not used), 5 (FM2) or the intercom (ICS). A remote position hands the choice to the select switches.",
+              "context": "The remote frequency display shows the chosen radio with an arrow.",
+              "positions": [
+                {
+                  "name": "1 (FM1)",
+                  "text": "Talks on the first FM radio."
+                },
+                {
+                  "name": "2 (UHF)",
+                  "text": "Talks on the UHF radio."
+                },
+                {
+                  "name": "3 (VHF)",
+                  "text": "Talks on the VHF radio."
+                },
+                {
+                  "name": "4 (N/A)",
+                  "text": "A radio that is not used."
+                },
+                {
+                  "name": "5 (FM2)",
+                  "text": "Talks on the second FM radio."
+                },
+                {
+                  "name": "ICS",
+                  "text": "Talks on the intercom only."
+                }
+              ],
+              "page": "162",
+              "src": "m1"
+            },
+            {
+              "id": "mic",
+              "name": "MIC switch (copilot)",
+              "type": "switch2",
+              "match": [
+                "HLP_CPOCSC_MIC",
+                "item:communications-control-panel:7"
+              ],
+              "text": "This switch picks which of two microphone inputs the copilot uses: MIC 1 or MIC 2.",
+              "context": "The manual only says that this switch selects between MIC 1 and MIC 2.",
+              "positions": [
+                {
+                  "name": "1",
+                  "text": "Microphone input 1."
+                },
+                {
+                  "name": "2",
+                  "text": "Microphone input 2."
+                }
+              ],
+              "page": "162",
+              "src": "m1"
+            },
+            {
+              "id": "chan-updn",
+              "name": "Channel Select switch, up/down (copilot)",
+              "type": "button",
+              "match": [
+                "HLP_CPO_CHNL_UPDN"
+              ],
+              "text": "Pushed forward, this switch moves the radio the copilot talks on to the next higher stored channel. Pushed aft, it moves to the next lower stored channel. The game calls the two moves CH UP and CH DN.",
+              "context": "A stored channel is a saved frequency. The remote frequency display shows the new channel.",
+              "positions": [
+                {
+                  "name": "FWD (CH UP)",
+                  "text": "Goes to the next higher stored channel."
+                },
+                {
+                  "name": "AFT (CH DN)",
+                  "text": "Goes to the next lower stored channel."
+                }
+              ],
+              "page": "164",
+              "src": "m1"
+            },
+            {
+              "id": "chan-side",
+              "name": "Channel Select switch, left/right (copilot)",
+              "type": "button",
+              "match": [
+                "HLP_CPO_CHNL_side01"
+              ],
+              "text": "Pushed left (KYBD), this switch lets the copilot type a manual frequency on the keyboard. Pushed right (FREQ) while the COMM page shows, it opens the frequency page with the channels and call signs of the chosen radio.",
+              "context": "The switch is spring-loaded and returns to the centre. It works together with the screen, the keyboard and the remote frequency display.",
+              "positions": [
+                {
+                  "name": "LEFT (KYBD)",
+                  "text": "Starts the entry of a manual frequency on the keyboard."
+                },
+                {
+                  "name": "RIGHT (FREQ)",
+                  "text": "Opens the frequency page for the chosen radio."
+                }
+              ],
+              "page": "164",
+              "src": "m1"
+            }
+          ],
+          "page": "162"
+        }
+      ]
+    },
+    {
+      "id": "cpo-overhead",
+      "where": "overhead",
+      "name": "Overhead console",
+      "seat": 2,
+      "text": "The panel in the roof above the crew. It holds the main electrical switches, the engine switches, the light switches and the circuit breakers.",
+      "panels": [
+        {
+          "id": "cpo-elec",
+          "name": "Electrical System Switches",
+          "src": "m1",
+          "text": "This row of switches is the main power control of the helicopter. It brings in the battery and the generators that make the electricity. It sits at the front of the overhead console.",
+          "context": "The pilot sets these switches first in the start-up list and again after the engine has started. Almost everything in the cockpit needs power from them.",
+          "controls": [
+            {
+              "id": "batt1",
+              "name": "Battery 1 switch",
+              "type": "switch3",
+              "match": [
+                "item:electrical-switches:1"
+              ],
+              "text": "This switch connects the battery to the helicopter. The OH-58D has one 24-volt battery, used for starting and for emergencies.",
+              "context": "The pilot turns it on in the start-up list. The pilot's screen, the remote frequency display and the engine display wake up. The battery is the power source before the engine runs.",
+              "positions": [
+                {
+                  "name": "OFF",
+                  "text": "The battery is not connected."
+                },
+                {
+                  "name": "ON",
+                  "text": "The battery gives power to the helicopter."
+                },
+                {
+                  "name": "PREHEAT",
+                  "text": "A position that the game offers. The manual does not describe it."
+                }
+              ],
+              "page": "50",
+              "src": "m1"
+            },
+            {
+              "id": "batt2",
+              "name": "Battery 2 switch",
+              "type": "switch3",
+              "match": [
+                "HLP_BATT2",
+                "item:electrical-switches:2"
+              ],
+              "text": "The manual says this switch has no function in this helicopter, because it has only one battery.",
+              "context": "The switch can be clicked, but nothing happens.",
+              "positions": [
+                {
+                  "name": "OFF",
+                  "text": "No function."
+                },
+                {
+                  "name": "ON",
+                  "text": "No function."
+                },
+                {
+                  "name": "PREHEAT",
+                  "text": "No function."
+                }
+              ],
+              "page": "50",
+              "src": "m1"
+            },
+            {
+              "id": "ac-gen",
+              "name": "AC Generator switch",
+              "type": "switch2",
+              "match": [
+                "HLP_AC_GEN",
+                "item:electrical-switches:3"
+              ],
+              "text": "This switch puts the AC generator on the power lines. The generator makes electricity while the engine runs.",
+              "context": "The pilot turns it on after the engine has started and the gas generator speed (NG) is steady.",
+              "positions": [
+                {
+                  "name": "OFF",
+                  "text": "The AC generator is not connected."
+                },
+                {
+                  "name": "ON",
+                  "text": "The AC generator supplies power."
+                }
+              ],
+              "page": "50",
+              "src": "m1"
+            },
+            {
+              "id": "dc-gen",
+              "name": "DC Generator switch",
+              "type": "switch3",
+              "match": [
+                "HLP_DC_GEN",
+                "item:electrical-switches:4"
+              ],
+              "text": "This switch puts the DC generator on the power lines. The manual says it must be OFF when the helicopter is connected to ground power.",
+              "context": "The pilot turns it on after the engine start, together with the AC generator. RESET is a position the game offers; the manual does not describe it.",
+              "positions": [
+                {
+                  "name": "OFF",
+                  "text": "The DC generator is not connected. Use this with ground power."
+                },
+                {
+                  "name": "ON",
+                  "text": "The DC generator supplies power."
+                },
+                {
+                  "name": "RESET",
+                  "text": "A position that the game offers. The manual does not describe it."
+                }
+              ],
+              "page": "50",
+              "src": "m1"
+            },
+            {
+              "id": "ess-bus",
+              "name": "Essential Bus Run/Start switch",
+              "type": "switch2",
+              "match": [
+                "HLP_ESSENTIAL_BUS",
+                "item:electrical-switches:5"
+              ],
+              "text": "In START this switch lets the battery feed the battery emergency bus, the group of electric lines for the vital equipment. In RUN the normal supply takes over.",
+              "context": "The pilot sets it to START before the engine start and back to RUN when the engine is running and the generators are on.",
+              "positions": [
+                {
+                  "name": "RUN",
+                  "text": "The normal running supply is used."
+                },
+                {
+                  "name": "START",
+                  "text": "The battery feeds the emergency bus for the start."
+                }
+              ],
+              "page": "50",
+              "src": "m1"
+            }
+          ],
+          "page": "50"
+        },
+        {
+          "id": "cpo-engine",
+          "name": "Engine Switches",
+          "src": "m1",
+          "text": "These switches on the overhead console serve the engine: the engine computer (FADEC) power, the ignition, the fuel pump, the ice protection and the fuel shutoff lever.",
+          "context": "Most of them are set during the start-up list. They give the engine computer, the ignition system and the fuel pump what they need to start and run.",
+          "controls": [
+            {
+              "id": "fadec-cb",
+              "name": "FADEC circuit breaker switch",
+              "type": "switch2",
+              "match": [
+                "HLP_FADEC",
+                "item:engine-switches:1"
+              ],
+              "text": "This switch gives aircraft power to the FADEC, the engine's computer, for the start and the shutdown.",
+              "context": "It must be on at the start-up. If the start is not made within 60 seconds of advancing the throttle, the manual says to set the throttle to OFF and switch this off and on again.",
+              "positions": [
+                {
+                  "name": "OFF",
+                  "text": "The engine computer gets no power from the aircraft."
+                },
+                {
+                  "name": "ON",
+                  "text": "The engine computer gets power from the aircraft."
+                }
+              ],
+              "page": "44",
+              "src": "m1"
+            },
+            {
+              "id": "ignition-cb",
+              "name": "Ignition circuit breaker switch",
+              "type": "switch2",
+              "match": [
+                "item:engine-switches:2"
+              ],
+              "text": "This switch gives electric power to the ignition system, the part that makes the sparks to light the fuel.",
+              "context": "It is switched on before the ignition key and the start. The key switch must be on too.",
+              "positions": [
+                {
+                  "name": "OFF",
+                  "text": "No power to the ignition system."
+                },
+                {
+                  "name": "ON",
+                  "text": "The ignition system has power."
+                }
+              ],
+              "page": "49",
+              "src": "m1"
+            },
+            {
+              "id": "fuel-boost",
+              "name": "Fuel Boost switch",
+              "type": "switch2",
+              "match": [
+                "HLP_FUELBOOST",
+                "item:engine-switches:3"
+              ],
+              "text": "This switch turns on the fuel boost pump, which helps push the fuel to the engine during important times.",
+              "context": "The pilot turns it on after the engine start, when the generators are on.",
+              "positions": [
+                {
+                  "name": "OFF",
+                  "text": "The boost pump is off."
+                },
+                {
+                  "name": "ON",
+                  "text": "The boost pump runs."
+                }
+              ],
+              "page": "49",
+              "src": "m1"
+            },
+            {
+              "id": "anti-ice",
+              "name": "Engine Anti-Ice switch",
+              "type": "switch2",
+              "match": [
+                "HLP_ENG_ANTI_ICE",
+                "item:engine-switches:4"
+              ],
+              "text": "This switch sends hot air over the engine air inlet, so that ice cannot build up there.",
+              "context": "The pilot uses it in weather in which ice can form.",
+              "positions": [
+                {
+                  "name": "OFF",
+                  "text": "No hot air; ice protection is off."
+                },
+                {
+                  "name": "ON",
+                  "text": "Hot air flows over the inlet."
+                }
+              ],
+              "page": "49",
+              "src": "m1"
+            },
+            {
+              "id": "oil-bypass",
+              "name": "Engine Oil Bypass switch",
+              "type": "switch2",
+              "match": [
+                "item:engine-switches:5"
+              ],
+              "text": "The manual says this switch is not functional.",
+              "context": "Clicking it only moves the switch; the engine is not affected.",
+              "positions": [
+                {
+                  "name": "OFF",
+                  "text": "No function."
+                },
+                {
+                  "name": "ON",
+                  "text": "No function."
+                }
+              ],
+              "page": "49",
+              "src": "m1"
+            }
+          ],
+          "page": "47"
+        },
+        {
+          "id": "cpo-lights",
+          "name": "Lighting switches",
+          "src": "m1",
+          "text": "These controls turn on the lights of the helicopter: the lights on the outside that others can see, and the lights inside the cockpit.",
+          "context": "The outside lights make the helicopter visible to others. The inside lights make the instruments readable at night. The formation lights are infrared lights for night-vision goggles.",
+          "controls": [
+            {
+              "id": "pos-lights",
+              "name": "Position Lights switch",
+              "type": "switch3",
+              "match": [
+                "HLP_POSITION_LIGHT"
+              ],
+              "text": "This switch turns on the position lights, which are red, green and white lights on the tail section. They show others which way the helicopter is heading.",
+              "context": "The position lights have three modes: off, dim and bright.",
+              "positions": [
+                {
+                  "name": "OFF",
+                  "text": "The position lights are off."
+                },
+                {
+                  "name": "DIM",
+                  "text": "The position lights shine dimly."
+                },
+                {
+                  "name": "BRIGHT",
+                  "text": "The position lights shine brightly."
+                }
+              ],
+              "page": "174",
+              "src": "m1"
+            },
+            {
+              "id": "console-light",
+              "name": "Console Lighting Brightness dial",
+              "type": "knob",
+              "match": [
+                "HLP_CONSOLE_LT"
+              ],
+              "text": "Turning this dial makes the lights of the consoles brighter or darker.",
+              "context": "The crew sets it for night flying.",
+              "page": "178",
+              "src": "m1"
+            },
+            {
+              "id": "flood-switch",
+              "name": "Flood Light switch",
+              "type": "switch3",
+              "match": [
+                "HLP_FLOOD_LT_SW"
+              ],
+              "text": "This switch turns on the flood light in the cockpit and chooses its colour: green or white.",
+              "context": "A flood light spreads soft light over the cockpit, for example to read a map. The next dial sets how bright it is.",
+              "positions": [
+                {
+                  "name": "GREEN",
+                  "text": "The cockpit flood light is green."
+                },
+                {
+                  "name": "OFF",
+                  "text": "The flood light is off."
+                },
+                {
+                  "name": "WHITE",
+                  "text": "The cockpit flood light is white."
+                }
+              ],
+              "page": "179",
+              "src": "m1"
+            },
+            {
+              "id": "flood-dial",
+              "name": "Flood Light Brightness dial",
+              "type": "knob",
+              "match": [
+                "HLP_FLOOD_LT_ROT"
+              ],
+              "text": "Turning this dial makes the cockpit flood light brighter or darker.",
+              "context": "It works together with the flood light switch, which chooses green or white.",
+              "page": "179",
+              "src": "m1"
+            }
+          ],
+          "page": "173"
+        },
+        {
+          "id": "cpo-cabin",
+          "name": "Cabin air and window heat switches",
+          "src": "m1",
+          "text": "These switches belong to the comfort and visibility of the crew: a blower for the compartment, blowers against fog on the windows, a heater and the heating of the speed probe.",
+          "context": "The manual does not describe these switches. The text here follows the names the game gives them.",
+          "controls": [
+            {
+              "id": "defog",
+              "name": "Left and right Defog Blower switches",
+              "type": "switch2",
+              "match": [
+                "HLP_LDEFOG",
+                "HLP_RDEFOG"
+              ],
+              "text": "These two switches turn on the defog blowers, fans that blow air at the windows to clear fog. One is for the left side and one for the right.",
+              "context": "The manual does not describe them. The names come from the game.",
+              "positions": [
+                {
+                  "name": "OFF",
+                  "text": "The blower is off."
+                },
+                {
+                  "name": "ON",
+                  "text": "The blower is on."
+                }
+              ],
+              "count": 2,
+              "src": "m1"
+            },
+            {
+              "id": "heater",
+              "name": "Heater switch",
+              "type": "switch2",
+              "match": [
+                "HLP_HTR"
+              ],
+              "text": "The game names this switch 'Heater Switch', with the positions OFF and ON. The manual does not describe it.",
+              "context": "It is a comfort switch for the crew.",
+              "positions": [
+                {
+                  "name": "OFF",
+                  "text": "The heater is off."
+                },
+                {
+                  "name": "ON",
+                  "text": "The heater is on."
+                }
+              ],
+              "src": "m1"
+            },
+            {
+              "id": "pitot",
+              "name": "Pitot Heater switch",
+              "type": "switch2",
+              "match": [
+                "HLP_PITOTHTR"
+              ],
+              "text": "This switch heats the small tubes outside that measure speed, so they do not freeze.",
+              "context": "The pilot turns it on when flying in cold, wet air. The manual does not describe it, so this follows the name the game gives it.",
+              "positions": [
+                {
+                  "name": "OFF",
+                  "text": "The heating is off."
+                },
+                {
+                  "name": "ON",
+                  "text": "The heating is on."
+                }
+              ],
+              "src": "m1"
+            }
+          ]
+        },
+        {
+          "id": "cpo-ir-gear",
+          "name": "Infrared countermeasure switches",
+          "src": "m1",
+          "text": "These switches belong to the infrared jammer (ALQ-144), a device that confuses heat-seeking missiles. It is not fitted by default and is installed in the mission editor.",
+          "context": "Installing the infrared jammer takes the missile warning system (CMWS) off the helicopter. The jammer cannot warn the crew; it only deflects the missiles.",
+          "controls": [
+            {
+              "id": "ir-xmit",
+              "name": "IR Jammer XMIT switch",
+              "type": "switch",
+              "match": [
+                "HLP_ALQ144_top_front_01"
+              ],
+              "text": "This switch turns the jammer's transmit function on or off. The game gives it one toggle command named 'IR Jammer XMIT Switch - ON/OFF'.",
+              "context": "The manual does not describe the transmit switch.",
+              "page": "169",
+              "src": "m1"
+            }
+          ],
+          "page": "169"
+        }
+      ]
+    },
+    {
+      "id": "cpo-breakers",
+      "where": "left-side",
+      "name": "Circuit breaker panels",
+      "seat": 2,
+      "text": "The circuit breaker panels at the centre post, seen from the left seat, and the circuit breakers of the overhead console. Each breaker cuts the power to a piece of equipment if needed.",
+      "panels": [
+        {
+          "id": "cpo-cb",
+          "name": "Circuit breaker panels",
+          "src": "m1",
+          "text": "Circuit breakers are safety switches that cut the power to a piece of equipment when too much current flows. The OH-58D has several panels of them, in the overhead console, on the centre post and at the rear. Each is named after the equipment it protects.",
+          "context": "The pilot normally leaves them as they are. The start-up list tells the crew to set some of them: the FADEC and ignition breakers, the particle separator, IFF, radar detector, radar warning and L2MUM.",
+          "controls": [
+            {
+              "id": "radio",
+              "name": "Radio, intercom and data breakers",
+              "type": "switch",
+              "match": [
+                "HLP_ICS_CPO",
+                "HLP_FM",
+                "HLP_FM_2",
+                "HLP_VHF",
+                "HLP_UHF",
+                "HLP_SATCOM_RT",
+                "HLP_SATCOM_AMP",
+                "HLP_SCTY_UHF",
+                "HLP_SCTY_VHF",
+                "HLP_HF_PWR",
+                "HLP_HF_AC",
+                "HLP_RFD",
+                "HLP_IFF",
+                "HLP_IFF_CMPTR"
+              ],
+              "text": "Each of these is a circuit breaker, a safety switch that cuts the power when something draws too much. These ones protect the radios, the intercom, the identification radio (IFF) and the data equipment. Some are push-in and pull-out breakers (IN or OUT), some are ON/OFF switches. The manual does not describe each one. Printed on the switches in this view: ICS CPO, FM1, FM2, VHF, UHF, SATCOM RT, SATCOM AMP, SCTY UHF, SCTY VHF, HF PWR, HF AC, RFD, IFF, IFF CMPTR.",
+              "context": "Without power the named radio or unit does not work. The manual's list for further systems has the IFF breaker set ON.",
+              "count": 14,
+              "page": "37",
+              "src": "m1"
+            },
+            {
+              "id": "engine",
+              "name": "Engine, fuel and drive breakers",
+              "type": "switch",
+              "match": [
+                "HLP_XMSN_XDCS",
+                "HLP_ROTOR_XDCR",
+                "HLP_FUEL_QTY",
+                "HLP_FUEL_BOOST",
+                "HLP_ENG_OIL_BYPASS",
+                "HLP_MAST_TRQ",
+                "HLP_PART_SEP"
+              ],
+              "text": "Each of these is a circuit breaker, a safety switch that cuts the power when something draws too much. These ones protect the engine and fuel equipment, the starter and the drive train. Some are push-in and pull-out breakers (IN or OUT), some are ON/OFF switches. The manual does not describe each one. Printed on the switches in this view: XMSN XDCR, ROTOR XDCR, FUEL QTY, FUEL BOOST, ENG OIL, MAST TRQ, Particle Separator.",
+              "context": "The manual sets the particle separator breaker to IN during the engine start procedure. XDCR is the label as printed.",
+              "count": 7,
+              "page": "37",
+              "src": "m1"
+            },
+            {
+              "id": "power",
+              "name": "Electrical supply breakers",
+              "type": "switch",
+              "match": [
+                "HLP_DC_GEN_FIELD",
+                "HLP_DC_GEN_RESET",
+                "HLP_BUS_INTCON",
+                "HLP_26_VAC_PWR"
+              ],
+              "text": "Each of these is a circuit breaker, a safety switch that cuts the power when something draws too much. These ones protect parts of the helicopter's electrical supply, such as the generator fields and the battery charger. Some are push-in and pull-out breakers (IN or OUT), some are ON/OFF switches. The manual does not describe each one. Printed on the switches in this view: DC GEN FIELD, DC GEN RESET, BUS INTCON, 26 VAC.",
+              "context": "They belong to the electrical system whose main switches are on the overhead console.",
+              "count": 4,
+              "page": "37",
+              "src": "m1"
+            },
+            {
+              "id": "flight",
+              "name": "Flight instrument, screen and flight control breakers",
+              "type": "switch",
+              "match": [
+                "HLP_FROCE_TRIM",
+                "HLP_ADU",
+                "HLP_EGI",
+                "HLP_RADAR_ALT",
+                "HLP_MFD_PLT",
+                "HLP_MFD_CPO",
+                "HLP_MCPU_R",
+                "HLP_MCPU_BLWR"
+              ],
+              "text": "Each of these is a circuit breaker, a safety switch that cuts the power when something draws too much. These ones protect flight instruments, the screens, the stability system, the hydraulics and the navigation units. Some are push-in and pull-out breakers (IN or OUT), some are ON/OFF switches. The manual does not describe each one. Printed on the switches in this view: FORCE TRIM, ADU, EGI, RADAR ALT, MFD PLT, MFD CPO, MCPU R, MCPU BLWR.",
+              "context": "Without them the matching instrument or helper may not work. Force trim and heading hold depend on theirs.",
+              "count": 8,
+              "page": "37",
+              "src": "m1"
+            },
+            {
+              "id": "lights",
+              "name": "Light breakers",
+              "type": "switch",
+              "match": [
+                "HLP_CKPT_LT",
+                "HLP_POS_LT",
+                "HLP_ANTICOLL_LT",
+                "HLP_EL_LT",
+                "HLP_SRCH_LT_CONTR",
+                "HLP_SRCH_LT_PWR"
+              ],
+              "text": "Each of these is a circuit breaker, a safety switch that cuts the power when something draws too much. These ones protect the lights of the cockpit and the outside lights. Some are push-in and pull-out breakers (IN or OUT), some are ON/OFF switches. The manual does not describe each one. Printed on the switches in this view: CKPT LT, POS LT, ANTI COLL LT, EL LT, SRCH LT CONTR, SRCH LT PWR.",
+              "context": "The manual says the POS LT breaker protects the circuit of the formation lights, and the SRCH LT breakers protect the searchlight.",
+              "count": 6,
+              "page": "37",
+              "src": "m1"
+            },
+            {
+              "id": "weapons",
+              "name": "Weapon, sight and night-vision breakers",
+              "type": "switch",
+              "match": [
+                "HLP_PWR_SIGHT",
+                "HLP_PWR_LGUN",
+                "HLP_PWR_RKT",
+                "HLP_JETT",
+                "HLP_TAMS",
+                "HLP_MMS_DC_CONTR",
+                "HLP_MMS_AC"
+              ],
+              "text": "Each of these is a circuit breaker, a safety switch that cuts the power when something draws too much. These ones protect the weapon controls, the sight (MMS), the night-vision power and the jettison. Some are push-in and pull-out breakers (IN or OUT), some are ON/OFF switches. The manual does not describe each one. Printed on the switches in this view: PWR SIGHT, PWR LGUN, PWR RKT, JETT, TAMS, MMS DC CONTR, MMS AC.",
+              "context": "They have to be in for the sight and the weapons to have power.",
+              "count": 7,
+              "page": "37",
+              "src": "m1"
+            },
+            {
+              "id": "l2mum",
+              "name": "L2MUM power circuit breaker switch",
+              "type": "switch2",
+              "match": [
+                "HLP_L2MUM"
+              ],
+              "text": "This switch gives power to the L2MUM system, which sends video and data between aircraft.",
+              "context": "The manual's list of further systems puts it to ON.",
+              "positions": [
+                {
+                  "name": "OFF",
+                  "text": "The L2MUM system has no power."
+                },
+                {
+                  "name": "ON",
+                  "text": "The L2MUM system has power."
+                }
+              ],
+              "page": "31",
+              "src": "m1"
+            },
+            {
+              "id": "other",
+              "name": "Other breakers",
+              "type": "switch",
+              "match": [
+                "HLP_BLWR_COMPT",
+                "HLP_CABIN_HTR",
+                "HLP_PITOT_HTR",
+                "HLP_AIR_BAG"
+              ],
+              "text": "Each of these is a circuit breaker, a safety switch that cuts the power when something draws too much. These ones protect the cabin blower, the cabin heater, the pitot heater and other equipment. Some are push-in and pull-out breakers (IN or OUT), some are ON/OFF switches. The manual does not describe each one. Printed on the switches in this view: BLWR COMPT, CABIN HTR, PITOT HTR, AIR BAG.",
+              "context": "The air bag, HUMS and fuzz burner breakers are named as printed; the manual says nothing about them.",
+              "count": 4,
+              "page": "37",
+              "src": "m1"
+            }
+          ],
+          "page": "37"
+        }
+      ]
+    },
+    {
+      "id": "cpo-side",
+      "where": "left-console",
+      "name": "Door and armor panel",
+      "seat": 2,
+      "text": "The door and the armor panel on the left side of the cabin.",
+      "panels": [
+        {
+          "id": "cpo-doors",
+          "name": "Doors and armor panels",
+          "src": "m1",
+          "text": "The cabin has a door and an armor panel on each side. The game lets the crew open and close them with a click.",
+          "context": "The doors can also be removed in the mission editor or by the ground crew radio menu. The manual does not describe the armor panels.",
+          "controls": [
+            {
+              "id": "door-left",
+              "name": "Left door (open/close)",
+              "type": "button",
+              "match": [
+                "HLP_DOOR_LEFT"
+              ],
+              "text": "This button opens or closes the left door. The game calls it 'Open/Close Left Door'.",
+              "context": "The copilot's door is on this side.",
+              "page": "22",
+              "src": "m1"
+            },
+            {
+              "id": "armor-left",
+              "name": "Left armor panel (open/close)",
+              "type": "button",
+              "match": [
+                "HLP_door_lock_copilot"
+              ],
+              "text": "This button opens or closes the left armor panel. The game calls it 'Open/Close Left Armor Panel'.",
+              "context": "The manual does not describe the armor panels.",
+              "src": "m1",
+              "page": "22"
+            }
+          ],
+          "page": "22"
+        }
+      ]
+    },
+    {
+      "id": "cpo-hotas",
+      "where": "hotas",
+      "name": "Cyclic and collective grips (copilot)",
+      "seat": 2,
+      "text": "The copilot's flying controls and the grip that runs the mast-mounted sight. The pilot's collective head, which carries the flare jettison and IZLID switches, is also seen from this seat.",
+      "panels": [
+        {
+          "id": "cpo-pilot-collective",
+          "name": "Pilot collective grip (as seen from the left seat)",
+          "src": "m1",
+          "text": "The pilot's collective sits between the seats, so the copilot sees its head from the left. The game places two of its controls in the left seat's view: the flare jettison switch and the IZLID switch.",
+          "context": "The two controls belong to the pilot's collective grip. They are described here because the game lists them for the left seat.",
+          "controls": [
+            {
+              "id": "collective",
+              "name": "Collective lever",
+              "type": "axis",
+              "match": [
+                "control:collective.axis.main"
+              ],
+              "text": "Raising this lever makes all the rotor blades bite the air harder, so the helicopter climbs. Lowering it makes the helicopter sink.",
+              "context": "The collective, the cyclic and the pedals are the three controls for flying. The throttle twist grip sits at its end.",
+              "page": "40",
+              "src": "m1"
+            },
+            {
+              "id": "throttle",
+              "name": "Twist-grip throttle",
+              "type": "axis",
+              "match": [
+                "control:collective.axis.throttle_twist"
+              ],
+              "text": "Twisting the grip at the end of the collective sets the engine's power. It has a stop at IDLE, so it cannot go to OFF by accident.",
+              "context": "The engine computer governs the fuel when the throttle is above 65 per cent in the automatic mode. In the manual mode, the throttle controls the fuel directly.",
+              "page": "47",
+              "src": "m1"
+            },
+            {
+              "id": "flare-jett",
+              "name": "Flare Jettison switch and cover",
+              "type": "guard",
+              "match": [
+                "HLP_PILOT_FLARE_JETT_COVER",
+                "HLP_PILOT_FLARE_JETT_BUTTON"
+              ],
+              "text": "This is a covered switch on the pilot's collective head. Lift the cover and press the switch, and all the flares are launched at once in an emergency.",
+              "context": "The cover keeps it from being pressed by mistake. In the game these two parts are seen from the copilot's side.",
+              "page": "40",
+              "src": "m1"
+            },
+            {
+              "id": "izlid",
+              "name": "IZLID switch (infrared gun laser)",
+              "type": "button",
+              "match": [
+                "HLP_PILOT_GUN_LASER_BUTTON"
+              ],
+              "text": "This switch turns on the IZLID, an infrared zoom laser illuminator designator. The game also calls it the gun laser.",
+              "context": "The manual says the IZLID is attached to the M3P machine gun and works only when that gun is installed.",
+              "page": "226",
+              "src": "m1"
+            }
+          ],
+          "page": "40"
+        },
+        {
+          "id": "cpo-copilot-cyclic",
+          "name": "Copilot cyclic grip",
+          "src": "m1",
+          "text": "The copilot's cyclic is also a flying control. Its grip is built mainly to run the mast-mounted sight and the laser, which sit above the rotor. The copilot can fly the helicopter with it too.",
+          "context": "The copilot flies the sight with the thumb and fingers while looking at the left screen. The same grip also moves the menus of the HOG interface on that screen.",
+          "controls": [
+            {
+              "id": "cyclic",
+              "name": "Cyclic stick (pitch and roll)",
+              "type": "axis",
+              "match": [
+                "control:stick.gimbal"
+              ],
+              "text": "Moving the stick forward or back tilts the helicopter's nose down or up, and moving it to the side tilts the helicopter to that side. The copilot has dual controls and can fly with it.",
+              "context": "The manual's priority setting decides which seat's controls win if both crew members fly at the same time.",
+              "page": "41",
+              "src": "m1"
+            },
+            {
+              "id": "sensor",
+              "name": "TV/TIS select / HOG BACK",
+              "type": "button",
+              "match": [
+                "control:stick.button.sensor"
+              ],
+              "text": "This button switches the sight between its TV camera and its thermal camera. TIS is the thermal imaging sensor, which sees heat. When the HOG menu is open, the same button steps back.",
+              "context": "The copilot picks TV by day and the thermal camera when it is dark or when heat shows the target better.",
+              "page": "41",
+              "src": "m1"
+            },
+            {
+              "id": "frame-freeze",
+              "name": "MMS Frame Freeze / Target Select / HOG ON/OFF",
+              "type": "button",
+              "match": [
+                "control:stick.button.frame_freeze"
+              ],
+              "text": "This button freezes the sight's picture or selects a target. It also opens and closes the HOG menu on the left screen. HOG is the hands-on-grip menu that is run with this grip.",
+              "context": "The manual says the button does not open the HOG menu when it has another job at that moment, such as in the acquire-on-the-move sub-mode.",
+              "page": "209",
+              "src": "m1"
+            },
+            {
+              "id": "nav-tgt",
+              "name": "NAV / Target Designate / HOG scroll switch",
+              "type": "switch3",
+              "match": [
+                "HLP_DESIG_BUTTON",
+                "control:stick.switch.nav_tgt"
+              ],
+              "text": "Pushed up, this switch selects the navigation designate function; pushed down, it starts the target designate (target locate) mode. When the HOG menu is open, it scrolls the menu pages.",
+              "context": "In target locate mode the copilot can find the target with the laser rangefinder and store it as a target point.",
+              "positions": [
+                {
+                  "name": "UP",
+                  "text": "Selects the NAV designate function; scrolls the HOG menu back."
+                },
+                {
+                  "name": "CENTER",
+                  "text": "The rest position."
+                },
+                {
+                  "name": "DOWN",
+                  "text": "Selects target designate / locate; scrolls the HOG menu forward."
+                }
+              ],
+              "page": "160",
+              "src": "m1"
+            },
+            {
+              "id": "slew",
+              "name": "LOS Slew control",
+              "type": "other",
+              "match": [
+                "control:stick.ministick"
+              ],
+              "text": "This small thumb stick points the mast-mounted sight. Moving it left, right, up or down turns the camera view the same way. LOS means line of sight.",
+              "context": "The copilot slews the sight to look at the target. The sight turns 190 degrees to either side and 30 degrees up and down relative to the helicopter, according to the manual.",
+              "page": "142",
+              "src": "m1"
+            },
+            {
+              "id": "manual-slave",
+              "name": "Manual / Slave button",
+              "type": "button",
+              "match": [
+                "control:stick.button.manual_slave"
+              ],
+              "text": "This button puts the sight into manual mode, in which the copilot points it. Pressed again, it goes to the operational mode.",
+              "context": "The manual's list of further systems sets the sight to MANUAL and then SLAVED.",
+              "page": "31",
+              "src": "m1"
+            },
+            {
+              "id": "ics-radio",
+              "name": "ICS / Radio Transmit (copilot trigger)",
+              "type": "trigger",
+              "match": [
+                "control:stick.switch.ics_radio"
+              ],
+              "text": "This is the talk trigger of the copilot. Pressed to the first stage, it opens the intercom to the pilot. Pressed to the second stage, it transmits on the radio the copilot has chosen.",
+              "context": "The copilot chooses the radio with the transmit selector on the copilot's communications panel.",
+              "page": "41",
+              "src": "m1"
+            },
+            {
+              "id": "point-track",
+              "name": "MMS Point Track / HOG Enter (pinky switch)",
+              "type": "button",
+              "match": [
+                "HLP_PNT_TRK_BUTTON",
+                "control:stick.pinky.button"
+              ],
+              "text": "This switch under the little finger locks the sight onto a point in the picture. In the HOG menu it confirms the chosen entry.",
+              "context": "The sight keeps looking at the point while the helicopter moves. The game calls it 'MMS Point-Track On / HOG Menu Selection Confirm'.",
+              "page": "41",
+              "src": "m1"
+            },
+            {
+              "id": "scas-release",
+              "name": "SCAS Release switch (copilot)",
+              "type": "button",
+              "match": [
+                "control:stick.button.scas_release"
+              ],
+              "text": "Pressing this button switches off the SCAS, the helper that keeps the helicopter steady, until it is engaged again.",
+              "context": "The copilot uses it in the same way as the pilot's button.",
+              "page": "42",
+              "src": "m1"
+            },
+            {
+              "id": "trim-release",
+              "name": "Trim Release switch (copilot)",
+              "type": "button",
+              "match": [
+                "control:stick.button.trim_release"
+              ],
+              "text": "Force trim is the magnetic brake that holds the stick where it is put. Pressing and holding this button lets go of that hold, so the pilot can move the stick freely and then set a new reference point when the button is released. This is the copilot's button.",
+              "context": "It does the same as the pilot's button.",
+              "page": "42",
+              "src": "m1"
+            },
+            {
+              "id": "area-track",
+              "name": "Area Track button",
+              "type": "button",
+              "match": [
+                "HLP_AREA_TRK_BUTTON",
+                "control:stick.button.area_track"
+              ],
+              "text": "This button makes the sight track an area, a patch of the picture. Pressed again, it goes to acquire on the move.",
+              "context": "Area track is one of the sight's tracking modes, next to point track.",
+              "page": "154",
+              "src": "m1"
+            },
+            {
+              "id": "laser",
+              "name": "Laser Fire button",
+              "type": "button",
+              "match": [
+                "HLP_LASER_FIRE_BUTTON",
+                "control:stick.button.laser"
+              ],
+              "text": "While this button is held, the laser of the sight is fired, to measure the distance to the target or to mark it for a laser guided weapon. The laser switch on the sight panel decides whether the laser is allowed to fire.",
+              "context": "The manual warns that the laser must not be fired within 10 degrees of the tail, because the tail inhibits are not reliable.",
+              "page": "142",
+              "src": "m1"
+            },
+            {
+              "id": "fov",
+              "name": "MMS FOV Select / HOG list select",
+              "type": "switch3",
+              "match": [
+                "control:stick.switch.fov"
+              ],
+              "text": "This switch changes the field of view of the sight, which is how much of the scene it shows. Up gives the narrow, zoomed view and down the wide view. In the HOG menu it scrolls the list.",
+              "context": "The copilot zooms in on a target with it and zooms out to search.",
+              "positions": [
+                {
+                  "name": "UP",
+                  "text": "Narrow field of view (2x to 4x); scrolls the HOG list up."
+                },
+                {
+                  "name": "CENTER",
+                  "text": "The rest position."
+                },
+                {
+                  "name": "DOWN",
+                  "text": "Wide field of view; scrolls the HOG list down."
+                }
+              ],
+              "page": "209",
+              "src": "m1"
+            }
+          ],
+          "page": "41"
+        },
+        {
+          "id": "cpo-copilot-collective",
+          "name": "Copilot collective and throttle",
+          "src": "m1",
+          "text": "The copilot also has a collective lever with a twist-grip throttle at its left. They work as the pilot's do.",
+          "context": "The manual says the twist-grip throttle is on both collectives.",
+          "controls": [
+            {
+              "id": "collective",
+              "name": "Collective lever (copilot)",
+              "type": "axis",
+              "match": [
+                "control:collective.axis.main"
+              ],
+              "text": "Raising this lever makes the helicopter climb; lowering it makes the helicopter sink. This is the copilot's lever.",
+              "context": "It is one of the copilot's three flying controls, with the cyclic and the pedals.",
+              "page": "40",
+              "src": "m1"
+            },
+            {
+              "id": "throttle",
+              "name": "Twist-grip throttle (copilot)",
+              "type": "axis",
+              "match": [
+                "control:collective.axis.throttle_twist"
+              ],
+              "text": "Twisting the grip at the end of this collective sets the engine's power, as the pilot's grip does. It has a stop at IDLE.",
+              "context": "The manual says a twist-grip throttle is on the pilot's and copilot's collectives.",
+              "page": "47",
+              "src": "m1"
+            }
+          ],
+          "page": "40"
+        }
+      ]
+    }
+  ]
+}

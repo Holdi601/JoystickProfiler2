@@ -232,8 +232,7 @@ engine --profile <p> sync apply --game <id> --choices <file.json> [--path <confi
 - `accept`: the current state counts as known; nothing is imported.
 
 The whole journey in the games themselves (GUI or tray host running, a bind changed in the game's controls menu, the
-dialog after the exit, Ignore / Take over, no dialog without a change) is `tools\e2e\games\Watchdog.ps1`; how to run
-it and the results per game: [testing](testing.md#config-watcher-live-toolse2egameswatchdogps1).
+dialog after the exit, Ignore / Take over, no dialog without a change) is tested in the games before a release.
 
 ## Resources
 

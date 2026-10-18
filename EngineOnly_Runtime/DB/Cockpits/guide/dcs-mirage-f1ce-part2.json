@@ -1,0 +1,2348 @@
+{
+  "format": "joypro-cockpit-guide",
+  "version": 1,
+  "partOf": "dcs-mirage-f1ce",
+  "areas": [
+    {
+      "id": "left-console",
+      "where": "left-console",
+      "name": "Left console",
+      "text": "The left side of the cockpit: engine start, fuel and engine controls, flight control switches, landing gear, flaps, radios and the weapons master switch.",
+      "panels": [
+        {
+          "id": "engine-start",
+          "name": "Engine start and fuel pump switches",
+          "src": "m1",
+          "page": "34",
+          "text": "The switches for fuel taps, fuel pumps and starting the engine.",
+          "context": "The start order in the manual is: open the LP main cock, switch on both LP pumps, set the selector to ignition, lift the cover of the start button, press the button for about one second, and move the throttle to idle between 300 and 600 rpm.",
+          "controls": [
+            {
+              "id": "lp-guard",
+              "name": "LP main cock switch guard",
+              "type": "guard",
+              "match": [
+                "PNT-380"
+              ],
+              "text": "A hinged cover over the LP main cock switch. The pilot lifts the cover first, so the switch cannot be moved by accident, and closes it again afterwards.",
+              "context": "The cover has its own clickable part in DCS. It belongs to the LP main cock switch; the real cockpit has a guard here as well.",
+              "src": "m1",
+              "page": "29"
+            },
+            {
+              "id": "lp-cock",
+              "name": "LP main cock switch",
+              "type": "switch",
+              "match": [
+                "PNT-381",
+                "item:left-side-panel:39"
+              ],
+              "text": "This is the main fuel tap of the engine and the afterburner (LP stands for low pressure). Closed, no fuel reaches the engine.",
+              "context": "The cabin checks set it to closed and unguarded; for the start it is opened.",
+              "src": "m1",
+              "page": "29"
+            },
+            {
+              "id": "lh-pump",
+              "name": "L/H LP pump switch",
+              "type": "switch2",
+              "match": [
+                "PNT-379",
+                "item:left-side-panel:37"
+              ],
+              "positions": [
+                {
+                  "name": "OFF",
+                  "text": "The left pump is off."
+                },
+                {
+                  "name": "ON",
+                  "text": "The left pump is powered."
+                }
+              ],
+              "text": "Switches the left fuel pump on or off. The pump pushes fuel from the left feeder tank to the engine.",
+              "context": "An amber L/H LP light on the failure warning panel shows when the pump pressure is low. Both pumps are switched on for the start.",
+              "src": "m1",
+              "page": "29"
+            },
+            {
+              "id": "rh-pump",
+              "name": "R/H LP pump switch",
+              "type": "switch2",
+              "match": [
+                "PNT-378",
+                "item:left-side-panel:38"
+              ],
+              "positions": [
+                {
+                  "name": "OFF",
+                  "text": "The right pump is off."
+                },
+                {
+                  "name": "ON",
+                  "text": "The right pump is powered."
+                }
+              ],
+              "text": "Switches the right fuel pump on or off. The pump pushes fuel from the right feeder tank to the engine.",
+              "context": "An amber R/H LP light on the failure warning panel shows when the pump pressure is low.",
+              "src": "m1",
+              "page": "29"
+            },
+            {
+              "id": "starting-pump",
+              "name": "Starting pump switch",
+              "type": "switch2",
+              "match": [
+                "PNT-377",
+                "item:left-side-panel:36"
+              ],
+              "positions": [
+                {
+                  "name": "OFF",
+                  "text": "The starting pump is off."
+                },
+                {
+                  "name": "ON",
+                  "text": "The starting pump is powered."
+                }
+              ],
+              "text": "Switches on an extra fuel pump that is used only for starting the engine.",
+              "context": "The manual says the cover of the start button also switches this pump on by itself.",
+              "src": "m1",
+              "page": "29"
+            },
+            {
+              "id": "ign-vent",
+              "name": "Ignition/ventilation selector switch",
+              "type": "selector",
+              "match": [
+                "PNT-376",
+                "item:left-side-panel:34"
+              ],
+              "positions": [
+                {
+                  "name": "L/H",
+                  "text": "Uses the left spark plug for the start."
+                },
+                {
+                  "name": "R/H",
+                  "text": "Uses the right spark plug for the start."
+                },
+                {
+                  "name": "VENTIL",
+                  "text": "Ventilation: spins the engine without fuel or spark, to clear left-over fuel."
+                }
+              ],
+              "text": "Chooses which spark plug the starter uses, left or right, or the ventilation mode. In ventilation the fuel and the spark are cut so the engine can be spun to blow remaining fuel out.",
+              "context": "The ignition position is used for a normal start. Ventilation is used after a false start.",
+              "src": "m1",
+              "page": "34"
+            },
+            {
+              "id": "start-cover",
+              "name": "Start button cover",
+              "type": "cover",
+              "match": [
+                "PNT-374"
+              ],
+              "positions": [
+                {
+                  "name": "CLOSE",
+                  "text": "The cover is down and protects the button."
+                },
+                {
+                  "name": "OPEN",
+                  "text": "The cover is lifted; the button can be pressed."
+                }
+              ],
+              "text": "A spring-loaded cover marked DEMAR over the start button. Lifting it also switches on the starting pump.",
+              "context": "It stops the start button being pressed by accident.",
+              "src": "m1",
+              "page": "34"
+            },
+            {
+              "id": "start-button",
+              "name": "Start button",
+              "type": "button",
+              "match": [
+                "PNT-375",
+                "item:left-side-panel:35"
+              ],
+              "text": "Pressing this button starts the engine on the ground. It switches on an electric motor that spins the engine until it runs by itself.",
+              "context": "The manual says to press it for no more than about two seconds, never while the engine is turning, and not in flight.",
+              "src": "m1",
+              "page": "34"
+            }
+          ]
+        },
+        {
+          "id": "engine-controls",
+          "name": "Engine emergency and relight controls",
+          "src": "m1",
+          "page": "34",
+          "text": "Controls for special engine situations: a relight in flight, the emergency control mode and the fuel taps for the afterburner.",
+          "context": "These controls are normally left in their normal setting. The cabin checks of the manual check each one before the engine start.",
+          "controls": [
+            {
+              "id": "relight",
+              "name": "In-flight relight control",
+              "type": "button",
+              "match": [
+                "PNT-240",
+                "item:left-side-panel:32"
+              ],
+              "text": "Pressing this control tries to restart the engine in flight if it has gone out. It holds itself on for 30 seconds.",
+              "context": "It is hidden under the throttle. It needs the battery, so a flat battery stops the relight.",
+              "src": "m1",
+              "page": "34"
+            },
+            {
+              "id": "jpt-reg",
+              "name": "JPT emergency regulation switch",
+              "type": "switch2",
+              "match": [
+                "PNT-396",
+                "item:left-side-panel:23"
+              ],
+              "positions": [
+                {
+                  "name": "AUTO",
+                  "text": "The normal automatic control is on."
+                },
+                {
+                  "name": "OFF",
+                  "text": "The automatic control is switched off."
+                }
+              ],
+              "text": "A switch that is turned off in some unusual cases of too low or too high exhaust temperature (JPT is the jet pipe temperature).",
+              "context": "The cabin checks require it to be on AUTO.",
+              "src": "m1",
+              "page": "34"
+            },
+            {
+              "id": "ab-guard",
+              "name": "A/B main cock switch guard",
+              "type": "guard",
+              "match": [
+                "PNT-397"
+              ],
+              "text": "A hinged cover over the afterburner main cock switch. The pilot lifts the cover first, so the switch cannot be moved by accident, and closes it again afterwards.",
+              "context": "The cover has its own clickable part in DCS. It belongs to the afterburner main cock switch; the real cockpit has a guard here as well.",
+              "src": "m1",
+              "page": "29"
+            },
+            {
+              "id": "ab-cock",
+              "name": "A/B main cock switch",
+              "type": "switch",
+              "match": [
+                "PNT-398",
+                "item:left-side-panel:24"
+              ],
+              "text": "This is a fuel tap for the afterburner only. It can shut off the afterburner's fuel while the engine itself keeps running.",
+              "context": "The cabin checks set it to ON and guarded. After an afterburner fire the pilot closes it.",
+              "src": "m1",
+              "page": "29"
+            },
+            {
+              "id": "em-reg-guard",
+              "name": "Engine emergency regulation switch guard",
+              "type": "guard",
+              "match": [
+                "PNT-357"
+              ],
+              "text": "A hinged cover over the emergency regulation switch. The pilot lifts the cover first, so the switch cannot be moved by accident, and closes it again afterwards.",
+              "context": "The cover has its own clickable part in DCS. It belongs to the emergency regulation switch; the real cockpit has a guard here as well.",
+              "src": "m1",
+              "page": "34"
+            },
+            {
+              "id": "em-reg-switch",
+              "name": "Engine emergency regulation switch",
+              "type": "switch2",
+              "match": [
+                "PNT-358",
+                "item:left-side-panel:7"
+              ],
+              "positions": [
+                {
+                  "name": "OFF",
+                  "text": "Normal engine control."
+                },
+                {
+                  "name": "ON",
+                  "text": "Emergency regulation: the engine is controlled by the emergency lever."
+                }
+              ],
+              "text": "Switches the engine to an emergency control mode. It is used in most oil failures or when the rpm freezes.",
+              "context": "In this mode the nozzle opens and thrust falls to about 43 percent. The afterburner cannot be used.",
+              "src": "m1",
+              "page": "34"
+            },
+            {
+              "id": "em-reg-lever",
+              "name": "Emergency regulation control lever",
+              "type": "lever",
+              "match": [
+                "PNT-359",
+                "item:left-side-panel:6"
+              ],
+              "positions": [
+                {
+                  "name": "Forward/Increase",
+                  "text": "The engine speed increases in small steps."
+                },
+                {
+                  "name": "Aft/Decrease",
+                  "text": "The engine speed decreases in small steps."
+                }
+              ],
+              "text": "In emergency regulation this lever takes the place of the throttle. It is moved in small steps, forward for more and aft for less engine speed.",
+              "context": "There is no rpm regulation in this mode, and the engine reacts slowly.",
+              "src": "m1",
+              "page": "34"
+            },
+            {
+              "id": "em-reg-light",
+              "name": "Emergency regulation light",
+              "type": "light",
+              "match": [
+                "PNT-354",
+                "item:left-side-panel:8"
+              ],
+              "text": "This light comes on when the emergency regulation mode is switched on.",
+              "context": "The pilot checks before line-up that it is out; before the first flight of the day a test of this mode is part of the procedure.",
+              "src": "m1",
+              "page": "34"
+            }
+          ]
+        },
+        {
+          "id": "flight-control-modes",
+          "name": "Flight control switches and test",
+          "src": "m1",
+          "page": "47",
+          "text": "The switches that set how the control system helps the pilot, and the test of that system.",
+          "context": "The stick moves the control surfaces through hydraulics and electric helpers that smooth the flying. If the helpers fail, the plane flies in a rougher 'manual hydraulic' mode.",
+          "controls": [
+            {
+              "id": "servo-reset",
+              "name": "Servo reset button (SERVO)",
+              "type": "button",
+              "match": [
+                "PNT-89",
+                "item:left-side-panel:13"
+              ],
+              "text": "Pressing this button restarts the electric helpers (servos) of the control system after they have switched off.",
+              "context": "It is pressed when the amber lights ELEV or RUD of the failure warning panel show that a helper circuit has dropped out.",
+              "src": "m1",
+              "page": "47"
+            },
+            {
+              "id": "arthur-guard",
+              "name": "ARTHUR selector switch guard",
+              "type": "guard",
+              "match": [
+                "PNT-94"
+              ],
+              "text": "A hinged cover over the ARTHUR selector switch. The pilot lifts the cover first, so the switch cannot be moved by accident, and closes it again afterwards.",
+              "context": "The cover has its own clickable part in DCS. It belongs to the ARTHUR selector switch; the real cockpit has a guard here as well.",
+              "src": "m1",
+              "page": "47"
+            },
+            {
+              "id": "arthur",
+              "name": "ARTHUR selector switch",
+              "type": "switch3",
+              "match": [
+                "PNT-96",
+                "item:left-side-panel:14"
+              ],
+              "positions": [
+                {
+                  "name": "AUTO",
+                  "text": "ARTHUR sets the sensitivity by itself."
+                },
+                {
+                  "name": "HIGH",
+                  "text": "High sensitivity (GRAND)."
+                },
+                {
+                  "name": "LOW",
+                  "text": "Low sensitivity (PETIT)."
+                }
+              ],
+              "text": "ARTHUR is a part that limits how sensitive the plane reacts to the stick in pitch. This switch chooses its mode: automatic, high or low sensitivity.",
+              "context": "In AUTO it adapts to altitude and speed. The cabin checks require AUTO; the HIGH and LOW positions are printed GRAND and PETIT.",
+              "src": "m1",
+              "page": "47"
+            },
+            {
+              "id": "uncouple-guard",
+              "name": "Stick uncouple switch guard",
+              "type": "guard",
+              "match": [
+                "PNT-95"
+              ],
+              "text": "A hinged cover over the stick uncouple switch. The pilot lifts the cover first, so the switch cannot be moved by accident, and closes it again afterwards.",
+              "context": "The cover has its own clickable part in DCS. It belongs to the stick uncouple switch; the real cockpit has a guard here as well.",
+              "src": "m1",
+              "page": "47"
+            },
+            {
+              "id": "uncouple",
+              "name": "Stick uncouple switch",
+              "type": "switch",
+              "match": [
+                "PNT-97",
+                "item:left-side-panel:15"
+              ],
+              "text": "Frees the stick from the autopilot. If the autopilot is on, using this switch switches it off.",
+              "context": "It is labelled DEB. MANCHE (stick uncouple). It stays off, under guard, in normal flying.",
+              "src": "m1",
+              "page": "47"
+            },
+            {
+              "id": "yaw",
+              "name": "Yaw/anti-slip switch",
+              "type": "switch3",
+              "match": [
+                "PNT-90",
+                "item:left-side-panel:16"
+              ],
+              "positions": [
+                {
+                  "name": "ANTI-SLIP",
+                  "text": "The setting used in the cabin checks; the anti-slip function is on."
+                },
+                {
+                  "name": "YAW",
+                  "text": "The yaw damper position; the anti-slip function is off."
+                },
+                {
+                  "name": "OFF",
+                  "text": "The electric yaw helpers are off."
+                }
+              ],
+              "text": "Controls the electric helpers for steering around the vertical axis. The anti-slip helper trims the rudder by itself. The yaw damper adds rudder to keep turns coordinated.",
+              "context": "The manual says the two helpers can be turned off separately with this switch. The cabin checks use ANTI-SLIP.",
+              "src": "m1",
+              "page": "47"
+            },
+            {
+              "id": "pitch",
+              "name": "Pitch switch",
+              "type": "switch2",
+              "match": [
+                "PNT-91",
+                "item:left-side-panel:17"
+              ],
+              "positions": [
+                {
+                  "name": "OFF",
+                  "text": "The pitch helper is off."
+                },
+                {
+                  "name": "ON",
+                  "text": "The pitch helper is on."
+                }
+              ],
+              "text": "Turns the electro-hydraulic pitch helper on or off. It smooths the plane's reaction to the stick in pitch.",
+              "context": "The cabin checks of the manual require ON.",
+              "src": "m1",
+              "page": "47"
+            },
+            {
+              "id": "lead-light",
+              "name": "Lead light",
+              "type": "light",
+              "match": [
+                "item:left-side-panel:18"
+              ],
+              "text": "A light on the left panel. The manual lists it but does not describe it.",
+              "context": "The manual lists it in the figure of the left side panel and shows a lead light in its electrical diagram, fed together with the radar control.",
+              "src": "m1",
+              "page": "18"
+            },
+            {
+              "id": "incidence-test",
+              "name": "Incidence test switch",
+              "type": "switch",
+              "match": [
+                "PNT-98",
+                "item:left-side-panel:19"
+              ],
+              "positions": [
+                {
+                  "name": "INC",
+                  "text": "Moves in the increase direction."
+                },
+                {
+                  "name": "DEC",
+                  "text": "Moves in the decrease direction."
+                }
+              ],
+              "text": "The game names this control 'Incidence test switch'. It can be moved to INC or DEC. The manual does not describe it.",
+              "context": "Incidence is another word for the angle of attack.",
+              "src": "m1",
+              "page": "18"
+            },
+            {
+              "id": "test-guard",
+              "name": "Flight control test switch guard",
+              "type": "guard",
+              "match": [
+                "PNT-369"
+              ],
+              "text": "A hinged cover over the flight control test switch. The pilot lifts the cover first, so the switch cannot be moved by accident, and closes it again afterwards.",
+              "context": "The cover has its own clickable part in DCS. It belongs to the flight control test switch; the real cockpit has a guard here as well.",
+              "src": "m1",
+              "page": "53"
+            },
+            {
+              "id": "test",
+              "name": "Flight control test switch",
+              "type": "switch2",
+              "match": [
+                "PNT-370",
+                "item:left-side-panel:21"
+              ],
+              "positions": [
+                {
+                  "name": "OFF",
+                  "text": "No test is running."
+                },
+                {
+                  "name": "ON",
+                  "text": "The test runs (marked M in the manual)."
+                }
+              ],
+              "text": "Starts a built-in test of the flying aids and the autopilot, which takes about 90 seconds.",
+              "context": "The test display unit shows numbers as the test runs; some steps ask the pilot to press the PA button or the disconnect trigger. The manual says the test is done every few flights.",
+              "src": "m1",
+              "page": "53"
+            },
+            {
+              "id": "test-restart",
+              "name": "Flight control test restart button",
+              "type": "button",
+              "match": [
+                "PNT-368",
+                "item:left-side-panel:20"
+              ],
+              "text": "If the test counter stops at a number, pressing this button lets the test go on.",
+              "context": "A stopped counter means a fault in the part of the system that belongs to that number. The pilot should write the number down.",
+              "src": "m1",
+              "page": "53"
+            },
+            {
+              "id": "rudder-trim",
+              "name": "Rudder trim control switch",
+              "type": "button",
+              "match": [
+                "PNT-406",
+                "item:left-side-panel:42"
+              ],
+              "text": "Trims the rudder by hand, that is, shifts the neutral position of the rudder so the plane flies straight without pushing the pedals.",
+              "context": "It works when the anti-slip function is off. It is labelled TRIM DIRECT. in the cockpit.",
+              "src": "m1",
+              "page": "47"
+            }
+          ]
+        },
+        {
+          "id": "landing-gear",
+          "name": "Landing gear, brake and chute controls",
+          "src": "m1",
+          "page": "40",
+          "text": "The levers and handles for the wheels: pull them up and down, brake the plane and open the brake parachute.",
+          "context": "The wheels must be up above 240 knots to avoid damage. The brake chute can be used only on the ground, at up to 210 knots.",
+          "controls": [
+            {
+              "id": "gear-lever",
+              "name": "Undercarriage control lever",
+              "type": "lever",
+              "match": [
+                "PNT-86",
+                "item:left-side-panel:10"
+              ],
+              "positions": [
+                {
+                  "name": "Extend",
+                  "text": "The wheels go down."
+                },
+                {
+                  "name": "Retract",
+                  "text": "The wheels go up."
+                }
+              ],
+              "text": "This lever moves the landing gear down or up. Pull it to extend or retract the wheels.",
+              "context": "The pilot retracts the gear after take-off and extends it for landing. The safety lever beside it must be opened first.",
+              "src": "m1",
+              "page": "40"
+            },
+            {
+              "id": "gear-safety",
+              "name": "Undercarriage safety lever",
+              "type": "lever",
+              "match": [
+                "PNT-85"
+              ],
+              "positions": [
+                {
+                  "name": "CLOSE",
+                  "text": "The gear lever is blocked."
+                },
+                {
+                  "name": "OPEN",
+                  "text": "The gear lever can be moved."
+                }
+              ],
+              "text": "A safety lever that blocks the gear lever so it is not moved by accident.",
+              "context": "A DCS option can operate this lever automatically so the gear can be moved with a single press.",
+              "src": "m1",
+              "page": "40"
+            },
+            {
+              "id": "anti-retraction",
+              "name": "Anti-retraction override button",
+              "type": "button",
+              "match": [
+                "PNT-87",
+                "item:left-side-panel:11"
+              ],
+              "text": "Normally the gear cannot be raised while the plane stands on the ground. Pressing this button allows it.",
+              "context": "It is a safety feature against raising the gear by mistake on the ground.",
+              "src": "m1",
+              "page": "40"
+            },
+            {
+              "id": "parking-brake",
+              "name": "Emergency/parking brake handle",
+              "type": "handle",
+              "match": [
+                "PNT-84",
+                "item:left-side-panel:12"
+              ],
+              "text": "A handle that holds the brakes on when the plane is parked, or brakes the plane if the normal brakes do not work.",
+              "context": "The cabin checks set the parking brake before engine start and release it before taxiing.",
+              "src": "m1",
+              "page": "40"
+            },
+            {
+              "id": "landing-light",
+              "name": "Landing light control",
+              "type": "switch3",
+              "match": [
+                "PNT-353",
+                "item:left-side-panel:9"
+              ],
+              "positions": [
+                {
+                  "name": "OFF",
+                  "text": "The light is retracted and off."
+                },
+                {
+                  "name": "TAXI",
+                  "text": "The light is out and shines in the taxi position."
+                },
+                {
+                  "name": "LAND",
+                  "text": "The light is extended into the landing position."
+                }
+              ],
+              "text": "Extends the landing light from the nose gear and switches it on, for use on the ground and during landing.",
+              "context": "The landing light works only when the nose gear is down.",
+              "src": "m1",
+              "page": "75"
+            },
+            {
+              "id": "brake-chute",
+              "name": "Brake chute control",
+              "type": "handle",
+              "match": [
+                "PNT-54",
+                "item:left-side-panel:1"
+              ],
+              "positions": [
+                {
+                  "name": "AFT",
+                  "text": "The chute opens."
+                },
+                {
+                  "name": "FORWARD",
+                  "text": "The chute is dropped."
+                }
+              ],
+              "text": "A handle for the brake parachute under the tail. Pulling it aft opens the chute; pushing it forward drops it.",
+              "context": "It can be used only on the ground, up to 210 knots. The cabin checks require it forward.",
+              "src": "m1",
+              "page": "57"
+            },
+            {
+              "id": "emergency-gear",
+              "name": "Emergency undercarriage handle",
+              "type": "handle",
+              "match": [
+                "PNT-107",
+                "item:right-side-panel:3"
+              ],
+              "positions": [
+                {
+                  "name": "NORMAL",
+                  "text": "The handle is in and folded back."
+                },
+                {
+                  "name": "DOORS",
+                  "text": "First position: the gear doors open."
+                },
+                {
+                  "name": "U/C",
+                  "text": "Second position: the gear goes down."
+                }
+              ],
+              "text": "A handle to lower the gear if the hydraulics fail. It is pulled in two steps: first the doors open, then the gear comes down.",
+              "context": "It sits on the right front panel and stays folded back for normal flying.",
+              "src": "m1",
+              "page": "40"
+            }
+          ]
+        },
+        {
+          "id": "high-lift",
+          "name": "Slat and flap controls",
+          "src": "m1",
+          "page": "39",
+          "text": "The levers that set the movable parts of the wing that give more lift at low speed.",
+          "context": "The slats and flaps work by themselves in the normal mode. The pilot can set them by hand for take-off and landing.",
+          "controls": [
+            {
+              "id": "flap-lever",
+              "name": "Slat/flap lever",
+              "type": "lever",
+              "match": [
+                "PNT-248",
+                "item:left-side-panel:41"
+              ],
+              "positions": [
+                {
+                  "name": "HOTAS flaps down",
+                  "text": "Moves the lever toward more flaps."
+                },
+                {
+                  "name": "HOTAS flaps up",
+                  "text": "Moves the lever toward less flaps."
+                }
+              ],
+              "text": "This lever sets the slats and flaps by hand for take-off and landing. The game calls its moves 'flaps down' and 'flaps up'.",
+              "context": "It works together with the combat flap lever on the throttle and the selector switch next to it.",
+              "src": "m1",
+              "page": "39"
+            },
+            {
+              "id": "hl-selector",
+              "name": "High-lift device selector switch",
+              "type": "switch3",
+              "match": [
+                "PNT-399",
+                "item:left-side-panel:43"
+              ],
+              "positions": [
+                {
+                  "name": "EMG. RETR.",
+                  "text": "Emergency retraction: slats and flaps retract and other commands are overridden."
+                },
+                {
+                  "name": "NORMAL",
+                  "text": "Normal behaviour with automatic slats."
+                },
+                {
+                  "name": "OFF",
+                  "text": "The automatic deployment of the slats stops."
+                }
+              ],
+              "text": "Decides the overall behaviour of the slats and flaps: automatic slats, no automatic action, or a quick emergency retraction.",
+              "context": "The cabin checks set it to OFF and later to NORMAL after the start.",
+              "src": "m1",
+              "page": "39"
+            }
+          ]
+        },
+        {
+          "id": "radios",
+          "name": "Radios",
+          "src": "m1",
+          "page": "82",
+          "text": "The two radios on the left console and the box that mixes their volume.",
+          "context": "The pilot talks with the push-to-talk button on the stick. The channels are stored radio frequencies that are set in the Mission Editor.",
+          "controls": [
+            {
+              "id": "vuhf-overview",
+              "name": "V/UHF radio control unit (TRAP 136)",
+              "type": "other",
+              "match": [
+                "item:left-side-panel:40"
+              ],
+              "text": "The green radio. It can use frequencies from 118 to 143.975 MHz and from 225 to 399.975 MHz. It has a receiver for the guard channel too, the emergency frequency.",
+              "context": "The frequency can be typed with the thumbwheels, taken from one of 20 presets or set to the guard frequency.",
+              "src": "m1",
+              "page": "82"
+            },
+            {
+              "id": "vuhf-function",
+              "name": "V/UHF function selector",
+              "type": "selector",
+              "match": [
+                "PNT-280"
+              ],
+              "positions": [
+                {
+                  "name": "AR",
+                  "text": "The radio is off."
+                },
+                {
+                  "name": "PAL",
+                  "text": "Only the main frequency."
+                },
+                {
+                  "name": "PAL+G",
+                  "text": "Main frequency and guard receiver."
+                },
+                {
+                  "name": "F1",
+                  "text": "Not used in this game."
+                },
+                {
+                  "name": "H",
+                  "text": "Not used in this game."
+                }
+              ],
+              "text": "Switches the radio off or on and chooses whether it also listens to the guard channel.",
+              "context": "The manual says AR is off, PAL uses only the main frequency, PAL+G also listens to the guard channel, and F1 and H are unused.",
+              "src": "m1",
+              "page": "82"
+            },
+            {
+              "id": "vuhf-mode",
+              "name": "V/UHF frequency mode switch",
+              "type": "switch3",
+              "match": [
+                "PNT-282"
+              ],
+              "positions": [
+                {
+                  "name": "M",
+                  "text": "The frequency of the thumbwheels."
+                },
+                {
+                  "name": "P",
+                  "text": "The preset channel."
+                },
+                {
+                  "name": "G",
+                  "text": "The guard frequency."
+                }
+              ],
+              "text": "Chooses where the main frequency comes from: typed in by hand, a preset channel, or the guard frequency.",
+              "context": "The marks are M (manual), P (preset) and G (guard).",
+              "src": "m1",
+              "page": "82"
+            },
+            {
+              "id": "vuhf-wheels",
+              "name": "V/UHF frequency thumbwheels",
+              "type": "wheel",
+              "match": [
+                "PNT-274",
+                "PNT-275",
+                "PNT-276",
+                "PNT-277",
+                "PNT-278"
+              ],
+              "text": "Five small wheels for typing the frequency by hand: hundreds, tens, units, tenths and thousandths of megahertz.",
+              "context": "They are used when the frequency mode switch is on M.",
+              "count": 5,
+              "src": "m1",
+              "page": "82"
+            },
+            {
+              "id": "vuhf-channel",
+              "name": "V/UHF channel selector",
+              "type": "selector",
+              "match": [
+                "PNT-283"
+              ],
+              "text": "Chooses one of the 20 stored radio channels, like the station buttons of a car radio.",
+              "context": "It is used when the frequency mode switch is on P. A window shows the chosen number.",
+              "src": "m1",
+              "page": "82"
+            },
+            {
+              "id": "vuhf-power",
+              "name": "V/UHF 25W-5W switch",
+              "type": "switch2",
+              "match": [
+                "PNT-281"
+              ],
+              "positions": [
+                {
+                  "name": "25W",
+                  "text": "Strong transmission."
+                },
+                {
+                  "name": "5W",
+                  "text": "Weak transmission."
+                }
+              ],
+              "text": "Chooses the transmitter power, strong at 25 watts or weak at 5 watts.",
+              "context": "A weaker transmitter reaches less far.",
+              "src": "m1",
+              "page": "83"
+            },
+            {
+              "id": "vuhf-sil",
+              "name": "V/UHF SIL (squelch) switch",
+              "type": "switch",
+              "match": [
+                "PNT-273"
+              ],
+              "text": "SIL stands for silence. The switch turns on the squelch, which cuts the hiss of the radio when nobody talks.",
+              "context": "It is the same function as on a normal radio set.",
+              "src": "m1",
+              "page": "83"
+            },
+            {
+              "id": "vuhf-test",
+              "name": "V/UHF test selector switch",
+              "type": "switch3",
+              "match": [
+                "PNT-272"
+              ],
+              "positions": [
+                {
+                  "name": "R",
+                  "text": "Test of the receiver."
+                },
+                {
+                  "name": "NEUTRAL",
+                  "text": "Normal use."
+                },
+                {
+                  "name": "E+A2",
+                  "text": "Test of the transmitter."
+                }
+              ],
+              "text": "Starts a test of the radio's receiver or transmitter. It has a middle position for normal use.",
+              "context": "A test light shows that the transmitter test has started.",
+              "src": "m1",
+              "page": "83"
+            },
+            {
+              "id": "uhf-overview",
+              "name": "UHF radio control unit (TRAP 137B)",
+              "type": "other",
+              "match": [
+                "item:left-side-panel:22"
+              ],
+              "text": "The red radio. It uses frequencies from 225 to 399.975 MHz and has 20 stored channels. It has no way to type a frequency by hand.",
+              "context": "Channel 20 is reserved by the game when the 'Easy Comms' option is on.",
+              "src": "m1",
+              "page": "82"
+            },
+            {
+              "id": "uhf-function",
+              "name": "UHF function selector",
+              "type": "selector",
+              "match": [
+                "PNT-344"
+              ],
+              "positions": [
+                {
+                  "name": "AR",
+                  "text": "The radio is off."
+                },
+                {
+                  "name": "M",
+                  "text": "The radio is on."
+                },
+                {
+                  "name": "F1",
+                  "text": "Not used in this game."
+                },
+                {
+                  "name": "H",
+                  "text": "Not used in this game."
+                }
+              ],
+              "text": "Switches the UHF radio on or off with one turn of the knob.",
+              "context": "AR is off and M is on; F1 and H are unused.",
+              "src": "m1",
+              "page": "83"
+            },
+            {
+              "id": "uhf-channel",
+              "name": "UHF channel selector",
+              "type": "selector",
+              "match": [
+                "PNT-348"
+              ],
+              "text": "Chooses one of the radio's 20 stored channels.",
+              "context": "A window shows the chosen channel number.",
+              "src": "m1",
+              "page": "83"
+            },
+            {
+              "id": "uhf-squelch",
+              "name": "UHF squelch switch",
+              "type": "switch2",
+              "match": [
+                "PNT-341"
+              ],
+              "positions": [
+                {
+                  "name": "OFF",
+                  "text": "Squelch is off."
+                },
+                {
+                  "name": "ON",
+                  "text": "Squelch is on."
+                }
+              ],
+              "text": "Turns the squelch of the UHF radio on or off. The squelch cuts the hiss when nobody talks.",
+              "context": "It is the counterpart of the SIL switch of the other radio.",
+              "src": "m1",
+              "page": "83"
+            },
+            {
+              "id": "uhf-test",
+              "name": "UHF test selector switch",
+              "type": "switch",
+              "match": [
+                "PNT-342"
+              ],
+              "positions": [
+                {
+                  "name": "R",
+                  "text": "Test of the receiver."
+                },
+                {
+                  "name": "E+A2",
+                  "text": "Test of the transmitter."
+                }
+              ],
+              "text": "Starts a test of the UHF radio's receiver or transmitter.",
+              "context": "A test light shows that the transmitter test has started.",
+              "src": "m1",
+              "page": "83"
+            },
+            {
+              "id": "uhf-power",
+              "name": "UHF 25W-5W switch",
+              "type": "switch2",
+              "match": [
+                "PNT-340"
+              ],
+              "positions": [
+                {
+                  "name": "25W",
+                  "text": "Strong transmission."
+                },
+                {
+                  "name": "5W",
+                  "text": "Weak transmission."
+                }
+              ],
+              "text": "Chooses the transmitter power of the UHF radio, 25 watts or 5 watts.",
+              "context": "A weak transmitter reaches less far but uses less power.",
+              "src": "m1",
+              "page": "83"
+            },
+            {
+              "id": "uhf-cde",
+              "name": "UHF CDE button (not used)",
+              "type": "button",
+              "match": [
+                "PNT-343"
+              ],
+              "text": "A button of the UHF radio that is not used. The manual says so as well.",
+              "context": "In DCS this button has no function at all.",
+              "src": "m1",
+              "page": "85"
+            },
+            {
+              "id": "sib",
+              "name": "Radio selector unit (SIB box)",
+              "type": "other",
+              "match": [
+                "item:left-side-panel:44"
+              ],
+              "text": "The intercom box that selects which radio the pilot transmits on and how loud each receiver is. Pushing a knob makes it ready to transmit; turning it sets the volume.",
+              "context": "Warning sounds cannot be adjusted. The V/UHF and the UHF radio can be used together by pressing both buttons.",
+              "src": "m1",
+              "page": "83"
+            },
+            {
+              "id": "sib-uv",
+              "name": "U + V pushbutton/potentiometer",
+              "type": "knob",
+              "match": [
+                "PNT-310"
+              ],
+              "text": "Pressing it makes the V/UHF radio ready to transmit. Turning it changes the volume of that radio.",
+              "context": "Both knobs of the radio selector unit work by being pushed and turned.",
+              "src": "m1",
+              "page": "83"
+            },
+            {
+              "id": "sib-u",
+              "name": "U pushbutton/potentiometer",
+              "type": "knob",
+              "match": [
+                "PNT-313"
+              ],
+              "text": "Pressing it makes the UHF radio ready to transmit. Turning it changes the volume of that radio.",
+              "context": "The V/UHF radio has its own knob next to it.",
+              "src": "m1",
+              "page": "83"
+            },
+            {
+              "id": "sib-rap",
+              "name": "RAP + CME pushbutton/potentiometer",
+              "type": "knob",
+              "match": [
+                "PNT-316"
+              ],
+              "text": "RAP is a return button: pressing it sets the knobs that were pressed before back to receive mode. Turning it sets the volume of the radar warning receiver.",
+              "context": "The manual describes it for the F1CE, where it adjusts the volume of the RWR (CME).",
+              "src": "m1",
+              "page": "83"
+            },
+            {
+              "id": "sib-mkr",
+              "name": "MKR + TP pushbutton/potentiometer",
+              "type": "knob",
+              "match": [
+                "PNT-319"
+              ],
+              "text": "Pressing it connects the pilot to the ground crew by the telephone link. After the ground crew disconnect, it becomes the volume knob for the marker beacon.",
+              "context": "The listening to a telebriefing is not implemented in the game.",
+              "src": "m1",
+              "page": "83"
+            },
+            {
+              "id": "sib-ampli",
+              "name": "AMPLI 2-1 selector switch",
+              "type": "switch",
+              "match": [
+                "PNT-309"
+              ],
+              "text": "Changes between two amplifiers in the box. Amplifier 1 is powered by the main DC bus and amplifier 2 by the battery bus.",
+              "context": "Channel 2 runs from the battery bus, so it does not depend on the main bus.",
+              "src": "m1",
+              "page": "83"
+            },
+            {
+              "id": "sib-vor",
+              "name": "VOR potentiometer",
+              "type": "knob",
+              "match": [
+                "PNT-308"
+              ],
+              "text": "Turning it sets the volume of the VOR radio signal.",
+              "context": "VOR is a radio beacon that gives the direction to it.",
+              "src": "m1",
+              "page": "83"
+            },
+            {
+              "id": "sib-tac",
+              "name": "TAC potentiometer",
+              "type": "knob",
+              "match": [
+                "PNT-307"
+              ],
+              "text": "Turning it sets the volume of the TACAN radio signal.",
+              "context": "TACAN is a radio beacon that gives the direction and distance to it.",
+              "src": "m1",
+              "page": "83"
+            },
+            {
+              "id": "sib-miss",
+              "name": "MISS potentiometer",
+              "type": "knob",
+              "match": [
+                "PNT-306"
+              ],
+              "text": "Turning it sets the volume of the missile warning sound.",
+              "context": "The missile warning comes from the radar warning system.",
+              "src": "m1",
+              "page": "83"
+            }
+          ]
+        },
+        {
+          "id": "armament-left",
+          "name": "Armament master switch and sight source",
+          "src": "m1",
+          "page": "101",
+          "text": "The main safety switch for all the weapons and the switch that chooses where the sight gets its data.",
+          "context": "Nothing fires unless the master switch is on. The manual also says a landing-gear-up check adds safety.",
+          "controls": [
+            {
+              "id": "master-guard",
+              "name": "Armament master switch guard",
+              "type": "guard",
+              "match": [
+                "PNT-432"
+              ],
+              "text": "A hinged cover over the armament master switch. The pilot lifts the cover first, so the switch cannot be moved by accident, and closes it again afterwards.",
+              "context": "The cover has its own clickable part in DCS. It belongs to the armament master switch; the real cockpit has a guard here as well.",
+              "src": "m1",
+              "page": "101"
+            },
+            {
+              "id": "master",
+              "name": "Armament master switch",
+              "type": "switch3",
+              "match": [
+                "PNT-433",
+                "item:left-side-panel:45"
+              ],
+              "positions": [
+                {
+                  "name": "OFF",
+                  "text": "The weapons are safe."
+                },
+                {
+                  "name": "ON",
+                  "text": "The weapons are armed and can be fired."
+                },
+                {
+                  "name": "TEST",
+                  "text": "A test position; the manual does not describe it."
+                }
+              ],
+              "text": "The main safety switch for the weapons. Off, nothing can be armed or fired. On, the weapons are armed.",
+              "context": "The rear cockpit of the two-seater shows its state with a green or red repeater light.",
+              "src": "m1",
+              "page": "101"
+            }
+          ]
+        },
+        {
+          "id": "oxygen",
+          "name": "Oxygen system controls",
+          "src": "m1",
+          "page": "76",
+          "text": "The controls for the pilot's breathing oxygen and the anti-G suit hose.",
+          "context": "The oxygen comes from a liquid oxygen tank and an emergency bottle. The failure warning panel shows oxygen problems with its REG O2 and 5mn O2 lights.",
+          "controls": [
+            {
+              "id": "overview",
+              "name": "Oxygen system controls (overview)",
+              "type": "other",
+              "match": [
+                "item:left-side-panel:46"
+              ],
+              "text": "The catalog lists these controls as one group that is partly hidden: the oxygen mode selector, the anti-G valve and the overpressure button. They are explained one by one in this panel.",
+              "context": "The manual marks this group as partly hidden from the pilot's normal view.",
+              "src": "m1",
+              "page": "19"
+            },
+            {
+              "id": "mode",
+              "name": "N-100%-EMG mode selector switch",
+              "type": "switch3",
+              "match": [
+                "PNT-709"
+              ],
+              "positions": [
+                {
+                  "name": "N",
+                  "text": "Normal: a mixture of oxygen and air depending on height, and pure oxygen above 33,000 feet."
+                },
+                {
+                  "name": "100%",
+                  "text": "Pure oxygen on demand at any height."
+                },
+                {
+                  "name": "EMG",
+                  "text": "Emergency: a steady flow of the mixture."
+                }
+              ],
+              "text": "Chooses how the oxygen is supplied: normal, pure oxygen, or an emergency flow.",
+              "context": "A little blinker shows when oxygen is used on demand. A repeater shows N or a red square.",
+              "src": "m1",
+              "page": "76"
+            },
+            {
+              "id": "overpressure",
+              "name": "Oxygen overpressure button",
+              "type": "button",
+              "match": [
+                "PNT-710"
+              ],
+              "text": "The game names it 'Oxygen overpressure button'. In this simulation it has no function.",
+              "context": "The manual states that the overpressure button is not implemented in this simulation.",
+              "src": "m1",
+              "page": "76"
+            },
+            {
+              "id": "antig-cover",
+              "name": "Anti-G connection cover",
+              "type": "cover",
+              "match": [
+                "PNT-712"
+              ],
+              "text": "A cover on the connector for the anti-G suit hose. The anti-G suit squeezes the pilot's legs in hard turns.",
+              "context": "The manual states that the cover is not implemented in this simulation.",
+              "src": "m1",
+              "page": "76"
+            },
+            {
+              "id": "antig-test",
+              "name": "Anti-G test button",
+              "type": "button",
+              "match": [
+                "PNT-713"
+              ],
+              "text": "A button to test the anti-G system of the pilot's suit.",
+              "context": "The manual only names it in a figure; it does not describe the test.",
+              "src": "m1",
+              "page": "77"
+            },
+            {
+              "id": "antig-valve",
+              "name": "Anti-G valve cock",
+              "type": "switch2",
+              "match": [
+                "PNT-714"
+              ],
+              "positions": [
+                {
+                  "name": "OFF",
+                  "text": "The tap is closed."
+                },
+                {
+                  "name": "ON",
+                  "text": "The tap is open."
+                }
+              ],
+              "text": "The tap of the anti-G system, the suit that squeezes the legs in hard turns.",
+              "context": "The manual only names it in a figure.",
+              "src": "m1",
+              "page": "77"
+            },
+            {
+              "id": "test-t",
+              "name": "Oxygen test button (T button)",
+              "type": "button",
+              "match": [
+                "PNT-517"
+              ],
+              "text": "Holding this button runs the oxygen quantity needle from empty to full. After release it should settle back at its start position.",
+              "context": "If the needle settles outside the green zone, the oxygen tank has to be changed.",
+              "src": "m1",
+              "page": "76"
+            },
+            {
+              "id": "test-pilot",
+              "name": "Pilot oxygen test button",
+              "type": "button",
+              "match": [
+                "PNT-519",
+                "item:right-side-panel:24"
+              ],
+              "text": "A ground test button for the oxygen quantity indicator. Pressing it makes the indicator read the oxygen quantity.",
+              "context": "The manual calls it the TEST OXY button and says to use it when no external power is connected.",
+              "src": "m1",
+              "page": "76"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "right-console",
+      "where": "right-console",
+      "name": "Right console",
+      "text": "The right side of the cockpit: the air conditioning, the lighting knobs, the armament panel with the radar switch, and the radio navigation boxes.",
+      "panels": [
+        {
+          "id": "air-conditioning",
+          "name": "Air conditioning and pressurization panel",
+          "src": "m1",
+          "page": "79",
+          "text": "The switches that heat, cool and pressurize the cabin and the equipment bay, plus the canopy seal lever.",
+          "context": "The air comes from the last compressor stage of the engine. To pressurize the cabin the master switch must be ON, the canopy seal lever forward and the ram air switch OFF.",
+          "controls": [
+            {
+              "id": "master",
+              "name": "Air conditioning master valve control switch",
+              "type": "switch2",
+              "match": [
+                "PNT-525",
+                "item:right-side-panel:26"
+              ],
+              "positions": [
+                {
+                  "name": "A",
+                  "text": "Off ('arret')."
+                },
+                {
+                  "name": "M",
+                  "text": "On ('marche')."
+                }
+              ],
+              "text": "The main switch of the cabin air system. It connects or disconnects the air conditioning and pressurization of the cabin and the cooling of the equipment bay.",
+              "context": "The after-start list switches it on.",
+              "src": "m1",
+              "page": "79"
+            },
+            {
+              "id": "temp",
+              "name": "Temperature control rheostat",
+              "type": "knob",
+              "match": [
+                "PNT-527",
+                "item:right-side-panel:27"
+              ],
+              "text": "A knob that sets the cabin temperature, in automatic or manual mode. Turned to AUTO it keeps the temperature by itself.",
+              "context": "The cabin checks of the manual set it to AUTO.",
+              "src": "m1",
+              "page": "79"
+            },
+            {
+              "id": "auto-man",
+              "name": "Air conditioning auto/manual selector switch",
+              "type": "switch2",
+              "match": [
+                "PNT-529",
+                "item:right-side-panel:29"
+              ],
+              "positions": [
+                {
+                  "name": "AUTO",
+                  "text": "Automatic control."
+                },
+                {
+                  "name": "MANUAL",
+                  "text": "The pilot uses the hot/cold switch."
+                }
+              ],
+              "text": "Chooses whether the equipment temperature is controlled automatically or by hand with the hot/cold switch.",
+              "context": "The cabin checks set it to AUTO.",
+              "src": "m1",
+              "page": "79"
+            },
+            {
+              "id": "hot-cold",
+              "name": "Hot/cold equipment selector switch",
+              "type": "switch3",
+              "match": [
+                "PNT-530",
+                "item:right-side-panel:30"
+              ],
+              "positions": [
+                {
+                  "name": "COLD",
+                  "text": "Spring-loaded: more cold air (froid)."
+                },
+                {
+                  "name": "NEUTRAL",
+                  "text": "Middle position: no change."
+                },
+                {
+                  "name": "HOT",
+                  "text": "Spring-loaded: more hot air (chaud)."
+                }
+              ],
+              "text": "Changes the equipment temperature by hand when the selector is on manual. It springs back to the middle.",
+              "context": "Hot lets in more warm air and cold more cold air.",
+              "src": "m1",
+              "page": "79"
+            },
+            {
+              "id": "emergency-cold",
+              "name": "Emergency cold switch",
+              "type": "switch2",
+              "match": [
+                "PNT-524",
+                "item:right-side-panel:25"
+              ],
+              "positions": [
+                {
+                  "name": "NORMAL",
+                  "text": "Normal operation."
+                },
+                {
+                  "name": "EMG COLD",
+                  "text": "Emergency cold: the solenoid valve is commanded to close."
+                }
+              ],
+              "text": "Orders the solenoid valve, which lets hot air into the air mix, to close. Less hot air then reaches the cabin.",
+              "context": "The cabin checks set it OFF. The manual calls it 'secours froid'.",
+              "src": "m1",
+              "page": "79"
+            },
+            {
+              "id": "ram-guard",
+              "name": "Ram air switch guard",
+              "type": "guard",
+              "match": [
+                "PNT-410"
+              ],
+              "text": "A hinged cover over the ram air switch. The pilot lifts the cover first, so the switch cannot be moved by accident, and closes it again afterwards.",
+              "context": "The cover has its own clickable part in DCS. It belongs to the ram air switch; the real cockpit has a guard here as well.",
+              "src": "m1",
+              "page": "79"
+            },
+            {
+              "id": "ram",
+              "name": "Ram air switch",
+              "type": "switch2",
+              "match": [
+                "PNT-411",
+                "item:right-side-panel:31"
+              ],
+              "positions": [
+                {
+                  "name": "OFF",
+                  "text": "The ram air inlet is closed."
+                },
+                {
+                  "name": "ON",
+                  "text": "Outside air flows into the cabin."
+                }
+              ],
+              "text": "Opens a fresh air inlet in the nose so outside air flows into the cockpit. It can clear smoke or fumes or cool the cabin.",
+              "context": "While it is on the cabin cannot be pressurized. The cabin checks set it to OFF and guarded.",
+              "src": "m1",
+              "page": "79"
+            },
+            {
+              "id": "demist",
+              "name": "Demist switch",
+              "type": "switch",
+              "match": [
+                "PNT-412",
+                "item:right-side-panel:32"
+              ],
+              "text": "Forward, it lets warm air flow onto the front and left windows to clear mist.",
+              "context": "The manual says the demist switch has no effect in DCS.",
+              "src": "m1",
+              "page": "79"
+            },
+            {
+              "id": "seal",
+              "name": "Canopy seal valve control lever",
+              "type": "lever",
+              "match": [
+                "PNT-233",
+                "item:right-side-panel:14"
+              ],
+              "positions": [
+                {
+                  "name": "Inflate",
+                  "text": "Forward: the canopy seal is inflated."
+                },
+                {
+                  "name": "Deflate",
+                  "text": "Rearward: the canopy seal is let down."
+                }
+              ],
+              "text": "A lever that pumps air into a rubber seal around the canopy, or lets it out. Forward inflates the seal so the cabin is sealed for pressurization.",
+              "context": "The cabin checks set it forward (inflate).",
+              "src": "m1",
+              "page": "79"
+            }
+          ]
+        },
+        {
+          "id": "lighting-unit",
+          "name": "Lighting control unit",
+          "src": "m1",
+          "page": "72",
+          "text": "The knobs and switch for the lights of the cockpit panels.",
+          "context": "At night the pilot dims the instrument lights; by day they are at full strength.",
+          "controls": [
+            {
+              "id": "overview",
+              "name": "Lighting control unit (whole box)",
+              "type": "other",
+              "match": [
+                "item:right-side-panel:28"
+              ],
+              "text": "A box on the right console that holds the day/night switch and the knobs for the cockpit lighting. They are explained one by one in this panel.",
+              "context": "The other lighting knobs are around the clock and the sight.",
+              "src": "m1",
+              "page": "72"
+            },
+            {
+              "id": "day-night",
+              "name": "Day/night selector switch",
+              "type": "switch2",
+              "match": [
+                "PNT-382"
+              ],
+              "positions": [
+                {
+                  "name": "DAY",
+                  "text": "Full brightness, not adjustable (JOUR)."
+                },
+                {
+                  "name": "NIGHT",
+                  "text": "Adjustable brightness (NUIT)."
+                }
+              ],
+              "text": "In the day position the indicator lights and panels are at full brightness and cannot be dimmed. In the night position they can be dimmed with the next knob.",
+              "context": "At night the maximum is slightly lower than by day.",
+              "src": "m1",
+              "page": "73"
+            },
+            {
+              "id": "panel-lights",
+              "name": "Light and panel lighting rheostat",
+              "type": "knob",
+              "match": [
+                "PNT-383"
+              ],
+              "text": "Adjusts the brightness of the indicator lights and panels, but only when the day/night switch is on night.",
+              "context": "It also sets the brightness of the lit pushbuttons.",
+              "src": "m1",
+              "page": "73"
+            },
+            {
+              "id": "uv",
+              "name": "Ultraviolet lighting rheostat",
+              "type": "knob",
+              "match": [
+                "PNT-384"
+              ],
+              "text": "Adjusts the ultraviolet light that makes the markings of the main panel instruments glow.",
+              "context": "It is turned up only when the cockpit is dark.",
+              "src": "m1",
+              "page": "73"
+            },
+            {
+              "id": "panel-flood",
+              "name": "Dual instrument panel lighting rheostat (floodlights)",
+              "type": "knob",
+              "match": [
+                "PNT-385"
+              ],
+              "text": "The outer knob of a double knob. It sets the brightness of the red floodlights on the instrument panel.",
+              "context": "The inner knob of the same pair sets the integral lights.",
+              "src": "m1",
+              "page": "73"
+            },
+            {
+              "id": "panel-integral",
+              "name": "Dual instrument panel lighting rheostat (integral)",
+              "type": "knob",
+              "match": [
+                "PNT-386"
+              ],
+              "text": "The inner knob of a double knob. It sets the brightness of the red lights built into the instrument panel.",
+              "context": "The outer knob sets the floodlights.",
+              "src": "m1",
+              "page": "73"
+            },
+            {
+              "id": "console-flood",
+              "name": "Dual console and pedestal lighting rheostat (floodlights)",
+              "type": "knob",
+              "match": [
+                "PNT-387"
+              ],
+              "text": "The outer knob of a second double knob. It sets the brightness of the red floodlights on the consoles and the pedestal.",
+              "context": "The inner knob sets their integral lights.",
+              "src": "m1",
+              "page": "73"
+            },
+            {
+              "id": "console-integral",
+              "name": "Dual console and pedestal lighting rheostat (integral)",
+              "type": "knob",
+              "match": [
+                "PNT-388"
+              ],
+              "text": "The inner knob of the second double knob. It sets the brightness of the red lights built into the consoles and the pedestal.",
+              "context": "The outer knob sets the floodlights.",
+              "src": "m1",
+              "page": "73"
+            }
+          ]
+        },
+        {
+          "id": "armament-panel",
+          "name": "Armament control panel",
+          "src": "m1",
+          "page": "98",
+          "text": "The panel where the pilot chooses the weapon and how it is released, and where the radar is switched on.",
+          "context": "Interlocks stop most pushbuttons being pressed together. Left and fuselage missile with right missile can be combined, and wing bombs with fuselage bombs. The selected pushbutton also tells the sight which mode to show.",
+          "controls": [
+            {
+              "id": "overview",
+              "name": "Armament panel and switches (whole panel)",
+              "type": "other",
+              "match": [
+                "item:right-side-panel:13"
+              ],
+              "text": "The panel on the right console with the weapon pushbuttons and selectors, and the radar and fuel dipper switches. They are explained one by one below.",
+              "context": "On the F1EE and F1M the whole panel sits in a different place, according to the manual.",
+              "src": "m1",
+              "page": "21"
+            },
+            {
+              "id": "matra-switch",
+              "name": "MATRA 550 or Sidewinder missile switch",
+              "type": "switch2",
+              "match": [
+                "PNT-593",
+                "item:right-side-panel-detail:12"
+              ],
+              "positions": [
+                {
+                  "name": "OFF",
+                  "text": "Missile systems off."
+                },
+                {
+                  "name": "ON",
+                  "text": "Missile systems on (M, 'marche')."
+                }
+              ],
+              "text": "Switches on some systems of the two wingtip missiles (MATRA R550 or Sidewinder).",
+              "context": "The manual says to switch it on two minutes before launching these missiles.",
+              "src": "m1",
+              "page": "98"
+            },
+            {
+              "id": "sight-selector",
+              "name": "Sight selector",
+              "type": "switch3",
+              "match": [
+                "PNT-590",
+                "item:right-side-panel-detail:9"
+              ],
+              "positions": [
+                {
+                  "name": "ON",
+                  "text": "Normal attitude marks for navigation, air-to-air and air-to-ground."
+                },
+                {
+                  "name": "APP",
+                  "text": "Simplified marks for the approach (velocity vector)."
+                },
+                {
+                  "name": "OFF",
+                  "text": "The third position; the manual does not say what it does."
+                }
+              ],
+              "text": "Chooses the attitude marks of the sight: the normal ones, or the simplified ones for a landing approach that include the velocity vector.",
+              "context": "The after-start list sets it to ON or APP as needed.",
+              "src": "m1",
+              "page": "99"
+            },
+            {
+              "id": "fore-aft",
+              "name": "Fore/aft selector switch",
+              "type": "switch2",
+              "match": [
+                "PNT-594",
+                "item:right-side-panel-detail:13"
+              ],
+              "positions": [
+                {
+                  "name": "FORE",
+                  "text": "AV: attack from the front."
+                },
+                {
+                  "name": "AFT",
+                  "text": "AR: attack from the rear."
+                }
+              ],
+              "text": "Chooses the type of attack for the case that the radar is locked on direction only and not on distance (as against a jammer).",
+              "context": "The marks are AV (avant, fore) and AR (arriere, aft).",
+              "src": "m1",
+              "page": "99"
+            },
+            {
+              "id": "auto-manual",
+              "name": "Auto/manual firing selector switch",
+              "type": "switch2",
+              "match": [
+                "PNT-595",
+                "item:right-side-panel-detail:14"
+              ],
+              "positions": [
+                {
+                  "name": "AUTO",
+                  "text": "Automatic firing."
+                },
+                {
+                  "name": "MAN",
+                  "text": "Manual firing."
+                }
+              ],
+              "text": "Chooses whether a MATRA R530 or S530 missile is fired by itself or by the pilot.",
+              "context": "In AUTO the missile goes when the white, amber and green signals in the sight are all on. In MAN the pilot can fire when the white and amber ones are on.",
+              "src": "m1",
+              "page": "99"
+            },
+            {
+              "id": "single-salvo",
+              "name": "Single/salvo selector",
+              "type": "switch2",
+              "match": [
+                "PNT-596",
+                "item:right-side-panel-detail:15"
+              ],
+              "positions": [
+                {
+                  "name": "SINGLE",
+                  "text": "One by one (CPC)."
+                },
+                {
+                  "name": "SALVO",
+                  "text": "In a salvo (SALV)."
+                }
+              ],
+              "text": "Chooses whether bombs and rockets leave one by one or all at once.",
+              "context": "One by one is CPC (coup par coup); all at once is SALV (salvo).",
+              "src": "m1",
+              "page": "98"
+            },
+            {
+              "id": "bomb-rocket",
+              "name": "Bomb/rocket selector",
+              "type": "switch3",
+              "match": [
+                "PNT-592",
+                "item:right-side-panel-detail:11"
+              ],
+              "positions": [
+                {
+                  "name": "INBD",
+                  "text": "The inner wing stations."
+                },
+                {
+                  "name": "OUTBD",
+                  "text": "The outer wing stations."
+                },
+                {
+                  "name": "1+2",
+                  "text": "Both stations."
+                }
+              ],
+              "text": "Chooses which wing stations release bombs or rockets: the inner ones, the outer ones, or both.",
+              "context": "It works together with the single/salvo selector.",
+              "src": "m1",
+              "page": "98"
+            },
+            {
+              "id": "fuze",
+              "name": "Instantaneous/delay/safe selector switch",
+              "type": "switch3",
+              "match": [
+                "PNT-597",
+                "item:right-side-panel-detail:16"
+              ],
+              "positions": [
+                {
+                  "name": "INST",
+                  "text": "Instantaneous: the nose fuze."
+                },
+                {
+                  "name": "DLY",
+                  "text": "Delay: the tail fuze."
+                },
+                {
+                  "name": "SAFE",
+                  "text": "Bombs are not armed."
+                }
+              ],
+              "text": "Sets how the bombs are armed: at the nose, at the tail, or not at all.",
+              "context": "The cabin checks require SAFE.",
+              "src": "m1",
+              "page": "98"
+            },
+            {
+              "id": "radar-selector",
+              "name": "Radar selector",
+              "type": "switch3",
+              "match": [
+                "PNT-598",
+                "item:right-side-panel-detail:17"
+              ],
+              "positions": [
+                {
+                  "name": "OFF",
+                  "text": "Radar power off (AR)."
+                },
+                {
+                  "name": "SBY",
+                  "text": "Standby (V): the tubes heat, no transmission."
+                },
+                {
+                  "name": "TX",
+                  "text": "Transmit (EM): the radar emits."
+                }
+              ],
+              "text": "Powers the radar: off, standby (warms up without transmitting), or transmit.",
+              "context": "After the start it is set to standby. After 35 seconds the scan and the markers show, and after 3 minutes of warm-up transmitting starts.",
+              "src": "m1",
+              "page": "111"
+            },
+            {
+              "id": "radar-emergency",
+              "name": "Radar emergency transmission button",
+              "type": "button",
+              "match": [
+                "PNT-599",
+                "item:right-side-panel-detail:22"
+              ],
+              "text": "Pressing it restarts the radar transmission or resets the radar power supply.",
+              "context": "The manual calls it the SECOURS (emergency) pushbutton.",
+              "src": "m1",
+              "page": "110"
+            },
+            {
+              "id": "left-550",
+              "name": "Left MATRA R550 or Sidewinder pushbutton",
+              "type": "button",
+              "match": [
+                "PNT-604",
+                "item:right-side-panel-detail:18"
+              ],
+              "text": "Selects the outer wing missile mode. In this mode the sight shows missile marks and either wingtip missile can be locked and fired.",
+              "context": "With both outer missiles locked, the left one is fired first.",
+              "src": "m1",
+              "page": "98"
+            },
+            {
+              "id": "right-550",
+              "name": "Right MATRA R550 or Sidewinder pushbutton",
+              "type": "button",
+              "match": [
+                "PNT-612",
+                "item:right-side-panel-detail:23"
+              ],
+              "text": "Selects the outer missile mode with priority to the right missile.",
+              "context": "With both outer missiles locked, the right one is fired first.",
+              "src": "m1",
+              "page": "98"
+            },
+            {
+              "id": "left-530",
+              "name": "Left or fuselage MATRA R530 pushbutton",
+              "type": "button",
+              "match": [
+                "PNT-606",
+                "item:right-side-panel-detail:19"
+              ],
+              "text": "Selects the left or fuselage medium-range missile for locking and firing.",
+              "context": "It can be selected together with the right R530 pushbutton. The R530 IR missile is cooled when this and the master arm are on.",
+              "src": "m1",
+              "page": "98"
+            },
+            {
+              "id": "right-530",
+              "name": "Right MATRA R530 pushbutton",
+              "type": "button",
+              "match": [
+                "PNT-614",
+                "item:right-side-panel-detail:24"
+              ],
+              "text": "Selects the right inner medium-range missile for locking and firing.",
+              "context": "If both inner missiles are locked, an infrared one goes before a radar one; if both are the same, the left one goes first.",
+              "src": "m1",
+              "page": "98"
+            },
+            {
+              "id": "aa-guns",
+              "name": "Air-to-air guns pushbutton",
+              "type": "button",
+              "match": [
+                "PNT-608",
+                "item:right-side-panel-detail:20"
+              ],
+              "text": "Sets the sight to the air-to-air cannon mode.",
+              "context": "The cannons fire with the trigger on the control stick whatever mode is chosen here; only the master arm limits them.",
+              "src": "m1",
+              "page": "98"
+            },
+            {
+              "id": "ag-guns",
+              "name": "Air-to-ground guns or rockets pushbutton",
+              "type": "button",
+              "match": [
+                "PNT-616",
+                "item:right-side-panel-detail:25"
+              ],
+              "text": "Sets the sight to the air-to-ground mode for cannons or rockets, and enables rocket firing if rockets are carried.",
+              "context": "It is used for attacks on the ground.",
+              "src": "m1",
+              "page": "98"
+            },
+            {
+              "id": "wing-bombs",
+              "name": "Wing bombs pushbutton",
+              "type": "button",
+              "match": [
+                "PNT-610",
+                "item:right-side-panel-detail:21"
+              ],
+              "text": "Sets the sight to bombing mode and enables the release of the wing bombs.",
+              "context": "It can be selected together with the fuselage bombs pushbutton.",
+              "src": "m1",
+              "page": "98"
+            },
+            {
+              "id": "fuse-bombs",
+              "name": "Fuselage bombs pushbutton",
+              "type": "button",
+              "match": [
+                "PNT-618",
+                "item:right-side-panel-detail:26"
+              ],
+              "text": "Sets the sight to bombing mode and enables the release of the fuselage bombs.",
+              "context": "With a CLB4 pylon the light of the button goes out when all its bombs are gone.",
+              "src": "m1",
+              "page": "98"
+            },
+            {
+              "id": "scan",
+              "name": "Radar 4 lines/1 line scan switch",
+              "type": "switch2",
+              "match": [
+                "PNT-600",
+                "item:right-side-panel-detail:27"
+              ],
+              "positions": [
+                {
+                  "name": "4L",
+                  "text": "Four-line scan."
+                },
+                {
+                  "name": "1L",
+                  "text": "One-line scan."
+                }
+              ],
+              "text": "Chooses how the radar beam searches: along four lines or only one line.",
+              "context": "One line helps to see an echo at each sweep once the antenna is aimed in height.",
+              "src": "m1",
+              "page": "112"
+            },
+            {
+              "id": "snap",
+              "name": "R530 missile normal/altitude difference selector switch",
+              "type": "switch2",
+              "match": [
+                "PNT-601",
+                "item:right-side-panel-detail:28"
+              ],
+              "positions": [
+                {
+                  "name": "NORM",
+                  "text": "Normal shot."
+                },
+                {
+                  "name": "SNAP",
+                  "text": "Altitude difference function (DEN in the manual)."
+                }
+              ],
+              "text": "Chooses how the interception computer guides the pilot for an R530 or S530 missile shot: normal, or with the altitude difference taken into account.",
+              "context": "The manual calls the second position DEN.",
+              "src": "m1",
+              "page": "99"
+            },
+            {
+              "id": "jammer-pursuit",
+              "name": "Normal/jammer pursuit switch (no function)",
+              "type": "switch",
+              "match": [
+                "PNT-603",
+                "item:right-side-panel-detail:29"
+              ],
+              "text": "A switch that has no function in this simulation.",
+              "context": "The manual states that it has no function.",
+              "src": "m1",
+              "page": "98"
+            },
+            {
+              "id": "lights-test",
+              "name": "Armament panel lights test",
+              "type": "button",
+              "match": [
+                "PNT-602",
+                "item:right-side-panel-detail:30"
+              ],
+              "text": "Pressing it lights the lamps of the pushbuttons on this panel to prove they work.",
+              "context": "It is the test button for the panel.",
+              "src": "m1",
+              "page": "99"
+            },
+            {
+              "id": "fuel-dipper",
+              "name": "Firing fuel dipper switch",
+              "type": "switch2",
+              "match": [
+                "PNT-591",
+                "item:right-side-panel-detail:10"
+              ],
+              "positions": [
+                {
+                  "name": "OFF",
+                  "text": "The dipper is off (A, 'arret')."
+                },
+                {
+                  "name": "ON",
+                  "text": "The dipper is on (M, 'marche')."
+                }
+              ],
+              "text": "Switches the fuel dipper, which briefly reduces the fuel when missiles or cannons are fired so the engine does not choke on the exhaust fumes.",
+              "context": "After a missile shot the rpm drops, the afterburner goes out and the nozzle opens for 3 seconds. With cannons only the rpm drops.",
+              "src": "m1",
+              "page": "33"
+            }
+          ]
+        },
+        {
+          "id": "tacan",
+          "name": "TACAN control box",
+          "src": "m1",
+          "page": "90",
+          "text": "The box to tune the TACAN, a radio beacon system that gives the direction and distance to a station.",
+          "context": "TACAN stations are on airfields and on ships. The result is shown on the navigation indicator.",
+          "controls": [
+            {
+              "id": "channel",
+              "name": "TACAN channel selectors (X/Y, hundreds-tens, units)",
+              "type": "selector",
+              "match": [
+                "PNT-485",
+                "PNT-486",
+                "PNT-488",
+                "item:right-side-panel:20"
+              ],
+              "text": "Three knobs that set the TACAN channel: the X or Y mode, the hundreds and tens, and the units.",
+              "context": "Valid channels run from 01 to 116, X or Y. A window shows the channel.",
+              "count": 3,
+              "src": "m1",
+              "page": "90"
+            },
+            {
+              "id": "mode",
+              "name": "TACAN mode selector",
+              "type": "selector",
+              "match": [
+                "PNT-487"
+              ],
+              "positions": [
+                {
+                  "name": "OFF",
+                  "text": "The TACAN is off."
+                },
+                {
+                  "name": "REC",
+                  "text": "Receive: direction only."
+                },
+                {
+                  "name": "T/R",
+                  "text": "Transmit/receive: direction and distance."
+                },
+                {
+                  "name": "A/A",
+                  "text": "Air to air: distance between two planes."
+                }
+              ],
+              "text": "Chooses the TACAN mode: off, receive only, transmit and receive for direction and distance, or air to air.",
+              "context": "T/R is the normal mode for a direction and distance to a ground station.",
+              "src": "m1",
+              "page": "90"
+            },
+            {
+              "id": "test",
+              "name": "TACAN test button",
+              "type": "button",
+              "match": [
+                "PNT-480"
+              ],
+              "text": "Starts a 10-second test. A green and a red lamp flash, then the green lamp must stay on.",
+              "context": "If the green stays off and the red lamp stays on, the TACAN is faulty.",
+              "src": "m1",
+              "page": "88"
+            }
+          ]
+        },
+        {
+          "id": "vor-ils",
+          "name": "VOR/ILS control box and selectors",
+          "src": "m1",
+          "page": "87",
+          "text": "The box to tune VOR and ILS radio beacons, plus the knobs that choose and set the course.",
+          "context": "VOR is a beacon that gives the direction to it; ILS guides a landing by a runway line and a glide path.",
+          "controls": [
+            {
+              "id": "overview",
+              "name": "VOR/ILS control unit (whole box)",
+              "type": "other",
+              "match": [
+                "item:right-side-panel:22"
+              ],
+              "text": "The box for the VOR and ILS receiver. Its frequency range is 108 to 117.95 MHz in 50 kHz steps. A window shows the chosen frequency.",
+              "context": "Choosing an ILS frequency also switches on the marker receiver.",
+              "src": "m1",
+              "page": "87"
+            },
+            {
+              "id": "onoff",
+              "name": "VOR/ILS ON/OFF selector",
+              "type": "switch2",
+              "match": [
+                "PNT-503"
+              ],
+              "positions": [
+                {
+                  "name": "A",
+                  "text": "Off ('arret')."
+                },
+                {
+                  "name": "M",
+                  "text": "On ('marche')."
+                }
+              ],
+              "text": "Switches the VOR/ILS receiver on or off.",
+              "context": "The after-start list switches it on.",
+              "src": "m1",
+              "page": "90"
+            },
+            {
+              "id": "mhz",
+              "name": "VOR/ILS MHz frequency selector",
+              "type": "selector",
+              "match": [
+                "PNT-504"
+              ],
+              "text": "Sets the whole-megahertz part of the VOR or ILS frequency.",
+              "context": "It is used together with the kHz selector.",
+              "src": "m1",
+              "page": "90"
+            },
+            {
+              "id": "khz",
+              "name": "VOR/ILS kHz frequency selector",
+              "type": "selector",
+              "match": [
+                "PNT-506"
+              ],
+              "text": "Sets the kilohertz part of the VOR or ILS frequency.",
+              "context": "It is used together with the MHz selector.",
+              "src": "m1",
+              "page": "90"
+            },
+            {
+              "id": "test",
+              "name": "VOR/ILS test selector",
+              "type": "selector",
+              "match": [
+                "PNT-505"
+              ],
+              "text": "Starts a test of the VOR/ILS equipment. In the test positions a north bearing, or a maximum bar deviation, is shown.",
+              "context": "The manual names the test positions HG and BD.",
+              "src": "m1",
+              "page": "89"
+            },
+            {
+              "id": "source",
+              "name": "VOR-ILS/OFF/TACAN selector",
+              "type": "selector",
+              "match": [
+                "PNT-544",
+                "item:right-side-panel:21"
+              ],
+              "positions": [
+                {
+                  "name": "VOR/ILS",
+                  "text": "The pointers follow VOR or ILS."
+                },
+                {
+                  "name": "OFF",
+                  "text": "No radio signal."
+                },
+                {
+                  "name": "TACAN",
+                  "text": "The pointers follow the TACAN."
+                }
+              ],
+              "text": "Chooses which radio signal moves the pointers on the spherical indicator: VOR/ILS, or TACAN, or none.",
+              "context": "The after-start list sets it to VOR/ILS or TACAN as needed.",
+              "src": "m1",
+              "page": "90"
+            },
+            {
+              "id": "omnibearing",
+              "name": "Omnibearing selector",
+              "type": "knob",
+              "match": [
+                "PNT-545"
+              ],
+              "text": "A knob to set the course to a TACAN or VOR beacon.",
+              "context": "For an ILS the course need not be set.",
+              "src": "m1",
+              "page": "90"
+            },
+            {
+              "id": "heading",
+              "name": "Heading selection knob",
+              "type": "knob",
+              "match": [
+                "PNT-547",
+                "item:right-side-panel:23"
+              ],
+              "text": "Sets the heading that the autopilot flies in CAP mode. The chosen heading appears on the navigation indicator as an index.",
+              "context": "The knob is on the right console.",
+              "src": "m1",
+              "page": "54"
+            }
+          ]
+        },
+        {
+          "id": "right-misc",
+          "name": "Seat and life-saving controls",
+          "src": "m1",
+          "page": "20",
+          "text": "Small controls at the right side of the pilot's seat.",
+          "context": "The seat height is adjusted early, when climbing into the cockpit.",
+          "controls": [
+            {
+              "id": "seat-height",
+              "name": "Seat height adjustment control",
+              "type": "button",
+              "match": [
+                "PNT-11",
+                "item:right-side-panel:16"
+              ],
+              "text": "Moves the seat up or down so the pilot sits at the right height.",
+              "context": "It is part of getting into the cockpit; the manual lists it with the entry checks.",
+              "src": "m1",
+              "page": "143"
+            },
+            {
+              "id": "dinghy",
+              "name": "Dinghy puncture",
+              "type": "handle",
+              "match": [
+                "item:right-side-panel:1"
+              ],
+              "text": "A handle named 'Dinghy puncture' on the right side panel. The manual lists it but does not describe it.",
+              "context": "A dinghy is a small rescue raft.",
+              "src": "m1",
+              "page": "20"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

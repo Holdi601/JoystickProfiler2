@@ -117,7 +117,8 @@ public sealed class CalloutSheetCanvas : Control
     // Right-click > Change...: the host opens the bind panel on that input.
     public event EventHandler<(string Input, bool Modifier)>? RowChangeRequested;
 
-    private static readonly FontFamily SheetFont = new("Bahnschrift SemiCondensed, Bahnschrift, Segoe UI, Yu Gothic UI, Microsoft YaHei UI, Malgun Gothic"); // nonloc
+    // The sheet's font: Bahnschrift SemiCondensed, then the language's fallbacks (CJK of the language, symbols).
+    private static FontFamily SheetFont => SheetFonts.Get("Bahnschrift SemiCondensed, Bahnschrift, Segoe UI, ");
     private readonly SchematicPainter schematicPainter = new();
     private double zoom = 1;
     private Vector pan;

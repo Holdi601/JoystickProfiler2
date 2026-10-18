@@ -1,0 +1,568 @@
+{
+  "format": "joypro-cockpit-guide",
+  "version": 1,
+  "id": "msfs2020-common-part4",
+  "partOf": "msfs2020-common",
+  "title": "Microsoft Flight Simulator 2020: all aircraft (shared guide), part 4",
+  "common": true,
+  "games": [
+    "MSFS2020"
+  ],
+  "sets": [],
+  "sources": [
+    {
+      "id": "g1",
+      "title": "Microsoft Flight Simulator 2020: the cockpit models' node names and behaviours",
+      "kind": "game-files"
+    }
+  ],
+  "areas": [
+    {
+      "id": "airliner",
+      "where": "other",
+      "name": "Airliner and large-aircraft panels",
+      "text": "These controls belong to large aircraft and to older multi-engine aircraft. Their cockpits have separate panels for the left pilot and the right pilot, a pedestal between them and an overhead panel full of switches. The node name says what the part is.",
+      "panels": [
+        {
+          "id": "airliner-audio",
+          "name": "Radio panels, audio receivers and push-to-talk (large aircraft)",
+          "src": "g1",
+          "text": "On large aircraft each pilot has an audio panel with a button and a volume knob for every radio: VHF voice radios, HF long-range radios, satellite, public address and the cabin.",
+          "context": "The pilots pick the radio to talk on and the receivers to hear. The push-to-talk switch sends the voice out.",
+          "controls": [
+            {
+              "id": "comnav-panel",
+              "name": "Radio panel mode keys (VHF, HF, SAT, XPDR, WXR ...)",
+              "type": "button",
+              "match": [
+                "COMNAV_*",
+                "com?_push_*",
+                "com?_knob_*"
+              ],
+              "text": "These keys belong to a radio management panel. They pick the radio type for a tuning line (VHF, HF, satellite, data), and other keys call up the transponder, the weather radar, the menu and the next or previous page, or clear an entry.",
+              "context": "The pilot tunes a radio on this panel and then speaks on it through the audio panel."
+            },
+            {
+              "id": "boeing-audio",
+              "name": "Audio receiver buttons and knobs (VHF, HF, SAT, PA, CAB)",
+              "type": "button",
+              "match": [
+                "BOEING_AudioReceiver_*",
+                "sk_button_audio*",
+                "switch_*_ptt_switch*",
+                "Knob_COMM*",
+                "sk_knob_*"
+              ],
+              "text": "Each button on this audio panel lets the pilot hear one radio, and the knob next to it sets its volume. The names say which: VHF left, centre and right (voice), HF (long range), SAT (satellite), PA (announcements to the cabin), FLT and CAB (calls to the flight deck and the cabin). The LED parts are the small lamps of the buttons.",
+              "context": "The pilot presses the button of the radio to talk on and uses the push-to-talk switch to speak. Several radios can be heard at once."
+            }
+          ]
+        },
+        {
+          "id": "airliner-displays",
+          "name": "Screens and display controls",
+          "src": "g1",
+          "text": "Large aircraft show their information on big screens. These controls change the page shown, the range of the map, the brightness and the settings of the screens.",
+          "context": "The pilots call up the page they need, such as engines, fuel or the map, and set the range or the minimums.",
+          "controls": [
+            {
+              "id": "ddi-mfd",
+              "name": "Display buttons and knobs (DDI, MFD, EFD, ECAM, EICAS)",
+              "type": "button",
+              "match": [
+                "DDI_*",
+                "MFD_*",
+                "EFD_*",
+                "EFIS_*",
+                "PUSH_ECAM*",
+                "eicas_*",
+                "DISPLAY_*",
+                "BOEING_PUSH_*",
+                "EFB_*",
+                "DISPLAYBACKUP_*",
+                "PFD_Knob*",
+                "knob_baro_*",
+                "Knob_Baroset*",
+                "Knob_Minimums*"
+              ],
+              "text": "These buttons and knobs belong to the screens in front of the pilots. Buttons around a screen pick the word printed next to them on the screen. Knobs set the range of the map, the brightness, the air pressure setting or the minimum height for an approach.",
+              "context": "The pilots use them throughout the flight. The same button does different things on different pages."
+            }
+          ]
+        },
+        {
+          "id": "airliner-systems",
+          "name": "Overhead and pedestal system switches",
+          "src": "g1",
+          "text": "The overhead panel and the pedestal hold the switches of the aircraft's systems: electricity, fuel, hydraulics, air conditioning, fire protection and the engines. Many have a protective cover.",
+          "context": "The pilots go through the overhead panel in a set order when preparing the aircraft, and use it for faults in flight. Switch covers stop a switch from being flipped by accident.",
+          "controls": [
+            {
+              "id": "stab-trim",
+              "name": "Stabilizer trim switches (alternate, interrupt)",
+              "type": "switch",
+              "match": [
+                "stabtrim_*",
+                "StabTrim_Switch*",
+                "Interrupt_*"
+              ],
+              "text": "The stabilizer is the large movable surface at the tail that holds the nose up or down. These switches belong to its electric trim: one picks an alternate way of trimming, and an interrupt switch (under a cover) cuts the trim motor.",
+              "context": "The pilots use them only when the trim misbehaves, for example when it keeps running by itself."
+            },
+            {
+              "id": "fans",
+              "name": "Cockpit and cabin fans",
+              "type": "switch",
+              "match": [
+                "cockpit_fan_switch*",
+                "cabin_fan_switch*",
+                "CockpitFan_Switch*"
+              ],
+              "text": "This switch turns on a fan that moves the air in the cockpit or in the cabin. Moving air makes a warm space feel cooler.",
+              "context": "The pilot uses it on the ground and in warm weather."
+            },
+            {
+              "id": "radio-master",
+              "name": "Radio master and emergency radio switches",
+              "type": "switch",
+              "match": [
+                "RadioMaster_Switch*",
+                "RadioEmerg_Switch*"
+              ],
+              "text": "The radio master switch gives power to the radios. The emergency radio switch turns on a radio for emergencies. The simulator says only the names.",
+              "context": "The pilot switches the radio master on with the other avionics."
+            },
+            {
+              "id": "standby-power",
+              "name": "Standby / external power and bus switches",
+              "type": "switch",
+              "match": [
+                "ext_stby_pwr_switch*",
+                "stby_push*",
+                "bus?_switch*",
+                "power_switch_cover*"
+              ],
+              "text": "These switches select the standby power or the external power for a group of electric lines (a bus), and a cover protects the power switch. The simulator says only the names.",
+              "context": "The pilots use them on the ground and when the normal power fails."
+            },
+            {
+              "id": "glider-instruments",
+              "name": "VSI and ACD instrument buttons",
+              "type": "button",
+              "match": [
+                "VSI_V*",
+                "ACD*_*"
+              ],
+              "text": "These are the small buttons of an instrument unit. VSI is a vertical speed indicator, which shows how fast the aircraft climbs or sinks. The buttons change what the unit shows.",
+              "context": "The pilot uses them to change the display mode of the instrument."
+            },
+            {
+              "id": "ovhd-switches",
+              "name": "Overhead panel switches",
+              "type": "switch",
+              "match": [
+                "ovhd_*",
+                "Btn_ovh_*",
+                "push_ovhd_*",
+                "Dummy_handle_ovhd*",
+                "Dummy_*ovhd*",
+                "ovhd?_*",
+                "Cover_*",
+                "UP_Cover*",
+                "bus?_switch*",
+                "power_switch_cover*",
+                "ext_stby_pwr_switch*",
+                "emer_switch*",
+                "emer_cover*",
+                "stby_push*",
+                "Master_Switch*",
+                "Master_Cover*",
+                "RadioMaster_Switch*",
+                "RadioEmerg_Switch*",
+                "FCUSense_Switch*",
+                "Interrupt_*",
+                "StabTrim_Switch*",
+                "stabtrim_*",
+                "cockpit_fan_switch*",
+                "cabin_fan_switch*",
+                "CockpitFan_Switch*"
+              ],
+              "text": "These are the switches, push buttons and guard covers of the overhead panel and its neighbours: power buses, the standby power, the emergency radio, the stabilizer trim cut-out and fans. The name tells which system a part belongs to, and a cover protects the switch beneath it.",
+              "context": "The pilots set them in the start-up routine and use them for emergencies. Some switches matter only when something fails."
+            },
+            {
+              "id": "hydraulics",
+              "name": "Hydraulic pump and demand controls",
+              "type": "switch",
+              "match": [
+                "HYDRAULIC_*",
+                "HYDRAULICS_*"
+              ],
+              "text": "Hydraulics are oil under high pressure that moves heavy parts of the aircraft, such as the gear, the flaps and the control surfaces. These switches turn the hydraulic pumps on and off and set how much they deliver.",
+              "context": "The pilots check the hydraulic pumps before the flight and watch them if a pressure warning appears."
+            },
+            {
+              "id": "airliner-elec",
+              "name": "Airliner electrical push buttons (bus, drive, connection)",
+              "type": "button",
+              "match": [
+                "ELECTRICAL_Push_*",
+                "ELECTRICAL_Switch_Connection*",
+                "ELECTRICAL_Switch_Starter*",
+                "ELECTRICAL_Switch_Bus*"
+              ],
+              "text": "These buttons and switches connect the generators and the electric lines (buses) of a large aircraft with each other, and connect the drive of a generator to its engine. A button with a lit part shows its state.",
+              "context": "The pilots set them in the start-up routine, and use them to isolate a faulty part if a generator or a bus fails."
+            },
+            {
+              "id": "airliner-fuel",
+              "name": "Airliner fuel pump and valve buttons",
+              "type": "button",
+              "match": [
+                "FUEL_Push_*",
+                "FUEL_Switch_*"
+              ],
+              "text": "On a large aircraft each fuel tank has its own pumps and valves, switched by push buttons. Other buttons transfer fuel between the tanks or let fuel out in an emergency.",
+              "context": "The pilots turn the pumps on before the engine start and manage the tanks in flight so that the aircraft stays balanced."
+            },
+            {
+              "id": "airliner-engine",
+              "name": "Engine master, reverse and mode controls",
+              "type": "switch",
+              "match": [
+                "ENGINE_SWITCH_*",
+                "ENGINE_Switch_*",
+                "ENGINE_Push_*",
+                "ENGINE_Handle_*",
+                "ENGINE_Lever_*",
+                "ECU_*",
+                "DA??_*",
+                "LEVER_THROTTLE_HANDLE*",
+                "Dummy_ENGINE*",
+                "ENGINESTART_*",
+                "Prop_*"
+              ],
+              "text": "These controls belong to the engines of the aircraft: the master switch of an engine, the reverse thrust that slows the aircraft after landing, the engine computer mode and the coolant. The name says the exact part.",
+              "context": "The pilots use them in the engine start and the landing. Which controls exist depends on the engines."
+            },
+            {
+              "id": "airliner-air",
+              "name": "Air conditioning, passenger and cabin panels",
+              "type": "switch",
+              "match": [
+                "ACPanel_*",
+                "ACPANEL_*",
+                "PASSENGER_*",
+                "PASSENGERS_*",
+                "LIGHTING_Push_Cabin*",
+                "LIGHTING_Switch_Overhead_Passenger*",
+                "LIGHTING_Switch_Landing*",
+                "LIGHTING_Knob_Cockpit*",
+                "LIGHTING_Push_*"
+              ],
+              "text": "These controls set the air conditioning and the temperature of the cockpit, cabin and cargo, and switch the seat belt signs and the cabin and cockpit lights.",
+              "context": "The pilots set the cabin temperature early in the flight and the signs for take-off and landing."
+            },
+            {
+              "id": "fire",
+              "name": "Fire handles and shut-off",
+              "type": "handle",
+              "match": [
+                "Dummy_handle_ovhd_fire*",
+                "*fire_protect*",
+                "*Fire*"
+              ],
+              "text": "Fire handles and buttons shut off the fuel and the power of an engine or compartment that is on fire, and fire the extinguisher. The part sits under a cover in most aircraft.",
+              "context": "The pilots use them only in a fire emergency, following the checklist."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "simulator",
+      "where": "other",
+      "name": "Simulator helpers and printed labels",
+      "text": "Not everything in a cockpit model is a real control. Some parts are printed labels, invisible click areas, small decoration pieces or animation helpers of the simulator.",
+      "panels": [
+        {
+          "id": "sim-helpers",
+          "name": "Labels, helper areas and decoration",
+          "src": "g1",
+          "text": "Parts that exist for the simulator and not for the pilot: printed labels (decals), larger invisible click areas (helpers), animation parts and screws.",
+          "context": "A real aircraft has no such controls. In the simulator they make a control easier to click or to see.",
+          "controls": [
+            {
+              "id": "decal",
+              "name": "Decal / label (printed text)",
+              "type": "other",
+              "match": [
+                "DECAL_*",
+                "Decals_*",
+                "Label_*",
+                "LABEL_*",
+                "decal_*"
+              ],
+              "text": "A decal is a printed label stuck on the panel. It tells the pilot what a nearby switch or lever is for and has no function of its own.",
+              "context": "It only helps reading the panel. The control next to it does the work."
+            },
+            {
+              "id": "helper-area",
+              "name": "Helper click area",
+              "type": "other",
+              "match": [
+                "HELPER_*",
+                "*_helper",
+                "*_helper_*",
+                "Door_Handle_Helper*"
+              ],
+              "text": "A helper is an invisible or larger area around a control that makes it easier to click with the mouse. It belongs to the control of the same name.",
+              "context": "It is a convenience of the simulator, not a part of a real aircraft."
+            },
+            {
+              "id": "seq-part",
+              "name": "Animation / sequence part",
+              "type": "other",
+              "match": [
+                "*_SEQ*",
+                "*_LED_*"
+              ],
+              "text": "A part with SEQ in its name belongs to the animation of the button or switch of the same name. A part with LED in its name is the small lamp of a button.",
+              "context": "It is part of the model of the control and has no job of its own."
+            },
+            {
+              "id": "hardware-parts",
+              "name": "Washers, screws and brackets",
+              "type": "other",
+              "match": [
+                "Washer_*",
+                "Screw*",
+                "Lever_top_handle*",
+                "SKEL_*",
+                "Skel_*"
+              ],
+              "text": "These are decoration pieces of the cockpit model, such as washers, screws, the handle of a lever or parts of the cable and bones that move a lever. They make the model look right.",
+              "context": "They are not controls. Some belong to a lever and move with it."
+            },
+            {
+              "id": "sim-dummy",
+              "name": "Dummy and empty parts",
+              "type": "other",
+              "match": [
+                "Dummy_*",
+                "Empty_*",
+                "Tablet_Button*"
+              ],
+              "text": "A dummy is a placeholder part in the model, often standing in for an instrument or a control. An empty instrument is a gauge without a function of its own. A tablet button belongs to the tablet that some cockpits show.",
+              "context": "They help the model work in the simulator. A dummy is not a control of its own."
+            },
+            {
+              "id": "coded-names",
+              "name": "Parts with a short code name",
+              "type": "other",
+              "match": [
+                "RR_*",
+                "EX_Switch*",
+                "FE?_*",
+                "FES_*"
+              ],
+              "text": "The simulator names these parts with a short code such as RR or FE and a number, and does not explain it. They are selectors, knobs or switches of the cockpit model.",
+              "context": "The code is all that is known; the cockpit picture shows where the part sits."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "other-by-name",
+      "where": "other",
+      "name": "Other parts by name",
+      "text": "The simulator has more cockpit parts than the panels above describe. They are listed here by the first word of their name. The name tells which part it is; what it does depends on the aircraft.",
+      "panels": [
+        {
+          "id": "other-systems",
+          "name": "Other cockpit parts by system name",
+          "src": "g1",
+          "text": "Each entry stands for the parts whose name starts with the system word shown. Open the aircraft's own guide or look at the part for what it does exactly.",
+          "context": "The first word of a node name is the system: ELECTRICAL for electricity, LIGHTING for lights, FUEL for fuel and so on. A second word says if it is a Switch, Knob, Lever or Push button.",
+          "controls": [
+            {
+              "id": "other-elec",
+              "name": "Other electrical parts",
+              "type": "switch",
+              "match": [
+                "ELECTRICAL_*",
+                "ELECTRICPOWER_*",
+                "Skel_ELECTRICAL*",
+                "sk_switch_*",
+                "power_*"
+              ],
+              "text": "The simulator names these parts after the electrical system. The rest of the name says what it is, for example a switch, a bus, a breaker, a starter or a cover.",
+              "context": "They sit on the electrical panel of the aircraft."
+            },
+            {
+              "id": "other-lighting",
+              "name": "Other lighting parts",
+              "type": "knob",
+              "match": [
+                "LIGHTING_*"
+              ],
+              "text": "The simulator names these parts after the lights. The rest of the name says which lights: panel, cabin, instruments, a screen or an outside light.",
+              "context": "Light knobs usually dim a group of lights; light switches turn a lamp on or off."
+            },
+            {
+              "id": "other-fuel",
+              "name": "Other fuel parts",
+              "type": "switch",
+              "match": [
+                "FUEL_*"
+              ],
+              "text": "The simulator names these parts after the fuel system: pumps, valves, selectors and levers for the tanks.",
+              "context": "They sit on the fuel panel of the aircraft."
+            },
+            {
+              "id": "other-engine",
+              "name": "Other engine parts",
+              "type": "switch",
+              "match": [
+                "ENGINE_*",
+                "MV_ENGINE_*"
+              ],
+              "text": "The simulator names these parts after the engine: levers, switches and push buttons for the engine start, the power and the engine settings.",
+              "context": "The pilot uses them to start the engine and to set its power."
+            },
+            {
+              "id": "other-deice",
+              "name": "Other ice protection parts",
+              "type": "switch",
+              "match": [
+                "DEICE_*",
+                "DEICESYSTEM_*"
+              ],
+              "text": "The simulator names these parts after the ice protection: heaters and de-icing for the wings, the engine, the propeller and the probes.",
+              "context": "The pilot uses them when flying in cold, wet air."
+            },
+            {
+              "id": "other-nav",
+              "name": "Other navigation and communication parts",
+              "type": "knob",
+              "match": [
+                "COM_*",
+                "NAV_*",
+                "COMNAV_*",
+                "NAVCOM_*",
+                "ADF_*",
+                "KX*",
+                "TRANSPONDER_*",
+                "atc_*",
+                "AUDIO*"
+              ],
+              "text": "The simulator names these parts after the radios: communication, navigation, the direction finder and the transponder.",
+              "context": "The pilot uses them to tune the radios and to choose which radio is heard or spoken on."
+            },
+            {
+              "id": "other-ap",
+              "name": "Other autopilot parts",
+              "type": "button",
+              "match": [
+                "AUTOPILOT_*",
+                "Autopilot_*",
+                "KNOB_*",
+                "PUSH_*",
+                "HEADING_*",
+                "AIRLINER_*"
+              ],
+              "text": "The simulator names these parts after the autopilot: buttons, knobs and selectors for its modes and numbers.",
+              "context": "The pilot uses them to tell the autopilot what to fly."
+            },
+            {
+              "id": "other-handling",
+              "name": "Other handling parts",
+              "type": "lever",
+              "match": [
+                "HANDLING_*",
+                "HH?_*",
+                "Support_*",
+                "YOKE_*",
+                "yoke_*",
+                "LANDING_*",
+                "PARKBRAKE_*",
+                "Mag_*",
+                "rear_*",
+                "front_*",
+                "Window_*"
+              ],
+              "text": "The simulator names these parts after the handling of the aircraft: flaps, trim, brakes, the yoke, the gear and the handles.",
+              "context": "The pilot uses them to fly and to move the aircraft on the ground."
+            },
+            {
+              "id": "other-cabin",
+              "name": "Other cabin and air parts",
+              "type": "switch",
+              "match": [
+                "PASSENGER*",
+                "PRESSURIZATION_*",
+                "SAFETY_*",
+                "AC_*",
+                "AIR_*",
+                "DOOR*",
+                "Door*",
+                "CANOPY*",
+                "TOPNOPANEL_*",
+                "INSTRUMENT_*",
+                "ELT_*",
+                "annunciator_*",
+                "window*",
+                "WINDOW*"
+              ],
+              "text": "The simulator names these parts after the cabin, the air, the safety equipment and the instruments.",
+              "context": "The pilot uses them for the comfort and the safety of the flight."
+            },
+            {
+              "id": "single-names",
+              "name": "Parts of single aircraft (named by their own name)",
+              "type": "other",
+              "match": [
+                "DC*_*",
+                "sk_*",
+                "vent_knob_*",
+                "throttle_switch_low",
+                "switch_fuel_valve_cover",
+                "sperry_*",
+                "btn_Lever_*",
+                "Tug_Boat*",
+                "Trip_Lever",
+                "Tailwheel_*",
+                "Switch_toggle_catapult",
+                "Switch_ENG_CRANK*",
+                "SkiControl_*",
+                "SWITCH_Clutch_Cover",
+                "Rudder_Knob",
+                "Receptacle_Switch",
+                "RADIO_Push_*",
+                "Pump_Housing_Guard",
+                "Oil_cooling_flaps_*",
+                "NYP_*",
+                "Misc_Buttons",
+                "LIGHTIN_Knob_*",
+                "LB_SWITCH_*",
+                "Head_Temp_Switch",
+                "HOTAIRFLOW_KNOB",
+                "Flare_Selectors_*",
+                "EMERGENCY_PUSH_*",
+                "Constraints_switchs",
+                "CREWMUSIC_*",
+                "BolsterPanel_*",
+                "APTRIMS_*",
+                "AH_DC*",
+                "A*_Switch_Power*"
+              ],
+              "text": "These parts exist in one or two aircraft only. The simulator gives each a name that tells what it is, for example a vent knob, a ski control, a catapult switch or a test button, and nothing more. The guide cannot say more for sure.",
+              "context": "Look at the part in the cockpit picture; the name on the callout is the simulator's own."
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

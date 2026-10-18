@@ -1,0 +1,1682 @@
+{
+  "format": "joypro-cockpit-guide",
+  "version": 1,
+  "id": "dcs-ah-64d.part4",
+  "partOf": "dcs-ah-64d",
+  "areas": [
+    {
+      "id": "cpg-left-console",
+      "where": "left-console",
+      "name": "CPG left console",
+      "seat": 2,
+      "text": "The panel beside the CPG's left leg. It has the power levers, the lights, the emergency buttons and the stores jettison buttons.",
+      "panels": [
+        {
+          "id": "cpg-power-quadrant",
+          "name": "Power quadrant panel (CPG seat)",
+          "db": "power-quadrant-panel-cpg",
+          "src": "m1",
+          "page": "126",
+          "text": "The CPG has only the two ENG POWER levers of the power quadrant. They control the fuel of each engine, like gas pedals.",
+          "context": "They are linked to the pilot's levers: when one crew member moves a lever, the same lever in the other seat moves too.",
+          "controls": [
+            {
+              "id": "eng-power-levers",
+              "name": "ENG POWER levers (CPG)",
+              "type": "lever",
+              "match": [
+                "pnt_628",
+                "pnt_629",
+                "item:power-quadrant-panel-cpg:1",
+                "control:panel.lever.power"
+              ],
+              "text": "These two levers set the fuel flow of each engine, as in the rear seat. OFF is no fuel, IDLE is the engine running slowly, FLY is the normal flight setting.",
+              "context": "To move a lever past a detent, the CPG's finger-lift catch needs electrical power in the helicopter, because it works through electrical switches.",
+              "positions": [
+                {
+                  "name": "OFF",
+                  "text": "No fuel goes to the engine."
+                },
+                {
+                  "name": "IDLE",
+                  "text": "The engine runs at idle."
+                },
+                {
+                  "name": "FLY",
+                  "text": "The normal flight position: the computer regulates the engine."
+                },
+                {
+                  "name": "LOCK OUT",
+                  "text": "Emergency position: the computer is bypassed and the engine is controlled by hand."
+                }
+              ],
+              "src": "m1",
+              "page": "126"
+            }
+          ]
+        },
+        {
+          "id": "cpg-tail-wheel-nvs",
+          "name": "Tail wheel / NVS mode panel (CPG seat)",
+          "db": "tail-wheel-nvs-mode-panel",
+          "src": "m1",
+          "page": "115",
+          "text": "This panel has two controls: the lock of the little tail wheel and the mode of the night vision system for this seat.",
+          "context": "The tail wheel is locked for take-off and landing so the helicopter rolls straight. The CPG (copilot/gunner) uses the night vision mode when the picture from the nose cameras is shown in the helmet display.",
+          "controls": [
+            {
+              "id": "tail-wheel",
+              "name": "TAIL WHEEL button (lock / unlock)",
+              "type": "button",
+              "match": [
+                "pnt_362",
+                "item:tail-wheel-nvs-mode-panel:1"
+              ],
+              "text": "This button locks or unlocks the tail wheel. A light says UNLOCK while the wheel is free to swivel. This entry is for the CPG's tail wheel and night vision panel.",
+              "context": "A locked wheel keeps the tail straight on a take-off or landing run; unlocked it can swivel for turning on the ground. There is a button with the same job on the collective lever. This is the CPG seat copy; the pilot in the rear seat has an own one.",
+              "src": "m1",
+              "page": "115"
+            },
+            {
+              "id": "nvs-mode",
+              "name": "NVS MODE switch (night vision sensor)",
+              "type": "switch3",
+              "match": [
+                "pnt_363",
+                "item:tail-wheel-nvs-mode-panel:2"
+              ],
+              "text": "This switch turns the night vision camera of this seat on and chooses how it points. The camera chosen by default for this seat is the TADS (the targeting camera in the nose).",
+              "context": "NVS means night vision system. The picture is shown on the helmet display (the small screen in front of one eye). It belongs to the CPG's tail wheel and night vision panel.",
+              "positions": [
+                {
+                  "name": "FIXED",
+                  "text": "The camera is switched on and looks straight ahead and slightly down, whatever the head does."
+                },
+                {
+                  "name": "NORM",
+                  "text": "The camera follows where the helmet looks."
+                },
+                {
+                  "name": "OFF",
+                  "text": "The camera is switched off and stowed."
+                }
+              ],
+              "src": "m1",
+              "page": "115"
+            }
+          ]
+        },
+        {
+          "id": "cpg-emergency-panel",
+          "name": "Emergency panel (CPG seat)",
+          "db": "emergency-panel",
+          "src": "m1",
+          "page": "116",
+          "text": "This panel puts four emergency actions on single buttons, so the crew does not need to hunt through screen pages. In DCS none of the four does anything yet.",
+          "context": "Each is meant for an emergency: calling on the emergency radio frequency, sending the emergency transponder code, wiping secret data and getting emergency hydraulic pressure. The CPG (copilot/gunner) would reach for them only in trouble.",
+          "controls": [
+            {
+              "id": "guard-button",
+              "name": "GUARD button",
+              "type": "button",
+              "match": [
+                "pnt_358",
+                "item:emergency-panel:1"
+              ],
+              "text": "This button is meant to tune the UHF radio to the guard frequency, 243.000 MHz, the standard emergency channel. In DCS the manual lists it as not implemented. This entry is for the CPG's emergency panel.",
+              "context": "An ON light would show the button has been pressed in either seat. It belongs to the CPG's emergency panel.",
+              "src": "m1",
+              "page": "116"
+            },
+            {
+              "id": "xpndr-button",
+              "name": "XPNDR button (transponder emergency)",
+              "type": "button",
+              "match": [
+                "pnt_359",
+                "item:emergency-panel:2"
+              ],
+              "text": "This button is meant to set the transponder to the emergency code 7700. A transponder is the radio box that answers radar questions with a code number. In DCS it is not implemented. This entry is for the CPG's emergency panel.",
+              "context": "The code 7700 tells air traffic control that the aircraft has an emergency. It belongs to the CPG's emergency panel.",
+              "src": "m1",
+              "page": "116"
+            },
+            {
+              "id": "zeroize-switch",
+              "name": "ZEROIZE switch",
+              "type": "switch2",
+              "match": [
+                "pnt_360",
+                "item:emergency-panel:3"
+              ],
+              "text": "This switch is meant to erase the secret radio codes and stored map points, so an enemy cannot use them. In DCS it is not implemented. This entry is for the CPG's emergency panel.",
+              "context": "It is for the case that the helicopter is forced down in hostile territory. It belongs to the CPG's emergency panel.",
+              "positions": [
+                {
+                  "name": "ON",
+                  "text": "Meant to start the erasing of codes and stored points; not implemented in DCS."
+                },
+                {
+                  "name": "OFF",
+                  "text": "Normal position."
+                }
+              ],
+              "src": "m1",
+              "page": "116"
+            },
+            {
+              "id": "emerg-hyd",
+              "name": "EMERG HYD button (emergency hydraulics)",
+              "type": "button",
+              "match": [
+                "pnt_361",
+                "item:emergency-panel:4"
+              ],
+              "text": "This button is meant to switch on emergency hydraulic pressure. Hydraulics is oil under high pressure that moves the heavy parts. In DCS it is not implemented. This entry is for the CPG's emergency panel.",
+              "context": "In real life it would give pressure for a very short time to make an emergency landing. It belongs to the CPG's emergency panel.",
+              "src": "m1",
+              "page": "116"
+            }
+          ]
+        },
+        {
+          "id": "cpg-stores-jettison",
+          "name": "Stores jettison panel (CPG seat)",
+          "db": "stores-jettison-panel",
+          "src": "m1",
+          "page": "119",
+          "text": "This panel lets the crew drop weapons from chosen wing stations in an emergency, to make the helicopter lighter or to get rid of a hung weapon.",
+          "context": "Each station button arms one wing station for dropping. Then the JETT button drops all armed stations. Only the seat that armed a station can disarm it; either seat can press JETT.",
+          "controls": [
+            {
+              "id": "jett-stations",
+              "name": "Station buttons L/R OUTBD and INBD",
+              "type": "button",
+              "match": [
+                "pnt_368",
+                "pnt_369",
+                "pnt_370",
+                "pnt_371",
+                "item:stores-jettison-panel:1",
+                "item:stores-jettison-panel:2",
+                "item:stores-jettison-panel:3",
+                "item:stores-jettison-panel:4"
+              ],
+              "text": "These four buttons stand for four weapon stations on the wings: left outboard, left inboard, right inboard and right outboard. Pressing one arms or disarms that station for dropping; a light on the button shows it is armed. This entry is for the CPG's stores jettison panel.",
+              "context": "Outboard means farther out along the wing.",
+              "count": 4,
+              "src": "m1",
+              "page": "119"
+            },
+            {
+              "id": "jett-tips",
+              "name": "L TIP and R TIP buttons",
+              "type": "button",
+              "match": [
+                "pnt_372",
+                "pnt_374",
+                "item:stores-jettison-panel:5",
+                "item:stores-jettison-panel:7"
+              ],
+              "text": "These two buttons for the wing tips are on the panel but have no function. This entry is for the CPG's stores jettison panel.",
+              "context": "The manual says so explicitly.",
+              "count": 2,
+              "src": "m1",
+              "page": "119"
+            },
+            {
+              "id": "jett-button",
+              "name": "JETT button (jettison)",
+              "type": "button",
+              "match": [
+                "pnt_373",
+                "item:stores-jettison-panel:6"
+              ],
+              "text": "Pressing this button drops the weapons from all stations that were armed with the station buttons. This entry is for the CPG's stores jettison panel.",
+              "context": "Unlike the guarded emergency jettison button on the collective lever, which drops everything, this one drops only the chosen stations. It belongs to the CPG's stores jettison panel.",
+              "src": "m1",
+              "page": "119"
+            }
+          ]
+        },
+        {
+          "id": "cpg-interior-lighting",
+          "name": "Interior lighting panel (CPG seat)",
+          "db": "interior-lighting-panel-cpg",
+          "src": "m1",
+          "page": "126",
+          "text": "This panel sets the lights inside the CPG cockpit and has a test button for the signal lights.",
+          "context": "It is the front-seat counterpart of the pilot's lighting panel, without the lights outside the helicopter.",
+          "controls": [
+            {
+              "id": "signal-knob",
+              "name": "SIGNAL knob (CPG)",
+              "type": "knob",
+              "match": [
+                "pnt_364",
+                "item:interior-lighting-panel-cpg:1"
+              ],
+              "text": "This knob sets the brightness of the small warning and status lights in the cockpit at night. It does nothing while they are set to day brightness. This entry is for the CPG's lighting panel.",
+              "context": "Turning it to RST sets the night levels, if the PRIMARY knob is not OFF and the FLOOD knob is below half. It belongs to the CPG's lighting panel.",
+              "src": "m1",
+              "page": "126"
+            },
+            {
+              "id": "primary-knob",
+              "name": "PRIMARY knob (CPG)",
+              "type": "knob",
+              "match": [
+                "pnt_365",
+                "item:interior-lighting-panel-cpg:2"
+              ],
+              "text": "This knob sets the brightness of the lights behind the instrument markings in the front seat. Turned to OFF it sends the signal lights back to day brightness.",
+              "context": "It is used at night together with the flood light.",
+              "src": "m1",
+              "page": "126"
+            },
+            {
+              "id": "flood-knob",
+              "name": "FLOOD knob (CPG)",
+              "type": "knob",
+              "match": [
+                "pnt_366",
+                "item:interior-lighting-panel-cpg:3"
+              ],
+              "text": "This knob sets the brightness of the flood lights that light the front cockpit. Turned beyond half it sends the signal lights back to day brightness.",
+              "context": "It lights the cockpit as a whole, while the PRIMARY knob lights the instrument markings. It belongs to the CPG's lighting panel.",
+              "src": "m1",
+              "page": "126"
+            },
+            {
+              "id": "press-to-test",
+              "name": "PRESS TO TEST button (CPG)",
+              "type": "button",
+              "match": [
+                "pnt_367",
+                "item:interior-lighting-panel-cpg:4"
+              ],
+              "text": "Pressing this button lights up all the signal lights of the front seat at once, so the CPG can see that none is burned out.",
+              "context": "It is a quick check of the warning lights.",
+              "src": "m1",
+              "page": "126"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "cpg-right-console",
+      "where": "right-console",
+      "name": "CPG right console",
+      "seat": 2,
+      "text": "The panel beside the CPG's right leg. It holds the communications panel, the wiper, the processor select switch and some fittings.",
+      "panels": [
+        {
+          "id": "cpg-communications-panel",
+          "name": "Communications panel (CPG seat)",
+          "db": "communications-panel",
+          "src": "m1",
+          "page": "121",
+          "text": "This panel sets how loud each radio and warning voice is in the helmet of the CPG (copilot/gunner), and how the intercom microphone works.",
+          "context": "The intercom is the phone line between the two crew members. The radios are for talking to other aircraft and ground units. Each seat has its own panel, so each crew member sets own volumes.",
+          "controls": [
+            {
+              "id": "radio-volume",
+              "name": "Radio volume knobs VHF, UHF, FM1, FM2, HF",
+              "type": "knob",
+              "match": [
+                "pnt_375",
+                "pnt_376",
+                "pnt_377",
+                "pnt_378",
+                "pnt_379",
+                "item:communications-panel:1",
+                "item:communications-panel:2",
+                "item:communications-panel:3",
+                "item:communications-panel:4",
+                "item:communications-panel:5"
+              ],
+              "text": "Each of these five knobs sets how loud one radio sounds in the headset of the CPG (copilot/gunner). Turning clockwise makes it louder; pulling the knob outward mutes that radio.",
+              "context": "The five radios are named VHF, UHF, FM1, FM2 and HF. Pulling a knob out also removes the monitoring mark of that radio on the EUFD. It belongs to the CPG's communications panel.",
+              "count": 5,
+              "src": "m1",
+              "page": "121"
+            },
+            {
+              "id": "squelch-switches",
+              "name": "SQL squelch switches (VHF, UHF, FM1, FM2, HF)",
+              "type": "switch",
+              "match": [
+                "pnt_380",
+                "pnt_381",
+                "pnt_382",
+                "pnt_383",
+                "pnt_384",
+                "item:communications-panel:6"
+              ],
+              "text": "Squelch cuts the hiss of a radio when nobody talks. Each of these five switches turns the squelch of one radio on or off. An asterisk on the EUFD marks the radios with squelch on. This entry is for the CPG's communications panel.",
+              "context": "A tap forward or aft toggles it. The setting is shown on the EUFD in both seats. It belongs to the CPG's communications panel.",
+              "count": 5,
+              "src": "m1",
+              "page": "122"
+            },
+            {
+              "id": "sens-knob",
+              "name": "SENS knob (voice activation sensitivity)",
+              "type": "knob",
+              "match": [
+                "pnt_386",
+                "item:communications-panel:7"
+              ],
+              "text": "This knob sets how loudly a person must speak before the microphone switches on by itself. It matters only in the VOX setting of the ICS switch. This entry is for the CPG's communications panel.",
+              "context": "Turning it clockwise makes the microphone react to a quieter voice. It belongs to the CPG's communications panel.",
+              "src": "m1",
+              "page": "122"
+            },
+            {
+              "id": "master-volume",
+              "name": "MASTER volume knob",
+              "type": "knob",
+              "match": [
+                "pnt_385",
+                "item:communications-panel:8"
+              ],
+              "text": "This knob sets the overall loudness of everything in the helmet. Turn it clockwise for louder. This entry is for the CPG's communications panel.",
+              "context": "It works on top of the single volume knobs.",
+              "src": "m1",
+              "page": "122"
+            },
+            {
+              "id": "ics-mode",
+              "name": "ICS mode switch (intercom microphone)",
+              "type": "switch3",
+              "match": [
+                "pnt_387",
+                "item:communications-panel:9"
+              ],
+              "text": "This switch decides when the microphone of this seat is open on the intercom. This entry is for the CPG's communications panel.",
+              "context": "PTT stands for push-to-talk. The switch on the cyclic stick does the pushing. It belongs to the CPG's communications panel.",
+              "positions": [
+                {
+                  "name": "PTT",
+                  "text": "The microphone is only on while the push-to-talk switch (or the floor button) is pressed."
+                },
+                {
+                  "name": "VOX",
+                  "text": "The microphone switches on by itself when the voice is loud enough, or while push-to-talk is pressed."
+                },
+                {
+                  "name": "HOT MIC",
+                  "text": "The microphone is always on."
+                }
+              ],
+              "src": "m1",
+              "page": "122"
+            },
+            {
+              "id": "ident-button",
+              "name": "IDENT button",
+              "type": "button",
+              "match": [
+                "pnt_388",
+                "item:communications-panel:10"
+              ],
+              "text": "This button is meant to make the helicopter stand out on an air traffic radar for a moment by its transponder. In DCS it is not implemented. This entry is for the CPG's communications panel.",
+              "context": "The transponder is the radio box that answers radar questions with a code. It belongs to the CPG's communications panel.",
+              "src": "m1",
+              "page": "122"
+            },
+            {
+              "id": "iff-volume",
+              "name": "IFF volume knob",
+              "type": "knob",
+              "match": [
+                "pnt_389",
+                "item:communications-panel:11"
+              ],
+              "text": "This knob would set the volume of the sound from the IFF, the system that answers friend-or-foe questions. In DCS it is not implemented. This entry is for the CPG's communications panel.",
+              "context": "The manual lists it as not implemented.",
+              "src": "m1",
+              "page": "122"
+            },
+            {
+              "id": "rlwr-volume",
+              "name": "RLWR volume knob",
+              "type": "knob",
+              "match": [
+                "pnt_390",
+                "item:communications-panel:12"
+              ],
+              "text": "This knob sets the volume of the spoken warnings from the radar and laser warning receiver. Turn it clockwise for louder. This entry is for the CPG's communications panel.",
+              "context": "The receiver tells the crew when an enemy radar or laser looks at the helicopter. It belongs to the CPG's communications panel.",
+              "src": "m1",
+              "page": "122"
+            },
+            {
+              "id": "ata-volume",
+              "name": "ATA volume knob",
+              "type": "knob",
+              "match": [
+                "pnt_391",
+                "item:communications-panel:13"
+              ],
+              "text": "This knob is on the panel but has no function in the game.",
+              "context": "The manual says that this knob has no function.",
+              "src": "m1",
+              "page": "122"
+            },
+            {
+              "id": "vcr-volume",
+              "name": "VCR volume knob",
+              "type": "knob",
+              "match": [
+                "pnt_392",
+                "item:communications-panel:14"
+              ],
+              "text": "This knob would set the sound level of a video recorder playback. Pulling it would mute it. In DCS it is not implemented. This entry is for the CPG's communications panel.",
+              "context": "The manual lists it as not implemented.",
+              "src": "m1",
+              "page": "122"
+            },
+            {
+              "id": "adf-volume",
+              "name": "ADF volume knob",
+              "type": "knob",
+              "match": [
+                "pnt_393",
+                "item:communications-panel:15"
+              ],
+              "text": "This knob sets the volume of the ADF audio, the radio that points to ground beacons. On this helicopter that audio channel also carries the spoken alerts of the missile warning system. Pulling it mutes. This entry is for the CPG's communications panel.",
+              "context": "The CMWS/NAV switch on the CMWS panel decides whether this channel carries the beacon sound or the missile alerts. It belongs to the CPG's communications panel.",
+              "src": "m1",
+              "page": "122"
+            }
+          ]
+        },
+        {
+          "id": "cpg-windshield-wiper",
+          "name": "Windshield wiper and defog panel (CPG seat)",
+          "db": "windshield-wiper-panel",
+          "src": "m1",
+          "page": "127",
+          "text": "This panel has the wiper for the windshield (the front window) and a defog button for misted canopy side windows.",
+          "context": "It is used in rain or when the windows fog up. In DCS the defog button is not implemented.",
+          "controls": [
+            {
+              "id": "defog-button",
+              "name": "DEFOG button",
+              "type": "button",
+              "match": [
+                "pnt_394",
+                "item:windshield-wiper-panel:1"
+              ],
+              "text": "This button is meant to blow warm air against the canopy side windows to clear fog. In DCS it is not implemented. This entry is for the CPG's wiper panel.",
+              "context": "The manual lists it as not implemented.",
+              "src": "m1",
+              "page": "112"
+            },
+            {
+              "id": "wiper-knob",
+              "name": "WINDSHIELD WIPER knob",
+              "type": "selector",
+              "match": [
+                "pnt_395",
+                "item:windshield-wiper-panel:2"
+              ],
+              "text": "This knob switches the windshield wiper off, to low or to high speed, or sends it back to its parking place. This entry is for the CPG's wiper panel.",
+              "context": "The CPG (copilot/gunner) uses it in rain. Holding it at PARK moves the wiper to its rest position, and the knob springs back to OFF when let go.",
+              "positions": [
+                {
+                  "name": "PARK",
+                  "text": "Hold to move the wiper to its parking place; the knob springs back to OFF."
+                },
+                {
+                  "name": "OFF",
+                  "text": "The wiper stops where it is."
+                },
+                {
+                  "name": "LO",
+                  "text": "The wiper moves slowly."
+                },
+                {
+                  "name": "HI",
+                  "text": "The wiper moves fast."
+                }
+              ],
+              "src": "m1",
+              "page": "112"
+            }
+          ]
+        },
+        {
+          "id": "cpg-processor-select",
+          "name": "Processor select panel (CPG seat)",
+          "db": "processor-select-panel",
+          "src": "m1",
+          "page": "127",
+          "text": "This panel chooses which of the two system processors, the helicopter's main computers, is in charge. In DCS it is not implemented.",
+          "context": "It is a safety feature: a second computer can take over if the first one fails.",
+          "controls": [
+            {
+              "id": "processor-select",
+              "name": "PROCESSOR SELECT switch (SP 1 / AUTO / SP 2)",
+              "type": "switch3",
+              "match": [
+                "pnt_397",
+                "item:processor-select-panel:1",
+                "item:processor-select-panel:2"
+              ],
+              "text": "This switch picks the primary computer: SP1 or SP2 by hand, or AUTO to let the helicopter switch over by itself if the primary one fails. Two lights show which is primary. In DCS it is not implemented.",
+              "context": "The manual lists the whole panel as not implemented.",
+              "positions": [
+                {
+                  "name": "SP 1",
+                  "text": "Chooses system processor 1 as the primary computer."
+                },
+                {
+                  "name": "AUTO",
+                  "text": "The helicopter switches over by itself if the primary computer fails."
+                },
+                {
+                  "name": "SP 2",
+                  "text": "Chooses system processor 2 as the primary computer."
+                }
+              ],
+              "src": "m1",
+              "page": "127"
+            }
+          ]
+        },
+        {
+          "id": "cpg-cockpit-fittings",
+          "name": "Canopy door, M4 rifle and stick folding (CPG seat)",
+          "src": "m1",
+          "page": "127",
+          "text": "These are fittings of the front cockpit that the game lets you click: the canopy door, an M4 rifle and a stick folding switch.",
+          "context": "None of them is a flight system. The manual does not describe the rifle controls or the stick folding switch.",
+          "controls": [
+            {
+              "id": "cpg-canopy",
+              "name": "CPG canopy door (open / close)",
+              "type": "switch2",
+              "match": [
+                "pnt_799"
+              ],
+              "text": "This opens or closes the canopy door next to the CPG, the glass door used to climb in.",
+              "context": "The EUFD can show an advisory message when the canopy door is not latched. It belongs to the CPG's cockpit fittings.",
+              "positions": [
+                {
+                  "name": "OPEN",
+                  "text": "The canopy door is open."
+                },
+                {
+                  "name": "CLOSE",
+                  "text": "The canopy door is closed."
+                }
+              ],
+              "src": "m1",
+              "page": "127"
+            },
+            {
+              "id": "cpg-m4-trigger",
+              "name": "CPG M4 trigger",
+              "type": "button",
+              "match": [
+                "pnt_825"
+              ],
+              "text": "The manual's picture of the right console shows an M4 rifle there. This is the trigger of that rifle in the game, for the front seat.",
+              "context": "The manual does not describe the rifle controls further.",
+              "src": "m1",
+              "page": "127"
+            },
+            {
+              "id": "cpg-m4-safety",
+              "name": "CPG M4 safety",
+              "type": "switch",
+              "match": [
+                "pnt_826"
+              ],
+              "text": "This is the safety catch of the M4 rifle in the front cockpit.",
+              "context": "The manual does not describe it; the game names it 'CPG M4 Safety'.",
+              "src": "m1",
+              "page": "127"
+            },
+            {
+              "id": "stick-folding",
+              "name": "Stick folding (UP / DOWN)",
+              "type": "switch2",
+              "match": [
+                "pnt_809"
+              ],
+              "text": "The game names this switch 'Stick Folding, UP/DOWN'. The manual does not describe it, so its exact effect is not known here.",
+              "context": "It is not part of the flight systems described in the manual.",
+              "positions": [
+                {
+                  "name": "UP",
+                  "text": "The upper position of the switch."
+                },
+                {
+                  "name": "DOWN",
+                  "text": "The lower position of the switch."
+                }
+              ],
+              "src": "m1"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "cpg-hotas",
+      "where": "hotas",
+      "name": "CPG cyclic, collective and TEDAC grips",
+      "seat": 2,
+      "text": "The cyclic stick and the collective lever of the CPG, plus the two fixed handgrips on either side of the TEDAC screen.",
+      "panels": [
+        {
+          "id": "cpg-cyclic-grip",
+          "name": "Cyclic grip (CPG seat)",
+          "src": "m1",
+          "page": "136",
+          "text": "The cyclic is the stick between the knees. Its grip carries many switches, so that the hand can fly, talk on the radio, drop decoys and fire the weapons without letting go.",
+          "context": "The cyclic grips of the pilot and of the CPG are the same in form and function. The switches here cover radios, decoys, weapons and the helmet display.",
+          "controls": [
+            {
+              "id": "force-trim-hold",
+              "name": "Force Trim / Hold Mode switch",
+              "type": "hat",
+              "match": [
+                "control:stick.hat.ftr"
+              ],
+              "text": "This four-way switch under the thumb handles the force trim and the hold modes. Force trim is the system that makes the stick and the pedals stay where they are put. Held forward, it lets go of that hold; left and right turn attitude hold and altitude hold on or off; aft switches both off. This entry is for the CPG's cyclic grip.",
+              "context": "The CPG (copilot/gunner) uses it to let the helicopter keep its attitude or height for a moment, and to move the stick freely when needed. When the switch is let go, the trim holds the new stick position.",
+              "src": "m1",
+              "page": "136"
+            },
+            {
+              "id": "weapon-action",
+              "name": "Weapon Action Switch (WAS)",
+              "type": "hat",
+              "match": [
+                "control:stick.hat.was"
+              ],
+              "text": "This four-way switch picks the weapon: forward the gun, left the rockets, right the missiles. Pressing the same direction a second time puts the weapon away again. The aft position has no function. This entry is for the CPG's cyclic grip.",
+              "context": "Choosing a weapon is called actioning it. Neither seat has priority: the seat that actioned a weapon last gets the weapon. The CPG (copilot/gunner) then fires it with the trigger.",
+              "src": "m1",
+              "page": "137"
+            },
+            {
+              "id": "symbology-select",
+              "name": "Symbology Select switch",
+              "type": "hat",
+              "match": [
+                "control:stick.hat.symbology"
+              ],
+              "text": "This four-way switch with a push chooses what the helmet display shows for flying: forward is transition and cruise, aft is hover and bob-up. Pressing in brings up the flight page on the left MPD. This entry is for the CPG's cyclic grip.",
+              "context": "Both seats always show the same symbol mode, whichever switch changed it. The four modes are cruise, transition, hover and bob-up. It belongs to the CPG's cyclic grip.",
+              "src": "m1",
+              "page": "137"
+            },
+            {
+              "id": "ptt-rts",
+              "name": "PTT / RTS switch (radio and intercom)",
+              "type": "hat",
+              "match": [
+                "control:stick.hat.comm"
+              ],
+              "text": "This switch under the thumb is the push-to-talk button. Left transmits on the chosen radio, right talks on the intercom to the other seat and to the ground crew, and a push moves the radio choice to the next radio. This entry is for the CPG's cyclic grip.",
+              "context": "The chosen radio is shown on the EUFD (RTS means radio transmit select). The same choice can be made with the RTS rocker next to that screen. It belongs to the CPG's cyclic grip.",
+              "src": "m1",
+              "page": "137"
+            },
+            {
+              "id": "chaff-button",
+              "name": "Chaff dispense (C) button",
+              "type": "button",
+              "match": [
+                "control:stick.button.chaff"
+              ],
+              "text": "This button throws out chaff, small strips of metal that confuse a radar-guided missile. In program mode it releases a stored series of strips; in manual mode it releases one cartridge. This entry is for the CPG's cyclic grip.",
+              "context": "The chaff dispenser must be armed first, which is only possible in the air. It belongs to the CPG's cyclic grip.",
+              "src": "m1",
+              "page": "137"
+            },
+            {
+              "id": "flare-button",
+              "name": "Flare dispense (FLARE) button",
+              "type": "button",
+              "match": [
+                "control:stick.button.flare"
+              ],
+              "text": "This button throws out flares, hot burning decoys that lure heat-seeking missiles away. It releases one stored flare program. This entry is for the CPG's cyclic grip.",
+              "context": "It works in addition to the automatic dispensing of the missile warning system, and only when the flare system is armed in the air. It belongs to the CPG's cyclic grip.",
+              "src": "m1",
+              "page": "138"
+            },
+            {
+              "id": "weapon-trigger",
+              "name": "Weapon trigger (two stages, guarded)",
+              "type": "trigger",
+              "match": [
+                "control:stick.trigger"
+              ],
+              "text": "This trigger fires the weapon that the CPG (copilot/gunner) has chosen. The first stage fires if no performance or safety inhibits are present; the second stage fires if no safety inhibits are present. A flip guard covers it.",
+              "context": "The master arm on the armament panel must be on ARM. An inhibit is a rule that blocks firing, such as weight on the wheels. It belongs to the CPG's cyclic grip.",
+              "src": "m1",
+              "page": "138"
+            },
+            {
+              "id": "trigger-guard",
+              "name": "Trigger guard (cover)",
+              "type": "guard",
+              "match": [
+                "control:stick.guard.trigger"
+              ],
+              "text": "This is the flip cover over the weapon trigger. Open it before firing and close it afterwards. This entry is for the CPG's cyclic grip.",
+              "context": "It stops the trigger being pulled by accident.",
+              "src": "m1",
+              "page": "138"
+            },
+            {
+              "id": "fmc-release",
+              "name": "FMC release button",
+              "type": "button",
+              "match": [
+                "control:stick.pinky.button"
+              ],
+              "text": "This button under the little finger switches off the flight management computer help for pitch, roll, yaw and the collective. The flight management computer is the computer that keeps the helicopter steady. This entry is for the CPG's cyclic grip.",
+              "context": "The help can be switched on again from the Utility page on the MPD. It belongs to the CPG's cyclic grip.",
+              "src": "m1",
+              "page": "138"
+            },
+            {
+              "id": "cyclic-stick",
+              "name": "Cyclic (the stick)",
+              "type": "axis",
+              "match": [
+                "control:stick.gimbal"
+              ],
+              "text": "The cyclic is the stick in front of the seat. Moving it tilts the rotor and so the helicopter: forward, back, left or right. This entry is for the CPG's cyclic grip.",
+              "context": "It is the main flight control together with the collective and the pedals. It belongs to the CPG's cyclic grip.",
+              "src": "m1",
+              "page": "136"
+            },
+            {
+              "id": "cyclic-parts-swch",
+              "name": "Four-way switches of the cyclic (3D parts)",
+              "type": "other",
+              "match": [
+                "CPG_cyclic_1_swch_*"
+              ],
+              "text": "In the 3D cockpit the game models the four-way switches of the grip as separate clickable parts, all labelled 'swch'. They are the force trim, weapon action, symbology and radio switches described above. This entry is for the CPG's cyclic grip.",
+              "context": "Which part is which is shown in the controls of this panel.",
+              "count": 4,
+              "src": "m1",
+              "page": "136"
+            },
+            {
+              "id": "cyclic-parts-btn",
+              "name": "Buttons of the cyclic (3D parts)",
+              "type": "other",
+              "match": [
+                "CPG_cyclic_1_btn_*"
+              ],
+              "text": "The game models the buttons of the cyclic grip as clickable parts, all labelled 'btn': chaff, flare, FMC release and the cage button, which has no function. This entry is for the CPG's cyclic grip.",
+              "context": "The 3D parts are not named one by one in the game.",
+              "count": 4,
+              "src": "m1",
+              "page": "138"
+            },
+            {
+              "id": "cyclic-part-trigger",
+              "name": "Weapon trigger (3D part)",
+              "type": "trigger",
+              "match": [
+                "CPG_cyclic_1_trgr"
+              ],
+              "text": "This is the clickable trigger on the cyclic grip in the 3D cockpit. It does the same as the weapon trigger above. This entry is for the CPG's cyclic grip.",
+              "context": "Its guard is a separate clickable part.",
+              "src": "m1",
+              "page": "138"
+            }
+          ]
+        },
+        {
+          "id": "cpg-collective-flight-grip",
+          "name": "Collective: flight grip (CPG seat)",
+          "src": "m1",
+          "page": "138",
+          "text": "The collective is the lever at the left of the seat. Its flight grip holds the critical switches: jettison, searchlight, night vision choice, stabilator, tail wheel and engine chop.",
+          "context": "The flight grip is the part of the lever the hand holds while flying. The pilot and the CPG have the same grip, except that the BUCS trigger works only in the CPG seat.",
+          "controls": [
+            {
+              "id": "jettison-button",
+              "name": "Emergency jettison (JETT) button (guarded)",
+              "type": "button",
+              "match": [
+                "control:collective.button.jettison"
+              ],
+              "text": "This guarded button drops all weapons from the wing stations at once. The guard has to be flipped up first. This entry is for the CPG's collective flight grip.",
+              "context": "It is for an emergency when the helicopter must be lighter. The stores jettison panel can drop single stations instead. It belongs to the CPG's collective flight grip.",
+              "src": "m1",
+              "page": "138"
+            },
+            {
+              "id": "boresight-polarity",
+              "name": "Boresight / Polarity switch",
+              "type": "switch3",
+              "match": [
+                "control:collective.switch.boresight"
+              ],
+              "text": "This switch changes the infrared picture between white-hot and black-hot. The left position, boresight, has no function. This entry is for the CPG's collective flight grip.",
+              "context": "Polarity means whether warm things are shown white or black. It applies to the night camera of this seat. It belongs to the CPG's collective flight grip.",
+              "positions": [
+                {
+                  "name": "B/S",
+                  "text": "Boresight: no function."
+                },
+                {
+                  "name": "CENTER",
+                  "text": "Neutral position."
+                },
+                {
+                  "name": "PLRT",
+                  "text": "Switches the infrared picture between white-hot and black-hot."
+                }
+              ],
+              "src": "m1",
+              "page": "138"
+            },
+            {
+              "id": "searchlight-switch",
+              "name": "Searchlight switch",
+              "type": "switch3",
+              "match": [
+                "control:collective.switch.searchlight"
+              ],
+              "text": "This switch turns the searchlight under the fuselage on, off, or sends it back into its stowed position. This entry is for the CPG's collective flight grip.",
+              "context": "From STOW the switch springs back to OFF. The light cannot be moved for one minute after STOW. It belongs to the CPG's collective flight grip.",
+              "positions": [
+                {
+                  "name": "ON",
+                  "text": "The searchlight is on."
+                },
+                {
+                  "name": "OFF",
+                  "text": "The searchlight is off."
+                },
+                {
+                  "name": "STOW",
+                  "text": "The searchlight retracts into its stowed position."
+                }
+              ],
+              "src": "m1",
+              "page": "138"
+            },
+            {
+              "id": "searchlight-position",
+              "name": "Searchlight position switch",
+              "type": "hat",
+              "match": [
+                "control:collective.hat.searchlight"
+              ],
+              "text": "This four-way switch aims the searchlight: forward turns it forward and up, back turns it down and back, left and right turn it sideways. This entry is for the CPG's collective flight grip.",
+              "context": "It moves the light bulb, not the switch of the light itself. It belongs to the CPG's collective flight grip.",
+              "src": "m1",
+              "page": "139"
+            },
+            {
+              "id": "nvs-select",
+              "name": "NVS Select switch",
+              "type": "switch2",
+              "match": [
+                "control:collective.switch.nvs"
+              ],
+              "text": "This switch chooses which camera feeds the night vision picture of this seat: the TADS (the targeting camera in the nose) or the PNVS (the pilot's night camera in the nose). This entry is for the CPG's collective flight grip.",
+              "context": "Either seat can change the choice. The frame in the helmet display then shows the movement limits of the chosen camera. It belongs to the CPG's collective flight grip.",
+              "positions": [
+                {
+                  "name": "TADS",
+                  "text": "The targeting camera is the night vision sensor of this seat."
+                },
+                {
+                  "name": "PNVS",
+                  "text": "The pilot's night camera is the night vision sensor of this seat."
+                }
+              ],
+              "src": "m1",
+              "page": "139"
+            },
+            {
+              "id": "stabilator-switch",
+              "name": "Stabilator control switch",
+              "type": "switch3",
+              "match": [
+                "control:collective.switch.stabilator"
+              ],
+              "text": "This switch moves the stabilator, the small wing at the tail, by hand: nose-down or nose-up. Pressing it in sets the stabilator back to automatic. This entry is for the CPG's collective flight grip.",
+              "context": "Normally the stabilator is automatic. Moving the switch forward or back puts it in manual mode. It belongs to the CPG's collective flight grip.",
+              "positions": [
+                {
+                  "name": "ND",
+                  "text": "Moves the trailing edge down, so the nose pitches down; switches to manual."
+                },
+                {
+                  "name": "NU",
+                  "text": "Moves the trailing edge up, so the nose pitches up; switches to manual."
+                },
+                {
+                  "name": "RESET",
+                  "text": "Pressing in resets the stabilator to automatic."
+                }
+              ],
+              "src": "m1",
+              "page": "139"
+            },
+            {
+              "id": "chop-button",
+              "name": "Engine CHOP button (guarded)",
+              "type": "button",
+              "match": [
+                "control:collective.button.chop"
+              ],
+              "text": "This guarded button is meant to bring both engines back to idle power in a hurry. Pressing it again would restore the power. In DCS it is not implemented. This entry is for the CPG's collective flight grip.",
+              "context": "It has a guard to prevent accidental use.",
+              "src": "m1",
+              "page": "139"
+            },
+            {
+              "id": "tail-wheel-button",
+              "name": "Tail wheel lock / unlock button",
+              "type": "button",
+              "match": [
+                "control:collective.button.tailwheel"
+              ],
+              "text": "This button locks or unlocks the tail wheel, the same as the button on the tail wheel panel. A light on that panel shows UNLOCK while the wheel is free. This entry is for the CPG's collective flight grip.",
+              "context": "The wheel should be locked before lift-off and unlocked for turning on the ground. It belongs to the CPG's collective flight grip.",
+              "src": "m1",
+              "page": "139"
+            },
+            {
+              "id": "collective-lever",
+              "name": "Collective (the lever)",
+              "type": "axis",
+              "match": [
+                "control:collective.axis.main"
+              ],
+              "text": "The collective is the lever at the left of the seat. Pulling it up makes the main rotor blades bite harder, so the helicopter climbs; lowering it makes the helicopter sink. This entry is for the CPG's collective flight grip.",
+              "context": "It is used together with the cyclic stick and the pedals.",
+              "src": "m1",
+              "page": "136"
+            }
+          ]
+        },
+        {
+          "id": "cpg-collective-mission-grip",
+          "name": "Collective: mission grip (CPG seat)",
+          "src": "m1",
+          "page": "140",
+          "text": "The mission grip is the second grip on the collective. It holds the controls for the radar, the cursor on the screens and the choice of sight.",
+          "context": "The thumb works the cursor pad and the sight switch, so the target work can be done without taking the hand off the flight controls.",
+          "controls": [
+            {
+              "id": "fcr-mode",
+              "name": "FCR mode switch",
+              "type": "hat",
+              "match": [
+                "control:collective.hat.fcr_mode"
+              ],
+              "text": "This four-way switch picks the mode of the fire control radar, the radar on the mast above the rotor. Forward is ground targets, right is the radar map, aft is air targets and left is the terrain profile. This entry is for the CPG's collective mission grip.",
+              "context": "It works while the radar is the chosen sight and is not scanning. Pressing the radar map direction again shows or hides the terrain video underlay. It belongs to the CPG's collective mission grip.",
+              "src": "m1",
+              "page": "140"
+            },
+            {
+              "id": "fcr-scan-size",
+              "name": "FCR scan size switch",
+              "type": "hat",
+              "match": [
+                "control:collective.hat.fcr_scan_size"
+              ],
+              "text": "This four-way switch sets how wide the radar looks: wide (right), medium (aft), narrow (left) or zoom (forward). The exact widths depend on whether the radar looks for ground or air targets. This entry is for the CPG's collective mission grip.",
+              "context": "The manual gives, for ground modes, 90, 45, 30 and 15 degrees. The setting is used while the radar is not scanning. It belongs to the CPG's collective mission grip.",
+              "src": "m1",
+              "page": "140"
+            },
+            {
+              "id": "cursor-controller",
+              "name": "Cursor controller / enter",
+              "type": "other",
+              "match": [
+                "control:collective.ministick"
+              ],
+              "text": "This little pad under the thumb moves the cursor on the MPD screens, so a button on the screen can be picked without reaching for it. Pressing it in picks what the cursor is on. This entry is for the CPG's collective mission grip.",
+              "context": "It works like a mouse pointer for the MPD pages.",
+              "src": "m1",
+              "page": "141"
+            },
+            {
+              "id": "sight-select",
+              "name": "Sight Select switch",
+              "type": "hat",
+              "match": [
+                "control:collective.hat.sight_select"
+              ],
+              "text": "This four-way switch chooses the sight for aiming: forward the helmet sight, left the radar, right the targeting camera TADS, aft the link function that points one sensor at the other's target. The CPG can also pick the TADS sight, the targeting camera in the nose.",
+              "context": "The sight is where the weapons look. The radar sight brings up the radar page on the left MPD. It belongs to the CPG's collective mission grip.",
+              "src": "m1",
+              "page": "141"
+            },
+            {
+              "id": "cursor-display-select",
+              "name": "Cursor display select button",
+              "type": "button",
+              "match": [
+                "control:collective.button.cursor_display"
+              ],
+              "text": "This button jumps the cursor to the centre of the other MPD screen. This entry is for the CPG's collective mission grip.",
+              "context": "It saves moving the cursor across the cockpit with the pad.",
+              "src": "m1",
+              "page": "141"
+            },
+            {
+              "id": "fcr-scan",
+              "name": "FCR scan switch",
+              "type": "switch3",
+              "match": [
+                "control:collective.switch.fcr_scan"
+              ],
+              "text": "This switch starts a radar scan: forward one single scan burst, aft a continuous scan. A second move stops the scan in progress. This entry is for the CPG's collective mission grip.",
+              "context": "The radar cannot transmit with the weight on the wheels, unless the ground override of the armament panel is on. It belongs to the CPG's collective mission grip.",
+              "positions": [
+                {
+                  "name": "S-SCAN",
+                  "text": "Starts a single scan burst; moving it again stops a scan in progress."
+                },
+                {
+                  "name": "CENTER",
+                  "text": "Neutral position."
+                },
+                {
+                  "name": "C-SCAN",
+                  "text": "Starts a continuous scan until stopped or another sight is chosen."
+                }
+              ],
+              "src": "m1",
+              "page": "141"
+            },
+            {
+              "id": "cued-search",
+              "name": "Cued search (CUED) button",
+              "type": "button",
+              "match": [
+                "control:collective.button.cued_search"
+              ],
+              "text": "This button is meant for a cued search of the radar. In DCS it is not implemented. This entry is for the CPG's collective mission grip.",
+              "context": "The manual lists it as not implemented.",
+              "src": "m1",
+              "page": "141"
+            },
+            {
+              "id": "missile-advance",
+              "name": "Missile advance button",
+              "type": "button",
+              "match": [
+                "control:collective.button.missile_advance"
+              ],
+              "text": "This button steps to the next Hellfire missile in the series. A Hellfire is the helicopter's guided anti-tank missile. This entry is for the CPG's collective mission grip.",
+              "context": "It only works when the missile mode on the weapon page is set to MAN, for manual. It belongs to the CPG's collective mission grip.",
+              "src": "m1",
+              "page": "141"
+            },
+            {
+              "id": "alt-cursor-enter",
+              "name": "Alternate cursor enter trigger",
+              "type": "trigger",
+              "match": [
+                "control:collective.button.cursor_enter"
+              ],
+              "text": "This trigger under the grip picks the item under the cursor, as an alternative to pushing the cursor pad itself. This entry is for the CPG's collective mission grip.",
+              "context": "It is used together with the cursor pad.",
+              "src": "m1",
+              "page": "141"
+            }
+          ]
+        },
+        {
+          "id": "cpg-collective-parts",
+          "name": "Collective grip parts as modelled (CPG seat)",
+          "src": "m1",
+          "page": "138",
+          "text": "The game models the collective grips as many separate clickable parts. This entry groups them by kind.",
+          "context": "The functions of the parts are explained in the flight grip and mission grip panels.",
+          "controls": [
+            {
+              "id": "collective-parts-switch",
+              "name": "Switches of the collective (3D parts)",
+              "type": "other",
+              "match": [
+                "CPG_cs_switch*"
+              ],
+              "text": "The game models the switches and four-way pads of the collective grips as separate clickable parts, all labelled 'switch'. They stand for the switches described in the other two panels of the collective. This entry is for the CPG's collective grip parts.",
+              "context": "The 3D parts are not named one by one in the game.",
+              "count": 10,
+              "src": "m1",
+              "page": "138"
+            },
+            {
+              "id": "collective-parts-btn",
+              "name": "Buttons of the collective (3D parts)",
+              "type": "other",
+              "match": [
+                "CPG_cs_btn*"
+              ],
+              "text": "The game models the buttons of the collective grips as clickable parts, all labelled 'btn'. They are the jettison, chop, tail wheel, cursor display, cued search and missile advance buttons. This entry is for the CPG's collective grip parts.",
+              "context": "The 3D parts are not named one by one in the game.",
+              "count": 6,
+              "src": "m1",
+              "page": "138"
+            },
+            {
+              "id": "collective-parts-trigger",
+              "name": "Triggers of the collective (3D parts)",
+              "type": "trigger",
+              "match": [
+                "CPG_cs_trigger*"
+              ],
+              "text": "The game models the two triggers of the collective as clickable parts. One is the alternate cursor enter trigger of the mission grip; the other is the BUCS trigger, which is not implemented. This entry is for the CPG's collective grip parts.",
+              "context": "BUCS is the back-up control system. The manual says its trigger works only in the CPG seat, and even there it is marked not implemented. It belongs to the CPG's collective grip parts.",
+              "count": 2,
+              "src": "m1",
+              "page": "139"
+            },
+            {
+              "id": "collective-parts-cap",
+              "name": "Guard covers of the collective (3D parts)",
+              "type": "guard",
+              "match": [
+                "CPG_cs_cap*"
+              ],
+              "text": "The game models the guard covers over the guarded buttons of the collective as clickable parts. The emergency jettison button and the engine chop button have such covers. This entry is for the CPG's collective grip parts.",
+              "context": "A cover must be flipped up before its button can be pressed. It belongs to the CPG's collective grip parts.",
+              "count": 3,
+              "src": "m1",
+              "page": "138"
+            }
+          ]
+        },
+        {
+          "id": "cpg-tedac-left-grip",
+          "name": "TEDAC left handgrip, LHG (CPG seat)",
+          "src": "m1",
+          "page": "131",
+          "text": "The left handgrip is the fixed handle at the left of the TEDAC screen. It carries the switches for the targeting camera, the weapons, the radar and the cursor.",
+          "context": "Many of its switches copy the ones on the CPG's cyclic and collective, so that the CPG can work without touching the flight controls while the pilot flies.",
+          "controls": [
+            {
+              "id": "iat-ofs",
+              "name": "Image Auto Track / Offset switch",
+              "type": "switch3",
+              "match": [
+                "pnt_491",
+                "control:throttle.tedac.switch.iat"
+              ],
+              "text": "This switch controls the automatic tracking of the targeting camera. IAT makes it follow the target under the aiming cross by itself. OFS returns to or drops a track.",
+              "context": "A short press of OFS returns the aiming cross to the track or drops the track; a long press drops all tracks.",
+              "positions": [
+                {
+                  "name": "IAT",
+                  "text": "Starts automatic tracking of the target under the aiming reticle."
+                },
+                {
+                  "name": "CENTER",
+                  "text": "Neutral position."
+                },
+                {
+                  "name": "OFS",
+                  "text": "Offset: a short press returns to the track or drops it; a long press drops all tracks."
+                }
+              ],
+              "src": "m1",
+              "page": "131"
+            },
+            {
+              "id": "tads-fov",
+              "name": "TADS field-of-view switch",
+              "type": "hat",
+              "match": [
+                "pnt_492-1",
+                "pnt_492-2",
+                "pnt_493-1",
+                "pnt_493-2",
+                "control:throttle.tedac.hat.fov"
+              ],
+              "text": "This four-way switch zooms the targeting camera: wide (right), medium (aft), narrow (left) and a 2:1 electronic zoom (forward).",
+              "context": "A narrow view shows a small area in more detail.",
+              "src": "m1",
+              "page": "131"
+            },
+            {
+              "id": "tads-sensor",
+              "name": "TADS sensor select switch",
+              "type": "switch3",
+              "match": [
+                "pnt_494",
+                "control:throttle.tedac.switch.sensor"
+              ],
+              "text": "This switch picks which camera of the targeting system is used: the infrared camera (FLIR) or the daylight TV camera. The third position has no function.",
+              "context": "The choice is forced to FLIR while the night vision mode is on NORM or FIXED.",
+              "positions": [
+                {
+                  "name": "FLIR",
+                  "text": "The infrared camera, which sees heat."
+                },
+                {
+                  "name": "TV",
+                  "text": "The daylight TV camera."
+                },
+                {
+                  "name": "DVO",
+                  "text": "No function."
+                }
+              ],
+              "src": "m1",
+              "page": "132"
+            },
+            {
+              "id": "lhg-was",
+              "name": "Weapon Action Switch (WAS, left handgrip)",
+              "type": "hat",
+              "match": [
+                "pnt_502-1",
+                "pnt_502-2",
+                "pnt_503-1",
+                "pnt_503-2",
+                "control:throttle.tedac.hat.was"
+              ],
+              "text": "This four-way switch picks the weapon: forward gun, left rockets, right missiles. Pressing the same direction again puts the weapon away. Aft has no function.",
+              "context": "A weapon chosen here is fired with the trigger of this left handgrip. On the ground the master arm ground override is needed first.",
+              "src": "m1",
+              "page": "132"
+            },
+            {
+              "id": "store-update",
+              "name": "Store / Update switch",
+              "type": "switch3",
+              "match": [
+                "pnt_495",
+                "control:throttle.tedac.switch.store"
+              ],
+              "text": "This switch saves a target or waypoint position at the place where the chosen sight is looking. The other direction would update the helicopter's position; it is not implemented.",
+              "context": "A waypoint is a point on the planned route. The switch works together with the Point page of the TSD map.",
+              "positions": [
+                {
+                  "name": "STORE",
+                  "text": "Stores a target point at the chosen sight position."
+                },
+                {
+                  "name": "CENTER",
+                  "text": "Neutral position."
+                },
+                {
+                  "name": "UPDT",
+                  "text": "Meant to update the position; not implemented."
+                }
+              ],
+              "src": "m1",
+              "page": "132"
+            },
+            {
+              "id": "lhg-fcr-mode",
+              "name": "FCR mode switch (left handgrip)",
+              "type": "hat",
+              "match": [
+                "pnt_498-1",
+                "pnt_498-2",
+                "pnt_499-1",
+                "pnt_499-2",
+                "control:throttle.tedac.hat.fcr_mode"
+              ],
+              "text": "This four-way switch picks the radar mode: forward ground targets, right radar map, aft air targets, left terrain profile.",
+              "context": "It works while the radar is the chosen sight and is not scanning.",
+              "src": "m1",
+              "page": "132"
+            },
+            {
+              "id": "lhg-cursor",
+              "name": "Cursor controller / enter (left handgrip)",
+              "type": "other",
+              "match": [
+                "pnt_487-1",
+                "pnt_487-2",
+                "pnt_488-1",
+                "pnt_488-2",
+                "pnt_489",
+                "control:throttle.tedac.ministick"
+              ],
+              "text": "This little pad under the thumb moves the cursor over the MPD screens and over the radar page on the TEDAC screen. Pressing it in picks what the cursor is on.",
+              "context": "On the TEDAC screen the radar page can only be reached with this cursor, since that screen has no buttons around it.",
+              "src": "m1",
+              "page": "133"
+            },
+            {
+              "id": "lhg-cursor-display",
+              "name": "Cursor display select button",
+              "type": "button",
+              "match": [
+                "pnt_490",
+                "control:throttle.tedac.button.cursor_display"
+              ],
+              "text": "This button jumps the cursor to the centre of the other MPD screen. This entry is for the CPG's TEDAC left handgrip.",
+              "context": "It saves moving the cursor across the cockpit with the pad.",
+              "src": "m1",
+              "page": "133"
+            },
+            {
+              "id": "lhg-trigger",
+              "name": "Weapon trigger (left handgrip, two stages)",
+              "type": "trigger",
+              "match": [
+                "control:throttle.tedac.trigger"
+              ],
+              "text": "This trigger on the left handgrip fires the weapon that was chosen with the left handgrip switch. The first stage fires if no performance or safety inhibits are present; the second if no safety inhibits are present.",
+              "context": "The master arm switch must be on ARM for the weapon to fire.",
+              "src": "m1",
+              "page": "133"
+            },
+            {
+              "id": "lhg-scan",
+              "name": "FCR scan switch (left handgrip)",
+              "type": "switch3",
+              "match": [
+                "pnt_500",
+                "control:throttle.tedac.switch.fcr_scan"
+              ],
+              "text": "This switch starts a radar scan: S-SCAN one single scan burst, C-SCAN a continuous scan. A move to either side during a scan stops it.",
+              "context": "The radar only works when the radar is the chosen sight. On the ground it needs the ground override.",
+              "positions": [
+                {
+                  "name": "S-SCAN",
+                  "text": "Starts a single scan burst."
+                },
+                {
+                  "name": "CENTER",
+                  "text": "Neutral position."
+                },
+                {
+                  "name": "C-SCAN",
+                  "text": "Starts a continuous scan until stopped."
+                }
+              ],
+              "src": "m1",
+              "page": "133"
+            },
+            {
+              "id": "lhg-cued",
+              "name": "CUED search button",
+              "type": "button",
+              "match": [
+                "pnt_501"
+              ],
+              "text": "This button is meant to point the radar centre line at the cued direction. In DCS it is not implemented.",
+              "context": "The manual lists the cued search button as not implemented.",
+              "src": "m1",
+              "page": "133"
+            },
+            {
+              "id": "lmc-button",
+              "name": "Linear Motion Compensation (LMC) button",
+              "type": "button",
+              "match": [
+                "pnt_496",
+                "control:throttle.tedac.button.lmc"
+              ],
+              "text": "This button switches on or off the linear motion compensation of the targeting camera. That makes the camera follow a target more smoothly when the helicopter moves in a straight line.",
+              "context": "The manual shows it on the opposite side of the grip from the main switches.",
+              "src": "m1",
+              "page": "133"
+            }
+          ]
+        },
+        {
+          "id": "cpg-tedac-right-grip",
+          "name": "TEDAC right handgrip, RHG (CPG seat)",
+          "src": "m1",
+          "page": "134",
+          "text": "The right handgrip is the fixed handle at the right of the TEDAC screen. It carries the switches for the radar scan size, the sight choice, the sight tracking stick and the laser trigger.",
+          "context": "With both handgrips the CPG can search for and mark a target while the pilot has the flight controls.",
+          "controls": [
+            {
+              "id": "rhg-scan-size",
+              "name": "FCR scan size switch (right handgrip)",
+              "type": "hat",
+              "match": [
+                "pnt_511-1",
+                "pnt_511-2",
+                "pnt_512-1",
+                "pnt_512-2",
+                "control:stick.tedac.hat.fcr_scan_size"
+              ],
+              "text": "This four-way switch sets how wide the radar looks: wide (right), medium (aft), narrow (left) and zoom (forward).",
+              "context": "It works while the radar is the chosen sight and is not scanning. It belongs to the CPG's TEDAC right handgrip.",
+              "src": "m1",
+              "page": "134"
+            },
+            {
+              "id": "c-scope",
+              "name": "C-SCOPE button",
+              "type": "button",
+              "match": [
+                "pnt_513",
+                "control:stick.tedac.button.cscope"
+              ],
+              "text": "This button shows or hides the radar C-scope overlay in the CPG seat.",
+              "context": "The overlay adds the radar symbols to the picture.",
+              "src": "m1",
+              "page": "134"
+            },
+            {
+              "id": "flir-polarity",
+              "name": "FLIR polarity button",
+              "type": "button",
+              "match": [
+                "pnt_504",
+                "control:stick.tedac.button.polarity"
+              ],
+              "text": "This button changes the infrared picture between white-hot and black-hot.",
+              "context": "White-hot shows warm things bright, black-hot shows warm things dark.",
+              "src": "m1",
+              "page": "134"
+            },
+            {
+              "id": "laser-tracker",
+              "name": "Laser tracker (LT) switch",
+              "type": "switch3",
+              "match": [
+                "pnt_510",
+                "control:stick.tedac.switch.lst"
+              ],
+              "text": "This switch controls the laser spot tracker, which lets the targeting camera find and follow a spot lit by a laser. In A and M, the laser range finder of the helicopter is blocked.",
+              "context": "In the middle position the laser tracker is off and the helicopter's own laser may fire.",
+              "positions": [
+                {
+                  "name": "A",
+                  "text": "Automatic laser spot tracking; the laser range finder is blocked."
+                },
+                {
+                  "name": "O",
+                  "text": "Off: the tracker is off and the laser range finder may fire."
+                },
+                {
+                  "name": "M",
+                  "text": "Manual laser spot tracking; the laser range finder is blocked."
+                }
+              ],
+              "src": "m1",
+              "page": "134"
+            },
+            {
+              "id": "rhg-sight-select",
+              "name": "Sight Select switch (right handgrip)",
+              "type": "hat",
+              "match": [
+                "pnt_508-1",
+                "pnt_508-2",
+                "pnt_509-1",
+                "pnt_509-2",
+                "control:stick.tedac.hat.sight"
+              ],
+              "text": "This four-way switch chooses the sight for aiming: forward the helmet sight, left the radar, right the targeting camera, aft the link function.",
+              "context": "The CPG can use any of the sights. The radar sight brings up the radar page on the left MPD.",
+              "src": "m1",
+              "page": "135"
+            },
+            {
+              "id": "sight-slave",
+              "name": "Sight Slave button",
+              "type": "button",
+              "match": [
+                "pnt_514",
+                "control:stick.tedac.button.slave"
+              ],
+              "text": "This button makes the chosen sight follow the acquisition source, for example the radar's next target, or releases it so it can be moved by hand.",
+              "context": "Releasing a sight is called de-slaving it.",
+              "src": "m1",
+              "page": "135"
+            },
+            {
+              "id": "man-trk",
+              "name": "Sight manual tracker (MAN TRK)",
+              "type": "other",
+              "match": [
+                "pnt_515-1",
+                "pnt_515-2",
+                "pnt_516-1",
+                "pnt_516-2",
+                "control:stick.tedac.ministick"
+              ],
+              "text": "This little thumb stick moves the chosen sight (the targeting camera or the radar) by hand when it is not slaved.",
+              "context": "It is also called the thumb force controller.",
+              "src": "m1",
+              "page": "135"
+            },
+            {
+              "id": "display-zoom",
+              "name": "Display Zoom button",
+              "type": "button",
+              "match": [
+                "pnt_517",
+                "control:stick.tedac.button.zoom"
+              ],
+              "text": "This button switches the zoomed radar format on or off while the radar is the chosen sight.",
+              "context": "The game describes it as showing the radar targeting information of the next-to-shoot target.",
+              "src": "m1",
+              "page": "135"
+            },
+            {
+              "id": "rhg-trigger",
+              "name": "LRFD trigger (two stages)",
+              "type": "trigger",
+              "match": [
+                "control:stick.tedac.trigger"
+              ],
+              "text": "This trigger on the front of the right handgrip fires the laser range finder and designator. Stage one fires one short laser pulse to measure the distance; stage two fires a steady beam to mark a target.",
+              "context": "The master arm must be on ARM and the laser must be powered. The laser can mark a target for laser-guided weapons.",
+              "src": "m1",
+              "page": "135"
+            },
+            {
+              "id": "mtt-promote",
+              "name": "MTT track promote switch",
+              "type": "switch3",
+              "match": [
+                "pnt_519",
+                "control:stick.tedac.switch.mtt"
+              ],
+              "text": "This switch steps through the targets that the camera tracks at the same time: forward goes to the previous one, aft to the next one. The chosen target becomes the primary one.",
+              "context": "The game labels it 'Spare Switch, PREVIOUS/NEXT'. It matters only in the multi-target track mode.",
+              "positions": [
+                {
+                  "name": "-",
+                  "text": "Promotes the previous track to primary."
+                },
+                {
+                  "name": "CENTER",
+                  "text": "Neutral position."
+                },
+                {
+                  "name": "+",
+                  "text": "Promotes the next track to primary."
+                }
+              ],
+              "src": "m1",
+              "page": "135"
+            },
+            {
+              "id": "rhg-cursor-enter",
+              "name": "Cursor Enter button",
+              "type": "button",
+              "match": [
+                "pnt_518",
+                "control:stick.tedac.button.cursor_enter"
+              ],
+              "text": "This button picks the item under the cursor, as an alternative to pushing the cursor pad itself.",
+              "context": "It is used together with the cursor pad of the left handgrip.",
+              "src": "m1",
+              "page": "135"
+            },
+            {
+              "id": "iat-polarity",
+              "name": "Image Auto Tracker (IAT) polarity switch",
+              "type": "switch3",
+              "match": [
+                "pnt_507"
+              ],
+              "text": "This switch is meant to set the polarity for the image auto tracker. In DCS it is not implemented.",
+              "context": "The manual lists it as not implemented.",
+              "positions": [
+                {
+                  "name": "W",
+                  "text": "White polarity."
+                },
+                {
+                  "name": "A",
+                  "text": "Automatic polarity."
+                },
+                {
+                  "name": "B",
+                  "text": "Black polarity."
+                }
+              ],
+              "src": "m1",
+              "page": "135"
+            },
+            {
+              "id": "hdd-hod",
+              "name": "HDD / HOD select button",
+              "type": "button",
+              "match": [
+                "pnt_505"
+              ],
+              "text": "This button has no function in DCS; the game says it is currently not used.",
+              "context": "The manual lists the heads-down display button as having no function; the game says it is currently not used.",
+              "src": "m1",
+              "page": "135"
+            },
+            {
+              "id": "rhg-missile-advance",
+              "name": "Missile advance button (right handgrip)",
+              "type": "button",
+              "match": [
+                "control:stick.tedac.button.missile_advance"
+              ],
+              "text": "This button on the back of the right TEDAC grip steps to the next Hellfire missile. A Hellfire is the helicopter's guided anti-tank missile, and this button picks which one fires next.",
+              "context": "It does the same as the missile advance button on the CPG's collective and works when the missile mode on the weapon page is set to MAN, for manual.",
+              "src": "m1"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

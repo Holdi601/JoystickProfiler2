@@ -95,6 +95,9 @@ namespace JoyPro.DeviceReference
         // How the game pictures are shown: "picture" (the render) or "drawing" (JoyPro's line drawing of it, in the
         // user's drawing style).
         public string PictureMode = "picture";
+        // The cockpit guide of the variant (CockpitGuideTree.Build): the game panels' titles and the callouts' names and
+        // one-line explanations come from it; null = the game's own names.
+        public CockpitGuideTree Guide;
     }
 
     public static class ManualLayout
@@ -340,9 +343,13 @@ namespace JoyPro.DeviceReference
         // A game view as the page's picture: the render, or JoyPro's line drawing of it (the drawing mode, or no render).
         public static CockpitArt GameArt(CockpitPictureView view, ManualPageOptions o)
         {
-            if (view == null)
+            // A picture the quality gate rated unusable (below 45, PictureQuality.Keep; a low-quality set's overview is
+            // kept for its callouts): the page lists its controls without it.
+            if (view == null || (view.Quality >= 0 && view.Quality < 45))
                 return null;
-            bool drawing = string.Equals(o.PictureMode, "drawing", StringComparison.OrdinalIgnoreCase);
+            // A drawing that would be a mess (a busy perspective, a poor render) or of a screenshot: the picture instead.
+            bool drawing = string.Equals(o.PictureMode, "drawing", StringComparison.OrdinalIgnoreCase) && view.DrawingReadable &&
+                           !(view.Set != null && string.Equals(view.Set.Source, "screenshot", StringComparison.OrdinalIgnoreCase));
             if (!drawing && File.Exists(view.Image))
                 return new CockpitArt { Picture = view.Image, Mask = File.Exists(view.Mask) ? view.Mask : string.Empty, PictureWidth = view.Width, PictureHeight = view.Height };
             DeviceLineArt art = view.Set != null ? view.Set.DrawingOf(view) : null;
@@ -425,13 +432,17 @@ namespace JoyPro.DeviceReference
             if (ov != null)
             {
                 foreach (CockpitPictureCallout c in ov.Callouts)
-                    callouts.Add(new Callout { N = c.N, Label = c.Label, X = c.X, Y = c.Y, Link = GameLink(v, c.Link), Tag = "area:" + c.N });
+                {
+                    CockpitGuideNode node = GuideNode(o, ov, c);
+                    string label = node != null && !node.Generic ? node.Name : ViewTitle(o, c.Link, c.Label);
+                    callouts.Add(new Callout { N = c.N, Label = label, X = c.X, Y = c.Y, Link = GameLink(v, c.Link), Tag = "area:" + c.N, Text = node == null || node.Generic ? string.Empty : node.Short });
+                }
             }
             if (art != null)
                 y = PlaceDrawing(page, art, callouts, y, 620, true, pal, o);
             y += 10;
             foreach (Callout c in callouts.OrderBy(x => x.N))
-                y = NumberedLine(page, y, c.N, c.Label, string.Empty, string.Empty, pal, o, c.Link, c.Tag);
+                y = NumberedLine(page, y, c.N, c.Label, c.Text, string.Empty, pal, o, c.Link, c.Tag);
             ManualPageItem src = Text(ManualLayout.Margin, y + 8, ManualLayout.PageWidth - 2 * ManualLayout.Margin, GameSource(o.Pictures), 11.5, false, pal.Muted);
             page.Items.Add(src);
             y += src.H + 8;
@@ -443,7 +454,7 @@ namespace JoyPro.DeviceReference
         public static ManualPage GamePanel(CockpitVariant v, CockpitPictureView view, ManualPageOptions o)
         {
             ManualPalette pal = ManualPalette.Of(o);
-            ManualPage page = NewPage("panel", "game:" + view.Id, view.Title, v, pal);
+            ManualPage page = NewPage("panel", "game:" + view.Id, ViewTitle(o, view.Id, view.Title), v, pal);
             double y = 104;
             string area = CockpitSchematic.AreaTitle(view.Area);
             if (area.Length > 0)
@@ -455,15 +466,19 @@ namespace JoyPro.DeviceReference
             CockpitArt art = GameArt(view, o);
             if (art != null)
             {
-                List<Callout> callouts = view.Callouts.Select(c => new Callout { N = c.N, Label = c.Label, X = c.X, Y = c.Y, Tag = "click:" + c.Id }).ToList();
+                List<Callout> callouts = view.Callouts.Select(c => new Callout { N = c.N, Label = GuideName(o, view, c), X = c.X, Y = c.Y, Tag = "click:" + c.Id }).ToList();
                 y = PlaceDrawing(page, art, callouts, y, 560, true, pal, o);
                 y += 10;
             }
             foreach (CockpitPictureCallout c in view.Callouts.OrderBy(x => x.N))
             {
                 List<string> names = c.Commands.Select(x => x.Name).Where(x => x.Length > 0).Distinct(StringComparer.OrdinalIgnoreCase).ToList();
-                string text = names.Count == 0 ? string.Empty : "Commands to bind: " + string.Join("; ", names.Take(5)) + (names.Count > 5 ? "; ..." : string.Empty) + ".";
-                y = NumberedLine(page, y, c.N, c.Label, text, string.Empty, pal, o, string.Empty, "click:" + c.Id);
+                CockpitGuideNode node = GuideNode(o, view, c);
+                string explain = node == null || node.Generic ? string.Empty : node.Short;
+                int keep = explain.Length > 0 ? 3 : 5;
+                string text = names.Count == 0 ? string.Empty : "Commands to bind: " + string.Join("; ", names.Take(keep)) + (names.Count > keep ? "; ..." : string.Empty) + ".";
+                text = explain + (explain.Length > 0 && text.Length > 0 ? " " : string.Empty) + text;
+                y = NumberedLine(page, y, c.N, GuideName(o, view, c), text, string.Empty, pal, o, string.Empty, "click:" + c.Id);
             }
             ManualPageItem src = Text(ManualLayout.Margin, y + 8, ManualLayout.PageWidth - 2 * ManualLayout.Margin, GameSource(view.Set ?? o.Pictures), 11.5, false, pal.Muted);
             page.Items.Add(src);
@@ -471,6 +486,27 @@ namespace JoyPro.DeviceReference
             page.SearchText = string.Join(" ", page.Items.SelectMany(i => i.Lines));
             page.Height = y + ManualLayout.Margin;
             return page;
+        }
+
+        // The guide's node of a game callout, or null.
+        private static CockpitGuideNode GuideNode(ManualPageOptions o, CockpitPictureView view, CockpitPictureCallout c)
+        {
+            CockpitGuideNode node;
+            return o.Guide != null && view != null && c != null && o.Guide.ByCallout.TryGetValue(view.Id + "|" + c.Id, out node) ? node : null;
+        }
+
+        // A callout's name: the guide's name of the control (the game's name for it when the guide has none).
+        private static string GuideName(ManualPageOptions o, CockpitPictureView view, CockpitPictureCallout c)
+        {
+            CockpitGuideNode node = GuideNode(o, view, c);
+            return node != null && !node.Generic && node.Name.Length > 0 ? node.Name : c.Label;
+        }
+
+        // A game view's title by the guide's panels of its controls ("ELEC control panel, EPU control panel").
+        private static string ViewTitle(ManualPageOptions o, string viewId, string fallback)
+        {
+            string title;
+            return o.Guide != null && !string.IsNullOrEmpty(viewId) && o.Guide.ViewTitles.TryGetValue(viewId, out title) ? title : fallback;
         }
 
         // ------------------------------------------------------------------ overview
@@ -905,6 +941,7 @@ namespace JoyPro.DeviceReference
             public double Y = -1;
             public string Link = string.Empty;
             public string Tag = string.Empty;
+            public string Text = string.Empty;
         }
 
         // The drawing centred between two callout columns; a callout box per control ("7. Trim Switch", or only the

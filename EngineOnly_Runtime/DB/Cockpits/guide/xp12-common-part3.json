@@ -1,0 +1,1078 @@
+{
+  "format": "joypro-cockpit-guide",
+  "version": 1,
+  "id": "xp12-common-part3",
+  "partOf": "xp12-common",
+  "areas": [
+    {
+      "id": "anti-ice",
+      "where": "other",
+      "name": "Anti-ice",
+      "text": "These controls keep ice off the wings, the engine, the propeller, the windshield and the measuring probes, so the aircraft and its instruments keep working in cold, wet air.",
+      "panels": [
+        {
+          "id": "ice-protection",
+          "name": "Ice protection",
+          "text": "Ice makes an aircraft heavier and spoils the shape of the wing. These systems heat or break up the ice.",
+          "context": "The pilot turns them on in clouds or rain when the outside air is near or below freezing. Some are on all the time in flight; the others are used when ice appears.",
+          "src": "g1",
+          "controls": [
+            {
+              "id": "pitot-heat",
+              "name": "Pitot heat (probe heat)",
+              "type": "switch",
+              "match": [
+                "cmd:sim/ice/pitot_heat*",
+                "cmd:sim/ice/AOA_heat0_tog",
+                "cmd:pitot_heat?_on/off",
+                "cmd:laminar/B738/toggle_switch/*robes*",
+                "cmd:laminar/CitX/ice/*pitot*",
+                "cmd:laminar/md82cmd/ice/*"
+              ],
+              "text": "This switch heats the small tubes outside the aircraft that measure speed, so they do not freeze. Some aircraft also heat the sensor of the stall warning and the angle of attack probe.",
+              "context": "The pilot turns it on before take-off and keeps it on in flight. A frozen tube gives wrong speed readings."
+            },
+            {
+              "id": "wing-heat",
+              "name": "Wing and surface anti-ice",
+              "type": "switch",
+              "match": [
+                "cmd:sim/ice/wing_heat*",
+                "cmd:sim/ice/tks_*",
+                "cmd:laminar/sr22/anti_ice_tks_max",
+                "cmd:laminar/sr22/switch/ice_protect_*",
+                "cmd:laminar/b58/surface_ice_switch_*",
+                "cmd:laminar/c90/iceRain/switch/surface_deice_*",
+                "cmd:laminar/CitX/ice/cmd_wing_crossover_toggle",
+                "cmd:laminar/CitX/ice/*slat*",
+                "cmd:laminar/CitX/ice/*stab*"
+              ],
+              "text": "These switches protect the wings and the tail from ice. Some aircraft heat the wing edge with hot air. Others, like the Cirrus, spray a liquid (TKS) onto the wing. Others have rubber boots that swell to crack off the ice.",
+              "context": "The pilot turns them on when ice appears on the wing, or earlier when flying into clouds in freezing air."
+            },
+            {
+              "id": "engine-anti-ice",
+              "name": "Engine inlet anti-ice",
+              "type": "switch",
+              "match": [
+                "cmd:sim/ice/inlet_heat*",
+                "cmd:inlet_heat?_on/off",
+                "cmd:laminar/c90/iceRain/switch/engine_*",
+                "cmd:laminar/c90/iceRain/switch/fuel_vent_deice_*",
+                "cmd:laminar/F4/toggle_switch/engine_anti_ice_on",
+                "cmd:laminar/f14/envr/aice/*",
+                "cmd:laminar/CitX/ice/*engine*"
+              ],
+              "text": "These switches heat the air inlet of the engine, so ice cannot form there and break loose into the engine. The King Air also has switches for the fuel vents and for the engine's moving flap.",
+              "context": "The pilot turns them on whenever there is a risk of ice. Without them, ice can damage or stop a turbine engine."
+            },
+            {
+              "id": "prop-heat",
+              "name": "Propeller heat",
+              "type": "switch",
+              "match": [
+                "cmd:sim/ice/prop_heat*",
+                "cmd:laminar/c90/iceRain/switch/prop_deice"
+              ],
+              "text": "This switch heats the propeller blades, or the front edge of them, so that ice slides off.",
+              "context": "The pilot switches it on in icing conditions. Ice on the blades would reduce thrust and shake the aircraft."
+            },
+            {
+              "id": "window-heat",
+              "name": "Window / windshield heat and wipers",
+              "type": "switch",
+              "match": [
+                "cmd:sim/ice/window*",
+                "cmd:window_heat_on/off",
+                "cmd:sim/systems/wipers*",
+                "cmd:laminar/c90/iceRain/switch/windshield_*",
+                "cmd:laminar/CitX/ice/*windshield*"
+              ],
+              "text": "The window heat switch warms the windshield so it does not freeze or mist. The wipers swish water off the glass; the switch sets slow, fast or off.",
+              "context": "The pilot uses window heat in flight and the wipers in rain."
+            },
+            {
+              "id": "static-source",
+              "name": "Alternate static air source",
+              "type": "handle",
+              "match": [
+                "cmd:sim/ice/alternate_static_port",
+                "cmd:sim/cockpit2/switches/alternate_static_air_ratio"
+              ],
+              "text": "The static port is a small opening that measures the air pressure for the altimeter, speed indicator and climb gauge. This handle switches to a second opening if the first is blocked by ice or water.",
+              "context": "The pilot pulls it if the instruments show strange values."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "instruments",
+      "where": "other",
+      "name": "Instruments",
+      "text": "These controls adjust the flight instruments: altimeter pressure setting, horizon, timers, minimums, the map and the weather display.",
+      "panels": [
+        {
+          "id": "altimeter-baro",
+          "name": "Altimeter and barometer setting",
+          "text": "The altimeter shows the height of the aircraft. It measures air pressure, so the pilot sets the local air pressure in a small window. This keeps the height reading correct.",
+          "context": "The pilot gets the pressure from the tower and sets it in the window before take-off and landing. Above a certain height everybody sets the standard value.",
+          "src": "g1",
+          "controls": [
+            {
+              "id": "baro-set",
+              "name": "Barometer setting knob",
+              "type": "knob",
+              "match": [
+                "cmd:sim/instruments/barometer_up",
+                "cmd:sim/instruments/barometer_down",
+                "cmd:sim/instruments/barometer_copilot_up",
+                "cmd:sim/instruments/barometer_copilot_down",
+                "cmd:sim/instruments/barometer_stby_*",
+                "cmd:laminar/A333/knob/baro/*"
+              ],
+              "text": "This knob sets the local air pressure in the altimeter. Turning the knob right makes the number higher, turning it left lower. The copilot has a second knob on some aircraft, and the standby instrument has its own.",
+              "context": "A wrong setting means the altimeter reads too high or too low. A drop of one hectopascal moves the reading by about 30 feet; that is why the pilot sets it."
+            },
+            {
+              "id": "baro-std",
+              "name": "Standard pressure button (29.92 / 1013)",
+              "type": "button",
+              "match": [
+                "cmd:sim/instruments/barometer_2992",
+                "cmd:sim/instruments/barometer_std",
+                "cmd:sim/instruments/barometer_copilot_std",
+                "cmd:laminar/A333/pull/*",
+                "cmd:laminar/A333/push/*",
+                "cmd:laminar/A333/buttons/standby_standard_toggle"
+              ],
+              "text": "This button sets the altimeter to the standard pressure, 29.92 inches or 1013 hectopascals. It is the same value for every aircraft in the world.",
+              "context": "The pilot sets it when climbing above the transition altitude, so that all aircraft measure their height against the same reference."
+            }
+          ]
+        },
+        {
+          "id": "attitude-and-gyros",
+          "name": "Horizon, cage and gyro controls",
+          "text": "The artificial horizon shows how the aircraft is tilted. These controls adjust or lock (cage) it, and set other gyro-based instruments.",
+          "context": "The pilot nudges the horizon to a level line on the ground and cages the gyro on the ground before the start of flight.",
+          "src": "g1",
+          "controls": [
+            {
+              "id": "horizon-adjust",
+              "name": "Artificial horizon adjust knob",
+              "type": "knob",
+              "match": [
+                "cmd:sim/instruments/ah_ref_*",
+                "cmd:sim/cockpit2/gauges/actuators/artificial_horizon_adjust_deg_pilot",
+                "cmd:laminar/CitX/standby/horiz_adj*",
+                "cmd:laminar/f14/inst/knob/sai_aircraft_ref_*"
+              ],
+              "text": "This knob moves the little aircraft symbol up and down in the artificial horizon. The horizon is an instrument that shows the nose up or down and the wings level.",
+              "context": "The pilot sets it so the symbol sits on the horizon line when the aircraft flies level."
+            },
+            {
+              "id": "gyro-cage",
+              "name": "Horizon cage knob",
+              "type": "knob",
+              "match": [
+                "cmd:sim/instruments/ah_cage*",
+                "cmd:sim/cockpit/gyros/gyr_cage_ratio*",
+                "cmd:laminar/CitX/standby/*cage*"
+              ],
+              "text": "This knob locks (cages) the gyro of the artificial horizon in its level position and releases it again. Pulling it out locks the gyro.",
+              "context": "The pilot cages the horizon on the ground before starting. It resets the instrument if it has tumbled."
+            },
+            {
+              "id": "reversion",
+              "name": "AHRS and air data reversion switches",
+              "type": "switch",
+              "match": [
+                "cmd:sim/instruments/ahrs_rev*",
+                "cmd:sim/instruments/adc_rev*"
+              ],
+              "text": "These switches move a failed unit's work to the other one. The AHRS is the unit that senses the aircraft's tilt and heading. The air data computer measures speed and altitude. With the reversion switch, both pilots' displays use the working unit.",
+              "context": "The pilot uses them only after a failure of one of these units."
+            },
+            {
+              "id": "adirs",
+              "name": "ADIRS selector knobs (air data and inertial reference)",
+              "type": "knob",
+              "match": [
+                "cmd:laminar/A333/knobs/adirs/*",
+                "cmd:laminar/A333/buttons/adirs/*"
+              ],
+              "text": "The ADIRS is the system that measures the aircraft's tilt, direction, speed and height. Each knob turns one of its units OFF, to NAV (full navigation use) or ATT (tilt and heading only). Buttons switch one air data or inertial unit on and off.",
+              "context": "The pilot turns the knobs from OFF to NAV before flight, so the units align and the instruments get their data."
+            },
+            {
+              "id": "gpws",
+              "name": "Ground proximity warning (GPWS) switches",
+              "type": "switch",
+              "match": [
+                "cmd:laminar/A333/buttons/gpws/*",
+                "cmd:laminar/md82cmd/safeguard02"
+              ],
+              "text": "The GPWS warns the pilot when the ground comes too close, for example with a spoken message. These switches turn the system or parts of it on and off, such as the flap mode, the glide slope mode and the terrain display, or cancel one warning.",
+              "context": "The pilot leaves the system on. The tooltips name the part each switch controls."
+            },
+            {
+              "id": "standby-instrument",
+              "name": "Standby instrument buttons",
+              "type": "button",
+              "match": [
+                "cmd:laminar/A333/buttons/standby_*",
+                "cmd:laminar/B738/standby_instr/*"
+              ],
+              "text": "The standby instrument is a small backup screen showing speed, height and the horizon. These buttons dim or brighten it and set its bugs (markers), its landing-system display, its reset and its barometer reading.",
+              "context": "The pilot uses the standby instrument if the main screens fail."
+            }
+          ]
+        },
+        {
+          "id": "timers-and-minimums",
+          "name": "Timers, clocks and minimums",
+          "text": "These controls work the clock, the timers and the decision height marker.",
+          "context": "The pilot uses the timer to time turns and approach legs. The decision height (minimums) is the height at which the pilot must decide whether to land or go around.",
+          "src": "g1",
+          "controls": [
+            {
+              "id": "timer",
+              "name": "Timer / chronometer buttons",
+              "type": "button",
+              "match": [
+                "cmd:sim/instruments/timer_*",
+                "cmd:sim/instruments/chrono*",
+                "cmd:sim/instruments/elapsed*",
+                "cmd:laminar/A333/clock/*",
+                "cmd:laminar/B738/push_button/*hrono*",
+                "cmd:laminar/c90/avionics/dial/EFIS_timer_*",
+                "cmd:laminar/c90/avionics/switch/EFIS_ss"
+              ],
+              "text": "These buttons start, stop and reset the clock. Some also choose what the clock shows: universal time, local time, the time of the flight, or the elapsed time. Others show the date.",
+              "context": "The pilot starts the timer at a landmark to time the flight along a leg."
+            },
+            {
+              "id": "decision-height",
+              "name": "Decision height / minimums knob",
+              "type": "knob",
+              "match": [
+                "cmd:sim/instruments/dh_ref_*",
+                "cmd:sim/instruments/mda_ref_*",
+                "cmd:sim/instruments/minimum_*",
+                "cmd:sim/instruments/ra_baro*",
+                "cmd:laminar/c90/avionics/switch/EFIS_dh_test"
+              ],
+              "text": "This knob sets the decision height or minimum altitude marker. When the aircraft sinks to it on an approach, a light or sound shows it. A button chooses whether the value is measured by the radio altimeter (height above ground) or by the pressure altimeter.",
+              "context": "On an instrument approach the pilot sets the marker to the minimum shown on the approach chart."
+            },
+            {
+              "id": "temp-units",
+              "name": "Temperature units / OAT knob",
+              "type": "knob",
+              "match": [
+                "cmd:sim/instruments/thermo_units_toggle",
+                "cmd:laminar/c172/knob_OAT",
+                "cmd:laminar/c172/knob_TAS"
+              ],
+              "text": "These knobs change what a small instrument shows: the outside air temperature in degrees Celsius or Fahrenheit (and in the Cessna 172 the battery voltage), or they turn the dial of a speed calculator.",
+              "context": "The pilot reads the outside temperature to check for ice risks and uses the calculator to work out true airspeed."
+            }
+          ]
+        },
+        {
+          "id": "efis-map",
+          "name": "EFIS, navigation display and weather radar",
+          "text": "The EFIS is the electronic flight instrument system, the screens that show the flight information. These buttons choose what the navigation display shows on the map, and how the weather radar displays rain.",
+          "context": "The pilot shows airports, stations and routes on the map and switches the weather radar on for storms ahead.",
+          "src": "g1",
+          "controls": [
+            {
+              "id": "efis-buttons",
+              "name": "EFIS map display buttons",
+              "type": "button",
+              "match": [
+                "cmd:sim/instruments/EFIS_*",
+                "cmd:sim/instruments/map_*",
+                "cmd:sim/cockpit2/EFIS/map_range*",
+                "cmd:laminar/B738/EFIS_control/*",
+                "cmd:laminar/B738/MFD_control/*",
+                "cmd:laminar/md82/ND/*",
+                "cmd:laminar/A333/knobs/*EFIS*",
+                "cmd:laminar/A333/buttons/*EFIS*",
+                "cmd:laminar/A333/buttons/pfd_nd_*",
+                "cmd:laminar/A333/buttons/*ils_bars*"
+              ],
+              "text": "These buttons and knobs choose what the electronic map shows: airports (ARPT), waypoints (WPT), radio stations (VOR, NDB), the terrain, other traffic (TCAS) or the weather. The mode knob chooses the map style and the range knob zooms. Softkeys under a screen do what the text above them says.",
+              "context": "The pilot switches layers on and off so that the map is not too crowded."
+            },
+            {
+              "id": "wx-radar",
+              "name": "Weather radar controls",
+              "type": "knob",
+              "match": [
+                "cmd:sim/cockpit2/EFIS/EFIS_weather*",
+                "cmd:sim/cockpit/switches/EFIS_weather_alpha",
+                "cmd:rdr2000/*",
+                "cmd:laminar/CitX/radar/*",
+                "cmd:laminar/B738/wxr_radar/*",
+                "cmd:laminar/A333/switches/weather_radar*",
+                "cmd:laminar/md82cmd/EFIS_wxr_mode_*"
+              ],
+              "text": "These controls work the weather radar, which sees rain in front of the aircraft. Gain sets how sensitive it is, tilt aims the beam up or down, range sets the distance shown and brightness lights the display.",
+              "context": "The pilot looks for storm cells and flies around them."
+            },
+            {
+              "id": "ecam-eicas",
+              "name": "Engine and systems display (EICAS / ECAM)",
+              "type": "button",
+              "match": [
+                "cmd:sim/instruments/ECAM_mode_up",
+                "cmd:sim/instruments/center_control_*"
+              ],
+              "text": "These controls change the page of the engine and systems display, which shows engine data, warnings and system states in one screen.",
+              "context": "The pilot flips through the pages to check the engine and the systems."
+            },
+            {
+              "id": "annunciators",
+              "name": "Annunciator test and master warnings",
+              "type": "button",
+              "match": [
+                "cmd:sim/annunciator/test_all_annunciators",
+                "cmd:sim/annunciator/clear_master_caution",
+                "cmd:sim/annunciator/clear_master_warning",
+                "cmd:sim/annunciator/test_stall",
+                "cmd:sim/systems/overspeed_test",
+                "cmd:laminar/A333/buttons/*mast_*",
+                "cmd:laminar/B738/push_button/master_caution*",
+                "cmd:laminar/B738/push_button/stall_test*",
+                "cmd:laminar/B738/push_button/mach_warn_test*"
+              ],
+              "text": "The test button lights all warning lamps to check that the bulbs work. The master caution and master warning buttons switch off the big flashing lights after the pilot has noticed the message. The stall and overspeed tests sound the matching warnings.",
+              "context": "The pilot tests the lamps in the cockpit checks and presses the master buttons to quiet an alert after reading it."
+            },
+            {
+              "id": "hud-power",
+              "name": "HUD power",
+              "type": "switch",
+              "match": [
+                "cmd:sim/HUD/power_toggle",
+                "cmd:sim/cockpit2/switches/HUD_brightness_ratio"
+              ],
+              "text": "This switch turns the head-up display (HUD) on or off. The HUD is the glass screen in front of the pilot's eyes that shows flight numbers and aiming marks. A knob sets its brightness.",
+              "context": "The pilot has it on for take-off and landing."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "cabin",
+      "where": "other",
+      "name": "Cabin and doors",
+      "text": "These controls open the doors, windows and hatches, and run the air in the cabin: heating, cooling, air flow, pressure and oxygen.",
+      "panels": [
+        {
+          "id": "doors-windows",
+          "name": "Doors, windows and canopy",
+          "text": "These handles open and close the doors, the windows, the hatches and, on a fighter, the canopy.",
+          "context": "The pilot opens the door to get in and out. Doors and exits in an airliner are named by their place, such as L1 for the first left door.",
+          "src": "g1",
+          "controls": [
+            {
+              "id": "doors",
+              "name": "Door handles and emergency exits",
+              "type": "handle",
+              "match": [
+                "cmd:sim/flight_controls/door_close_*",
+                "cmd:sim/flight_controls/door_open_*",
+                "cmd:sim/cockpit2/switches/door_open*",
+                "cmd:sim/operation/slider_0?",
+                "cmd:sim/operation/slider_1?"
+              ],
+              "text": "These handles open or close a door, a hatch or an emergency exit. On small aircraft the door is next to the seats. Airliners have many doors, named by their place, such as L1 for front left. Some aircraft have a small window or a stairway that opens by the same kind of control.",
+              "context": "The pilot closes and locks the door before the flight. Emergency exits are opened only in an emergency."
+            },
+            {
+              "id": "canopy",
+              "name": "Canopy controls",
+              "type": "handle",
+              "match": [
+                "cmd:sim/flight_controls/canopy_*",
+                "cmd:laminar/F4/canopy_open_handle"
+              ],
+              "text": "These controls open and close the canopy, the clear glass roof over a glider or fighter cockpit. In the Boeing 737 the same command is used for the cockpit door.",
+              "context": "The pilot closes it before take-off and opens it after landing."
+            },
+            {
+              "id": "cockpit-door",
+              "name": "Cockpit door lock",
+              "type": "switch",
+              "match": [
+                "cmd:laminar/A333/switches/cockpit_door*",
+                "cmd:laminar/md82cmd/switches/ckpt_door_lock_toggle",
+                "cmd:laminar/A333/buttons/cockpit_door*"
+              ],
+              "text": "This switch locks or unlocks the door between the cockpit and the cabin.",
+              "context": "The door stays locked in flight for safety."
+            },
+            {
+              "id": "sunvisor-etc",
+              "name": "Sun visors, armrests, glove box and other fixtures",
+              "type": "other",
+              "match": [
+                "cmd:laminar/*/sunvisor*",
+                "cmd:laminar/*/cabin/sunvisor*",
+                "cmd:laminar/a333/misc/*",
+                "cmd:laminar/*/fixtures/*",
+                "cmd:laminar/n844x/door_seals_*",
+                "cmd:laminar/n844x/switches/ELT_*",
+                "cmd:laminar/sr22/sunvisor*",
+                "cmd:laminar/rv10/sunvisor*",
+                "cmd:laminar/rv10/seat_heat*",
+                "cmd:laminar/rv10/heat_fan*"
+              ],
+              "text": "These controls move small parts of the cabin: the sun visors, which shade the pilot's eyes, the arm rests and the glove box. They do not change how the aircraft flies.",
+              "context": "The pilot uses them for comfort. The ELT, an emergency radio, is also in this group when its tooltip says so."
+            }
+          ]
+        },
+        {
+          "id": "air-pressure",
+          "name": "Air conditioning, pressurization and oxygen",
+          "text": "These controls warm and cool the cabin air, bring in fresh air and keep the pressure in the cabin comfortable at high altitude. The oxygen controls give the crew the breathing gas for high flight.",
+          "context": "The pilot sets the temperature and the cabin altitude before flight. Higher up the air is thin, so jets keep the cabin pressure higher than outside.",
+          "src": "g1",
+          "controls": [
+            {
+              "id": "cabin-heat-air",
+              "name": "Cabin heat, air and fan controls",
+              "type": "knob",
+              "match": [
+                "cmd:sim/pressurization/fan_*",
+                "cmd:sim/pressurization/heater_*",
+                "cmd:laminar/r22/cabin_*",
+                "cmd:laminar/pa18/cabin_heat_ratio",
+                "cmd:laminar/sr22/fan_speed_*",
+                "cmd:laminar/sr22/temp_control",
+                "cmd:laminar/sr22/button/air_con_toggle",
+                "cmd:laminar/c90/airCon/*",
+                "cmd:laminar/CitX/bleedair/*",
+                "cmd:laminar/rv10/knobs/*",
+                "cmd:laminar/B738/air/*",
+                "cmd:laminar/A333/knob/*_temp",
+                "cmd:laminar/md82/bleedair/*",
+                "cmd:laminar/A333/switches/hot_air?_toggle",
+                "cmd:laminar/A333/switches/ram_air_toggle",
+                "cmd:laminar/A333/switches/misc/*",
+                "cmd:laminar/A333/buttons/cabin_fan_tog",
+                "cmd:laminar/A333/buttons/cargo_cond/*",
+                "cmd:laminar/A333/buttons/ventilation*"
+              ],
+              "text": "These controls set the cabin's heat, cool and fresh air. A heat knob mixes hot air into the flow, a fan switch moves air faster, and a temperature dial sets the temperature the system aims at. The tooltip says whether it is the heater, the fan or the air conditioning.",
+              "context": "The pilot uses them for the comfort of the people on board and to demist the windshield in cold weather."
+            },
+            {
+              "id": "bleed-air",
+              "name": "Bleed air and air-conditioning packs",
+              "type": "switch",
+              "match": [
+                "cmd:sim/bleed_air/engine_*",
+                "cmd:sim/bleed_air/pack_*",
+                "cmd:sim/operation/slider_21",
+                "cmd:laminar/c90/pneumatic/*",
+                "cmd:laminar/md82cmd/bleedair/*",
+                "cmd:laminar/B738/switch/*pack*",
+                "cmd:laminar/B738/switch/*recirc*",
+                "cmd:laminar/B738/switch/iso_valve*",
+                "cmd:laminar/A333/knobs/press_press_flow_*",
+                "cmd:laminar/f14/envr/bleed_air/*"
+              ],
+              "text": "These switches take hot air from the engines (bleed air) and send it to the air conditioning. The packs are the machines that cool and dry that hot air for the cabin. The bleed switch of each engine opens or closes its supply.",
+              "context": "The pilot switches bleeds on after the engine start. During take-off the bleed is sometimes closed to leave all power to the engine."
+            },
+            {
+              "id": "pressurization",
+              "name": "Pressurization controls",
+              "type": "knob",
+              "match": [
+                "cmd:sim/pressurization/cabin_alt_*",
+                "cmd:sim/pressurization/vvi_*",
+                "cmd:sim/pressurization/dump_*",
+                "cmd:sim/cockpit2/pressurization/actuators/*",
+                "cmd:laminar/c90/pressure/*",
+                "cmd:laminar/CitX/pressurization/*",
+                "cmd:laminar/B738/pressurization/*",
+                "cmd:laminar/f14/pres/*",
+                "cmd:laminar/A333/knobs/press_isol_valve_*"
+              ],
+              "text": "These controls set the cabin pressure. The pilot chooses the height of the cabin air, the rate at which the pressure may change, and the destination airport's height. The dump switch releases the pressure at once.",
+              "context": "The system runs by itself once set. The dump is for smoke or an emergency."
+            },
+            {
+              "id": "oxygen",
+              "name": "Oxygen controls",
+              "type": "switch",
+              "match": [
+                "cmd:sim/oxy/*",
+                "cmd:laminar/CitX/oxygen/*",
+                "cmd:laminar/f14/oxyg/*",
+                "cmd:laminar/A333/crew_supply_toggle"
+              ],
+              "text": "These controls open the supply of oxygen for the crew, or drop the oxygen masks in the passenger cabin by hand.",
+              "context": "Oxygen is needed at high altitude or if smoke fills the cabin."
+            }
+          ]
+        },
+        {
+          "id": "cabin-signs",
+          "name": "Passenger signs and calls",
+          "text": "These switches turn on the signs for the passengers, such as the seat belt sign and the no-smoking sign, and the call buttons for the cabin crew.",
+          "context": "The pilot switches the seat belt sign on for take-off, landing and rough air, so the people in the cabin stay seated and belted.",
+          "src": "g1",
+          "controls": [
+            {
+              "id": "passenger-signs",
+              "name": "Seat belt and no-smoking signs",
+              "type": "switch",
+              "match": [
+                "cmd:laminar/md82cmd/switches/seatbelts_*",
+                "cmd:laminar/md82cmd/switches/nosmoke_*",
+                "cmd:laminar/B738/toggle_switch/seatbelt_sign_*",
+                "cmd:laminar/A333/switches/seatbelt_signs_*",
+                "cmd:laminar/A333/switches/smoking_signs_*",
+                "cmd:laminar/CitX/lights/cmd_seat_belt_pass_safety_*",
+                "cmd:laminar/c90/lighting/switch/no_smoke_fsb_*"
+              ],
+              "text": "These switches turn the passenger signs on and off. The seat belt sign tells the people in the cabin to sit down and fasten their belts. The no-smoking sign says smoking is not allowed. Some have an AUTO position where the aircraft switches the sign by itself.",
+              "context": "The pilot uses the seat belt sign for take-off, landing and bumpy air."
+            },
+            {
+              "id": "cabin-lights",
+              "name": "Cabin lights and passenger power switches",
+              "type": "switch",
+              "match": [
+                "cmd:laminar/c90/lighting/switch/cabin_brt_dim_*",
+                "cmd:laminar/CitX/lights/cmd_cabin_master_toggle",
+                "cmd:laminar/A333/buttons/galley_toggle",
+                "cmd:laminar/A333/buttons/pax_*",
+                "cmd:laminar/A333/buttons/commercial_toggle",
+                "cmd:laminar/B738/switch/cab_util_*",
+                "cmd:laminar/B738/switch/ife_pass_seat_*"
+              ],
+              "text": "These switches control the cabin's lights and the power to passenger services such as the galley (kitchen), the entertainment system and the seat power. The tooltip says which.",
+              "context": "The cabin crew and the pilots set them for the comfort of the passengers."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "sim-helpers",
+      "where": "other",
+      "name": "Simulator helpers",
+      "text": "These controls are not part of a real aircraft. X-Plane adds them as help, for example to hide the yokes or to change the volume of the radio.",
+      "panels": [
+        {
+          "id": "helper-controls",
+          "name": "Helper controls",
+          "text": "These click spots are helpers for the pilot sitting at the computer. They change how the cockpit looks or sounds without changing how the aircraft flies.",
+          "context": "They are never part of a checklist. They are a comfort for the person in the seat.",
+          "src": "g1",
+          "controls": [
+            {
+              "id": "toggle-yokes",
+              "name": "Hide / show the yokes",
+              "type": "button",
+              "match": [
+                "cmd:sim/operation/toggle_yoke"
+              ],
+              "text": "This control hides the yokes or shows them again. With the yokes hidden you can see the instruments behind them.",
+              "context": "It changes only the view; the controls still work."
+            },
+            {
+              "id": "bobblehead",
+              "name": "Custom sliders (bobblehead and others)",
+              "type": "other",
+              "match": [
+                "cmd:sim/operation/slider_20",
+                "cmd:sim/operation/slider_22",
+                "cmd:sim/operation/slider_23"
+              ],
+              "text": "X-Plane gives aircraft makers numbered custom sliders, and each aircraft uses them for its own purpose. In the Cessna 172 one slider moves a bobblehead figure between the glareshield and the drawer. In the SF50 one slider turns on the oxygen for the masks in case the pressure fails. The tooltip says which.",
+              "context": "Read the tooltip: a custom slider can be a toy or a real switch."
+            },
+            {
+              "id": "feel-aids",
+              "name": "Sound and force feedback helpers",
+              "type": "other",
+              "match": [
+                "cmd:sim/operation/sound/*",
+                "cmd:sim/aircraft/forcefeedback/*",
+                "cmd:sim/systems/total_energy_audio_toggle"
+              ],
+              "text": "These controls switch helper features: the volume of the radio sounds, the stick shaker for a joystick with force feedback, and the total energy audio. The audio is a sound that helps glider pilots find rising air.",
+              "context": "A glider pilot listens to the total energy sound to find lift."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "other",
+      "where": "other",
+      "name": "Other controls by name",
+      "text": "These controls belong to one aircraft or to one system of a big aircraft. The text for each group is general; the tooltip of the control names the exact switch, button or knob.",
+      "panels": [
+        {
+          "id": "covers-guards",
+          "name": "Covers, guards and safeguards",
+          "text": "A cover, guard or safeguard is a small hinged flap or bar over a switch or button. It stops the pilot from pressing the switch by accident.",
+          "context": "The pilot lifts the cover first and then works the switch below it. Covers protect the controls with big effects, such as engine fire, battery or emergency systems.",
+          "src": "g1",
+          "controls": [
+            {
+              "id": "covers",
+              "name": "Switch covers, guards and safeguards",
+              "type": "cover",
+              "match": [
+                "cmd:laminar/*/guard_cover*",
+                "cmd:laminar/*/button_switch_cover*",
+                "cmd:laminar/*/safeguard*",
+                "cmd:sim/operation/slider_24",
+                "cmd:laminar/CitX/*guard*",
+                "cmd:laminar/CitX/lights/cmd_cabin_safeguard_toggle",
+                "cmd:laminar/CitX/APU/fire_guard"
+              ],
+              "text": "These click spots lift or close the cover over a switch. The tooltip names the switch the cover protects, such as the battery, a fire handle or the landing gear emergency release. Some are clear plastic flaps, others are bars.",
+              "context": "Flip the cover up to reach the switch. The cover stays open until it is closed again. Some covers hide switches the pilot uses rarely or only in an emergency."
+            }
+          ]
+        },
+        {
+          "id": "ga-extras",
+          "name": "Single controls of the smaller aircraft",
+          "text": "These are single controls that only one or two of the smaller aircraft have, such as warning-light tests, extra EFIS switches and special instruments.",
+          "context": "They are part of the systems of their aircraft; the tooltip names the control.",
+          "src": "g1",
+          "controls": [
+            {
+              "id": "r22-test",
+              "name": "Robinson R22 warning light tests",
+              "type": "button",
+              "match": [
+                "cmd:laminar/r22/cmd_*_button"
+              ],
+              "text": "These buttons test the warning lights of the helicopter: low fuel, main rotor chip, main rotor temperature, tail rotor chip. A chip light means small metal pieces were found in the gearbox oil. Pressing a button lights its lamp to show the lamp works.",
+              "context": "The pilot presses them in the checks before flight."
+            },
+            {
+              "id": "c90-efis",
+              "name": "King Air EFIS controls",
+              "type": "switch",
+              "match": [
+                "cmd:laminar/c90/avionics/dial/EFIS_*",
+                "cmd:laminar/c90/avionics/switch/EFIS_*",
+                "cmd:laminar/c90/avionics/switch/encd_altim_selector",
+                "cmd:laminar/c90/avionics/switch/annun_brt"
+              ],
+              "text": "These controls belong to the electronic flight instrument system (EFIS), the screens of the King Air. They switch the screens on and off, test them, choose their map style, silence the warning horn for auxiliary power and select a backup mode if a screen fails.",
+              "context": "The pilot uses them in the checks before flight and when a screen fails."
+            },
+            {
+              "id": "c90-misc",
+              "name": "King Air bus sense, lights and cabin signs",
+              "type": "switch",
+              "match": [
+                "cmd:laminar/c90/electrical/switch/bus_sense_*",
+                "cmd:laminar/c90/ind42/*",
+                "cmd:laminar/c90/autopilot/switch/test"
+              ],
+              "text": "These switches belong to the King Air. The bus sense switch tests the electric lines (buses) and resets their sensors. An autopilot test switch lights the autopilot warning lamps. The IND42 is a radio indicator with its own power, channel and mode switches.",
+              "context": "They are used in the checks before flight."
+            },
+            {
+              "id": "small-ap-knobs",
+              "name": "Small autopilot knobs (heading and altitude)",
+              "type": "knob",
+              "match": [
+                "cmd:laminar/n844x/ap_knob_*",
+                "cmd:laminar/rv10/ap_knob_*"
+              ],
+              "text": "On the autopilot of these small aircraft, a pair of knobs sets the targets. The tooltip names them Heading and Altitude adjust. Turning a knob changes the value the autopilot aims at.",
+              "context": "The pilot sets the heading and altitude here, then lets the autopilot fly to them."
+            },
+            {
+              "id": "n844x-push-hot",
+              "name": "Push hot handle (N844X)",
+              "type": "handle",
+              "match": [
+                "cmd:laminar/n844x/handles/push_hot"
+              ],
+              "text": "The game names this handle 'Push Hot'. The game gives no further description, so the exact function is not stated here.",
+              "context": "It is a handle in the cockpit of the N844X aircraft."
+            },
+            {
+              "id": "n844x-ap",
+              "name": "Autopilot nav button (small aircraft)",
+              "type": "button",
+              "match": [
+                "cmd:laminar/n844x/ap_button_nav"
+              ],
+              "text": "This button on a small autopilot makes the aircraft follow a navigation beacon, a localizer (the radio beam of a runway) or an approach. The label reads VOR LOC APPR.",
+              "context": "The pilot presses it when flying a radio approach with the autopilot."
+            },
+            {
+              "id": "tiny-tach",
+              "name": "Tiny tach mode button",
+              "type": "button",
+              "match": [
+                "cmd:laminar/aerolite/button/tiny_tack_mode"
+              ],
+              "text": "This button changes what the small engine instrument shows. It cycles through the readouts one after the other, such as the engine speed.",
+              "context": "The pilot presses it to see another readout."
+            },
+            {
+              "id": "engine-switches-jet",
+              "name": "Engine on/off switches (F-4)",
+              "type": "switch",
+              "match": [
+                "cmd:laminar/F4/toggle_switch/engine?_on"
+              ],
+              "text": "These switches turn the F-4's engines on and off. The label names engine 1 or engine 2.",
+              "context": "The pilot uses them in the engine start and shutdown."
+            },
+            {
+              "id": "f4-lights-weapons",
+              "name": "F-4 exterior lights and weapon switch",
+              "type": "switch",
+              "match": [
+                "cmd:laminar/F4/toggle_switch/*",
+                "cmd:laminar/F4/*"
+              ],
+              "text": "These switches belong to the Phantom. Brightness switches set its fuselage, tail, wing and console lights. The steady-flash switch picks flashing lights, and the missile arm switch arms the missiles.",
+              "context": "The pilot sets the lights for the time of day. The arm switch is used before using missiles."
+            },
+            {
+              "id": "md80-computer",
+              "name": "MD-80 take-off computer, speed bug and thrust inputs",
+              "type": "knob",
+              "match": [
+                "cmd:laminar/md82/TOcomputer/*",
+                "cmd:laminar/md82/IAS/*",
+                "cmd:laminar/md82/autopilot/*",
+                "cmd:laminar/md82/*"
+              ],
+              "text": "These knobs set values the MD-80 flight computer uses: the weight balance (CG) and the flap setting for the take-off trim, a custom speed marker and an assumed temperature for reduced thrust.",
+              "context": "The pilot or crew set these before take-off. They help the computer to work out the right trim and thrust for the weight of that flight."
+            },
+            {
+              "id": "misc-sim-controls",
+              "name": "EPR bug, water rudder, jettison and chaff",
+              "type": "other",
+              "match": [
+                "cmd:sim/cockpit2/engine/actuators/EPR_target_bug*",
+                "cmd:sim/cockpit2/controls/water_rudder_handle_ratio",
+                "cmd:sim/flight_controls/drop_tank",
+                "cmd:sim/flight_controls/jettison_payload",
+                "cmd:sim/weapons/deploy_chaff",
+                "cmd:sim/weapons/deploy_flares",
+                "cmd:sim/engines/throttle_horizontal_*",
+                "cmd:sim/cockpit2/radios/actuators/com?_right_is_selected"
+              ],
+              "text": "These are single controls of some aircraft. The EPR bug is a marker on the engine pressure ratio gauge. The water rudder handle lowers the rudder of a seaplane for steering on the water. The jettison buttons drop external stores in an emergency, and the chaff button throws out strips of metal to fool radar missiles. A radio frequency selection switch is also here.",
+              "context": "Each belongs to the one aircraft whose tooltip names it."
+            }
+          ]
+        },
+        {
+          "id": "a330-audio-radios",
+          "name": "Airbus A330: audio and radio panels",
+          "text": "Each pilot seat and the extra crew seat of the A330 has an audio panel and a radio management panel. They set what the crew hears and which radio they talk on, and tune the radio frequencies.",
+          "context": "The captain, the first officer and the observer use their own panels. The names tell which seat and which radio the control belongs to.",
+          "src": "g1",
+          "controls": [
+            {
+              "id": "a330-audio",
+              "name": "A330 audio control panel (buttons and volume knobs)",
+              "type": "other",
+              "match": [
+                "cmd:laminar/A333/audio/*"
+              ],
+              "text": "These buttons and knobs belong to the audio panel of one crew seat. A button picks a source to listen to or to talk on, such as a radio, the cabin phone or the passenger announcement. A knob sets the volume of that source.",
+              "context": "The pilot listens to several sources at the same time. The microphone sends to the source that was picked for talking."
+            },
+            {
+              "id": "a330-rtp",
+              "name": "A330 radio management panels (left, right, center)",
+              "type": "other",
+              "match": [
+                "cmd:laminar/A333/rtp_*/*",
+                "cmd:laminar/A330/*rtp*"
+              ],
+              "text": "These panels tune the radios. Keys choose which radio the panel works on. The knobs set the megahertz and the kilohertz parts of the frequency. A swap key flips the active and the standby frequency.",
+              "context": "The left and right panels belong to the captain and the first officer, the center panel to the middle of the pedestal."
+            }
+          ]
+        },
+        {
+          "id": "a330-systems",
+          "name": "Airbus A330: system panels",
+          "text": "The A330 has a big overhead panel and pedestal full of push buttons and switches. Every button belongs to one system, such as electrical, fuel, air conditioning, hydraulics, doors or lights.",
+          "context": "The overhead panel is organised by systems: the pilot checks each section in turn before flight. Covers protect the important buttons.",
+          "src": "g1",
+          "controls": [
+            {
+              "id": "a330-ecam",
+              "name": "A330 ECAM control panel",
+              "type": "button",
+              "match": [
+                "cmd:laminar/A333/button/ecam/*",
+                "cmd:laminar/A333/button/emer_*"
+              ],
+              "text": "The ECAM is the central screen that shows the aircraft's systems and warnings. These buttons choose the system page, such as APU, air conditioning, electrical or engine, clear a message or cancel an emergency alert. Two other buttons test the emergency generator.",
+              "context": "The pilot calls up a page to check one system. ECAM also shows pages by itself when something goes wrong."
+            },
+            {
+              "id": "a330-autopilot",
+              "name": "A330 autopilot panel (FCU)",
+              "type": "knob",
+              "match": [
+                "cmd:laminar/A333/autopilot/*"
+              ],
+              "text": "The flight control unit (FCU) panel sets the autopilot targets. The knobs set altitude, heading, speed and vertical speed or flight path angle. Pushing or pulling a knob picks the mode. Other buttons switch the autothrottle on and off.",
+              "context": "The pilot sets a target with a knob and pushes or pulls it to tell the autopilot how to reach it."
+            },
+            {
+              "id": "a330-fire",
+              "name": "A330 fire panel",
+              "type": "button",
+              "match": [
+                "cmd:laminar/A333/fire/*"
+              ],
+              "text": "These controls handle fires in the engines, the APU and the cargo hold. A fire handle shuts down the affected system. The agent buttons release the extinguishing agent. The test buttons check the fire alarms.",
+              "context": "They are used only if a fire warning appears, or for a test."
+            },
+            {
+              "id": "a330-transponder",
+              "name": "A330 transponder and TCAS panel",
+              "type": "knob",
+              "match": [
+                "cmd:laminar/A333/transponder/*"
+              ],
+              "text": "These controls set the transponder mode and the TCAS traffic alert system. TCAS watches the transponders of other aircraft and warns of a possible collision. The mode selects between standby, traffic advisory only and full resolution advisories.",
+              "context": "The pilot sets them before take-off and keeps them on during the whole flight."
+            },
+            {
+              "id": "a330-switches",
+              "name": "A330 switches and push buttons",
+              "type": "button",
+              "match": [
+                "cmd:laminar/A333/switches/*",
+                "cmd:laminar/A333/switch/*",
+                "cmd:laminar/A333/toggle_switch/*",
+                "cmd:laminar/A333/buttons/*",
+                "cmd:laminar/A333/*",
+                "cmd:laminar/A330/*",
+                "cmd:laminar/a333/*"
+              ],
+              "text": "These are the many switches and push buttons of the A330's overhead and other panels, for example the fuel pumps, hydraulic pumps, air systems, ADR units, lights, doors and call buttons. The tooltip names each one.",
+              "context": "The pilot works through these panels from the overhead down to the pedestal, as the checklists say."
+            }
+          ]
+        },
+        {
+          "id": "b738-panels",
+          "name": "Boeing 737-800: panels",
+          "text": "The Boeing 737-800 has a mode control panel (MCP) for the autopilot, EFIS panels for the screens, radio panels, an overhead and many covers.",
+          "context": "The pilots work the panels from the overhead to the pedestal. The two pilots each have their own EFIS panel.",
+          "src": "g1",
+          "controls": [
+            {
+              "id": "b738-mcp",
+              "name": "737 mode control panel (autopilot)",
+              "type": "button",
+              "match": [
+                "cmd:laminar/B738/autopilot/*"
+              ],
+              "text": "These buttons and knobs belong to the autopilot panel. They engage the autopilot (CMD A and CMD B), the control wheel steering (CWS), and the modes such as heading select, altitude hold, vertical speed, level change, VNAV and LNAV (navigation by the flight computer). Others disconnect or take over the autothrottle.",
+              "context": "The pilot sets the targets and presses the buttons to pick how the aircraft should fly them."
+            },
+            {
+              "id": "b738-radio-audio",
+              "name": "737 radio and audio panels",
+              "type": "button",
+              "match": [
+                "cmd:laminar/B738/rtp_*/*",
+                "cmd:laminar/B738/audio/*",
+                "cmd:laminar/B738/comm/*",
+                "cmd:laminar/B738/push_button/*NAV*"
+              ],
+              "text": "The radio panels tune the left and right COM radios with a frequency knob and a swap key. The audio buttons choose what each crew seat hears: VHF radios, the interphone, the cabin and the announcements.",
+              "context": "The captain, first officer and observer each have an audio panel."
+            },
+            {
+              "id": "b738-start-levers",
+              "name": "737 engine start levers",
+              "type": "lever",
+              "match": [
+                "cmd:laminar/B738/engine/*"
+              ],
+              "text": "The start lever of an engine controls its fuel supply. In the cut-off position no fuel reaches the engine. In the idle position fuel flows at the lowest running setting. There is one lever for each engine.",
+              "context": "The pilot moves the lever from cut-off to idle once the engine has reached the speed for the fuel, and back to cut-off to shut the engine down."
+            },
+            {
+              "id": "b738-misc",
+              "name": "737 switches, knobs and buttons",
+              "type": "other",
+              "match": [
+                "cmd:laminar/B738/*"
+              ],
+              "text": "These are the other switches, knobs and push buttons of the 737-800: the lights, the seat belt sign, the emergency exit lights, the ELT, the drive disconnects, the oxygen and the test switches. The tooltip names each control.",
+              "context": "The pilot sets them in the pre-flight checks; covers protect the important ones."
+            }
+          ]
+        },
+        {
+          "id": "citx-panels",
+          "name": "Cessna Citation X: panels",
+          "text": "The Citation X is a fast business jet. Its cockpit has overhead and side panels with switches for the electrical, engine, fuel, air, ice, light and pressurization systems, and an autopilot panel.",
+          "context": "The tooltip of each control names the system. Many switches are three-position switches with a spring or a click.",
+          "src": "g1",
+          "controls": [
+            {
+              "id": "citx-autopilot",
+              "name": "Citation X autopilot panel",
+              "type": "button",
+              "match": [
+                "cmd:laminar/CitX/autopilot/*"
+              ],
+              "text": "These buttons and wheels belong to the Citation's autopilot panel. They turn the autopilot on and off, pick modes such as heading hold, altitude hold, vertical speed, navigation, approach and back course, and change the pitch with a wheel. Others switch the yaw damper and the automatic Mach trim.",
+              "context": "The pilot engages the autopilot and picks the modes in flight. The autopilot then flies those modes."
+            },
+            {
+              "id": "citx-electrical-engine",
+              "name": "Citation X electrical, APU and engine switches",
+              "type": "switch",
+              "match": [
+                "cmd:laminar/CitX/electrical/*",
+                "cmd:laminar/CitX/APU/*",
+                "cmd:laminar/CitX/engine/*",
+                "cmd:laminar/CitX/test/*"
+              ],
+              "text": "These switches control the Citation's power sources, the APU, the engines and a test mode. Examples are the avionics power, the external power, the standby power, the load shed switch for the electric lines, the engine sync and the ground idle mode.",
+              "context": "The pilot uses them on the ground before the start and in the checks."
+            },
+            {
+              "id": "citx-lights",
+              "name": "Citation X lights and dimmers",
+              "type": "switch",
+              "match": [
+                "cmd:laminar/CitX/lights/*",
+                "cmd:laminar/CitX/primus/*",
+                "cmd:laminar/CitX/FMS?/*"
+              ],
+              "text": "These are the Citation's remaining light and display controls: the map dome lights, the dimming switch for the lights and a switch the tooltip calls toggle monitor on/off. The brightness of the screens and the FMS displays is also set here.",
+              "context": "The pilot sets the lights by the time of day."
+            },
+            {
+              "id": "citx-others",
+              "name": "Citation X standby, radar and other controls",
+              "type": "other",
+              "match": [
+                "cmd:laminar/CitX/*"
+              ],
+              "text": "These are the remaining controls of the Citation X, such as the emergency brake handle, the emergency stow of the thrust reverser doors, the wing ice inspection light and the switch that toggles the standby radio between COM1 and NAV1. The tooltip names each control.",
+              "context": "The pilot uses them as the checklists call for."
+            }
+          ]
+        },
+        {
+          "id": "md80-panels",
+          "name": "McDonnell Douglas MD-80: panels",
+          "text": "The MD-80 is a two-engine airliner with an older-style cockpit. Its controls include the autopilot and autothrottle panel, the radio panels and switches for the lights, the doors and the electric system.",
+          "context": "Some switches in this aircraft model exist only for decoration; the game says so in the tooltip.",
+          "src": "g1",
+          "controls": [
+            {
+              "id": "md80-autopilot",
+              "name": "MD-80 autopilot and autothrottle controls",
+              "type": "button",
+              "match": [
+                "cmd:laminar/md82cmd/autopilot/*"
+              ],
+              "text": "These controls belong to the MD-80's autopilot and autothrottle. They engage the autopilot servos, hold altitude or vertical speed, follow the flight computer, engage autoland and set the engine thrust targets. Some of them are not simulated, as the tooltip says.",
+              "context": "The pilot picks a mode and the autopilot then holds it. The thrust targets (EPR) are values the engine thrust is aimed at."
+            },
+            {
+              "id": "md80-others",
+              "name": "MD-80 switches and radio panel keys",
+              "type": "other",
+              "match": [
+                "cmd:laminar/md82cmd/*"
+              ],
+              "text": "These are the other switches of the MD-80: the lights, the passenger signs, the cockpit door, the voltmeter source selector, the ADF tuning and the weather radar mode. The tooltip names each one.",
+              "context": "The pilot uses them as the checklists call for."
+            }
+          ]
+        },
+        {
+          "id": "f14-panels",
+          "name": "Grumman F-14D Tomcat: panels",
+          "text": "The F-14 is a two-seat navy fighter. The pilot sits in front and the radar intercept officer (RIO) behind. The cockpit has weapon switches, many displays with buttons, radios, lights and a swing-wing control.",
+          "context": "The pilot uses the front controls to fly and shoot; the RIO uses the back seat for radar and navigation.",
+          "src": "g1",
+          "controls": [
+            {
+              "id": "f14-mfd-buttons",
+              "name": "F-14 multi-function display pushbuttons",
+              "type": "button",
+              "match": [
+                "cmd:laminar/f14/inst/*mfd?_pb*"
+              ],
+              "text": "These are the rows of numbered pushbuttons around the F-14's multi-function displays (MFDs). An MFD is a screen with buttons around its edge. Each button picks the word printed next to it on the screen, so the same button does different things on different pages.",
+              "context": "The pilot and the RIO use them to switch the screens between the map, radar, weapons and other pages."
+            },
+            {
+              "id": "f14-displays",
+              "name": "F-14 displays and instrument buttons",
+              "type": "button",
+              "match": [
+                "cmd:laminar/f14/inst/*",
+                "cmd:laminar/f14/avio/*",
+                "cmd:laminar/f14/syst/*",
+                "cmd:laminar/f14/aplt/*",
+                "cmd:laminar/f14/navg/*"
+              ],
+              "text": "These buttons and knobs run the F-14's displays and instruments. Some power displays on and off, others set the HUD (the glass screen with flight numbers and aiming marks), the attitude indicator and the mode of the tactical systems.",
+              "context": "The pilot or the RIO select the page and the mode for the job at hand."
+            },
+            {
+              "id": "f14-weapons",
+              "name": "F-14 weapon switches",
+              "type": "switch",
+              "match": [
+                "cmd:laminar/f14/weapons/*",
+                "cmd:laminar/f14/wpns/*",
+                "cmd:laminar/f14/stores/*",
+                "cmd:laminar/f14/fltc/*"
+              ],
+              "text": "These controls select and fire the weapons. The master arm switch is the main safety switch for the weapons; nothing fires while it is off. The weapon select buttons pick guns, missiles, chaff or flares, the bomb release button drops bombs and the jettison switch drops stores in an emergency.",
+              "context": "The pilot arms the aircraft only when ready to use the weapons."
+            },
+            {
+              "id": "f14-comm-lights",
+              "name": "F-14 radios, lights and other switches",
+              "type": "other",
+              "match": [
+                "cmd:laminar/f14/*"
+              ],
+              "text": "These are the remaining F-14 controls, such as the fuel feed and refuel probe switches. The tooltip names each control.",
+              "context": "The pilot or the RIO set them in the checks and use them during the mission."
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

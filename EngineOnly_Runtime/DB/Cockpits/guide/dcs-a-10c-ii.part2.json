@@ -1,0 +1,1983 @@
+{
+  "format": "joypro-cockpit-guide",
+  "version": 1,
+  "id": "dcs-a-10c-ii-part2",
+  "partOf": "dcs-a-10c-ii",
+  "areas": [
+    {
+      "id": "left-console",
+      "where": "left-console",
+      "name": "Left console",
+      "text": "The side panel to the pilot's left: throttles and engine switches, the fuel panel, three radios, the autopilot panel, flight control backup switches, the intercom, lights and the ejection seat controls.",
+      "panels": [
+        {
+          "id": "fuel-panel",
+          "name": "Fuel system control panel",
+          "db": "fuel-system-control-panel",
+          "src": "m1",
+          "page": "158",
+          "text": "This panel controls how fuel flows from the tanks to the engines. It has pump switches, tank switches, a crossfeed switch and the controls for refuelling in the air.",
+          "context": "The plane has two separate fuel systems, left and right, so one failure cannot starve both engines. The pilot switches the pumps on during start-up and uses the crossfeed only if a pump fails.",
+          "controls": [
+            {
+              "id": "boost-main",
+              "name": "Main boost pump switches (L and R)",
+              "type": "switch2",
+              "match": [
+                "PTR-FSCP-BOOST-PUMPS-MAIN-*",
+                "item:fuel-system-control-panel:1"
+              ],
+              "positions": [
+                {
+                  "name": "ON",
+                  "text": "The pump of that main tank runs and pushes fuel to the engine."
+                },
+                {
+                  "name": "OFF",
+                  "text": "The pump of that main tank is off."
+                }
+              ],
+              "count": 2,
+              "text": "These two switches turn on the pumps of the left and right fuselage main tanks. A pump pushes the fuel towards the engine.",
+              "context": "The pre-flight list has them off. The pilot turns them on during the start-up, and a caution light shows if a pump pressure is low.",
+              "src": "m1",
+              "page": "158"
+            },
+            {
+              "id": "boost-wing",
+              "name": "Wing boost pump switches (L and R)",
+              "type": "switch2",
+              "match": [
+                "PTR-FSCP-BOOST-PUMPS-WING-*",
+                "item:fuel-system-control-panel:2"
+              ],
+              "positions": [
+                {
+                  "name": "ON",
+                  "text": "The pump of that wing tank runs."
+                },
+                {
+                  "name": "OFF",
+                  "text": "The pump of that wing tank is off."
+                }
+              ],
+              "count": 2,
+              "text": "These two switches turn on the pumps of the left and right wing tanks.",
+              "context": "Because of their pump pressure the wing tanks empty first, then the fuselage tanks.",
+              "src": "m1",
+              "page": "158"
+            },
+            {
+              "id": "ext-tanks",
+              "name": "EXT TKS switches (WING and FUS)",
+              "type": "switch2",
+              "match": [
+                "PTR-FSCP-EXT-TANKS-WING",
+                "PTR-FSCP-EXT-TANKS-FUS",
+                "item:fuel-system-control-panel:3"
+              ],
+              "positions": [
+                {
+                  "name": "WING / FUS",
+                  "text": "Up position: fuel from the external wing tanks or the external centre tank can be used."
+                },
+                {
+                  "name": "OFF",
+                  "text": "Down position: the external tanks are not used."
+                }
+              ],
+              "count": 2,
+              "text": "These two switches allow fuel to flow from external tanks hung under the wings (left switch) and under the belly (right switch).",
+              "context": "If the plane carries no external tanks, the switches have nothing to do.",
+              "src": "m1",
+              "page": "159"
+            },
+            {
+              "id": "crossfeed",
+              "name": "CROSSFEED switch",
+              "type": "switch2",
+              "match": [
+                "PTR-FSCP-CROSS-FEED",
+                "item:fuel-system-control-panel:4"
+              ],
+              "positions": [
+                {
+                  "name": "CROSSFEED",
+                  "text": "Both systems are joined; the pumps feed both engines."
+                },
+                {
+                  "name": "OFF",
+                  "text": "The two fuel systems stay separate."
+                }
+              ],
+              "text": "This switch joins the left and right fuel systems so that the pumps can feed both engines.",
+              "context": "It is mostly used when one boost pump has failed.",
+              "src": "m1",
+              "page": "159"
+            },
+            {
+              "id": "tank-gate",
+              "name": "TK GATE switch (tank gate)",
+              "type": "switch2",
+              "match": [
+                "PTR-FSCP-TK-GATE",
+                "item:fuel-system-control-panel:5"
+              ],
+              "positions": [
+                {
+                  "name": "OPEN",
+                  "text": "The valve between the left and right main tank is open."
+                },
+                {
+                  "name": "CLOSE",
+                  "text": "The valve is closed and the tanks are separate."
+                }
+              ],
+              "text": "This switch opens a valve between the left and the right main tank. Closed, the two tanks are separate.",
+              "context": "The manual advises to keep it closed because open it can lead to problems with the plane's balance.",
+              "src": "m1",
+              "page": "159"
+            },
+            {
+              "id": "rcvr-lever",
+              "name": "RCVR air refuel lever",
+              "type": "lever",
+              "match": [
+                "PTR-FSCP-RCVR-LEVER",
+                "item:fuel-system-control-panel:6"
+              ],
+              "positions": [
+                {
+                  "name": "OPEN",
+                  "text": "Moved down: the refuelling door opens."
+                },
+                {
+                  "name": "CLOSE",
+                  "text": "Moved forward: the refuelling door closes."
+                }
+              ],
+              "text": "This grey lever opens and closes the refuelling door (the slipway door) in front of the cockpit. A tanker plane can then connect its boom there.",
+              "context": "When the door is open, the READY light on the canopy frame comes on. The pre-flight list says the lever must be at CLOSE.",
+              "src": "m1",
+              "page": "159"
+            },
+            {
+              "id": "fill-disable",
+              "name": "Fill disable buttons (main L/R and wing L/R)",
+              "type": "button",
+              "match": [
+                "PTR-FSCP-FILLDISABLE-*",
+                "item:fuel-system-control-panel:7"
+              ],
+              "count": 4,
+              "text": "These four buttons stop a tank from being filled during refuelling. They work like circuit breakers: a button pulled out means that tank takes no fuel.",
+              "context": "A pilot may use them, for example, after battle damage to a tank. The pre-flight list says they should be pushed in.",
+              "src": "m1",
+              "page": "159"
+            },
+            {
+              "id": "rcvr-lt",
+              "name": "RCVR LT dial (refuel lights)",
+              "type": "knob",
+              "match": [
+                "PTR-FSCP-RCVR-LT",
+                "item:fuel-system-control-panel:8"
+              ],
+              "text": "This dial sets the brightness of the lamps around the refuelling door and of the floodlight on the back that lights both engine housings.",
+              "context": "It helps to see the refuelling area at night. The dial turns from OFF to BRT.",
+              "src": "m1",
+              "page": "159"
+            },
+            {
+              "id": "line-check",
+              "name": "LINE CHECK button",
+              "type": "button",
+              "match": [
+                "PTR-FSCP-LINE-CHECK",
+                "item:fuel-system-control-panel:9"
+              ],
+              "text": "The manual says this button has no function in the game.",
+              "context": "Clicking it changes nothing in this version; the fuel panel works without it.",
+              "src": "m1",
+              "page": "160"
+            },
+            {
+              "id": "sig-ampl",
+              "name": "SIGNAL AMPLIFIER switch",
+              "type": "switch",
+              "match": [
+                "PTR-FSCP-SIG-AMPL",
+                "item:fuel-system-control-panel:10"
+              ],
+              "text": "The manual says this switch has no function in the game. The game names it 'Signal Amplifier Norm/Override'.",
+              "context": "Clicking it changes nothing in this version; the engines are not affected.",
+              "src": "m1",
+              "page": "160"
+            }
+          ]
+        },
+        {
+          "id": "throttle-quadrant",
+          "name": "Throttle quadrant (throttles panel)",
+          "db": "throttles-panel",
+          "src": "m1",
+          "page": "160",
+          "text": "This is the area around the two throttle levers. Next to them are the switches for the APU, the engine start, the fuel flow and the flaps.",
+          "context": "In the A-10C both engines are started with help of the APU, the small helper engine. The levers are moved from OFF to IDLE to start an engine.",
+          "controls": [
+            {
+              "id": "apu-switch",
+              "name": "APU switch",
+              "type": "switch2",
+              "match": [
+                "PTR-APU-START",
+                "item:throttles-panel:1"
+              ],
+              "positions": [
+                {
+                  "name": "START",
+                  "text": "The APU starts and the APU gauges come on."
+                },
+                {
+                  "name": "OFF",
+                  "text": "The APU is off."
+                }
+              ],
+              "text": "This switch starts the APU, a small extra engine in the back of the plane. It makes electricity and compressed air before the main engines run.",
+              "context": "It works only when the battery switch is on. It starts the fuel pump, opens the fuel valve, starts the starter and wakes up the APU gauges. The APU is then used to start both main engines.",
+              "src": "m1",
+              "page": "161"
+            },
+            {
+              "id": "throttle-levers",
+              "name": "Throttle levers (OFF / IDLE / MAX)",
+              "type": "lever",
+              "match": [
+                "item:throttles-panel:2"
+              ],
+              "positions": [
+                {
+                  "name": "OFF",
+                  "text": "Fully back: no fuel; the engine is off or cannot start."
+                },
+                {
+                  "name": "IDLE",
+                  "text": "The engine starts and runs at its lowest power."
+                },
+                {
+                  "name": "MAX",
+                  "text": "Fully forward: the highest push of the engine."
+                }
+              ],
+              "text": "There are two levers, one for each engine. Pushing a lever forward gives that engine more power, pulling it back gives less, like a car's gas pedal.",
+              "context": "At OFF the fuel is shut. From OFF to IDLE the engine starts by itself (fuel pump, starter air and ignition). The levers are normally moved together. The grip buttons are in the Stick and throttle section.",
+              "src": "m1",
+              "page": "162"
+            },
+            {
+              "id": "fuel-flow-sw",
+              "name": "ENG FUEL FLOW switches (L and R)",
+              "type": "switch2",
+              "match": [
+                "PTR-FUEL-FLOW-*",
+                "TUMB-PANTRTL-ENGFUELFLV-*",
+                "item:throttles-panel:3"
+              ],
+              "positions": [
+                {
+                  "name": "NORM",
+                  "text": "The throttle and the temperature limiter control the fuel."
+                },
+                {
+                  "name": "OVERRIDE",
+                  "text": "Only the throttle controls the fuel; the engine can get too hot."
+                }
+              ],
+              "count": 2,
+              "text": "These two switches set how the fuel for the left and right engine is controlled. Normally the throttle and a temperature limiter do it together.",
+              "context": "OVERRIDE switches the temperature limiter off. The manual says it is only for getting home when the limiter has failed, not for extra power.",
+              "src": "m1",
+              "page": "162"
+            },
+            {
+              "id": "eng-operate",
+              "name": "ENG OPERATE switches (L and R)",
+              "type": "switch3",
+              "match": [
+                "PTR-ENGINE-OPER-*",
+                "item:throttles-panel:4"
+              ],
+              "positions": [
+                {
+                  "name": "MOTOR",
+                  "text": "The engine is turned over without fuel burning, to purge fuel."
+                },
+                {
+                  "name": "NORM",
+                  "text": "Normal position."
+                },
+                {
+                  "name": "IGN",
+                  "text": "Held there, the ignition is switched on by hand."
+                }
+              ],
+              "count": 2,
+              "text": "These two switches give the left and right engine special start commands: manual ignition, or turning the engine over to blow the fuel out.",
+              "context": "The middle position NORM is the normal one. IGN is mostly used to restart an engine in the air. MOTOR is used to clear fuel after a failed start or to restart with the APU.",
+              "src": "m1",
+              "page": "163"
+            },
+            {
+              "id": "gear-horn",
+              "name": "Landing gear horn silence button",
+              "type": "button",
+              "match": [
+                "PTR-LG-WRN-SILENCE",
+                "item:throttles-panel:5"
+              ],
+              "text": "This button silences the warning horn that sounds when the plane is slow and the landing gear is not down.",
+              "context": "It sits below the APU switch on the throttle quadrant of the left console.",
+              "src": "m1",
+              "page": "163"
+            },
+            {
+              "id": "throttle-friction",
+              "name": "Throttle friction knob",
+              "type": "knob",
+              "match": [
+                "PTR-THROTTLE-FRICTION"
+              ],
+              "text": "Turning this knob makes the throttle levers stiffer or looser to move. Stiffer levers stay where the pilot puts them.",
+              "context": "The manual does not describe this knob; this text follows the game's label 'Throttle Friction Control'."
+            },
+            {
+              "id": "flaps",
+              "name": "FLAP switch (UP / MVR / DN)",
+              "type": "switch3",
+              "match": [
+                "PTR-FLAPS"
+              ],
+              "positions": [
+                {
+                  "name": "UP",
+                  "text": "The flaps are in, 0 degrees."
+                },
+                {
+                  "name": "MVR",
+                  "text": "Maneuver setting, 7 degrees, used for take-off."
+                },
+                {
+                  "name": "DN",
+                  "text": "The flaps are fully down, 20 degrees, used for landing."
+                }
+              ],
+              "text": "This switch sets the flaps, the parts of the wing that slide out to give more lift at low speed.",
+              "context": "Above 185 knots the flaps cannot be lowered. The pre-flight list says to set UP before the start.",
+              "src": "m1",
+              "page": "127"
+            }
+          ]
+        },
+        {
+          "id": "laste",
+          "name": "LASTE control panel",
+          "db": "laste-control-panel",
+          "src": "m1",
+          "page": "165",
+          "text": "This panel switches on the helpers that make low flying safer and the autopilot work. It has an arming switch, a radar altimeter switch, an autopilot mode switch and an engage button.",
+          "context": "LASTE stands for Low Altitude Safety and Targeting Enhancement. The pilot sets the mode first and then presses the engage button; the autopilot has no route mode.",
+          "controls": [
+            {
+              "id": "eac",
+              "name": "EAC switch (enhanced attitude control)",
+              "type": "switch2",
+              "match": [
+                "PTR-LCP-EAC",
+                "item:laste-control-panel:1"
+              ],
+              "positions": [
+                {
+                  "name": "ARM",
+                  "text": "Up: the system is ready for the autopilot and PAC."
+                },
+                {
+                  "name": "OFF",
+                  "text": "Down: the system is off and the EAC caution light shows."
+                }
+              ],
+              "text": "This switch arms the system that makes the autopilot and the gun steadying (PAC) possible.",
+              "context": "If the system switches itself off after a fault, the EAC caution light and the master caution come on.",
+              "src": "m1",
+              "page": "165"
+            },
+            {
+              "id": "rdr-altm",
+              "name": "RDR ALTM switch (radar altimeter)",
+              "type": "switch2",
+              "match": [
+                "PTR-LCP-RDRALTM",
+                "item:laste-control-panel:2"
+              ],
+              "positions": [
+                {
+                  "name": "NRM",
+                  "text": "The radar altimeter works and feeds the ground warning."
+                },
+                {
+                  "name": "DIS",
+                  "text": "The radar altimeter and the ground warning are off."
+                }
+              ],
+              "text": "This switch turns the radar altimeter, which measures the height above the ground, on or off.",
+              "context": "With it off the ground collision warning (GCAS) stops, too.",
+              "src": "m1",
+              "page": "165"
+            },
+            {
+              "id": "ap-mode",
+              "name": "Autopilot mode switch (PATH / ALT/HDG / ALT)",
+              "type": "switch3",
+              "match": [
+                "PTR-LCP-AUTOPILOT-PATH-ALT",
+                "item:laste-control-panel:3"
+              ],
+              "positions": [
+                {
+                  "name": "PATH",
+                  "text": "Up: the autopilot tries to keep the present flight path."
+                },
+                {
+                  "name": "ALT/HDG",
+                  "text": "Middle: it keeps the height and heading from the moment of engaging."
+                },
+                {
+                  "name": "ALT",
+                  "text": "Down: it keeps the height and the present bank angle."
+                }
+              ],
+              "text": "This switch picks what the autopilot holds: the present flight path, the height and heading, or the height and bank angle.",
+              "context": "Path and height-heading will not engage with more than 10 degrees of bank. The autopilot cannot fly a route to a steerpoint.",
+              "src": "m1",
+              "page": "165"
+            },
+            {
+              "id": "ap-engage",
+              "name": "Autopilot ENGAGE button",
+              "type": "button",
+              "match": [
+                "PTR-LCP-AUTOPILOT-ENGAGE",
+                "item:laste-control-panel:4"
+              ],
+              "text": "This button starts the chosen autopilot mode, or stops it if it is already on.",
+              "context": "Moving the stick also switches the autopilot off, and the voice says 'WARNING, AUTOPILOT'. The same job is done by a button on the left throttle.",
+              "src": "m1",
+              "page": "166"
+            }
+          ]
+        },
+        {
+          "id": "arc210",
+          "name": "AN/ARC-210 radio (VHF/AM radio 1)",
+          "db": "arc-210",
+          "src": "m1",
+          "page": "167",
+          "text": "This radio panel is the first of the three radios. It talks to other aircraft and to the tower on the VHF and UHF bands, and it has a small display and many buttons and dials.",
+          "context": "In this version it replaces the older ARC-186 radio. The manual says the ARC-210 is to be documented later, so the texts here follow the game's own labels.",
+          "controls": [
+            {
+              "id": "arc210-master",
+              "name": "Master switch",
+              "type": "selector",
+              "match": [
+                "VHFUHF1P",
+                "item:arc-210:1"
+              ],
+              "positions": [
+                {
+                  "name": "Radio off",
+                  "text": "The radio is off."
+                },
+                {
+                  "name": "Transmit-receive",
+                  "text": "The radio can send and receive."
+                },
+                {
+                  "name": "With guard receiver",
+                  "text": "Send and receive, and also listen to the emergency guard frequency."
+                },
+                {
+                  "name": "Change preset",
+                  "text": "Used to change the stored channel."
+                }
+              ],
+              "text": "This dial turns the radio on and picks its mode. The game lists four choices: off, transmit-receive, transmit-receive with the guard receiver, and a mode to change the preset.",
+              "context": "The guard receiver listens to the emergency frequency in addition to the chosen one."
+            },
+            {
+              "id": "arc210-channel",
+              "name": "Channel select knob",
+              "type": "knob",
+              "match": [
+                "VHFUHF2P",
+                "item:arc-210:2"
+              ],
+              "text": "Turning this knob goes to the next or the previous stored channel (preset), like a station button on a car radio.",
+              "context": "The game labels it 'channel select knob' with commands for next and previous channel."
+            },
+            {
+              "id": "arc210-secondary",
+              "name": "Secondary switch",
+              "type": "selector",
+              "match": [
+                "VHFUHF3P",
+                "item:arc-210:3"
+              ],
+              "positions": [
+                {
+                  "name": "121.5 Guard",
+                  "text": "Tunes the guard frequency 121.5."
+                },
+                {
+                  "name": "243 Guard",
+                  "text": "Tunes the guard frequency 243."
+                },
+                {
+                  "name": "MAN",
+                  "text": "The frequency is set by hand with the digit dials."
+                },
+                {
+                  "name": "PRST",
+                  "text": "A stored channel is used."
+                }
+              ],
+              "text": "This dial chooses where the radio takes its frequency from: the guard frequencies, manual entry or the stored channels.",
+              "context": "Guard frequencies are the international emergency frequencies, 121.5 and 243."
+            },
+            {
+              "id": "arc210-digits",
+              "name": "Frequency digit dials (100 MHz to 25 kHz)",
+              "type": "selector",
+              "match": [
+                "VHFUHF4P",
+                "VHFUHF5P",
+                "VHFUHF6P",
+                "VHFUHF7P",
+                "VHFUHF8P",
+                "item:arc-210:4",
+                "item:arc-210:5",
+                "item:arc-210:6",
+                "item:arc-210:7",
+                "item:arc-210:8"
+              ],
+              "count": 5,
+              "text": "Five dials set the digits of the frequency, the radio's 'station number': 100 MHz, 10 MHz, 1 MHz, 100 kHz and 25 kHz.",
+              "context": "The pilot sets them in manual mode to the frequency named in the briefing."
+            },
+            {
+              "id": "arc210-fsk",
+              "name": "Function select keys (upper, middle, lower)",
+              "type": "button",
+              "match": [
+                "VHFUHF19P",
+                "VHFUHF20P",
+                "VHFUHF21P",
+                "item:arc-210:9"
+              ],
+              "count": 3,
+              "text": "Three keys beside the display pick the functions that the display shows next to them.",
+              "context": "The game calls them upper, middle and lower FSK key."
+            },
+            {
+              "id": "arc210-offset",
+              "name": "Offset frequency button",
+              "type": "button",
+              "match": [
+                "VHFUHF10P",
+                "item:arc-210:10"
+              ],
+              "text": "This button changes the frequency by a fixed offset.",
+              "context": "The game names it 'Offset frequency'. The manual does not describe it."
+            },
+            {
+              "id": "arc210-txrx",
+              "name": "TX/RX function toggle",
+              "type": "button",
+              "match": [
+                "VHFUHF11P",
+                "item:arc-210:11"
+              ],
+              "text": "This button toggles the transmit and receive function of the radio.",
+              "context": "The game names it 'Transmit / receive function toggle'. The manual does not describe it."
+            },
+            {
+              "id": "arc210-amfm",
+              "name": "AM/FM select button",
+              "type": "button",
+              "match": [
+                "VHFUHF12P",
+                "item:arc-210:12"
+              ],
+              "text": "This button switches between two ways of carrying the voice on the radio wave: AM and FM.",
+              "context": "The other pilot's radio must use the same way to be understood."
+            },
+            {
+              "id": "arc210-menu",
+              "name": "Menu pages button",
+              "type": "button",
+              "match": [
+                "VHFUHF13P",
+                "item:arc-210:13"
+              ],
+              "text": "This button shows the menu pages of the radio display.",
+              "context": "The game names it 'Menu pages'. The manual does not describe it."
+            },
+            {
+              "id": "arc210-squelch",
+              "name": "Squelch button",
+              "type": "switch",
+              "match": [
+                "VHFUHF14P",
+                "item:arc-210:14"
+              ],
+              "text": "This button turns the squelch on or off. Squelch cuts the hiss of a radio when nobody talks.",
+              "context": "The game has separate commands for squelch on and squelch off."
+            },
+            {
+              "id": "arc210-brightness",
+              "name": "Brightness buttons (up and down)",
+              "type": "button",
+              "match": [
+                "VHFUHF22P",
+                "VHFUHF23P",
+                "item:arc-210:15"
+              ],
+              "count": 2,
+              "text": "These two buttons make the radio display brighter or darker.",
+              "context": "The pilot adjusts them to the light in the cockpit."
+            },
+            {
+              "id": "arc210-unused",
+              "name": "Unused ARC-210 keys (no function)",
+              "type": "button",
+              "match": [
+                "VHFUHF9P",
+                "VHFUHF15P",
+                "VHFUHF16P",
+                "VHFUHF17P",
+                "VHFUHF18P"
+              ],
+              "count": 5,
+              "text": "The game lists five keys of this radio as having no function: Enter, select receiver-transmitter, global positioning system, time of day receive and time of day send.",
+              "context": "They are drawn on the panel but do nothing in this version."
+            }
+          ]
+        },
+        {
+          "id": "arc164",
+          "name": "AN/ARC-164 UHF radio",
+          "db": "arc-164-radio-head",
+          "src": "m1",
+          "page": "168",
+          "text": "This is the UHF radio, the main radio for talking to the pilot's own flight. It covers the frequencies from 225.000 to 399.975 MHz and can store 20 channels.",
+          "context": "Most mission talk goes through this radio. The pilot can turn its volume down if too much is said, or change the channel.",
+          "controls": [
+            {
+              "id": "arc164-channel",
+              "name": "Preset channel selector",
+              "type": "knob",
+              "match": [
+                "PTR-ANARC164-CHANNEL-SELECTOR",
+                "item:arc-164-radio-head:1",
+                "item:arc-164-radio-head:2",
+                "item:arc-164-radio-head:3"
+              ],
+              "text": "Turning this knob at the upper right goes through the 20 stored channels. The channel number and its frequency show in two windows, and the frequency is repeated on the front dash.",
+              "context": "A stored channel is like a station button on a car radio; this knob only has an effect with the mode dial set to PRESET."
+            },
+            {
+              "id": "arc164-digits",
+              "name": "Frequency digit dials (100 MHz to 0.025 MHz)",
+              "type": "selector",
+              "match": [
+                "PTR-ANARC164-100MHZ-SELECTOR",
+                "PTR-ANARC164-10MHZ-SELECTOR",
+                "PTR-ANARC164-1MHZ-SELECTOR",
+                "PTR-ANARC164-0.1MHZ-SELECTOR",
+                "PTR-ANARC164-0.025MHZ-SELECTOR",
+                "item:arc-164-radio-head:4",
+                "item:arc-164-radio-head:5",
+                "item:arc-164-radio-head:6",
+                "item:arc-164-radio-head:7",
+                "item:arc-164-radio-head:8"
+              ],
+              "count": 5,
+              "text": "Five dials set the digits of the frequency by hand. The first is for the hundreds of MHz (2, 3 or A), the next three set tens, ones and tenths, and the last sets the final digits in steps of 25.",
+              "context": "They only work when the mode dial is on MNL (manual).",
+              "src": "m1",
+              "page": "169"
+            },
+            {
+              "id": "arc164-mode",
+              "name": "Frequency mode dial (MNL / PRESET / GRD)",
+              "type": "selector",
+              "match": [
+                "PTR-ANARC164-FREQMODE",
+                "item:arc-164-radio-head:9"
+              ],
+              "positions": [
+                {
+                  "name": "MNL",
+                  "text": "The frequency is set with the digit dials."
+                },
+                {
+                  "name": "PRESET",
+                  "text": "The preset channel selector sets the frequency."
+                },
+                {
+                  "name": "GRD",
+                  "text": "The radio is tuned to the guard channel."
+                }
+              ],
+              "text": "This dial decides where the frequency comes from: set by hand, from a stored channel, or the guard (emergency) channel.",
+              "context": "The pilot sets PRESET to use the stored channels.",
+              "src": "m1",
+              "page": "169"
+            },
+            {
+              "id": "arc164-function",
+              "name": "Function dial (OFF / MAIN / BOTH / ADF)",
+              "type": "selector",
+              "match": [
+                "PTR-ANARC164-FUNCTION",
+                "item:arc-164-radio-head:10"
+              ],
+              "positions": [
+                {
+                  "name": "OFF",
+                  "text": "No power to the radio."
+                },
+                {
+                  "name": "MAIN",
+                  "text": "The radio sends and receives on the chosen channel."
+                },
+                {
+                  "name": "BOTH",
+                  "text": "It does that and also listens to the guard channel."
+                },
+                {
+                  "name": "ADF",
+                  "text": "Direction finding; the manual says it has no function."
+                }
+              ],
+              "text": "This dial turns the radio on and picks what it does. MAIN sends and receives on the chosen channel, BOTH also listens to the guard channel.",
+              "context": "ADF would let the radio find the direction of a signal, but the manual says this has no function.",
+              "src": "m1",
+              "page": "169"
+            },
+            {
+              "id": "arc164-volume",
+              "name": "VOL knob (volume)",
+              "type": "knob",
+              "match": [
+                "PTR-ANARC164-VOLUME",
+                "item:arc-164-radio-head:11"
+              ],
+              "text": "Turning this knob makes the voice from the UHF radio louder or quieter.",
+              "context": "The intercom panel's volume knob works on top of it.",
+              "src": "m1",
+              "page": "170"
+            },
+            {
+              "id": "arc164-t-tone",
+              "name": "T-TONE button",
+              "type": "button",
+              "match": [
+                "PTR-ANARC164-T-TONE",
+                "item:arc-164-radio-head:12"
+              ],
+              "text": "The manual says this button has no function in the game.",
+              "context": "Clicking it changes nothing in this version; the radio works without it.",
+              "src": "m1",
+              "page": "170"
+            },
+            {
+              "id": "arc164-squelch",
+              "name": "SQUELCH switch",
+              "type": "switch",
+              "match": [
+                "PTR-ANARC164-SQUELCH",
+                "item:arc-164-radio-head:13"
+              ],
+              "text": "This switch sets the squelch, which cuts the hiss of the radio when nobody is talking.",
+              "context": "The manual says it provides a squelch tone.",
+              "src": "m1",
+              "page": "170"
+            },
+            {
+              "id": "arc164-load",
+              "name": "LOAD cover and button",
+              "type": "button",
+              "match": [
+                "PTR-ANARC164-COVER",
+                "PTR-ANARC164-LOAD",
+                "item:arc-164-radio-head:14"
+              ],
+              "count": 2,
+              "text": "Lifting the small cover shows the orange LOAD button. Pressing it stores the dialled frequency in the chosen preset channel.",
+              "context": "To store a channel: set PRESET, choose a channel number, dial the frequency, lift the cover and press LOAD. The cover is its own clickable part in the game.",
+              "src": "m1",
+              "page": "170"
+            },
+            {
+              "id": "arc164-test",
+              "name": "TEST DISPLAY button",
+              "type": "button",
+              "match": [
+                "PTR-ANARC164-TEST-DISPLAY"
+              ],
+              "text": "The game names this button 'Test Display'.",
+              "context": "The manual does not describe this button."
+            },
+            {
+              "id": "arc164-status",
+              "name": "STATUS button",
+              "type": "button",
+              "match": [
+                "PTR-ANARC164-STATUS"
+              ],
+              "text": "The game names this button 'Status'. It belongs to the front of the UHF radio panel.",
+              "context": "The manual does not describe this button."
+            }
+          ]
+        },
+        {
+          "id": "arc186",
+          "name": "AN/ARC-186 VHF/FM radio 2",
+          "db": "arc-186-radio-head",
+          "src": "m1",
+          "page": "171",
+          "text": "This is the second radio. It works in the VHF/FM band from 30.000 to 76.000 MHz and stores 20 channels. Its frequency is set with four knobs.",
+          "context": "In most missions this radio is used to talk to JTAC, the ground controllers who guide attacks.",
+          "controls": [
+            {
+              "id": "arc186-volume",
+              "name": "VOLUME knob",
+              "type": "knob",
+              "match": [
+                "PTR-ANARC186-VHFFM-VOLUME",
+                "item:arc-186-radio-head:5"
+              ],
+              "text": "Turning this knob makes the sound of the radio louder or quieter.",
+              "context": "The knob sits at the top left of the panel.",
+              "src": "m1",
+              "page": "171"
+            },
+            {
+              "id": "arc186-squelch",
+              "name": "SQUELCH / TONE switch",
+              "type": "switch",
+              "match": [
+                "PTR-ANARC186-VHFFM-SQUELCH",
+                "item:arc-186-radio-head:8"
+              ],
+              "text": "This switch sets the squelch, which cuts the hiss when nobody is talking, or sounds a tone.",
+              "context": "The manual says it provides a squelch tone.",
+              "src": "m1",
+              "page": "172"
+            },
+            {
+              "id": "arc186-freq",
+              "name": "Frequency selector knobs (1st to 4th)",
+              "type": "knob",
+              "match": [
+                "PTR-ANARC186-VHFFM-FREQ-1",
+                "PTR-ANARC186-VHFFM-FREQ-2",
+                "PTR-ANARC186-VHFFM-FREQ-3",
+                "PTR-ANARC186-VHFFM-FREQ-4",
+                "item:arc-186-radio-head:3"
+              ],
+              "count": 4,
+              "text": "Four knobs set the frequency digit above each of them. In the FM band the first knob sets the tens of MHz, the second the ones, and the other two stay at 0.",
+              "context": "The pilot sets the frequency given in the briefing. A warning tone sounds for a frequency outside the band.",
+              "src": "m1",
+              "page": "171"
+            },
+            {
+              "id": "arc186-emer",
+              "name": "Frequency selection dial (EMER FM / EMER AM / MAN / PRE)",
+              "type": "selector",
+              "match": [
+                "PTR-ANARC186-VHFFM-FREQEMER-CONTROL",
+                "item:arc-186-radio-head:7"
+              ],
+              "positions": [
+                {
+                  "name": "EMER FM",
+                  "text": "The guard channel is tuned."
+                },
+                {
+                  "name": "EMER AM",
+                  "text": "The guard channel is tuned; this has no effect with this FM radio."
+                },
+                {
+                  "name": "MAN",
+                  "text": "The frequency is set with the four knobs."
+                },
+                {
+                  "name": "PRE",
+                  "text": "The stored channel of the preset window is used."
+                }
+              ],
+              "text": "This dial decides how the frequency is picked: the emergency guard channel, a frequency set by hand, or a stored channel.",
+              "context": "EMER FM and EMER AM pick the guard channel for the FM or AM radio.",
+              "src": "m1",
+              "page": "172"
+            },
+            {
+              "id": "arc186-load",
+              "name": "LOAD button",
+              "type": "button",
+              "match": [
+                "PTR-ANARC186-VHFFM-LOAD",
+                "item:arc-186-radio-head:4"
+              ],
+              "text": "Pressing this button stores the hand-set frequency in the preset channel that is shown.",
+              "context": "To store: set MAN, dial the frequency, pick the channel with the wheel, press LOAD, then set PRE.",
+              "src": "m1",
+              "page": "171"
+            },
+            {
+              "id": "arc186-preset",
+              "name": "Preset channel selector wheel",
+              "type": "wheel",
+              "match": [
+                "PTR-ANARC186-VHFFM-PRESET",
+                "item:arc-186-radio-head:1",
+                "item:arc-186-radio-head:2"
+              ],
+              "text": "This wheel at the bottom moves left and right to pick one of the 20 stored channels. The channel number shows in a window above it.",
+              "context": "In PRE mode the frequency of the shown channel is used; it is not shown in the frequency windows.",
+              "src": "m1",
+              "page": "171"
+            },
+            {
+              "id": "arc186-mode",
+              "name": "Frequency mode dial (OFF / TR / DF)",
+              "type": "selector",
+              "match": [
+                "PTR-ANARC186-VHFFM-MODE",
+                "item:arc-186-radio-head:6"
+              ],
+              "positions": [
+                {
+                  "name": "OFF",
+                  "text": "The radio has no power."
+                },
+                {
+                  "name": "TR",
+                  "text": "The radio sends and receives voice."
+                },
+                {
+                  "name": "DF",
+                  "text": "Direction finding; not functional in this game."
+                }
+              ],
+              "text": "This dial turns the radio off or on. TR is the normal mode to send and receive voice.",
+              "context": "DF would let the radio find a signal's direction, but the manual says it is not functional.",
+              "src": "m1",
+              "page": "172"
+            }
+          ]
+        },
+        {
+          "id": "ky58",
+          "name": "KY-58 secure voice panel",
+          "db": "ky-58-panel",
+          "src": "m1",
+          "page": "173",
+          "text": "This panel is meant to scramble the voice on the UHF and VHF radios so that the enemy cannot listen.",
+          "context": "The manual says this panel is not functional in the simulation.",
+          "controls": [
+            {
+              "id": "ky58-power",
+              "name": "Power switch",
+              "type": "switch",
+              "match": [
+                "PTR-TMB-PANKY58-POWER",
+                "item:ky-58-panel:1"
+              ],
+              "text": "This switch turns the voice encryption on.",
+              "context": "The panel is not functional in the game.",
+              "src": "m1",
+              "page": "173"
+            },
+            {
+              "id": "ky58-mode",
+              "name": "Mode switch (OP / LD / RV)",
+              "type": "selector",
+              "match": [
+                "PTR-LVR-PANKY58-MODE",
+                "item:ky-58-panel:2"
+              ],
+              "text": "This dial sets the main working mode. OP is the normal one to send and receive scrambled voice; LD loads secret keys by hand, RV receives keys by radio.",
+              "context": "It is normally left on OP, the setting for ordinary scrambled talking.",
+              "src": "m1",
+              "page": "173"
+            },
+            {
+              "id": "ky58-radio",
+              "name": "C/RAD switch (C/RAD 1 / PLAIN / C/RAD 2)",
+              "type": "selector",
+              "match": [
+                "PTR-LVR-PANKY58-PLAIN",
+                "item:ky-58-panel:3"
+              ],
+              "positions": [
+                {
+                  "name": "C/RAD 1",
+                  "text": "Scrambles the UHF radio."
+                },
+                {
+                  "name": "PLAIN",
+                  "text": "No scrambling; normal voice."
+                },
+                {
+                  "name": "C/RAD 2",
+                  "text": "Scrambles the VHF radio."
+                }
+              ],
+              "text": "This dial chooses which radio is scrambled: the UHF (C/RAD 1), the VHF (C/RAD 2) or none (PLAIN).",
+              "context": "Both ends must use the same code to understand each other.",
+              "src": "m1",
+              "page": "173"
+            },
+            {
+              "id": "ky58-code",
+              "name": "Code preset dial",
+              "type": "selector",
+              "match": [
+                "PTR-LVR-PANKY58-1TO5",
+                "item:ky-58-panel:4"
+              ],
+              "text": "This dial picks one of the six stored secret codes. The game calls it 'Full switch'.",
+              "context": "Both ends must use the same code number.",
+              "src": "m1",
+              "page": "173"
+            },
+            {
+              "id": "ky58-delay",
+              "name": "Delay switch",
+              "type": "switch",
+              "match": [
+                "PTR-DELAY-SWITCH",
+                "item:ky-58-panel:5"
+              ],
+              "text": "The manual says this switch has no function.",
+              "context": "Clicking it changes nothing in this version; the panel is not functional anyway.",
+              "src": "m1",
+              "page": "173"
+            },
+            {
+              "id": "ky58-zero-cover",
+              "name": "Zeroize switch cover",
+              "type": "guard",
+              "match": [
+                "PTR-ZEROIZE-COVER"
+              ],
+              "text": "This small guard protects the zeroize switch so it is not hit by mistake.",
+              "context": "The cover is its own clickable part in the game.",
+              "src": "m1",
+              "page": "174"
+            },
+            {
+              "id": "ky58-zero",
+              "name": "Zeroize switch",
+              "type": "switch",
+              "match": [
+                "PTR-ZEROIZE-SWITCH",
+                "item:ky-58-panel:6"
+              ],
+              "text": "Under the guard, this switch erases the six stored secret codes. After that no scrambled voice is possible.",
+              "context": "In real life it is a way to destroy the secrets quickly if the plane is lost.",
+              "src": "m1",
+              "page": "174"
+            }
+          ]
+        },
+        {
+          "id": "intercom",
+          "name": "Intercom control panel",
+          "db": "intercom-control-panel",
+          "src": "m1",
+          "page": "182",
+          "text": "This is the sound mixer of the cockpit. It decides which radios and signals the pilot hears and which one the pilot talks on, and it controls the volume.",
+          "context": "It also lets the pilot talk to the ground crew, which is needed to ask for arming or refuelling. Its volume overrides the volume knobs on the single radios.",
+          "controls": [
+            {
+              "id": "ic-vol",
+              "name": "VOL knob (master volume)",
+              "type": "knob",
+              "match": [
+                "PTR-INTERCOM-VOL",
+                "item:intercom-control-panel:1"
+              ],
+              "text": "Turning this knob makes all the sound of the cockpit louder or quieter.",
+              "context": "It affects every other volume setting of the panel.",
+              "src": "m1",
+              "page": "182"
+            },
+            {
+              "id": "ic-hm",
+              "name": "HM button (hot mic)",
+              "type": "button",
+              "match": [
+                "PTR-INTERCOM-HM",
+                "item:intercom-control-panel:2"
+              ],
+              "text": "Pressing this button opens the microphone to the ground crew or the tanker.",
+              "context": "The rotary dial must be on INT and the INT switch must be in for it to work.",
+              "src": "m1",
+              "page": "182"
+            },
+            {
+              "id": "ic-int",
+              "name": "INT switch",
+              "type": "switch",
+              "match": [
+                "PTR-INTERCOM-INT",
+                "item:intercom-control-panel:3"
+              ],
+              "text": "This push button turns on the talking line to the ground crew or tanker.",
+              "context": "After this the pilot presses HM to talk.",
+              "src": "m1",
+              "page": "182"
+            },
+            {
+              "id": "ic-aim",
+              "name": "AIM switch",
+              "type": "switch",
+              "match": [
+                "PTR-INTERCOM-AIM",
+                "item:intercom-control-panel:4"
+              ],
+              "text": "This push button lets the pilot hear the sound of the AIM-9 Sidewinder missile's seeker (its heat-seeking eye).",
+              "context": "The AIM-9 mode switch must be set to SELECT first.",
+              "src": "m1",
+              "page": "183"
+            },
+            {
+              "id": "ic-monitors",
+              "name": "FM, VHF and UHF monitor switches",
+              "type": "switch",
+              "match": [
+                "PTR-INTERCOM-FM",
+                "PTR-INTERCOM-VHF",
+                "PTR-INTERCOM-UHF",
+                "item:intercom-control-panel:5",
+                "item:intercom-control-panel:6",
+                "item:intercom-control-panel:8"
+              ],
+              "count": 3,
+              "text": "These three push buttons let the pilot hear the VHF/FM radio, the VHF/AM radio and the UHF radio. Pushed in, that radio is heard.",
+              "context": "The position of the rotary dial does not matter for listening.",
+              "src": "m1",
+              "page": "183"
+            },
+            {
+              "id": "ic-ils",
+              "name": "ILS switch",
+              "type": "switch",
+              "match": [
+                "PTR-INTERCOM-ILS",
+                "item:intercom-control-panel:7"
+              ],
+              "text": "This push button lets the pilot hear the tones of the landing beam and the marker beacons.",
+              "context": "It is used when landing by ILS.",
+              "src": "m1",
+              "page": "183"
+            },
+            {
+              "id": "ic-tcn",
+              "name": "TCN switch",
+              "type": "switch",
+              "match": [
+                "PTR-INTERCOM-TCN",
+                "item:intercom-control-panel:9"
+              ],
+              "text": "This push button lets the pilot hear the TACAN station's name, sent in Morse code.",
+              "context": "It proves that the right station is tuned.",
+              "src": "m1",
+              "page": "183"
+            },
+            {
+              "id": "ic-rotary",
+              "name": "Rotary selector dial (INT / VHF / FM / HF)",
+              "type": "selector",
+              "match": [
+                "PTR-INTERCOM-MODE",
+                "item:intercom-control-panel:10"
+              ],
+              "positions": [
+                {
+                  "name": "INT",
+                  "text": "The pilot talks on the intercom to the ground crew or tanker."
+                },
+                {
+                  "name": "VHF",
+                  "text": "The pilot talks on the VHF/AM radio."
+                },
+                {
+                  "name": "FM",
+                  "text": "The pilot talks on the VHF/FM radio."
+                },
+                {
+                  "name": "HF",
+                  "text": "The HF position is printed on the dial; the manual does not describe an HF radio."
+                }
+              ],
+              "text": "This dial picks the radio or line the pilot talks on.",
+              "context": "Before sending a radio message to the ground crew or the tanker, the pilot sets the dial first.",
+              "src": "m1",
+              "page": "183"
+            },
+            {
+              "id": "ic-iff",
+              "name": "IFF knob",
+              "type": "knob",
+              "match": [
+                "PTR-INTERCOM-IFF",
+                "item:intercom-control-panel:11"
+              ],
+              "text": "This knob sets the volume of the tone that sounds when the IFF is asked a question.",
+              "context": "Mode 4 questions are told by this tone.",
+              "src": "m1",
+              "page": "183"
+            },
+            {
+              "id": "ic-call",
+              "name": "CALL switch",
+              "type": "button",
+              "match": [
+                "PTR-INTERCOM-CALL",
+                "item:intercom-control-panel:12"
+              ],
+              "text": "The manual says this switch has no function.",
+              "context": "Clicking it changes nothing in this version; the other intercom switches work.",
+              "src": "m1",
+              "page": "183"
+            }
+          ]
+        },
+        {
+          "id": "iff",
+          "name": "IFF/SIF control panel",
+          "db": "iff-sif-control-panel",
+          "src": "m1",
+          "page": "178",
+          "text": "IFF stands for identification friend or foe. This panel sets how the plane answers when a radar asks it who it is, with code numbers.",
+          "context": "The manual says that this panel is not functional in the simulation; the plane cannot ask other planes but could answer.",
+          "controls": [
+            {
+              "id": "iff-master",
+              "name": "Master mode dial (OFF / STBY / LOW / NORM / EMER)",
+              "type": "selector",
+              "match": [
+                "PTR-IFFCP-MASTER",
+                "item:iff-sif-control-panel:1"
+              ],
+              "positions": [
+                {
+                  "name": "OFF",
+                  "text": "No power to the IFF."
+                },
+                {
+                  "name": "STBY",
+                  "text": "Powered and ready, but not receiving."
+                },
+                {
+                  "name": "LOW",
+                  "text": "The receivers have low sensitivity."
+                },
+                {
+                  "name": "NORM",
+                  "text": "The receivers have normal sensitivity."
+                },
+                {
+                  "name": "EMER",
+                  "text": "No function."
+                }
+              ],
+              "text": "This dial switches the IFF on and sets how sensitive its receiver is.",
+              "context": "EMER has no function in the game; the other positions are explained below.",
+              "src": "m1",
+              "page": "179"
+            },
+            {
+              "id": "iff-modes",
+              "name": "Mode switches M-1, M-2, M-3/A and M-C",
+              "type": "switch",
+              "match": [
+                "PTR-IFFCP-TEST-M-*",
+                "item:iff-sif-control-panel:2",
+                "item:iff-sif-control-panel:3",
+                "item:iff-sif-control-panel:4",
+                "item:iff-sif-control-panel:5"
+              ],
+              "count": 4,
+              "text": "Four switches turn on the answers for the IFF modes 1, 2, 3/A and C. Mode C also reports the plane's height.",
+              "context": "The game labels the switches 'Test M-1' and so on, because they also have a test position.",
+              "src": "m1",
+              "page": "179"
+            },
+            {
+              "id": "iff-radtest",
+              "name": "RAD TEST/MON switch",
+              "type": "switch",
+              "match": [
+                "PTR-IFFCP-RADTEST",
+                "item:iff-sif-control-panel:6"
+              ],
+              "text": "The manual says this switch has no function.",
+              "context": "Clicking it changes nothing in this version; the IFF panel is not functional anyway.",
+              "src": "m1",
+              "page": "180"
+            },
+            {
+              "id": "iff-ident",
+              "name": "IDENT/MIC switch",
+              "type": "switch",
+              "match": [
+                "PTR-IFFCP-MIC-IDENT",
+                "item:iff-sif-control-panel:7"
+              ],
+              "text": "The manual lists this as the identification of position switch and says it has no function.",
+              "context": "Clicking it changes nothing in this version; the manual lists no use for it.",
+              "src": "m1",
+              "page": "180"
+            },
+            {
+              "id": "iff-mode1",
+              "name": "Mode 1 code wheels",
+              "type": "wheel",
+              "match": [
+                "PTR-IFFCP-MODE1-WHEEL?",
+                "item:iff-sif-control-panel:8"
+              ],
+              "count": 2,
+              "text": "Two wheels set the two-digit code for mode 1. Valid codes run from 00 to 73.",
+              "context": "The code is like a short password the plane answers with.",
+              "src": "m1",
+              "page": "180"
+            },
+            {
+              "id": "iff-mode3a",
+              "name": "Mode 3/A code wheels",
+              "type": "wheel",
+              "match": [
+                "PTR-IFFCP-MODE3A-WHEEL?",
+                "item:iff-sif-control-panel:9"
+              ],
+              "count": 4,
+              "text": "Four wheels set the four-digit code of mode 3/A, the standard air traffic control mode. Each digit is between 0 and 7.",
+              "context": "This code is also called the squawk code.",
+              "src": "m1",
+              "page": "180"
+            },
+            {
+              "id": "iff-m4",
+              "name": "Mode 4 ON/OUT switch",
+              "type": "switch",
+              "match": [
+                "PTR-IFFCP-ON-OUT",
+                "item:iff-sif-control-panel:10"
+              ],
+              "text": "This switch turns on the scrambled mode 4 answer.",
+              "context": "Mode 4 uses encryption, so enemy planes cannot copy it.",
+              "src": "m1",
+              "page": "180"
+            },
+            {
+              "id": "iff-audio",
+              "name": "AUDIO / OUT / LIGHT switch",
+              "type": "switch3",
+              "match": [
+                "PTR-IFFCP-OUT-AUDIO-LIGHT",
+                "item:iff-sif-control-panel:11"
+              ],
+              "positions": [
+                {
+                  "name": "AUDIO",
+                  "text": "A tone is heard on a mode 4 question."
+                },
+                {
+                  "name": "OUT",
+                  "text": "A tone is heard on a mode 4 question."
+                },
+                {
+                  "name": "LIGHT",
+                  "text": "The REPLY light comes on when a mode 4 question is answered."
+                }
+              ],
+              "text": "This switch decides how the pilot is told that a mode 4 question was answered: with a tone or with the REPLY light.",
+              "context": "The manual says the tone is heard in the OUT or AUDIO position.",
+              "src": "m1",
+              "page": "180"
+            },
+            {
+              "id": "iff-code",
+              "name": "CODE dial",
+              "type": "button",
+              "match": [
+                "PTR-IFFCP-CODE",
+                "item:iff-sif-control-panel:12"
+              ],
+              "text": "The manual says this code dial has no function.",
+              "context": "Clicking it changes nothing in this version; the code wheels are set directly.",
+              "src": "m1",
+              "page": "180"
+            },
+            {
+              "id": "iff-lights",
+              "name": "REPLY and TEST lights",
+              "type": "light",
+              "match": [
+                "PTR-BTN-PANIFF-REPLY",
+                "PTR-BTN-PANIFF-TEST",
+                "item:iff-sif-control-panel:13",
+                "item:iff-sif-control-panel:14"
+              ],
+              "count": 2,
+              "text": "The REPLY light comes on when the plane answers a mode 4 question. The TEST light comes on during a test of mode 1, 2, 3/A or C. The game lets the pilot click them.",
+              "context": "The game names the clickable parts 'Reply test' and 'Test test'.",
+              "src": "m1",
+              "page": "180"
+            }
+          ]
+        },
+        {
+          "id": "emer-brake",
+          "name": "Emergency brake handle",
+          "db": "emergency-brake",
+          "src": "m1",
+          "page": "174",
+          "text": "A handle for stopping the plane when the normal brakes do not work.",
+          "context": "If the left hydraulic system fails, the handle uses the right system for the wheel brakes. If both fail, a stored reserve is used, enough for about five braking actions.",
+          "controls": [
+            {
+              "id": "emer-brake-handle",
+              "name": "EMER BRAKE handle",
+              "type": "handle",
+              "match": [
+                "PTR-EMER-BRKARM",
+                "item:emergency-brake:1",
+                "item:left-console:8"
+              ],
+              "text": "Pulling this handle sends high-pressure oil from the right system or from a reserve tank to the wheel brakes.",
+              "context": "It is only for emergencies after a loss of the left hydraulic system.",
+              "src": "m1",
+              "page": "174"
+            }
+          ]
+        },
+        {
+          "id": "aux-lighting",
+          "name": "Auxiliary lighting control panel",
+          "db": "auxiliary-lighting-control-panel",
+          "src": "m1",
+          "page": "175",
+          "text": "A panel with several small lighting and test controls: the brightness of the refuelling and landing-angle lights, the night-vision lights, a lamp test button, the HARS/SAS override and the fire detection test.",
+          "context": "The pilot uses the lamp test to check that the warning lights work and the fire test to see that the three fire handles light up.",
+          "controls": [
+            {
+              "id": "rsil-dial",
+              "name": "REFUEL STATUS & INDEXER LTS dial",
+              "type": "knob",
+              "match": [
+                "PTR-ALCP-RSIL",
+                "item:auxiliary-lighting-control-panel:1"
+              ],
+              "text": "This dial sets the brightness of the refuelling status lights and of the landing-angle lights on the left canopy frame.",
+              "context": "It turns between DIM for a faint light and BRT for the full brightness.",
+              "src": "m1",
+              "page": "175"
+            },
+            {
+              "id": "nvis",
+              "name": "NVIS LTS switch (TOP / ALL / OFF)",
+              "type": "switch3",
+              "match": [
+                "PTR-ALCP-NVIS-LTS",
+                "item:auxiliary-lighting-control-panel:2"
+              ],
+              "positions": [
+                {
+                  "name": "TOP",
+                  "text": "Only the night-vision light on top is on."
+                },
+                {
+                  "name": "ALL",
+                  "text": "All night-vision lights are on."
+                },
+                {
+                  "name": "OFF",
+                  "text": "All night-vision lights are off."
+                }
+              ],
+              "text": "This switch turns on the outside lights that night-vision goggles can see. TOP lights only the top light, ALL lights all of them.",
+              "context": "The manual says it has no function in this simulation.",
+              "src": "m1",
+              "page": "175"
+            },
+            {
+              "id": "lamp-test",
+              "name": "SIGNAL LIGHT LAMP TEST button",
+              "type": "button",
+              "match": [
+                "PTR-ALCP-SIGLIGHTS-LAMP-TEST",
+                "item:auxiliary-lighting-control-panel:3"
+              ],
+              "text": "While this button is held, the warning and indicator lights come on so the pilot can see which bulbs work.",
+              "context": "With only the battery on, lights like STEERING ENGAGED, MARKER BEACON, CANOPY UNLOCKED, MASTER CAUTION, the gear lights and the caution panel light up.",
+              "src": "m1",
+              "page": "175"
+            },
+            {
+              "id": "wpn-dimmer",
+              "name": "Weapon station dimmer dial",
+              "type": "knob",
+              "match": [
+                "PTR-ALCP-WPNSTA",
+                "item:auxiliary-lighting-control-panel:4"
+              ],
+              "text": "The manual says this dial has no function in the A-10C. The weapon panel functions moved to the screens.",
+              "context": "Turning it changes nothing in this version; the weapon lights are not used.",
+              "src": "m1",
+              "page": "176"
+            },
+            {
+              "id": "hars-sas",
+              "name": "HARS/SAS override switch",
+              "type": "switch2",
+              "match": [
+                "PTR-ALCP-HARSSAS",
+                "item:auxiliary-lighting-control-panel:5"
+              ],
+              "positions": [
+                {
+                  "name": "NORM",
+                  "text": "SAS switches itself off if HARS data is bad."
+                },
+                {
+                  "name": "OVERRIDE",
+                  "text": "SAS keeps working even if HARS data is bad."
+                }
+              ],
+              "text": "This switch decides what the stability helper (SAS) does when the backup gyro (HARS) gives bad data.",
+              "context": "The pre-flight list says NORM. OVERRIDE keeps SAS running even with faulty HARS data.",
+              "src": "m1",
+              "page": "176"
+            },
+            {
+              "id": "fire-test",
+              "name": "Fire detect / bleed air leak test button",
+              "type": "button",
+              "match": [
+                "PTR-ALCP-FDBAL-TEST",
+                "item:auxiliary-lighting-control-panel:6"
+              ],
+              "text": "Pressing this button tests the fire detection system. The three red fire handles light up when it works.",
+              "context": "The pilot checks it during the pre-flight so a real fire would be noticed.",
+              "src": "m1",
+              "page": "176"
+            }
+          ]
+        },
+        {
+          "id": "sas",
+          "name": "SAS panel (stability augmentation)",
+          "db": "sas-panel",
+          "src": "m1",
+          "page": "177",
+          "text": "This panel switches the SAS, a helper that keeps the plane steady and smooth. It has engage switches for pitch and yaw, a yaw trim knob and the take-off trim button.",
+          "context": "SAS needs hydraulic power and switches itself off if the hydraulics fail. Pitch is the nose going up and down, yaw is the nose going left and right.",
+          "controls": [
+            {
+              "id": "sas-yaw-trim",
+              "name": "Yaw trim knob",
+              "type": "knob",
+              "match": [
+                "PTR-SASP-YAW-TRIM",
+                "item:sas-panel:1"
+              ],
+              "text": "Turning this knob gives the plane a small steady push to the left or right so it flies straight without rudder pedal pressure.",
+              "context": "It only works while the SAS is on.",
+              "src": "m1",
+              "page": "177"
+            },
+            {
+              "id": "sas-to-trim",
+              "name": "T/O TRIM button and light",
+              "type": "button",
+              "match": [
+                "PTR-SASP-TO-TRIM",
+                "item:sas-panel:2"
+              ],
+              "text": "Pressing this button sets all trims to the values for take-off. The TAKEOFF TRIM light above it comes on when this is done.",
+              "context": "The pilot presses it before take-off.",
+              "src": "m1",
+              "page": "177"
+            },
+            {
+              "id": "sas-pitch",
+              "name": "Pitch SAS engage switches (L and R)",
+              "type": "switch2",
+              "match": [
+                "PTR-SASP-PITCH-SASENGAGE-*",
+                "item:sas-panel:3"
+              ],
+              "positions": [
+                {
+                  "name": "ENGAGE",
+                  "text": "That channel of the pitch SAS is on."
+                },
+                {
+                  "name": "OFF",
+                  "text": "That channel is off."
+                }
+              ],
+              "count": 2,
+              "text": "These two switches turn on the two channels of the pitch SAS. Both must be up to have full help.",
+              "context": "A caution light comes on if at least one pitch channel is off.",
+              "src": "m1",
+              "page": "177"
+            },
+            {
+              "id": "sas-yaw",
+              "name": "Yaw SAS engage switches (L and R)",
+              "type": "switch2",
+              "match": [
+                "PTR-SASP-YAW-SASENGAGE-*",
+                "item:sas-panel:4"
+              ],
+              "positions": [
+                {
+                  "name": "ENGAGE",
+                  "text": "That channel of the yaw SAS is on."
+                },
+                {
+                  "name": "OFF",
+                  "text": "That channel is off."
+                }
+              ],
+              "count": 2,
+              "text": "These two switches turn on the two channels of the yaw SAS. It also adds the right amount of rudder in turns.",
+              "context": "A caution light comes on if at least one yaw channel is off.",
+              "src": "m1",
+              "page": "178"
+            },
+            {
+              "id": "sas-monitor",
+              "name": "MONITOR TEST switch",
+              "type": "switch",
+              "match": [
+                "PTR-SASP-MONITOR-TEST",
+                "item:sas-panel:5"
+              ],
+              "text": "The manual says this switch has no function.",
+              "context": "Clicking it changes nothing in this version; the SAS works without it.",
+              "src": "m1",
+              "page": "178"
+            }
+          ]
+        },
+        {
+          "id": "efcp",
+          "name": "Emergency flight control panel",
+          "db": "emergency-flight-control-panel",
+          "src": "m1",
+          "page": "180",
+          "text": "A panel of switches for emergencies with the flight controls: emergency trim, retracting the flaps or speed brakes by air load, and cutting off a stuck aileron or elevator.",
+          "context": "In normal flight this panel is not used. All its switches should be in their normal positions before the start.",
+          "controls": [
+            {
+              "id": "efcp-trim-sw",
+              "name": "PITCH/ROLL TRIM switch (NORM / EMER OVERRIDE)",
+              "type": "switch2",
+              "match": [
+                "PTR-EFCP-PTCHROLL-TRIM",
+                "item:emergency-flight-control-panel:1"
+              ],
+              "positions": [
+                {
+                  "name": "NORM",
+                  "text": "The trim hat on the stick sets the trim."
+                },
+                {
+                  "name": "EMER OVERRIDE",
+                  "text": "The emergency trim buttons set the trim."
+                }
+              ],
+              "text": "This switch decides which control sets the trim. Trim is the small adjustment that lets the plane fly straight without holding the stick.",
+              "context": "In NORM the trim hat on the stick is used. In EMER OVERRIDE the four emergency trim buttons next to it are used.",
+              "src": "m1",
+              "page": "181"
+            },
+            {
+              "id": "efcp-trim-btn",
+              "name": "Emergency trim switch (nose up/down, wing down)",
+              "type": "button",
+              "match": [
+                "PTR-EFCP-TRIM-*"
+              ],
+              "count": 4,
+              "text": "These four directions trim the nose up, nose down, left wing down and right wing down when the emergency override is on.",
+              "context": "They only work when the PITCH/ROLL TRIM switch is at EMER OVERRIDE.",
+              "src": "m1",
+              "page": "181"
+            },
+            {
+              "id": "efcp-spdbk",
+              "name": "SPD BK EMER RETR switch (speed brake emergency retract)",
+              "type": "switch2",
+              "match": [
+                "PTR-EFCP-SPDBK-EMER-RETR",
+                "item:emergency-flight-control-panel:2"
+              ],
+              "positions": [
+                {
+                  "name": "NORM",
+                  "text": "Down: the speed brake switch on the throttle controls the brakes."
+                },
+                {
+                  "name": "EMER RETR",
+                  "text": "Up: the wind pressure closes the speed brakes."
+                }
+              ],
+              "text": "Raised, this switch lets the wind press the speed brakes shut. The speed brakes are panels that open into the wind to slow the plane.",
+              "context": "Down, the speed brake switch on the throttle controls them as usual.",
+              "src": "m1",
+              "page": "181"
+            },
+            {
+              "id": "efcp-flap",
+              "name": "FLAP EMER RETR switch (flap emergency retract)",
+              "type": "switch2",
+              "match": [
+                "PTR-EFCP-FLAP-EMER-RETR",
+                "item:emergency-flight-control-panel:3"
+              ],
+              "positions": [
+                {
+                  "name": "NORM",
+                  "text": "Down: the flap switch controls the flaps."
+                },
+                {
+                  "name": "EMER RETR",
+                  "text": "Up: the wind pressure closes the flaps."
+                }
+              ],
+              "text": "Raised, this switch lets the wind press the flaps shut. Flaps are parts of the wing that slide out to give more lift at low speed.",
+              "context": "Down, the flap switch next to the throttles controls them as usual.",
+              "src": "m1",
+              "page": "181"
+            },
+            {
+              "id": "efcp-ail",
+              "name": "AILERON EMER DISENGAGE switch",
+              "type": "switch",
+              "match": [
+                "PTR-EFCP-AILERON-EMER-DISENGAGE",
+                "item:emergency-flight-control-panel:4"
+              ],
+              "text": "Moving this switch left or right cuts off a stuck aileron (the parts of the wing for rolling) so the other one can move freely.",
+              "context": "A caution light shows when an aileron is cut off. The pre-flight list says the switch must be in the centre.",
+              "src": "m1",
+              "page": "181"
+            },
+            {
+              "id": "efcp-elev",
+              "name": "ELEVATOR EMER DISENGAGE switch",
+              "type": "switch",
+              "match": [
+                "PTR-EFCP-ELEVATOR-EMER-DISENGAGE",
+                "item:emergency-flight-control-panel:5"
+              ],
+              "text": "Moving this switch left or right cuts off a stuck elevator (the tail parts for pitch) so the other one can move freely.",
+              "context": "A caution light shows when an elevator is cut off. The pre-flight list says the switch must be in the centre.",
+              "src": "m1",
+              "page": "181"
+            },
+            {
+              "id": "efcp-mrfcs",
+              "name": "MRFCS switch (manual reversion flight control)",
+              "type": "switch2",
+              "match": [
+                "PTR-EFCP-MRFCS",
+                "item:emergency-flight-control-panel:6"
+              ],
+              "positions": [
+                {
+                  "name": "FLT CONT NORM",
+                  "text": "Up: normal flight controls."
+                },
+                {
+                  "name": "MAN REVERSION",
+                  "text": "Down: the manual backup system is on."
+                }
+              ],
+              "text": "This switch changes to a backup way of steering that uses direct cables when both hydraulic systems have failed.",
+              "context": "It allows moderate flying. The pilot keeps it at FLT CONT NORM unless both hydraulic systems are gone.",
+              "src": "m1",
+              "page": "181"
+            }
+          ]
+        },
+        {
+          "id": "stall",
+          "name": "Stall warning control panel",
+          "db": "stall-warning-control-panel",
+          "src": "m1",
+          "page": "183",
+          "text": "Two dials set the loudness of the two warning tones that sound when the plane is close to a stall, which means the wing loses its lift.",
+          "context": "A steady tone sounds within 2 units of a stall, and it becomes a chopped tone within 1 unit. When the chopped tone sounds, the pilot should lower the angle of attack at once.",
+          "controls": [
+            {
+              "id": "stall-vol",
+              "name": "STALL volume dial",
+              "type": "knob",
+              "match": [
+                "PTR-STALLWCP-STALL",
+                "item:stall-warning-control-panel:1"
+              ],
+              "text": "This dial sets the loudness of the chopped warning tone, the louder warning very close to a stall.",
+              "context": "It cannot be turned fully down.",
+              "src": "m1",
+              "page": "184"
+            },
+            {
+              "id": "peak-vol",
+              "name": "PEAK PRFM volume dial",
+              "type": "knob",
+              "match": [
+                "PTR-STALLWCP-PEAK",
+                "item:stall-warning-control-panel:2"
+              ],
+              "text": "This dial sets the loudness of the steady tone that sounds 2 units from a stall.",
+              "context": "It can be turned down to zero.",
+              "src": "m1",
+              "page": "184"
+            }
+          ]
+        },
+        {
+          "id": "antsp",
+          "name": "Antenna select panel",
+          "text": "A small panel with switches for the antennas of the IFF and UHF radios and the EGI, and a guarded ground safety switch for the weapons.",
+          "context": "The manual only names the antenna select panel in the list of lit panels. The texts here follow the labels of the game.",
+          "controls": [
+            {
+              "id": "ant-iff",
+              "name": "IFF antenna switch",
+              "type": "switch",
+              "match": [
+                "PTR-ANTSP-IFF"
+              ],
+              "text": "The game names this switch 'IFF antenna switch'.",
+              "context": "The manual does not describe it."
+            },
+            {
+              "id": "ant-uhf",
+              "name": "UHF antenna switch",
+              "type": "switch",
+              "match": [
+                "PTR-ANTSP-UHF"
+              ],
+              "text": "The game names this switch 'UHF antenna switch'.",
+              "context": "The manual does not describe it."
+            },
+            {
+              "id": "ant-egi",
+              "name": "EGI HQ TOD switch",
+              "type": "switch",
+              "match": [
+                "PTR-ANTSP-EGI-HQ-TOD"
+              ],
+              "text": "The game names this switch 'EGI HQ TOD'. EGI is the plane's navigation system.",
+              "context": "The manual does not describe it."
+            },
+            {
+              "id": "armgs-cover",
+              "name": "ARM GS override switch cover",
+              "type": "guard",
+              "match": [
+                "PTR-ARMGS-COVER"
+              ],
+              "text": "A guard over the ground safety override switch.",
+              "context": "The game names it 'Arm Ground Safety Override Cover'. The manual does not describe it."
+            },
+            {
+              "id": "armgs-switch",
+              "name": "ARM GS override switch",
+              "type": "switch",
+              "match": [
+                "PTR-ARMGS-OVERRIDE-SWITCH"
+              ],
+              "text": "The game names this switch 'Arm Ground Safety Override Switch'. It sits under a guard.",
+              "context": "The manual does not describe it."
+            }
+          ]
+        },
+        {
+          "id": "anti-g",
+          "name": "Anti-G suit valve test",
+          "text": "A button the game labels 'Anti-G suit valve test button'.",
+          "context": "An anti-G suit is a pair of pants that squeezes the pilot's legs in hard turns, so the blood stays in the head. The manual does not describe this button.",
+          "controls": [
+            {
+              "id": "anti-g-test",
+              "name": "Anti-G suit valve test button",
+              "type": "button",
+              "match": [
+                "ANTI-G-VALVE-PTR"
+              ],
+              "text": "The game names this button 'Anti-G suit valve test button'. It tests the valve that feeds air to the pilot's anti-G suit.",
+              "context": "The manual does not describe this button."
+            }
+          ]
+        },
+        {
+          "id": "seat",
+          "name": "Ejection seat and seat height",
+          "src": "m1",
+          "page": "506",
+          "text": "The pilot sits on an ejection seat that can shoot the pilot out of the plane in an emergency. Two controls belong to it: the arming handle and the seat height button.",
+          "context": "The seat is a zero-zero seat, which works even when the plane is still on the ground. The pre-flight list says to arm the seat.",
+          "controls": [
+            {
+              "id": "seat-arm",
+              "name": "Ejection seat arm handle",
+              "type": "handle",
+              "match": [
+                "PTR-ARM-SEAT-HANDLE"
+              ],
+              "text": "This handle arms the ejection seat. A seat that is not armed will not fire.",
+              "context": "A caution light, SEAT NOT ARMED, is listed in the manual but has no function in the game. The pre-flight list says to arm the seat.",
+              "src": "m1",
+              "page": "506"
+            },
+            {
+              "id": "seat-height",
+              "name": "Seat height adjustment button",
+              "type": "button",
+              "match": [
+                "PTR-SEAT-ADJBUTTON"
+              ],
+              "text": "This button moves the seat up or down, so the pilot can sit comfortably and see well.",
+              "context": "The game has two commands, seat adjustment up and seat adjustment down. The manual does not describe the button."
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

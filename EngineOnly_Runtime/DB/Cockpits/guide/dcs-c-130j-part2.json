@@ -1,0 +1,2028 @@
+{
+  "format": "joypro-cockpit-guide",
+  "version": 1,
+  "partOf": "dcs-c-130j",
+  "areas": [
+    {
+      "id": "left-console",
+      "where": "left-console",
+      "name": "Pilot's side console",
+      "text": "The panels on the pilot's left: the oxygen levers, the audio monitoring panel and a few extras.",
+      "panels": [
+        {
+          "id": "pilot-oxygen",
+          "name": "Pilot oxygen regulator",
+          "src": "m1",
+          "page": "68",
+          "text": "The oxygen regulator feeds breathing oxygen from the plane's liquid oxygen tank to the pilot's mask. It has three levers.",
+          "context": "The pilots use oxygen at high altitude or when smoke fills the cockpit.",
+          "controls": [
+            {
+              "id": "ox-supply",
+              "name": "Pilot oxygen supply lever (ON / OFF)",
+              "type": "lever",
+              "match": [
+                "PNT_P_OXYGEN_SUPPLY_509",
+                "item:pilot-side-console:3"
+              ],
+              "positions": [
+                {
+                  "name": "OFF",
+                  "text": "Oxygen to the mask is shut off."
+                },
+                {
+                  "name": "ON",
+                  "text": "Oxygen is available at the mask."
+                }
+              ],
+              "text": "This lever lets oxygen flow to the pilot's mask or shuts it off.",
+              "context": "Oxygen comes from a 25-liter tank of liquid oxygen in the nose.",
+              "src": "m1",
+              "page": "68"
+            },
+            {
+              "id": "ox-diluter",
+              "name": "Pilot oxygen diluter lever",
+              "type": "lever",
+              "match": [
+                "PNT_P_OXYGEN_PERC_508"
+              ],
+              "text": "On other planes this lever mixes air into the oxygen. On the C-130J it does not work: both positions give 100 percent oxygen.",
+              "context": "The lever is a part of the regulator's design.",
+              "src": "m1",
+              "page": "68"
+            },
+            {
+              "id": "ox-emerg",
+              "name": "Pilot oxygen emergency lever",
+              "type": "lever",
+              "match": [
+                "PNT_P_OXYGEN_EMERG_507"
+              ],
+              "positions": [
+                {
+                  "name": "EMERGENCY",
+                  "text": "Oxygen flows all the time to force smoke out of the mask."
+                },
+                {
+                  "name": "NORMAL",
+                  "text": "Oxygen flows when the pilot breathes in."
+                },
+                {
+                  "name": "TEST MASK",
+                  "text": "A short puff of oxygen checks the mask. The lever springs back."
+                }
+              ],
+              "text": "This lever sets how the oxygen flows. In EMERGENCY oxygen is pushed continuously into the mask to blow smoke and fumes out. TEST MASK gives a short puff to check the mask.",
+              "context": "It springs back to NORMAL from TEST MASK.",
+              "src": "m1",
+              "page": "68"
+            }
+          ]
+        },
+        {
+          "id": "pilot-audio-monitor",
+          "name": "Pilot audio monitoring panel",
+          "src": "m1",
+          "page": "151",
+          "text": "This panel on the pilot's side console listens to the navigation radios and the radar warning receiver. Each has a knob for volume and on/off.",
+          "context": "The pilot hears the identity tones of beacons and the warning sounds of the RWR, the radar warning receiver.",
+          "controls": [
+            {
+              "id": "mon-knobs",
+              "name": "Pilot audio monitoring knobs (10)",
+              "type": "knob",
+              "match": [
+                "PNT_P_MON_*",
+                "item:pilot-side-console:4"
+              ],
+              "count": 10,
+              "text": "These ten knobs control the audio of the pilot side for VOR 1 and 2, TACAN 1 and 2, ADF 1 and 2, SAR, BCN and RWR, plus one unused knob. Turning changes the volume. Pulling a knob out switches that channel on.",
+              "context": "A white band at the foot of a knob shows that its channel is on. VOR, TACAN and ADF are radio beacons that give the plane its direction.",
+              "src": "m1",
+              "page": "151"
+            }
+          ]
+        },
+        {
+          "id": "pilot-console-items",
+          "name": "Pilot console extras",
+          "src": "m1",
+          "page": "19",
+          "text": "A tablet, a coffee cup and two items listed in the manual: the windshield defog lever and the data transfer unit.",
+          "context": "These items are not flight controls.",
+          "controls": [
+            {
+              "id": "tablet",
+              "name": "Tablet",
+              "type": "other",
+              "match": [
+                "PNT_TABLET_CLICK"
+              ],
+              "text": "The game lets the player click a tablet on the pilot's side. The manual does not describe it.",
+              "context": "It is not a flight control and does not change the aircraft.",
+              "src": "m1"
+            },
+            {
+              "id": "coffee-cup",
+              "name": "Coffee cup",
+              "type": "other",
+              "match": [
+                "P_COFFEE_CUP_1687"
+              ],
+              "text": "Clicking the pilot's cup holder shows a coffee cup. Two cup holders are in the cockpit, one on each side window tray.",
+              "context": "It is for fun and has no function.",
+              "src": "m1",
+              "page": "154"
+            },
+            {
+              "id": "defog-pilot",
+              "name": "Pilot windshield defog lever",
+              "type": "lever",
+              "match": [
+                "item:pilot-side-console:1"
+              ],
+              "text": "This lever is listed in the manual as the pilot's windshield defog lever. Defog means clearing fog from the glass. The game's list of controls has no callout for it.",
+              "context": "The manual does not describe the lever.",
+              "src": "m1",
+              "page": "19"
+            },
+            {
+              "id": "dsdts-pilot",
+              "name": "Dual slot data transfer system (DSDTS), pilot side",
+              "type": "other",
+              "match": [
+                "item:pilot-side-console:2"
+              ],
+              "text": "The DSDTS is a device with two slots for data cartridges that carry mission data. This one is on the pilot's side.",
+              "context": "The game shows a DSDTS DOOR OPEN advisory when its door is open. The manual does not describe it further.",
+              "src": "m1",
+              "page": "19"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "cabin",
+      "where": "left-console",
+      "name": "Crew door, loadmaster station and galley",
+      "text": "The crew door, the loadmaster's station and the galley (kitchen corner) behind the cockpit. The manual does not describe these; the game names the parts.",
+      "panels": [
+        {
+          "id": "crew-door",
+          "name": "Crew door",
+          "src": "m1",
+          "text": "The crew door is how the crew enters and leaves the plane. It has an inside and an outside handle.",
+          "context": "The game lets the player open the door. The manual only mentions the crew door in the list of exits.",
+          "controls": [
+            {
+              "id": "door-inside",
+              "name": "Crew door (inside)",
+              "type": "handle",
+              "match": [
+                "PNT_CREW_DOOR_INTERNAL_2111"
+              ],
+              "text": "Clicking this opens or closes the crew door from the inside.",
+              "context": "The manual does not describe the door itself. A CREW DOOR OPEN message can appear in the message list.",
+              "src": "m1"
+            },
+            {
+              "id": "door-outside",
+              "name": "Crew door (outside)",
+              "type": "handle",
+              "match": [
+                "PNT_CREW_DOOR_2110"
+              ],
+              "text": "Clicking this opens or closes the crew door from the outside.",
+              "context": "It is used to get into the plane from the ground.",
+              "src": "m1"
+            }
+          ]
+        },
+        {
+          "id": "loadmaster",
+          "name": "Loadmaster station",
+          "src": "m1",
+          "text": "The loadmaster is the crew member who looks after the cargo. The station has a cover and a ramp switch.",
+          "context": "The game has a copy of the ramp and door switch here. The manual does not describe this station.",
+          "controls": [
+            {
+              "id": "lm-cover",
+              "name": "Loadmaster station cover",
+              "type": "cover",
+              "match": [
+                "PNT_LM_GLASS_2100"
+              ],
+              "text": "This cover protects the loadmaster's controls. The game lets the player open it.",
+              "context": "The manual does not describe it.",
+              "src": "m1"
+            },
+            {
+              "id": "lm-ramp",
+              "name": "Loadmaster ramp/door control switch",
+              "type": "switch",
+              "match": [
+                "PNT_LM_RAMP_2101"
+              ],
+              "text": "This switch at the loadmaster station opens and closes the cargo ramp and door, like the switch on the aerial delivery panel in the cockpit.",
+              "context": "The manual describes the cockpit switch, not this one.",
+              "src": "m1",
+              "page": "49"
+            }
+          ]
+        },
+        {
+          "id": "galley-lower",
+          "name": "Galley shelves, drawers and doors",
+          "src": "m1",
+          "text": "The galley is the kitchen corner of the plane. These are its shelves, drawers, doors and stoppers.",
+          "context": "The manual does not describe the galley. The game lets the player click these parts.",
+          "controls": [
+            {
+              "id": "galley-microwave-latch",
+              "name": "Microwave latch",
+              "type": "other",
+              "match": [
+                "PNT_GALY_STOPPR_1677"
+              ],
+              "text": "The game calls this the 'Microwave Latch'. It can be clicked.",
+              "context": "The manual does not describe the galley.",
+              "src": "m1"
+            },
+            {
+              "id": "galley-middle-shelf",
+              "name": "Galley middle shelf",
+              "type": "other",
+              "match": [
+                "PNT_GALY_SHELF_1642"
+              ],
+              "text": "This is the middle shelf of the galley. It can be clicked to move it.",
+              "context": "The manual does not describe the galley.",
+              "src": "m1"
+            },
+            {
+              "id": "galley-bottom-shelf",
+              "name": "Galley bottom shelf",
+              "type": "other",
+              "match": [
+                "PNT_GALY_SM_DRAWER_1667"
+              ],
+              "text": "This is the bottom shelf of the galley. It can be clicked to move it.",
+              "context": "The manual does not describe the galley.",
+              "src": "m1"
+            },
+            {
+              "id": "galley-bottom-latch",
+              "name": "Bottom cabinet latch",
+              "type": "other",
+              "match": [
+                "PNT_GALY_INSUL_OPEN_1668"
+              ],
+              "text": "The game calls this the 'Btm Cabinet latch'. It opens the cabinet at the bottom of the galley.",
+              "context": "The manual does not describe the galley.",
+              "src": "m1"
+            },
+            {
+              "id": "galley-trash-door",
+              "name": "Galley trash door",
+              "type": "other",
+              "match": [
+                "PNT_GALY_TRASH_DOOR_1666"
+              ],
+              "text": "This is the door of the galley's trash bin.",
+              "context": "The manual does not describe the galley.",
+              "src": "m1"
+            },
+            {
+              "id": "galley-trash-latch",
+              "name": "Galley trash door latch",
+              "type": "other",
+              "match": [
+                "PNT_GALY_TRASH_LATCH_1669"
+              ],
+              "text": "This latch holds the galley trash door closed.",
+              "context": "The manual does not describe the galley.",
+              "src": "m1"
+            },
+            {
+              "id": "galley-stoppers",
+              "name": "Galley shelf, drawer and door stoppers",
+              "type": "other",
+              "match": [
+                "PNT_GALY_STOPPR_*"
+              ],
+              "count": 11,
+              "text": "The game names these clickable parts 'stoppers' (shelf stoppers 1 to 4, top shelf stoppers, bottom drawer stoppers and the door stoppers). A stopper keeps a shelf or drawer from sliding out.",
+              "context": "The manual does not describe the galley.",
+              "src": "m1"
+            },
+            {
+              "id": "galley-cabinet",
+              "name": "Cabinet open/close",
+              "type": "other",
+              "match": [
+                "P_CABINET_BOX_73"
+              ],
+              "text": "The game calls this 'Cabinet Open/Close'. Clicking it opens or closes a cabinet.",
+              "context": "The manual does not describe this cabinet.",
+              "src": "m1"
+            }
+          ]
+        },
+        {
+          "id": "microwave",
+          "name": "Microwave oven",
+          "src": "m1",
+          "text": "A kitchen microwave oven in the galley. It has number keys and a few buttons.",
+          "context": "It is a fun detail of the game. The manual does not describe it.",
+          "controls": [
+            {
+              "id": "mw-start",
+              "name": "Microwave START",
+              "type": "button",
+              "match": [
+                "PNT_MICROW_START_*"
+              ],
+              "text": "This button starts the microwave oven in the galley.",
+              "context": "The manual does not describe the microwave.",
+              "src": "m1"
+            },
+            {
+              "id": "mw-digits",
+              "name": "Microwave number keys 0-9",
+              "type": "keypad",
+              "match": [
+                "PNT_MICROW_?_*"
+              ],
+              "count": 10,
+              "text": "These ten keys type numbers into the microwave oven, for example the time.",
+              "context": "The manual does not describe the microwave.",
+              "src": "m1"
+            },
+            {
+              "id": "mw-min",
+              "name": "Microwave MIN key",
+              "type": "button",
+              "match": [
+                "PNT_MICROW_MIN_*"
+              ],
+              "text": "This key of the microwave is labelled MIN, short for minutes.",
+              "context": "The manual does not describe the microwave.",
+              "src": "m1"
+            },
+            {
+              "id": "mw-clear",
+              "name": "Microwave CLEAR key",
+              "type": "button",
+              "match": [
+                "PNT_MICROW_CLEAR_*"
+              ],
+              "text": "This key of the microwave clears what was typed.",
+              "context": "The manual does not describe the microwave.",
+              "src": "m1"
+            },
+            {
+              "id": "mw-popcorn",
+              "name": "Microwave POPCORN key",
+              "type": "button",
+              "match": [
+                "PNT_MICROW_POPCORN_*"
+              ],
+              "text": "This key of the microwave is labelled POPCORN, a ready-made program for cooking popcorn.",
+              "context": "The manual does not describe the microwave.",
+              "src": "m1"
+            },
+            {
+              "id": "mw-open",
+              "name": "Microwave OPEN button",
+              "type": "button",
+              "match": [
+                "PNT_MICROW_OPEN_*"
+              ],
+              "text": "This button opens the door of the microwave oven.",
+              "context": "The manual does not describe the microwave.",
+              "src": "m1"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "right-console",
+      "where": "right-console",
+      "name": "Copilot's side console",
+      "text": "The panels on the copilot's right: the oxygen levers, the audio monitoring panel, the emergency nose gear release and a few extras.",
+      "panels": [
+        {
+          "id": "copilot-oxygen",
+          "name": "Copilot oxygen regulator",
+          "src": "m1",
+          "page": "68",
+          "text": "The oxygen regulator feeds breathing oxygen from the plane's liquid oxygen tank to the copilot's mask. It has three levers.",
+          "context": "The levers are the same as at the pilot's seat. The game's names for two of them differ from its internal ids; this guide follows the game's names.",
+          "controls": [
+            {
+              "id": "ox-supply",
+              "name": "Copilot oxygen supply lever (ON / OFF)",
+              "type": "lever",
+              "match": [
+                "PNT_CP_OXYGEN_PERC_192",
+                "item:copilot-side-console:1"
+              ],
+              "positions": [
+                {
+                  "name": "OFF",
+                  "text": "Oxygen to the mask is shut off."
+                },
+                {
+                  "name": "ON",
+                  "text": "Oxygen is available at the mask."
+                }
+              ],
+              "text": "This lever lets oxygen flow to the copilot's mask or shuts it off. The game's label for this lever is 'Copilot Oxygen Supply Lever'.",
+              "context": "The copilot's regulator is fed from the same 25-liter tank of liquid oxygen in the nose as the pilot's.",
+              "src": "m1",
+              "page": "68"
+            },
+            {
+              "id": "ox-diluter",
+              "name": "Copilot oxygen diluter lever",
+              "type": "lever",
+              "match": [
+                "PNT_CP_OXYGEN_SUPPLY_191"
+              ],
+              "text": "On other planes this lever mixes air into the oxygen. On the C-130J it does not work: both positions give 100 percent oxygen. The game's label for this lever is 'Copilot Oxygen Diluter Lever'.",
+              "context": "The lever is a part of the regulator's design.",
+              "src": "m1",
+              "page": "68"
+            },
+            {
+              "id": "ox-emerg",
+              "name": "Copilot oxygen emergency lever",
+              "type": "lever",
+              "match": [
+                "PNT_CP_OXYGEN_EMERG_193"
+              ],
+              "positions": [
+                {
+                  "name": "EMERGENCY",
+                  "text": "Oxygen flows all the time to force smoke out of the mask."
+                },
+                {
+                  "name": "NORMAL",
+                  "text": "Oxygen flows when the copilot breathes in."
+                },
+                {
+                  "name": "TEST MASK",
+                  "text": "A short puff of oxygen checks the mask. The lever springs back."
+                }
+              ],
+              "text": "This lever sets how the oxygen flows to the copilot's mask. In EMERGENCY oxygen is pushed continuously into the mask to blow smoke out. TEST MASK gives a short puff to check the mask.",
+              "context": "It springs back to NORMAL from TEST MASK.",
+              "src": "m1",
+              "page": "68"
+            }
+          ]
+        },
+        {
+          "id": "copilot-audio-monitor",
+          "name": "Copilot audio monitoring panel",
+          "src": "m1",
+          "page": "151",
+          "text": "This panel on the copilot's side console listens to the navigation radios and the radar warning receiver. Each has a knob for volume and on/off.",
+          "context": "It is the copilot's counterpart of the pilot's audio monitoring panel.",
+          "controls": [
+            {
+              "id": "mon-knobs",
+              "name": "Copilot audio monitoring knobs (10)",
+              "type": "knob",
+              "match": [
+                "PNT_CP_MON_*",
+                "item:copilot-side-console:2"
+              ],
+              "count": 10,
+              "text": "These ten knobs control the audio of the copilot side for VOR 1 and 2, TACAN 1 and 2, ADF 1 and 2, SAR, BCN and RWR, plus one unused knob. Turning changes the volume. Pulling a knob out switches that channel on.",
+              "context": "A white band at the foot of a knob shows that its channel is on.",
+              "src": "m1",
+              "page": "151"
+            }
+          ]
+        },
+        {
+          "id": "emergency-gear",
+          "name": "Emergency nose gear release",
+          "src": "m1",
+          "page": "43",
+          "text": "This lever, behind a cover, is the emergency way to release the nose landing gear.",
+          "context": "The manual says the auxiliary hydraulic system can extend the nose gear if the utility system fails. It does not describe this lever.",
+          "controls": [
+            {
+              "id": "emerg-gear-cover",
+              "name": "Emergency nose gear release lever cover",
+              "type": "cover",
+              "match": [
+                "PNT_EMERG_NGEAR_COVER_131"
+              ],
+              "text": "This cover sits over the emergency nose gear release lever. It stops the lever from being moved by mistake.",
+              "context": "The pilot lifts it only when the nose gear must be released in an emergency.",
+              "src": "m1"
+            },
+            {
+              "id": "emerg-gear-lever",
+              "name": "Emergency nose gear release lever",
+              "type": "lever",
+              "match": [
+                "PNT_EMRG_NGEAR_REL_132"
+              ],
+              "text": "The game calls this the 'Emergency Nose Gear Release Lever'. It is for the emergency release of the nose landing gear.",
+              "context": "The manual does not describe the lever. It lists an emergency landing gear extension that runs on the auxiliary hydraulic system.",
+              "src": "m1",
+              "page": "43"
+            }
+          ]
+        },
+        {
+          "id": "copilot-console-items",
+          "name": "Copilot console extras",
+          "src": "m1",
+          "page": "19",
+          "text": "Items on the copilot's side console that are listed in the manual: the get-home radio, a data transfer unit and the defog lever.",
+          "context": "These items are not flight controls.",
+          "controls": [
+            {
+              "id": "get-home",
+              "name": "Get home control radio",
+              "type": "other",
+              "match": [
+                "item:copilot-side-console:3"
+              ],
+              "text": "This is the control unit of the get home radio, a backup radio. The game's list of controls has no callout for it.",
+              "context": "The manual only names it in its overview of the copilot side console.",
+              "src": "m1",
+              "page": "19"
+            },
+            {
+              "id": "dsdts-copilot",
+              "name": "Data transfer system (DSDTS), copilot side",
+              "type": "other",
+              "match": [
+                "item:copilot-side-console:4"
+              ],
+              "text": "This is the second data cartridge device, on the copilot's side. It carries mission data.",
+              "context": "The manual only names this device, together with the one on the pilot's side.",
+              "src": "m1",
+              "page": "19"
+            },
+            {
+              "id": "defog-copilot",
+              "name": "Copilot windshield defog lever",
+              "type": "lever",
+              "match": [
+                "item:copilot-side-console:5"
+              ],
+              "text": "This lever is listed in the manual as the copilot's windshield defog lever. Defog means clearing fog from the glass. The game's list of controls has no callout for it.",
+              "context": "The manual does not describe the lever.",
+              "src": "m1",
+              "page": "19"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "center-pedestal",
+      "where": "center-pedestal",
+      "name": "Center console (between the pilots)",
+      "text": "The console between the two pilots. It holds the autopilot panel, the CNI keypads, the trim, flap and airdrop panels, the cursor controls and the ARC-210 radio.",
+      "panels": [
+        {
+          "id": "afcs",
+          "name": "AFCS control panel (autopilot)",
+          "src": "m1",
+          "page": "22",
+          "text": "This panel switches the autopilot on and gives it basic commands: bank the plane or pitch it up and down. AFCS means automatic flight control system.",
+          "context": "The autopilot flies the plane along the commands of the flight director, using the modes picked on the REF/MODE panels. Either pilot can engage it.",
+          "controls": [
+            {
+              "id": "afcs-pilot",
+              "name": "AFCS PILOT engage switch",
+              "type": "switch2",
+              "match": [
+                "PNT_AFCS_P_52",
+                "item:upper-center-console:12"
+              ],
+              "positions": [
+                {
+                  "name": "DISENGAGE",
+                  "text": "The pilot's autopilot is off."
+                },
+                {
+                  "name": "ENGAGE",
+                  "text": "The pilot's autopilot is on and coupled to the pilot's flight director."
+                }
+              ],
+              "text": "This switch engages the pilot's autopilot. A magnet holds it in ENGAGE, and it is released by itself when the autopilot disengages.",
+              "context": "Only one of the two engage switches can be on at a time. The autopilot also needs the yoke buttons and trim switches to be at rest, and the TURN knob in its center detent.",
+              "src": "m1",
+              "page": "22"
+            },
+            {
+              "id": "afcs-copilot",
+              "name": "AFCS COPILOT engage switch",
+              "type": "switch2",
+              "match": [
+                "PNT_AFCS_CP_53"
+              ],
+              "positions": [
+                {
+                  "name": "DISENGAGE",
+                  "text": "The copilot's autopilot is off."
+                },
+                {
+                  "name": "ENGAGE",
+                  "text": "The copilot's autopilot is on and coupled to the copilot's flight director."
+                }
+              ],
+              "text": "This switch engages the copilot's autopilot. A magnet holds it in ENGAGE, and it is released by itself when the autopilot disengages.",
+              "context": "It works as the pilot's switch does but couples the autopilot to the copilot's flight director.",
+              "src": "m1",
+              "page": "22"
+            },
+            {
+              "id": "afcs-pitch-wheel",
+              "name": "AFCS PITCH wheel",
+              "type": "wheel",
+              "match": [
+                "PNT_AFCS_PITCH_KNOB_71"
+              ],
+              "text": "Rolling this wheel tells the autopilot to hold a different nose-up or nose-down angle. It can change the pitch by up to 10 degrees.",
+              "context": "It is a way to adjust the pitch by hand while the autopilot is on.",
+              "src": "m1",
+              "page": "22"
+            },
+            {
+              "id": "afcs-turn",
+              "name": "AFCS TURN knob",
+              "type": "knob",
+              "match": [
+                "PNT_AFCS_TURN_KNOB_70"
+              ],
+              "text": "Turning this knob tells the autopilot to bank the plane. The further the knob is turned, the steeper the bank, up to 35 degrees. In the center detent the autopilot follows the flight director.",
+              "context": "The autopilot cannot be engaged unless this knob is centered. The game has a command to center it.",
+              "src": "m1",
+              "page": "22"
+            },
+            {
+              "id": "afcs-pitch-axis",
+              "name": "AFCS PITCH axis switch",
+              "type": "switch",
+              "match": [
+                "PNT_AFCS_PITCH_51"
+              ],
+              "text": "This switch switches the up-and-down part of the autopilot on or off. With it off, the plane's pitch is no longer handled by the autopilot.",
+              "context": "If both this and the LAT switch are off with the autopilot on, the autopilot works only as a yaw damper, which keeps the nose from swinging side to side.",
+              "src": "m1",
+              "page": "22"
+            },
+            {
+              "id": "afcs-lat-axis",
+              "name": "AFCS LAT axis switch",
+              "type": "switch",
+              "match": [
+                "PNT_AFCS_LAT_73"
+              ],
+              "text": "This switch switches the sideways (roll) part of the autopilot on or off. With it off, the pilot flies the turns by hand.",
+              "context": "Pilots use it to fly part of the job by hand while the rest stays automatic.",
+              "src": "m1",
+              "page": "22"
+            }
+          ]
+        },
+        {
+          "id": "hdg-course-pilot",
+          "name": "Pilot heading and course select panel",
+          "src": "m1",
+          "page": "23",
+          "text": "This small panel has two knobs. One sets the heading bug, the mark that shows the compass direction the pilot wants to fly. The other sets the course shown on the course deviation indicator.",
+          "context": "The copilot has an identical panel. The heading bug is flown by the heading mode of the autopilot.",
+          "controls": [
+            {
+              "id": "hdg-knob",
+              "name": "Pilot heading knob (push to sync)",
+              "type": "knob",
+              "match": [
+                "PNT_P_HEADING_490_562",
+                "item:upper-center-console:9"
+              ],
+              "text": "Turning this knob moves the pilot's heading bug, the mark for the direction the pilot wants to fly. Pressing it sets the bug to the plane's present magnetic heading.",
+              "context": "The HDG mode of the flight director turns the plane to the bug.",
+              "src": "m1",
+              "page": "23"
+            },
+            {
+              "id": "course-knob",
+              "name": "Pilot course knob (push to sync)",
+              "type": "knob",
+              "match": [
+                "PNT_P_COURSE_491_563"
+              ],
+              "text": "Turning this knob sets the course line shown on the pilot's course deviation indicator when its source is not the inertial navigation. Pressing it sets the course to the present heading.",
+              "context": "The course line is what the plane is steered along when it tracks a radio beacon.",
+              "src": "m1",
+              "page": "23"
+            }
+          ]
+        },
+        {
+          "id": "hdg-course-copilot",
+          "name": "Copilot heading and course select panel",
+          "src": "m1",
+          "page": "23",
+          "text": "This panel is the copilot's copy of the heading and course panel. It has a heading knob and a course knob.",
+          "context": "It works independently of the pilot's panel and sets the copilot's own heading bug and course.",
+          "controls": [
+            {
+              "id": "hdg-knob",
+              "name": "Copilot heading knob (push to sync)",
+              "type": "knob",
+              "match": [
+                "PNT_CP_HEADING_492_564",
+                "item:upper-center-console:11"
+              ],
+              "text": "Turning this knob moves the copilot's heading bug. Pressing it sets the bug to the plane's present magnetic heading.",
+              "context": "The copilot's bug appears on the copilot's displays and HUD.",
+              "src": "m1",
+              "page": "23"
+            },
+            {
+              "id": "course-knob",
+              "name": "Copilot course knob (push to sync)",
+              "type": "knob",
+              "match": [
+                "PNT_CP_COURSE_493_565"
+              ],
+              "text": "Turning this knob sets the course on the copilot's course deviation indicator when its source is not the inertial navigation. Pressing it sets the course to the present heading.",
+              "context": "It is the copilot's counterpart of the pilot's course knob.",
+              "src": "m1",
+              "page": "23"
+            }
+          ]
+        },
+        {
+          "id": "cni-pilot",
+          "name": "Pilot CNI-MU (communication / navigation / identification management unit)",
+          "src": "m1",
+          "page": "229",
+          "text": "The CNI-MU is a screen with keys and a keypad. It is the main way for the pilot's side to tune radios, plan the route, and set up many mission tasks. Text is typed into the scratchpad line first and then sent to a field.",
+          "context": "There are three CNI-MUs in the C-130J: one for the pilot, one for the copilot and one for the augmented crew member. Together they replace the radio panels and navigation computers of older planes.",
+          "controls": [
+            {
+              "id": "lsk",
+              "name": "Pilot CNI-MU line select keys L1-L6, R1-R6",
+              "type": "button",
+              "match": [
+                "PNT_P_CNI_DISPL?_*",
+                "PNT_P_CNI_DISPR?_*",
+                "item:upper-center-console:6"
+              ],
+              "count": 12,
+              "text": "These 12 keys sit beside the screen of the pilot's CNI-MU, six on the left (L1-L6) and six on the right (R1-R6). A key picks the line of text next to it, or sends the typed text to that line.",
+              "context": "The CNI-MU (communication, navigation and identification management unit) is the keypad and screen through which pilot's side manages radios, routes and many mission tasks. The pilot's unit is driven by the first signal processor and mission computer. This is the pilot's unit.",
+              "src": "m1",
+              "page": "229"
+            },
+            {
+              "id": "key-comm",
+              "name": "COMM TUNE key",
+              "type": "button",
+              "match": [
+                "PNT_P_CNI_COMM_*"
+              ],
+              "text": "This key opens the COMM TUNE INDEX page, from which the communication radios (UHF, VHF and HF) are tuned. It is on the pilot's CNI-MU.",
+              "context": "The pilots use it to change a radio frequency on a unit, for example to talk to the tower. It is on the pilot's unit. This is the pilot's unit.",
+              "src": "m1",
+              "page": "230"
+            },
+            {
+              "id": "key-nav-tune",
+              "name": "NAV TUNE key",
+              "type": "button",
+              "match": [
+                "PNT_P_CNI_NAV_*"
+              ],
+              "text": "This key opens the NAV TUNE INDEX page, from which the navigation radios are tuned. It is on the pilot's CNI-MU.",
+              "context": "It leads to the tuning of the beacon radios (VOR, TACAN and ADF) that give the plane its direction and distance to the ground. It is on the pilot's unit. This is the pilot's unit.",
+              "src": "m1",
+              "page": "230"
+            },
+            {
+              "id": "key-iff",
+              "name": "IFF key",
+              "type": "button",
+              "match": [
+                "PNT_P_CNI_IFF_*"
+              ],
+              "text": "This key opens the IFF page, where the transponder is set (the radio box that answers 'who are you' queries with a code). It is on the pilot's CNI-MU.",
+              "context": "The transponder code can also be changed on the CNBP; the entries are shared between both. It is on the pilot's unit. This is the pilot's unit.",
+              "src": "m1",
+              "page": "230"
+            },
+            {
+              "id": "key-nav-ctrl",
+              "name": "NAV CTRL key",
+              "type": "button",
+              "match": [
+                "PNT_P_CNI_NAVCTRL_*"
+              ],
+              "text": "This key opens the INAV control page, which handles the plane's inertial navigation system (its position sensor). It is on the pilot's CNI-MU.",
+              "context": "The inertial navigation system finds the plane's position by sensing its own movement. It is on the pilot's unit. This is the pilot's unit.",
+              "src": "m1",
+              "page": "230"
+            },
+            {
+              "id": "key-msn",
+              "name": "MSN key",
+              "type": "button",
+              "match": [
+                "PNT_P_CNI_MSN_*"
+              ],
+              "text": "This key opens the MISSION page. It is on the pilot's CNI-MU.",
+              "context": "From the mission page the crew reaches the mission functions of the mission computer. It is on the pilot's unit. This is the pilot's unit.",
+              "src": "m1",
+              "page": "230"
+            },
+            {
+              "id": "key-dir",
+              "name": "DIR INTC key",
+              "type": "button",
+              "match": [
+                "PNT_P_CNI_DIR_*"
+              ],
+              "text": "This key opens the DIR INTC page, used to go direct to a point or to intercept a leg of the route. It is on the pilot's CNI-MU.",
+              "context": "It is used when the crew wants to fly straight to a point of the route. It is on the pilot's unit. This is the pilot's unit.",
+              "src": "m1",
+              "page": "230"
+            },
+            {
+              "id": "key-legs",
+              "name": "LEGS key",
+              "type": "button",
+              "match": [
+                "PNT_P_CNI_LEGS_*"
+              ],
+              "text": "This key opens the LEGS page, which lists the legs (route sections) of the flight plan. It is on the pilot's CNI-MU.",
+              "context": "A route is made of legs, one from each waypoint (route point) to the next. The page shows them one after another. It is on the pilot's unit. This is the pilot's unit.",
+              "src": "m1",
+              "page": "230"
+            },
+            {
+              "id": "key-told",
+              "name": "TOLD key",
+              "type": "button",
+              "match": [
+                "PNT_P_CNI_TOLD_*"
+              ],
+              "text": "This key opens the TOLD INDEX page, with takeoff and landing data. It is on the pilot's CNI-MU.",
+              "context": "Such data covers speeds and distances for takeoff and landing. It is on the pilot's unit. This is the pilot's unit.",
+              "src": "m1",
+              "page": "230"
+            },
+            {
+              "id": "key-mark",
+              "name": "MARK key",
+              "type": "button",
+              "match": [
+                "PNT_P_CNI_MARK_*"
+              ],
+              "text": "This key opens the MARK POSITION page, which stores the plane's present position. It is on the pilot's CNI-MU.",
+              "context": "It is a quick way to store a place, for example the point where the plane passes over a target. It is on the pilot's unit. This is the pilot's unit.",
+              "src": "m1",
+              "page": "230"
+            },
+            {
+              "id": "key-indx",
+              "name": "INDX key",
+              "type": "button",
+              "match": [
+                "PNT_P_CNI_INDX_*"
+              ],
+              "text": "This key opens the INDEX page, a list of the CNI pages. It is on the pilot's CNI-MU.",
+              "context": "From the index the crew can reach every CNI page. It is on the pilot's unit. This is the pilot's unit.",
+              "src": "m1",
+              "page": "230"
+            },
+            {
+              "id": "key-mc-indx",
+              "name": "MC INDX key",
+              "type": "button",
+              "match": [
+                "PNT_P_CNI_MC_INDEX_*"
+              ],
+              "text": "This key opens the MSN CMPTR INDEX page, the index of the mission computer pages. It is on the pilot's CNI-MU.",
+              "context": "It leads to the pages of the mission computer, such as the ones for airdrop planning. It is on the pilot's unit. This is the pilot's unit.",
+              "src": "m1",
+              "page": "230"
+            },
+            {
+              "id": "key-caps",
+              "name": "CAPS key",
+              "type": "button",
+              "match": [
+                "PNT_P_CNI_CAPS_*"
+              ],
+              "text": "This key opens the CAPS COMMAND page. It is on the pilot's CNI-MU.",
+              "context": "CAPS is the formation flying system (SKE). The key leads to the commands for it. It is on the pilot's unit. This is the pilot's unit.",
+              "src": "m1",
+              "page": "230"
+            },
+            {
+              "id": "key-prev-next",
+              "name": "PREV PAGE and NEXT PAGE keys",
+              "type": "button",
+              "match": [
+                "PNT_P_CNI_PREV_*",
+                "PNT_P_CNI_NEXT_*"
+              ],
+              "count": 2,
+              "text": "These two keys turn to the previous or next page when the page on the pilot's CNI-MU has several pages.",
+              "context": "At the last page, NEXT PAGE goes on to the first page. This is the pilot's unit.",
+              "src": "m1",
+              "page": "230"
+            },
+            {
+              "id": "key-exec",
+              "name": "EXEC key",
+              "type": "button",
+              "match": [
+                "PNT_P_CNI_EXEC_*"
+              ],
+              "text": "This key carries out a change to the flight plan made on the pilot's CNI-MU. It works only while the green EXEC light above it is on.",
+              "context": "A flight plan change is only a draft until EXEC is pressed. After that, the light goes out. This is the pilot's unit.",
+              "src": "m1",
+              "page": "231"
+            },
+            {
+              "id": "bright",
+              "name": "Brightness rocker",
+              "type": "rocker",
+              "match": [
+                "PNT_P_CNI_BRTUP_*",
+                "PNT_P_CNI_BRTDWN_*"
+              ],
+              "text": "This rocker makes the screen of the pilot's CNI-MU brighter or darker.",
+              "context": "The game lists one key for brighter and one for darker. This is the pilot's unit.",
+              "src": "m1",
+              "page": "230"
+            },
+            {
+              "id": "letters",
+              "name": "Letter keys A-Z",
+              "type": "keypad",
+              "match": [
+                "PNT_P_CNI_A_*",
+                "PNT_P_CNI_B_*",
+                "PNT_P_CNI_C_*",
+                "PNT_P_CNI_D_*",
+                "PNT_P_CNI_E_*",
+                "PNT_P_CNI_F_*",
+                "PNT_P_CNI_G_*",
+                "PNT_P_CNI_H_*",
+                "PNT_P_CNI_I_*",
+                "PNT_P_CNI_J_*",
+                "PNT_P_CNI_K_*",
+                "PNT_P_CNI_L_*",
+                "PNT_P_CNI_M_*",
+                "PNT_P_CNI_N_*",
+                "PNT_P_CNI_O_*",
+                "PNT_P_CNI_P_*",
+                "PNT_P_CNI_Q_*",
+                "PNT_P_CNI_R_*",
+                "PNT_P_CNI_S_*",
+                "PNT_P_CNI_T_*",
+                "PNT_P_CNI_U_*",
+                "PNT_P_CNI_V_*",
+                "PNT_P_CNI_W_*",
+                "PNT_P_CNI_X_*",
+                "PNT_P_CNI_Y_*",
+                "PNT_P_CNI_Z_*"
+              ],
+              "count": 26,
+              "text": "These 26 keys type the letters A to Z into the scratchpad, the line at the bottom of the pilot's CNI-MU screen.",
+              "context": "Letters are needed for names such as airport codes, waypoints and radio names. Typed text goes to a field with a line select key. This is the pilot's unit.",
+              "src": "m1",
+              "page": "231"
+            },
+            {
+              "id": "digits",
+              "name": "Number keys 0-9",
+              "type": "keypad",
+              "match": [
+                "PNT_P_CNI_0_*",
+                "PNT_P_CNI_1_*",
+                "PNT_P_CNI_2_*",
+                "PNT_P_CNI_3_*",
+                "PNT_P_CNI_4_*",
+                "PNT_P_CNI_5_*",
+                "PNT_P_CNI_6_*",
+                "PNT_P_CNI_7_*",
+                "PNT_P_CNI_8_*",
+                "PNT_P_CNI_9_*"
+              ],
+              "count": 10,
+              "text": "These ten keys type the numbers 0 to 9 into the scratchpad of the pilot's CNI-MU.",
+              "context": "Numbers are used for frequencies, altitudes and weights. The scratchpad is 25 characters wide. This is the pilot's unit.",
+              "src": "m1",
+              "page": "231"
+            },
+            {
+              "id": "dot",
+              "name": "Decimal key",
+              "type": "button",
+              "match": [
+                "PNT_P_CNI_DOT_*"
+              ],
+              "text": "This key types a decimal point into the scratchpad of the pilot's CNI-MU.",
+              "context": "A radio frequency uses it, for example 251.0. This is the pilot's unit.",
+              "src": "m1",
+              "page": "231"
+            },
+            {
+              "id": "plusminus",
+              "name": "Minus key (+/-)",
+              "type": "button",
+              "match": [
+                "PNT_P_CNI_PLUSMINUS_*"
+              ],
+              "text": "This key types a minus sign into the scratchpad of the pilot's CNI-MU. The key shows a plus sign as well, but a plus cannot be entered.",
+              "context": "All numbers are taken as positive unless a minus comes first. This is the pilot's unit.",
+              "src": "m1",
+              "page": "231"
+            },
+            {
+              "id": "slash",
+              "name": "Slash key",
+              "type": "button",
+              "match": [
+                "PNT_P_CNI_SLASH_*"
+              ],
+              "text": "This key types a slash (/) into the scratchpad of the pilot's CNI-MU.",
+              "context": "Some fields need two values separated by a slash. This is the pilot's unit.",
+              "src": "m1",
+              "page": "231"
+            },
+            {
+              "id": "del",
+              "name": "DEL key (delete)",
+              "type": "button",
+              "match": [
+                "PNT_P_CNI_DEL_*"
+              ],
+              "text": "This key puts the word *DELETE* into the scratchpad of the pilot's CNI-MU. Together with a line select key, it removes the data of that field.",
+              "context": "A field that was deleted goes back to its default value, if it has one. This is the pilot's unit.",
+              "src": "m1",
+              "page": "231"
+            },
+            {
+              "id": "clr",
+              "name": "CLR key (clear)",
+              "type": "button",
+              "match": [
+                "PNT_P_CNI_CLR_*"
+              ],
+              "text": "This key erases the scratchpad of the pilot's CNI-MU. One press removes one character. Holding it for over three seconds removes everything.",
+              "context": "A single press also removes a message that the unit has put into the scratchpad. This is the pilot's unit.",
+              "src": "m1",
+              "page": "231"
+            },
+            {
+              "id": "unused",
+              "name": "Unused key",
+              "type": "button",
+              "match": [
+                "PNT_P_CNI_MINUS_*"
+              ],
+              "text": "The game calls this key of the pilot's CNI-MU the 'Unused Key'. It has no function.",
+              "context": "It sits near the minus key and is only a part of the keypad. This is the pilot's unit.",
+              "src": "m1",
+              "page": "231"
+            }
+          ]
+        },
+        {
+          "id": "cni-copilot",
+          "name": "Copilot CNI-MU (communication / navigation / identification management unit)",
+          "src": "m1",
+          "page": "229",
+          "text": "The CNI-MU is a screen with keys and a keypad. It is the main way for the copilot's side to tune radios, plan the route, and set up many mission tasks. Text is typed into the scratchpad line first and then sent to a field.",
+          "context": "There are three CNI-MUs in the C-130J: one for the pilot, one for the copilot and one for the augmented crew member. Together they replace the radio panels and navigation computers of older planes.",
+          "controls": [
+            {
+              "id": "lsk",
+              "name": "Copilot CNI-MU line select keys L1-L6, R1-R6",
+              "type": "button",
+              "match": [
+                "PNT_CP_CNI_DISPL?_*",
+                "PNT_CP_CNI_DISPR?_*",
+                "item:upper-center-console:8"
+              ],
+              "count": 12,
+              "text": "These 12 keys sit beside the screen of the copilot's CNI-MU, six on the left (L1-L6) and six on the right (R1-R6). A key picks the line of text next to it, or sends the typed text to that line.",
+              "context": "The CNI-MU (communication, navigation and identification management unit) is the keypad and screen through which copilot's side manages radios, routes and many mission tasks. The copilot's unit works on the second computer set. This is the copilot's unit.",
+              "src": "m1",
+              "page": "229"
+            },
+            {
+              "id": "key-comm",
+              "name": "COMM TUNE key",
+              "type": "button",
+              "match": [
+                "PNT_CPPNT_P_CNI_COMM_*"
+              ],
+              "text": "This key opens the COMM TUNE INDEX page, from which the communication radios (UHF, VHF and HF) are tuned. It is on the copilot's CNI-MU.",
+              "context": "The pilots use it to change a radio frequency on a unit, for example to talk to the tower. It is on the copilot's unit. This is the copilot's unit.",
+              "src": "m1",
+              "page": "230"
+            },
+            {
+              "id": "key-nav-tune",
+              "name": "NAV TUNE key",
+              "type": "button",
+              "match": [
+                "PNT_CPPNT_P_CNI_NAV_*"
+              ],
+              "text": "This key opens the NAV TUNE INDEX page, from which the navigation radios are tuned. It is on the copilot's CNI-MU.",
+              "context": "It leads to the tuning of the beacon radios (VOR, TACAN and ADF) that give the plane its direction and distance to the ground. It is on the copilot's unit. This is the copilot's unit.",
+              "src": "m1",
+              "page": "230"
+            },
+            {
+              "id": "key-iff",
+              "name": "IFF key",
+              "type": "button",
+              "match": [
+                "PNT_CPPNT_P_CNI_IFF_*"
+              ],
+              "text": "This key opens the IFF page, where the transponder is set (the radio box that answers 'who are you' queries with a code). It is on the copilot's CNI-MU.",
+              "context": "The transponder code can also be changed on the CNBP; the entries are shared between both. It is on the copilot's unit. This is the copilot's unit.",
+              "src": "m1",
+              "page": "230"
+            },
+            {
+              "id": "key-nav-ctrl",
+              "name": "NAV CTRL key",
+              "type": "button",
+              "match": [
+                "PNT_CPPNT_P_CNI_NAVCTRL_*"
+              ],
+              "text": "This key opens the INAV control page, which handles the plane's inertial navigation system (its position sensor). It is on the copilot's CNI-MU.",
+              "context": "The inertial navigation system finds the plane's position by sensing its own movement. It is on the copilot's unit. This is the copilot's unit.",
+              "src": "m1",
+              "page": "230"
+            },
+            {
+              "id": "key-msn",
+              "name": "MSN key",
+              "type": "button",
+              "match": [
+                "PNT_CPPNT_P_CNI_MSN_*"
+              ],
+              "text": "This key opens the MISSION page. It is on the copilot's CNI-MU.",
+              "context": "From the mission page the crew reaches the mission functions of the mission computer. It is on the copilot's unit. This is the copilot's unit.",
+              "src": "m1",
+              "page": "230"
+            },
+            {
+              "id": "key-dir",
+              "name": "DIR INTC key",
+              "type": "button",
+              "match": [
+                "PNT_CPPNT_P_CNI_DIR_*"
+              ],
+              "text": "This key opens the DIR INTC page, used to go direct to a point or to intercept a leg of the route. It is on the copilot's CNI-MU.",
+              "context": "It is used when the crew wants to fly straight to a point of the route. It is on the copilot's unit. This is the copilot's unit.",
+              "src": "m1",
+              "page": "230"
+            },
+            {
+              "id": "key-legs",
+              "name": "LEGS key",
+              "type": "button",
+              "match": [
+                "PNT_CPPNT_P_CNI_LEGS_*"
+              ],
+              "text": "This key opens the LEGS page, which lists the legs (route sections) of the flight plan. It is on the copilot's CNI-MU.",
+              "context": "A route is made of legs, one from each waypoint (route point) to the next. The page shows them one after another. It is on the copilot's unit. This is the copilot's unit.",
+              "src": "m1",
+              "page": "230"
+            },
+            {
+              "id": "key-told",
+              "name": "TOLD key",
+              "type": "button",
+              "match": [
+                "PNT_CPPNT_P_CNI_TOLD_*"
+              ],
+              "text": "This key opens the TOLD INDEX page, with takeoff and landing data. It is on the copilot's CNI-MU.",
+              "context": "Such data covers speeds and distances for takeoff and landing. It is on the copilot's unit. This is the copilot's unit.",
+              "src": "m1",
+              "page": "230"
+            },
+            {
+              "id": "key-mark",
+              "name": "MARK key",
+              "type": "button",
+              "match": [
+                "PNT_CPPNT_P_CNI_MARK_*"
+              ],
+              "text": "This key opens the MARK POSITION page, which stores the plane's present position. It is on the copilot's CNI-MU.",
+              "context": "It is a quick way to store a place, for example the point where the plane passes over a target. It is on the copilot's unit. This is the copilot's unit.",
+              "src": "m1",
+              "page": "230"
+            },
+            {
+              "id": "key-indx",
+              "name": "INDX key",
+              "type": "button",
+              "match": [
+                "PNT_CPPNT_P_CNI_INDX_*"
+              ],
+              "text": "This key opens the INDEX page, a list of the CNI pages. It is on the copilot's CNI-MU.",
+              "context": "From the index the crew can reach every CNI page. It is on the copilot's unit. This is the copilot's unit.",
+              "src": "m1",
+              "page": "230"
+            },
+            {
+              "id": "key-mc-indx",
+              "name": "MC INDX key",
+              "type": "button",
+              "match": [
+                "PNT_CPPNT_P_CNI_MC_INDEX_*"
+              ],
+              "text": "This key opens the MSN CMPTR INDEX page, the index of the mission computer pages. It is on the copilot's CNI-MU.",
+              "context": "It leads to the pages of the mission computer, such as the ones for airdrop planning. It is on the copilot's unit. This is the copilot's unit.",
+              "src": "m1",
+              "page": "230"
+            },
+            {
+              "id": "key-caps",
+              "name": "CAPS key",
+              "type": "button",
+              "match": [
+                "PNT_CPPNT_P_CNI_CAPS_*"
+              ],
+              "text": "This key opens the CAPS COMMAND page. It is on the copilot's CNI-MU.",
+              "context": "CAPS is the formation flying system (SKE). The key leads to the commands for it. It is on the copilot's unit. This is the copilot's unit.",
+              "src": "m1",
+              "page": "230"
+            },
+            {
+              "id": "key-prev-next",
+              "name": "PREV PAGE and NEXT PAGE keys",
+              "type": "button",
+              "match": [
+                "PNT_CPPNT_P_CNI_PREV_*",
+                "PNT_CPPNT_P_CNI_NEXT_*"
+              ],
+              "count": 2,
+              "text": "These two keys turn to the previous or next page when the page on the copilot's CNI-MU has several pages.",
+              "context": "At the last page, NEXT PAGE goes on to the first page. This is the copilot's unit.",
+              "src": "m1",
+              "page": "230"
+            },
+            {
+              "id": "key-exec",
+              "name": "EXEC key",
+              "type": "button",
+              "match": [
+                "PNT_CPPNT_P_CNI_EXEC_*"
+              ],
+              "text": "This key carries out a change to the flight plan made on the copilot's CNI-MU. It works only while the green EXEC light above it is on.",
+              "context": "A flight plan change is only a draft until EXEC is pressed. After that, the light goes out. This is the copilot's unit.",
+              "src": "m1",
+              "page": "231"
+            },
+            {
+              "id": "bright",
+              "name": "Brightness rocker",
+              "type": "rocker",
+              "match": [
+                "PNT_CP_CNI_BRTUP_*",
+                "PNT_CP_CNI_BRTDWN_*"
+              ],
+              "text": "This rocker makes the screen of the copilot's CNI-MU brighter or darker.",
+              "context": "The game lists one key for brighter and one for darker. This is the copilot's unit.",
+              "src": "m1",
+              "page": "230"
+            },
+            {
+              "id": "letters",
+              "name": "Letter keys A-Z",
+              "type": "keypad",
+              "match": [
+                "PNT_CP_CNI_A_*",
+                "PNT_CP_CNI_B_*",
+                "PNT_CP_CNI_C_*",
+                "PNT_CP_CNI_D_*",
+                "PNT_CP_CNI_E_*",
+                "PNT_CP_CNI_F_*",
+                "PNT_CP_CNI_G_*",
+                "PNT_CP_CNI_H_*",
+                "PNT_CP_CNI_I_*",
+                "PNT_CP_CNI_J_*",
+                "PNT_CP_CNI_K_*",
+                "PNT_CP_CNI_L_*",
+                "PNT_CP_CNI_M_*",
+                "PNT_CP_CNI_N_*",
+                "PNT_CP_CNI_O_*",
+                "PNT_CP_CNI_P_*",
+                "PNT_CP_CNI_Q_*",
+                "PNT_CP_CNI_R_*",
+                "PNT_CP_CNI_S_*",
+                "PNT_CP_CNI_T_*",
+                "PNT_CP_CNI_U_*",
+                "PNT_CP_CNI_V_*",
+                "PNT_CP_CNI_W_*",
+                "PNT_CP_CNI_X_*",
+                "PNT_CP_CNI_Y_*",
+                "PNT_CP_CNI_Z_*"
+              ],
+              "count": 26,
+              "text": "These 26 keys type the letters A to Z into the scratchpad, the line at the bottom of the copilot's CNI-MU screen.",
+              "context": "Letters are needed for names such as airport codes, waypoints and radio names. Typed text goes to a field with a line select key. This is the copilot's unit.",
+              "src": "m1",
+              "page": "231"
+            },
+            {
+              "id": "digits",
+              "name": "Number keys 0-9",
+              "type": "keypad",
+              "match": [
+                "PNT_CP_CNI_0_*",
+                "PNT_CP_CNI_1_*",
+                "PNT_CP_CNI_2_*",
+                "PNT_CP_CNI_3_*",
+                "PNT_CP_CNI_4_*",
+                "PNT_CP_CNI_5_*",
+                "PNT_CP_CNI_6_*",
+                "PNT_CP_CNI_7_*",
+                "PNT_CP_CNI_8_*",
+                "PNT_CP_CNI_9_*"
+              ],
+              "count": 10,
+              "text": "These ten keys type the numbers 0 to 9 into the scratchpad of the copilot's CNI-MU.",
+              "context": "Numbers are used for frequencies, altitudes and weights. The scratchpad is 25 characters wide. This is the copilot's unit.",
+              "src": "m1",
+              "page": "231"
+            },
+            {
+              "id": "dot",
+              "name": "Decimal key",
+              "type": "button",
+              "match": [
+                "PNT_CP_CNI_DOT_*"
+              ],
+              "text": "This key types a decimal point into the scratchpad of the copilot's CNI-MU.",
+              "context": "A radio frequency uses it, for example 251.0. This is the copilot's unit.",
+              "src": "m1",
+              "page": "231"
+            },
+            {
+              "id": "plusminus",
+              "name": "Minus key (+/-)",
+              "type": "button",
+              "match": [
+                "PNT_CP_CNI_PLUSMINUS_*"
+              ],
+              "text": "This key types a minus sign into the scratchpad of the copilot's CNI-MU. The key shows a plus sign as well, but a plus cannot be entered.",
+              "context": "All numbers are taken as positive unless a minus comes first. This is the copilot's unit.",
+              "src": "m1",
+              "page": "231"
+            },
+            {
+              "id": "slash",
+              "name": "Slash key",
+              "type": "button",
+              "match": [
+                "PNT_CP_CNI_SLASH_*"
+              ],
+              "text": "This key types a slash (/) into the scratchpad of the copilot's CNI-MU.",
+              "context": "Some fields need two values separated by a slash. This is the copilot's unit.",
+              "src": "m1",
+              "page": "231"
+            },
+            {
+              "id": "del",
+              "name": "DEL key (delete)",
+              "type": "button",
+              "match": [
+                "PNT_CP_CNI_DEL_*"
+              ],
+              "text": "This key puts the word *DELETE* into the scratchpad of the copilot's CNI-MU. Together with a line select key, it removes the data of that field.",
+              "context": "A field that was deleted goes back to its default value, if it has one. This is the copilot's unit.",
+              "src": "m1",
+              "page": "231"
+            },
+            {
+              "id": "clr",
+              "name": "CLR key (clear)",
+              "type": "button",
+              "match": [
+                "PNT_CP_CNI_CLR_*"
+              ],
+              "text": "This key erases the scratchpad of the copilot's CNI-MU. One press removes one character. Holding it for over three seconds removes everything.",
+              "context": "A single press also removes a message that the unit has put into the scratchpad. This is the copilot's unit.",
+              "src": "m1",
+              "page": "231"
+            },
+            {
+              "id": "unused",
+              "name": "Unused key",
+              "type": "button",
+              "match": [
+                "PNT_CP_CNI_MINUS_*"
+              ],
+              "text": "The game calls this key of the copilot's CNI-MU the 'Unused Key'. It has no function.",
+              "context": "It sits near the minus key and is only a part of the keypad. This is the copilot's unit.",
+              "src": "m1",
+              "page": "231"
+            }
+          ]
+        },
+        {
+          "id": "flaps",
+          "name": "Flap control panel",
+          "src": "m1",
+          "page": "67",
+          "text": "This panel has the flap lever. The flaps are the big parts of the wing that slide out for more lift at low speed, during takeoff and landing.",
+          "context": "The pilot sets flaps for takeoff and landing, and raises them in cruise. The levers' position is read on the flap gauge of the trim indicator panel.",
+          "controls": [
+            {
+              "id": "flap-lever",
+              "name": "Flap control lever",
+              "type": "lever",
+              "match": [
+                "PNT_FLAP_LVR_15_16",
+                "item:lower-center-console:5",
+                "control:quadrant.lever.flaps"
+              ],
+              "text": "Moving this lever forward retracts the wing flaps, moving it back extends them. The lever can be set in small steps. The most forward spot is 0 percent (fully in), the rearmost is 100 percent (fully out).",
+              "context": "In the game, the mouse wheel changes the lever by 1 percent and a key by 10 percent. A latch holds the lever at 0 percent. The utility hydraulic system moves the flaps.",
+              "src": "m1",
+              "page": "67"
+            }
+          ]
+        },
+        {
+          "id": "trim",
+          "name": "Trim control panel",
+          "src": "m1",
+          "page": "65",
+          "text": "Trim means small adjustments so the plane flies straight without the pilot pushing on the yoke. This panel sets the aileron (roll) trim and the rudder (turn) trim, and the elevator trim in an emergency.",
+          "context": "Normal elevator trim is done with the thumb switches on the yoke. Only when those fail does the pilot use this panel for the elevator.",
+          "controls": [
+            {
+              "id": "elev-trim-power",
+              "name": "ELEV TRIM TAB power switch",
+              "type": "switch3",
+              "match": [
+                "PNT_TRIM_ELEV_1334",
+                "item:lower-center-console:2"
+              ],
+              "positions": [
+                {
+                  "name": "NORM",
+                  "text": "The trim motor has AC power. The yoke trim switches and the autopilot can move the trim."
+                },
+                {
+                  "name": "OFF",
+                  "text": "The trim motor has no power."
+                },
+                {
+                  "name": "EMER",
+                  "text": "The trim motor has DC power; trim is made with the emergency switch on this panel, not the yoke."
+                }
+              ],
+              "text": "This switch picks the electric power for the elevator trim tabs and so decides which switch can move them.",
+              "context": "With the autopilot on, setting it to OFF or EMER switches the autopilot off.",
+              "src": "m1",
+              "page": "65"
+            },
+            {
+              "id": "trim-multi",
+              "name": "Aileron / emergency elevator trim switch",
+              "type": "switch",
+              "match": [
+                "PNT_TRIM_MULTI_*"
+              ],
+              "count": 4,
+              "text": "This four-way switch trims the plane. Left and right turn the aileron trim tab, which rolls the plane. Forward and back move the elevator trim, but only when the ELEV TRIM TAB switch is on EMER. It springs back to the middle.",
+              "context": "The game names the directions Left Wing Down, Right Wing Down, Nose Down and Nose Up. The autopilot cannot trim the ailerons.",
+              "src": "m1",
+              "page": "65"
+            },
+            {
+              "id": "rudder-trim",
+              "name": "Rudder trim switch",
+              "type": "switch3",
+              "match": [
+                "PNT_RUDDER_TRIM_075"
+              ],
+              "positions": [
+                {
+                  "name": "Left",
+                  "text": "The rudder trim tab moves one way, while the switch is held."
+                },
+                {
+                  "name": "Center",
+                  "text": "No movement. The switch rests here."
+                },
+                {
+                  "name": "Right",
+                  "text": "The rudder trim tab moves the other way, while the switch is held."
+                }
+              ],
+              "text": "This switch turns the rudder trim tab left or right, to relieve the pressure on the rudder pedals. It springs back to the middle.",
+              "context": "The autopilot cannot make rudder trim inputs.",
+              "src": "m1",
+              "page": "65"
+            }
+          ]
+        },
+        {
+          "id": "aerial-delivery",
+          "name": "Aerial delivery panel (airdrop)",
+          "src": "m1",
+          "page": "49",
+          "text": "This panel is for dropping cargo or paratroopers out of the plane. It opens the cargo ramp and door, controls the jump lights and the air deflectors, and rings the cargo bay alarm bells.",
+          "context": "It is used on airdrop missions. The loadmaster has a copy of the ramp switch in the cargo bay.",
+          "controls": [
+            {
+              "id": "ramp-door",
+              "name": "RAMP/DOOR switch",
+              "type": "selector",
+              "match": [
+                "PNT_ADP_RAMP_479",
+                "item:lower-center-console:1"
+              ],
+              "positions": [
+                {
+                  "name": "OPEN",
+                  "text": "The ramp and door are commanded open."
+                },
+                {
+                  "name": "OFF",
+                  "text": "Movement stops."
+                },
+                {
+                  "name": "CLOSE",
+                  "text": "The ramp and door are commanded closed."
+                }
+              ],
+              "text": "This switch opens or closes the cargo ramp and cargo door at the same time. It springs back to OFF from OPEN and stops the movement.",
+              "context": "It works only in the air, unless a setting on the PREFLIGHT AMU page overrides it, and only if the cabin is not pressurized. A green FULL light shows when the door is open and the ramp is at the airdrop position.",
+              "src": "m1",
+              "page": "49"
+            },
+            {
+              "id": "caution-light",
+              "name": "CAUTION light switch",
+              "type": "button",
+              "match": [
+                "PNT_DROP_WAIT_397"
+              ],
+              "text": "This button turns on the red jump lights in the cargo bay, which tell the paratroopers to be ready. A yellow light on the button shows it is on.",
+              "context": "The red light comes before the green light in the airdrop order. The game names it Airdrop Caution Light.",
+              "src": "m1",
+              "page": "50"
+            },
+            {
+              "id": "jump-light",
+              "name": "JUMP light switch",
+              "type": "button",
+              "match": [
+                "PNT_DROP_JUMP_326"
+              ],
+              "text": "This button turns on the green jump lights in the cargo bay, the signal to jump. A green light on the button shows it is on.",
+              "context": "As a safety rule, the jump light only works when the caution light is already on.",
+              "src": "m1",
+              "page": "50"
+            },
+            {
+              "id": "chute-cover",
+              "name": "CHUTE RELEASE button cover",
+              "type": "cover",
+              "match": [
+                "PNT_CHUTE_COVER_76"
+              ],
+              "text": "This cover sits over the chute release button. It prevents the button from being pressed by mistake.",
+              "context": "The pilot lifts the cover before using the button.",
+              "src": "m1",
+              "page": "50"
+            },
+            {
+              "id": "chute-release",
+              "name": "CHUTE RELEASE button",
+              "type": "button",
+              "match": [
+                "PNT_CHUTE_BUTTON_77"
+              ],
+              "text": "This button lets go of the extraction parachute, if the plane carries one. The parachute pulls the cargo out of the open ramp.",
+              "context": "It works only with the ramp and door in the airdrop position and the plane in the air.",
+              "src": "m1",
+              "page": "50"
+            },
+            {
+              "id": "deflectors",
+              "name": "AIR DEFLECTOR switch",
+              "type": "switch2",
+              "match": [
+                "PNT_ADP_DEFLECTORS_478"
+              ],
+              "positions": [
+                {
+                  "name": "OPEN",
+                  "text": "The deflectors extend into the airstream."
+                },
+                {
+                  "name": "CLOSE",
+                  "text": "The deflectors retract into the fuselage."
+                }
+              ],
+              "text": "This switch moves the air deflectors of the paratroop doors out into the airstream or back in. The deflectors guide the air away from the jumpers.",
+              "context": "They are used before paratroopers jump from the side doors.",
+              "src": "m1",
+              "page": "50"
+            },
+            {
+              "id": "comp-drop",
+              "name": "COMPUTER DROP switch",
+              "type": "selector",
+              "match": [
+                "PNT_ADP_COMPDROP_474"
+              ],
+              "positions": [
+                {
+                  "name": "AUTO",
+                  "text": "The CNI-MU turns on the jump lights and releases the chute itself at the green light point."
+                },
+                {
+                  "name": "AD-MAN TJ-AUTO",
+                  "text": "The CNI-MU turns on the jump lights, but the chute release is pressed by hand."
+                },
+                {
+                  "name": "MAN",
+                  "text": "The computer does nothing; the crew uses the light switches and the chute release."
+                }
+              ],
+              "text": "This switch decides how much of the airdrop the computer does by itself. In AUTO the computer turns on the jump lights and releases the chute at the computed release point. In MAN the crew does everything.",
+              "context": "The computer drop is planned on the CNI-MU. The middle position needs the crew to press the chute release button.",
+              "src": "m1",
+              "page": "50"
+            },
+            {
+              "id": "alarm-cover",
+              "name": "Cargo bay ALARM switch guard",
+              "type": "guard",
+              "match": [
+                "PNT_ADP_COVER_78"
+              ],
+              "text": "This cover sits over the ALARM switch. It stops the alarm bells from being rung by mistake.",
+              "context": "The cover is lifted before the switch is moved.",
+              "src": "m1",
+              "page": "50"
+            },
+            {
+              "id": "alarm",
+              "name": "Cargo bay ALARM switch",
+              "type": "switch2",
+              "match": [
+                "PNT_ADP_ALARM_79"
+              ],
+              "positions": [
+                {
+                  "name": "OFF",
+                  "text": "The bells are quiet."
+                },
+                {
+                  "name": "ON",
+                  "text": "The four alarm bells ring."
+                }
+              ],
+              "text": "This switch rings four alarm bells in the cargo bay. The bells call the attention of the people in the back.",
+              "context": "The alarm is also used for emergencies.",
+              "src": "m1",
+              "page": "50"
+            }
+          ]
+        },
+        {
+          "id": "cursor-panel",
+          "name": "Cursor control panel",
+          "src": "m1",
+          "page": "175",
+          "text": "The cursor is a movable mark on the map and radar screens. This panel chooses the screen it works on, where its position is sent and how the map is scaled.",
+          "context": "The cursor is moved with the small stick on the yoke or the cursor hand controller. The panel sits in the lower center console.",
+          "controls": [
+            {
+              "id": "ccp-priority",
+              "name": "Cursor priority switch",
+              "type": "switch3",
+              "match": [
+                "PNT_CCP_SELECTOR_65"
+              ],
+              "positions": [
+                {
+                  "name": "P",
+                  "text": "The pilot's CNI-MU scratchpad gets the position."
+                },
+                {
+                  "name": "3RD",
+                  "text": "The augmented crew member's CNI-MU gets the position."
+                },
+                {
+                  "name": "CP",
+                  "text": "The copilot's CNI-MU gets the position."
+                }
+              ],
+              "text": "This switch chooses which CNI-MU receives the cursor's position when the INSERT switch is used: the pilot's, the augmented crew's or the copilot's.",
+              "context": "In the game, one command toggles the priority.",
+              "src": "m1",
+              "page": "175"
+            },
+            {
+              "id": "ccp-reset",
+              "name": "Cursor reset switch",
+              "type": "button",
+              "match": [
+                "PNT_CCP_RESET_68"
+              ],
+              "text": "This switch puts the cursor back to a point ahead of the plane. It works only in the manual or ground cursor mode.",
+              "context": "It brings the cursor back quickly after it was moved far away.",
+              "src": "m1",
+              "page": "175"
+            },
+            {
+              "id": "ccp-display",
+              "name": "Cursor display select switch",
+              "type": "selector",
+              "match": [
+                "PNT_CCP_DISPLAY_72",
+                "item:lower-center-console:3"
+              ],
+              "positions": [
+                {
+                  "name": "OFF",
+                  "text": "No cursor on the screens or the HUD."
+                },
+                {
+                  "name": "HDD 1",
+                  "text": "The cursor works on HDD 1."
+                },
+                {
+                  "name": "HDD 2",
+                  "text": "The cursor works on HDD 2."
+                },
+                {
+                  "name": "HDD 3",
+                  "text": "The cursor works on HDD 3."
+                },
+                {
+                  "name": "HDD 4",
+                  "text": "The cursor works on HDD 4."
+                }
+              ],
+              "text": "This switch picks which of the four big screens (HDD 1-4) the cursor works on. In OFF the cursor marks are removed from the screens and the HUD.",
+              "context": "The range and zoom switches next to it also act on the picked screen.",
+              "src": "m1",
+              "page": "175"
+            },
+            {
+              "id": "ccp-hud",
+              "name": "HUD cursor off/on switch",
+              "type": "button",
+              "match": [
+                "PNT_CCP_HUD_69"
+              ],
+              "text": "This switch removes the cursor position symbol from the HUD when pressed. Pressing it again brings the symbol back.",
+              "context": "It keeps the HUD clear when the cursor mark is not needed.",
+              "src": "m1",
+              "page": "175"
+            },
+            {
+              "id": "ccp-range",
+              "name": "Display range rocker",
+              "type": "rocker",
+              "match": [
+                "PNT_CCP_RANGE_*"
+              ],
+              "count": 2,
+              "text": "This rocker changes the scale of the digital map on the picked screen, so the map shows a larger or smaller area.",
+              "context": "The game lists a key for range increase and one for range decrease.",
+              "src": "m1",
+              "page": "175"
+            },
+            {
+              "id": "ccp-zoom",
+              "name": "Display zoom rocker",
+              "type": "rocker",
+              "match": [
+                "PNT_CCP_ZOOM_*"
+              ],
+              "count": 2,
+              "text": "This rocker zooms the digital map in or out. Each press changes the magnification by 10 percent, up to 200 percent.",
+              "context": "The game lists a key for zoom in and one for zoom out.",
+              "src": "m1",
+              "page": "175"
+            }
+          ]
+        },
+        {
+          "id": "arc210",
+          "name": "ARC-210 radio control unit",
+          "src": "m1",
+          "page": "150",
+          "text": "The ARC-210 is a radio for secure VHF and UHF voice and satellite talk. This unit holds its keys, switches and knobs.",
+          "context": "The manual says that this radio is inoperative in the current version of DCS: C-130J. The pilots use the other radios instead.",
+          "controls": [
+            {
+              "id": "arc-lsk",
+              "name": "ARC-210 line select keys LSK 1-3",
+              "type": "button",
+              "match": [
+                "PNT_ARC210_RCU_LSK_?_*",
+                "item:lower-center-console:6"
+              ],
+              "count": 3,
+              "text": "These three keys sit beside the small screen of the ARC-210 radio control unit. They pick the line of text next to them.",
+              "context": "The manual says that the ARC-210 radio is not working in this version of DCS.",
+              "src": "m1",
+              "page": "150"
+            },
+            {
+              "id": "arc-tod",
+              "name": "ARC-210 TOD SND and TOD RCV keys",
+              "type": "button",
+              "match": [
+                "PNT_ARC210_RCU_EMERG_TOD_*"
+              ],
+              "count": 2,
+              "text": "These two keys send or receive the time of day (TOD) for the radio's secure modes.",
+              "context": "The radio is not working in this version of DCS, so they have no effect.",
+              "src": "m1",
+              "page": "150"
+            },
+            {
+              "id": "arc-gps",
+              "name": "ARC-210 GPS key",
+              "type": "button",
+              "match": [
+                "PNT_ARC210_RCU_GPS_*"
+              ],
+              "text": "This key of the ARC-210 radio control unit is labelled GPS. The manual does not describe it.",
+              "context": "As the radio is not working in this version of DCS, a press of this key changes nothing.",
+              "src": "m1",
+              "page": "150"
+            },
+            {
+              "id": "arc-rt",
+              "name": "ARC-210 RT SELECT key",
+              "type": "button",
+              "match": [
+                "PNT_ARC210_RCU_RT_SELECT_*"
+              ],
+              "text": "This key of the ARC-210 radio control unit is labelled RT SELECT. The manual does not describe it.",
+              "context": "The radio is not working in this version of DCS.",
+              "src": "m1",
+              "page": "150"
+            },
+            {
+              "id": "arc-enter",
+              "name": "ARC-210 ENTER key",
+              "type": "button",
+              "match": [
+                "PNT_ARC210_RCU_ENTER_*"
+              ],
+              "text": "This key of the ARC-210 radio control unit is labelled ENTER. On such units it accepts what was typed, but the manual does not describe it.",
+              "context": "The radio is not working in this version of DCS, so it has no effect.",
+              "src": "m1",
+              "page": "150"
+            },
+            {
+              "id": "arc-bright",
+              "name": "ARC-210 brightness keys",
+              "type": "rocker",
+              "match": [
+                "PNT_ARC210_RCU_BRT_*"
+              ],
+              "count": 2,
+              "text": "These two keys make the screen of the ARC-210 control unit brighter or darker.",
+              "context": "The radio is not working in this version of DCS.",
+              "src": "m1",
+              "page": "150"
+            },
+            {
+              "id": "rcu-menu",
+              "name": "ARC-210 MENU/TIME key",
+              "type": "button",
+              "match": [
+                "PNT_RCU_MENU_*"
+              ],
+              "text": "This key of the ARC-210 radio is labelled MENU/TIME. The manual does not describe it.",
+              "context": "Because the ARC-210 is inoperative in this version of DCS, the key does nothing.",
+              "src": "m1",
+              "page": "150"
+            },
+            {
+              "id": "rcu-squelch",
+              "name": "ARC-210 squelch switch",
+              "type": "switch",
+              "match": [
+                "ARC210_RCU_POWER_*"
+              ],
+              "text": "The game calls this the ARC-210 Squelch Switch. Squelch cuts the hiss of a radio when nobody talks.",
+              "context": "The radio is not working in this version of DCS, so the switch has no effect.",
+              "src": "m1",
+              "page": "150"
+            },
+            {
+              "id": "rcu-amfm",
+              "name": "ARC-210 AM/FM key",
+              "type": "button",
+              "match": [
+                "PNT_RCU_AMFM_*"
+              ],
+              "text": "This key of the ARC-210 radio is labelled AM/FM, the two ways a radio signal can be sent.",
+              "context": "The radio is not working in this version of DCS.",
+              "src": "m1",
+              "page": "150"
+            },
+            {
+              "id": "rcu-xmt",
+              "name": "ARC-210 XMT/REC or SEND key",
+              "type": "button",
+              "match": [
+                "PNT_RCU_XMTRCV_*"
+              ],
+              "text": "This key of the ARC-210 radio is labelled XMT/REC or SEND. The manual does not describe it.",
+              "context": "The ARC-210 is inoperative in this version of DCS, so this key has no effect.",
+              "src": "m1",
+              "page": "150"
+            },
+            {
+              "id": "rcu-offset",
+              "name": "ARC-210 OFFSET or RCV key",
+              "type": "button",
+              "match": [
+                "PNT_RCU_OFFSET_*"
+              ],
+              "text": "This key of the ARC-210 radio is labelled OFFSET or RCV. The manual does not describe it.",
+              "context": "The radio is not working in this version of DCS, so this key has no effect.",
+              "src": "m1",
+              "page": "150"
+            },
+            {
+              "id": "rcu-freq",
+              "name": "ARC-210 frequency selectors (100 MHz to 25 kHz)",
+              "type": "knob",
+              "match": [
+                "PNT_RCU_?_5*"
+              ],
+              "count": 5,
+              "text": "These five selectors set the digits of the radio frequency: 100 MHz, 10 MHz, 1 MHz, 100 kHz and 25 kHz. The frequency is the 'station number' the radio talks on.",
+              "context": "The radio is not working in this version of DCS, so the digits have no effect.",
+              "src": "m1",
+              "page": "150"
+            },
+            {
+              "id": "rcu-op-mode",
+              "name": "ARC-210 operational mode switch",
+              "type": "selector",
+              "match": [
+                "PNT_RCU_OP_MODE_*",
+                "PNT_RCU_Q_MODE_*"
+              ],
+              "count": 2,
+              "text": "The game names these two switches the ARC-210 Operational Mode Switch and the Frequency Mode Switch. The manual does not describe them.",
+              "context": "The ARC-210 is inoperative in this version of DCS; neither switch changes anything.",
+              "src": "m1",
+              "page": "150"
+            },
+            {
+              "id": "rcu-chnl",
+              "name": "ARC-210 channel selector",
+              "type": "knob",
+              "match": [
+                "PNT_RCU_CHNL_*"
+              ],
+              "text": "This selector of the ARC-210 radio picks a stored channel (a preset), like a station button of a car radio.",
+              "context": "The radio is not working in this version of DCS.",
+              "src": "m1",
+              "page": "150"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

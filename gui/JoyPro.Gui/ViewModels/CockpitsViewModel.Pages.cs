@@ -97,16 +97,22 @@ public sealed partial class CockpitsViewModel
 
     private bool syncingPages;
 
-    private ManualPageOptions PageOptions(string highlight) => new()
+    private ManualPageOptions PageOptions(string highlight)
     {
-        Dark = ThemeIsDark,
-        Colors = PageStyle.Resolve(ThemeIsDark),
-        Folder = CockpitService.Folder() ?? string.Empty,
-        Highlight = highlight,
-        Mark = compared.Count == 0 ? null : CompareMark,
-        Pictures = FindGamePictures(Variant),
-        PictureMode = PictureModeKey
-    };
+        CockpitPictureSet? pictures = FindGamePictures(Variant);
+        BuildGuide(Variant, pictures);
+        return new()
+        {
+            Dark = ThemeIsDark,
+            Colors = PageStyle.Resolve(ThemeIsDark),
+            Folder = CockpitService.Folder() ?? string.Empty,
+            Highlight = highlight,
+            Mark = compared.Count == 0 ? null : CompareMark,
+            Pictures = pictures,
+            PictureMode = PictureModeKey,
+            Guide = GuideTree
+        };
+    }
 
     // "✓ relation (input)" for a row the profile holds, "–" for a row with a function id it does not.
     private string? CompareMark(CockpitControl c, CockpitFunction f, string mode)
@@ -172,6 +178,8 @@ public sealed partial class CockpitsViewModel
         CockpitPageItem? page = Pages.FirstOrDefault(p => string.Equals(p.Page.Id, id, StringComparison.OrdinalIgnoreCase));
         if (page == null)
             return false;
+        if (!ReferenceEquals(page, SelectedPage))
+            SelectedTag = string.Empty;
         SelectedPage = page;
         return true;
     }
@@ -192,7 +200,12 @@ public sealed partial class CockpitsViewModel
 
     // ------------------------------------------------------------------ search over the variant's pages
 
-    partial void OnPageSearchTextChanged(string value) => BuildPages();
+    // The search box searches the pages (marks) and the guide tree (filters it).
+    partial void OnPageSearchTextChanged(string value)
+    {
+        BuildPages();
+        GuideSearchText = value ?? string.Empty;
+    }
 
     private void RunPageSearch()
     {

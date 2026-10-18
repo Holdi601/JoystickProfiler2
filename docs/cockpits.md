@@ -242,6 +242,115 @@ so the tables never overlap and the lines do not cross tables. Controls the draw
   profile holds it for that game and aircraft (`engine cockpits compare`), with the relation's name and its input.
 - **Use this layout**: hands the variant to the setup wizard (below).
 
+## The cockpit guide
+
+Every panel and every control of a cockpit explained in plain words, as a tree: **area** (a rough section only: left
+console, main panel, overhead, stick and throttle) > **panel** (a real, named panel: "ENG & JET START control panel",
+"Autopilot panel") > **control** (every switch, button, knob, lever, with its positions). Each panel and control has
+"What does it do?" (what it does, as for someone who has never sat in a cockpit) and "In the bigger picture" (when and
+why the pilot uses it, what depends on it, where it comes in the start-up), the positions (OFF / BATT / MAIN PWR, each
+with what it does), the game's own name for it, the commands to bind it with, the open profile's relations that bind it
+(after **Compare with my setup**) and the source (manual and page).
+
+On the **Cockpits** page the guide sits next to the manual page (above it on a narrow window). A click on a control opens
+the page that shows it and marks its callout (a ring around the point, the list line highlighted); a click on a callout
+or a list line of a page selects its control in the tree and opens its explanation. The search box ("battery",
+"autopilot") filters the tree to the matching controls with their panels and areas and marks them on the pages. The
+printed pages keep the compact form: the game panels are titled by the guide's panels ("ELEC control panel, EPU control
+panel" instead of a camera view's "Instrument Panel (3)"), the callouts carry the guide's names, and each list line
+gives the first sentence of the explanation.
+
+### The data (`DB/Cockpits/guide`)
+
+Written offline (no AI at runtime) from the games' own control lists (the source sheets of the picture sets: DCS hint
+texts and command categories, X-Plane tooltips and commands, MSFS node and event names, IL-2 actions), the manuals
+that come with the games and JoyPro's catalog; shipped with JoyPro.
+
+```json
+{ "format": "joypro-cockpit-guide", "version": 1, "id": "dcs-f-16c-50", "title": "F-16C Viper (DCS)",
+  "variants": ["f-16c-block-50"], "games": ["DCS"], "sets": ["DCS/F-16C_50"],
+  "sources": [ { "id": "m1", "title": "DCS F-16C Early Access Guide (EN)", "file": "Mods/aircraft/F-16C/Doc/..." } ],
+  "intro": "What kind of aircraft, how its cockpit is laid out.",
+  "areas": [ { "id": "left-console", "where": "left-console", "name": "Left console", "text": "...", "seat": 0,
+    "panels": [ { "id": "elec", "name": "ELEC control panel", "db": "elec-control-panel", "text": "...", "context": "...", "src": "m1", "page": "64",
+      "controls": [ { "id": "main-pwr", "name": "MAIN PWR switch", "type": "switch3",
+                      "match": ["PTR-ELEC-TMB-MPWR-510", "item:elec-control-panel:1"],
+                      "positions": [ { "name": "OFF", "text": "..." }, { "name": "BATT", "text": "..." }, { "name": "MAIN PWR", "text": "..." } ],
+                      "text": "...", "context": "...", "count": 0, "fn": "" } ] } ] } ] }
+```
+
+| Field | |
+|---|---|
+| `variants` | the catalog variants it explains (a guide may list a version's seats; the back seat's areas have `"seat": 2`, areas without a seat are in every seat) |
+| `inherits`, `remove` | starts from another guide (A-10C from A-10C II, Ka-50 BS2 from BS3, TF-51D from P-51D); its areas, panels and controls are replaced by id; `remove` drops `panel` or `panel/control` ids |
+| `partOf` | a part file of a big guide (`dcs-a-10c-ii-part2.json`): its areas join the guide's |
+| `common` + `games` | a shared guide of a game's common controls (IL-2's actions, MSFS's node names, X-Plane's commands): used for every variant of the game below its own guide; only its controls the cockpit has are shown |
+| area `where` | `glareshield front-left front-center front-right left-console right-console center-pedestal overhead left-side right-side floor rear seat helmet hotas other` |
+| panel `db` | the catalog panel it is (the catalog's items no guide control names are listed in it) |
+| control `type` | `switch2 switch3 switch knob selector button lever handle wheel guard cover gauge display screen light indicator keypad rocker hat slider encoder pedal trigger axis other`; `count` for a group of alike controls (OSB 1-20) |
+| `match` | the game controls it is: a glob of the picture callout id (`PNT-BTN-MFD-L-*`), `cmd:<glob>` (a command id or name of the callout: X-Plane commands, IL-2 actions, MSFS events), `label:<text>` (the callout's label), `item:<catalog panel>:<n>`, `control:<catalog grip control id>`. The first guide control (in file order) that matches a callout gets it |
+
+Translations: `<id>.<lang>.json` (`joypro-cockpit-guide-text`: `title`, `intro`, `areas` / `panels` by id,
+`controls` by `panel/control` with `name`, `text`, `context` and `positions` by the English position name). The GUI
+uses the language of the user interface where there is one (German: `.de.json`), else English. Controls no guide
+explains (War Thunder, Nuclear Option, Star Citizen, aircraft without a guide yet) are listed under their game panel or
+catalog panel with the game's or catalog's name, the catalog's note and a general description of their kind of control
+(GUI texts, translated); the tree says "not explained yet".
+
+**General explanations by function** (`guide/_templates.json`, German `_templates.de.json`, format
+`joypro-cockpit-guide-templates`): for every control no guide explains (War Thunder, Nuclear Option, Star Citizen, Elite,
+X4, VTOL VR and the long tail of the others) the template with the longest of its `words` in the control's name (else
+in the catalog's note) gives the text and the bigger picture, with `{name}` replaced by the control's own name ("landing
+gear", "flaps", "master arm", "radio", "trim" ...); gauges, lights and screens get the template of what they are. The
+tree shows them as "general description"; a control without a matching template gets the GUI's sentence for its kind of
+control (switch, knob, button ...).
+
+**Animated controls**: every control of the picture set's `controls` list (see [Animated controls](#animated-controls))
+is in the tree. One that is a callout joins its callout's node; one that is not (an animated part without a callout)
+gets a node of its own at the pictures it is visible on, matched to a guide control by its id, label or commands like a
+callout, else under its game panel with a general explanation. Its kind (`switch-3`, `rotary` ...) gives the type and
+its animation's positions the positions ("Position 1 / 2 / 3") where no guide names them. New picture sets are read
+whenever the page shows a variant, so rebuilt sets show their animated controls without a JoyPro update.
+
+Rules (`CockpitGuideLibrary.Check`, part of `engine cockpits check`; `tools/cockpit_guide.py check`): ids, a name and
+both texts on every area, panel and control (lengths within bounds, no placeholder, no exclamation mark), no two
+controls with the same text or context in one seat, positions named once, each with its text, `switch2` with two and
+`switch3` with three positions, known types and variants, translations that name existing areas, panels, controls and
+positions.
+
+Writing more: `tools/cockpit_guide.py` (`check`, `coverage <guide> --pictures <set>` lists the game controls a guide does
+not explain yet, `stats`, `report --pictures <root>` the coverage of every picture set). The writers' brief (format,
+style guide, glossary of plain explanations) is kept with the maintainer's working files; its rules are the ones above:
+facts only from the game's labels, the manual and the catalog; a game control is tied to a guide control only when its
+label, commands or id say which it is; when unsure, say less.
+
+### Coverage (2026-10-18, `engine cockpits guide --coverage [--game G]` with every picture pack installed)
+
+| Game | Variants with a guide | Controls written out / with a general description / in the tree | Game controls explained |
+|---|---|---|---|
+| DCS (48 cockpits, every module incl. Flaming Cliffs, SA342, A-4E) | 81 / 81 | 17,464 / 69 / 17,568 | 17,206 / 17,206 |
+| Falcon BMS (F-16 blocks, Hornets, A-10A) | 17 / 17 | 3,393 / 91 / 3,502 | (no pictures) |
+| IL-2 Great Battles (117 cockpits) | 66 / 66 | 4,906 / 4 / 4,916 | 2,148 / 2,148 |
+| MSFS 2020 / 2024 | 49 / 51, 52 / 54 | 3,772 / 581 / 5,017; 4,128 / 571 / 5,382 | 9,043 / 9,906; 9,913 / 10,797 |
+| X-Plane 12 | 18 / 18 | 1,543 / 1 / 1,553 | 3,886 / 3,896 |
+| War Thunder | 100 / 155 (shared variants) | 14,050 / 3,483 / 18,428 | 8,714 / 8,801 |
+| Nuclear Option / Star Citizen | 0 | general descriptions: 351 / 351, 2,296 / 2,821 | – |
+| **All** | **209 / 462** | **28,347 written, 10,113 general / 41,457** | **28,412 / 29,329** |
+
+The guide data: 966 areas, 2,657 panels, 16,329 guide controls (groups of alike controls count once), about 4.6 million
+characters of English; German for the ten biggest DCS modules (F-16C, F/A-18C, A-10C II, AH-64D, F-15E, F-14, Ka-50 III
+and BS2, UH-1H, Mi-8MTV2, F-4E) and both MSFS shared guides (every MSFS aircraft's game controls).
+
+`engine cockpits guide <aircraft> [<variant>] [--lang de] [--search words] [--no-pictures]` prints the tree (JSON, or
+text with `--text`); `--coverage [--game G]` the table above per variant; `engine cockpits compare` also lists every game command the profile binds (`Commands`), which the
+guide shows per control.
+
+Code: `engine/DeviceReference/CockpitGuide.cs` (format, library, rules, matching), `CockpitGuideTree.cs` (the tree of a
+variant), `CockpitManualPages` (the guide's names on the pages), `gui/JoyPro.Gui/ViewModels/CockpitsViewModel.Guide.cs`,
+`Views/CockpitsView.axaml`. Tests: `CockpitGuideTests` (the shipped guides' rules, the tree on a synthetic cockpit with
+pictures, seats, a shared guide and German, the pages, the page's selection and marks; opt-in render:
+`JOYPRO_GUIDE_RENDER_OUT`, `JOYPRO_GUIDE_PICTURES`, `JOYPRO_GUIDE_AIRCRAFT=f-16:f-16c-block-50:jfs;...`).
+
 ## For the setup wizard and scripts (API)
 
 - `engine cockpits get <aircraft> [<variant>] [--json]` returns the resolved variant as `joypro-cockpit-layout`:
@@ -296,25 +405,81 @@ yoke and throttle datarefs (X-Plane).
 | Game | What is read | State (2026-10-17) |
 |---|---|---|
 | DCS World | `Mods\aircraft\*`: entry.lua (aircraft, cockpit folder), mainpanel_init.lua (model, grip arguments), clickabledata.lua, Views.lua (seats, eye points), the cockpit EDM and its textures (DDS in zip archives) | 48 cockpits on the maintainer's PC (about 1,900 pictures, 15,000 callouts). Not complete: F-14BU (no clickable data yet) and SA342 (no cockpit model in the files); some C-130J, OH-58D and F-14 textures are not found (flat colour) |
-| X-Plane 12 | `Aircraft\**\*.acf` (objects, pilot's eye) and the OBJ8 objects with their textures | 24 aircraft (every one in Aircraft) |
+| X-Plane 12 | `Aircraft\**\*.acf` (objects, pilot's eye) and the OBJ8 objects with their textures (DDS and PNG both top row first) | 24 aircraft (every one in Aircraft). The displays are drawn by the sim at run time (black in the pictures) |
 | MSFS 2020 | the packages of `InstalledPackagesPath` (UserCfg.opt) that are not encrypted (no `.fsarchive`): `model*\model.cfg` `interior=` -> the interior xml (its first LOD's glTF, its behaviours) -> the glTF (Asobo's optimised format: interleaved vertices, half-float texture coordinates, primitives sharing one index buffer by `ASOBO_primitive` StartIndex / BaseVertexIndex, `MSFT_texture_dds`), the textures (texture.cfg fallbacks), cameras.cfg + flight_model.cfg (eye = reference datum + eyepoint + the pilot camera's offset) | 57 interiors (all open ones of the maintainer's packages; about 730 pictures, 7,300 callouts). Callouts on the parts named by function (`ELECTRICAL_Switch_Battery_Master`, older models `DEICESYSTEM_SWITCH_AIRFRAME`), with the behaviour template and its events where the xml names the node; the yoke (`HANDLING_Yoke_1`, `YOKE_LEFT`) and throttle are grips. Encrypted packages and the sim itself (not installed on the maintainer's PC) are skipped |
 | MSFS 2024 | models are in encrypted packages (`.fsc`, `.fsarchive`): not read. Screenshots in the sim instead: `tools\e2e\games\Msfs2024CockpitShots.ps1` (unattended; SimConnect through the sim's own client library `SimConnect_internal.dll`: EnumerateSimObjectsAndLiveries, FlightSave/FlightLoad to swap the aircraft at Innsbruck, CAMERA VIEW TYPE AND INDEX for the pilot's view and every instrument view, EnumerateInputEvents) | screenshots of every aircraft family (overview + instrument views, the HUD cropped away); the list on the overview is the aircraft's own input events (`ELECTRICAL_Battery_1`), without places (they cannot be derived honestly from a screenshot). Only via picture packs or the e2e script, not from the Cockpits page |
 | Nuclear Option | `NuclearOption_Data\resources.assets` (plain Unity 2022.3 data, JoyPro's own read-only reader): the aircraft prefabs' cockpit objects (interior, stick, throttle or collective, screens), the pilot's helmet camera as the eye, the textures from `resources.assets.resS`, the unit names of the aircraft definitions and the game's Rewired action list | 13 aircraft (every flyable one; 46 pictures, about a minute). The cockpits have no separate switches (painted on), so the callouts name the grips and the screens only; each grip page lists the game's "Flight Controls" actions (they bind to any button) |
 | IL-2 Great Battles | `data\*.gtp` (plain stored archives, read only): the plane scripts (`luascripts/worldobjects/planes/*.txt`: name, cockpit model, pilot seat as the eye), the cockpit `-c.mgm` models (JoyPro's own reader: node tree, geometry, skinned parts, the animations that tie the argument numbers to the parts), `-c.arg` argument names, DDS textures, the input actions and their English names (`swf/il2`) | 117 aircraft with a pilot's cockpit (about 1,070 pictures, 2,200 callouts; the 66 catalog variants find their set). Callouts: the parts the control arguments move, named by the game's input action where the argument is plainly that control (gear, flaps, throttle, mixture ...), else by the argument's own name. Not complete: CG-4A and Pe-2 ser.87 overviews are wrong (frames the reader does not follow), a few WWI/transport sticks are not found, linkage rods the game places at run time are left out |
 | IL-2 Korea | not read: the archive directories are obfuscated and `Scripts.gtp`, `Graphics2.gtp`, `Interface.gtp` (`S16E!`) are encrypted; the plain archives (`S16R!`) hold no cockpit model (searched for the cockpit node and texture names, nothing decoded). Readable on disk: `data\input\general.actions` (JSON) and the mission files | skipped; in-game screenshots (Quick Mission) would be the way, only while the PC is idle |
-| Star Citizen | packed formats | not yet (menus only: anti-cheat) |
+| Star Citizen | the game's data files, read only and never while the game runs: ship entities, seats, dashboards and grips, their interaction points (named with the game's own texts) and the flight actions of the default profile | 149 cockpits; big ships show the dashboard, seat and grips; some ships have no stick or throttle picture yet |
 | War Thunder | `content.hq\pkg_cockpits\res`, read only and without de-obfuscation: the GRP2 packs (`*.grp`: the 1,197 `<plane>_cockpit` DynModels with their `_skeleton` node trees; DagorEngine's format: vertex declarations, packed positions with the model's unpack constants, meshoptimizer-packed indices, LOD 0's rigid meshes), `dynModelDesc.bin` (zstd, binary BLK: each model's materials and texture names) and the DxP2 texture packs (DDSx; the best of `$hq` / base / `$tq`). The vertex data and most textures are Oodle Leviathan packed: unpacked by the War Thunder Oodle helper `tools\wt-oodle` (a separate GPL-3 program, a C# port of parts of ooz with fixes; the engine starts it as a process, `JOYPRO_WT_OODLE` names it; without it War Thunder is skipped with a note). The eye is the pilot figure's head bone (`Bip01 Head01`); the grips are the model's `stick*` / `throttle*` nodes; the callouts are the model's own control and instrument node names (`gears`, `flaps`, `airbrake_lever`, `mixture`, `speed`, `altitude_hour` ...; instruments carry the node name). Obfuscated (not read): `aces.vromfs.bin` (flight models, cockpit instruments, HUD, the factory HOTAS presets), `char`/`game`/`gui`/`lang`/`mis`/`webUi`/`wwdata` vromfs and every `grp_hdr.vromfs.bin` | 1,197 cockpits on the maintainer's PC (9,274 pictures, about 25,000 callouts; about 4 hours at low priority). Environment cubemaps and some shared textures are not in the cockpit packs (flat colour); 42 cockpits have a texture in a format JoyPro does not decode (flat colour). 52 models have no pilot figure (mostly bomber cockpits made of their instruments): the eye is placed above and behind the stick (7) or behind the middle of the instruments (45). Users get the pictures as picture packs (the helper is not part of the release) |
 
 The Lua files are read with DCS's own interpreter (`bin\luae.exe`) and small harness scripts that only print; nothing in
 a game folder is written. A build skips an aircraft whose pictures are newer than its model and were made for the same
 game version (`--force` makes them again). It takes about two seconds per picture; a big DCS module has 50 to 80 pictures.
 
-`engine cockpits pictures build [--game DCS|XPlane12|MSFS2020|IL2Game|NuclearOption|all] [--aircraft <name>,...] [--force] [--out <folder>]`,
-`engine cockpits pictures status`, `engine cockpits render ... --pictures picture|drawing|none`. The format:
+`engine cockpits pictures build [--game DCS|XPlane12|MSFS2020|IL2Game|NuclearOption|WarThunder|StarCitizen|all] [--aircraft <name>,...] [--force] [--out <folder>]`,
+`engine cockpits pictures status`, `engine cockpits pictures check` (below), `engine cockpits render ... --pictures picture|drawing|none`. The format:
 `pictures.json` (`joypro-cockpit-pictures`): per view `id`, `kind` (overview, device, panel), `title`, `area`, `seat`,
 `image`, `drawing` (a `joypro-device-drawing`), `width`, `height`, and `callouts` (`n`, `id`, `label`, `x`, `y` 0..1 of
 the picture, `kind`, `device`, `commands`); `index.json` names the set of each of the game's aircraft names. The code is
 in `engine/CockpitPictures` (EDM, OBJ8, DDS/TGA/PNG readers, a software renderer, the line tracer, the view planner).
+
+### Picture quality
+
+Every picture goes through an automatic quality gate (`engine/CockpitPictures/PictureQuality.cs`, used by
+`PictureWriter` for every game). Measured on the picture: how much of the frame the model covers (for a grip: the box
+around what is drawn), the share of 8x8 blocks with visible detail (local contrast), the brightness entropy, the share of
+black; from the renderer: the share of textured pixels and of the view's callouts that are in the frame and not covered.
+A score of 0 to 100 (60 and more: good) and the problems (`little detail`, `one flat colour`, `mostly black`,
+`mostly empty`, `too small in the frame`, `untextured`, `controls hidden`).
+
+- A grip much smaller than its frame is zoomed to what is drawn; a poor picture is made again with the planner's other
+  cameras (a panel: more room around it, then the pilot's own view from the head; the overview: closer to the head, at
+  the head, further back) and the best one is kept.
+- A panel or grip picture that stays below 45 is left out (its overview callout goes too); the overview is always kept.
+- A panel picture that looks like an earlier one (the same panel framed for another group of its controls) gives its
+  callouts to that one (`merged`).
+- `pictures.json` gets `quality` (`score` of the overview, `mean`, `low`, `views`, `dropped`, `merged`) and, per view,
+  `quality`, `problems` and `drawingReadable: false` where JoyPro's line drawing would be a mess (a poor picture, a busy
+  perspective, a screenshot): the drawing mode shows the picture there.
+- A set is `low` when its overview is below 45 or fewer than a third of its pictures are good. The Cockpits page then
+  shows another game's set of the aircraft first (`CockpitPictureSet.For`; the picture packs: `"low"` in the manifest).
+- `engine cockpits pictures check [--game G] [--aircraft a,b] [--write] [--drop]` rates sets that are already there
+  (screenshots, picture packs, older builds); `--write` keeps the ratings in `pictures.json`, `--drop` also leaves out
+  the panel pictures below the gate.
+- The build report names a set's verdict ("low quality (overview 31/100); 4 unusable pictures left out; 2 duplicate
+  pictures merged"). `JOYPRO_PICTURE_KEEP_ALL=1` keeps every picture (to look at what the gate leaves out).
+
+### Animated controls
+
+`pictures.json` lists every control of the cockpit once under `"controls"` (a data addition; the pages do not show it
+yet): the callouts of the panel and grip pictures, the grips themselves (`grip:stick`, `grip:throttle`) and the model's
+other animated controls a reader adds without a callout (`CockpitScene.Controls`). Per control: `id`, `label`, `kind`
+(JoyPro's vocabulary: `button`, `switch-2`, `switch-3`, `switch-N`, `switch` (positions not known), `rotary`, `lever`,
+`axis`, `grip`, `hat`, `trigger`, `screen`, `cover`, `wheel`, `pedal`, `other`), `gameKind` (the game's own: DCS `TUMB`,
+X-Plane `axis_knob`, MSFS `Switch ASOBO_..._Template`), `panel`, `device`, `seat`, `animation` (`source`, `name`, `min`,
+`max`, `positions` where known), `commands` (the ids to bind) and `views` (`view`, `x`, `y` 0..1 on every picture it is
+visible on; `n` on the picture where it is a callout; elsewhere only where its surface is drawn at its place, not behind
+something). Where the animation comes from:
+
+| Game | `animation.source` | Range and positions |
+|---|---|---|
+| DCS World | `draw argument` (clickabledata.lua `arg`) | `arg_lim` (range), `arg_value` steps (a switch's positions) |
+| X-Plane 12 | `dataref` / `command` (the manipulator) | the manipulator's numbers (axis knobs, drag axes, toggles, pushes) |
+| MSFS 2020 | `behaviour` (node and template) / `model node` | not in the open files |
+| IL-2 Great Battles | `animation argument` | the argument values of its animation keys (positions when 2 to 6) |
+| War Thunder | `animated node` (the skeleton's node) | not in the open files |
+| Nuclear Option | `animated part` (the grips) | not in the open files |
+| Star Citizen | `interaction point` / `model node` | not in the open files |
+
+`CockpitPictureSet.Controls` (`CockpitPictureControl`, `CockpitPictureSpot`) reads them.
+
+What made the first X-Plane pictures unusable (2026-10-18): Laminar's DDS textures were sampled upside down (they are
+stored top row first like their PNGs), so every surface showed the wrong part of its texture; and static offsets without a
+dataref (`ANIM_trans x y z x y z`, `ANIM_rotate x y z r r`) were ignored, so the 737's levers and their callouts sat at the
+aircraft's origin and its panel pictures looked at the inside of the nose (mirrored). Panel pictures of a single control
+show at least 24 x 18 cm around it.
 
 ## Photos
 
@@ -329,6 +494,16 @@ encyclopedia pages.
   cockpit photos). It is cached in `%LOCALAPPDATA%\JoyPro2\DeviceImages` (`DeviceImageCache`) and shown with its credit
   and license. A Wikimedia Commons file is loaded as Wikimedia's 960 px thumbnail (what Wikimedia asks programs to
   use), the original only when the thumbnail fails.
+- Downloads go one at a time per site, a little apart, with a user agent that names JoyPro, its version and its
+  repository (Wikimedia's robot policy). A "429 too many requests" or "503" answer is tried again after the server's
+  Retry-After (else 2, 4, 8 seconds; at most four tries); an answer that is not an image (an error page) is not a photo; a
+  photo that failed is not remembered as missing. Until 2.1.0 the photos loaded at once with a bare "JoyPro2" agent and
+  Wikimedia refused most after the first two (the 747: 2 of 5).
+- Each photo card has **Open the photo** (the file itself in the browser, full size, to save from there) and **Open
+  the page**; a photo that could not be loaded gets **Try again**. A link that is only a page (fiction, official pages)
+  says so instead of failing.
+- `CockpitPictureQualityTests.OptIn_EveryCockpitPhotoLinkOpens` (`JOYPRO_CHECK_COCKPIT_PHOTOS=1`, network) loads every
+  photo link of the database as the page does (2026-10-18: 348 of 348).
 - The engine never downloads a photo.
 - The maintainer's private backup: `tools\backup_cockpit_photos.ps1 -Target <folder outside the repository>` (default
   `..\JoyPro2-private\cockpit-photos`) downloads every linked photo with a manifest (aircraft, view, address, page,
@@ -446,6 +621,13 @@ grips with their HOTAS tables and numbered panels; `cockpits check` reports no p
 - `engine\tests\smoke\cockpits.ps1`: `cockpits check`, `list` with filters, `search`, `get` (JSON for the wizard,
   vocabulary and game actions), `render` (PNG), `compare` on a profile, `photos --coverage`.
 - `dotnet test gui/JoyPro.Gui.Tests --filter CockpitPicturePackTests`: the picture packs (below).
+- `dotnet test gui/JoyPro.Gui.Tests --filter CockpitPictureQualityTests`: the quality gate (flat, black, empty, untextured,
+  hidden controls, a grip too small in its frame, duplicates), a poor panel left out and a duplicate merged, the X-Plane
+  static offsets, a low-quality set giving way to another game's set (also for the packs), the drawing mode showing the
+  picture where the drawing is unreadable, every picture of a set opening (`JOYPRO_CHECK_PICTURE_SETS=<root>`: every
+  set of a pictures root), the photo downloads after 429 with an honest user agent (`JOYPRO_CHECK_COCKPIT_PHOTOS=1`: every
+  photo link of the database, network). The journey shows the 737 from X-Plane 12 with "Pictures from" MSFS 2024 and the
+  747's photos from a local stand-in that answers 429 first.
 
 ## Picture packs
 

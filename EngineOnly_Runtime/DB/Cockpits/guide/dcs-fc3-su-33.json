@@ -1,0 +1,1021 @@
+{
+  "format": "joypro-cockpit-guide",
+  "version": 1,
+  "id": "dcs-fc3-su-33",
+  "title": "Su-33 Flanker-D (DCS Flaming Cliffs)",
+  "variants": [
+    "su-33"
+  ],
+  "games": [
+    "DCS"
+  ],
+  "sets": [],
+  "sources": [
+    {
+      "id": "q1",
+      "title": "Su-33 DCS Flaming Cliffs Flight Manual (EN)",
+      "file": "Mods/aircraft/Su-33/Doc/Su-33 DCS Flaming Cliffs Flight Manual EN.pdf"
+    }
+  ],
+  "intro": "The Su-33 is the Russian carrier-based version of the Su-27 fighter. The cockpit is like the Su-27 with extra marks for the arresting hook and folded wings. It also has an autopilot (ACS) with a landing mode and an AoA indexer, three lamps that help to fly the right speed for a landing on a ship. The pilot flies with the stick in the middle and the twin throttle on the left console.",
+  "areas": [
+    {
+      "id": "instrument-panel",
+      "where": "front-center",
+      "name": "Instrument panel",
+      "text": "In Flaming Cliffs aircraft most switches in the cockpit cannot be clicked with the mouse; the pilot uses key commands or controller buttons for them. The panel is like the Su-27 with additions for carrier flying: hook and wing fold marks, an autothrust and a landing mode.",
+      "panels": [
+        {
+          "id": "flight-instruments",
+          "name": "Flight instruments",
+          "db": "instrument-panel",
+          "src": "q1",
+          "page": "56",
+          "text": "The gauges for speed, height, attitude, climb rate, heading and time.",
+          "context": "The pilot scans them all the time in flight.",
+          "controls": [
+            {
+              "id": "aoa-accel",
+              "name": "AoA indicator and accelerometer",
+              "type": "gauge",
+              "match": [
+                "item:instrument-panel:1"
+              ],
+              "text": "One round gauge with two scales. The left part shows the angle of attack (how steeply the wing meets the air) in degrees. The right part shows the G-load, the push into the seat in turns, and a mark keeps the largest value of the flight.",
+              "context": "The pilot watches it in slow flight and in hard turns to keep the plane inside its limits.",
+              "src": "q1",
+              "page": "59"
+            },
+            {
+              "id": "airspeed-mach",
+              "name": "Airspeed and Mach indicator",
+              "type": "gauge",
+              "match": [
+                "item:instrument-panel:2"
+              ],
+              "text": "A gauge with two scales. The outer scale shows the indicated airspeed in km/h, from 100 to 1,600. The inner scale shows the Mach number (a multiple of the speed of sound), from 0.6 to 3.",
+              "context": "The pilot uses the indicated speed for take-off and landing and the Mach number at high speed.",
+              "src": "q1",
+              "page": "57"
+            },
+            {
+              "id": "adi",
+              "name": "ADI (attitude direction indicator)",
+              "type": "gauge",
+              "match": [
+                "item:instrument-panel:4"
+              ],
+              "text": "The artificial horizon: a ball that shows whether the nose is up or down and how far the wings are tilted. Yellow bars show how much to bank and pitch to follow the route; a slip indicator sits at the bottom. A W-shaped mark shows the instrument landing beam during a landing.",
+              "context": "It is the main instrument when the real horizon cannot be seen. When both bars sit in the middle, the plane follows the route.",
+              "src": "q1",
+              "page": "60"
+            },
+            {
+              "id": "hsi",
+              "name": "HSI (horizontal situation indicator)",
+              "type": "gauge",
+              "match": [
+                "item:instrument-panel:5"
+              ],
+              "text": "The compass display: a turning compass card with arrows. The heading always stands at the top. A course arrow shows the required heading and a bearing pointer shows the direction to the next waypoint. Distance and heading are also given as numbers, and the bars in the middle show the landing beam.",
+              "context": "The pilot reads the heading and the direction to the target point here.",
+              "src": "q1",
+              "page": "60"
+            },
+            {
+              "id": "vvi",
+              "name": "VVI (vertical velocity indicator)",
+              "type": "gauge",
+              "match": [
+                "item:instrument-panel:6"
+              ],
+              "text": "A gauge that shows how fast the plane climbs or sinks, in metres per second. One metre per second is about 197 feet per minute.",
+              "context": "The pilot keeps a steady climb or descent with it.",
+              "src": "q1",
+              "page": "61"
+            },
+            {
+              "id": "clock",
+              "name": "Clock",
+              "type": "gauge",
+              "match": [
+                "item:instrument-panel:13"
+              ],
+              "text": "The cockpit clock. It shows the time of day as set in the mission.",
+              "context": "The pilot uses it for timing legs of the flight.",
+              "src": "q1",
+              "page": "61"
+            },
+            {
+              "id": "radio-alt",
+              "name": "Radio altimeter",
+              "type": "gauge",
+              "match": [
+                "item:instrument-panel:14"
+              ],
+              "text": "A gauge that shows the height above the ground below the plane, from 0 to 1,000 metres. It measures with radio waves and is not accurate when the plane is banked steeply.",
+              "context": "It matters most low over the ground, for example on landing.",
+              "src": "q1",
+              "page": "58"
+            },
+            {
+              "id": "pressure-alt",
+              "name": "Pressure altimeter",
+              "type": "gauge",
+              "match": [
+                "item:instrument-panel:15"
+              ],
+              "text": "The height gauge that works with the air pressure. A short needle shows thousands of metres and a long needle shows hundreds. Add both for the height above sea level.",
+              "context": "The pilot uses it for the cruise height.",
+              "src": "q1",
+              "page": "57"
+            }
+          ]
+        },
+        {
+          "id": "engine-gear",
+          "name": "Engine, fuel and gear instruments",
+          "src": "q1",
+          "page": "56",
+          "text": "Gauges for the engines and fuel, the gear handle, the mechanical devices indicator and the trim lights.",
+          "context": "The pilot checks them at engine start, on take-off and before landing.",
+          "controls": [
+            {
+              "id": "tacho",
+              "name": "Tachometer",
+              "type": "gauge",
+              "match": [
+                "item:instrument-panel:7"
+              ],
+              "text": "Needles that show how fast the two engines turn, in percent of the maximum. Full afterburner (extra fuel burned at the back of the engine for much more push) shows as more than 100 percent, and green lights above the tachometer come on.",
+              "context": "The pilot reads them at engine start and when setting power.",
+              "src": "q1",
+              "page": "62"
+            },
+            {
+              "id": "itt",
+              "name": "Interstage turbine temperature indicators",
+              "type": "gauge",
+              "match": [
+                "item:instrument-panel:8"
+              ],
+              "text": "Two gauges that show how hot the exhaust gas of the left and right engine is.",
+              "context": "A too hot engine is damaged; the pilot watches the needles at engine start and at high power.",
+              "src": "q1",
+              "page": "63"
+            },
+            {
+              "id": "fuel",
+              "name": "Fuel quantity indicator",
+              "type": "gauge",
+              "match": [
+                "item:instrument-panel:9"
+              ],
+              "text": "A gauge that shows how much fuel is left, in kilograms, with a scale in tonnes. Lamps at the right side show which tanks are empty.",
+              "context": "The pilot watches it to plan the way home. The fuel panel next to it explains the lamps.",
+              "src": "q1",
+              "page": "62"
+            },
+            {
+              "id": "gear-valve",
+              "name": "Landing gear control valve",
+              "type": "lever",
+              "match": [
+                "item:instrument-panel:11"
+              ],
+              "positions": [
+                {
+                  "name": "UP",
+                  "text": "The wheels are folded away for flight."
+                },
+                {
+                  "name": "DOWN",
+                  "text": "The wheels are out for take-off, landing and taxiing."
+                }
+              ],
+              "text": "Moving this handle raises or lowers the landing gear, the wheels and their legs.",
+              "context": "The pilot lowers the gear for landing and raises it after take-off. The mechanical devices indicator shows the result.",
+              "src": "q1",
+              "page": "56"
+            },
+            {
+              "id": "mech-devices",
+              "name": "Mechanical devices indicator",
+              "type": "indicator",
+              "match": [
+                "item:instrument-panel:12"
+              ],
+              "text": "One display for the moving parts of the plane: landing gear, flaps, air brake, intake covers, the arresting hook and the folded wings. A red lamp in the middle lights if the gear has not reached its position.",
+              "context": "The pilot checks it after moving the gear handle. The panel named Mechanical Devices Indicator names its marks.",
+              "src": "q1",
+              "page": "59"
+            },
+            {
+              "id": "trim-lights",
+              "name": "Neutral trim lights (pitch, roll, yaw)",
+              "type": "light",
+              "match": [
+                "item:instrument-panel:16"
+              ],
+              "text": "Three lights that show when the trim of the stabilizer (pitch), the ailerons (roll) and the rudder (yaw) is in its neutral middle position. Trim is a small adjustment so the plane flies straight without force on the stick.",
+              "context": "The pilot checks them before using the autopilot. The panel named Trim annunciators explains each lamp.",
+              "src": "q1",
+              "page": "69"
+            }
+          ]
+        },
+        {
+          "id": "screens-warnings",
+          "name": "Screens, weapons panel and warnings",
+          "src": "q1",
+          "page": "56",
+          "text": "The head-down screen, the weapons panel, the warning panels and the radar warning indicator.",
+          "context": "The pilot uses them for the route, the fight and to check the plane's systems.",
+          "controls": [
+            {
+              "id": "weapons-panel",
+              "name": "Weapons control panel",
+              "type": "other",
+              "match": [
+                "item:instrument-panel:3"
+              ],
+              "text": "A panel of buttons and lamps for the weapons. The manual names it in the picture of the panel but does not describe its buttons.",
+              "context": "The key commands normally do the weapon selection; this panel shows the result. In Flaming Cliffs aircraft most switches in the cockpit cannot be clicked with the mouse; the pilot uses key commands or controller buttons for them.",
+              "src": "q1",
+              "page": "56"
+            },
+            {
+              "id": "hdd",
+              "name": "Head down display (HDD)",
+              "type": "display",
+              "match": [
+                "item:instrument-panel:10"
+              ],
+              "text": "A screen in the upper right corner of the panel. It shows the planned route, the waypoints and the runways, and in a fight it shows the radar and the electro-optical sensor. The pilot can change the map scale.",
+              "context": "The pilot uses it as a map for the route and as the radar screen.",
+              "src": "q1",
+              "page": "63"
+            },
+            {
+              "id": "ekran",
+              "name": "Ekran information panel",
+              "type": "display",
+              "match": [
+                "item:instrument-panel:18"
+              ],
+              "text": "A panel of words that light up to report failures of the plane's systems. The manual calls it the Ecran integrated information system panel.",
+              "context": "When a warning light comes on, the pilot looks here for the reason.",
+              "src": "q1",
+              "page": "57"
+            },
+            {
+              "id": "warning-lights",
+              "name": "Warning lights",
+              "type": "light",
+              "match": [
+                "item:instrument-panel:17"
+              ],
+              "text": "A board of warning lamps. The manual lists the board without describing the single lamps.",
+              "context": "The pilot looks at it when something seems wrong.",
+              "src": "q1",
+              "page": "57"
+            },
+            {
+              "id": "spo15",
+              "name": "SPO-15 Beryoza RWR",
+              "type": "indicator",
+              "match": [
+                "item:instrument-panel:19"
+              ],
+              "text": "The radar warning receiver (RWR). Lamps light when an enemy or friendly radar looks at the plane and show from which direction and what kind of radar it is. A red lamp warns of a launch.",
+              "context": "A lit lamp means the plane has been seen. Strong signals and the lock lamp tell how dangerous the situation is.",
+              "src": "q1",
+              "page": "65"
+            }
+          ]
+        },
+        {
+          "id": "mechanical-devices-indicator",
+          "name": "Mechanical Devices Indicator",
+          "db": "mechanical-devices-indicator",
+          "src": "q1",
+          "page": "59",
+          "text": "One display for landing gear, flaps, air brake, intake covers, hook and wing fold.",
+          "context": "The pilot checks it after moving the gear handle and before a carrier landing.",
+          "controls": [
+            {
+              "id": "airbrake",
+              "name": "Airbrake mark",
+              "type": "light",
+              "match": [
+                "item:mechanical-devices-indicator:1"
+              ],
+              "text": "A mark that lights when the air brake is out. The air brake is a panel that opens into the wind to slow the plane down.",
+              "context": "The pilot opens it with the switch on the throttle.",
+              "src": "q1",
+              "page": "59"
+            },
+            {
+              "id": "fod",
+              "name": "Intake FOD shields mark",
+              "type": "light",
+              "match": [
+                "item:mechanical-devices-indicator:2"
+              ],
+              "text": "A mark for the covers of the engine intakes (FOD shields). They keep objects from being sucked into the engines.",
+              "context": "The mark shows the position of the covers.",
+              "src": "q1",
+              "page": "59"
+            },
+            {
+              "id": "gear-warning",
+              "name": "Landing gear warning light",
+              "type": "light",
+              "match": [
+                "item:mechanical-devices-indicator:3"
+              ],
+              "text": "A red lamp in the middle of the indicator. It lights while the landing gear is not fully out or fully in.",
+              "context": "After moving the gear handle the lamp should go out when the gear has arrived.",
+              "src": "q1",
+              "page": "59"
+            },
+            {
+              "id": "gear",
+              "name": "Landing gear mark",
+              "type": "light",
+              "match": [
+                "item:mechanical-devices-indicator:4"
+              ],
+              "text": "Marks that show whether the landing gear is folded away or extended.",
+              "context": "The pilot checks them before landing.",
+              "src": "q1",
+              "page": "59"
+            },
+            {
+              "id": "wings-folded",
+              "name": "Wings folded mark",
+              "type": "light",
+              "match": [
+                "item:mechanical-devices-indicator:5"
+              ],
+              "text": "A mark that lights when the wings are folded. The Su-33 folds its wings to save space on the aircraft carrier.",
+              "context": "The wings must be spread and locked before flight.",
+              "src": "q1",
+              "page": "59"
+            },
+            {
+              "id": "flaps",
+              "name": "Flaps mark",
+              "type": "light",
+              "match": [
+                "item:mechanical-devices-indicator:6"
+              ],
+              "text": "A mark that shows the position of the flaps, the parts of the wing that slide out to give more lift at low speed.",
+              "context": "Flaps are used for take-off and landing.",
+              "src": "q1",
+              "page": "59"
+            },
+            {
+              "id": "hook",
+              "name": "Arresting hook mark",
+              "type": "light",
+              "match": [
+                "item:mechanical-devices-indicator:7"
+              ],
+              "text": "A mark that shows the position of the arresting hook, the hook at the tail that catches the wire when landing on an aircraft carrier.",
+              "context": "The hook is lowered before a carrier landing.",
+              "src": "q1",
+              "page": "59"
+            }
+          ]
+        },
+        {
+          "id": "fuel-quantity-indicator",
+          "name": "Fuel quantity indicator",
+          "db": "fuel-quantity-indicator",
+          "src": "q1",
+          "page": "63",
+          "text": "The fuel gauge in kilograms and tonnes with lamps for empty tanks and low fuel.",
+          "context": "The pilot watches it to plan the way home.",
+          "controls": [
+            {
+              "id": "fuel-kg",
+              "name": "All tanks fuel quantity (kg)",
+              "type": "gauge",
+              "match": [
+                "item:fuel-quantity-indicator:1"
+              ],
+              "text": "A counter that shows the fuel left in all tanks together, in kilograms.",
+              "context": "It is the main fuel reading of the plane.",
+              "src": "q1",
+              "page": "63"
+            },
+            {
+              "id": "fuel-scale",
+              "name": "Fuel scale (t)",
+              "type": "gauge",
+              "match": [
+                "item:fuel-quantity-indicator:2"
+              ],
+              "text": "A scale that shows the same amount of fuel in tonnes.",
+              "context": "The pilot can read it at a glance.",
+              "src": "q1",
+              "page": "63"
+            },
+            {
+              "id": "empty-tanks",
+              "name": "Empty tank lights",
+              "type": "light",
+              "match": [
+                "item:fuel-quantity-indicator:3"
+              ],
+              "text": "Lamps on the right side of the indicator. Each one lights when its fuel tank is empty.",
+              "context": "The pilot sees which tank has run dry.",
+              "src": "q1",
+              "page": "63"
+            },
+            {
+              "id": "below-1500",
+              "name": "Remaining fuel below 1500 kg",
+              "type": "light",
+              "match": [
+                "item:fuel-quantity-indicator:4"
+              ],
+              "text": "A lamp that lights when less than 1,500 kg of fuel is left.",
+              "context": "It is the first warning that the fuel is getting low.",
+              "src": "q1",
+              "page": "63"
+            },
+            {
+              "id": "below-600",
+              "name": "Remaining fuel below 600 kg",
+              "type": "light",
+              "match": [
+                "item:fuel-quantity-indicator:5"
+              ],
+              "text": "A lamp that lights when less than 600 kg of fuel is left.",
+              "context": "It is the second and stronger fuel warning.",
+              "src": "q1",
+              "page": "63"
+            }
+          ]
+        },
+        {
+          "id": "trim-annunciators",
+          "name": "Trim annunciators",
+          "db": "trim-annunciators",
+          "src": "q1",
+          "page": "69",
+          "text": "Three lamps that show whether the trim is in its neutral position.",
+          "context": "The pilot trims the plane first and checks the lamps before using the autopilot.",
+          "controls": [
+            {
+              "id": "trim-neutral",
+              "name": "Neutral trim lamps (aileron, stabilizer, rudder)",
+              "type": "light",
+              "match": [
+                "item:trim-annunciators:1",
+                "item:trim-annunciators:2",
+                "item:trim-annunciators:3"
+              ],
+              "text": "Three lamps that light when the trim of the ailerons (roll), the stabilizer (pitch) and the rudder is in its neutral middle position. Trim is a small adjustment so the plane flies straight without force on the stick.",
+              "context": "The pilot trims the plane first and checks the lamps before using the autopilot. A key command sets the trim back to neutral.",
+              "src": "q1",
+              "page": "69"
+            }
+          ]
+        },
+        {
+          "id": "acs-push-lights",
+          "name": "ACS push-lights and switches (autopilot)",
+          "db": "acs-push-lights-and-switches",
+          "src": "q1",
+          "page": "71",
+          "text": "The buttons of the automatic control system, the autopilot of the Su-33. They are on the left console in the real plane and shown here with the panel.",
+          "context": "The modes help with route flying, holding height and landing. The manual says the aircraft should be trimmed before the ACS is switched on.",
+          "controls": [
+            {
+              "id": "acs-landing",
+              "name": "Landing push-light",
+              "type": "button",
+              "match": [
+                "item:acs-push-lights-and-switches:1"
+              ],
+              "text": "A push-light of the automatic control system (ACS, the autopilot). It selects the landing mode, in which the system flies the plane down the landing beam.",
+              "context": "The ACS can lead the plane to a landing approach down to 50-60 metres height. In Flaming Cliffs aircraft most switches in the cockpit cannot be clicked with the mouse; the pilot uses key commands or controller buttons for them.",
+              "src": "q1",
+              "page": "71"
+            },
+            {
+              "id": "acs-radio-alt",
+              "name": "Radio altitude hold push-light",
+              "type": "button",
+              "match": [
+                "item:acs-push-lights-and-switches:2"
+              ],
+              "text": "A push-light that makes the ACS hold the height above the ground that the radio altimeter measures.",
+              "context": "The manual says it works at heights between 100 and 1,000 metres. Below 50 metres the ground collision avoidance takes over by itself.",
+              "src": "q1",
+              "page": "69"
+            },
+            {
+              "id": "acs-baro-alt",
+              "name": "Baro altitude hold push-light",
+              "type": "button",
+              "match": [
+                "item:acs-push-lights-and-switches:3"
+              ],
+              "text": "A push-light that makes the ACS hold the height above sea level that the air-pressure altimeter measures.",
+              "context": "The pilot uses it for steady cruise flight.",
+              "src": "q1",
+              "page": "71"
+            },
+            {
+              "id": "acs-reset",
+              "name": "ACS reset push-light",
+              "type": "button",
+              "match": [
+                "item:acs-push-lights-and-switches:4"
+              ],
+              "text": "A push-light that switches off the mode that is now on, including the manual control warning and the ground collision avoidance mode. It also clears an ACS failure.",
+              "context": "The pilot presses it to take over after the system disconnected itself.",
+              "src": "q1",
+              "page": "73"
+            },
+            {
+              "id": "acs-autothrust",
+              "name": "Autothrust push-light",
+              "type": "button",
+              "match": [
+                "item:acs-push-lights-and-switches:5"
+              ],
+              "text": "A push-light that switches on the autothrust: the system moves the throttles to hold the chosen speed.",
+              "context": "It can be used together with the other modes.",
+              "src": "q1",
+              "page": "73"
+            },
+            {
+              "id": "acs-speed-switch",
+              "name": "Autothrust speed adjustment switch",
+              "type": "switch3",
+              "match": [
+                "item:acs-push-lights-and-switches:6"
+              ],
+              "positions": [
+                {
+                  "name": "Increase",
+                  "text": "The speed that the autothrust holds goes up."
+                },
+                {
+                  "name": "Neutral",
+                  "text": "The speed setting stays as it is."
+                },
+                {
+                  "name": "Decrease",
+                  "text": "The speed that the autothrust holds goes down."
+                }
+              ],
+              "text": "A three-position switch that raises or lowers the speed that the autothrust holds.",
+              "context": "The pilot changes the speed in small steps this way.",
+              "src": "q1",
+              "page": "73"
+            },
+            {
+              "id": "acs-nav",
+              "name": "Navigation (route following) push-light",
+              "type": "button",
+              "match": [
+                "item:acs-push-lights-and-switches:7"
+              ],
+              "text": "A push-light that makes the ACS fly the planned route from waypoint to waypoint.",
+              "context": "The route comes from the mission.",
+              "src": "q1",
+              "page": "71"
+            },
+            {
+              "id": "acs-auto",
+              "name": "Automatic (attitude hold) push-light",
+              "type": "button",
+              "match": [
+                "item:acs-push-lights-and-switches:8"
+              ],
+              "text": "The AUTO push-light. It lights when any ACS mode is on. If it is the only light on, the system holds the current attitude (pitch and bank angle) of the plane.",
+              "context": "If it is off, the ACS is not active.",
+              "src": "q1",
+              "page": "71"
+            }
+          ]
+        },
+        {
+          "id": "gca",
+          "name": "Ground collision avoidance annunciator and switch",
+          "db": "gca-annunciator-and-switch",
+          "src": "q1",
+          "page": "73",
+          "text": "A lamp and a switch for the mode that saves the plane from flying into the ground.",
+          "context": "The system climbs away by itself when the plane is too low and too steep towards the ground.",
+          "controls": [
+            {
+              "id": "gca-lamp",
+              "name": "Ground collision avoidance annunciator",
+              "type": "light",
+              "match": [
+                "item:gca-annunciator-and-switch:1"
+              ],
+              "text": "A lamp that lights when the ground collision avoidance mode is working. In this mode the system rolls the wings level and pulls the nose up to climb away from the ground.",
+              "context": "The system also takes over by itself in radar altitude hold when the plane is below 50 metres or sinks fast. In Flaming Cliffs aircraft most switches in the cockpit cannot be clicked with the mouse; the pilot uses key commands or controller buttons for them.",
+              "src": "q1",
+              "page": "73"
+            },
+            {
+              "id": "gca-switch",
+              "name": "Ground collision avoidance switch",
+              "type": "switch2",
+              "match": [
+                "item:gca-annunciator-and-switch:2"
+              ],
+              "positions": [
+                {
+                  "name": "ON",
+                  "text": "The ground collision avoidance mode is switched on."
+                },
+                {
+                  "name": "OFF",
+                  "text": "The ground collision avoidance mode is switched off."
+                }
+              ],
+              "text": "A switch that turns the ground collision avoidance mode on and off.",
+              "context": "The lamp next to it shows when the mode works.",
+              "src": "q1",
+              "page": "73"
+            }
+          ]
+        },
+        {
+          "id": "beryoza-spo-15lm-indicator",
+          "name": "SPO-15LM Beryoza indicator",
+          "db": "beryoza-spo-15lm-indicator",
+          "src": "q1",
+          "page": "66",
+          "text": "A round display of lamps that shows which radars look at the plane and from where.",
+          "context": "It is the pilot's early warning against radar-guided missiles.",
+          "controls": [
+            {
+              "id": "dir-primary",
+              "name": "Direction to the primary threat",
+              "type": "light",
+              "match": [
+                "item:beryoza-spo-15lm-indicator:1"
+              ],
+              "text": "A lamp that lights on the side from which the most dangerous enemy radar looks at the plane. The ring around the plane symbol works like a clock face.",
+              "context": "The pilot turns away from the lamp or towards it, depending on the situation. It points out a direction only, not a distance.",
+              "src": "q1",
+              "page": "66"
+            },
+            {
+              "id": "dir-secondary",
+              "name": "Direction to the secondary threats",
+              "type": "light",
+              "match": [
+                "item:beryoza-spo-15lm-indicator:6"
+              ],
+              "text": "Smaller lamps in the ring that show the directions of other radars that also see the plane.",
+              "context": "They give a wider picture of the radar situation around the plane.",
+              "src": "q1",
+              "page": "66"
+            },
+            {
+              "id": "own-mark",
+              "name": "Own aircraft mark on the light strip",
+              "type": "indicator",
+              "match": [
+                "item:beryoza-spo-15lm-indicator:2"
+              ],
+              "text": "A fixed plane symbol in the middle of the display. It stands for the pilot's own plane.",
+              "context": "All direction lamps around it are read relative to this symbol.",
+              "src": "q1",
+              "page": "66"
+            },
+            {
+              "id": "threat-types",
+              "name": "Primary and secondary threat type",
+              "type": "light",
+              "match": [
+                "item:beryoza-spo-15lm-indicator:3",
+                "item:beryoza-spo-15lm-indicator:4"
+              ],
+              "text": "Six symbol lamps in the lower part tell what kind of radar is looking at the plane: an aircraft radar, a long-range, medium-range or short-range ground radar, an early-warning radar or an AWACS (a radar plane).",
+              "context": "One lamp group is for the type of the primary threat, another for the type of the secondary threat. The system warns about every radar and cannot tell friend from enemy.",
+              "src": "q1",
+              "page": "66"
+            },
+            {
+              "id": "power-light",
+              "name": "Power light",
+              "type": "light",
+              "match": [
+                "item:beryoza-spo-15lm-indicator:5"
+              ],
+              "text": "The manual's picture shows a lamp with this name. The text of the manual does not describe it; the game lists it as part of the indicator.",
+              "context": "It belongs to the radar warning indicator; see the other lamps of this display for the real warnings.",
+              "src": "q1",
+              "page": "66"
+            },
+            {
+              "id": "light-strip",
+              "name": "Light strip (relative emission power)",
+              "type": "light",
+              "match": [
+                "item:beryoza-spo-15lm-indicator:7"
+              ],
+              "text": "A ring of lamps around the plane symbol. The more segments light up, the stronger the signal of the primary threat's radar, which usually means it is closer.",
+              "context": "A quickly growing signal can mean that a radar-guided missile is coming.",
+              "src": "q1",
+              "page": "66"
+            },
+            {
+              "id": "elevation",
+              "name": "Relative elevation of the primary threat",
+              "type": "light",
+              "match": [
+                "item:beryoza-spo-15lm-indicator:8"
+              ],
+              "text": "Small lamps in the middle of the plane symbol. They show whether the primary threat is above, below or at about the same height as the plane.",
+              "context": "A threat at about the same height is within 15 degrees of the plane's own level.",
+              "src": "q1",
+              "page": "66"
+            },
+            {
+              "id": "launch",
+              "name": "Launch warning lamp (red, flashing)",
+              "type": "light",
+              "match": [
+                "item:beryoza-spo-15lm-indicator:9"
+              ],
+              "text": "A red lamp. It shines steadily when an enemy radar has locked onto the plane and flashes when a radar-guided missile is on its way.",
+              "context": "A flashing launch lamp together with a high tone is the signal to defend at once, for example with chaff and flares.",
+              "src": "q1",
+              "page": "66"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "glareshield",
+      "where": "glareshield",
+      "name": "AoA indexer",
+      "text": "Three lamps next to the HUD that help the pilot to land at the right speed.",
+      "panels": [
+        {
+          "id": "aoa-indexer",
+          "name": "AoA Indexer (ISM-1)",
+          "db": "aoa-indexer",
+          "src": "q1",
+          "page": "74",
+          "text": "Three coloured lamps next to the HUD that show if the plane flies at the right angle of attack for landing.",
+          "context": "The pilot keeps the green lamp steady during the final approach to the carrier.",
+          "controls": [
+            {
+              "id": "aoa-yellow",
+              "name": "Yellow lamp (AoA low, speed high)",
+              "type": "light",
+              "match": [
+                "item:aoa-indexer:1"
+              ],
+              "text": "One of the three lamps of the AoA indexer next to the HUD. When it shines, the angle of attack (how steeply the wing meets the air) is too low and the speed too high for landing.",
+              "context": "The pilot slows down until the green lamp shines steadily.",
+              "src": "q1",
+              "page": "74"
+            },
+            {
+              "id": "aoa-green",
+              "name": "Green lamp (optimum)",
+              "type": "light",
+              "match": [
+                "item:aoa-indexer:2"
+              ],
+              "text": "Another of the three lamps. It shines when the angle of attack and the speed are right for a landing.",
+              "context": "The pilot controls the speed to keep this lamp steady.",
+              "src": "q1",
+              "page": "74"
+            },
+            {
+              "id": "aoa-red",
+              "name": "Red lamp (AoA high, speed low)",
+              "type": "light",
+              "match": [
+                "item:aoa-indexer:3"
+              ],
+              "text": "The third lamp. When it shines, the angle of attack is too high and the speed too low for landing.",
+              "context": "The pilot adds power or lowers the nose until the green lamp shines.",
+              "src": "q1",
+              "page": "74"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "hotas",
+      "where": "hotas",
+      "name": "Stick and throttle",
+      "text": "The pilot flies with the stick in the middle and the twin throttle on the left console. Triggers, lock-on and decoy buttons are on the grips.",
+      "panels": [
+        {
+          "id": "stick",
+          "name": "Control stick",
+          "src": "q1",
+          "text": "The stick with the triggers and the buttons for trim, targeting and nose wheel steering.",
+          "context": "The right hand flies the plane and fires from here.",
+          "controls": [
+            {
+              "id": "trim-hat",
+              "name": "Trim hat (ТРИМ)",
+              "type": "hat",
+              "match": [
+                "control:stick.hat.trim"
+              ],
+              "text": "A four-way button on top of the grip. Pushing it makes small adjustments (trim) so that the plane flies straight without force on the stick. Up trims the nose down, down trims it up; left and right roll the plane.",
+              "context": "The pilot trims after every change of speed.",
+              "src": "q1"
+            },
+            {
+              "id": "trigger",
+              "name": "Gun trigger (ОГОНЬ)",
+              "type": "trigger",
+              "match": [
+                "control:stick.trigger"
+              ],
+              "text": "The trigger at the front of the grip. Pressing it fires the GSh-30-1 cannon.",
+              "context": "The cannon is the weapon for close fights and for targets on the ground.",
+              "src": "q1"
+            },
+            {
+              "id": "stores-trigger",
+              "name": "Stores trigger (ПОДВ)",
+              "type": "trigger",
+              "match": [
+                "control:stick.weapon_release"
+              ],
+              "text": "A flip-down trigger in front of the gun trigger. Pressing it launches a missile or releases a store (a bomb or a tank hanging under the plane).",
+              "context": "The pilot first selects the weapon, then locks the target and then uses this trigger.",
+              "src": "q1"
+            },
+            {
+              "id": "override-trigger",
+              "name": "Autopilot override trigger",
+              "type": "lever",
+              "match": [
+                "control:stick.pinky.lever"
+              ],
+              "text": "A lever for the fingers on the grip. While it is held, the pilot can fly by hand and the automatic control system waits. When it is released, the autopilot goes on.",
+              "context": "It lets the pilot make a small correction without switching the autopilot off.",
+              "src": "q1"
+            },
+            {
+              "id": "weapon-select",
+              "name": "Weapon select switch",
+              "type": "button",
+              "match": [
+                "control:stick.button.weapon_select"
+              ],
+              "text": "A switch on the grip head. Each press steps to the next type of weapon.",
+              "context": "The pilot picks the weapon type this way before locking the target.",
+              "src": "q1"
+            },
+            {
+              "id": "lock-on",
+              "name": "Lock-on button",
+              "type": "button",
+              "match": [
+                "control:stick.button.lock"
+              ],
+              "text": "A button on the grip head. Pressing it makes the radar or the sensor lock onto the target in the aiming mark.",
+              "context": "A locked target can then be attacked with the stores trigger.",
+              "src": "q1"
+            },
+            {
+              "id": "reset",
+              "name": "Reset button (СБРОС)",
+              "type": "button",
+              "match": [
+                "control:stick.button.reset"
+              ],
+              "text": "Pressing this button drops the locked target and returns the system to search.",
+              "context": "The pilot uses it if the wrong target was locked.",
+              "src": "q1"
+            },
+            {
+              "id": "nws",
+              "name": "Nosewheel steering button",
+              "type": "button",
+              "match": [
+                "control:stick.button.nws"
+              ],
+              "text": "While this button is held, the nose wheel can steer the plane on the ground, like the steering of a car.",
+              "context": "The pilot uses it for taxiing and for the start and landing run.",
+              "src": "q1"
+            },
+            {
+              "id": "gimbal",
+              "name": "Control stick",
+              "type": "axis",
+              "match": [
+                "control:stick.gimbal"
+              ],
+              "text": "The stick in the middle. Pushing it forward lowers the nose, pulling back raises it. Moving it left or right rolls the plane. In pitch it works through a fly-by-wire system (computers between the stick and the control surfaces).",
+              "context": "It is the main flight control of the plane.",
+              "src": "q1"
+            }
+          ]
+        },
+        {
+          "id": "throttle",
+          "name": "Twin throttle",
+          "src": "q1",
+          "text": "Two throttle levers with the switches for the air brake, the designator, the hardpoint selection and the decoys.",
+          "context": "The left hand sets the engine power and presses these switches.",
+          "controls": [
+            {
+              "id": "throttle-left",
+              "name": "Left throttle (РУД)",
+              "type": "axis",
+              "match": [
+                "control:throttle.axis.left"
+              ],
+              "text": "The left lever of the twin throttle on the left console. Pushing it forward gives more power to the left AL-31F engine (series 3).",
+              "context": "The pilot normally moves both levers together.",
+              "src": "q1"
+            },
+            {
+              "id": "throttle-right",
+              "name": "Right throttle (РУД)",
+              "type": "axis",
+              "match": [
+                "control:throttle.axis.right"
+              ],
+              "text": "The right lever of the twin throttle on the left console. Pushing it forward gives more power to the right AL-31F engine (series 3).",
+              "context": "The pilot normally moves both levers together.",
+              "src": "q1"
+            },
+            {
+              "id": "airbrake-switch",
+              "name": "Air brake switch",
+              "type": "switch2",
+              "match": [
+                "control:throttle.speedbrake"
+              ],
+              "positions": [
+                {
+                  "name": "AFT",
+                  "text": "The air brake opens."
+                },
+                {
+                  "name": "FWD",
+                  "text": "The air brake closes."
+                }
+              ],
+              "text": "A switch on the throttle grip. Moved back it opens the air brake into the wind to slow the plane. Moved forward it closes it.",
+              "context": "The mechanical devices indicator shows the position of the airbrake.",
+              "src": "q1"
+            },
+            {
+              "id": "designator",
+              "name": "Target designator control",
+              "type": "other",
+              "match": [
+                "control:throttle.ministick"
+              ],
+              "text": "A small thumb control on the throttle grip. It moves the designator mark or the radar scan zone left, right, up and down.",
+              "context": "The pilot uses it to move the search area or the cursor onto a target.",
+              "src": "q1"
+            },
+            {
+              "id": "cms",
+              "name": "Countermeasures button",
+              "type": "button",
+              "match": [
+                "control:throttle.button.cms"
+              ],
+              "text": "Pressing this button throws out chaff (clouds of metal strips for radar missiles) and flares (hot burning decoys for heat-seeking missiles).",
+              "context": "The pilot presses it when the radar warning shows a launch.",
+              "src": "q1"
+            },
+            {
+              "id": "station",
+              "name": "Hardpoint selector button",
+              "type": "button",
+              "match": [
+                "control:throttle.button.station"
+              ],
+              "text": "A button on the throttle grip. Each press steps to the next pair of hardpoints (the mounts under the plane) for the weapons.",
+              "context": "The pilot picks the mounts this way before launching.",
+              "src": "q1"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

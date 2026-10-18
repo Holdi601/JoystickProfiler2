@@ -1,0 +1,715 @@
+{
+  "format": "joypro-cockpit-guide",
+  "version": 1,
+  "id": "il2-pe-2",
+  "title": "Pe-2 (IL-2)",
+  "variants": [
+    "pe-2-series-35",
+    "pe-2-series-87"
+  ],
+  "games": [
+    "IL2Game"
+  ],
+  "sets": [],
+  "sources": [
+    {
+      "id": "c1",
+      "title": "JoyPro cockpit catalog (from the IL-2 and real aircraft manuals)",
+      "kind": "reference"
+    },
+    {
+      "id": "g1",
+      "title": "IL-2 Sturmovik 1946 Aircraft Guide",
+      "file": "IL 2 Sturmovik 1946/Aircraft Guide.pdf",
+      "kind": "manual"
+    }
+  ],
+  "intro": "The Petlyakov Pe-2 is a Soviet twin-engine bomber of the Second World War that can dive on its target. It has a crew of three. The pilot sits at the front with a control wheel and the throttles of two engines, and the navigator sits behind. The guide covers the pilot's cockpit.",
+  "areas": [
+    {
+      "id": "gunsight",
+      "where": "glareshield",
+      "name": "Gunsight",
+      "text": "The aiming sight sits on top of the instrument panel, right in front of the pilot's eyes.",
+      "panels": [
+        {
+          "id": "gunsight",
+          "name": "PBP-1b reflector gunsight",
+          "db": "gunsight",
+          "text": "The PBP-1b reflector gunsight is the sight with which the pilot aims. It projects a glowing aiming mark onto a glass in front of the pilot's eyes. A simple ring-and-bead sight is the backup.",
+          "context": "The pilot looks through the sight in every attack with guns, rockets or bombs.",
+          "controls": [
+            {
+              "id": "reflector-glass",
+              "name": "Reflector glass (gun sight)",
+              "type": "display",
+              "match": [
+                "item:gunsight:1"
+              ],
+              "text": "This is a clear glass plate in front of the pilot. A lit aiming mark, the reticle, is projected onto it, so the pilot sees the mark floating over the outside world. The pilot puts the mark on the target before firing.",
+              "context": "The sight serves the guns, the rockets and the bombs alike. The lamp behind the glass needs electricity."
+            },
+            {
+              "id": "sight-lamp-and-brightness-control",
+              "name": "Sight lamp and brightness control",
+              "type": "knob",
+              "match": [
+                "item:gunsight:2"
+              ],
+              "text": "This control belongs to the lamp that lights the aiming mark. Turning it changes how bright the mark is.",
+              "context": "The pilot makes the mark bright enough to see against the sky or the ground, but not so bright that it dazzles."
+            },
+            {
+              "id": "back-up-ring-and-bead-sight",
+              "name": "Back-up ring and bead sight",
+              "type": "other",
+              "match": [
+                "item:gunsight:3"
+              ],
+              "text": "This is a simple mechanical sight made of a ring and a small bead. Looking through the ring at the bead shows where the guns point. It needs no electricity and no lamp.",
+              "context": "The pilot can use it when the lit sight fails or is damaged. It is the plain emergency way of aiming."
+            },
+            {
+              "id": "dive-angle-markings",
+              "name": "Dive angle markings (side window)",
+              "type": "indicator",
+              "match": [
+                "item:gunsight:4"
+              ],
+              "text": "These are lines on the side windows. By looking at where the horizon crosses the lines, the pilot sees how steeply the plane is diving.",
+              "context": "The Pe-2 is a dive bomber. The pilot uses the lines to hold the wanted dive angle during the attack."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "main-panel",
+      "where": "front-center",
+      "name": "Instrument panel",
+      "text": "The board in front of the pilot with the dials for speed, height, direction, engine and electrics.",
+      "panels": [
+        {
+          "id": "main-panel",
+          "name": "Instrument panel",
+          "db": "main-panel",
+          "text": "The instrument panel is the board in front of the pilot. It carries the dials that show speed, height and direction, the dials for the engine, and the lights for the wheels.",
+          "context": "The pilot scans it all the time in flight. The engine dials say when the engine runs too hot or loses oil pressure.",
+          "src": "g1",
+          "page": "179",
+          "controls": [
+            {
+              "id": "course-indicator",
+              "name": "Course indicator (PDI)",
+              "type": "indicator",
+              "match": [
+                "item:main-panel:1"
+              ],
+              "text": "This instrument has a needle that shows whether the plane is left or right of the course it should follow. The pilot turns the plane until the needle sits in the centre.",
+              "context": "It helps the pilot to fly a chosen direction without watching the compass all the time. It belongs to the flight instruments."
+            },
+            {
+              "id": "flap-light",
+              "name": "Flap light",
+              "type": "light",
+              "match": [
+                "item:main-panel:2"
+              ],
+              "text": "This lamp lights up when the flaps are extended.",
+              "context": "Flaps give the wing more lift for take-off and landing. The lamp reminds the pilot to retract them for speed."
+            },
+            {
+              "id": "flap-position-indicator",
+              "name": "Flap position indicator",
+              "type": "indicator",
+              "match": [
+                "item:main-panel:3"
+              ],
+              "text": "This indicator shows how far the flaps are extended, as an angle.",
+              "context": "The pilot checks it during take-off and landing, when the flaps are put in a middle or a full position."
+            },
+            {
+              "id": "magnetic-compass",
+              "name": "Magnetic compass",
+              "type": "gauge",
+              "match": [
+                "item:main-panel:4",
+                "item:main-panel:28"
+              ],
+              "text": "This is a compass. It shows the direction the plane's nose points, using the Earth's magnetic field, as a hiking compass does. The catalog marks this gauge in two places of the cockpit picture.",
+              "context": "With the clock and a map it is how a pilot of this time finds the way. The pilot reads it to fly a chosen direction."
+            },
+            {
+              "id": "airspeed-indicator",
+              "name": "Airspeed indicator (km/h)",
+              "type": "gauge",
+              "match": [
+                "item:main-panel:5"
+              ],
+              "text": "This dial shows how fast the plane moves through the air, in kilometres per hour. The faster the plane flies, the further the needle turns.",
+              "context": "The pilot watches it at take-off, in the climb and when landing. Too slow and the wings stop carrying the plane, too fast can damage it."
+            },
+            {
+              "id": "artificial-horizon",
+              "name": "Artificial horizon (attitude gauge)",
+              "type": "gauge",
+              "match": [
+                "item:main-panel:6"
+              ],
+              "text": "This instrument shows a small plane over a line that stands for the horizon. It shows if the plane's nose is up or down and if its wings are level. It works with a spinning gyroscope inside.",
+              "context": "The pilot uses it in cloud or at night when the real horizon cannot be seen."
+            },
+            {
+              "id": "variometer",
+              "name": "Variometer (climb and sink rate)",
+              "type": "gauge",
+              "match": [
+                "item:main-panel:7"
+              ],
+              "text": "This dial shows how fast the plane is climbing or sinking. The needle moves up for a climb and down for a descent.",
+              "context": "The pilot uses it to hold a steady climb or descent, for example when approaching to land."
+            },
+            {
+              "id": "turn-and-slip-indicator",
+              "name": "Turn and slip indicator",
+              "type": "gauge",
+              "match": [
+                "item:main-panel:8"
+              ],
+              "text": "This instrument has a needle that shows how fast the plane is turning and a ball in a curved tube. The ball shows whether the plane slides sideways in the turn.",
+              "context": "The pilot keeps the ball in the middle with the rudder. A centred ball means a clean, efficient turn. The instrument also helps when flying in cloud."
+            },
+            {
+              "id": "altimeter",
+              "name": "Altimeter (height gauge)",
+              "type": "gauge",
+              "match": [
+                "item:main-panel:9"
+              ],
+              "text": "This dial shows how high the plane is. It measures the height from the air pressure, which gets lower the higher the plane climbs.",
+              "context": "The pilot uses it to hold a height, to know when the thin air needs a different engine setting, and to keep clear of the ground on the way down."
+            },
+            {
+              "id": "fuel-contents-gauge",
+              "name": "Fuel contents gauge",
+              "type": "gauge",
+              "match": [
+                "item:main-panel:10"
+              ],
+              "text": "This dial shows how much fuel is left in the tanks. It is like the fuel gauge of a car.",
+              "context": "The pilot checks it to know how long the plane can keep flying. Fighters of this time carried little fuel, so the gauge is watched often."
+            },
+            {
+              "id": "fuel-gauge-tank-selector",
+              "name": "Fuel gauge tank selector",
+              "type": "selector",
+              "match": [
+                "item:main-panel:11"
+              ],
+              "text": "This selector chooses which fuel tank the fuel gauge shows. The Pe-2 has several tanks, and the single gauge reads one at a time.",
+              "context": "The pilot turns it to check each tank in turn to learn how much fuel is left in total."
+            },
+            {
+              "id": "boost-gauge",
+              "name": "Boost gauge (left engine)",
+              "type": "gauge",
+              "match": [
+                "item:main-panel:12"
+              ],
+              "text": "This dial shows the boost of the left engine. Boost is how hard air is pushed into the engine. More boost means more power. The throttle lever of this engine sets it.",
+              "context": "The pilot compares it with the right engine's dial, so that both engines pull the same."
+            },
+            {
+              "id": "boost-gauge-2",
+              "name": "Boost gauge (right engine)",
+              "type": "gauge",
+              "match": [
+                "item:main-panel:13"
+              ],
+              "text": "This dial shows the boost of the right engine. Boost is how hard air is pushed into the engine. More boost means more power. The throttle lever of this engine sets it.",
+              "context": "The pilot compares it with the left engine's dial, so that both engines pull the same."
+            },
+            {
+              "id": "tachometer",
+              "name": "Tachometer (left engine)",
+              "type": "gauge",
+              "match": [
+                "item:main-panel:14"
+              ],
+              "text": "This dial shows how fast the left engine turns, in rotations per minute (RPM).",
+              "context": "The pilot compares it with the right engine's dial, so that both engines turn at the same speed."
+            },
+            {
+              "id": "tachometer-2",
+              "name": "Tachometer (right engine)",
+              "type": "gauge",
+              "match": [
+                "item:main-panel:15"
+              ],
+              "text": "This dial shows how fast the right engine turns, in rotations per minute (RPM).",
+              "context": "The pilot compares it with the left engine's dial, so that both engines turn at the same speed."
+            },
+            {
+              "id": "inert-gas-indicator",
+              "name": "Inert gas indicator",
+              "type": "gauge",
+              "match": [
+                "item:main-panel:16"
+              ],
+              "text": "This dial shows the pressure of the inert gas that protects the fuel tanks. An inert gas does not burn. It fills the tanks in place of air, so that a hit is less likely to set them on fire.",
+              "context": "The pilot checks that the protection still has pressure before flying into combat."
+            },
+            {
+              "id": "fuel-pressure-gauge",
+              "name": "Fuel pressure gauge (left engine)",
+              "type": "gauge",
+              "match": [
+                "item:main-panel:17"
+              ],
+              "text": "This dial shows the pressure of the fuel that reaches the left engine.",
+              "context": "A falling pressure is a warning. The pilot compares it with the right engine's dial."
+            },
+            {
+              "id": "fuel-pressure-gauge-2",
+              "name": "Fuel pressure gauge (right engine)",
+              "type": "gauge",
+              "match": [
+                "item:main-panel:18"
+              ],
+              "text": "This dial shows the pressure of the fuel that reaches the right engine.",
+              "context": "A falling pressure is a warning. The pilot compares it with the left engine's dial."
+            },
+            {
+              "id": "oil-pressure-gauge",
+              "name": "Oil pressure gauge (left engine)",
+              "type": "gauge",
+              "match": [
+                "item:main-panel:19"
+              ],
+              "text": "This dial shows the pressure of the oil in the left engine. The oil pump pushes oil through the engine to lubricate it.",
+              "context": "A pressure that drops while the engine runs is a warning. The pilot compares it with the right engine's dial."
+            },
+            {
+              "id": "oil-pressure-gauge-2",
+              "name": "Oil pressure gauge (right engine)",
+              "type": "gauge",
+              "match": [
+                "item:main-panel:20"
+              ],
+              "text": "This dial shows the pressure of the oil in the right engine. The oil pump pushes oil through the engine to lubricate it.",
+              "context": "A pressure that drops while the engine runs is a warning. The pilot compares it with the left engine's dial."
+            },
+            {
+              "id": "oil-temperature-gauge",
+              "name": "Oil temperature gauge (left engine)",
+              "type": "gauge",
+              "match": [
+                "item:main-panel:21"
+              ],
+              "text": "This dial shows how hot the oil of the left engine is. The pilot can change the opening of its oil radiator to keep the oil in range.",
+              "context": "Oil that is too hot warns of trouble. The pilot compares it with the right engine's dial."
+            },
+            {
+              "id": "oil-temperature-gauge-2",
+              "name": "Oil temperature gauge (right engine)",
+              "type": "gauge",
+              "match": [
+                "item:main-panel:22"
+              ],
+              "text": "This dial shows how hot the oil of the right engine is. The pilot can change the opening of its oil radiator to keep the oil in range.",
+              "context": "Oil that is too hot warns of trouble. The pilot compares it with the left engine's dial."
+            },
+            {
+              "id": "coolant-temperature-gauge",
+              "name": "Coolant temperature gauge (left engine)",
+              "type": "gauge",
+              "match": [
+                "item:main-panel:23"
+              ],
+              "text": "This dial shows the temperature of the liquid that cools the left engine. The pilot can open or close its radiator doors to keep it in range.",
+              "context": "A hot engine can fail. The pilot compares it with the right engine's dial."
+            },
+            {
+              "id": "coolant-temperature-gauge-2",
+              "name": "Coolant temperature gauge (right engine)",
+              "type": "gauge",
+              "match": [
+                "item:main-panel:24"
+              ],
+              "text": "This dial shows the temperature of the liquid that cools the right engine. The pilot can open or close its radiator doors to keep it in range.",
+              "context": "A hot engine can fail. The pilot compares it with the left engine's dial."
+            },
+            {
+              "id": "navigator-s-airspeed-indicator",
+              "name": "Navigator's airspeed indicator",
+              "type": "gauge",
+              "match": [
+                "item:main-panel:25"
+              ],
+              "text": "This is a second airspeed dial for the navigator, who sits behind the pilot. It repeats the speed of the pilot's dial, in kilometres per hour.",
+              "context": "It lets the navigator work out the position of the plane and prepare the bomb run without asking the pilot."
+            },
+            {
+              "id": "navigator-s-altimeter",
+              "name": "Navigator's altimeter",
+              "type": "gauge",
+              "match": [
+                "item:main-panel:26"
+              ],
+              "text": "This is a second height dial for the navigator, who sits behind the pilot. It repeats the height of the pilot's altimeter.",
+              "context": "The navigator needs the height to plan the bomb run."
+            },
+            {
+              "id": "outside-air-temperature-gauge",
+              "name": "Outside air temperature gauge",
+              "type": "gauge",
+              "match": [
+                "item:main-panel:27"
+              ],
+              "text": "This dial shows how warm or cold the air outside the plane is.",
+              "context": "The temperature of the air changes with height and affects the engines and the instruments, so the crew likes to know it."
+            },
+            {
+              "id": "hydraulic-pressure-gauge",
+              "name": "Hydraulic pressure gauge",
+              "type": "gauge",
+              "match": [
+                "item:main-panel:29"
+              ],
+              "text": "This dial shows the pressure of the hydraulic system. Hydraulics is oil under high pressure that moves heavy parts of the plane.",
+              "context": "The pilot checks that there is enough pressure before using the parts that depend on it."
+            },
+            {
+              "id": "compressed-air-pressure-gauge",
+              "name": "Compressed-air pressure gauge",
+              "type": "gauge",
+              "match": [
+                "item:main-panel:30"
+              ],
+              "text": "This dial shows the pressure in the compressed-air bottles. This stored air works the wheel brakes, the flaps and the landing gear, and it charges the guns.",
+              "context": "The pilot keeps an eye on it, because when the bottles are empty the brakes and flaps no longer work."
+            },
+            {
+              "id": "elevator-trim-light",
+              "name": "Elevator trim light",
+              "type": "light",
+              "match": [
+                "item:main-panel:31"
+              ],
+              "text": "This lamp shows that the elevator trim is in its neutral position. Trim is a small adjustment so that the plane flies straight without the pilot holding the stick.",
+              "context": "The pilot checks it before take-off, so that the plane does not pitch up or down."
+            },
+            {
+              "id": "landing-gear-lights",
+              "name": "Landing gear lights (red up, green down)",
+              "type": "light",
+              "match": [
+                "item:main-panel:32"
+              ],
+              "text": "These lights show where the wheels are. A red light means the landing gear is up, and a green light means it is down and ready for landing.",
+              "context": "The pilot looks at the lights after moving the gear lever. Before landing, the green light must be on."
+            },
+            {
+              "id": "g-load-warning-light",
+              "name": "G-load warning light",
+              "type": "light",
+              "match": [
+                "item:main-panel:33"
+              ],
+              "text": "This lamp warns the pilot when the pull-out from a dive pushes too hard. The push into the seat is called the G-load.",
+              "context": "A dive bomber pulls up hard after its dive. A pull that is too hard can damage the plane."
+            },
+            {
+              "id": "external-ordnance-lights",
+              "name": "External ordnance lights (bombs, rockets)",
+              "type": "light",
+              "match": [
+                "item:main-panel:34"
+              ],
+              "text": "These lights show which bombs or rockets are loaded on the racks under the plane. A lit lamp means that weapon is still there.",
+              "context": "After an attack the pilot sees at once if everything was released or if a bomb or rocket is stuck."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "engine-controls",
+      "where": "left-side",
+      "name": "Left side and engine controls",
+      "text": "The levers the pilot moves with the left hand: the engine levers, the dive brake control, the trim wheels, the gear and flap levers.",
+      "panels": [
+        {
+          "id": "engine-controls",
+          "name": "Engine and flight controls (left side)",
+          "db": "engine-controls",
+          "text": "These are the levers for the two engines and the dive brakes, trim and wheels. They sit at the pilot's left hand.",
+          "context": "The pilot uses them for take-off, flight and the dive attack. Two engines mean two throttles and two sets of controls.",
+          "controls": [
+            {
+              "id": "throttle-levers",
+              "name": "Throttle levers (left and right engine)",
+              "type": "lever",
+              "match": [
+                "item:engine-controls:1"
+              ],
+              "text": "These two levers make the two engines stronger or weaker, like the gas pedals of a car. One lever is for each engine. The pilot can move them together or one at a time.",
+              "context": "Two engines allow the pilot to give one side more power. The pilot pushes both forward for take-off."
+            },
+            {
+              "id": "propeller-governor-controls",
+              "name": "Propeller governor controls",
+              "type": "lever",
+              "match": [
+                "item:engine-controls:2"
+              ],
+              "text": "These controls set the speed of the propellers. A governor keeps the propeller at a chosen speed by itself. The catalog says that they are slow electric governors.",
+              "context": "The pilot sets the propeller speed for take-off, climb and cruise. Because the governors are slow, a change takes some seconds."
+            },
+            {
+              "id": "mixture-levers",
+              "name": "Mixture levers",
+              "type": "lever",
+              "match": [
+                "item:engine-controls:3"
+              ],
+              "text": "These levers set how much fuel goes into the air of each engine, the mixture. The higher the plane flies, the thinner the air, and the leaner the mixture can be.",
+              "context": "The pilot moves them in a climb. One lever is for each engine."
+            },
+            {
+              "id": "dive-brake-control",
+              "name": "Dive brake control",
+              "type": "lever",
+              "match": [
+                "item:engine-controls:4"
+              ],
+              "text": "This control pushes grids out of the wing. These grids are the dive brakes. They hold the plane back so that it does not become too fast in a steep dive.",
+              "context": "The Pe-2 is a dive bomber. The pilot extends the grids to start the dive and pulls them in again after it."
+            },
+            {
+              "id": "trim-wheels",
+              "name": "Trim wheels (three axes)",
+              "type": "wheel",
+              "match": [
+                "item:engine-controls:5"
+              ],
+              "text": "These wheels adjust the trim on all three axes: elevator, rudder and ailerons. Trim lets the plane fly straight without the pilot holding the controls.",
+              "context": "The pilot trims after take-off and when the speed changes. This is especially useful on a long flight."
+            },
+            {
+              "id": "landing-gear-control",
+              "name": "Landing gear control",
+              "type": "lever",
+              "match": [
+                "item:engine-controls:6"
+              ],
+              "text": "This lever raises and lowers the landing gear, the wheels and their legs.",
+              "context": "The pilot raises the gear after take-off and lowers it before landing. The gear lights show what the wheels are doing."
+            },
+            {
+              "id": "flap-control-lever",
+              "name": "Flap control lever",
+              "type": "lever",
+              "match": [
+                "item:engine-controls:7"
+              ],
+              "text": "This lever moves the flaps, parts of the wing that fold down to give more lift at low speed. They are used for take-off and landing.",
+              "context": "The pilot lowers the flaps when approaching to land so the plane can fly slowly, and raises them again afterwards to fly fast."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "salvo-controllers",
+      "where": "other",
+      "name": "Bomb and rocket controls",
+      "text": "The selectors and the door control for dropping bombs and firing rockets.",
+      "panels": [
+        {
+          "id": "salvo-controllers",
+          "name": "Bomb and rocket salvo controllers",
+          "db": "salvo-controllers",
+          "text": "These controls set how the bombs and rockets are released and open the bomb bay doors.",
+          "context": "The weapon systems are set before the attack run. The release button on the control wheel then drops the weapons.",
+          "controls": [
+            {
+              "id": "bomb-salvo-controller",
+              "name": "Bomb salvo controller",
+              "type": "selector",
+              "match": [
+                "item:salvo-controllers:1"
+              ],
+              "text": "This selector decides how the bombs are released, for example one at a time or several together.",
+              "context": "The pilot sets it before the bomb run."
+            },
+            {
+              "id": "rocket-salvo-controller",
+              "name": "Rocket salvo controller",
+              "type": "selector",
+              "match": [
+                "item:salvo-controllers:2"
+              ],
+              "text": "This selector decides how the rockets are released, for example one at a time or several together.",
+              "context": "The pilot sets it before the attack."
+            },
+            {
+              "id": "bomb-bay-door-control",
+              "name": "Bomb bay door control",
+              "type": "switch",
+              "match": [
+                "item:salvo-controllers:3"
+              ],
+              "text": "This switch opens and closes the doors of the bomb bay, the compartment in which the bombs are carried inside the plane.",
+              "context": "The doors open before the bomb run and close afterwards, because open doors slow the plane."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "hotas",
+      "where": "hotas",
+      "name": "Stick and throttle",
+      "text": "The controls that the game lets you bind to a joystick and a throttle: the stick with its grip, and the engine levers at the left hand.",
+      "panels": [
+        {
+          "id": "control-wheel",
+          "name": "Control column with wheel",
+          "text": "The pilot steers the Pe-2 with a control column that carries a wheel. The column and wheel carry the fire button, the release button and the brake lever.",
+          "context": "The pilot holds it with the right hand while the left hand works the throttles. These controls can be bound to a joystick.",
+          "controls": [
+            {
+              "id": "yoke-gimbal",
+              "name": "Control column with wheel",
+              "type": "axis",
+              "match": [
+                "control:yoke.gimbal"
+              ],
+              "text": "This is the control column with a wheel in front of the pilot. Pushing and pulling the column pitches the nose down and up. Turning the wheel rolls the plane onto its side, which starts a turn.",
+              "context": "On a joystick this is the main stick axis. The pilot uses it all the time."
+            },
+            {
+              "id": "yoke-button-1",
+              "name": "Forward gun trigger",
+              "type": "button",
+              "match": [
+                "control:yoke.button.1"
+              ],
+              "text": "A fire button on the control wheel. It fires the guns in the nose of the plane.",
+              "context": "The pilot fires the forward guns with it. The gunners in the back have their own guns."
+            },
+            {
+              "id": "yoke-button-2",
+              "name": "Bomb / rocket release",
+              "type": "button",
+              "match": [
+                "control:yoke.button.2"
+              ],
+              "text": "A release button on the control wheel. It drops bombs or fires rockets. During a dive attack it also ends the dive.",
+              "context": "The Pe-2 attacks in a dive. The pilot presses this button at the right moment, then pulls out of the dive."
+            },
+            {
+              "id": "yoke-lever-brake",
+              "name": "Brake lever",
+              "type": "lever",
+              "match": [
+                "control:yoke.lever.brake"
+              ],
+              "text": "A lever on the control wheel that the pilot squeezes to brake the wheels. The rudder pedals decide which wheel is braked more, so the plane can steer on the ground.",
+              "context": "The pilot brakes on the ground, when landing or taxiing. In the game it is an axis."
+            }
+          ]
+        },
+        {
+          "id": "throttle",
+          "name": "Engine levers and throttle",
+          "text": "These are the levers at the pilot's left hand: the throttle and the other engine levers, with the trim wheels and the buttons the game binds to a throttle device.",
+          "context": "The pilot keeps the left hand there during the whole flight. In JoyPro these controls are the ones bound to a throttle device.",
+          "controls": [
+            {
+              "id": "throttle-axis-left",
+              "name": "Left throttle",
+              "type": "axis",
+              "match": [
+                "control:throttle.axis.left"
+              ],
+              "text": "This is the left throttle lever on the left side. It sets the power of the left engine.",
+              "context": "With a left and a right throttle the pilot can turn by giving one side more power. A joystick set can use two axes or move both with one."
+            },
+            {
+              "id": "throttle-axis-right",
+              "name": "Right throttle",
+              "type": "axis",
+              "match": [
+                "control:throttle.axis.right"
+              ],
+              "text": "This is the right throttle lever on the left side. It sets the power of the right engine.",
+              "context": "It is the partner of the left throttle. Both are usually moved together."
+            },
+            {
+              "id": "throttle-axis-prop",
+              "name": "Propeller governor controls",
+              "type": "axis",
+              "match": [
+                "control:throttle.axis.prop"
+              ],
+              "text": "These controls by the throttles set the propeller speed. The catalog says that they are slow electric governors, so a change takes some seconds.",
+              "context": "On a throttle device they are an axis of their own."
+            },
+            {
+              "id": "throttle-axis-mixture",
+              "name": "Mixture levers",
+              "type": "axis",
+              "match": [
+                "control:throttle.axis.mixture"
+              ],
+              "text": "These levers by the throttles set the mixture, the fuel in the engine's air. The catalog notes that the mixture should be made leaner above about 3 to 4 km.",
+              "context": "On a throttle device they are an axis of their own."
+            },
+            {
+              "id": "throttle-lever-dive-brakes",
+              "name": "Dive brake control",
+              "type": "lever",
+              "match": [
+                "control:throttle.lever.dive_brakes"
+              ],
+              "text": "This is the dive brake control. Forward extends the dive brakes, grids that open under the wing and hold the plane back. This starts the dive. Back pulls them in.",
+              "context": "The Pe-2 attacks ground targets in a steep dive. The pilot extends the brakes for the dive and retracts them afterwards."
+            },
+            {
+              "id": "throttle-wheel-trim",
+              "name": "Elevator trim wheel",
+              "type": "wheel",
+              "match": [
+                "control:throttle.wheel.trim"
+              ],
+              "text": "This is the elevator trim wheel on the left side. Moving it up trims the nose down, and moving it down trims the nose up. The dive system also trims the plane in the dive.",
+              "context": "On a joystick set it is usually a trim hat or two buttons."
+            },
+            {
+              "id": "throttle-lever-gear",
+              "name": "Landing gear control",
+              "type": "lever",
+              "match": [
+                "control:throttle.lever.gear"
+              ],
+              "text": "This is the landing gear control on the left side. Up raises the wheels, down lowers them.",
+              "context": "The pilot raises the gear after take-off and lowers it for landing. In the game it is bound to a button or two."
+            },
+            {
+              "id": "throttle-lever-flaps",
+              "name": "Flap control",
+              "type": "lever",
+              "match": [
+                "control:throttle.lever.flaps"
+              ],
+              "text": "This is the flap control on the left side. Up raises the flaps, down lowers them.",
+              "context": "The pilot uses flaps for take-off and landing. In the game it is bound to a button or two."
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

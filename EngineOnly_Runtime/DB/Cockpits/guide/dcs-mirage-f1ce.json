@@ -1,0 +1,1864 @@
+{
+  "format": "joypro-cockpit-guide",
+  "version": 1,
+  "id": "dcs-mirage-f1ce",
+  "title": "Mirage F1CE / F1M (DCS)",
+  "variants": [
+    "mirage-f1ce",
+    "mirage-f1m"
+  ],
+  "games": [
+    "DCS"
+  ],
+  "sets": [
+    "DCS/Mirage-F1CE"
+  ],
+  "sources": [
+    {
+      "id": "m1",
+      "title": "DCS Mirage F1 Flight Manual (EN)",
+      "file": "Mods/aircraft/Mirage-F1/Docs/Mirage F1 Flight Manual.pdf"
+    },
+    {
+      "id": "m2",
+      "title": "DCS Mirage F1 Quick Start Guide (EN)",
+      "file": "Mods/aircraft/Mirage-F1/Docs/Mirage F1 Quick Start Guide.pdf"
+    }
+  ],
+  "intro": "The Mirage F1 is a French fighter from the 1970s, built to intercept other aircraft and to attack the ground. The cockpit is fully analogue: round dials, many toggle switches, a centre stick, a throttle on the left console and a separate radar handle behind it. The sight sits on top of the main panel above the radar screen, the electrics and the radios are on the side consoles, and the weapons panel is on the right console.",
+  "areas": [
+    {
+      "id": "glareshield",
+      "where": "glareshield",
+      "name": "Glareshield, canopy and clock",
+      "text": "The upper part of the cockpit under the canopy: the canopy handles, the mirrors, the clock and the lamp controls next to it.",
+      "panels": [
+        {
+          "id": "canopy",
+          "name": "Canopy controls",
+          "src": "m1",
+          "page": "70",
+          "text": "These controls open, hold, lock and break the canopy, the clear glass roof over the cockpit.",
+          "context": "The pilot opens the canopy to climb in and closes and locks it before taxiing. The red P.CAB light on the failure warning panel stays on while the canopy is open.",
+          "controls": [
+            {
+              "id": "open-close",
+              "name": "Canopy open/close handles",
+              "type": "handle",
+              "match": [
+                "PNT-1-L",
+                "PNT-1-R"
+              ],
+              "text": "Two handles on the left and right of the canopy frame. The pilot grabs them to push the canopy open or to pull it shut by hand.",
+              "context": "The canopy is moved by hand, not by a motor. In DCS it can also be opened and closed with a key command.",
+              "count": 2,
+              "src": "m1",
+              "page": "70"
+            },
+            {
+              "id": "hinged-handle",
+              "name": "Canopy hinged handle",
+              "type": "handle",
+              "match": [
+                "PNT-3",
+                "item:main-instrument-panel:1"
+              ],
+              "text": "A hinged handle that keeps the canopy open a little, like the stay that holds a window ajar.",
+              "context": "The start-up list of the manual allows the engine to be started with the canopy closed or partly open.",
+              "src": "m1",
+              "page": "70"
+            },
+            {
+              "id": "lock",
+              "name": "Canopy lock control",
+              "type": "lever",
+              "match": [
+                "PNT-55",
+                "item:right-side-panel:2"
+              ],
+              "positions": [
+                {
+                  "name": "FORWARD",
+                  "text": "The canopy is locked."
+                },
+                {
+                  "name": "AFT",
+                  "text": "The canopy is unlocked and can be opened."
+                }
+              ],
+              "text": "This lever locks the closed canopy to its frame so it cannot blow open in flight. Forward locks it, aft frees it.",
+              "context": "The pilot moves it forward when the canopy is fully closed during start-up and checks that the P.CAB light is out before lining up for take-off.",
+              "src": "m1",
+              "page": "70"
+            },
+            {
+              "id": "embrittle",
+              "name": "Canopy embrittle control",
+              "type": "handle",
+              "match": [
+                "PNT-56",
+                "item:left-side-panel:2"
+              ],
+              "text": "A handle for emergencies. Pulling it sets off a small charge that makes the canopy glass crack, so it breaks away easily when the pilot has to leave the plane.",
+              "context": "The ejection seat sets off the same system by itself. In normal flying the handle stays aft, as the cabin checks require.",
+              "src": "m1",
+              "page": "70"
+            }
+          ]
+        },
+        {
+          "id": "mirrors",
+          "name": "Rear-view mirrors",
+          "src": "m1",
+          "page": "19",
+          "text": "Small mirrors on the canopy frame that let the pilot look behind the plane without turning around.",
+          "context": "The mirrors are part of the canopy structure. DCS offers commands to fold and unfold them.",
+          "controls": [
+            {
+              "id": "mirror",
+              "name": "Rear-view mirror",
+              "type": "knob",
+              "match": [
+                "PNT-0",
+                "PNT-2"
+              ],
+              "text": "The game calls this control 'Adjust/Hide Mirror (rotate or click)'. Turning it aims the mirror; clicking it hides the mirror or shows it again.",
+              "context": "One mirror sits on each side. The game gives the fold and unfold actions their own commands, so they can be put on a key or button.",
+              "count": 2,
+              "src": "m1",
+              "page": "19"
+            }
+          ]
+        },
+        {
+          "id": "clock",
+          "name": "Clock and cockpit lamp controls",
+          "src": "m1",
+          "page": "72",
+          "text": "The clock with its stopwatch, and the knobs and switches for the map light and the instrument lamps next to it.",
+          "context": "The clock works without electricity, so it stays usable even after a complete electrical failure. The lamp controls are the same group the manual describes with the cockpit lighting.",
+          "controls": [
+            {
+              "id": "clock",
+              "name": "Clock with chronometer",
+              "type": "display",
+              "match": [
+                "item:main-instrument-panel:2"
+              ],
+              "text": "A classic watch with a stopwatch hand that counts up to 15 minutes. Its spring holds enough for two days. In DCS it starts half wound at the beginning of a mission.",
+              "context": "The pilot reads the time here. The manual lists the clock among the instruments that keep working in a complete electrical failure.",
+              "src": "m1",
+              "page": "66"
+            },
+            {
+              "id": "chrono-knob",
+              "name": "Chronometer start / clock winding knob",
+              "type": "knob",
+              "match": [
+                "PNT-67"
+              ],
+              "text": "Pushing this knob starts, stops and resets the stopwatch. Turning it clockwise winds the clock. With the setting lever pulled, turning it sets the time.",
+              "context": "It works together with the winding/setting lever next to it. Together they keep the clock wound and set.",
+              "src": "m1",
+              "page": "66"
+            },
+            {
+              "id": "clock-lever",
+              "name": "Clock winding/setting lever",
+              "type": "lever",
+              "match": [
+                "PNT-231"
+              ],
+              "positions": [
+                {
+                  "name": "PUSHED",
+                  "text": "Turning the knob winds the clock spring."
+                },
+                {
+                  "name": "PULLED",
+                  "text": "Turning the knob sets the time."
+                }
+              ],
+              "text": "A small lever that decides what turning the clock knob does. Pushed in, the knob winds the clock. Pulled out, the knob sets the time.",
+              "context": "It is used together with the chronometer and winding knob.",
+              "src": "m1",
+              "page": "66"
+            },
+            {
+              "id": "map-light",
+              "name": "Map light rheostat",
+              "type": "knob",
+              "match": [
+                "PNT-66"
+              ],
+              "text": "This knob makes the map light brighter or dimmer. The map light is a small lamp for reading a paper map.",
+              "context": "It belongs to the cockpit lighting group that the manual describes with the lighting control unit.",
+              "src": "m1",
+              "page": "73"
+            },
+            {
+              "id": "misc-integral",
+              "name": "Miscellaneous instrument integral lighting rheostat",
+              "type": "knob",
+              "match": [
+                "PNT-68"
+              ],
+              "text": "This knob sets the brightness of the built-in lighting of the standby compass, the clock and the accelerometer (the G-meter).",
+              "context": "It is one of several dimmers in the cockpit lighting group; the others sit on the right console.",
+              "src": "m1",
+              "page": "72"
+            },
+            {
+              "id": "misc-switch",
+              "name": "Miscellaneous instrument lighting switch",
+              "type": "switch",
+              "match": [
+                "PNT-470"
+              ],
+              "text": "A switch of the lighting group. The manual lists it together with the lighting of the angle-of-attack indicator tape, the scale strip of that instrument.",
+              "context": "The manual does not describe its positions further; the game names it 'Miscellaneous instrument lighting switch'.",
+              "src": "m1",
+              "page": "72"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "front-left",
+      "where": "front-left",
+      "name": "Main panel: left side",
+      "text": "The left part of the main instrument panel: the chaff and flare controls, the warning lights and the autopilot buttons.",
+      "panels": [
+        {
+          "id": "chaff-flare",
+          "name": "Chaff and flare dispenser panel (AN/ALE-40)",
+          "db": "chaff-flare-panel",
+          "src": "m1",
+          "page": "105",
+          "text": "This panel controls the machine that throws out chaff and flares to fool enemy missiles.",
+          "context": "Chaff is a cloud of metal strips that confuses radar missiles; flares are hot burning decoys for heat-seeking missiles. The pilot picks the mode here and releases with the button on the left wall. The number of decoys per release is set on the ground.",
+          "controls": [
+            {
+              "id": "overview",
+              "name": "Chaff and flare dispenser unit (whole panel)",
+              "type": "other",
+              "match": [
+                "item:main-instrument-panel:4"
+              ],
+              "text": "The control unit of the countermeasure system on the left of the main panel. Its mode selector, type selector, jettison switch, two reset buttons and two counters are explained one by one in this panel.",
+              "context": "The system is the AN/ALE-40. It fits either 30 chaff or 15 flare charges per side, and in practice flares were mounted on the left only.",
+              "src": "m1",
+              "page": "105"
+            },
+            {
+              "id": "mode",
+              "name": "OFF-SGL-MULT-PRGRM mode selector",
+              "type": "selector",
+              "match": [
+                "PNT-209",
+                "item:chaff-flare-panel:1"
+              ],
+              "positions": [
+                {
+                  "name": "OFF",
+                  "text": "The dispenser is switched off."
+                },
+                {
+                  "name": "SGL",
+                  "text": "Single: one decoy per side for each press."
+                },
+                {
+                  "name": "MULT",
+                  "text": "Multiple: a series of 1, 2, 3, 4, 6 or 8 decoys with a short pause between them."
+                },
+                {
+                  "name": "PRGRM",
+                  "text": "Program: the multiple series is repeated several times, with a pause between the repeats."
+                }
+              ],
+              "text": "This selector decides how many decoys one press of the release button throws out: none, a single one, a short series, or a repeated program.",
+              "context": "The size of the series and the pause between series are set on the ground, in the Mission Editor or at the programmer behind the seat.",
+              "src": "m1",
+              "page": "105"
+            },
+            {
+              "id": "type",
+              "name": "CHAFF-BOTH-FLARE selector",
+              "type": "switch3",
+              "match": [
+                "PNT-208",
+                "item:chaff-flare-panel:2"
+              ],
+              "positions": [
+                {
+                  "name": "CHAFF",
+                  "text": "Only chaff is released."
+                },
+                {
+                  "name": "BOTH",
+                  "text": "Chaff and flares are released together."
+                },
+                {
+                  "name": "FLARE",
+                  "text": "Only flares are released."
+                }
+              ],
+              "text": "This switch chooses what the release button throws out: only chaff, only flares, or both together.",
+              "context": "Chaff works against radar-guided threats and flares against heat-seeking ones, so the pilot picks according to the threat.",
+              "src": "m1",
+              "page": "105"
+            },
+            {
+              "id": "jettison",
+              "name": "Emergency jettisoning switch (JTSN)",
+              "type": "switch",
+              "match": [
+                "PNT-216",
+                "item:chaff-flare-panel:3"
+              ],
+              "text": "This switch empties all the flares one after the other, very quickly, instead of releasing them in small groups.",
+              "context": "It is meant for an emergency, for example to get rid of the flares fast.",
+              "src": "m1",
+              "page": "105"
+            },
+            {
+              "id": "chaff-reset",
+              "name": "Chaff counter reset button",
+              "type": "button",
+              "match": [
+                "PNT-212",
+                "item:chaff-flare-panel:4"
+              ],
+              "text": "Pressing this button sets the chaff counter back to the number of charges that are loaded.",
+              "context": "After the plane is rearmed the pilot sets the counter to the real number. A DCS option can reset the counters by itself on rearm.",
+              "src": "m1",
+              "page": "105"
+            },
+            {
+              "id": "flare-reset",
+              "name": "Flares counter reset button",
+              "type": "button",
+              "match": [
+                "PNT-215",
+                "item:chaff-flare-panel:5"
+              ],
+              "text": "Pressing this button sets the flare counter back to the number of flares that are loaded.",
+              "context": "It is the twin of the chaff counter button and is used after rearming. A DCS option can do it automatically.",
+              "src": "m1",
+              "page": "105"
+            },
+            {
+              "id": "counters",
+              "name": "Countermeasure counters",
+              "type": "indicator",
+              "match": [
+                "item:chaff-flare-panel:6"
+              ],
+              "text": "Two small number windows. One shows how many chaff charges are left and the other how many flares are left.",
+              "context": "The pilot glances at them to see how many decoys remain before a threatening situation.",
+              "src": "m1",
+              "page": "105"
+            }
+          ]
+        },
+        {
+          "id": "warning-lights",
+          "name": "Warning and status lights",
+          "src": "m1",
+          "page": "139",
+          "text": "A group of lights on the main panel that report the state of the landing gear, the brakes, the engine and the afterburner.",
+          "context": "Most of these lights can be pressed to test them. The red and amber lights of the failure warning panel on the right side are explained in that panel.",
+          "controls": [
+            {
+              "id": "limit",
+              "name": "LIM light with horn",
+              "type": "light",
+              "match": [
+                "PNT-932"
+              ],
+              "text": "A red light that comes on together with a warning horn when the plane goes beyond a permitted limit, for example too fast with the flaps, slats or landing gear out.",
+              "context": "The horn tells the pilot to slow down or change the setting. Pressing the light tests it.",
+              "src": "m1",
+              "page": "139"
+            },
+            {
+              "id": "fire",
+              "name": "Fire warning light (engine / afterburner) with horn",
+              "type": "light",
+              "match": [
+                "PNT-940",
+                "item:main-instrument-panel:18"
+              ],
+              "text": "A red warning light with a horn. It lights when the engine or the afterburner is on fire.",
+              "context": "For an engine fire the manual says to cut the throttle and close the engine fuel cock at once; for an afterburner fire to cut the afterburner and close its fuel cock.",
+              "src": "m1",
+              "page": "37"
+            },
+            {
+              "id": "gear-brake-lights",
+              "name": "Landing gear, airbrake, nose wheel steering and combat flap lights",
+              "type": "light",
+              "match": [
+                "PNT-928",
+                "PNT-944",
+                "PNT-950",
+                "PNT-956",
+                "item:main-instrument-panel:14"
+              ],
+              "text": "Four lights in one group. The U/C light is about the landing gear. The airbrake light says the airbrake is out. The nose wheel steering light says the steering is completely off. The combat flaps light shows that the combat flaps are working.",
+              "context": "The manual says a steady combat flaps light is normal inside the permitted speed range and a flashing one means the flaps are outside it. The lights can be pressed to test them.",
+              "count": 4,
+              "src": "m1",
+              "page": "40"
+            },
+            {
+              "id": "ab-lights",
+              "name": "Afterburner lights INJ, ON and SRL",
+              "type": "light",
+              "match": [
+                "PNT-1029",
+                "PNT-1031",
+                "PNT-1033"
+              ],
+              "text": "Three lights about the afterburner, the extra fuel burned at the back of the engine. INJ shows that the afterburner fuel is being injected. ON (FON) shows that the afterburner burns. SRL (also called ADF) warns of a fault in the system that lets the throttle jump straight into afterburner.",
+              "context": "Pressing a light tests it. When the afterburner lights up, INJ goes out and ON comes on.",
+              "count": 3,
+              "src": "m1",
+              "page": "36"
+            },
+            {
+              "id": "standby-receptacle",
+              "name": "Standby receptacle light",
+              "type": "light",
+              "match": [
+                "PNT-92",
+                "item:left-side-panel:3"
+              ],
+              "text": "A press-to-test light of the standby receptacle, the ground socket that powers and warms up some equipment before the engine runs.",
+              "context": "The manual describes the receptacle itself but does not say exactly when this light comes on.",
+              "src": "m1",
+              "page": "22"
+            },
+            {
+              "id": "config-test",
+              "name": "Configuration indicator test button",
+              "type": "button",
+              "match": [
+                "PNT-1082"
+              ],
+              "text": "This button tests the lights of the configuration indicator, the combat flaps light and the nose wheel steering light.",
+              "context": "The pilot presses it to see that all these lights work.",
+              "src": "m1",
+              "page": "40"
+            },
+            {
+              "id": "bip",
+              "name": "BIP button",
+              "type": "button",
+              "match": [
+                "PNT-1081"
+              ],
+              "text": "When the landing gear is down, pressing this button sends a short audio signal to the tower on the radio frequency in use. The pilot hears it too.",
+              "context": "It tells the tower that the landing gear is down and locked. A test light shows the signal is being sent.",
+              "src": "m1",
+              "page": "40"
+            }
+          ]
+        },
+        {
+          "id": "autopilot",
+          "name": "Autopilot control and indicator unit",
+          "src": "m1",
+          "page": "54",
+          "text": "Five lit buttons that switch the autopilot on and choose what it holds, such as the height or the heading.",
+          "context": "The autopilot flies the plane so that the pilot does not have to hold the stick. On the stick grip the disconnect trigger and the disengage lever take it off again.",
+          "controls": [
+            {
+              "id": "lights",
+              "name": "Autopilot indicator lights",
+              "type": "indicator",
+              "match": [
+                "item:main-instrument-panel:11"
+              ],
+              "text": "The buttons of this unit are also lights that show what the autopilot is doing. PA lights when it is connected. ALT flashes while the plane crosses the speed of sound.",
+              "context": "A red PA light on the failure warning panel with a horn means the autopilot has dropped out.",
+              "src": "m1",
+              "page": "50"
+            },
+            {
+              "id": "pa",
+              "name": "Autopilot PA button",
+              "type": "button",
+              "match": [
+                "PNT-974"
+              ],
+              "text": "Pressing PA switches the autopilot on in its basic mode, where it holds the plane's attitude. Pressing it again switches the autopilot off.",
+              "context": "The manual advises pressing it while holding the disconnect trigger on the stick, so the autopilot does not jerk the plane.",
+              "src": "m1",
+              "page": "54"
+            },
+            {
+              "id": "alt",
+              "name": "Autopilot ALT button",
+              "type": "button",
+              "match": [
+                "PNT-977"
+              ],
+              "text": "ALT makes the autopilot hold the present altitude.",
+              "context": "The altitude hold needs the basic autopilot to be on. While crossing the speed of sound it falls back to the basic mode.",
+              "src": "m1",
+              "page": "54"
+            },
+            {
+              "id": "cap",
+              "name": "Autopilot CAP button",
+              "type": "button",
+              "match": [
+                "PNT-980"
+              ],
+              "text": "CAP (the French word for heading) makes the autopilot fly the heading that was set with the heading selection knob.",
+              "context": "The selected heading is shown on the navigation indicator by an index. The knob is on the right console.",
+              "src": "m1",
+              "page": "54"
+            },
+            {
+              "id": "r",
+              "name": "Autopilot R button",
+              "type": "button",
+              "match": [
+                "PNT-982"
+              ],
+              "text": "R makes the autopilot catch and follow a radio line: a VOR or TACAN radial, or the runway line of an ILS.",
+              "context": "It is used for flying along a navigation beacon's line or for the first part of an instrument landing.",
+              "src": "m1",
+              "page": "54"
+            },
+            {
+              "id": "g",
+              "name": "Autopilot G button",
+              "type": "button",
+              "match": [
+                "PNT-987"
+              ],
+              "text": "G makes the autopilot catch and follow the ILS glide path, the sloping radio beam that leads down to the runway, together with the runway line.",
+              "context": "It is the last step of an automatic instrument approach; the pilot still decides when to land.",
+              "src": "m1",
+              "page": "54"
+            },
+            {
+              "id": "intensity",
+              "name": "Autopilot intensity control",
+              "type": "knob",
+              "match": [
+                "PNT-992"
+              ],
+              "text": "Turning this knob makes the lights of the autopilot buttons brighter or dimmer.",
+              "context": "It is one of the cockpit lighting controls.",
+              "src": "m1",
+              "page": "74"
+            },
+            {
+              "id": "test",
+              "name": "Autopilot unit test button",
+              "type": "button",
+              "match": [
+                "PNT-973"
+              ],
+              "text": "Pressing this button lights all the lamps of the autopilot unit, so the pilot can see that none is burnt out.",
+              "context": "It does not switch the autopilot on.",
+              "src": "m1",
+              "page": "54"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "front-center",
+      "where": "front-center",
+      "name": "Main panel: centre",
+      "text": "The middle of the main instrument panel: the sight, the radar screen, the flight and engine instruments, the fuel gauges and the jettison buttons.",
+      "panels": [
+        {
+          "id": "sight",
+          "name": "Sight and reticle controls",
+          "src": "m1",
+          "page": "131",
+          "text": "The gunsight and the controls that set how bright its aiming marks are.",
+          "context": "The sight shows different marks for flying, landing, guns, missiles, bombs and rockets, depending on what the pilot chose on the armament panel.",
+          "controls": [
+            {
+              "id": "head",
+              "name": "Sight head",
+              "type": "display",
+              "match": [
+                "item:main-instrument-panel:6"
+              ],
+              "text": "A glass plate in front of the pilot's eyes that shows aiming marks and flight information. The marks seem to float far away, so the eyes need not refocus between the marks and the outside world.",
+              "context": "It works like a head-up display: it shows an attitude line, the radar aiming marks, missile ready and locked signals, and the gun and bomb aiming circles.",
+              "src": "m1",
+              "page": "131"
+            },
+            {
+              "id": "lighting-selector",
+              "name": "Sight lighting selector switch",
+              "type": "switch3",
+              "match": [
+                "PNT-761"
+              ],
+              "positions": [
+                {
+                  "name": "O",
+                  "text": "All aiming marks are off (printed A in the manual)."
+                },
+                {
+                  "name": "N",
+                  "text": "Normal operation."
+                },
+                {
+                  "name": "E",
+                  "text": "Emergency operation, used when one mark has gone out (printed S in the manual)."
+                }
+              ],
+              "text": "This three-position switch controls the lamps behind the aiming marks. In one position all marks are off, in the middle they work normally, and in the third position a spare lamp system takes over.",
+              "context": "The spare position is for the case that one aiming mark has gone dark because of a burnt bulb.",
+              "src": "m1",
+              "page": "74"
+            },
+            {
+              "id": "auto-man",
+              "name": "Sight AUTO/MAN intensity selector switch",
+              "type": "switch2",
+              "match": [
+                "PNT-760"
+              ],
+              "positions": [
+                {
+                  "name": "AUTO",
+                  "text": "The brightness follows the outside light automatically."
+                },
+                {
+                  "name": "MAN",
+                  "text": "The brightness is set by the pilot with the three rheostats."
+                }
+              ],
+              "text": "Decides who sets the brightness of the aiming marks. In AUTO the sight adjusts it by itself to the light outside. In MAN the pilot sets it with the three rheostats under the sight.",
+              "context": "A bright sky needs brighter marks, a dark sky dimmer ones. AUTO saves the pilot from turning the knobs all the time.",
+              "src": "m1",
+              "page": "74"
+            },
+            {
+              "id": "fixed-reticle",
+              "name": "Fixed reticle intensity rheostat",
+              "type": "knob",
+              "match": [
+                "PNT-770"
+              ],
+              "text": "A brightness knob for the fixed marks of the sight, mainly the radar reference.",
+              "context": "It is one of the three reticle knobs under the sight that are used when the selector is on MAN.",
+              "src": "m1",
+              "page": "131"
+            },
+            {
+              "id": "moving-reticle",
+              "name": "Moving and target reticles intensity rheostat",
+              "type": "knob",
+              "match": [
+                "PNT-771"
+              ],
+              "text": "A brightness knob for the marks that move, mainly the square around a locked target.",
+              "context": "It is the second of the three reticle knobs under the sight.",
+              "src": "m1",
+              "page": "131"
+            },
+            {
+              "id": "attitude-reticle",
+              "name": "Attitude reticle intensity rheostat",
+              "type": "knob",
+              "match": [
+                "PNT-772"
+              ],
+              "text": "A brightness knob for the attitude marks of the sight, mainly the artificial horizon line.",
+              "context": "It is the third of the three reticle knobs under the sight.",
+              "src": "m1",
+              "page": "131"
+            },
+            {
+              "id": "sight-test",
+              "name": "Sight system test button",
+              "type": "button",
+              "match": [
+                "PNT-773"
+              ],
+              "text": "Pressing this button runs a test of the sight and its marks.",
+              "context": "The pilot uses it on the ground to see that the sight and its marks work.",
+              "src": "m1",
+              "page": "131"
+            },
+            {
+              "id": "gravity-drop",
+              "name": "Manual gravity drop selection thumbwheel",
+              "type": "wheel",
+              "match": [
+                "PNT-769",
+                "item:main-instrument-panel:8"
+              ],
+              "text": "A small wheel that sets how far below the line of flight the bomb aiming circle sits. A window next to it shows the angle in milliradians (thousandths of a radian).",
+              "context": "It is used for dropping unguided bombs and for ground shooting, where the sight needs to aim lower than the flight path.",
+              "src": "m1",
+              "page": "100"
+            },
+            {
+              "id": "camera",
+              "name": "Sight camera",
+              "type": "other",
+              "match": [
+                "item:main-instrument-panel:13"
+              ],
+              "text": "A film camera that records what the sight shows and the result of the shooting. It starts when the gun trigger is pulled to its first stop or the launch button is pressed.",
+              "context": "The manual says the camera is not implemented in this simulation; its controls are only drawn.",
+              "src": "m1",
+              "page": "131"
+            }
+          ]
+        },
+        {
+          "id": "radar-scope",
+          "name": "Radar indicator scope",
+          "src": "m1",
+          "page": "108",
+          "text": "The round-cornered screen that shows what the radar finds, with the buttons and knobs below it.",
+          "context": "The radar is the CYRANO IV. The pilot sets it up with the selector on the armament panel and the radar control stick on the left console, then reads the result here.",
+          "controls": [
+            {
+              "id": "scope",
+              "name": "Radar indicator scope",
+              "type": "screen",
+              "match": [
+                "item:main-instrument-panel:17"
+              ],
+              "text": "The radar screen. It shows echoes of other aircraft as marks, the scan lines, a strobe line for choosing targets, distance marks, status lights and a small display for the antenna tilt.",
+              "context": "It works in air-to-air and air-to-ground modes. Search range is up to 60 nautical miles and lock-on range up to 35.",
+              "src": "m1",
+              "page": "109"
+            },
+            {
+              "id": "test",
+              "name": "Radar test button",
+              "type": "button",
+              "match": [
+                "PNT-836"
+              ],
+              "text": "Pressing this button starts a test run of the radar display.",
+              "context": "The pilot uses it on the ground to see that the radar is healthy.",
+              "src": "m1",
+              "page": "109"
+            },
+            {
+              "id": "function",
+              "name": "Radar function selection",
+              "type": "switch",
+              "match": [
+                "PNT-838"
+              ],
+              "text": "A switch under the screen that selects special radar display functions, for example HA (high altitude), IC (short pulse) and V1 (a picture of the ground).",
+              "context": "The manual says these three functions are chosen with this selector.",
+              "src": "m1",
+              "page": "109"
+            },
+            {
+              "id": "intensity",
+              "name": "Scope intensity adjustment",
+              "type": "knob",
+              "match": [
+                "PNT-837"
+              ],
+              "text": "Turning this knob makes the picture on the radar screen brighter or darker.",
+              "context": "On the screen's label it is marked LUM.",
+              "src": "m1",
+              "page": "109"
+            },
+            {
+              "id": "storage",
+              "name": "Storage adjustment",
+              "type": "knob",
+              "match": [
+                "PNT-839"
+              ],
+              "text": "This knob sets how long the picture of an echo stays on the screen before it fades (the afterglow).",
+              "context": "On the screen's label it is marked REM.",
+              "src": "m1",
+              "page": "109"
+            },
+            {
+              "id": "erase",
+              "name": "Scope erasing button",
+              "type": "button",
+              "match": [
+                "PNT-840"
+              ],
+              "text": "Pressing this button wipes the screen to black.",
+              "context": "On the screen's label it is marked EFF.",
+              "src": "m1",
+              "page": "109"
+            },
+            {
+              "id": "polaroid",
+              "name": "Polaroid screen adjustment",
+              "type": "knob",
+              "match": [
+                "PNT-841"
+              ],
+              "text": "A ring around the screen that changes the screen's background shade to suit the light in the cockpit.",
+              "context": "The manual calls it the polaroid control.",
+              "src": "m1",
+              "page": "109"
+            },
+            {
+              "id": "cover",
+              "name": "Radar cover remove toggle",
+              "type": "switch",
+              "match": [
+                "PNT-864"
+              ],
+              "text": "The game names this control 'Radar cover remove toggle'. It takes the cover off the radar or puts it back on.",
+              "context": "The manual does not describe it.",
+              "src": "m1",
+              "page": "108"
+            },
+            {
+              "id": "box",
+              "name": "Radar indicator scope control box",
+              "type": "other",
+              "match": [
+                "item:right-side-panel:15"
+              ],
+              "text": "A small box of five knobs for the radar screen's lights and markings. They are listed below this entry, one by one.",
+              "context": "The box sits on the right of the main panel.",
+              "src": "m1",
+              "page": "110"
+            },
+            {
+              "id": "box-lights",
+              "name": "Indicator lights brightness (EC)",
+              "type": "knob",
+              "match": [
+                "PNT-632"
+              ],
+              "text": "Sets the brightness of the status lights of the radar screen. The red fault lights are not affected.",
+              "context": "If a fault is present, these three red lights go out when the knob is at minimum.",
+              "src": "m1",
+              "page": "110"
+            },
+            {
+              "id": "box-strobe",
+              "name": "Strobe brightness (AL)",
+              "type": "knob",
+              "match": [
+                "PNT-633"
+              ],
+              "text": "Sets the brightness of the strobe, the bright line the pilot moves across the screen to choose a target.",
+              "context": "The strobe is moved with the radar control stick.",
+              "src": "m1",
+              "page": "110"
+            },
+            {
+              "id": "box-markers",
+              "name": "Distance markers brightness (MQ)",
+              "type": "knob",
+              "match": [
+                "PNT-634"
+              ],
+              "text": "Sets the brightness of the distance markers on the screen.",
+              "context": "The markers help to read how far away an echo is.",
+              "src": "m1",
+              "page": "110"
+            },
+            {
+              "id": "box-horizon",
+              "name": "Horizon and radial velocity marker brightness (LH)",
+              "type": "knob",
+              "match": [
+                "PNT-635"
+              ],
+              "text": "Sets the brightness of the artificial horizon line and the radial speed marker on the screen.",
+              "context": "The horizon line on the screen is moved up and down with the knob next to it.",
+              "src": "m1",
+              "page": "110"
+            },
+            {
+              "id": "box-horizon-pos",
+              "name": "Horizon symbol vertical position (CH)",
+              "type": "knob",
+              "match": [
+                "PNT-636"
+              ],
+              "text": "Moves the artificial horizon line on the screen up or down.",
+              "context": "It is used together with the brightness knob for the horizon line.",
+              "src": "m1",
+              "page": "110"
+            }
+          ]
+        },
+        {
+          "id": "flight-instruments",
+          "name": "Flight instruments",
+          "src": "m1",
+          "page": "65",
+          "text": "The round dials and indicators that tell the pilot how fast, how high and in which attitude the plane flies, with their setting knobs.",
+          "context": "Most of these instruments get their data from the air data computer or from the gyro system. Two of them (the standby altimeter and the standby horizon) are back-ups.",
+          "controls": [
+            {
+              "id": "mach",
+              "name": "Mach/airspeed indicator",
+              "type": "gauge",
+              "match": [
+                "item:main-instrument-panel:16"
+              ],
+              "text": "A dial that shows two speeds at once. The outer ring shows speed in knots (nautical miles per hour) and the inner sphere shows the Mach number, the speed compared with the speed of sound.",
+              "context": "The manual lists it among the instruments that keep working in a complete electrical failure.",
+              "src": "m1",
+              "page": "65"
+            },
+            {
+              "id": "mach-ref",
+              "name": "Reference airspeed knob",
+              "type": "knob",
+              "match": [
+                "PNT-1270"
+              ],
+              "text": "Turning this knob moves a small marker around the speed dial. The pilot sets it to a speed to remember, for example the approach speed.",
+              "context": "The marker is the reference speed index of the Mach/airspeed indicator.",
+              "src": "m1",
+              "page": "66"
+            },
+            {
+              "id": "altimeter",
+              "name": "Slaved altimeter",
+              "type": "gauge",
+              "match": [
+                "item:main-instrument-panel:21"
+              ],
+              "text": "The main height gauge. A needle turns once for every 1,000 feet, and four counter drums show the full height in feet.",
+              "context": "A striped cover hides the drums when the instrument or the air data computer fails.",
+              "src": "m1",
+              "page": "65"
+            },
+            {
+              "id": "altimeter-baro",
+              "name": "Slaved altimeter pressure setting knob",
+              "type": "knob",
+              "match": [
+                "PNT-1053"
+              ],
+              "text": "Turning this knob tells the altimeter the local air pressure so it reads the right height. A counter shows the setting in millibars.",
+              "context": "The pilot sets it before take-off to the value the tower gives. The manual says the range is 930 to 1070 millibars.",
+              "src": "m1",
+              "page": "65"
+            },
+            {
+              "id": "altimeter-sby",
+              "name": "Standby altimeter",
+              "type": "gauge",
+              "match": [
+                "item:main-instrument-panel:22"
+              ],
+              "text": "A second height gauge with three needles. It works without the air data computer.",
+              "context": "It is the back-up if the main altimeter fails. The manual lists it among the instruments that survive a total electrical failure.",
+              "src": "m1",
+              "page": "65"
+            },
+            {
+              "id": "altimeter-sby-baro",
+              "name": "Standby altimeter pressure setting knob",
+              "type": "knob",
+              "match": [
+                "PNT-1072"
+              ],
+              "text": "Turning this knob sets the local air pressure on the standby altimeter, in the same way as the main one.",
+              "context": "The pilot sets both altimeters before take-off.",
+              "src": "m1",
+              "page": "65"
+            },
+            {
+              "id": "vsi",
+              "name": "Vertical speed indicator",
+              "type": "gauge",
+              "match": [
+                "item:main-instrument-panel:25"
+              ],
+              "text": "A dial that shows how fast the plane climbs or sinks, up to 6,000 feet per minute each way.",
+              "context": "It is also a back-up instrument that keeps working in a complete electrical failure.",
+              "src": "m1",
+              "page": "65"
+            },
+            {
+              "id": "spherical",
+              "name": "Spherical indicator",
+              "type": "indicator",
+              "match": [
+                "item:main-instrument-panel:24"
+              ],
+              "text": "The main attitude instrument: a ball that shows whether the nose is up or down and the wings level, and also the heading. It has pointers for radio beams, a bank scale and a ball for sideways slip.",
+              "context": "A flag appears on it if the gyro information fails.",
+              "src": "m1",
+              "page": "90"
+            },
+            {
+              "id": "spherical-pole",
+              "name": "Spherical indicator pole setting / marker test knob",
+              "type": "switch",
+              "match": [
+                "PNT-1117"
+              ],
+              "positions": [
+                {
+                  "name": "N",
+                  "text": "Normal operation."
+                },
+                {
+                  "name": "P",
+                  "text": "Pole: the ball tilts to its south pole."
+                }
+              ],
+              "text": "Turning this knob to P tilts the ball so it rests at its south pole. Pressing it tests the marker light.",
+              "context": "The marker light flashes when the plane flies over a marker beacon on the way to a runway.",
+              "src": "m1",
+              "page": "90"
+            },
+            {
+              "id": "spherical-daynight",
+              "name": "Spherical indicator day/night selector",
+              "type": "switch",
+              "match": [
+                "PNT-1116"
+              ],
+              "positions": [
+                {
+                  "name": "J",
+                  "text": "Day brightness."
+                },
+                {
+                  "name": "N",
+                  "text": "Night brightness."
+                }
+              ],
+              "text": "Changes the brightness of the marker light between day and night.",
+              "context": "The marker light blinks when the plane passes a marker beacon.",
+              "src": "m1",
+              "page": "90"
+            },
+            {
+              "id": "standby-horizon",
+              "name": "Standby horizon",
+              "type": "gauge",
+              "match": [
+                "item:main-instrument-panel:26"
+              ],
+              "text": "A small back-up artificial horizon: a model aircraft against a line that shows nose up or down and bank.",
+              "context": "A flag on its left shows a fault. It is normally gone about 50 seconds after the horizon is powered and uncaged.",
+              "src": "m1",
+              "page": "91"
+            },
+            {
+              "id": "standby-horizon-knob",
+              "name": "Standby horizon uncage and aircraft model control",
+              "type": "knob",
+              "match": [
+                "PNT-1132"
+              ],
+              "text": "Pulling and turning this knob fully clockwise locks (cages) the horizon. Turning it back unlocks (uncages) it. Pulling it fast-levels the horizon. Turning it moves the model aircraft up or down.",
+              "context": "The pilot uncages it during start-up and adjusts the model aircraft during taxiing.",
+              "src": "m1",
+              "page": "90"
+            },
+            {
+              "id": "standby-horizon-switch",
+              "name": "Standby horizon switch",
+              "type": "switch",
+              "match": [
+                "PNT-474",
+                "item:right-side-panel-detail:3"
+              ],
+              "text": "Switches the power of the standby horizon on and off.",
+              "context": "The start-up list switches it on during the after-start checks.",
+              "src": "m1",
+              "page": "145"
+            },
+            {
+              "id": "compass",
+              "name": "Standby magnetic compass",
+              "type": "other",
+              "match": [
+                "item:main-instrument-panel:3"
+              ],
+              "text": "An old-fashioned magnetic compass that shows the heading without any electricity.",
+              "context": "It keeps working in a complete electrical failure.",
+              "src": "m1",
+              "page": "66"
+            },
+            {
+              "id": "incidence",
+              "name": "Incidence indicator (angle of attack)",
+              "type": "indicator",
+              "match": [
+                "item:main-instrument-panel:5"
+              ],
+              "text": "A strip that shows the angle of attack, how steeply the wing meets the air, from 0 to 22 degrees. Coloured lights on the side show blue, green, yellow and red zones.",
+              "context": "Green is the zone for landing approach; yellow and red mean the wing is close to its limit. A horn sounds at a high angle.",
+              "src": "m1",
+              "page": "65"
+            },
+            {
+              "id": "incidence-light",
+              "name": "Incidence indicator lighting rheostat",
+              "type": "knob",
+              "match": [
+                "PNT-201"
+              ],
+              "text": "Turning this knob changes the brightness of the angle-of-attack lights.",
+              "context": "It sets the coloured lights independently of the other instrument lights.",
+              "src": "m1",
+              "page": "66"
+            },
+            {
+              "id": "accelerometer",
+              "name": "Accelerometer (G-meter)",
+              "type": "gauge",
+              "match": [
+                "item:main-instrument-panel:9"
+              ],
+              "text": "A dial that shows how strongly the pilot is pressed into the seat in turns. It also keeps the highest and the lowest values reached.",
+              "context": "It keeps working in a complete electrical failure.",
+              "src": "m1",
+              "page": "66"
+            },
+            {
+              "id": "accelerometer-reset",
+              "name": "Accelerometer reset button and rheostat",
+              "type": "button",
+              "match": [
+                "PNT-1288"
+              ],
+              "text": "Pressing this button clears the highest and lowest values the G-meter remembers. Turning the knob changes the instrument's lighting.",
+              "context": "The pilot resets the memory before a flight.",
+              "src": "m1",
+              "page": "66"
+            }
+          ]
+        },
+        {
+          "id": "idn-controls",
+          "name": "Navigation indicator (IDN) controls, F1CE",
+          "src": "m1",
+          "page": "87",
+          "text": "The navigation indicator shows the direction and distance to a radio beacon or to the radar's antenna. These are its controls.",
+          "context": "The main part of the indicator is explained in the 'Navigation indicator' entry. The F1EE and F1M use a different version of this instrument.",
+          "controls": [
+            {
+              "id": "ind",
+              "name": "Navigation indicator (IDN)",
+              "type": "indicator",
+              "match": [
+                "item:main-instrument-panel:27"
+              ],
+              "text": "A round dial with a compass rose, a wide needle and a narrow needle. The wide needle points to a TACAN beacon or an extra point; the narrow needle shows the radar antenna direction or a VOR beacon.",
+              "context": "It also shows the distance to the beacon in a counter and the heading that the autopilot is set to.",
+              "src": "m1",
+              "page": "87"
+            },
+            {
+              "id": "mode",
+              "name": "IDN mode selector switch",
+              "type": "switch",
+              "match": [
+                "PNT-1204"
+              ],
+              "text": "This switch picks the mode of the indicator: TT, TE or VT, or off. It chooses which sources the needles follow, among radar, TACAN and VOR.",
+              "context": "The pilot sets it to TT or VT to see a TACAN beacon, or to VT for a VOR beacon.",
+              "src": "m1",
+              "page": "90"
+            },
+            {
+              "id": "vector",
+              "name": "Normal/Additional vector selector switch",
+              "type": "switch2",
+              "match": [
+                "PNT-1205"
+              ],
+              "positions": [
+                {
+                  "name": "NORMAL",
+                  "text": "The needle and counter refer to the TACAN beacon."
+                },
+                {
+                  "name": "VECT. ADD.",
+                  "text": "They refer to the extra point set with the bearing/distance knob."
+                }
+              ],
+              "text": "Chooses whether the wide needle and the distance counter point to the TACAN beacon itself or to an extra point that the pilot has set relative to the beacon.",
+              "context": "The extra point is called the additional vector.",
+              "src": "m1",
+              "page": "90"
+            },
+            {
+              "id": "target",
+              "name": "Additional target selector switch",
+              "type": "switch",
+              "match": [
+                "PNT-1206"
+              ],
+              "text": "Chooses whether the next entry for the extra point is its bearing or its distance. It can be turned clockwise or counterclockwise.",
+              "context": "It is used together with the bearing/distance knob.",
+              "src": "m1",
+              "page": "91"
+            },
+            {
+              "id": "knob",
+              "name": "Bearing/Distance selector knob",
+              "type": "knob",
+              "match": [
+                "PNT-1207"
+              ],
+              "text": "Dials in the extra point: a direction in degrees or a distance in nautical miles from the beacon, depending on the other switch.",
+              "context": "The values appear in the two windows of the indicator.",
+              "src": "m1",
+              "page": "91"
+            },
+            {
+              "id": "test",
+              "name": "IDN test button",
+              "type": "button",
+              "match": [
+                "PNT-1208"
+              ],
+              "text": "Pressing this button makes the wide needle jump to 45 degrees and the distance counter show 250 nautical miles, to prove that the indicator works.",
+              "context": "The pilot uses it as a quick check of the indicator.",
+              "src": "m1",
+              "page": "90"
+            }
+          ]
+        },
+        {
+          "id": "fuel",
+          "name": "Fuel gauges and fuel switches",
+          "src": "m1",
+          "page": "29",
+          "text": "The gauges and switches that show how much fuel is left and how it flows between the tanks.",
+          "context": "The plane has nine internal tanks. All of them feed the two feeder tanks, and the feeders feed the engine.",
+          "controls": [
+            {
+              "id": "gauge",
+              "name": "Dual fuel gauge",
+              "type": "gauge",
+              "match": [
+                "item:main-instrument-panel:32"
+              ],
+              "text": "A gauge with two needles, one for each side of the plane, that show the fuel left in litres. It shows either the feeder tanks or the whole fuselage, depending on the selector next to it.",
+              "context": "The feeder tanks are the small tanks that directly supply the engine.",
+              "src": "m1",
+              "page": "30"
+            },
+            {
+              "id": "selector",
+              "name": "Feeder tank / fuselage selector switch",
+              "type": "switch2",
+              "match": [
+                "PNT-1144"
+              ],
+              "positions": [
+                {
+                  "name": "F",
+                  "text": "The gauge shows the fuel of the whole fuselage."
+                },
+                {
+                  "name": "FT",
+                  "text": "The gauge shows the fuel of the feeder tanks."
+                }
+              ],
+              "text": "Chooses what the fuel gauge shows: the fuel in the feeder tanks, or the fuel in the whole fuselage.",
+              "context": "The marking F is for the fuselage and N, from the French word 'nourrices', for the feeder tanks.",
+              "src": "m1",
+              "page": "29"
+            },
+            {
+              "id": "remaining",
+              "name": "Fuel remaining indicator",
+              "type": "display",
+              "match": [
+                "item:main-instrument-panel:33"
+              ],
+              "text": "A counter with four digits that shows the fuel still on board. It counts down as fuel is used.",
+              "context": "The pilot sets it to the real amount after each refuelling with the reset thumbwheel. It makes a clicking sound that can be muted in the DCS options.",
+              "src": "m1",
+              "page": "30"
+            },
+            {
+              "id": "reset",
+              "name": "Fuel quantity reset thumbwheel",
+              "type": "wheel",
+              "match": [
+                "PNT-1150"
+              ],
+              "text": "A small wheel that sets the fuel remaining counter back to the real fuel amount after refuelling.",
+              "context": "A DCS option can reset the counters automatically when the plane is rearmed and refuelled.",
+              "src": "m1",
+              "page": "29"
+            },
+            {
+              "id": "transfer-indicator",
+              "name": "Fuel transfer indicator",
+              "type": "indicator",
+              "match": [
+                "item:main-instrument-panel:35"
+              ],
+              "text": "A picture of the plane's tanks with lights. A light comes on when the tank it stands for is empty.",
+              "context": "It lets the pilot watch the tanks emptying in their order.",
+              "src": "m1",
+              "page": "30"
+            },
+            {
+              "id": "transfer-test",
+              "name": "Fuel transfer indicator test button",
+              "type": "button",
+              "match": [
+                "PNT-1166"
+              ],
+              "text": "Pressing this button lights the lights of the fuel transfer indicator, to check that they work.",
+              "context": "It is the test button for the fuel transfer indicator.",
+              "src": "m1",
+              "page": "31"
+            },
+            {
+              "id": "gauge-test",
+              "name": "Fuel gauge test button",
+              "type": "button",
+              "match": [
+                "PNT-1145"
+              ],
+              "text": "Pressing this button tests the fuel gauge.",
+              "context": "The manual does not explain the test further; the game names it 'Fuel gauge test button'.",
+              "src": "m1",
+              "page": "31"
+            },
+            {
+              "id": "crossfeed",
+              "name": "Crossfeed switch",
+              "type": "switch2",
+              "match": [
+                "PNT-1151",
+                "item:main-instrument-panel:34"
+              ],
+              "positions": [
+                {
+                  "name": "OFF",
+                  "text": "No fuel moves between the feeder tanks."
+                },
+                {
+                  "name": "ON",
+                  "text": "Fuel may move between the feeder tanks."
+                }
+              ],
+              "text": "Lets fuel pass between the two feeder tanks to even out the fuel if one side has more than the other.",
+              "context": "It is normally off. The cabin checks of the manual list it as OFF.",
+              "src": "m1",
+              "page": "29"
+            },
+            {
+              "id": "emergency-transfer",
+              "name": "Emergency transfer switch",
+              "type": "switch2",
+              "match": [
+                "PNT-1152"
+              ],
+              "positions": [
+                {
+                  "name": "OFF",
+                  "text": "Normal transfer."
+                },
+                {
+                  "name": "ON",
+                  "text": "Emergency transfer by gravity is on."
+                }
+              ],
+              "text": "Starts an emergency transfer, using gravity, of fuel from the rear side tanks to the feeder tanks.",
+              "context": "It is normally off and used only if the normal transfer fails.",
+              "src": "m1",
+              "page": "29"
+            }
+          ]
+        },
+        {
+          "id": "engine-instruments",
+          "name": "Engine instruments",
+          "src": "m1",
+          "page": "36",
+          "text": "The dials that show how hard the engine works and how its air intake is set.",
+          "context": "The pilot watches them during engine start and while changing power.",
+          "controls": [
+            {
+              "id": "rpm",
+              "name": "RPM indicator",
+              "type": "indicator",
+              "match": [
+                "item:main-instrument-panel:20"
+              ],
+              "text": "A dial with two needles that shows how fast the engine turns. The short needle counts thousands and the long needle counts hundreds of turns per minute.",
+              "context": "In idle the engine turns at 2,900 rpm and at full power at 8,400. It keeps working in a complete electrical failure.",
+              "src": "m1",
+              "page": "36"
+            },
+            {
+              "id": "jpt",
+              "name": "JPT indicator (jet pipe temperature)",
+              "type": "indicator",
+              "match": [
+                "item:main-instrument-panel:23"
+              ],
+              "text": "A dial that shows how hot the gas is in the engine's exhaust pipe, in degrees Celsius.",
+              "context": "The pilot watches it during engine start to avoid a hot start.",
+              "src": "m1",
+              "page": "36"
+            },
+            {
+              "id": "shock-cone",
+              "name": "Shock-cone position indicator",
+              "type": "indicator",
+              "match": [
+                "item:main-instrument-panel:15"
+              ],
+              "text": "A dial that shows how far the shock cones are pushed out, as a function of the Mach number. The cones are cones in the air intakes that guide the air at high speed.",
+              "context": "They normally move by themselves and move further out as the plane flies faster.",
+              "src": "m1",
+              "page": "36"
+            }
+          ]
+        },
+        {
+          "id": "jettison",
+          "name": "Jettison panel",
+          "src": "m1",
+          "page": "100",
+          "text": "The buttons that let the pilot drop the external loads (tanks, bombs, rockets) or fire the wingtip missiles unarmed, in an emergency.",
+          "context": "Dropping the loads makes the plane lighter and faster. The buttons are guarded so they are not pressed by accident.",
+          "controls": [
+            {
+              "id": "emergency-guard",
+              "name": "Emergency jettison button guard",
+              "type": "guard",
+              "match": [
+                "PNT-966"
+              ],
+              "text": "A hinged cover over the emergency jettison button. The pilot lifts the cover first, so the switch cannot be moved by accident, and closes it again afterwards.",
+              "context": "The cover has its own clickable part in DCS. It belongs to the emergency jettison button; the real cockpit has a guard here as well.",
+              "src": "m1",
+              "page": "102"
+            },
+            {
+              "id": "emergency",
+              "name": "Emergency jettison button",
+              "type": "button",
+              "match": [
+                "PNT-967",
+                "item:main-instrument-panel:29"
+              ],
+              "text": "Pressing this button drops all the loads under the wings and the fuselage at once.",
+              "context": "It is for emergencies only. The wingtip missiles are not dropped by it; they have their own button.",
+              "src": "m1",
+              "page": "100"
+            },
+            {
+              "id": "selector",
+              "name": "Jettisoning selector switch",
+              "type": "switch3",
+              "match": [
+                "PNT-970",
+                "item:main-instrument-panel:30"
+              ],
+              "positions": [
+                {
+                  "name": "FUS",
+                  "text": "The store under the fuselage is selected."
+                },
+                {
+                  "name": "WING 1",
+                  "text": "The stores of the first wing are selected."
+                },
+                {
+                  "name": "WING 2",
+                  "text": "The stores of the second wing are selected."
+                }
+              ],
+              "text": "Chooses which stores the selective jettison button drops: the fuselage, or one of the two wings.",
+              "context": "The game names its positions FUS, WING 1 and WING 2; the manual calls them FUS, VOIL 1 and VOIL 2.",
+              "src": "m1",
+              "page": "100"
+            },
+            {
+              "id": "selective-guard",
+              "name": "Selective jettison button guard",
+              "type": "guard",
+              "match": [
+                "PNT-968"
+              ],
+              "text": "A hinged cover over the selective jettison button. The pilot lifts the cover first, so the switch cannot be moved by accident, and closes it again afterwards.",
+              "context": "The cover has its own clickable part in DCS. It belongs to the selective jettison button; the real cockpit has a guard here as well.",
+              "src": "m1",
+              "page": "102"
+            },
+            {
+              "id": "selective",
+              "name": "Selective jettison button",
+              "type": "button",
+              "match": [
+                "PNT-969",
+                "item:main-instrument-panel:31"
+              ],
+              "text": "Pressing this button drops only the stores that the jettisoning selector has chosen.",
+              "context": "It lets the pilot get rid of one load instead of all of them.",
+              "src": "m1",
+              "page": "100"
+            },
+            {
+              "id": "matra-guard",
+              "name": "MATRA 550 / Sidewinder jettison button guard",
+              "type": "guard",
+              "match": [
+                "PNT-962"
+              ],
+              "text": "A hinged cover over the outer missile emergency launch button. The pilot lifts the cover first, so the switch cannot be moved by accident, and closes it again afterwards.",
+              "context": "The cover has its own clickable part in DCS. It belongs to the outer missile emergency launch button; the real cockpit has a guard here as well.",
+              "src": "m1",
+              "page": "102"
+            },
+            {
+              "id": "matra",
+              "name": "MATRA 550 or Sidewinder jettison button",
+              "type": "button",
+              "match": [
+                "PNT-963",
+                "item:main-instrument-panel:19"
+              ],
+              "text": "Pressing this button starts the motors of the two missiles on the wingtips and releases them without arming them. They are launched, not dropped.",
+              "context": "The wingtip missiles are not part of the normal jettison. The manual calls this the outer missile emergency launch button.",
+              "src": "m1",
+              "page": "100"
+            }
+          ]
+        },
+        {
+          "id": "radar-detector",
+          "name": "Radar detector indicator",
+          "src": "m1",
+          "page": "107",
+          "text": "A small display that warns the pilot when an enemy radar is looking at the plane.",
+          "context": "It is the BF radar detector (an RWR, a radar warning receiver). It gives a light and sound warning from every direction and shows what kind of radar it is.",
+          "controls": [
+            {
+              "id": "ind",
+              "name": "Radar detector indicator",
+              "type": "indicator",
+              "match": [
+                "item:main-instrument-panel:28"
+              ],
+              "text": "A display with red arrows for the direction of the threat and red lights for its kind: a radar aimed at the plane, a radar that scans while tracking, or a continuous-wave radar such as a missile guidance radar on the ground.",
+              "context": "It has a test switch and a test button, and a knob that sets the brightness of its lights.",
+              "src": "m1",
+              "page": "107"
+            },
+            {
+              "id": "jammer-light",
+              "name": "Jammer detection light",
+              "type": "light",
+              "match": [
+                "PNT-194"
+              ],
+              "text": "A light that comes on when the radar detector senses a jammer, a transmitter that blinds radars.",
+              "context": "It sits below the standby compass. It is also a press-to-test light.",
+              "src": "m1",
+              "page": "101"
+            },
+            {
+              "id": "r-light",
+              "name": "(C + M or SW) R light",
+              "type": "light",
+              "match": [
+                "PNT-197",
+                "item:main-instrument-panel:7"
+              ],
+              "text": "A green light that shows the dogfight mode is on, in which the guns and the wingtip missiles are armed together. The catalog also names the jammer detection light here.",
+              "context": "The mode is switched on by the button on the throttle and off by a switch on the left wall.",
+              "src": "m1",
+              "page": "101"
+            }
+          ]
+        },
+        {
+          "id": "master-warning",
+          "name": "Master failure warning light",
+          "src": "m1",
+          "page": "138",
+          "text": "A big red-and-amber light that shouts that something on the failure warning panel needs attention.",
+          "context": "Red lights on the failure warning panel need immediate action; amber lights allow a delayed action.",
+          "controls": [
+            {
+              "id": "light",
+              "name": "Master failure warning light",
+              "type": "light",
+              "match": [
+                "PNT-920",
+                "item:main-instrument-panel:10"
+              ],
+              "text": "A double red and amber light. It lights when any lamp of the failure warning panel comes on. Pressing it switches it off and silences the horn; it is then ready for the next failure.",
+              "context": "The lamp on the failure warning panel itself stays lit for as long as the fault is present.",
+              "src": "m1",
+              "page": "138"
+            },
+            {
+              "id": "config",
+              "name": "Configuration indicator",
+              "type": "indicator",
+              "match": [
+                "item:main-instrument-panel:12"
+              ],
+              "text": "A small panel with lights that show the position of the flaps and slats, the landing gear and the gear doors.",
+              "context": "The test button beside it lights all its lamps.",
+              "src": "m1",
+              "page": "40"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "front-right",
+      "where": "front-right",
+      "name": "Main panel: right side",
+      "text": "The right part of the main panel: the electrical switches with the failure warning panel and the gyro controls.",
+      "panels": [
+        {
+          "id": "electrical",
+          "name": "Electrical controls",
+          "src": "m1",
+          "page": "22",
+          "text": "The switches that connect the battery and the two generators (alternators) to the plane's electrical system.",
+          "context": "The pilot sets them first when climbing into the cockpit. Their lights are on the failure warning panel.",
+          "controls": [
+            {
+              "id": "battery",
+              "name": "Battery switch",
+              "type": "switch2",
+              "match": [
+                "PNT-113",
+                "item:right-side-panel:6"
+              ],
+              "positions": [
+                {
+                  "name": "OFF",
+                  "text": "The battery is disconnected."
+                },
+                {
+                  "name": "ON",
+                  "text": "The battery is connected to the electrical system."
+                }
+              ],
+              "text": "This switch connects the battery to the plane's electricity. The battery gives power for the first checks and for starting the engine.",
+              "context": "The cabin checks of the manual start with the battery switch ON. A red BATT light shows it is disconnected.",
+              "src": "m1",
+              "page": "23"
+            },
+            {
+              "id": "alt1",
+              "name": "Alternator 1 switch",
+              "type": "switch2",
+              "match": [
+                "PNT-114",
+                "item:right-side-panel:7"
+              ],
+              "positions": [
+                {
+                  "name": "OFF",
+                  "text": "Alternator 1 is disconnected."
+                },
+                {
+                  "name": "ON",
+                  "text": "Alternator 1 is connected."
+                }
+              ],
+              "text": "This switch connects the first alternator, one of the plane's two electricity generators driven by the engine, to its part of the electrical system.",
+              "context": "The alternators cut in by themselves at about 2,800 engine rpm after the start. An amber ALT 1 light shows when it does not deliver.",
+              "src": "m1",
+              "page": "23"
+            },
+            {
+              "id": "alt2",
+              "name": "Alternator 2 switch",
+              "type": "switch2",
+              "match": [
+                "PNT-115",
+                "item:right-side-panel:8"
+              ],
+              "positions": [
+                {
+                  "name": "OFF",
+                  "text": "Alternator 2 is disconnected."
+                },
+                {
+                  "name": "ON",
+                  "text": "Alternator 2 is connected."
+                }
+              ],
+              "text": "This switch connects the second alternator to its part of the electrical system.",
+              "context": "If one alternator fails, the other takes over both systems. An amber ALT 2 light shows when this one does not deliver.",
+              "src": "m1",
+              "page": "23"
+            },
+            {
+              "id": "tr-reset",
+              "name": "TR reset button",
+              "type": "button",
+              "match": [
+                "PNT-116",
+                "item:right-side-panel:5"
+              ],
+              "text": "Pressing this button resets the two transformer-rectifiers, the boxes that turn the alternating current into direct current.",
+              "context": "It is used when the amber TR1 or TR2 light shows that one of them is not delivering.",
+              "src": "m1",
+              "page": "23"
+            },
+            {
+              "id": "inverter",
+              "name": "Inverter selector switch",
+              "type": "switch3",
+              "match": [
+                "PNT-117",
+                "item:right-side-panel:9"
+              ],
+              "positions": [
+                {
+                  "name": "INV",
+                  "text": "The inverter supplies the emergency system."
+                },
+                {
+                  "name": "AUTO",
+                  "text": "The system switches to the inverter by itself when it is needed."
+                },
+                {
+                  "name": "RESET",
+                  "text": "Spring-loaded: it springs back to AUTO and resets the supply to the normal source."
+                }
+              ],
+              "text": "This switch decides how the emergency alternating-current system is supplied, by the alternators or by the battery through an inverter, a box that makes alternating current from battery power.",
+              "context": "The manual sets it to RESET after the engine start, so the emergency system goes back to the normal supply.",
+              "src": "m1",
+              "page": "23"
+            },
+            {
+              "id": "cannons-hot",
+              "name": "Cannons too hot light",
+              "type": "light",
+              "match": [
+                "PNT-108",
+                "item:right-side-panel:4"
+              ],
+              "text": "A light that comes on when the cannons are too hot. Pressing it tests the light.",
+              "context": "It sits on the right front panel.",
+              "src": "m1",
+              "page": "101"
+            },
+            {
+              "id": "fwp",
+              "name": "Failure warning panel",
+              "type": "indicator",
+              "match": [
+                "item:right-side-panel:10"
+              ],
+              "text": "A board of labelled lights on the right of the main panel. Each light stands for one fault: battery, alternators, fuel pumps, oil, hydraulics, flight controls, oxygen, air conditioning, autopilot and more.",
+              "context": "Red lights need immediate action and amber lights allow a delayed one. The master failure warning light and the horn tell the pilot to look at this panel.",
+              "src": "m1",
+              "page": "138"
+            }
+          ]
+        },
+        {
+          "id": "heading-reference",
+          "name": "Heading and vertical reference system",
+          "src": "m1",
+          "page": "89",
+          "text": "The controls of the gyros that tell the plane which way is up and which way it points.",
+          "context": "These gyros feed the spherical indicator, the sight, the autopilot and the navigation indicator. There is an emergency gyro as well.",
+          "controls": [
+            {
+              "id": "main",
+              "name": "Heading and vertical reference system control switch",
+              "type": "selector",
+              "match": [
+                "PNT-537",
+                "item:right-side-panel:17"
+              ],
+              "positions": [
+                {
+                  "name": "A",
+                  "text": "The system is off."
+                },
+                {
+                  "name": "GM",
+                  "text": "Gyromagnetic: the gyro is corrected by the magnetic field."
+                },
+                {
+                  "name": "CM",
+                  "text": "Purely magnetic heading."
+                },
+                {
+                  "name": "SEC",
+                  "text": "The heading comes from the emergency gyro."
+                }
+              ],
+              "text": "The main selector of the gyro system. It picks how the heading is found: by gyro corrected by the Earth's magnetic field, by magnetic field alone, or from the emergency gyro. It can also turn the system off.",
+              "context": "The start-up list sets it to GM. If it was off for more than 15 seconds, the gyro has to level itself again after it is turned on, which takes about a minute.",
+              "src": "m1",
+              "page": "89"
+            },
+            {
+              "id": "emergency",
+              "name": "Emergency gyromagnetic compass switch",
+              "type": "switch2",
+              "match": [
+                "PNT-538",
+                "item:right-side-panel:18"
+              ],
+              "positions": [
+                {
+                  "name": "OFF",
+                  "text": "The emergency gyro is off."
+                },
+                {
+                  "name": "ON",
+                  "text": "The emergency gyro is on."
+                }
+              ],
+              "text": "Turns the emergency gyro on and off. The emergency gyro only gives the heading.",
+              "context": "The start-up list turns it on. It is a back-up if the main heading system fails.",
+              "src": "m1",
+              "page": "89"
+            },
+            {
+              "id": "erection",
+              "name": "Heading control unit erection button",
+              "type": "button",
+              "match": [
+                "PNT-540",
+                "item:right-side-panel:19"
+              ],
+              "text": "Pressing this button quickly lines up the emergency gyro with the magnetic field.",
+              "context": "A needle on the unit shows how far the emergency gyro is off.",
+              "src": "m1",
+              "page": "90"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

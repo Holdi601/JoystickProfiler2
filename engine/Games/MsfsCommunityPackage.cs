@@ -77,6 +77,25 @@ namespace JoyPro.Engine.Games
             return false;
         }
 
+        // The EFS "encrypted" mark off JoyPro's package folder, its folders and files (best effort).
+        public static void ClearEncryption(string packageFolder)
+        {
+            if (string.IsNullOrWhiteSpace(packageFolder) || !Directory.Exists(packageFolder))
+                return;
+            try
+            {
+                SafeFileIo.ClearEncrypted(packageFolder);
+                foreach (string entry in Directory.GetFileSystemEntries(packageFolder, "*", SearchOption.AllDirectories))
+                    SafeFileIo.ClearEncrypted(entry);
+            }
+            catch (IOException)
+            {
+            }
+            catch (UnauthorizedAccessException)
+            {
+            }
+        }
+
         public static List<string> PresetFiles(string packageFolder)
         {
             string root = Path.Combine(packageFolder, "InputProfiles", "Categories");

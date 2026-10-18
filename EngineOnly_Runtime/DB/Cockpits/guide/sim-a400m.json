@@ -1,0 +1,445 @@
+{
+  "format": "joypro-cockpit-guide",
+  "version": 1,
+  "id": "sim-a400m",
+  "title": "Airbus A400M Atlas (flight deck)",
+  "variants": [
+    "a400m-atlas"
+  ],
+  "games": [
+    "MSFS2024"
+  ],
+  "sets": [],
+  "intro": "The A400M Atlas is a big military transport aircraft with four propeller engines. Its flight deck borrows from the Airbus airliners: a side-stick instead of a wheel, an Airbus-style autopilot panel and large screens. It also has a head-up display (a glass screen in front of the pilot's eyes) for each pilot, and four throttle levers on the pedestal between the seats.",
+  "sources": [
+    {
+      "id": "c1",
+      "title": "JoyPro cockpit catalog",
+      "kind": "reference"
+    },
+    {
+      "id": "m1",
+      "title": "Airbus A400M Atlas (Wikipedia)",
+      "url": "https://en.wikipedia.org/wiki/Airbus_A400M_Atlas"
+    },
+    {
+      "id": "m2",
+      "title": "FlightGlobal: Family ties (A400M flight deck)",
+      "url": "https://flightglobal.com/family-ties/57585.article"
+    },
+    {
+      "id": "m3",
+      "title": "New aircraft in Microsoft Flight Simulator 2024",
+      "url": "https://jonbeckett.substack.com/p/new-aircraft-in-microsoft-flight"
+    }
+  ],
+  "areas": [
+    {
+      "id": "glareshield",
+      "where": "glareshield",
+      "name": "Glareshield: FCU and head-up displays",
+      "text": "The strip under the windscreen with the autopilot panel in the middle and the head-up displays in front of each pilot.",
+      "panels": [
+        {
+          "id": "glareshield",
+          "name": "Glareshield: FCU and HUDs",
+          "db": "glareshield",
+          "src": "m2",
+          "text": "The glareshield of the A400M holds the Airbus-style flight control unit (the autopilot panel), the display controls, the warning lights and the two head-up displays.",
+          "context": "The pilots set the autopilot here and look through the glass screens at the real world with flight data drawn over it.",
+          "controls": [
+            {
+              "id": "hud",
+              "name": "Head-up display (each pilot)",
+              "type": "display",
+              "match": [
+                "item:glareshield:1"
+              ],
+              "text": "The head-up display is a clear glass screen in front of each pilot's eyes. It draws flight marks, like speed, height and the flight direction, over the view outside.",
+              "context": "The pilot can read the numbers without looking down. The marks also help during tactical approaches."
+            },
+            {
+              "id": "fcu",
+              "name": "FCU speed, heading, altitude, V/S knobs",
+              "type": "knob",
+              "match": [
+                "item:glareshield:2"
+              ],
+              "positions": [
+                {
+                  "name": "PUSH",
+                  "text": "Managed: the flight computer chooses the value along the planned route."
+                },
+                {
+                  "name": "PULL",
+                  "text": "Selected: the number the pilot dialled in is used."
+                }
+              ],
+              "text": "These knobs set the speed, the compass heading, the height and the climb or descent rate the autopilot should fly. Pushing a knob lets the flight computer decide (managed), pulling it uses the pilot's own number (selected).",
+              "context": "It is the same idea as on the Airbus airliners. The pilot tells the autopilot what to do with these knobs."
+            },
+            {
+              "id": "ap-athr",
+              "name": "AP / A/THR pushbuttons",
+              "type": "button",
+              "match": [
+                "item:glareshield:3"
+              ],
+              "text": "These buttons switch the autopilot and the autothrust on or off. The autopilot steers the aircraft, the autothrust moves the engine power.",
+              "context": "Once the aircraft is in the air, the pilot hands the work to these systems and watches."
+            },
+            {
+              "id": "efis",
+              "name": "EFIS control panels",
+              "type": "selector",
+              "match": [
+                "item:glareshield:4"
+              ],
+              "text": "Each pilot has an EFIS panel with controls for the look of the navigation screen, such as the mode and the options of the map.",
+              "context": "The pilots set the screen to show what is useful for the phase of flight."
+            },
+            {
+              "id": "master-lights",
+              "name": "MASTER WARN / CAUT lights",
+              "type": "light",
+              "match": [
+                "item:glareshield:5"
+              ],
+              "text": "The red MASTER WARN light shows a serious problem and the amber MASTER CAUT light shows something that needs attention. Pressing them stops the flashing.",
+              "context": "Details of each message are shown on the centre screens."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "front-center",
+      "where": "front-center",
+      "name": "Main panel displays",
+      "text": "Eight large screens fill the main panel. The pilots can change what each one shows.",
+      "panels": [
+        {
+          "id": "displays",
+          "name": "Main panel displays",
+          "db": "displays",
+          "src": "m2",
+          "text": "Eight large interchangeable LCD screens and the landing gear lever. Two screens in front of each pilot show flight data and the map, and two in the middle show engine and system pages.",
+          "context": "The pilots read nearly all the flight information here, and they can move pages between screens if one fails.",
+          "controls": [
+            {
+              "id": "pfd",
+              "name": "PFD (each pilot)",
+              "type": "display",
+              "match": [
+                "item:displays:1"
+              ],
+              "text": "The primary flight display shows the nose up-down attitude, speed, height and autopilot modes. It is the main instrument the pilot flies with.",
+              "context": "It replaces many round gauges with one picture."
+            },
+            {
+              "id": "nd",
+              "name": "ND (each pilot)",
+              "type": "display",
+              "match": [
+                "item:displays:2"
+              ],
+              "text": "The navigation display shows the map with the planned route, and for a military aircraft also a tactical map.",
+              "context": "It shows where the aircraft is going and what is around it."
+            },
+            {
+              "id": "centre-displays",
+              "name": "Centre displays",
+              "type": "display",
+              "match": [
+                "item:displays:3"
+              ],
+              "text": "The screens in the middle of the panel show the engine data and warnings, and pages about the aircraft systems.",
+              "context": "The pilots check the four engines and the systems here."
+            },
+            {
+              "id": "gear",
+              "name": "Landing gear lever",
+              "type": "lever",
+              "match": [
+                "item:displays:4"
+              ],
+              "positions": [
+                {
+                  "name": "UP",
+                  "text": "The landing gear is raised."
+                },
+                {
+                  "name": "DOWN",
+                  "text": "The landing gear is lowered."
+                }
+              ],
+              "text": "This lever lowers and raises the landing gear, the wheels and their legs. Moving it down puts the wheels out, up folds them away.",
+              "context": "The wheels go up after take-off and down for the landing."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "overhead",
+      "where": "overhead",
+      "name": "Overhead panel",
+      "text": "The ceiling panel above the pilots with the system switches for the engines, fuel, electricity and lights.",
+      "panels": [
+        {
+          "id": "overhead-panel",
+          "name": "Overhead panel",
+          "db": "overhead-panel",
+          "src": "m2",
+          "text": "The overhead panel has the system controls: the four engines and propellers, the fuel, the electricity and the lights.",
+          "context": "The pilots set these switches when preparing the aircraft and watch the panel lights afterwards.",
+          "controls": [
+            {
+              "id": "eng-prop",
+              "name": "Engine and propeller panels",
+              "type": "button",
+              "match": [
+                "item:overhead-panel:1"
+              ],
+              "text": "These panels control the four TP400 engines and their propellers: starting them and the related switches.",
+              "context": "The engines are started from here before taxiing."
+            },
+            {
+              "id": "fuel",
+              "name": "Fuel panel",
+              "type": "button",
+              "match": [
+                "item:overhead-panel:2"
+              ],
+              "text": "This panel controls the fuel pumps, the transfer of fuel between tanks and the air refuelling, where the aircraft takes fuel from a tanker in flight.",
+              "context": "The pilots use it to keep the tanks balanced and to prepare air refuelling."
+            },
+            {
+              "id": "elec",
+              "name": "Electrical panel",
+              "type": "button",
+              "match": [
+                "item:overhead-panel:3"
+              ],
+              "text": "This panel controls the generators and the batteries, the sources of the aircraft's electricity.",
+              "context": "The pilots switch the batteries on first and the generators once the engines run."
+            },
+            {
+              "id": "lights",
+              "name": "Lights panel",
+              "type": "switch",
+              "match": [
+                "item:overhead-panel:4"
+              ],
+              "text": "This panel controls the exterior lights, including the covert (hidden) lights and the lighting made for night vision goggles.",
+              "context": "The pilots use the covert lighting for a military flight in the dark."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "center-pedestal",
+      "where": "center-pedestal",
+      "name": "Pedestal",
+      "text": "The block between the pilots with the four throttle levers, the flaps lever, the keyboards and the radios.",
+      "panels": [
+        {
+          "id": "pedestal",
+          "name": "Pedestal: throttles, KCCUs",
+          "db": "pedestal",
+          "src": "m2",
+          "text": "The pedestal holds the four throttle levers, the flaps lever, the keyboard and cursor units and the radio panels.",
+          "context": "The pilots handle the engines and the flaps by hand here, and use the keyboards to work with the displays and the computers.",
+          "controls": [
+            {
+              "id": "throttles",
+              "name": "Throttle levers 1-4",
+              "type": "lever",
+              "match": [
+                "item:pedestal:1"
+              ],
+              "text": "The four levers set the power of the four engines. Moving them forward gives more power. On the ground they have a range for slowing the aircraft with reverse thrust.",
+              "context": "With autothrust the levers are set to a notch and the computers manage the power."
+            },
+            {
+              "id": "flaps",
+              "name": "Flaps lever",
+              "type": "lever",
+              "match": [
+                "item:pedestal:2"
+              ],
+              "text": "This lever sets the flaps, the parts of the wing that extend for more lift at low speed. Each step changes the flap position.",
+              "context": "Flaps are extended for take-off and landing and folded in for cruise."
+            },
+            {
+              "id": "kccu",
+              "name": "KCCUs",
+              "type": "keypad",
+              "match": [
+                "item:pedestal:3"
+              ],
+              "text": "These are the keyboard and cursor control units. The pilot uses them like a computer keyboard and mouse to work with the pages on the displays.",
+              "context": "They let the pilot type data in and move the cursor on the screens."
+            },
+            {
+              "id": "radio-panels",
+              "name": "Radio panels",
+              "type": "keypad",
+              "match": [
+                "item:pedestal:4"
+              ],
+              "text": "These panels tune the radios, the frequencies used to talk to air traffic control and to other aircraft.",
+              "context": "The pilot sets the frequency before talking."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "hotas",
+      "where": "hotas",
+      "name": "Stick, throttles and pedals",
+      "text": "The controls that match your joystick, throttle and pedals: the side-stick, the four throttle levers, the flaps lever, the pedals, the steering hand wheel and the gear lever.",
+      "panels": [
+        {
+          "id": "sidestick",
+          "name": "Side-stick",
+          "src": "m2",
+          "text": "The side-stick sits on the outer side console of each pilot. It carries the radio trigger and the red takeover button.",
+          "context": "On the A400M, as on the Airbus airliners, the pilot flies with a small stick at the side.",
+          "controls": [
+            {
+              "id": "stick-gimbal",
+              "name": "Side-stick",
+              "type": "axis",
+              "match": [
+                "control:stick.gimbal"
+              ],
+              "text": "The side-stick tilts forward and back for pitch and left and right for roll. It returns to the centre when released. The flight control computers turn its moves into control surface moves.",
+              "context": "The computers watch the aircraft and keep it inside safe limits."
+            },
+            {
+              "id": "stick-trigger",
+              "name": "Radio communication trigger",
+              "type": "trigger",
+              "match": [
+                "control:stick.trigger"
+              ],
+              "text": "Pressing this trigger on the front of the grip with the index finger lets the pilot talk on the selected radio. It is held while speaking.",
+              "context": "It is the push-to-talk button."
+            },
+            {
+              "id": "stick-takeover",
+              "name": "Takeover / autopilot disconnect pushbutton",
+              "type": "button",
+              "match": [
+                "control:stick.button.takeover"
+              ],
+              "text": "This red thumb button on the side of the grip disconnects the autopilot when pressed. It also takes priority over the other pilot's stick.",
+              "context": "The pilot uses it to take over from the autopilot at once."
+            }
+          ]
+        },
+        {
+          "id": "throttle",
+          "name": "Throttle levers and flaps",
+          "src": "m2",
+          "text": "The four throttle levers and the flaps lever on the pedestal, as they match the controls of a throttle device.",
+          "context": "The pilot uses them with the left hand, from take-off to landing.",
+          "controls": [
+            {
+              "id": "lever-1",
+              "name": "Throttle lever 1",
+              "type": "axis",
+              "match": [
+                "control:quadrant.axis.lever.1"
+              ],
+              "text": "This is the outer left of the four levers. It sets the power of engine 1.",
+              "context": "The four levers are normally moved together."
+            },
+            {
+              "id": "lever-2",
+              "name": "Throttle lever 2",
+              "type": "axis",
+              "match": [
+                "control:quadrant.axis.lever.2"
+              ],
+              "text": "This is the inner left lever. It sets the power of engine 2.",
+              "context": "The pilot can move the levers one by one to shut an engine or adjust it."
+            },
+            {
+              "id": "lever-3",
+              "name": "Throttle lever 3",
+              "type": "axis",
+              "match": [
+                "control:quadrant.axis.lever.3"
+              ],
+              "text": "This is the inner right lever. It sets the power of engine 3.",
+              "context": "It works like the other throttle levers."
+            },
+            {
+              "id": "lever-4",
+              "name": "Throttle lever 4",
+              "type": "axis",
+              "match": [
+                "control:quadrant.axis.lever.4"
+              ],
+              "text": "This is the outer right lever. It sets the power of engine 4.",
+              "context": "It works like the other throttle levers."
+            },
+            {
+              "id": "flaps-hotas",
+              "name": "Flaps lever",
+              "type": "lever",
+              "match": [
+                "control:quadrant.lever.flaps"
+              ],
+              "text": "This lever on the right of the pedestal moves the flaps one step. Forward is one step up (less flap), aft is one step down (more flap).",
+              "context": "The flaps are changed in steps along the flight."
+            }
+          ]
+        },
+        {
+          "id": "pedals-gear",
+          "name": "Pedals, steering and landing gear",
+          "src": "m2",
+          "text": "The rudder pedals at the pilot's feet, the nosewheel steering hand wheel and the landing gear lever.",
+          "context": "The pedals and the hand wheel keep the aircraft on the runway and on the taxiway.",
+          "controls": [
+            {
+              "id": "pedals",
+              "name": "Rudder pedals",
+              "type": "axis",
+              "match": [
+                "control:pedals.axis.rudder"
+              ],
+              "text": "The pedals move the rudder left and right. The toe brakes on top brake the left and right wheels. The pedals also steer the nose wheel by a few degrees.",
+              "context": "The rudder keeps the aircraft straight. Different left and right braking helps to turn on the ground."
+            },
+            {
+              "id": "tiller",
+              "name": "Nosewheel steering tiller",
+              "type": "wheel",
+              "match": [
+                "control:panel.wheel.tiller"
+              ],
+              "text": "This hand wheel on each side console steers the nose wheel left and right on the ground.",
+              "context": "The pilot uses it for taxiing, and the pedals for the small corrections."
+            },
+            {
+              "id": "gear-hotas",
+              "name": "Landing gear lever",
+              "type": "lever",
+              "match": [
+                "control:panel.lever.gear"
+              ],
+              "text": "This lever on the centre instrument panel lowers the wheels when moved down and raises them when moved up.",
+              "context": "The pilot raises the wheels after take-off and lowers them before landing."
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

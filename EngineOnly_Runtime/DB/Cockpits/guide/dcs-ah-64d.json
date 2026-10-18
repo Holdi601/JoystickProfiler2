@@ -1,0 +1,1462 @@
+{
+  "format": "joypro-cockpit-guide",
+  "version": 1,
+  "id": "dcs-ah-64d",
+  "title": "AH-64D Apache Block II (DCS)",
+  "variants": [
+    "ah-64d-pilot",
+    "ah-64d-cpg"
+  ],
+  "games": [
+    "DCS"
+  ],
+  "sets": [
+    "DCS/AH-64D_BLK_II"
+  ],
+  "sources": [
+    {
+      "id": "m1",
+      "title": "DCS AH-64D Flight Manual (EN)",
+      "file": "Mods/aircraft/AH-64D/Doc/DCS AH-64D Flight Manual EN.pdf"
+    }
+  ],
+  "intro": "The AH-64D Apache is an attack helicopter with two crew members in tandem: the pilot sits in the rear seat and the copilot/gunner (CPG) in the front seat. Each seat has its own cyclic stick, collective lever and many panels, and both seats look through a helmet display. The pilot flies; the CPG mainly works the sensors and weapons, using the TEDAC screen and its two handgrips. The seats share many identical panels, such as the multi-purpose screens, the fire panel and the radio volume panel.",
+  "areas": [
+    {
+      "id": "plt-instrument-panel",
+      "where": "front-center",
+      "name": "Pilot instrument panel",
+      "seat": 1,
+      "text": "The panel right in front of the pilot in the rear seat. It has the two big MPD screens, the small EUFD text screen, the warning buttons, the fire panel and a few backup dials.",
+      "panels": [
+        {
+          "id": "plt-master-warning-caution",
+          "name": "Master Warning / Master Caution buttons (pilot seat)",
+          "db": "master-warning-caution",
+          "src": "m1",
+          "page": "106",
+          "text": "These are two big lighted buttons that call for attention. The warning button is for danger, the caution button is for a less urgent problem.",
+          "context": "The words that say what is wrong appear on the EUFD, the small text screen. The pilot reads them there and presses the button to acknowledge.",
+          "controls": [
+            {
+              "id": "mstr-warn",
+              "name": "MSTR WARN button (master warning)",
+              "type": "button",
+              "match": [
+                "pnt_304",
+                "item:master-warning-caution:1"
+              ],
+              "text": "This button flashes when something dangerous happens, for example an engine fire. Pressing it puts out its light and stops the spoken warning in the headset.",
+              "context": "The EUFD shows which warning it is. The manual says the voice message stops in both seats, while only the light of the pilot goes out. This is the pilot seat copy; the CPG in the front seat has an own one.",
+              "src": "m1",
+              "page": "106"
+            },
+            {
+              "id": "mstr-caut",
+              "name": "MSTR CAUT button (master caution)",
+              "type": "button",
+              "match": [
+                "pnt_305",
+                "item:master-warning-caution:2"
+              ],
+              "text": "This button lights up when something is wrong but not immediately dangerous, for example a failure in the electrical system. Pressing it puts out the light and stops the warning tone.",
+              "context": "The EUFD shows the caution message. The tone stops in the seat where the button is pressed, so the pilot acknowledges it on the own button. This is the pilot seat copy; the CPG in the front seat has an own one.",
+              "src": "m1",
+              "page": "106"
+            }
+          ]
+        },
+        {
+          "id": "plt-eufd",
+          "name": "Enhanced Upfront Display, EUFD (pilot seat)",
+          "db": "mpd-eufd",
+          "src": "m1",
+          "page": "155",
+          "text": "The EUFD is a small text screen with a few buttons beside it. It lists warnings, shows the radios with their frequencies and shows fuel, transponder code and the clock.",
+          "context": "It keeps working on battery power alone, unlike the big screens. The pilot looks at it for warnings and to see which radio is selected for talking.",
+          "controls": [
+            {
+              "id": "eufd-display",
+              "name": "EUFD text display",
+              "type": "display",
+              "match": [
+                "item:mpd-eufd:2"
+              ],
+              "text": "This is the lit text screen itself. It has three columns for messages (warnings, cautions and advisories), a block that shows the five radios, and a line with fuel, transponder and time.",
+              "context": "A warning message comes with the flashing MSTR WARN button and a voice, a caution with the MSTR CAUT button and a tone. This one belongs to the pilot.",
+              "src": "m1",
+              "page": "155"
+            },
+            {
+              "id": "wca-rocker",
+              "name": "WCA rocker (scroll messages)",
+              "type": "rocker",
+              "match": [
+                "pnt_271-1",
+                "pnt_271-2"
+              ],
+              "text": "This rocker scrolls the message columns up or down. The pilot needs it when a column holds eight or more messages, more than the screen can show at once.",
+              "context": "WCA stands for warnings, cautions and advisories. A double arrow on the screen tells that more messages wait out of sight. Pressing the top half scrolls one way, the bottom half the other.",
+              "src": "m1",
+              "page": "155"
+            },
+            {
+              "id": "idm-rocker",
+              "name": "IDM rocker (datalink radio select)",
+              "type": "rocker",
+              "match": [
+                "pnt_270-1",
+                "pnt_270-2"
+              ],
+              "text": "This rocker picks which radio sends data messages. A datalink is the way aircraft share positions and targets by radio instead of by voice.",
+              "context": "Small marks next to each radio on the screen show the choice. The game names this rocker IDM. The manual calls it the datalink transmit select rocker.",
+              "src": "m1",
+              "page": "156"
+            },
+            {
+              "id": "rts-rocker",
+              "name": "RTS rocker (radio transmit select)",
+              "type": "rocker",
+              "match": [
+                "pnt_272-1",
+                "pnt_272-2"
+              ],
+              "text": "This rocker picks the radio that the pilot talks on. Each press moves the choice up or down the list of radios.",
+              "context": "At the end of the list the choice wraps around to the other end. The cyclic stick also has a switch that does the same job, so the hands can stay on the controls.",
+              "src": "m1",
+              "page": "156"
+            },
+            {
+              "id": "eufd-brt",
+              "name": "Brightness knob (EUFD)",
+              "type": "knob",
+              "match": [
+                "pnt_273"
+              ],
+              "text": "Turning this knob makes the EUFD screen brighter or darker.",
+              "context": "The pilot sets it so the text can be read in bright daylight and is not too bright at night.",
+              "src": "m1",
+              "page": "156"
+            },
+            {
+              "id": "preset-button",
+              "name": "PRESET button",
+              "type": "button",
+              "match": [
+                "pnt_274"
+              ],
+              "text": "This button shows or hides a list of stored radio frequencies, like the station buttons of a car radio.",
+              "context": "The crew picks a stored frequency from the list and then presses the ENTER button next to it to tune the radio.",
+              "src": "m1",
+              "page": "156"
+            },
+            {
+              "id": "eufd-enter",
+              "name": "ENTER button (EUFD)",
+              "type": "button",
+              "match": [
+                "pnt_275"
+              ],
+              "text": "This button tunes the radio to the frequency that is highlighted in the preset list.",
+              "context": "It is used right after the PRESET button has opened the list.",
+              "src": "m1",
+              "page": "156"
+            },
+            {
+              "id": "stopwatch-button",
+              "name": "Stopwatch button",
+              "type": "button",
+              "match": [
+                "pnt_276"
+              ],
+              "text": "Press this button to start or stop the stopwatch shown above the clock. Holding it for two seconds resets the stopwatch.",
+              "context": "The stopwatch of each seat is independent, so the CPG in the front seat is not disturbed when the pilot uses it.",
+              "src": "m1",
+              "page": "157"
+            },
+            {
+              "id": "swap-button",
+              "name": "SWAP button",
+              "type": "button",
+              "match": [
+                "pnt_277"
+              ],
+              "text": "This button swaps the active and the standby setting of the selected radio, so the radio changes to the frequency that was waiting.",
+              "context": "The standby frequency is entered first, then the SWAP button switches to it. The manual says it also swaps the encryption and network settings.",
+              "src": "m1",
+              "page": "157"
+            }
+          ]
+        },
+        {
+          "id": "plt-mpd-left",
+          "name": "Left multi-purpose display, MPD (pilot seat)",
+          "db": "mpd-eufd",
+          "src": "m1",
+          "page": "164",
+          "text": "The MPD is a screen with buttons all around its edge. Each button picks the word printed next to it on the screen, so the same button does different things on different pages. This is the screen on the left in front of the pilot.",
+          "context": "The crew uses the MPD pages for the map, the weapons, the radar, the radios and the engine. The two MPDs of a seat can show different pages at once.",
+          "controls": [
+            {
+              "id": "mpd-left-screen",
+              "name": "Left MPD screen",
+              "type": "display",
+              "match": [
+                "item:mpd-eufd:1"
+              ],
+              "text": "This is the left screen itself. It shows the page chosen with the buttons around it, such as the flight page, the weapon page or the map-like situation page.",
+              "context": "Because the screens are shared between flying, weapons and navigation, the pilot keeps changing the pages during a mission.",
+              "src": "m1",
+              "page": "164"
+            },
+            {
+              "id": "mpd-left-vab-t",
+              "name": "VAB T1-T6 (top row buttons, left MPD)",
+              "type": "button",
+              "match": [
+                "pnt_20",
+                "pnt_21",
+                "pnt_22",
+                "pnt_23",
+                "pnt_24",
+                "pnt_25"
+              ],
+              "text": "These six buttons sit along the top edge of the left screen. Each one picks the option printed right below it on the screen.",
+              "context": "VAB means variable action button: what it does depends on the page. T1 is at the far left and T6 at the far right.",
+              "count": 6,
+              "src": "m1",
+              "page": "165"
+            },
+            {
+              "id": "mpd-left-vab-l",
+              "name": "VAB L1-L6 (left column buttons, left MPD)",
+              "type": "button",
+              "match": [
+                "pnt_12",
+                "pnt_13",
+                "pnt_14",
+                "pnt_15",
+                "pnt_16",
+                "pnt_17"
+              ],
+              "text": "These six buttons run down the left edge of the left screen. Each one picks the option printed next to it.",
+              "context": "L1 is at the top and L6 at the bottom. A label with the sign > next to it means that the button asks for typed data on the keyboard unit.",
+              "count": 6,
+              "src": "m1",
+              "page": "165"
+            },
+            {
+              "id": "mpd-left-vab-r",
+              "name": "VAB R1-R6 (right column buttons, left MPD)",
+              "type": "button",
+              "match": [
+                "pnt_28",
+                "pnt_29",
+                "pnt_30",
+                "pnt_31",
+                "pnt_32",
+                "pnt_33"
+              ],
+              "text": "These six buttons run down the right edge of the left screen. Each one picks the option printed next to it.",
+              "context": "R1 is at the top and R6 at the bottom. What they do changes with every page.",
+              "count": 6,
+              "src": "m1",
+              "page": "165"
+            },
+            {
+              "id": "mpd-left-vab-b",
+              "name": "VAB B2-B6 (bottom row buttons, left MPD)",
+              "type": "button",
+              "match": [
+                "pnt_37",
+                "pnt_38",
+                "pnt_39",
+                "pnt_40",
+                "pnt_41"
+              ],
+              "text": "These five buttons sit along the bottom edge of the left screen. Each one picks the option printed above it.",
+              "context": "Together with the M button at the far left they form the bottom row. Their labels belong to the page that is shown.",
+              "count": 5,
+              "src": "m1",
+              "page": "165"
+            },
+            {
+              "id": "mpd-left-m",
+              "name": "M button (B1, menu, left MPD)",
+              "type": "button",
+              "match": [
+                "pnt_42"
+              ],
+              "text": "This is the first button of the bottom row, marked M. It opens the menu page, a list of all pages the screen can show.",
+              "context": "Pressing it again on the menu page opens the DMS page. The page that is shown is named in the text above this button.",
+              "src": "m1",
+              "page": "165"
+            },
+            {
+              "id": "mpd-left-fcr",
+              "name": "FCR page button (left MPD)",
+              "type": "button",
+              "match": [
+                "pnt_11"
+              ],
+              "text": "This fixed button switches the screen to the FCR page, the picture of the fire control radar. That is a radar on the mast above the main rotor that finds targets.",
+              "context": "It is one of six page buttons that always do the same thing, whatever page is showing.",
+              "src": "m1",
+              "page": "165"
+            },
+            {
+              "id": "mpd-left-wpn",
+              "name": "WPN page button (left MPD)",
+              "type": "button",
+              "match": [
+                "pnt_10"
+              ],
+              "text": "This fixed button switches the screen to the weapon page. It shows a top-down view of the weapons on board together with the state of the sights, sensors and decoys.",
+              "context": "The page changes to show more settings for a weapon as soon as that weapon is chosen. It is one of six fixed page buttons.",
+              "src": "m1",
+              "page": "165"
+            },
+            {
+              "id": "mpd-left-tsd",
+              "name": "TSD page button (left MPD)",
+              "type": "button",
+              "match": [
+                "pnt_43"
+              ],
+              "text": "This fixed button switches the screen to the TSD page, the tactical situation display. It is a top-down moving map of the area around the helicopter, with the planned route and information from the sensors.",
+              "context": "It is the main page for navigating. Waypoints (points on the planned route) are also handled from there.",
+              "src": "m1",
+              "page": "165"
+            },
+            {
+              "id": "mpd-left-vid",
+              "name": "VID page button (left MPD)",
+              "type": "button",
+              "match": [
+                "pnt_34"
+              ],
+              "text": "This fixed button switches the screen to the video page, where the pictures and symbols of the helicopter's cameras and sensors can be viewed.",
+              "context": "A video source can also be set as a background picture under other pages. It is one of six fixed page buttons.",
+              "src": "m1",
+              "page": "165"
+            },
+            {
+              "id": "mpd-left-com",
+              "name": "COM page button (left MPD)",
+              "type": "button",
+              "match": [
+                "pnt_35"
+              ],
+              "text": "This fixed button switches the screen to the communications page, an overview of the radios, their stored frequencies, the datalink and the transponder.",
+              "context": "The crew goes there to set up radios. Frequencies can also be tuned with the small EUFD screen.",
+              "src": "m1",
+              "page": "165"
+            },
+            {
+              "id": "mpd-left-ac",
+              "name": "A/C page button (left MPD)",
+              "type": "button",
+              "match": [
+                "pnt_36"
+              ],
+              "text": "This fixed button shows the flight page when the helicopter is in the air. On the ground with its weight on the wheels it shows the engine page instead.",
+              "context": "A/C stands for aircraft. It gives the crew the numbers about the helicopter itself.",
+              "src": "m1",
+              "page": "165"
+            },
+            {
+              "id": "mpd-left-ast",
+              "name": "Asterisk (*) button (left MPD)",
+              "type": "button",
+              "match": [
+                "pnt_27"
+              ],
+              "text": "This button has an asterisk printed on it. In DCS it has no function.",
+              "context": "The manual lists it as not implemented.",
+              "src": "m1",
+              "page": "165"
+            },
+            {
+              "id": "mpd-left-mode",
+              "name": "Mode knob DAY / NIGHT / MONO (left MPD)",
+              "type": "switch3",
+              "match": [
+                "pnt_26"
+              ],
+              "text": "This knob sets how bright and in which colours the screen looks. It has a day setting, a night setting and a one-colour setting.",
+              "context": "The pilot turns it to NIGHT or MONO when flying in the dark, so the screen does not blind the eyes or the night vision goggles.",
+              "positions": [
+                {
+                  "name": "DAY",
+                  "text": "Bright daytime picture."
+                },
+                {
+                  "name": "NIGHT",
+                  "text": "Dimmer picture for flying in the dark."
+                },
+                {
+                  "name": "MONO",
+                  "text": "Night brightness with a single-colour picture that suits night vision goggles."
+                }
+              ],
+              "src": "m1",
+              "page": "165"
+            },
+            {
+              "id": "mpd-left-brt",
+              "name": "BRT knob (left MPD)",
+              "type": "knob",
+              "match": [
+                "pnt_18"
+              ],
+              "text": "Turning this knob makes the left screen brighter or darker, within the range set by the mode knob.",
+              "context": "It is the fine adjustment after DAY, NIGHT or MONO has been chosen.",
+              "src": "m1",
+              "page": "165"
+            },
+            {
+              "id": "mpd-left-vid-knob",
+              "name": "VID knob (video brightness, left MPD)",
+              "type": "knob",
+              "match": [
+                "pnt_19"
+              ],
+              "text": "Turning this knob changes the brightness of the picture behind the symbols, for example the camera picture or the map, without changing the symbols.",
+              "context": "It helps when the background is too bright and drowns out the writing, or too dark to see.",
+              "src": "m1",
+              "page": "165"
+            }
+          ]
+        },
+        {
+          "id": "plt-mpd-right",
+          "name": "Right multi-purpose display, MPD (pilot seat)",
+          "db": "mpd-eufd",
+          "src": "m1",
+          "page": "164",
+          "text": "The MPD is a screen with buttons all around its edge. Each button picks the word printed next to it on the screen, so the same button does different things on different pages. This is the screen on the right in front of the pilot.",
+          "context": "The crew uses the MPD pages for the map, the weapons, the radar, the radios and the engine. The two MPDs of a seat can show different pages at once.",
+          "controls": [
+            {
+              "id": "mpd-right-screen",
+              "name": "Right MPD screen",
+              "type": "display",
+              "match": [
+                "item:mpd-eufd:3"
+              ],
+              "text": "This is the right screen itself. It shows the page chosen with the buttons around it, such as the flight page, the weapon page or the map-like situation page.",
+              "context": "Because the screens are shared between flying, weapons and navigation, the pilot keeps changing the pages during a mission. It belongs to the pilot's right MPD.",
+              "src": "m1",
+              "page": "164"
+            },
+            {
+              "id": "mpd-right-vab-t",
+              "name": "VAB T1-T6 (top row buttons, right MPD)",
+              "type": "button",
+              "match": [
+                "pnt_54",
+                "pnt_55",
+                "pnt_56",
+                "pnt_57",
+                "pnt_58",
+                "pnt_59"
+              ],
+              "text": "These six buttons sit along the top edge of the right screen. Each one picks the option printed right below it on the screen.",
+              "context": "VAB means variable action button: what it does depends on the page. T1 is at the far left and T6 at the far right. It belongs to the pilot's right MPD.",
+              "count": 6,
+              "src": "m1",
+              "page": "165"
+            },
+            {
+              "id": "mpd-right-vab-l",
+              "name": "VAB L1-L6 (left column buttons, right MPD)",
+              "type": "button",
+              "match": [
+                "pnt_46",
+                "pnt_47",
+                "pnt_48",
+                "pnt_49",
+                "pnt_50",
+                "pnt_51"
+              ],
+              "text": "These six buttons run down the left edge of the right screen. Each one picks the option printed next to it.",
+              "context": "L1 is at the top and L6 at the bottom. A label with the sign > next to it means that the button asks for typed data on the keyboard unit. It belongs to the pilot's right MPD.",
+              "count": 6,
+              "src": "m1",
+              "page": "165"
+            },
+            {
+              "id": "mpd-right-vab-r",
+              "name": "VAB R1-R6 (right column buttons, right MPD)",
+              "type": "button",
+              "match": [
+                "pnt_62",
+                "pnt_63",
+                "pnt_64",
+                "pnt_65",
+                "pnt_66",
+                "pnt_67"
+              ],
+              "text": "These six buttons run down the right edge of the right screen. Each one picks the option printed next to it.",
+              "context": "R1 is at the top and R6 at the bottom. What they do changes with every page. It belongs to the pilot's right MPD.",
+              "count": 6,
+              "src": "m1",
+              "page": "165"
+            },
+            {
+              "id": "mpd-right-vab-b",
+              "name": "VAB B2-B6 (bottom row buttons, right MPD)",
+              "type": "button",
+              "match": [
+                "pnt_71",
+                "pnt_72",
+                "pnt_73",
+                "pnt_74",
+                "pnt_75"
+              ],
+              "text": "These five buttons sit along the bottom edge of the right screen. Each one picks the option printed above it.",
+              "context": "Together with the M button at the far left they form the bottom row. Their labels belong to the page that is shown. It belongs to the pilot's right MPD.",
+              "count": 5,
+              "src": "m1",
+              "page": "165"
+            },
+            {
+              "id": "mpd-right-m",
+              "name": "M button (B1, menu, right MPD)",
+              "type": "button",
+              "match": [
+                "pnt_76"
+              ],
+              "text": "This is the first button of the bottom row, marked M. It opens the menu page, a list of all pages the screen can show. This entry is for the pilot's right MPD.",
+              "context": "Pressing it again on the menu page opens the DMS page. The page that is shown is named in the text above this button. It belongs to the pilot's right MPD.",
+              "src": "m1",
+              "page": "165"
+            },
+            {
+              "id": "mpd-right-fcr",
+              "name": "FCR page button (right MPD)",
+              "type": "button",
+              "match": [
+                "pnt_45"
+              ],
+              "text": "This fixed button switches the screen to the FCR page, the picture of the fire control radar. That is a radar on the mast above the main rotor that finds targets. This entry is for the pilot's right MPD.",
+              "context": "It is one of six page buttons that always do the same thing, whatever page is showing. It belongs to the pilot's right MPD.",
+              "src": "m1",
+              "page": "165"
+            },
+            {
+              "id": "mpd-right-wpn",
+              "name": "WPN page button (right MPD)",
+              "type": "button",
+              "match": [
+                "pnt_44"
+              ],
+              "text": "This fixed button switches the screen to the weapon page. It shows a top-down view of the weapons on board together with the state of the sights, sensors and decoys. This entry is for the pilot's right MPD.",
+              "context": "The page changes to show more settings for a weapon as soon as that weapon is chosen. It is one of six fixed page buttons. It belongs to the pilot's right MPD.",
+              "src": "m1",
+              "page": "165"
+            },
+            {
+              "id": "mpd-right-tsd",
+              "name": "TSD page button (right MPD)",
+              "type": "button",
+              "match": [
+                "pnt_77"
+              ],
+              "text": "This fixed button switches the screen to the TSD page, the tactical situation display. It is a top-down moving map of the area around the helicopter, with the planned route and information from the sensors. This entry is for the pilot's right MPD.",
+              "context": "It is the main page for navigating. Waypoints (points on the planned route) are also handled from there. It belongs to the pilot's right MPD.",
+              "src": "m1",
+              "page": "165"
+            },
+            {
+              "id": "mpd-right-vid",
+              "name": "VID page button (right MPD)",
+              "type": "button",
+              "match": [
+                "pnt_68"
+              ],
+              "text": "This fixed button switches the screen to the video page, where the pictures and symbols of the helicopter's cameras and sensors can be viewed. This entry is for the pilot's right MPD.",
+              "context": "A video source can also be set as a background picture under other pages. It is one of six fixed page buttons. It belongs to the pilot's right MPD.",
+              "src": "m1",
+              "page": "165"
+            },
+            {
+              "id": "mpd-right-com",
+              "name": "COM page button (right MPD)",
+              "type": "button",
+              "match": [
+                "pnt_69"
+              ],
+              "text": "This fixed button switches the screen to the communications page, an overview of the radios, their stored frequencies, the datalink and the transponder. This entry is for the pilot's right MPD.",
+              "context": "The crew goes there to set up radios. Frequencies can also be tuned with the small EUFD screen. It belongs to the pilot's right MPD.",
+              "src": "m1",
+              "page": "165"
+            },
+            {
+              "id": "mpd-right-ac",
+              "name": "A/C page button (right MPD)",
+              "type": "button",
+              "match": [
+                "pnt_70"
+              ],
+              "text": "This fixed button shows the flight page when the helicopter is in the air. On the ground with its weight on the wheels it shows the engine page instead. This entry is for the pilot's right MPD.",
+              "context": "A/C stands for aircraft. It gives the crew the numbers about the helicopter itself. It belongs to the pilot's right MPD.",
+              "src": "m1",
+              "page": "165"
+            },
+            {
+              "id": "mpd-right-ast",
+              "name": "Asterisk (*) button (right MPD)",
+              "type": "button",
+              "match": [
+                "pnt_61"
+              ],
+              "text": "This button has an asterisk printed on it. In DCS it has no function. This entry is for the pilot's right MPD.",
+              "context": "The manual lists it as not implemented.",
+              "src": "m1",
+              "page": "165"
+            },
+            {
+              "id": "mpd-right-mode",
+              "name": "Mode knob DAY / NIGHT / MONO (right MPD)",
+              "type": "switch3",
+              "match": [
+                "pnt_60"
+              ],
+              "text": "This knob sets how bright and in which colours the screen looks. It has a day setting, a night setting and a one-colour setting. This entry is for the pilot's right MPD.",
+              "context": "The pilot turns it to NIGHT or MONO when flying in the dark, so the screen does not blind the eyes or the night vision goggles. It belongs to the pilot's right MPD.",
+              "positions": [
+                {
+                  "name": "DAY",
+                  "text": "Bright daytime picture."
+                },
+                {
+                  "name": "NIGHT",
+                  "text": "Dimmer picture for flying in the dark."
+                },
+                {
+                  "name": "MONO",
+                  "text": "Night brightness with a single-colour picture that suits night vision goggles."
+                }
+              ],
+              "src": "m1",
+              "page": "165"
+            },
+            {
+              "id": "mpd-right-brt",
+              "name": "BRT knob (right MPD)",
+              "type": "knob",
+              "match": [
+                "pnt_52"
+              ],
+              "text": "Turning this knob makes the right screen brighter or darker, within the range set by the mode knob.",
+              "context": "It is the fine adjustment after DAY, NIGHT or MONO has been chosen. It belongs to the pilot's right MPD.",
+              "src": "m1",
+              "page": "165"
+            },
+            {
+              "id": "mpd-right-vid-knob",
+              "name": "VID knob (video brightness, right MPD)",
+              "type": "knob",
+              "match": [
+                "pnt_53"
+              ],
+              "text": "Turning this knob changes the brightness of the picture behind the symbols, for example the camera picture or the map, without changing the symbols. This entry is for the pilot's right MPD.",
+              "context": "It helps when the background is too bright and drowns out the writing, or too dark to see. It belongs to the pilot's right MPD.",
+              "src": "m1",
+              "page": "165"
+            }
+          ]
+        },
+        {
+          "id": "plt-fire-panel",
+          "name": "Fire detection / extinguishing panel (pilot seat)",
+          "db": "fire-detection-extinguishing",
+          "src": "m1",
+          "page": "106",
+          "text": "This panel deals with fire. Three covered buttons light up when a fire is found in the left engine, the right engine or the small extra engine in the back. Two more buttons put out the fire.",
+          "context": "Both seats have a copy and they work together: a button pressed in one seat is armed for both, but only the seat that pressed it can switch it off again. The pilot uses it only in an emergency.",
+          "controls": [
+            {
+              "id": "eng1-fire",
+              "name": "ENG 1 FIRE button (with cover)",
+              "type": "button",
+              "match": [
+                "pnt_295",
+                "pnt_296",
+                "item:fire-detection-extinguishing:1"
+              ],
+              "text": "This covered button belongs to the left engine (engine 1). A yellow FIRE light comes on when a fire is detected there. After lifting the cover, the pilot presses it to cut the engine's fuel and hot air and to arm the fire bottles.",
+              "context": "A green RDY light then shows that it is armed. The engine runs on until the fuel left in its lines is used up. The next step is to press PRI or RES.",
+              "src": "m1",
+              "page": "106"
+            },
+            {
+              "id": "apu-fire",
+              "name": "APU FIRE button (with cover)",
+              "type": "button",
+              "match": [
+                "pnt_297",
+                "pnt_298",
+                "item:fire-detection-extinguishing:2"
+              ],
+              "text": "This covered button belongs to the APU, a small extra engine in the back that makes electricity and air before the main engines run. Its FIRE light comes on on a fire; pressing the button cuts the APU fuel and arms the fire bottles.",
+              "context": "The green RDY light shows it is armed. The pilot lifts the cover first, so it cannot be pressed by accident.",
+              "src": "m1",
+              "page": "106"
+            },
+            {
+              "id": "eng2-fire",
+              "name": "ENG 2 FIRE button (with cover)",
+              "type": "button",
+              "match": [
+                "pnt_299",
+                "pnt_300",
+                "item:fire-detection-extinguishing:3"
+              ],
+              "text": "This covered button belongs to the right engine (engine 2). Its yellow FIRE light shows a fire there. Pressing the button, after lifting the cover, cuts the fuel and hot air to that engine and arms the fire bottles.",
+              "context": "It is the same arrangement as for engine 1. Only the seat that armed it can disarm it again.",
+              "src": "m1",
+              "page": "107"
+            },
+            {
+              "id": "pri-button",
+              "name": "PRI button (primary fire bottle)",
+              "type": "button",
+              "match": [
+                "pnt_301",
+                "item:fire-detection-extinguishing:4"
+              ],
+              "text": "This button empties the primary fire extinguisher bottle into the engine or the APU that was armed with its FIRE button.",
+              "context": "A DISCH light shows that the bottle is armed and ready. After the discharge the light goes out.",
+              "src": "m1",
+              "page": "107"
+            },
+            {
+              "id": "res-button",
+              "name": "RES button (reserve fire bottle)",
+              "type": "button",
+              "match": [
+                "pnt_303",
+                "item:fire-detection-extinguishing:6"
+              ],
+              "text": "This button empties the second, reserve fire extinguisher bottle into the armed engine or APU.",
+              "context": "It is used when the first bottle did not put the fire out.",
+              "src": "m1",
+              "page": "108"
+            },
+            {
+              "id": "fire-test",
+              "name": "TEST switch (fire detection test)",
+              "type": "switch3",
+              "match": [
+                "pnt_302",
+                "item:fire-detection-extinguishing:5"
+              ],
+              "text": "This switch tests the fire warning system. Moved to TEST 1 or TEST 2 it makes all three FIRE lights come on and the warning voices speak, which proves the detectors work.",
+              "context": "It springs back to the middle when released. TEST 2 also lights the DISCH lights of both bottles.",
+              "positions": [
+                {
+                  "name": "TEST 1",
+                  "text": "Tests fire detection circuit 1: the three FIRE lights, the MSTR WARN light and the warning voices appear."
+                },
+                {
+                  "name": "OFF",
+                  "text": "Middle position. The switch rests here."
+                },
+                {
+                  "name": "TEST 2",
+                  "text": "Tests circuit 2: the same signs as TEST 1, and the DISCH lights of the two bottles also come on."
+                }
+              ],
+              "src": "m1",
+              "page": "107"
+            }
+          ]
+        },
+        {
+          "id": "plt-armament-panel",
+          "name": "Armament panel (pilot seat)",
+          "db": "armament-panel",
+          "src": "m1",
+          "page": "108",
+          "text": "This panel holds the master arm: the main safety for the weapons. While it shows SAFE nothing can be fired, not even the laser.",
+          "context": "Both seats share the state: pressing a button in one seat changes the same button in the other seat. The pilot sets ARM only when a weapon is really to be used.",
+          "controls": [
+            {
+              "id": "a-s",
+              "name": "A/S button (ARM / SAFE)",
+              "type": "button",
+              "match": [
+                "pnt_306",
+                "item:armament-panel:1"
+              ],
+              "text": "This button switches the weapons between ARM and SAFE. Lights show the state. In ARM the weapons and the laser can be fired; in SAFE they cannot.",
+              "context": "It works in the air. On the ground it needs the GND ORIDE button to be on first.",
+              "positions": [
+                {
+                  "name": "ARM",
+                  "text": "The weapons and the laser range finder may be fired."
+                },
+                {
+                  "name": "SAFE",
+                  "text": "Firing the weapons and the laser is blocked."
+                }
+              ],
+              "src": "m1",
+              "page": "108"
+            },
+            {
+              "id": "gnd-oride",
+              "name": "GND ORIDE button (ground override)",
+              "type": "button",
+              "match": [
+                "pnt_307",
+                "item:armament-panel:2"
+              ],
+              "text": "This button lets the crew arm and test things while the helicopter stands on the ground, which is normally blocked for safety. Its ON light shows it is active.",
+              "context": "Switching it off again sets the master arm back to SAFE and removes any chosen weapon. In flight it has no effect.",
+              "positions": [
+                {
+                  "name": "ON",
+                  "text": "Arming, choosing weapons, radar transmissions and arming the chaff are allowed on the ground."
+                },
+                {
+                  "name": "OFF",
+                  "text": "The normal ground safety is back."
+                }
+              ],
+              "src": "m1",
+              "page": "108"
+            }
+          ]
+        },
+        {
+          "id": "plt-video-panel",
+          "name": "Video panel (pilot seat)",
+          "db": "video-panel",
+          "src": "m1",
+          "page": "109",
+          "text": "This panel sets how bright the picture and the symbols are in the pilot's helmet display, the small screen in front of one eye. It also tunes the infrared camera picture.",
+          "context": "The pilot flies at night mostly by looking at this helmet display, so the brightness has to be right. The infrared camera (FLIR) sees heat instead of light.",
+          "controls": [
+            {
+              "id": "ihadss-brt",
+              "name": "IHADSS BRT knob (helmet display brightness)",
+              "type": "knob",
+              "match": [
+                "pnt_278",
+                "item:video-panel:1"
+              ],
+              "text": "Turning this knob makes the picture in the helmet display brighter or darker. IHADSS is the name of the helmet display system.",
+              "context": "On the real panel the BRT and CON knobs sit one inside the other. The outer one is brightness.",
+              "src": "m1",
+              "page": "109"
+            },
+            {
+              "id": "ihadss-con",
+              "name": "IHADSS CON knob (helmet display contrast)",
+              "type": "knob",
+              "match": [
+                "pnt_279"
+              ],
+              "text": "Turning this knob changes the contrast of the helmet display picture, the difference between its light and dark parts.",
+              "context": "It is the inner knob of the pair, next to the brightness knob.",
+              "src": "m1",
+              "page": "109"
+            },
+            {
+              "id": "sym-brt",
+              "name": "SYM BRT knob (symbol brightness)",
+              "type": "knob",
+              "match": [
+                "pnt_280"
+              ],
+              "text": "This knob sets the brightness of the symbols (numbers and marks) in the helmet display, apart from the camera picture behind them.",
+              "context": "It lets the pilot keep the symbols readable without making the picture too bright.",
+              "src": "m1",
+              "page": "109"
+            },
+            {
+              "id": "acm-switch",
+              "name": "ACM switch (automatic contrast mode)",
+              "type": "switch2",
+              "match": [
+                "pnt_281",
+                "item:video-panel:3"
+              ],
+              "text": "This switch is meant to let the infrared picture set its level and gain by itself when it is on. In DCS it is not implemented.",
+              "context": "When it is off, the FLIR knob next to it is used.",
+              "positions": [
+                {
+                  "name": "ACM",
+                  "text": "Automatic setting of the infrared picture (not implemented)."
+                },
+                {
+                  "name": "OFF",
+                  "text": "The FLIR knob sets the picture by hand."
+                }
+              ],
+              "src": "m1",
+              "page": "109"
+            },
+            {
+              "id": "flir-lvl",
+              "name": "FLIR LVL knob (infrared level)",
+              "type": "knob",
+              "match": [
+                "pnt_282",
+                "item:video-panel:4"
+              ],
+              "text": "This knob sets the level of the infrared camera picture, which makes it lighter or darker overall.",
+              "context": "The picture comes from the pilot's night camera or the targeting camera. It is the outer knob of a pair.",
+              "src": "m1",
+              "page": "109"
+            },
+            {
+              "id": "flir-gain",
+              "name": "FLIR GAIN knob (infrared gain)",
+              "type": "knob",
+              "match": [
+                "pnt_283"
+              ],
+              "text": "This knob sets the gain of the infrared picture, which is how strongly small differences in heat show up.",
+              "context": "It is the inner knob of the pair, used together with the level knob.",
+              "src": "m1",
+              "page": "109"
+            }
+          ]
+        },
+        {
+          "id": "plt-check-overspeed-gen-reset",
+          "name": "Check overspeed test / generator reset panel (pilot seat)",
+          "db": "check-overspeed-gen-reset",
+          "src": "m1",
+          "page": "111",
+          "text": "This panel holds two test switches for the engine overspeed protection and a switch that restarts a generator. A generator makes electricity while the engine runs.",
+          "context": "The generator reset is for the case that the screens went dark after a power failure. The overspeed tests are not implemented in DCS.",
+          "controls": [
+            {
+              "id": "ckt-a",
+              "name": "CKT A switch (overspeed test circuit A)",
+              "type": "switch3",
+              "match": [
+                "pnt_353",
+                "item:check-overspeed-gen-reset:1"
+              ],
+              "text": "This switch is meant to test one of the two circuits that stop an engine from running too fast. In DCS it is not implemented.",
+              "context": "It springs back to the middle position when released.",
+              "positions": [
+                {
+                  "name": "ENG 1",
+                  "text": "Meant to test the circuit for engine 1; not implemented."
+                },
+                {
+                  "name": "OFF",
+                  "text": "Middle position. The switch rests here."
+                },
+                {
+                  "name": "ENG 2",
+                  "text": "Meant to test the circuit for engine 2; not implemented."
+                }
+              ],
+              "src": "m1",
+              "page": "111"
+            },
+            {
+              "id": "ckt-b",
+              "name": "CKT B switch (overspeed test circuit B)",
+              "type": "switch3",
+              "match": [
+                "pnt_354",
+                "item:check-overspeed-gen-reset:2"
+              ],
+              "text": "This switch is meant to test the second circuit that stops an engine from running too fast. In DCS it is not implemented.",
+              "context": "It is the twin of the CKT A switch and springs back to the middle.",
+              "positions": [
+                {
+                  "name": "ENG 1",
+                  "text": "Meant to test circuit B for engine 1; not implemented."
+                },
+                {
+                  "name": "OFF",
+                  "text": "Middle position. The switch rests here."
+                },
+                {
+                  "name": "ENG 2",
+                  "text": "Meant to test circuit B for engine 2; not implemented."
+                }
+              ],
+              "src": "m1",
+              "page": "112"
+            },
+            {
+              "id": "gen-rst",
+              "name": "GEN RST switch (generator reset)",
+              "type": "switch3",
+              "match": [
+                "pnt_355",
+                "item:check-overspeed-gen-reset:3"
+              ],
+              "text": "This switch restarts one of the two generators after a power failure. A generator makes the helicopter's electricity while its engine runs.",
+              "context": "The manual says it is meant for the case that the MPD screens do not work after a power failure.",
+              "positions": [
+                {
+                  "name": "GEN 1",
+                  "text": "Resets generator 1."
+                },
+                {
+                  "name": "OFF",
+                  "text": "Middle position. The switch rests here."
+                },
+                {
+                  "name": "GEN 2",
+                  "text": "Resets generator 2."
+                }
+              ],
+              "src": "m1",
+              "page": "112"
+            }
+          ]
+        },
+        {
+          "id": "plt-standby-instruments",
+          "name": "Standby instruments (pilot seat)",
+          "db": "standby-instruments",
+          "src": "m1",
+          "page": "110",
+          "text": "These are old-fashioned backup dials that need no computer: a small artificial horizon, an airspeed dial, a height dial and a compass.",
+          "context": "The pilot looks at them when the main displays fail. The two knobs on them are the cage knob of the horizon and the pressure setting of the height dial.",
+          "controls": [
+            {
+              "id": "sai",
+              "name": "Standby attitude indicator (artificial horizon)",
+              "type": "gauge",
+              "match": [
+                "item:standby-instruments:1"
+              ],
+              "text": "This round dial shows whether the nose is up or down and whether the wings are level, with a white half for the sky and a black half for the ground. It also has a ball and a bar for turn and slip.",
+              "context": "It is the backup for the main displays. A yellow OFF flag shows when it is caged or has no power.",
+              "src": "m1",
+              "page": "110"
+            },
+            {
+              "id": "sai-cage",
+              "name": "PULL TO CAGE knob (standby horizon)",
+              "type": "knob",
+              "match": [
+                "pnt_619",
+                "item:standby-instruments:2"
+              ],
+              "text": "Pulling this knob out locks the horizon level, which is called caging. Turning it moves the small aircraft symbol up or down on the dial.",
+              "context": "Caging is used when the horizon has drifted after hard manoeuvres. A yellow OFF flag appears while it is caged.",
+              "src": "m1",
+              "page": "110"
+            },
+            {
+              "id": "standby-airspeed",
+              "name": "Standby airspeed indicator",
+              "type": "gauge",
+              "match": [
+                "item:standby-instruments:3"
+              ],
+              "text": "This dial shows how fast the helicopter moves through the air, from 0 to 250 knots. It works with air pressure from the right-hand pitot probe, a small tube outside.",
+              "context": "It is the backup if the main airspeed display fails.",
+              "src": "m1",
+              "page": "111"
+            },
+            {
+              "id": "standby-altimeter",
+              "name": "Standby altimeter (height dial)",
+              "type": "gauge",
+              "match": [
+                "item:standby-instruments:4"
+              ],
+              "text": "This dial shows the height above sea level, up to 20,000 feet. It measures the air pressure outside.",
+              "context": "A small window shows the local pressure setting in inches of mercury.",
+              "src": "m1",
+              "page": "111"
+            },
+            {
+              "id": "baro-knob",
+              "name": "Barometric setting knob",
+              "type": "knob",
+              "match": [
+                "pnt_477",
+                "item:standby-instruments:5"
+              ],
+              "text": "Turning this knob sets the local air pressure in the small window of the height dial, so the dial reads the right height.",
+              "context": "The pilot uses the pressure the tower or weather report gives (called QNH).",
+              "src": "m1",
+              "page": "111"
+            },
+            {
+              "id": "standby-compass",
+              "name": "Standby magnetic compass",
+              "type": "gauge",
+              "match": [
+                "item:standby-instruments:6"
+              ],
+              "text": "This is a simple compass that shows the heading by the earth's magnetism.",
+              "context": "The pilot uses it only when power or the navigation system has failed. It is not precise.",
+              "src": "m1",
+              "page": "105"
+            }
+          ]
+        },
+        {
+          "id": "plt-canopy-jettison-zeroize",
+          "name": "Canopy jettison handle, master zeroize switch and parking brake (pilot seat)",
+          "db": "canopy-jettison-zeroize",
+          "src": "m1",
+          "page": "109",
+          "text": "These are three emergency or parking handles on the instrument panel: the handle that blows off the canopy side windows, a guarded switch that erases secret data, and the parking brake handle.",
+          "context": "The canopy handle and the zeroize switch are for emergencies and are not implemented in DCS. The parking brake handle is used on every ground stop.",
+          "controls": [
+            {
+              "id": "canopy-jett",
+              "name": "Canopy jettison handle",
+              "type": "handle",
+              "match": [
+                "item:canopy-jettison-zeroize:1"
+              ],
+              "text": "Pulling this handle would blast the side panels of the canopy away, so the crew can get out fast. A safety pin locks it on the ground. In DCS it is not implemented.",
+              "context": "Either crew member could pull it, and rescue crews have a handle on the outside.",
+              "src": "m1",
+              "page": "109"
+            },
+            {
+              "id": "master-zeroize",
+              "name": "Master zeroize switch (with cover)",
+              "type": "guard",
+              "match": [
+                "pnt_804",
+                "pnt_803",
+                "item:canopy-jettison-zeroize:2"
+              ],
+              "text": "This guarded switch would erase all secret data on board, such as radio codes, if the helicopter is forced down among enemies. In DCS it is not implemented.",
+              "context": "The cover on top has to be lifted first, so it is not switched by accident.",
+              "src": "m1",
+              "page": "109"
+            },
+            {
+              "id": "park-brake",
+              "name": "PARK BRAKE handle (parking brake)",
+              "type": "handle",
+              "match": [
+                "pnt_634",
+                "item:canopy-jettison-zeroize:3"
+              ],
+              "text": "Pulling this handle out keeps the wheel brakes on, so the helicopter stays put without the pilot pressing the pedals. Pressing the brake pedals again lets it snap back in and releases the brakes.",
+              "context": "To set it, the pilot first presses the pedals, pulls the handle, then lets go of the pedals. The handle can also be pulled out without brakes on, so its position alone does not prove the brakes are on.",
+              "positions": [
+                {
+                  "name": "IN",
+                  "text": "Stowed forward: the brakes are released."
+                },
+                {
+                  "name": "OUT",
+                  "text": "Pulled out: the brakes are held on once the pedals have been pressed."
+                }
+              ],
+              "src": "m1",
+              "page": "112"
+            }
+          ]
+        },
+        {
+          "id": "plt-windshield-wiper",
+          "name": "Windshield wiper and defog panel (pilot seat)",
+          "db": "windshield-wiper-panel",
+          "src": "m1",
+          "page": "112",
+          "text": "This panel has the wiper for the windshield (the front window) and a defog button for misted canopy side windows.",
+          "context": "It is used in rain or when the windows fog up. In DCS the defog button is not implemented.",
+          "controls": [
+            {
+              "id": "defog-button",
+              "name": "DEFOG button",
+              "type": "button",
+              "match": [
+                "pnt_356",
+                "item:windshield-wiper-panel:1"
+              ],
+              "text": "This button is meant to blow warm air against the canopy side windows to clear fog. In DCS it is not implemented.",
+              "context": "The manual lists it as not implemented.",
+              "src": "m1",
+              "page": "112"
+            },
+            {
+              "id": "wiper-knob",
+              "name": "WINDSHIELD WIPER knob",
+              "type": "selector",
+              "match": [
+                "pnt_357",
+                "item:windshield-wiper-panel:2"
+              ],
+              "text": "This knob switches the windshield wiper off, to low or to high speed, or sends it back to its parking place.",
+              "context": "The pilot uses it in rain. Holding it at PARK moves the wiper to its rest position, and the knob springs back to OFF when let go.",
+              "positions": [
+                {
+                  "name": "PARK",
+                  "text": "Hold to move the wiper to its parking place; the knob springs back to OFF."
+                },
+                {
+                  "name": "OFF",
+                  "text": "The wiper stops where it is."
+                },
+                {
+                  "name": "LO",
+                  "text": "The wiper moves slowly."
+                },
+                {
+                  "name": "HI",
+                  "text": "The wiper moves fast."
+                }
+              ],
+              "src": "m1",
+              "page": "112"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "plt-keyboard-unit",
+      "where": "front-left",
+      "name": "Pilot keyboard unit",
+      "seat": 1,
+      "text": "A small keyboard with a one-line display on the pilot's left. The pilot types numbers and letters on it.",
+      "panels": [
+        {
+          "id": "plt-keyboard-unit",
+          "name": "Keyboard unit, KU (pilot seat)",
+          "db": "keyboard-unit",
+          "src": "m1",
+          "page": "113",
+          "text": "The keyboard unit is a small keyboard with a one-line text display. The pilot types numbers and letters on it, such as frequencies and map points, or uses it as a notepad.",
+          "context": "Typed data only goes into the helicopter's computers when an MPD button has asked for it and a prompt is shown on the KU display. Each seat has its own keyboard unit.",
+          "controls": [
+            {
+              "id": "ku-prompt",
+              "name": "KU display prompt",
+              "type": "display",
+              "match": [
+                "item:keyboard-unit:1"
+              ],
+              "text": "This part of the display tells what kind of data the computer waits for, for example a frequency, followed by a colon.",
+              "context": "The prompt appears after the crew presses an MPD button that carries a data entry sign.",
+              "src": "m1",
+              "page": "113"
+            },
+            {
+              "id": "ku-scratchpad",
+              "name": "KU scratchpad display",
+              "type": "display",
+              "match": [
+                "item:keyboard-unit:2"
+              ],
+              "text": "This is the line where typed characters show up. It holds 22 characters; the arrows scroll longer entries.",
+              "context": "The new characters overwrite the old ones under the blinking cursor, like typing over text.",
+              "src": "m1",
+              "page": "113"
+            },
+            {
+              "id": "ku-letters",
+              "name": "Letter keys A-Z",
+              "type": "keypad",
+              "match": [
+                "pnt_213",
+                "pnt_214",
+                "pnt_215",
+                "pnt_216",
+                "pnt_217",
+                "pnt_218",
+                "pnt_222",
+                "pnt_223",
+                "pnt_224",
+                "pnt_225",
+                "pnt_226",
+                "pnt_227",
+                "pnt_231",
+                "pnt_232",
+                "pnt_233",
+                "pnt_234",
+                "pnt_235",
+                "pnt_236",
+                "pnt_240",
+                "pnt_241",
+                "pnt_242",
+                "pnt_243",
+                "pnt_244",
+                "pnt_245",
+                "pnt_249",
+                "pnt_250"
+              ],
+              "text": "These 26 keys type the letters. The keys N, E, S and W have a box around them to find them fast when entering a map position.",
+              "context": "Letters are needed for names and for map coordinates. The pilot types them while a prompt is shown.",
+              "count": 26,
+              "src": "m1",
+              "page": "113"
+            },
+            {
+              "id": "ku-digits",
+              "name": "Digit keys 0-9",
+              "type": "keypad",
+              "match": [
+                "pnt_219",
+                "pnt_220",
+                "pnt_221",
+                "pnt_228",
+                "pnt_229",
+                "pnt_230",
+                "pnt_237",
+                "pnt_238",
+                "pnt_239",
+                "pnt_247"
+              ],
+              "text": "These ten keys type the numbers from 0 to 9.",
+              "context": "They are used for frequencies, codes and coordinates.",
+              "count": 10,
+              "src": "m1",
+              "page": "113"
+            },
+            {
+              "id": "ku-dot",
+              "name": "Decimal point key (.)",
+              "type": "keypad",
+              "match": [
+                "pnt_246"
+              ],
+              "text": "This key types the dot, the decimal point, for example in a radio frequency.",
+              "context": "It is part of the number block.",
+              "src": "m1",
+              "page": "113"
+            },
+            {
+              "id": "ku-plusminus",
+              "name": "Plus-minus key (+/-)",
+              "type": "keypad",
+              "match": [
+                "pnt_248"
+              ],
+              "text": "This key types a plus or a minus sign in front of a number.",
+              "context": "The game labels it +/- and the manual does not describe it separately.",
+              "src": "m1",
+              "page": "113"
+            },
+            {
+              "id": "ku-slash",
+              "name": "Slash key (/)",
+              "type": "keypad",
+              "match": [
+                "pnt_251"
+              ],
+              "text": "This key types a slash character in the scratchpad.",
+              "context": "The manual does not describe it separately; it is a data entry key. It is not the divide key of the arithmetic group.",
+              "src": "m1",
+              "page": "113"
+            },
+            {
+              "id": "ku-arithmetic",
+              "name": "Arithmetic keys (* divide + -)",
+              "type": "keypad",
+              "match": [
+                "pnt_254",
+                "pnt_255",
+                "pnt_256",
+                "pnt_257",
+                "item:keyboard-unit:3"
+              ],
+              "text": "These four keys let the KU work as a pocket calculator: multiply, divide, add and subtract. This only works when no data prompt is shown.",
+              "context": "Type a number, press an operator key, type a second number and press ENTER. The result appears on the scratchpad.",
+              "count": 4,
+              "src": "m1",
+              "page": "113"
+            },
+            {
+              "id": "ku-bks",
+              "name": "BKS key (backspace)",
+              "type": "keypad",
+              "match": [
+                "pnt_252",
+                "item:keyboard-unit:8"
+              ],
+              "text": "This key erases the character left of the cursor.",
+              "context": "It is used to fix a typing mistake.",
+              "src": "m1",
+              "page": "114"
+            },
+            {
+              "id": "ku-spc",
+              "name": "SPC key (space)",
+              "type": "keypad",
+              "match": [
+                "pnt_253",
+                "item:keyboard-unit:9"
+              ],
+              "text": "This key puts an empty space at the cursor.",
+              "context": "It is used for blanks in names and messages.",
+              "src": "m1",
+              "page": "114"
+            },
+            {
+              "id": "ku-clr",
+              "name": "CLR key (clear)",
+              "type": "keypad",
+              "match": [
+                "pnt_258",
+                "item:keyboard-unit:4"
+              ],
+              "text": "This key clears everything typed on the scratchpad.",
+              "context": "It does not remove the prompt, so the computer still waits for the data.",
+              "src": "m1",
+              "page": "114"
+            },
+            {
+              "id": "ku-arrows",
+              "name": "Scroll arrow keys (left and right)",
+              "type": "keypad",
+              "match": [
+                "pnt_259",
+                "pnt_260",
+                "item:keyboard-unit:5"
+              ],
+              "text": "These two keys move the cursor left or right along the scratchpad.",
+              "context": "They are used to change a character in the middle, or to scroll an entry longer than the display.",
+              "count": 2,
+              "src": "m1",
+              "page": "114"
+            },
+            {
+              "id": "ku-enter",
+              "name": "ENTER key",
+              "type": "keypad",
+              "match": [
+                "pnt_261",
+                "item:keyboard-unit:6"
+              ],
+              "text": "This key sends the typed data to the computer. If the data is not valid, the characters flash and must be corrected first.",
+              "context": "It also gives the result of a calculation.",
+              "src": "m1",
+              "page": "114"
+            },
+            {
+              "id": "ku-brt",
+              "name": "Display brightness knob (KU)",
+              "type": "knob",
+              "match": [
+                "pnt_316",
+                "item:keyboard-unit:7"
+              ],
+              "text": "Turning this knob makes the KU display brighter or darker.",
+              "context": "The crew sets it for daylight or night.",
+              "src": "m1",
+              "page": "114"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

@@ -5,10 +5,10 @@ Steam app 2445980, process `G_Rebels-Win64-Shipping`.
 
 Status: **integrated, experimental: `engine grebels`** (`engine/Games/GRebelsIntegration.cs`, `GRebelsSaveOptions.cs`):
 `paths`, `catalog`, `scan`, `import`, `export` (merge-overwrite / merge / add / clean, `--nuke-untouched-devices`,
-`--dry-run`). Started for the first time by the e2e kit on 2026-10-11 (build 26/0911.0.64; no EULA, no store, no
+`--dry-run`). Started for the first time in the in-game test on 2026-10-11 (build 26/0911.0.64; no store, no
 anti-cheat); the save layout below is from that start and from binds made in the game with vJoy.
 
-Tags: **[OBS]** seen on the dev PC · **[SRC]** the game's files · **[WEB]** public sources.
+Tags: **[OBS]** seen on a test PC · **[SRC]** the game's files · **[WEB]** public sources.
 
 ## Input in the game [OBS]
 - OPTIONS > INPUT > **DEVICES** lists every HID joystick (vendor + product line) with a dropdown **DEACTIVATED / 0 - CHANNEL
@@ -49,7 +49,7 @@ Tags: **[OBS]** seen on the dev PC · **[SRC]** the game's files · **[WEB]** pu
   column; so far only **Primary Fire** (`PRIMARYFIRE`) is confirmed. Other actions follow when their names are seen.
 - **Devices:** matched by HID path (SaveOptions' `DeviceID`) to the channel; a device without a channel is skipped
   with "switch it on in OPTIONS > INPUT > DEVICES". Hats (POV rows), dead zone and sensitivity are not written yet.
-- Catalog: `DB\GRebels\actions.tsv`, JoyPro's own table (the game's paks are compressed/encrypted and are not read).
+- Catalog: `DB\GRebels\actions.tsv`, JoyPro's own table (the game's paks are not read).
   A release ships no game DB folder, so `engine grebels refresh-db` (GUI: Build List / Update) writes the table from
   the code into the game-data folder (2026-10-12; before, a fresh install had no G-Rebels list); rows already there keep
   their entry.

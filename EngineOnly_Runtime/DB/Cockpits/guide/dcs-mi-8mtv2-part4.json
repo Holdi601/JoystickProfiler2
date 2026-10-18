@@ -1,0 +1,1150 @@
+{
+  "format": "joypro-cockpit-guide",
+  "version": 1,
+  "id": "dcs-mi-8mtv2-part4",
+  "partOf": "dcs-mi-8mtv2",
+  "areas": [
+    {
+      "id": "right-rear",
+      "where": "right-side",
+      "name": "Right rear console",
+      "text": "The panel behind the copilot with the electrical meters and the AC power switches, and the second red lighting knobs.",
+      "panels": [
+        {
+          "id": "meters",
+          "name": "DC and AC meters",
+          "db": "right-rear-console",
+          "src": "m1",
+          "page": "79",
+          "text": "The row of dials on the right rear console that show the voltage and the current of the batteries, the rectifiers and the two AC generators.",
+          "context": "The pilots read them during the preflight check and when switching on the generators. The selector switches decide what each voltmeter shows.",
+          "controls": [
+            {
+              "id": "dc-voltmeter",
+              "name": "DC voltmeter",
+              "type": "gauge",
+              "match": [
+                "item:right-rear-console:1"
+              ],
+              "text": "This dial shows the DC voltage of the source chosen with the selector.",
+              "context": "The manual says a healthy battery bus reads at least 24 volts.",
+              "src": "m1",
+              "page": "148"
+            },
+            {
+              "id": "battery-ammeters",
+              "name": "Battery 1 and 2 ammeters",
+              "type": "gauge",
+              "match": [
+                "item:right-rear-console:2",
+                "item:right-rear-console:3"
+              ],
+              "text": "These two dials show how much current flows out of or into each battery.",
+              "context": "A big flow out of a battery means it is giving a lot of power.",
+              "count": 2,
+              "src": "m1",
+              "page": "148"
+            },
+            {
+              "id": "rectifier-voltmeters",
+              "name": "Rectifier 1, 2 and 3 voltmeters",
+              "type": "gauge",
+              "match": [
+                "item:right-rear-console:4",
+                "item:right-rear-console:5",
+                "item:right-rear-console:6"
+              ],
+              "text": "These three dials show the voltage made by each rectifier.",
+              "context": "The manual says the voltage should be 27 to 29 volts.",
+              "count": 3,
+              "src": "m1",
+              "page": "148"
+            },
+            {
+              "id": "ac-voltmeter",
+              "name": "AC generator voltmeter",
+              "type": "gauge",
+              "match": [
+                "item:right-rear-console:7"
+              ],
+              "text": "This dial shows the AC voltage of the source chosen with the AC selector.",
+              "context": "The manual says the generators should make 200 to 205 volts.",
+              "src": "m1",
+              "page": "150"
+            },
+            {
+              "id": "generator-ammeters",
+              "name": "AC generator 1 and 2 ammeters",
+              "type": "gauge",
+              "match": [
+                "item:right-rear-console:8",
+                "item:right-rear-console:9"
+              ],
+              "text": "These dials show how much current each AC generator delivers.",
+              "context": "If a generator fails, its dial falls to zero.",
+              "count": 2,
+              "src": "m1",
+              "page": "150"
+            }
+          ]
+        },
+        {
+          "id": "ac-power",
+          "name": "AC power control panel",
+          "db": "right-rear-console",
+          "src": "m1",
+          "page": "149",
+          "text": "The panel for the alternating current (AC) electricity: the two generators on the main gearbox, the ground power and the inverters (which make AC from the batteries).",
+          "context": "After the engines run, the pilot switches on both generators and checks their voltage. The inverters are set to automatic.",
+          "controls": [
+            {
+              "id": "ac-voltmeter-selector",
+              "name": "AC voltmeter selector",
+              "type": "selector",
+              "match": [
+                "PTR-EEP-LVR-MODE",
+                "item:right-rear-console:10"
+              ],
+              "text": "This rotary switch picks which AC source the AC voltmeter shows: generator 1, generator 2, the ground power or the 115 volt system.",
+              "context": "The manual says to check the generator voltage here after switching them on.",
+              "src": "m1",
+              "page": "150"
+            },
+            {
+              "id": "ac-voltage-rotaries",
+              "name": "AC generator 1 and 2 voltage adjustment rheostats",
+              "type": "knob",
+              "match": [
+                "PTR-EEP-LVR-ADJV1",
+                "PTR-EEP-LVR-ADJV2",
+                "item:right-rear-console:11"
+              ],
+              "text": "These two knobs adjust the voltage of generator 1 and generator 2 a little.",
+              "context": "The manual says the voltage should be between 200 and 205 volts. The game uses them only as an adjustment.",
+              "count": 2,
+              "src": "m1",
+              "page": "149"
+            },
+            {
+              "id": "generator1",
+              "name": "Generator 1 switch",
+              "type": "switch2",
+              "match": [
+                "PTR-EEP-TMB-GEN1",
+                "item:right-rear-console:17"
+              ],
+              "positions": [
+                {
+                  "name": "ON",
+                  "text": "Generator 1 feeds the network."
+                },
+                {
+                  "name": "OFF",
+                  "text": "Generator 1 is disconnected."
+                }
+              ],
+              "text": "This switch connects generator 1, driven by the main gearbox, to the electrical system.",
+              "context": "The manual says generator 1 feeds rectifier 1, the 36 volt transformer and the rotor de-icing.",
+              "src": "m1",
+              "page": "144"
+            },
+            {
+              "id": "generator2",
+              "name": "Generator 2 switch",
+              "type": "switch2",
+              "match": [
+                "PTR-EEP-TMB-GEN2",
+                "item:right-rear-console:16"
+              ],
+              "positions": [
+                {
+                  "name": "ON",
+                  "text": "Generator 2 feeds the network."
+                },
+                {
+                  "name": "OFF",
+                  "text": "Generator 2 is disconnected."
+                }
+              ],
+              "text": "This switch connects generator 2 to the electrical system.",
+              "context": "The manual says generator 2 feeds rectifiers 2 and 3, the 115 volt transformer and the window de-icing.",
+              "src": "m1",
+              "page": "144"
+            },
+            {
+              "id": "ac-ground-power",
+              "name": "AC ground power switch",
+              "type": "switch2",
+              "match": [
+                "PTR-EEP-TMB-AER",
+                "item:right-rear-console:14"
+              ],
+              "positions": [
+                {
+                  "name": "ON",
+                  "text": "Ground AC power feeds the network."
+                },
+                {
+                  "name": "OFF",
+                  "text": "Ground AC power is disconnected."
+                }
+              ],
+              "text": "This switch connects the AC power from an outside plug-in source on the ground.",
+              "context": "In DCS the AC and DC ground power connect at the same time, according to the manual.",
+              "src": "m1",
+              "page": "247"
+            },
+            {
+              "id": "inverter-115",
+              "name": "115 V inverter switch (MANUAL / OFF / AUTO)",
+              "type": "switch3",
+              "match": [
+                "PTR-EEP-TMB-PO",
+                "item:right-rear-console:12"
+              ],
+              "positions": [
+                {
+                  "name": "MANUAL",
+                  "text": "The inverter runs."
+                },
+                {
+                  "name": "OFF",
+                  "text": "The inverter is off."
+                },
+                {
+                  "name": "AUTO",
+                  "text": "The inverter starts by itself if the generators fail."
+                }
+              ],
+              "text": "This switch controls the inverter that makes 115 volt AC from the batteries when the generators are not running.",
+              "context": "The manual says to set it to MANUAL at the start so that some gauges work, and to AUTO once the generators run.",
+              "src": "m1",
+              "page": "245"
+            },
+            {
+              "id": "inverter-36",
+              "name": "36 V inverter switch (MANUAL / OFF / AUTO)",
+              "type": "switch3",
+              "match": [
+                "PTR-EEP-TMB-PT",
+                "item:right-rear-console:13"
+              ],
+              "positions": [
+                {
+                  "name": "MANUAL",
+                  "text": "The inverter runs."
+                },
+                {
+                  "name": "OFF",
+                  "text": "The inverter is off."
+                },
+                {
+                  "name": "AUTO",
+                  "text": "The inverter starts by itself if the generators fail."
+                }
+              ],
+              "text": "This switch controls the inverter that makes 36 volt AC from the batteries.",
+              "context": "The manual says to leave it off during a battery start to save the batteries, and to set it to AUTO once the generators run.",
+              "src": "m1",
+              "page": "245"
+            },
+            {
+              "id": "ac-lamps",
+              "name": "Generator fail and external power annunciators",
+              "type": "light",
+              "match": [
+                "item:right-rear-console:15"
+              ],
+              "text": "These lamps show a failure of generator 1 or 2, that ground power is connected, and that the 115 volt inverter runs.",
+              "context": "A generator fail lamp comes on with a voice message from the warning system.",
+              "src": "m1",
+              "page": "150"
+            }
+          ]
+        },
+        {
+          "id": "centre-red-lights",
+          "name": "Central red lighting dimmers (doorway)",
+          "src": "m1",
+          "page": "205",
+          "text": "Two knobs by the cockpit doorway that set the red backlight of the middle panels: the centre console, the centre overhead console and the radio panels.",
+          "context": "The pilot sets them at night. The cockpit has three places with such knobs.",
+          "controls": [
+            {
+              "id": "centre-red-dimmers",
+              "name": "Central red lighting dimmers (group 1 and 2)",
+              "type": "knob",
+              "match": [
+                "PTR-RSPE-LVR-REDGRP003",
+                "PTR-RSPE-LVR-REDGRP004"
+              ],
+              "text": "Each knob sets the brightness of the red backlight of its group. Turned down fully, the group is off.",
+              "context": "The manual says these knobs light the central autopilot console, the centre overhead console and the AC power panel.",
+              "count": 2,
+              "src": "m1",
+              "page": "205"
+            }
+          ]
+        },
+        {
+          "id": "windows",
+          "name": "Sliding side windows (blisters)",
+          "src": "m1",
+          "page": "305",
+          "text": "Each pilot has a sliding window beside the seat, called a blister. It can be opened and closed.",
+          "context": "The pilots open them for ventilation or to look out. The manual says a visual ice detector rod sits on the left one.",
+          "controls": [
+            {
+              "id": "blisters",
+              "name": "Left and right blister lock buttons",
+              "type": "button",
+              "match": [
+                "PTR-BLISTER-LOCK-R",
+                "PTR-BLISTER-LOCK-L"
+              ],
+              "text": "These two buttons open or close the sliding window on the left or the right side.",
+              "context": "The game names them Open/Close Left Blister and Open/Close Right Blister.",
+              "count": 2,
+              "src": "m1",
+              "page": "174"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "right-aux",
+      "where": "front-right",
+      "name": "Right auxiliary panel",
+      "text": "A panel with the R-828 radio, the Yadro-1A HF radio and the flare dispenser program unit.",
+      "panels": [
+        {
+          "id": "r828",
+          "name": "R-828 VHF FM radio panel",
+          "db": "right-auxiliary-panel",
+          "src": "m1",
+          "page": "117",
+          "text": "The R-828 is a second radio with ten stored channels in the 20 to 59.975 MHz range. It can talk by voice and can also guide the homing set ARK-UD to a beacon.",
+          "context": "The manual says it cannot talk to the tower in the game, because the tower uses another type of modulation.",
+          "controls": [
+            {
+              "id": "r828-power",
+              "name": "R-828 radio power switch",
+              "type": "switch2",
+              "match": [
+                "PTR-ADDSECPLT-TMB-P828",
+                "item:right-auxiliary-panel:2"
+              ],
+              "positions": [
+                {
+                  "name": "ON",
+                  "text": "The R-828 radio has power."
+                },
+                {
+                  "name": "OFF",
+                  "text": "The R-828 radio is off."
+                }
+              ],
+              "text": "This switch turns the R-828 radio on and off.",
+              "context": "The radio needs about 3 minutes to be ready.",
+              "src": "m1",
+              "page": "118"
+            },
+            {
+              "id": "r828-mode",
+              "name": "R-828 mode switch (COMM / NAV, voice or homing)",
+              "type": "switch2",
+              "match": [
+                "PTR-ADDSECPLT-TMB-MODSEL",
+                "item:right-auxiliary-panel:3"
+              ],
+              "positions": [
+                {
+                  "name": "COMM",
+                  "text": "Voice communication."
+                },
+                {
+                  "name": "NAV",
+                  "text": "Homing with the ARK-UD set."
+                }
+              ],
+              "text": "This switch picks if the R-828 is used as a voice radio or as the antenna for the homing set ARK-UD.",
+              "context": "The manual calls the positions VOICE and HOMING. In HOMING the needle on the heading dial points to the signal.",
+              "src": "m1",
+              "page": "119"
+            },
+            {
+              "id": "r828-channel",
+              "name": "R-828 channel selector",
+              "type": "selector",
+              "match": [
+                "PTR-ADDSECPLT-LVR-CHNL",
+                "item:right-auxiliary-panel:1"
+              ],
+              "text": "This knob picks one of the ten stored channels.",
+              "context": "The manual says the TUNING lamp lights for 1 to 5 seconds while the radio tunes.",
+              "src": "m1",
+              "page": "119"
+            },
+            {
+              "id": "r828-squelch",
+              "name": "R-828 squelch switch",
+              "type": "switch2",
+              "match": [
+                "PTR-ADDSECPLT-TMB-PSH"
+              ],
+              "positions": [
+                {
+                  "name": "ON",
+                  "text": "The noise filter is on."
+                },
+                {
+                  "name": "OFF",
+                  "text": "The noise filter is off."
+                }
+              ],
+              "text": "This switch controls the noise filter of the radio that cuts the hiss.",
+              "context": "The manual says to set it OFF at the start.",
+              "src": "m1",
+              "page": "119"
+            },
+            {
+              "id": "r828-volume",
+              "name": "R-828 volume knob",
+              "type": "knob",
+              "match": [
+                "PTR-ADDSECPLT-LVR-VOL"
+              ],
+              "text": "Turning this knob makes the radio louder or quieter.",
+              "context": "The manual says to set it to maximum and regulate on the intercom box.",
+              "src": "m1",
+              "page": "119"
+            },
+            {
+              "id": "r828-agc",
+              "name": "R-828 radio tuner (AGC) button",
+              "type": "button",
+              "match": [
+                "PTR-ADDSECPLT-BTN-ASU"
+              ],
+              "text": "Pressing this button switches on the automatic gain control, which adapts the transmitter to the antenna.",
+              "context": "The manual describes this button on the R-828 control panel.",
+              "src": "m1",
+              "page": "118"
+            }
+          ]
+        },
+        {
+          "id": "yadro",
+          "name": "Yadro-1A HF radio panel",
+          "db": "right-auxiliary-panel",
+          "src": "m1",
+          "page": "114",
+          "text": "The Yadro-1A is a long-range HF radio. It can be tuned freely between 2 and 17.999 MHz and reaches 900 km or more according to the manual.",
+          "context": "The pilot sets the mode, the frequency and the volume, then waits for the TUNING lamp to go out. Its power switch is on the right triangular panel.",
+          "controls": [
+            {
+              "id": "yadro-mode",
+              "name": "Yadro-1A mode switch (OFF / OM / AM)",
+              "type": "switch3",
+              "match": [
+                "PTR-ADDSECPLT-LVR-ONOFF",
+                "item:right-auxiliary-panel:5"
+              ],
+              "positions": [
+                {
+                  "name": "OFF",
+                  "text": "The radio is off."
+                },
+                {
+                  "name": "OM",
+                  "text": "Single sideband (SSB)."
+                },
+                {
+                  "name": "AM",
+                  "text": "Amplitude modulation."
+                }
+              ],
+              "text": "This switch turns the HF radio on and picks the type of transmission: single sideband or amplitude modulation.",
+              "context": "The manual calls the positions OFF, SSB and AM; the game labels single sideband OM.",
+              "src": "m1",
+              "page": "116"
+            },
+            {
+              "id": "yadro-freq",
+              "name": "Yadro-1A frequency knobs (1 MHz, 100 kHz, 10 kHz, 1 kHz / 100 Hz)",
+              "type": "knob",
+              "match": [
+                "PTR-ADDSECPLT-LVR-DIG*"
+              ],
+              "text": "These four knobs set the frequency of the HF radio, digit by digit, from the megahertz down to the hundreds of hertz.",
+              "context": "The manual says the TUNING lamp lights while the radio tunes, up to about 5 seconds.",
+              "count": 4,
+              "src": "m1",
+              "page": "116"
+            },
+            {
+              "id": "yadro-squelch",
+              "name": "Yadro-1A squelch switch",
+              "type": "switch2",
+              "match": [
+                "PTR-ADDSECPLT-LVR-PSH"
+              ],
+              "positions": [
+                {
+                  "name": "ON",
+                  "text": "The noise filter is on."
+                },
+                {
+                  "name": "OFF",
+                  "text": "The noise filter is off."
+                }
+              ],
+              "text": "This switch controls the noise filter of the HF radio.",
+              "context": "The manual says to switch it OFF at the start.",
+              "src": "m1",
+              "page": "116"
+            },
+            {
+              "id": "yadro-test",
+              "name": "Yadro-1A control (test) button",
+              "type": "button",
+              "match": [
+                "PTR-ADDSECPLT-TMB-CONTR"
+              ],
+              "text": "Pressing this button starts the self-test of the HF radio. The TEST lamp lights and noise is heard in the headset.",
+              "context": "The test checks the receiving, sending and tuning.",
+              "src": "m1",
+              "page": "116"
+            },
+            {
+              "id": "yadro-volume",
+              "name": "Yadro-1A volume knob",
+              "type": "knob",
+              "match": [
+                "PTR-ADDSECPLT-LVR-VOLUM"
+              ],
+              "text": "Turning this knob makes the HF radio louder or quieter.",
+              "context": "The manual says to set it to maximum.",
+              "src": "m1",
+              "page": "116"
+            }
+          ]
+        },
+        {
+          "id": "uv26",
+          "name": "UV-26 countermeasures (flare dispenser) panel",
+          "db": "right-auxiliary-panel",
+          "src": "m1",
+          "page": "141",
+          "text": "The UV-26 panel programs the flare dispensers on the sides of the helicopter. Flares are hot burning decoys that fool heat-seeking missiles. The panel sets how many flares are fired, how often and from which side.",
+          "context": "The default program is 110: one flare each time. The manual says the helicopter carries up to 128 flares. The start button here and the flare button on the pilot's instrument panel run the program.",
+          "controls": [
+            {
+              "id": "uv26-power",
+              "name": "UV-26 power switch",
+              "type": "switch2",
+              "match": [
+                "PTR-UV26-ONOFF",
+                "item:right-auxiliary-panel:4"
+              ],
+              "positions": [
+                {
+                  "name": "ON",
+                  "text": "The UV-26 has power."
+                },
+                {
+                  "name": "OFF",
+                  "text": "The UV-26 is off."
+                }
+              ],
+              "text": "This switch turns the flare dispenser on and off.",
+              "context": "It must be on before any flares can be released.",
+              "src": "m1",
+              "page": "141"
+            },
+            {
+              "id": "uv26-side",
+              "name": "UV-26 dispenser side switch (LEFT / BOTH / RIGHT)",
+              "type": "switch3",
+              "match": [
+                "PTR-UV26-BOARD"
+              ],
+              "positions": [
+                {
+                  "name": "LEFT",
+                  "text": "Flares are released from the left side only."
+                },
+                {
+                  "name": "BOTH",
+                  "text": "Flares are released from both sides."
+                },
+                {
+                  "name": "RIGHT",
+                  "text": "Flares are released from the right side only."
+                }
+              ],
+              "text": "This switch picks which side the flares come from: left, right or both.",
+              "context": "The matching lamps in the display show the choice.",
+              "src": "m1",
+              "page": "141"
+            },
+            {
+              "id": "uv26-display-mode",
+              "name": "UV-26 display switch (COUNTER / PROGRAMMING)",
+              "type": "switch2",
+              "match": [
+                "PTR-UV26-PROG"
+              ],
+              "positions": [
+                {
+                  "name": "COUNTER",
+                  "text": "The display shows how many flares remain."
+                },
+                {
+                  "name": "PROGRAMMING",
+                  "text": "The display shows the program."
+                }
+              ],
+              "text": "This switch picks what the display shows: the flares that remain, or the program numbers.",
+              "context": "In the program view the three digits are the number of sequences, flares per sequence and the interval.",
+              "src": "m1",
+              "page": "141"
+            },
+            {
+              "id": "uv26-sequence-length",
+              "name": "UV-26 number in sequence button",
+              "type": "button",
+              "match": [
+                "PTR-L8-BTN"
+              ],
+              "text": "Each press of this button changes how many flares are released in one burst of the program.",
+              "context": "The manual names this the SALVO button.",
+              "src": "m1",
+              "page": "141"
+            },
+            {
+              "id": "uv26-sequences",
+              "name": "UV-26 number of sequences button",
+              "type": "button",
+              "match": [
+                "PTR-L45-BTN"
+              ],
+              "text": "Each press of this button changes how many times the program repeats. At 0 the flares are released without end until stopped.",
+              "context": "The manual names this the SEQUENCES button.",
+              "src": "m1",
+              "page": "141"
+            },
+            {
+              "id": "uv26-interval",
+              "name": "UV-26 dispense interval button",
+              "type": "button",
+              "match": [
+                "PTR-L68-BTN"
+              ],
+              "text": "Each press of this button changes the time between two flares.",
+              "context": "The manual says the time is in seconds, and some settings give 0.125, 0.25 or 0.5 seconds.",
+              "src": "m1",
+              "page": "141"
+            },
+            {
+              "id": "uv26-start",
+              "name": "UV-26 start dispense button",
+              "type": "button",
+              "match": [
+                "PTR-START-BTN"
+              ],
+              "text": "Pressing this button runs the flare program that is set.",
+              "context": "The pilot can also use the flare button on the instrument panel.",
+              "src": "m1",
+              "page": "142"
+            },
+            {
+              "id": "uv26-stop",
+              "name": "UV-26 stop dispense button",
+              "type": "button",
+              "match": [
+                "PTR-STOP-BTN"
+              ],
+              "text": "Pressing this button stops the flare program that is running.",
+              "context": "It is useful with the endless program 0.",
+              "src": "m1",
+              "page": "141"
+            },
+            {
+              "id": "uv26-reset",
+              "name": "UV-26 reset to default program button",
+              "type": "button",
+              "match": [
+                "PTR-RESET-PROG-BTN"
+              ],
+              "text": "Pressing this button sets the program back to the default 110: one sequence, one flare, short delay.",
+              "context": "The manual says the default releases one flare at each press.",
+              "src": "m1",
+              "page": "142"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "hotas",
+      "where": "hotas",
+      "name": "Cyclic and collective",
+      "text": "The flying controls: the cyclic stick between the knees and the collective lever at the left of the seat, for both pilots.",
+      "panels": [
+        {
+          "id": "pilot-cyclic",
+          "name": "Pilot's cyclic stick (left seat)",
+          "src": "m1",
+          "page": "82",
+          "text": "The cyclic is the helicopter's stick, standing between the pilot's knees. Tilting it tilts the main rotor, so the helicopter flies forward, back or sideways. Buttons on the grip handle radio, weapons, autopilot and trim.",
+          "context": "The pilot holds it with the right hand. The copilot has an almost identical stick on the other side.",
+          "controls": [
+            {
+              "id": "cyclic-stick",
+              "name": "Cyclic control stick",
+              "type": "axis",
+              "match": [
+                "control:stick.gimbal"
+              ],
+              "text": "Moving this stick forward makes the helicopter fly forward, moving it back makes it fly backward, and moving it sideways makes it slide sideways. The rotor tilts the same way.",
+              "context": "The pilot uses it all the time. The manual says its force grows with the deflection, and the trim button zeroes the force.",
+              "src": "m1",
+              "page": "81"
+            },
+            {
+              "id": "wheel-brake-lever",
+              "name": "Wheel brake lever",
+              "type": "lever",
+              "match": [
+                "PTR-WHEELBRK-ARM",
+                "control:stick.lever.wheel_brake"
+              ],
+              "text": "This lever on the front of the grip brakes the wheels. The harder it is squeezed, the more air pressure goes to the brakes.",
+              "context": "The pilot uses it when taxiing and landing on wheels. The brake pressure gauge on the left console shows the pressure.",
+              "src": "m1",
+              "page": "181"
+            },
+            {
+              "id": "parking-brake",
+              "name": "Parking brake latch",
+              "type": "switch2",
+              "match": [
+                "PTR-WHEELBRKFIX-ARM"
+              ],
+              "positions": [
+                {
+                  "name": "ON",
+                  "text": "The brake is locked on."
+                },
+                {
+                  "name": "OFF",
+                  "text": "The brake is free."
+                }
+              ],
+              "text": "This latch holds the wheel brake lever in the pressed position so the helicopter stays still while parked.",
+              "context": "The manual calls it the parking brake trigger.",
+              "src": "m1",
+              "page": "181"
+            },
+            {
+              "id": "ics-radio-trigger",
+              "name": "ICS / RADIO trigger",
+              "type": "trigger",
+              "match": [
+                "PTR-ARMS-L",
+                "STICK-BTN-RCVR-L",
+                "control:stick.switch.ics_radio"
+              ],
+              "text": "This two-step trigger on the front of the grip is the push-to-talk. The first click talks on the intercom, the second click talks on the radio.",
+              "context": "What the second click does depends on the RADIO/ICS switch on the intercom box. The game names it the trigger button, with left mouse for radio and right mouse for intercom.",
+              "src": "m1",
+              "page": "111"
+            },
+            {
+              "id": "autopilot-off-button",
+              "name": "Autopilot OFF button",
+              "type": "button",
+              "match": [
+                "PTR-AUTOPILOT-OFF-L",
+                "STICK-CAPRS-L",
+                "STICK-CAPRS-L002",
+                "control:stick.button.ap_off"
+              ],
+              "text": "Pressing this button on the grip switches the autopilot off at once.",
+              "context": "The manual says the autopilot is switched off with it after landing.",
+              "src": "m1",
+              "page": "220"
+            },
+            {
+              "id": "fire-button-l",
+              "name": "FIRE button",
+              "type": "button",
+              "match": [
+                "PTR-RS-L",
+                "STICK-BTN-FIRE-L",
+                "control:stick.button.fire"
+              ],
+              "text": "Pressing this button on top of the grip fires the weapon that is chosen on the weapons panel.",
+              "context": "The weapons only fire when the master arm switch and the weapon master switch are on. A small cover protects the button in the game.",
+              "src": "m1",
+              "page": "320"
+            },
+            {
+              "id": "fire-button-cover-l",
+              "name": "FIRE button cover",
+              "type": "cover",
+              "match": [
+                "PTR-COVER-RS-L"
+              ],
+              "positions": [
+                {
+                  "name": "OPEN",
+                  "text": "The cover is open and the button can be pressed."
+                },
+                {
+                  "name": "CLOSE",
+                  "text": "The cover shields the button."
+                }
+              ],
+              "text": "This cover protects the fire button from being pressed by accident.",
+              "context": "The pilot opens it before an attack.",
+              "src": "m1",
+              "page": "320"
+            },
+            {
+              "id": "trim-button",
+              "name": "TRIM (trim disengage) button",
+              "type": "button",
+              "match": [
+                "PTR-TRIMMER-ON-L",
+                "STICK-BTN-TRIM-L",
+                "STICK-BTN-TRIM-L002",
+                "control:stick.button.trim"
+              ],
+              "text": "Pressing and holding this button takes the force off the stick and the pedals. When released, the new stick position becomes the new neutral.",
+              "context": "Pilots use it to hold the helicopter in a steady attitude without pushing on the stick.",
+              "src": "m1",
+              "page": "81"
+            }
+          ]
+        },
+        {
+          "id": "pilot-collective",
+          "name": "Pilot's collective lever (left seat)",
+          "src": "m1",
+          "page": "85",
+          "text": "The collective is a lever at the left of the pilot's seat. Raising it makes the rotor blades bite more, so the helicopter climbs. The engines add power by themselves. Its grip has the twist throttle, buttons and switches.",
+          "context": "The pilot holds it with the left hand. A hand wheel sets how much friction holds the lever in place.",
+          "controls": [
+            {
+              "id": "collective-lever",
+              "name": "Collective lever",
+              "type": "axis",
+              "match": [
+                "PKT-TROTTLE_L",
+                "control:collective.axis.main"
+              ],
+              "text": "Raising this lever makes the helicopter climb and lowering it makes the helicopter sink. In the game the left mouse button moves the collective and the right mouse button moves the throttle.",
+              "context": "The collective and the engine power are linked: more lift needs more power. The rotor speed is held by the engine governor.",
+              "src": "m1",
+              "page": "85"
+            },
+            {
+              "id": "twist-throttle",
+              "name": "Twist throttle",
+              "type": "knob",
+              "match": [
+                "STICK-SG-GAZ-L",
+                "control:collective.axis.throttle_twist"
+              ],
+              "text": "Turning this twist grip on the collective changes the power of both engines together. Turned fully left the engines idle. Fully right the governor keeps the rotor speed.",
+              "context": "The manual says the throttle is turned fully right for normal flight. Turning it left switches off the automatic rotor speed control.",
+              "src": "m1",
+              "page": "86"
+            },
+            {
+              "id": "ecl-left",
+              "name": "Left engine condition lever (ECL)",
+              "type": "lever",
+              "match": [
+                "PTR-STKSEC-ARM-L",
+                "control:collective.lever.ecl_left"
+              ],
+              "text": "This small lever sets the power of the left engine alone. The normal position is the middle detent.",
+              "context": "The manual says the levers are used for ground tests and special cases such as an engine failure.",
+              "src": "m1",
+              "page": "86"
+            },
+            {
+              "id": "ecl-right",
+              "name": "Right engine condition lever (ECL)",
+              "type": "lever",
+              "match": [
+                "PTR-STKSEC-ARM-R",
+                "control:collective.lever.ecl_right"
+              ],
+              "text": "This small lever sets the power of the right engine alone. The normal position is the middle detent.",
+              "context": "Moving both levers to the maximum gives take-off power.",
+              "src": "m1",
+              "page": "86"
+            },
+            {
+              "id": "n2-trim",
+              "name": "N2 trim INCR-DECR switch",
+              "type": "switch3",
+              "match": [
+                "PTR-STKSGR-TMB-RPM-LEFT",
+                "TMB-STICKSG-RPM-L",
+                "control:collective.switch.n2_trim"
+              ],
+              "positions": [
+                {
+                  "name": "INCR",
+                  "text": "Raises the power turbine speed while held."
+                },
+                {
+                  "name": "Middle",
+                  "text": "No change."
+                },
+                {
+                  "name": "DECR",
+                  "text": "Lowers the power turbine speed while held."
+                }
+              ],
+              "text": "This three-position switch changes the speed of the engines' power turbine a little, and with it the speed of the main rotor.",
+              "context": "The manual says it is used to set the rotor speed to about 95 percent for take-off. It springs back to the middle.",
+              "src": "m1",
+              "page": "87"
+            },
+            {
+              "id": "searchlight-hat",
+              "name": "Searchlight control hat",
+              "type": "hat",
+              "match": [
+                "control:collective.hat.searchlight"
+              ],
+              "text": "This five-position switch aims the search light: up or down to raise or lower the beam, left or right to turn it.",
+              "context": "The manual says the same hat exists on the copilot's collective. The light itself is switched on at the instrument panel.",
+              "src": "m1",
+              "page": "196"
+            },
+            {
+              "id": "grip-finger-buttons",
+              "name": "Collective grip finger buttons (game parts)",
+              "type": "button",
+              "match": [
+                "STICK-SG-FNGR1-L"
+              ],
+              "text": "The game marks this finger-operated part on the collective grip with the name 'SG FNGR1 L'. The manual does not describe it separately.",
+              "context": "It is a clickable part of the collective grip in the 3D model.",
+              "src": "m1",
+              "page": "85"
+            },
+            {
+              "id": "emergency-cargo-release",
+              "name": "Emergency cargo release button and cover",
+              "type": "button",
+              "match": [
+                "PTR-STKSG-BTN-EMRGJET",
+                "PTR-STKSG-CVR-EMRGJET",
+                "control:collective.button.emergency_release"
+              ],
+              "text": "Pressing this button opens the hook that holds a load under the helicopter, so the load falls. A safety cover must be lifted first.",
+              "context": "The manual says the emergency release and the tactical release have the same result; only the electric circuit differs.",
+              "src": "m1",
+              "page": "216"
+            },
+            {
+              "id": "tactical-cargo-release",
+              "name": "Tactical cargo release button and cover",
+              "type": "button",
+              "match": [
+                "PTR-STKSG-BTN-TACTJET",
+                "PTR-STKSG-CVR-TACTJET",
+                "control:collective.button.tactical_release"
+              ],
+              "text": "Pressing this button opens the cargo hook in the normal way. A cover protects it.",
+              "context": "The pilot uses it to drop the load at the target place.",
+              "src": "m1",
+              "page": "216"
+            },
+            {
+              "id": "clutch-release",
+              "name": "CLUTCH RELEASE button",
+              "type": "button",
+              "match": [
+                "control:collective.button.clutch"
+              ],
+              "text": "Holding this button frees the collective lever so it moves easily. When it is released, the lever is held in place again.",
+              "context": "The manual says it also switches off the autopilot altitude channel.",
+              "src": "m1",
+              "page": "85"
+            }
+          ]
+        },
+        {
+          "id": "copilot-cyclic",
+          "name": "Copilot's cyclic stick (right seat)",
+          "src": "m1",
+          "page": "82",
+          "text": "The copilot's cyclic is the twin of the pilot's stick, on the right side. It has the same buttons except the wheel brake.",
+          "context": "Either pilot can fly the helicopter. The manual says the controls are linked mechanically.",
+          "controls": [
+            {
+              "id": "cop-ics-radio-trigger",
+              "name": "ICS / RADIO trigger (copilot)",
+              "type": "trigger",
+              "match": [
+                "PTR-ARMS-R",
+                "STICK-BTN-RCVR-R"
+              ],
+              "text": "This two-step trigger on the copilot's grip is the push-to-talk. The first click uses the intercom, the second click the radio.",
+              "context": "It follows the setting of the RADIO/ICS switch of the copilot's intercom box.",
+              "src": "m1",
+              "page": "111"
+            },
+            {
+              "id": "cop-autopilot-off",
+              "name": "Autopilot OFF button (copilot)",
+              "type": "button",
+              "match": [
+                "PTR-AUTOPILOT-OFF-R",
+                "STICK-CAPRS-R"
+              ],
+              "text": "Pressing this button switches the autopilot off at once.",
+              "context": "Both cyclics have such a button.",
+              "src": "m1",
+              "page": "220"
+            },
+            {
+              "id": "cop-fire-button",
+              "name": "FIRE button and cover (copilot)",
+              "type": "button",
+              "match": [
+                "PTR-RS-R",
+                "PTR-COVER-RS-R",
+                "STICK-BTN-FIRE-R"
+              ],
+              "text": "Pressing this button fires the chosen weapon. A cover protects the button in the game.",
+              "context": "Both cyclics have a fire button. The weapons must be armed first.",
+              "src": "m1",
+              "page": "320"
+            },
+            {
+              "id": "cop-trim-button",
+              "name": "TRIM button (copilot)",
+              "type": "button",
+              "match": [
+                "PTR-TRIMMER-ON-R",
+                "STICK-BTN-TRIM-R"
+              ],
+              "text": "Pressing and holding this button takes the force off the stick and the pedals. Releasing it sets the new neutral position.",
+              "context": "It works like the pilot's trim button.",
+              "src": "m1",
+              "page": "81"
+            }
+          ]
+        },
+        {
+          "id": "copilot-collective",
+          "name": "Copilot's collective lever (right seat)",
+          "src": "m1",
+          "page": "86",
+          "text": "The copilot's collective is like the pilot's but has no friction clutch, no cargo release buttons and no engine condition levers.",
+          "context": "Either pilot can raise the lever to climb or use the twist throttle.",
+          "controls": [
+            {
+              "id": "cop-collective-lever",
+              "name": "Collective lever (copilot)",
+              "type": "axis",
+              "match": [
+                "PKT-TROTTLE_R"
+              ],
+              "text": "The copilot's lever raises or lowers the rotor pitch like the pilot's one. In the game the left mouse button moves the collective and the right one the throttle.",
+              "context": "It is mechanically linked with the pilot's lever.",
+              "src": "m1",
+              "page": "85"
+            },
+            {
+              "id": "cop-twist-throttle",
+              "name": "Twist throttle (copilot)",
+              "type": "knob",
+              "match": [
+                "STICK-SG-GAZ-L001"
+              ],
+              "text": "Turning this twist grip changes the power of both engines together, like the pilot's.",
+              "context": "The manual says the twist throttle on either collective controls both engines together.",
+              "src": "m1",
+              "page": "86"
+            },
+            {
+              "id": "cop-n2-trim",
+              "name": "N2 trim switch (copilot)",
+              "type": "switch3",
+              "match": [
+                "PTR-STKSGR-TMB-RPM-RIGHT",
+                "TMB-STICKSG-RPM-R"
+              ],
+              "positions": [
+                {
+                  "name": "MORE",
+                  "text": "Raises the speed while held."
+                },
+                {
+                  "name": "OFF",
+                  "text": "No change."
+                },
+                {
+                  "name": "LESS",
+                  "text": "Lowers the speed while held."
+                }
+              ],
+              "text": "This three-position switch changes the engine power turbine speed a little, like the pilot's switch.",
+              "context": "The game names it the Readjust Free Turbine RPM switch, MORE or LESS.",
+              "src": "m1",
+              "page": "87"
+            },
+            {
+              "id": "cop-grip-fingers",
+              "name": "Collective grip finger buttons (game parts, copilot)",
+              "type": "button",
+              "match": [
+                "STICK-SG-FNGR1-R",
+                "STICK-SG-FNGR2-R"
+              ],
+              "text": "The game marks these finger-operated parts on the copilot's collective grip with the names 'SG FNGR1 R' and 'SG FNGR2 R'. The manual does not describe them separately.",
+              "context": "They are clickable parts of the grip in the 3D model.",
+              "count": 2,
+              "src": "m1",
+              "page": "86"
+            }
+          ]
+        },
+        {
+          "id": "pedals",
+          "name": "Anti-torque pedals",
+          "src": "m1",
+          "page": "82",
+          "text": "The two foot pedals in front of each seat. They turn the nose of the helicopter left and right by changing the pitch of the small tail rotor.",
+          "context": "Without the tail rotor the body would spin the other way when the main rotor turns. The pilot uses the pedals all the time, most of all when hovering and when the engine power changes.",
+          "controls": [
+            {
+              "id": "anti-torque-pedals",
+              "name": "Anti-torque pedals (rudder)",
+              "type": "pedal",
+              "match": [
+                "control:pedals.axis.rudder"
+              ],
+              "text": "Pushing the left pedal forward turns the helicopter's nose to the left, pushing the right pedal forward turns it to the right. The pedals can be moved closer or farther for the pilot's comfort.",
+              "context": "The manual says the right pedal travel is limited by the SPUU-52 tail rotor pitch limiter. Small switches in the pedals tell the autopilot when the pilot wants to steer himself.",
+              "src": "m1",
+              "page": "82"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

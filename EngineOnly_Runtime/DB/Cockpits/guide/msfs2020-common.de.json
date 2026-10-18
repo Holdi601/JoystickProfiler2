@@ -1,0 +1,1130 @@
+{
+  "format": "joypro-cockpit-guide-text",
+  "version": 1,
+  "guide": "msfs2020-common",
+  "language": "de",
+  "title": "Microsoft Flight Simulator 2020: alle Flugzeuge (gemeinsamer Leitfaden)",
+  "intro": "Diese Texte gelten für jedes Flugzeug des Microsoft Flight Simulator 2020, von kleinen Propellerflugzeugen und Segelflugzeugen bis zu Verkehrsflugzeugen. Der Simulator baut jedes Cockpit aus einem 3D-Modell, und jedes anklickbare Teil des Modells hat einen Knotennamen, zum Beispiel ELECTRICAL_Switch_Battery_Master_1 oder LIGHTING_Switch_Light_Strobe. Das erste Wort nennt das System, die nächsten Wörter sagen, was für ein Teil es ist (Switch, Knob, Lever, Push) und welches, und eine Zahl sagt, welche Ausführung gemeint ist. Ein Bedienelement erscheint nur bei Flugzeugen, die es haben. Die Texte beschreiben die Funktion allgemein, der genaue Schalter ist von Flugzeug zu Flugzeug verschieden.",
+  "areas": {
+    "electrical": {
+      "name": "Elektrisches System",
+      "text": "Diese Bedienelemente bestimmen, woher der Strom des Flugzeugs kommt und welche Geräte ihn bekommen. Die Namen sind die Knotennamen des Cockpit-Modells, deshalb zeigt jedes Flugzeug nur die, die es hat."
+    },
+    "engine": {
+      "name": "Triebwerkssteuerung",
+      "text": "Diese Hebel und Schalter starten die Triebwerke und stellen ein, wie viel Leistung sie abgeben. Kleine Flugzeuge haben wenige Hebel, größere einen Satz pro Triebwerk. Die Zahl im Namen sagt, welches Triebwerk gemeint ist."
+    },
+    "fuel": {
+      "name": "Kraftstoffsystem",
+      "text": "Diese Bedienelemente bestimmen, welcher Tank das Triebwerk versorgt und ob die Kraftstoffpumpen laufen. Kleine Flugzeuge haben einen Wahlschalter und einen Pumpenschalter, größere Flugzeuge mehrere Pumpen und Ventile."
+    },
+    "lights": {
+      "name": "Beleuchtung",
+      "text": "Diese Schalter und Drehknöpfe schalten die Lichter des Flugzeugs ein und aus: die Außenlichter, damit andere das Flugzeug sehen, und die Cockpitlichter, damit der Pilot die Tafel lesen kann."
+    },
+    "anti-ice": {
+      "name": "Enteisung und Eisschutz",
+      "text": "Eis auf einem Flügel oder an einem Messrohr ist gefährlich. Diese Bedienelemente heizen oder erwärmen die Teile, die eisfrei bleiben müssen."
+    },
+    "radios": {
+      "name": "Funkgeräte und Transponder",
+      "text": "Diese Bedienelemente dienen dazu, mit der Flugsicherung und anderen Flugzeugen zu sprechen, die Navigationsfunkgeräte einzustellen, den Transponder zu bedienen und die GPS- und Bildschirmgeräte zu nutzen. Kleine Flugzeuge haben einen kleinen Funkgerätestapel, größere Flugzeuge getrennte Felder für jede Aufgabe."
+    },
+    "autopilot": {
+      "name": "Autopilot",
+      "text": "Der Autopilot ist das System, das die Höhe, den Kurs oder den Weg des Flugzeugs halten kann, damit der Pilot es nicht selbst tun muss. Sein Bedienfeld sitzt in der Mitte unter der Frontscheibe oder auf dem Glareshield. Diese Bedienelemente wählen, was er hält, und stellen die Zahlen ein."
+    },
+    "flight-controls": {
+      "name": "Flugsteuerung und Trimmung",
+      "text": "Diese Bedienelemente bewegen oder verstellen die Teile des Flugzeugs, die es steuern: Landeklappen für den Langsamflug, Trimmung für entspannte Hände, Spoiler zum Abbremsen sowie das Steuerhorn oder der Steuerknüppel und die Pedale."
+    },
+    "gear-brakes": {
+      "name": "Fahrwerk und Bremsen",
+      "text": "Das Fahrwerk sind die Räder mit ihren Beinen. Diese Bedienelemente fahren es aus und ein, halten die Räder mit der Feststellbremse fest und lenken am Boden."
+    },
+    "instruments": {
+      "name": "Instrumente",
+      "text": "Diese Bedienelemente gehören zu den Anzeigen und Bildschirmen vor dem Piloten: den Höhenmesser einstellen, die Kursmarke, die Uhr, und ein Instrument zurücksetzen oder testen."
+    },
+    "cabin": {
+      "name": "Kabine, Türen und Sicherheit",
+      "text": "Diese Bedienelemente gehören zur Kabinenluft, zu den Türen und zur Sicherheitsausrüstung: dem Notsender, den Warnlichtern und den Tests."
+    },
+    "airliner": {
+      "name": "Verkehrsflugzeuge und große Flugzeuge",
+      "text": "Diese Bedienelemente gehören zu großen Flugzeugen und älteren mehrmotorigen Flugzeugen. Ihre Cockpits haben getrennte Felder für den linken und den rechten Piloten, ein Pedestal dazwischen und eine Dachkonsole voller Schalter. Der Knotenname sagt, was das Teil ist."
+    },
+    "simulator": {
+      "name": "Hilfen des Simulators und aufgedruckte Schilder",
+      "text": "Nicht alles in einem Cockpit-Modell ist ein echtes Bedienelement. Manche Teile sind aufgedruckte Schilder, unsichtbare Klickflächen, kleine Dekoteile oder Animationshilfen des Simulators."
+    },
+    "other-by-name": {
+      "name": "Weitere Teile nach Namen",
+      "text": "Der Simulator hat mehr Cockpitteile, als die Felder oben beschreiben. Sie sind hier nach dem ersten Wort ihres Namens aufgeführt. Der Name sagt, welches Teil es ist. Was es tut, hängt vom Flugzeug ab."
+    }
+  },
+  "panels": {
+    "battery-generators": {
+      "name": "Batterie, Lichtmaschinen und Generatoren",
+      "text": "Diese Bedienelemente schalten die Stromquellen ein und aus: die Batterie sowie die Lichtmaschinen oder Generatoren, die Strom machen, solange das Triebwerk läuft.",
+      "context": "Der Pilot schaltet beim Einsteigen zuerst die Batterie ein. Die Lichtmaschinen oder Generatoren werden eingeschaltet, wenn das Triebwerk läuft. Sie versorgen dann alles und laden die Batterie wieder auf."
+    },
+    "avionics-power": {
+      "name": "Avionik-Stromversorgung",
+      "text": "Avionik sind die elektronischen Instrumente, Funkgeräte und Bildschirme. Diese Bedienelemente schalten ihnen den Strom zu.",
+      "context": "Der Pilot schaltet die Avionik nach dem Triebwerksstart ein, damit die empfindlichen Geräte die Spannungssprünge beim Start nicht abbekommen."
+    },
+    "circuit-breakers": {
+      "name": "Sicherungsautomaten",
+      "text": "Ein Sicherungsautomat ist ein Sicherheitsschalter, der den Strom abschaltet, wenn etwas zu viel Strom zieht. Er springt heraus und kann wieder hineingedrückt werden.",
+      "context": "Piloten prüfen sie vor dem Flug und setzen einen herausgesprungenen Automaten nur zurück, wenn die Checkliste es erlaubt. Jedes Flugzeug hat ein Feld davon, einen pro Gerät."
+    },
+    "power-levers": {
+      "name": "Schub-, Propeller- und Gemischhebel",
+      "text": "Diese Hebel stellen die Leistung des Triebwerks ein: wie viel Kraftstoff es bekommt, wie scharf der Propeller in die Luft greift und wie fett das Kraftstoffgemisch ist.",
+      "context": "Der Pilot bewegt sie für den Start, den Steigflug und die Landung. Strahlflugzeuge haben nur Schubhebel, Kolbenflugzeuge mit Verstellpropeller haben mehr Hebel."
+    },
+    "start-ignition": {
+      "name": "Anlasser, Zündung und Magnetzünder",
+      "text": "Diese Bedienelemente bringen das Triebwerk in Gang: Der Anlasser dreht es durch, und die Zündung oder die Magnetzünder machen die Funken, die den Kraftstoff entzünden.",
+      "context": "Sie werden beim Triebwerksstart und bei den Kontrollen vor dem Start benutzt. Kolbentriebwerke haben Magnetzünder an einem schlüsselartigen Schalter, Strahltriebwerke haben Anlasser und Zünder."
+    },
+    "fuel-pumps-valves": {
+      "name": "Kraftstoffpumpen, Ventile und Wahlschalter",
+      "text": "Pumpen fördern den Kraftstoff aus den Tanks zum Triebwerk. Ventile öffnen oder schließen die Kraftstoffleitungen. Ein Wahlschalter bestimmt, welcher Tank benutzt wird.",
+      "context": "Der Pilot prüft sie vor dem Start und wechselt im Flug bei Bedarf die Tanks. Erreicht der Kraftstoff das Triebwerk nicht, bleibt das Triebwerk stehen."
+    },
+    "exterior-lights": {
+      "name": "Außenlichter",
+      "text": "Lichter an der Außenseite des Flugzeugs. Manche beleuchten die Piste für den Piloten, andere machen das Flugzeug nur für andere sichtbar.",
+      "context": "Piloten folgen einer Routine: Beacon vor dem Triebwerksstart an, Positionslichter nachts immer, Landescheinwerfer für Start und Landung, Strobe-Lichter auf der Piste und im Flug."
+    },
+    "interior-lights": {
+      "name": "Tafel-, Instrumenten- und Cockpitlichter",
+      "text": "Lichter im Cockpit: Lichter für die Instrumente und Tafeln und für den Pilotenraum.",
+      "context": "Piloten dimmen die Lichter nachts, damit sich die Augen an die Dunkelheit gewöhnt halten und die Bildschirme nicht zu hell sind."
+    },
+    "pitot-heat": {
+      "name": "Pitot- und Sondenheizung",
+      "text": "Heizungen für die kleinen Rohre außen am Flugzeug, die die Geschwindigkeit messen, und für andere Sonden, damit sie nicht einfrieren.",
+      "context": "Der Pilot schaltet sie vor dem Start bei kalter oder nasser Luft ein und im Flug, wenn Vereisung droht. Ein eingefrorenes Rohr würde falsche Geschwindigkeiten anzeigen."
+    },
+    "ice-protection": {
+      "name": "Heizung für Zelle, Propeller und Strömungsabrisswarnung",
+      "text": "Diese Bedienelemente erwärmen oder schützen die Flügel, den Propeller und einige Sensoren gegen Eis.",
+      "context": "Der Pilot benutzt sie in Wolken, wenn die Außenluft nahe dem Gefrierpunkt ist. Sie brauchen Strom oder Triebwerkswärme und bleiben deshalb nicht ohne Grund an."
+    },
+    "com-radios": {
+      "name": "COM- und NAV-Funkgeräte (Feldgeräte)",
+      "text": "COM-Funkgeräte sind die Sprechfunkgeräte. Der Pilot stellt eine Frequenz ein, die 'Sendernummer' des Funkgeräts, und spricht mit dem Tower oder anderen Flugzeugen. NAV-Funkgeräte stellen die Funkfeuer ein, die das Flugzeug leiten.",
+      "context": "Der Pilot stellt vor dem Start die Frequenz des Towers ein und ändert sie im Lauf des Fluges. Die meisten Flugzeuge haben zwei COM-Funkgeräte, COM1 und COM2 genannt."
+    },
+    "audio-panel": {
+      "name": "Audiofeld und Bordsprechanlage",
+      "text": "Das Audiofeld wählt, welche Funkgeräte der Pilot hört und über welches Funkgerät die Stimme hinausgeht. Die Bordsprechanlage ist die Telefonleitung zwischen den Menschen im Flugzeug.",
+      "context": "In kleinen Flugzeugen ist es ein Feld mit einer Taste pro Funkgerät. Größere Flugzeuge haben für jeden Piloten ein Feld."
+    },
+    "transponder": {
+      "name": "Transponder",
+      "text": "Der Transponder ist ein Funkkasten, der die Fragen der Radargeräte der Flugsicherung mit einem vierstelligen Code beantwortet, damit der Lotse das Flugzeug auf dem Bildschirm sieht.",
+      "context": "Der Pilot stellt den Code ein, den der Lotse nennt. Vor dem Start wird er von Standby auf an geschaltet, damit das Flugzeug auf dem Radar erscheint."
+    },
+    "adf-radio": {
+      "name": "ADF-Funkgerät (Peilempfänger)",
+      "text": "Das ADF ist ein Funkgerät, das eine Nadel auf ein Bodenfunkfeuer (ein NDB) richtet, damit der Pilot dessen Richtung kennt.",
+      "context": "Es ist eine ältere Navigationshilfe. Der Pilot stellt die Frequenz des Funkfeuers ein und fliegt der Nadel nach."
+    },
+    "gps-comnav": {
+      "name": "GPS-Geräte mit Funkgeräten (Typ GNS 430 und GNS 530)",
+      "text": "Das sind kleine Geräte, die einen GPS-Navigationscomputer mit einem COM- und einem NAV-Funkgerät verbinden, mit Tasten und Drehknöpfen auf der Vorderseite. Ihre Knotennamen beginnen nach den beiden Größen mit AS430 oder AS530.",
+      "context": "Der Pilot gibt auf einem Gerät eine Route ein, wählt Direct-to, zeigt die Karte und stellt die Funkgeräte ein. Viele kleine Flugzeuge haben eins oder zwei davon."
+    },
+    "g1000": {
+      "name": "Glascockpit mit PFD und MFD (Typ G1000)",
+      "text": "Ein Glascockpit ersetzt runde Anzeigen durch große Bildschirme: das PFD (die Hauptfluganzeige) und das MFD (die Multifunktionsanzeige mit Karte und Triebwerksdaten). Tasten und Drehknöpfe sitzen rund um die Bildschirme. Die Knotennamen beginnen mit AS1000.",
+      "context": "Die Tasten unter einem Bildschirm heißen Softkeys: Jede tut, was das Wort auf dem Bildschirm darüber sagt, ihre Funktion ändert sich also mit der Seite."
+    },
+    "g3x": {
+      "name": "Touchscreen-Geräte (Typ G3X und G3000)",
+      "text": "Das sind Bildschirmgeräte, die vor allem durch Berühren des Bildschirms bedient werden, mit einigen Knöpfen und Tasten ringsum. Die Knotennamen beginnen mit AS3X oder AS3000.",
+      "context": "Der Pilot wählt die Seiten auf dem Bildschirm und benutzt die Knöpfe zum Einstellen und zum Zoomen der Karte. Das Tastenfeld tippt Namen und Zahlen ein."
+    },
+    "ap-panel": {
+      "name": "Autopilot-Bedienfeld (Betriebsarten)",
+      "text": "Tasten, die den Autopiloten einschalten und seine Aufgabe wählen: einen Kurs halten, eine Höhe halten, einem Funkkurs folgen, einen Anflug fliegen oder gleichmäßig steigen.",
+      "context": "Der Pilot stellt zuerst die Zielwerte (Kurs, Höhe) ein und drückt dann die Betriebsartentaste. Erneutes Drücken schaltet die Betriebsart meist wieder aus. Der Simulator nennt die Tasten 'Push'. Ein Teil mit Active im Namen gehört zur gleichen Taste."
+    },
+    "fms-cdu": {
+      "name": "Tastenfeld des Routencomputers (CDU)",
+      "text": "Ein Tastenfeld mit einem kleinen Bildschirm, auf dem der Pilot die Route, Leistungswerte und mehr eintippt. Der Bildschirm hat an den Seiten Zeilenwahltasten.",
+      "context": "Der Pilot gibt vor dem Flug die Route und die Werte ein. Im Flug nutzt der Computer sie, um den Autopiloten zu steuern."
+    },
+    "flaps-spoilers": {
+      "name": "Landeklappen und Spoiler",
+      "text": "Landeklappen sind Teile des Flügels, die ausfahren und bei niedriger Geschwindigkeit mehr Auftrieb geben. Spoiler sind Klappen oben auf dem Flügel, die hochklappen, um das Flugzeug abzubremsen und auf den Boden zu drücken.",
+      "context": "Der Pilot stellt die Landeklappen für den Start auf eine kleine Stufe und für die Landung auf eine größere. Spoiler (auch Bremsklappen genannt) werden im Ausrollen und zum Höhenabbau benutzt."
+    },
+    "trim": {
+      "name": "Trimmungsbedienelemente",
+      "text": "Trimmung ist eine kleine Einstellung, damit das Flugzeug geradeaus fliegt, ohne dass der Pilot den Steuerknüppel hält. Es gibt Trimmung für die Nickachse (Nase hoch und runter), für die Rollachse und für das Seitenruder (Drehen nach links und rechts).",
+      "context": "Der Pilot trimmt, wenn sich Geschwindigkeit und Last ändern, bis keine Kraft mehr auf Knüppel oder Steuerhorn nötig ist. Ein Rad, ein Knopf oder ein Schalter bewegt die Trimmung."
+    },
+    "yoke-pedals": {
+      "name": "Steuerhorn, Pedale und Handhabungsteile",
+      "text": "Weitere Bedienelemente, die der Pilot direkt bedient: die Tasten am Steuerhorn, die Steuersäule sowie die Ballast- und Bremsgriffe.",
+      "context": "Der Pilot benutzt sie während des ganzen Fluges."
+    },
+    "gear-handle": {
+      "name": "Fahrwerkshebel",
+      "text": "Der Hebel, der die Räder nach dem Start einklappen und vor der Landung wieder herunterkommen lässt.",
+      "context": "Der Pilot fährt das Fahrwerk nach dem Start ein, um den Luftwiderstand zu verringern, und vor der Landung aus. Manche kleinen Flugzeuge haben feste Räder und keinen Hebel."
+    },
+    "brakes": {
+      "name": "Feststellbremse",
+      "text": "Die Feststellbremse hält die Räder beim Parken fest.",
+      "context": "Der Pilot setzt die Feststellbremse beim Parken und für den Start der Triebwerke und löst sie vor dem Rollen."
+    },
+    "flight-instruments": {
+      "name": "Flugüberwachungsinstrumente",
+      "text": "Die Instrumente, die dem Piloten Geschwindigkeit, Höhe, Richtung und Lage des Flugzeugs sagen. Einige davon haben Drehknöpfe zum Einstellen.",
+      "context": "Der Pilot stellt sie vor dem Flug ein und prüft, dass sie miteinander übereinstimmen."
+    },
+    "cabin-air": {
+      "name": "Kabinenheizung, Luft und Druck",
+      "text": "Bedienelemente für die Temperatur und die Frischluft in der Kabine. In hoch fliegenden Flugzeugen halten sie außerdem den Luftdruck angenehm.",
+      "context": "Kleine Flugzeuge haben einen Heizknopf und eine Lüftung. Größere Flugzeuge haben eine Klimaanlage, die die Kabinenluft aus Triebwerksluft macht."
+    },
+    "doors": {
+      "name": "Türen und Kabinendach",
+      "text": "Türen lassen Menschen hinein und hinaus. Ein Kabinendach ist das klare Glasdach über dem Cockpit mancher kleinen Flugzeuge und Segelflugzeuge.",
+      "context": "Der Pilot schließt und verriegelt sie vor dem Triebwerksstart. Im Simulator können die Türen oft geöffnet werden, um hinauszuschauen."
+    },
+    "safety": {
+      "name": "Sicherheits- und Warnausrüstung",
+      "text": "Ausrüstung für Notfälle und Warnungen: der Notsender, Warn- und Hinweislichter mit ihren Testtasten und die alternative statische Druckquelle.",
+      "context": "Der Pilot testet die Lichter vor dem Flug und weiß, wo die Notschalter sind."
+    },
+    "airliner-audio": {
+      "name": "Funkfelder, Audioempfänger und Sprechtasten (große Flugzeuge)",
+      "text": "In großen Flugzeugen hat jeder Pilot ein Audiofeld mit einer Taste und einem Lautstärkeknopf für jedes Funkgerät: VHF-Sprechfunk, HF-Langstreckenfunk, Satellit, Durchsagen und die Kabine.",
+      "context": "Die Piloten wählen das Funkgerät zum Sprechen und die Empfänger zum Hören. Der Sprechtasten-Schalter schickt die Stimme hinaus."
+    },
+    "airliner-displays": {
+      "name": "Bildschirme und Anzeigebedienung",
+      "text": "Große Flugzeuge zeigen ihre Informationen auf großen Bildschirmen. Diese Bedienelemente ändern die gezeigte Seite, den Kartenmaßstab, die Helligkeit und die Einstellungen der Bildschirme.",
+      "context": "Die Piloten rufen die Seite auf, die sie brauchen, zum Beispiel Triebwerke, Kraftstoff oder die Karte, und stellen den Maßstab oder die Minima ein."
+    },
+    "airliner-systems": {
+      "name": "Systemschalter der Dachkonsole und des Pedestals",
+      "text": "Die Dachkonsole und das Pedestal enthalten die Schalter der Flugzeugsysteme: Elektrik, Kraftstoff, Hydraulik, Klimaanlage, Brandschutz und die Triebwerke. Viele haben eine Schutzabdeckung.",
+      "context": "Die Piloten gehen die Dachkonsole bei der Vorbereitung des Flugzeugs in einer festen Reihenfolge durch und benutzen sie bei Störungen im Flug. Schalterabdeckungen verhindern, dass ein Schalter aus Versehen umgelegt wird."
+    },
+    "sim-helpers": {
+      "name": "Schilder, Hilfsflächen und Dekoration",
+      "text": "Teile, die für den Simulator da sind und nicht für den Piloten: aufgedruckte Schilder (Decals), größere unsichtbare Klickflächen (Helper), Animationsteile und Schrauben.",
+      "context": "Ein echtes Flugzeug hat solche Bedienelemente nicht. Im Simulator machen sie ein Bedienelement leichter anklickbar oder sichtbar."
+    },
+    "other-systems": {
+      "name": "Weitere Cockpitteile nach Systemnamen",
+      "text": "Jeder Eintrag steht für die Teile, deren Name mit dem gezeigten Systemwort beginnt. Was sie genau tun, steht im eigenen Leitfaden des Flugzeugs oder zeigt das Teil selbst.",
+      "context": "Das erste Wort eines Knotennamens ist das System: ELECTRICAL für Elektrik, LIGHTING für Lichter, FUEL für Kraftstoff und so weiter. Ein zweites Wort sagt, ob es ein Switch, Knob, Lever oder Push button ist."
+    }
+  },
+  "controls": {
+    "battery-generators/battery-master": {
+      "name": "Battery-Master-Schalter",
+      "text": "Dieser Schalter verbindet die Batterie des Flugzeugs mit dem Rest des Flugzeugs. Die Batterie speichert Strom für die Zeit, in der die Triebwerke aus sind. Ist der Hauptschalter aus, bleibt das Cockpit größtenteils dunkel. Die Zahl sagt, welche Batterie gemeint ist, wenn ein Flugzeug mehrere hat.",
+      "context": "Er gehört zu den ersten Dingen, die der Pilot einschaltet, und zu den letzten, die er ausschaltet. Kleine Flugzeuge haben meist einen, größere einen pro Batterie."
+    },
+    "battery-generators/battery-standby": {
+      "name": "Standby-Batterieschalter",
+      "text": "Dieser Schalter verbindet die Standby-Batterie, eine zweite kleine Batterie für die wichtigsten Instrumente. Fällt der Hauptstrom aus, kann die Standby-Batterie diese Instrumente noch eine Weile am Laufen halten.",
+      "context": "Der Pilot schaltet sie bei den Kontrollen vor dem Flug scharf oder testet sie. Nur Flugzeuge mit einer Standby-Batterie haben diesen Schalter."
+    },
+    "battery-generators/alternator": {
+      "name": "Lichtmaschinenschalter",
+      "text": "Dieser Schalter verbindet eine Lichtmaschine mit dem Strom des Flugzeugs. Eine Lichtmaschine ist ein kleines Kraftwerk am Triebwerk, das Strom macht, solange sich das Triebwerk dreht. Die Zahl sagt, zu welchem Triebwerk die Lichtmaschine gehört.",
+      "context": "Nach dem Triebwerksstart schaltet der Pilot die Lichtmaschinen ein, damit sie die Last tragen und die Batterie nicht leer wird. Fällt eine aus, hält die Batterie oder die andere Lichtmaschine den Strom aufrecht."
+    },
+    "battery-generators/generator": {
+      "name": "Generatorschalter",
+      "text": "Dieser Schalter verbindet einen Generator mit dem Strom des Flugzeugs. Ein Generator ist eine Maschine am Triebwerk, die Strom macht, solange sich das Triebwerk dreht. Der Name umfasst auch das Rücksetz-Bedienelement, wenn ein Flugzeug eines hat.",
+      "context": "Er wird nach dem Triebwerksstart eingeschaltet, damit der Generator von der Batterie übernimmt. Die genaue Anordnung ist von Flugzeug zu Flugzeug verschieden."
+    },
+    "battery-generators/apu-generator": {
+      "name": "APU-Generatorschalter",
+      "text": "Dieser Schalter verbindet den Generator der APU. Die APU ist ein kleines Zusatztriebwerk, das Strom und Luft macht, solange die Haupttriebwerke aus sind.",
+      "context": "Verkehrsflugzeuge nutzen die APU am Boden für Strom und um die Haupttriebwerke zu starten. Flugzeuge ohne APU haben diesen Schalter nicht."
+    },
+    "battery-generators/external-power": {
+      "name": "Schalter für Außenstrom",
+      "text": "Dieser Schalter verbindet Strom von außerhalb des Flugzeugs, zum Beispiel von einem Bodenaggregat, das an der Parkposition angeschlossen ist. So kann der Pilot den Strom des Flugzeugs nutzen, ohne die Triebwerke laufen zu lassen oder die Batterie zu leeren.",
+      "context": "Er wird am Boden vor dem Triebwerksstart benutzt. Nach dem Start übernehmen die eigenen Generatoren des Flugzeugs."
+    },
+    "battery-generators/power-12v": {
+      "name": "12V-Stromschalter",
+      "text": "Der Simulator benennt diesen Schalter nach einer Spannung, zum Beispiel 12V. Er schaltet eine Stromversorgung oder Steckdose dieser Spannung. Der Knotenname ist alles, was der Simulator darüber sagt.",
+      "context": "Was genau er versorgt, hängt vom Flugzeug ab. Der Name sagt nur die Spannung."
+    },
+    "battery-generators/elec-starter": {
+      "name": "Anlasser-Taste / -Drehknopf",
+      "text": "Wird diese Taste oder dieser Drehknopf gehalten, dreht der elektrische Anlasser das Triebwerk. Der Anlasser ist ein Motor, der das Triebwerk durchdreht, bis es allein laufen kann, wie der Anlasser eines Autos.",
+      "context": "Der Pilot benutzt ihn beim Triebwerksstart, nachdem die Batterie eingeschaltet und Kraftstoff und Zündung eingestellt sind. Flugzeuge mit einem Schlüsselschalter benutzen dafür stattdessen den Magnetschalter."
+    },
+    "battery-generators/elec-radio-button": {
+      "name": "Funkgerätetaste (Elektrik)",
+      "text": "Der Simulator nennt diese Drucktaste unter den elektrischen Teilen 'Radio Button'. Sie gehört zur Stromversorgung der Funkausrüstung. Der Knotenname ist alles, was der Simulator darüber sagt.",
+      "context": "Was genau sie tut, hängt vom Flugzeug ab, das sie hat."
+    },
+    "avionics-power/avionics-master": {
+      "name": "Avionics-Master-Schalter",
+      "text": "Dieser Schalter gibt der gesamten elektronischen Ausrüstung auf einmal Strom: den Funkgeräten, den Bildschirmen und den Navigationsgeräten. Ist er aus, bleiben sie dunkel, auch wenn die Batterie an ist.",
+      "context": "Er wird nach dem Triebwerksstart eingeschaltet und vor dem Abstellen des Triebwerks ausgeschaltet. Manche Flugzeuge haben zwei (einen pro Seite), nummeriert mit 1 und 2."
+    },
+    "avionics-power/avionics-bus": {
+      "name": "Avionics-Bus-Schalter",
+      "text": "Dieser Schalter verbindet eine Gruppe von Stromleitungen (eine Sammelschiene), die die Avionik versorgen. Die Zahl sagt, welche Sammelschiene gemeint ist. Ist er aus, hat die Ausrüstung an dieser Sammelschiene keinen Strom.",
+      "context": "Zwei Avionik-Sammelschienen geben eine Reserve, wenn eine ausfällt. Der Pilot schaltet beide nach dem Triebwerksstart ein."
+    },
+    "avionics-power/avionics-other": {
+      "name": "Weitere Schalter der Avionik-Stromversorgung",
+      "text": "Diese Schalter gehören zur Stromversorgung der Avionik, zum Beispiel ein Reservestrom oder eine Sammelschienenkupplung. Der Name sagt, welcher Teil gemeint ist. Was er tut, hängt vom Flugzeug ab.",
+      "context": "Sie gehören zum Elektrikfeld und sind vor allem wichtig, wenn etwas ausfällt."
+    },
+    "circuit-breakers/breaker": {
+      "name": "Sicherungsautomat (benannt)",
+      "text": "Ein Sicherungsautomat ist nach dem Gerät benannt, das er schützt, zum Beispiel Radios, Pitot Heat oder Strobe Lights. Hineingedrückt hat das Gerät Strom. Herausgesprungen ist der Strom zu ihm abgeschnitten.",
+      "context": "Springt ein Automat im Flug heraus, hat etwas zu viel Strom gezogen. Der Pilot darf ihn einmal hineindrücken, wenn die Checkliste des Flugzeugs es erlaubt."
+    },
+    "power-levers/throttle-reverser": {
+      "name": "Schubumkehr-Hebel",
+      "text": "Dieser Hebel oder Schalter stellt die Schubumkehr ein. Das Triebwerk drückt dann die Luft nach vorn statt nach hinten, was hilft, das Flugzeug nach der Landung abzubremsen.",
+      "context": "Der Pilot benutzt ihn nur am Boden, im Ausrollen nach der Landung. Er funktioniert bei Triebwerken, die umkehren können."
+    },
+    "power-levers/throttle": {
+      "name": "Schubhebel",
+      "text": "Wird dieser Hebel nach vorn geschoben, wird das Triebwerk stärker, nach hinten gezogen wird es schwächer. Er funktioniert wie das Gaspedal eines Autos, nur als Hebel. Die Zahl sagt, welches Triebwerk er steuert.",
+      "context": "Der Pilot stellt für den Start volle Leistung ein, für Steigflug und Reiseflug weniger und für die Landung Leerlauf. Flugzeuge mit mehr Triebwerken haben einen Hebel pro Triebwerk, oft nebeneinander."
+    },
+    "power-levers/throttle-shake": {
+      "name": "Hilfsteile der Schubhebel",
+      "text": "Das sind Zusatzteile des Schub-, Propeller- oder Gemischhebels. Manche gehören zum Hebel des zweiten Piloten, andere lassen den Hebel wackeln oder folgen dem ersten. Sie gehören zum Hebel mit dem gleichen Namen.",
+      "context": "Der Hebel des Copiloten funktioniert wie der des Piloten. Beide bewegen dasselbe Triebwerks-Bedienelement."
+    },
+    "power-levers/pitch-propeller": {
+      "name": "Propellerhebel",
+      "text": "Dieser Hebel stellt ein, wie scharf die Propellerblätter in die Luft greifen, und damit, wie schnell sich der Propeller dreht. Vorn gibt er einen schnellen Propeller für den Start, hinten einen langsameren für den Reiseflug. Ein Prop-Sync-Schalter lässt zwei Propeller gleich schnell drehen.",
+      "context": "Nur Flugzeuge mit verstellbarem Propeller haben ihn. Der Pilot schiebt ihn vor dem Start nach vorn und zieht ihn nach dem Steigflug zurück."
+    },
+    "power-levers/mixture": {
+      "name": "Gemischhebel",
+      "text": "Dieser Hebel stellt ein, wie viel Kraftstoff in die Luft des Triebwerks gemischt wird. Vorn ist fett, mit viel Kraftstoff. Zurückgezogen ist mager, mit weniger Kraftstoff. Ganz hinten stoppt er bei vielen Kolbenflugzeugen das Triebwerk.",
+      "context": "Der Pilot stellt ihn für Start und Abflug fett ein und magert ihn im Reiseflug ab, weil dünne Luft in der Höhe weniger Kraftstoff braucht. Mit ihm stellt der Pilot ein Kolbentriebwerk ab."
+    },
+    "power-levers/cowl-flaps": {
+      "name": "Kühlerklappenhebel",
+      "text": "Dieser Hebel öffnet oder schließt die Kühlerklappen, kleine Türen am Ende der Triebwerksverkleidung. Offen lassen sie mehr Kühlluft durch das Triebwerk. Geschlossen gleitet das Flugzeug leichter durch die Luft.",
+      "context": "Der Pilot öffnet sie am Boden und im Steigflug, wenn das Triebwerk heiß wird, und schließt sie im Reiseflug."
+    },
+    "power-levers/throttle-choke": {
+      "name": "Choke-Hebel",
+      "text": "Dieser Hebel hilft einem kalten Triebwerk beim Start. Herausgezogen gibt er dem Triebwerk ein fetteres Gemisch aus Kraftstoff und Luft, wie der alte Choke eines Autos.",
+      "context": "Der Pilot benutzt ihn für den Start und schiebt ihn dann zurück. Nur manche kleinen Triebwerke haben ihn."
+    },
+    "power-levers/throttle-support": {
+      "name": "Hebelhalterung / Leerlaufregler (Halterungsteil)",
+      "text": "Das ist das Gehäuse oder Halteteil eines Hebels, im Simulator 'Lever Support' genannt. Es trägt den Hebel, nach dem es benannt ist, und hat keine eigene Funktion.",
+      "context": "Der Hebel, zu dem es gehört (Propeller, Leerlaufregler oder ähnlich), erledigt die Arbeit."
+    },
+    "power-levers/lever-tension": {
+      "name": "Hebelreibung / Spannungsknöpfe",
+      "text": "Diese Drehknöpfe stellen ein, wie schwergängig der Schub-, Propeller- oder Gemischhebel ist. Ein schwergängiger Hebel bleibt dort, wo der Pilot ihn hinstellt.",
+      "context": "Es sind Reibungseinstellungen. Der Pilot zieht sie fest, damit der Hebel während des Fluges nicht wandert."
+    },
+    "start-ignition/magneto": {
+      "name": "Magnetschalter / Zündschlüssel",
+      "text": "Dieser Schalter funktioniert wie der Zündschlüssel eines Autos. Er schaltet die zwei Magnetzünder (kleine Generatoren, die die Funken für ein Kolbentriebwerk machen) ein oder aus, und in seiner letzten Stellung dreht er den Anlassermotor. Die Zahl sagt, für welches Triebwerk er gilt.",
+      "context": "Der Pilot dreht ihn, um das Triebwerk zu starten, und prüft vor dem Start jeden Magnetzünder einzeln. Auf aus gedreht stoppt er die Funken und das Triebwerk."
+    },
+    "start-ignition/starter-switch": {
+      "name": "Anlasserschalter",
+      "text": "Dieser Schalter lässt den Anlasser das Triebwerk drehen. Der Anlasser ist ein Motor (bei einem Strahltriebwerk eine Turbine), der das Triebwerk durchdreht, bis es allein läuft. Manche haben eine Abdeckung, die den Schalter schützt.",
+      "context": "Er kommt beim Triebwerksstart nach der Batterie, dem Kraftstoff und der Zündung. Der Pilot lässt ihn los oder schaltet ihn aus, sobald das Triebwerk läuft."
+    },
+    "start-ignition/ignition": {
+      "name": "Zündschalter",
+      "text": "Dieser Schalter schaltet die Zünder ein, die den Kraftstoff im Inneren des Triebwerks entzünden. Ohne Funken brennt der Kraftstoff nicht.",
+      "context": "Der Pilot schaltet ihn für den Triebwerksstart ein, bei manchen Flugzeugen auch vorsorglich für Flüge im Regen oder bei Vereisung."
+    },
+    "start-ignition/primer": {
+      "name": "Einspritzpumpe (Primer)",
+      "text": "Dieses Bedienelement pumpt etwas Kraftstoff ins Triebwerk, damit ein kaltes Triebwerk anspringt. Der Pilot betätigt es vor dem Start ein paar Mal.",
+      "context": "Es wird nur für Kaltstarts mancher Kolbentriebwerke benutzt."
+    },
+    "start-ignition/alternate-air": {
+      "name": "Alternate-Air-Schalter",
+      "text": "Dieser Schalter öffnet einen zweiten Weg für die Luft zum Triebwerk, falls der normale Lufteinlass blockiert ist, zum Beispiel durch Eis.",
+      "context": "Es ist ein Notfall-Bedienelement. Der Pilot benutzt es nur, wenn die Triebwerksleistung wegen eines blockierten Einlasses sinkt."
+    },
+    "start-ignition/carb-heat": {
+      "name": "Vergaservorwärmung / Triebwerks-Enteisungshebel",
+      "text": "Dieses Bedienelement leitet warme Luft zum Einlass des Triebwerks, um dort Eis zu schmelzen oder zu verhindern. Eis im Einlass kann ein Kolbentriebwerk ersticken.",
+      "context": "Der Pilot benutzt es bei feuchter, kalter Luft und vor der Landung, wie es die Checkliste des Flugzeugs sagt."
+    },
+    "start-ignition/egt-knob": {
+      "name": "EGT-Drehknopf",
+      "text": "EGT ist die Temperatur des heißen Abgases. Dieser Drehknopf gehört zur Anzeige, die sie zeigt, zum Beispiel um eine Bezugsmarke darauf zu setzen.",
+      "context": "Der Pilot nutzt die Abgastemperatur, um das Gemisch im Reiseflug abzumagern."
+    },
+    "start-ignition/engine-monitor": {
+      "name": "Drehknöpfe und Tasten des Triebwerksmonitors",
+      "text": "Diese Bedienelemente gehören zum Triebwerksmonitor, einem kleinen Bildschirm, der Triebwerkswerte wie Temperaturen und Drücke zeigt. Der Drehknopf wählt, welcher Wert gezeigt wird, und die Tasten blättern nach links oder rechts.",
+      "context": "Der Pilot schaut beim Start und im Flug darauf, um zu sehen, dass das Triebwerk gesund ist."
+    },
+    "start-ignition/oil-lever": {
+      "name": "Ölhebel",
+      "text": "Der Simulator nennt dieses Teil 'Oil lever'. Es gehört zum Ölsystem des Triebwerks. Der Knotenname ist alles, was darüber sicher gesagt werden kann.",
+      "context": "Was genau er tut, hängt vom Flugzeug ab."
+    },
+    "fuel-pumps-valves/fuel-pump": {
+      "name": "Kraftstoffpumpenschalter",
+      "text": "Dieser Schalter schaltet eine elektrische Kraftstoffpumpe ein. Die Pumpe drückt Kraftstoff vom Tank zum Triebwerk. Sie ist eine Hilfe neben der Pumpe, die das Triebwerk selbst antreibt.",
+      "context": "Der Pilot schaltet sie für den Start, den Abflug und die Landung ein oder wenn die Pumpe am Triebwerk ausfällt. Die Zahl sagt, welche Pumpe gemeint ist."
+    },
+    "fuel-pumps-valves/fuel-cutoff": {
+      "name": "Fuel-Cutoff-Schalter",
+      "text": "Dieser Schalter lässt Kraftstoff zum Triebwerk fließen oder schneidet ihn ab. Cutoff heißt, dass der Kraftstoff gestoppt wird und das Triebwerk ausläuft. Bei manchen Flugzeugen ist er eine Drucktaste oder hat eine Abdeckung.",
+      "context": "Der Pilot öffnet den Kraftstoff für den Triebwerksstart und schließt ihn, um das Triebwerk abzustellen. Er dient auch als Notstopp."
+    },
+    "fuel-pumps-valves/fuel-selector": {
+      "name": "Kraftstoff-Wahlschalter",
+      "text": "Dieser Wahlschalter bestimmt, welcher Kraftstofftank das Triebwerk versorgt, zum Beispiel der linke Tank, der rechte Tank, beide oder aus. Ein Decal-Teil ist nur das aufgedruckte Schild daneben.",
+      "context": "Der Pilot wechselt im Flug die Tanks, damit das Flugzeug im Gleichgewicht bleibt, und stellt ihn bei manchen Flugzeugen zum Abstellen auf aus."
+    },
+    "fuel-pumps-valves/fuel-valve": {
+      "name": "Drehknopf des Kraftstoffventils",
+      "text": "Dieser Drehknopf öffnet oder schließt ein Ventil in den Kraftstoffleitungen. Bei offenem Ventil kann Kraftstoff fließen. Geschlossen ist die Leitung dicht.",
+      "context": "Der Pilot öffnet es vor dem Triebwerksstart und schließt es zum Abstellen oder in einem Notfall."
+    },
+    "fuel-pumps-valves/fuel-crossfeed": {
+      "name": "Crossfeed-Schalter",
+      "text": "Dieser Schalter lässt den Tank einer Seite das Triebwerk der anderen Seite versorgen (Crossfeed) oder bringt Kraftstoff zwischen den Seiten hin und her, um sie auszugleichen.",
+      "context": "Der Pilot benutzt ihn, wenn eine Seite knapp wird oder eine Pumpe ausfällt. Im normalen Flug bleibt er aus."
+    },
+    "exterior-lights/light-beacon": {
+      "name": "Beacon-Lichtschalter",
+      "text": "Dieser Schalter schaltet das Beacon ein, ein rotes Blink- oder Drehlicht am Flugzeug. Es warnt Menschen am Boden, dass das Triebwerk gleich startet oder läuft.",
+      "context": "Der Pilot schaltet es vor dem Triebwerksstart ein und nach dem Abstellen aus. Manche Schalter sind mit den Positionslichtern kombiniert."
+    },
+    "exterior-lights/light-nav": {
+      "name": "Positionslichtschalter",
+      "text": "Dieser Schalter schaltet die Positionslichter ein: ein rotes Licht an der linken Flügelspitze, ein grünes an der rechten und ein weißes am Heck. Sie zeigen anderen Piloten, in welche Richtung das Flugzeug fliegt.",
+      "context": "Sie sind an, wann immer das Flugzeug nachts oder bei schlechtem Licht fliegt. Das linke und das rechte Positionslicht können eigene Schalter haben."
+    },
+    "exterior-lights/light-strobe": {
+      "name": "Strobe-Lichtschalter",
+      "text": "Dieser Schalter schaltet die Strobe-Lichter ein, sehr helle weiße Blitze an den Flügelspitzen und am Heck. Sie machen das Flugzeug für andere gut sichtbar.",
+      "context": "Der Pilot schaltet sie ein, wenn er auf die Piste rollt, und lässt sie im Flug an. Im Dunkeln in Wolken werden sie oft ausgeschaltet, weil die Blitze blenden würden."
+    },
+    "exterior-lights/light-landing": {
+      "name": "Landescheinwerferschalter",
+      "text": "Dieser Schalter schaltet die Landescheinwerfer ein, helle Lampen, die nach vorn leuchten und die Piste vor dem Flugzeug beleuchten. Größere Flugzeuge haben außerdem Abrollscheinwerfer und ähnliche Lampen an eigenen Schaltern.",
+      "context": "Der Pilot schaltet sie für Start und Landung ein, zeitweise auch im Flug, damit andere Flugzeuge es sehen."
+    },
+    "exterior-lights/light-taxi": {
+      "name": "Rollscheinwerferschalter",
+      "text": "Dieser Schalter schaltet den Rollscheinwerfer ein, eine Lampe, die den Boden vor dem Flugzeug beleuchtet, während es langsam zur Piste und von ihr weg rollt.",
+      "context": "Der Pilot benutzt ihn nachts am Boden und schaltet ihn vor dem Start aus, wenn der Landescheinwerfer übernimmt."
+    },
+    "exterior-lights/light-wing": {
+      "name": "Tragflächenlichtschalter",
+      "text": "Dieser Schalter schaltet die Tragflächenlichter ein, Lampen, die auf die Vorderkante der Flügel leuchten. Damit sieht der Pilot nachts Eis auf dem Flügel.",
+      "context": "Der Pilot benutzt sie nachts in Wolken oder wenn Vereisung droht."
+    },
+    "exterior-lights/light-pulse": {
+      "name": "Pulse-Lichtschalter",
+      "text": "Dieser Schalter lässt das Landelicht in einem pulsierenden Rhythmus an- und ausgehen. Das Blinken fällt anderen Piloten besser auf als ein Dauerlicht.",
+      "context": "Der Pilot benutzt ihn, wenn er in der Nähe anderer Flugzeuge oder zu einem belebten Flugplatz fliegt."
+    },
+    "exterior-lights/light-elt": {
+      "name": "Light-ELT-Schalter",
+      "text": "Der Simulator führt diesen Schalter unter den Lichtern mit dem Namen ELT. ELT ist der Notsender. Der Knotenname ist alles, was darüber gesagt wird.",
+      "context": "Was der ELT ist, steht beim ELT-Schalter in der Sicherheitsausrüstung."
+    },
+    "exterior-lights/light-cabin": {
+      "name": "Kabinen- / Deckenlichtschalter",
+      "text": "Dieses Bedienelement schaltet das Kabinenlicht ein und aus oder macht es heller und dunkler. Das Kabinenlicht ist die Lampe, die den Innenraum der Kabine beleuchtet, wo die Menschen sitzen.",
+      "context": "Nachts hält der Pilot es gedimmt oder aus, damit sich die Augen an die Dunkelheit gewöhnt halten und draußen sichtbar bleibt."
+    },
+    "interior-lights/light-panel": {
+      "name": "Tafellicht-Drehknopf",
+      "text": "Wird dieser Drehknopf gedreht, werden die Lichter auf dem Instrumentenbrett heller oder dunkler. Er funktioniert wie der Dimmer einer Lampe.",
+      "context": "Der Pilot dreht ihn für Nachtflüge auf und im Dunkeln zurück, damit die Augen draußen etwas sehen. Bei Tageslicht sind die Lichter aus."
+    },
+    "interior-lights/light-glareshield": {
+      "name": "Glareshield-Licht-Drehknopf",
+      "text": "Dieser Drehknopf stellt die Helligkeit der Lichter auf dem Glareshield ein, dem Bord direkt unter der Frontscheibe. Er funktioniert wie ein Dimmer.",
+      "context": "Der Pilot benutzt ihn für Nachtflüge, damit das Bord und die Autopilot-Bedienelemente, die oft dort sitzen, lesbar sind."
+    },
+    "interior-lights/light-avionics": {
+      "name": "Lichtknöpfe für Avionik, Pedestal und Funkgeräte",
+      "text": "Diese Drehknöpfe stellen die Helligkeit einer Gruppe von Lichtern ein: der Avionik, des Pedestals, der Funkgeräte, eines Bildschirms oder der aufgedruckten Schilder. In eine Richtung gedreht werden die Lichter heller.",
+      "context": "Der Pilot stellt sie nachts ein. Welche Lichtgruppe jeder Drehknopf bedient, steht in seinem Namen."
+    },
+    "interior-lights/light-pilot": {
+      "name": "Leselicht für Pilot / Copilot",
+      "text": "Dieses Bedienelement schaltet das Licht für den Piloten oder den Copiloten ein oder dimmt es, zum Beispiel um eine Karte zu lesen. Der Name sagt, welcher Sitz gemeint ist.",
+      "context": "Der Pilot benutzt es nachts, um eine Karte oder eine Checkliste zu lesen."
+    },
+    "interior-lights/light-other-switch": {
+      "name": "Weitere Lichtschalter (allgemein)",
+      "text": "Das ist ein Lichtschalter, den der Simulator nur 'Light' nennt. Der Name danach sagt, welches Licht gemeint ist, zum Beispiel Panel oder Glareshield.",
+      "context": "Was genau er tut, hängt vom Flugzeug ab."
+    },
+    "pitot-heat/pitot-heat": {
+      "name": "Pitot-Heat-Schalter",
+      "text": "Dieser Schalter heizt das Pitotrohr, das kleine Rohr am Flugzeug, das die Geschwindigkeit misst. Die Heizung verhindert, dass Eis es verstopft.",
+      "context": "Der Pilot schaltet ihn vor dem Start bei kalter oder nasser Luft ein und lässt ihn in Wolken oder Regen an. Falsche Geschwindigkeitsanzeigen sind das Zeichen eines eingefrorenen Rohrs."
+    },
+    "ice-protection/deice-airframe": {
+      "name": "Zellen-Enteisungsschalter",
+      "text": "Dieses Bedienelement heizt oder bläst die Vorderkanten der Flügel und des Leitwerks auf, damit Eis schmilzt oder abplatzt. Eis würde das Flugzeug schwerer und den Flügel weniger tragfähig machen.",
+      "context": "Der Pilot schaltet ihn ein, wenn er bei kalter Luft durch Wolken fliegt. Er ersetzt nicht, starker Vereisung auszuweichen."
+    },
+    "ice-protection/deice-prop": {
+      "name": "Propeller-Enteisungsschalter",
+      "text": "Dieser Schalter heizt die Blätter des Propellers, damit sich kein Eis darauf bildet.",
+      "context": "Der Pilot benutzt ihn zusammen mit dem übrigen Eisschutz in Wolken nahe dem Gefrierpunkt."
+    },
+    "ice-protection/deice-stall": {
+      "name": "Heizung der Strömungsabrisswarnung",
+      "text": "Dieser Schalter heizt den Sensor der Strömungsabrisswarnung am Flügel. Der Sensor sagt dem Piloten, dass der Flügel gleich keinen Auftrieb mehr hat, und darf nicht einfrieren.",
+      "context": "Er wird bei kalter oder nasser Luft zusammen mit der Pitot-Heizung eingeschaltet."
+    },
+    "ice-protection/defrost": {
+      "name": "Defrost / Frontscheibenheizung",
+      "text": "Dieses Bedienelement erwärmt die Luft, die auf die Frontscheibe bläst, um Beschlag oder Eis zu entfernen, oder stellt die Kabinenheizung ein. Die Namen lauten 'Defrost' und 'Heating'.",
+      "context": "Der Pilot benutzt es, wenn die Scheiben bei feuchter oder kalter Luft beschlagen."
+    },
+    "com-radios/com-onoff": {
+      "name": "COM- / NAV-Ein/Aus- und Lautstärkeknopf",
+      "text": "Dreht man diesen Knopf, wird das Funkgerät eingeschaltet und sein Ton lauter oder leiser. Der Knopf sitzt neben der Anzeige dieses Funkgeräts.",
+      "context": "Der Pilot schaltet die Funkgeräte nach der Avionik-Stromversorgung ein und stellt die Lautstärke so ein, dass der Tower gut zu hören ist."
+    },
+    "com-radios/com-freq-knobs": {
+      "name": "COM- / NAV-Frequenzknöpfe (MHz und kHz)",
+      "text": "Diese zwei Knöpfe stellen die Frequenz des Funkgeräts ein, seine Sendernummer. Ein Knopf ändert die großen Schritte (MHz), der andere die kleinen Schritte (kHz). Ziehen oder Drücken eines Knopfes kann seine Aufgabe ändern, zum Beispiel um zwischen Feldern zu wechseln.",
+      "context": "Der Pilot stellt die Frequenz ein, die der Lotse nennt. Ein NAV-Funkgerät wird auf die gleiche Weise auf ein Funkfeuer abgestimmt."
+    },
+    "com-radios/com-swap": {
+      "name": "Swap-Taste (aktive und Standby-Frequenz)",
+      "text": "Funkgeräte merken sich zwei Frequenzen: die aktive, die gerade benutzt wird, und eine Standby-Frequenz, die bereitsteht. Diese Taste tauscht sie, sodass die Standby-Frequenz sofort die aktive wird.",
+      "context": "Der Pilot tippt die nächste Frequenz auf den Standby-Platz ein, während er noch auf der aktiven spricht, und tauscht dann."
+    },
+    "com-radios/com-test": {
+      "name": "Tasten der Feldfunkgeräte (Test, Ident, Monitor, Memory, Enter, Clear)",
+      "text": "Das sind die kleinen Tasten eines Feldfunkgeräts: das Funkgerät testen, eine zweite Frequenz mithören (Monitor), eine Frequenz speichern oder abrufen (Memory), einen Kanal wählen, mit ENT annehmen und mit CLR löschen. Das aufgedruckte Schild auf jeder Taste sagt, was sie tut.",
+      "context": "Der Pilot speichert damit die Frequenzen des Towers und der Flugplätze. Welche Tasten es gibt, hängt vom Funkgerätemodell ab."
+    },
+    "com-radios/com-knob-misc": {
+      "name": "Lautstärke / Speicher des Funkgeräts (Typ AS92)",
+      "text": "Das sind Teile eines kleinen Feld-Funkgeräts, benannt COM_AS plus eine Zahl: sein Lautstärkeknopf, die Monitor- und Memory-Tasten und die Frequenzknöpfe.",
+      "context": "Der Pilot benutzt sie wie die Knöpfe jedes Feldfunkgeräts: die Lautstärke einstellen und die Frequenz abstimmen."
+    },
+    "audio-panel/audio-mid": {
+      "name": "Tasten des G1000-Audiofelds (MID) und ähnliche",
+      "text": "Das Audiofeld hat eine Reihe von Tasten: COM1, COM2, NAV1, NAV2, DME, ADF, AUX und weitere, um diesen Empfänger zu hören, MIC-Tasten, um das Funkgerät zu wählen, über das die Stimme hinausgeht, SPKR für den Kabinenlautsprecher, MKR/MUTE für den Ton des Einflugzeichens, PLAY zum erneuten Abspielen der letzten Meldung und PILOT, COPLT und PASS für die Bordsprechanlage.",
+      "context": "Der Pilot wählt vor dem Sprechen das Funkgerät, hier zum Beispiel COM1 MIC. Die Tasten leuchten, wenn sie an sind."
+    },
+    "audio-panel/audio-push": {
+      "name": "Tasten des Audiofelds (COM, NAV, ADF, DME, AUX, ICS ...)",
+      "text": "Jede Taste dieses Felds schaltet einen Empfänger in den Kopfhörer oder aus ihm heraus oder schickt die Stimme des Piloten an ein Funkgerät. Das Schild sagt, welches: COM1, COM2, NAV, ADF, DME, Einflugzeichen, Bordsprechanlage, Lautsprecher. Schalter können auch das Feld testen oder die Bordsprechanlage einschalten.",
+      "context": "Der Pilot wählt das Funkgerät zum Sprechen und die Empfänger zum Hören. Eine leuchtende Taste bedeutet, dass der Empfänger an ist."
+    },
+    "transponder/xpdr-ident": {
+      "name": "IDENT-Taste (IDT)",
+      "text": "Einmal gedrückt, lässt diese Taste das Signal des Flugzeugs für kurze Zeit auf dem Bildschirm des Lotsen hervortreten. IDT ist die Kurzform von IDENT.",
+      "context": "Der Pilot drückt sie, wenn die Flugsicherung 'squawk ident' sagt, um zu zeigen, welches Flugzeug gemeint ist."
+    },
+    "transponder/xpdr-vfr": {
+      "name": "VFR-Taste",
+      "text": "Diese Taste stellt den Standardcode für den Flug nach Sicht ein, sodass der Pilot die vier Ziffern nicht eintippen muss.",
+      "context": "Der Pilot drückt sie beim Flug nach Sichtflugregeln, wenn die Flugsicherung keinen Code genannt hat."
+    },
+    "transponder/xpdr-clr": {
+      "name": "CLR-Taste (Löschen)",
+      "text": "Diese Taste löscht die bisher eingetippten Ziffern, damit der Code neu eingetippt werden kann.",
+      "context": "Der Pilot benutzt sie nach einer falschen Ziffer. Der neue Code gilt, sobald die letzte Ziffer eingetippt ist."
+    },
+    "transponder/xpdr-mode-keys": {
+      "name": "Betriebsartentasten (OFF, STBY, ON, ALT)",
+      "text": "Diese vier Tasten stellen ein, was der Transponder tut: OFF ist ausgeschaltet, STBY ist Standby (bereit, aber stumm), ON antwortet mit dem Code, und ALT antwortet mit dem Code und der Höhe des Flugzeugs.",
+      "context": "Vor dem Start stellt der Pilot ihn von STBY auf ALT, damit der Lotse das Flugzeug und seine Höhe sieht."
+    },
+    "transponder/xpdr-func-keys": {
+      "name": "Tasten FUNC, CRSR und START/STOP",
+      "text": "FUNC ändert, was die Anzeige zeigt, CRSR bewegt den Cursor zwischen den Ziffern, START/STOP lässt einen Zeitmesser auf der Anzeige laufen, und ENTER nimmt einen eingetippten Wert an. Welche Tasten es gibt, hängt vom Transpondermodell ab.",
+      "context": "Der Pilot benutzt sie, um den Zeitmesser abzulesen oder die Anzeige zu ändern und um einen Code einzutippen."
+    },
+    "transponder/xpdr-digits": {
+      "name": "Code-Zifferntasten (0-7)",
+      "text": "Diese Tasten tippen die vier Ziffern des Codes ein, von 0 bis 7. Der Code ist eine Zahl, die die Flugsicherung dem Piloten gibt.",
+      "context": "Der Pilot tippt die vier Ziffern nacheinander ein. Die letzte Ziffer macht den Code aktiv."
+    },
+    "transponder/xpdr-knobs": {
+      "name": "Transponder-Betriebsart- / Codeknöpfe",
+      "text": "Bei vielen Flugzeugen hat der Transponder statt Tasten einen Betriebsartenknopf (OFF, STBY, ON, ALT) und Knöpfe, die die Codeziffern drehen.",
+      "context": "Er wird wie der Transponder mit Tasten eingestellt: erst der Code, dann ALT vor dem Start."
+    },
+    "adf-radio/adf-freq": {
+      "name": "ADF-Frequenzknöpfe (MHz, kHz)",
+      "text": "Diese Knöpfe stellen die Frequenz des Funkfeuers ein, auf das das ADF hört. Ein Knopf ändert die großen Schritte, der andere die kleinen.",
+      "context": "Der Pilot stellt die Frequenz des Funkfeuers ein, die auf der Karte steht."
+    },
+    "adf-radio/adf-volume": {
+      "name": "ADF-Lautstärke- und Betriebsartenknöpfe",
+      "text": "Diese Knöpfe machen den Ton des ADF lauter oder leiser und wählen seine Betriebsart. Am Ton prüft der Pilot den Morsecode-Namen des Funkfeuers.",
+      "context": "Der Pilot hört auf den Code, um sicher zu sein, dass das richtige Funkfeuer eingestellt ist."
+    },
+    "adf-radio/adf-keys": {
+      "name": "ADF-Tasten (ADF, BFO, FRQ, FLT, SET/RST)",
+      "text": "ADF wählt die ADF-Hörbetriebsart, und BFO fügt einen Ton für Funkfeuer hinzu, die keine Sprache senden. FRQ zeigt die eingestellte Frequenz, FLT zeigt einen Flugzeitmesser, und SET/RST stellt den Zeitmesser ein oder setzt ihn zurück. Der ADF-Knopf am Instrument dreht die Kompassrose.",
+      "context": "Der Pilot benutzt FRQ und die Knöpfe zum Einstellen und die Zeitmessertasten zum Stoppen von Zeiten. Welche Tasten es gibt, hängt vom Funkgerätemodell ab."
+    },
+    "gps-comnav/gns-vol": {
+      "name": "COM- / NAV-Lautstärkeknöpfe (Drücken: Squelch, ID)",
+      "text": "Der COM-Lautstärkeknopf stellt die Lautstärke des Sprechfunks ein, und gedrückt schaltet er den Squelch (den Rauschfilter) ein oder aus. Der NAV-Lautstärkeknopf tut dasselbe für das Navigationsfunkgerät, und gedrückt spielt er den Morsenamen des Funkfeuers (ID) ab.",
+      "context": "Der Pilot stellt die Lautstärke so ein, dass der Tower zu hören ist, und prüft mit ID ein Navigationsfunkfeuer."
+    },
+    "gps-comnav/gns-freq-mhz": {
+      "name": "Frequenzknopf, MHz (groß)",
+      "text": "Der große Frequenzknopf ändert den MHz-Teil der Standby-Frequenz. Drückt man ihn, wechselt die Einstellung zwischen dem COM-Feld und dem NAV-Feld.",
+      "context": "Der Pilot wählt das Feld, dreht den großen Knopf für die großen Schritte und den kleinen für die kleinen Schritte und tauscht dann."
+    },
+    "gps-comnav/gns-freq-khz": {
+      "name": "Frequenzknopf, kHz (klein)",
+      "text": "Der kleine Frequenzknopf ändert den kHz-Teil der Standby-Frequenz. Drückt man ihn, kann er bei vielen Geräten zwischen den Schritten der kHz-Einstellung wechseln.",
+      "context": "Er wird zusammen mit dem großen MHz-Knopf benutzt, um die genaue Frequenz einzugeben."
+    },
+    "gps-comnav/gns-swap": {
+      "name": "COM- / NAV-Swap-Tasten",
+      "text": "Diese Tasten tauschen die aktive und die Standby-Frequenz des COM- oder des NAV-Funkgeräts, genauso wie die Swap-Taste eines Feldfunkgeräts.",
+      "context": "Der Pilot tauscht, sobald die neue Frequenz bereit ist, um sie zu benutzen."
+    },
+    "gps-comnav/gns-cdi": {
+      "name": "Tasten CDI, OBS und MSG",
+      "text": "CDI schaltet die Kursnadel zwischen dem GPS und dem Navigationsfunkgerät um. Mit OBS wählt der Pilot einen Kurs zu einem Punkt oder von ihm weg. MSG zeigt die Meldungen des Geräts. GPSApr gehört zur GPS-Anflugbetriebsart der Anzeige.",
+      "context": "Der Pilot benutzt CDI, wenn er von der GPS-Navigation auf ein Funkfeuer oder einen ILS wechselt."
+    },
+    "gps-comnav/gns-keys": {
+      "name": "GPS-Gerätetasten (DIRECT, FPL, PROC, MENU, CLR, ENT, CRSR, VNAV)",
+      "text": "DIRECT (Direct-to) fliegt direkt zu einem Punkt. FPL zeigt den Flugplan, PROC die Anflugverfahren, MENU die Optionen, CLR löscht einen Eintrag, ENT nimmt ihn an, CRSR startet den Cursor, und VNAV gehört zum senkrechten Flugweg. Der gedrückte CRSR-Knopf startet den Cursor.",
+      "context": "Der Pilot gibt mit diesen Tasten vor dem Flug die Route ein und kürzt sie mit Direct-to ab. Welche Tasten es gibt, hängt vom Gerät ab."
+    },
+    "gps-comnav/gns-range": {
+      "name": "Range-Wippe",
+      "text": "Diese Wippe zoomt die Karte des Geräts hinein oder heraus. Drückt man eine Seite, zeigt sie einen kleineren Bereich genauer, die andere Seite zeigt einen größeren Bereich.",
+      "context": "Der Pilot zoomt in der Nähe des Flugplatzes hinein und für den Überblick heraus."
+    },
+    "gps-comnav/gns-knobs": {
+      "name": "Großer und kleiner Knopf des GPS-Geräts",
+      "text": "Diese Knöpfe bewegen sich durch die Seiten und Listen des Geräts. Der große äußere Knopf ändert die Seitengruppe, der kleine innere wählt die Seite oder bewegt den Cursor, und Drücken des inneren Knopfs startet den Cursor.",
+      "context": "Der Pilot dreht sie, um die Karte, den Flugplan und andere Seiten zu finden und um Buchstaben und Zahlen einzugeben."
+    },
+    "gps-comnav/gns-other": {
+      "name": "Weitere Teile des GPS-Geräts",
+      "text": "Diese Teile gehören zu einem GPS-Gerät vom Typ GNS. Der Rest des Namens sagt, welche Taste oder welcher Knopf es ist. Was er tut, hängt vom Gerät ab.",
+      "context": "Der Pilot benutzt sie zusammen mit den Tasten und Knöpfen desselben Geräts."
+    },
+    "g1000/g1k-softkeys": {
+      "name": "Softkeys (die Tastenreihe unter dem Bildschirm)",
+      "text": "Diese Tasten sitzen in einer Reihe unter dem Bildschirm. Jede tut, was das Wort sagt, das auf dem Bildschirm darüber steht. Dieselbe Taste tut also auf verschiedenen Seiten verschiedene Dinge.",
+      "context": "Der Pilot benutzt sie, um die Karte, das Wetter und die Einstellungen zu ändern, und bei Geräten, die die Autopilot-Betriebsarten als Softkeys zeigen, um diese umzuschalten."
+    },
+    "g1000/g1k-range": {
+      "name": "Joystick- / Range-Knopf",
+      "text": "Dieser Joystick-Knopf zoomt die Karte hinein oder heraus, wenn er gedreht wird, und bewegt einen Zeiger über die Karte, wenn er gedrückt und zur Seite geschoben wird.",
+      "context": "Der Pilot zoomt die Karte, um das Gebiet voraus oder einen kleinen Bereich um das Flugzeug zu sehen."
+    },
+    "g1000/g1k-volume": {
+      "name": "NAV- / COM-Lautstärkeknöpfe (Drücken: ID, Squelch)",
+      "text": "Die Lautstärkeknöpfe NAV und COM stellen die Lautstärke des Navigationsfunkgeräts und des Sprechfunks ein. Gedrückt spielt der NAV-Knopf den Morsenamen des Funkfeuers (ID) ab, und der COM-Knopf schaltet den Squelch (den Rauschfilter) um.",
+      "context": "Der Pilot stellt die Lautstärke so ein, dass der Tower gut zu hören ist."
+    },
+    "g1000/g1k-nav-tuning": {
+      "name": "NAV-Frequenzknöpfe und NAV-Swap",
+      "text": "Der große NAV-Knopf ändert den MHz-Teil der Navigationsfrequenz und der kleine Knopf den kHz-Teil. Drückt man den kleinen Knopf, wechselt die Einstellung zwischen den Feldern, und die Swap-Taste tauscht die aktive und die Standby-Frequenz.",
+      "context": "Der Pilot stellt hier das Navigationsfunkfeuer oder den ILS der Piste ein."
+    },
+    "g1000/g1k-com-tuning": {
+      "name": "COM-Frequenzknöpfe und COM-Swap",
+      "text": "Der große COM-Knopf ändert den MHz-Teil der Sprechfunkfrequenz und der kleine Knopf den kHz-Teil. Drückt man den kleinen Knopf, wechselt die Einstellung zwischen den Feldern, und die Swap-Taste tauscht die aktive und die Standby-Frequenz.",
+      "context": "Der Pilot stellt hier die Frequenz des Towers ein und tauscht auf sie, wenn er bereit ist."
+    },
+    "g1000/g1k-course-baro": {
+      "name": "Kurs- (CRS) und Luftdruckknöpfe (BARO)",
+      "text": "Der CRS-Knopf stellt den Kurs für die Navigationsnadel ein, gedrückt zentriert er die Nadel. Der BARO-Knopf stellt den Luftdruck für die Höhenanzeige ein. Der Heading-Knopf bewegt die Kursmarke.",
+      "context": "Der Pilot stellt den Luftdruck nach dem Wetterbericht und den Kurs nach der Karte ein."
+    },
+    "g1000/g1k-fms": {
+      "name": "FMS-Knöpfe (außen und innen)",
+      "text": "Der FMS-Knopf ist ein Doppelknopf. Der große äußere Teil ändert die Seitengruppe, der kleine innere Teil wählt eine Seite oder bewegt den Cursor, und Drücken startet den Cursor.",
+      "context": "Der Pilot benutzt ihn, um durch Seiten, Listen und den Flugplan zu gehen und um Namen und Zahlen einzugeben."
+    },
+    "g1000/g1k-keys": {
+      "name": "Tasten (DIRECT, MENU, FPL, PROC, CLR, ENT)",
+      "text": "DIRECT fliegt direkt zu einem Punkt. MENU zeigt die Optionen der Seite. FPL zeigt den Flugplan, PROC die Anflugverfahren, CLR löscht einen Eintrag und ENT nimmt ihn an.",
+      "context": "Der Pilot gibt und ändert mit diesen Tasten die Route. Sie sind am PFD und am MFD gleich."
+    },
+    "g1000/g1k-controlpad": {
+      "name": "ControlPad-Tasten (Buchstaben, Zahlen)",
+      "text": "Das ControlPad ist ein Tastenfeld mit Buchstaben und Zahlen, mit dem man Namen und Frequenzen am Bildschirmgerät eintippt.",
+      "context": "Der Pilot tippt damit einen Namen oder eine Zahl ein, statt die Knöpfe zu drehen."
+    },
+    "g1000/g1k-other": {
+      "name": "Weitere Teile des Bildschirmgeräts",
+      "text": "Diese Teile gehören zu einem Bildschirmgerät, dessen Name mit AS plus einer Zahl beginnt. Der Rest des Namens sagt, was für ein Teil es ist. Was es genau tut, hängt vom Gerät ab.",
+      "context": "Der Pilot benutzt es wie die benachbarten Knöpfe und Tasten desselben Geräts."
+    },
+    "g3x/g3x-keys": {
+      "name": "Gerätetasten (MENU, DIRECT, NEAREST, FPL, RANGE, BACK ...)",
+      "text": "Diese Tasten öffnen das Menü, fliegen direkt zu einem Punkt, zeigen die nächsten Flughäfen, zeigen den Flugplan, ändern den Kartenmaßstab, gehen eine Seite zurück, löschen und nehmen einen Eintrag an. Softkeys tun, was das Wort über ihnen sagt.",
+      "context": "Der Pilot benutzt sie, um einen Punkt zu finden und das Gerät zu steuern, ohne viel zu tippen."
+    },
+    "g3x/g3x-knobs": {
+      "name": "Geräteknöpfe und Joystick",
+      "text": "Diese Knöpfe stellen Frequenzen ein, setzen den Kurs und die Lautstärke und zoomen die Karte. Der innere und der äußere Teil jedes Knopfes haben verschiedene Aufgaben, und Drücken eines Knopfes ändert seine Aufgabe.",
+      "context": "Der Pilot dreht sie, um Funkgeräte einzustellen und durch Seiten zu blättern."
+    },
+    "g3x/g3x-controlpad": {
+      "name": "Controller-Pad und weitere Geräteteile",
+      "text": "Das ControlPad hat Buchstaben, Zahlen, Betriebsartentasten und einen Controller-Knopf. Es tippt Namen und Frequenzen ein. Die übrigen Teile des Geräts sind nach dem benannt, was sie sind.",
+      "context": "Der Pilot tippt mit dem Pad einen Namen oder eine Zahl ein."
+    },
+    "ap-panel/ap-master": {
+      "name": "Autopilot-Taste (AP)",
+      "text": "Diese Taste schaltet den Autopiloten ein oder aus. Ist er an, fliegt der Autopilot das Flugzeug von selbst, in den Betriebsarten, die die anderen Tasten gewählt haben.",
+      "context": "Der Pilot schaltet ihn nach dem Start ein, sobald das Flugzeug stabil fliegt, und zum Handfliegen aus. Auch kräftiges Drücken am Steuerknüppel oder die Abschalttaste schaltet ihn aus."
+    },
+    "ap-panel/ap-disconnect": {
+      "name": "Autopilot-Abschalttaste",
+      "text": "Diese Taste schaltet den Autopiloten sofort aus. Transfertasten geben die Flugsteuerung an die Seite des anderen Piloten.",
+      "context": "Der Pilot benutzt sie, um von Hand zu übernehmen, zum Beispiel bei Turbulenz oder für die Landung."
+    },
+    "ap-panel/ap-heading": {
+      "name": "Kurs-Taste (HDG)",
+      "text": "Diese Taste lässt den Autopiloten den Kompasskurs fliegen, der mit dem Kursknopf gewählt wurde. Das Flugzeug dreht in diese Richtung und hält sie.",
+      "context": "Der Pilot stellt den Kurs ein, den der Lotse genannt hat, und drückt die Taste. Der Autopilot dreht das Flugzeug darauf."
+    },
+    "ap-panel/ap-heading-knob": {
+      "name": "Kursknopf (HDG-Marke)",
+      "text": "Dreht man diesen Knopf, stellt man den Kurs ein, den der Autopilot fliegen soll. Die Kursmarke, ein Zeiger am Kompass, bewegt sich mit. Drückt man den Knopf, setzt er die Marke oft auf den aktuellen Kurs.",
+      "context": "Der Pilot dreht ihn auf die Richtung, die der Lotse genannt hat, und lässt den Autopiloten dann folgen."
+    },
+    "ap-panel/ap-nav": {
+      "name": "Navigations-Taste (NAV)",
+      "text": "Diese Taste lässt den Autopiloten einem Navigationskurs folgen, zum Beispiel der GPS-Route oder dem Strahl eines Funkfeuers, statt einem festen Kurs.",
+      "context": "Der Pilot benutzt sie auf einem Flug entlang der Route, nachdem die Route im Navigationsgerät eingestellt ist."
+    },
+    "ap-panel/ap-approach": {
+      "name": "Anflug-Taste (APR)",
+      "text": "Diese Taste lässt den Autopiloten der Führung eines Anflugs folgen, zum Beispiel den Funkstrahlen eines ILS, die zu einer Piste hinunterführen.",
+      "context": "Der Pilot schaltet sie auf dem Weg zur Piste scharf. Der Autopilot richtet sich dann auf den Anflug aus."
+    },
+    "ap-panel/ap-backcourse": {
+      "name": "Back-Course-Taste (BC / REV)",
+      "text": "Diese Taste lässt den Autopiloten einem Localizer-Strahl von der Gegenseite folgen, dem sogenannten Back Course. Der Strahl führt normalerweise das Flugzeug zu einer Piste, hier wird er andersherum benutzt.",
+      "context": "Sie wird selten benutzt, nur bei Anflügen, die auf der Rückseite des Strahls geflogen werden."
+    },
+    "ap-panel/ap-altitude": {
+      "name": "Höhenhalte-Taste (ALT)",
+      "text": "Diese Taste lässt den Autopiloten die Höhe halten. Er hält das Flugzeug waagerecht auf der erreichten oder eingestellten Höhe und steigt oder sinkt vorher dorthin.",
+      "context": "Der Pilot drückt sie, wenn das Flugzeug auf die gewünschte Höhe gestiegen ist, um waagerecht zu fliegen."
+    },
+    "ap-panel/ap-vs": {
+      "name": "Steig-/Sinkraten-Taste (VS)",
+      "text": "Diese Taste lässt den Autopiloten mit einer gleichmäßigen Rate steigen oder sinken. Die Rate wird mit den Auf- und Ab-Tasten oder einem Rad eingestellt und auf der Anzeige in Fuß pro Minute gezeigt.",
+      "context": "Der Pilot benutzt sie für einen sanften Steig- oder Sinkflug auf eine eingestellte Höhe, wobei die Höheneinstellung das Ziel ist."
+    },
+    "ap-panel/ap-flc": {
+      "name": "Flight Level Change (FLC) und Geschwindigkeitstasten",
+      "text": "Flight Level Change lässt das Flugzeug auf die eingestellte Höhe steigen oder sinken und dabei eine eingestellte Geschwindigkeit halten. Der Geschwindigkeitsknopf stellt diese Geschwindigkeit ein, und die Geschwindigkeitstaste hält sie.",
+      "context": "Der Pilot benutzt es für schnelle Steig- und Sinkflüge, bei denen die Geschwindigkeit gleich bleiben soll."
+    },
+    "ap-panel/ap-vnav": {
+      "name": "Vertikalnavigations-Taste (VNAV)",
+      "text": "Diese Taste lässt den Autopiloten dem Steig- und Sinkweg des Flugplans folgen, sodass die Höhen entlang der Route von selbst eingehalten werden.",
+      "context": "Der Pilot benutzt sie in Flugzeugen mit einem Flugplan-Computer, für einen durchgehenden Sinkflug zum Ziel."
+    },
+    "ap-panel/ap-fd": {
+      "name": "Flight-Director-Taste (FD)",
+      "text": "Diese Taste zeigt den Flight Director, Führungsbalken auf der Hauptlageanzeige, die dem Piloten zeigen, wie er steuern muss, um den gewählten Betriebsarten zu folgen. Der Pilot kann den Balken von Hand folgen oder den Autopiloten das tun lassen.",
+      "context": "Der Pilot schaltet ihn vor dem Start oder dem Anflug ein. Der Autopilot nutzt dieselbe Führung."
+    },
+    "ap-panel/ap-level": {
+      "name": "Tasten Level, Bank, Yaw Damper und Couple",
+      "text": "LVL (Level) bringt die Flügel in die Waagerechte. BANK stellt den größten Querneigungswinkel ein, den der Autopilot benutzt. YD (Yaw Damper) beruhigt das Heck, damit das Flugzeug nicht hin und her schlingert. CPL (Couple) wählt, welcher Seite der Autopilot in der Führung folgt.",
+      "context": "Der Pilot benutzt Level, um sich aus einer ungewöhnlichen Lage zu erholen, und den Yaw Damper im Flug bei Flugzeugen, die einen haben."
+    },
+    "ap-panel/ap-nose": {
+      "name": "Nase hoch / Nase runter (Tasten des VS-Rads)",
+      "text": "Diese Tasten erhöhen oder senken das Ziel der Steig-/Sinkrate Schritt für Schritt, sodass das Flugzeug schneller oder langsamer steigt oder sinkt.",
+      "context": "Sie werden zusammen mit der VS-Taste benutzt."
+    },
+    "ap-panel/ap-altitude-knob": {
+      "name": "Höhenwahlknopf",
+      "text": "Dreht man diesen Knopf, stellt man die Höhe ein, auf die der Autopilot steigen oder sinken soll. Manche Felder haben einen Knopf für die Tausender und einen für die Hunderter Fuß. Drückt man den Knopf, wählt er eine andere Schrittweite oder die aktuelle Höhe.",
+      "context": "Der Pilot stellt die freigegebene Höhe vor dem Steigflug ein und drückt dann die Betriebsartentaste."
+    },
+    "ap-panel/ap-course-baro": {
+      "name": "Kurs- und Baro-Knöpfe",
+      "text": "Der Kursknopf stellt den Kurs ein, dem der Autopilot zu einem oder von einem Funkfeuer folgt. Der Baro-Knopf stellt den Luftdruck für die Höhenanzeige auf dem Autopilot-Feld ein.",
+      "context": "Der Pilot stellt den Kurs nach der Karte und den Luftdruck nach dem Wetterbericht ein."
+    },
+    "ap-panel/ap-active": {
+      "name": "Autopilot-Betriebsartenlampen (Active-Teile)",
+      "text": "Ein Teil mit Active im Namen gehört zur Autopilot-Taste mit gleichem Namen. Es steht für den leuchtenden Zustand der Taste, der zeigt, dass die Betriebsart eingeschaltet ist.",
+      "context": "Eine leuchtende Betriebsartentaste sagt dem Piloten, welche Aufgabe der Autopilot gerade erledigt."
+    },
+    "ap-panel/ap-autothrottle": {
+      "name": "Autothrottle- und Steigflugtasten",
+      "text": "Die Autothrottle-Taste lässt den Autopiloten die Schubhebel von selbst bewegen, um die gewählte Geschwindigkeit zu halten. Die Taste CLB CON wählt die Steigflugeinstellung.",
+      "context": "Der Pilot schaltet die Autothrottle für Start und Steigflug bei Flugzeugen scharf, die eine haben."
+    },
+    "ap-panel/ap-localizer": {
+      "name": "Localizer-Taste (LOC)",
+      "text": "Diese Taste lässt den Autopiloten dem Localizer folgen, dem Funkstrahl, der die Mittellinie einer Piste zeigt, sodass das Flugzeug sich auf die Piste ausrichtet.",
+      "context": "Der Pilot schaltet sie auf dem Weg zur Piste zu Beginn eines ILS-Anflugs scharf."
+    },
+    "ap-panel/ap-bank-limit": {
+      "name": "Querneigungs-Begrenzungsknopf",
+      "text": "Dieser Knopf stellt den größten Querneigungswinkel ein, also wie steil sich das Flugzeug in einer Kurve neigen darf, den der Autopilot benutzen darf.",
+      "context": "Der Pilot stellt eine sanfte Grenze für den Komfort der Passagiere ein."
+    },
+    "ap-panel/ap-lower": {
+      "name": "Autopilot- / Flight-Director-Schalter (Autotrim, Yaw Trim)",
+      "text": "Diese Schalter und Knöpfe gehören zum Autopiloten: der Schalter für Flight Director und Autopilot, die automatische Nicktrimmung und die Gierachsen-Trimmung. Der Simulator gibt nur die Namen.",
+      "context": "Der Pilot prüft sie, bevor er den Autopiloten benutzt."
+    },
+    "ap-panel/ap-bank-other": {
+      "name": "Weitere Autopilot-Bedienelemente",
+      "text": "Der Simulator benennt diese Bedienelemente nach dem Autopiloten. Der Rest des Namens sagt, welche Taste oder welcher Knopf es ist.",
+      "context": "Was genau sie tun, hängt vom Flugzeug ab."
+    },
+    "fms-cdu/cdu-keys": {
+      "name": "CDU-Tasten",
+      "text": "Die Tasten der Control Display Unit: Buchstaben und Zahlen zum Tippen, Zeilenwahltasten an den Seiten des Bildschirms, um eine Zeile zu wählen, und Seitentasten, um die Seite zu wechseln. EXEC übernimmt eine Änderung.",
+      "context": "Die Piloten geben hier vor dem Flug die Route ein. Der Autopilot folgt ihr dann."
+    },
+    "flaps-spoilers/flaps-lever": {
+      "name": "Landeklappenhebel",
+      "text": "Wird dieser Hebel bewegt, werden die Landeklappen ausgefahren oder eingefahren, die Teile hinten am Flügel, die nach hinten und unten ausfahren. Jede Raste des Hebels ist eine Klappenstellung. Manche Hebel haben eine Taste, die vor dem Bewegen gedrückt wird, oder eine Pumpe für Klappen, die mit Öldruck bewegt werden.",
+      "context": "Der Pilot fährt die Landeklappen für den Start ein Stück aus und für die Landung weiter und fährt sie danach wieder ein. Mit den Landeklappen kann das Flugzeug langsamer fliegen, ohne abzustürzen."
+    },
+    "flaps-spoilers/spoilers": {
+      "name": "Spoiler- / Bremsklappenhebel",
+      "text": "Wird dieser Hebel gezogen, werden die Spoiler hochgeklappt, Klappen oben auf dem Flügel. Sie stören den Auftrieb und erhöhen den Luftwiderstand, sodass das Flugzeug sinkt und langsamer wird.",
+      "context": "Der Pilot benutzt sie nach dem Aufsetzen, um das Flugzeug auf die Piste zu drücken, und in der Luft, um Höhe oder Geschwindigkeit abzubauen."
+    },
+    "trim/trim-elevator-wheel": {
+      "name": "Höhenruder-Trimmrad (Elevator Trim)",
+      "text": "Dieses Rad trimmt die Nase nach oben oder unten. Nach vorn gerollt geht die Nase nach unten, und die Knüppelkraft wird leichter. Nach hinten gerollt passiert das Gegenteil.",
+      "context": "Der Pilot rollt es nach jeder Änderung von Geschwindigkeit oder Leistung ein wenig, bis das Flugzeug waagerecht fliegt, ohne dass am Steuerhorn gedrückt werden muss."
+    },
+    "trim/trim-elevator-switch": {
+      "name": "Höhenruder-Trimmschalter (Elevator Trim)",
+      "text": "Dieser Schalter bewegt die Höhenruder-Trimmung mit einem Elektromotor. In die eine Richtung gedrückt trimmt er die Nase nach unten, in die andere nach oben. Er federt in die Mitte zurück.",
+      "context": "Bei Flugzeugen mit elektrischer Trimmung sitzt der Schalter oft am Steuerhorn oder Knüppel, damit der Pilot trimmen kann, ohne loszulassen."
+    },
+    "trim/trim-rudder": {
+      "name": "Seitenruder-Trimmknopf (Rudder Trim)",
+      "text": "Dieser Knopf trimmt das Seitenruder, den beweglichen Teil des Hecks, der die Nase nach links oder rechts dreht. Er hält die Nase gerade, ohne dass auf die Pedale gedrückt wird.",
+      "context": "Der Pilot stellt ihn nach, wenn sich die Triebwerksleistung ändert, weil mehr Leistung das Flugzeug zum Gieren bringt."
+    },
+    "trim/trim-aileron": {
+      "name": "Querruder-Trimmknopf (Aileron Trim)",
+      "text": "Dieser Knopf trimmt die Querruder, die Teile der Flügel, die das Flugzeug rollen lassen. Er hält die Flügel waagerecht, ohne dass der Knüppel zur Seite gehalten wird.",
+      "context": "Der Pilot benutzt ihn, wenn ein Flügel schwerer ist, zum Beispiel wenn der Kraftstoff ungleichmäßig verbraucht wird."
+    },
+    "yoke-pedals/yoke-buttons": {
+      "name": "Steuerhorn-Tasten (Mic, Front, Stick LR ...)",
+      "text": "Das Steuerhorn ist das Lenkrad des Flugzeugs. Seine Tasten können eine Sprechtaste (Mic) für das Funkgerät und weitere enthalten, die vom Flugzeug abhängen. Die Griffteile sind die Griffe. Werden sie nach links und rechts oder nach vorn und hinten bewegt, rollt und nickt das Flugzeug.",
+      "context": "Der Pilot fliegt die ganze Zeit mit diesen Teilen. Die Knotennamen sagen, welche Taste oder Bewegung gemeint ist."
+    },
+    "yoke-pedals/water-rudder": {
+      "name": "Wasserruder-Hebel",
+      "text": "Bei einem Wasserflugzeug mit Schwimmern sind die Wasserruder kleine Ruder unter den Schwimmern. Dieser Hebel senkt oder hebt sie, um auf dem Wasser zu lenken.",
+      "context": "Der Pilot senkt sie zum Rollen auf dem Wasser und hebt sie für Start und Landung."
+    },
+    "yoke-pedals/floats-skis": {
+      "name": "Schwimmer- und Skikästen",
+      "text": "Diese gehören zu den Schwimmer- oder Skibeschlägen eines Wasser- oder Schneeflugzeugs: ein Hebel an einem Kasten für die Ausrüstung und ein Dimmerschalter für ihre Lichter.",
+      "context": "Nur Flugzeuge mit Schwimmern oder Skiern haben sie."
+    },
+    "yoke-pedals/ballast": {
+      "name": "Wasserballast-Hebel",
+      "text": "Bei einem Segelflugzeug öffnet der Wasserballast-Hebel die Ventile, die Wasser aus den Tanks in den Flügeln ablassen. Das Wasser macht das Segelflugzeug für schnelle Flüge schwerer und wird vor der Landung abgelassen.",
+      "context": "Der Pilot lässt das Wasser ab, wenn es nicht mehr gebraucht wird oder vor der Landung."
+    },
+    "yoke-pedals/wipers": {
+      "name": "Scheibenwischer",
+      "text": "Dieser Schalter lässt die Scheibenwischer sich bewegen, um Regen von der Frontscheibe zu wischen.",
+      "context": "Der Pilot benutzt ihn bei Regen am Boden und im Flug."
+    },
+    "yoke-pedals/handling-other": {
+      "name": "Weitere Handhabungselemente",
+      "text": "Diese Handhabungsteile sind nur nach ihrer Art und dem benannt, was sie bedienen, zum Beispiel eine Trimmsperre oder ein Knüppel. Der Name sagt, welches. Was es tut, hängt vom Flugzeug ab.",
+      "context": "Sie werden zusammen mit den Hauptsteuerelementen des Flugzeugs benutzt."
+    },
+    "gear-handle/gear-lever": {
+      "name": "Fahrwerkshebel",
+      "text": "Wird dieser Hebel gezogen, kommen die Räder herunter. In die andere Richtung geschoben klappen sie ins Flugzeug hoch. Ein Hakenhebel bei manchen Flugzeugen senkt einen Fanghaken am Heck.",
+      "context": "Der Pilot fährt das Fahrwerk nach dem Start ein und vor der Landung aus. Grüne Lichter zeigen meist, dass die Räder unten und verriegelt sind."
+    },
+    "brakes/parking-brake": {
+      "name": "Feststellbremse",
+      "text": "Dieses Bedienelement setzt oder löst die Feststellbremse. Ist sie gesetzt, bleiben die Räder gebremst, wie bei der Handbremse eines Autos.",
+      "context": "Der Pilot setzt sie vor dem Triebwerksstart und löst sie, bevor er losrollt."
+    },
+    "flight-instruments/altimeter-knob": {
+      "name": "Höhenmesser-Knopf (Luftdruckeinstellung)",
+      "text": "Dreht man diesen Knopf, stellt man den örtlichen Luftdruck am Höhenmesser ein, der Höhenanzeige. Der Höhenmesser zeigt dann die richtige Höhe.",
+      "context": "Der Pilot stellt den Luftdruck nach dem Wetterbericht vor dem Start ein und im Flug, wenn er sich ändert."
+    },
+    "flight-instruments/airspeed-knob": {
+      "name": "Fahrtmesser-Knopf",
+      "text": "Dieser Knopf gehört zum Fahrtmesser, der Geschwindigkeitsanzeige. Er bewegt eine Marke auf der Anzeige.",
+      "context": "Der Pilot nutzt die Marke, um sich eine Geschwindigkeit zu merken, die er beobachten will."
+    },
+    "flight-instruments/attitude-knob": {
+      "name": "Knopf des künstlichen Horizonts",
+      "text": "Dieser Knopf gehört zum künstlichen Horizont, der zeigt, ob die Nase oben oder unten ist und die Flügel waagerecht sind. Dreht man ihn, bewegt sich das kleine Flugzeugsymbol, und Ziehen kann den Kreisel aufrichten.",
+      "context": "Der Pilot stellt ihn so ein, dass das Symbol im Geradeausflug auf der Horizontlinie sitzt."
+    },
+    "flight-instruments/compass-heading": {
+      "name": "Kurs- / Kompassknopf",
+      "text": "Dieser Knopf stellt die Kursmarke auf der Kursanzeige ein oder richtet die Kompassrose aus.",
+      "context": "Der Pilot gleicht die Rose von Zeit zu Zeit mit dem Magnetkompass ab, weil Kreisel langsam wegdriften."
+    },
+    "flight-instruments/cdi-course": {
+      "name": "CDI-Kursknopf (OBS)",
+      "text": "Das CDI ist die Kursnadel, die dem Piloten sagt, links oder rechts von einem Funkstrahl zu fliegen. Dieser Knopf stellt den Kurs ein, auf den sich die Nadel bezieht.",
+      "context": "Der Pilot stellt den Kurs des Funkfeuers oder der Piste ein, bevor er darauf zufliegt."
+    },
+    "flight-instruments/clock": {
+      "name": "Uhrentasten und -knopf",
+      "text": "Diese Tasten und dieser Knopf stellen die Uhr ein, schalten sie zwischen Zeit, Datum und Zeitmesser um und starten oder stoppen den Zeitmesser. OAT zeigt auf derselben Anzeige die Außenlufttemperatur.",
+      "context": "Der Pilot nutzt den Zeitmesser, um Abschnitte des Fluges zu stoppen."
+    },
+    "flight-instruments/accelerometer": {
+      "name": "Bedienelemente des Beschleunigungsmessers (G-Meter)",
+      "text": "Der Beschleunigungsmesser zeigt, wie stark der Druck in den Sitz in Kurven und beim Hochziehen ist. Seine Tasten setzen die Anzeigen zurück und stellen die Anzeige ein.",
+      "context": "Der Pilot setzt ihn vor einem Kunstflug zurück, um danach den höchsten Wert abzulesen."
+    },
+    "flight-instruments/instrument-other": {
+      "name": "Weitere Instrumenten-Bedienelemente",
+      "text": "Diese Teile gehören zu einem Instrument. Der Rest des Namens sagt, zu welchem. Was der Knopf oder die Taste tut, hängt vom Flugzeug ab.",
+      "context": "Der Pilot stellt die Instrumente vor dem Flug ein."
+    },
+    "cabin-air/cabin-heat": {
+      "name": "Bedienelemente für Kabinenheizung / Kabinenluft",
+      "text": "Diese Bedienelemente lassen warme Luft oder Frischluft in die Kabine. Offen strömt die Luft ein. Die Luft kommt für die Wärme vom Triebwerk und für die Frischluft von draußen. Größere Flugzeuge haben einen Knopf für die Temperatur der Kabine, des Cockpits und des Frachtraums.",
+      "context": "Der Pilot öffnet die Heizung bei kaltem Wetter und die Luft bei warmem Wetter."
+    },
+    "cabin-air/pressurization": {
+      "name": "Druckkabine, Sauerstoff und Zapfluft",
+      "text": "Diese Bedienelemente gehören zum Kabinendrucksystem und zur Sauerstoffversorgung. Die Druckkabine hält die Luft in der Kabine dichter als die dünne Luft draußen. Sauerstoff ist das Atemgas für große Höhen.",
+      "context": "Der Pilot stellt sie bei Flugzeugen ein, die hoch fliegen, und prüft sie zu Beginn des Fluges."
+    },
+    "cabin-air/window-control": {
+      "name": "Fenster- und Lüftungsgriffe",
+      "text": "Diese Griffe öffnen oder schließen ein Fenster oder eine Lüftung des Cockpits.",
+      "context": "Piloten öffnen am Boden ein kleines Fenster für Luft. In der Luft ist es geschlossen."
+    },
+    "doors/door-handles": {
+      "name": "Tür-, Ausgangs- und Kabinendachgriffe",
+      "text": "Diese Griffe öffnen und schließen eine Tür, einen Notausgang oder ein Kabinendach. Der Name sagt, welche Tür gemeint ist: links oder rechts, vorn oder hinten. Notausgangsgriffe öffnen einen Ausgang für die Besatzung im Notfall.",
+      "context": "Der Pilot prüft vor dem Start, dass die Türen verriegelt sind. Eine nicht verriegelte Tür kann im Flug aufgehen."
+    },
+    "safety/elt": {
+      "name": "ELT-Schalter (Notsender)",
+      "text": "Der ELT ist ein kleiner Funksender, der nach einem Absturz ein Notsignal sendet. Dieser Schalter macht ihn scharf, schaltet ihn ein oder testet ihn. Ein Teil namens Active gehört zu seiner Lampe.",
+      "context": "Der Pilot prüft vor dem Flug, dass er scharf ist, und schaltet ihn bei einer Notlandung ein."
+    },
+    "safety/alternate-static": {
+      "name": "Alternative statische Druckquelle",
+      "text": "Dieses Bedienelement öffnet eine andere Stelle, über die der Luftdruck zu den Anzeigen für Geschwindigkeit, Höhe und Steigen gelangt, falls die normale Öffnung außen blockiert ist. Drücken oder Ziehen schaltet auf die Luft des Cockpits um.",
+      "context": "Der Pilot benutzt es nur, wenn die Instrumente falsche Werte zeigen, zum Beispiel nachdem Eis die normale Öffnung blockiert hat."
+    },
+    "safety/warning-lights": {
+      "name": "Caution-, Warning- und Testtasten",
+      "text": "Die Tasten Caution und Warning sind die großen Lampen, die sagen 'etwas braucht Aufmerksamkeit' (Caution) oder 'jetzt Gefahr' (Warning). Drücken bestätigt die Meldung. Die Testtaste lässt alle Warnlampen leuchten, um zu prüfen, dass sie funktionieren.",
+      "context": "Der Pilot drückt Test vor dem Flug und bestätigt Meldungen, wenn sie erscheinen."
+    },
+    "safety/safety-light": {
+      "name": "Lichtschalter (Sicherheit)",
+      "text": "Der Simulator führt diesen Schalter unter der Sicherheitsausrüstung und nennt ihn Light. Es ist ein Lichtschalter. Der Name sagt nicht, welche Lampe gemeint ist.",
+      "context": "Was genau er tut, hängt vom Flugzeug ab, das ihn hat."
+    },
+    "safety/safety-other": {
+      "name": "Weitere Sicherheits-Bedienelemente",
+      "text": "Der Simulator benennt diese Bedienelemente nach der Sicherheitsausrüstung. Der Rest des Namens sagt, welches Bedienelement es ist. Was es tut, hängt vom Flugzeug ab.",
+      "context": "Sie werden benutzt, wenn etwas nicht stimmt, oder für Tests."
+    },
+    "airliner-audio/comnav-panel": {
+      "name": "Betriebsartentasten des Funkfelds (VHF, HF, SAT, XPDR, WXR ...)",
+      "text": "Diese Tasten gehören zu einem Funkverwaltungsfeld. Sie wählen die Funkart für eine Einstellzeile (VHF, HF, Satellit, Daten), und weitere Tasten rufen den Transponder, das Wetterradar, das Menü und die nächste oder vorige Seite auf oder löschen einen Eintrag.",
+      "context": "Der Pilot stellt auf diesem Feld ein Funkgerät ein und spricht dann über das Audiofeld darauf."
+    },
+    "airliner-audio/boeing-audio": {
+      "name": "Audioempfänger-Tasten und -Knöpfe (VHF, HF, SAT, PA, CAB)",
+      "text": "Jede Taste dieses Audiofelds lässt den Piloten ein Funkgerät hören, und der Knopf daneben stellt seine Lautstärke ein. Die Namen sagen, welches: VHF links, Mitte und rechts (Sprechfunk), HF (Langstrecke), SAT (Satellit), PA (Durchsagen an die Kabine), FLT und CAB (Rufe zum Cockpit und zur Kabine). Die LED-Teile sind die kleinen Lampen der Tasten.",
+      "context": "Der Pilot drückt die Taste des Funkgeräts, auf dem er sprechen will, und spricht mit dem Sprechtasten-Schalter. Mehrere Funkgeräte können gleichzeitig gehört werden."
+    },
+    "airliner-displays/ddi-mfd": {
+      "name": "Tasten und Knöpfe der Anzeigen (DDI, MFD, EFD, ECAM, EICAS)",
+      "text": "Diese Tasten und Knöpfe gehören zu den Bildschirmen vor den Piloten. Tasten rund um einen Bildschirm wählen das Wort, das auf dem Bildschirm daneben steht. Knöpfe stellen den Kartenmaßstab, die Helligkeit, die Luftdruckeinstellung oder die Mindesthöhe für einen Anflug ein.",
+      "context": "Die Piloten benutzen sie während des ganzen Fluges. Dieselbe Taste tut auf verschiedenen Seiten verschiedene Dinge."
+    },
+    "airliner-systems/stab-trim": {
+      "name": "Stabilizer-Trimmschalter (Alternate, Interrupt)",
+      "text": "Der Stabilizer ist die große bewegliche Fläche am Heck, die die Nase oben oder unten hält. Diese Schalter gehören zu seiner elektrischen Trimmung: Einer wählt eine alternative Art der Trimmung, und ein Unterbrecherschalter (unter einer Abdeckung) schaltet den Trimmmotor ab.",
+      "context": "Die Piloten benutzen sie nur, wenn die Trimmung sich falsch verhält, zum Beispiel wenn sie von selbst weiterläuft."
+    },
+    "airliner-systems/fans": {
+      "name": "Ventilatoren in Cockpit und Kabine",
+      "text": "Dieser Schalter schaltet einen Ventilator ein, der die Luft im Cockpit oder in der Kabine bewegt. Bewegte Luft lässt einen warmen Raum kühler wirken.",
+      "context": "Der Pilot benutzt ihn am Boden und bei warmem Wetter."
+    },
+    "airliner-systems/radio-master": {
+      "name": "Radio-Master- und Notfunk-Schalter",
+      "text": "Der Radio-Master-Schalter gibt den Funkgeräten Strom. Der Notfunk-Schalter schaltet ein Funkgerät für Notfälle ein. Der Simulator sagt nur die Namen.",
+      "context": "Der Pilot schaltet den Radio Master zusammen mit der übrigen Avionik ein."
+    },
+    "airliner-systems/standby-power": {
+      "name": "Standby- / Außenstrom- und Sammelschienenschalter",
+      "text": "Diese Schalter wählen den Standby-Strom oder den Außenstrom für eine Gruppe von Stromleitungen (eine Sammelschiene), und eine Abdeckung schützt den Stromschalter. Der Simulator sagt nur die Namen.",
+      "context": "Die Piloten benutzen sie am Boden und wenn der normale Strom ausfällt."
+    },
+    "airliner-systems/glider-instruments": {
+      "name": "VSI- und ACD-Instrumententasten",
+      "text": "Das sind die kleinen Tasten einer Instrumenteneinheit. VSI ist eine Anzeige der Steig- und Sinkrate, die zeigt, wie schnell das Flugzeug steigt oder sinkt. Die Tasten ändern, was die Einheit zeigt.",
+      "context": "Der Pilot benutzt sie, um die Anzeigeart des Instruments zu ändern."
+    },
+    "airliner-systems/ovhd-switches": {
+      "name": "Schalter der Dachkonsole",
+      "text": "Das sind die Schalter, Drucktasten und Schutzabdeckungen der Dachkonsole und ihrer Nachbarn: Stromsammelschienen, der Standby-Strom, der Notfunk, die Abschaltung der Stabilizer-Trimmung und Ventilatoren. Der Name sagt, zu welchem System ein Teil gehört, und eine Abdeckung schützt den Schalter darunter.",
+      "context": "Die Piloten stellen sie in der Startvorbereitung ein und benutzen sie in Notfällen. Manche Schalter sind nur wichtig, wenn etwas ausfällt."
+    },
+    "airliner-systems/hydraulics": {
+      "name": "Hydraulikpumpen und Bedarfsregler",
+      "text": "Hydraulik ist Öl unter hohem Druck, das schwere Teile des Flugzeugs bewegt, zum Beispiel das Fahrwerk, die Landeklappen und die Steuerflächen. Diese Schalter schalten die Hydraulikpumpen ein und aus und stellen ein, wie viel sie liefern.",
+      "context": "Die Piloten prüfen die Hydraulikpumpen vor dem Flug und beobachten sie, wenn eine Druckwarnung erscheint."
+    },
+    "airliner-systems/airliner-elec": {
+      "name": "Elektrische Drucktasten der Verkehrsflugzeuge (Sammelschiene, Antrieb, Kupplung)",
+      "text": "Diese Tasten und Schalter verbinden die Generatoren und die Stromleitungen (Sammelschienen) eines großen Flugzeugs miteinander und verbinden den Antrieb eines Generators mit seinem Triebwerk. Eine Taste mit einem leuchtenden Teil zeigt ihren Zustand.",
+      "context": "Die Piloten stellen sie in der Startvorbereitung ein und benutzen sie, um einen fehlerhaften Teil abzutrennen, wenn ein Generator oder eine Sammelschiene ausfällt."
+    },
+    "airliner-systems/airliner-fuel": {
+      "name": "Kraftstoffpumpen- und Ventiltasten der Verkehrsflugzeuge",
+      "text": "In einem großen Flugzeug hat jeder Kraftstofftank eigene Pumpen und Ventile, die mit Drucktasten geschaltet werden. Andere Tasten pumpen Kraftstoff zwischen den Tanks um oder lassen ihn im Notfall ab.",
+      "context": "Die Piloten schalten die Pumpen vor dem Triebwerksstart ein und verwalten die Tanks im Flug, damit das Flugzeug im Gleichgewicht bleibt."
+    },
+    "airliner-systems/airliner-engine": {
+      "name": "Triebwerks-Master, Schubumkehr und Betriebsartenschalter",
+      "text": "Diese Bedienelemente gehören zu den Triebwerken des Flugzeugs: der Master-Schalter eines Triebwerks, die Schubumkehr, die das Flugzeug nach der Landung abbremst, die Betriebsart des Triebwerkscomputers und das Kühlmittel. Der Name sagt das genaue Teil.",
+      "context": "Die Piloten benutzen sie beim Triebwerksstart und bei der Landung. Welche Bedienelemente es gibt, hängt von den Triebwerken ab."
+    },
+    "airliner-systems/airliner-air": {
+      "name": "Klimaanlage, Passagier- und Kabinenfelder",
+      "text": "Diese Bedienelemente stellen die Klimaanlage und die Temperatur von Cockpit, Kabine und Fracht ein und schalten die Anschnallzeichen sowie die Kabinen- und Cockpitlichter.",
+      "context": "Die Piloten stellen die Kabinentemperatur früh im Flug und die Zeichen für Start und Landung ein."
+    },
+    "airliner-systems/fire": {
+      "name": "Feuergriffe und Absperrung",
+      "text": "Feuergriffe und -tasten sperren den Kraftstoff und den Strom eines Triebwerks oder Raums ab, der brennt, und lösen den Feuerlöscher aus. Das Teil sitzt in den meisten Flugzeugen unter einer Abdeckung.",
+      "context": "Die Piloten benutzen sie nur in einem Brandnotfall und folgen dabei der Checkliste."
+    },
+    "sim-helpers/decal": {
+      "name": "Decal / Schild (aufgedruckter Text)",
+      "text": "Ein Decal ist ein aufgedrucktes Schild auf der Tafel. Es sagt dem Piloten, wofür ein Schalter oder Hebel in der Nähe da ist, und hat keine eigene Funktion.",
+      "context": "Es hilft nur beim Lesen der Tafel. Das Bedienelement daneben erledigt die Arbeit."
+    },
+    "sim-helpers/helper-area": {
+      "name": "Helper-Klickfläche",
+      "text": "Ein Helper ist eine unsichtbare oder größere Fläche um ein Bedienelement, die das Anklicken mit der Maus erleichtert. Er gehört zum Bedienelement mit dem gleichen Namen.",
+      "context": "Es ist eine Erleichterung des Simulators und kein Teil eines echten Flugzeugs."
+    },
+    "sim-helpers/seq-part": {
+      "name": "Animations- / Sequenzteil",
+      "text": "Ein Teil mit SEQ im Namen gehört zur Animation der Taste oder des Schalters mit gleichem Namen. Ein Teil mit LED im Namen ist die kleine Lampe einer Taste.",
+      "context": "Es ist Teil des Modells des Bedienelements und hat keine eigene Aufgabe."
+    },
+    "sim-helpers/hardware-parts": {
+      "name": "Unterlegscheiben, Schrauben und Halterungen",
+      "text": "Das sind Dekoteile des Cockpit-Modells, zum Beispiel Unterlegscheiben, Schrauben, der Griff eines Hebels oder Teile von Seil und Gestänge, die einen Hebel bewegen. Sie lassen das Modell richtig aussehen.",
+      "context": "Sie sind keine Bedienelemente. Manche gehören zu einem Hebel und bewegen sich mit ihm."
+    },
+    "sim-helpers/sim-dummy": {
+      "name": "Dummy- und leere Teile",
+      "text": "Ein Dummy ist ein Platzhalterteil im Modell, das oft für ein Instrument oder ein Bedienelement steht. Ein leeres Instrument ist eine Anzeige ohne eigene Funktion. Eine Tablet-Taste gehört zum Tablet, das manche Cockpits zeigen.",
+      "context": "Sie helfen dem Modell, im Simulator zu funktionieren. Ein Dummy ist kein eigenes Bedienelement."
+    },
+    "sim-helpers/coded-names": {
+      "name": "Teile mit einem kurzen Codenamen",
+      "text": "Der Simulator benennt diese Teile mit einem kurzen Code wie RR oder FE und einer Zahl und erklärt ihn nicht. Es sind Wahlschalter, Knöpfe oder Schalter des Cockpit-Modells.",
+      "context": "Der Code ist alles, was bekannt ist. Das Cockpitbild zeigt, wo das Teil sitzt."
+    },
+    "other-systems/other-elec": {
+      "name": "Weitere elektrische Teile",
+      "text": "Der Simulator benennt diese Teile nach dem elektrischen System. Der Rest des Namens sagt, was es ist, zum Beispiel ein Schalter, eine Sammelschiene, ein Sicherungsautomat, ein Anlasser oder eine Abdeckung.",
+      "context": "Sie sitzen auf dem Elektrikfeld des Flugzeugs."
+    },
+    "other-systems/other-lighting": {
+      "name": "Weitere Lichtteile",
+      "text": "Der Simulator benennt diese Teile nach den Lichtern. Der Rest des Namens sagt, welche Lichter: Tafel, Kabine, Instrumente, ein Bildschirm oder ein Außenlicht.",
+      "context": "Lichtknöpfe dimmen meist eine Gruppe von Lichtern, Lichtschalter schalten eine Lampe ein oder aus."
+    },
+    "other-systems/other-fuel": {
+      "name": "Weitere Kraftstoffteile",
+      "text": "Der Simulator benennt diese Teile nach dem Kraftstoffsystem: Pumpen, Ventile, Wahlschalter und Hebel für die Tanks.",
+      "context": "Sie sitzen auf dem Kraftstoffbedienfeld des Flugzeugs."
+    },
+    "other-systems/other-engine": {
+      "name": "Weitere Triebwerksteile",
+      "text": "Der Simulator benennt diese Teile nach dem Triebwerk: Hebel, Schalter und Drucktasten für den Triebwerksstart, die Leistung und die Triebwerkseinstellungen.",
+      "context": "Der Pilot benutzt sie, um das Triebwerk zu starten und seine Leistung einzustellen."
+    },
+    "other-systems/other-deice": {
+      "name": "Weitere Eisschutzteile",
+      "text": "Der Simulator benennt diese Teile nach dem Eisschutz: Heizungen und Enteisung für die Flügel, das Triebwerk, den Propeller und die Sonden.",
+      "context": "Der Pilot benutzt sie beim Flug in kalter, nasser Luft."
+    },
+    "other-systems/other-nav": {
+      "name": "Weitere Navigations- und Kommunikationsteile",
+      "text": "Der Simulator benennt diese Teile nach den Funkgeräten: Kommunikation, Navigation, Peilempfänger und Transponder.",
+      "context": "Der Pilot benutzt sie, um die Funkgeräte einzustellen und zu wählen, welches Funkgerät gehört oder besprochen wird."
+    },
+    "other-systems/other-ap": {
+      "name": "Weitere Autopilot-Teile",
+      "text": "Der Simulator benennt diese Teile nach dem Autopiloten: Tasten, Knöpfe und Wahlschalter für seine Betriebsarten und Zahlen.",
+      "context": "Der Pilot benutzt sie, um dem Autopiloten zu sagen, was er fliegen soll."
+    },
+    "other-systems/other-handling": {
+      "name": "Weitere Handhabungsteile",
+      "text": "Der Simulator benennt diese Teile nach der Handhabung des Flugzeugs: Landeklappen, Trimmung, Bremsen, das Steuerhorn, das Fahrwerk und die Griffe.",
+      "context": "Der Pilot benutzt sie, um zu fliegen und das Flugzeug am Boden zu bewegen."
+    },
+    "other-systems/other-cabin": {
+      "name": "Weitere Kabinen- und Luftteile",
+      "text": "Der Simulator benennt diese Teile nach der Kabine, der Luft, der Sicherheitsausrüstung und den Instrumenten.",
+      "context": "Der Pilot benutzt sie für den Komfort und die Sicherheit des Fluges."
+    },
+    "other-systems/single-names": {
+      "name": "Teile einzelner Flugzeuge (mit eigenem Namen)",
+      "text": "Diese Teile gibt es nur in einem oder zwei Flugzeugen. Der Simulator gibt jedem einen Namen, der sagt, was es ist, zum Beispiel ein Lüftungsknopf, ein Skibedienelement, ein Katapultschalter oder eine Testtaste, und nichts weiter. Der Leitfaden kann nicht sicher mehr sagen.",
+      "context": "Wo das Teil sitzt, zeigt das Cockpitbild. Der Name am Hinweis ist der eigene Name des Simulators."
+    }
+  }
+}

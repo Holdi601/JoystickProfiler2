@@ -1,0 +1,4040 @@
+{
+  "format": "joypro-cockpit-guide",
+  "version": 1,
+  "id": "dcs-f-4e-part4",
+  "partOf": "dcs-f-4e",
+  "areas": [
+    {
+      "id": "wso-front",
+      "where": "front-center",
+      "name": "WSO cockpit: Front panel (upfront indicators)",
+      "text": "The front panel in the back seat. The weapon systems officer (WSO) sits behind the pilot and has his own set of flight instruments, warning lights and the radar warning scope.",
+      "panels": [
+        {
+          "id": "wso-upfront",
+          "name": "Upfront indicators (WSO)",
+          "db": "wso-upfront",
+          "src": "m1",
+          "page": "185",
+          "text": "The flight instruments, warning lights and radar cues across the WSO's front panel. They let him follow the flight and the engines from the back seat.",
+          "context": "The WSO reads speed, height and direction from here while he works the radar. The WSO has no reset button for the caution light.",
+          "controls": [
+            {
+              "id": "wso-standby-compass",
+              "name": "Standby magnetic compass (WSO)",
+              "type": "gauge",
+              "match": [
+                "item:wso-upfront:1"
+              ],
+              "text": "A simple magnetic compass for the back seat, used if the main direction instruments fail.",
+              "context": "It is only reliable in level flight.",
+              "src": "m1",
+              "page": "185"
+            },
+            {
+              "id": "wso-ejection-select",
+              "name": "Command ejection select handle",
+              "type": "switch2",
+              "match": [
+                "PNT_WSO_EJECTION_SEL_VALVE",
+                "item:wso-upfront:2"
+              ],
+              "positions": [
+                {
+                  "name": "WSO ONLY",
+                  "text": "Handle vertical (valve closed): only the rear seat is ejected."
+                },
+                {
+                  "name": "BOTH",
+                  "text": "Handle horizontal (valve open): both crew members are ejected."
+                }
+              ],
+              "text": "Chooses whether an ejection started by the WSO shoots out only the rear seat or both seats. The game's hint is 'Ejection Command Selector'.",
+              "context": "Only the WSO's own ejection is affected by it.",
+              "src": "m1",
+              "page": "186"
+            },
+            {
+              "id": "wso-course-indicator",
+              "name": "Course indicator and course set knob",
+              "type": "gauge",
+              "match": [
+                "UpFront_localizer_knob_low_help",
+                "item:wso-upfront:3"
+              ],
+              "text": "A dial for landing approaches that shows how far the plane is left or right of the runway beam and above or below the glide path. A knob at its lower left sets the course. The game's hint is 'Set Course'.",
+              "context": "It does not work with TACAN or VOR; warning flags show when the signal is lost.",
+              "src": "m1",
+              "page": "186"
+            },
+            {
+              "id": "wso-marker-beacon",
+              "name": "Marker beacon lamp",
+              "type": "button",
+              "match": [
+                "UpFront_localizer_adv_light_help",
+                "item:wso-upfront:4"
+              ],
+              "text": "A lamp that lights when the plane passes over a marker beacon near a runway. It can be pushed to test and turned to dim.",
+              "context": "A tone is heard in the intercom at the same time.",
+              "src": "m1",
+              "page": "187"
+            },
+            {
+              "id": "wso-ky28-indicator",
+              "name": "KY-28 mode indicator",
+              "type": "light",
+              "match": [
+                "UpFront_ky58_mode_light_body_U_help",
+                "UpFront_ky58_mode_light_body_D_help",
+                "item:wso-upfront:5"
+              ],
+              "count": 2,
+              "text": "Two lamps. P shows the voice scrambler is in plain (not coded) mode, C that it is in cipher (coded) mode. Both can be pushed to test and turned to dim.",
+              "context": "Radio talk needs the plain mode.",
+              "src": "m1",
+              "page": "187"
+            },
+            {
+              "id": "wso-master-caution",
+              "name": "MASTER CAUTION light (repeater)",
+              "type": "light",
+              "match": [
+                "item:wso-upfront:6"
+              ],
+              "text": "A light that repeats the pilot's master caution light, so the WSO knows a problem needs attention.",
+              "context": "There is no reset button for the WSO; the pilot must reset it.",
+              "src": "m1",
+              "page": "188"
+            },
+            {
+              "id": "wso-shoot-light",
+              "name": "SHOOT light",
+              "type": "light",
+              "match": [
+                "item:wso-upfront:7"
+              ],
+              "text": "A light that glows when the conditions for firing a missile are met. It stays dark for visual intercepts and ground attacks.",
+              "context": "The WSO watches it while locking a target.",
+              "src": "m1",
+              "page": "189"
+            },
+            {
+              "id": "wso-rwr-display",
+              "name": "RWR azimuth indicator and brightness knob",
+              "type": "display",
+              "match": [
+                "PNT_WSO_RWR_KNOB",
+                "item:wso-upfront:8"
+              ],
+              "text": "A small round screen that shows enemy radars as marks around a centre. The knob at its lower left sets the brightness. The buttons next to it control the warning receiver.",
+              "context": "The closer a mark is to the centre, the more dangerous it is.",
+              "src": "m1",
+              "page": "189"
+            },
+            {
+              "id": "wso-target-contrast",
+              "name": "Target contrast switch (Maverick)",
+              "type": "switch3",
+              "match": [
+                "PNT_WSO_CORR_SWITCH",
+                "item:wso-upfront:9"
+              ],
+              "positions": [
+                {
+                  "name": "WHT/BLK",
+                  "text": "A light target on a dark background."
+                },
+                {
+                  "name": "AUTO",
+                  "text": "The automatic tracking mode."
+                },
+                {
+                  "name": "BLK/WHT",
+                  "text": "A dark target on a light background."
+                }
+              ],
+              "text": "Tells a Maverick missile whether to look for a light target on dark ground, a dark target on light ground, or choose by itself. The game labels it 'Maverick Contrast-Lock Polarity' and gives it no command.",
+              "context": "It sets the seeker coding, not the picture. It is only for the AGM-65A and B.",
+              "src": "m1",
+              "page": "190"
+            },
+            {
+              "id": "wso-ml-audio",
+              "name": "ML audio knob (missile launch warning)",
+              "type": "knob",
+              "match": [
+                "Rwr_panel_polar_mode_help",
+                "item:wso-upfront:10"
+              ],
+              "text": "Sets the volume of the tones that warn the WSO about a missile attack. The game's hint is 'RWR Missile Launch Audio Volume'.",
+              "context": "The game's name for the part is 'polar mode', but its label is the volume.",
+              "src": "m1",
+              "page": "191"
+            },
+            {
+              "id": "wso-aoa-indexer",
+              "name": "Angle of attack indexer",
+              "type": "light",
+              "match": [
+                "item:wso-upfront:11"
+              ],
+              "text": "A pair of lights that show quickly whether the plane is too slow, on speed or too fast for landing. They can also show weapon steering cues.",
+              "context": "They only light with the right gear down.",
+              "src": "m1",
+              "page": "191"
+            },
+            {
+              "id": "wso-apx81-lights",
+              "name": "APX-81A activity lights",
+              "type": "light",
+              "match": [
+                "item:wso-upfront:12"
+              ],
+              "text": "Lights beside the indexers that glow when the Combat Tree system sees an answer from an enemy IFF box.",
+              "context": "In the game they only light if a transponder answers a challenge sent by the own plane.",
+              "src": "m1",
+              "page": "193"
+            },
+            {
+              "id": "wso-range-indicator",
+              "name": "Range (VISIDENT) indicator",
+              "type": "display",
+              "match": [
+                "item:wso-upfront:13"
+              ],
+              "text": "A display of the radar range inside 2 nautical miles, and the speed at which the range changes inside 9000 feet, when a target is locked in visual intercept or the narrow and wide B modes.",
+              "context": "It is turned off in AIR-GRD mode.",
+              "src": "m1",
+              "page": "194"
+            },
+            {
+              "id": "wso-clock",
+              "name": "8-day clock (WSO, set knob)",
+              "type": "knob",
+              "match": [
+                "PNT_1052"
+              ],
+              "text": "A clock with hour and minute hands. The knob at its lower left sets the time (pulled out and turned).",
+              "context": "It has a stopwatch with its own button.",
+              "src": "m1",
+              "page": "194"
+            },
+            {
+              "id": "wso-stopwatch",
+              "name": "Stopwatch button (WSO)",
+              "type": "button",
+              "match": [
+                "PNT_CLOCK_RESET_wso"
+              ],
+              "text": "The top right button of the clock starts, stops and resets the stopwatch.",
+              "context": "The WSO uses it to time parts of the flight.",
+              "src": "m1",
+              "page": "194"
+            },
+            {
+              "id": "wso-accelerometer",
+              "name": "Accelerometer (G-meter) and reset button",
+              "type": "button",
+              "match": [
+                "PNT_RIO_G_RESET",
+                "item:wso-upfront:14"
+              ],
+              "text": "A meter for G forces with three pointers: the present load and the highest positive and negative loads. Pushing the button sets the maxima back to 1 G.",
+              "context": "It is the same instrument as the pilot's.",
+              "src": "m1",
+              "page": "195"
+            },
+            {
+              "id": "wso-turn-indicator",
+              "name": "Turn indicator",
+              "type": "gauge",
+              "match": [
+                "item:wso-upfront:15"
+              ],
+              "text": "A four-minute turn indicator with a needle and a slip ball. Putting the needle on a side mark gives a turn of 360 degrees in four minutes.",
+              "context": "It is a backup instrument for flying in clouds.",
+              "src": "m1",
+              "page": "195"
+            },
+            {
+              "id": "wso-nav-mode-switch",
+              "name": "Navigation mode selector switch (BDHI needles)",
+              "type": "switch3",
+              "match": [
+                "PNT_RIO_TACAN_NAV_FUNCTION_SELECTOR_SWITCH",
+                "item:wso-upfront:16"
+              ],
+              "positions": [
+                {
+                  "name": "UHF/ADF",
+                  "text": "Needle 1 shows the UHF direction finder, needle 2 the TACAN station."
+                },
+                {
+                  "name": "VOR",
+                  "text": "Needle 1 shows the VOR station, needle 2 the TACAN station."
+                },
+                {
+                  "name": "NAV COMP",
+                  "text": "Needle 1 shows the bearing to the navigation computer target, needle 2 the ground track."
+                }
+              ],
+              "text": "Chooses what the two needles of the BDHI (the bearing and distance dial) point to. The game's hint is 'Select Navigation Input'.",
+              "context": "Up shows the radio direction finder and TACAN, the middle VOR and TACAN, and down the navigation computer.",
+              "src": "m1",
+              "page": "196"
+            },
+            {
+              "id": "wso-groundspeed",
+              "name": "Ground speed indicator",
+              "type": "gauge",
+              "match": [
+                "item:wso-upfront:17"
+              ],
+              "text": "A counter that shows the speed over the ground in knots, from 0 to 1999. It needs the inertial navigation system for a good value.",
+              "context": "With the system off it can show up to 150 knots while the plane stands still.",
+              "src": "m1",
+              "page": "197"
+            },
+            {
+              "id": "wso-tas",
+              "name": "True airspeed indicator",
+              "type": "gauge",
+              "match": [
+                "item:wso-upfront:18"
+              ],
+              "text": "A counter with the real speed through the air in knots, calibrated from 150 to 1500 knots.",
+              "context": "Values below 150 knots are not reliable.",
+              "src": "m1",
+              "page": "197"
+            },
+            {
+              "id": "wso-uhf-remote",
+              "name": "UHF remote channel indicator",
+              "type": "display",
+              "match": [
+                "item:wso-upfront:19"
+              ],
+              "text": "A small window with the radio channel in use. It shows M for manual, G for guard or A.",
+              "context": "It shows the WSO the same channel as the pilot has.",
+              "src": "m1",
+              "page": "198"
+            },
+            {
+              "id": "wso-vvi",
+              "name": "Vertical velocity indicator",
+              "type": "gauge",
+              "match": [
+                "item:wso-upfront:20"
+              ],
+              "text": "A dial for the climb or sink rate in thousands of feet per minute.",
+              "context": "It is read from the static air pressure.",
+              "src": "m1",
+              "page": "198"
+            },
+            {
+              "id": "wso-altimeter-knob",
+              "name": "Altimeter pressure setting knob",
+              "type": "knob",
+              "match": [
+                "PNT_RIO_ALTIMETER_KNOB",
+                "item:wso-upfront:21"
+              ],
+              "text": "Turning this knob enters the local air pressure into the WSO's altimeter. The game's hint is 'Change Reference Pressure'.",
+              "context": "The altimeter shows height in feet.",
+              "src": "m1",
+              "page": "199"
+            },
+            {
+              "id": "wso-altimeter-mode",
+              "name": "Altimeter RESET / STBY switch",
+              "type": "button",
+              "match": [
+                "PNT_RIO_ALTIMETER_MODESWITCH"
+              ],
+              "text": "A spring-loaded switch that picks the backup pneumatic mode (STBY) or returns to the normal electric mode (RESET).",
+              "context": "The WSO holds RESET for a few seconds to return the altimeter to its normal electric mode.",
+              "src": "m1",
+              "page": "199"
+            },
+            {
+              "id": "wso-attitude",
+              "name": "Attitude indicator and trim knob",
+              "type": "gauge",
+              "match": [
+                "PNT_RIO_ADI",
+                "item:wso-upfront:22"
+              ],
+              "text": "A horizon ball that shows the nose and wing position. Its knob adjusts the ball so that it shows the plane correctly. The game's hint is 'Adjust Pitch'.",
+              "context": "It always uses the AJB-7 gyro, whatever the pilot's reference switch says.",
+              "src": "m1",
+              "page": "200"
+            },
+            {
+              "id": "wso-airspeed-mach",
+              "name": "Airspeed and Mach indicator",
+              "type": "gauge",
+              "match": [
+                "PNT_RIO_MACHANDAIRSPEED_KNOB",
+                "item:wso-upfront:23"
+              ],
+              "text": "A dial for speed in knots and Mach number. A knob on its face moves two marker bugs.",
+              "context": "The WSO can set a marker as a speed reference.",
+              "src": "m1",
+              "page": "201"
+            },
+            {
+              "id": "wso-bdhi",
+              "name": "Bearing distance heading indicator (BDHI)",
+              "type": "gauge",
+              "match": [
+                "item:wso-upfront:24"
+              ],
+              "text": "A round dial with two needles that point to the chosen navigation stations, a compass card and a distance counter.",
+              "context": "What the needles show is chosen with the navigation mode selector switch.",
+              "src": "m1",
+              "page": "201"
+            },
+            {
+              "id": "wso-tachometers",
+              "name": "Tachometers (WSO)",
+              "type": "gauge",
+              "match": [
+                "item:wso-upfront:25"
+              ],
+              "text": "Two engine speed gauges in percent. Idle is about 65 %, military power about 95 % and full afterburner 105 %.",
+              "context": "The WSO can watch the engines from the back.",
+              "src": "m1",
+              "page": "202"
+            },
+            {
+              "id": "wso-warning-lamps",
+              "name": "Canopy unlocked / INS out / CNI cool off lamps",
+              "type": "light",
+              "match": [
+                "item:wso-upfront:26"
+              ],
+              "text": "Three warning lamps: the canopy is not locked, the inertial navigation system has failed, or the cooling of the radio and navigation equipment is too hot.",
+              "context": "On a cooling warning, the crew slow down, wait about 15 seconds and press the cooling reset button.",
+              "src": "m1",
+              "page": "203"
+            },
+            {
+              "id": "wso-cooling-reset",
+              "name": "Cooling reset button",
+              "type": "button",
+              "match": [
+                "PNT_WSO_COOLING_RESET_BUTTON",
+                "item:wso-upfront:27"
+              ],
+              "text": "Resets the cooling system of the communication and navigation equipment after an overheat warning. The game's hint is 'Reset Cooling Button'.",
+              "context": "If the lamp stays on, the plane should land as soon as practical.",
+              "src": "m1",
+              "page": "204"
+            },
+            {
+              "id": "wso-grease-pencil-right",
+              "name": "Grease pencil board (WSO, right)",
+              "type": "other",
+              "match": [
+                "PNT_WSO_GreasePencil_right"
+              ],
+              "text": "A clickable item named 'Grease Pencil' in the WSO cockpit. Its game hint is 'Hide/Show Grease Pencil'. The manual does not describe it.",
+              "context": "It belongs to the game's note-taking features.",
+              "src": "m1",
+              "page": "185"
+            },
+            {
+              "id": "wso-grease-pencil-left",
+              "name": "Grease pencil board (WSO, left)",
+              "type": "other",
+              "match": [
+                "PNT_WSO_GreasePencil_left"
+              ],
+              "text": "The second clickable 'Grease Pencil' in the WSO cockpit, on the left. Its game hint is 'Hide/Show Grease Pencil'. The manual does not describe it.",
+              "context": "It belongs to the game's note-taking features.",
+              "src": "m1",
+              "page": "185"
+            },
+            {
+              "id": "wso-mirrors",
+              "name": "Mirrors (WSO, left and right)",
+              "type": "switch",
+              "match": [
+                "PNT_WsoMirror_*"
+              ],
+              "count": 2,
+              "text": "Two mirrors of the back seat. The game's hint for both is 'Toggle Mirrors': a click shows or hides the mirror view.",
+              "context": "They let the WSO look behind the plane.",
+              "src": "m1",
+              "page": "185"
+            }
+          ]
+        },
+        {
+          "id": "wso-rwr-controls",
+          "name": "RWR control panel (ALR-46, WSO)",
+          "src": "m1",
+          "page": "607",
+          "text": "The WSO's own copy of the radar warning receiver panel, with ten lit buttons and two knobs. It works like the pilot's panel.",
+          "context": "The two panels control the same system. After the power button is pushed there is a nine-second warm-up.",
+          "controls": [
+            {
+              "id": "wso-rwr-power",
+              "name": "SYSTEM POWER button (WSO)",
+              "type": "button",
+              "match": [
+                "PNT_WSO_ALR_POWER"
+              ],
+              "text": "Switches the radar warning receiver on and off.",
+              "context": "After switching on there is a short warm-up with flashing lights.",
+              "src": "m1",
+              "page": "611"
+            },
+            {
+              "id": "wso-rwr-mode",
+              "name": "Priority / Open mode button (WSO)",
+              "type": "button",
+              "match": [
+                "PNT_WSO_ALR_PRIORITY"
+              ],
+              "text": "Changes between OPEN, which shows up to 16 radars, and PRIORITY, which shows only the five most dangerous ones.",
+              "context": "The WSO picks PRIORITY when the screen is crowded.",
+              "src": "m1",
+              "page": "607"
+            },
+            {
+              "id": "wso-rwr-search",
+              "name": "Search button (WSO)",
+              "type": "button",
+              "match": [
+                "PNT_WSO_ALR_SEARCH"
+              ],
+              "text": "Adds long-range search radars to the display, shown with an S.",
+              "context": "By default only radars that can shoot at the plane are shown.",
+              "src": "m1",
+              "page": "607"
+            },
+            {
+              "id": "wso-rwr-handoff",
+              "name": "Handoff button (WSO)",
+              "type": "button",
+              "match": [
+                "PNT_WSO_ALR_HANDOFF"
+              ],
+              "text": "Lets the crew choose which radar gets the diamond of the main threat. Holding steps through the radars; a short press returns to the automatic choice.",
+              "context": "A tone is heard in the intercom while a radar is latched.",
+              "src": "m1",
+              "page": "608"
+            },
+            {
+              "id": "wso-rwr-launch",
+              "name": "Missile launch button (WSO)",
+              "type": "button",
+              "match": [
+                "PNT_WSO_ALR_LAUNCH"
+              ],
+              "text": "In the real system the lamp lights when a missile launch is detected. The game labels the button '(no function)'.",
+              "context": "Clicking it does nothing in the game.",
+              "src": "m1",
+              "page": "608"
+            },
+            {
+              "id": "wso-rwr-low-alt",
+              "name": "Low altitude button (WSO)",
+              "type": "button",
+              "match": [
+                "PNT_WSO_ALR_LOW"
+              ],
+              "text": "Switches the LOW ALT mode on and off, so that threats that only matter against low-flying planes keep their priority.",
+              "context": "It helps for a dive attack or a low-level approach.",
+              "src": "m1",
+              "page": "609"
+            },
+            {
+              "id": "wso-rwr-tgt-sep",
+              "name": "Target separation button (WSO)",
+              "type": "button",
+              "match": [
+                "PNT_ALR_TGT_SEP"
+              ],
+              "text": "Spreads out overlapping radar marks for three seconds so they can be told apart.",
+              "context": "It helps to count radars that sit close together.",
+              "src": "m1",
+              "page": "609"
+            },
+            {
+              "id": "wso-rwr-test",
+              "name": "System test button (WSO)",
+              "type": "button",
+              "match": [
+                "PNT_WSO_ALR_SYS_TEST"
+              ],
+              "text": "Starts a self test of the receiver with marks and tones for all three radar bands.",
+              "context": "It is also used when changing the threat files.",
+              "src": "m1",
+              "page": "610"
+            },
+            {
+              "id": "wso-rwr-unknown",
+              "name": "Unknown button (WSO)",
+              "type": "button",
+              "match": [
+                "PNT_WSO_ALR_UNKNOWN"
+              ],
+              "text": "Its U lamp flashes when a radar is found that is not in the receiver's list. Pushing it shows the U symbol on the screen.",
+              "context": "The U lamp is normally lit steadily.",
+              "src": "m1",
+              "page": "610"
+            },
+            {
+              "id": "wso-rwr-activity",
+              "name": "Activity button (WSO)",
+              "type": "button",
+              "match": [
+                "PNT_WSO_ALR_ACTIVITY"
+              ],
+              "text": "In the real system its lamp lights when guidance signals of a surface-to-air missile are heard. The game labels the button '(no function)'.",
+              "context": "Clicking it does nothing in the game.",
+              "src": "m1",
+              "page": "610"
+            },
+            {
+              "id": "wso-rwr-audio",
+              "name": "RWR audio volume knob (WSO)",
+              "type": "knob",
+              "match": [
+                "Wso_Rwr_knob_audio_help"
+              ],
+              "text": "Sets the loudness of the warning tones of the receiver.",
+              "context": "The WSO sets it so the tones are heard over the radio.",
+              "src": "m1",
+              "page": "607"
+            },
+            {
+              "id": "wso-rwr-dim",
+              "name": "RWR light brightness knob (WSO)",
+              "type": "knob",
+              "match": [
+                "Wso_Rwr_knob_dim_help"
+              ],
+              "text": "Sets the brightness of the lamps in the RWR buttons. The game's hint is 'Light Brightness'.",
+              "context": "The WSO dims it for night flying.",
+              "src": "m1",
+              "page": "607"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "wso-left-sub-panel-area",
+      "where": "front-left",
+      "name": "WSO cockpit: Left sub-panel",
+      "text": "The panel at the WSO's lower left. It holds the gun camera and video controls, the video recorder switch, the emergency gear and brake handles, the IFF interrogator and the oxygen regulator.",
+      "panels": [
+        {
+          "id": "wso-left-sub-panel",
+          "name": "Left sub-panel (WSO)",
+          "db": "wso-left-sub-panel",
+          "src": "m1",
+          "page": "205",
+          "text": "Camera and video controls, the video recorder (AVTR), the emergency handles for the landing gear and brakes, the IFF interrogator panel and the WSO's oxygen controls.",
+          "context": "Most of it is used for the weapons and for the recorder. The emergency handles are pulled only when the normal systems fail.",
+          "controls": [
+            {
+              "id": "wso-gun-camera",
+              "name": "Gun camera switch",
+              "type": "switch",
+              "match": [
+                "Wso_Gun_camera_Switch_help",
+                "item:wso-left-sub-panel:1"
+              ],
+              "text": "Starts the recording of the gun camera film. The game's hint is 'Toggle Gun Camera' and it gives the switch no command.",
+              "context": "The pilot has his own gun camera switch on the left wall.",
+              "src": "m1",
+              "page": "205"
+            },
+            {
+              "id": "wso-air-to-air",
+              "name": "Air to air (CAGE) light",
+              "type": "button",
+              "match": [
+                "PNT_WSO_AIR_AIR",
+                "item:wso-left-sub-panel:2"
+              ],
+              "text": "This light comes on when the CAGE mode is active. Pressing it takes the radar back to what it was doing before the CAGE mode.",
+              "context": "The pilot's cage button on the throttle starts the mode.",
+              "src": "m1",
+              "page": "206"
+            },
+            {
+              "id": "wso-video-select",
+              "name": "Video select button (WEAPON / ASQ-153)",
+              "type": "button",
+              "match": [
+                "PNT_WSO_AIR_AIR001",
+                "item:wso-left-sub-panel:3"
+              ],
+              "text": "Switches the television picture on the radar screen between the weapon camera (for example the Maverick) and the targeting pod (ASQ-153).",
+              "context": "It works when the screen is in TV mode.",
+              "src": "m1",
+              "page": "206"
+            },
+            {
+              "id": "wso-avtr-timer",
+              "name": "AVTR tape timer",
+              "type": "display",
+              "match": [
+                "item:wso-left-sub-panel:4"
+              ],
+              "text": "A small display with the minutes of recording tape. A cassette holds up to 20 minutes.",
+              "context": "It shows how much recording time is left or used.",
+              "src": "m1",
+              "page": "206"
+            },
+            {
+              "id": "wso-avtr-switch",
+              "name": "AVTR switch",
+              "type": "switch3",
+              "match": [
+                "WSO_Avtr_switch_help",
+                "item:wso-left-sub-panel:5"
+              ],
+              "positions": [
+                {
+                  "name": "OFF",
+                  "text": "The recorder is off; the tape winds back to the start."
+                },
+                {
+                  "name": "RECORD",
+                  "text": "Recording; the RCD light is on."
+                },
+                {
+                  "name": "STANDBY",
+                  "text": "Recording is paused."
+                }
+              ],
+              "text": "Controls the airborne video tape recorder, which records the intercom sound and the rear radar screen.",
+              "context": "In OFF the tape is automatically rewound after 10 seconds.",
+              "src": "m1",
+              "page": "206"
+            },
+            {
+              "id": "wso-avtr-lights",
+              "name": "AVTR RCD / EOT lights",
+              "type": "button",
+              "match": [
+                "PNT_WSO_RCD_EOT",
+                "item:wso-left-sub-panel:6"
+              ],
+              "text": "Two lamps: RCD lights while recording, EOT lights when the tape has reached its end. The game labels the button 'AVTR Record/End Of Tape Button (no function)'.",
+              "context": "At the end of tape the tape must be unthreaded before recording again.",
+              "src": "m1",
+              "page": "206"
+            },
+            {
+              "id": "wso-emergency-gear",
+              "name": "Emergency landing gear handle",
+              "type": "handle",
+              "match": [
+                "PNT_EMERG_GEAR_HANDLE",
+                "item:wso-left-sub-panel:7"
+              ],
+              "text": "Pulling it blows the landing gear down with air from two bottles. It cannot raise the gear. The game's hint is 'Emergency Gear Handle (Pull to Release)'.",
+              "context": "It is for when the normal gear system fails.",
+              "src": "m1",
+              "page": "207"
+            },
+            {
+              "id": "wso-emergency-brake",
+              "name": "Emergency brake handle (WSO)",
+              "type": "handle",
+              "match": [
+                "PNT_RIO_EMERG_BRAKE",
+                "item:wso-left-sub-panel:8"
+              ],
+              "text": "Pulling it sends the pressure stored in the brake tank into the brakes for a limited number of stops.",
+              "context": "It is the back seat's copy of the pilot's emergency brake handle.",
+              "src": "m1",
+              "page": "207"
+            },
+            {
+              "id": "wso-apx80-increase",
+              "name": "APX-80 increase buttons (mode and code digits)",
+              "type": "button",
+              "match": [
+                "Wso_apx80_01_help",
+                "Wso_apx80_02_help",
+                "Wso_apx80_03_help",
+                "Wso_apx80_04_help",
+                "Wso_apx80_05_help",
+                "item:wso-left-sub-panel:9"
+              ],
+              "count": 5,
+              "text": "Five buttons above the code display of the IFF interrogator. Each one raises one setting by one step: the mode and the four code digits (thousands, hundreds, tens, ones).",
+              "context": "The interrogator asks other aircraft 'who are you?' and compares the answer with the code set here.",
+              "src": "m1",
+              "page": "208"
+            },
+            {
+              "id": "wso-apx80-decrease",
+              "name": "APX-80 decrease buttons (mode and code digits)",
+              "type": "button",
+              "match": [
+                "Wso_apx80_06_help",
+                "Wso_apx80_07_help",
+                "Wso_apx80_08_help",
+                "Wso_apx80_09_help",
+                "Wso_apx80_10_help"
+              ],
+              "count": 5,
+              "text": "Five buttons below the code display. Each one lowers one setting by one step: the mode and the four code digits.",
+              "context": "The first digit of the display is the mode: off, 1, 2, 3, 4/A or 4/B; the other four digits are the code.",
+              "src": "m1",
+              "page": "208"
+            },
+            {
+              "id": "wso-apx76-lamp",
+              "name": "Challenge light (APX-76)",
+              "type": "button",
+              "match": [
+                "Wso_apx80_Chal_help",
+                "item:wso-left-sub-panel:10"
+              ],
+              "text": "A lamp that lights while the plane is sending IFF questions. It can be pushed to test and turned to dim.",
+              "context": "It shows the WSO that the interrogator is working.",
+              "src": "m1",
+              "page": "208"
+            },
+            {
+              "id": "wso-test-challenge",
+              "name": "Test / challenge code switch",
+              "type": "switch3",
+              "match": [
+                "Wso_apx80_AntiJam_help001",
+                "item:wso-left-sub-panel:11"
+              ],
+              "positions": [
+                {
+                  "name": "CHALLENGE",
+                  "text": "Sends interrogation challenges while held."
+                },
+                {
+                  "name": "CENTER",
+                  "text": "Rest position."
+                },
+                {
+                  "name": "TEST",
+                  "text": "Starts the test of the interrogator while held."
+                }
+              ],
+              "text": "Sends IFF questions (challenge) or starts a self test of the interrogator. Both positions are held and spring back.",
+              "context": "The test is described in the interrogator systems chapter of the manual.",
+              "src": "m1",
+              "page": "208"
+            },
+            {
+              "id": "wso-combat-tree-modes",
+              "name": "Combat Tree mode 2 and 3 switches",
+              "type": "switch3",
+              "match": [
+                "Wso_apx80_3_help",
+                "Wso_apx80_2_help",
+                "item:wso-left-sub-panel:12"
+              ],
+              "positions": [
+                {
+                  "name": "ACTIVE",
+                  "text": "The system sends questions and listens."
+                },
+                {
+                  "name": "OFF",
+                  "text": "This mode is off."
+                },
+                {
+                  "name": "PASSIVE",
+                  "text": "The system only listens."
+                }
+              ],
+              "count": 2,
+              "text": "Two switches that set Combat Tree mode 2 and mode 3 to ACTIVE, PASSIVE or OFF. Combat Tree is a system that listens to enemy IFF answers.",
+              "context": "ACTIVE is needed to use the system.",
+              "src": "m1",
+              "page": "209"
+            },
+            {
+              "id": "wso-mode4-alarm",
+              "name": "Mode 4 alarm / override switch",
+              "type": "switch",
+              "match": [
+                "Wso_apx80_M4_alm_help"
+              ],
+              "text": "A switch that would set Combat Tree mode 4 to alarm or override. The game labels it '(no function)', and the manual says it was never installed.",
+              "context": "Clicking it does nothing in the game.",
+              "src": "m1",
+              "page": "209"
+            },
+            {
+              "id": "wso-combat-tree-test",
+              "name": "Combat Tree test button",
+              "type": "button",
+              "match": [
+                "Wso_apx80_TestChal_help",
+                "item:wso-left-sub-panel:13"
+              ],
+              "text": "Starts the built-in test of the Combat Tree system (APX-81A).",
+              "context": "The test steps are in the manual's chapter for the APX-81A.",
+              "src": "m1",
+              "page": "209"
+            },
+            {
+              "id": "wso-combat-tree-lamp",
+              "name": "Combat Tree challenge lamp",
+              "type": "button",
+              "match": [
+                "Wso_apx80_Knob_help"
+              ],
+              "text": "A lamp that lights while the Combat Tree system is sending a challenge. It can be pushed to test and turned to dim.",
+              "context": "It is next to the test button.",
+              "src": "m1",
+              "page": "209"
+            },
+            {
+              "id": "wso-anti-jam",
+              "name": "Anti-jam switch",
+              "type": "switch",
+              "match": [
+                "Wso_apx80_AntiJam_help"
+              ],
+              "text": "A switch that could be used against jamming on some systems. The manual says it was never installed and connected on this variant, and the game labels it '(no function)'.",
+              "context": "Clicking it does nothing, as the game states.",
+              "src": "m1",
+              "page": "208"
+            },
+            {
+              "id": "wso-ox-supply",
+              "name": "Oxygen supply lever (WSO)",
+              "type": "switch2",
+              "match": [
+                "PNT_RIO_OX_SUPPLY_SWITCH",
+                "item:wso-left-sub-panel:14"
+              ],
+              "positions": [
+                {
+                  "name": "ON",
+                  "text": "Oxygen flows to the mask."
+                },
+                {
+                  "name": "OFF",
+                  "text": "No oxygen flows."
+                }
+              ],
+              "text": "Turns the oxygen to the WSO's mask on or off.",
+              "context": "The WSO switches it on before flight.",
+              "src": "m1",
+              "page": "210"
+            },
+            {
+              "id": "wso-ox-diluter",
+              "name": "Oxygen diluter lever (WSO)",
+              "type": "switch2",
+              "match": [
+                "PNT_RIO_OX_RATIO_SWITCH",
+                "item:wso-left-sub-panel:15"
+              ],
+              "positions": [
+                {
+                  "name": "NORMAL OXYGEN",
+                  "text": "A mix of air and oxygen."
+                },
+                {
+                  "name": "100% OXYGEN",
+                  "text": "Pure oxygen."
+                }
+              ],
+              "text": "Chooses between a mix of air and oxygen and pure oxygen.",
+              "context": "Pure oxygen is better if there is smoke or fumes in the cockpit.",
+              "src": "m1",
+              "page": "210"
+            },
+            {
+              "id": "wso-ox-emergency",
+              "name": "Emergency flow control switch (WSO)",
+              "type": "switch3",
+              "match": [
+                "PNT_RIO_OX_PRESSURE",
+                "item:wso-left-sub-panel:16"
+              ],
+              "positions": [
+                {
+                  "name": "NORMAL",
+                  "text": "Standard oxygen supply."
+                },
+                {
+                  "name": "EMERGENCY",
+                  "text": "Pure oxygen with continuous positive pressure."
+                },
+                {
+                  "name": "TEST MASK",
+                  "text": "Positive pressure to test the mask (held)."
+                }
+              ],
+              "text": "Normal supply in the centre. One side gives pure oxygen under constant pressure, the other tests the mask for leaks.",
+              "context": "It should stay in the centre unless an unplanned pressure rise is needed.",
+              "src": "m1",
+              "page": "210"
+            },
+            {
+              "id": "wso-ox-flow",
+              "name": "Flow indicator (WSO)",
+              "type": "indicator",
+              "match": [
+                "item:wso-left-sub-panel:17"
+              ],
+              "text": "A small window that flips between black and white with each breath; white means breathing in.",
+              "context": "It shows that oxygen is flowing.",
+              "src": "m1",
+              "page": "211"
+            },
+            {
+              "id": "wso-ox-pressure",
+              "name": "Oxygen pressure gauge (WSO)",
+              "type": "gauge",
+              "match": [
+                "item:wso-left-sub-panel:18"
+              ],
+              "text": "A gauge for the oxygen supply pressure from 0 to 500 psi.",
+              "context": "It checks that supply pressure is there.",
+              "src": "m1",
+              "page": "211"
+            },
+            {
+              "id": "wso-gear-flap-panel",
+              "name": "Landing gear / flap indicator panel",
+              "type": "indicator",
+              "match": [
+                "item:wso-left-sub-panel:19"
+              ],
+              "text": "A panel with windows for the gear (UP, barber pole or wheel), the slats (IN or OUT) and the flaps (UP or DN).",
+              "context": "The WSO can check that the pilot has put the wheels down.",
+              "src": "m1",
+              "page": "211"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "wso-left-console",
+      "where": "left-console",
+      "name": "WSO cockpit: Left console",
+      "text": "The long panel at the WSO's left side. It holds the intercom, the radar set controls, the countermeasure control unit, the TACAN and UHF radio panels and the throttles of the rear seat.",
+      "panels": [
+        {
+          "id": "wso-intercom",
+          "name": "Intercom control panel (WSO)",
+          "src": "m1",
+          "page": "214",
+          "text": "The WSO's intercom panel, the phone line to the pilot, with the volume knob, the amplifier select knob and the mode switch.",
+          "context": "The mic switch on the rear throttle uses it.",
+          "controls": [
+            {
+              "id": "wso-ics-volume",
+              "name": "Intercom volume knob (WSO)",
+              "type": "knob",
+              "match": [
+                "WSO_intercom_vol_help",
+                "item:wso-left-console-front:1"
+              ],
+              "text": "Turn it clockwise to make the voices between the cockpits louder.",
+              "context": "The WSO sets it so he can hear the pilot.",
+              "src": "m1",
+              "page": "214"
+            },
+            {
+              "id": "wso-ics-amplifier",
+              "name": "Intercom amplifier select knob (WSO)",
+              "type": "selector",
+              "match": [
+                "WSO_intercom_mode_help",
+                "item:wso-left-console-front:2"
+              ],
+              "positions": [
+                {
+                  "name": "B/U",
+                  "text": "The backup headset amplifier gives the audio."
+                },
+                {
+                  "name": "NORM",
+                  "text": "The primary headset amplifier gives the audio."
+                },
+                {
+                  "name": "EMER",
+                  "text": "The amplifier of the other cockpit is used."
+                }
+              ],
+              "text": "Chooses which headset amplifier the WSO uses. In an emergency the amplifier of the other cockpit can be used.",
+              "context": "The WSO leaves it on NORM unless the normal amplifier fails.",
+              "src": "m1",
+              "page": "215"
+            },
+            {
+              "id": "wso-ics-function",
+              "name": "Intercom function selector switch (WSO)",
+              "type": "switch3",
+              "match": [
+                "WSO_intercom_mic_mode_help",
+                "item:wso-left-console-front:3"
+              ],
+              "positions": [
+                {
+                  "name": "COLD MIC",
+                  "text": "The mic switch on the throttle must be held to talk."
+                },
+                {
+                  "name": "HOT MIC",
+                  "text": "The voice is sent automatically."
+                },
+                {
+                  "name": "RADIO OVERRIDE",
+                  "text": "Sent automatically, with other sounds turned down (held)."
+                }
+              ],
+              "text": "Chooses how the WSO's voice is sent to the intercom: only when the mic switch is held, or automatically.",
+              "context": "The radio override setting lowers other sounds while the crew talk.",
+              "src": "m1",
+              "page": "214"
+            }
+          ]
+        },
+        {
+          "id": "wso-control-monitor",
+          "name": "Radar control monitor panel",
+          "src": "m1",
+          "page": "215",
+          "text": "A panel with a meter and test knobs for the APQ-120 radar. It is used for the radar self tests and to set the antenna and range-rate options.",
+          "context": "In normal flight only the stab and Vc switches matter; the meter and the knobs are for tests.",
+          "controls": [
+            {
+              "id": "wso-temp-light",
+              "name": "TEMP light",
+              "type": "light",
+              "match": [
+                "item:wso-left-console-front:4"
+              ],
+              "text": "An amber light that shows too much heat in the radar bay in the nose.",
+              "context": "Normally an overheat means setting the radar power to OFF; if the radar is needed, the light is watched.",
+              "src": "m1",
+              "page": "215"
+            },
+            {
+              "id": "wso-lamp-cap",
+              "name": "Lamp cap (game name)",
+              "type": "knob",
+              "match": [
+                "PNT_WSO_Oxygen_Knob"
+              ],
+              "text": "The game has a clickable part in this area labelled 'Lamp Cap (no function)'. It does nothing when clicked.",
+              "context": "The manual lists a 'Cords light' on this panel that is not used in the F-4E, but does not say that this part is it.",
+              "src": "m1",
+              "page": "215"
+            },
+            {
+              "id": "wso-meter-selector",
+              "name": "Meter selector knob",
+              "type": "selector",
+              "match": [
+                "PNT_RADAR_WSO_METER_SWITCH",
+                "item:wso-left-console-front:5"
+              ],
+              "text": "A 16-position knob that picks which value the monitor meter shows. The game's hint is 'Set Meter Display'.",
+              "context": "It is used together with the test knob.",
+              "src": "m1",
+              "page": "216"
+            },
+            {
+              "id": "wso-monitor-meter",
+              "name": "Monitor meter",
+              "type": "gauge",
+              "match": [
+                "item:wso-left-console-front:6"
+              ],
+              "text": "A meter with the radar voltages, currents and signals chosen by the selector knob and the meter switch.",
+              "context": "It is read during the self tests.",
+              "src": "m1",
+              "page": "216"
+            },
+            {
+              "id": "wso-test-knob",
+              "name": "Test knob (radar BIT)",
+              "type": "selector",
+              "match": [
+                "Radar_Monitor_Test",
+                "item:wso-left-console-front:7"
+              ],
+              "text": "An 11-position knob used with the radar power knob on TEST to run the radar self tests (BIT). The game's hint is 'Radar BIT'.",
+              "context": "Each position checks another part of the radar, such as the scope picture or the lock-on.",
+              "src": "m1",
+              "page": "217"
+            },
+            {
+              "id": "wso-meter-switch",
+              "name": "Meter switch (VOLT / SIGNALS)",
+              "type": "switch2",
+              "match": [
+                "PNT_RADAR_METER_SELECTOR",
+                "item:wso-left-console-front:8"
+              ],
+              "positions": [
+                {
+                  "name": "VOLT",
+                  "text": "The inner ring of voltage values."
+                },
+                {
+                  "name": "SIGNALS",
+                  "text": "The outer ring of signal values."
+                }
+              ],
+              "text": "Chooses which ring of values the meter selector uses: the inner ring of voltages or the outer ring of signals.",
+              "context": "The game's hint is 'Select Meter Mode (Volt/Signal)'.",
+              "src": "m1",
+              "page": "218"
+            },
+            {
+              "id": "wso-vc-switch",
+              "name": "Vc switch",
+              "type": "switch",
+              "match": [
+                "PNT_RADAR_WSO_VC_SWITCH",
+                "item:wso-left-console-front:9"
+              ],
+              "text": "Changes the scale of the range-rate display. Planes with the new screen (DSCG) must leave it at 2700.",
+              "context": "A wrong setting makes the Vc display wrong.",
+              "src": "m1",
+              "page": "218"
+            },
+            {
+              "id": "wso-stab-switch",
+              "name": "Stab switch (antenna stabilization)",
+              "type": "switch3",
+              "match": [
+                "PNT_WSO_RADAR_STAB_SWITCH",
+                "item:wso-left-console-front:10"
+              ],
+              "positions": [
+                {
+                  "name": "NOR",
+                  "text": "Normal: pitch and roll are fed to the stabilization."
+                },
+                {
+                  "name": "STAB OUT",
+                  "text": "The horizon line is removed from the scopes and the drift servos are zeroed."
+                },
+                {
+                  "name": "DRIFT OUT",
+                  "text": "The drift compensation from the INS is removed."
+                }
+              ],
+              "text": "Chooses how the radar antenna is held steady while the plane moves.",
+              "context": "NOR is the setting for normal operation.",
+              "src": "m1",
+              "page": "218"
+            }
+          ]
+        },
+        {
+          "id": "wso-radar-set-control",
+          "name": "Radar set control panel (APQ-120)",
+          "db": "wso-radar-set-control",
+          "src": "m1",
+          "page": "220",
+          "text": "The main control panel of the APQ-120 radar, the plane's eye for finding aircraft and ground returns. It has knobs for power, range, scan, display, gain and mode.",
+          "context": "The WSO operates the radar; the pilot sees the same picture on his own screen. The main steps are power on, range, mode and display.",
+          "controls": [
+            {
+              "id": "wso-radar-power",
+              "name": "Radar power knob",
+              "type": "selector",
+              "match": [
+                "PNT_Radar_Power",
+                "item:wso-radar-set-control:1"
+              ],
+              "positions": [
+                {
+                  "name": "OFF",
+                  "text": "The radar is off."
+                },
+                {
+                  "name": "STBY",
+                  "text": "Power applied; the radar does not transmit."
+                },
+                {
+                  "name": "TEST",
+                  "text": "Power to the control monitor and the BIT functions 1 to 6."
+                },
+                {
+                  "name": "OPR",
+                  "text": "The radar is fully operational."
+                },
+                {
+                  "name": "EMER",
+                  "text": "Overrides time delay, pressure and temperature limits so the radar can work."
+                }
+              ],
+              "text": "A five-position knob for the radar power state. The game's hint is 'Radar Power Controls'.",
+              "context": "The radar is on standby while the plane waits and OPR when in use.",
+              "src": "m1",
+              "page": "221"
+            },
+            {
+              "id": "wso-radar-range",
+              "name": "Radar range knob",
+              "type": "selector",
+              "match": [
+                "PNT_Radar_Range",
+                "item:wso-radar-set-control:2"
+              ],
+              "positions": [
+                {
+                  "name": "5 nm",
+                  "text": "5 nautical miles."
+                },
+                {
+                  "name": "10 nm",
+                  "text": "10 nautical miles."
+                },
+                {
+                  "name": "25 nm",
+                  "text": "25 nautical miles."
+                },
+                {
+                  "name": "50 nm",
+                  "text": "50 nautical miles."
+                },
+                {
+                  "name": "100 nm",
+                  "text": "100 nautical miles."
+                },
+                {
+                  "name": "200 nm",
+                  "text": "200 nautical miles."
+                }
+              ],
+              "text": "Chooses how far the radar looks: 5, 10, 25, 50, 100 or 200 nautical miles on both screens.",
+              "context": "The WSO picks a long range to search and a short one to track.",
+              "src": "m1",
+              "page": "222"
+            },
+            {
+              "id": "wso-radar-polar",
+              "name": "Polar switch",
+              "type": "switch3",
+              "match": [
+                "PNT_RADAR_WSO_POLAR_SWITCH",
+                "item:wso-radar-set-control:3"
+              ],
+              "positions": [
+                {
+                  "name": "LIN",
+                  "text": "Linear: the normal setting."
+                },
+                {
+                  "name": "CIR 1",
+                  "text": "Circular 1: reduces rain clutter."
+                },
+                {
+                  "name": "CIR 2",
+                  "text": "Circular 2: reduces rain clutter."
+                }
+              ],
+              "text": "Chooses the polarization of the radio waves the radar sends. Linear is normal. The two circular settings reduce rain clutter on the screen but increase ground clutter.",
+              "context": "The game's hint is 'Change Polarization'.",
+              "src": "m1",
+              "page": "221"
+            },
+            {
+              "id": "wso-radar-maneuver",
+              "name": "Maneuver switch",
+              "type": "switch2",
+              "match": [
+                "PNT_RADAR_WSO_MANEUVER_SWITCH",
+                "item:wso-radar-set-control:4"
+              ],
+              "positions": [
+                {
+                  "name": "LOW",
+                  "text": "The antenna acceleration is limited."
+                },
+                {
+                  "name": "HI",
+                  "text": "The acceleration limit is removed."
+                }
+              ],
+              "text": "Sets how fast the antenna may move while tracking a target. The low setting limits the acceleration; the high setting removes the limit.",
+              "context": "The game's hint is 'Select Maneuver' (Low G / High G).",
+              "src": "m1",
+              "page": "222"
+            },
+            {
+              "id": "wso-radar-scan",
+              "name": "Bar scan switch",
+              "type": "switch2",
+              "match": [
+                "PNT_Radar_Scan",
+                "item:wso-radar-set-control:5"
+              ],
+              "positions": [
+                {
+                  "name": "1 BAR",
+                  "text": "One scan line."
+                },
+                {
+                  "name": "2 BARS",
+                  "text": "Two scan lines."
+                }
+              ],
+              "text": "Chooses if the antenna sweeps one row (bar) or two rows in height. Only the B modes can use two bars.",
+              "context": "Two bars search a bigger slice of the sky, but take more time.",
+              "src": "m1",
+              "page": "223"
+            },
+            {
+              "id": "wso-radar-aspect",
+              "name": "Aspect knob",
+              "type": "selector",
+              "match": [
+                "PNT_RADAR_WSO_ASPECT_KNOB",
+                "item:wso-radar-set-control:6"
+              ],
+              "positions": [
+                {
+                  "name": "NOSE",
+                  "text": "Tells the missile to expect the doppler of a target at this aspect (game name: Nose)."
+                },
+                {
+                  "name": "FORWARD",
+                  "text": "The same for the aspect named Forward."
+                },
+                {
+                  "name": "WIDE",
+                  "text": "The same for the aspect named Wide."
+                },
+                {
+                  "name": "AFT",
+                  "text": "The same for the aspect named Aft."
+                },
+                {
+                  "name": "TAIL",
+                  "text": "The same for the aspect named Tail."
+                }
+              ],
+              "text": "Gives the AIM-7 radar missile an estimated target direction when the radar is not tracking. The game's hint is 'Select Target Aspect'.",
+              "context": "It lets the WSO supply a likely speed gate to the missile.",
+              "src": "m1",
+              "page": "223"
+            },
+            {
+              "id": "wso-radar-gain",
+              "name": "Receiver gain knobs (coarse and fine)",
+              "type": "knob",
+              "match": [
+                "PNT_Radar_RcvrGain_Coarse",
+                "PNT_Radar_RcvrGain_Fine",
+                "item:wso-radar-set-control:7"
+              ],
+              "count": 2,
+              "text": "Two knobs, one inside the other, that set how sensitive the radar receiver is. Too high makes noise and a saturated picture, too low reduces the range.",
+              "context": "The outer ring is the coarse setting, the inner knob the fine setting.",
+              "src": "m1",
+              "page": "224"
+            },
+            {
+              "id": "wso-radar-track",
+              "name": "Track switch",
+              "type": "switch3",
+              "match": [
+                "PNT_Radar_Track",
+                "item:wso-radar-set-control:8"
+              ],
+              "positions": [
+                {
+                  "name": "AUTO",
+                  "text": "Automatic range tracking."
+                },
+                {
+                  "name": "MAN",
+                  "text": "Manual range tracking, with the manual Vc knob."
+                },
+                {
+                  "name": "AOJ OUT",
+                  "text": "The setting the game names 'AOJ Out (Acquisition On Jamming)'; the manual points to its radar chapter for it."
+                }
+              ],
+              "text": "Chooses how the radar follows the range to a target. Automatic is normal; the other settings help in heavy clutter or against a jammer.",
+              "context": "The game names the settings Auto, Manual and AOJ Out (acquisition on jamming).",
+              "src": "m1",
+              "page": "224"
+            },
+            {
+              "id": "wso-radar-display",
+              "name": "Display knob",
+              "type": "selector",
+              "match": [
+                "PNT_Radar_Display",
+                "item:wso-radar-set-control:9"
+              ],
+              "positions": [
+                {
+                  "name": "B WIDE",
+                  "text": "A 120-degree B-sweep for search."
+                },
+                {
+                  "name": "B NAR",
+                  "text": "A 45-degree B-sweep sector, moved with the hand control."
+                },
+                {
+                  "name": "PPI WIDE",
+                  "text": "A 120-degree plan position display for MAP mode."
+                },
+                {
+                  "name": "PPI NAR",
+                  "text": "A 45-degree plan display moved with the hand control."
+                },
+                {
+                  "name": "VI",
+                  "text": "Visual intercept: pure pursuit guidance to a locked target."
+                }
+              ],
+              "text": "Chooses the type of picture on the radar screen: wide or narrow B scan, wide or narrow plan view (PPI), or the visual intercept guide (VI).",
+              "context": "It works together with the mode knob.",
+              "src": "m1",
+              "page": "225"
+            },
+            {
+              "id": "wso-radar-pulse",
+              "name": "Pulse switch",
+              "type": "switch3",
+              "match": [
+                "PNT_Radar_Pulse",
+                "item:wso-radar-set-control:10"
+              ],
+              "positions": [
+                {
+                  "name": "AUTO",
+                  "text": "Pulse chosen by the system."
+                },
+                {
+                  "name": "LONG",
+                  "text": "Wide pulse and low repetition rate: maximum range."
+                },
+                {
+                  "name": "SHORT",
+                  "text": "Narrow pulse and high repetition rate: better at close range."
+                }
+              ],
+              "text": "Chooses the width of the radar pulse and how often it is sent. Long pulses reach farther, short ones work better at close range.",
+              "context": "AUTO lets the system pick the best one.",
+              "src": "m1",
+              "page": "227"
+            },
+            {
+              "id": "wso-radar-man-vc",
+              "name": "Manual Vc knob",
+              "type": "selector",
+              "match": [
+                "WSO_radar_control_man_vc_help",
+                "item:wso-radar-set-control:11"
+              ],
+              "text": "A 12-position knob to enter the closing speed to a target for manual tracking, in steps of 100 knots. Clockwise is closing, anticlockwise is opening.",
+              "context": "The game's hint is 'Select Manual Vc (Closure Velocity, kt)'.",
+              "src": "m1",
+              "page": "226"
+            },
+            {
+              "id": "wso-skin-track-light",
+              "name": "Skin track light",
+              "type": "light",
+              "match": [
+                "item:wso-radar-set-control:12"
+              ],
+              "text": "A lamp that lights when the radar has a track with range data. It goes out if the lock falls back to memory.",
+              "context": "It matches the T lamp at the radar scope.",
+              "src": "m1",
+              "page": "228"
+            },
+            {
+              "id": "wso-radar-mode",
+              "name": "Mode knob",
+              "type": "selector",
+              "match": [
+                "PNT_Radar_Mode",
+                "item:wso-radar-set-control:13"
+              ],
+              "positions": [
+                {
+                  "name": "BST",
+                  "text": "Air-to-air boresight: the antenna is aligned with the radar boresight line."
+                },
+                {
+                  "name": "RDR",
+                  "text": "Search mode with a wider beam."
+                },
+                {
+                  "name": "MAP",
+                  "text": "Search mode for the ground with a narrower beam."
+                },
+                {
+                  "name": "AIR-GRD",
+                  "text": "Air-to-ground boresight: tracks the range of lit ground."
+                },
+                {
+                  "name": "BEACON",
+                  "text": "Receives beacon signals; not implemented in DCS."
+                },
+                {
+                  "name": "TV",
+                  "text": "Not used with the new screen; detunes the AIM-7."
+                }
+              ],
+              "text": "A six-position knob for the basic radar mode: searching air, finding the ground, or the TV.",
+              "context": "Beacon mode is not implemented in the game, and TV is not used with the new screen.",
+              "src": "m1",
+              "page": "227"
+            }
+          ]
+        },
+        {
+          "id": "wso-ccu",
+          "name": "AN/ALE-40 cockpit control unit (CCU)",
+          "db": "wso-ccu",
+          "src": "m1",
+          "page": "230",
+          "text": "The main control panel of the countermeasure system. It chooses what is dispensed and has the dispense button and counters. Chaff are metal strips against radar missiles; flares are hot decoys against heat-seeking missiles.",
+          "context": "The WSO can fire the countermeasures from here, like the pilot with the button on his throttle. The settings follow the programmer on the pilot's left console.",
+          "controls": [
+            {
+              "id": "wso-dispense",
+              "name": "Dispense button",
+              "type": "button",
+              "match": [
+                "WSO_Ale40_dispense_button_help",
+                "item:wso-ccu:1",
+                "control:panel.button.dispense"
+              ],
+              "text": "Starts the release of chaff and flares as set on the control unit and the programmer.",
+              "context": "It works only if the flaps and speed brakes are retracted.",
+              "src": "m1",
+              "page": "231"
+            },
+            {
+              "id": "wso-ripple-cover",
+              "name": "Ripple switch cover",
+              "type": "cover",
+              "match": [
+                "WSO_Ale40_ripple_cover_help"
+              ],
+              "text": "A flap that guards the ripple switch. In the game it is a click of its own.",
+              "context": "It stops the switch from being used by accident.",
+              "src": "m1",
+              "page": "231"
+            },
+            {
+              "id": "wso-ripple-switch",
+              "name": "Ripple switch",
+              "type": "switch2",
+              "match": [
+                "WSO_Ale40_ripple_switch_help",
+                "item:wso-ccu:2"
+              ],
+              "positions": [
+                {
+                  "name": "OFF",
+                  "text": "Normal operation."
+                },
+                {
+                  "name": "ON",
+                  "text": "Ripple release of all flares."
+                }
+              ],
+              "text": "When on, it throws out all flares at ten per second until the dispensers are empty, as long as flaps and speed brakes are retracted.",
+              "context": "All flares are gone after about 10 seconds.",
+              "src": "m1",
+              "page": "231"
+            },
+            {
+              "id": "wso-chaff-counter",
+              "name": "Chaff counter",
+              "type": "display",
+              "match": [
+                "item:wso-ccu:3"
+              ],
+              "text": "A counter of the chaff cartridges that are left. It is set by the ground crew when the plane is rearmed.",
+              "context": "The WSO checks how much chaff remains.",
+              "src": "m1",
+              "page": "231"
+            },
+            {
+              "id": "wso-flare-mode",
+              "name": "Flare mode knob",
+              "type": "selector",
+              "match": [
+                "WSO_Ale40_Flare_knob_help",
+                "item:wso-ccu:4"
+              ],
+              "positions": [
+                {
+                  "name": "OFF",
+                  "text": "The flare system is inactive."
+                },
+                {
+                  "name": "SGL",
+                  "text": "A single burst for each press of the dispense button."
+                },
+                {
+                  "name": "PROG",
+                  "text": "A salvo as set on the programmer for each press."
+                }
+              ],
+              "text": "Chooses how flares are released: off, a single burst, or a salvo as set on the programmer.",
+              "context": "The game names the settings Off, Single and Program.",
+              "src": "m1",
+              "page": "232"
+            },
+            {
+              "id": "wso-flare-light",
+              "name": "Flare mode light",
+              "type": "button",
+              "match": [
+                "WSO_Ale40_Flare_light_help",
+                "item:wso-ccu:5"
+              ],
+              "text": "Lights when a flare mode is selected. It can be pushed to test and turned to dim.",
+              "context": "The game's hint is 'Flare Indicator'.",
+              "src": "m1",
+              "page": "232"
+            },
+            {
+              "id": "wso-flare-counter",
+              "name": "Flare counter",
+              "type": "display",
+              "match": [
+                "item:wso-ccu:6"
+              ],
+              "text": "A counter of the flares that are left, set by the ground crew.",
+              "context": "The WSO checks how many flares remain.",
+              "src": "m1",
+              "page": "231"
+            },
+            {
+              "id": "wso-chaff-mode",
+              "name": "Chaff mode knob",
+              "type": "selector",
+              "match": [
+                "WSO_Ale40_Chaff_knob_help",
+                "item:wso-ccu:7"
+              ],
+              "positions": [
+                {
+                  "name": "OFF",
+                  "text": "The chaff system is inactive."
+                },
+                {
+                  "name": "SGL",
+                  "text": "A single burst for each press."
+                },
+                {
+                  "name": "MULT",
+                  "text": "A salvo as set on the programmer for each press."
+                },
+                {
+                  "name": "PROG",
+                  "text": "Multiple salvos as set on the programmer for each press."
+                }
+              ],
+              "text": "Chooses how chaff is released: off, single burst, multiple salvos or a program.",
+              "context": "The game names the settings Off, Single, Multiple and Program.",
+              "src": "m1",
+              "page": "231"
+            },
+            {
+              "id": "wso-chaff-light",
+              "name": "Chaff mode light",
+              "type": "button",
+              "match": [
+                "WSO_Ale40_Chaff_light_help_Left",
+                "item:wso-ccu:8"
+              ],
+              "text": "Lights when a chaff mode is selected. It can be pushed to test and turned to dim.",
+              "context": "The game's hint is 'Chaff Indicator'.",
+              "src": "m1",
+              "page": "232"
+            }
+          ]
+        },
+        {
+          "id": "wso-tacan",
+          "name": "TACAN control panel (WSO)",
+          "src": "m1",
+          "page": "233",
+          "text": "The WSO's panel for TACAN, the radio beacon system that gives direction and distance to a ground station or a tanker.",
+          "context": "The panel is in both cockpits; the NAV CMD button on the radio panel decides which seat controls the TACAN.",
+          "controls": [
+            {
+              "id": "wso-tacan-hundreds",
+              "name": "TACAN channel knob (hundreds and tens)",
+              "type": "selector",
+              "match": [
+                "PNT_RIO_TACAN_CHAN_TensAndMore",
+                "item:wso-left-console-aft:1"
+              ],
+              "text": "Sets the first two digits of the TACAN channel number.",
+              "context": "The channel is that of the station the crew wants to find.",
+              "src": "m1",
+              "page": "233"
+            },
+            {
+              "id": "wso-tacan-ones",
+              "name": "TACAN channel knob (ones)",
+              "type": "selector",
+              "match": [
+                "PNT_RIO_TACAN_CHAN_Ones"
+              ],
+              "text": "Sets the last digit of the TACAN channel number.",
+              "context": "It works together with the knob for the first two digits.",
+              "src": "m1",
+              "page": "233"
+            },
+            {
+              "id": "wso-tacan-xy",
+              "name": "TACAN X/Y ring",
+              "type": "switch2",
+              "match": [
+                "PNT_RIO_TACAN_CHAN_XY"
+              ],
+              "positions": [
+                {
+                  "name": "X",
+                  "text": "The X channel."
+                },
+                {
+                  "name": "Y",
+                  "text": "The Y channel."
+                }
+              ],
+              "text": "An outer ring on the ones knob that sets X or Y for the channel.",
+              "context": "The crew must pick the letter of the station.",
+              "src": "m1",
+              "page": "233"
+            },
+            {
+              "id": "wso-tacan-test",
+              "name": "TACAN TEST button and lamp",
+              "type": "button",
+              "match": [
+                "PNT_RIO_TACAN_CHAN_Test",
+                "item:wso-left-console-aft:2"
+              ],
+              "text": "Starts a test cycle of the TACAN after warm-up; the lamp above shows the test state.",
+              "context": "It can also be used as a quick check in flight.",
+              "src": "m1",
+              "page": "233"
+            },
+            {
+              "id": "wso-tacan-volume",
+              "name": "TACAN VOL knob",
+              "type": "knob",
+              "match": [
+                "PNT_RIO_TACAN_Volume",
+                "item:wso-left-console-aft:3"
+              ],
+              "text": "Sets the loudness of the TACAN station's audio.",
+              "context": "The station's identification code is heard in the headset.",
+              "src": "m1",
+              "page": "234"
+            },
+            {
+              "id": "wso-tacan-function",
+              "name": "TACAN function selector",
+              "type": "selector",
+              "match": [
+                "PNT_RIO_TACAN_Mode_Selector_Knob",
+                "item:wso-left-console-aft:4"
+              ],
+              "positions": [
+                {
+                  "name": "OFF",
+                  "text": "The TACAN is off."
+                },
+                {
+                  "name": "REC",
+                  "text": "Receive only: bearing to the station."
+                },
+                {
+                  "name": "T/R",
+                  "text": "Receive and transmit: bearing and distance."
+                },
+                {
+                  "name": "A/A REC",
+                  "text": "Air-to-air receive: bearing to another aircraft."
+                },
+                {
+                  "name": "A/A T/R",
+                  "text": "Air-to-air send and receive: bearing and distance."
+                }
+              ],
+              "text": "Chooses what the TACAN does: off, receive only, send and receive, or the air-to-air versions for finding another aircraft.",
+              "context": "For air-to-air, the channel must differ by 63 from the other aircraft's, with the same X or Y.",
+              "src": "m1",
+              "page": "234"
+            }
+          ]
+        },
+        {
+          "id": "wso-uhf",
+          "name": "Communication control panel (UHF radio, WSO)",
+          "src": "m1",
+          "page": "235",
+          "text": "The panel for the UHF radio, with the same layout as in the front seat. It has command buttons, volume knobs, frequency knobs and a channel memory.",
+          "context": "The panel exists in both cockpits; the COMM CMD button decides which seat controls the radio. The pilot's and the WSO's radios are one radio.",
+          "controls": [
+            {
+              "id": "wso-comm-cmd",
+              "name": "COMM CMD and NAV CMD buttons (WSO)",
+              "type": "button",
+              "match": [
+                "PNT_RIO_UHF_COMM_CMD_Button",
+                "PNT_RIO_UHF_NAV_CMD_Button",
+                "item:wso-left-console-aft:5"
+              ],
+              "count": 2,
+              "text": "Two buttons that give the control of the radio (COMM) or the TACAN (NAV) to the WSO's cockpit. Each press passes the command between the seats.",
+              "context": "The lit button shows who is in command.",
+              "src": "m1",
+              "page": "235"
+            },
+            {
+              "id": "wso-cmd-light",
+              "name": "Command light brightness knobs (WSO)",
+              "type": "knob",
+              "match": [
+                "PNT_WSO_UHF_COMM_CMD_Brightness",
+                "PNT_WSO_UHF_NAV_CMD_Brightness"
+              ],
+              "count": 2,
+              "text": "Two knobs that set the brightness of the green command lights in the COMM CMD and NAV CMD buttons.",
+              "context": "They dim the lights for night flying.",
+              "src": "m1",
+              "page": "235"
+            },
+            {
+              "id": "wso-radio-volume",
+              "name": "Radio volume knob (WSO)",
+              "type": "knob",
+              "match": [
+                "PNT_RIO_UHF_Volume_Control",
+                "item:wso-left-console-aft:6"
+              ],
+              "text": "Sets the loudness of the UHF radio in the WSO's headset.",
+              "context": "It is under the COMM CMD button.",
+              "src": "m1",
+              "page": "235"
+            },
+            {
+              "id": "wso-squelch",
+              "name": "Squelch switch (WSO)",
+              "type": "switch2",
+              "match": [
+                "PNT_RIO_UHF_SQUELCH_SWITCH",
+                "item:wso-left-console-aft:7"
+              ],
+              "positions": [
+                {
+                  "name": "OFF",
+                  "text": "The squelch is off."
+                },
+                {
+                  "name": "ON",
+                  "text": "The squelch is on."
+                }
+              ],
+              "text": "Switches the squelch on or off. The squelch cuts the hiss when nobody talks.",
+              "context": "It is near the NAV CMD button.",
+              "src": "m1",
+              "page": "235"
+            },
+            {
+              "id": "wso-freq-first",
+              "name": "A-3-2-T selector (first digit, WSO)",
+              "type": "selector",
+              "match": [
+                "PNT_RIO_UHF_Freq_Knob_Hundreds",
+                "item:wso-left-console-aft:8"
+              ],
+              "text": "Sets the first digit of the manual frequency: 2 or 3. A and T belong to the HAVE QUICK radio mode, which is not simulated.",
+              "context": "Frequencies go from 225.00 to 399.975 MHz.",
+              "src": "m1",
+              "page": "235"
+            },
+            {
+              "id": "wso-freq-digits",
+              "name": "Frequency knobs (tens, ones, decimals, WSO)",
+              "type": "selector",
+              "match": [
+                "PNT_RIO_UHF_Freq_Knob_TensAndMore",
+                "PNT_RIO_UHF_Freq_Knob_Ones",
+                "PNT_RIO_UHF_Freq_Knob_DecOnes",
+                "PNT_RIO_UHF_Freq_Knob_DecTens"
+              ],
+              "count": 4,
+              "text": "Four knobs set the tens, the ones, the first decimal and the last two decimals of the frequency, the last in steps of 0.025 MHz.",
+              "context": "Together with the first digit they set the radio frequency in MHz.",
+              "src": "m1",
+              "page": "236"
+            },
+            {
+              "id": "wso-comm-channel",
+              "name": "Comm channel control knob (WSO)",
+              "type": "selector",
+              "match": [
+                "PNT_RIO_UHF_Communication_Channel_Control_Knob"
+              ],
+              "text": "Picks one of the stored preset channels shown in the COMM CHAN window.",
+              "context": "A channel is stored with the SET button.",
+              "src": "m1",
+              "page": "236"
+            },
+            {
+              "id": "wso-freq-mode",
+              "name": "Preset / manual switch (WSO)",
+              "type": "switch2",
+              "match": [
+                "PNT_RIO_UHF_Mode_Selector_Switch"
+              ],
+              "positions": [
+                {
+                  "name": "MANUAL",
+                  "text": "The frequency knobs set the frequency."
+                },
+                {
+                  "name": "PRESET",
+                  "text": "A stored channel is used."
+                }
+              ],
+              "text": "Chooses whether the radio uses the frequency set with the knobs or a stored channel.",
+              "context": "In PRESET the channel knob picks the frequency.",
+              "src": "m1",
+              "page": "236"
+            },
+            {
+              "id": "wso-aux-channel",
+              "name": "AUX channel knob (WSO)",
+              "type": "selector",
+              "match": [
+                "PNT_RIO_UHF_AUX_Channel_Control_Knob"
+              ],
+              "text": "Picks one of 20 fixed channels for the auxiliary receiver; these cannot be changed in the cockpit.",
+              "context": "The channel is shown in a window under the comm channel knob.",
+              "src": "m1",
+              "page": "236"
+            },
+            {
+              "id": "wso-set-channel",
+              "name": "SET button (load channel, WSO)",
+              "type": "button",
+              "match": [
+                "PNT_RIO_UHF_Set_Channel_Pushbutton"
+              ],
+              "text": "Stores the frequency shown on the knobs in the selected channel.",
+              "context": "It prepares the preset channels.",
+              "src": "m1",
+              "page": "236"
+            },
+            {
+              "id": "wso-tone",
+              "name": "TONE button (WSO)",
+              "type": "button",
+              "match": [
+                "PNT_RIO_UHF_Tone_Button",
+                "item:wso-left-console-aft:9"
+              ],
+              "text": "Would send a time-of-day signal for HAVE QUICK. This function is not simulated in the game.",
+              "context": "It has no effect in DCS because the function is not simulated.",
+              "src": "m1",
+              "page": "236"
+            },
+            {
+              "id": "wso-aux-volume",
+              "name": "AUX volume knob (WSO)",
+              "type": "knob",
+              "match": [
+                "PNT_RIO_UHF_AUX_Volume_Control"
+              ],
+              "text": "Sets the loudness of the auxiliary receiver.",
+              "context": "The auxiliary receiver is also used for guard and direction finder listening.",
+              "src": "m1",
+              "page": "236"
+            },
+            {
+              "id": "wso-comm-function",
+              "name": "Comm function selector (radio mode, WSO)",
+              "type": "selector",
+              "match": [
+                "PNT_RIO_UHF_MODE_SELECTOR_KNOB",
+                "item:wso-left-console-aft:10"
+              ],
+              "positions": [
+                {
+                  "name": "OFF",
+                  "text": "All UHF radios are off."
+                },
+                {
+                  "name": "T/R ADF",
+                  "text": "Main radio receives and transmits; direction finder on the auxiliary receiver."
+                },
+                {
+                  "name": "T/R+G ADF",
+                  "text": "Main radio and guard listening; direction finder on the auxiliary receiver."
+                },
+                {
+                  "name": "ADF+G CMD",
+                  "text": "Direction finder and guard listening."
+                },
+                {
+                  "name": "ADF+G",
+                  "text": "Main receiver as direction finder; transmitter on the main channel."
+                },
+                {
+                  "name": "GUARD ADF",
+                  "text": "Receive and send on guard."
+                }
+              ],
+              "text": "Chooses the working mode of the radio: off, transmit and receive, with the guard emergency channel and the automatic direction finder.",
+              "context": "It is the same set of modes as on the pilot's panel.",
+              "src": "m1",
+              "page": "237"
+            }
+          ]
+        },
+        {
+          "id": "wso-left-console-aft",
+          "name": "Left console aft: gauges and VOR/ILS volume",
+          "db": "wso-left-console-aft",
+          "src": "m1",
+          "page": "238",
+          "text": "A few gauges and the volume knobs of the VOR/ILS receiver at the rear of the WSO's left console.",
+          "context": "The cockpit altitude gauge tells the crew when oxygen is needed.",
+          "controls": [
+            {
+              "id": "wso-cockpit-altitude",
+              "name": "Cockpit altitude gauge (WSO)",
+              "type": "gauge",
+              "match": [
+                "item:wso-left-console-aft:11"
+              ],
+              "text": "A gauge for the air pressure in the cockpit, given as a height in thousands of feet.",
+              "context": "Above about 13000 feet of cabin altitude the crew breathe oxygen from the mask.",
+              "src": "m1",
+              "page": "238"
+            },
+            {
+              "id": "wso-ox-quantity",
+              "name": "Oxygen quantity gauge (WSO)",
+              "type": "gauge",
+              "match": [
+                "item:wso-left-console-aft:12"
+              ],
+              "text": "A gauge for the oxygen amount, from 0 to 10 litres. A flag appears if power is lost.",
+              "context": "Below 1 litre the OXYGEN LOW light comes on.",
+              "src": "m1",
+              "page": "239"
+            },
+            {
+              "id": "wso-vor-vol",
+              "name": "VOR/ILS volume knob (square)",
+              "type": "knob",
+              "match": [
+                "PNT_WSO_VORILS",
+                "item:wso-left-console-aft:13"
+              ],
+              "text": "The square knob sets the loudness of the VOR and runway beam (localizer) audio. The game's hint is 'Change VOR/ILS Volume'.",
+              "context": "It belongs to the VOR/ILS receiver, which the pilot tunes.",
+              "src": "m1",
+              "page": "239"
+            },
+            {
+              "id": "wso-mkr-vol",
+              "name": "Marker beacon volume knob (round)",
+              "type": "knob",
+              "match": [
+                "PNT_WSO_MKR_BCN"
+              ],
+              "text": "The round knob sets the loudness of the marker beacon tone. The game's hint is 'Change Marker-Beacon Volume'.",
+              "context": "A marker beacon tells the crew they are at a set distance from the runway.",
+              "src": "m1",
+              "page": "239"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "wso-left-wall-area",
+      "where": "left-side",
+      "name": "WSO cockpit: Left wall",
+      "text": "The wall at the WSO's left with the canopy handles, the emergency flaps handle and the controls of the pull-up tone.",
+      "panels": [
+        {
+          "id": "wso-left-wall",
+          "name": "Left wall (WSO)",
+          "db": "wso-left-wall",
+          "src": "m1",
+          "page": "240",
+          "text": "Canopy handles, an emergency handle for the slats and flaps and the volume and tone controls of the LABS bombing system.",
+          "context": "The handles with yellow and black paint are for emergencies. The tone controls are used for weapon deliveries.",
+          "controls": [
+            {
+              "id": "wso-canopy-jettison",
+              "name": "Emergency canopy jettison handle (WSO)",
+              "type": "handle",
+              "match": [
+                "PNT_COPILOT_CANOPY_JETTISON",
+                "item:wso-left-wall:1"
+              ],
+              "text": "Pulling it opens the glass roof over the back seat at once with a compressed gas cylinder and shears it off at its hinges. It is for getting out on the ground.",
+              "context": "The handle is for emergency use only.",
+              "src": "m1",
+              "page": "240"
+            },
+            {
+              "id": "wso-canopy-control",
+              "name": "Canopy control switch (WSO)",
+              "type": "switch2",
+              "match": [
+                "PNT_COPILOT_CANOPY_HANDLE",
+                "item:wso-left-wall:2"
+              ],
+              "positions": [
+                {
+                  "name": "OPEN",
+                  "text": "The WSO canopy opens (aft)."
+                },
+                {
+                  "name": "CLOSE",
+                  "text": "The WSO canopy closes (forward)."
+                }
+              ],
+              "text": "Opens or closes the WSO canopy. Aft opens it, forward closes it.",
+              "context": "The WSO has his own canopy and handle.",
+              "src": "m1",
+              "page": "241"
+            },
+            {
+              "id": "wso-slats-emergency",
+              "name": "Emergency flaps handle (WSO)",
+              "type": "handle",
+              "match": [
+                "PNT_RIO_SLATS_EMERGENCY",
+                "item:wso-left-wall:3"
+              ],
+              "text": "Pulling it aft puts the slats and flaps out with stored air, from the back seat, if the normal system has failed.",
+              "context": "It works only once. The flaps do not extend fully above 230 knots.",
+              "src": "m1",
+              "page": "241"
+            },
+            {
+              "id": "wso-aural-tone",
+              "name": "Aural tone volume knob",
+              "type": "knob",
+              "match": [
+                "PNT_WSO_Missile_Tone_Knob",
+                "item:wso-left-wall:4"
+              ],
+              "text": "Sets the volume of the weapon tones, for example the Sidewinder seeker tone.",
+              "context": "The game's hint is 'Aural Tone Volume'.",
+              "src": "m1",
+              "page": "242"
+            },
+            {
+              "id": "wso-pullup-tone",
+              "name": "Pull-up tone switch",
+              "type": "switch2",
+              "match": [
+                "PNT_Pullup_Tone_Switch",
+                "item:wso-left-wall:5"
+              ],
+              "positions": [
+                {
+                  "name": "OFF",
+                  "text": "No pull-up tone."
+                },
+                {
+                  "name": "ON",
+                  "text": "The pull-up tone is played."
+                }
+              ],
+              "text": "Switches the pull-up tone of the LABS bombing system on or off. The game's hint is 'LABS Pull-Up Tone'.",
+              "context": "The tone tells the crew when to pull up in a loft or LABS run.",
+              "src": "m1",
+              "page": "242"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "wso-pedestal-area",
+      "where": "center-pedestal",
+      "name": "WSO cockpit: Radar screen and Pave Spike panel",
+      "text": "The WSO's radar scope in the middle, with its knobs and lamps, and the control panel of the Pave Spike targeting pod right below it.",
+      "panels": [
+        {
+          "id": "wso-dscg",
+          "name": "Digital scan converter group (DSCG)",
+          "db": "wso-dscg",
+          "src": "m1",
+          "page": "244",
+          "text": "The radar screen of the back seat with the knobs for its picture. The screen shows the radar, the video of a weapon or the picture of the targeting pod.",
+          "context": "The WSO watches this screen all the time. The pilot's screen in front shows the same radar picture.",
+          "controls": [
+            {
+              "id": "wso-radar-scope",
+              "name": "Radar scope",
+              "type": "display",
+              "match": [
+                "item:wso-dscg:1"
+              ],
+              "text": "The round screen of the radar. It shows aircraft and ground echoes, the cursors for the radar settings and, in TV mode, the picture of a weapon or the pod.",
+              "context": "What is shown depends on the radar mode and display knobs on the left console.",
+              "src": "m1",
+              "page": "244"
+            },
+            {
+              "id": "wso-dscg-contrast",
+              "name": "Contrast knob",
+              "type": "knob",
+              "match": [
+                "PNT_Radar_Contr",
+                "item:wso-dscg:2"
+              ],
+              "text": "Clockwise gives the picture more contrast, anticlockwise less.",
+              "context": "The WSO sets it so echoes stand out from the background.",
+              "src": "m1",
+              "page": "245"
+            },
+            {
+              "id": "wso-dscg-cursor-rng",
+              "name": "Cursor RNG knob",
+              "type": "knob",
+              "match": [
+                "PNT_Radar_ScreenRng",
+                "item:wso-dscg:3"
+              ],
+              "text": "Sets the brightness of the range cursor, the curved line used in the map modes (PPI). It affects both cockpits' screens.",
+              "context": "The game's hint is 'Change Range-Cursor Brightness'.",
+              "src": "m1",
+              "page": "245"
+            },
+            {
+              "id": "wso-dscg-brightness",
+              "name": "Brightness knob",
+              "type": "knob",
+              "match": [
+                "PNT_Radar_Brtness",
+                "item:wso-dscg:4"
+              ],
+              "text": "Clockwise makes the whole radar picture brighter, anticlockwise darker.",
+              "context": "It is adjusted for day and night.",
+              "src": "m1",
+              "page": "245"
+            },
+            {
+              "id": "wso-dscg-cursor-ofs",
+              "name": "Cursor OFS knob",
+              "type": "knob",
+              "match": [
+                "PNT_Radar_OFS",
+                "item:wso-dscg:5"
+              ],
+              "text": "Sets the brightness of the offset cursor, the cross-track line used in the map and beacon modes, on both screens.",
+              "context": "The game's hint is 'Change Offset-Cursor Brightness'.",
+              "src": "m1",
+              "page": "245"
+            },
+            {
+              "id": "wso-dscg-mode",
+              "name": "DSCG mode knob",
+              "type": "selector",
+              "match": [
+                "PNT_Radar_ScreenMode",
+                "item:wso-dscg:6"
+              ],
+              "positions": [
+                {
+                  "name": "OFF",
+                  "text": "Turns the scope off and removes power from the DSCG parts."
+                },
+                {
+                  "name": "STBY",
+                  "text": "Powers the DSCG parts; the display remains off."
+                },
+                {
+                  "name": "DSCG TEST",
+                  "text": "Shows a test picture with 8 shades of grey to confirm normal operation."
+                },
+                {
+                  "name": "RDR BIT",
+                  "text": "Shows test grids for the calibration of the radar."
+                },
+                {
+                  "name": "RDR",
+                  "text": "Radar picture in all modes."
+                },
+                {
+                  "name": "TV",
+                  "text": "Television picture of electro-optical weapons and targeting pods."
+                }
+              ],
+              "text": "Chooses what the scope does: off, standby, radar picture, TV picture or one of the two test pictures.",
+              "context": "OFF and STBY are the first positions. STBY powers the group but keeps the display off, used for take-off and landing.",
+              "src": "m1",
+              "page": "245"
+            },
+            {
+              "id": "wso-dscg-grid",
+              "name": "Grid knob",
+              "type": "knob",
+              "match": [
+                "PNT_Radar_Brt",
+                "item:wso-dscg:7"
+              ],
+              "text": "Sets the brightness of the grid drawn over the radar picture. The game's hint is 'Change Grid Brightness'.",
+              "context": "It is a double knob with the scale knob.",
+              "src": "m1",
+              "page": "244"
+            },
+            {
+              "id": "wso-dscg-scale",
+              "name": "Scale knob",
+              "type": "knob",
+              "match": [
+                "WSO_RADAR_Rio_Knob_help"
+              ],
+              "text": "Sets the brightness of the range scales around the edge of the scope. The game's hint is 'Scale Brightness'.",
+              "context": "It is the second knob of the pair with the grid knob.",
+              "src": "m1",
+              "page": "244"
+            },
+            {
+              "id": "wso-dscg-lamps",
+              "name": "H and T lamps",
+              "type": "light",
+              "match": [
+                "item:wso-dscg:8"
+              ],
+              "text": "Two lamps in the corners of the glare shield. H lights when the radar tracks the angle of a jammer (home on jam). T lights during a normal lock-on.",
+              "context": "T goes out if the radar loses the target and falls back to remembered range.",
+              "src": "m1",
+              "page": "244"
+            },
+            {
+              "id": "wso-glare-shield",
+              "name": "Screen glare shield cover",
+              "type": "switch",
+              "match": [
+                "PNT_HideRadarBoot"
+              ],
+              "text": "A cover over the scope that blocks light. In the game it can be clicked to hide or show it. The game's hint is 'Show/Hide Screen Glare Shield'.",
+              "context": "The manual says the cover can be removed by clicking it.",
+              "src": "m1",
+              "page": "244"
+            }
+          ]
+        },
+        {
+          "id": "wso-pave-spike",
+          "name": "Target designator control set (Pave Spike)",
+          "db": "wso-pave-spike",
+          "src": "m1",
+          "page": "246",
+          "text": "The main panel of the Pave Spike, a camera pod with a laser carried under the plane. The WSO uses it to find a target on a TV picture and light it for laser-guided bombs.",
+          "context": "The pod must be stowed for take-off, landing and hard manoeuvres. The pilot sees its picture too.",
+          "controls": [
+            {
+              "id": "wso-ps-reticle",
+              "name": "Reticle brightness knob",
+              "type": "knob",
+              "match": [
+                "Wso_target_des_RET_Brt_hekp",
+                "item:wso-pave-spike:1"
+              ],
+              "text": "Sets the contrast of the TV aiming mark from black (far left) to green (far right). The game's hint is 'TV Reticle Brightness'.",
+              "context": "It should give the best contrast in the display during the attack.",
+              "src": "m1",
+              "page": "246"
+            },
+            {
+              "id": "wso-ps-boresight",
+              "name": "Boresight knobs (azimuth, elevation, roll)",
+              "type": "knob",
+              "match": [
+                "Wso_target_des_Boresight_az_help",
+                "Wso_target_des_Boresight_el_help",
+                "Wso_target_des_Boresight_Roll_help",
+                "item:wso-pave-spike:2"
+              ],
+              "count": 3,
+              "text": "Three knobs that fine-tune the pod's aim by up to 2.5 degrees in each direction: azimuth and elevation (best set in 12-VIS) and roll (best set in 9-VIS).",
+              "context": "The ground crew sets the pod right before flight. The WSO uses the knobs again if it has drifted.",
+              "src": "m1",
+              "page": "246"
+            },
+            {
+              "id": "wso-ps-stow",
+              "name": "Stow button",
+              "type": "button",
+              "match": [
+                "PNT_WSO_TGT_STOW",
+                "item:wso-pave-spike:3"
+              ],
+              "text": "Each press stows or unstows the pod head. The button is lit when the head is stowed.",
+              "context": "The pod must be stowed for take-off, landing and hard manoeuvres. Without power the stowed pod swings loose.",
+              "src": "m1",
+              "page": "247"
+            },
+            {
+              "id": "wso-ps-laser",
+              "name": "Laser ready select button",
+              "type": "switch2",
+              "match": [
+                "PNT_WSO_TGT_LSR_RDY",
+                "item:wso-pave-spike:4"
+              ],
+              "positions": [
+                {
+                  "name": "SAFE",
+                  "text": "The laser is not armed."
+                },
+                {
+                  "name": "ARM",
+                  "text": "The laser may fire; the button is lit."
+                }
+              ],
+              "text": "Enables the designator laser. It is only lit when all conditions are right (for example the nose gear is up). Another press switches the laser off.",
+              "context": "The game's hint is 'Arm/Disarm Laser'.",
+              "src": "m1",
+              "page": "247"
+            },
+            {
+              "id": "wso-ps-power",
+              "name": "Power on button",
+              "type": "button",
+              "match": [
+                "PNT_WSO_TGT_PWR_ON",
+                "item:wso-pave-spike:5"
+              ],
+              "text": "Switches the power of the pod on and off. The button lamp goes out when the head is stowed.",
+              "context": "The pod should be powered whenever it is carried, even when not used.",
+              "src": "m1",
+              "page": "247"
+            },
+            {
+              "id": "wso-ps-bit",
+              "name": "BIT selector button",
+              "type": "button",
+              "match": [
+                "Wso_target_des_Acq_help",
+                "item:wso-pave-spike:6"
+              ],
+              "text": "Steps through the built-in test modes shown in the window next to it. BIT 1 is the normal mode. The game's hint is 'Next BIT'.",
+              "context": "BIT 1 must be selected for normal use.",
+              "src": "m1",
+              "page": "248"
+            },
+            {
+              "id": "wso-ps-light",
+              "name": "Light brightness knob",
+              "type": "knob",
+              "match": [
+                "Wso_target_des_LT_brt_help",
+                "item:wso-pave-spike:7"
+              ],
+              "text": "Sets the brightness of all lamps on this panel except the overheat lamp.",
+              "context": "The game's hint is 'Panel Light Brightness'.",
+              "src": "m1",
+              "page": "248"
+            },
+            {
+              "id": "wso-ps-reject",
+              "name": "Reject / override button",
+              "type": "button",
+              "match": [
+                "Wso_target_des_Rejovrd_help",
+                "item:wso-pave-spike:8"
+              ],
+              "text": "If the laser range and the range from the navigation system differ too much, the pod uses the navigation range. This button forces the laser range.",
+              "context": "The game's hint is 'Reject/Override Range'.",
+              "src": "m1",
+              "page": "248"
+            },
+            {
+              "id": "wso-ps-acq-mode",
+              "name": "Acquisition mode selector switch",
+              "type": "switch3",
+              "match": [
+                "PNT_WSO_TGT_DES_ACQ",
+                "item:wso-pave-spike:9"
+              ],
+              "positions": [
+                {
+                  "name": "12-VIS",
+                  "text": "The line of sight points parallel to the optical sight pipper."
+                },
+                {
+                  "name": "WRCS",
+                  "text": "The line of sight follows the WRCS cursors."
+                },
+                {
+                  "name": "9-VIS",
+                  "text": "The line of sight points 90 degrees below the fuselage line and rolled 90 degrees left."
+                }
+              ],
+              "text": "Chooses where the pod looks: along the optical sight (12-VIS), at the WRCS cursors (WRCS) or 90 degrees below and to the left (9-VIS).",
+              "context": "If the WRCS is not integrated, the WRCS position falls back to 12-VIS.",
+              "src": "m1",
+              "page": "248"
+            },
+            {
+              "id": "wso-ps-wrcs-out",
+              "name": "WRCS OUT lamp-button",
+              "type": "switch",
+              "match": [
+                "PNT_WSO_TGT_WRCS_OUT",
+                "item:wso-pave-spike:10"
+              ],
+              "text": "A lamp that is lit when the weapon release computer is not tied to the pod. Pressing it connects or disconnects the integration.",
+              "context": "Functions that need the WRCS are not available while it is lit.",
+              "src": "m1",
+              "page": "248"
+            },
+            {
+              "id": "wso-ps-bit-status",
+              "name": "BIT status indicator (GO / MALF)",
+              "type": "switch",
+              "match": [
+                "PNT_WSO_TGT_GO_MALF",
+                "item:wso-pave-spike:11"
+              ],
+              "text": "A lamp pair: GO shows the selected test passed, MALF shows it failed. The game labels it '(no function)', so clicking it does nothing.",
+              "context": "It is read after a built-in test of the pod.",
+              "src": "m1",
+              "page": "249"
+            },
+            {
+              "id": "wso-ps-ins-out",
+              "name": "OVHT / INS OUT lamps",
+              "type": "switch",
+              "match": [
+                "PNT_WSO_TGT_OVHT_INSOUT",
+                "item:wso-pave-spike:12"
+              ],
+              "text": "The upper lamp shows the pod is too hot; the lower one shows the navigation system (INS) is not tied to the pod. Pressing the INS part connects or disconnects the integration (game hint: Enable/Disable INS integration).",
+              "context": "On overheat, the pod must be switched off to cool down before it melts.",
+              "src": "m1",
+              "page": "249"
+            },
+            {
+              "id": "wso-pedal-crank",
+              "name": "Rudder pedal adjustment crank (WSO)",
+              "type": "knob",
+              "match": [
+                "WSO_pedal_adjust_lever_help",
+                "item:wso-pave-spike:13"
+              ],
+              "text": "A crank that moves the WSO's rudder pedals forward or back. It needs 12 full turns for the whole range.",
+              "context": "It is adjusted once so the pedals fit the crew member.",
+              "src": "m1",
+              "page": "250"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "wso-right-sub-panel-area",
+      "where": "front-right",
+      "name": "WSO cockpit: Right sub-panel",
+      "text": "The panel at the WSO's lower right with the eject light, the voice scrambler, the jamming pod controls and two small bombing computers.",
+      "panels": [
+        {
+          "id": "wso-right-sub-panel",
+          "name": "Right sub-panel (WSO)",
+          "db": "wso-right-sub-panel",
+          "src": "m1",
+          "page": "251",
+          "text": "The controls for the eject light, the voice scrambler (KY-28), the electronic jamming pods and the settings for bombing by hand.",
+          "context": "The jamming controls are used in a hostile area. The bombing computers are set before an attack run.",
+          "controls": [
+            {
+              "id": "wso-eject-light",
+              "name": "Eject light / switch",
+              "type": "button",
+              "match": [
+                "PNT_EJECT_PUSH_TEST",
+                "item:wso-right-sub-panel:1"
+              ],
+              "text": "A lamp that lights when the pilot signals the WSO to get ready to eject. Only the pilot can light it; if the WSO presses it, it only tests the lamp.",
+              "context": "The game's hint is 'Eject Light (push to test)'.",
+              "src": "m1",
+              "page": "251"
+            },
+            {
+              "id": "wso-ky28-power",
+              "name": "KY-28 power switch",
+              "type": "switch3",
+              "match": [
+                "Wso_KY28_on_off_help",
+                "item:wso-right-sub-panel:2"
+              ],
+              "positions": [
+                {
+                  "name": "OFF",
+                  "text": "The scrambler is off."
+                },
+                {
+                  "name": "ON",
+                  "text": "The scrambler is on."
+                },
+                {
+                  "name": "RELAY",
+                  "text": "Relay position."
+                }
+              ],
+              "text": "Switches the voice scrambler on, off or to relay.",
+              "context": "The scrambler codes the radio voice so only friends can understand it.",
+              "src": "m1",
+              "page": "252"
+            },
+            {
+              "id": "wso-ky28-mode",
+              "name": "KY-28 mode switch (cipher / plain)",
+              "type": "switch2",
+              "match": [
+                "Wso_KY28_C_P_Switch_help"
+              ],
+              "positions": [
+                {
+                  "name": "CIPHER",
+                  "text": "Coded voice."
+                },
+                {
+                  "name": "PLAIN",
+                  "text": "Normal voice."
+                }
+              ],
+              "text": "Chooses between coded (cipher) and uncoded (plain) voice.",
+              "context": "Radio talk with other planes needs the plain mode.",
+              "src": "m1",
+              "page": "252"
+            },
+            {
+              "id": "wso-ky28-zeroize",
+              "name": "KY-28 zeroize button",
+              "type": "button",
+              "match": [
+                "Wso_zeroize_btn_help"
+              ],
+              "text": "Erases the secret code data of the scrambler. The game's hint is 'Erase KY-28 Data'.",
+              "context": "It is used if the plane is about to fall in enemy hands.",
+              "src": "m1",
+              "page": "252"
+            },
+            {
+              "id": "wso-ecm-mode",
+              "name": "ECM mode knobs (left and right pods)",
+              "type": "selector",
+              "match": [
+                "WSO_Ecm01_help",
+                "WSO_Ecm02_help",
+                "item:wso-right-sub-panel:3"
+              ],
+              "positions": [
+                {
+                  "name": "OFF",
+                  "text": "Turned off; no transmission."
+                },
+                {
+                  "name": "STBY",
+                  "text": "Warm-up; no transmission yet (about 200 seconds for the ALQ-131)."
+                },
+                {
+                  "name": "XMIT 1",
+                  "text": "Transmitting and jamming with technique 1."
+                },
+                {
+                  "name": "XMIT 2",
+                  "text": "Transmitting and jamming with technique 2."
+                },
+                {
+                  "name": "XMIT BOTH",
+                  "text": "Both techniques at once."
+                }
+              ],
+              "count": 2,
+              "text": "Two knobs for the jamming pods, one for the pods on the left wing stations and one for the right. A jammer is a radio transmitter that blinds enemy radars.",
+              "context": "The ground use of a transmitting pod is forbidden because it endangers people.",
+              "src": "m1",
+              "page": "253"
+            },
+            {
+              "id": "wso-ecm-lights",
+              "name": "ECM STBY / XMIT / AI lights",
+              "type": "light",
+              "match": [
+                "item:wso-right-sub-panel:4"
+              ],
+              "text": "Three lamps per pod: STBY (white) means warm-up is done, XMIT (green) means the pod is transmitting and AI (red) means a radar is detected and jammed.",
+              "context": "The AI light is not simulated in the game at present.",
+              "src": "m1",
+              "page": "253"
+            },
+            {
+              "id": "wso-ecm-reset",
+              "name": "ECM reset buttons and lamps",
+              "type": "button",
+              "match": [
+                "WSO_Ecm01_Reset_help",
+                "WSO_Ecm02_Reset_help",
+                "item:wso-right-sub-panel:5"
+              ],
+              "count": 2,
+              "text": "Each lamp lights on a fault in the pod; flashing means overheating. Pressing the button resets the pod, like turning it off and on, with a new warm-up.",
+              "context": "If the fault clears, the lamp goes out.",
+              "src": "m1",
+              "page": "254"
+            },
+            {
+              "id": "wso-bomb-angle",
+              "name": "Bomb release angle computer (low and high angle)",
+              "type": "knob",
+              "match": [
+                "PNT_RIO_LOW_ANGLE_KNOB",
+                "PNT_RIO_HIGH_ANGLE_KNOB",
+                "item:wso-right-sub-panel:6"
+              ],
+              "count": 2,
+              "text": "Two knobs for the release angles of the bombing computer: the low angle (0 to 89.9 degrees) for loft bombing and the high angle (70 to 179.9 degrees) for over-the-shoulder bombing.",
+              "context": "The angles are calculated for each weapon, for example with the bombing calculator mentioned in the manual.",
+              "src": "m1",
+              "page": "255"
+            },
+            {
+              "id": "wso-bomb-timers",
+              "name": "Bombing timers (pull-up and release)",
+              "type": "knob",
+              "match": [
+                "PNT_RIO_PULLUP_KNOB",
+                "PNT_RIO_RELEASE_KNOB",
+                "item:wso-right-sub-panel:7"
+              ],
+              "count": 2,
+              "text": "Two knobs for the timers of timed attacks: the pull-up timer (0 to 60 seconds) and the release timer (0 to 30 seconds), in steps of 0.1 second.",
+              "context": "Two three-digit rollers above the knobs show the values.",
+              "src": "m1",
+              "page": "256"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "wso-right-console-area",
+      "where": "right-console",
+      "name": "WSO cockpit: Right console",
+      "text": "The long panel at the WSO's right side. It holds the laser code buttons, the inertial navigation panel, the antenna hand control for the radar, the weapon release computer and the navigation computer.",
+      "panels": [
+        {
+          "id": "wso-laser-coder",
+          "name": "Laser coder control",
+          "db": "wso-right-console-front",
+          "src": "m1",
+          "page": "258",
+          "text": "Four small buttons and an ENTER button to set the code of the targeting pod's laser. Laser guided bombs only follow a laser with the same code.",
+          "context": "The code is set before the attack. It is also adjustable in the Mission Editor or during rearming.",
+          "controls": [
+            {
+              "id": "wso-laser-digits",
+              "name": "Laser code buttons (thousands, hundreds, tens, ones)",
+              "type": "button",
+              "match": [
+                "WSO_laser_thousands_help",
+                "WSO_laser_hundreds_help",
+                "WSO_laser_dozens_help",
+                "WSO_laser_units_help",
+                "item:wso-right-console-front:1"
+              ],
+              "count": 4,
+              "text": "Four buttons, one for each digit. Each press advances that digit by one.",
+              "context": "Valid codes go from 1111 to 1788 and cannot use the digits 0 or 9. The default is 1688.",
+              "src": "m1",
+              "page": "258"
+            },
+            {
+              "id": "wso-laser-enter",
+              "name": "Laser code ENTER button",
+              "type": "button",
+              "match": [
+                "WSO_laser_enter_help",
+                "item:wso-right-console-front:2"
+              ],
+              "text": "Sends the set code to the pod. The transfer also starts by itself when power is applied.",
+              "context": "The NO GO light shows if the code is invalid.",
+              "src": "m1",
+              "page": "259"
+            },
+            {
+              "id": "wso-laser-nogo",
+              "name": "Laser NO GO light",
+              "type": "light",
+              "match": [
+                "item:wso-right-console-front:3"
+              ],
+              "text": "A lamp that lights if the entered code is not valid. The check takes about 5 seconds.",
+              "context": "The WSO then changes the digits and presses ENTER again.",
+              "src": "m1",
+              "page": "259"
+            }
+          ]
+        },
+        {
+          "id": "wso-ins-panel",
+          "name": "Inertial navigation control panel",
+          "src": "m1",
+          "page": "259",
+          "text": "The panel for the inertial navigation system (INS), the system that always knows where the plane is by measuring its own movements. It must be aligned before flight.",
+          "context": "The WSO switches the INS on and aligns it on the ground. The two lamps show the progress.",
+          "controls": [
+            {
+              "id": "wso-ins-mode-cover",
+              "name": "INS align mode cover",
+              "type": "cover",
+              "match": [
+                "PNT_INS_ALIGN_MODE_COVER"
+              ],
+              "text": "A flap that covers the mode switch. In the game it is a click of its own.",
+              "context": "It prevents the mode from being changed by accident.",
+              "src": "m1",
+              "page": "259"
+            },
+            {
+              "id": "wso-ins-mode",
+              "name": "INS align mode switch (GYRO COMP / HDG MEM)",
+              "type": "switch2",
+              "match": [
+                "PNT_INS_ALIGN_MODE_SWITCH",
+                "item:wso-right-console-front:4"
+              ],
+              "positions": [
+                {
+                  "name": "GYRO COMP",
+                  "text": "Gyro compass alignment."
+                },
+                {
+                  "name": "HDG MEM",
+                  "text": "Heading memory alignment, if a heading was stored."
+                }
+              ],
+              "text": "Chooses how the INS is aligned: GYRO COMP (find north by itself, the usual way) or HDG MEM (use a heading stored in the mission).",
+              "context": "HDG MEM must be set before the INS is turned on.",
+              "src": "m1",
+              "page": "259"
+            },
+            {
+              "id": "wso-ins-power",
+              "name": "INS power control knob",
+              "type": "selector",
+              "match": [
+                "PNT_INS_POWER_KNOB",
+                "item:wso-right-console-front:5"
+              ],
+              "positions": [
+                {
+                  "name": "OFF",
+                  "text": "The system is off."
+                },
+                {
+                  "name": "STBY",
+                  "text": "Power for the heaters and the temperature control."
+                },
+                {
+                  "name": "ALIGN",
+                  "text": "Fine levelling and alignment of the platform and gyros."
+                },
+                {
+                  "name": "NAV",
+                  "text": "The INS is active for navigation."
+                }
+              ],
+              "text": "Switches the INS on and runs its steps: standby, alignment and then navigation.",
+              "context": "The INS must be in NAV before the inertial data are used.",
+              "src": "m1",
+              "page": "260"
+            },
+            {
+              "id": "wso-ins-lamps",
+              "name": "INS HEAT and ALIGN lights",
+              "type": "button",
+              "match": [
+                "WSO_inert_nav_heat_light_help",
+                "WSO_inert_nav_align_light_help",
+                "item:wso-right-console-front:6"
+              ],
+              "count": 2,
+              "text": "HEAT lights while the gyros warm up. ALIGN shows the state of the alignment: steady when the first alignment is done, flashing when the compass alignment is finished. Both can be pushed to test and turned to dim.",
+              "context": "The WSO waits for the lights before moving the knob on.",
+              "src": "m1",
+              "page": "260"
+            }
+          ]
+        },
+        {
+          "id": "wso-antenna-hand-control",
+          "name": "Antenna hand control",
+          "src": "m1",
+          "page": "261",
+          "text": "A small joystick on the WSO's right console that steers the radar antenna and its aiming symbol. It also steers the seeker of a Maverick and the camera pod. It has a trigger, a thumbwheel and a button.",
+          "context": "The WSO uses it to find and lock a target. What it does depends on whether the radar, a weapon or the pod is in control.",
+          "controls": [
+            {
+              "id": "wso-ahc-stick",
+              "name": "Antenna hand control stick",
+              "type": "other",
+              "match": [
+                "control:panel.ministick.antenna_hand_control",
+                "item:wso-right-console-front:7"
+              ],
+              "text": "Moving the stick changes the range (fore and aft) and the direction (left and right) of the target symbol on the radar screen, or the aim of the weapon seeker or pod.",
+              "context": "It is the WSO's tool to place the radar on a target.",
+              "src": "m1",
+              "page": "261"
+            },
+            {
+              "id": "wso-ahc-action",
+              "name": "Action switch (trigger, two stages)",
+              "type": "trigger",
+              "match": [
+                "control:panel.trigger.action"
+              ],
+              "text": "A two-stage trigger that locks targets. What it does depends on whether the radar, a weapon or the pod is controlled.",
+              "context": "The exact steps are in the radar and weapon chapters of the manual.",
+              "src": "m1",
+              "page": "261"
+            },
+            {
+              "id": "wso-ahc-elevation",
+              "name": "Antenna elevation thumbwheel",
+              "type": "wheel",
+              "match": [
+                "control:panel.wheel.ant_elev",
+                "PNT_RADAR_WSO_ELEVATION"
+              ],
+              "text": "A thumbwheel on the left side of the stick. It tilts the radar antenna up or down, shown by the EL strobe on the screen. The game's hint is 'Change Radar Antenna Elevation' (held up or down).",
+              "context": "The WSO tilts the antenna to look higher or lower.",
+              "src": "m1",
+              "page": "261"
+            },
+            {
+              "id": "wso-ahc-challenge",
+              "name": "Challenge button",
+              "type": "button",
+              "match": [
+                "control:panel.button.challenge",
+                "WSO_atenna_control_button_help"
+              ],
+              "text": "A button on top of the stick. With the radar in control, it sends an IFF question to the target. With the pod, it switches the field of view between wide and narrow.",
+              "context": "The IFF question asks 'friend or foe?'.",
+              "src": "m1",
+              "page": "261"
+            },
+            {
+              "id": "wso-ahc-boresight",
+              "name": "Antenna hand control boresight button",
+              "type": "button",
+              "match": [
+                "PNT_WSO_BORESIGHT_BUTTON"
+              ],
+              "text": "A button under the stick that loads the new boresight values after the ground crew has set them with a screwdriver. In the game it has no function without the screwdriver.",
+              "context": "The setting is only for ground personnel.",
+              "src": "m1",
+              "page": "262"
+            }
+          ]
+        },
+        {
+          "id": "wso-weapon-delivery-panel",
+          "name": "Weapon delivery panel (ACTIVATE / TGT FIND / RANGE)",
+          "src": "m1",
+          "page": "262",
+          "text": "Three switches for the weapon release computer on the WSO's right console. They set how the computer works for the delivery of bombs.",
+          "context": "They are set before a bomb run. The pilot sets the delivery mode.",
+          "controls": [
+            {
+              "id": "wso-wdp-activate",
+              "name": "ACTIVATE switch",
+              "type": "switch2",
+              "match": [
+                "PNT_WEAP_DELIV_PANEL_ACTIVATE_SWITCH",
+                "item:wso-right-console-front:8"
+              ],
+              "positions": [
+                {
+                  "name": "NORM",
+                  "text": "Normal; the circuits are not powered."
+                },
+                {
+                  "name": "ON",
+                  "text": "The release circuits are powered."
+                }
+              ],
+              "text": "Powers the circuits of the weapon release computer for a LABS release using the WRCS range data. It only works after the Target Insert button was pressed. The game's hint is 'ARBCS Activate'.",
+              "context": "It belongs to bomb deliveries that combine the two computers.",
+              "src": "m1",
+              "page": "262"
+            },
+            {
+              "id": "wso-wdp-tgt-find",
+              "name": "TGT FIND switch",
+              "type": "switch2",
+              "match": [
+                "PNT_WEAP_DELIV_PANEL_TGT_FIND_SWITCH",
+                "item:wso-right-console-front:9"
+              ],
+              "positions": [
+                {
+                  "name": "HOLD",
+                  "text": "Combines the target-find mode with the ARBCS delivery."
+                },
+                {
+                  "name": "NORM",
+                  "text": "The standard function of the WRCS."
+                }
+              ],
+              "text": "Combines the ARBCS/LABS delivery with the WRCS target-find mode. In NORM the WRCS works in the standard way.",
+              "context": "With HOLD and an ARBCS setting, the attack is finished from the initial point with the normal procedures.",
+              "src": "m1",
+              "page": "263"
+            },
+            {
+              "id": "wso-wdp-range",
+              "name": "RANGE switch",
+              "type": "switch2",
+              "match": [
+                "PNT_WEAP_DELIV_PANEL_RANGE_SWITCH",
+                "item:wso-right-console-front:10"
+              ],
+              "positions": [
+                {
+                  "name": "NORM",
+                  "text": "The standard factor of 10."
+                },
+                {
+                  "name": "X100",
+                  "text": "A factor of 100."
+                }
+              ],
+              "text": "Changes the multiplier of the release range from the usual factor of 10 to 100. The game's hint is 'WRCS Range x100 Multiplier'.",
+              "context": "It lets the release range knob cover larger ranges.",
+              "src": "m1",
+              "page": "263"
+            }
+          ]
+        },
+        {
+          "id": "wso-volume-panel",
+          "name": "Volume panel (canopy warning and stall warning)",
+          "src": "m1",
+          "page": "263",
+          "text": "A small panel right of the antenna hand control with two knobs for the loudness of warning voices and tones.",
+          "context": "The WSO sets the loudness once at the start of the flight.",
+          "controls": [
+            {
+              "id": "wso-canopy-volume",
+              "name": "Canopy / low altitude warning volume (WSO)",
+              "type": "knob",
+              "match": [
+                "PNT_ALT_LOW_VOL_RIO",
+                "item:wso-right-console-front:11"
+              ],
+              "text": "A cube-shaped knob for the voice warnings 'canopy open' and 'low altitude'. This system is not installed in this version, and the game labels the knob '(no function)'.",
+              "context": "Turning it changes nothing in the game.",
+              "src": "m1",
+              "page": "263"
+            },
+            {
+              "id": "wso-stall-volume",
+              "name": "Stall warning knob (WSO)",
+              "type": "knob",
+              "match": [
+                "PNT_AOA_VOL_RIO",
+                "item:wso-right-console-front:12"
+              ],
+              "text": "Sets the volume of the tones that warn of a high angle of attack. In dangerous cases the system can override the setting.",
+              "context": "The game's hint is 'AoA Stall Warning Volume'.",
+              "src": "m1",
+              "page": "264"
+            }
+          ]
+        },
+        {
+          "id": "wso-wrcs",
+          "name": "WRCS and cursor control panels",
+          "db": "wso-wrcs",
+          "src": "m1",
+          "page": "265",
+          "text": "The weapon release computer set (WRCS) panel with drums and knobs to enter distances and numbers, and the cursor panel for radar bombing. The WSO uses them to drop bombs on targets seen on the radar.",
+          "context": "The WRCS panel is used for radar and offset bombing; the cursor panel only works with the radar in MAP PPI mode and a suitable delivery mode.",
+          "controls": [
+            {
+              "id": "wso-wrcs-ns",
+              "name": "Target distance knob N/S",
+              "type": "knob",
+              "match": [
+                "PNT_RIO_NS_DISTANCE_KNOB",
+                "item:wso-wrcs:1"
+              ],
+              "text": "A knob and a four-digit drum to enter the target's north-south distance from the radar reference point, in hundreds of feet.",
+              "context": "The game's hint is 'Set Target N/S Distance (x100 ft)'.",
+              "src": "m1",
+              "page": "265"
+            },
+            {
+              "id": "wso-wrcs-ew",
+              "name": "Target distance knob E/W",
+              "type": "knob",
+              "match": [
+                "PNT_RIO_EW_DISTANCE_KNOB"
+              ],
+              "text": "A knob and a four-digit drum for the east-west distance of the target, in hundreds of feet. For 4000 feet east the drum reads E0040.",
+              "context": "Fractions of 100 feet are possible by moving the last roller.",
+              "src": "m1",
+              "page": "265"
+            },
+            {
+              "id": "wso-wrcs-altitude",
+              "name": "Target / IP altitude knob",
+              "type": "knob",
+              "match": [
+                "PNT_RIO_ALT_RANGE_KNOB",
+                "item:wso-wrcs:2"
+              ],
+              "text": "A knob and three-digit drum for the altitude of the target or of the initial point, in steps of 100 feet.",
+              "context": "A better value makes the release more accurate.",
+              "src": "m1",
+              "page": "266"
+            },
+            {
+              "id": "wso-wrcs-drag",
+              "name": "Drag coefficient knob",
+              "type": "knob",
+              "match": [
+                "PNT_RIO_DRAG_COEFF_KNOB",
+                "item:wso-wrcs:3"
+              ],
+              "text": "A knob and three-digit drum for the drag value of the weapon, taken from the bombing tables.",
+              "context": "The manual says that a bombing calculator can give workable solutions for all weapons.",
+              "src": "m1",
+              "page": "266"
+            },
+            {
+              "id": "wso-wrcs-advance",
+              "name": "Release advance knob",
+              "type": "knob",
+              "match": [
+                "PNT_RIO_ADVANCE_KNOB",
+                "item:wso-wrcs:4"
+              ],
+              "text": "A knob and drum that advance the release signal by 0 to 999 milliseconds relative to the target point.",
+              "context": "It spreads a bomb run over the target area.",
+              "src": "m1",
+              "page": "266"
+            },
+            {
+              "id": "wso-wrcs-range",
+              "name": "Release range knob",
+              "type": "knob",
+              "match": [
+                "PNT_RIO_RANGE_KNOB",
+                "item:wso-wrcs:5"
+              ],
+              "text": "A knob and drum to set the bomb release range by hand, from the weapon's release table.",
+              "context": "The game's hint is 'Set Release Range (x10 ft)'.",
+              "src": "m1",
+              "page": "266"
+            },
+            {
+              "id": "wso-wrcs-bit",
+              "name": "WRCS BIT knob",
+              "type": "selector",
+              "match": [
+                "PNT_RIO_WRCS_TEST_MODE",
+                "item:wso-wrcs:6"
+              ],
+              "text": "A six-position knob for built-in tests of the delivery modes. The test is made by pressing the knob for five seconds and then the Freeze button. The game's hint is 'Select BIT Mode'.",
+              "context": "The test steps are explained in the manual's WRCS BIT section.",
+              "src": "m1",
+              "page": "267"
+            },
+            {
+              "id": "wso-cursor-freeze",
+              "name": "Freeze button",
+              "type": "button",
+              "match": [
+                "PNT_CURSOR_PANEL_WSO_FREEZE_BUTTON",
+                "item:wso-wrcs:7"
+              ],
+              "text": "Starts the tracking of the plane's speed from the INS and keeps the target position fixed that was set with the two cursors. This fixes the radar initial point. The button stays lit until reset.",
+              "context": "The game's hint is 'Freeze Target Data'.",
+              "src": "m1",
+              "page": "267"
+            },
+            {
+              "id": "wso-cursor-insert",
+              "name": "Target insert button",
+              "type": "button",
+              "match": [
+                "PNT_CURSOR_PANEL_WSO_TGT_INSERT_BUTTON",
+                "item:wso-wrcs:8"
+              ],
+              "text": "Enters the north-south and east-west offsets from the WRCS panel into the computer, which moves the cursors to the real target.",
+              "context": "The pod also uses it for its memory mode.",
+              "src": "m1",
+              "page": "267"
+            },
+            {
+              "id": "wso-cursor-reset",
+              "name": "Reset button",
+              "type": "button",
+              "match": [
+                "PNT_CURSOR_PANEL_WSO_RESET_BUTTON",
+                "item:wso-wrcs:9"
+              ],
+              "text": "Drops the tracked ground target from the memory of the computer and resets the cursors and the speed tracking to zero.",
+              "context": "The game's hint is 'Reset Target Data'.",
+              "src": "m1",
+              "page": "268"
+            },
+            {
+              "id": "wso-cursor-along",
+              "name": "Along track wheel",
+              "type": "wheel",
+              "match": [
+                "PNT_CURSOR_PANEL_WSO_ALONG_TRACK_WHEEL",
+                "item:wso-wrcs:10"
+              ],
+              "text": "Sets the range from the plane to the radar initial point with a growing and shrinking curved cursor on the radar screen.",
+              "context": "The game's hint is 'Move Cursor (Along Track)'.",
+              "src": "m1",
+              "page": "268"
+            },
+            {
+              "id": "wso-cursor-cross",
+              "name": "Cross track wheel",
+              "type": "wheel",
+              "match": [
+                "PNT_CURSOR_PANEL_WSO_CROSS_TRACK_WHEEL",
+                "item:wso-wrcs:11"
+              ],
+              "text": "Sets the direction to the radar initial point; it shows as a vertical line in PPI mode. Where the two cursors cross, the initial point is.",
+              "context": "The game's hint is 'Move Cursor (Cross Track)'.",
+              "src": "m1",
+              "page": "268"
+            },
+            {
+              "id": "wso-nuclear-consent",
+              "name": "Nuclear stores consent switch",
+              "type": "switch",
+              "match": [
+                "WSO_nuclear_consent_help",
+                "item:wso-wrcs:12"
+              ],
+              "text": "Arms nuclear stores: SAFE inhibits release, REL releases them unarmed, REL/ARM releases them armed. The game lists it with no command.",
+              "context": "The nuclear release circuit is not simulated in the game, according to the manual.",
+              "src": "m1",
+              "page": "269"
+            },
+            {
+              "id": "wso-skyspot",
+              "name": "Skyspot mode switch",
+              "type": "switch",
+              "match": [
+                "PNT_WSO_PULSE_SWITCH",
+                "item:wso-wrcs:13"
+              ],
+              "text": "A switch for the Combat Skyspot system for bombing directed from the ground. The manual says it was never installed on this variant, and the game says so as well.",
+              "context": "Clicking it does nothing in the game.",
+              "src": "m1",
+              "page": "269"
+            }
+          ]
+        },
+        {
+          "id": "wso-nav-computer",
+          "name": "Navigation computer control panel",
+          "db": "wso-right-console-aft",
+          "src": "m1",
+          "page": "270",
+          "text": "The panel for the navigation computer. It keeps the plane's position, the target position and the wind, and gives the HSI and BDHI their steering information. It has knobs with number counters.",
+          "context": "It works in two modes, INERTIAL (using the INS) and AIR DATA (using the air data computer and wind figures).",
+          "controls": [
+            {
+              "id": "wso-nav-function",
+              "name": "Function selector knob",
+              "type": "selector",
+              "match": [
+                "PNT_NAV_COMP_FUNCTION_SELECTOR_KNOB",
+                "item:wso-right-console-aft:1"
+              ],
+              "positions": [
+                {
+                  "name": "OFF",
+                  "text": "The system is off."
+                },
+                {
+                  "name": "STBY",
+                  "text": "Powered, but the position integration is off."
+                },
+                {
+                  "name": "TARGET 1",
+                  "text": "Range and bearing to the coordinates set on the target counters."
+                },
+                {
+                  "name": "TARGET 2",
+                  "text": "Range and bearing to the memorized coordinates."
+                },
+                {
+                  "name": "RESET",
+                  "text": "Clears the memorized coordinates; back in TARGET 2 the target counters are stored."
+                }
+              ],
+              "text": "A five-position knob that sets the function of the navigation computer. The game's hint is 'Select Navigation Computer Mode'.",
+              "context": "TARGET 1 steers to the numbers on the target counters; TARGET 2 steers to a memorized point.",
+              "src": "m1",
+              "page": "271"
+            },
+            {
+              "id": "wso-nav-wind",
+              "name": "Wind control knobs (direction, speed)",
+              "type": "knob",
+              "match": [
+                "PNT_NAV_COMP_WIND_DIR_KNOB",
+                "PNT_NAV_COMP_WIND_MAG_KNOB",
+                "item:wso-right-console-aft:2"
+              ],
+              "count": 2,
+              "text": "Two knobs to set the wind direction (in degrees) and the wind speed (in knots) by hand. The computer uses them in AIR DATA mode.",
+              "context": "The set numbers show on the counters above the knobs.",
+              "src": "m1",
+              "page": "272"
+            },
+            {
+              "id": "wso-nav-magvar",
+              "name": "Magnetic variation knob",
+              "type": "knob",
+              "match": [
+                "PNT_NAV_COMP_MAG_VAR_KNOB",
+                "item:wso-right-console-aft:3"
+              ],
+              "text": "Sets the magnetic variation, the difference between true north and the compass north, in degrees.",
+              "context": "It is needed for navigation in AIR DATA mode and for the first INS alignment.",
+              "src": "m1",
+              "page": "272"
+            },
+            {
+              "id": "wso-nav-position",
+              "name": "Position control knobs (latitude, longitude)",
+              "type": "knob",
+              "match": [
+                "PNT_NAV_COMP_POS_LATTITUDE_KNOB",
+                "PNT_NAV_COMP_POS_LONGITUDE_KNOB",
+                "item:wso-right-console-aft:4"
+              ],
+              "count": 2,
+              "text": "Two knobs to change the plane's own position: north-south (latitude) and east-west (longitude), shown on counters in degrees and minutes. They must be pressed in to work.",
+              "context": "In inertial mode the position update switch is used together with them.",
+              "src": "m1",
+              "page": "273"
+            },
+            {
+              "id": "wso-nav-target",
+              "name": "Target control knobs (latitude, longitude)",
+              "type": "knob",
+              "match": [
+                "PNT_NAV_COMP_TARGET_LATTITUDE_KNOB",
+                "PNT_NAV_COMP_TARGET_LONGITUDE_KNOB",
+                "item:wso-right-console-aft:5"
+              ],
+              "count": 2,
+              "text": "Two knobs to set the position of a target or waypoint on counters. The values are used directly in TARGET 1 or stored for TARGET 2.",
+              "context": "The game offers fast and slow turns for these knobs.",
+              "src": "m1",
+              "page": "273"
+            },
+            {
+              "id": "wso-nav-update",
+              "name": "Position update switch",
+              "type": "switch3",
+              "match": [
+                "PNT_NAV_COMP_POSITION_UPDATE_SWITCH",
+                "item:wso-right-console-aft:6"
+              ],
+              "positions": [
+                {
+                  "name": "SET",
+                  "text": "Updating is off; the counters can be turned freely."
+                },
+                {
+                  "name": "NORMAL",
+                  "text": "The counters follow the INS (or the computer in AIR DATA mode)."
+                },
+                {
+                  "name": "FIX",
+                  "text": "Moves the INS position towards the counters (held)."
+                }
+              ],
+              "text": "Controls whether the position counters follow the computed position or are set by hand. It has about half a second delay on the way to NORM.",
+              "context": "FIX moves the INS position by about 3 minutes of arc per second.",
+              "src": "m1",
+              "page": "274"
+            },
+            {
+              "id": "wso-nav-var-meter",
+              "name": "Variation sync meter",
+              "type": "gauge",
+              "match": [
+                "item:wso-right-console-aft:7"
+              ],
+              "text": "A meter that shows the difference between the variation computed by the INS and the one set by hand.",
+              "context": "In AIR DATA mode the manually set variation does not affect it.",
+              "src": "m1",
+              "page": "275"
+            },
+            {
+              "id": "wso-nav-test-cap",
+              "name": "Test cap off light",
+              "type": "light",
+              "match": [
+                "item:wso-right-console-aft:8"
+              ],
+              "text": "A lamp that lights when the true airspeed circuit from the air data computer has a failure (an open circuit).",
+              "context": "It is a warning for the crew about the speed signal.",
+              "src": "m1",
+              "page": "275"
+            },
+            {
+              "id": "wso-nav-sync-lights",
+              "name": "Latitude / longitude sync lights",
+              "type": "light",
+              "match": [
+                "item:wso-right-console-aft:9"
+              ],
+              "text": "Lamps that light when the position counters differ from the INS position by more than 1.5 minutes of arc.",
+              "context": "The crew sets the counters again.",
+              "src": "m1",
+              "page": "276"
+            },
+            {
+              "id": "wso-nav-air-data-light",
+              "name": "Air data mode light",
+              "type": "light",
+              "match": [
+                "item:wso-right-console-aft:10"
+              ],
+              "text": "A lamp that lights when the navigation computer works in AIR DATA mode.",
+              "context": "It tells the crew that the INS is not the source.",
+              "src": "m1",
+              "page": "276"
+            }
+          ]
+        },
+        {
+          "id": "wso-cockpit-lighting",
+          "name": "Cockpit lighting control panel (WSO)",
+          "src": "m1",
+          "page": "277",
+          "text": "The WSO's copy of the lighting panel. It controls the light of the consoles and instrument panel, the white floodlight, the standby compass light and the warning light test.",
+          "context": "The instrument floodlights are controlled by the pilot.",
+          "controls": [
+            {
+              "id": "wso-light-console-knob",
+              "name": "Console knob",
+              "type": "knob",
+              "match": [
+                "WSO_ckp_light_console_help",
+                "item:wso-right-console-aft:11"
+              ],
+              "text": "Sets how bright the console lighting is on the left and right side, from OFF to BRT.",
+              "context": "The WSO uses it as the main knob for console lighting at night.",
+              "src": "m1",
+              "page": "278"
+            },
+            {
+              "id": "wso-light-instrument-knob",
+              "name": "Instrument panel knob",
+              "type": "knob",
+              "match": [
+                "WSO_ckp_light_instruments_help",
+                "item:wso-right-console-aft:12"
+              ],
+              "text": "Sets the backlight of the instrument panel and the edge light of most dials.",
+              "context": "The main flight instruments are controlled by the pilot.",
+              "src": "m1",
+              "page": "278"
+            },
+            {
+              "id": "wso-light-indexer-knob",
+              "name": "Indexer knob",
+              "type": "knob",
+              "match": [
+                "WSO_ckp_light_console_help001",
+                "item:wso-right-console-aft:13"
+              ],
+              "text": "Sets the brightness of the angle-of-attack indexer lights left and right of the canopy bow. The game's hint is 'Change AoA Indexer Brightness'.",
+              "context": "The indexer helps in the approach.",
+              "src": "m1",
+              "page": "278"
+            },
+            {
+              "id": "wso-white-flood",
+              "name": "White floodlight switch (WSO)",
+              "type": "switch2",
+              "match": [
+                "WSO_ckp_light_flood_help",
+                "item:wso-right-console-aft:14"
+              ],
+              "positions": [
+                {
+                  "name": "OFF",
+                  "text": "The white floodlight is off."
+                },
+                {
+                  "name": "ON",
+                  "text": "The white floodlight is on."
+                }
+              ],
+              "text": "Switches the white floodlight that lights the cockpit brightly, also called the thunderstorm light.",
+              "context": "It works separately from the other light controls.",
+              "src": "m1",
+              "page": "277"
+            },
+            {
+              "id": "wso-compass-light",
+              "name": "Standby compass switch",
+              "type": "switch2",
+              "match": [
+                "WSO_ckp_light_compass_help",
+                "item:wso-right-console-aft:15"
+              ],
+              "positions": [
+                {
+                  "name": "OFF",
+                  "text": "The compass light is off."
+                },
+                {
+                  "name": "ON",
+                  "text": "The compass light is on."
+                }
+              ],
+              "text": "Switches the light of the standby compass on and off.",
+              "context": "The standby compass is the backup direction instrument.",
+              "src": "m1",
+              "page": "277"
+            },
+            {
+              "id": "wso-console-flood",
+              "name": "Console floodlight switch (WSO)",
+              "type": "switch3",
+              "match": [
+                "WSO_ckp_light_console_flood_help",
+                "item:wso-right-console-aft:16"
+              ],
+              "positions": [
+                {
+                  "name": "DIM",
+                  "text": "Dim red floodlight."
+                },
+                {
+                  "name": "MED",
+                  "text": "Medium red floodlight."
+                },
+                {
+                  "name": "BRT",
+                  "text": "Bright red floodlight."
+                }
+              ],
+              "text": "Sets the level of the red floodlights of the consoles: dim, medium or bright.",
+              "context": "The WSO turns them off by putting the switch to DIM and the console knob to OFF.",
+              "src": "m1",
+              "page": "277"
+            },
+            {
+              "id": "wso-warn-test",
+              "name": "Warning light test switch (WSO)",
+              "type": "button",
+              "match": [
+                "WSO_ckp_light_warning_help",
+                "item:wso-right-console-aft:17"
+              ],
+              "text": "Holding it checks that the warning lights of the cockpit light up. The game's hint is 'Test Warning Lights'.",
+              "context": "The pilot has a three-position version of this switch.",
+              "src": "m1",
+              "page": "278"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "wso-right-wall-area",
+      "where": "right-side",
+      "name": "WSO cockpit: Right wall",
+      "text": "The wall at the WSO's right with the canopy unlock handle and three switches for ground tests.",
+      "panels": [
+        {
+          "id": "wso-right-wall",
+          "name": "Right wall (WSO)",
+          "db": "wso-right-wall",
+          "src": "m1",
+          "page": "279",
+          "text": "The canopy manual unlock handle and the ground test panel with the battery bypass and the ground power test switches.",
+          "context": "The ground test switches are used by the crew and the ground crew while the plane stands on the ground.",
+          "controls": [
+            {
+              "id": "wso-canopy-unlock",
+              "name": "Canopy manual unlock handle (WSO)",
+              "type": "handle",
+              "match": [
+                "PNT_COPILOT_CANOPY_UNLOCK",
+                "item:wso-right-wall:1"
+              ],
+              "text": "A handle that unlocks the back canopy by hand if the air system fails. The game's hint is 'Manual Canopy Unlock (command open first)'.",
+              "context": "The canopy lever must be put on OPEN first. If the canopy is not locked, the warning light on the telelight panel lights.",
+              "src": "m1",
+              "page": "279"
+            },
+            {
+              "id": "wso-battery-bypass",
+              "name": "Battery bypass switch",
+              "type": "switch2",
+              "match": [
+                "PNT_WSO_AA_IFF_TEST_SWITCH",
+                "item:wso-right-wall:2"
+              ],
+              "positions": [
+                {
+                  "name": "OFF",
+                  "text": "The battery is connected normally."
+                },
+                {
+                  "name": "ON",
+                  "text": "The battery relay is de-energized and the battery is disconnected."
+                }
+              ],
+              "text": "Switched on, it disconnects the battery from the essential power bus and stops its charging. It is used if the battery overheats badly.",
+              "context": "The game's hint is 'Battery Bypass Switch'.",
+              "src": "m1",
+              "page": "280"
+            },
+            {
+              "id": "wso-ap-ground-test",
+              "name": "Autopilot ground test switch",
+              "type": "switch2",
+              "match": [
+                "PNT_WSO_AP_IFF_TEST_SWITCH",
+                "item:wso-right-wall:3"
+              ],
+              "positions": [
+                {
+                  "name": "NORM",
+                  "text": "Normal; the autopilot circuit gets no outside power."
+                },
+                {
+                  "name": "TEST",
+                  "text": "Outside power to the autopilot circuits."
+                }
+              ],
+              "text": "Connects outside electrical power to the autopilot (AFCS) circuits for tests on the ground. It switches off when outside power is lost or a generator starts.",
+              "context": "The game's hint is 'Autopilot Ground Power Switch'.",
+              "src": "m1",
+              "page": "280"
+            },
+            {
+              "id": "wso-instrument-ground-power",
+              "name": "Instrument ground power switch",
+              "type": "switch2",
+              "match": [
+                "PNT_WSO_GROUND_POWER_SWITCH",
+                "item:wso-right-wall:4"
+              ],
+              "positions": [
+                {
+                  "name": "NORM",
+                  "text": "Normal operation."
+                },
+                {
+                  "name": "TEST",
+                  "text": "Outside power to the instrument buses."
+                }
+              ],
+              "text": "In TEST it connects outside power to the instrument power buses, if the generator switches are on EXT ON. This lets the crew set up instruments before the engines start.",
+              "context": "It is used in a cold start after connecting ground power.",
+              "src": "m1",
+              "page": "280"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "wso-hotas",
+      "where": "hotas",
+      "name": "WSO cockpit: Stick and throttles",
+      "text": "The WSO's own control stick and the two throttles in the rear cockpit. The rear throttles are linked to the front ones.",
+      "panels": [
+        {
+          "id": "wso-stick",
+          "name": "Control stick (WSO)",
+          "src": "m1",
+          "page": "281",
+          "text": "The rear control stick is nearly the same as the front one. The WSO can fly the plane with it, for example when the pilot is unable to.",
+          "context": "The WSO normally works the radar and weapons, and flies only in an emergency.",
+          "controls": [
+            {
+              "id": "wso-stick-gimbal",
+              "name": "Rear control stick",
+              "type": "axis",
+              "match": [
+                "control:stick.gimbal",
+                "item:wso-stick-seat:1"
+              ],
+              "text": "Pulling the stick back raises the nose, pushing it forward lowers it, moving it sideways rolls the plane.",
+              "context": "The front and rear controls move together.",
+              "src": "m1",
+              "page": "281"
+            },
+            {
+              "id": "wso-trim-hat",
+              "name": "Trim hat (rear stick)",
+              "type": "hat",
+              "match": [
+                "control:stick.hat.trim"
+              ],
+              "text": "A four-way thumb switch on top of the rear grip that sets the trim for pitch and roll.",
+              "context": "Trim removes the force from the stick.",
+              "src": "m1",
+              "page": "281"
+            },
+            {
+              "id": "wso-bomb-button",
+              "name": "Bomb / missile launch button (rear stick)",
+              "type": "button",
+              "match": [
+                "control:stick.weapon_release"
+              ],
+              "text": "A button on top of the rear grip. It drops bombs and launches a locked Maverick missile.",
+              "context": "It works when the weapons are armed from the front cockpit.",
+              "src": "m1",
+              "page": "281"
+            },
+            {
+              "id": "wso-trigger",
+              "name": "Trigger (rear stick)",
+              "type": "trigger",
+              "match": [
+                "control:stick.trigger"
+              ],
+              "text": "A two-stage trigger on the front of the rear grip. The first stage runs the gun camera; the second stage fires. With a TV weapon it shows the video and uncages the seeker.",
+              "context": "The rear trigger fires what the pilot has selected.",
+              "src": "m1",
+              "page": "281"
+            },
+            {
+              "id": "wso-nws-button",
+              "name": "Nose wheel steering / auto-acquisition button",
+              "type": "button",
+              "match": [
+                "control:stick.button.nws",
+                "PNT_WSO_Stick_NWS"
+              ],
+              "text": "While it is held, the plane's nose wheel is steered with the rudder pedals. In the air it tells the radar to lock the nearest target.",
+              "context": "The game's hint is 'Nosegear Steering Button'.",
+              "src": "m1",
+              "page": "282"
+            },
+            {
+              "id": "wso-quick-release",
+              "name": "Emergency quick release lever (rear stick)",
+              "type": "lever",
+              "match": [
+                "control:stick.pinky.lever",
+                "PNT_WSO_Stick_Emerg_Lever"
+              ],
+              "text": "A lever at the lower front of the rear grip. Pressing it cuts the anti-skid, the autopilot, the stability aids and the rudder-aileron link together.",
+              "context": "It lets the rear crew member take back full control quickly.",
+              "src": "m1",
+              "page": "282"
+            },
+            {
+              "id": "wso-stick-hide",
+              "name": "Stick hide / show switch (WSO)",
+              "type": "switch",
+              "match": [
+                "PNT_WSO_STICK_HIDE"
+              ],
+              "text": "Clicking the base of the rear stick hides or shows the stick in the game, so it does not block the view.",
+              "context": "It changes nothing in the plane.",
+              "src": "m1",
+              "page": "281"
+            }
+          ]
+        },
+        {
+          "id": "wso-throttle",
+          "name": "Rear throttles (WSO)",
+          "src": "m1",
+          "page": "229",
+          "text": "Two levers on the WSO's left console, linked to the pilot's throttles. They have a speed brake switch and a mic switch.",
+          "context": "The rear throttles cannot start the engines or light the afterburner. Only the pilot can do that.",
+          "controls": [
+            {
+              "id": "wso-throttle-left",
+              "name": "Left rear throttle",
+              "type": "axis",
+              "match": [
+                "control:throttle.axis.left",
+                "item:wso-ccu:9"
+              ],
+              "text": "The left engine's power lever in the rear seat. It moves with the front lever.",
+              "context": "The rear lever can be moved out of OFF without the front seat's help. It cannot reach the afterburner range.",
+              "src": "m1",
+              "page": "229"
+            },
+            {
+              "id": "wso-throttle-right",
+              "name": "Right rear throttle",
+              "type": "axis",
+              "match": [
+                "control:throttle.axis.right"
+              ],
+              "text": "The right engine's power lever in the rear seat. It moves with the front one.",
+              "context": "It works like the left rear throttle.",
+              "src": "m1",
+              "page": "229"
+            },
+            {
+              "id": "wso-speed-brake",
+              "name": "Speed brake switch (rear)",
+              "type": "switch3",
+              "match": [
+                "control:throttle.speedbrake",
+                "WSO_throttle_mic_help"
+              ],
+              "positions": [
+                {
+                  "name": "OUT",
+                  "text": "Opens the speed brakes while held."
+                },
+                {
+                  "name": "STOP",
+                  "text": "Holds the speed brakes where they are."
+                },
+                {
+                  "name": "IN",
+                  "text": "Retracts the speed brakes."
+                }
+              ],
+              "text": "A three-position switch on the inboard rear throttle. It opens the speed brakes, plates that stand in the wind to slow the plane, or closes them. Out springs back to stop.",
+              "context": "Either seat can operate the speed brakes. The game's hint is 'Speed Brake'.",
+              "src": "m1",
+              "page": "229"
+            },
+            {
+              "id": "wso-mic-switch",
+              "name": "Mic switch (rear)",
+              "type": "switch3",
+              "match": [
+                "control:throttle.hat.mic",
+                "WSO_throttle_brake_help"
+              ],
+              "positions": [
+                {
+                  "name": "UHF",
+                  "text": "Pushed forward and held: transmits on the radio."
+                },
+                {
+                  "name": "CENTER",
+                  "text": "Rest position."
+                },
+                {
+                  "name": "ICS",
+                  "text": "Pushed aft and held: talks on the intercom."
+                }
+              ],
+              "text": "A switch on the inboard rear throttle for talking. Forward transmits on the radio, aft talks on the intercom. Both are held.",
+              "context": "The game's hint is 'Mic Switch' with the choices ICS and UHF.",
+              "src": "m1",
+              "page": "230"
+            }
+          ]
+        },
+        {
+          "id": "wso-seat",
+          "name": "Ejection seat and seat position (WSO)",
+          "src": "m1",
+          "page": "283",
+          "text": "The WSO's ejection seat with its two handles and a switch to move the seat up and down.",
+          "context": "The handles are for emergencies only. The command ejection select handle on the front panel decides whether both crew members leave.",
+          "controls": [
+            {
+              "id": "wso-ejection-handles",
+              "name": "Ejection handles (rear seat)",
+              "type": "handle",
+              "match": [
+                "item:wso-stick-seat:2"
+              ],
+              "text": "Pulling the cord between the legs or the curtain above the head fires the seat out of the plane.",
+              "context": "It is the last resort of the rear crew member; the details are in the emergency system chapter of the manual.",
+              "src": "m1",
+              "page": "283"
+            },
+            {
+              "id": "wso-seat-position",
+              "name": "Seat position switch (WSO)",
+              "type": "switch3",
+              "match": [
+                "PNT_WSO_SEAT_HEIGHT"
+              ],
+              "positions": [
+                {
+                  "name": "UP",
+                  "text": "Moves the seat up while held."
+                },
+                {
+                  "name": "CENTER",
+                  "text": "Rest position."
+                },
+                {
+                  "name": "DOWN",
+                  "text": "Moves the seat down while held."
+                }
+              ],
+              "text": "A spring-loaded switch that moves the seat up or down by about 5 cm. The game's hint is 'Change Seat Position'.",
+              "context": "The motor should run for no more than 30 seconds in 10 minutes.",
+              "src": "m1",
+              "page": "283"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,2441 @@
+{
+  "format": "joypro-cockpit-guide",
+  "version": 1,
+  "id": "dcs-c-130j",
+  "title": "C-130J-30 Super Hercules (DCS)",
+  "variants": [
+    "c-130j-30"
+  ],
+  "games": [
+    "DCS"
+  ],
+  "sets": [
+    "DCS/C-130J-30"
+  ],
+  "sources": [
+    {
+      "id": "m1",
+      "title": "DCS C-130J User Manual (EN)",
+      "file": "Mods/aircraft/C130J/docs/DCS C-130J User Manual.pdf"
+    }
+  ],
+  "intro": "The C-130J-30 Super Hercules is a large transport plane with four propeller engines driven by turbines (turboprops). Its glass cockpit has two pilots side by side, the pilot on the left and the copilot on the right. Four big screens, two head-up displays and several small keypad units replace most of the round gauges. A loadmaster looks after the cargo, and the plane carries no flight engineer. The four power levers stand on the console between the pilots, and the engine, fuel and electrical switches are overhead.",
+  "areas": [
+    {
+      "id": "lower-overhead",
+      "where": "glareshield",
+      "name": "Lower overhead panel (above the windshield)",
+      "text": "The strip of panels above the windshield. It holds engine start, the fire handles, the APU, the engine computer and propeller switches, and the two HUD button panels.",
+      "panels": [
+        {
+          "id": "engine-start",
+          "name": "Engine start panel",
+          "src": "m1",
+          "page": "79",
+          "text": "This panel has one switch for each of the four engines. With it the pilot starts an engine, runs it, stops it, or spins it without fuel to cool it.",
+          "context": "It is used after electric power and air are available, from the APU or from a ground cart. The engine start sequence itself is run by each engine's computer.",
+          "controls": [
+            {
+              "id": "eng-switches",
+              "name": "ENGINE 1-4 start switches",
+              "type": "selector",
+              "match": [
+                "PNT_ENGSTART_?_*",
+                "item:lower-overhead-panel:11"
+              ],
+              "positions": [
+                {
+                  "name": "MOTOR",
+                  "text": "Spins the engine with the starter, without fuel or spark. It clears the engine after a stopped start. The switch springs back to STOP."
+                },
+                {
+                  "name": "STOP",
+                  "text": "Cuts the fuel and shuts the engine down. This is the rest position of the left half of the switch."
+                },
+                {
+                  "name": "RUN",
+                  "text": "The normal position while the engine runs; the fuel pump of that engine's tank is on."
+                },
+                {
+                  "name": "START",
+                  "text": "Begins the start sequence, with a green light on. The switch springs back to RUN."
+                }
+              ],
+              "count": 4,
+              "text": "These four switches start and stop the four engines, one switch each. Moving a switch to START makes the engine's own computer run the start by itself: it adds fuel and sparks at the right moment.",
+              "context": "A green start light shows that the starter is turning. The start only works with the power lever in the starting range and the bleed air valve open. In the game, hold the key for MOTOR or START and release it to return.",
+              "src": "m1",
+              "page": "79"
+            }
+          ]
+        },
+        {
+          "id": "fire-control",
+          "name": "Fire control panel (engine fire handles)",
+          "src": "m1",
+          "page": "86",
+          "text": "This panel has one big red handle for each engine. A handle lights up red when the plane detects fire in that engine. Pulling it shuts the engine and cuts it off from fuel, oil, air and hydraulics.",
+          "context": "In a fire the pilots pull the handle first. Twisting it afterwards sprays fire-killing agent from one of two bottles into that engine.",
+          "controls": [
+            {
+              "id": "eng-fire-handles",
+              "name": "ENGINE 1-4 fire handles",
+              "type": "handle",
+              "match": [
+                "PNT_ENGFIRE_HANDLE_?_*",
+                "item:lower-overhead-panel:6"
+              ],
+              "positions": [
+                {
+                  "name": "PUSHED",
+                  "text": "The engine works normally."
+                },
+                {
+                  "name": "PULLED",
+                  "text": "The engine is isolated from fuel, oil, hydraulics and bleed air, and it is shut down with its propeller feathered (blades turned edge-on to the wind)."
+                },
+                {
+                  "name": "DISCH 1",
+                  "text": "Fire bottle 1 is fired and its agent flows to this engine."
+                },
+                {
+                  "name": "DISCH 2",
+                  "text": "Fire bottle 2 is fired and its agent flows to this engine."
+                }
+              ],
+              "count": 4,
+              "text": "Each handle pulls out and twists. Pulled out, it isolates the engine from fuel, oil, air and hydraulics, and the propeller is turned into the wind to stop drag. Twisted, it sends fire-killing agent into the engine compartment.",
+              "context": "A red light in the handle shows the fire. It is the emergency action for an engine fire. In the game, scroll to pull or push the handle and click to turn it.",
+              "src": "m1",
+              "page": "86"
+            }
+          ]
+        },
+        {
+          "id": "apu",
+          "name": "APU control panel",
+          "src": "m1",
+          "page": "84",
+          "text": "This panel starts and stops the APU, a small engine in the left wheel well. The APU makes electricity and air while the big engines are off.",
+          "context": "The pilot starts the APU first, then uses its power and air to start the main engines.",
+          "controls": [
+            {
+              "id": "apu-switch",
+              "name": "APU control switch",
+              "type": "switch3",
+              "match": [
+                "PNT_APU_CONTROL_322",
+                "item:lower-overhead-panel:7"
+              ],
+              "positions": [
+                {
+                  "name": "STOP",
+                  "text": "Closes the fuel valve and shuts the APU down."
+                },
+                {
+                  "name": "RUN",
+                  "text": "The running position. Power opens the APU air door."
+                },
+                {
+                  "name": "START",
+                  "text": "Opens the fuel valve and turns the starter until about half speed. The switch springs back to RUN."
+                }
+              ],
+              "text": "This switch starts and stops the APU. Pushing it to START opens the fuel valve and turns the starter until the APU runs on its own. It then springs back to RUN.",
+              "context": "A green start light shows that the starter is turning. The air intake door of the APU opens by itself. In the game the left and right commands move the switch.",
+              "src": "m1",
+              "page": "84"
+            },
+            {
+              "id": "apu-alarm",
+              "name": "APU ALARM switch",
+              "type": "switch2",
+              "match": [
+                "PNT_APU_ALARM_425"
+              ],
+              "positions": [
+                {
+                  "name": "OFF",
+                  "text": "The fire warning tone plays only in the cockpit."
+                },
+                {
+                  "name": "ON",
+                  "text": "The fire warning tone plays in the cockpit and in the cargo bay."
+                }
+              ],
+              "text": "This switch decides where the warning tone for an APU fire is heard. Off: only in the cockpit. On: also over the speakers in the cargo bay.",
+              "context": "The cargo crew works away from the cockpit, so this lets them hear an APU fire warning.",
+              "src": "m1",
+              "page": "84"
+            },
+            {
+              "id": "apu-fire",
+              "name": "APU fire handle",
+              "type": "handle",
+              "match": [
+                "PNT_FIRE_HANDLE_APU_324_325"
+              ],
+              "positions": [
+                {
+                  "name": "PUSHED",
+                  "text": "The APU works normally."
+                },
+                {
+                  "name": "PULLED",
+                  "text": "The APU fuel valve closes and the air door shuts as the APU slows down."
+                },
+                {
+                  "name": "DISCH 1",
+                  "text": "Fire bottle 1 sends its agent to the APU."
+                },
+                {
+                  "name": "DISCH 2",
+                  "text": "Fire bottle 2 sends its agent to the APU."
+                }
+              ],
+              "text": "This handle works like the engine fire handles, but for the APU. Pulling it shuts the APU's fuel and closes its air door. Twisting it sprays fire-killing agent at the APU.",
+              "context": "The pilots use it only when the APU is on fire. In the game, scroll to pull or push the handle and click to turn it.",
+              "src": "m1",
+              "page": "84"
+            }
+          ]
+        },
+        {
+          "id": "fadec",
+          "name": "FADEC control panel",
+          "src": "m1",
+          "page": "81",
+          "text": "FADEC is the computer that runs each engine. This panel has one switch per engine, guarded by a cover, to change to the engine's second computer or to clear its faults.",
+          "context": "Each engine has two computer units. One is in charge and the other watches it. The pilot rarely needs these switches.",
+          "controls": [
+            {
+              "id": "fadec-guards",
+              "name": "FADEC switch guards (covers)",
+              "type": "guard",
+              "match": [
+                "PNT_FADEC_GUARD_*"
+              ],
+              "count": 4,
+              "text": "These four little covers sit over the FADEC switches. They stop the pilot from touching a switch by mistake. The pilot lifts a cover to reach its switch.",
+              "context": "There is one cover for each engine, directly over that engine's FADEC switch.",
+              "src": "m1",
+              "page": "81"
+            },
+            {
+              "id": "fadec-switches",
+              "name": "FADEC 1-4 switches (ALT / RESET)",
+              "type": "switch3",
+              "match": [
+                "PNT_FADEC_?_4*",
+                "item:lower-overhead-panel:5"
+              ],
+              "positions": [
+                {
+                  "name": "ALT",
+                  "text": "The second computer unit is put in charge."
+                },
+                {
+                  "name": "NORM",
+                  "text": "Normal operation. The switch rests here."
+                },
+                {
+                  "name": "RESET",
+                  "text": "A reset signal goes to both units and clears their fault indications."
+                }
+              ],
+              "count": 4,
+              "text": "Each switch picks which of the engine's two computer units is in charge, or clears the computer's fault messages. It springs back to the middle after use.",
+              "context": "If the unit in charge fails, the other one takes over by itself. The pilot can also hand over control by hand with ALT. Engine data pages show which unit is in charge.",
+              "src": "m1",
+              "page": "81"
+            }
+          ]
+        },
+        {
+          "id": "propeller",
+          "name": "Propeller control panel",
+          "src": "m1",
+          "page": "82",
+          "text": "This panel has one switch per propeller. It turns the propeller blades by hand toward feather (edge-on to the wind) or the other way.",
+          "context": "It only works when the engine is shut down or in the low ground-idle mode with the power lever at ground idle. Normally the engine computer sets the blades by itself.",
+          "controls": [
+            {
+              "id": "prop-switches",
+              "name": "PROP 1-4 control switches",
+              "type": "switch3",
+              "match": [
+                "PNT_PROP_CNTRL_?_*",
+                "item:lower-overhead-panel:9"
+              ],
+              "positions": [
+                {
+                  "name": "FEATHER",
+                  "text": "The extra pump runs and drives the blades toward the feather position."
+                },
+                {
+                  "name": "NORMAL",
+                  "text": "The extra pump is off."
+                },
+                {
+                  "name": "UNFEATHER",
+                  "text": "The extra pump runs and drives the blades the other way, away from feather."
+                }
+              ],
+              "count": 4,
+              "text": "Each switch runs a small extra pump that turns the blades of one propeller. FEATHER turns them edge-on to the wind, so the propeller makes little drag or wind. UNFEATHER turns them back.",
+              "context": "On the ground it is used for shut-down engines or for the quiet 'hotel' mode. Holding UNFEATHER on a stopped engine can drive the blades to full reverse.",
+              "src": "m1",
+              "page": "82"
+            }
+          ]
+        },
+        {
+          "id": "atcs-sync",
+          "name": "ATCS and propeller sync switches",
+          "src": "m1",
+          "page": "82",
+          "text": "These switches control two engine helpers: the automatic thrust control system (ATCS) and the propeller synchronizer.",
+          "context": "Both normally stay on. The pilot touches them only for special cases, such as a test or a failure.",
+          "controls": [
+            {
+              "id": "atcs-guard",
+              "name": "ATCS switch guard",
+              "type": "guard",
+              "match": [
+                "PNT_ATCS_GUARD_327"
+              ],
+              "text": "This cover sits over the ATCS switch so that it cannot be switched off by accident.",
+              "context": "The pilot lifts it only when ATCS must be turned off.",
+              "src": "m1",
+              "page": "82"
+            },
+            {
+              "id": "atcs-switch",
+              "name": "ATCS switch",
+              "type": "switch2",
+              "match": [
+                "PNT_ATCS_416",
+                "item:lower-overhead-panel:10"
+              ],
+              "positions": [
+                {
+                  "name": "ON",
+                  "text": "ATCS is active."
+                },
+                {
+                  "name": "OFF",
+                  "text": "ATCS is switched off."
+                }
+              ],
+              "text": "ATCS is the automatic thrust control system. If an outer engine loses power at low speed, ATCS lowers the power of the other outer engine so the plane does not swing sideways. This switch turns that helper on and off.",
+              "context": "With ATCS off, nothing holds back the power of the other outer engine in an engine failure at low speed, and the plane may be hard to control.",
+              "src": "m1",
+              "page": "82"
+            },
+            {
+              "id": "prop-sync",
+              "name": "PROP SYNC switch",
+              "type": "switch2",
+              "match": [
+                "PNT_PROPSYNC_376"
+              ],
+              "positions": [
+                {
+                  "name": "ON",
+                  "text": "The propellers are matched in phase."
+                },
+                {
+                  "name": "OFF",
+                  "text": "No matching; the propellers turn independently."
+                }
+              ],
+              "text": "This switch turns on the propeller synchronizer. It lines up the four propellers so that they turn in step, which removes the pulsing drumming sound they make otherwise.",
+              "context": "The engine computers do the matching; the pilot only switches the function on or off.",
+              "src": "m1",
+              "page": "82"
+            }
+          ]
+        },
+        {
+          "id": "hud-pilot",
+          "name": "Pilot HUD control panel",
+          "src": "m1",
+          "page": "196",
+          "text": "This panel sets what the pilot's head-up display (HUD) shows: the glass screen in front of the pilot's eyes. It has layer buttons and a brightness knob.",
+          "context": "The pilot chooses layers such as visual, navigation or tactical. The copilot has an identical panel for the copilot's own HUD.",
+          "controls": [
+            {
+              "id": "vis",
+              "name": "VIS button (visual layer)",
+              "type": "button",
+              "match": [
+                "PNT_P_HUD_VIS_*",
+                "item:lower-overhead-panel:8"
+              ],
+              "text": "This button shows or hides the 'visual' layer of the pilot's head-up display, the glass screen in front of the pilot's eyes. The visual layer is the set of flight marks used when flying by sight.",
+              "context": "A small green light on the button shows that the layer is on. Each pilot has an own panel and changes only the own HUD. This is the pilot's panel.",
+              "src": "m1",
+              "page": "196"
+            },
+            {
+              "id": "cat2",
+              "name": "CAT2 button (category 2 approach)",
+              "type": "button",
+              "match": [
+                "PNT_P_HUD_CAT2_*"
+              ],
+              "text": "This button adds the marks for a 'category 2' instrument approach to the pilot's HUD. It also starts the checking of that approach.",
+              "context": "A category 2 approach is a landing in poor visibility with radio guidance. The green light on the button shows that the function is on. This is the pilot's panel.",
+              "src": "m1",
+              "page": "196"
+            },
+            {
+              "id": "os",
+              "name": "O/S button (offside)",
+              "type": "button",
+              "match": [
+                "PNT_P_HUD_O/S_*"
+              ],
+              "text": "While the pilot's button is held, the HUD shows what the other pilot has chosen to display instead of the own choice. The word OFFSIDE appears on the HUD during this time.",
+              "context": "It lets one pilot take a quick look at the other pilot's picture without changing anything. This is the pilot's panel.",
+              "src": "m1",
+              "page": "196"
+            },
+            {
+              "id": "tact",
+              "name": "TACT button (tactical layer)",
+              "type": "button",
+              "match": [
+                "PNT_P_HUD_TACT_*"
+              ],
+              "text": "This button shows or hides the 'tactical' layer on the pilot's HUD. That layer holds mission and threat information.",
+              "context": "It is used on military missions, for example to see threat warnings on the glass screen. A green light on the button shows that the layer is on. This is the pilot's panel.",
+              "src": "m1",
+              "page": "196"
+            },
+            {
+              "id": "nav",
+              "name": "NAV button (navigation layer)",
+              "type": "button",
+              "match": [
+                "PNT_P_HUD_NAV_*"
+              ],
+              "text": "This button shows or hides the navigation layer on the pilot's HUD, which holds the data for flying along the planned route.",
+              "context": "A green light on the button shows that the layer is on. The pilot can switch it off to make the glass screen less crowded. This is the pilot's panel.",
+              "src": "m1",
+              "page": "196"
+            },
+            {
+              "id": "uncg",
+              "name": "UNCG button (uncage)",
+              "type": "button",
+              "match": [
+                "PNT_P_HUD_UNCG_*"
+              ],
+              "text": "This button 'uncages' the flight path marker on the pilot's HUD. The marker is the small aircraft symbol that shows where the plane is really going. Uncaged, it may also move sideways.",
+              "context": "The game describes the button as the cage and uncage control of that marker. A green light shows that it is uncaged. This is the pilot's panel.",
+              "src": "m1",
+              "page": "196"
+            },
+            {
+              "id": "blank",
+              "name": "Unused HUD buttons (2)",
+              "type": "button",
+              "match": [
+                "PNT_P_HUD_BANK1_*",
+                "PNT_P_HUD_BLANK2_*"
+              ],
+              "count": 2,
+              "text": "The game gives these two controls of the pilot's HUD panel no label; their names suggest blank keys. The manual lists the unused keys of this panel as having no function.",
+              "context": "They are only parts of the panel's picture. The six labelled buttons and the brightness knob are the controls that matter. This is the pilot's panel.",
+              "src": "m1",
+              "page": "196"
+            },
+            {
+              "id": "brt",
+              "name": "Brightness knob (pull for AUTO)",
+              "type": "knob",
+              "match": [
+                "PNT_P_HUD_BRT_*"
+              ],
+              "text": "Turning this knob makes the pilot's head-up display brighter (clockwise) or darker (counter-clockwise). Pulling the knob out lets the brightness follow the light outside by itself. Pushing it in gives manual control back.",
+              "context": "The glass screen must be bright enough to read in sunlight and dim enough at night. This is the pilot's panel.",
+              "src": "m1",
+              "page": "196"
+            }
+          ]
+        },
+        {
+          "id": "hud-copilot",
+          "name": "Copilot HUD control panel",
+          "src": "m1",
+          "page": "196",
+          "text": "This panel sets what the copilot's head-up display (HUD) shows. It has the same layer buttons and brightness knob as the pilot's panel.",
+          "context": "Each pilot's HUD is independent, so the two pilots can show different layers at the same time.",
+          "controls": [
+            {
+              "id": "vis",
+              "name": "VIS button (visual layer)",
+              "type": "button",
+              "match": [
+                "PNT_CP_HUD_VIS_*",
+                "item:lower-overhead-panel:13"
+              ],
+              "text": "This button shows or hides the 'visual' layer of the copilot's head-up display, the glass screen in front of the pilot's eyes. The visual layer is the set of flight marks used when flying by sight.",
+              "context": "A small green light on the button shows that the layer is on. Each pilot has an own panel and changes only the own HUD. This is the copilot's panel.",
+              "src": "m1",
+              "page": "196"
+            },
+            {
+              "id": "cat2",
+              "name": "CAT2 button (category 2 approach)",
+              "type": "button",
+              "match": [
+                "PNT_CP_HUD_CAT2_*"
+              ],
+              "text": "This button adds the marks for a 'category 2' instrument approach to the copilot's HUD. It also starts the checking of that approach.",
+              "context": "A category 2 approach is a landing in poor visibility with radio guidance. The green light on the button shows that the function is on. This is the copilot's panel.",
+              "src": "m1",
+              "page": "196"
+            },
+            {
+              "id": "os",
+              "name": "O/S button (offside)",
+              "type": "button",
+              "match": [
+                "PNT_CP_HUD_O/S_*"
+              ],
+              "text": "While the copilot's button is held, the HUD shows what the other pilot has chosen to display instead of the own choice. The word OFFSIDE appears on the HUD during this time.",
+              "context": "It lets one pilot take a quick look at the other pilot's picture without changing anything. This is the copilot's panel.",
+              "src": "m1",
+              "page": "196"
+            },
+            {
+              "id": "tact",
+              "name": "TACT button (tactical layer)",
+              "type": "button",
+              "match": [
+                "PNT_CP_HUD_TACT_*"
+              ],
+              "text": "This button shows or hides the 'tactical' layer on the copilot's HUD. That layer holds mission and threat information.",
+              "context": "It is used on military missions, for example to see threat warnings on the glass screen. A green light on the button shows that the layer is on. This is the copilot's panel.",
+              "src": "m1",
+              "page": "196"
+            },
+            {
+              "id": "nav",
+              "name": "NAV button (navigation layer)",
+              "type": "button",
+              "match": [
+                "PNT_CP_HUD_NAV_*"
+              ],
+              "text": "This button shows or hides the navigation layer on the copilot's HUD, which holds the data for flying along the planned route.",
+              "context": "A green light on the button shows that the layer is on. The pilot can switch it off to make the glass screen less crowded. This is the copilot's panel.",
+              "src": "m1",
+              "page": "196"
+            },
+            {
+              "id": "uncg",
+              "name": "UNCG button (uncage)",
+              "type": "button",
+              "match": [
+                "PNT_CP_HUD_UNCG_*"
+              ],
+              "text": "This button 'uncages' the flight path marker on the copilot's HUD. The marker is the small aircraft symbol that shows where the plane is really going. Uncaged, it may also move sideways.",
+              "context": "The game describes the button as the cage and uncage control of that marker. A green light shows that it is uncaged. This is the copilot's panel.",
+              "src": "m1",
+              "page": "196"
+            },
+            {
+              "id": "blank",
+              "name": "Unused HUD buttons (2)",
+              "type": "button",
+              "match": [
+                "PNT_CP_HUD_BANK1_*",
+                "PNT_CP_HUD_BLANK2_*"
+              ],
+              "count": 2,
+              "text": "The game gives these two controls of the copilot's HUD panel no label; their names suggest blank keys. The manual lists the unused keys of this panel as having no function.",
+              "context": "They are only parts of the panel's picture. The six labelled buttons and the brightness knob are the controls that matter. This is the copilot's panel.",
+              "src": "m1",
+              "page": "196"
+            },
+            {
+              "id": "brt",
+              "name": "Brightness knob (pull for AUTO)",
+              "type": "knob",
+              "match": [
+                "PNT_CP_HUD_BRT_*"
+              ],
+              "text": "Turning this knob makes the copilot's head-up display brighter (clockwise) or darker (counter-clockwise). Pulling the knob out lets the brightness follow the light outside by itself. Pushing it in gives manual control back.",
+              "context": "The glass screen must be bright enough to read in sunlight and dim enough at night. This is the copilot's panel.",
+              "src": "m1",
+              "page": "196"
+            }
+          ]
+        },
+        {
+          "id": "hud-latches",
+          "name": "HUD latches",
+          "src": "m1",
+          "page": "184",
+          "text": "Each HUD has a glass screen (the combiner) that can be moved up out of the way or down in front of the pilot. A latch releases it.",
+          "context": "The pilot lowers the screen when flying with the HUD and raises it when it is not wanted.",
+          "controls": [
+            {
+              "id": "hud-latch-pilot",
+              "name": "Pilot HUD latch",
+              "type": "lever",
+              "match": [
+                "PNT_HUD_ARG_006"
+              ],
+              "text": "This latch moves the pilot's HUD glass up or down. The game offers commands to lower it, raise it, or toggle it.",
+              "context": "The HUD is the main way to keep eyes outside the cockpit. The manual does not describe the latch itself.",
+              "src": "m1",
+              "page": "184"
+            },
+            {
+              "id": "hud-latch-copilot",
+              "name": "Copilot HUD latch",
+              "type": "lever",
+              "match": [
+                "PNT_HUD_ARG_007"
+              ],
+              "text": "This latch moves the copilot's HUD glass up or down. The game offers commands to lower it, raise it, or toggle it.",
+              "context": "The copilot's HUD is independent of the pilot's. The manual does not describe the latch itself.",
+              "src": "m1",
+              "page": "184"
+            }
+          ]
+        },
+        {
+          "id": "misc-switches",
+          "name": "Miscellaneous switch panel",
+          "src": "m1",
+          "page": "90",
+          "text": "This small panel holds the windshield wiper switch, the button for the emergency exit lights, and the switch for the emergency radio beacon (ELT).",
+          "context": "These are mostly used on the ground or in an emergency.",
+          "controls": [
+            {
+              "id": "wipers",
+              "name": "Windshield wiper switch",
+              "type": "selector",
+              "match": [
+                "PNT_WIPERS_323",
+                "item:lower-overhead-panel:12"
+              ],
+              "positions": [
+                {
+                  "name": "PARK",
+                  "text": "Held there, both wipers return to their stowed position. The knob springs back."
+                },
+                {
+                  "name": "OFF",
+                  "text": "The wipers stop where they are."
+                },
+                {
+                  "name": "SLOW",
+                  "text": "The slowest wiping speed."
+                },
+                {
+                  "name": "2",
+                  "text": "A medium speed."
+                },
+                {
+                  "name": "3",
+                  "text": "A faster speed."
+                },
+                {
+                  "name": "FAST",
+                  "text": "The fastest wiping speed."
+                }
+              ],
+              "text": "This knob runs the two windshield wipers (pilot and copilot side) at different speeds. Holding it in PARK sends the wipers back to their rest position.",
+              "context": "The pilots use it in rain. The knob springs back from PARK to OFF.",
+              "src": "m1",
+              "page": "154"
+            },
+            {
+              "id": "exit-light",
+              "name": "Emergency exit light extinguish button",
+              "type": "button",
+              "match": [
+                "PNT_EMEREXITLT_377"
+              ],
+              "text": "This button switches off all the green emergency exit lights in the plane at the same time.",
+              "context": "The exit lights have their own batteries and come on if the plane loses power. The button switches them off, for example after a ground check.",
+              "src": "m1",
+              "page": "90"
+            },
+            {
+              "id": "elt",
+              "name": "ELT switch (emergency locator transmitter)",
+              "type": "switch2",
+              "match": [
+                "PNT_ELT_ON_149"
+              ],
+              "positions": [
+                {
+                  "name": "ARM",
+                  "text": "The beacon is ready and would start by itself after a hard impact."
+                },
+                {
+                  "name": "ON",
+                  "text": "The manual says this position has no function."
+                }
+              ],
+              "text": "The ELT is an emergency radio beacon in the tail. If the plane crashes, it sends a distress signal with the plane's position. A clip holds this switch in ARM.",
+              "context": "In normal use the switch stays in ARM. The manual says that the ELT is not simulated in DCS.",
+              "src": "m1",
+              "page": "91"
+            }
+          ]
+        },
+        {
+          "id": "cvr",
+          "name": "Cockpit voice recorder microphone",
+          "src": "m1",
+          "page": "90",
+          "text": "A microphone that records what is said in the cockpit.",
+          "context": "The recorder keeps the talk of the crew for later accident investigation.",
+          "controls": [
+            {
+              "id": "cvr-mic",
+              "name": "Cockpit voice recorder microphone",
+              "type": "other",
+              "match": [
+                "item:lower-overhead-panel:1"
+              ],
+              "text": "This is the microphone of the cockpit voice recorder. It picks up the sounds in the cockpit. It is not a control the pilot uses.",
+              "context": "The recorder works whenever the plane's essential direct-current power is on. It has four channels, including the pilot and copilot intercom.",
+              "src": "m1",
+              "page": "90"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "front-left",
+      "where": "front-left",
+      "name": "Front panel, pilot's side",
+      "text": "The left part of the instrument panel and glareshield, in front of the pilot. It has the pilot's autopilot mode panel, the pilot's AMU, the standby instruments, the parking brake, and the lighting and intercom panels.",
+      "panels": [
+        {
+          "id": "pilot-refmode",
+          "name": "Pilot REF/MODE panel",
+          "src": "m1",
+          "page": "24",
+          "text": "This panel on the glareshield (the ledge below the windshield) has two halves. The REF half sets reference marks such as speed, height and air pressure. The MODE half picks the autopilot modes.",
+          "context": "Two identical panels exist, one for each pilot. The marks set here appear on the displays and the head-up display of that pilot. The warning and caution lights are on the same panel.",
+          "controls": [
+            {
+              "id": "ref-select",
+              "name": "REF select switch",
+              "type": "selector",
+              "match": [
+                "PNT_L_REF_SELECT_*",
+                "item:main-instrument-panel:4"
+              ],
+              "positions": [
+                {
+                  "name": "HP",
+                  "text": "The knob sets the engine horsepower mark on the engine display, in steps of 50."
+                },
+                {
+                  "name": "RAD ALT",
+                  "text": "The knob sets the reference height above the ground from the radio altimeter."
+                },
+                {
+                  "name": "IAS",
+                  "text": "The knob sets the reference speed bug on the speed display."
+                },
+                {
+                  "name": "FPA",
+                  "text": "The knob sets the flight path angle mark, how steeply the plane climbs or descends."
+                },
+                {
+                  "name": "MINS",
+                  "text": "The knob sets the minimum height for an approach (decision height or minimum descent altitude)."
+                },
+                {
+                  "name": "Unlabeled",
+                  "text": "This position has no function."
+                }
+              ],
+              "text": "This knob picks which value the pilot's REF SET knob changes. The choices are engine power (HP), radio altimeter height (RAD ALT), speed (IAS), flight path angle (FPA) and minimums (MINS).",
+              "context": "The chosen value is shown on a small digital display above the REF SET knob and as a bug on the pilot's screens. Each pilot has an own panel. This is the pilot's side.",
+              "src": "m1",
+              "page": "24"
+            },
+            {
+              "id": "ref-set",
+              "name": "REF SET knob (push to hide)",
+              "type": "knob",
+              "match": [
+                "PNT_L_REF_SET_*"
+              ],
+              "text": "This knob changes the value picked with the REF select switch on the pilot's side. Pressing it hides the matching mark from the pilot's screens. Pressing it again brings the mark back.",
+              "context": "The mark is the bug the pilot flies to, for example a speed. The horsepower mark can be hidden from either side. This is the pilot's side.",
+              "src": "m1",
+              "page": "25"
+            },
+            {
+              "id": "alt-sel",
+              "name": "ALT SEL knob (altitude select)",
+              "type": "knob",
+              "match": [
+                "PNT_L_REF_ALTSEL_*"
+              ],
+              "text": "This knob sets the height the pilot's side wants to fly to, in steps of 100 feet. Pressing it sets the height to the plane's present height.",
+              "context": "The set height drives the altitude alert and the altitude select mode of the flight director. The plane levels off when it reaches the set height. This is the pilot's side.",
+              "src": "m1",
+              "page": "25"
+            },
+            {
+              "id": "baro-set",
+              "name": "BARO SET knob (push for standard)",
+              "type": "knob",
+              "match": [
+                "PNT_L_REF_BAROSEL_*"
+              ],
+              "text": "This knob tells the pilot's altimeter (the height gauge) the local air pressure, so that it reads correctly. Pressing it resets the pressure to the standard value, 29.92 inches of mercury or 1013 millibars.",
+              "context": "The pilot's knob changes the altimeter of the pilot's screens and HUD only. The other pilot sets the own knob. This is the pilot's side.",
+              "src": "m1",
+              "page": "25"
+            },
+            {
+              "id": "master-warning",
+              "name": "MASTER WARNING pushlight",
+              "type": "button",
+              "match": [
+                "PNT_L_MASTERWARNING_*"
+              ],
+              "text": "This red button lights up and flashes when the plane has a new warning message for the pilot's side. A loud tone sounds with it. Pressing the button silences the tone and puts out the light.",
+              "context": "A warning means danger that needs action at once, such as an engine fire. The words of the warning are shown in the message list on the displays. This is the pilot's side.",
+              "src": "m1",
+              "page": "26"
+            },
+            {
+              "id": "master-caution",
+              "name": "MASTER CAUTION pushlight",
+              "type": "button",
+              "match": [
+                "PNT_L_MASTERCAUTION_*"
+              ],
+              "text": "This amber button lights up and flashes when the plane has a new caution message for the pilot's side, with a tone. Pressing the button acknowledges the message, silences the tone and puts out the light.",
+              "context": "A caution means something is not normal and needs the crew to act so that nothing is damaged. The message list shows what it is. This is the pilot's side.",
+              "src": "m1",
+              "page": "26"
+            },
+            {
+              "id": "mode-alt",
+              "name": "ALT mode switch",
+              "type": "button",
+              "match": [
+                "PNT_L_MODE_ALT_*"
+              ],
+              "text": "Pressing this switch makes the flight director hold the plane's present height. If the plane is climbing or sinking slower than 2000 feet per minute, it levels off. This is the switch of the pilot's side.",
+              "context": "It is the 'stay at this height' switch. A green ON light shows that it is active. Using the vertical speed or airspeed mode cancels it. Each pilot has an own set of mode switches; this is the pilot's set. This is the pilot's side.",
+              "src": "m1",
+              "page": "26"
+            },
+            {
+              "id": "mode-vs",
+              "name": "VS mode switch",
+              "type": "button",
+              "match": [
+                "PNT_L_MODE_VS_*"
+              ],
+              "text": "Pressing this switch makes the flight director hold the climb or descent rate the plane has at that moment (vertical speed). This is the switch of the pilot's side.",
+              "context": "The manual warns that this mode gives no protection against flying too slowly. The pilot must watch the speed. Pressing again cancels the mode. Each pilot has an own set of mode switches; this is the pilot's set. This is the pilot's side.",
+              "src": "m1",
+              "page": "26"
+            },
+            {
+              "id": "mode-ias",
+              "name": "IAS mode switch",
+              "type": "button",
+              "match": [
+                "PNT_L_MODE_IAS_*"
+              ],
+              "text": "Pressing this switch makes the flight director hold the speed shown at that moment (indicated airspeed) by raising or lowering the nose. This is the switch of the pilot's side.",
+              "context": "The manual says IAS is the only vertical mode of the flight director that protects against flying too slowly. A green ON light shows that it is active. Each pilot has an own set of mode switches; this is the pilot's set. This is the pilot's side.",
+              "src": "m1",
+              "page": "26"
+            },
+            {
+              "id": "mode-sel",
+              "name": "SEL mode switch",
+              "type": "button",
+              "match": [
+                "PNT_L_MODE_SEL_*"
+              ],
+              "text": "Pressing this switch arms the 'altitude select' mode. The flight director then climbs or descends to the height set with the ALT SEL knob and levels off there. This is the switch of the pilot's side.",
+              "context": "The mode arms itself when a new height is set. The light stays on after levelling off, because the mode stays ready for the next height. Each pilot has an own set of mode switches; this is the pilot's set. This is the pilot's side.",
+              "src": "m1",
+              "page": "26"
+            },
+            {
+              "id": "mode-hdg",
+              "name": "HDG mode switch",
+              "type": "button",
+              "match": [
+                "PNT_L_MODE_HDG_*"
+              ],
+              "text": "Pressing this switch makes the flight director turn the plane to the compass heading set with the heading knob and hold it. This is the switch of the pilot's side.",
+              "context": "The heading mode ends by itself when the plane captures a radio course. Pressing the switch again also cancels it. Each pilot has an own set of mode switches; this is the pilot's set. This is the pilot's side.",
+              "src": "m1",
+              "page": "26"
+            },
+            {
+              "id": "mode-nav",
+              "name": "NAV mode switch",
+              "type": "button",
+              "match": [
+                "PNT_L_MODE_NAV_*"
+              ],
+              "text": "Pressing this switch makes the flight director follow the course source chosen on the NAV-SELECT page of the AMU (for example the planned route). This is the switch of the pilot's side.",
+              "context": "The plane then steers along the course line. A green ON light shows that the mode is active. Each pilot has an own set of mode switches; this is the pilot's set. This is the pilot's side.",
+              "src": "m1",
+              "page": "26"
+            },
+            {
+              "id": "mode-appr",
+              "name": "APPR mode switch",
+              "type": "button",
+              "match": [
+                "PNT_L_MODE_APPR_*"
+              ],
+              "text": "Pressing this switch arms an instrument approach. The flight director then follows the radio beams of a runway (localizer sideways, glideslope downward). This is the switch of the pilot's side.",
+              "context": "With a runway beam tuned, the plane is guided down to the runway. The sideways navigation mode is armed together with the glideslope mode. Each pilot has an own set of mode switches; this is the pilot's set. This is the pilot's side.",
+              "src": "m1",
+              "page": "26"
+            },
+            {
+              "id": "mode-caps",
+              "name": "CAPS mode switch",
+              "type": "button",
+              "match": [
+                "PNT_L_MODE_CAPS_*"
+              ],
+              "text": "Pressing this switch makes the flight director follow steering commands from the CAPS system, the formation flying system (SKE). This is the switch of the pilot's side.",
+              "context": "It is used for flying formation or airdrops with other planes that carry the same system. Each pilot has an own set of mode switches; this is the pilot's set. This is the pilot's side.",
+              "src": "m1",
+              "page": "26"
+            },
+            {
+              "id": "mode-at",
+              "name": "A/T mode switch",
+              "type": "button",
+              "match": [
+                "PNT_L_MODE_AT_*"
+              ],
+              "text": "Pressing this switch turns on the autothrottle. Small motors then move the four power levers by themselves to hold the chosen speed. This is the switch of the pilot's side.",
+              "context": "The autothrottle cannot be used together with the IAS mode, which also holds speed. It does not work with the wheels on the ground and can be switched off with the buttons by the power levers. Each pilot has an own set of mode switches; this is the pilot's set. This is the pilot's side.",
+              "src": "m1",
+              "page": "26"
+            },
+            {
+              "id": "mode-unused",
+              "name": "Unused mode switch",
+              "type": "button",
+              "match": [
+                "PNT_L_AP_ON_OFF_*"
+              ],
+              "text": "The game calls this the pilot's 'Unused Mode Switch'. It sits among the autopilot mode switches. The manual lists this key as unused.",
+              "context": "It does nothing. The other mode switches next to it are the ones that matter. This is the pilot's side.",
+              "src": "m1",
+              "page": "28"
+            },
+            {
+              "id": "ap-annunciator",
+              "name": "Pilot autopilot mode annunciator panel",
+              "type": "indicator",
+              "match": [
+                "item:main-instrument-panel:9"
+              ],
+              "text": "This is a set of green lights in front of the pilot's seat that show at a glance which autopilot modes are on. The words include AP ON, AP DSNG, PTCH OFF, LAT OFF, NAV ARM, NAV CAPT, GS ARM, GS CAPT, GO ARND, BACK LOC, CAT2 ARM and CAT2.",
+              "context": "AP ON means the autopilot of that side is engaged. AP DSNG flashes when the autopilot has switched itself off and no one has acknowledged it yet. The other words tell the state of the sideways, the glideslope and the approach modes. This is the pilot's panel.",
+              "src": "m1",
+              "page": "28"
+            }
+          ]
+        },
+        {
+          "id": "pilot-amu",
+          "name": "Pilot AMU (avionics management unit)",
+          "src": "m1",
+          "page": "110",
+          "text": "The AMU is a small box with two screens and keys that chooses what the big screens show. This one belongs to the pilot.",
+          "context": "The pilot uses it to put pages such as the flight display, the map or the engine page on the big screens. Page changes here do not change the aircraft itself.",
+          "controls": [
+            {
+              "id": "amu-lsk",
+              "name": "Pilot AMU line select keys (16)",
+              "type": "button",
+              "match": [
+                "PNT_L_AMU_L?_BTN*",
+                "item:main-instrument-panel:5"
+              ],
+              "count": 16,
+              "text": "These 16 keys sit around the two small screens of the pilot's avionics management unit (AMU). Each screen has four keys on the left (L1-L4) and four on the right (R1-R4). A key picks the line of text next to it.",
+              "context": "The AMU decides which pages the pilot's big screens (HDDs) show, for example the flight display, the radar map or the engine page. The MAIN MENU page is the start page.",
+              "src": "m1",
+              "page": "110"
+            },
+            {
+              "id": "amu-bright",
+              "name": "Pilot AMU brightness rocker",
+              "type": "rocker",
+              "match": [
+                "PNT_AMU_L_DIM_*",
+                "PNT_AMU_L_BRT_*"
+              ],
+              "text": "This rocker makes the two pilot's AMU screens brighter or darker. The game lists a key for brighter and one for darker.",
+              "context": "The pilot's AMU screens must be readable in sunlight and not glaring at night.",
+              "src": "m1",
+              "page": "110"
+            }
+          ]
+        },
+        {
+          "id": "standby",
+          "name": "Standby instruments",
+          "src": "m1",
+          "page": "36",
+          "text": "These are the old-style backup instruments for attitude, speed, height and heading. They work without the displays.",
+          "context": "If the electrical system or the air data computer fails, the standby instruments keep the pilots flying safely. The attitude indicator has a battery for at least 30 minutes.",
+          "controls": [
+            {
+              "id": "standby-cage",
+              "name": "Standby attitude indicator knob (PULL TO CAGE)",
+              "type": "knob",
+              "match": [
+                "PNT_STBY_CAGE_127_128"
+              ],
+              "text": "This knob on the standby artificial horizon moves the little aircraft symbol up or down (turning it). Pulling it out sets the gyroscope level again. Pulling and turning locks the gyroscope in place.",
+              "context": "A pitch error can be corrected by turning the knob. An OFF flag shows when the horizon has no good information, for example when it is caged.",
+              "src": "m1",
+              "page": "37"
+            },
+            {
+              "id": "standby-baro",
+              "name": "Standby altimeter BARO SET knob",
+              "type": "knob",
+              "match": [
+                "PNT_STBY_BARO_KNB_125"
+              ],
+              "text": "This knob sets the local air pressure for the standby altimeter so that it shows the right height. The pressure appears in millibars and inches of mercury on the gauge.",
+              "context": "It is the backup counterpart of the BARO SET knobs on the REF/MODE panels.",
+              "src": "m1",
+              "page": "37"
+            },
+            {
+              "id": "standby-gauges",
+              "name": "Standby flight instruments",
+              "type": "gauge",
+              "match": [
+                "item:main-instrument-panel:11"
+              ],
+              "text": "This group has a backup artificial horizon, which shows the nose up or down and the wings level, and a combined height and speed gauge. They use their own pipes and gyroscope.",
+              "context": "They are the last resort when the big screens fail.",
+              "src": "m1",
+              "page": "36"
+            },
+            {
+              "id": "standby-compass",
+              "name": "Standby magnetic compass",
+              "type": "gauge",
+              "match": [
+                "item:main-instrument-panel:1"
+              ],
+              "text": "This is a plain magnetic compass. A card floats in fluid and swings to point north. A white line is read as the heading.",
+              "context": "It needs no electricity. An inset light lights it at night in a way that goes with night vision goggles.",
+              "src": "m1",
+              "page": "37"
+            }
+          ]
+        },
+        {
+          "id": "parking-brake",
+          "name": "Parking brake handle",
+          "src": "m1",
+          "page": "40",
+          "text": "This handle holds the wheel brakes on while the plane is parked.",
+          "context": "It is pulled with the brake pedals pressed. Pressing the pedals again releases it.",
+          "controls": [
+            {
+              "id": "parking-brake",
+              "name": "Parking brake handle",
+              "type": "handle",
+              "match": [
+                "PNT_PARKING_BRAKE_29",
+                "item:main-instrument-panel:16"
+              ],
+              "text": "Pulling this handle out locks the brake pressure in the brake lines, so the plane stays still. The game has commands for brake on and off.",
+              "context": "To set it, the pilot first presses the toe brakes on all four rudder pedals at least 80 percent. Tapping the pedals later releases the handle, which snaps back in.",
+              "src": "m1",
+              "page": "40"
+            }
+          ]
+        },
+        {
+          "id": "pilot-lighting",
+          "name": "Pilot lighting control panel",
+          "src": "m1",
+          "page": "46",
+          "text": "This panel has the dimmers for the lights on the pilot's side of the cockpit. It also has the switches that set the mode for all the cockpit lighting.",
+          "context": "The pilot sets the lights to be readable but not too bright, especially at night.",
+          "controls": [
+            {
+              "id": "lt-mode",
+              "name": "Lighting master mode switch",
+              "type": "switch3",
+              "match": [
+                "PNT_P_MASTER_LTE_MODE_1337",
+                "item:upper-center-console:1"
+              ],
+              "positions": [
+                {
+                  "name": "NVIS",
+                  "text": "Lights that do not work with night vision goggles are turned off."
+                },
+                {
+                  "name": "NORM",
+                  "text": "The brightness knobs of the pilot and copilot panels control the lighting."
+                },
+                {
+                  "name": "TSTORM",
+                  "text": "All the lighting groups and displays go to full brightness, regardless of their knobs."
+                }
+              ],
+              "text": "This switch sets the mode for all the lights inside the cockpit. NORM leaves the dimmers in charge. NVIS turns off lights that would blind night vision goggles. TSTORM sets everything to full brightness.",
+              "context": "TSTORM is for thunderstorms: bright lights help against the eyes' dark adaptation after lightning. At night with night vision goggles, NVIS is used.",
+              "src": "m1",
+              "page": "46"
+            },
+            {
+              "id": "lt-annunciator",
+              "name": "Annunciator brightness switch (DIM / BRT)",
+              "type": "switch3",
+              "match": [
+                "PNT_P_ANN_1336"
+              ],
+              "positions": [
+                {
+                  "name": "DIM",
+                  "text": "The annunciator and indicator lights shine at reduced brightness."
+                },
+                {
+                  "name": "Center",
+                  "text": "The rest position. The switch springs back here."
+                },
+                {
+                  "name": "BRT",
+                  "text": "The lights shine at full brightness."
+                }
+              ],
+              "text": "This switch changes how bright the many small warning and indicator lights in the cockpit are. It springs back to the middle.",
+              "context": "At night the lights should be dim, in bright daylight they should be bright.",
+              "src": "m1",
+              "page": "46"
+            },
+            {
+              "id": "lt-dome",
+              "name": "Dome light rheostat",
+              "type": "knob",
+              "match": [
+                "PNT_PLT_DOME_1340"
+              ],
+              "text": "This knob sets how bright the dome lights in the roof of the cockpit are. A rheostat is a dimmer, like the dimmer of a room lamp.",
+              "context": "The dome lights light up the whole cockpit. The pilot turns them down at night.",
+              "src": "m1",
+              "page": "47"
+            },
+            {
+              "id": "lt-cb",
+              "name": "Circuit breaker light rheostat",
+              "type": "knob",
+              "match": [
+                "PNT_PLT_CKT_BRK_1341"
+              ],
+              "text": "This dimmer sets how bright the flood light is over the pilot side circuit breaker panel. The circuit breakers are the safety switches that pop out when a device draws too much power.",
+              "context": "It makes the breakers readable at night.",
+              "src": "m1",
+              "page": "47"
+            },
+            {
+              "id": "lt-display-master",
+              "name": "Display master rheostat",
+              "type": "knob",
+              "match": [
+                "PNT_P_DISPLAYMASTER_1335"
+              ],
+              "text": "This dimmer sets the brightness of the first two big screens (HDD 1 and HDD 2), of the pilot's AMU and of the CNBP (the radio and breaker panel).",
+              "context": "It is the main brightness control for the pilot's screens. The copilot has a similar knob for HDD 3, HDD 4 and the copilot's AMU.",
+              "src": "m1",
+              "page": "47"
+            },
+            {
+              "id": "lt-panel",
+              "name": "Side and instrument panel backlighting rheostat",
+              "type": "knob",
+              "match": [
+                "PNT_PLT_PANEL_1342"
+              ],
+              "text": "This dimmer sets the backlight of the labels on the pilot's side console and instrument panel. Backlight means light shining through the printed letters.",
+              "context": "It lets the pilot read the panel names at night.",
+              "src": "m1",
+              "page": "47"
+            },
+            {
+              "id": "lt-flood",
+              "name": "Side and instrument panel flood rheostat",
+              "type": "knob",
+              "match": [
+                "PNT_PLT_FLOOD_1343"
+              ],
+              "text": "This dimmer sets the flood light, a soft light that shines over the pilot's side console and instrument panel.",
+              "context": "Together with the backlight knob it sets how the panels look at night.",
+              "src": "m1",
+              "page": "47"
+            },
+            {
+              "id": "lt-floor",
+              "name": "Floor light rheostat",
+              "type": "knob",
+              "match": [
+                "PNT_PLT_FLOOR_1344"
+              ],
+              "text": "This dimmer sets how bright the lights on the cockpit floor are.",
+              "context": "The floor lights help to see where to step in a dark cockpit.",
+              "src": "m1",
+              "page": "47"
+            }
+          ]
+        },
+        {
+          "id": "pilot-ics",
+          "name": "Pilot ICS control panel (intercom)",
+          "src": "m1",
+          "page": "152",
+          "text": "The ICS is the crew's intercom. This panel is where the pilot chooses what to hear, how loud it is, and where the own voice goes.",
+          "context": "It combines the radios, the intercom and the loudspeaker line (public address). Each crew seat has its own panel.",
+          "controls": [
+            {
+              "id": "ics-radio-knobs",
+              "name": "Pilot radio channel knobs (11)",
+              "type": "knob",
+              "match": [
+                "PNT_P_ISCP_*_2??_2??",
+                "item:upper-center-console:4"
+              ],
+              "count": 11,
+              "text": "These 11 knobs are for listening on the pilot's side: INT (interphone, the crew's own phone line), H1 and H2 (HF radios), V1 and V2 (VHF radios), U1 and U2 (UHF radios), SAT (satellite radio), PA (public address) and the channels PVT and VOX/HM. Turning a knob changes the volume. Pulling it out switches the channel on.",
+              "context": "A white band shows at the foot of a knob when its channel is switched on. The manual does not explain PVT and VOX/HM further. This is the pilot's panel.",
+              "src": "m1",
+              "page": "152"
+            },
+            {
+              "id": "ics-pa-gain",
+              "name": "PA GAIN knob",
+              "type": "knob",
+              "match": [
+                "PNT_P_ISCP_PAGAIN_*"
+              ],
+              "text": "This knob sets how loud the pilot's public address announcements are in the cargo bay.",
+              "context": "The public address is the loudspeaker line to the people in the back. This is the pilot's panel.",
+              "src": "m1",
+              "page": "152"
+            },
+            {
+              "id": "ics-vox-sens",
+              "name": "VOX SENS knob",
+              "type": "knob",
+              "match": [
+                "PNT_P_ISCP_VOXSENS_*"
+              ],
+              "text": "This knob sets how sensitive the pilot's microphone is for voice activation (VOX means voice operated). Lower settings need a louder voice before the microphone starts to send.",
+              "context": "It matters when the interphone is in voice mode, so that the pilot does not need a button to talk. This is the pilot's panel.",
+              "src": "m1",
+              "page": "152"
+            },
+            {
+              "id": "ics-int-radio",
+              "name": "Interphone / radio transmit switch",
+              "type": "switch",
+              "match": [
+                "PNT_P_ISCP_INT_291",
+                "PNT_P_ISCP_RADIO_291"
+              ],
+              "positions": [
+                {
+                  "name": "INT",
+                  "text": "The voice goes to the interphone."
+                },
+                {
+                  "name": "RADIO",
+                  "text": "The voice goes out over the selected radio."
+                }
+              ],
+              "text": "This switch picks where the pilot's microphone speaks to. INT sends the voice over the crew's interphone. RADIO sends it over the radio chosen with the transmission selector.",
+              "context": "The same switch exists as a thumb switch on the side of the yoke. In the game it has a command for each direction. This is the pilot's panel.",
+              "src": "m1",
+              "page": "153"
+            },
+            {
+              "id": "ics-mode",
+              "name": "Interphone mode switch (CALL / INT / VOX / HOT MIC)",
+              "type": "selector",
+              "match": [
+                "PNT_P_ISCP_MODE_293"
+              ],
+              "positions": [
+                {
+                  "name": "CALL",
+                  "text": "A priority call that is 6 decibels louder than other talk. It springs back to INT."
+                },
+                {
+                  "name": "INT",
+                  "text": "The microphone sends on the interphone only when the transmit switch is used."
+                },
+                {
+                  "name": "VOX",
+                  "text": "The interphone is voice-activated and sends only when it hears a voice."
+                },
+                {
+                  "name": "HOT MIC",
+                  "text": "The microphone sends all the time."
+                }
+              ],
+              "text": "This switch sets how the pilot's microphone sends on the interphone. CALL is a loud priority call, INT needs the push-to-talk switch, VOX is voice-activated, and HOT MIC always sends.",
+              "context": "CALL springs back to INT after use. The other positions stay where they are put. This is the pilot's panel.",
+              "src": "m1",
+              "page": "153"
+            },
+            {
+              "id": "ics-selector",
+              "name": "Transmission selector switch",
+              "type": "selector",
+              "match": [
+                "PNT_P_ISCP_SELECTOR_294"
+              ],
+              "text": "This knob picks the radio or line that the pilot's microphone transmits on when RADIO is chosen. It has ten positions, among them H-1, H-2, INT, PA, PVT and SAT.",
+              "context": "For example, the pilot chooses a UHF radio to speak with the tower and then uses the push-to-talk switch. This is the pilot's panel.",
+              "src": "m1",
+              "page": "153"
+            },
+            {
+              "id": "ics-volume",
+              "name": "Master volume knob",
+              "type": "knob",
+              "match": [
+                "PNT_P_ISCP_VOL_1355"
+              ],
+              "text": "This knob changes the overall volume of what the pilot's headset receives, both from the radios and from the interphone.",
+              "context": "The single channel knobs set each channel's own loudness; this one sets the total. This is the pilot's panel.",
+              "src": "m1",
+              "page": "153"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "front-center",
+      "where": "front-center",
+      "name": "Front panel, center",
+      "text": "The middle of the instrument panel. The four big screens, the radio panel (CNBP), the landing gear panel, the hydraulic panel and the radar panel are here.",
+      "panels": [
+        {
+          "id": "displays",
+          "name": "Head-down displays (HDD 1-4) and HUDs",
+          "src": "m1",
+          "page": "14",
+          "text": "The big flat screens and the head-up displays are the main way the pilots see flight and system data.",
+          "context": "The AMU units choose the pages of the screens, and the knobs on the lighting panels set how bright they are.",
+          "controls": [
+            {
+              "id": "hdd1",
+              "name": "HDD 1 (head-down display)",
+              "type": "display",
+              "match": [
+                "item:main-instrument-panel:10"
+              ],
+              "text": "HDD 1 is one of the four big flat screens in the instrument panel. It is one of the two screens on the pilot's side; by default it shows the PFD, the primary flight display. What it shows is chosen with the AMU and the CNBP.",
+              "context": "The four screens show flight data, the map with radar overlay, engine data and system pages. Together they replace the many round gauges of older planes. This is screen number 1.",
+              "src": "m1",
+              "page": "14"
+            },
+            {
+              "id": "hdd1-bright",
+              "name": "HDD 1 brightness rocker",
+              "type": "rocker",
+              "match": [
+                "PNT_CMDU_1_*"
+              ],
+              "text": "This rocker makes HDD 1 brighter or darker. The game lists a key for brighter and one for darker.",
+              "context": "HDD 1 also follows the display master dimmer of the pilot.",
+              "src": "m1",
+              "page": "14"
+            },
+            {
+              "id": "hdd2",
+              "name": "HDD 2 (head-down display)",
+              "type": "display",
+              "match": [
+                "item:main-instrument-panel:12"
+              ],
+              "text": "HDD 2 is one of the four big flat screens in the instrument panel. It is the second screen on the pilot's side. What it shows is chosen with the AMU and the CNBP.",
+              "context": "The four screens show flight data, the map with radar overlay, engine data and system pages. Together they replace the many round gauges of older planes. This is screen number 2.",
+              "src": "m1",
+              "page": "14"
+            },
+            {
+              "id": "hdd2-bright",
+              "name": "HDD 2 brightness rocker",
+              "type": "rocker",
+              "match": [
+                "PNT_CMDU_2_*"
+              ],
+              "text": "This rocker makes HDD 2 brighter or darker. The game lists a key for brighter and one for darker.",
+              "context": "HDD 2 also follows the display master dimmer of the pilot.",
+              "src": "m1",
+              "page": "14"
+            },
+            {
+              "id": "hdd3",
+              "name": "HDD 3 (head-down display)",
+              "type": "display",
+              "match": [
+                "item:main-instrument-panel:13"
+              ],
+              "text": "HDD 3 is one of the four big flat screens in the instrument panel. It is the first screen on the copilot's side. What it shows is chosen with the AMU and the CNBP.",
+              "context": "The four screens show flight data, the map with radar overlay, engine data and system pages. Together they replace the many round gauges of older planes. This is screen number 3.",
+              "src": "m1",
+              "page": "14"
+            },
+            {
+              "id": "hdd3-bright",
+              "name": "HDD 3 brightness rocker",
+              "type": "rocker",
+              "match": [
+                "PNT_CMDU_3_*"
+              ],
+              "text": "This rocker makes HDD 3 brighter or darker. The game lists a key for brighter and one for darker.",
+              "context": "HDD 3 also follows the display master dimmer of the copilot.",
+              "src": "m1",
+              "page": "14"
+            },
+            {
+              "id": "hdd4",
+              "name": "HDD 4 (head-down display)",
+              "type": "display",
+              "match": [
+                "item:main-instrument-panel:14"
+              ],
+              "text": "HDD 4 is one of the four big flat screens in the instrument panel. It is the second screen on the copilot's side. What it shows is chosen with the AMU and the CNBP.",
+              "context": "The four screens show flight data, the map with radar overlay, engine data and system pages. Together they replace the many round gauges of older planes. This is screen number 4.",
+              "src": "m1",
+              "page": "14"
+            },
+            {
+              "id": "hdd4-bright",
+              "name": "HDD 4 brightness rocker",
+              "type": "rocker",
+              "match": [
+                "PNT_CMDU_4_*"
+              ],
+              "text": "This rocker makes HDD 4 brighter or darker. The game lists a key for brighter and one for darker.",
+              "context": "HDD 4 also follows the display master dimmer of the copilot.",
+              "src": "m1",
+              "page": "14"
+            },
+            {
+              "id": "hud-pilot-glass",
+              "name": "Pilot HUD (head-up display)",
+              "type": "display",
+              "match": [
+                "item:main-instrument-panel:2"
+              ],
+              "text": "The HUD is a clear glass screen in front of the pilot's eyes. It shows speed, height, heading and aiming marks, so the pilot can look outside and still read flight data.",
+              "context": "The HUD shows nearly the same data as the PFD, the primary flight display. Its layers are chosen on the pilot HUD control panel.",
+              "src": "m1",
+              "page": "184"
+            },
+            {
+              "id": "hud-copilot-glass",
+              "name": "Copilot HUD (head-up display)",
+              "type": "display",
+              "match": [
+                "item:main-instrument-panel:3"
+              ],
+              "text": "This is the copilot's own HUD, a clear glass screen in front of the copilot's eyes that shows flight data and marks.",
+              "context": "Its layers are chosen on the copilot HUD control panel. It works independently of the pilot's HUD.",
+              "src": "m1",
+              "page": "184"
+            },
+            {
+              "id": "trim-indicator",
+              "name": "Trim indicator panel",
+              "type": "gauge",
+              "match": [
+                "item:main-instrument-panel:17"
+              ],
+              "text": "This panel shows how far the trim tabs of the aileron, the rudder and the elevator are turned. A flap gauge shows how far the wing flaps are out, in percent.",
+              "context": "The trim tabs are small flaps that hold the plane in balance. A white band on the elevator gauge marks the takeoff setting. The pointers need power to show true values.",
+              "src": "m1",
+              "page": "66"
+            }
+          ]
+        },
+        {
+          "id": "cnbp",
+          "name": "CNBP (communication / navigation / breaker panel)",
+          "src": "m1",
+          "page": "29",
+          "text": "The CNBP is a small panel with two screens, a keypad and keys. It sets the radio frequencies, the transponder code and the electronic circuit breakers.",
+          "context": "It sits between the two AMUs. The pilots use it for radio and navigation tuning, and in an electrical fault to reset a breaker.",
+          "controls": [
+            {
+              "id": "cnbp-lsk",
+              "name": "CNBP line select keys (8)",
+              "type": "button",
+              "match": [
+                "PNT_CNBP_BTN?_*",
+                "item:main-instrument-panel:6"
+              ],
+              "count": 8,
+              "text": "These eight keys sit beside the two small screens of the CNBP, four on the left (L1-L4) and four on the right (R1-R4). A key picks the line of text next to it, or sends the typed number to that line.",
+              "context": "The CNBP is used to tune the radios, change the transponder code and manage the electronic circuit breakers. A typed number is first put into the scratchpad line and then sent to a field with a key.",
+              "src": "m1",
+              "page": "29"
+            },
+            {
+              "id": "cnbp-comm",
+              "name": "CNBP COMM key",
+              "type": "button",
+              "match": [
+                "PNT_CNBP_COMM_159"
+              ],
+              "text": "This key shows the COMM page of the CNBP. On it the pilots tune the six communication radios, which are two UHF, two VHF and two HF radios.",
+              "context": "A radio that shows OFF turns on by itself when a frequency is entered into it.",
+              "src": "m1",
+              "page": "32"
+            },
+            {
+              "id": "cnbp-nav",
+              "name": "CNBP NAV key",
+              "type": "button",
+              "match": [
+                "PNT_CNBP_NAV_160"
+              ],
+              "text": "This key shows the NAV page of the CNBP. On it the pilots tune the navigation radios: two VOR, two TACAN and two ADF.",
+              "context": "These radios give the plane its direction and distance to ground beacons.",
+              "src": "m1",
+              "page": "33"
+            },
+            {
+              "id": "cnbp-ecb",
+              "name": "CNBP ECB key",
+              "type": "button",
+              "match": [
+                "PNT_CNBP_ECB_161"
+              ],
+              "text": "This key shows the ECB page of the CNBP. ECBs are electronic circuit breakers, safety switches that can be pulled and reset from this panel.",
+              "context": "The page can also show a list of the breakers on one of the big screens.",
+              "src": "m1",
+              "page": "34"
+            },
+            {
+              "id": "cnbp-digits",
+              "name": "CNBP number keys 0-9",
+              "type": "keypad",
+              "match": [
+                "PNT_CNBP_NUM0_*",
+                "PNT_CNBP_NUM1_*",
+                "PNT_CNBP_NUM2_*",
+                "PNT_CNBP_NUM3_*",
+                "PNT_CNBP_NUM4_*",
+                "PNT_CNBP_NUM5_*",
+                "PNT_CNBP_NUM6_*",
+                "PNT_CNBP_NUM7_*",
+                "PNT_CNBP_NUM8_*",
+                "PNT_CNBP_NUM9_*"
+              ],
+              "count": 10,
+              "text": "These ten keys type numbers into the scratchpad, the line at the bottom of the CNBP screen. The scratchpad holds 14 characters.",
+              "context": "A typed frequency stays in the scratchpad for three seconds after it was sent, so it can be sent to another radio, too.",
+              "src": "m1",
+              "page": "29"
+            },
+            {
+              "id": "cnbp-dot",
+              "name": "CNBP decimal key",
+              "type": "button",
+              "match": [
+                "PNT_CNBP_NUM_DOT_171"
+              ],
+              "text": "This key types a decimal point into the scratchpad. A frequency needs it, for example 251.0.",
+              "context": "A frequency without the point is rejected with the message INVALID FREQUENCY.",
+              "src": "m1",
+              "page": "30"
+            },
+            {
+              "id": "cnbp-clr",
+              "name": "CNBP CLR key (clear)",
+              "type": "button",
+              "match": [
+                "PNT_CNBP_NUM_CLR_173"
+              ],
+              "text": "This key erases the scratchpad. One press removes one character. Holding it for more than one second removes all of them.",
+              "context": "It also removes a system message, such as INVALID ENTRY.",
+              "src": "m1",
+              "page": "29"
+            },
+            {
+              "id": "cnbp-bright",
+              "name": "CNBP brightness rocker",
+              "type": "rocker",
+              "match": [
+                "PNT_CNBP_DIM_201",
+                "PNT_CNBP_BRT_202"
+              ],
+              "text": "This rocker makes the CNBP screen brighter or darker.",
+              "context": "The CNBP lies between the two AMUs on the glareshield.",
+              "src": "m1",
+              "page": "29"
+            }
+          ]
+        },
+        {
+          "id": "gear-panel",
+          "name": "Landing gear control panel",
+          "src": "m1",
+          "page": "41",
+          "text": "This panel holds the landing gear handle and the lights that point forward: the landing lights and the taxi lights.",
+          "context": "The pilots lower the gear before landing and raise it after takeoff. The lights are used at night and on the ground.",
+          "controls": [
+            {
+              "id": "gear-lever",
+              "name": "Landing gear handle",
+              "type": "handle",
+              "match": [
+                "PNT_GEAR_LVR_126",
+                "item:main-instrument-panel:18"
+              ],
+              "positions": [
+                {
+                  "name": "UP",
+                  "text": "The gear folds into the fuselage. The utility hydraulic system moves it."
+                },
+                {
+                  "name": "DN",
+                  "text": "The gear extends and locks down."
+                }
+              ],
+              "text": "Pull this handle and the wheels come down. Moving it up folds them away. Red lights inside the handle warn when the gear is in a wrong state for the flight, for example the gear is up and the power is low.",
+              "context": "Three green lights show that the nose and the two main gears are down and locked. The handle is locked in DN while the plane is on the ground. Gear travel takes 19 seconds or less.",
+              "src": "m1",
+              "page": "41"
+            },
+            {
+              "id": "downlock",
+              "name": "Downlock release button",
+              "type": "button",
+              "match": [
+                "PNT_DWN_LOCK_RELEASE_36"
+              ],
+              "text": "This spring-loaded button frees the mechanical lock that keeps the landing gear handle down.",
+              "context": "The lock holds the handle in DN while the weight is on the wheels, so that the gear cannot be raised by mistake on the ground.",
+              "src": "m1",
+              "page": "42"
+            },
+            {
+              "id": "ldg-lights",
+              "name": "LANDING LIGHTS switches (left, right, both)",
+              "type": "switch",
+              "match": [
+                "PNT_LDG_LIGHT_*"
+              ],
+              "count": 3,
+              "text": "These switches turn on the left and right landing lights on the wings. A clickspot between the two switches moves both with one action.",
+              "context": "The landing lights light up the runway for takeoff and landing. They must be extended first with the motor switches.",
+              "src": "m1",
+              "page": "42"
+            },
+            {
+              "id": "ldg-motors",
+              "name": "LANDING LIGHTS MOTOR switches (left, right, both)",
+              "type": "switch",
+              "match": [
+                "PNT_MOTORS_*"
+              ],
+              "positions": [
+                {
+                  "name": "EXTEND",
+                  "text": "The motor drives the light out to the fully extended position."
+                },
+                {
+                  "name": "HOLD",
+                  "text": "The motor stops; the light stays where it is."
+                },
+                {
+                  "name": "RETRACT",
+                  "text": "The motor drives the light fully in."
+                }
+              ],
+              "count": 3,
+              "text": "These switches drive the motors that push the two landing lights out of their housing or pull them in. Each switch has EXTEND, HOLD and RETRACT. A clickspot between them moves both.",
+              "context": "A green light shows while a landing light is not fully retracted. The landing lights should not stay out at high speed.",
+              "src": "m1",
+              "page": "42"
+            },
+            {
+              "id": "taxi-lights",
+              "name": "TAXI LIGHT and WINGTIP TAXI LIGHT switches",
+              "type": "switch",
+              "match": [
+                "PNT_TXI_*"
+              ],
+              "count": 3,
+              "text": "These switches turn on the taxi lights in the main gear doors and the taxi lights in the wing tips. A clickspot between them moves both together.",
+              "context": "Taxi lights light up the ground while the plane drives to and from the runway.",
+              "src": "m1",
+              "page": "42"
+            }
+          ]
+        },
+        {
+          "id": "hydraulics",
+          "name": "Hydraulic control panel",
+          "src": "m1",
+          "page": "44",
+          "text": "Hydraulics means oil under high pressure that moves heavy parts such as the landing gear, flaps and brakes. This panel holds the switches for the pumps, the anti-skid system and the emergency brakes.",
+          "context": "The plane has three hydraulic systems: utility, booster and auxiliary. They make sure that one failure does not stop everything.",
+          "controls": [
+            {
+              "id": "antiskid",
+              "name": "ANTI-SKID switch",
+              "type": "switch2",
+              "match": [
+                "PNT_ANTI_SKID_37",
+                "item:main-instrument-panel:19"
+              ],
+              "positions": [
+                {
+                  "name": "OFF",
+                  "text": "The anti-skid system does not work."
+                },
+                {
+                  "name": "ON",
+                  "text": "The anti-skid system reduces brake pressure at a wheel that starts to skid."
+                }
+              ],
+              "text": "This switch turns the anti-skid system on or off. It stops the wheels from locking up under hard braking, like the ABS of a car.",
+              "context": "The brakes work better and tires are safer with it on. The emergency brake mode bypasses the anti-skid.",
+              "src": "m1",
+              "page": "44"
+            },
+            {
+              "id": "emer-brake",
+              "name": "EMER BRAKE SEL button",
+              "type": "button",
+              "match": [
+                "PNT_EMRG_BRAKE_SELECT_99"
+              ],
+              "text": "This button changes the brakes to the emergency supply. The green EMER light shows it is on. The normal brake valve closes and the auxiliary hydraulic system powers the brakes.",
+              "context": "It is only used when the normal brake system fails. The anti-skid system does not work in this mode. A thump comes from the nose gear bay when the valves switch.",
+              "src": "m1",
+              "page": "44"
+            },
+            {
+              "id": "pump-util",
+              "name": "Engine 1 and 2 hydraulic pump switches (utility)",
+              "type": "switch",
+              "match": [
+                "PNT_ENG_PUMP_1_39",
+                "PNT_ENG_PUMP_2_40"
+              ],
+              "count": 2,
+              "text": "These two switches turn the hydraulic pumps on engines 1 and 2 on or off. These pumps make pressure for the utility hydraulic system. The switch face is dark when on and shows a green OFF light when off.",
+              "context": "The utility system moves the landing gear, flaps, brakes, nose steering and half of the flight control boosters.",
+              "src": "m1",
+              "page": "45"
+            },
+            {
+              "id": "pump-boost",
+              "name": "Engine 3 and 4 hydraulic pump switches (booster)",
+              "type": "switch",
+              "match": [
+                "PNT_ENG_PUMP_3_41",
+                "PNT_ENG_PUMP_4_42"
+              ],
+              "count": 2,
+              "text": "These two switches turn the hydraulic pumps on engines 3 and 4 on or off. They feed the booster hydraulic system. The switch face is dark when on and shows a green OFF light when off.",
+              "context": "The booster system powers the aileron, elevator and rudder boosters, which make the controls light to move.",
+              "src": "m1",
+              "page": "45"
+            },
+            {
+              "id": "aux-pump",
+              "name": "Auxiliary hydraulic pump switch",
+              "type": "switch2",
+              "match": [
+                "PNT_EMG_HYD_PUMP_45"
+              ],
+              "positions": [
+                {
+                  "name": "OFF",
+                  "text": "The auxiliary pump is stopped."
+                },
+                {
+                  "name": "ON",
+                  "text": "The pump runs and builds pressure for the auxiliary system."
+                }
+              ],
+              "text": "This switch runs the electric pump of the auxiliary hydraulic system in the cargo bay. A green light shows it is on, and a display next to it shows the pressure.",
+              "context": "The auxiliary system moves the cargo ramp and door, the emergency brakes and the emergency landing gear extension.",
+              "src": "m1",
+              "page": "45"
+            },
+            {
+              "id": "suction-pumps",
+              "name": "Suction boost pump switches (utility and booster)",
+              "type": "switch",
+              "match": [
+                "PNT_SUCT_BOOST_PMP_UTIL_43",
+                "PNT_SUCT_BOOST_PMP_44"
+              ],
+              "count": 2,
+              "text": "These two switches turn on the electric suction pumps that feed oil from the tanks to the engine pumps of the utility and booster systems. Dark means on; a green OFF light means off.",
+              "context": "The suction pumps help the engine pumps get oil, for example at start-up.",
+              "src": "m1",
+              "page": "45"
+            }
+          ]
+        },
+        {
+          "id": "radar-panel",
+          "name": "Radar control panel",
+          "src": "m1",
+          "text": "This panel sets the plane's radar: its power, its modes and its picture. The radar picture shows on the big screens.",
+          "context": "The manual describes the screens that show the radar picture, but not this panel's buttons. Treat the names here as the game's names.",
+          "controls": [
+            {
+              "id": "radar-master",
+              "name": "Radar master power switch",
+              "type": "selector",
+              "match": [
+                "PNT_RCP_MASTER_485",
+                "item:upper-center-console:2"
+              ],
+              "positions": [
+                {
+                  "name": "OFF",
+                  "text": "The radar has no power."
+                },
+                {
+                  "name": "ON",
+                  "text": "The radar has power and can be used."
+                },
+                {
+                  "name": "TEST",
+                  "text": "The game offers a test position."
+                }
+              ],
+              "text": "This switch gives power to the radar. The game lists the positions OFF, ON and TEST.",
+              "context": "The radar picture shows on one of the big screens. The manual does not describe the radar control panel in detail.",
+              "src": "m1"
+            },
+            {
+              "id": "radar-modes",
+              "name": "Radar mode and option buttons (12)",
+              "type": "button",
+              "match": [
+                "PNT_RCP_MAP_*",
+                "PNT_RCP_WX_*",
+                "PNT_RCP_SP_*",
+                "PNT_RCP_PRCN_*",
+                "PNT_RCP_MGM_*",
+                "PNT_RCP_WS_*",
+                "PNT_RCP_BCN_*",
+                "PNT_RCP_OFS_*",
+                "PNT_RCP_FRZ_*",
+                "PNT_RCP_PSEL_*",
+                "PNT_RCP_PEN_*",
+                "PNT_RCP_SCTR_*"
+              ],
+              "count": 12,
+              "text": "The game names these twelve buttons after radar modes or options: MAP, WX, SP, PRCN, MGM, WS, BCN, OFS, FRZ, PSEL, PEN and SCTR. The manual does not describe these buttons, so what each one does is not explained here.",
+              "context": "They sit on the radar control panel in the upper center console. The list of the names is all the game and the manual give.",
+              "src": "m1"
+            },
+            {
+              "id": "radar-intensity-sel",
+              "name": "Intensity target select switch",
+              "type": "switch",
+              "match": [
+                "PNT_INTENSITY_SEL_486"
+              ],
+              "text": "The game names this switch 'Intensity Target Select Switch'. It chooses what the intensity rocker changes. The manual does not describe it further.",
+              "context": "It works together with the intensity rocker next to it.",
+              "src": "m1"
+            },
+            {
+              "id": "radar-intensity",
+              "name": "Radar intensity rocker",
+              "type": "rocker",
+              "match": [
+                "PNT_RCP_INTENSITY_INC_*"
+              ],
+              "text": "This rocker raises or lowers the radar's 'intensity' value. The manual does not say what exactly intensity changes.",
+              "context": "The game lists one key for increase and one for decrease.",
+              "src": "m1"
+            },
+            {
+              "id": "radar-gain",
+              "name": "Radar gain rocker",
+              "type": "rocker",
+              "match": [
+                "PNT_RCP_GAIN_INC_*"
+              ],
+              "text": "This rocker raises or lowers the gain of the radar. The gain is how strongly the radar boosts the echoes it receives.",
+              "context": "A higher gain shows weaker echoes but also more noise. The manual does not describe this rocker.",
+              "src": "m1"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "front-right",
+      "where": "front-right",
+      "name": "Front panel, copilot's side",
+      "text": "The right part of the instrument panel and glareshield, in front of the copilot. It has the copilot's counterparts of the pilot's panels.",
+      "panels": [
+        {
+          "id": "copilot-refmode",
+          "name": "Copilot REF/MODE panel",
+          "src": "m1",
+          "page": "24",
+          "text": "This panel is the copilot's copy of the REF/MODE panel. Its REF half sets reference marks such as speed, height and air pressure. Its MODE half picks the autopilot modes.",
+          "context": "It changes the marks on the copilot's displays and HUD. The copilot's autopilot mode lights are on the same side.",
+          "controls": [
+            {
+              "id": "ref-select",
+              "name": "REF select switch",
+              "type": "selector",
+              "match": [
+                "PNT_R_REF_SELECT_*",
+                "item:main-instrument-panel:8"
+              ],
+              "positions": [
+                {
+                  "name": "HP",
+                  "text": "The knob sets the engine horsepower mark on the engine display, in steps of 50."
+                },
+                {
+                  "name": "RAD ALT",
+                  "text": "The knob sets the reference height above the ground from the radio altimeter."
+                },
+                {
+                  "name": "IAS",
+                  "text": "The knob sets the reference speed bug on the speed display."
+                },
+                {
+                  "name": "FPA",
+                  "text": "The knob sets the flight path angle mark, how steeply the plane climbs or descends."
+                },
+                {
+                  "name": "MINS",
+                  "text": "The knob sets the minimum height for an approach (decision height or minimum descent altitude)."
+                },
+                {
+                  "name": "Unlabeled",
+                  "text": "This position has no function."
+                }
+              ],
+              "text": "This knob picks which value the copilot's REF SET knob changes. The choices are engine power (HP), radio altimeter height (RAD ALT), speed (IAS), flight path angle (FPA) and minimums (MINS).",
+              "context": "The chosen value is shown on a small digital display above the REF SET knob and as a bug on the copilot's screens. Each pilot has an own panel. This is the copilot's side.",
+              "src": "m1",
+              "page": "24"
+            },
+            {
+              "id": "ref-set",
+              "name": "REF SET knob (push to hide)",
+              "type": "knob",
+              "match": [
+                "PNT_R_REF_SET_*"
+              ],
+              "text": "This knob changes the value picked with the REF select switch on the copilot's side. Pressing it hides the matching mark from the copilot's screens. Pressing it again brings the mark back.",
+              "context": "The mark is the bug the pilot flies to, for example a speed. The horsepower mark can be hidden from either side. This is the copilot's side.",
+              "src": "m1",
+              "page": "25"
+            },
+            {
+              "id": "alt-sel",
+              "name": "ALT SEL knob (altitude select)",
+              "type": "knob",
+              "match": [
+                "PNT_R_REF_ALTSEL_*"
+              ],
+              "text": "This knob sets the height the copilot's side wants to fly to, in steps of 100 feet. Pressing it sets the height to the plane's present height.",
+              "context": "The set height drives the altitude alert and the altitude select mode of the flight director. The plane levels off when it reaches the set height. This is the copilot's side.",
+              "src": "m1",
+              "page": "25"
+            },
+            {
+              "id": "baro-set",
+              "name": "BARO SET knob (push for standard)",
+              "type": "knob",
+              "match": [
+                "PNT_R_REF_BAROSEL_*"
+              ],
+              "text": "This knob tells the copilot's altimeter (the height gauge) the local air pressure, so that it reads correctly. Pressing it resets the pressure to the standard value, 29.92 inches of mercury or 1013 millibars.",
+              "context": "The copilot's knob changes the altimeter of the copilot's screens and HUD only. The other pilot sets the own knob. This is the copilot's side.",
+              "src": "m1",
+              "page": "25"
+            },
+            {
+              "id": "master-warning",
+              "name": "MASTER WARNING pushlight",
+              "type": "button",
+              "match": [
+                "PNT_R_MASTERWARNING_*"
+              ],
+              "text": "This red button lights up and flashes when the plane has a new warning message for the copilot's side. A loud tone sounds with it. Pressing the button silences the tone and puts out the light.",
+              "context": "A warning means danger that needs action at once, such as an engine fire. The words of the warning are shown in the message list on the displays. This is the copilot's side.",
+              "src": "m1",
+              "page": "26"
+            },
+            {
+              "id": "master-caution",
+              "name": "MASTER CAUTION pushlight",
+              "type": "button",
+              "match": [
+                "PNT_R_MASTERCAUTION_*"
+              ],
+              "text": "This amber button lights up and flashes when the plane has a new caution message for the copilot's side, with a tone. Pressing the button acknowledges the message, silences the tone and puts out the light.",
+              "context": "A caution means something is not normal and needs the crew to act so that nothing is damaged. The message list shows what it is. This is the copilot's side.",
+              "src": "m1",
+              "page": "26"
+            },
+            {
+              "id": "mode-alt",
+              "name": "ALT mode switch",
+              "type": "button",
+              "match": [
+                "PNT_R_MODE_ALT_*"
+              ],
+              "text": "Pressing this switch makes the flight director hold the plane's present height. If the plane is climbing or sinking slower than 2000 feet per minute, it levels off. This is the switch of the copilot's side.",
+              "context": "It is the 'stay at this height' switch. A green ON light shows that it is active. Using the vertical speed or airspeed mode cancels it. Each pilot has an own set of mode switches; this is the copilot's set. This is the copilot's side.",
+              "src": "m1",
+              "page": "26"
+            },
+            {
+              "id": "mode-vs",
+              "name": "VS mode switch",
+              "type": "button",
+              "match": [
+                "PNT_R_MODE_VS_*"
+              ],
+              "text": "Pressing this switch makes the flight director hold the climb or descent rate the plane has at that moment (vertical speed). This is the switch of the copilot's side.",
+              "context": "The manual warns that this mode gives no protection against flying too slowly. The pilot must watch the speed. Pressing again cancels the mode. Each pilot has an own set of mode switches; this is the copilot's set. This is the copilot's side.",
+              "src": "m1",
+              "page": "26"
+            },
+            {
+              "id": "mode-ias",
+              "name": "IAS mode switch",
+              "type": "button",
+              "match": [
+                "PNT_R_MODE_IAS_*"
+              ],
+              "text": "Pressing this switch makes the flight director hold the speed shown at that moment (indicated airspeed) by raising or lowering the nose. This is the switch of the copilot's side.",
+              "context": "The manual says IAS is the only vertical mode of the flight director that protects against flying too slowly. A green ON light shows that it is active. Each pilot has an own set of mode switches; this is the copilot's set. This is the copilot's side.",
+              "src": "m1",
+              "page": "26"
+            },
+            {
+              "id": "mode-sel",
+              "name": "SEL mode switch",
+              "type": "button",
+              "match": [
+                "PNT_R_MODE_SEL_*"
+              ],
+              "text": "Pressing this switch arms the 'altitude select' mode. The flight director then climbs or descends to the height set with the ALT SEL knob and levels off there. This is the switch of the copilot's side.",
+              "context": "The mode arms itself when a new height is set. The light stays on after levelling off, because the mode stays ready for the next height. Each pilot has an own set of mode switches; this is the copilot's set. This is the copilot's side.",
+              "src": "m1",
+              "page": "26"
+            },
+            {
+              "id": "mode-hdg",
+              "name": "HDG mode switch",
+              "type": "button",
+              "match": [
+                "PNT_R_MODE_HDG_*"
+              ],
+              "text": "Pressing this switch makes the flight director turn the plane to the compass heading set with the heading knob and hold it. This is the switch of the copilot's side.",
+              "context": "The heading mode ends by itself when the plane captures a radio course. Pressing the switch again also cancels it. Each pilot has an own set of mode switches; this is the copilot's set. This is the copilot's side.",
+              "src": "m1",
+              "page": "26"
+            },
+            {
+              "id": "mode-nav",
+              "name": "NAV mode switch",
+              "type": "button",
+              "match": [
+                "PNT_R_MODE_NAV_*"
+              ],
+              "text": "Pressing this switch makes the flight director follow the course source chosen on the NAV-SELECT page of the AMU (for example the planned route). This is the switch of the copilot's side.",
+              "context": "The plane then steers along the course line. A green ON light shows that the mode is active. Each pilot has an own set of mode switches; this is the copilot's set. This is the copilot's side.",
+              "src": "m1",
+              "page": "26"
+            },
+            {
+              "id": "mode-appr",
+              "name": "APPR mode switch",
+              "type": "button",
+              "match": [
+                "PNT_R_MODE_APPR_*"
+              ],
+              "text": "Pressing this switch arms an instrument approach. The flight director then follows the radio beams of a runway (localizer sideways, glideslope downward). This is the switch of the copilot's side.",
+              "context": "With a runway beam tuned, the plane is guided down to the runway. The sideways navigation mode is armed together with the glideslope mode. Each pilot has an own set of mode switches; this is the copilot's set. This is the copilot's side.",
+              "src": "m1",
+              "page": "26"
+            },
+            {
+              "id": "mode-caps",
+              "name": "CAPS mode switch",
+              "type": "button",
+              "match": [
+                "PNT_R_MODE_CAPS_*"
+              ],
+              "text": "Pressing this switch makes the flight director follow steering commands from the CAPS system, the formation flying system (SKE). This is the switch of the copilot's side.",
+              "context": "It is used for flying formation or airdrops with other planes that carry the same system. Each pilot has an own set of mode switches; this is the copilot's set. This is the copilot's side.",
+              "src": "m1",
+              "page": "26"
+            },
+            {
+              "id": "mode-at",
+              "name": "A/T mode switch",
+              "type": "button",
+              "match": [
+                "PNT_R_MODE_AT_*"
+              ],
+              "text": "Pressing this switch turns on the autothrottle. Small motors then move the four power levers by themselves to hold the chosen speed. This is the switch of the copilot's side.",
+              "context": "The autothrottle cannot be used together with the IAS mode, which also holds speed. It does not work with the wheels on the ground and can be switched off with the buttons by the power levers. Each pilot has an own set of mode switches; this is the copilot's set. This is the copilot's side.",
+              "src": "m1",
+              "page": "26"
+            },
+            {
+              "id": "mode-unused",
+              "name": "Unused mode switch",
+              "type": "button",
+              "match": [
+                "PNT_R_AP_ON_OFF_*"
+              ],
+              "text": "The game calls this the copilot's 'Unused Mode Switch'. It sits among the autopilot mode switches. The manual lists this key as unused.",
+              "context": "It does nothing. The other mode switches next to it are the ones that matter. This is the copilot's side.",
+              "src": "m1",
+              "page": "28"
+            },
+            {
+              "id": "ap-annunciator",
+              "name": "Copilot autopilot mode annunciator panel",
+              "type": "indicator",
+              "match": [
+                "item:main-instrument-panel:15"
+              ],
+              "text": "This is a set of green lights in front of the copilot's seat that show at a glance which autopilot modes are on. The words include AP ON, AP DSNG, PTCH OFF, LAT OFF, NAV ARM, NAV CAPT, GS ARM, GS CAPT, GO ARND, BACK LOC, CAT2 ARM and CAT2.",
+              "context": "AP ON means the autopilot of that side is engaged. AP DSNG flashes when the autopilot has switched itself off and no one has acknowledged it yet. The other words tell the state of the sideways, the glideslope and the approach modes. This is the copilot's panel.",
+              "src": "m1",
+              "page": "28"
+            }
+          ]
+        },
+        {
+          "id": "copilot-amu",
+          "name": "Copilot AMU (avionics management unit)",
+          "src": "m1",
+          "page": "110",
+          "text": "This is the copilot's avionics management unit, a small box with two screens and keys that chooses what the copilot's big screens show.",
+          "context": "The copilot puts pages such as the flight display, the map or the engine page on the screens HDD 3 and HDD 4.",
+          "controls": [
+            {
+              "id": "amu-lsk",
+              "name": "Copilot AMU line select keys (16)",
+              "type": "button",
+              "match": [
+                "PNT_AMU_R?_BTN*",
+                "item:main-instrument-panel:7"
+              ],
+              "count": 16,
+              "text": "These 16 keys sit around the two small screens of the copilot's avionics management unit (AMU). Each screen has four keys on the left (L1-L4) and four on the right (R1-R4). A key picks the line of text next to it.",
+              "context": "The AMU decides which pages the copilot's big screens (HDDs) show, for example the flight display, the radar map or the engine page. The MAIN MENU page is the start page.",
+              "src": "m1",
+              "page": "110"
+            },
+            {
+              "id": "amu-bright",
+              "name": "Copilot AMU brightness rocker",
+              "type": "rocker",
+              "match": [
+                "PNT_AMU_R_DIM_*",
+                "PNT_AMU_R_BRT_*"
+              ],
+              "text": "This rocker makes the two copilot's AMU screens brighter or darker. The game lists a key for brighter and one for darker.",
+              "context": "The copilot's AMU screens must be readable in sunlight and not glaring at night.",
+              "src": "m1",
+              "page": "110"
+            }
+          ]
+        },
+        {
+          "id": "copilot-lighting",
+          "name": "Copilot lighting control panel",
+          "src": "m1",
+          "page": "47",
+          "text": "This panel has the dimmers for the lights on the copilot's side and the overhead panel. It also has the lamp test switch.",
+          "context": "The copilot sets the lights to be readable at night. The lamp test is a quick check of the warning lights.",
+          "controls": [
+            {
+              "id": "lt-cb",
+              "name": "Circuit breaker light rheostat",
+              "type": "knob",
+              "match": [
+                "PNT_CP_CKT_BRK_1345",
+                "item:upper-center-console:3"
+              ],
+              "text": "This dimmer sets how bright the flood light is over the copilot side circuit breaker panel.",
+              "context": "It is the copilot's counterpart of the pilot's circuit breaker light knob.",
+              "src": "m1",
+              "page": "48"
+            },
+            {
+              "id": "lt-ovh-flood",
+              "name": "Overhead panel flood light rheostat",
+              "type": "knob",
+              "match": [
+                "PNT_CP_OVH_FLOOD_1346"
+              ],
+              "text": "This dimmer sets the flood light, a soft light, over the overhead panel above the pilots' heads.",
+              "context": "The overhead panel holds the engine, fuel and electrical switches. The light makes their labels readable at night.",
+              "src": "m1",
+              "page": "48"
+            },
+            {
+              "id": "lt-ovh-panel",
+              "name": "Overhead panel backlighting rheostat",
+              "type": "knob",
+              "match": [
+                "PNT_CP_OVH_PANEL_1347"
+              ],
+              "text": "This dimmer sets the backlight of the labels on the overhead panel. Backlight means light shining through the printed letters.",
+              "context": "It works with the overhead flood light knob.",
+              "src": "m1",
+              "page": "48"
+            },
+            {
+              "id": "lt-center",
+              "name": "Center console backlighting rheostat",
+              "type": "knob",
+              "match": [
+                "PNT_CP_CTRCNSL_1348"
+              ],
+              "text": "This dimmer sets the backlight of the labels on the center console between the two pilots.",
+              "context": "The power levers, the keypads and many panels are on that console.",
+              "src": "m1",
+              "page": "48"
+            },
+            {
+              "id": "lamp-test",
+              "name": "Display/lamp test switch",
+              "type": "switch",
+              "match": [
+                "PNT_CP_LAMP_TEST_1352"
+              ],
+              "positions": [
+                {
+                  "name": "LAMP",
+                  "text": "All the annunciator and indicator lights shine."
+                },
+                {
+                  "name": "DISPL",
+                  "text": "All the eight-segment displays show 8s, except the battery voltage display."
+                }
+              ],
+              "text": "This switch tests the lights and number displays of the cockpit. In the LAMP position all warning and indicator lights come on. In the DISPL position all the digital displays show 8s.",
+              "context": "The pilots use it to check that no bulb or display segment is broken. The battery voltage display is not tested.",
+              "src": "m1",
+              "page": "48"
+            },
+            {
+              "id": "lt-flood",
+              "name": "Side and instrument panel flood light rheostat",
+              "type": "knob",
+              "match": [
+                "PNT_CP_SI_FLOOD_1351"
+              ],
+              "text": "This dimmer sets the flood light over the copilot's side console and instrument panel.",
+              "context": "It is the copilot's counterpart of the pilot's flood knob.",
+              "src": "m1",
+              "page": "48"
+            },
+            {
+              "id": "lt-panel",
+              "name": "Side and instrument panel backlighting rheostat",
+              "type": "knob",
+              "match": [
+                "PNT_CP_SI_PANEL_1350"
+              ],
+              "text": "This dimmer sets the backlight of the labels on the copilot's side console and instrument panel.",
+              "context": "It is the copilot's counterpart of the pilot's backlight knob.",
+              "src": "m1",
+              "page": "48"
+            },
+            {
+              "id": "lt-display-master",
+              "name": "Display master rheostat",
+              "type": "knob",
+              "match": [
+                "PNT_CP_MASTER_1349"
+              ],
+              "text": "This dimmer sets the brightness of the big screens HDD 3 and HDD 4 and of the copilot's AMU.",
+              "context": "It is the copilot's main brightness control for the screens in front of the copilot.",
+              "src": "m1",
+              "page": "48"
+            }
+          ]
+        },
+        {
+          "id": "copilot-ics",
+          "name": "Copilot ICS control panel (intercom)",
+          "src": "m1",
+          "page": "152",
+          "text": "The ICS is the crew's intercom. This panel is where the copilot chooses what to hear, how loud it is, and where the own voice goes.",
+          "context": "It is identical to the pilot's panel but acts for the copilot's headset and microphone only.",
+          "controls": [
+            {
+              "id": "ics-radio-knobs",
+              "name": "Copilot radio channel knobs (11)",
+              "type": "knob",
+              "match": [
+                "PNT_CP_ICS_*_2??_2??",
+                "item:upper-center-console:5"
+              ],
+              "count": 11,
+              "text": "These 11 knobs are for listening on the copilot's side: INT (interphone, the crew's own phone line), H1 and H2 (HF radios), V1 and V2 (VHF radios), U1 and U2 (UHF radios), SAT (satellite radio), PA (public address) and the channels PVT and VOX/HM. Turning a knob changes the volume. Pulling it out switches the channel on.",
+              "context": "A white band shows at the foot of a knob when its channel is switched on. The manual does not explain PVT and VOX/HM further. This is the copilot's panel.",
+              "src": "m1",
+              "page": "152"
+            },
+            {
+              "id": "ics-pa-gain",
+              "name": "PA GAIN knob",
+              "type": "knob",
+              "match": [
+                "PNT_CP_ICS_PAGAIN_*"
+              ],
+              "text": "This knob sets how loud the copilot's public address announcements are in the cargo bay.",
+              "context": "The public address is the loudspeaker line to the people in the back. This is the copilot's panel.",
+              "src": "m1",
+              "page": "152"
+            },
+            {
+              "id": "ics-vox-sens",
+              "name": "VOX SENS knob",
+              "type": "knob",
+              "match": [
+                "PNT_CP_ICS_VOXSENS_*"
+              ],
+              "text": "This knob sets how sensitive the copilot's microphone is for voice activation (VOX means voice operated). Lower settings need a louder voice before the microphone starts to send.",
+              "context": "It matters when the interphone is in voice mode, so that the pilot does not need a button to talk. This is the copilot's panel.",
+              "src": "m1",
+              "page": "152"
+            },
+            {
+              "id": "ics-int-radio",
+              "name": "Interphone / radio transmit switch",
+              "type": "switch",
+              "match": [
+                "PNT_CP_ICS_INT_292",
+                "PNT_CP_ICS_RADIO_292"
+              ],
+              "positions": [
+                {
+                  "name": "INT",
+                  "text": "The voice goes to the interphone."
+                },
+                {
+                  "name": "RADIO",
+                  "text": "The voice goes out over the selected radio."
+                }
+              ],
+              "text": "This switch picks where the copilot's microphone speaks to. INT sends the voice over the crew's interphone. RADIO sends it over the radio chosen with the transmission selector.",
+              "context": "The same switch exists as a thumb switch on the side of the yoke. In the game it has a command for each direction. This is the copilot's panel.",
+              "src": "m1",
+              "page": "153"
+            },
+            {
+              "id": "ics-mode",
+              "name": "Interphone mode switch (CALL / INT / VOX / HOT MIC)",
+              "type": "selector",
+              "match": [
+                "PNT_CP_ISCP_MODE_295"
+              ],
+              "positions": [
+                {
+                  "name": "CALL",
+                  "text": "A priority call that is 6 decibels louder than other talk. It springs back to INT."
+                },
+                {
+                  "name": "INT",
+                  "text": "The microphone sends on the interphone only when the transmit switch is used."
+                },
+                {
+                  "name": "VOX",
+                  "text": "The interphone is voice-activated and sends only when it hears a voice."
+                },
+                {
+                  "name": "HOT MIC",
+                  "text": "The microphone sends all the time."
+                }
+              ],
+              "text": "This switch sets how the copilot's microphone sends on the interphone. CALL is a loud priority call, INT needs the push-to-talk switch, VOX is voice-activated, and HOT MIC always sends.",
+              "context": "CALL springs back to INT after use. The other positions stay where they are put. This is the copilot's panel.",
+              "src": "m1",
+              "page": "153"
+            },
+            {
+              "id": "ics-selector",
+              "name": "Transmission selector switch",
+              "type": "selector",
+              "match": [
+                "PNT_CP_ICS_SELECTOR_296"
+              ],
+              "text": "This knob picks the radio or line that the copilot's microphone transmits on when RADIO is chosen. It has ten positions, among them H-1, H-2, INT, PA, PVT and SAT.",
+              "context": "For example, the pilot chooses a UHF radio to speak with the tower and then uses the push-to-talk switch. This is the copilot's panel.",
+              "src": "m1",
+              "page": "153"
+            },
+            {
+              "id": "ics-volume",
+              "name": "Master volume knob",
+              "type": "knob",
+              "match": [
+                "PNT_CP_ICS_VOL_1358"
+              ],
+              "text": "This knob changes the overall volume of what the copilot's headset receives, both from the radios and from the interphone.",
+              "context": "The single channel knobs set each channel's own loudness; this one sets the total. This is the copilot's panel.",
+              "src": "m1",
+              "page": "153"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

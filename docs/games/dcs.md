@@ -65,7 +65,7 @@ Everything is written into a temporary Saved Games folder; the user's `Config\In
 `--plane`/`--planes` limit the aircraft. A file the strip option (below) patched is read from its `.nocombo.bak`, so
 the clean profiles always hold DCS's real defaults (checked: FA-18C and F-15C from a stripped copy of the install are
 byte-identical to those from the untouched install). Before the refresh JoyPro re-applies the switched-on install
-options. The full refresh on the dev PC (85 profiles, 136 device types) takes about 25 minutes and writes 5071 clean
+options. The full refresh on a test PC (85 profiles, 136 device types) takes about 25 minutes and writes 5071 clean
 profiles (9 MB; before: 1145).
 
 ### Root cause of "DCS defaults stay on my device" (fixed 2026-10-17)
@@ -108,13 +108,13 @@ integrity check of multiplayer servers that enforce it. The GUI shows that warni
   either one can undo the other's work; JoyPro's restore covers files that script patched). Original bytes, line ends
   and a UTF-8 BOM stay. After patching, DCS's own loader (`Input.Data.loadDeviceProfileFromFile` in luae.exe) reads
   every patched file and its original: same commands, no combos left; a file that fails is put back at once. On a copy
-  of the dev PC's install: 218 files, all compared, 2525 default binds switched off; restore byte-identical (8231
+  of a test PC's install: 218 files, all compared, 2525 default binds switched off; restore byte-identical (8231
   files). `--skip-ui-layer` keeps `Config\Input\UiLayer`. The user's `Saved Games\DCS\Config\Input` is never touched.
 - **Device files** (`engine dcs device-luas [list|remove|restore]`): the device-specific default files of the
   joystick folders (`<device type>.lua` and template diffs `<device type>.diff.lua`, not `default.lua`) move into
   `<data>\DcsDefaults\DeviceLuas` (with `manifest.json`), so DCS uses `default.lua` for every device (JoyPro 1's way).
   Files another Lua file of the module names stay, and so does the UI layer (its VR controller files make the menus
-  usable in VR). On the dev PC's install: 554 files. After a move or restore the clean profiles no longer match what
+  usable in VR). On a test PC's install: 554 files. After a move or restore the clean profiles no longer match what
   DCS loads; the GUI rebuilds them and the export warns until then. `engine dcs defaults restore` still puts back what
   an older JoyPro moved into `Saved Games\DCS\BACKUP_JOYSTICK_DEFAULTS`.
 - The switches are kept in `<data>\DcsDefaults\state.json`. A DCS update or repair brings original files back; with a

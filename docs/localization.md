@@ -46,7 +46,13 @@ translated later.
 - Engine texts: the status line (`Failed: ...`), the busy panel's step and the profile history messages go through
   `Loc.Translate`.
 - Fonts: the UI font is `{DynamicResource JP.UiFont}`: Bahnschrift, Segoe UI, then the CJK UI font of the language
-  shown first (Yu Gothic UI / Microsoft YaHei UI / Microsoft JhengHei UI / Malgun Gothic), `Languages.FontStack`.
+  shown first (Yu Gothic UI / Microsoft YaHei UI / Microsoft JhengHei UI / Malgun Gothic), then Segoe UI Symbol and
+  Segoe UI Emoji (arrows and media signs such as ↻ ⇕ ⏮ ⏺ that no text font has), `Languages.FontStack`; the HUD uses
+  it too. The callout sheets and manual pages keep their own first font and add `Languages.FallbackFonts`
+  (`Views/Controls/SheetFonts.cs`). Bahnschrift has every letter of the 38 languages (Latin Extended, Greek,
+  Cyrillic); `FontCoverageTests` checks every character of every strings file and every language's own name against
+  these chains (and the default font of the drawn canvases through Avalonia's match), so a new text with a character
+  no font has fails the test. `JOYPRO_FONT_REPORT=<file>` lists which font draws how many characters per language.
 - Tray host: the GUI writes the tray's texts in its language to `<settings>\tray-strings.json`
   (`Services/TrayStrings.cs`); `JoyPro.Watch.WatchText` reads them (English without the file).
 - Layout: icon buttons wrap a long translation to a second line instead of cutting it (Styles/IconStyles.axaml).

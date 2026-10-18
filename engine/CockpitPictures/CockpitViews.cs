@@ -22,6 +22,71 @@ namespace JoyPro.CockpitPictures
         public List<string> Args = new List<string>();
         public List<CalloutCommand> Commands = new List<CalloutCommand>();
         public int N;
+        // The animation behind the control where the game's files name it (draw argument, dataref, node ...), and the
+        // game's own kind of control (DCS: TUMB, LEV; X-Plane: the manipulator; MSFS: the behaviour template).
+        public ControlAnimation Animation;
+        public string GameKind = string.Empty;
+        public int Seat = 1;
+    }
+
+    // What moves when a control is used, as the game's files say (pictures.json "controls", docs/cockpits.md
+    // "Animated controls"): where it comes from (draw argument, dataref, node, event, interaction, input action), its
+    // name there, the range and the positions of a switch (NaN / empty: not known).
+    internal sealed class ControlAnimation
+    {
+        public string Source = string.Empty;
+        public string Name = string.Empty;
+        public double Min = double.NaN;
+        public double Max = double.NaN;
+        public List<double> Positions = new List<double>();
+    }
+
+    // One vocabulary for the kinds of controls of every game: button, switch-2, switch-3, switch-N (more positions),
+    // switch (positions not known), rotary, lever, axis, grip, hat, trigger, screen, cover, wheel, pedal, other.
+    internal static class ControlKinds
+    {
+        public static string Of(CockpitCallout c)
+        {
+            string k = ((c.Kind ?? string.Empty) + " " + (c.GameKind ?? string.Empty)).ToLowerInvariant();
+            int positions = c.Animation == null ? 0 : c.Animation.Positions.Count;
+            // A part on a grip: by its name (hat, trigger, a thumb stick, else a button).
+            if (k.Trim() == "part" || k.Trim() == "part part")
+            {
+                string n = ((c.Id ?? string.Empty) + " " + (c.Label ?? string.Empty)).ToLowerInvariant();
+                if (System.Text.RegularExpressions.Regex.IsMatch(n, "trigger|trg|pickle"))
+                    return "trigger";
+                if (System.Text.RegularExpressions.Regex.IsMatch(n, @"hat|tms|dms|cms|coolie|slew|cursor|\bcur\b|ministick|thumb|jstck|joystick|castle"))
+                    return "hat";
+                if (System.Text.RegularExpressions.Regex.IsMatch(n, @"lever|paddle|lvr|switch|sw\b|rng|antn|shift"))
+                    return "switch";
+                return "button";
+            }
+            if (k.Contains("screen") || k.Contains("display") || k.Contains("mfd"))
+                return "screen";
+            if (k.Contains("cover") || k.Contains("guard"))
+                return "cover";
+            if (k.Contains("grip") || k.Contains("stick") || k.Contains("yoke") || k.Contains("cyclic"))
+                return "grip";
+            if (k.Contains("pedal"))
+                return "pedal";
+            if (k.Contains("wheel") && !k.Contains("button"))
+                return "wheel";
+            if (k.Contains("button") || k.Contains("push") || k.Contains("btn") || k.Contains("command ") || k.Trim() == "command")
+                return positions >= 3 ? "switch-" + positions : "button";
+            if (k.Contains("switch") || k.Contains("tumb") || k.Contains("toggle") || k.Contains("radio"))
+                return positions == 2 ? "switch-2" : positions == 3 ? "switch-3" : positions > 3 ? "switch-" + positions : "switch";
+            if (k.Contains("knob") || k.Contains("rotary") || k.Contains("lev,") || k.EndsWith(" lev") || k.Contains("axis_knob") || k.Contains("wrap") || k.Contains("delta"))
+                return positions >= 2 && positions <= 12 ? "switch-" + positions : "rotary";
+            if (k.Contains("lever") || k.Contains("throttle") || k.Contains("handle") || k.Contains("movable_lev") || k.Contains("drag"))
+                return "lever";
+            if (k.Contains("axis"))
+                return "axis";
+            if (positions == 2)
+                return "switch-2";
+            if (positions == 3)
+                return "switch-3";
+            return k.Trim().Length == 0 ? "other" : (c.Kind ?? "other").ToLowerInvariant();
+        }
     }
 
     internal sealed class CalloutCommand
@@ -35,6 +100,8 @@ namespace JoyPro.CockpitPictures
     internal sealed class CockpitGrip
     {
         public string Device = "stick";
+        // What moves the grip in the game's files (the stick's arguments, the yoke's datarefs), where the reader knows it.
+        public ControlAnimation Animation;
         public List<int> Meshes = new List<int>();
         public List<CockpitCallout> Parts = new List<CockpitCallout>();
         public Vec3 Pivot;
@@ -51,6 +118,10 @@ namespace JoyPro.CockpitPictures
         public int Seat = 1;
         public RenderCamera Camera;
         public List<int> Meshes;                 // null = all
+        // Other cameras for the same picture, tried in order while the picture is poor (PictureWriter's quality gate).
+        public List<RenderCamera> Alternatives = new List<RenderCamera>();
+        // A grip picture: the grip itself as a control (pictures.json "controls": the stick, the throttle).
+        public CockpitCallout GripControl;
         public List<CockpitCallout> Callouts = new List<CockpitCallout>();
         // The overview's callouts lead to these views (panel keys), in callout order.
         public List<string> Links = new List<string>();
@@ -66,6 +137,8 @@ namespace JoyPro.CockpitPictures
         public static List<CockpitViewPlan> Plan(CockpitScene scene, Vec3 head, List<CockpitCallout> callouts, List<CockpitGrip> grips, int width)
         {
             List<CockpitViewPlan> views = new List<CockpitViewPlan>();
+            // Controls more than 4 m from the pilot are not in this cockpit (unplaced connectors, another crew station).
+            callouts = callouts.Where(c => (c.Position - head).Length <= 4.0).ToList();
             List<List<CockpitCallout>> panels = Panels(callouts, head);
             // The grips nearest the pilot first; a second grip of a kind (the other pilot's, a second lever) gets its own id.
             grips = grips.OrderBy(g => (g.Pivot - head).Length).ToList();
@@ -109,7 +182,11 @@ namespace JoyPro.CockpitPictures
                 scene.Bounds(Enumerable.Range(0, scene.Meshes.Count), out mn, out mx);
                 all.Add((mn + mx) * 0.5);
             }
-            CockpitViewPlan overview = OverviewView(head, all, width);
+            CockpitViewPlan overview = OverviewView(head, all, width, 0.32, 0.22);
+            // Closer to the head (a big cabin seen from too far back) and further back (a head inside an instrument).
+            overview.Alternatives.Add(OverviewView(head, all, width, 0.12, 0.12).Camera);
+            overview.Alternatives.Add(OverviewView(head, all, width, 0.0, 0.06).Camera);
+            overview.Alternatives.Add(OverviewView(head, all, width, 0.6, 0.35).Camera);
             int n = 1;
             foreach (CockpitViewPlan pv in panelViews.OrderBy(p => AreaOrder(p.Area)).ThenBy(p => p.Title, StringComparer.OrdinalIgnoreCase))
             {
@@ -148,6 +225,28 @@ namespace JoyPro.CockpitPictures
             string[] order = { "glareshield", "front-left", "front-center", "front-right", "left-console", "center-pedestal", "right-console", "overhead", "left-side", "right-side", "floor", "rear", "seat" };
             int i = Array.IndexOf(order, area);
             return i < 0 ? order.Length : i;
+        }
+
+        // The per-axis median (robust against a few points far away).
+        public static Vec3 Median(List<Vec3> pts)
+        {
+            if (pts.Count == 0)
+                return new Vec3(0, 0, 0);
+            Func<IEnumerable<double>, double> med = v =>
+            {
+                List<double> l = v.OrderBy(x => x).ToList();
+                return l.Count % 2 == 1 ? l[l.Count / 2] : (l[l.Count / 2 - 1] + l[l.Count / 2]) / 2;
+            };
+            return new Vec3(med(pts.Select(p => p.X)), med(pts.Select(p => p.Y)), med(pts.Select(p => p.Z)));
+        }
+
+        // Leaves out the callouts farther than maxDistance from the median of all; returns how many.
+        public static int DropOutliers(List<CockpitCallout> callouts, double maxDistance)
+        {
+            if (callouts.Count < 4)
+                return 0;
+            Vec3 m = Median(callouts.Select(c => c.Position).ToList());
+            return callouts.RemoveAll(c => (c.Position - m).Length > maxDistance || double.IsNaN(c.Position.X));
         }
 
         public static Vec3 Centre(List<Vec3> pts)
@@ -303,8 +402,8 @@ namespace JoyPro.CockpitPictures
             }
             double margin = 0.045;
             double w = maxR - minR + 2 * margin, h = maxU - minU + 2 * margin;
-            w = Math.Max(w, 0.12);
-            h = Math.Max(h, 0.09);
+            w = Math.Max(w, 0.24);
+            h = Math.Max(h, 0.18);
             double aspect = Math.Max(0.75, Math.Min(2.2, w / h));
             Vec3 centre = c0 + cam.Right * ((minR + maxR) / 2) + cam.Up * ((minU + maxU) / 2);
             cam.Width = width;
@@ -316,6 +415,13 @@ namespace JoyPro.CockpitPictures
             cam.Near = distance - maxDepth - 0.07;
             string title = group[0].PanelTitle.Length > 0 ? group[0].PanelTitle : group[0].Panel;
             CockpitViewPlan v = new CockpitViewPlan { Kind = "panel", Title = title, Area = group[0].Area, Camera = cam };
+            // When the picture is poor: the same view with more room around the controls, then the pilot's own view of
+            // them (from the head: nothing of the cockpit in between, the side the pilot sees).
+            RenderCamera wide = new RenderCamera { Ortho = true, Forward = cam.Forward, Up = cam.Up, Right = cam.Right, Width = cam.Width, Height = cam.Height, HalfHeight = cam.HalfHeight * 2.2, Eye = cam.Eye, Near = cam.Near };
+            v.Alternatives.Add(wide);
+            RenderCamera pilot = PilotView(head, pts, width);
+            if (pilot != null)
+                v.Alternatives.Add(pilot);
             v.Id = "panel:" + Key(title + "-" + group[0].Area + "-" + Math.Round(c0.X * 100) + "-" + Math.Round(c0.Z * 100));
             // Callouts in reading order: top to bottom, left to right.
             int n = 1;
@@ -325,6 +431,31 @@ namespace JoyPro.CockpitPictures
                 v.Callouts.Add(c);
             }
             return v;
+        }
+
+        // The controls as the pilot sees them: from the head (a little in front of it), the field of view fitted to them.
+        private static RenderCamera PilotView(Vec3 head, List<Vec3> pts, int width)
+        {
+            Vec3 c = Centre(pts);
+            Vec3 dir = c - head;
+            if (dir.Length < 0.08)
+                return null;
+            Vec3 eye = head + dir.Normalized * Math.Min(0.15, dir.Length * 0.3);
+            RenderCamera cam = RenderCamera.LookAt(eye, c, 40, width, (int)Math.Round(width / 1.33));
+            double maxX = 0, maxY = 0;
+            foreach (Vec3 p in pts)
+            {
+                Vec3 d = p - eye;
+                double z = Vec3.Dot(d, cam.Forward);
+                if (z < 0.05)
+                    return null;
+                maxX = Math.Max(maxX, Math.Abs(Vec3.Dot(d, cam.Right)) / z);
+                maxY = Math.Max(maxY, Math.Abs(Vec3.Dot(d, cam.Up)) / z);
+            }
+            double halfY = Math.Max(maxY, maxX / 1.33) * 1.25 + 0.08;
+            cam.FovY = Math.Max(20, Math.Min(90, 2 * Math.Atan(halfY) * 180 / Math.PI));
+            cam.Near = 0.05;
+            return cam;
         }
 
         public static string Key(string s)
@@ -416,11 +547,11 @@ namespace JoyPro.CockpitPictures
 
         // ------------------------------------------------------------------ overview
 
-        private static CockpitViewPlan OverviewView(Vec3 head, List<Vec3> pts, int width)
+        private static CockpitViewPlan OverviewView(Vec3 head, List<Vec3> pts, int width, double back, double up)
         {
             // From behind and above the head (between the seats of a side-by-side cockpit), looking down at the middle
             // of the controls in front of the pilot; what lies behind the head does not widen the picture.
-            Vec3 eye = new Vec3(head.X - 0.32, head.Y + 0.22, Math.Abs(head.Z) < 0.7 ? 0 : head.Z);
+            Vec3 eye = new Vec3(head.X - back, head.Y + up, Math.Abs(head.Z) < 0.7 ? 0 : head.Z);
             List<Vec3> front = pts.Where(p => p.X >= head.X - 0.05).ToList();
             if (front.Count >= 3)
                 pts = front;
@@ -449,10 +580,53 @@ namespace JoyPro.CockpitPictures
 
         // ------------------------------------------------------------------ grips
 
+        // The meshes of a grip that belong together (boxes less than 12 cm apart); the group nearest the pilot. Two
+        // yokes that move together, a left and a right throttle knob or a part far away made one tiny picture of both.
+        internal static List<int> NearestCluster(CockpitScene scene, List<int> meshes, Vec3 head)
+        {
+            if (meshes.Count < 2)
+                return meshes;
+            int n = meshes.Count;
+            Vec3[] lo = new Vec3[n], hi = new Vec3[n];
+            for (int i = 0; i < n; i++)
+                scene.Bounds(new[] { meshes[i] }, out lo[i], out hi[i]);
+            int[] group = Enumerable.Range(0, n).ToArray();
+            Func<int, int> find = null;
+            find = i => group[i] == i ? i : (group[i] = find(group[i]));
+            for (int i = 0; i < n; i++)
+            {
+                for (int k = i + 1; k < n; k++)
+                {
+                    double gx = Math.Max(0, Math.Max(lo[i].X - hi[k].X, lo[k].X - hi[i].X));
+                    double gy = Math.Max(0, Math.Max(lo[i].Y - hi[k].Y, lo[k].Y - hi[i].Y));
+                    double gz = Math.Max(0, Math.Max(lo[i].Z - hi[k].Z, lo[k].Z - hi[i].Z));
+                    if (Math.Sqrt(gx * gx + gy * gy + gz * gz) < 0.12)
+                        group[find(i)] = find(k);
+                }
+            }
+            List<List<int>> clusters = Enumerable.Range(0, n).GroupBy(find).Select(c => c.Select(i => meshes[i]).ToList()).ToList();
+            if (clusters.Count < 2)
+                return meshes;
+            return clusters.OrderBy(c =>
+            {
+                Vec3 a, b;
+                scene.Bounds(c, out a, out b);
+                return ((a + b) * 0.5 - head).Length;
+            }).First();
+        }
+
         private static CockpitViewPlan GripView(CockpitScene scene, Vec3 head, CockpitGrip g, int width)
         {
             if (g.Meshes.Count == 0)
                 return null;
+            List<int> kept = NearestCluster(scene, g.Meshes, head);
+            if (kept.Count < g.Meshes.Count)
+            {
+                Vec3 a, b;
+                scene.Bounds(kept, out a, out b);
+                Vec3 margin = new Vec3(0.08, 0.08, 0.08);
+                g = new CockpitGrip { Device = g.Device, Animation = g.Animation, Meshes = kept, Pivot = (a + b) * 0.5, Parts = g.Parts.Where(p => p.Position.X >= a.X - margin.X && p.Position.X <= b.X + margin.X && p.Position.Y >= a.Y - margin.Y && p.Position.Y <= b.Y + margin.Y && p.Position.Z >= a.Z - margin.Z && p.Position.Z <= b.Z + margin.Z).ToList() };
+            }
             Vec3 mn, mx;
             scene.Bounds(g.Meshes, out mn, out mx);
             Vec3 c = (mn + mx) * 0.5;
@@ -480,6 +654,7 @@ namespace JoyPro.CockpitPictures
             cam.FovY = 2 * Math.Atan(Math.Max(halfY, halfX / aspect) * 1.08) * 180 / Math.PI;
             cam.Near = 0.02;
             CockpitViewPlan v = new CockpitViewPlan { Id = "device:" + g.Device, Kind = "device", Device = g.Device, Title = Title(g.Device), Camera = cam, Meshes = g.Meshes };
+            v.GripControl = new CockpitCallout { Id = "grip:" + g.Device, Label = Title(g.Device), Position = g.Pivot, Kind = "grip", Device = g.Device, Animation = g.Animation };
             int n = 1;
             foreach (CockpitCallout p in g.Parts)
             {

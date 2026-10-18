@@ -793,7 +793,7 @@ namespace JoyPro.CockpitPictures
                 if ((mx - mn).Length > 1.5 || ((mn + mx) * 0.5 - head).Length > 2.5)
                     continue;
                 string device = Regex.IsMatch(g.Name, "^(joy)?stick", RegexOptions.IgnoreCase) ? "stick" : "throttle";
-                CockpitGrip cg = new CockpitGrip { Device = device, Meshes = meshes, Pivot = (mn + mx) * 0.5 };
+                CockpitGrip cg = new CockpitGrip { Device = device, Meshes = meshes, Pivot = (mn + mx) * 0.5, Animation = new ControlAnimation { Source = "animated part", Name = g.Name } };
                 if (flight.Count > 0)
                 {
                     CockpitCallout p = new CockpitCallout

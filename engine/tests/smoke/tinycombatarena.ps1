@@ -1,7 +1,7 @@
 # Tiny Combat Arena: Rewired joystick maps in Unity PlayerPrefs (HKCU\Software\TinyCombat\Arena), split over the Control
 # Mapper's map categories. Dot-sourced by engine_smoke_test.ps1 (Run-Engine, Assert-*, $tempDir, $engineDir, $engineBin).
 # The registry is the integration's fake-registry .json hook (value name -> base64 of the value bytes), built here in the
-# shape the game wrote on the dev PC (game 0.17.2.3, 2026-10-11): player "Player", one JoystickMap value plus its
+# shape the game wrote on a test PC (game 0.17.2.3, 2026-10-11): player "Player", one JoystickMap value plus its
 # KnownActionIds per device and map category (0 System, 3 Flight, 8 Weapons, 11 Camera, 4 View Select, 9 Map UI),
 # buttons with axisRange 1, a hat direction as element 160, a keyboard map, a calibration map and a DWORD setting. The
 # binds are made up; no game data is copied. Devices: tests\fixtures\nuclearoption\devices.tsv (vJoy, Smoke Stick,

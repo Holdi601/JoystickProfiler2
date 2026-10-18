@@ -1,0 +1,437 @@
+{
+  "format": "joypro-cockpit-guide",
+  "version": 1,
+  "id": "sim-bell-407",
+  "title": "Bell 407",
+  "variants": [
+    "bell-407-standard"
+  ],
+  "games": [
+    "MSFS2020",
+    "MSFS2024"
+  ],
+  "sets": [],
+  "sources": [
+    {
+      "id": "c1",
+      "title": "JoyPro cockpit catalog",
+      "kind": "reference"
+    },
+    {
+      "id": "s1",
+      "title": "Bell 407 (Wikipedia)",
+      "url": "https://en.wikipedia.org/wiki/Bell_407",
+      "kind": "web"
+    },
+    {
+      "id": "s2",
+      "title": "MSFS forums: Bell 407 Force Trim only Resets Trim to Center",
+      "url": "https://forums.flightsimulator.com/t/bell-407-force-trim-only-resets-trim-to-center/557399",
+      "kind": "web"
+    },
+    {
+      "id": "s3",
+      "title": "Fly Away Simulation: Which helicopters are included in MSFS 2020 and 2024?",
+      "url": "https://flyawaysimulation.com/ask/answers/helicopters-included-msfs-2020-2024/",
+      "kind": "web"
+    },
+    {
+      "id": "b1",
+      "title": "Bell 407 flight manual (public knowledge)",
+      "kind": "reference"
+    },
+    {
+      "id": "fn",
+      "title": "JoyPro function tables MSFS2020/2024 and X-Plane 11/12 (DB/Functions)",
+      "kind": "reference"
+    }
+  ],
+  "intro": "The Bell 407 is a light turbine helicopter for five passengers, flown from the right seat. The pilot holds the cyclic stick between the knees with the right hand, the collective lever on the left with the left hand and has pedals for the feet. An overhead panel holds the electric switches.",
+  "areas": [
+    {
+      "id": "front-center",
+      "where": "front-center",
+      "name": "Instrument panel",
+      "text": "The dashboard in front of the pilot with the dials for speed, horizon, height and the engine and rotor.",
+      "panels": [
+        {
+          "id": "instrument-panel",
+          "name": "Instrument panel",
+          "db": "instrument-panel",
+          "src": "b1",
+          "text": "This panel holds the dials the pilot watches: the flight instruments and the engine and rotor gauges. Some versions have a Garmin glass panel (G1000H) instead of dials.",
+          "context": "The pilot watches the rotor and engine gauges closely, since they show whether the helicopter has the right power.",
+          "controls": [
+            {
+              "id": "asi",
+              "name": "Airspeed indicator",
+              "type": "gauge",
+              "match": [
+                "item:instrument-panel:1"
+              ],
+              "text": "This dial shows how fast the helicopter flies through the air.",
+              "context": "The pilot checks the speed in every phase of the flight.",
+              "src": "b1"
+            },
+            {
+              "id": "ai",
+              "name": "Attitude indicator",
+              "type": "gauge",
+              "match": [
+                "item:instrument-panel:2"
+              ],
+              "text": "This dial shows the artificial horizon: whether the nose is up or down and whether the helicopter leans left or right.",
+              "context": "The pilot uses it when the real horizon cannot be seen.",
+              "src": "b1"
+            },
+            {
+              "id": "alt",
+              "name": "Altimeter",
+              "type": "gauge",
+              "match": [
+                "item:instrument-panel:3"
+              ],
+              "text": "This dial shows the height above sea level.",
+              "context": "The pilot sets the local air pressure so that the height reads right.",
+              "src": "b1"
+            },
+            {
+              "id": "tach",
+              "name": "Dual tachometer (NR / NP)",
+              "type": "gauge",
+              "match": [
+                "item:instrument-panel:4"
+              ],
+              "text": "This dial has two needles. NR shows how fast the main rotor turns and NP how fast the engine's power turbine turns. They normally stay together.",
+              "context": "The pilot keeps the rotor speed in its green range, because the rotor must turn at the right speed to fly.",
+              "src": "b1"
+            },
+            {
+              "id": "torque",
+              "name": "Torque indicator",
+              "type": "gauge",
+              "match": [
+                "item:instrument-panel:5"
+              ],
+              "text": "This dial shows how hard the engine is turning the rotor, called torque. It tells how much power the pilot uses.",
+              "context": "The pilot watches it so that the power does not go over the limit when lifting off or climbing.",
+              "src": "b1"
+            },
+            {
+              "id": "mgt",
+              "name": "MGT indicator",
+              "type": "gauge",
+              "match": [
+                "item:instrument-panel:6"
+              ],
+              "text": "This dial shows the temperature of the hot gas in the engine, the measured gas temperature.",
+              "context": "The pilot watches it during the engine start and when using high power.",
+              "src": "b1"
+            },
+            {
+              "id": "caution",
+              "name": "Caution / warning panel",
+              "type": "light",
+              "match": [
+                "item:instrument-panel:7"
+              ],
+              "text": "This board of labelled lights shows what is wrong when something fails. Each light has a word for the problem.",
+              "context": "When a light comes on, the pilot reads the label and follows the checklist.",
+              "src": "b1"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "overhead",
+      "where": "overhead",
+      "name": "Overhead panel",
+      "text": "The panel in the ceiling with the electric switches and circuit breakers.",
+      "panels": [
+        {
+          "id": "overhead-panel",
+          "name": "Overhead panel",
+          "db": "overhead-panel",
+          "src": "b1",
+          "text": "This ceiling panel holds the electric switches for the battery and generator, the engine control mode, the lights and the circuit breakers.",
+          "context": "The pilot uses it for the start-up and shutdown. In flight there is little to touch.",
+          "controls": [
+            {
+              "id": "bat-gen",
+              "name": "Battery and generator switches",
+              "type": "switch",
+              "match": [
+                "item:overhead-panel:1"
+              ],
+              "text": "These switches connect the battery and the generator to the helicopter's electric system.",
+              "context": "The pilot switches the battery on first and the generator after the engine runs.",
+              "src": "b1"
+            },
+            {
+              "id": "fadec",
+              "name": "FADEC mode switch",
+              "type": "switch2",
+              "match": [
+                "item:overhead-panel:2"
+              ],
+              "positions": [
+                {
+                  "name": "AUTO",
+                  "text": "The engine computer controls the fuel automatically."
+                },
+                {
+                  "name": "MAN",
+                  "text": "The pilot controls the engine fuel by hand."
+                }
+              ],
+              "text": "This switch picks how the engine's computer (FADEC) controls the fuel. AUTO lets the computer do it, MAN lets the pilot do it by hand.",
+              "context": "AUTO is the normal setting. MAN is a backup if the computer fails.",
+              "src": "b1"
+            },
+            {
+              "id": "lights",
+              "name": "Light switches",
+              "type": "switch",
+              "match": [
+                "item:overhead-panel:3"
+              ],
+              "text": "These switches turn on the lights of the helicopter, such as the position lights and the landing light.",
+              "context": "The pilot uses them at night and for visibility.",
+              "src": "b1"
+            },
+            {
+              "id": "breakers",
+              "name": "Circuit breakers",
+              "type": "other",
+              "match": [
+                "item:overhead-panel:4"
+              ],
+              "text": "These are rows of small buttons that pop out when too much current flows through a circuit. Pushing a button back in resets it.",
+              "context": "They protect the electric parts from damage.",
+              "src": "b1"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "pedestal",
+      "where": "center-pedestal",
+      "name": "Pedestal",
+      "text": "The console between the seats with the radios and navigation.",
+      "panels": [
+        {
+          "id": "pedestal",
+          "name": "Pedestal",
+          "db": "pedestal",
+          "src": "b1",
+          "text": "This console holds the audio panel, the radios, the transponder and the GPS.",
+          "context": "The pilot uses it to talk on the radio, set the transponder code and plan the route.",
+          "controls": [
+            {
+              "id": "audio",
+              "name": "Audio panel",
+              "type": "button",
+              "match": [
+                "item:pedestal:1"
+              ],
+              "text": "This panel chooses which radios the pilot hears and talks on.",
+              "context": "The pilot picks the right radio before speaking.",
+              "src": "b1"
+            },
+            {
+              "id": "radios",
+              "name": "NAV / COM radios",
+              "type": "keypad",
+              "match": [
+                "item:pedestal:2"
+              ],
+              "text": "These radios set the frequencies for talking to controllers and for radio navigation.",
+              "context": "The pilot types in the frequency the controller gives.",
+              "src": "b1"
+            },
+            {
+              "id": "transponder",
+              "name": "Transponder",
+              "type": "keypad",
+              "match": [
+                "item:pedestal:3"
+              ],
+              "text": "The transponder is a radio box that answers radar and tells the controllers who and where the helicopter is. The pilot types a four-digit code.",
+              "context": "The controller gives a code to enter.",
+              "src": "b1"
+            },
+            {
+              "id": "gps",
+              "name": "GPS",
+              "type": "display",
+              "match": [
+                "item:pedestal:4"
+              ],
+              "text": "This screen shows the position from the satellite navigation system and the route to fly.",
+              "context": "The pilot uses it to see where the helicopter is and which way to go.",
+              "src": "b1"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "hotas",
+      "where": "hotas",
+      "name": "Cyclic, collective and pedals",
+      "text": "The controls for the pilot's hands and feet: the cyclic, the collective with its twist grip and the pedals.",
+      "panels": [
+        {
+          "id": "grip-cyclic",
+          "name": "Cyclic",
+          "text": "The cyclic is the stick between the pilot's knees in the right seat. The pilot's right hand holds it. Buttons on the grip handle trim and radio.",
+          "context": "The pilot steers the helicopter's direction in the air with it.",
+          "controls": [
+            {
+              "id": "cyc-gimbal",
+              "name": "Cyclic",
+              "type": "other",
+              "match": [
+                "control:stick.gimbal"
+              ],
+              "text": "Moving the cyclic forward tilts the rotor so the helicopter moves forward. Moving it back goes backwards and moving it sideways goes sideways.",
+              "context": "It does not change the height. It changes the direction the helicopter moves in."
+            },
+            {
+              "id": "cyc-ftr",
+              "name": "Force trim release",
+              "type": "button",
+              "match": [
+                "control:stick.button.ftr"
+              ],
+              "text": "Pressing this button frees the cyclic from its magnet hold. When released, the cyclic stays where the pilot puts it.",
+              "context": "Force trim is a light spring that makes the cyclic hold its place. The pilot releases it to move to a new position without pushing against it."
+            },
+            {
+              "id": "cyc-trigger",
+              "name": "Radio / ICS trigger",
+              "type": "trigger",
+              "match": [
+                "control:stick.trigger"
+              ],
+              "text": "Pressing this trigger on the front of the grip makes the radio send while it is held.",
+              "context": "The pilot uses it to talk to the controller."
+            }
+          ]
+        },
+        {
+          "id": "grip-collective",
+          "name": "Collective and twist grip",
+          "text": "The collective is the lever at the left of the pilot's seat. The left hand holds it. The twist grip on it is the engine throttle, and switches and buttons sit on its top.",
+          "context": "The collective sets the lift, the twist grip the engine, and the switches the rotor speed, the starter and the landing light.",
+          "controls": [
+            {
+              "id": "coll-main",
+              "name": "Collective",
+              "type": "axis",
+              "match": [
+                "control:collective.axis.main"
+              ],
+              "text": "Pulling this lever up makes the rotor blades bite the air harder, so the helicopter climbs. Lowering it makes the helicopter sink.",
+              "context": "The pilot lifts the lever to lift off and lowers it to land."
+            },
+            {
+              "id": "coll-twist",
+              "name": "Twist-grip throttle",
+              "type": "other",
+              "match": [
+                "control:collective.axis.throttle_twist"
+              ],
+              "text": "Twisting the grip on the end of the lever sets the engine to cut-off, idle or fly. Idle is reached by releasing a button next to the grip.",
+              "context": "The pilot moves it to idle for the start and then to FLY for flight. The engine computer then runs the power."
+            },
+            {
+              "id": "coll-rpm",
+              "name": "Governor RPM switch",
+              "type": "switch3",
+              "match": [
+                "control:collective.switch.rpm"
+              ],
+              "positions": [
+                {
+                  "name": "up",
+                  "text": "Raises the rotor speed a little each time (a beep)."
+                },
+                {
+                  "name": "down",
+                  "text": "Lowers the rotor speed a little each time."
+                },
+                {
+                  "name": "centre",
+                  "text": "In the middle, no change."
+                }
+              ],
+              "text": "This switch on the collective head changes the rotor speed set by the governor, the automatic speed control. Up raises it and down lowers it.",
+              "context": "The pilot uses it to trim the rotor speed to the right value."
+            },
+            {
+              "id": "coll-starter",
+              "name": "Starter button",
+              "type": "button",
+              "match": [
+                "control:collective.button.starter"
+              ],
+              "text": "Pressing this button on the collective starts the engine.",
+              "context": "The pilot presses it once the battery is on and the controls are set for the start."
+            },
+            {
+              "id": "coll-idle-release",
+              "name": "Idle release button",
+              "type": "button",
+              "match": [
+                "control:collective.button.idle_release"
+              ],
+              "text": "This button beside the twist grip lets the grip turn below the idle position to cut-off.",
+              "context": "It is a safety stop that keeps the pilot from cutting off the engine by accident."
+            },
+            {
+              "id": "coll-light",
+              "name": "Landing light switch",
+              "type": "switch2",
+              "match": [
+                "control:collective.switch.landing_light"
+              ],
+              "positions": [
+                {
+                  "name": "on",
+                  "text": "The landing light is on."
+                },
+                {
+                  "name": "off",
+                  "text": "The landing light is off."
+                }
+              ],
+              "text": "This switch on the collective head turns the landing light on or off.",
+              "context": "The pilot uses the landing light to see the ground in the dark."
+            }
+          ]
+        },
+        {
+          "id": "grip-pedals",
+          "name": "Anti-torque pedals",
+          "text": "The two anti-torque pedals sit at the pilot's feet on the floor of the cockpit.",
+          "context": "The pilot turns the helicopter's nose left and right with them.",
+          "controls": [
+            {
+              "id": "pedals",
+              "name": "Anti-torque pedals",
+              "type": "pedal",
+              "match": [
+                "control:pedals.axis.rudder"
+              ],
+              "text": "Pushing a pedal changes the pitch of the tail rotor blades. The tail rotor is the small rotor at the back, and the pedals turn the nose left or right.",
+              "context": "The pilot uses them to keep the helicopter pointed straight and to turn it while hovering."
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

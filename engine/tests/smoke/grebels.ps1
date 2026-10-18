@@ -1,6 +1,6 @@
 # G-Rebels: axis roles edited in place in SaveOptions.sav (UE 5.8 GVAS, UE 5.4+ property tags) and button binds in
 # EnhancedInputUserSettings.sav. Dot-sourced by engine_smoke_test.ps1 (Run-Engine, Assert-*, $tempDir, $engineDir).
-# The SaveOptions.sav here is synthetic, built in the shape the game wrote on the dev PC (2026-10-11): the Blueprint
+# The SaveOptions.sav here is synthetic, built in the shape the game wrote on a test PC (2026-10-11): the Blueprint
 # class path, AxisOptions = S_Input_Axis_Save { Key (FKey: KeyName), Offset, Multiplier, Role (E_Input_Axis_Roles
 # enum name), Inverted (bool in the tag flags), DeadZone } and Joysticks = S_Controller_Save { DeviceID (HID path with
 # one NUL too many, as the game writes it), Enabled, MultiID }. The button file is the Hell Let Loose: Vietnam fixture's

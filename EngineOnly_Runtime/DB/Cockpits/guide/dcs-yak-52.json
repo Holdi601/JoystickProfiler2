@@ -1,0 +1,2780 @@
+{
+  "format": "joypro-cockpit-guide",
+  "version": 1,
+  "id": "dcs-yak-52",
+  "title": "Yak-52 (DCS)",
+  "variants": [
+    "yak-52"
+  ],
+  "games": [
+    "DCS"
+  ],
+  "sets": [
+    "DCS/Yak-52"
+  ],
+  "sources": [
+    {
+      "id": "m1",
+      "title": "DCS Yak-52 Manual (EN)",
+      "file": "Mods/aircraft/Yak-52/Doc/DCS Yak-52 Manual EN.pdf"
+    }
+  ],
+  "intro": "The Yakovlev Yak-52 is a Soviet two-seat trainer with a nine-cylinder radial engine and a propeller. The student sits in the front cabin and the instructor in the rear cabin, and both have their own stick, pedals and levers, joined by cables. The wheels, flaps and brakes work with compressed air. The engine is started with compressed air too.",
+  "areas": [
+    {
+      "id": "front-center",
+      "where": "front-center",
+      "name": "Front cabin dashboard",
+      "text": "The dashboard in front of the student is full of lights, flight dials, engine dials and the radio. The start controls and the wheels lever are here too.",
+      "panels": [
+        {
+          "id": "front-lights",
+          "name": "Warning and signal lights (front cabin)",
+          "db": "front-dashboard",
+          "src": "m1",
+          "page": "43",
+          "text": "This block of small lights on the dashboard tells the pilot about the wheels, the flaps and problems such as a generator failure or a stall. Each light has a printed text.",
+          "context": "The pilot presses the test light button before starting to see that all lights work. During flight a lit warning light means something needs attention.",
+          "controls": [
+            {
+              "id": "gear-lights",
+              "name": "Undercarriage deployed and retracted lights",
+              "type": "light",
+              "match": [
+                "item:front-dashboard:1",
+                "item:front-dashboard:2"
+              ],
+              "count": 2,
+              "text": "These two lights show where the wheels are. One lights when the wheels are down and locked and the other when they are fully up.",
+              "context": "The pilot looks at them in the circuit before landing. A green light on the deployed one means the wheels are down.",
+              "src": "m1",
+              "page": "43"
+            },
+            {
+              "id": "flaps-light",
+              "name": "Flaps status light",
+              "type": "light",
+              "match": [
+                "item:front-dashboard:24"
+              ],
+              "text": "This light shows the state of the landing flaps. Flaps are parts of the wing that move down for more lift at low speed.",
+              "context": "The pilot uses it together with the flaps lever during take-off and landing.",
+              "src": "m1",
+              "page": "44"
+            },
+            {
+              "id": "warn-lights",
+              "name": "Warning lights: FAILURE, G-limit, overturning speed, FOD IN OIL, generator, pitot",
+              "type": "light",
+              "match": [
+                "item:front-dashboard:8",
+                "item:front-dashboard:9",
+                "item:front-dashboard:10",
+                "item:front-dashboard:12",
+                "item:front-dashboard:14",
+                "item:front-dashboard:15"
+              ],
+              "count": 6,
+              "text": "These six lights warn of trouble. The manual's start-up checks name them as: stall (the FAILURE light), over-G, dangerous speed, FOD (dirt) in the oil, generator failure and pitot warm-up.",
+              "context": "The pilot checks that they all work with the test light button before the start. In flight, a lit light means that thing needs attention.",
+              "src": "m1",
+              "page": "43"
+            },
+            {
+              "id": "sensor-lights",
+              "name": "FAILURE SENSOR WARMUP and DO NOT USE GYROMAGNETIC COMPASS lights",
+              "type": "light",
+              "match": [
+                "item:front-dashboard:13",
+                "item:front-dashboard:11"
+              ],
+              "count": 2,
+              "text": "The first light says the heater of the stall warning sensor is working. The second light tells the pilot not to trust the gyromagnetic compass (a compass with a spinning gyro) while it is not ready.",
+              "context": "Both are part of the signal lights that the manual has the pilot test before the engine start.",
+              "src": "m1",
+              "page": "43"
+            },
+            {
+              "id": "lamp-test",
+              "name": "Test light button",
+              "type": "button",
+              "match": [
+                "L_CTRL_P0",
+                "item:front-dashboard:21"
+              ],
+              "text": "Pressing this button lights the signal lights so the pilot can see that none of the bulbs is burnt out.",
+              "context": "The manual has the pilot press it during the electrical checks before the engine start.",
+              "src": "m1",
+              "page": "66"
+            },
+            {
+              "id": "stall-test",
+              "name": "Stall warning test button",
+              "type": "button",
+              "match": [
+                "pnt041"
+              ],
+              "text": "This button tests the stall warning system. A stall is when the wing loses its lift because the plane flies too slowly or at too steep an angle.",
+              "context": "The pilot can press it to check the warning before flight. The game puts the button on the front dash.",
+              "src": "m1",
+              "page": "67"
+            },
+            {
+              "id": "stall-switch",
+              "name": "Stall monitor switch",
+              "type": "switch2",
+              "match": [
+                "item:front-dashboard:4"
+              ],
+              "positions": [
+                {
+                  "name": "ON",
+                  "text": "The circuit is switched on and powered."
+                },
+                {
+                  "name": "OFF",
+                  "text": "The circuit is cut and the equipment gets no power."
+                }
+              ],
+              "text": "The manual lists a stall monitor switch on the dashboard but does not describe it.",
+              "context": "It belongs to the stall warning system, together with the stall test button and the warning light.",
+              "src": "m1",
+              "page": "43"
+            },
+            {
+              "id": "elt-switch",
+              "name": "Aircraft emergency locator switch",
+              "type": "switch2",
+              "match": [
+                "item:front-dashboard:5"
+              ],
+              "positions": [
+                {
+                  "name": "ON",
+                  "text": "The circuit is switched on and powered."
+                },
+                {
+                  "name": "OFF",
+                  "text": "The circuit is cut and the equipment gets no power."
+                }
+              ],
+              "text": "The manual lists an emergency locator switch on the dashboard but does not describe it. An emergency locator is a small radio transmitter that helps rescuers find a plane after a crash.",
+              "context": "It is only named in the list of dashboard items.",
+              "src": "m1",
+              "page": "43"
+            }
+          ]
+        },
+        {
+          "id": "front-flight",
+          "name": "Flight instruments (front cabin)",
+          "db": "front-dashboard",
+          "src": "m1",
+          "page": "44",
+          "text": "These dials tell the pilot how fast, how high and in which direction the plane flies, and whether it is level, turning or climbing.",
+          "context": "The pilot looks at them all the time. The small knobs and buttons on or beside them set or test the instruments.",
+          "controls": [
+            {
+              "id": "asi",
+              "name": "US-450K airspeed indicator",
+              "type": "gauge",
+              "match": [
+                "item:front-dashboard:7"
+              ],
+              "text": "This dial shows how fast the plane moves through the air.",
+              "context": "The pilot watches it all the time. The manual gives speed limits, for example for the wheels and flaps being down.",
+              "src": "m1",
+              "page": "43"
+            },
+            {
+              "id": "accel",
+              "name": "AM-9S accelerometer and reset button",
+              "type": "gauge",
+              "match": [
+                "ACCMETER_P0",
+                "item:front-dashboard:6"
+              ],
+              "text": "This dial shows the G-force, how strongly the pilot is pressed into the seat in a turn. Pressing the button on it resets the extra marker needles.",
+              "context": "The manual has the pilot reset it before the start. The trainer's limits are 7 G positive and 5 G negative.",
+              "src": "m1",
+              "page": "61"
+            },
+            {
+              "id": "compass",
+              "name": "KI-13K magnetic compass",
+              "type": "gauge",
+              "match": [
+                "item:front-dashboard:16"
+              ],
+              "text": "This is a plain magnetic compass. It shows which way the nose points without any electricity.",
+              "context": "The pilot checks before take-off that it shows the runway heading.",
+              "src": "m1",
+              "page": "61"
+            },
+            {
+              "id": "da30",
+              "name": "DA-30 climb, turn and slip indicator",
+              "type": "gauge",
+              "match": [
+                "item:front-dashboard:17"
+              ],
+              "text": "This dial shows how fast the plane climbs or sinks, whether it is turning and whether it slides sideways.",
+              "context": "It is a main instrument for flying without sight of the horizon.",
+              "src": "m1",
+              "page": "44"
+            },
+            {
+              "id": "clock",
+              "name": "AChS-1K clock and its winding buttons",
+              "type": "gauge",
+              "match": [
+                "CLK_PINION1_P0",
+                "CLK_PINION2_P0",
+                "item:front-dashboard:27"
+              ],
+              "text": "This is the plane's clock. The two small buttons on it wind and set the hands.",
+              "context": "The manual has the pilot check the clock and set it to the exact time before the start.",
+              "src": "m1",
+              "page": "62"
+            },
+            {
+              "id": "altimeter",
+              "name": "VD-10K altimeter and pressure knob",
+              "type": "gauge",
+              "match": [
+                "ALT_MMHG_P0",
+                "item:front-dashboard:28"
+              ],
+              "text": "This dial shows how high the plane is. The knob turns the small pressure scale, so the pilot can set the air pressure of the day.",
+              "context": "Before the start the pilot sets the hands to zero. The pressure scale should match the real ground pressure.",
+              "src": "m1",
+              "page": "62"
+            },
+            {
+              "id": "ugr",
+              "name": "UGR-4UK heading indicator and its knob",
+              "type": "gauge",
+              "match": [
+                "HSI_KNOB_P0",
+                "item:front-dashboard:29"
+              ],
+              "text": "This dial shows the plane's heading from the GMK-1A gyro compass. The knob is used to set the heading mark.",
+              "context": "Before take-off the pilot sets the take-off course on it and compares it with the magnetic compass.",
+              "src": "m1",
+              "page": "81"
+            },
+            {
+              "id": "horizon",
+              "name": "AGI-1K artificial horizon with zeroing knob and cage button",
+              "type": "gauge",
+              "match": [
+                "AH_PINION_P0",
+                "AH_ARRETIR_P0",
+                "item:front-dashboard:30"
+              ],
+              "text": "This dial shows a small plane on a line standing for the horizon. It shows if the nose is up or down and the wings level. A knob zeroes it and a button locks (cages) it.",
+              "context": "The manual has the pilot press the button labelled to be pressed before start-up. After the electrical power is on, the horizon needs about a minute before it works.",
+              "src": "m1",
+              "page": "65"
+            }
+          ]
+        },
+        {
+          "id": "front-engine-instr",
+          "name": "Engine instruments (front cabin)",
+          "db": "front-dashboard",
+          "src": "m1",
+          "page": "44",
+          "text": "These dials show how the engine is doing: pressure, speed, temperatures, oil, fuel, electricity and the compressed air supply.",
+          "context": "The pilot watches them during start-up and flight to notice problems early. The manual lists limits for oil temperature, cylinder temperature and oil pressure.",
+          "controls": [
+            {
+              "id": "air-gauge",
+              "name": "2M-80K dual air pressure gauge",
+              "type": "gauge",
+              "match": [
+                "item:front-dashboard:3"
+              ],
+              "text": "This dial has two pointers. They show the air pressure in the main and in the emergency air bottle. The compressed air starts the engine and works the wheels, flaps and brakes.",
+              "context": "Before the start the manual wants at least 50 kilograms-force per square centimetre in both.",
+              "src": "m1",
+              "page": "63"
+            },
+            {
+              "id": "manifold",
+              "name": "MV-16K manifold pressure gauge",
+              "type": "gauge",
+              "match": [
+                "item:front-dashboard:25"
+              ],
+              "text": "This dial shows how hard air is pushed into the engine. More pressure means more power.",
+              "context": "The pilot reads it together with the engine speed to set the power.",
+              "src": "m1",
+              "page": "44"
+            },
+            {
+              "id": "tach",
+              "name": "ITE-1K tachometer",
+              "type": "gauge",
+              "match": [
+                "item:front-dashboard:26"
+              ],
+              "text": "This dial shows how fast the engine turns, in percent of its top speed.",
+              "context": "The manual gives engine speeds in percent, for example 41 to 44 percent for the warm-up.",
+              "src": "m1",
+              "page": "74"
+            },
+            {
+              "id": "mix-temp",
+              "name": "TUE-48K mixture temperature gauge",
+              "type": "gauge",
+              "match": [
+                "item:front-dashboard:32"
+              ],
+              "text": "This dial shows the temperature of the fuel and air mixture entering the engine.",
+              "context": "The charge heating lever on the right side changes this temperature.",
+              "src": "m1",
+              "page": "44"
+            },
+            {
+              "id": "cyl-temp",
+              "name": "TTsT-13K cylinder temperature gauge",
+              "type": "gauge",
+              "match": [
+                "item:front-dashboard:33"
+              ],
+              "text": "This dial shows how hot the engine cylinders are.",
+              "context": "The manual says the engine is warm when it reads at least 120 degrees Celsius, and gives an upper limit of 240 degrees.",
+              "src": "m1",
+              "page": "75"
+            },
+            {
+              "id": "emi",
+              "name": "EMI-3K engine gauge (oil and fuel)",
+              "type": "gauge",
+              "match": [
+                "item:front-dashboard:34"
+              ],
+              "text": "This is a three-pointer dial for the engine. It shows oil pressure, oil temperature and fuel pressure.",
+              "context": "The manual wants at least 1 kilogram-force per square centimetre of oil pressure within 15 to 20 seconds after the start.",
+              "src": "m1",
+              "page": "73"
+            },
+            {
+              "id": "fuel-gauge",
+              "name": "IUT-3-1 fuel gauge with test button and dimmer",
+              "type": "gauge",
+              "match": [
+                "FUEL_CONTROL_P0",
+                "FUEL_DIMMER_P0",
+                "item:front-dashboard:35"
+              ],
+              "text": "This gauge shows how much fuel is in the wing tanks. A button on it tests the warning lights and a small switch dims its light.",
+              "context": "The manual has the pilot check the real fuel quantity and press the control button before the start.",
+              "src": "m1",
+              "page": "68"
+            },
+            {
+              "id": "voltmeter",
+              "name": "VA-2K voltammeter and its button",
+              "type": "gauge",
+              "match": [
+                "VA_KNOB_P0",
+                "item:front-dashboard:18"
+              ],
+              "text": "This dial shows the electric current and, when the button is pressed, the voltage of the plane's electric system.",
+              "context": "The manual wants at least 24 volts on the battery before the engine start. Over 30 amperes of charging means the battery should be switched off.",
+              "src": "m1",
+              "page": "65"
+            }
+          ]
+        },
+        {
+          "id": "front-start",
+          "name": "Engine start controls",
+          "db": "front-dashboard",
+          "src": "m1",
+          "page": "43",
+          "text": "These controls prime and start the engine. The Yak-52 has no electric starter motor. Compressed air spins the engine for the start.",
+          "context": "For a start the pilot primes the engine, presses and holds the start button for a few seconds, then switches on the magnetos. The manual gives the whole procedure on pages 69 to 74.",
+          "controls": [
+            {
+              "id": "primer-pump",
+              "name": "Priming pump (filler syringe)",
+              "type": "handle",
+              "match": [
+                "PRIMER_P0",
+                "item:front-dashboard:19"
+              ],
+              "text": "This is a hand pump on the dashboard. The pilot pulls it back and pushes it in to push fuel into the engine for the start. Pulled back, it fills with fuel first.",
+              "context": "The manual has 5 to 6 strokes in summer and 8 to 12 in winter. After the start the pilot closes its handle.",
+              "src": "m1",
+              "page": "31"
+            },
+            {
+              "id": "primer-mode",
+              "name": "Primer mode selector",
+              "type": "selector",
+              "match": [
+                "PRIMER_P0_S",
+                "PRIMER_P0_0",
+                "PRIMER_P0_P"
+              ],
+              "positions": [
+                {
+                  "name": "pipeline fill",
+                  "text": "The pump fills the fuel line and raises the fuel pressure in front of the carburettor."
+                },
+                {
+                  "name": "OFF",
+                  "text": "The primer is off."
+                },
+                {
+                  "name": "cylinder primer",
+                  "text": "The pump injects fuel into the engine cylinders."
+                }
+              ],
+              "text": "This selector decides where the pumped fuel goes: into the fuel line, into the engine's cylinders, or nowhere.",
+              "context": "The pilot sets it to cylinder priming while the propeller is turned, and to pipeline filling to raise the fuel pressure before the start.",
+              "src": "m1",
+              "page": "71"
+            },
+            {
+              "id": "magneto",
+              "name": "PM-1 magneto switch",
+              "type": "selector",
+              "match": [
+                "MAGNETO_P0",
+                "MAGNETO_P0_3",
+                "MAGNETO_P0_2",
+                "MAGNETO_P0_1",
+                "MAGNETO_P0_0",
+                "item:front-dashboard:20"
+              ],
+              "positions": [
+                {
+                  "name": "0",
+                  "text": "Both magnetos are off and the engine has no sparks."
+                },
+                {
+                  "name": "1",
+                  "text": "Only magneto 1 works."
+                },
+                {
+                  "name": "2",
+                  "text": "Only magneto 2 works."
+                },
+                {
+                  "name": "1+2",
+                  "text": "Both magnetos work. This is the normal position for starting and flying."
+                }
+              ],
+              "text": "This switch decides which of the engine's two magnetos work. A magneto is a small generator that makes the sparks that light the fuel in the engine.",
+              "context": "It is off for the start-up and switched to 1+2 after the propeller has turned a few times. Off again to stop the engine.",
+              "src": "m1",
+              "page": "73"
+            },
+            {
+              "id": "start-cover",
+              "name": "Start button cover",
+              "type": "cover",
+              "match": [
+                "STARTER_COVER_P0"
+              ],
+              "text": "This is a small flip-up cover over the engine start button. It stops the button from being pressed by accident.",
+              "context": "The manual says to flip the cover open before pressing the start button.",
+              "src": "m1",
+              "page": "73"
+            },
+            {
+              "id": "start-button",
+              "name": "Engine start button",
+              "type": "button",
+              "match": [
+                "STARTER_P0",
+                "item:front-dashboard:23"
+              ],
+              "text": "Pressing this button sends compressed air into the engine so it turns over. The pilot holds it down for about 3 to 5 seconds.",
+              "context": "The pilot keeps holding it, switches on the magnetos after 3 to 5 turns, and releases it once the engine runs steadily.",
+              "src": "m1",
+              "page": "73"
+            }
+          ]
+        },
+        {
+          "id": "front-gear",
+          "name": "Landing gear lever and lock, emergency valve",
+          "db": "front-dashboard",
+          "src": "m1",
+          "page": "45",
+          "text": "These controls raise and lower the wheels. The lever sends compressed air to the wheel mechanism. A lock stops it from being moved by accident. An emergency valve lowers the wheels if the normal system fails.",
+          "context": "The wheels go up after take-off and down before landing. The instructor's lever in the rear cabin can overrule the front one.",
+          "controls": [
+            {
+              "id": "uc-lever",
+              "name": "Undercarriage lever",
+              "type": "lever",
+              "match": [
+                "UC_P0",
+                "item:front-dashboard:22"
+              ],
+              "positions": [
+                {
+                  "name": "UP",
+                  "text": "The wheels are retracted."
+                },
+                {
+                  "name": "DOWN",
+                  "text": "The wheels are extended."
+                }
+              ],
+              "text": "This lever moves the wheels up or down. Compressed air then pushes them. The lever has an UP and a DOWN position and sits in neutral in between.",
+              "context": "The manual says the rear cabin's valve is the command valve: if its handle is not neutral, the front one is cut off.",
+              "src": "m1",
+              "page": "30"
+            },
+            {
+              "id": "uc-lock",
+              "name": "Undercarriage lever lock",
+              "type": "switch2",
+              "match": [
+                "UC_LOCK_P0"
+              ],
+              "positions": [
+                {
+                  "name": "Locked",
+                  "text": "The lever is locked in its position."
+                },
+                {
+                  "name": "Unlocked",
+                  "text": "The lever can be moved."
+                }
+              ],
+              "text": "This small lock holds the undercarriage lever in place so it cannot be moved by mistake.",
+              "context": "The manual has the pilot ensure the lever is in the deployed position and locked before the start.",
+              "src": "m1",
+              "page": "59"
+            },
+            {
+              "id": "emerg-valve",
+              "name": "Emergency undercarriage valve",
+              "type": "knob",
+              "match": [
+                "EMER_VALVE_P0",
+                "item:front-right-side:9"
+              ],
+              "text": "This valve lowers the wheels with air from the emergency air bottle when the normal air system fails. The game calls it Emergency valve.",
+              "context": "The manual says the emergency air bottle also provides brake air in that case.",
+              "src": "m1",
+              "page": "31"
+            }
+          ]
+        },
+        {
+          "id": "front-radio",
+          "name": "Landysh 5 VHF radio and SPU-9 intercom",
+          "db": "front-dashboard",
+          "src": "m1",
+          "page": "44",
+          "text": "The VHF radio is for talking to other aircraft and the ground. The intercom is the phone line between the two seats. Both are controlled from small panels.",
+          "context": "The radio needs about two minutes after being switched on. The push-to-talk buttons are on the throttle lever.",
+          "controls": [
+            {
+              "id": "radio-vol",
+              "name": "Radio volume knob",
+              "type": "knob",
+              "match": [
+                "RADIO_P0_VOL"
+              ],
+              "text": "Turning this knob makes the radio louder or quieter.",
+              "context": "The manual has the pilot set it to the maximum before the start.",
+              "src": "m1",
+              "page": "62"
+            },
+            {
+              "id": "radio-sq",
+              "name": "Radio squelch switch (noise suppressor)",
+              "type": "switch2",
+              "match": [
+                "RADIO_P0_SQ"
+              ],
+              "positions": [
+                {
+                  "name": "ON",
+                  "text": "The hiss between messages is suppressed."
+                },
+                {
+                  "name": "OFF",
+                  "text": "The hiss between messages is heard."
+                }
+              ],
+              "text": "This switch cuts the hiss of the radio when nobody talks.",
+              "context": "The manual has the pilot set it off (down) and the volume to maximum while checking the radio.",
+              "src": "m1",
+              "page": "62"
+            },
+            {
+              "id": "radio-mhz",
+              "name": "Radio frequency MHz knob",
+              "type": "switch",
+              "match": [
+                "RADIO_P0_HRKNOB"
+              ],
+              "positions": [
+                {
+                  "name": "-",
+                  "text": "Lowers the megahertz setting by one step."
+                },
+                {
+                  "name": "+",
+                  "text": "Raises the megahertz setting by one step."
+                }
+              ],
+              "text": "This knob changes the whole-number part of the radio frequency, the megahertz.",
+              "context": "The frequency is the station number the radio talks on. The other side must use the same frequency.",
+              "src": "m1",
+              "page": "175"
+            },
+            {
+              "id": "radio-khz",
+              "name": "Radio frequency kHz knob",
+              "type": "switch",
+              "match": [
+                "RADIO_P0_LRKNOB"
+              ],
+              "positions": [
+                {
+                  "name": "-",
+                  "text": "Lowers the kilohertz setting by one step."
+                },
+                {
+                  "name": "+",
+                  "text": "Raises the kilohertz setting by one step."
+                }
+              ],
+              "text": "This knob changes the fine part of the radio frequency, the kilohertz.",
+              "context": "It is turned after the megahertz knob, to hit the exact frequency.",
+              "src": "m1",
+              "page": "175"
+            },
+            {
+              "id": "landysh",
+              "name": "Landysh 5 radio control panel",
+              "type": "other",
+              "match": [
+                "item:front-dashboard:36"
+              ],
+              "text": "This is the whole control panel of the VHF radio with its knobs. The manual calls it the LANDYSH 5 radio-station control panel.",
+              "context": "The knobs on it are listed as separate entries.",
+              "src": "m1",
+              "page": "175"
+            },
+            {
+              "id": "int-vol",
+              "name": "Intercom volume knob",
+              "type": "knob",
+              "match": [
+                "INTERCOM_P0_RH1"
+              ],
+              "text": "This knob sets how loud the intercom is, the voice line between the two seats.",
+              "context": "It is on the SPU-9 intercom panel.",
+              "src": "m1",
+              "page": "44"
+            },
+            {
+              "id": "int-radio-vol",
+              "name": "Radio volume knob (intercom panel)",
+              "type": "knob",
+              "match": [
+                "INTERCOM_P0_RH2"
+              ],
+              "text": "The game calls this knob the radio volume knob on the intercom panel. It sets how loud the radio is in the headset.",
+              "context": "It works together with the radio volume knob on the radio panel.",
+              "src": "m1",
+              "page": "44"
+            },
+            {
+              "id": "int-stby",
+              "name": "Intercom STBY/distributive switch",
+              "type": "switch2",
+              "match": [
+                "INTERCOM_P0_S1"
+              ],
+              "positions": [
+                {
+                  "name": "Up",
+                  "text": "The upper position of the switch."
+                },
+                {
+                  "name": "Down",
+                  "text": "The lower position of the switch."
+                }
+              ],
+              "text": "The game labels this switch as the intercom stand-by / distributive switch. The manual does not describe it.",
+              "context": "It is on the SPU-9 intercom panel.",
+              "src": "m1",
+              "page": "44"
+            },
+            {
+              "id": "int-rdf",
+              "name": "Intercom RC-OFF switch (radio compass sound)",
+              "type": "switch2",
+              "match": [
+                "INTERCOM_P0_S2"
+              ],
+              "positions": [
+                {
+                  "name": "RC",
+                  "text": "The radio compass is connected to the headset."
+                },
+                {
+                  "name": "Off",
+                  "text": "The radio compass sound is off."
+                }
+              ],
+              "text": "This switch on the intercom panel lets the pilot hear the radio compass in the headset or switches it off. The manual calls it the RC-Off switch.",
+              "context": "The manual has the pilot set it to Off at the end of the radio compass check.",
+              "src": "m1",
+              "page": "80"
+            },
+            {
+              "id": "spu9",
+              "name": "SPU-9 intercom panel",
+              "type": "other",
+              "match": [
+                "item:front-dashboard:38"
+              ],
+              "text": "This is the whole intercom panel, the voice line between the two seats.",
+              "context": "The knobs and switches on it are listed as separate entries.",
+              "src": "m1",
+              "page": "44"
+            }
+          ]
+        },
+        {
+          "id": "front-canopy",
+          "name": "Canopy catches (front cabin)",
+          "src": "m1",
+          "page": "20",
+          "text": "The canopy is the clear roof of the cabin. It slides back on rails and is held shut by locks. The game has three clickable catches in the front cabin: one at the back and one on each side.",
+          "context": "The pilot opens it on the ground and closes it before taxiing. The manual says to check before the start that the sliding part opens and closes easily and the locks work.",
+          "controls": [
+            {
+              "id": "f-hatches",
+              "name": "Canopy hatch catches (front)",
+              "type": "button",
+              "match": [
+                "HATCH_B_P0",
+                "HATCH_L_P0",
+                "HATCH_R_P0"
+              ],
+              "count": 3,
+              "text": "Each of these handles releases or locks the sliding canopy. The pilot can also pull a ball over the head to release the lock from inside.",
+              "context": "From outside, the lock is opened by pressing its outer lever.",
+              "src": "m1",
+              "page": "20"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "left-console",
+      "where": "left-console",
+      "name": "Front cabin left side",
+      "text": "The left wall carries the engine levers, the flaps lever, the trim wheel and a row of circuit breaker switches. The hand on the throttle also holds the radio buttons.",
+      "panels": [
+        {
+          "id": "front-engine-levers",
+          "name": "Throttle, propeller and fuel lever",
+          "db": "front-left-side",
+          "src": "m1",
+          "page": "44",
+          "text": "These levers on the left wall control the engine. The throttle sets the power, the propeller lever sets the engine speed and the fuel lever opens or shuts the fuel.",
+          "context": "The left hand works them all the time. Pushed forward each one gives more power, finer propeller pitch, or opens the fuel; pulled back they do the opposite.",
+          "controls": [
+            {
+              "id": "throttle",
+              "name": "Throttle lever with VHF and intercom buttons",
+              "type": "lever",
+              "match": [
+                "THTL_P0",
+                "item:front-left-side:7",
+                "control:throttle.axis.main"
+              ],
+              "text": "Pushing this lever forward makes the engine stronger and pulling it back makes it weaker, like the gas pedal of a car. Pulled all the way back it stops the engine. The radio and intercom buttons sit on it.",
+              "context": "The manual puts the throttle at about one third for the start. The lever has a friction setting to hold it in place.",
+              "src": "m1",
+              "page": "69"
+            },
+            {
+              "id": "prop",
+              "name": "Propeller pitch lever (RPM)",
+              "type": "lever",
+              "match": [
+                "PROP_P0",
+                "item:front-left-side:5",
+                "control:throttle.lever.prop"
+              ],
+              "text": "This lever sets the engine speed through the angle of the propeller blades. Forward is a fine angle and a high engine speed. Pulled back is a coarse angle and a lower speed.",
+              "context": "The manual sets it to fine pitch (forward) for the start. A governor then keeps the set speed.",
+              "src": "m1",
+              "page": "69"
+            },
+            {
+              "id": "ptt-vhf",
+              "name": "VHF radio push-to-talk button",
+              "type": "button",
+              "match": [
+                "RADIO_TX_P0",
+                "control:throttle.hat.mic"
+              ],
+              "text": "While this button on the throttle lever is pressed, the pilot talks on the VHF radio.",
+              "context": "The radio must be switched on at its breaker.",
+              "src": "m1",
+              "page": "44"
+            },
+            {
+              "id": "ptt-int",
+              "name": "Intercom push-to-talk button",
+              "type": "button",
+              "match": [
+                "INTERCOM_TX_P0",
+                "control:throttle.button.intercom"
+              ],
+              "text": "While this second button on the throttle lever is pressed, the pilot talks on the intercom to the other seat.",
+              "context": "The instructor and the student use the intercom to speak without the radio.",
+              "src": "m1",
+              "page": "44"
+            },
+            {
+              "id": "friction",
+              "name": "Lock lever (friction of the left levers)",
+              "type": "knob",
+              "match": [
+                "FRIC_P0",
+                "item:front-left-side:6"
+              ],
+              "text": "This lever makes the throttle and propeller levers stiffer or looser. Tight, it holds them where the pilot set them.",
+              "context": "The manual says brake friction levers regulate the force needed to move the levers or fix them in place.",
+              "src": "m1",
+              "page": "38"
+            },
+            {
+              "id": "fuel-cock",
+              "name": "Fuel emergency shut-off cock lever",
+              "type": "lever",
+              "match": [
+                "FUEL_COCK_P0",
+                "item:front-left-side:8"
+              ],
+              "text": "This lever opens or closes the fuel tap to the engine. It also works as the fire cock for emergencies.",
+              "context": "The manual sets it open (all the way forward, away from the pilot) before the start, and shuts it when stopping the engine.",
+              "src": "m1",
+              "page": "64"
+            }
+          ]
+        },
+        {
+          "id": "front-flaps-trim",
+          "name": "Flaps lever, trim wheel and air system valve",
+          "db": "front-left-side",
+          "src": "m1",
+          "page": "44",
+          "text": "The flaps lever moves the flaps. The trim wheel sets the elevator trim. The air valve opens the compressed air to the plane's systems.",
+          "context": "The flaps are used for take-off and landing. The trim is used to hold the plane level without pushing the stick. The air valve is opened before the start.",
+          "controls": [
+            {
+              "id": "flaps",
+              "name": "Landing flaps lever",
+              "type": "lever",
+              "match": [
+                "FLAPS_P0",
+                "item:front-left-side:4",
+                "control:throttle.lever.flaps"
+              ],
+              "positions": [
+                {
+                  "name": "Down",
+                  "text": "The flaps move down."
+                },
+                {
+                  "name": "Neutral",
+                  "text": "The lever is at rest and no air flows to the flaps."
+                },
+                {
+                  "name": "Up",
+                  "text": "The flaps move up."
+                }
+              ],
+              "text": "This lever lowers and raises the landing flaps with compressed air. Flaps are parts of the wing that move down to give more lift at low speed. The lever has a neutral middle position.",
+              "context": "The manual sets it to neutral before the start. The flaps go down to 45 degrees.",
+              "src": "m1",
+              "page": "26"
+            },
+            {
+              "id": "trim",
+              "name": "Trimmer hand wheel (elevator trim)",
+              "type": "wheel",
+              "match": [
+                "TRIM_WHEEL_P0",
+                "item:front-left-side:3",
+                "control:throttle.wheel.elevator_trim"
+              ],
+              "text": "This wheel sets the elevator trim. Trim means a small adjustment so the plane flies level without the pilot holding the stick.",
+              "context": "The wheel moves a trimmer of up to 12 degrees. The rear cabin wheel is joined to it by cables.",
+              "src": "m1",
+              "page": "26"
+            },
+            {
+              "id": "air-valve",
+              "name": "Air system valve",
+              "type": "knob",
+              "match": [
+                "PNEM_VALVE_P0",
+                "item:front-left-side:1"
+              ],
+              "text": "This valve opens the compressed air supply to the plane's air system. The air is used for the engine start, the wheels, the flaps and the brakes.",
+              "context": "The manual has the pilot open it and then check the air pressure in both bottles.",
+              "src": "m1",
+              "page": "63"
+            }
+          ]
+        },
+        {
+          "id": "front-breakers-left",
+          "name": "Circuit breaker switchboard (left panel)",
+          "db": "front-left-side",
+          "src": "m1",
+          "page": "44",
+          "text": "These circuit breaker switches on the left side power the radio, the intercom, the instruments and the navigation equipment.",
+          "context": "The manual has the pilot switch these on during the electrical checks and off again at the end.",
+          "controls": [
+            {
+              "id": "cb-radio",
+              "name": "RADIO circuit breaker",
+              "type": "switch2",
+              "match": [
+                "CB_RADIO_P0",
+                "item:front-left-side:2"
+              ],
+              "positions": [
+                {
+                  "name": "ON",
+                  "text": "The circuit is switched on and powered."
+                },
+                {
+                  "name": "OFF",
+                  "text": "The circuit is cut and the equipment gets no power."
+                }
+              ],
+              "text": "This is a circuit breaker switch (a safety switch that cuts power when something draws too much). It powers the VHF radio.",
+              "context": "The radio is ready about two minutes after this is switched on.",
+              "src": "m1",
+              "page": "66"
+            },
+            {
+              "id": "cb-intercom",
+              "name": "INTERCOM circuit breaker",
+              "type": "switch2",
+              "match": [
+                "CB_INTERCOM_P0"
+              ],
+              "positions": [
+                {
+                  "name": "ON",
+                  "text": "The circuit is switched on and powered."
+                },
+                {
+                  "name": "OFF",
+                  "text": "The circuit is cut and the equipment gets no power."
+                }
+              ],
+              "text": "This is a circuit breaker switch (a safety switch that cuts power when something draws too much). It powers the intercom, the voice line between the seats.",
+              "context": "It is switched on together with the radio.",
+              "src": "m1",
+              "page": "66"
+            },
+            {
+              "id": "cb-uc",
+              "name": "UNDERCARRIAGE INDICATION circuit breaker",
+              "type": "switch2",
+              "match": [
+                "CB_UC_P0"
+              ],
+              "positions": [
+                {
+                  "name": "ON",
+                  "text": "The circuit is switched on and powered."
+                },
+                {
+                  "name": "OFF",
+                  "text": "The circuit is cut and the equipment gets no power."
+                }
+              ],
+              "text": "This is a circuit breaker switch (a safety switch that cuts power when something draws too much). It powers the lights that show the position of the wheels.",
+              "context": "The manual has it switched on before the engine start for the undercarriage signal lights.",
+              "src": "m1",
+              "page": "66"
+            },
+            {
+              "id": "cb-pag1",
+              "name": "PAG-1 converter circuit breaker",
+              "type": "switch2",
+              "match": [
+                "CB_UMFORMER2_P0"
+              ],
+              "positions": [
+                {
+                  "name": "ON",
+                  "text": "The circuit is switched on and powered."
+                },
+                {
+                  "name": "OFF",
+                  "text": "The circuit is cut and the equipment gets no power."
+                }
+              ],
+              "text": "This is a circuit breaker switch (a safety switch that cuts power when something draws too much). The game calls this one cb pag1. The manual does not describe it.",
+              "context": "It sits with the other breakers on the left panel.",
+              "src": "m1",
+              "page": "66"
+            },
+            {
+              "id": "cb-pt200",
+              "name": "PT-200 converter circuit breaker",
+              "type": "switch2",
+              "match": [
+                "CB_UMFORMER1_P0"
+              ],
+              "positions": [
+                {
+                  "name": "ON",
+                  "text": "The circuit is switched on and powered."
+                },
+                {
+                  "name": "OFF",
+                  "text": "The circuit is cut and the equipment gets no power."
+                }
+              ],
+              "text": "This is a circuit breaker switch (a safety switch that cuts power when something draws too much). The game calls this one cb pt200. The manual has the pilot switch on the PT-200 breaker together with the gyromagnetic compass.",
+              "context": "The artificial horizon and compass checks start with it.",
+              "src": "m1",
+              "page": "65"
+            },
+            {
+              "id": "cb-sdg",
+              "name": "SDG (heading system) circuit breaker",
+              "type": "switch2",
+              "match": [
+                "CB_SDG_P0"
+              ],
+              "positions": [
+                {
+                  "name": "ON",
+                  "text": "The circuit is switched on and powered."
+                },
+                {
+                  "name": "OFF",
+                  "text": "The circuit is cut and the equipment gets no power."
+                }
+              ],
+              "text": "This is a circuit breaker switch (a safety switch that cuts power when something draws too much). The game calls this one cb sdg. It sits beside the controls of the heading system.",
+              "context": "The manual has the gyromagnetic compass switched on before the start.",
+              "src": "m1",
+              "page": "65"
+            },
+            {
+              "id": "cb-einstr",
+              "name": "ENGINE INSTRUMENTATION circuit breaker",
+              "type": "switch2",
+              "match": [
+                "CB_E_INSTR_P0"
+              ],
+              "positions": [
+                {
+                  "name": "ON",
+                  "text": "The circuit is switched on and powered."
+                },
+                {
+                  "name": "OFF",
+                  "text": "The circuit is cut and the equipment gets no power."
+                }
+              ],
+              "text": "This is a circuit breaker switch (a safety switch that cuts power when something draws too much). It powers the electric engine gauges.",
+              "context": "The manual has it switched on before the engine start.",
+              "src": "m1",
+              "page": "71"
+            },
+            {
+              "id": "cb-rdf",
+              "name": "RADIO COMPASS (ADF) circuit breaker",
+              "type": "switch2",
+              "match": [
+                "CB_RDF_P0"
+              ],
+              "positions": [
+                {
+                  "name": "ON",
+                  "text": "The circuit is switched on and powered."
+                },
+                {
+                  "name": "OFF",
+                  "text": "The circuit is cut and the equipment gets no power."
+                }
+              ],
+              "text": "This is a circuit breaker switch (a safety switch that cuts power when something draws too much). It powers the radio compass, the instrument that points to a radio beacon.",
+              "context": "The manual has it switched on before testing the radio compass.",
+              "src": "m1",
+              "page": "77"
+            },
+            {
+              "id": "cb-adf",
+              "name": "ADF marker circuit breaker",
+              "type": "switch2",
+              "match": [
+                "CB_ADF_P0"
+              ],
+              "positions": [
+                {
+                  "name": "ON",
+                  "text": "The circuit is switched on and powered."
+                },
+                {
+                  "name": "OFF",
+                  "text": "The circuit is cut and the equipment gets no power."
+                }
+              ],
+              "text": "This is a circuit breaker switch (a safety switch that cuts power when something draws too much). The game calls this one cb adf marker. The manual does not describe it.",
+              "context": "It belongs to the radio compass equipment.",
+              "src": "m1",
+              "page": "77"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "right-console",
+      "where": "right-console",
+      "name": "Front cabin right side",
+      "text": "The right wall has the levers for engine cooling and heating, the switches for oil dilution and sensors, the radio compass and heading system panels and the circuit breakers.",
+      "panels": [
+        {
+          "id": "front-breakers-right",
+          "name": "Circuit breaker switchboard (right panel)",
+          "db": "front-dashboard",
+          "src": "m1",
+          "page": "59",
+          "text": "This board of switches on the right holds the circuit breakers for the main electrical systems: battery, generator, ignition and the heaters. Each switch powers one system.",
+          "context": "The manual has the pilot start with all breakers off and then switch on the ones needed. The ones for the pitot and stall heaters are only needed in the cold.",
+          "controls": [
+            {
+              "id": "cb-battery",
+              "name": "BATTERY circuit breaker",
+              "type": "switch2",
+              "match": [
+                "CB_BATTERY_P0",
+                "item:front-dashboard:37"
+              ],
+              "positions": [
+                {
+                  "name": "ON",
+                  "text": "The circuit is switched on and powered."
+                },
+                {
+                  "name": "OFF",
+                  "text": "The circuit is cut and the equipment gets no power."
+                }
+              ],
+              "text": "This is a circuit breaker switch (a safety switch that cuts power when something draws too much). It connects the battery to the plane's electric system.",
+              "context": "The pilot switches it on early and off when leaving the plane.",
+              "src": "m1",
+              "page": "59"
+            },
+            {
+              "id": "cb-generator",
+              "name": "GENERATOR circuit breaker",
+              "type": "switch2",
+              "match": [
+                "CB_GENERATOR_P0"
+              ],
+              "positions": [
+                {
+                  "name": "ON",
+                  "text": "The circuit is switched on and powered."
+                },
+                {
+                  "name": "OFF",
+                  "text": "The circuit is cut and the equipment gets no power."
+                }
+              ],
+              "text": "This is a circuit breaker switch (a safety switch that cuts power when something draws too much). It connects the generator, which makes electricity while the engine runs.",
+              "context": "A generator failure light on the dashboard warns when it stops.",
+              "src": "m1",
+              "page": "59"
+            },
+            {
+              "id": "cb-ignition",
+              "name": "IGNITION circuit breaker",
+              "type": "switch2",
+              "match": [
+                "CB_IGNITION_P0"
+              ],
+              "positions": [
+                {
+                  "name": "ON",
+                  "text": "The circuit is switched on and powered."
+                },
+                {
+                  "name": "OFF",
+                  "text": "The circuit is cut and the equipment gets no power."
+                }
+              ],
+              "text": "This is a circuit breaker switch (a safety switch that cuts power when something draws too much). It gives power to the ignition system.",
+              "context": "The ignition switch in the rear cabin works in the same system.",
+              "src": "m1",
+              "page": "59"
+            },
+            {
+              "id": "cb-pitot",
+              "name": "PITOT heating circuit breaker",
+              "type": "switch2",
+              "match": [
+                "CB_PITOT_P0"
+              ],
+              "positions": [
+                {
+                  "name": "ON",
+                  "text": "The circuit is switched on and powered."
+                },
+                {
+                  "name": "OFF",
+                  "text": "The circuit is cut and the equipment gets no power."
+                }
+              ],
+              "text": "This is a circuit breaker switch (a safety switch that cuts power when something draws too much). It powers the heater of the pitot tube, the small tube outside that measures speed.",
+              "context": "The manual says to switch it on in subzero cold before taxiing, so the tube does not ice up.",
+              "src": "m1",
+              "page": "81"
+            },
+            {
+              "id": "cb-oildil",
+              "name": "OIL DILUTION breaker button",
+              "type": "button",
+              "match": [
+                "CB_OILDIL_P0"
+              ],
+              "text": "The game labels this button the oil dilution circuit breaker. Oil dilution means thinning cold oil with a little fuel, to make a cold start easier.",
+              "context": "The manual lists an oil dilution tumbler switch on the right panel and describes the dilution system for subzero use.",
+              "src": "m1",
+              "page": "45"
+            },
+            {
+              "id": "cb-stall",
+              "name": "STALL warning circuit breaker",
+              "type": "switch2",
+              "match": [
+                "CB_STALL_P0"
+              ],
+              "positions": [
+                {
+                  "name": "ON",
+                  "text": "The circuit is switched on and powered."
+                },
+                {
+                  "name": "OFF",
+                  "text": "The circuit is cut and the equipment gets no power."
+                }
+              ],
+              "text": "This is a circuit breaker switch (a safety switch that cuts power when something draws too much). It powers the stall warning system. A stall is when the wing loses its lift.",
+              "context": "The manual has the pilot switch it on to test the stall warning lights.",
+              "src": "m1",
+              "page": "81"
+            },
+            {
+              "id": "cb-eheat",
+              "name": "STALL warning heater circuit breaker",
+              "type": "switch2",
+              "match": [
+                "CB_E_HEAT_P0"
+              ],
+              "positions": [
+                {
+                  "name": "ON",
+                  "text": "The circuit is switched on and powered."
+                },
+                {
+                  "name": "OFF",
+                  "text": "The circuit is cut and the equipment gets no power."
+                }
+              ],
+              "text": "This is a circuit breaker switch (a safety switch that cuts power when something draws too much). It powers the heater of the stall warning sensor.",
+              "context": "It is switched on in the cold, like the pitot heater.",
+              "src": "m1",
+              "page": "81"
+            }
+          ]
+        },
+        {
+          "id": "front-cooling",
+          "name": "Engine cooling and heating levers",
+          "db": "front-right-side",
+          "src": "m1",
+          "page": "45",
+          "text": "These levers open or close the air doors and flaps that cool the engine or heat the incoming air.",
+          "context": "In the cold, doors are kept closed so the engine warms up quickly. After warming up, the pilot opens them as needed.",
+          "controls": [
+            {
+              "id": "louvres",
+              "name": "Louvre shutter control lever (cowling shutters)",
+              "type": "lever",
+              "match": [
+                "WRADIATOR_P0",
+                "item:front-right-side:6"
+              ],
+              "text": "This lever opens and closes the shutters in front of the engine. Open shutters let more cooling air through.",
+              "context": "The manual says to keep the nose shutters closed in winter to speed up the warm-up. The game calls it cooling louvers.",
+              "src": "m1",
+              "page": "36"
+            },
+            {
+              "id": "oil-door",
+              "name": "Oil-cooler half-door control lever",
+              "type": "lever",
+              "match": [
+                "ORADIATOR_P0",
+                "item:front-right-side:5"
+              ],
+              "text": "This lever opens and closes the door of the oil cooler. The oil cooler cools the engine oil.",
+              "context": "It is kept closed for the winter warm-up and opened as the oil gets warm.",
+              "src": "m1",
+              "page": "34"
+            },
+            {
+              "id": "mix-heat",
+              "name": "Charge heating control lever",
+              "type": "switch2",
+              "match": [
+                "MIXHEAT_P0",
+                "item:front-right-side:7"
+              ],
+              "positions": [
+                {
+                  "name": "ON",
+                  "text": "Warm air goes to the carburettor."
+                },
+                {
+                  "name": "OFF",
+                  "text": "Cold outside air goes to the carburettor."
+                }
+              ],
+              "text": "This lever heats the air that goes to the carburettor, the part that mixes fuel and air. Heated air stops ice in the cold.",
+              "context": "The manual says to switch on the carburettor air heating if the air temperature is below zero, by pulling back the lever.",
+              "src": "m1",
+              "page": "70"
+            },
+            {
+              "id": "lock-right",
+              "name": "Lock lever (friction of the right levers)",
+              "type": "knob",
+              "match": [
+                "FRIC_RH_P0",
+                "item:front-right-side:4"
+              ],
+              "text": "This lever on the right wall makes the cooling levers stiffer or looser so they stay where the pilot set them.",
+              "context": "The game calls it right friction.",
+              "src": "m1",
+              "page": "38"
+            },
+            {
+              "id": "vent",
+              "name": "Ventilation control lever",
+              "type": "lever",
+              "match": [
+                "item:front-right-side:8"
+              ],
+              "text": "The manual lists a ventilation control lever on the right panel but does not describe it. Ventilation brings fresh air into the cabin.",
+              "context": "It is only named in the list of right panel items.",
+              "src": "m1",
+              "page": "45"
+            }
+          ]
+        },
+        {
+          "id": "front-switches-right",
+          "name": "Oil dilution and sensor switches",
+          "db": "front-right-side",
+          "src": "m1",
+          "page": "45",
+          "text": "These three switches on the right panel are for the oil dilution and the sensor of the stall warning system.",
+          "context": "They are only needed in cold weather. The manual does not describe the switches.",
+          "controls": [
+            {
+              "id": "oildil-sw",
+              "name": "Oil dilution tumbler",
+              "type": "switch2",
+              "match": [
+                "item:front-right-side:1"
+              ],
+              "positions": [
+                {
+                  "name": "ON",
+                  "text": "The circuit is switched on and powered."
+                },
+                {
+                  "name": "OFF",
+                  "text": "The circuit is cut and the equipment gets no power."
+                }
+              ],
+              "text": "This toggle switch is the oil dilution switch. In the manual it is listed with the controls; dilution means thinning the oil with fuel in subzero cold.",
+              "context": "The game's oil dilution breaker button is in the switchboard.",
+              "src": "m1",
+              "page": "45"
+            },
+            {
+              "id": "sensor-warm",
+              "name": "Failure sensor warm-up activator",
+              "type": "switch2",
+              "match": [
+                "item:front-right-side:2"
+              ],
+              "positions": [
+                {
+                  "name": "ON",
+                  "text": "The circuit is switched on and powered."
+                },
+                {
+                  "name": "OFF",
+                  "text": "The circuit is cut and the equipment gets no power."
+                }
+              ],
+              "text": "This switch is listed as the failure sensor warm-up activator. The manual's start-up text calls the matching light the stall warning warm-up light, so it is the heater of the stall sensor.",
+              "context": "It is used in the cold before take-off.",
+              "src": "m1",
+              "page": "45"
+            },
+            {
+              "id": "sensor-act",
+              "name": "Failure sensor activator",
+              "type": "switch2",
+              "match": [
+                "item:front-right-side:3"
+              ],
+              "positions": [
+                {
+                  "name": "ON",
+                  "text": "The circuit is switched on and powered."
+                },
+                {
+                  "name": "OFF",
+                  "text": "The circuit is cut and the equipment gets no power."
+                }
+              ],
+              "text": "This switch is listed as the failure sensor activator. The manual's text calls the matching warning the stall warning.",
+              "context": "It switches on the stall warning system.",
+              "src": "m1",
+              "page": "45"
+            }
+          ]
+        },
+        {
+          "id": "front-ark",
+          "name": "ARK-15M radio compass control panel",
+          "db": "front-right-side",
+          "src": "m1",
+          "page": "45",
+          "text": "The radio compass has a needle that points to a radio station on the ground. The pilot can fly towards the station by following the needle. This is its control panel.",
+          "context": "The pilot uses it to find the airfield, especially in poor visibility. The manual describes a check with the switches and the channel selector.",
+          "controls": [
+            {
+              "id": "ark-listen",
+              "name": "TLF-TLG switch (listen mode)",
+              "type": "switch2",
+              "match": [
+                "RDF_LISTEN_P0"
+              ],
+              "positions": [
+                {
+                  "name": "TLF",
+                  "text": "Telephone position, used for the noise check."
+                },
+                {
+                  "name": "TLG",
+                  "text": "Telegraph position, used for the compass check."
+                }
+              ],
+              "text": "This switch sets the listening mode of the radio compass. The manual names the two positions TLF and TLG.",
+              "context": "The manual uses TLF for a check of the noise in the headset and TLG for the compass check.",
+              "src": "m1",
+              "page": "78"
+            },
+            {
+              "id": "ark-channel",
+              "name": "ADF channel switch",
+              "type": "switch",
+              "match": [
+                "RDF_CHANNEL_P0"
+              ],
+              "text": "This switch picks the radio channel of the station the radio compass listens to.",
+              "context": "The pilot sets it to the channel of the beacon to be flown to.",
+              "src": "m1",
+              "page": "78"
+            },
+            {
+              "id": "ark-mode",
+              "name": "ARK-15M mode switch",
+              "type": "switch",
+              "match": [
+                "RDF_MODE_12_P0"
+              ],
+              "text": "This switch sets how the radio compass works: as an ordinary receiver (Ant.) or as the compass that points the needle (Comp.).",
+              "context": "The manual sets it to Ant. to hear the call sign and to Comp. to make the needle point to the station.",
+              "src": "m1",
+              "page": "79"
+            },
+            {
+              "id": "ark-vol",
+              "name": "ARK-15M volume knob",
+              "type": "knob",
+              "match": [
+                "RDF_VOLUME_P0"
+              ],
+              "text": "Turning this knob makes the radio compass louder or quieter in the headset.",
+              "context": "The manual turns it fully to the right when checking the call sign.",
+              "src": "m1",
+              "page": "79"
+            },
+            {
+              "id": "ark-control",
+              "name": "ARK-15M control (rdf control)",
+              "type": "button",
+              "match": [
+                "RDF_CSWITCH_P0"
+              ],
+              "text": "The game names this button rdf control. The manual does not describe it under this name.",
+              "context": "It sits on the radio compass panel.",
+              "src": "m1",
+              "page": "78"
+            },
+            {
+              "id": "ark-frame",
+              "name": "Frame (loop) button",
+              "type": "button",
+              "match": [
+                "RDF_MODE_3_P0"
+              ],
+              "text": "While this button is held, the needle moves away from the station. When released, the needle returns by itself. This is how the pilot checks that the compass works.",
+              "context": "The game calls it rdf loop. The manual uses a Frame button in its check, pushing the needle to 160 degrees.",
+              "src": "m1",
+              "page": "80"
+            },
+            {
+              "id": "ark-panel",
+              "name": "ARK-15M radio compass control panel (whole)",
+              "type": "other",
+              "match": [
+                "item:front-right-side:10"
+              ],
+              "text": "This is the whole control panel of the radio compass. Its switches and knobs are listed as separate entries.",
+              "context": "The radio compass needs 1 to 2 minutes after switching on to work fully.",
+              "src": "m1",
+              "page": "78"
+            },
+            {
+              "id": "ark-light",
+              "name": "Radio compass signal light",
+              "type": "light",
+              "match": [
+                "item:front-right-side:11"
+              ],
+              "text": "This light is listed beside the radio compass panel. The manual does not describe it.",
+              "context": "It is part of the radio compass equipment.",
+              "src": "m1",
+              "page": "45"
+            },
+            {
+              "id": "ark-button",
+              "name": "Radio compass button",
+              "type": "button",
+              "match": [
+                "item:front-right-side:12"
+              ],
+              "text": "This button is listed beside the radio compass panel. The manual does not describe it.",
+              "context": "The manual says to switch on the radio compass by pressing a labelled button.",
+              "src": "m1",
+              "page": "78"
+            }
+          ]
+        },
+        {
+          "id": "front-gmk",
+          "name": "PU-26 heading system panel (GMK-1A)",
+          "db": "front-right-side",
+          "src": "m1",
+          "page": "45",
+          "text": "This panel belongs to the GMK-1A gyromagnetic compass, a heading system with a spinning gyro. Its controls set it up and test it.",
+          "context": "The pilot uses it before take-off to set the take-off course on the heading indicator, and the manual has the gyromagnetic compass switched on and checked.",
+          "controls": [
+            {
+              "id": "sdg-mode",
+              "name": "GMK-1A mode switch",
+              "type": "switch",
+              "match": [
+                "SDG_MODE_P0"
+              ],
+              "text": "This switch sets the working mode of the heading system.",
+              "context": "The manual does not describe the positions. The game names it sdg mode.",
+              "src": "m1",
+              "page": "81"
+            },
+            {
+              "id": "sdg-hemi",
+              "name": "Hemisphere switch (N/S)",
+              "type": "switch2",
+              "match": [
+                "SDG_HEMI_P0"
+              ],
+              "positions": [
+                {
+                  "name": "N",
+                  "text": "Northern hemisphere."
+                },
+                {
+                  "name": "S",
+                  "text": "Southern hemisphere."
+                }
+              ],
+              "text": "This switch sets whether the plane is in the northern or southern half of the world. The compass needs this to correct its drift.",
+              "context": "The pilot sets it once before the flight and then leaves it.",
+              "src": "m1",
+              "page": "81"
+            },
+            {
+              "id": "sdg-lat",
+              "name": "Latitude knob",
+              "type": "knob",
+              "match": [
+                "SDG_LAT_P0"
+              ],
+              "text": "This knob sets the latitude, how far north or south of the equator the plane is.",
+              "context": "It is set with the hemisphere switch before flight.",
+              "src": "m1",
+              "page": "81"
+            },
+            {
+              "id": "sdg-course",
+              "name": "Course button",
+              "type": "button",
+              "match": [
+                "SDG_COURSE_P0"
+              ],
+              "text": "This button is used to set or adjust the course on the heading system.",
+              "context": "The manual says the pilot sets the take-off course on the UGR-4UK indicator before take-off.",
+              "src": "m1",
+              "page": "81"
+            },
+            {
+              "id": "sdg-check",
+              "name": "Check-up button",
+              "type": "button",
+              "match": [
+                "SDG_CONTROL_P0"
+              ],
+              "text": "This button runs a self-test of the heading system, so the pilot can see that it works.",
+              "context": "The game calls it sdg checkup.",
+              "src": "m1",
+              "page": "81"
+            },
+            {
+              "id": "sdg-panel",
+              "name": "PU-26 control panel (whole)",
+              "type": "other",
+              "match": [
+                "item:front-right-side:13"
+              ],
+              "text": "This is the whole PU-26 control panel of the heading system. Its controls are listed as separate entries.",
+              "context": "The panel is part of the GMK-1A set named in the manual.",
+              "src": "m1",
+              "page": "45"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "hotas",
+      "where": "hotas",
+      "name": "Stick and pedals",
+      "text": "These are the controls the pilot holds with the hands and feet: the stick with its brake lever, the rudder pedals and the smoke switch.",
+      "panels": [
+        {
+          "id": "front-stick",
+          "name": "Control stick and brake lever",
+          "src": "m1",
+          "page": "24",
+          "text": "The stick tilts forward, back, left and right to steer the plane. The brake lever on it works the wheel brakes and has a catch for parking.",
+          "context": "Both seats have a stick and they are linked by cables, so the instructor feels what the student does. The rear stick has an extra brake release button.",
+          "controls": [
+            {
+              "id": "stick",
+              "name": "Control stick",
+              "type": "other",
+              "match": [
+                "control:stick.gimbal"
+              ],
+              "text": "Moving the stick back makes the nose go up and forward makes it go down. Moving it sideways rolls the plane.",
+              "context": "The stick is mechanical. The sticks in both cabins are connected.",
+              "src": "m1",
+              "page": "24"
+            },
+            {
+              "id": "brake-lever",
+              "name": "Wheel brake lever",
+              "type": "lever",
+              "match": [
+                "BRAKES_P0",
+                "control:stick.lever.brake"
+              ],
+              "text": "Squeezing this lever on the stick brakes the wheels with compressed air. The pedals decide which wheel brakes more, so the plane can steer on the ground.",
+              "context": "The brake draws on the main air bottle. The manual presses it during the engine warm-up so the plane stands still.",
+              "src": "m1",
+              "page": "28"
+            },
+            {
+              "id": "brake-lock",
+              "name": "Brake lever lock",
+              "type": "button",
+              "match": [
+                "BRAKES_L_P0",
+                "control:stick.button.brake_lock"
+              ],
+              "text": "This catch locks the brake lever in its pressed position, which makes it a parking brake.",
+              "context": "The manual has the pilot check that the brake lever is locked before the start.",
+              "src": "m1",
+              "page": "60"
+            },
+            {
+              "id": "smoke",
+              "name": "Smoke apparatus switch",
+              "type": "switch2",
+              "match": [
+                "SMOKER_SWITCH_P0"
+              ],
+              "positions": [
+                {
+                  "name": "ON",
+                  "text": "Smoke is on."
+                },
+                {
+                  "name": "OFF",
+                  "text": "Smoke is off."
+                }
+              ],
+              "text": "This switch turns on the smoke system, which makes a trail of smoke behind the plane.",
+              "context": "The game puts it with the stick controls.",
+              "src": "m1",
+              "page": "43"
+            }
+          ]
+        },
+        {
+          "id": "front-pedals",
+          "name": "Rudder pedals",
+          "db": "front-dashboard",
+          "src": "m1",
+          "page": "25",
+          "text": "The two pedals under the pilot's feet move the rudder at the tail, which turns the nose left and right. Pushing the top of them works the wheel brakes on each side.",
+          "context": "The pedals are joined to those in the rear cabin by cables. On the ground, the pedals steer the plane together with the brakes.",
+          "controls": [
+            {
+              "id": "pedals",
+              "name": "Rudder pedals",
+              "type": "pedal",
+              "match": [
+                "item:front-dashboard:31"
+              ],
+              "text": "Pushing the left pedal turns the nose to the left and the right pedal turns it to the right. The rudder moves up to 27 degrees each way.",
+              "context": "The pedals also decide which wheel the brake works on, so the plane can be steered when taxiing.",
+              "src": "m1",
+              "page": "25"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "rear",
+      "where": "rear",
+      "name": "Rear cabin (instructor)",
+      "text": "The back seat is the instructor's cabin. It has its own dashboard, stick, pedals and levers, joined to the front ones. It also has the failure simulator panel.",
+      "panels": [
+        {
+          "id": "rear-lights",
+          "name": "Rear cabin warning and signal lights",
+          "db": "rear-dashboard",
+          "src": "m1",
+          "page": "46",
+          "text": "These lights in the instructor's cabin repeat some of the warnings of the front cabin and add some, such as the battery on light, the critical overheat light and the two lights for low tank quantity.",
+          "context": "The instructor can see problems of the student's flight from here. The tank lights come on when 12 litres are left in a tank.",
+          "controls": [
+            {
+              "id": "r-gear-lights",
+              "name": "Undercarriage retracted and deployed lights (rear)",
+              "type": "light",
+              "match": [
+                "item:rear-dashboard:20",
+                "item:rear-dashboard:21"
+              ],
+              "count": 2,
+              "text": "These two lights show where the wheels are: up or down.",
+              "context": "They are the same lights as in the front cabin.",
+              "src": "m1",
+              "page": "47"
+            },
+            {
+              "id": "r-flaps-light",
+              "name": "Flaps light (rear)",
+              "type": "light",
+              "match": [
+                "item:rear-dashboard:28"
+              ],
+              "text": "This light shows the state of the landing flaps.",
+              "context": "It is the rear cabin copy of the flaps light.",
+              "src": "m1",
+              "page": "47"
+            },
+            {
+              "id": "r-warn-lights",
+              "name": "Warning lights: pitot, battery, generator, overheat, sensor, gyro, FOD",
+              "type": "light",
+              "match": [
+                "item:rear-dashboard:5",
+                "item:rear-dashboard:6",
+                "item:rear-dashboard:7",
+                "item:rear-dashboard:8",
+                "item:rear-dashboard:9",
+                "item:rear-dashboard:10",
+                "item:rear-dashboard:11",
+                "item:rear-dashboard:13",
+                "item:rear-dashboard:14",
+                "item:rear-dashboard:16"
+              ],
+              "count": 10,
+              "text": "These lights warn about: pitot tube heating, battery on, generator failure, critical overheat, failure sensor warm-up, gyromagnetic compass not to be used, failure (stall), overturning speed (twice) and FOD in the oil.",
+              "context": "The instructor reads them to see what is wrong with the aircraft or the student's flying.",
+              "src": "m1",
+              "page": "46"
+            },
+            {
+              "id": "r-tank-lights",
+              "name": "Left and right tank 12 litres remaining lights",
+              "type": "light",
+              "match": [
+                "item:rear-dashboard:12",
+                "item:rear-dashboard:15"
+              ],
+              "count": 2,
+              "text": "Each of these lights comes on when only 12 litres of fuel are left in that wing tank.",
+              "context": "The manual says there are two signal lamps in the rear cabin for the two tanks.",
+              "src": "m1",
+              "page": "33"
+            },
+            {
+              "id": "r-elt",
+              "name": "Emergency locator switch (rear)",
+              "type": "switch2",
+              "match": [
+                "item:rear-dashboard:1"
+              ],
+              "positions": [
+                {
+                  "name": "ON",
+                  "text": "The circuit is switched on and powered."
+                },
+                {
+                  "name": "OFF",
+                  "text": "The circuit is cut and the equipment gets no power."
+                }
+              ],
+              "text": "The manual lists an emergency locator switch in the rear cabin but does not describe it.",
+              "context": "It is the rear copy of the front switch.",
+              "src": "m1",
+              "page": "46"
+            },
+            {
+              "id": "r-signal-btn",
+              "name": "Signal light button (rear)",
+              "type": "button",
+              "match": [
+                "L_CTRL_P1",
+                "item:rear-dashboard:22"
+              ],
+              "text": "Pressing this button lights the signal lights so the instructor can check them.",
+              "context": "It is the rear copy of the test light button.",
+              "src": "m1",
+              "page": "66"
+            }
+          ]
+        },
+        {
+          "id": "rear-instruments",
+          "name": "Rear cabin instruments",
+          "db": "rear-dashboard",
+          "src": "m1",
+          "page": "46",
+          "text": "The instructor's dashboard has the same main flight and engine dials as the front cabin, so the instructor can follow the student's flying.",
+          "context": "The small knobs and buttons on the dials do the same job as in the front cabin.",
+          "controls": [
+            {
+              "id": "r-asi",
+              "name": "US-450K airspeed indicator (rear)",
+              "type": "gauge",
+              "match": [
+                "item:rear-dashboard:3"
+              ],
+              "text": "This dial shows how fast the plane flies through the air.",
+              "context": "The instructor watches it to see if the student keeps the right speed.",
+              "src": "m1",
+              "page": "46"
+            },
+            {
+              "id": "r-tach",
+              "name": "ITE-1K tachometer (rear)",
+              "type": "gauge",
+              "match": [
+                "item:rear-dashboard:2"
+              ],
+              "text": "This dial shows how fast the engine turns, in percent.",
+              "context": "The instructor sees the engine speed the student sets.",
+              "src": "m1",
+              "page": "46"
+            },
+            {
+              "id": "r-accel",
+              "name": "AM-9S accelerometer and reset button (rear)",
+              "type": "gauge",
+              "match": [
+                "ACCMETER_P1",
+                "item:rear-dashboard:4"
+              ],
+              "text": "This dial shows the G-force on the pilot. Its button resets the marker needles.",
+              "context": "The instructor sees how hard the student pulls in turns.",
+              "src": "m1",
+              "page": "46"
+            },
+            {
+              "id": "r-compass",
+              "name": "KI-13K magnetic compass (rear)",
+              "type": "gauge",
+              "match": [
+                "item:rear-dashboard:17"
+              ],
+              "text": "This is the magnetic compass of the rear cabin.",
+              "context": "The instructor can check the heading without the student.",
+              "src": "m1",
+              "page": "46"
+            },
+            {
+              "id": "r-clock",
+              "name": "AChS-1K clock and winding buttons (rear)",
+              "type": "gauge",
+              "match": [
+                "CLK_PINION1_P1",
+                "CLK_PINION2_P1",
+                "item:rear-dashboard:18"
+              ],
+              "text": "This is the rear cabin clock. The two small buttons wind it and set the hands.",
+              "context": "It is a copy of the front clock.",
+              "src": "m1",
+              "page": "46"
+            },
+            {
+              "id": "r-air",
+              "name": "2M-80K dual air pressure gauge (rear)",
+              "type": "gauge",
+              "match": [
+                "item:rear-dashboard:29"
+              ],
+              "text": "This dial shows the pressure in the main and the emergency air bottle.",
+              "context": "The instructor can check there is air left for brakes and gear.",
+              "src": "m1",
+              "page": "47"
+            },
+            {
+              "id": "r-alt",
+              "name": "VD-10K altimeter and pressure knob (rear)",
+              "type": "gauge",
+              "match": [
+                "ALT_MMHG_P1",
+                "item:rear-dashboard:30"
+              ],
+              "text": "This dial shows how high the plane is. The knob sets the air pressure scale.",
+              "context": "The instructor sees the height the student flies at.",
+              "src": "m1",
+              "page": "47"
+            },
+            {
+              "id": "r-ugr",
+              "name": "UGR-4UK heading indicator and knob (rear)",
+              "type": "gauge",
+              "match": [
+                "HSI_KNOB_P1",
+                "item:rear-dashboard:32"
+              ],
+              "text": "This dial shows the heading from the gyro compass. The knob sets the heading mark.",
+              "context": "The instructor can follow the heading of the flight.",
+              "src": "m1",
+              "page": "47"
+            },
+            {
+              "id": "r-horizon",
+              "name": "AGI-1K artificial horizon with zeroing knob and cage button (rear)",
+              "type": "gauge",
+              "match": [
+                "AH_PINION_P1",
+                "AH_ARRETIR_P1",
+                "item:rear-dashboard:33"
+              ],
+              "text": "This dial shows whether the nose is up or down and the wings level. A knob zeroes it and a button cages it.",
+              "context": "The instructor sees the attitude of the plane at a glance.",
+              "src": "m1",
+              "page": "47"
+            },
+            {
+              "id": "r-emi",
+              "name": "EMI-3K engine gauge (rear)",
+              "type": "gauge",
+              "match": [
+                "item:rear-dashboard:34"
+              ],
+              "text": "This three-pointer shows oil pressure, oil temperature and fuel pressure.",
+              "context": "The instructor can watch the engine health during the lesson.",
+              "src": "m1",
+              "page": "47"
+            },
+            {
+              "id": "r-da30",
+              "name": "DA-30 climb, turn and slip indicator (rear)",
+              "type": "gauge",
+              "match": [
+                "item:rear-dashboard:35"
+              ],
+              "text": "This dial shows climb or sink, turn and slip.",
+              "context": "The instructor sees climbs, dives and turns as the student flies them.",
+              "src": "m1",
+              "page": "47"
+            },
+            {
+              "id": "r-cyl",
+              "name": "TTsT-13K cylinder temperature gauge (rear)",
+              "type": "gauge",
+              "match": [
+                "item:rear-dashboard:36"
+              ],
+              "text": "This dial shows how hot the cylinders are.",
+              "context": "The instructor can watch for overheating during the lesson.",
+              "src": "m1",
+              "page": "47"
+            },
+            {
+              "id": "r-pedals",
+              "name": "Rudder pedals (rear)",
+              "type": "pedal",
+              "match": [
+                "item:rear-dashboard:31"
+              ],
+              "text": "These are the instructor's rudder pedals. They are joined to the front pedals by cables.",
+              "context": "The instructor can steer and brake with them.",
+              "src": "m1",
+              "page": "47"
+            }
+          ]
+        },
+        {
+          "id": "rear-start",
+          "name": "Rear cabin engine start, ignition and gear",
+          "db": "rear-dashboard",
+          "src": "m1",
+          "page": "47",
+          "text": "The instructor can start the engine and move the wheels from the rear cabin. The controls are copies of the front ones, with a separate ignition switch.",
+          "context": "The manual says the rear cabin's undercarriage valve is the command valve. The ignition switch there should be up for the start-up.",
+          "controls": [
+            {
+              "id": "r-magneto",
+              "name": "PM-1 magneto switch (rear)",
+              "type": "selector",
+              "match": [
+                "MAGNETO_P1",
+                "MAGNETO_P1_3",
+                "MAGNETO_P1_2",
+                "MAGNETO_P1_1",
+                "MAGNETO_P1_0",
+                "item:rear-dashboard:23"
+              ],
+              "positions": [
+                {
+                  "name": "0",
+                  "text": "Both magnetos are off."
+                },
+                {
+                  "name": "1",
+                  "text": "Only magneto 1 works."
+                },
+                {
+                  "name": "2",
+                  "text": "Only magneto 2 works."
+                },
+                {
+                  "name": "1+2",
+                  "text": "Both magnetos work."
+                }
+              ],
+              "text": "This switch decides which of the two magnetos work. A magneto is a small generator that makes the engine's sparks.",
+              "context": "The manual sets it to 1+2 for the post-landing checks. It works like the front switch.",
+              "src": "m1",
+              "page": "56"
+            },
+            {
+              "id": "r-ignition",
+              "name": "Ignition switch",
+              "type": "switch2",
+              "match": [
+                "IGNITION_S_P1",
+                "item:rear-dashboard:27"
+              ],
+              "positions": [
+                {
+                  "name": "1",
+                  "text": "Position 1 (up)."
+                },
+                {
+                  "name": "0",
+                  "text": "Position 0 (down)."
+                }
+              ],
+              "text": "This switch in the rear cabin selects the ignition source, with an up and a down position.",
+              "context": "The manual puts it to 1 (up) in the pre-start checklist.",
+              "src": "m1",
+              "page": "56"
+            },
+            {
+              "id": "r-start-cover",
+              "name": "Start button cover (rear)",
+              "type": "cover",
+              "match": [
+                "STARTER_COVER_P1"
+              ],
+              "text": "This is the cover over the rear engine start button.",
+              "context": "It stops the button from being pressed by accident.",
+              "src": "m1",
+              "page": "73"
+            },
+            {
+              "id": "r-start",
+              "name": "Engine start button (rear)",
+              "type": "button",
+              "match": [
+                "STARTER_P1",
+                "item:rear-dashboard:24"
+              ],
+              "text": "Pressing this button sends compressed air to the engine so it turns over.",
+              "context": "It is the rear copy of the front start button.",
+              "src": "m1",
+              "page": "73"
+            },
+            {
+              "id": "r-uc",
+              "name": "Undercarriage lever (rear)",
+              "type": "lever",
+              "match": [
+                "UC_P1",
+                "item:rear-dashboard:25"
+              ],
+              "positions": [
+                {
+                  "name": "UP",
+                  "text": "The wheels are retracted."
+                },
+                {
+                  "name": "DOWN",
+                  "text": "The wheels are extended."
+                }
+              ],
+              "text": "This lever raises or lowers the wheels. The rear lever is the command valve.",
+              "context": "If its handle is not neutral, the front lever is cut off.",
+              "src": "m1",
+              "page": "30"
+            },
+            {
+              "id": "r-uc-lock",
+              "name": "Undercarriage valve locking device",
+              "type": "switch2",
+              "match": [
+                "UC_LOCK_P1",
+                "item:rear-dashboard:26"
+              ],
+              "positions": [
+                {
+                  "name": "Locked",
+                  "text": "The lever is locked."
+                },
+                {
+                  "name": "Unlocked",
+                  "text": "The lever can be moved."
+                }
+              ],
+              "text": "This lock holds the undercarriage valve lever in place.",
+              "context": "The manual puts the lever in neutral and locked in the pre-start checklist.",
+              "src": "m1",
+              "page": "57"
+            }
+          ]
+        },
+        {
+          "id": "rear-left",
+          "name": "Rear cabin left side",
+          "db": "rear-left-side",
+          "src": "m1",
+          "page": "47",
+          "text": "The left wall of the rear cabin has the instructor's throttle, propeller and fuel levers, the flaps lever, the trim wheel and the brake release switch.",
+          "context": "These work the same way as the front ones. Both throttles are joined, so the instructor feels the student's lever.",
+          "controls": [
+            {
+              "id": "r-throttle",
+              "name": "Throttle lever with RADIO and SPU buttons (rear)",
+              "type": "lever",
+              "match": [
+                "THTL_P1",
+                "item:rear-left-side:6"
+              ],
+              "text": "This lever sets the engine power, as in the front cabin. The radio and intercom buttons are on it.",
+              "context": "The rear lever is joined to the front one.",
+              "src": "m1",
+              "page": "48"
+            },
+            {
+              "id": "r-ptt-radio",
+              "name": "Radio push-to-talk button (rear)",
+              "type": "button",
+              "match": [
+                "RADIO_TX_P1"
+              ],
+              "text": "While this button is pressed, the instructor talks on the VHF radio.",
+              "context": "It is the rear copy of the front radio button.",
+              "src": "m1",
+              "page": "48"
+            },
+            {
+              "id": "r-ptt-int",
+              "name": "Intercom push-to-talk button (rear)",
+              "type": "button",
+              "match": [
+                "INTERCOM_TX_P1"
+              ],
+              "text": "While this button is pressed, the instructor talks on the intercom to the front seat.",
+              "context": "It is the rear copy of the front intercom button.",
+              "src": "m1",
+              "page": "48"
+            },
+            {
+              "id": "r-prop",
+              "name": "Propeller pitch lever (rear)",
+              "type": "lever",
+              "match": [
+                "PROP_P1",
+                "item:rear-left-side:4"
+              ],
+              "text": "This lever sets the engine speed through the angle of the propeller blades. Forward is fine pitch.",
+              "context": "It is the rear copy of the front lever.",
+              "src": "m1",
+              "page": "48"
+            },
+            {
+              "id": "r-friction",
+              "name": "Lock lever (rear)",
+              "type": "knob",
+              "match": [
+                "FRIC_P1",
+                "item:rear-left-side:5"
+              ],
+              "text": "This lever makes the throttle and propeller levers stiffer to hold their position.",
+              "context": "It is the rear copy of the front lock lever.",
+              "src": "m1",
+              "page": "48"
+            },
+            {
+              "id": "r-fuel-cock",
+              "name": "Fuel emergency shut-off cock lever (rear)",
+              "type": "lever",
+              "match": [
+                "FUEL_COCK_P1",
+                "item:rear-left-side:7"
+              ],
+              "text": "This lever opens or shuts the fuel tap to the engine, also in an emergency.",
+              "context": "It is the rear copy of the front fuel lever.",
+              "src": "m1",
+              "page": "48"
+            },
+            {
+              "id": "r-flaps",
+              "name": "Landing flaps lever (rear)",
+              "type": "lever",
+              "match": [
+                "FLAPS_P1",
+                "item:rear-left-side:2"
+              ],
+              "positions": [
+                {
+                  "name": "Down",
+                  "text": "The flaps move down."
+                },
+                {
+                  "name": "Neutral",
+                  "text": "No air flows to the flaps."
+                },
+                {
+                  "name": "Up",
+                  "text": "The flaps move up."
+                }
+              ],
+              "text": "This lever lowers and raises the landing flaps from the rear cabin.",
+              "context": "The manual sets it to neutral in the pre-start checklist.",
+              "src": "m1",
+              "page": "47"
+            },
+            {
+              "id": "r-trim",
+              "name": "Trimmer hand wheel (rear)",
+              "type": "wheel",
+              "match": [
+                "TRIM_WHEEL_P1",
+                "item:rear-left-side:1"
+              ],
+              "text": "This wheel sets the elevator trim from the rear cabin. It is joined to the front wheel by cables.",
+              "context": "A position indicator is fitted on the wheel in both cabins.",
+              "src": "m1",
+              "page": "26"
+            },
+            {
+              "id": "r-brake-switch",
+              "name": "Brake release switch (circuit breaker)",
+              "type": "switch2",
+              "match": [
+                "CB_BRAKES_CUT_P1",
+                "item:rear-left-side:3"
+              ],
+              "positions": [
+                {
+                  "name": "ON",
+                  "text": "The circuit is switched on and powered."
+                },
+                {
+                  "name": "OFF",
+                  "text": "The circuit is cut and the equipment gets no power."
+                }
+              ],
+              "text": "This circuit breaker switch powers the instructor's brake release function. The manual sets it to off in the pre-start checklist.",
+              "context": "The brake release button is on the rear stick.",
+              "src": "m1",
+              "page": "57"
+            }
+          ]
+        },
+        {
+          "id": "rear-right",
+          "name": "Rear cabin right side and radio compass",
+          "db": "rear-right-side",
+          "src": "m1",
+          "page": "48",
+          "text": "The right wall of the rear cabin has the emergency undercarriage valve and the control of the radio compass.",
+          "context": "They work like the front cabin versions.",
+          "controls": [
+            {
+              "id": "r-emerg",
+              "name": "Emergency undercarriage valve (rear)",
+              "type": "knob",
+              "match": [
+                "EMER_VALVE_P1",
+                "item:rear-right-side:1"
+              ],
+              "text": "This valve lowers the wheels with air from the emergency bottle when the normal system fails.",
+              "context": "It is the rear copy of the front valve.",
+              "src": "m1",
+              "page": "48"
+            },
+            {
+              "id": "r-ark-listen",
+              "name": "TLF-TLG switch (rear)",
+              "type": "switch2",
+              "match": [
+                "RDF_LISTEN_P1"
+              ],
+              "positions": [
+                {
+                  "name": "TLF",
+                  "text": "Telephone position, used for the noise check."
+                },
+                {
+                  "name": "TLG",
+                  "text": "Telegraph position, used for the compass check."
+                }
+              ],
+              "text": "This switch sets the listening mode of the radio compass in the rear cabin, with the positions TLF and TLG.",
+              "context": "It is the rear copy of the front switch.",
+              "src": "m1",
+              "page": "78"
+            },
+            {
+              "id": "r-ark-channel",
+              "name": "ADF channel switch (rear)",
+              "type": "switch",
+              "match": [
+                "RDF_CHANNEL_P1"
+              ],
+              "text": "This switch picks the radio channel of the station that the instructor's radio compass listens to.",
+              "context": "The instructor can choose a channel for the rear cabin.",
+              "src": "m1",
+              "page": "78"
+            },
+            {
+              "id": "r-ark-mode",
+              "name": "ARK-15M mode switch (rear)",
+              "type": "switch",
+              "match": [
+                "RDF_MODE_12_P1"
+              ],
+              "text": "This switch sets the radio compass mode: as a receiver (Ant.) or as a compass (Comp.).",
+              "context": "It is the rear copy of the front switch.",
+              "src": "m1",
+              "page": "79"
+            },
+            {
+              "id": "r-ark-vol",
+              "name": "ARK-15M volume knob (rear)",
+              "type": "knob",
+              "match": [
+                "RDF_VOLUME_P1"
+              ],
+              "text": "Turning this knob makes the radio compass louder or quieter.",
+              "context": "It is the rear copy of the front knob.",
+              "src": "m1",
+              "page": "79"
+            },
+            {
+              "id": "r-ark-control",
+              "name": "ARK-15M control (rear)",
+              "type": "button",
+              "match": [
+                "RDF_CSWITCH_P1"
+              ],
+              "text": "The game names this rear button rdf control. The manual does not describe it under this name.",
+              "context": "It sits on the rear radio compass panel.",
+              "src": "m1",
+              "page": "78"
+            },
+            {
+              "id": "r-ark-frame",
+              "name": "Frame (loop) button (rear)",
+              "type": "button",
+              "match": [
+                "RDF_MODE_3_P1"
+              ],
+              "text": "While this button is held, the radio compass needle moves away. When released, the needle returns by itself.",
+              "context": "It is the rear copy of the front button.",
+              "src": "m1",
+              "page": "80"
+            },
+            {
+              "id": "r-ark-panel",
+              "name": "ARK-15M radio compass control panel (rear)",
+              "type": "other",
+              "match": [
+                "item:rear-right-side:2"
+              ],
+              "text": "This is the whole control panel of the radio compass in the rear cabin.",
+              "context": "Its switches and knobs are listed as separate entries.",
+              "src": "m1",
+              "page": "48"
+            },
+            {
+              "id": "r-ark-light",
+              "name": "Radio compass signal light (rear)",
+              "type": "light",
+              "match": [
+                "item:rear-right-side:3"
+              ],
+              "text": "This light is listed beside the rear radio compass panel; the manual does not describe it.",
+              "context": "It is a rear cabin radio compass part.",
+              "src": "m1",
+              "page": "48"
+            },
+            {
+              "id": "r-ark-button",
+              "name": "Radio compass button (rear)",
+              "type": "button",
+              "match": [
+                "item:rear-right-side:4"
+              ],
+              "text": "This button is listed beside the rear radio compass panel; the manual does not describe it.",
+              "context": "It is a rear cabin radio compass part.",
+              "src": "m1",
+              "page": "48"
+            }
+          ]
+        },
+        {
+          "id": "rear-misc",
+          "name": "Rear cabin brakes, intercom, canopy and failure simulator",
+          "src": "m1",
+          "page": "46",
+          "text": "This panel gathers the other rear cabin controls: the brake lever and release button on the stick, the intercom, the canopy catches, the instructor's failure simulator and a few circuit breakers.",
+          "context": "The failure simulator is the main trainer feature: the instructor can make instruments fail to teach the student.",
+          "controls": [
+            {
+              "id": "r-brake",
+              "name": "Wheel brake lever (rear)",
+              "type": "lever",
+              "match": [
+                "BRAKES_P1"
+              ],
+              "text": "Squeezing this lever on the rear stick brakes the wheels with compressed air.",
+              "context": "It is the rear copy of the front brake lever.",
+              "src": "m1",
+              "page": "28"
+            },
+            {
+              "id": "r-brake-lock",
+              "name": "Brake lever lock (rear)",
+              "type": "button",
+              "match": [
+                "BRAKES_L_P1"
+              ],
+              "text": "This catch locks the rear brake lever in its pressed position as a parking brake.",
+              "context": "The manual says parking is done by locking the brake lever in both cabins.",
+              "src": "m1",
+              "page": "28"
+            },
+            {
+              "id": "r-brake-release",
+              "name": "Brake release button (rear stick)",
+              "type": "button",
+              "match": [
+                "BRAKES_CUT_P1"
+              ],
+              "text": "This button on top of the rear stick releases the wheel brakes. The game calls it wheel brakes purge.",
+              "context": "The manual says it is on the rear stick only. The brake release breaker on the rear left wall must be on.",
+              "src": "m1",
+              "page": "28"
+            },
+            {
+              "id": "r-int-vol",
+              "name": "Intercom volume knob (rear)",
+              "type": "knob",
+              "match": [
+                "INTERCOM_P1_RH1"
+              ],
+              "text": "This knob sets how loud the intercom is in the rear cabin.",
+              "context": "It is on the rear SPU-9 intercom panel.",
+              "src": "m1",
+              "page": "46"
+            },
+            {
+              "id": "r-int-radio",
+              "name": "Radio volume knob (rear intercom panel)",
+              "type": "knob",
+              "match": [
+                "INTERCOM_P1_RH2"
+              ],
+              "text": "This knob sets how loud the radio is in the rear headset.",
+              "context": "It is on the rear intercom panel.",
+              "src": "m1",
+              "page": "46"
+            },
+            {
+              "id": "r-int-stby",
+              "name": "Intercom STBY/distributive switch (rear)",
+              "type": "switch2",
+              "match": [
+                "INTERCOM_P1_S1"
+              ],
+              "positions": [
+                {
+                  "name": "Up",
+                  "text": "The upper position."
+                },
+                {
+                  "name": "Down",
+                  "text": "The lower position."
+                }
+              ],
+              "text": "The game labels this switch the intercom stand-by / distributive switch. The manual does not describe it.",
+              "context": "It is on the rear intercom panel.",
+              "src": "m1",
+              "page": "46"
+            },
+            {
+              "id": "r-int-rdf",
+              "name": "Intercom RC-OFF switch (rear)",
+              "type": "switch2",
+              "match": [
+                "INTERCOM_P1_S2"
+              ],
+              "positions": [
+                {
+                  "name": "RC",
+                  "text": "The radio compass is connected."
+                },
+                {
+                  "name": "Off",
+                  "text": "The radio compass sound is off."
+                }
+              ],
+              "text": "This switch lets the instructor hear the radio compass in the headset or switches it off.",
+              "context": "It is the rear copy of the front switch.",
+              "src": "m1",
+              "page": "80"
+            },
+            {
+              "id": "r-spu9",
+              "name": "SPU-9 intercom panel (rear)",
+              "type": "other",
+              "match": [
+                "item:rear-dashboard:19"
+              ],
+              "text": "This is the whole intercom panel of the rear cabin.",
+              "context": "The rear knobs and switches on it have their own entries here.",
+              "src": "m1",
+              "page": "46"
+            },
+            {
+              "id": "r-hatches",
+              "name": "Canopy hatch catches (rear)",
+              "type": "button",
+              "match": [
+                "HATCH_B_P1",
+                "HATCH_R_P1",
+                "HATCH_L_P1"
+              ],
+              "count": 3,
+              "text": "These handles release the rear canopy so it can slide open or shut. The game has one for the back and one on each side.",
+              "context": "The manual says the pilots pull a ball over their head to release the lock from inside.",
+              "src": "m1",
+              "page": "20"
+            },
+            {
+              "id": "r-sim-master",
+              "name": "Failure simulator: master switch",
+              "type": "switch2",
+              "match": [
+                "CB_TPANEL_P1_0",
+                "item:rear-dashboard:37"
+              ],
+              "positions": [
+                {
+                  "name": "ON",
+                  "text": "The circuit is switched on and powered."
+                },
+                {
+                  "name": "OFF",
+                  "text": "The circuit is cut and the equipment gets no power."
+                }
+              ],
+              "text": "This is the master switch of the instructor's failure simulator panel. The game calls it trainer master.",
+              "context": "The manual says the failure simulator switches must be off in the pre-start checklist.",
+              "src": "m1",
+              "page": "58"
+            },
+            {
+              "id": "r-sim-speed",
+              "name": "Failure simulator: airspeed switch",
+              "type": "switch2",
+              "match": [
+                "CB_TPANEL_P1_1"
+              ],
+              "positions": [
+                {
+                  "name": "ON",
+                  "text": "The circuit is switched on and powered."
+                },
+                {
+                  "name": "OFF",
+                  "text": "The circuit is cut and the equipment gets no power."
+                }
+              ],
+              "text": "This switch of the failure simulator is called trainer speedo in the game, so it simulates a failure of the speed indicator.",
+              "context": "The instructor uses it to teach the student to cope with a failed instrument.",
+              "src": "m1",
+              "page": "58"
+            },
+            {
+              "id": "r-sim-ah",
+              "name": "Failure simulator: artificial horizon switch",
+              "type": "switch2",
+              "match": [
+                "CB_TPANEL_P1_2"
+              ],
+              "positions": [
+                {
+                  "name": "ON",
+                  "text": "The circuit is switched on and powered."
+                },
+                {
+                  "name": "OFF",
+                  "text": "The circuit is cut and the equipment gets no power."
+                }
+              ],
+              "text": "This switch of the failure simulator is called trainer ah in the game, so it simulates a failure of the artificial horizon.",
+              "context": "The student then has to fly with the other instruments.",
+              "src": "m1",
+              "page": "58"
+            },
+            {
+              "id": "r-sim-static",
+              "name": "Failure simulator: statics switch",
+              "type": "switch2",
+              "match": [
+                "CB_TPANEL_P1_3"
+              ],
+              "positions": [
+                {
+                  "name": "ON",
+                  "text": "The circuit is switched on and powered."
+                },
+                {
+                  "name": "OFF",
+                  "text": "The circuit is cut and the equipment gets no power."
+                }
+              ],
+              "text": "The game names this switch trainer statics. The manual does not describe it.",
+              "context": "It is one of the four switches of the failure simulator panel.",
+              "src": "m1",
+              "page": "58"
+            },
+            {
+              "id": "r-cb-adf",
+              "name": "ADF marker circuit breaker (rear)",
+              "type": "switch2",
+              "match": [
+                "CB_ADF_P1"
+              ],
+              "positions": [
+                {
+                  "name": "ON",
+                  "text": "The circuit is switched on and powered."
+                },
+                {
+                  "name": "OFF",
+                  "text": "The circuit is cut and the equipment gets no power."
+                }
+              ],
+              "text": "This is a circuit breaker switch (a safety switch that cuts power when something draws too much). In the rear cabin the game labels this breaker cb adf marker. The manual does not describe it.",
+              "context": "It sits at the instructor's place for the radio compass equipment.",
+              "src": "m1",
+              "page": "77"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

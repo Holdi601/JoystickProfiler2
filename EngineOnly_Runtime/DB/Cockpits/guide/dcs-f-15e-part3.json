@@ -1,0 +1,2749 @@
+{
+  "format": "joypro-cockpit-guide",
+  "version": 1,
+  "id": "dcs-f-15e-part3",
+  "partOf": "dcs-f-15e",
+  "areas": [
+    {
+      "id": "rear-left-console",
+      "where": "left-console",
+      "name": "Rear left console",
+      "seat": 2,
+      "text": "The left console in the back seat. It holds the throttles of the WSO, the sensor and electronic warfare panels, and the intercom controls.",
+      "panels": [
+        {
+          "id": "rear-left-console",
+          "name": "Rear left console",
+          "db": "rear-left-console",
+          "src": "m1",
+          "page": "77",
+          "text": "This part of the left console holds the nuclear weapon switch, the video recorder and the rear throttles with the rudder trim.",
+          "context": "The WSO uses the recorder to keep a film of the displays. The throttle is only for flying the plane when the pilot cannot.",
+          "controls": [
+            {
+              "id": "nuc-rear",
+              "name": "NUC panel switch and cover",
+              "type": "switch3",
+              "match": [
+                "PTN_1401",
+                "PTN_1402",
+                "item:rear-left-console:1"
+              ],
+              "positions": [
+                {
+                  "name": "SAFE",
+                  "text": "No nuclear release."
+                },
+                {
+                  "name": "ARM",
+                  "text": "The release position; the manual calls it RELEASE."
+                },
+                {
+                  "name": "JETT ENABLE",
+                  "text": "Jettison of nuclear weapons enabled."
+                }
+              ],
+              "text": "Under a guard, this switch allows nuclear weapons to be released or jettisoned. It is the same as the one in the front seat, and both switches must be enabled. The manual says it is not implemented in the game.",
+              "context": "In DCS this switch has no function, so the WSO can leave it on SAFE.",
+              "src": "m1",
+              "page": "77"
+            },
+            {
+              "id": "vtr",
+              "name": "8 mm video tape recorder",
+              "type": "other",
+              "match": [
+                "item:rear-left-console:2"
+              ],
+              "text": "This is a video recorder that can film up to 5 hours of what the MPDs, MPCDs and HUD show, along with the voices of the crew.",
+              "context": "The stick trigger and the pickle button also work it. The manual does not say more about it.",
+              "src": "m1",
+              "page": "77"
+            },
+            {
+              "id": "vtr-power",
+              "name": "Video recorder power switch",
+              "type": "switch3",
+              "match": [
+                "item:rear-left-console:3"
+              ],
+              "positions": [
+                {
+                  "name": "PLAYBACK",
+                  "text": "Not used."
+                },
+                {
+                  "name": "ON",
+                  "text": "The recorder is on."
+                },
+                {
+                  "name": "OFF",
+                  "text": "The recorder is off."
+                }
+              ],
+              "text": "This switch turns the video recorder on and off. PLAYBACK is not used. The game has no click point for it.",
+              "context": "It is listed in the manual only.",
+              "src": "m1",
+              "page": "77"
+            },
+            {
+              "id": "rear-throttles",
+              "name": "Rear throttles",
+              "type": "lever",
+              "match": [
+                "item:rear-left-console:4"
+              ],
+              "text": "These are the two throttle levers of the back seat. They move together with the pilot's levers. Only the microphone and speed brake switches are on them.",
+              "context": "Most of the switches that the pilot has on the throttle are on the hand controllers of the WSO.",
+              "src": "m1",
+              "page": "77"
+            },
+            {
+              "id": "rear-rudder-trim",
+              "name": "Rudder trim switch",
+              "type": "switch",
+              "match": [
+                "PTN_1403",
+                "item:rear-left-console:5"
+              ],
+              "text": "This switch adjusts the rudder trim, the small setting that keeps the plane flying straight without pedal pressure. It works like the pilot's one.",
+              "context": "The WSO can trim the plane if the pilot needs help.",
+              "src": "m1",
+              "page": "77"
+            }
+          ]
+        },
+        {
+          "id": "rear-sensor-control-panel",
+          "name": "Sensor control panel (rear)",
+          "db": "rear-sensor-control-panel",
+          "src": "m1",
+          "page": "78",
+          "text": "This panel runs the targeting pod, a camera with a zoom and a laser under the plane. It has the power, picture and laser switches.",
+          "context": "The WSO works the targeting pod to find and mark targets, so this panel is in the WSO's reach.",
+          "controls": [
+            {
+              "id": "tgp-pwr",
+              "name": "TGP power switch (OFF / STBY / ON)",
+              "type": "switch3",
+              "match": [
+                "PTN_1413",
+                "item:rear-sensor-control-panel:1"
+              ],
+              "positions": [
+                {
+                  "name": "OFF",
+                  "text": "The pod is off."
+                },
+                {
+                  "name": "STBY",
+                  "text": "Standby: the cool-down of the pod starts."
+                },
+                {
+                  "name": "ON",
+                  "text": "The pod is on."
+                }
+              ],
+              "text": "This switch turns the targeting pod on. In STBY (standby) the pod starts to cool down so its camera can work.",
+              "context": "The cool-down takes a while, so the WSO sets STBY early.",
+              "src": "m1",
+              "page": "78"
+            },
+            {
+              "id": "tgp-level-gain",
+              "name": "TGP FLIR gain and level knobs",
+              "type": "knob",
+              "match": [
+                "PTN_1414",
+                "PTN_1415",
+                "item:rear-sensor-control-panel:2"
+              ],
+              "count": 2,
+              "text": "These two knobs set the gain (contrast) and level (brightness) of the pod's camera picture by hand.",
+              "context": "The WSO uses them when the automatic setting does not give a good picture.",
+              "src": "m1",
+              "page": "78"
+            },
+            {
+              "id": "tgp-laser",
+              "name": "TGP laser switch (SAFE / ARM)",
+              "type": "switch2",
+              "match": [
+                "PTN_1416",
+                "item:rear-sensor-control-panel:3"
+              ],
+              "positions": [
+                {
+                  "name": "SAFE",
+                  "text": "The laser cannot fire. The marker works."
+                },
+                {
+                  "name": "ARM",
+                  "text": "The laser is armed and can fire."
+                }
+              ],
+              "text": "This switch arms the laser of the targeting pod. With SAFE the laser cannot fire, but the laser marker still works.",
+              "context": "The LASER ARMED light in the front cockpit shows that it is armed.",
+              "src": "m1",
+              "page": "78"
+            }
+          ]
+        },
+        {
+          "id": "ew-control-panel",
+          "name": "Electronic warfare control panel",
+          "db": "ew-control-panel",
+          "src": "m1",
+          "page": "78",
+          "text": "This panel holds the mode switches of the radar warning receiver and the jammer. These are the systems that warn about enemy radars and confuse them.",
+          "context": "The WSO handles the electronic defence, so these switches are in the back seat.",
+          "controls": [
+            {
+              "id": "rwr-mode",
+              "name": "RWR / ICS mode switch (TRAINING / COMBAT)",
+              "type": "switch2",
+              "match": [
+                "PTN_1417",
+                "item:ew-control-panel:1"
+              ],
+              "positions": [
+                {
+                  "name": "COMBAT",
+                  "text": "Combat mode."
+                },
+                {
+                  "name": "TRNG",
+                  "text": "Training mode."
+                }
+              ],
+              "text": "This switch changes the radar warning receiver (RWR) and the internal jammer (ICS) between training mode and combat mode.",
+              "context": "COMBAT is for a real mission and TRNG for practice.",
+              "src": "m1",
+              "page": "78"
+            },
+            {
+              "id": "pods",
+              "name": "ECM pods mode switch",
+              "type": "switch2",
+              "match": [
+                "PTN_1418",
+                "item:ew-control-panel:2"
+              ],
+              "positions": [
+                {
+                  "name": "XMIT",
+                  "text": "Transmit position of the jammer pods. It has no effect."
+                },
+                {
+                  "name": "STBY",
+                  "text": "Standby position. It has no effect."
+                }
+              ],
+              "text": "This switch is called 'Pods' in the manual and 'ECM PODS Mode Switch XMIT / STBY' in the game. The manual says it is not functional.",
+              "context": "ECM pods are jammers carried outside the plane. The switch does nothing in the game.",
+              "src": "m1",
+              "page": "78"
+            },
+            {
+              "id": "ics-mode",
+              "name": "ICS operational mode switch (MAN / AUTO / STBY)",
+              "type": "switch3",
+              "match": [
+                "PTN_1419",
+                "item:ew-control-panel:3"
+              ],
+              "positions": [
+                {
+                  "name": "MAN",
+                  "text": "The jammer is controlled by hand."
+                },
+                {
+                  "name": "AUTO",
+                  "text": "The jammer works automatically."
+                },
+                {
+                  "name": "STBY",
+                  "text": "The jammer is off."
+                }
+              ],
+              "text": "This switch picks how the internal jammer (ICS) works. STBY (standby) turns it off.",
+              "context": "ICS means internal countermeasures set. A jammer is a radio transmitter that blinds enemy radars.",
+              "src": "m1",
+              "page": "78"
+            }
+          ]
+        },
+        {
+          "id": "rear-intercom-panel",
+          "name": "Intercommunications control panel (rear)",
+          "db": "rear-intercom-panel",
+          "src": "m1",
+          "page": "78",
+          "text": "This panel has the volume knobs, the intercom, the radio coding and the tone switches of the WSO.",
+          "context": "The WSO sets the volumes and the intercom so the crew can talk to each other.",
+          "controls": [
+            {
+              "id": "r-tews-vol",
+              "name": "TEWS volume knobs (caution and launch)",
+              "type": "knob",
+              "match": [
+                "PTN_1420",
+                "PTN_1421",
+                "item:rear-intercom-panel:1"
+              ],
+              "count": 2,
+              "text": "These two knobs set the loudness of the warning system's sounds in the WSO's headset. The top one is for cautions, the bottom, larger one for the launch warning.",
+              "context": "A launch warning means a missile was fired at the plane.",
+              "src": "m1",
+              "page": "78"
+            },
+            {
+              "id": "r-ics-vol",
+              "name": "Intercom and weapon volume knobs",
+              "type": "knob",
+              "match": [
+                "PTN_1422",
+                "PTN_1423",
+                "item:rear-intercom-panel:2"
+              ],
+              "count": 2,
+              "text": "These two knobs set the volume of the intercom (top) and of the weapon lock tone (bottom).",
+              "context": "The WSO uses them to hear the pilot and the weapon tones well.",
+              "src": "m1",
+              "page": "78"
+            },
+            {
+              "id": "r-ils-tacan",
+              "name": "ILS and TACAN volume knobs",
+              "type": "knob",
+              "match": [
+                "PTN_1424",
+                "PTN_1425",
+                "item:rear-intercom-panel:3"
+              ],
+              "count": 2,
+              "text": "These two knobs set the volume of the ILS sound (outer knob) and the TACAN beacon sound (inner knob). ILS is a radio beam that guides the plane down to a runway. TACAN is a beacon that gives direction and distance.",
+              "context": "They let the WSO hear which beacon is tuned.",
+              "src": "m1",
+              "page": "78"
+            },
+            {
+              "id": "r-crypto",
+              "name": "Crypto switch (HOLD / NORM / ZERO)",
+              "type": "switch3",
+              "match": [
+                "PTN_1426",
+                "item:rear-intercom-panel:4"
+              ],
+              "positions": [
+                {
+                  "name": "HOLD",
+                  "text": "The codes stay in memory."
+                },
+                {
+                  "name": "NORM",
+                  "text": "Normal; the codes are erased when the power is shut down."
+                },
+                {
+                  "name": "ZERO",
+                  "text": "The codes are erased."
+                }
+              ],
+              "text": "This switch keeps or erases the secret codes of the IFF mode 4. HOLD keeps them, ZERO erases them.",
+              "context": "It works as the one in the front seat does.",
+              "src": "m1",
+              "page": "78"
+            },
+            {
+              "id": "r-mic",
+              "name": "Intercom function selector (MIC switch)",
+              "type": "switch3",
+              "match": [
+                "PTN_1427",
+                "item:rear-intercom-panel:5"
+              ],
+              "positions": [
+                {
+                  "name": "RAD ORIDE",
+                  "text": "The intercom overrides the radio."
+                },
+                {
+                  "name": "ON",
+                  "text": "Direct talking between the crew."
+                },
+                {
+                  "name": "OFF",
+                  "text": "The microphone is off for the intercom, but not for the radio."
+                }
+              ],
+              "text": "This switch sets how the WSO's microphone is used for the intercom. It springs back to ON.",
+              "context": "The intercom is the phone line between the two crew members.",
+              "src": "m1",
+              "page": "78"
+            },
+            {
+              "id": "r-silence",
+              "name": "Voice / tone silence switch",
+              "type": "button",
+              "match": [
+                "PTN_1428",
+                "item:rear-intercom-panel:6"
+              ],
+              "text": "This button quiets all voice and tone warnings for up to one minute.",
+              "context": "The WSO presses it when a repeated warning is no longer needed.",
+              "src": "m1",
+              "page": "78"
+            },
+            {
+              "id": "r-tone",
+              "name": "Tone selector switch",
+              "type": "switch2",
+              "match": [
+                "PTN_1429",
+                "item:rear-intercom-panel:7"
+              ],
+              "positions": [
+                {
+                  "name": "UHF1",
+                  "text": "The tone goes out on UHF radio 1."
+                },
+                {
+                  "name": "UHF2",
+                  "text": "The tone goes out on UHF radio 2."
+                }
+              ],
+              "text": "This switch picks the radio that sends the tone. In the game it offers UHF 1 and UHF 2.",
+              "context": "The catalog notes that the radio tone has no effect in DCS.",
+              "src": "m1",
+              "page": "78"
+            },
+            {
+              "id": "r-cipher",
+              "name": "Cipher text selector switch",
+              "type": "switch2",
+              "match": [
+                "PTN_1430",
+                "item:rear-intercom-panel:8"
+              ],
+              "positions": [
+                {
+                  "name": "NORM",
+                  "text": "Both ciphered and clear traffic."
+                },
+                {
+                  "name": "ONLY",
+                  "text": "Only ciphered traffic."
+                }
+              ],
+              "text": "This switch decides whether the radio accepts only coded messages or both coded and clear ones.",
+              "context": "A cipher is a secret code so enemies cannot read the messages.",
+              "src": "m1",
+              "page": "78"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "rear-left-wall",
+      "where": "left-side",
+      "name": "Rear left wall",
+      "seat": 2,
+      "text": "The left wall beside the WSO's seat.",
+      "panels": [
+        {
+          "id": "rear-left-wall",
+          "name": "Rear left wall",
+          "db": "rear-left-wall",
+          "src": "m1",
+          "page": "79",
+          "text": "These controls are on the left wall beside the WSO: the seat adjust switch and the canopy jettison handle. The game has a seat arm handle there too.",
+          "context": "The WSO sets the seat height once. The jettison handle and the seat handle are for emergencies.",
+          "controls": [
+            {
+              "id": "r-seat-adjust",
+              "name": "Seat adjust switch",
+              "type": "switch3",
+              "match": [
+                "PTN_1431",
+                "item:rear-left-wall:1"
+              ],
+              "positions": [
+                {
+                  "name": "UP",
+                  "text": "The seat rises."
+                },
+                {
+                  "name": "OFF",
+                  "text": "The seat stops."
+                },
+                {
+                  "name": "DN",
+                  "text": "The seat sinks."
+                }
+              ],
+              "text": "This switch raises or lowers the WSO's seat with an electric motor. It springs back to the centre.",
+              "context": "The WSO lets go at the end of the travel to spare the motor.",
+              "src": "m1",
+              "page": "79"
+            },
+            {
+              "id": "r-canopy-jett",
+              "name": "Canopy jettison handle",
+              "type": "handle",
+              "match": [
+                "PTN_1385",
+                "item:rear-left-wall:2"
+              ],
+              "text": "Press the unlock button on the striped handle and pull it back to throw the canopy off in an emergency. It is the same as the front one.",
+              "context": "It is needed if the canopy cannot be opened in the normal way.",
+              "src": "m1",
+              "page": "79"
+            },
+            {
+              "id": "r-seat-arm",
+              "name": "Seat arm handle",
+              "type": "handle",
+              "match": [
+                "PTN_802"
+              ],
+              "positions": [
+                {
+                  "name": "ARMED",
+                  "text": "The ejection seat is armed."
+                },
+                {
+                  "name": "SAFE",
+                  "text": "The ejection seat is safe."
+                }
+              ],
+              "text": "This handle arms or secures the WSO's ejection seat. The game offers ARMED and SAFE. The manual does not describe it.",
+              "context": "The ejection seat is the seat that shoots the crew member out in an emergency.",
+              "src": "m1",
+              "page": "79"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "rear-main-left",
+      "where": "front-left",
+      "name": "Rear main panel, left",
+      "seat": 2,
+      "text": "The left side of the WSO's main panel, with the gear, hook and mode lights.",
+      "panels": [
+        {
+          "id": "rear-main-panel-left",
+          "name": "Rear main panel, left",
+          "db": "rear-main-panel-left",
+          "src": "m1",
+          "page": "80",
+          "text": "This panel at the left of the WSO's main panel has the emergency gear handle, the arresting hook switch and the lights for the wheels, flaps and master mode.",
+          "context": "These are indications for the WSO. The wheels and flaps themselves are controlled by the pilot.",
+          "controls": [
+            {
+              "id": "r-emerg-gear",
+              "name": "Emergency landing gear handle",
+              "type": "handle",
+              "match": [
+                "PTN_1342",
+                "item:rear-main-panel-left:1"
+              ],
+              "text": "Pulling this handle lowers the wheels even if the normal system fails. It bypasses the usual hydraulic and electric controls.",
+              "context": "The WSO can pull it if the pilot cannot. The front handle is reset by turning it 45 degrees clockwise and pushing it forward.",
+              "src": "m1",
+              "page": "80"
+            },
+            {
+              "id": "r-callsign",
+              "name": "Radio call panel",
+              "type": "other",
+              "match": [
+                "item:rear-main-panel-left:2"
+              ],
+              "text": "This is a simple label with the tail number of the aircraft.",
+              "context": "It has nothing to operate; it only identifies the aircraft by its tail number.",
+              "src": "m1",
+              "page": "80"
+            },
+            {
+              "id": "r-hook",
+              "name": "Arresting hook switch",
+              "type": "switch2",
+              "match": [
+                "PTN_1341",
+                "item:rear-main-panel-left:3"
+              ],
+              "positions": [
+                {
+                  "name": "UP",
+                  "text": "The hook is retracted."
+                },
+                {
+                  "name": "DOWN",
+                  "text": "The hook is lowered."
+                }
+              ],
+              "text": "This switch raises or lowers the arresting hook, the tail hook that catches a wire when landing.",
+              "context": "The switch is in both cockpits, so either crew member can lower the hook.",
+              "src": "m1",
+              "page": "80"
+            },
+            {
+              "id": "r-flap-ind",
+              "name": "Flap position indicator",
+              "type": "indicator",
+              "match": [
+                "item:rear-main-panel-left:4"
+              ],
+              "text": "This light shows the flaps: off for up, yellow while moving, green for down.",
+              "context": "The WSO sees whether the pilot has the flaps out for landing.",
+              "src": "m1",
+              "page": "80"
+            },
+            {
+              "id": "r-gear-lights",
+              "name": "Landing gear position lights",
+              "type": "light",
+              "match": [
+                "item:rear-main-panel-left:5"
+              ],
+              "text": "The lights NOSE, LEFT and RIGHT come on when their wheel is down and locked. An UNSAFE light comes on when a wheel is not where it was commanded.",
+              "context": "Before landing all three lights should be on.",
+              "src": "m1",
+              "page": "80"
+            },
+            {
+              "id": "r-master-mode",
+              "name": "Master mode light panel",
+              "type": "indicator",
+              "match": [
+                "item:rear-main-panel-left:6"
+              ],
+              "text": "These lights show which master mode the plane is in: A/A (air to air), A/G (air to ground), NAV (navigation) or INST (instruments).",
+              "context": "The WSO can check the mode without looking at the front seat.",
+              "src": "m1",
+              "page": "80"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "rear-main-center",
+      "where": "front-center",
+      "name": "Rear main panel, displays and UFC",
+      "seat": 2,
+      "text": "The middle of the WSO's panel with the four displays, the keypad, the caution lights, the backup gauges and the ejection selector.",
+      "panels": [
+        {
+          "id": "rear-mpcd-left",
+          "name": "Left MPCD (rear, outboard)",
+          "db": "rear-mpcd",
+          "src": "m1",
+          "page": "84",
+          "text": "This is the colour screen at the far left of the WSO's panel. It has buttons around its edge and shows system data, sensor pictures and weapon information.",
+          "context": "The left hand controller of the WSO works the left screens. The A/G radar picture is not available on a colour screen.",
+          "controls": [
+            {
+              "id": "rear-mpcd-left-osb",
+              "name": "OSB 1-20 (option select buttons around the left colour screen)",
+              "type": "button",
+              "match": [
+                "PTN_1200",
+                "PTN_1201",
+                "PTN_1202",
+                "PTN_1203",
+                "PTN_1204",
+                "PTN_1205",
+                "PTN_1206",
+                "PTN_1207",
+                "PTN_1208",
+                "PTN_1209",
+                "PTN_1210",
+                "PTN_1211",
+                "PTN_1212",
+                "PTN_1213",
+                "PTN_1214",
+                "PTN_1215",
+                "PTN_1216",
+                "PTN_1217",
+                "PTN_1218",
+                "PTN_1219",
+                "item:rear-mpcd:2"
+              ],
+              "count": 20,
+              "text": "These 20 buttons run around the edge of the left colour screen. Each one chooses the word printed next to it on the screen, so every button changes its job from page to page.",
+              "context": "The WSO changes pages and options with them. The buttons are counted anticlockwise, starting at the top of the left side.",
+              "src": "m1",
+              "page": "84"
+            },
+            {
+              "id": "rear-mpcd-left-power",
+              "name": "Power rocker (left colour screen)",
+              "type": "rocker",
+              "match": [
+                "PTN_1221_1",
+                "PTN_1221_2",
+                "item:rear-mpcd:5"
+              ],
+              "count": 2,
+              "text": "This rocker switches the left colour screen on and off. One half turns it on, the other half off.",
+              "context": "The WSO switches the left colour screen on by hand, because no display starts by itself.",
+              "src": "m1",
+              "page": "84"
+            },
+            {
+              "id": "rear-mpcd-left-bright",
+              "name": "Brightness rocker (left colour screen)",
+              "type": "rocker",
+              "match": [
+                "PTN_1222_1",
+                "PTN_1222_2",
+                "item:rear-mpcd:3"
+              ],
+              "count": 2,
+              "text": "This rocker makes the picture of the left colour screen brighter or darker, together with the raster contrast.",
+              "context": "The WSO sets the left colour screen to the light in the cockpit.",
+              "src": "m1",
+              "page": "84"
+            },
+            {
+              "id": "rear-mpcd-left-contrast",
+              "name": "Contrast rocker (left colour screen)",
+              "type": "rocker",
+              "match": [
+                "PTN_1223_1",
+                "PTN_1223_2",
+                "item:rear-mpcd:4"
+              ],
+              "count": 2,
+              "text": "This rocker changes the contrast of the left colour screen: how strongly the shades of grey differ and how bright the lines are.",
+              "context": "The WSO sets the left colour screen together with its brightness rocker until the picture is easy to read.",
+              "src": "m1",
+              "page": "84"
+            },
+            {
+              "id": "rear-mpcd-left-bit",
+              "name": "BIT indicator (left colour screen)",
+              "type": "indicator",
+              "match": [
+                "item:rear-mpcd:1"
+              ],
+              "text": "A small ball behind a window of the left colour screen turns white when the display has failed its self-test.",
+              "context": "It tells the WSO that the left colour screen is not working. BIT means built-in test.",
+              "src": "m1",
+              "page": "84"
+            }
+          ]
+        },
+        {
+          "id": "rear-mpd-left",
+          "name": "Left MPD (rear, inboard)",
+          "db": "rear-mpd",
+          "src": "m1",
+          "page": "85",
+          "text": "This is the black-and-white screen left of the middle of the WSO's panel. It has buttons around its edge and shows system data, sensor pictures and weapons.",
+          "context": "The WSO uses it for the radar and weapon pages, side by side with the colour screens.",
+          "controls": [
+            {
+              "id": "rear-mpd-left-osb",
+              "name": "OSB 1-20 (option select buttons around the left black-and-white screen)",
+              "type": "button",
+              "match": [
+                "PTN_1224",
+                "PTN_1225",
+                "PTN_1226",
+                "PTN_1227",
+                "PTN_1228",
+                "PTN_1229",
+                "PTN_1230",
+                "PTN_1231",
+                "PTN_1232",
+                "PTN_1233",
+                "PTN_1234",
+                "PTN_1235",
+                "PTN_1236",
+                "PTN_1237",
+                "PTN_1238",
+                "PTN_1239",
+                "PTN_1240",
+                "PTN_1241",
+                "PTN_1242",
+                "PTN_1243",
+                "item:rear-mpd:2"
+              ],
+              "count": 20,
+              "text": "These 20 buttons run around the edge of the left black-and-white screen. Each one chooses the word printed next to it on the screen, so every button changes its job from page to page.",
+              "context": "The WSO uses them to pick radar, weapon and system pages. The buttons are counted anticlockwise, starting at the top of the left side.",
+              "src": "m1",
+              "page": "85"
+            },
+            {
+              "id": "rear-mpd-left-power",
+              "name": "Power rocker (left black-and-white screen)",
+              "type": "rocker",
+              "match": [
+                "PTN_1244_1",
+                "PTN_1244_2",
+                "item:rear-mpd:5"
+              ],
+              "count": 2,
+              "text": "This rocker switches the left black-and-white screen on and off. One half turns it on, the other half off.",
+              "context": "The WSO switches the left black-and-white screen on by hand, because no display starts by itself.",
+              "src": "m1",
+              "page": "85"
+            },
+            {
+              "id": "rear-mpd-left-bright",
+              "name": "Brightness rocker (left black-and-white screen)",
+              "type": "rocker",
+              "match": [
+                "PTN_1245_1",
+                "PTN_1245_2",
+                "item:rear-mpd:3"
+              ],
+              "count": 2,
+              "text": "This rocker raises or lowers the black level of the left black-and-white screen, so the picture gets lighter or darker.",
+              "context": "The WSO sets the left black-and-white screen to the light in the cockpit.",
+              "src": "m1",
+              "page": "85"
+            },
+            {
+              "id": "rear-mpd-left-contrast",
+              "name": "Contrast rocker (left black-and-white screen)",
+              "type": "rocker",
+              "match": [
+                "PTN_1246_1",
+                "PTN_1246_2",
+                "item:rear-mpd:4"
+              ],
+              "count": 2,
+              "text": "This rocker changes the contrast of the left black-and-white screen: how strongly the shades of grey differ and how bright the lines are.",
+              "context": "The WSO sets the left black-and-white screen together with its brightness rocker until the picture is easy to read.",
+              "src": "m1",
+              "page": "85"
+            },
+            {
+              "id": "rear-mpd-left-bit",
+              "name": "BIT indicator (left black-and-white screen)",
+              "type": "indicator",
+              "match": [
+                "item:rear-mpd:1"
+              ],
+              "text": "A small ball behind a window of the left black-and-white screen turns white when the display has failed its self-test.",
+              "context": "It tells the WSO that the left black-and-white screen is not working. BIT means built-in test.",
+              "src": "m1",
+              "page": "85"
+            }
+          ]
+        },
+        {
+          "id": "rear-mpd-right",
+          "name": "Right MPD (rear, inboard)",
+          "db": "rear-mpd",
+          "src": "m1",
+          "page": "85",
+          "text": "This is the black-and-white screen right of the middle of the WSO's panel. It has buttons around its edge for the pages and options.",
+          "context": "The right hand controller of the WSO works the right screens.",
+          "controls": [
+            {
+              "id": "rear-mpd-right-osb",
+              "name": "OSB 1-20 (option select buttons around the right black-and-white screen)",
+              "type": "button",
+              "match": [
+                "PTN_1247",
+                "PTN_1248",
+                "PTN_1249",
+                "PTN_1250",
+                "PTN_1251",
+                "PTN_1252",
+                "PTN_1253",
+                "PTN_1254",
+                "PTN_1255",
+                "PTN_1256",
+                "PTN_1257",
+                "PTN_1258",
+                "PTN_1259",
+                "PTN_1260",
+                "PTN_1261",
+                "PTN_1262",
+                "PTN_1263",
+                "PTN_1264",
+                "PTN_1265",
+                "PTN_1266",
+                "item:rear-mpd:2"
+              ],
+              "count": 20,
+              "text": "These 20 buttons run around the edge of the right black-and-white screen. Each one chooses the word printed next to it on the screen, so every button changes its job from page to page.",
+              "context": "The WSO picks the pages and options of the right side with them. The buttons are counted anticlockwise, starting at the top of the left side.",
+              "src": "m1",
+              "page": "85"
+            },
+            {
+              "id": "rear-mpd-right-power",
+              "name": "Power rocker (right black-and-white screen)",
+              "type": "rocker",
+              "match": [
+                "PTN_1267_1",
+                "PTN_1267_2",
+                "item:rear-mpd:5"
+              ],
+              "count": 2,
+              "text": "This rocker switches the right black-and-white screen on and off. One half turns it on, the other half off.",
+              "context": "The WSO switches the right black-and-white screen on by hand, because no display starts by itself.",
+              "src": "m1",
+              "page": "85"
+            },
+            {
+              "id": "rear-mpd-right-bright",
+              "name": "Brightness rocker (right black-and-white screen)",
+              "type": "rocker",
+              "match": [
+                "PTN_1268_1",
+                "PTN_1268_2",
+                "item:rear-mpd:3"
+              ],
+              "count": 2,
+              "text": "This rocker raises or lowers the black level of the right black-and-white screen, so the picture gets lighter or darker.",
+              "context": "The WSO sets the right black-and-white screen to the light in the cockpit.",
+              "src": "m1",
+              "page": "85"
+            },
+            {
+              "id": "rear-mpd-right-contrast",
+              "name": "Contrast rocker (right black-and-white screen)",
+              "type": "rocker",
+              "match": [
+                "PTN_1269_1",
+                "PTN_1269_2",
+                "item:rear-mpd:4"
+              ],
+              "count": 2,
+              "text": "This rocker changes the contrast of the right black-and-white screen: how strongly the shades of grey differ and how bright the lines are.",
+              "context": "The WSO sets the right black-and-white screen together with its brightness rocker until the picture is easy to read.",
+              "src": "m1",
+              "page": "85"
+            },
+            {
+              "id": "rear-mpd-right-bit",
+              "name": "BIT indicator (right black-and-white screen)",
+              "type": "indicator",
+              "match": [
+                "item:rear-mpd:1"
+              ],
+              "text": "A small ball behind a window of the right black-and-white screen turns white when the display has failed its self-test.",
+              "context": "It tells the WSO that the right black-and-white screen is not working. BIT means built-in test.",
+              "src": "m1",
+              "page": "85"
+            }
+          ]
+        },
+        {
+          "id": "rear-mpcd-right",
+          "name": "Right MPCD (rear, outboard)",
+          "db": "rear-mpcd",
+          "src": "m1",
+          "page": "84",
+          "text": "This is the colour screen at the far right of the WSO's panel. Like the others it has buttons around the edge and shows data, sensor pictures and weapon information.",
+          "context": "It is often used for the targeting camera or maps. The A/G radar page cannot be shown on it.",
+          "controls": [
+            {
+              "id": "rear-mpcd-right-osb",
+              "name": "OSB 1-20 (option select buttons around the right colour screen)",
+              "type": "button",
+              "match": [
+                "PTN_1270",
+                "PTN_1271",
+                "PTN_1272",
+                "PTN_1273",
+                "PTN_1274",
+                "PTN_1275",
+                "PTN_1276",
+                "PTN_1277",
+                "PTN_1278",
+                "PTN_1279",
+                "PTN_1280",
+                "PTN_1281",
+                "PTN_1282",
+                "PTN_1283",
+                "PTN_1284",
+                "PTN_1285",
+                "PTN_1286",
+                "PTN_1287",
+                "PTN_1288",
+                "PTN_1289",
+                "item:rear-mpcd:2"
+              ],
+              "count": 20,
+              "text": "These 20 buttons run around the edge of the right colour screen. Each one chooses the word printed next to it on the screen, so every button changes its job from page to page.",
+              "context": "The WSO moves between pages with them. The buttons are counted anticlockwise, starting at the top of the left side.",
+              "src": "m1",
+              "page": "84"
+            },
+            {
+              "id": "rear-mpcd-right-power",
+              "name": "Power rocker (right colour screen)",
+              "type": "rocker",
+              "match": [
+                "PTN_1290_1",
+                "PTN_1290_2",
+                "item:rear-mpcd:5"
+              ],
+              "count": 2,
+              "text": "This rocker switches the right colour screen on and off. One half turns it on, the other half off.",
+              "context": "The WSO switches the right colour screen on by hand, because no display starts by itself.",
+              "src": "m1",
+              "page": "84"
+            },
+            {
+              "id": "rear-mpcd-right-bright",
+              "name": "Brightness rocker (right colour screen)",
+              "type": "rocker",
+              "match": [
+                "PTN_1291_1",
+                "PTN_1291_2",
+                "item:rear-mpcd:3"
+              ],
+              "count": 2,
+              "text": "This rocker makes the picture of the right colour screen brighter or darker, together with the raster contrast.",
+              "context": "The WSO sets the right colour screen to the light in the cockpit.",
+              "src": "m1",
+              "page": "84"
+            },
+            {
+              "id": "rear-mpcd-right-contrast",
+              "name": "Contrast rocker (right colour screen)",
+              "type": "rocker",
+              "match": [
+                "PTN_1292_1",
+                "PTN_1292_2",
+                "item:rear-mpcd:4"
+              ],
+              "count": 2,
+              "text": "This rocker changes the contrast of the right colour screen: how strongly the shades of grey differ and how bright the lines are.",
+              "context": "The WSO sets the right colour screen together with its brightness rocker until the picture is easy to read.",
+              "src": "m1",
+              "page": "84"
+            },
+            {
+              "id": "rear-mpcd-right-bit",
+              "name": "BIT indicator (right colour screen)",
+              "type": "indicator",
+              "match": [
+                "item:rear-mpcd:1"
+              ],
+              "text": "A small ball behind a window of the right colour screen turns white when the display has failed its self-test.",
+              "context": "It tells the WSO that the right colour screen is not working. BIT means built-in test.",
+              "src": "m1",
+              "page": "84"
+            }
+          ]
+        },
+        {
+          "id": "rear-ufc",
+          "name": "Upfront control panel (rear)",
+          "db": "rear-ufc",
+          "src": "m1",
+          "page": "88",
+          "text": "This is the WSO's own keypad with a small six-line text screen, the same sort of panel as the pilot's. The WSO types numbers, letters and radio channels here.",
+          "context": "Both UFCs show the same data, so either crew member can enter the radio settings or the route points.",
+          "controls": [
+            {
+              "id": "r-ufc-fn",
+              "name": "UFC function buttons 1-10",
+              "type": "button",
+              "match": [
+                "PTN_1298",
+                "PTN_1299",
+                "PTN_1300",
+                "PTN_1301",
+                "PTN_1302",
+                "PTN_1293",
+                "PTN_1294",
+                "PTN_1295",
+                "PTN_1296",
+                "PTN_1297",
+                "item:rear-ufc:1"
+              ],
+              "count": 10,
+              "text": "These ten buttons sit beside the small text screen. Each one picks the menu line written next to it.",
+              "context": "Their job changes with the page on the screen. The WSO uses them to set the radios, the route and the weapons.",
+              "src": "m1",
+              "page": "88"
+            },
+            {
+              "id": "r-ufc-display",
+              "name": "UFC display (six text lines)",
+              "type": "display",
+              "match": [
+                "item:rear-ufc:2"
+              ],
+              "text": "This screen shows six lines with 20 characters each: the menus and the numbers typed on the keypad.",
+              "context": "Rows 5 and 6 are used only for the radios, according to the manual.",
+              "src": "m1",
+              "page": "88"
+            },
+            {
+              "id": "r-ufc-lradio",
+              "name": "Left radio channel knob",
+              "type": "knob",
+              "match": [
+                "PTN_1303",
+                "item:rear-ufc:3"
+              ],
+              "text": "This knob turns on the left radio and picks one of its stored channels. A channel is a saved radio frequency.",
+              "context": "It works like a station button on a car radio.",
+              "src": "m1",
+              "page": "88"
+            },
+            {
+              "id": "r-ufc-rradio",
+              "name": "Right radio channel knob",
+              "type": "knob",
+              "match": [
+                "PTN_1305",
+                "item:rear-ufc:4"
+              ],
+              "text": "This knob turns on the right radio and picks one of its stored channels.",
+              "context": "It is the same as the left one but for the other radio.",
+              "src": "m1",
+              "page": "88"
+            },
+            {
+              "id": "r-ufc-vol13",
+              "name": "Radio 1 / 3 volume knobs",
+              "type": "knob",
+              "match": [
+                "PTN_1307",
+                "PTN_1309",
+                "item:rear-ufc:5"
+              ],
+              "count": 2,
+              "text": "These two knobs set the headset volume of radio 1 (outer knob) and radio 3 (inner, larger knob).",
+              "context": "The manual says only radios 1 and 2 are simulated at the moment.",
+              "src": "m1",
+              "page": "88"
+            },
+            {
+              "id": "r-ufc-vol24",
+              "name": "Radio 2 / 4 volume knobs",
+              "type": "knob",
+              "match": [
+                "PTN_1308",
+                "PTN_1310",
+                "item:rear-ufc:6"
+              ],
+              "count": 2,
+              "text": "These two knobs set the headset volume of radio 2 (outer knob) and radio 4 (inner, larger knob).",
+              "context": "They are the partner of the radio 1 / 3 knobs.",
+              "src": "m1",
+              "page": "88"
+            },
+            {
+              "id": "r-ufc-bright",
+              "name": "UFC LCD brightness knob",
+              "type": "knob",
+              "match": [
+                "PTN_1311",
+                "item:rear-ufc:7"
+              ],
+              "text": "This knob changes how bright the keypad screen is. At the end of its travel it switches the UFC off.",
+              "context": "The WSO turns it on when starting up.",
+              "src": "m1",
+              "page": "88"
+            },
+            {
+              "id": "r-ufc-digits",
+              "name": "UFC letter and number keys (1/A to 0/-)",
+              "type": "keypad",
+              "match": [
+                "PTN_1314",
+                "PTN_1315",
+                "PTN_1316",
+                "PTN_1319",
+                "PTN_1320",
+                "PTN_1321",
+                "PTN_1324",
+                "PTN_1325",
+                "PTN_1326",
+                "PTN_1330",
+                "item:rear-ufc:8"
+              ],
+              "count": 10,
+              "text": "These ten keys give the digits 0 to 9. With the SHF key pressed first, they give the letter on them instead, which is needed for positions and names.",
+              "context": "Typing goes through the scratchpad (the line where typed values appear) and is then sent to the function the WSO chose.",
+              "src": "m1",
+              "page": "88"
+            },
+            {
+              "id": "r-ufc-ip",
+              "name": "I/P key (IFF identification)",
+              "type": "button",
+              "match": [
+                "PTN_1322"
+              ],
+              "text": "This key starts the IFF identification of position. IFF is the radio box that answers 'who are you' questions.",
+              "context": "It is one of the UFC keys. The manual describes it in one line.",
+              "src": "m1",
+              "page": "88"
+            },
+            {
+              "id": "r-ufc-dot",
+              "name": "Decimal point key",
+              "type": "button",
+              "match": [
+                "PTN_1323"
+              ],
+              "text": "This key types a decimal point into the number being entered.",
+              "context": "It is rarely needed, because the system puts the point in by itself.",
+              "src": "m1",
+              "page": "88"
+            },
+            {
+              "id": "r-ufc-ap",
+              "name": "A/P key (autopilot)",
+              "type": "button",
+              "match": [
+                "PTN_1328"
+              ],
+              "text": "This key calls up the autopilot format and couples the autopilot. The autopilot keeps the height or heading of the plane for the crew.",
+              "context": "It is the same key as the pilot's. The pilot's paddle switch disengages the autopilot.",
+              "src": "m1",
+              "page": "88"
+            },
+            {
+              "id": "r-ufc-clr",
+              "name": "CLR key (clear)",
+              "type": "button",
+              "match": [
+                "PTN_1329"
+              ],
+              "text": "This key deletes what was typed: the last digit with the first press and the whole entry with a second press.",
+              "context": "If nothing is typed, it clears the lines of the text screen.",
+              "src": "m1",
+              "page": "88"
+            },
+            {
+              "id": "r-ufc-data",
+              "name": "DATA key",
+              "type": "button",
+              "match": [
+                "PTN_1331"
+              ],
+              "text": "This key shows the DATA pages of the UFC, which give information such as the bearing and range to the next steer point. These pages are for reading.",
+              "context": "A second press shows the DATA 2 page.",
+              "src": "m1",
+              "page": "88"
+            },
+            {
+              "id": "r-ufc-shift",
+              "name": "SHF key (shift)",
+              "type": "button",
+              "match": [
+                "PTN_1327"
+              ],
+              "text": "This key makes the next key press give its letter. It works like the shift key on a computer.",
+              "context": "It is needed for the N, S, W and E of a position.",
+              "src": "m1",
+              "page": "88"
+            },
+            {
+              "id": "r-ufc-menu",
+              "name": "MENU key",
+              "type": "button",
+              "match": [
+                "PTN_1332"
+              ],
+              "text": "This key shows the menu pages of the UFC. On them the crew can enter or change data.",
+              "context": "A second press of the key shows the MENU 2 page of the UFC.",
+              "src": "m1",
+              "page": "88"
+            },
+            {
+              "id": "r-ufc-mark",
+              "name": "MARK key",
+              "type": "button",
+              "match": [
+                "PTN_1318"
+              ],
+              "text": "This key marks a point and selects a marked point for display.",
+              "context": "The manual describes it in one short line.",
+              "src": "m1",
+              "page": "88"
+            },
+            {
+              "id": "r-ufc-grec",
+              "name": "Left and right GREC C/M keys",
+              "type": "button",
+              "match": [
+                "PTN_1313",
+                "PTN_1317"
+              ],
+              "count": 2,
+              "text": "These keys are for the guard receiver (GREC), a radio listening on the emergency frequency. They also switch a radio between a stored channel and a typed frequency.",
+              "context": "One belongs to the left radio, the other to the right radio.",
+              "src": "m1",
+              "page": "88"
+            },
+            {
+              "id": "r-ufc-emis",
+              "name": "EMIS LMT key (emission limit)",
+              "type": "button",
+              "match": [
+                "PTN_1312",
+                "item:rear-ufc:9"
+              ],
+              "text": "This key limits what the plane sends out by radio and radar, so that enemy sensors find it less easily. Pressing it again undoes the limit.",
+              "context": "The EMIS LMT light comes on when it is selected.",
+              "src": "m1",
+              "page": "88"
+            }
+          ]
+        },
+        {
+          "id": "rear-standby-instruments",
+          "name": "Rear standby instruments",
+          "db": "rear-standby-instruments",
+          "src": "m1",
+          "page": "82",
+          "text": "These are the WSO's backup gauges for height, speed, attitude, fuel and time, with the emergency brake handle and the pedal knob.",
+          "context": "They let the WSO see the state of the plane without the pilot's help.",
+          "controls": [
+            {
+              "id": "rs-cabin-alt",
+              "name": "Cabin pressure altimeter",
+              "type": "gauge",
+              "match": [
+                "item:rear-standby-instruments:1"
+              ],
+              "text": "This gauge shows the air pressure in the cockpit as a height, from 0 to 50,000 feet.",
+              "context": "On the ground it should show the height of the airfield.",
+              "src": "m1",
+              "page": "82"
+            },
+            {
+              "id": "rs-airspeed",
+              "name": "Standby airspeed indicator",
+              "type": "gauge",
+              "match": [
+                "item:rear-standby-instruments:2"
+              ],
+              "text": "This round gauge shows the speed through the air, from 60 to 850 knots.",
+              "context": "It works without the main displays.",
+              "src": "m1",
+              "page": "82"
+            },
+            {
+              "id": "rs-adi",
+              "name": "Standby attitude indicator and cage knob",
+              "type": "gauge",
+              "match": [
+                "PTN_1354",
+                "item:rear-standby-instruments:3"
+              ],
+              "text": "This gauge shows if the nose is up or down and the wings are level, like a small horizon. Pull the knob to uncage (start) the gyro.",
+              "context": "It is the backup horizon of the WSO.",
+              "src": "m1",
+              "page": "82"
+            },
+            {
+              "id": "rs-alt",
+              "name": "Standby altimeter",
+              "type": "gauge",
+              "match": [
+                "item:rear-standby-instruments:4"
+              ],
+              "text": "This gauge shows the height above sea level, with a window for the air pressure setting.",
+              "context": "The pressure setting is changed with the knob next to it.",
+              "src": "m1",
+              "page": "82"
+            },
+            {
+              "id": "rs-baro",
+              "name": "Barometric setting knob",
+              "type": "knob",
+              "match": [
+                "PTN_1364"
+              ],
+              "text": "This knob sets the air pressure shown in the altimeter's window. Turning it changes what the gauge reads.",
+              "context": "The right pressure makes the height reading correct.",
+              "src": "m1",
+              "page": "82"
+            },
+            {
+              "id": "rs-fuel",
+              "name": "Fuel quantity indicator",
+              "type": "gauge",
+              "match": [
+                "item:rear-standby-instruments:5"
+              ],
+              "text": "This gauge shows the internal fuel with a pointer and the total fuel with a counter.",
+              "context": "The WSO can watch the fuel while the pilot flies.",
+              "src": "m1",
+              "page": "82"
+            },
+            {
+              "id": "rs-clock",
+              "name": "Eight day clock",
+              "type": "gauge",
+              "match": [
+                "item:rear-standby-instruments:6"
+              ],
+              "text": "This is the clock with a stopwatch in the back seat. Unless changed, it shows the local time.",
+              "context": "The WSO can use it for timing.",
+              "src": "m1",
+              "page": "82"
+            },
+            {
+              "id": "rs-clock-adj",
+              "name": "Clock adjust knob",
+              "type": "knob",
+              "match": [
+                "PTN_1382"
+              ],
+              "text": "This knob sets the time shown by the WSO's clock. Turn it to move the hands to the right time.",
+              "context": "It is used before the flight to set the right time.",
+              "src": "m1",
+              "page": "82"
+            },
+            {
+              "id": "rs-timer",
+              "name": "Timer stop knob",
+              "type": "knob",
+              "match": [
+                "PTN_1383"
+              ],
+              "text": "This knob starts, stops and resets the stopwatch part of the clock in the back seat.",
+              "context": "The WSO uses the stopwatch for timed legs of the route.",
+              "src": "m1",
+              "page": "82"
+            },
+            {
+              "id": "rs-vvi",
+              "name": "Vertical velocity indicator",
+              "type": "gauge",
+              "match": [
+                "item:rear-standby-instruments:7"
+              ],
+              "text": "This gauge shows how fast the plane climbs or sinks.",
+              "context": "An OFF flag shows when power is lost.",
+              "src": "m1",
+              "page": "82"
+            },
+            {
+              "id": "rs-emerg-brake",
+              "name": "Emergency brake / steering handle",
+              "type": "handle",
+              "match": [
+                "PTN_1345",
+                "item:rear-standby-instruments:8"
+              ],
+              "text": "Pulling this handle gives extra power to the wheel brakes and the front wheel steering from the JFS accumulator, a store of pressure.",
+              "context": "It is for a failure of the brakes. There is one in each cockpit.",
+              "src": "m1",
+              "page": "82"
+            },
+            {
+              "id": "rs-pedal",
+              "name": "Rudder pedal adjust knob",
+              "type": "knob",
+              "match": [
+                "PTN_1346",
+                "item:rear-standby-instruments:9"
+              ],
+              "text": "When this knob is pulled the rudder pedals come loose and can be moved forward or back.",
+              "context": "The WSO sets it once for comfort.",
+              "src": "m1",
+              "page": "82"
+            }
+          ]
+        },
+        {
+          "id": "rear-caution-lights",
+          "name": "Rear warning / caution / advisory lights",
+          "db": "rear-caution-lights",
+          "src": "m1",
+          "page": "86",
+          "text": "This board of lights repeats the warnings and cautions for the WSO. Red lights mean danger, amber lights mean something needs attention, and green lights only inform.",
+          "context": "When a caution comes on, the MASTER CAUTION light also comes on, and the displays give details.",
+          "controls": [
+            {
+              "id": "rc-master",
+              "name": "MASTER CAUTION light and button",
+              "type": "button",
+              "match": [
+                "PTN_1176",
+                "item:rear-caution-lights:1"
+              ],
+              "text": "This light comes on with most amber cautions. Pressing it puts the light out in both cockpits.",
+              "context": "The WSO reads on the displays what the caution is about and then presses the button.",
+              "src": "m1",
+              "page": "86"
+            },
+            {
+              "id": "rc-engine",
+              "name": "ENGINE light",
+              "type": "light",
+              "match": [
+                "item:rear-caution-lights:2"
+              ],
+              "text": "This light is labelled ENGINE. Engine system failure; details are on the displays.",
+              "context": "The pilot sees the same light in the front seat; the displays give the details.",
+              "src": "m1",
+              "page": "86"
+            },
+            {
+              "id": "rc-l-gen",
+              "name": "L GEN light",
+              "type": "light",
+              "match": [
+                "item:rear-caution-lights:3"
+              ],
+              "text": "This light is labelled L GEN. The left generator has failed.",
+              "context": "The right generator can carry the load alone, and the WSO tells the pilot over the intercom.",
+              "src": "m1",
+              "page": "86"
+            },
+            {
+              "id": "rc-r-gen",
+              "name": "R GEN light",
+              "type": "light",
+              "match": [
+                "item:rear-caution-lights:4"
+              ],
+              "text": "This light is labelled R GEN. The right generator has failed.",
+              "context": "The left generator can carry the load alone, and the WSO tells the pilot over the intercom.",
+              "src": "m1",
+              "page": "86"
+            },
+            {
+              "id": "rc-hyd",
+              "name": "HYD light",
+              "type": "light",
+              "match": [
+                "item:rear-caution-lights:5"
+              ],
+              "text": "This light is labelled HYD. A hydraulic failure.",
+              "context": "The hydraulic gauges in the front cockpit show the pressures; the displays give details.",
+              "src": "m1",
+              "page": "86"
+            },
+            {
+              "id": "rc-flt-control",
+              "name": "FLT CONTROL light",
+              "type": "light",
+              "match": [
+                "item:rear-caution-lights:6"
+              ],
+              "text": "This light is labelled FLT CONTROL. A failure in the flight controls.",
+              "context": "The displays give the details of which part of the flight controls failed.",
+              "src": "m1",
+              "page": "86"
+            },
+            {
+              "id": "rc-emis-lmt",
+              "name": "EMIS LMT light",
+              "type": "light",
+              "match": [
+                "item:rear-caution-lights:7"
+              ],
+              "text": "This light is labelled EMIS LMT. The emission limit is selected.",
+              "context": "It reminds the WSO that the plane is working in quiet mode, sending out less.",
+              "src": "m1",
+              "page": "86"
+            },
+            {
+              "id": "rc-av-bit",
+              "name": "AV BIT light",
+              "type": "light",
+              "match": [
+                "item:rear-caution-lights:8"
+              ],
+              "text": "This light is labelled AV BIT. The avionics self-test found a failure.",
+              "context": "Details of the failure are on the BIT page of the displays.",
+              "src": "m1",
+              "page": "86"
+            },
+            {
+              "id": "rc-fuel-low",
+              "name": "FUEL LOW light",
+              "type": "light",
+              "match": [
+                "item:rear-caution-lights:9"
+              ],
+              "text": "This light is labelled FUEL LOW. A feed tank is low.",
+              "context": "The pilot should plan a landing soon when this light is on.",
+              "src": "m1",
+              "page": "86"
+            },
+            {
+              "id": "rc-master-arm",
+              "name": "MASTER ARM light",
+              "type": "light",
+              "match": [
+                "item:rear-caution-lights:10"
+              ],
+              "text": "This light is labelled MASTER ARM. The master arm switch is in the armed position.",
+              "context": "The WSO sees at once that the weapons are live.",
+              "src": "m1",
+              "page": "86"
+            },
+            {
+              "id": "rc-nuclear",
+              "name": "NUCLEAR light",
+              "type": "light",
+              "match": [
+                "item:rear-caution-lights:11"
+              ],
+              "text": "This light is labelled NUCLEAR. A malfunction of the nuclear weapon system.",
+              "context": "Nuclear weapons are not simulated in DCS, but the light is on the panel.",
+              "src": "m1",
+              "page": "86"
+            },
+            {
+              "id": "rc-ap",
+              "name": "A/P light",
+              "type": "light",
+              "match": [
+                "item:rear-caution-lights:12"
+              ],
+              "text": "This light is labelled A/P. The autopilot is engaged.",
+              "context": "The pilot can disengage the autopilot with the paddle switch on the stick.",
+              "src": "m1",
+              "page": "86"
+            },
+            {
+              "id": "rc-unarmed",
+              "name": "UNARMED / NO ATF light",
+              "type": "light",
+              "match": [
+                "item:rear-caution-lights:13"
+              ],
+              "text": "This light is labelled UNARMED / NO ATF. Auto flyup or auto terrain following is not available.",
+              "context": "It belongs to the terrain following system; the manual describes it there.",
+              "src": "m1",
+              "page": "86"
+            },
+            {
+              "id": "rc-program",
+              "name": "PROGRAM light",
+              "type": "light",
+              "match": [
+                "item:rear-caution-lights:14"
+              ],
+              "text": "This light is labelled PROGRAM. The semi-auto countermeasure program is ready.",
+              "context": "The crew can release decoys with one press while this light is on.",
+              "src": "m1",
+              "page": "86"
+            },
+            {
+              "id": "rc-chaff",
+              "name": "CHAFF light",
+              "type": "light",
+              "match": [
+                "item:rear-caution-lights:15"
+              ],
+              "text": "This light is labelled CHAFF. Flashing: chaff is being dispensed. Steady: chaff is used up.",
+              "context": "Chaff is a cloud of metal strips that fools radar-guided missiles.",
+              "src": "m1",
+              "page": "86"
+            },
+            {
+              "id": "rc-flare",
+              "name": "FLARE light",
+              "type": "light",
+              "match": [
+                "item:rear-caution-lights:16"
+              ],
+              "text": "This light is labelled FLARE. Flashing: flares are being dispensed. Steady: flares are used up.",
+              "context": "Flares are burning decoys that fool heat-seeking missiles.",
+              "src": "m1",
+              "page": "86"
+            },
+            {
+              "id": "rc-minimum",
+              "name": "MINIMUM light",
+              "type": "light",
+              "match": [
+                "item:rear-caution-lights:17"
+              ],
+              "text": "This light is labelled MINIMUM. Chaff or flares are low.",
+              "context": "The crew knows that only a few decoys remain.",
+              "src": "m1",
+              "page": "86"
+            },
+            {
+              "id": "rc-disp-flow",
+              "name": "DISPLAY FLOW LOW light",
+              "type": "light",
+              "match": [
+                "item:rear-caution-lights:18"
+              ],
+              "text": "This light is labelled DISPLAY FLOW LOW. Not enough cooling air for the displays.",
+              "context": "The screens need cooling air, and without it they may fail.",
+              "src": "m1",
+              "page": "86"
+            },
+            {
+              "id": "rc-oxygen",
+              "name": "OXYGEN light",
+              "type": "light",
+              "match": [
+                "item:rear-caution-lights:19"
+              ],
+              "text": "This light is labelled OXYGEN. A failure in the oxygen system.",
+              "context": "The crew needs breathing oxygen at height, so this light matters.",
+              "src": "m1",
+              "page": "86"
+            },
+            {
+              "id": "rc-fire-l",
+              "name": "ENGINE FIRE LEFT light",
+              "type": "light",
+              "match": [
+                "item:rear-caution-lights:20"
+              ],
+              "text": "This light is labelled ENGINE FIRE LEFT. A fire in the left engine. The WSO has no extinguisher controls.",
+              "context": "The pilot has the extinguisher controls; the WSO tells the pilot over the intercom.",
+              "src": "m1",
+              "page": "86"
+            },
+            {
+              "id": "rc-fire-r",
+              "name": "ENGINE FIRE RIGHT light",
+              "type": "light",
+              "match": [
+                "item:rear-caution-lights:21"
+              ],
+              "text": "This light is labelled ENGINE FIRE RIGHT. A fire in the right engine.",
+              "context": "The pilot has the extinguisher controls in the front seat.",
+              "src": "m1",
+              "page": "86"
+            },
+            {
+              "id": "rc-canopy",
+              "name": "CANOPY UNLOCKED light",
+              "type": "light",
+              "match": [
+                "item:rear-caution-lights:22"
+              ],
+              "text": "This light is labelled CANOPY UNLOCKED. The canopy is not locked.",
+              "context": "The crew checks that it is off before takeoff.",
+              "src": "m1",
+              "page": "86"
+            },
+            {
+              "id": "rc-low-alt",
+              "name": "LOW ALT light",
+              "type": "light",
+              "match": [
+                "item:rear-caution-lights:23"
+              ],
+              "text": "This light is labelled LOW ALT. The plane is below the low altitude warning height or below 75 percent of the set clearance.",
+              "context": "It helps the crew to fly low on purpose without getting too close to the ground.",
+              "src": "m1",
+              "page": "86"
+            },
+            {
+              "id": "rc-ai",
+              "name": "AI light",
+              "type": "light",
+              "match": [
+                "item:rear-caution-lights:24"
+              ],
+              "text": "This light is labelled AI. A threat from an enemy air intercept radar is detected.",
+              "context": "The WSO checks the warning display and, if needed, uses the countermeasures.",
+              "src": "m1",
+              "page": "86"
+            },
+            {
+              "id": "rc-sam",
+              "name": "SAM light",
+              "type": "light",
+              "match": [
+                "item:rear-caution-lights:25"
+              ],
+              "text": "This light is labelled SAM. A threat from a surface-to-air missile radar is detected.",
+              "context": "A ground missile radar is looking at the plane, so the WSO checks the warning display.",
+              "src": "m1",
+              "page": "86"
+            },
+            {
+              "id": "rc-obstacle",
+              "name": "OBSTACLE light",
+              "type": "light",
+              "match": [
+                "item:rear-caution-lights:26"
+              ],
+              "text": "This light is labelled OBSTACLE. An obstacle ahead needs more than 2 G to avoid: climb or turn.",
+              "context": "It belongs to the terrain following system.",
+              "src": "m1",
+              "page": "86"
+            },
+            {
+              "id": "rc-tf-fail",
+              "name": "TF FAIL light",
+              "type": "light",
+              "match": [
+                "item:rear-caution-lights:27"
+              ],
+              "text": "This light is labelled TF FAIL. Terrain following is not working normally.",
+              "context": "When it comes on the crew should not rely on terrain following information.",
+              "src": "m1",
+              "page": "86"
+            }
+          ]
+        },
+        {
+          "id": "command-selector-valve",
+          "name": "Command selector valve",
+          "db": "command-selector-valve",
+          "src": "m1",
+          "page": "89",
+          "text": "This handle in the back seat chooses who is ejected when an ejection handle is pulled. It exists only in the rear cockpit.",
+          "context": "The setting AFT INITIATION is the expected one for almost all flights.",
+          "controls": [
+            {
+              "id": "csv",
+              "name": "Command selector valve (NORM / AFT INITIATION / SOLO)",
+              "type": "selector",
+              "match": [
+                "PTN_1386",
+                "item:command-selector-valve:1"
+              ],
+              "positions": [
+                {
+                  "name": "NORM",
+                  "text": "The WSO alone ejects if the WSO pulls a handle. If the pilot pulls, both go, the rear seat first."
+                },
+                {
+                  "name": "AFT INITIATE",
+                  "text": "Both seats eject, the rear seat first, whichever seat pulls the handle."
+                },
+                {
+                  "name": "SOLO",
+                  "text": "Only for a flight with the pilot alone. Only the pilot ejects and the rear seat is disabled."
+                }
+              ],
+              "text": "To use this handle, pull it all the way back and turn it. It sets the ejection sequence of the two seats.",
+              "context": "The ejection seat is the seat that shoots the crew out in an emergency.",
+              "src": "m1",
+              "page": "89"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "rear-right-console",
+      "where": "right-console",
+      "name": "Rear right console",
+      "seat": 2,
+      "text": "The right console in the back seat with the oxygen, lights, electronic warfare and countermeasures panels.",
+      "panels": [
+        {
+          "id": "rear-oxygen-regulator",
+          "name": "Oxygen regulator (rear)",
+          "db": "rear-oxygen-regulator",
+          "src": "m1",
+          "page": "91",
+          "text": "This is the oxygen panel of the WSO. It is the same as the pilot's panel and controls the system that makes breathing gas out of engine air.",
+          "context": "The WSO switches it on as part of the start-up in the back seat.",
+          "controls": [
+            {
+              "id": "ro2-supply",
+              "name": "Supply mode lever (OFF / ON / PBG)",
+              "type": "lever",
+              "match": [
+                "PTN_1452",
+                "item:rear-oxygen-regulator:1"
+              ],
+              "positions": [
+                {
+                  "name": "OFF",
+                  "text": "Electrical power is off for the system."
+                },
+                {
+                  "name": "ON",
+                  "text": "Breathing gas, with pressure rising as altitude rises."
+                },
+                {
+                  "name": "PBG",
+                  "text": "As ON, with pressure also following the G load."
+                }
+              ],
+              "text": "This lever switches the breathing gas on or off. PBG adds extra pressure breathing when the plane pulls many G.",
+              "context": "G is the strong pull into the seat in turns.",
+              "src": "m1",
+              "page": "91"
+            },
+            {
+              "id": "ro2-diluter",
+              "name": "Diluter switch (100% / NORM)",
+              "type": "switch2",
+              "match": [
+                "PTN_1451",
+                "item:rear-oxygen-regulator:2"
+              ],
+              "positions": [
+                {
+                  "name": "100%",
+                  "text": "Pure oxygen."
+                },
+                {
+                  "name": "NORM",
+                  "text": "Mixed with cabin air depending on altitude."
+                }
+              ],
+              "text": "This switch picks pure oxygen (100%) or oxygen mixed with cabin air (NORM) for the WSO's mask.",
+              "context": "NORM is the usual choice for normal flight.",
+              "src": "m1",
+              "page": "91"
+            },
+            {
+              "id": "ro2-emerg",
+              "name": "Emergency lever (EMERGENCY / NORMAL / TEST MASK)",
+              "type": "lever",
+              "match": [
+                "PTN_1450",
+                "item:rear-oxygen-regulator:3"
+              ],
+              "positions": [
+                {
+                  "name": "EMERGENCY",
+                  "text": "Continuous pressure to the mask."
+                },
+                {
+                  "name": "NORMAL",
+                  "text": "Gas on demand."
+                },
+                {
+                  "name": "TEST MASK",
+                  "text": "Tests the mask. It springs back."
+                }
+              ],
+              "text": "This lever picks emergency flow, normal flow or a mask test.",
+              "context": "TEST MASK springs back; it is used to check the mask.",
+              "src": "m1",
+              "page": "91"
+            },
+            {
+              "id": "ro2-flow",
+              "name": "Flow indicator",
+              "type": "indicator",
+              "match": [
+                "item:rear-oxygen-regulator:4"
+              ],
+              "text": "This indicator turns white when gas flows with a breath and black when not.",
+              "context": "The WSO sees that the gas is flowing.",
+              "src": "m1",
+              "page": "91"
+            },
+            {
+              "id": "ro2-pressure",
+              "name": "Oxygen pressure gauge",
+              "type": "gauge",
+              "match": [
+                "item:rear-oxygen-regulator:5"
+              ],
+              "text": "This gauge shows the pressure of the gas coming to the regulator.",
+              "context": "It shows that the system is supplying gas.",
+              "src": "m1",
+              "page": "91"
+            }
+          ]
+        },
+        {
+          "id": "rear-interior-lights",
+          "name": "Interior lights control panel (rear)",
+          "db": "rear-interior-lights",
+          "src": "m1",
+          "page": "92",
+          "text": "This panel holds the knobs for the lights in the back cockpit, from OFF to BRIGHT.",
+          "context": "The WSO sets them for night flying and for reading charts.",
+          "controls": [
+            {
+              "id": "ril-console",
+              "name": "Console lights knob",
+              "type": "knob",
+              "match": [
+                "PTN_1456",
+                "item:rear-interior-lights:1"
+              ],
+              "text": "This knob sets the brightness of the console lighting in the back seat.",
+              "context": "The WSO uses it for night flying, when the console must be lit.",
+              "src": "m1",
+              "page": "92"
+            },
+            {
+              "id": "ril-inst",
+              "name": "Instrument panel lights knob",
+              "type": "knob",
+              "match": [
+                "PTN_1457",
+                "item:rear-interior-lights:2"
+              ],
+              "text": "This knob sets the brightness of the lighting of the instruments in front of the WSO.",
+              "context": "The compass light follows this knob.",
+              "src": "m1",
+              "page": "92"
+            },
+            {
+              "id": "ril-test",
+              "name": "Lights test button",
+              "type": "button",
+              "match": [
+                "PTN_1459",
+                "item:rear-interior-lights:3"
+              ],
+              "text": "This button lights all working warning, caution and advisory lights in the back seat so that the bulbs can be checked. In the real plane it is a switch that springs back to OFF.",
+              "context": "The takeoff trim light is not included.",
+              "src": "m1",
+              "page": "92"
+            },
+            {
+              "id": "ril-ufc",
+              "name": "UFC panel backlight knob",
+              "type": "knob",
+              "match": [
+                "PTN_1458",
+                "item:rear-interior-lights:4"
+              ],
+              "text": "This knob sets the lighting of the WSO's keypad panel.",
+              "context": "The WSO uses it in the dark so the keypad can be read.",
+              "src": "m1",
+              "page": "92"
+            },
+            {
+              "id": "ril-compass",
+              "name": "Compass lights switch",
+              "type": "switch2",
+              "match": [
+                "PTN_1460",
+                "item:rear-interior-lights:5"
+              ],
+              "positions": [
+                {
+                  "name": "ON",
+                  "text": "The compass light is on."
+                },
+                {
+                  "name": "OFF",
+                  "text": "The compass light is off."
+                }
+              ],
+              "text": "This switch turns the compass light on or off. Its brightness follows the instrument knob.",
+              "context": "The WSO uses it at night, when the compass is hard to read.",
+              "src": "m1",
+              "page": "92"
+            },
+            {
+              "id": "ril-chart",
+              "name": "Chart light knob and chart panel light knob",
+              "type": "knob",
+              "match": [
+                "PTN_188",
+                "PTN_1462",
+                "item:rear-interior-lights:6"
+              ],
+              "count": 2,
+              "text": "These two knobs set lights for reading maps and papers in the back seat. The game names them chart light and chart panel lights.",
+              "context": "The WSO reads the charts while the pilot flies.",
+              "src": "m1",
+              "page": "92"
+            },
+            {
+              "id": "ril-display",
+              "name": "Displays day / night switch",
+              "type": "switch2",
+              "match": [
+                "PTN_1461",
+                "item:rear-interior-lights:7"
+              ],
+              "positions": [
+                {
+                  "name": "DAY",
+                  "text": "The displays can be bright."
+                },
+                {
+                  "name": "NIGHT",
+                  "text": "The displays are limited to a darker maximum."
+                }
+              ],
+              "text": "This switch sets how bright the four displays may get: day or night.",
+              "context": "It is changed with the time of day.",
+              "src": "m1",
+              "page": "92"
+            },
+            {
+              "id": "ril-warn",
+              "name": "Warning / caution lights knob",
+              "type": "knob",
+              "match": [
+                "PTN_1463",
+                "item:rear-interior-lights:8"
+              ],
+              "text": "This knob sets the brightness of the warning and caution lights. In the game a right click resets it when it is at BRT.",
+              "context": "The WSO dims the lights at night.",
+              "src": "m1",
+              "page": "92"
+            },
+            {
+              "id": "ril-flood",
+              "name": "Storm / flood lights knob",
+              "type": "knob",
+              "match": [
+                "PTN_1464",
+                "item:rear-interior-lights:9"
+              ],
+              "text": "This knob sets the flood lights that light up the whole cockpit.",
+              "context": "The WSO uses them when the whole cockpit needs light.",
+              "src": "m1",
+              "page": "92"
+            }
+          ]
+        },
+        {
+          "id": "tews-panel",
+          "name": "TEWS control panel",
+          "db": "tews-panel",
+          "src": "m1",
+          "page": "92",
+          "text": "TEWS is the tactical electronic warfare system: the radar warning receiver, the internal jammer, the warning set and the decoy dispenser. This panel has their power switches.",
+          "context": "The WSO runs the electronic defence in flight.",
+          "controls": [
+            {
+              "id": "tews-tone",
+              "name": "EWWS tone / defeat switch",
+              "type": "switch2",
+              "match": [
+                "PTN_1471",
+                "item:tews-panel:1"
+              ],
+              "positions": [
+                {
+                  "name": "TONE",
+                  "text": "Tone position. No effect."
+                },
+                {
+                  "name": "DEFEAT",
+                  "text": "Defeat position. No effect."
+                }
+              ],
+              "text": "This switch is labelled TONE / DEFEAT. In the game it offers TONE and DEFEAT. The manual says it is not simulated.",
+              "context": "It has no effect in the game, so it can be left alone.",
+              "src": "m1",
+              "page": "92"
+            },
+            {
+              "id": "tews-ewws",
+              "name": "EWWS power switch",
+              "type": "switch2",
+              "match": [
+                "PTN_1470",
+                "item:tews-panel:2"
+              ],
+              "positions": [
+                {
+                  "name": "ON",
+                  "text": "The EWWS is on."
+                },
+                {
+                  "name": "OFF",
+                  "text": "The EWWS is off."
+                }
+              ],
+              "text": "This switch turns the electronic warfare warning set (EWWS) on or off.",
+              "context": "EWWS is part of the plane's defensive suite.",
+              "src": "m1",
+              "page": "92"
+            },
+            {
+              "id": "tews-rwr",
+              "name": "RWR power switch",
+              "type": "switch2",
+              "match": [
+                "PTN_1469",
+                "item:tews-panel:3"
+              ],
+              "positions": [
+                {
+                  "name": "ON",
+                  "text": "The RWR is on."
+                },
+                {
+                  "name": "OFF",
+                  "text": "The RWR is off."
+                }
+              ],
+              "text": "This switch turns the radar warning receiver on or off. It tells the crew when an enemy radar is looking at the plane.",
+              "context": "The WSO switches it on before a mission.",
+              "src": "m1",
+              "page": "92"
+            },
+            {
+              "id": "tews-ics",
+              "name": "ICS power switch",
+              "type": "switch2",
+              "match": [
+                "PTN_1465",
+                "item:tews-panel:4"
+              ],
+              "positions": [
+                {
+                  "name": "ON",
+                  "text": "The jammer is on."
+                },
+                {
+                  "name": "OFF",
+                  "text": "The jammer is off."
+                }
+              ],
+              "text": "This switch turns the internal jammer (ICS) on or off. A jammer is a radio transmitter that blinds enemy radars.",
+              "context": "The ICS modes are chosen with the SET switches.",
+              "src": "m1",
+              "page": "92"
+            },
+            {
+              "id": "tews-sets",
+              "name": "ICS SET 1, 2 and 3 switches",
+              "type": "switch2",
+              "match": [
+                "PTN_1466",
+                "PTN_1467",
+                "PTN_1468",
+                "item:tews-panel:5"
+              ],
+              "positions": [
+                {
+                  "name": "MAN",
+                  "text": "The set is controlled by hand."
+                },
+                {
+                  "name": "AUTO",
+                  "text": "The set works automatically."
+                }
+              ],
+              "count": 3,
+              "text": "Each of these three switches picks MAN or AUTO for one jammer set. Each has a small window showing its status.",
+              "context": "The manual says only that the sets are different modes for the jammer.",
+              "src": "m1",
+              "page": "92"
+            }
+          ]
+        },
+        {
+          "id": "cmd-panel",
+          "name": "Countermeasures dispenser panel",
+          "db": "cmd-panel",
+          "src": "m1",
+          "page": "93",
+          "text": "This panel runs the dispenser that throws out chaff (metal strips against radar missiles) and flares (hot decoys against heat-seeking missiles).",
+          "context": "The crew drops these decoys to fool enemy missiles. The MAN 1 and MAN 2 programs are started from the hand controller or the throttle.",
+          "controls": [
+            {
+              "id": "cmd-select",
+              "name": "Dispense select switch (FLARE / BOTH / CHAFF)",
+              "type": "switch3",
+              "match": [
+                "PTN_1475",
+                "item:cmd-panel:1"
+              ],
+              "positions": [
+                {
+                  "name": "FLARE",
+                  "text": "Only flares are released."
+                },
+                {
+                  "name": "BOTH",
+                  "text": "Chaff and flares are released."
+                },
+                {
+                  "name": "CHAFF",
+                  "text": "Only chaff is released."
+                }
+              ],
+              "text": "This switch picks what the MAN 1 and MAN 2 programs release: chaff, flares or both.",
+              "context": "It works only when the mode knob is not on OFF.",
+              "src": "m1",
+              "page": "93"
+            },
+            {
+              "id": "cmd-mode",
+              "name": "Mode select knob",
+              "type": "selector",
+              "match": [
+                "PTN_1476",
+                "item:cmd-panel:2"
+              ],
+              "positions": [
+                {
+                  "name": "OFF",
+                  "text": "The dispenser is not working."
+                },
+                {
+                  "name": "STBY",
+                  "text": "Standby: warm-up and the full self-test on the ground."
+                },
+                {
+                  "name": "MAN ONLY",
+                  "text": "Only manual dispensing with MAN 1 and MAN 2."
+                },
+                {
+                  "name": "SEMI AUTO",
+                  "text": "The dispenser prepares a program from the RWR data. The crew starts it."
+                },
+                {
+                  "name": "AUTO",
+                  "text": "The dispenser prepares and starts a program by itself."
+                }
+              ],
+              "text": "This knob chooses how the dispenser works, from off to fully automatic.",
+              "context": "The manual advises MAN ONLY, because the automatic modes can use up all decoys fast.",
+              "src": "m1",
+              "page": "93"
+            },
+            {
+              "id": "cmd-jett",
+              "name": "Flare jettison switch and cover",
+              "type": "switch2",
+              "match": [
+                "PTN_1477",
+                "PTN_1478",
+                "item:cmd-panel:3"
+              ],
+              "positions": [
+                {
+                  "name": "NORM",
+                  "text": "The dispenser works normally."
+                },
+                {
+                  "name": "JETT",
+                  "text": "All flares are fired off."
+                }
+              ],
+              "text": "Under a guard, this switch drops all flares at once, whatever the mode knob says.",
+              "context": "It is used to get rid of the flares, for example before landing.",
+              "src": "m1",
+              "page": "93"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "rear-right-wall",
+      "where": "right-side",
+      "name": "Rear right wall",
+      "seat": 2,
+      "text": "The right wall beside the WSO's seat.",
+      "panels": [
+        {
+          "id": "rear-canopy-control",
+          "name": "Canopy control handle (rear)",
+          "db": "rear-canopy-control",
+          "src": "m1",
+          "page": "94",
+          "text": "This handle in the back seat opens and closes the canopy. It moves together with the pilot's handle.",
+          "context": "Either crew member can use it.",
+          "controls": [
+            {
+              "id": "rcanopy-handle",
+              "name": "Canopy control handle",
+              "type": "selector",
+              "match": [
+                "PTN_1479",
+                "item:rear-canopy-control:1"
+              ],
+              "positions": [
+                {
+                  "name": "LOCKED",
+                  "text": "A hydraulic block locks the canopy."
+                },
+                {
+                  "name": "UP",
+                  "text": "The canopy opens fully."
+                },
+                {
+                  "name": "DOWN",
+                  "text": "The canopy closes and moves forward."
+                },
+                {
+                  "name": "HOLD",
+                  "text": "The canopy stops where it is."
+                }
+              ],
+              "text": "This handle moves the canopy up, down or holds it, like the handle in the front seat. LOCKED needs the canopy to be down against the windscreen.",
+              "context": "Moving one handle moves the other too.",
+              "src": "m1",
+              "page": "94"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "rear-hotas",
+      "where": "hotas",
+      "name": "Stick and throttle (rear seat)",
+      "seat": 2,
+      "text": "The WSO's stick and throttle, plus the two hand controllers that carry most of the WSO's sensor buttons.",
+      "panels": [
+        {
+          "id": "rear-stick",
+          "name": "Rear stick and right hand controller",
+          "src": "m1",
+          "page": "95",
+          "text": "The WSO has a simple stick for flying as a backup, and a right hand controller on the right console that works the right-hand displays.",
+          "context": "The right hand controller works the right MPD and MPCD and the air-to-air interrogation. The left controller is on the left console.",
+          "controls": [
+            {
+              "id": "rs-gimbal",
+              "name": "Rear control stick",
+              "type": "axis",
+              "match": [
+                "control:stick.gimbal"
+              ],
+              "text": "Moving the rear stick pitches and rolls the plane. It moves together with the pilot's stick.",
+              "context": "The WSO can fly the plane with it if the pilot cannot.",
+              "src": "m1",
+              "page": "95"
+            },
+            {
+              "id": "rs-trim",
+              "name": "Rear stick trim switch",
+              "type": "hat",
+              "match": [
+                "control:stick.hat.trim"
+              ],
+              "text": "This four-way switch on top of the rear stick trims the plane: forward lowers the nose, back raises it, and left and right drop that wing.",
+              "context": "Trim is a small adjustment so the plane flies straight.",
+              "src": "m1",
+              "page": "95"
+            },
+            {
+              "id": "rs-pickle",
+              "name": "Rear stick weapon release button",
+              "type": "button",
+              "match": [
+                "control:stick.weapon_release"
+              ],
+              "text": "This button releases air-to-ground weapons and works the video recorder.",
+              "context": "It is the WSO's pickle button.",
+              "src": "m1",
+              "page": "95"
+            },
+            {
+              "id": "rs-paddle",
+              "name": "Rear stick paddle switch",
+              "type": "lever",
+              "match": [
+                "control:stick.pinky.lever"
+              ],
+              "text": "This lever in front of the rear stick disengages the autopilot. On the ground a short press ends the AFCS test and holding it releases the nosewheel steering.",
+              "context": "It is the same as the pilot's paddle.",
+              "src": "m1",
+              "page": "95"
+            },
+            {
+              "id": "rs-ar",
+              "name": "Air refuelling release switch",
+              "type": "button",
+              "match": [
+                "control:stick.button.ar_release"
+              ],
+              "text": "This button disconnects the refuelling boom of the tanker aircraft.",
+              "context": "The WSO can end the refuelling with it.",
+              "src": "m1",
+              "page": "95"
+            },
+            {
+              "id": "rhc-coolie",
+              "name": "RHC coolie switch",
+              "type": "hat",
+              "match": [
+                "control:stick.hat.rhc_coolie"
+              ],
+              "text": "This four-way switch on the right controller changes the pages of the right displays. Up and down step through the programmed pages of the right MPD and MPCD. Left and right take command of the right MPD and MPCD.",
+              "context": "The one in command is the display the other switches work on.",
+              "src": "m1",
+              "page": "95"
+            },
+            {
+              "id": "rhc-castle",
+              "name": "RHC castle switch",
+              "type": "hat",
+              "match": [
+                "control:stick.hat.rhc_castle"
+              ],
+              "text": "This five-way switch on the right controller has jobs for radar, ground maps and targeting pod, which change with the page on the display in command.",
+              "context": "The manual describes the uses in each sensor chapter.",
+              "src": "m1",
+              "page": "95"
+            },
+            {
+              "id": "rhc-tdc",
+              "name": "RHC TDC",
+              "type": "hat",
+              "match": [
+                "control:stick.ministick"
+              ],
+              "text": "This small slew control moves the cursor or the sensor on the right display. Pressing it in has a job that depends on the sensor.",
+              "context": "TDC means target designator control.",
+              "src": "m1",
+              "page": "95"
+            },
+            {
+              "id": "rhc-trigger",
+              "name": "RHC trigger",
+              "type": "trigger",
+              "match": [
+                "control:stick.trigger"
+              ],
+              "text": "This trigger has two steps. Its jobs depend on the sensor, for example it tracks or designates with the pod.",
+              "context": "The trigger of the hand controller does not fire the gun.",
+              "src": "m1",
+              "page": "95"
+            },
+            {
+              "id": "rhc-autoacq",
+              "name": "RHC auto acquisition / mode reject switch",
+              "type": "hat",
+              "match": [
+                "control:stick.switch.rhc_auto_acq"
+              ],
+              "text": "This switch springs back to the centre. Pushing it forward or back or pressing it changes the sensor mode, for example radar search and track.",
+              "context": "Its job depends on the sensor in use.",
+              "src": "m1",
+              "page": "95"
+            },
+            {
+              "id": "rhc-laser",
+              "name": "RHC laser fire button",
+              "type": "button",
+              "match": [
+                "control:stick.button.rhc_laser"
+              ],
+              "text": "This button on the right controller fires the targeting pod laser. In other modes it has other jobs, which the sensor chapters of the manual list.",
+              "context": "The laser has to be armed first.",
+              "src": "m1",
+              "page": "95"
+            },
+            {
+              "id": "rhc-aai",
+              "name": "RHC AAI / NCTR / EWWS / EID switch",
+              "type": "switch3",
+              "match": [
+                "control:stick.switch.rhc_aai"
+              ],
+              "positions": [
+                {
+                  "name": "fwd",
+                  "text": "A long push starts or stops the AAI interrogation."
+                },
+                {
+                  "name": "center",
+                  "text": "The switch is in the middle, off."
+                },
+                {
+                  "name": "aft",
+                  "text": "A short push starts NCTR and IFF, a long push EID."
+                }
+              ],
+              "text": "This switch starts air-to-air interrogation: asking a target who it is. It springs back to the centre.",
+              "context": "A long push forward starts or stops the interrogation. Pushing back starts NCTR and IFF, and a long push EID.",
+              "src": "m1",
+              "page": "95"
+            }
+          ]
+        },
+        {
+          "id": "rear-throttle",
+          "name": "Rear throttle and left hand controller",
+          "src": "m1",
+          "page": "96",
+          "text": "The WSO has two throttle levers with two switches, and a left hand controller on the left console that works the left-hand displays and the countermeasures.",
+          "context": "The left hand controller works the left MPD and MPCD and drops decoys.",
+          "controls": [
+            {
+              "id": "rt-left",
+              "name": "Rear left throttle",
+              "type": "axis",
+              "match": [
+                "control:throttle.axis.left"
+              ],
+              "text": "This lever moves together with the pilot's left throttle and sets the thrust of the left engine.",
+              "context": "The WSO can use it as a backup.",
+              "src": "m1",
+              "page": "96"
+            },
+            {
+              "id": "rt-right",
+              "name": "Rear right throttle",
+              "type": "axis",
+              "match": [
+                "control:throttle.axis.right"
+              ],
+              "text": "This lever moves together with the pilot's right throttle and sets the thrust of the right engine.",
+              "context": "It is the backup of the pilot's lever.",
+              "src": "m1",
+              "page": "96"
+            },
+            {
+              "id": "rt-mic",
+              "name": "Rear microphone switch",
+              "type": "switch3",
+              "match": [
+                "control:throttle.hat.mic"
+              ],
+              "positions": [
+                {
+                  "name": "fwd",
+                  "text": "Transmit on radio 1."
+                },
+                {
+                  "name": "center",
+                  "text": "Receive."
+                },
+                {
+                  "name": "aft",
+                  "text": "Transmit on radio 2."
+                }
+              ],
+              "text": "This slide switch picks the radio the WSO talks on. Forward sends on radio 1, back on radio 2. The middle is receive.",
+              "context": "It springs back to the middle.",
+              "src": "m1",
+              "page": "96"
+            },
+            {
+              "id": "rt-speedbrake",
+              "name": "Rear speed brake switch",
+              "type": "switch3",
+              "match": [
+                "control:throttle.speedbrake"
+              ],
+              "positions": [
+                {
+                  "name": "fwd",
+                  "text": "Retract the speed brake."
+                },
+                {
+                  "name": "center",
+                  "text": "Hold the position."
+                },
+                {
+                  "name": "aft",
+                  "text": "Extend the speed brake."
+                }
+              ],
+              "text": "This slide switch extends or retracts the speed brake, a panel that opens into the wind to slow the plane.",
+              "context": "It does the same as the pilot's switch.",
+              "src": "m1",
+              "page": "96"
+            },
+            {
+              "id": "lhc-coolie",
+              "name": "LHC coolie switch",
+              "type": "hat",
+              "match": [
+                "control:throttle.hat.lhc_coolie"
+              ],
+              "text": "This four-way switch on the left controller changes the pages of the left displays. Up and down step through the programmed pages of the left MPD and MPCD. Left and right take command of the left displays.",
+              "context": "The display in command is the one that the other switches work on.",
+              "src": "m1",
+              "page": "96"
+            },
+            {
+              "id": "lhc-castle",
+              "name": "LHC castle switch",
+              "type": "hat",
+              "match": [
+                "control:throttle.hat.lhc_castle"
+              ],
+              "text": "This five-way switch on the left controller has jobs for the radar, ground maps and targeting pod, which change with the page of the display in command.",
+              "context": "It is the same as the right controller's castle switch.",
+              "src": "m1",
+              "page": "96"
+            },
+            {
+              "id": "lhc-tdc",
+              "name": "LHC TDC",
+              "type": "hat",
+              "match": [
+                "control:throttle.ministick"
+              ],
+              "text": "This small slew control moves the cursor or sensor on the left display. Pressing it in has a job that depends on the sensor.",
+              "context": "TDC means target designator control.",
+              "src": "m1",
+              "page": "96"
+            },
+            {
+              "id": "lhc-trigger",
+              "name": "LHC trigger",
+              "type": "trigger",
+              "match": [
+                "control:throttle.trigger"
+              ],
+              "text": "This two-step trigger on the left controller works with the sensor in command, for example to track or designate.",
+              "context": "The trigger of the left controller does not fire the gun.",
+              "src": "m1",
+              "page": "96"
+            },
+            {
+              "id": "lhc-autoacq",
+              "name": "LHC auto acquisition / mode reject switch",
+              "type": "hat",
+              "match": [
+                "control:throttle.switch.lhc_auto_acq"
+              ],
+              "text": "This switch springs back to the centre. Pushing it forward or back or pressing it changes the sensor mode.",
+              "context": "Its job depends on the sensor in use.",
+              "src": "m1",
+              "page": "96"
+            },
+            {
+              "id": "lhc-laser",
+              "name": "LHC laser fire button",
+              "type": "button",
+              "match": [
+                "control:throttle.button.lhc_laser"
+              ],
+              "text": "This button on the left controller fires the laser of the targeting pod. Depending on the mode it does other jobs, which the sensor chapters of the manual list.",
+              "context": "The laser has to be armed first.",
+              "src": "m1",
+              "page": "96"
+            },
+            {
+              "id": "lhc-cmd",
+              "name": "LHC countermeasures (CMD) switch",
+              "type": "switch3",
+              "match": [
+                "control:throttle.switch.lhc_cmd"
+              ],
+              "positions": [
+                {
+                  "name": "fwd",
+                  "text": "Dispense the MAN 1 program."
+                },
+                {
+                  "name": "center",
+                  "text": "The switch is in the middle, off."
+                },
+                {
+                  "name": "aft",
+                  "text": "Dispense the MAN 2 program."
+                }
+              ],
+              "text": "This momentary slide switch drops decoys against missiles. Forward gives the MAN 1 program and back gives MAN 2. It springs back to off.",
+              "context": "Only the left controller has it.",
+              "src": "m1",
+              "page": "96"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

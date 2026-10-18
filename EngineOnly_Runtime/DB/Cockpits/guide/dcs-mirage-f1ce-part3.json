@@ -1,0 +1,2269 @@
+{
+  "format": "joypro-cockpit-guide",
+  "version": 1,
+  "partOf": "dcs-mirage-f1ce",
+  "areas": [
+    {
+      "id": "center-pedestal",
+      "where": "center-pedestal",
+      "name": "Lower panel and pedestal",
+      "text": "The lower middle of the cockpit: brakes, hydraulics, the IFF, the ejection seat handles and the outside light switches.",
+      "panels": [
+        {
+          "id": "forward-lower",
+          "name": "Forward lower panel: brakes, shock cones, hydraulics, steering",
+          "src": "m1",
+          "page": "39",
+          "text": "The lower middle of the cockpit with the switches for the anti-skid brakes, the air intake cones, the hydraulics and the nose wheel.",
+          "context": "The pilot checks most of these during the cabin checks and leaves them in normal position for flight.",
+          "controls": [
+            {
+              "id": "antiskid-guard",
+              "name": "Anti-skid (SPAD) switch guard",
+              "type": "guard",
+              "match": [
+                "PNT-402"
+              ],
+              "text": "A hinged cover over the anti-skid switch. The pilot lifts the cover first, so the switch cannot be moved by accident, and closes it again afterwards.",
+              "context": "The cover has its own clickable part in DCS. It belongs to the anti-skid switch; the real cockpit has a guard here as well.",
+              "src": "m1",
+              "page": "40"
+            },
+            {
+              "id": "antiskid",
+              "name": "Anti-skid (SPAD) switch",
+              "type": "switch",
+              "match": [
+                "PNT-403",
+                "item:forward-lower-panel:1"
+              ],
+              "text": "Switches off the anti-skid system, which stops the wheels from locking up when braking, like the ABS of a car.",
+              "context": "It stays on, under guard, in normal use.",
+              "src": "m1",
+              "page": "40"
+            },
+            {
+              "id": "cone-switch",
+              "name": "Shock-cone manual control switch",
+              "type": "switch3",
+              "match": [
+                "PNT-754",
+                "item:forward-lower-panel:2"
+              ],
+              "positions": [
+                {
+                  "name": "up",
+                  "text": "Extends the cones (S, 'sorti')."
+                },
+                {
+                  "name": "neutral",
+                  "text": "Spring-loaded middle position; nothing is commanded."
+                },
+                {
+                  "name": "down",
+                  "text": "Retracts the cones (R, 'rentre')."
+                }
+              ],
+              "text": "Moves the shock cones by hand: up extends them (S), down retracts them (R). The cones are in the air intakes. It springs back to the middle.",
+              "context": "Using it pops the pushbutton out of its automatic setting.",
+              "src": "m1",
+              "page": "34"
+            },
+            {
+              "id": "cone-button",
+              "name": "Shock-cone pushbutton",
+              "type": "button",
+              "match": [
+                "PNT-755",
+                "item:forward-lower-panel:3"
+              ],
+              "text": "When pushed in, it keeps the shock cones working by themselves. It pops out when the manual switch is used.",
+              "context": "The cabin checks require it pushed in; the pilot pushes it in again to get automatic control back.",
+              "src": "m1",
+              "page": "34"
+            },
+            {
+              "id": "transfer-seq",
+              "name": "Fuel transfer sequence selector switch",
+              "type": "selector",
+              "match": [
+                "item:forward-lower-panel:4"
+              ],
+              "positions": [
+                {
+                  "name": "CLEAN",
+                  "text": "Order for a plane without external tanks."
+                },
+                {
+                  "name": "EXTERNAL TANKS",
+                  "text": "Order for a plane with external tanks."
+                }
+              ],
+              "text": "Chooses the order in which the fuel tanks are emptied: CLEAN (without drop tanks) or EXTERNAL TANKS (with drop tanks).",
+              "context": "In both orders the external tanks and the wing tanks are emptied first.",
+              "src": "m1",
+              "page": "28"
+            },
+            {
+              "id": "hyd-selector",
+              "name": "Hydraulic pressure selector switch",
+              "type": "selector",
+              "match": [
+                "PNT-88",
+                "item:forward-lower-panel:5"
+              ],
+              "positions": [
+                {
+                  "name": "1 SERVOS 2",
+                  "text": "The gauge shows circuits 1 and 2."
+                },
+                {
+                  "name": "SDES-FS",
+                  "text": "The gauge shows the ancillary and emergency brake pressure."
+                }
+              ],
+              "text": "Chooses what the hydraulic gauge shows: the pressure of circuits 1 and 2, or the pressure of the emergency brake system.",
+              "context": "The manual's cabin checks use '1 SERVOS 2'.",
+              "src": "m1",
+              "page": "39"
+            },
+            {
+              "id": "nws-high",
+              "name": "Nose wheel steering high sensitivity button",
+              "type": "button",
+              "match": [
+                "PNT-756",
+                "item:forward-lower-panel:6"
+              ],
+              "text": "Decides how far the nose wheel turns for the same pedal movement: 45 degrees when pushed in (strong) and 7 degrees otherwise (gentle).",
+              "context": "The button pops out when there is no weight on the front wheel.",
+              "src": "m1",
+              "page": "40"
+            },
+            {
+              "id": "nws-guard",
+              "name": "Nose wheel steering switch guard",
+              "type": "guard",
+              "match": [
+                "PNT-757"
+              ],
+              "text": "A hinged cover over the nose wheel steering switch. The pilot lifts the cover first, so the switch cannot be moved by accident, and closes it again afterwards.",
+              "context": "The cover has its own clickable part in DCS. It belongs to the nose wheel steering switch; the real cockpit has a guard here as well.",
+              "src": "m1",
+              "page": "40"
+            },
+            {
+              "id": "nws",
+              "name": "Nose wheel steering switch",
+              "type": "switch",
+              "match": [
+                "PNT-758",
+                "item:forward-lower-panel:7"
+              ],
+              "text": "Switches the steering of the front wheel off.",
+              "context": "The cabin checks keep it on, under guard. The nose wheel steering light shows when the steering is completely off.",
+              "src": "m1",
+              "page": "40"
+            },
+            {
+              "id": "hyd-gauge",
+              "name": "Dual hydraulic pressure gauge",
+              "type": "gauge",
+              "match": [
+                "item:forward-lower-panel:9"
+              ],
+              "text": "A gauge with two needles. They show the pressure of the two hydraulic circuits or of the emergency system, depending on the selector.",
+              "context": "Hydraulics are oil under pressure that moves the heavy parts: control surfaces, gear, flaps, brakes.",
+              "src": "m1",
+              "page": "40"
+            },
+            {
+              "id": "cabin-alt",
+              "name": "Cabin altimeter",
+              "type": "gauge",
+              "match": [
+                "item:forward-lower-panel:10"
+              ],
+              "text": "A gauge that shows the height of the air pressure in the cabin, in feet.",
+              "context": "The cabin air is kept at a lower height than the plane flies. A red P.CAB light warns when it is above 30,000 feet.",
+              "src": "m1",
+              "page": "79"
+            },
+            {
+              "id": "trim-ind",
+              "name": "Trim indicators",
+              "type": "indicator",
+              "match": [
+                "item:forward-lower-panel:11"
+              ],
+              "text": "Three small gauges show how the roll, pitch and rudder trims are set.",
+              "context": "Trim means small adjustments so the plane flies straight without holding the stick. The trims are reset after the start.",
+              "src": "m1",
+              "page": "47"
+            },
+            {
+              "id": "elec-pump",
+              "name": "Electro-pump switch",
+              "type": "switch2",
+              "match": [
+                "PNT-475",
+                "item:right-side-panel-detail:4"
+              ],
+              "positions": [
+                {
+                  "name": "OFF",
+                  "text": "The pump is off."
+                },
+                {
+                  "name": "ON",
+                  "text": "The pump is available."
+                }
+              ],
+              "text": "Switches on a backup electric pump for the first hydraulic circuit. It turns itself on when the pressure of that circuit is too low.",
+              "context": "A red E.P light comes on if the pump runs longer than 8 seconds. The after-start list sets it ON.",
+              "src": "m1",
+              "page": "39"
+            },
+            {
+              "id": "test-t",
+              "name": "Failure warning panel T test button",
+              "type": "button",
+              "match": [
+                "PNT-118",
+                "item:right-side-panel-detail:1"
+              ],
+              "text": "Pressing it lights all the lamps of the failure warning panel and tests the master failure light and the warning sound for red lights.",
+              "context": "It is the general test of the warning system.",
+              "src": "m1",
+              "page": "141"
+            },
+            {
+              "id": "test-o2",
+              "name": "Failure warning panel O2 test button",
+              "type": "button",
+              "match": [
+                "PNT-119",
+                "item:right-side-panel-detail:2"
+              ],
+              "text": "Pressing it tests the oxygen failure light and the oxygen warning sound.",
+              "context": "The oxygen warning has its own sound that is different from the other warnings.",
+              "src": "m1",
+              "page": "141"
+            }
+          ]
+        },
+        {
+          "id": "iff",
+          "name": "IFF control panel (transponder)",
+          "src": "m1",
+          "page": "58",
+          "text": "The panel of the IFF, the box that answers 'who are you' questions from other radars with a code.",
+          "context": "The game has two versions of this panel, with and without the secret mode 4, and the cockpit shows the installed one. Many controls therefore have two numbers in the list. A basic IFF that tells friend from foe is always on in DCS.",
+          "controls": [
+            {
+              "id": "overview",
+              "name": "IFF control panel (whole panel)",
+              "type": "other",
+              "match": [
+                "item:forward-lower-panel:8"
+              ],
+              "text": "The transponder panel as a whole. A transponder is a radio box that answers questions from other radars with a code, so friends can be told from enemies.",
+              "context": "It supports modes 1, 2, 3/A, C and 4. After switching on it needs 90 seconds to warm up.",
+              "src": "m1",
+              "page": "58"
+            },
+            {
+              "id": "function",
+              "name": "IFF function selector switch",
+              "type": "selector",
+              "match": [
+                "PNT-739",
+                "PNT-1435"
+              ],
+              "positions": [
+                {
+                  "name": "OFF",
+                  "text": "The IFF is switched off."
+                },
+                {
+                  "name": "SBY",
+                  "text": "Standby: the IFF listens but does not answer."
+                },
+                {
+                  "name": "N",
+                  "text": "Normal operation."
+                },
+                {
+                  "name": "EMER",
+                  "text": "Emergency: sends the distress code 7700 in all modes; the switch has to be pulled and turned."
+                }
+              ],
+              "text": "The main switch of the IFF. It switches the IFF off, to standby, to normal use, or to the emergency signal.",
+              "context": "It is the first control used to start the IFF.",
+              "src": "m1",
+              "page": "61"
+            },
+            {
+              "id": "mode1",
+              "name": "IFF M-1 mode switch",
+              "type": "switch2",
+              "match": [
+                "PNT-750",
+                "PNT-1446"
+              ],
+              "positions": [
+                {
+                  "name": "UP",
+                  "text": "Mode 1 is switched on."
+                },
+                {
+                  "name": "DOWN",
+                  "text": "Mode 1 is switched off."
+                }
+              ],
+              "text": "Switches the answering of mode 1 questions on or off. Up is on and down is off.",
+              "context": "Mode 1 uses a code of two digits that is set with the mode 1 coding selectors.",
+              "src": "m1",
+              "page": "59"
+            },
+            {
+              "id": "mode2",
+              "name": "IFF M-2 mode switch",
+              "type": "switch2",
+              "match": [
+                "PNT-751",
+                "PNT-1447"
+              ],
+              "positions": [
+                {
+                  "name": "UP",
+                  "text": "Mode 2 is switched on."
+                },
+                {
+                  "name": "DOWN",
+                  "text": "Mode 2 is switched off."
+                }
+              ],
+              "text": "Switches the answering of mode 2 questions on or off.",
+              "context": "Mode 2 uses a code of four digits that cannot be set in the cockpit; in DCS it is set in the Mission Editor.",
+              "src": "m1",
+              "page": "59"
+            },
+            {
+              "id": "mode3",
+              "name": "IFF M-3 mode switch",
+              "type": "switch2",
+              "match": [
+                "PNT-752",
+                "PNT-1448"
+              ],
+              "positions": [
+                {
+                  "name": "UP",
+                  "text": "Mode 3/A is switched on."
+                },
+                {
+                  "name": "DOWN",
+                  "text": "Mode 3/A is switched off."
+                }
+              ],
+              "text": "Switches the answering of mode 3 questions (called 3/A) on or off.",
+              "context": "Mode 3/A uses a code of four digits that is set with the mode 3A coding selectors.",
+              "src": "m1",
+              "page": "59"
+            },
+            {
+              "id": "modec",
+              "name": "IFF M-C mode switch",
+              "type": "switch2",
+              "match": [
+                "PNT-753",
+                "PNT-1449"
+              ],
+              "positions": [
+                {
+                  "name": "UP",
+                  "text": "Mode C is switched on."
+                },
+                {
+                  "name": "DOWN",
+                  "text": "Mode C is switched off."
+                }
+              ],
+              "text": "Switches the answering of mode C questions on or off. Mode C would report the plane's height.",
+              "context": "The manual says mode C is not implemented in this simulation.",
+              "src": "m1",
+              "page": "59"
+            },
+            {
+              "id": "code1",
+              "name": "Mode 1 coding selectors",
+              "type": "selector",
+              "match": [
+                "PNT-732",
+                "PNT-1428",
+                "PNT-733",
+                "PNT-1429"
+              ],
+              "text": "Two code wheels (tens and units) that set the two-digit mode 1 code.",
+              "context": "Both stations need the same code for the answer to count as friendly.",
+              "count": 2,
+              "src": "m1",
+              "page": "61"
+            },
+            {
+              "id": "code3a",
+              "name": "Mode 3A coding selectors",
+              "type": "selector",
+              "match": [
+                "PNT-734",
+                "PNT-1430",
+                "PNT-735",
+                "PNT-1431",
+                "PNT-736",
+                "PNT-1432",
+                "PNT-737",
+                "PNT-1433"
+              ],
+              "text": "Four code wheels (thousands, hundreds, tens, units) that set the four-digit mode 3/A code.",
+              "context": "The code is usually given in the briefing; both sides use the same one.",
+              "count": 4,
+              "src": "m1",
+              "page": "61"
+            },
+            {
+              "id": "ident",
+              "name": "IFF position identification selector",
+              "type": "switch3",
+              "match": [
+                "PNT-744",
+                "PNT-1440"
+              ],
+              "positions": [
+                {
+                  "name": "OUT",
+                  "text": "Normal operation; no special identification."
+                },
+                {
+                  "name": "IDENT",
+                  "text": "Spring-loaded: an immediate identification, kept up by a timer for 30 seconds."
+                },
+                {
+                  "name": "MIC",
+                  "text": "The identification is sent each time the push-to-talk button is pressed."
+                }
+              ],
+              "text": "Used when a ground station asks the pilot to identify. It sends a special identification pulse in modes 1, 2 and 3/A.",
+              "context": "The IDENT position springs back after a short push; the pulse then lasts about 30 seconds.",
+              "src": "m1",
+              "page": "61"
+            },
+            {
+              "id": "mode4-selector",
+              "name": "IFF mode 4 selector switch",
+              "type": "selector",
+              "match": [
+                "PNT-743",
+                "PNT-1439"
+              ],
+              "positions": [
+                {
+                  "name": "A",
+                  "text": "Today's password."
+                },
+                {
+                  "name": "B",
+                  "text": "Tomorrow's password, used after midnight Zulu."
+                },
+                {
+                  "name": "ZERO",
+                  "text": "Deletes the passwords; the switch must be pulled and turned."
+                },
+                {
+                  "name": "HOLD",
+                  "text": "Spring-loaded: keeps the codes in the computer."
+                }
+              ],
+              "text": "Handles the secret codes of the mode 4 computer, the cryptographic part of the transponder that makes a mode 4 answer.",
+              "context": "The pilot has to hold the codes (HOLD) before shutting the engine down, or the computer deletes them.",
+              "src": "m1",
+              "page": "61"
+            },
+            {
+              "id": "mode4-switch",
+              "name": "IFF mode 4 ON-OUT switch",
+              "type": "switch2",
+              "match": [
+                "PNT-745",
+                "PNT-1441"
+              ],
+              "positions": [
+                {
+                  "name": "ON",
+                  "text": "Mode 4 is on."
+                },
+                {
+                  "name": "OUT",
+                  "text": "Mode 4 is out."
+                }
+              ],
+              "text": "Switches the mode 4 computer, the reply light and the alarm light on or off.",
+              "context": "It only works on the panel with mode 4.",
+              "src": "m1",
+              "page": "61"
+            },
+            {
+              "id": "audio-light",
+              "name": "IFF AUDIO-LIGHT switch",
+              "type": "switch3",
+              "match": [
+                "PNT-749",
+                "PNT-1445"
+              ],
+              "positions": [
+                {
+                  "name": "AUDIO",
+                  "text": "Lights and audio alarm are active."
+                },
+                {
+                  "name": "LIGHT",
+                  "text": "Only the lights are active."
+                },
+                {
+                  "name": "OUT",
+                  "text": "Neither lights nor sounds."
+                }
+              ],
+              "text": "Chooses how the IFF warns the pilot: with lights and audio, with lights only, or not at all.",
+              "context": "It only works on the panel with mode 4.",
+              "src": "m1",
+              "page": "61"
+            },
+            {
+              "id": "test",
+              "name": "IFF test button",
+              "type": "button",
+              "match": [
+                "PNT-738",
+                "PNT-1434"
+              ],
+              "text": "Pressing this button checks the IFF. If the IFF is faulty the FAULT light comes on.",
+              "context": "The IFF also tests itself every 30 seconds without help.",
+              "src": "m1",
+              "page": "60"
+            },
+            {
+              "id": "fault",
+              "name": "IFF fault light",
+              "type": "light",
+              "match": [
+                "PNT-746"
+              ],
+              "text": "A light that comes on when the IFF is not working right, either in use or in the test. Pressing it checks the lamp and clears the test result.",
+              "context": "If it lights for no clear reason, the manual says to press it; it goes out when released.",
+              "src": "m1",
+              "page": "60"
+            },
+            {
+              "id": "monitoring",
+              "name": "IFF monitoring light",
+              "type": "light",
+              "match": [
+                "PNT-741",
+                "PNT-1436"
+              ],
+              "text": "The game names this light 'IFF monitoring light'. The manual lists a reply light that shows mode 4 answers.",
+              "context": "The manual does not say whether it is the same lamp.",
+              "src": "m1",
+              "page": "61"
+            }
+          ]
+        },
+        {
+          "id": "ejection-seat",
+          "name": "Ejection seat",
+          "src": "m1",
+          "page": "71",
+          "text": "The seat that fires the pilot out of the plane in an emergency, with its handles and safety pin.",
+          "context": "A pin keeps the seat from firing by accident while the plane is on the ground. It is removed before taxiing.",
+          "controls": [
+            {
+              "id": "face-blind",
+              "name": "Face blind firing handle",
+              "type": "handle",
+              "match": [
+                "PNT-13"
+              ],
+              "positions": [
+                {
+                  "name": "PULL",
+                  "text": "Fires the seat."
+                },
+                {
+                  "name": "PUSH",
+                  "text": "Puts the handle back."
+                }
+              ],
+              "text": "The main handle that fires the ejection seat. The manual calls it the face blind firing handle.",
+              "context": "Pulling it ejects the pilot. The seat also cracks the canopy by itself.",
+              "src": "m1",
+              "page": "71"
+            },
+            {
+              "id": "alt-handle",
+              "name": "Alternative firing handle",
+              "type": "handle",
+              "match": [
+                "PNT-14",
+                "PNT-14-L",
+                "PNT-14-R",
+                "item:forward-lower-panel:12"
+              ],
+              "positions": [
+                {
+                  "name": "PULL",
+                  "text": "Fires the seat."
+                },
+                {
+                  "name": "PUSH",
+                  "text": "Puts the handle back."
+                }
+              ],
+              "text": "A second handle that fires the seat, for the case that the main one cannot be reached.",
+              "context": "It is a backup for the face blind handle.",
+              "src": "m1",
+              "page": "71"
+            },
+            {
+              "id": "safety-pin",
+              "name": "Ejection handle safety pin",
+              "type": "other",
+              "match": [
+                "PNT-1316"
+              ],
+              "positions": [
+                {
+                  "name": "INSTALL",
+                  "text": "The pin is in: the seat is safe."
+                },
+                {
+                  "name": "REMOVE",
+                  "text": "The pin is out: the seat is ready to fire."
+                }
+              ],
+              "text": "A pin that blocks the ejection handle so the seat cannot fire by accident on the ground.",
+              "context": "It is removed before taxiing and put back after parking.",
+              "src": "m1",
+              "page": "71"
+            }
+          ]
+        },
+        {
+          "id": "ext-lights",
+          "name": "Exterior lights",
+          "src": "m1",
+          "page": "75",
+          "text": "The switches for the lights outside the plane that other pilots see.",
+          "context": "The landing light is on the left console. The search light button is on the control stick.",
+          "controls": [
+            {
+              "id": "nav",
+              "name": "Navigation light control",
+              "type": "switch3",
+              "match": [
+                "PNT-111",
+                "item:right-side-panel:11"
+              ],
+              "positions": [
+                {
+                  "name": "BRIGHT",
+                  "text": "Bright (upper position)."
+                },
+                {
+                  "name": "OFF",
+                  "text": "Off (middle position)."
+                },
+                {
+                  "name": "DIM",
+                  "text": "Dim (lower position)."
+                }
+              ],
+              "text": "Sets the navigation lights on the wing tips and tail: bright, dim or off.",
+              "context": "Navigation lights tell other pilots where the plane is and which way it flies.",
+              "src": "m1",
+              "page": "75"
+            },
+            {
+              "id": "formation",
+              "name": "Formation light control",
+              "type": "switch3",
+              "match": [
+                "PNT-112",
+                "item:right-side-panel:12"
+              ],
+              "positions": [
+                {
+                  "name": "BRIGHT",
+                  "text": "A lit position (the manual says flashing for the upper one)."
+                },
+                {
+                  "name": "OFF",
+                  "text": "Off (middle position)."
+                },
+                {
+                  "name": "DIM",
+                  "text": "A lit position (the manual says steady for the lower one)."
+                }
+              ],
+              "text": "Sets the formation lights, small lamps that help pilots to fly close together in a group.",
+              "context": "The manual says the upper position gives a flashing light and the lower a steady one.",
+              "src": "m1",
+              "page": "75"
+            },
+            {
+              "id": "search",
+              "name": "Search light control",
+              "type": "switch2",
+              "match": [
+                "PNT-479",
+                "item:right-side-panel-detail:8"
+              ],
+              "positions": [
+                {
+                  "name": "OFF",
+                  "text": "The search light has no power."
+                },
+                {
+                  "name": "ON",
+                  "text": "The search light is powered."
+                }
+              ],
+              "text": "Powers the search light. The light itself is switched on by holding the search light button on the control stick.",
+              "context": "It is called the identification search light and shines only while the button is held.",
+              "src": "m1",
+              "page": "75"
+            }
+          ]
+        },
+        {
+          "id": "air-data-switches",
+          "name": "Warning horn, probe heat and radar detector switches",
+          "src": "m1",
+          "page": "138",
+          "text": "Three switches for safety equipment: the warning horn, the heating of the speed probes and the radar detector.",
+          "context": "The after-start list switches on all three.",
+          "controls": [
+            {
+              "id": "horn",
+              "name": "Warning horn switch",
+              "type": "switch",
+              "match": [
+                "PNT-476",
+                "item:right-side-panel-detail:5"
+              ],
+              "text": "Switches the warning horn on. The horn sounds with the red lights of the failure warning panel and with other warnings.",
+              "context": "The cabin checks require it ON; the test of the warning system uses it.",
+              "src": "m1",
+              "page": "138"
+            },
+            {
+              "id": "probe-heat",
+              "name": "Probe heater switch",
+              "type": "switch2",
+              "match": [
+                "PNT-477",
+                "item:right-side-panel-detail:6"
+              ],
+              "positions": [
+                {
+                  "name": "OFF",
+                  "text": "The probe heat is off."
+                },
+                {
+                  "name": "ON",
+                  "text": "The probe heat is on."
+                }
+              ],
+              "text": "Heats the probes outside the plane that measure speed and air data, so ice does not block them.",
+              "context": "If the left probe heat fails or the switch is off, the amber ANEMO light on the failure warning panel comes on.",
+              "src": "m1",
+              "page": "66"
+            },
+            {
+              "id": "radar-detector",
+              "name": "Radar detector switch",
+              "type": "switch2",
+              "match": [
+                "PNT-478",
+                "item:right-side-panel-detail:7"
+              ],
+              "positions": [
+                {
+                  "name": "OFF",
+                  "text": "The radar detector is off."
+                },
+                {
+                  "name": "ON",
+                  "text": "The radar detector is on."
+                }
+              ],
+              "text": "Switches on the radar detector, the receiver that warns when an enemy radar looks at the plane.",
+              "context": "The after-start list sets it ON and tests the warning panel.",
+              "src": "m1",
+              "page": "107"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "rear",
+      "where": "rear",
+      "name": "Behind the seat",
+      "text": "The circuit breaker box and the chaff and flare programmer, behind the pilot's seat.",
+      "panels": [
+        {
+          "id": "circuit-breakers",
+          "name": "Circuit breaker box",
+          "src": "m1",
+          "page": "26",
+          "text": "A box with 21 safety switches that protect the electrical lines of different equipment.",
+          "context": "A circuit breaker pops out when its line draws too much power. The pilot can push it back in, or pull it to switch off that equipment.",
+          "controls": [
+            {
+              "id": "breakers",
+              "name": "Circuit breakers (21)",
+              "type": "switch2",
+              "match": [
+                "PNT-548",
+                "PNT-550",
+                "PNT-552",
+                "PNT-554",
+                "PNT-556",
+                "PNT-558",
+                "PNT-560",
+                "PNT-562",
+                "PNT-564",
+                "PNT-566",
+                "PNT-568",
+                "PNT-570",
+                "PNT-572",
+                "PNT-574",
+                "PNT-576",
+                "PNT-578",
+                "PNT-580",
+                "PNT-582",
+                "PNT-584",
+                "PNT-586",
+                "PNT-588",
+                "item:right-side-panel:33"
+              ],
+              "positions": [
+                {
+                  "name": "IN",
+                  "text": "The line is connected."
+                },
+                {
+                  "name": "OUT",
+                  "text": "The line is cut off."
+                }
+              ],
+              "text": "Each of these breakers protects one piece of equipment, for example the gyro control unit, the V/UHF radio, the IFF, the gun trigger, the landing gear controls, the starter system, the emergency regulation system or the refuelling probe control.",
+              "context": "Pulling a breaker switches that equipment off. Pushing it back in switches it on again.",
+              "count": 21,
+              "src": "m1",
+              "page": "26"
+            }
+          ]
+        },
+        {
+          "id": "ale40-programmer",
+          "name": "AN/ALE-40 programmer",
+          "src": "m1",
+          "page": "234",
+          "text": "A small box with rotary selectors that sets how many chaff and flare charges are thrown out and how fast.",
+          "context": "It sits behind the seat in the Spanish single-seaters (in the F1BE it is on the rear cockpit's right console). The pilot can reach it only with the canopy open, the plane stopped and the engine off.",
+          "controls": [
+            {
+              "id": "chaff-reduce",
+              "name": "Chaff burst interval reduction switch",
+              "type": "switch",
+              "match": [
+                "PNT-1401"
+              ],
+              "text": "Divides the time between chaff releases by ten.",
+              "context": "It makes the series much faster.",
+              "src": "m1",
+              "page": "235"
+            },
+            {
+              "id": "chaff-count",
+              "name": "Chaff burst count selector",
+              "type": "selector",
+              "match": [
+                "PNT-1403"
+              ],
+              "text": "Sets how many chaff cartridges are launched in one burst: 1, 2, 3, 4, 6 or 8.",
+              "context": "It is used with the burst interval selector when the dispenser is in MULT or PRGRM.",
+              "src": "m1",
+              "page": "235"
+            },
+            {
+              "id": "chaff-interval",
+              "name": "Chaff burst interval selector",
+              "type": "selector",
+              "match": [
+                "PNT-1402"
+              ],
+              "text": "Sets the time between the cartridges of one chaff burst: 0.1, 0.2, 0.3 or 0.4 seconds.",
+              "context": "It goes with the burst count selector.",
+              "src": "m1",
+              "page": "235"
+            },
+            {
+              "id": "chaff-salvo-count",
+              "name": "Chaff salvo count selector",
+              "type": "selector",
+              "match": [
+                "PNT-1405"
+              ],
+              "text": "Sets how many times a chaff burst is repeated: 1, 2, 4, 8 or C for continuous.",
+              "context": "It is used in the PRGRM mode of the dispenser.",
+              "src": "m1",
+              "page": "235"
+            },
+            {
+              "id": "chaff-salvo-interval",
+              "name": "Chaff salvo interval selector",
+              "type": "selector",
+              "match": [
+                "PNT-1404"
+              ],
+              "text": "Sets the pause between the repeats of a chaff burst: 1, 2, 3, 4, 5, 8 seconds or R for random.",
+              "context": "It goes with the salvo count selector.",
+              "src": "m1",
+              "page": "235"
+            },
+            {
+              "id": "flare-count",
+              "name": "Flare burst count selector",
+              "type": "selector",
+              "match": [
+                "PNT-1407"
+              ],
+              "text": "Sets how many times the flare launch is repeated: 1, 2, 4, 8 or C for continuous.",
+              "context": "The flare section has two selectors.",
+              "src": "m1",
+              "page": "235"
+            },
+            {
+              "id": "flare-interval",
+              "name": "Flare burst interval selector",
+              "type": "selector",
+              "match": [
+                "PNT-1406"
+              ],
+              "text": "Sets the pause between flare launches: 3, 4, 6, 8 or 10 seconds.",
+              "context": "It goes with the flare count selector.",
+              "src": "m1",
+              "page": "235"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "hotas",
+      "where": "hotas",
+      "name": "Stick and throttle",
+      "text": "The stick, the throttle and the radar handle: the controls the pilot works without taking the hands off them.",
+      "panels": [
+        {
+          "id": "stick",
+          "name": "Control stick",
+          "src": "m1",
+          "page": "47",
+          "text": "The stick between the pilot's knees and the buttons on its grip. It flies the plane and also fires the weapons.",
+          "context": "The pilot's right hand rests on it all the time, so the most used buttons are on the grip.",
+          "controls": [
+            {
+              "id": "stick",
+              "name": "Control stick",
+              "type": "axis",
+              "match": [
+                "control:stick.gimbal"
+              ],
+              "text": "Moving the stick forward and back raises or lowers the nose (pitch). Moving it left and right rolls the plane over to that side.",
+              "context": "The ARTHUR part adjusts how sensitive the stick is in pitch, as described with the left console switches.",
+              "src": "m1",
+              "page": "45"
+            },
+            {
+              "id": "show-hide",
+              "name": "Show/Hide Flight Stick",
+              "type": "switch",
+              "match": [
+                "PNT-34"
+              ],
+              "text": "The game names this control 'Show/Hide Flight Stick'. It shows or hides the stick in the cockpit picture.",
+              "context": "It does not change how the plane flies.",
+              "src": "m1",
+              "page": "48"
+            },
+            {
+              "id": "trim-hat",
+              "name": "Trim hat",
+              "type": "hat",
+              "match": [
+                "control:stick.hat.trim",
+                "PNT-1454",
+                "PNT-1455"
+              ],
+              "text": "A small four-way switch on top of the grip for the thumb. It trims the plane: up and down for the pitch trim, left and right for the roll trim.",
+              "context": "While the autopilot is on, the same hat gives short pulses that change the held pitch and heading (BIP trim): a pitch pulse changes the attitude by 0.8 degrees and a roll pulse the heading by 2 degrees.",
+              "src": "m1",
+              "page": "47"
+            },
+            {
+              "id": "weapon-release",
+              "name": "Bombs, rockets, missiles and sight recorder button",
+              "type": "button",
+              "match": [
+                "control:stick.weapon_release"
+              ],
+              "text": "The launch button on top of the grip. Depending on the weapon chosen on the armament panel, it launches missiles, drops bombs or fires rockets. It also starts the sight recorder.",
+              "context": "Nothing leaves the plane unless the master arm switch is on.",
+              "src": "m1",
+              "page": "99"
+            },
+            {
+              "id": "trigger",
+              "name": "Gun firing trigger",
+              "type": "trigger",
+              "match": [
+                "control:stick.trigger"
+              ],
+              "positions": [
+                {
+                  "name": "Stage 1",
+                  "text": "Starts the sight recorder."
+                },
+                {
+                  "name": "Stage 2",
+                  "text": "Fires the cannons."
+                }
+              ],
+              "text": "A folding trigger on the front of the grip. The first stage starts the sight recorder and the second fires the cannons.",
+              "context": "The gun firing safety must be pulled for the cannons to fire. The trigger works whatever mode is chosen on the armament panel.",
+              "src": "m1",
+              "page": "99"
+            },
+            {
+              "id": "gun-safety",
+              "name": "Gun firing safety",
+              "type": "guard",
+              "match": [
+                "control:stick.guard.gun_safety"
+              ],
+              "positions": [
+                {
+                  "name": "Flush",
+                  "text": "Cannon firing is forbidden; recording is allowed."
+                },
+                {
+                  "name": "Pulled",
+                  "text": "Cannon firing is allowed."
+                }
+              ],
+              "text": "A safety on the grip. Flush, the cannons cannot fire but the sight recorder can run. Pulled, the cannons may fire.",
+              "context": "A DCS option makes the safeties open as soon as the buttons are pressed.",
+              "src": "m1",
+              "page": "99"
+            },
+            {
+              "id": "ap-disconnect",
+              "name": "Autopilot disconnect trigger",
+              "type": "button",
+              "match": [
+                "control:stick.button.ap_disconnect"
+              ],
+              "text": "A small trigger at the front of the grip. It takes the autopilot back to its basic mode and silences the autopilot warning sound.",
+              "context": "Held down, the pilot can fly with the stick while the autopilot stays armed; when released, the autopilot keeps the last attitude. The manual advises pressing the PA button while holding it.",
+              "src": "m1",
+              "page": "50"
+            },
+            {
+              "id": "ap-lever",
+              "name": "Autopilot disengage lever",
+              "type": "other",
+              "match": [
+                "control:stick.pinky.lever"
+              ],
+              "text": "A lever at the lower front of the grip, reached with the little finger. Pressing it switches the autopilot off completely.",
+              "context": "The red PA light and a warning sound then show on the failure warning panel.",
+              "src": "m1",
+              "page": "50"
+            },
+            {
+              "id": "ptt",
+              "name": "PTT button (push-to-talk)",
+              "type": "button",
+              "match": [
+                "control:stick.button.ptt"
+              ],
+              "text": "Press and hold it to talk on the radio. Release it to listen.",
+              "context": "The radio chosen on the radio selector unit is the one that transmits.",
+              "src": "m1",
+              "page": "84"
+            },
+            {
+              "id": "searchlight",
+              "name": "Search light button",
+              "type": "button",
+              "match": [
+                "control:stick.button.searchlight"
+              ],
+              "text": "Holding this button lights the search light, a lamp for identifying other aircraft at night.",
+              "context": "The search light switch on the right console must be on first.",
+              "src": "m1",
+              "page": "75"
+            }
+          ]
+        },
+        {
+          "id": "throttle",
+          "name": "Throttle and left-hand buttons",
+          "src": "m1",
+          "page": "34",
+          "text": "The throttle lever on the left console and the buttons on and around it.",
+          "context": "The pilot's left hand works the engine, the airbrake, the radio button and the dogfight buttons from here.",
+          "controls": [
+            {
+              "id": "lever",
+              "name": "Throttle lever",
+              "type": "axis",
+              "match": [
+                "control:throttle.axis.main",
+                "item:left-side-panel:30"
+              ],
+              "text": "Pushing this lever forward gives the engine more power. It has two ranges: the dry range, with an idle stop, and the afterburner range, reached by tilting the lever past a stop.",
+              "context": "In idle the engine runs at 2,900 rpm and at full dry power at 8,400. A DCS option moves the afterburner stop to fit a real throttle.",
+              "src": "m1",
+              "page": "34"
+            },
+            {
+              "id": "cutoff",
+              "name": "Throttle cut/idle switch",
+              "type": "switch2",
+              "match": [
+                "control:throttle.switch.cutoff",
+                "item:left-side-panel:31",
+                "PNT-239",
+                "PNT-234-1"
+              ],
+              "positions": [
+                {
+                  "name": "Idle",
+                  "text": "Forward: fuel on; used for the engine start."
+                },
+                {
+                  "name": "Cut",
+                  "text": "Aft: engine stop."
+                }
+              ],
+              "text": "A switch on the throttle that sets it to the idle position or to the stop position, where the engine gets no fuel.",
+              "context": "The throttle must be at the stop before the engine start, and is moved to idle between 300 and 600 rpm.",
+              "src": "m1",
+              "page": "34"
+            },
+            {
+              "id": "combat-lever",
+              "name": "Combat flap lever",
+              "type": "lever",
+              "match": [
+                "control:throttle.lever.combat_flaps"
+              ],
+              "text": "A small lever on the throttle that cancels the combat flaps and brings the flaps back in.",
+              "context": "Combat flaps are a flap setting meant for manoeuvring in combat. The VCBT light shows when they are working.",
+              "src": "m1",
+              "page": "39"
+            },
+            {
+              "id": "combat-button",
+              "name": "Combat flap button",
+              "type": "button",
+              "match": [
+                "control:throttle.button.combat_flaps"
+              ],
+              "text": "A button on the throttle that arms the combat flaps. They extend by themselves when speed and wing angle are within the allowed range.",
+              "context": "The combat flap button is also used to start the flight control test.",
+              "src": "m1",
+              "page": "39"
+            },
+            {
+              "id": "airbrake",
+              "name": "Airbrake control switch",
+              "type": "switch3",
+              "match": [
+                "control:throttle.speedbrake"
+              ],
+              "positions": [
+                {
+                  "name": "Aft",
+                  "text": "Extends the airbrakes."
+                },
+                {
+                  "name": "Center",
+                  "text": "Neutral."
+                },
+                {
+                  "name": "Forward",
+                  "text": "Retracts the airbrakes."
+                }
+              ],
+              "text": "A thumb switch on the throttle that opens or closes the airbrakes, panels that open into the wind to slow the plane.",
+              "context": "The airbrakes can be extended at any speed. The manual lists the positions retracted, extended unstable and extended locked.",
+              "src": "m1",
+              "page": "39"
+            },
+            {
+              "id": "r-mode",
+              "name": "(C + M or SW) R mode button",
+              "type": "button",
+              "match": [
+                "control:throttle.button.r_mode",
+                "item:left-wall-switches:1"
+              ],
+              "text": "Switches on the 'rapid cannon plus Magic or Sidewinder' dogfight mode, in which the cannons and the wingtip missiles are armed together. Further short presses release the radar lock and start a new search ahead of the current target.",
+              "context": "A green light on the sight mount shows the mode is on. A long press restarts the search pattern from its start. A switch on the left wall switches the mode off.",
+              "src": "m1",
+              "page": "96"
+            },
+            {
+              "id": "cannon-lock",
+              "name": "Cannon 300-600m and missile lock/unlock button",
+              "type": "button",
+              "match": [
+                "control:throttle.button.cannon_lock",
+                "item:left-wall-switches:2"
+              ],
+              "text": "When pressed, the radar stops transmitting and the cannon sight is set to a range of 600 metres. The same button also locks or unlocks a heat-seeking missile.",
+              "context": "It is used in close combat, where the radar cannot be used.",
+              "src": "m1",
+              "page": "100"
+            },
+            {
+              "id": "ptt-alt",
+              "name": "Alternative PTT button",
+              "type": "button",
+              "match": [
+                "control:throttle.button.ptt_alt",
+                "item:left-side-panel:33",
+                "PNT-405"
+              ],
+              "text": "A second push-to-talk button, on the left console. Press and hold it to talk on the radio. In DCS the game labels it 'Voice Chat'.",
+              "context": "It does the same as the button on the stick.",
+              "src": "m1",
+              "page": "84"
+            },
+            {
+              "id": "ant-gyro",
+              "name": "Antenna-gyro switch",
+              "type": "switch2",
+              "match": [
+                "control:throttle.switch.antenna_gyro",
+                "PNT-408",
+                "item:left-side-panel:29"
+              ],
+              "positions": [
+                {
+                  "name": "GYRO",
+                  "text": "The sight works with its gyro, the classic way."
+                },
+                {
+                  "name": "ANTENNA",
+                  "text": "The sight uses the radar antenna data when the radar is locked."
+                }
+              ],
+              "text": "Chooses where the sight gets its aim from. In ANT, if the radar is locked, the sight uses the radar antenna's direction. In GYRO the sight uses its own gyro in the classic way.",
+              "context": "ANT also lets the pilot shoot at a target seen only by radar.",
+              "src": "m1",
+              "page": "100"
+            }
+          ]
+        },
+        {
+          "id": "radar-stick",
+          "name": "Radar control stick",
+          "src": "m1",
+          "page": "110",
+          "text": "The radar handle on the left console, behind the throttle. It steers the radar search and the target choice.",
+          "context": "The pilot's left hand moves from the throttle to this handle to search for targets and lock on to one. It also has a gain knob and a button for maximum gain.",
+          "controls": [
+            {
+              "id": "handle",
+              "name": "Radar control stick",
+              "type": "axis",
+              "match": [
+                "control:panel.radar_stick.gimbal",
+                "item:left-side-panel:27"
+              ],
+              "text": "Moving the handle left and right turns the radar antenna and the strobe on the radar screen. Twisting it around its vertical axis moves the strobe in distance.",
+              "context": "The strobe is the line that the pilot moves onto an echo to choose the target.",
+              "src": "m1",
+              "page": "110"
+            },
+            {
+              "id": "elevation-buttons",
+              "name": "Elevation/altitude difference buttons",
+              "type": "rocker",
+              "match": [
+                "control:panel.radar_stick.elevation"
+              ],
+              "text": "Two buttons on the handle, under a protecting arch. They tilt the radar beam up or down, or change the height difference to the target.",
+              "context": "Pressing to the first detent moves slowly (2 degrees per second), pressing further moves fast (10 degrees per second).",
+              "src": "m1",
+              "page": "111"
+            },
+            {
+              "id": "elevation-select",
+              "name": "Radar control stick elevation/altitude difference button",
+              "type": "button",
+              "match": [
+                "PNT-259",
+                "item:left-side-panel:26"
+              ],
+              "text": "A button at the rear base of the radar handle. It chooses what the two handle buttons change: the antenna tilt (shown as E) or the altitude difference (shown as D).",
+              "context": "The letter appears on the radar screen's display.",
+              "src": "m1",
+              "page": "111"
+            },
+            {
+              "id": "aps-apc",
+              "name": "APS / APC lever",
+              "type": "switch3",
+              "match": [
+                "control:panel.radar_stick.aps_apc"
+              ],
+              "positions": [
+                {
+                  "name": "Up (APS)",
+                  "text": "Allows the preselection."
+                },
+                {
+                  "name": "Center",
+                  "text": "Normal search."
+                },
+                {
+                  "name": "Down (APC)",
+                  "text": "Allows the continuous pursuit."
+                }
+              ],
+              "text": "A lever with two spring-loaded positions. The upper part allows APS, the preselection of a target. The lower part allows APC, the continuous pursuit.",
+              "context": "Both are steps of the radar's automatic search and lock sequence.",
+              "src": "m1",
+              "page": "110"
+            },
+            {
+              "id": "unlock",
+              "name": "Unlocking lever",
+              "type": "lever",
+              "match": [
+                "control:panel.radar_stick.unlock"
+              ],
+              "text": "Pressing this lever breaks the radar's lock on a target, so the pilot can choose another one.",
+              "context": "The manual calls it the release or reject lever.",
+              "src": "m1",
+              "page": "110"
+            },
+            {
+              "id": "scan",
+              "name": "Radar control stick scan selection",
+              "type": "switch2",
+              "match": [
+                "control:panel.radar_stick.scan",
+                "PNT-257",
+                "item:left-side-panel:28"
+              ],
+              "positions": [
+                {
+                  "name": "Left",
+                  "text": "A step of the scan width."
+                },
+                {
+                  "name": "Right",
+                  "text": "A step of the scan width."
+                }
+              ],
+              "text": "A switch at the front of the handle's base. It selects the width of the radar's side-to-side sweep, plus or minus 60 or plus or minus 30 degrees.",
+              "context": "A narrower sweep searches a smaller area faster.",
+              "src": "m1",
+              "page": "110"
+            },
+            {
+              "id": "scale",
+              "name": "Radar control stick scale selection",
+              "type": "switch2",
+              "match": [
+                "control:panel.radar_stick.scale",
+                "PNT-258",
+                "item:left-side-panel:25"
+              ],
+              "positions": [
+                {
+                  "name": "Left",
+                  "text": "A step of the scale."
+                },
+                {
+                  "name": "Right",
+                  "text": "A step of the scale."
+                }
+              ],
+              "text": "A switch at the rear of the handle's base. It selects the distance scale of the radar screen: 60, 35, 15 or 7 nautical miles.",
+              "context": "The lit scale numbers on the screen show which one is chosen.",
+              "src": "m1",
+              "page": "110"
+            }
+          ]
+        },
+        {
+          "id": "left-wall",
+          "name": "Switches in the left wall",
+          "src": "m1",
+          "page": "102",
+          "text": "Three controls in the left wall of the cockpit: a radar mode switch, the dogfight mode release and the decoy button.",
+          "context": "They are used in combat. The pilot's left hand reaches them next to the throttle.",
+          "controls": [
+            {
+              "id": "tel-bpz",
+              "name": "Telemeter/zone scanning switch",
+              "type": "switch3",
+              "match": [
+                "control:panel.switch.tel_bpz",
+                "PNT-360",
+                "item:left-side-panel:5",
+                "item:left-wall-switches:4"
+              ],
+              "positions": [
+                {
+                  "name": "TEL (TL)",
+                  "text": "Air-to-air ranging with automatic lock."
+                },
+                {
+                  "name": "CENTER (OFF)",
+                  "text": "The radar is used in any other selected function."
+                },
+                {
+                  "name": "BPZ (BZ)",
+                  "text": "Scanning of a zone with automatic lock."
+                }
+              ],
+              "text": "Switches the radar to an automatic close-combat mode. In one position it measures distance to a target ahead (TEL). In another it scans a zone and locks the first target by itself (BZ).",
+              "context": "The close-combat modes lock a target closer than 7 km and have priority over all other radar functions.",
+              "src": "m1",
+              "page": "110"
+            },
+            {
+              "id": "r-deselect",
+              "name": "(C + M or SW) R deselection switch",
+              "type": "switch",
+              "match": [
+                "PNT-361",
+                "item:left-side-panel:4",
+                "item:left-wall-switches:3"
+              ],
+              "text": "A spring-loaded switch that switches off the rapid cannon plus missile dogfight mode and brings back the weapon choice made earlier.",
+              "context": "The mode itself is switched on by the button on the throttle.",
+              "src": "m1",
+              "page": "100"
+            },
+            {
+              "id": "chaff-release",
+              "name": "Chaff/flares release button",
+              "type": "button",
+              "match": [
+                "control:panel.button.chaff_flare",
+                "PNT-708"
+              ],
+              "text": "Pressing this button throws out chaff and flares according to the dispenser panel's settings.",
+              "context": "The mode is chosen at the chaff and flare panel on the main panel.",
+              "src": "m1",
+              "page": "105"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "f1ee-changes",
+      "where": "other",
+      "name": "F1EE and F1M: items that differ from the F1CE",
+      "text": "The panels that the F1EE and the F1M have in addition to, or in different places than, the F1CE: the radar warning receiver, the inertial navigation system and the new navigation indicator.",
+      "panels": [
+        {
+          "id": "ee-main-panel-changes",
+          "name": "F1EE/F1M main instrument panel changes",
+          "db": "ee-main-panel-changes",
+          "src": "m1",
+          "page": "199",
+          "text": "The items of the main panel that are new or placed differently on the F1EE and the F1M.",
+          "context": "The F1EE and the F1M share most systems with the F1CE but have a different panel layout, an inertial navigation system, aerial refuelling and a different radar warning receiver.",
+          "controls": [
+            {
+              "id": "rwr-ucc",
+              "name": "RWR UCC (cockpit control unit)",
+              "type": "other",
+              "match": [
+                "item:ee-main-panel-changes:1"
+              ],
+              "text": "The control unit of the AN/ALR-300 radar warning receiver (RWR), at the top left of the panel. It has five lit keys: CURS shows more detail on a threat, REG records, AMEN ELIM keeps the five most dangerous threats, TONO ELIM mutes the voice messages and EXPL ELIM removes scanning radars.",
+              "context": "The RWR tells the pilot which enemy radars look at the plane. A power switch for it sits on the front part of the right console.",
+              "src": "m1",
+              "page": "212"
+            },
+            {
+              "id": "rwr-ia",
+              "name": "RWR IA (azimuth indicator)",
+              "type": "display",
+              "match": [
+                "item:ee-main-panel-changes:2"
+              ],
+              "text": "The round screen of the radar warning receiver. It shows a symbol for each radar that looks at the plane, with outer marks every 30 degrees to show roughly the direction. The more dangerous a threat, the nearer the edge it sits.",
+              "context": "A brightness knob and a test button are on the unit. The test shows O (OK), L (limited) or T (failed). It can show up to 16 threats.",
+              "src": "m1",
+              "page": "212"
+            },
+            {
+              "id": "idn",
+              "name": "IDN (navigation indicator)",
+              "type": "gauge",
+              "match": [
+                "item:ee-main-panel-changes:3"
+              ],
+              "text": "The navigation indicator of the F1EE and F1M. It shows compass, needles and distance for radio beacons and for the inertial navigation system. Its parts are listed in the panel 'Navigation indicator (IDN, F1EE)'.",
+              "context": "The F1CE has a simpler version.",
+              "src": "m1",
+              "page": "208"
+            },
+            {
+              "id": "cone-controls",
+              "name": "Shock-cone control switch and pushbutton",
+              "type": "button",
+              "match": [
+                "item:ee-main-panel-changes:4"
+              ],
+              "text": "On the F1EE and the F1M this item sits in a different place than on the F1CE; the manual marks it with a yellow diamond. These are the manual shock cone switch and the automatic pushbutton.",
+              "context": "Its function is described with the F1CE control of the same name (Shock-cone manual control switch and pushbutton).",
+              "src": "m1",
+              "page": "200"
+            },
+            {
+              "id": "nws-controls",
+              "name": "Nose wheel steering switch and high sensitivity button",
+              "type": "button",
+              "match": [
+                "item:ee-main-panel-changes:5"
+              ],
+              "text": "On the F1EE and the F1M this item sits in a different place than on the F1CE; the manual marks it with a yellow diamond. These are the nose wheel steering switch and the high sensitivity button.",
+              "context": "Its function is described with the F1CE control of the same name (Nose wheel steering switch).",
+              "src": "m1",
+              "page": "200"
+            },
+            {
+              "id": "fuel-indicators",
+              "name": "Fuel transfer and fuel remaining indicators",
+              "type": "gauge",
+              "match": [
+                "item:ee-main-panel-changes:6"
+              ],
+              "text": "On the F1EE and the F1M this item sits in a different place than on the F1CE; the manual marks it with a yellow diamond. These are the two fuel indicators.",
+              "context": "Its function is described with the F1CE control of the same name (Fuel transfer indicator and fuel remaining indicator).",
+              "src": "m1",
+              "page": "200"
+            },
+            {
+              "id": "fuel-switches",
+              "name": "Crossfeed, emergency transfer and transfer sequence switches",
+              "type": "switch",
+              "match": [
+                "item:ee-main-panel-changes:7"
+              ],
+              "text": "On the F1EE and the F1M this item sits in a different place than on the F1CE; the manual marks it with a yellow diamond. These are three fuel switches.",
+              "context": "Its function is described with the F1CE control of the same name (Crossfeed switch, emergency transfer switch and fuel transfer sequence selector).",
+              "src": "m1",
+              "page": "200"
+            },
+            {
+              "id": "config",
+              "name": "Configuration indicator (F1EE position)",
+              "type": "indicator",
+              "match": [
+                "item:ee-main-panel-changes:8"
+              ],
+              "text": "On the F1EE and the F1M this item sits in a different place than on the F1CE; the manual marks it with a yellow diamond. This is the panel with the lights of the flaps, slats and landing gear.",
+              "context": "Its function is described with the F1CE control of the same name (Configuration indicator).",
+              "src": "m1",
+              "page": "200"
+            },
+            {
+              "id": "radar-sel",
+              "name": "Radar selector and radar emergency transmitting button",
+              "type": "selector",
+              "match": [
+                "item:ee-main-panel-changes:9"
+              ],
+              "text": "On the F1EE and the F1M this item sits in a different place than on the F1CE; the manual marks it with a yellow diamond. These are the switch that powers the radar and its emergency transmission button.",
+              "context": "Its function is described with the F1CE control of the same name (Radar selector).",
+              "src": "m1",
+              "page": "200"
+            },
+            {
+              "id": "radar-box",
+              "name": "Radar indicator scope control box (F1EE position)",
+              "type": "other",
+              "match": [
+                "item:ee-main-panel-changes:10"
+              ],
+              "text": "On the F1EE and the F1M this item sits in a different place than on the F1CE; the manual marks it with a yellow diamond. This is the box of five knobs for the radar screen's lights.",
+              "context": "Its function is described with the F1CE control of the same name (Radar indicator scope control box).",
+              "src": "m1",
+              "page": "200"
+            },
+            {
+              "id": "cone-ind",
+              "name": "Shock-cone position indicator (F1EE position)",
+              "type": "indicator",
+              "match": [
+                "item:ee-main-panel-changes:11"
+              ],
+              "text": "On the F1EE and the F1M this item sits in a different place than on the F1CE; the manual marks it with a yellow diamond. This is the dial for the shock cone position.",
+              "context": "Its function is described with the F1CE control of the same name (Shock-cone position indicator).",
+              "src": "m1",
+              "page": "200"
+            },
+            {
+              "id": "alt-mach",
+              "name": "Slaved altimeter and Mach/airspeed indicator",
+              "type": "gauge",
+              "match": [
+                "item:ee-main-panel-changes:12"
+              ],
+              "text": "On the F1EE and the F1M this item sits in a different place than on the F1CE; the manual marks it with a yellow diamond. These are the main height gauge and the speed dial.",
+              "context": "Its function is described with the F1CE control of the same name (Slaved altimeter and Mach/airspeed indicator).",
+              "src": "m1",
+              "page": "200"
+            },
+            {
+              "id": "vsi",
+              "name": "Vertical speed indicator (F1EE position)",
+              "type": "gauge",
+              "match": [
+                "item:ee-main-panel-changes:13"
+              ],
+              "text": "On the F1EE and the F1M this item sits in a different place than on the F1CE; the manual marks it with a yellow diamond. This is the dial for climb and sink rate.",
+              "context": "Its function is described with the F1CE control of the same name (Vertical speed indicator).",
+              "src": "m1",
+              "page": "200"
+            }
+          ]
+        },
+        {
+          "id": "ee-left-panel-changes",
+          "name": "F1EE/F1M left side panel changes",
+          "db": "ee-left-panel-changes",
+          "src": "m1",
+          "page": "199",
+          "text": "The items of the left console that are new or placed differently on the F1EE and the F1M, including the aerial refuelling switch.",
+          "context": "The F1EE and F1M can take fuel in flight from a tanker through a probe on the nose.",
+          "controls": [
+            {
+              "id": "refuel-switch",
+              "name": "Aerial refuelling system transfer/filling switch",
+              "type": "switch",
+              "match": [
+                "item:ee-left-panel-changes:1"
+              ],
+              "text": "A guarded switch that readies the plane to take fuel from a tanker in the air. Switched on, the tanks lose their pressure and the lights of the fuel transfer indicator come on.",
+              "context": "For safety the radar and the TACAN must be off while refuelling. A retractable light in the right air intake allows refuelling at night.",
+              "src": "m1",
+              "page": "210"
+            },
+            {
+              "id": "pumps",
+              "name": "Fuel pump switches, ignition/ventilation selector and start button",
+              "type": "switch",
+              "match": [
+                "item:ee-left-panel-changes:2"
+              ],
+              "text": "On the F1EE and the F1M this item sits in a different place than on the F1CE; the manual marks it with a yellow diamond. These are the two fuel pump switches, the spark plug selector and the start button.",
+              "context": "Its function is described with the F1CE control of the same name (the engine start controls of the left console).",
+              "src": "m1",
+              "page": "201"
+            },
+            {
+              "id": "lighting",
+              "name": "Interior lighting control unit",
+              "type": "other",
+              "match": [
+                "item:ee-left-panel-changes:3"
+              ],
+              "text": "The unit with the knobs for the lights inside the cockpit. A knob for the refuelling light in the right air intake is on the left console too.",
+              "context": "The manual shows the unit on the left side panel of the F1EE.",
+              "src": "m1",
+              "page": "201"
+            },
+            {
+              "id": "relight",
+              "name": "In-flight relight button (F1EE position)",
+              "type": "button",
+              "match": [
+                "item:ee-left-panel-changes:4"
+              ],
+              "text": "On the F1EE and the F1M this item sits in a different place than on the F1CE; the manual marks it with a yellow diamond. This is the button that tries to restart the engine in flight.",
+              "context": "Its function is described with the F1CE control of the same name (In-flight relight control).",
+              "src": "m1",
+              "page": "201"
+            },
+            {
+              "id": "antiskid",
+              "name": "Anti-skid (SPAD) switch (F1EE position)",
+              "type": "switch",
+              "match": [
+                "item:ee-left-panel-changes:5"
+              ],
+              "text": "On the F1EE and the F1M this item sits in a different place than on the F1CE; the manual marks it with a yellow diamond. This is the switch that turns the anti-skid brakes off.",
+              "context": "Its function is described with the F1CE control of the same name (Anti-skid (SPAD) switch).",
+              "src": "m1",
+              "page": "201"
+            },
+            {
+              "id": "jpt-ab",
+              "name": "JPT emergency regulation switch and A/B main cock switch",
+              "type": "switch",
+              "match": [
+                "item:ee-left-panel-changes:6"
+              ],
+              "text": "On the F1EE and the F1M this item sits in a different place than on the F1CE; the manual marks it with a yellow diamond. These are two engine switches, side by side.",
+              "context": "Its function is described with the F1CE control of the same name (JPT emergency regulation switch and A/B main cock switch).",
+              "src": "m1",
+              "page": "201"
+            },
+            {
+              "id": "uhf",
+              "name": "UHF radio control unit (F1EE position)",
+              "type": "other",
+              "match": [
+                "item:ee-left-panel-changes:7"
+              ],
+              "text": "On the F1EE and the F1M this item sits in a different place than on the F1CE; the manual marks it with a yellow diamond. This is the red UHF radio.",
+              "context": "Its function is described with the F1CE control of the same name (UHF radio control unit).",
+              "src": "m1",
+              "page": "201"
+            }
+          ]
+        },
+        {
+          "id": "ee-right-panel-changes",
+          "name": "F1EE/F1M right side panel changes",
+          "db": "ee-right-panel-changes",
+          "src": "m1",
+          "page": "199",
+          "text": "The items of the right console that are new or placed differently on the F1EE and the F1M.",
+          "context": "The F1EE and F1M have the inertial navigation panel on the right console.",
+          "controls": [
+            {
+              "id": "ins",
+              "name": "Inertial navigation system (PCN panel)",
+              "type": "other",
+              "match": [
+                "item:ee-right-panel-changes:1"
+              ],
+              "text": "The inertial navigation system finds the plane's position by measuring its own movements, without any outside signal. The data is typed on the navigation control panel (PCN).",
+              "context": "The panel is explained in the 'Navigation control panel (PCN)' panel.",
+              "src": "m1",
+              "page": "202"
+            },
+            {
+              "id": "arm-panel",
+              "name": "Armament panel and associated controls",
+              "type": "other",
+              "match": [
+                "item:ee-right-panel-changes:2"
+              ],
+              "text": "On the F1EE and the F1M this item sits in a different place than on the F1CE; the manual marks it with a yellow diamond. This is the weapon selection panel with its radar switches.",
+              "context": "Its function is described with the F1CE control of the same name (Armament control panel).",
+              "src": "m1",
+              "page": "201"
+            },
+            {
+              "id": "ram",
+              "name": "Ram air switch (F1EE position)",
+              "type": "switch",
+              "match": [
+                "item:ee-right-panel-changes:3"
+              ],
+              "text": "On the F1EE and the F1M this item sits in a different place than on the F1CE; the manual marks it with a yellow diamond. This is the guarded switch that opens the fresh air inlet.",
+              "context": "Its function is described with the F1CE control of the same name (Ram air switch).",
+              "src": "m1",
+              "page": "201"
+            },
+            {
+              "id": "nav-controls",
+              "name": "Heading selection, omnibearing, TACAN and VOR/ILS controls",
+              "type": "other",
+              "match": [
+                "item:ee-right-panel-changes:4"
+              ],
+              "text": "On the F1EE and the F1M this item sits in a different place than on the F1CE; the manual marks it with a yellow diamond. These are the radio navigation boxes and course knobs.",
+              "context": "Its function is described with the F1CE control of the same name (TACAN control box, VOR/ILS control box and the selection knobs).",
+              "src": "m1",
+              "page": "201"
+            },
+            {
+              "id": "demist",
+              "name": "Demist switch (F1EE position)",
+              "type": "switch",
+              "match": [
+                "item:ee-right-panel-changes:5"
+              ],
+              "text": "On the F1EE and the F1M this item sits in a different place than on the F1CE; the manual marks it with a yellow diamond. This is the switch that blows warm air on the windows.",
+              "context": "Its function is described with the F1CE control of the same name (Demist switch).",
+              "src": "m1",
+              "page": "201"
+            },
+            {
+              "id": "oxygen-ind",
+              "name": "Oxygen indicator",
+              "type": "indicator",
+              "match": [
+                "item:ee-right-panel-changes:6"
+              ],
+              "text": "A small instrument with a blinker, a needle showing the oxygen quantity in quarters, and a repeater of the selector position. Two test buttons check it.",
+              "context": "The blinker shows that oxygen is drawn on demand. A green band shows enough oxygen and a red band too little.",
+              "src": "m1",
+              "page": "76"
+            },
+            {
+              "id": "heading-unit",
+              "name": "Heading control unit",
+              "type": "other",
+              "match": [
+                "item:ee-right-panel-changes:7"
+              ],
+              "text": "On the F1EE and the F1M this item sits in a different place than on the F1CE; the manual marks it with a yellow diamond. This is the unit with the gyro system selector and the emergency compass switch.",
+              "context": "Its function is described with the F1CE control of the same name (Heading and vertical reference system controls).",
+              "src": "m1",
+              "page": "201"
+            },
+            {
+              "id": "ac-panel",
+              "name": "Air conditioning and pressurization panel",
+              "type": "other",
+              "match": [
+                "item:ee-right-panel-changes:8"
+              ],
+              "text": "On the F1EE and the F1M this item sits in a different place than on the F1CE; the manual marks it with a yellow diamond. This is the panel that heats, cools and pressurizes the cabin.",
+              "context": "Its function is described with the F1CE control of the same name (Air conditioning and pressurization panel).",
+              "src": "m1",
+              "page": "201"
+            }
+          ]
+        },
+        {
+          "id": "pcn-ins",
+          "name": "Navigation control panel (PCN)",
+          "db": "pcn-ins",
+          "src": "m1",
+          "page": "202",
+          "text": "The panel where the pilot starts the inertial navigation system and types in waypoints.",
+          "context": "The pilot switches the system on and lets it align before flying: 8 minutes for the normal alignment, 3.5 for a rapid one and 1.5 minutes for the alignment with a memorized heading. After that the system keeps track of the plane's position by itself.",
+          "controls": [
+            {
+              "id": "parameters",
+              "name": "Parameters selector",
+              "type": "selector",
+              "match": [
+                "item:pcn-ins:1"
+              ],
+              "positions": [
+                {
+                  "name": "L/G",
+                  "text": "Distance to the next waypoint."
+                },
+                {
+                  "name": "PP",
+                  "text": "Present position."
+                },
+                {
+                  "name": "VS/RT",
+                  "text": "Ground speed and true heading."
+                },
+                {
+                  "name": "POS",
+                  "text": "Position of the waypoint chosen with the wheel."
+                },
+                {
+                  "name": "STS",
+                  "text": "Failures and the percentage of the alignment."
+                },
+                {
+                  "name": "CDI",
+                  "text": "Codes and data of the system."
+                }
+              ],
+              "text": "Chooses what the display windows show: distance to the next waypoint, present position, ground speed and heading, a waypoint's position, the alignment status, or codes.",
+              "context": "The status position shows the percentage of the alignment done.",
+              "src": "m1",
+              "page": "205"
+            },
+            {
+              "id": "waypoints",
+              "name": "Waypoints selecting wheel",
+              "type": "wheel",
+              "match": [
+                "item:pcn-ins:2"
+              ],
+              "text": "A wheel that picks one of the nine stored waypoints, points on the planned route.",
+              "context": "Waypoint 0 of the Mission Editor is waypoint 1 in this system.",
+              "src": "m1",
+              "page": "203"
+            },
+            {
+              "id": "modes",
+              "name": "Modes selector",
+              "type": "selector",
+              "match": [
+                "item:pcn-ins:3"
+              ],
+              "positions": [
+                {
+                  "name": "AR",
+                  "text": "The system is off."
+                },
+                {
+                  "name": "VEI",
+                  "text": "Standby; data can be entered."
+                },
+                {
+                  "name": "CAL",
+                  "text": "Calibration, for maintenance."
+                },
+                {
+                  "name": "TEST",
+                  "text": "Test, for maintenance."
+                },
+                {
+                  "name": "ALCM",
+                  "text": "Fast alignment with the memorized heading."
+                },
+                {
+                  "name": "ALR",
+                  "text": "Rapid alignment."
+                },
+                {
+                  "name": "ALN",
+                  "text": "Normal alignment."
+                },
+                {
+                  "name": "NAV",
+                  "text": "Normal navigation."
+                },
+                {
+                  "name": "SEC",
+                  "text": "Emergency navigation."
+                }
+              ],
+              "text": "The main switch of the inertial system: off, standby, the three alignments, normal navigation and emergency navigation.",
+              "context": "CAL and TEST are reserved for maintenance.",
+              "src": "m1",
+              "page": "205"
+            },
+            {
+              "id": "lights-test",
+              "name": "Lights test and brightness selector",
+              "type": "selector",
+              "match": [
+                "item:pcn-ins:4"
+              ],
+              "text": "Tests the lights of the panel and sets their brightness.",
+              "context": "The manual only names the control.",
+              "src": "m1",
+              "page": "207"
+            },
+            {
+              "id": "keyboard",
+              "name": "Data introduction keyboard",
+              "type": "keypad",
+              "match": [
+                "item:pcn-ins:5"
+              ],
+              "text": "Keys for typing digits and the letters used in coordinates, such as N and E. Coordinates are in degrees, minutes and tenths of minutes.",
+              "context": "To store a waypoint the pilot types the latitude, presses INSER, types the longitude and presses INSER again.",
+              "src": "m1",
+              "page": "204"
+            },
+            {
+              "id": "valid",
+              "name": "Position validation button (VALID)",
+              "type": "button",
+              "match": [
+                "item:pcn-ins:6"
+              ],
+              "text": "Confirms a position update. It lights after the vertical designation button has been pressed.",
+              "context": "Pressing the CLR button instead cancels the update.",
+              "src": "m1",
+              "page": "204"
+            },
+            {
+              "id": "insert",
+              "name": "Data insertion button (INSER)",
+              "type": "button",
+              "match": [
+                "item:pcn-ins:7"
+              ],
+              "text": "Stores the typed data, one value at a time.",
+              "context": "It is pressed after the latitude and again after the longitude.",
+              "src": "m1",
+              "page": "203"
+            },
+            {
+              "id": "overfly",
+              "name": "Vertical designation button",
+              "type": "button",
+              "match": [
+                "item:pcn-ins:8"
+              ],
+              "text": "Pressed when the plane flies over a known point such as a landmark. It starts a position update that the VALID button then confirms.",
+              "context": "The error that has built up can be checked with L/G first. VALID confirms the update.",
+              "src": "m1",
+              "page": "204"
+            },
+            {
+              "id": "windows",
+              "name": "Display windows",
+              "type": "display",
+              "match": [
+                "item:pcn-ins:9"
+              ],
+              "text": "Two windows with digits: the left and right readouts of what the parameters selector has chosen.",
+              "context": "In alignment status the right window counts up to 999.",
+              "src": "m1",
+              "page": "205"
+            },
+            {
+              "id": "status-lights",
+              "name": "INS status lights",
+              "type": "light",
+              "match": [
+                "item:pcn-ins:10"
+              ],
+              "text": "Lights that show the state of the system. The ALIGN light blinks during the start of the alignment and burns steadily during the precision phase. PRET (ready) means the alignment is complete.",
+              "context": "The manual says the system can be set to NAV once the counter has reached 720, and that a full alignment is 999.",
+              "src": "m1",
+              "page": "206"
+            }
+          ]
+        },
+        {
+          "id": "idn-ee",
+          "name": "Navigation indicator (IDN, F1EE)",
+          "db": "idn-ee",
+          "src": "m1",
+          "page": "208",
+          "text": "The round navigation dial of the F1EE and F1M, with a compass rose, two needles and a distance counter.",
+          "context": "It works much like the F1CE one, with additions for the inertial system. The mode selector chooses which source the needles follow.",
+          "controls": [
+            {
+              "id": "heading-index",
+              "name": "Heading index",
+              "type": "indicator",
+              "match": [
+                "item:idn-ee:1"
+              ],
+              "text": "A mark at the top of the dial that shows the present heading.",
+              "context": "The compass rose turns under it.",
+              "src": "m1",
+              "page": "209"
+            },
+            {
+              "id": "wide-needle",
+              "name": "Wide needle",
+              "type": "indicator",
+              "match": [
+                "item:idn-ee:2"
+              ],
+              "text": "The wide needle points to the target of the chosen mode: the selected waypoint, an extra point, or a TACAN beacon.",
+              "context": "Its tail shows the line on which the plane is.",
+              "src": "m1",
+              "page": "208"
+            },
+            {
+              "id": "true-mag",
+              "name": "Gyromagnetic/true selector",
+              "type": "switch2",
+              "match": [
+                "item:idn-ee:3"
+              ],
+              "positions": [
+                {
+                  "name": "MAG",
+                  "text": "Magnetic heading."
+                },
+                {
+                  "name": "TRUE",
+                  "text": "True heading."
+                }
+              ],
+              "text": "Chooses whether the compass rose shows the magnetic or the true heading.",
+              "context": "True is measured to the real North Pole, magnetic to the magnetic one.",
+              "src": "m1",
+              "page": "208"
+            },
+            {
+              "id": "narrow-flag",
+              "name": "Narrow needle failure flag",
+              "type": "indicator",
+              "match": [
+                "item:idn-ee:4"
+              ],
+              "text": "A flag that appears when the narrow needle is not working.",
+              "context": "The flags tell the pilot not to trust a needle.",
+              "src": "m1",
+              "page": "208"
+            },
+            {
+              "id": "rose-flag",
+              "name": "Compass rose failure flag",
+              "type": "indicator",
+              "match": [
+                "item:idn-ee:5"
+              ],
+              "text": "A flag that appears when the compass rose is not working.",
+              "context": "It is one of three failure flags on the dial.",
+              "src": "m1",
+              "page": "208"
+            },
+            {
+              "id": "vor-radar",
+              "name": "VOR/radar narrow needle selector",
+              "type": "switch2",
+              "match": [
+                "item:idn-ee:6"
+              ],
+              "positions": [
+                {
+                  "name": "RADAR",
+                  "text": "The narrow needle shows the radar antenna direction."
+                },
+                {
+                  "name": "VOR",
+                  "text": "The narrow needle shows the VOR direction."
+                }
+              ],
+              "text": "Chooses what the narrow needle shows: the direction of the radar antenna, or the direction to a VOR beacon.",
+              "context": "R means radar antenna, V means VOR.",
+              "src": "m1",
+              "page": "208"
+            },
+            {
+              "id": "distance",
+              "name": "Distance counter",
+              "type": "display",
+              "match": [
+                "item:idn-ee:7"
+              ],
+              "text": "A counter that shows the distance to the chosen target, in nautical miles.",
+              "context": "Its flag appears when the distance is not available.",
+              "src": "m1",
+              "page": "208"
+            },
+            {
+              "id": "add-vector",
+              "name": "Additional vector bearing/distance adjustment",
+              "type": "indicator",
+              "match": [
+                "item:idn-ee:8"
+              ],
+              "text": "Windows and a switch for an extra point that the pilot sets by its bearing and distance. The switch picks which of the two is entered, in a range up to 359 nautical miles.",
+              "context": "The values are adjusted while the wide needle and counter show them.",
+              "src": "m1",
+              "page": "208"
+            },
+            {
+              "id": "mode-selector",
+              "name": "IDN mode selector switch",
+              "type": "selector",
+              "match": [
+                "item:idn-ee:9"
+              ],
+              "text": "Chooses the dial's mode, for example NAV-N for the waypoints of the inertial system, NAV-VA for the extra waypoint, or an RNAV mode for a TACAN beacon.",
+              "context": "A small index on the dial shows the chosen mode.",
+              "src": "m1",
+              "page": "208"
+            },
+            {
+              "id": "distance-flag",
+              "name": "Distance counter failure flag",
+              "type": "indicator",
+              "match": [
+                "item:idn-ee:10"
+              ],
+              "text": "A flag that appears when the distance is not available.",
+              "context": "It is one of the failure flags on the dial.",
+              "src": "m1",
+              "page": "209"
+            },
+            {
+              "id": "mode-index",
+              "name": "NAV-TACAN mode index",
+              "type": "indicator",
+              "match": [
+                "item:idn-ee:11"
+              ],
+              "text": "A small index that shows the chosen mode of the dial.",
+              "context": "It is read next to the mode selector.",
+              "src": "m1",
+              "page": "209"
+            },
+            {
+              "id": "wide-flag",
+              "name": "Wide needle failure flag",
+              "type": "indicator",
+              "match": [
+                "item:idn-ee:12"
+              ],
+              "text": "A flag that appears when the wide needle is not working.",
+              "context": "It is one of the failure flags on the dial.",
+              "src": "m1",
+              "page": "209"
+            },
+            {
+              "id": "narrow-needle",
+              "name": "Narrow needle",
+              "type": "indicator",
+              "match": [
+                "item:idn-ee:13"
+              ],
+              "text": "The thin needle. It shows the radar antenna direction or the direction to a VOR beacon, or an extra waypoint in the RNAV modes.",
+              "context": "The selector next to it chooses between the sources.",
+              "src": "m1",
+              "page": "209"
+            },
+            {
+              "id": "heading-bug",
+              "name": "Heading bug",
+              "type": "indicator",
+              "match": [
+                "item:idn-ee:14"
+              ],
+              "text": "A marker on the rim that shows the heading selected for the autopilot.",
+              "context": "The autopilot follows it in CAP mode. The heading is set with the heading selection knob.",
+              "src": "m1",
+              "page": "209"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

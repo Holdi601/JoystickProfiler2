@@ -1,0 +1,1029 @@
+{
+  "format": "joypro-cockpit-guide",
+  "version": 1,
+  "id": "dcs-ajs37",
+  "title": "AJS 37 Viggen (DCS)",
+  "variants": [
+    "viggen-ajs37"
+  ],
+  "games": [
+    "DCS"
+  ],
+  "sets": [
+    "DCS/AJS37"
+  ],
+  "sources": [
+    {
+      "id": "m1",
+      "title": "DCS AJS37 Flight Manual (EN) RC2.1",
+      "file": "Mods/aircraft/AJS37/Doc/DCS_AJS37_Flight_Manual_EN_RC2.1.pdf"
+    }
+  ],
+  "intro": "The AJS 37 Viggen is a Swedish single-seat jet built for low, fast attack flying from short runways. Its cockpit is analogue: a head-up display (the glass screen that shows flight numbers and aiming marks) sits above a round central radar screen. The left and right walls hold the switches, the computer keypad and the weapon panel. A separate radar handle sits on the left wall. Many labels are Swedish, and this guide explains each one in plain English.",
+  "areas": [
+    {
+      "id": "glareshield",
+      "where": "glareshield",
+      "name": "Windscreen frame, head-up display and mirrors",
+      "text": "The top of the instrument panel, right in front of the pilot's eyes. It holds the head-up display, the two big master warning lights and the rear-view mirrors.",
+      "panels": [
+        {
+          "id": "mirrors",
+          "name": "Rear-view mirrors",
+          "src": "m1",
+          "text": "Small mirrors let the pilot look behind the plane without turning around. In the game they can be clicked to show or hide the mirror view.",
+          "context": "The pilot uses them to check for aircraft coming up from behind. They do not change any system of the plane.",
+          "controls": [
+            {
+              "id": "toggle-mirrors",
+              "name": "Mirrors (left, right, centre)",
+              "type": "switch",
+              "match": [
+                "PNT_MIRROR_TOGGLE",
+                "PNT_MIRROR_TOGGLE_LEFT",
+                "PNT_MIRROR_TOGGLE_RIGHT"
+              ],
+              "count": 3,
+              "text": "The game shows three clickable mirrors. The game's hint for each is 'Toggle Mirrors'. A click shows or hides the view in that mirror.",
+              "context": "The mirrors only help the pilot to look around. The manual does not describe them.",
+              "src": "m1"
+            }
+          ]
+        },
+        {
+          "id": "hud",
+          "name": "Head-up display (HUD, 'SI')",
+          "src": "m1",
+          "text": "The HUD is the glass screen in front of the pilot's eyes. It shows flight numbers and aiming marks, so the pilot can read them while looking outside.",
+          "context": "The Viggen calls it SI. Besides flight information it gives the aiming marks for most weapons. Its glass can sit in a higher or lower position.",
+          "controls": [
+            {
+              "id": "hud-glass",
+              "name": "Head up display (HUD, 'SI')",
+              "type": "display",
+              "match": [
+                "item:front-panel:20"
+              ],
+              "text": "This is the glass screen that shows the plane's speed, height, direction and the aiming marks for weapons. It is not a button; the controls around it change how it looks.",
+              "context": "The HUD shares its information with the central indicator below it. Both are called the EP-08 system in the manual.",
+              "src": "m1",
+              "page": "96"
+            },
+            {
+              "id": "hud-cover",
+              "name": "HUD cover",
+              "type": "other",
+              "match": [
+                "item:front-panel:19"
+              ],
+              "text": "A cover on the HUD. The manual says it shows a conversion between altitude and flight level, or the emergency procedure for reduced thrust after take-off.",
+              "context": "It is a reference card for the pilot. It is not a control and has no function of its own.",
+              "src": "m1",
+              "page": "23"
+            },
+            {
+              "id": "hud-position",
+              "name": "HUD position lever",
+              "type": "lever",
+              "match": [
+                "PNT_11",
+                "item:front-panel:18"
+              ],
+              "text": "This lever moves the HUD glass between a higher and a lower position. The game offers a toggle between LOW and HIGH, and a hold command that pulls the glass to the lower position.",
+              "context": "The glass is moved down for take-off and landing, when the nose is high, so the symbols stay visible. The lever sits at the left side of the HUD base.",
+              "src": "m1",
+              "page": "96"
+            },
+            {
+              "id": "hud-brightness",
+              "name": "HUD brightness knob LJUS SI",
+              "type": "knob",
+              "match": [
+                "PNT_180",
+                "item:front-panel:16"
+              ],
+              "text": "Turning this knob makes the symbols on the HUD brighter or dimmer.",
+              "context": "The pilot sets it so the symbols can be read against a bright sky or a dark night. It sits to the left of the HUD position lever.",
+              "src": "m1",
+              "page": "96"
+            },
+            {
+              "id": "slav-si",
+              "name": "HUD slave switch SLAV SI",
+              "type": "switch2",
+              "match": [
+                "SlavSI-PTR",
+                "item:front-panel:22"
+              ],
+              "positions": [
+                {
+                  "name": "F",
+                  "text": "OFF (FRÅN): no slaved HUD and no LOW NAV mode."
+                },
+                {
+                  "name": "T",
+                  "text": "ON (TILL): HUD slaved in landing master mode LANDNING P/O, normal mode in LANDNING NAV, LOW NAV below 100 m."
+                }
+              ],
+              "text": "This switch has two positions, F (off) and T (on). In position T the HUD glass is centred during a visual landing, and the low-level navigation display is allowed below 100 metres.",
+              "context": "It also changes what the HUD shows during the landing approach and when a pop-up point comes near. The manual lists these uses with the master mode selector settings.",
+              "src": "m1",
+              "page": "104"
+            },
+            {
+              "id": "alt-source",
+              "name": "Altitude source switch HÖJD CI SI",
+              "type": "switch2",
+              "match": [
+                "HojdSI-PTR",
+                "item:front-panel:25"
+              ],
+              "positions": [
+                {
+                  "name": "LD",
+                  "text": "The height comes from air pressure (barometric altimeter)."
+                },
+                {
+                  "name": "RHM",
+                  "text": "The height comes from the radar altimeter, measured above the ground."
+                }
+              ],
+              "text": "This switch picks where the height shown on the HUD and the central indicator comes from. LD means the barometric height, RHM means the radar altimeter, which measures the real distance to the ground.",
+              "context": "The setting also decides which height the weapon calculations of some missiles use. The pilot sets it to the lower position for landing.",
+              "src": "m1",
+              "page": "165"
+            }
+          ]
+        },
+        {
+          "id": "master-warning",
+          "name": "Master warning lights",
+          "src": "m1",
+          "text": "Two big red lights that flash when something needs the pilot's attention. A sound tone plays with them.",
+          "context": "The pilot silences them with the small black reset button between the two lights. That does not fix the problem; it only quiets the alarm. Before take-off no red warning light may be on.",
+          "controls": [
+            {
+              "id": "master-warning-lights",
+              "name": "Master warning lights HUVUDVARNING",
+              "type": "light",
+              "match": [
+                "item:front-panel:14",
+                "item:indicator-warning-system:8"
+              ],
+              "text": "Two red lights that flash one after the other when a system needs attention. They are tested together with all other lamps by the KONTR LAMPTABLA button.",
+              "context": "A flashing master warning means the pilot should look at the two warning tables to see which light has come on.",
+              "src": "m1",
+              "page": "48"
+            },
+            {
+              "id": "master-reset",
+              "name": "Master warning reset button",
+              "type": "button",
+              "match": [
+                "MasterC-PTR",
+                "item:front-panel:15",
+                "item:indicator-warning-system:9"
+              ],
+              "text": "This small black button sits between the two red lights. Pressing it switches off the flashing lights and the warning tone.",
+              "context": "The problem stays; only the alarm is cancelled. The countermeasures chapter also uses it to cancel a flashing pod-empty light.",
+              "src": "m1",
+              "page": "48"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "left-panel",
+      "where": "front-left",
+      "name": "Left part of the instrument panel",
+      "text": "The left half of the main instrument panel. It holds the autopilot buttons, the left warning table, the radio frequency dials and the handles for the thrust reverser and the parking brake.",
+      "panels": [
+        {
+          "id": "autopilot",
+          "name": "Autopilot and autothrottle buttons (SPAK, ATT, HÖJD, AFK)",
+          "src": "m1",
+          "text": "Four buttons at the top left of the instrument panel. The first three switch on the autopilot helpers, each with a green light. The fourth switches on a special mode of the automatic throttle.",
+          "context": "The autopilot is called SA-06. It steadies the plane and can hold its attitude or height. The disconnect button on the stick (SNURK) switches all of it off at once.",
+          "controls": [
+            {
+              "id": "spak",
+              "name": "SPAK button (stabiliser)",
+              "type": "button",
+              "match": [
+                "SPAK-PTR",
+                "item:front-panel:10"
+              ],
+              "text": "This button switches on SPAK, the damping mode of the autopilot. SPAK calms the plane's movements in all three directions. A green light in the button shows that it is on.",
+              "context": "The manual says SPAK should be on at all times in normal flight. Pressing the SPAK button while ATT or HÖJD are on switches those two off again.",
+              "src": "m1",
+              "page": "86"
+            },
+            {
+              "id": "att",
+              "name": "ATT button (attitude hold)",
+              "type": "button",
+              "match": [
+                "ATT-PTR",
+                "item:front-panel:11"
+              ],
+              "text": "This button makes the autopilot hold the plane's present angle: nose up or down and the bank. The green light in the button shows it is on. SPAK is on with it.",
+              "context": "The pilot can fine-tune the held angle with the trim hat switch on the stick. Rolling the plane beyond 66 degrees switches ATT off again.",
+              "src": "m1",
+              "page": "86"
+            },
+            {
+              "id": "hojd",
+              "name": "HÖJD button (altitude hold)",
+              "type": "button",
+              "match": [
+                "HOJD-PTR",
+                "item:front-panel:12"
+              ],
+              "text": "This button makes the autopilot hold the present height, measured with air pressure. SPAK and ATT switch on with it. The green light in the button shows it is on.",
+              "context": "It is the highest of the three autopilot modes. The pilot can fine-tune the held height with the trim hat switch on the stick.",
+              "src": "m1",
+              "page": "86"
+            },
+            {
+              "id": "afk-mode3",
+              "name": "AFK mode 3 button (15.5)",
+              "type": "button",
+              "match": [
+                "PNT_464",
+                "item:front-panel:8",
+                "item:indicator-warning-system:11"
+              ],
+              "text": "This button switches on mode 3 of the automatic throttle (AFK). In that mode the AFK holds the speed that matches an angle of attack of 15.5 degrees. An orange light in the button shows it is on.",
+              "context": "Mode 3 gives the shortest landing run, but the manual says it is only for a very light plane: less than 40 percent fuel and nothing under the wings. The AFK lever must be on first.",
+              "src": "m1",
+              "page": "67"
+            },
+            {
+              "id": "afk-light",
+              "name": "AFK mode indicator light",
+              "type": "light",
+              "match": [
+                "item:front-panel:9",
+                "item:indicator-warning-system:10"
+              ],
+              "text": "A red AFK light at the top left of the instrument panel. It is lit while the automatic throttle (AFK) is switched on.",
+              "context": "The AFK moves the throttle by itself to hold a chosen speed for landing. The same light is also tested by the lamp test button.",
+              "src": "m1",
+              "page": "66"
+            },
+            {
+              "id": "ap-mode-indicator",
+              "name": "Autopilot mode indicator",
+              "type": "indicator",
+              "match": [
+                "item:indicator-warning-system:7"
+              ],
+              "text": "The manual's list of the warning system names an autopilot mode indicator and marks it 'no function'. The autopilot state is shown by the three green lights in the SPAK, ATT and HÖJD buttons.",
+              "context": "Use the lights in the buttons to see which autopilot modes are on.",
+              "src": "m1",
+              "page": "43"
+            }
+          ]
+        },
+        {
+          "id": "warning-left",
+          "name": "Left indicator & warning panel",
+          "db": "indicator-warning-system",
+          "src": "m1",
+          "text": "A board of labelled lights on the left of the instrument panel. Each light tells about one problem or status of the plane, for example the fire warning, the landing gear or the hydraulics.",
+          "context": "The pilot reads this board after a master warning to see which light has come on. All its lamps light up when the KONTR LAMPTABLA button is pressed.",
+          "controls": [
+            {
+              "id": "left-warning-table",
+              "name": "Left indicator & warning table",
+              "type": "indicator",
+              "match": [
+                "item:front-panel:46",
+                "item:indicator-warning-system:1",
+                "item:left-side-panel:33"
+              ],
+              "text": "A board with many labelled lights. BRAND means engine fire. LANDSTÄLL shows that the landing gear is moving or not locked. NOSSTÄLL, V-STÄLL and H-STÄLL show nose, left and right wheel legs down and locked. ELFEL shows an electrical failure. HYDRA-TR1 and TR2 show low hydraulic pressure. AFK FEL shows autothrottle failure.",
+              "context": "Some lights come on with a master warning. Before take-off only a few amber cautions may be on and no red warning.",
+              "src": "m1",
+              "page": "44"
+            }
+          ]
+        },
+        {
+          "id": "fr22-freq",
+          "name": "FR 22 frequency selector (manual tuning)",
+          "src": "m1",
+          "text": "Four dials and a display for tuning the main radio by hand. Together they set the frequency, the radio's 'station number'.",
+          "context": "The dials only work while the minus button on the FR 22 radio panel at the left side is pressed in. The frequency shown on top is the one the radio uses.",
+          "controls": [
+            {
+              "id": "fr22-display",
+              "name": "FR 22 frequency indicator",
+              "type": "display",
+              "match": [
+                "item:front-panel:2"
+              ],
+              "text": "A small display on top of the frequency selector. It shows the dialled frequency and whether AM or FM is selected.",
+              "context": "The example in the manual shows 217.250 megahertz with AM. It shows the manual setting only when the minus button is pressed.",
+              "src": "m1",
+              "page": "199"
+            },
+            {
+              "id": "fr22-inner-left",
+              "name": "Left dial, inner ring (first two digits)",
+              "type": "knob",
+              "match": [
+                "PNT_172"
+              ],
+              "text": "Turning this ring changes the first two digits of the frequency, for example the 21 of 217.250. The game offers commands to turn it up or down.",
+              "context": "This ring and the right dial's rings are used together to dial a frequency by hand.",
+              "src": "m1",
+              "page": "199"
+            },
+            {
+              "id": "fr22-outer-left",
+              "name": "Left dial, outer ring (third digit)",
+              "type": "knob",
+              "match": [
+                "PNT_171"
+              ],
+              "text": "Turning this ring changes the third digit of the frequency, for example the 7 of 217.250.",
+              "context": "It works together with the inner ring of the left dial.",
+              "src": "m1",
+              "page": "199"
+            },
+            {
+              "id": "fr22-inner-right",
+              "name": "Right dial, inner ring (first digit after the point)",
+              "type": "knob",
+              "match": [
+                "PNT_174"
+              ],
+              "text": "Turning this ring changes the first digit after the decimal point, for example the 2 of 217.250.",
+              "context": "The two rings of the right dial set the part after the decimal point.",
+              "src": "m1",
+              "page": "199"
+            },
+            {
+              "id": "fr22-outer-right",
+              "name": "Right dial, outer ring (last digits)",
+              "type": "knob",
+              "match": [
+                "PNT_173"
+              ],
+              "text": "Turning this ring changes the last digits of the frequency, in steps of 25, for example the 50 of 217.250.",
+              "context": "It works together with the inner ring of the right dial.",
+              "src": "m1",
+              "page": "199"
+            },
+            {
+              "id": "fr22-am-fm",
+              "name": "FR 22 FM / AM switch",
+              "type": "switch2",
+              "match": [
+                "PNT_170"
+              ],
+              "positions": [
+                {
+                  "name": "AM",
+                  "text": "Amplitude modulation, one of the two radio types."
+                },
+                {
+                  "name": "FM",
+                  "text": "Frequency modulation, the other radio type."
+                }
+              ],
+              "text": "This switch sets how the radio sends and receives: AM or FM. These are two ways of putting speech onto a radio wave. The other station has to use the same one.",
+              "context": "The pilot sets it to the type the other station uses, for example the tower. The setting shows next to the frequency.",
+              "src": "m1",
+              "page": "199"
+            }
+          ]
+        },
+        {
+          "id": "reverser-brakes",
+          "name": "Thrust reverser, brakes and pedals",
+          "src": "m1",
+          "text": "Controls for slowing down on the ground: the thrust reverser handle, the parking brake and the pedals that steer and brake.",
+          "context": "The thrust reverser turns the engine's push forward so the plane stops sooner after landing. The pedals steer the nose wheel and work the wheel brakes.",
+          "controls": [
+            {
+              "id": "reverser-handle",
+              "name": "Thrust reverser handle REV",
+              "type": "handle",
+              "match": [
+                "Revhd-PTR",
+                "item:front-panel:3"
+              ],
+              "text": "Pulling this handle arms the thrust reverser in flight. On the ground it engages it. Pushing the handle in switches the reverser off. A green light above the handle shows that it is on.",
+              "context": "After touch-down the reverser doors close and send the engine's push forward and a little downward. The afterburner cannot be used while it is working.",
+              "src": "m1",
+              "page": "64"
+            },
+            {
+              "id": "reverser-light",
+              "name": "Reverser indicator light REV",
+              "type": "light",
+              "match": [
+                "item:front-panel:4",
+                "item:indicator-warning-system:6"
+              ],
+              "text": "The green light above the thrust reverser handle. It is lit while the reverser is armed or engaged.",
+              "context": "It is one of the lamps tested with the KONTR LAMPTABLA button.",
+              "src": "m1",
+              "page": "64"
+            },
+            {
+              "id": "parking-brake",
+              "name": "Parking brake handle (PARK)",
+              "type": "handle",
+              "match": [
+                "PNT_22",
+                "item:front-panel:42"
+              ],
+              "text": "Pulling this handle while the brake pedals are pressed locks the wheel brakes. Pressing the brake pedals again releases it.",
+              "context": "The pilot sets it when the plane is parked.",
+              "src": "m1",
+              "page": "85"
+            },
+            {
+              "id": "rudder-pedals",
+              "name": "Rudder pedals & brakes",
+              "type": "pedal",
+              "match": [
+                "item:front-panel:39"
+              ],
+              "text": "The pedals move the rudder and steer the nose wheel on the ground. Pressing the brake pedals brakes the wheels, and each side can brake on its own for tight turns.",
+              "context": "The wheel brakes have anti-skid. The manual warns against braking one side only while the thrust reverser is used.",
+              "src": "m1",
+              "page": "85"
+            },
+            {
+              "id": "pedal-adjust",
+              "name": "Pedal adjustment",
+              "type": "handle",
+              "match": [
+                "item:front-panel:43"
+              ],
+              "text": "The lever for adjusting the rudder pedals.",
+              "context": "The manual lists it as a lever on the front panel without more detail.",
+              "src": "m1",
+              "page": "23"
+            }
+          ]
+        },
+        {
+          "id": "fittings-left",
+          "name": "Other fittings of the instrument panel",
+          "src": "m1",
+          "text": "A few items on the instrument panel that are not controls of the plane's systems: a hand hold, a map holder and a lighting dial.",
+          "context": "The manual only lists them by name in the front panel overview.",
+          "controls": [
+            {
+              "id": "hand-hold-front",
+              "name": "Hand hold",
+              "type": "handle",
+              "match": [
+                "item:front-panel:5"
+              ],
+              "text": "A grab handle (hand hold) on the instrument panel.",
+              "context": "It is a fixed fitting and cannot be operated.",
+              "src": "m1",
+              "page": "23"
+            },
+            {
+              "id": "map-holder",
+              "name": "Map holder",
+              "type": "other",
+              "match": [
+                "item:front-panel:13"
+              ],
+              "text": "A holder on the panel where the pilot can put a map.",
+              "context": "It is a plain holder with no function.",
+              "src": "m1",
+              "page": "23"
+            },
+            {
+              "id": "cockpit-light-dial",
+              "name": "Cockpit lighting dial",
+              "type": "light",
+              "match": [
+                "item:front-panel:41"
+              ],
+              "text": "The manual lists a cockpit lighting dial on the front panel. It does not describe the dial further.",
+              "context": "The other lighting knobs are on the left side panel (panel, instrument and ambient lights).",
+              "src": "m1",
+              "page": "23"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "centre-panel",
+      "where": "front-center",
+      "name": "Centre of the instrument panel",
+      "text": "The middle of the instrument panel. It holds the main flight instruments, the central indicator (radar screen) and the EP-13 sight.",
+      "panels": [
+        {
+          "id": "flight-instruments",
+          "name": "Primary flight instruments",
+          "src": "m1",
+          "text": "The round dials that tell the pilot how fast, how high and in which attitude the plane flies.",
+          "context": "They are fed by the main air-data system (the pitot tube on the nose and the flight data unit). The backup instruments on the right use a separate tube on the tail.",
+          "controls": [
+            {
+              "id": "airspeed",
+              "name": "Airspeed and Mach indicator",
+              "type": "gauge",
+              "match": [
+                "item:front-panel:6"
+              ],
+              "text": "This dial shows how fast the plane flies through the air, in kilometres per hour, and the Mach number. Mach 1 is the speed of sound. A white triangle on the outer scale can be set as a speed reminder.",
+              "context": "The pilot watches it all the time, especially in take-off and landing. A red and white flag shows a fault or missing power.",
+              "src": "m1",
+              "page": "29"
+            },
+            {
+              "id": "airspeed-index",
+              "name": "Airspeed index knob",
+              "type": "knob",
+              "match": [
+                "PNT_AirspeedIndexer"
+              ],
+              "text": "The game names this knob 'Airspeed Indexer'. The manual describes an index dial knob on the airspeed indicator that moves the white triangle on the outer scale.",
+              "context": "The triangle works as a reminder for a chosen speed, for example the approach speed.",
+              "src": "m1",
+              "page": "29"
+            },
+            {
+              "id": "altimeter",
+              "name": "Altimeter HÖJD m",
+              "type": "gauge",
+              "match": [
+                "item:front-panel:1"
+              ],
+              "text": "This dial shows the plane's height in metres, measured with air pressure. A window shows the pressure that is set.",
+              "context": "The Viggen uses QFE, a setting that makes the dial read zero on the runway. Weapon aiming calculations also use it, so the setting matters.",
+              "src": "m1",
+              "page": "29"
+            },
+            {
+              "id": "altimeter-knob",
+              "name": "Altimeter pressure setting knob",
+              "type": "knob",
+              "match": [
+                "AltsetL-PTR"
+              ],
+              "text": "Turning this knob sets the air pressure used by the altimeter, in hectopascal. Pulling it sets standard pressure (STD); pushing it in goes back to the normal setting. The game offers fast, slow and finest steps up and down.",
+              "context": "A wrong setting causes small errors in some navigation and aiming calculations. The pilot sets it before take-off.",
+              "src": "m1",
+              "page": "29"
+            },
+            {
+              "id": "adi",
+              "name": "Attitude director indicator (ADI, FLI37)",
+              "type": "gauge",
+              "match": [
+                "item:front-panel:7"
+              ],
+              "text": "This round instrument shows whether the nose is up or down, how the wings are tilted and which way the plane points. A little ball at the bottom shows if the plane slides sideways.",
+              "context": "It also shows the vertical speed on the left side. It is the main instrument for the plane's attitude, and the snabbresning button next to the central indicator can realign it.",
+              "src": "m1",
+              "page": "30"
+            },
+            {
+              "id": "aoa",
+              "name": "Angle of attack indicator (alpha)",
+              "type": "gauge",
+              "match": [
+                "item:front-panel:17"
+              ],
+              "text": "This gauge shows the angle of attack: how steeply the wings meet the air. The scale runs from 0 to 30 degrees.",
+              "context": "A high angle means the wings are close to stalling. The high alpha warning sounds and shakes the stick before the limit.",
+              "src": "m1",
+              "page": "31"
+            },
+            {
+              "id": "accelerometer",
+              "name": "Accelerometer (g-forces)",
+              "type": "gauge",
+              "match": [
+                "item:front-panel:26"
+              ],
+              "text": "This gauge shows how strongly the plane pushes the pilot into the seat during turns. It runs from -2 to +9 g. A striped pointer remembers the highest value.",
+              "context": "A button at its lower left resets the memory pointer to +1 g.",
+              "src": "m1",
+              "page": "39"
+            },
+            {
+              "id": "max-g-reset",
+              "name": "Max G reset button",
+              "type": "button",
+              "match": [
+                "PNT_175"
+              ],
+              "text": "Pressing this button resets the striped memory pointer of the accelerometer back to +1 g.",
+              "context": "The pilot uses it to start a new count of the highest g-force.",
+              "src": "m1",
+              "page": "39"
+            }
+          ]
+        },
+        {
+          "id": "central-indicator",
+          "name": "Central indicator (CI)",
+          "src": "m1",
+          "text": "The big round screen in the middle of the panel. It shows the radar picture and warns about enemy radars. It is also called CI.",
+          "context": "A ring of numbers around the screen shows the plane's heading. Six small lights around it show from which direction an enemy radar looks at the plane.",
+          "controls": [
+            {
+              "id": "ci",
+              "name": "Central indicator (CI)",
+              "type": "screen",
+              "match": [
+                "item:front-panel:44"
+              ],
+              "text": "This is the radar screen. It shows radar echoes either as a top view in a fan shape (PPI) or as a zoomed view around the next waypoint (B-scope). Flight information is drawn over the picture.",
+              "context": "A waypoint is needed for the B-scope view. The ring around the screen shows the heading, and the yellow mark shows the heading to the waypoint.",
+              "src": "m1",
+              "page": "97"
+            },
+            {
+              "id": "radar-night-filter",
+              "name": "CI filter knob (radar night filter)",
+              "type": "knob",
+              "match": [
+                "PNT_RadarFilter"
+              ],
+              "text": "Turning this knob puts a red filter over the radar picture. This reduces glare at night.",
+              "context": "The knob sits on the left side of the central indicator.",
+              "src": "m1",
+              "page": "116"
+            },
+            {
+              "id": "fast-erect",
+              "name": "Snabbresning button (fast erect)",
+              "type": "button",
+              "match": [
+                "SnabbresM-PTR"
+              ],
+              "text": "Pressing this button makes the attitude indicator (ADI) realign itself quickly. It is not labelled in the cockpit and sits at the lower left of the central indicator.",
+              "context": "It is for faults only and should be used in steady flight. The manual warns that it erases the initial heading setting, which makes navigation worse.",
+              "src": "m1",
+              "page": "30"
+            },
+            {
+              "id": "alt-warning-light",
+              "name": "Altitude warning light",
+              "type": "light",
+              "match": [
+                "item:front-panel:45",
+                "item:indicator-warning-system:12"
+              ],
+              "text": "A light on the central indicator that warns about height, among other uses. The KONTROLL test button on the right side tests it.",
+              "context": "The pilot watches it in low-level flying.",
+              "src": "m1",
+              "page": "49"
+            }
+          ]
+        },
+        {
+          "id": "ep13",
+          "name": "EP-13 sight and stores released light",
+          "src": "m1",
+          "text": "A small collimated sight for the RB 75 missile, and the red light that tells whether weapons have left the plane.",
+          "context": "The RB 75 is the Viggen's version of the Maverick air-to-ground missile. The light FÄLLD LAST glows after a weapon release and flashes if the release failed.",
+          "controls": [
+            {
+              "id": "ep13-indicator",
+              "name": "EP-13 indicator",
+              "type": "display",
+              "match": [
+                "item:front-panel:21",
+                "item:weapon-controls:2"
+              ],
+              "text": "A small collimated sight for the RB 75 missile, as the manual calls it. The pilot uses it to aim that missile.",
+              "context": "Its contrast and brightness dials are on the left side panel.",
+              "src": "m1",
+              "page": "283"
+            },
+            {
+              "id": "stores-released",
+              "name": "Stores released light FÄLLD LAST",
+              "type": "light",
+              "match": [
+                "item:front-panel:24",
+                "item:indicator-warning-system:13",
+                "item:weapon-controls:3"
+              ],
+              "text": "A red light that shows weapons have been released. It is steady for a successful release and flashes if the release failed or the weapon status is poor.",
+              "context": "The data panel can then show which weapon positions are empty. The light is also tested by the lamp test button.",
+              "src": "m1",
+              "page": "283"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "right-panel",
+      "where": "front-right",
+      "name": "Right part of the instrument panel",
+      "text": "The right half of the instrument panel. It holds the clock, the backup instruments, the engine dials, the navigation displays and the right warning table.",
+      "panels": [
+        {
+          "id": "clock",
+          "name": "Clock and stopwatch",
+          "src": "m1",
+          "text": "The plane's clock shows the time. A button starts the stopwatch and a knob sets the time.",
+          "context": "The clock does not change the time of the computer (CK37). That time is set separately in the data panel.",
+          "controls": [
+            {
+              "id": "clock-face",
+              "name": "Clock & chronometer",
+              "type": "gauge",
+              "match": [
+                "item:front-panel:23"
+              ],
+              "text": "The clock shows the time. By default it shows the local time of the mission. It also has a stopwatch hand.",
+              "context": "The pilot uses it for timed legs of a mission.",
+              "src": "m1",
+              "page": "38"
+            },
+            {
+              "id": "stopwatch",
+              "name": "Stopwatch button",
+              "type": "button",
+              "match": [
+                "PNT_CLOCK_RIGHT"
+              ],
+              "text": "Each press changes the stopwatch: the first press starts it, the second stops it and the third resets it.",
+              "context": "The button sits at the top right of the clock frame.",
+              "src": "m1",
+              "page": "38"
+            },
+            {
+              "id": "clock-set",
+              "name": "Clock setting knob",
+              "type": "knob",
+              "match": [
+                "PNT_CLOCK_RIGHT001"
+              ],
+              "text": "Turning this knob sets the time shown by the clock. The game offers slow and fast steps forwards and backwards.",
+              "context": "The manual says it changes only the clock and not the computer time, which must be set another way.",
+              "src": "m1",
+              "page": "38"
+            }
+          ]
+        },
+        {
+          "id": "backup-instruments",
+          "name": "Backup flight instruments",
+          "src": "m1",
+          "text": "A set of small round instruments that work on their own pitot tube at the tail. They stay usable if the main air-data system fails.",
+          "context": "They are a safety net: speed, height, attitude and compass without the main flight data unit.",
+          "controls": [
+            {
+              "id": "backup-adi",
+              "name": "Standby attitude indicator",
+              "type": "gauge",
+              "match": [
+                "item:front-panel:27"
+              ],
+              "text": "A small backup horizon. A turning cylinder against a fixed symbol shows nose up or down and the tilt of the wings.",
+              "context": "If the gyro tumbles, it can be erected again. In case of electrical failure it works normally for about 3 minutes.",
+              "src": "m1",
+              "page": "35"
+            },
+            {
+              "id": "backup-adi-cage",
+              "name": "Backup ADI cage",
+              "type": "button",
+              "match": [
+                "PNT_123"
+              ],
+              "text": "The game names this control 'Backup ADI Cage' and gives it a press-and-release command. The manual describes resetting the standby horizon by pulling its erect knob.",
+              "context": "The pilot resets the gyro after a tumble during rough flying.",
+              "src": "m1",
+              "page": "35"
+            },
+            {
+              "id": "backup-airspeed",
+              "name": "Standby airspeed indicator km/h",
+              "type": "gauge",
+              "match": [
+                "item:front-panel:30"
+              ],
+              "text": "A backup dial that shows speed between 200 and 800 kilometres per hour.",
+              "context": "It works on the tail pitot tube.",
+              "src": "m1",
+              "page": "36"
+            },
+            {
+              "id": "backup-altimeter",
+              "name": "Standby altimeter HÖJD",
+              "type": "gauge",
+              "match": [
+                "item:front-panel:33"
+              ],
+              "text": "A backup dial showing the height. The small hand counts hundreds of metres and the large hand thousands.",
+              "context": "Its pressure setting is turned with the knob at its lower left.",
+              "src": "m1",
+              "page": "35"
+            },
+            {
+              "id": "backup-alt-knob",
+              "name": "Backup altimeter setting knob",
+              "type": "knob",
+              "match": [
+                "PNT_126"
+              ],
+              "text": "Turning this knob sets the air pressure of the backup altimeter in hectopascal. The game offers slow, normal and fast steps up and down.",
+              "context": "The pilot sets it to the same pressure as the main altimeter.",
+              "src": "m1",
+              "page": "35"
+            },
+            {
+              "id": "backup-compass",
+              "name": "Backup compass KURS",
+              "type": "gauge",
+              "match": [
+                "item:front-panel:38"
+              ],
+              "text": "A compass that shows the magnetic heading. A button at its lower left would line it up quickly, but the manual says this is not implemented.",
+              "context": "It is a backup to the main heading display.",
+              "src": "m1",
+              "page": "36"
+            }
+          ]
+        },
+        {
+          "id": "engine-instruments",
+          "name": "Engine and fuel instruments",
+          "src": "m1",
+          "text": "The dials that tell the pilot how hard the engine works, how hot it is and how much fuel is left.",
+          "context": "The RPM dial and the EPR dial are the main check of engine power. The temperature and nozzle dials sit with them.",
+          "controls": [
+            {
+              "id": "rpm",
+              "name": "Engine RPM indicator Varv %",
+              "type": "gauge",
+              "match": [
+                "item:front-panel:32"
+              ],
+              "text": "This dial shows how fast the engine core turns, in percent. The big pointer goes up to 110 percent.",
+              "context": "The pilot checks it during the engine start and when setting power.",
+              "src": "m1",
+              "page": "32"
+            },
+            {
+              "id": "epr",
+              "name": "Engine pressure ratio indicator P7/P2",
+              "type": "gauge",
+              "match": [
+                "item:front-panel:36"
+              ],
+              "text": "This dial compares the pressure behind the engine with the pressure at the intake. It gives a rough idea of how much push the engine makes.",
+              "context": "The manual calls it the main instrument for checking the power setting.",
+              "src": "m1",
+              "page": "32"
+            },
+            {
+              "id": "egt",
+              "name": "EGT indicator (exhaust gas temperature)",
+              "type": "gauge",
+              "match": [
+                "item:right-side-panel:35"
+              ],
+              "text": "This dial shows how hot the exhaust gas is, from 100 to 800 degrees Celsius. An OFF flag shows when its power fails.",
+              "context": "The temperature is watched during engine start because it may not exceed 400 degrees then.",
+              "src": "m1",
+              "page": "33"
+            },
+            {
+              "id": "nozzle",
+              "name": "Engine nozzle indicator",
+              "type": "gauge",
+              "match": [
+                "item:right-side-panel:36"
+              ],
+              "text": "This dial shows how open the engine's exhaust nozzle is, from S (closed) to O (open), and shows the afterburner zone 1, 2 or 3 the engine is in.",
+              "context": "It shows the real nozzle, while the zone indicator shows only the throttle position.",
+              "src": "m1",
+              "page": "34"
+            },
+            {
+              "id": "ab-zone",
+              "name": "Afterburner zone indicator 1 2 3",
+              "type": "indicator",
+              "match": [
+                "item:front-panel:35",
+                "item:indicator-warning-system:16"
+              ],
+              "text": "Three numbered lights show which afterburner zone the throttle lever is set to. They show the throttle position, not what the engine is really doing.",
+              "context": "The afterburner has three steps. Zone 3 gives most push.",
+              "src": "m1",
+              "page": "33"
+            },
+            {
+              "id": "fuel",
+              "name": "Fuel indicator Bränsle %",
+              "type": "gauge",
+              "match": [
+                "item:front-panel:34"
+              ],
+              "text": "This dial shows the fuel left, in percent. A striped marker shows how much fuel the planned route needs.",
+              "context": "A light BRÄ < 24 comes on below 24 percent fuel.",
+              "src": "m1",
+              "page": "38"
+            }
+          ]
+        },
+        {
+          "id": "nav-indicators",
+          "name": "Navigation indicators",
+          "src": "m1",
+          "text": "Two small displays that tell where the plane is going: the number of the chosen waypoint and the distance to it.",
+          "context": "Both follow the waypoint chosen on the navigation panel in the right console.",
+          "controls": [
+            {
+              "id": "destination",
+              "name": "Destination indicator",
+              "type": "indicator",
+              "match": [
+                "item:front-panel:29",
+                "item:indicator-warning-system:15"
+              ],
+              "text": "A display with a letter and a number. It shows the chosen destination: for example B1 for navigation waypoint 1, M2 for target 2 or L1 for the main landing base.",
+              "context": "The pilot chooses the destination with the buttons on the navigation panel.",
+              "src": "m1",
+              "page": "37"
+            },
+            {
+              "id": "distance",
+              "name": "Distance indicator",
+              "type": "indicator",
+              "match": [
+                "item:front-panel:31"
+              ],
+              "text": "This display shows the distance to the chosen destination from 0 to 40 kilometres. Beyond 40 kilometres it rescales to Swedish miles; one Swedish mile is 10 kilometres.",
+              "context": "It uses the same waypoint as the destination indicator.",
+              "src": "m1",
+              "page": "37"
+            }
+          ]
+        },
+        {
+          "id": "warning-right",
+          "name": "Right indicator & warning panel",
+          "src": "m1",
+          "text": "A second board of labelled lights on the right. It reports engine, fuel, oxygen, radar and countermeasure matters.",
+          "context": "The pilot reads it after a master warning together with the left board. It has the fire warning for the starter (BRAND GTS) and the lights for the countermeasures pods.",
+          "controls": [
+            {
+              "id": "right-warning-table",
+              "name": "Right indicator & warning table",
+              "type": "indicator",
+              "match": [
+                "item:front-panel:37",
+                "item:indicator-warning-system:20",
+                "item:right-side-panel:33"
+              ],
+              "text": "A board of labelled lights. Examples: SPAK shows an autopilot problem, TÄNDSYST shows the ignition system is active, STARTSYST shows the starter system is active, BRÄ < 24 warns of low fuel, MOTVERK shows countermeasures at work, and LUFTBROMS shows the airbrakes are out.",
+              "context": "Lamps on the board can be tested with the KONTR LAMPTABLA button. Some lights come on with a master warning.",
+              "src": "m1",
+              "page": "46"
+            },
+            {
+              "id": "rev-transonic",
+              "name": "Rev thrust reduce / transonic indicator Tr REVAVDR TRANSONIC",
+              "type": "indicator",
+              "match": [
+                "item:front-panel:28",
+                "item:indicator-warning-system:14"
+              ],
+              "text": "A red light. While the thrust reverser is used, it warns that hot exhaust may be sucked into the intake, so the pilot should reduce thrust. It is also lit in transonic flight with the HÖJD autopilot mode on.",
+              "context": "The same lamp is tested with the KONTR LAMPTABLA button, as it is on the left panel.",
+              "src": "m1",
+              "page": "65"
+            },
+            {
+              "id": "function-check-lamp",
+              "name": "Function check",
+              "type": "other",
+              "match": [
+                "item:indicator-warning-system:19"
+              ],
+              "text": "The manual lists a function check on the warning system and marks it 'no function'.",
+              "context": "Nothing happens in DCS when the function check is used.",
+              "src": "m1",
+              "page": "43"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

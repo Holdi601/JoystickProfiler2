@@ -1,6 +1,6 @@
 # Project Wingman (native, several devices) on synthetic files of the real shape (docs/games/project-wingman.md).
 # Dot-sourced by engine_smoke_test.ps1 (Run-Engine, Assert-*, $tempDir, $engineDir). The fixtures follow the files the
-# game wrote on the dev PC (2026-10-12): Input.ini with plain ActionMappings/AxisMappings lines and JoystickPlugin keys
+# game wrote on a test PC (2026-10-12): Input.ini with plain ActionMappings/AxisMappings lines and JoystickPlugin keys
 # "Joystick_<DirectInput name without spaces>_<place in the game's device list>_Axis<n>/_Button<n>", a pak
 # (UE4 v11, built here) holding Config/DefaultInput.ini, and a GVAS savegame.sav with the curve/dead zone floats.
 # Fake devices (tests\fixtures\vjoy\devices.tsv): VJ Stick, VJ Throttle, vJoy Device -> the game's list is reversed:

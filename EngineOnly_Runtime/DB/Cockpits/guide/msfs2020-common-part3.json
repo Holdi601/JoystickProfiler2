@@ -1,0 +1,519 @@
+{
+  "format": "joypro-cockpit-guide",
+  "version": 1,
+  "id": "msfs2020-common-part3",
+  "partOf": "msfs2020-common",
+  "title": "Microsoft Flight Simulator 2020: all aircraft (shared guide), part 3",
+  "common": true,
+  "games": [
+    "MSFS2020"
+  ],
+  "sets": [],
+  "sources": [
+    {
+      "id": "g1",
+      "title": "Microsoft Flight Simulator 2020: the cockpit models' node names and behaviours",
+      "kind": "game-files"
+    }
+  ],
+  "areas": [
+    {
+      "id": "flight-controls",
+      "where": "other",
+      "name": "Flight controls and trim",
+      "text": "These controls move or adjust the parts of the aircraft that steer it: flaps for slow flight, trim for relaxed hands, spoilers to slow down, the yoke or stick and the pedals.",
+      "panels": [
+        {
+          "id": "flaps-spoilers",
+          "name": "Flaps and spoilers",
+          "src": "g1",
+          "text": "Flaps are parts of the wing that slide out to give more lift at low speed. Spoilers are panels on top of the wing that pop up to slow the plane down and press it onto the ground.",
+          "context": "The pilot sets the flaps to a small step for take-off and to a larger step for landing. Spoilers (also called speed brakes) are used on the landing roll and to lose height.",
+          "controls": [
+            {
+              "id": "flaps-lever",
+              "name": "Flaps lever",
+              "type": "lever",
+              "match": [
+                "HANDLING_Lever_Flaps*",
+                "HANDLING_Lever_Button_Flaps*",
+                "HANDLING_Switch_Flaps*",
+                "Flap_Switch*",
+                "flap_switch*",
+                "HH?_lever_flap*",
+                "Support_Lever_Flaps*",
+                "vc_button_flapcntrl*",
+                "Flap_Lever*",
+                "DA??_lever_flap*"
+              ],
+              "text": "Moving this lever lowers or raises the flaps, the parts at the back of the wing that slide out and down. Each notch of the lever is one flap setting. Some levers have a button to press before they move, or a pump for flaps that are moved by oil pressure.",
+              "context": "The pilot lowers the flaps a little for take-off and more for landing, and raises them again afterwards. The flaps let the aircraft fly slower without falling."
+            },
+            {
+              "id": "spoilers",
+              "name": "Spoilers / speed brake lever",
+              "type": "lever",
+              "match": [
+                "HANDLING_Lever_Spoilers*"
+              ],
+              "text": "Pulling this lever raises the spoilers, panels on top of the wing. They spoil the lift and add drag, so the aircraft sinks and slows down.",
+              "context": "The pilot uses them after touch-down to press the aircraft onto the runway, and in the air to lose height or speed."
+            }
+          ]
+        },
+        {
+          "id": "trim",
+          "name": "Trim controls",
+          "src": "g1",
+          "text": "Trim is a small adjustment so the aircraft flies straight without the pilot holding the stick. There is trim for pitch (nose up and down), for roll and for the rudder (turning left and right).",
+          "context": "The pilot trims as the speed and load change, until no force on the stick or yoke is needed. A wheel, a knob or a switch moves the trim.",
+          "controls": [
+            {
+              "id": "trim-elevator-wheel",
+              "name": "Elevator Trim wheel",
+              "type": "wheel",
+              "match": [
+                "HANDLING_Wheel_ElevatorTrim*"
+              ],
+              "text": "This wheel trims the nose up or down. Rolling it forward makes the nose go down and the stick force lighter; rolling it back does the opposite.",
+              "context": "The pilot rolls it a little after every change of speed or power, until the aircraft flies level without a push on the yoke."
+            },
+            {
+              "id": "trim-elevator-switch",
+              "name": "Elevator Trim switch",
+              "type": "switch",
+              "match": [
+                "HANDLING_Switch_Elevator_Trim*",
+                "HANDLING_YOKE_Switch_ElevatorTrim*",
+                "HANDLING_Switch_ElevatorTrim*"
+              ],
+              "text": "This switch moves the elevator trim with an electric motor. Pushed one way it trims the nose down, the other way it trims the nose up. It springs back to the middle.",
+              "context": "On aircraft with electric trim the switch is often on the yoke or stick, so the pilot can trim without letting go of it."
+            },
+            {
+              "id": "trim-rudder",
+              "name": "Rudder Trim knob",
+              "type": "knob",
+              "match": [
+                "HANDLING_Knob_RudderTrim*"
+              ],
+              "text": "This knob trims the rudder, the movable part of the tail that turns the nose left or right. It holds the nose straight without pressure on the pedals.",
+              "context": "The pilot adjusts it when the engine power changes, because more power makes the aircraft yaw."
+            },
+            {
+              "id": "trim-aileron",
+              "name": "Aileron Trim knob",
+              "type": "knob",
+              "match": [
+                "HANDLING_Knob_AileronTrim*"
+              ],
+              "text": "This knob trims the ailerons, the parts of the wings that roll the aircraft. It keeps the wings level without holding the stick sideways.",
+              "context": "The pilot uses it when one wing is heavier, for example when fuel is used unevenly."
+            }
+          ]
+        },
+        {
+          "id": "yoke-pedals",
+          "name": "Yoke, pedals and handling parts",
+          "src": "g1",
+          "text": "Further controls that the pilot handles directly: the buttons on the yoke, the control column and the ballast and brake handles.",
+          "context": "The pilot uses them throughout the flight.",
+          "controls": [
+            {
+              "id": "yoke-buttons",
+              "name": "Yoke buttons (Mic, Front, Stick LR ...)",
+              "type": "button",
+              "match": [
+                "Yoke_Mic_Push*",
+                "Yoke_Front_Push*",
+                "HANDLING_YOKE_Lever_StickLR*",
+                "HANDLING_YOKE_Push*",
+                "HANDLING_YOKE_Button*",
+                "Yoke_Handle_*",
+                "YOKE_L_PUSH_*",
+                "YOKE_BUTTON_*",
+                "yoke_*"
+              ],
+              "text": "The yoke is the steering wheel of the aircraft. Its buttons can include a push-to-talk (Mic) button for the radio and others that depend on the aircraft. The handle parts are the grips; moving them left and right or forward and back rolls and pitches the aircraft.",
+              "context": "The pilot flies with these parts all the time. The node names say which button or movement they are."
+            },
+            {
+              "id": "water-rudder",
+              "name": "Water rudder lever",
+              "type": "lever",
+              "match": [
+                "HANDLING_Water_Rudder_Lever*",
+                "HANDLING_Lever_Water_Rudder*",
+                "HANDLING_Switch_WaterRudder*"
+              ],
+              "text": "On a seaplane with floats the water rudders are small rudders under the floats. This lever lowers or raises them to steer on the water.",
+              "context": "The pilot lowers them to taxi on the water and raises them for take-off and landing."
+            },
+            {
+              "id": "floats-skis",
+              "name": "Floats and skis boxes",
+              "type": "lever",
+              "match": [
+                "Floaters_Box_*",
+                "ELECTRICAL_Switch_Floaters_Dim*",
+                "Box_Ski_Lever*",
+                "ELECTRICAL_Switch_Ski_Dim*"
+              ],
+              "text": "These belong to the float or ski fittings of a seaplane or snow aircraft: a lever on a box for the equipment, and a dimmer switch for its lights.",
+              "context": "Only aircraft with floats or skis have them."
+            },
+            {
+              "id": "ballast",
+              "name": "Water ballast lever",
+              "type": "lever",
+              "match": [
+                "HANDLING_Lever_Water_Ballast*"
+              ],
+              "text": "On a glider the water ballast lever opens the valves that let water out of tanks in the wings. The water makes the glider heavier for fast flights and is let out before landing.",
+              "context": "The pilot dumps the water when it is no longer needed or before landing."
+            },
+            {
+              "id": "wipers",
+              "name": "Windshield wipers",
+              "type": "switch",
+              "match": [
+                "HANDLING_Switch_Wipers*",
+                "SAFETY_Knob_Wipers*"
+              ],
+              "text": "This switch makes the windshield wipers move to clear rain from the windshield.",
+              "context": "The pilot uses it in rain on the ground and in flight."
+            },
+            {
+              "id": "handling-other",
+              "name": "Other handling controls",
+              "type": "lever",
+              "match": [
+                "HANDLING_Lever_*",
+                "HANDLING_Knob_*",
+                "HANDLING_YOKE_*"
+              ],
+              "text": "These handling parts are named only by their kind and what they handle, for example a trim lock or a stick. The name says which; what it does depends on the aircraft.",
+              "context": "They are used together with the main flight controls."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "gear-brakes",
+      "where": "other",
+      "name": "Landing gear and brakes",
+      "text": "The landing gear is the wheels and their legs. These controls lower and raise it, hold the wheels with the parking brake and steer on the ground.",
+      "panels": [
+        {
+          "id": "gear-handle",
+          "name": "Landing gear lever",
+          "src": "g1",
+          "text": "The lever that makes the wheels fold away after take-off and come down again before landing.",
+          "context": "The pilot raises the gear after take-off, to reduce drag, and lowers it before the landing. Some small aircraft have fixed wheels and no lever.",
+          "controls": [
+            {
+              "id": "gear-lever",
+              "name": "Landing gear lever",
+              "type": "lever",
+              "match": [
+                "LANDING_GEAR_Lever_Gear*",
+                "LANDING_GEAR_Lever_Hook*",
+                "Gear_Lever*",
+                "C*_gearlever_handle*",
+                "ldg_gear_crank*"
+              ],
+              "text": "Pull this lever and the wheels come down. Push it the other way and they fold up into the aircraft. A hook lever on some aircraft lowers a tail hook.",
+              "context": "The pilot raises the gear after take-off and lowers it before the landing. Green lights usually show the wheels are down and locked."
+            }
+          ]
+        },
+        {
+          "id": "brakes",
+          "name": "Parking brake",
+          "src": "g1",
+          "text": "The parking brake holds the wheels still while the aircraft is parked.",
+          "context": "The pilot sets the parking brake when parking and for the start of the engines, and releases it before taxiing.",
+          "controls": [
+            {
+              "id": "parking-brake",
+              "name": "Parking brake",
+              "type": "switch",
+              "match": [
+                "LANDING_GEAR_Switch_ParkingBrake*",
+                "LANDING_GEAR_Knob_ParkingBrake*",
+                "ParkingBrake_Lever*",
+                "PARKBRAKE_KNOB*"
+              ],
+              "text": "This control sets or releases the parking brake. With it set, the wheels stay braked, like the handbrake of a car.",
+              "context": "The pilot sets it before the engine start and releases it before rolling off."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "instruments",
+      "where": "other",
+      "name": "Instruments",
+      "text": "These controls belong to the gauges and displays in front of the pilot: setting the height gauge, the heading bug, the clock, and resetting or testing an instrument.",
+      "panels": [
+        {
+          "id": "flight-instruments",
+          "name": "Flight instruments",
+          "src": "g1",
+          "text": "The instruments that tell the pilot the speed, height, direction and attitude of the aircraft. A few of them have knobs for adjusting them.",
+          "context": "The pilot sets them before the flight and checks that they agree with each other.",
+          "controls": [
+            {
+              "id": "altimeter-knob",
+              "name": "Altimeter knob (baro setting)",
+              "type": "knob",
+              "match": [
+                "INSTRUMENT_Knob_Altimeter*"
+              ],
+              "text": "Turning this knob sets the local air pressure on the altimeter, the height gauge. The altimeter then shows the right height.",
+              "context": "The pilot sets the pressure from the weather report before take-off and in flight when it changes."
+            },
+            {
+              "id": "airspeed-knob",
+              "name": "Airspeed knob",
+              "type": "knob",
+              "match": [
+                "INSTRUMENT_Knob_Airspeed*"
+              ],
+              "text": "This knob belongs to the airspeed indicator, the speed gauge. It moves a marker on the gauge.",
+              "context": "The pilot uses the marker to remember a speed to watch."
+            },
+            {
+              "id": "attitude-knob",
+              "name": "Attitude indicator knob",
+              "type": "knob",
+              "match": [
+                "INSTRUMENT_AttitudeIndicator_Knob*",
+                "Dummy_INSTRUMENT_AttitudeIndicator*"
+              ],
+              "text": "This knob belongs to the attitude indicator, the artificial horizon that shows whether the nose is up or down and the wings are level. Turning it moves the little aircraft symbol, and pulling it can set the gyro upright.",
+              "context": "The pilot adjusts it so the symbol sits on the horizon line in level flight."
+            },
+            {
+              "id": "compass-heading",
+              "name": "Heading / compass knob",
+              "type": "knob",
+              "match": [
+                "INSTRUMENT_Knob_Heading*",
+                "INSTRUMENT_Knob_Compass*",
+                "Compass_knob*"
+              ],
+              "text": "This knob sets the heading bug on the heading indicator or aligns the compass card.",
+              "context": "The pilot sets the card to the magnetic compass from time to time, because gyros slowly drift."
+            },
+            {
+              "id": "cdi-course",
+              "name": "CDI course knob (OBS)",
+              "type": "knob",
+              "match": [
+                "INSTRUMENT_CDI_Knob_Course*",
+                "Decal_CDI_Knob_Course*"
+              ],
+              "text": "The CDI is the course needle that tells the pilot to fly left or right of a radio beam. This knob sets the course the needle refers to.",
+              "context": "The pilot sets the course of the beacon or the runway before flying to it."
+            },
+            {
+              "id": "clock",
+              "name": "Clock buttons and knob",
+              "type": "button",
+              "match": [
+                "INSTRUMENT_Push_Clock*",
+                "INSTRUMENT_Knob_Clock*"
+              ],
+              "text": "These buttons and this knob set the clock, switch it between time, date and timer, and start or stop the timer. OAT shows the outside air temperature on the same display.",
+              "context": "The pilot uses the timer to time legs of the flight."
+            },
+            {
+              "id": "accelerometer",
+              "name": "Accelerometer (G-meter) controls",
+              "type": "button",
+              "match": [
+                "INSTRUMENT_Accelerometer_*",
+                "INSTRUMENT_Push_GForce*"
+              ],
+              "text": "The accelerometer shows how strong the push into the seat is in turns and pull-ups. Its buttons reset the readings and set the display.",
+              "context": "The pilot resets it before an aerobatic flight to read the highest value afterwards."
+            },
+            {
+              "id": "instrument-other",
+              "name": "Other instrument controls",
+              "type": "knob",
+              "match": [
+                "INSTRUMENT_*",
+                "Empty_Instrument*"
+              ],
+              "text": "These parts belong to an instrument. The rest of the name says which one; what the knob or button does depends on the aircraft.",
+              "context": "The pilot sets the instruments before flight."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "cabin",
+      "where": "other",
+      "name": "Cabin, doors and safety",
+      "text": "These controls are for the cabin air, the doors and the safety equipment: the emergency transmitter, the warning lights and tests.",
+      "panels": [
+        {
+          "id": "cabin-air",
+          "name": "Cabin heat, air and pressure",
+          "src": "g1",
+          "text": "Controls for the temperature and fresh air in the cabin. In high-flying aircraft they also keep the air pressure comfortable.",
+          "context": "Small planes have a heat knob and an air vent. Larger aircraft have air conditioning that makes the cabin air from engine air.",
+          "controls": [
+            {
+              "id": "cabin-heat",
+              "name": "Cabin Heat / Cabin Air controls",
+              "type": "switch",
+              "match": [
+                "PASSENGER_Switch_Cabin_Heat*",
+                "PASSENGER_Switch_Cabin_Air*",
+                "PASSENGER_Knob_Cabin_Heat*",
+                "PASSENGERS_Knob_CabinHeat*",
+                "AC_*",
+                "PASSENGER_Knob_Temperature*"
+              ],
+              "text": "These controls let warm air or fresh air into the cabin. Open, the air flows in. The air comes from the engine for heat, and from outside for fresh air. Larger aircraft have a knob for the temperature of the cabin, the flight deck and the cargo space.",
+              "context": "The pilot opens the heat in cold weather and the air in warm weather."
+            },
+            {
+              "id": "pressurization",
+              "name": "Pressurization, oxygen and bleed air",
+              "type": "switch",
+              "match": [
+                "PRESSURIZATION_*",
+                "TOPNOPANEL_SWITCH_OXYGEN*",
+                "OXYGEN_Switch*"
+              ],
+              "text": "These controls belong to the cabin pressure system and the oxygen supply. Pressurization keeps the air in the cabin thicker than the thin air outside. Oxygen is the breathing gas for high altitude.",
+              "context": "The pilot sets them up on aircraft that fly high and checks them at the beginning of the flight."
+            },
+            {
+              "id": "window-control",
+              "name": "Window and vent handles",
+              "type": "lever",
+              "match": [
+                "window_handle_*",
+                "WINDOW_HANDLE_*",
+                "Window_*",
+                "Window_int_handle*"
+              ],
+              "text": "These handles open or close a window or vent of the cockpit.",
+              "context": "Pilots open a small window on the ground for air; in the air it is closed."
+            }
+          ]
+        },
+        {
+          "id": "doors",
+          "name": "Doors and canopy",
+          "src": "g1",
+          "text": "Doors let people in and out. A canopy is the clear glass roof over the cockpit of some small planes and gliders.",
+          "context": "The pilot closes and locks them before the engine start. In the simulator the doors can often be opened to look out.",
+          "controls": [
+            {
+              "id": "door-handles",
+              "name": "Door, exit and canopy handles",
+              "type": "handle",
+              "match": [
+                "DOOR*_Handle*",
+                "Door_Handle*",
+                "DOOR_*",
+                "Door_Lever*",
+                "DoorExit*",
+                "DOOREXIT*",
+                "EmergencyExit*",
+                "CANOPY_*",
+                "door_handle_*",
+                "FRONT_DOOR_HANDLE*",
+                "front_handle*",
+                "rear_handle*",
+                "*MainDoor_Handle*",
+                "Exterior_Door_Handle*",
+                "Cockpit_Door_*",
+                "MAIN_LEVER_CANOPY*",
+                "DA??_front_handle*"
+              ],
+              "text": "These handles open and close a door, an emergency exit or a canopy. The name says which door it is: left or right, front or rear, forward or back. Emergency exit handles open an exit for the crew in an emergency.",
+              "context": "The pilot checks that the doors are locked before take-off. A door that is not locked can open in flight."
+            }
+          ]
+        },
+        {
+          "id": "safety",
+          "name": "Safety and warning equipment",
+          "src": "g1",
+          "text": "Equipment for emergencies and warnings: the emergency transmitter, warning and caution lights and their test buttons, and the alternate static source.",
+          "context": "The pilot tests the lights before flight and knows where the emergency switches are.",
+          "controls": [
+            {
+              "id": "elt",
+              "name": "ELT switch (emergency locator transmitter)",
+              "type": "switch",
+              "match": [
+                "SAFETY_Switch_ELT*",
+                "Safety_Switch_Elt*",
+                "ELT_*",
+                "LIGHTING_Switch_ELT*"
+              ],
+              "text": "The ELT is a small radio transmitter that sends a distress signal after a crash. This switch arms it, switches it on or tests it. A part named Active belongs to its lamp.",
+              "context": "The pilot checks that it is armed before the flight, and switches it on in an emergency landing."
+            },
+            {
+              "id": "alternate-static",
+              "name": "Alternate static air",
+              "type": "button",
+              "match": [
+                "SAFETY_Push_AlternateStaticAir*"
+              ],
+              "text": "This control opens another place for air pressure to reach the speed, height and climb gauges, if the normal opening outside is blocked. Pressing or pulling it switches to the cockpit's air.",
+              "context": "The pilot uses it only if the instruments show wrong values, for example after ice has blocked the normal opening."
+            },
+            {
+              "id": "warning-lights",
+              "name": "Caution, warning and test buttons",
+              "type": "button",
+              "match": [
+                "SAFETY_Push_Caution*",
+                "SAFETY_Push_Warning*",
+                "SAFETY_Push_Test*",
+                "Master_warning_push*",
+                "Master_caution_push*",
+                "annunciator_button_*"
+              ],
+              "text": "The caution and warning buttons are the big lamps that say 'something needs your attention' (caution) or 'danger now' (warning). Pressing them acknowledges the message. The test button lights all warning lamps to check that they work.",
+              "context": "The pilot presses test before the flight and acknowledges messages when they appear."
+            },
+            {
+              "id": "safety-light",
+              "name": "Light switch (safety)",
+              "type": "switch",
+              "match": [
+                "SAFETY_Switch_Light*"
+              ],
+              "text": "The simulator lists this switch under the safety equipment and names it Light. It is a light switch; the name does not say which lamp.",
+              "context": "Its exact job depends on the aircraft that has it."
+            },
+            {
+              "id": "safety-other",
+              "name": "Other safety controls",
+              "type": "other",
+              "match": [
+                "SAFETY_*"
+              ],
+              "text": "The simulator names these controls after safety equipment. The rest of the name says which control; what it does depends on the aircraft.",
+              "context": "They are used when something is wrong or for tests."
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

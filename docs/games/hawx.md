@@ -29,7 +29,7 @@ Ubisoft account (see below). Not integrated.** Best route: **vJoy, one device.**
     binary profile file without an extension that nobody has decoded (WEB).
   - H.A.W.X 2: `%USERPROFILE%\Saved Games\Tom Clancy's H.A.W.X 2\Profiles` and `<install>\Data_PC\Settings\settings.ini`
     (`[Input] DeadZone`, `MouseSensitivity`).
-- **DRM:** Ubisoft Connect (H.A.W.X 2 launched with always-online DRM). No anti-cheat.
+- **Launcher:** Ubisoft Connect (needs a login). No anti-cheat.
 
 **JoyPro:**
 - **Virtual joystick:** the whole HOTAS on one vJoy device, real devices hidden by HidHide. Bind it in the game.

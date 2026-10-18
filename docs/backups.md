@@ -27,5 +27,12 @@ break after an export, restore the set from before that export.
   ([installed games](installs.md)).
 - A restore is refused while the game runs, because the game would write its own state back on exit.
 - Dry runs write no backup.
+- Backups, restores and the exports' temp-file replaces go through `engine/SafeFileIo.cs`: they copy the bytes instead
+  of `File.Copy`/`File.Replace` carrying the file's attributes over. A game file with the EFS "encrypted" mark
+  (a Store package folder, a folder from another PC, an encrypted AppData) made `File.Copy` fail with "The specified
+  file could not be encrypted." (ERROR_ENCRYPTION_FAILED) where Windows cannot encrypt (FAT/exFAT, network share, EFS
+  off). JoyPro's own temp and backup files lose the mark; a game file that really cannot be written gets a message
+  saying what to do. Tests: `SafeFileIoTests` (the native calls fail with HRESULT 0x80071770;
+  `JOYPRO_TEST_FAULT_ENCRYPTION=copy,replace,move,stream` does the same for an engine run).
 - The newest 30 sets per game are kept; older ones are deleted when a new set is made.
 - The single `<file>.jpbak` next to a changed file (copy of the state before the last export) stays as before.

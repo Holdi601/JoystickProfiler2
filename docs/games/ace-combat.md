@@ -53,7 +53,7 @@ Flight_HatSwitchUp=POV_U1
 - Read: simple values per device (by product GUID). Combinations and half axes are reported, not read.
 - Limits: buttons 1-32, hats 1-4, four hat directions, no modifiers (the `&` syntax is per device).
 
-**Observed on the installed game (2026-10-12, Steam build, no anti-cheat, no EULA or account screen at the first
+**Observed on the installed game (2026-10-12, Steam build, no anti-cheat, no account screen at the first
 start):**
 - `Ace7Game.exe` is the only executable (`Game\Content\Paks` holds the data). The first window is a 960x540 splash; the
   title then says "PRESS THE ENTER KEY".
@@ -61,7 +61,7 @@ start):**
   `[JoystickSetting]`, a `[JoystickMappingFormat]` block of `HelpComment=` lines (the object/value/mapping syntax and
   the example `Flight_Pitch=Y:R ! Button10`), and one `[Joystick-<product GUID>]` section per connected DirectInput
   model with `ProductName=` (the DirectInput name, quoted when it has outer spaces: `" VKB-Sim Gunfighter Modern Combat
-  Pro Twist "`) and **every** `Flight_*` and `UI_*` key, all empty for unlicensed devices. On the dev PC: 7 sections
+  Pro Twist "`) and **every** `Flight_*` and `UI_*` key, all empty for unlicensed devices. On a test PC: 7 sections
   (pedals, WinWing panel, vJoy `BEAD1234-...`, VKB, Rhino, VPC throttle, WarBRD); the Wooting keyboard's game
   controller interfaces got none (XInput-capable devices are left to XInput).
 - **The values JoyPro writes survive** the game's rewrite on exit (`Slider2:R`, `Y`, `Button11`, `POV_R1` ... read back

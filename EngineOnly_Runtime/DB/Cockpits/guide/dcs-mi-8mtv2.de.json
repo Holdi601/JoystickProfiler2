@@ -1,0 +1,2902 @@
+{
+  "format": "joypro-cockpit-guide-text",
+  "version": 1,
+  "guide": "dcs-mi-8mtv2",
+  "language": "de",
+  "title": "Mi-8MTV2 Magnificent Eight (DCS)",
+  "intro": "Die Mi-8MTV2 ist ein großer russischer Transporthubschrauber mit zwei Triebwerken und einem großen Hauptrotor oben. Der Pilot sitzt auf dem linken Sitz und der Kopilot auf dem rechten; ein Bordtechniker kann dazwischen stehen. Das Cockpit ist voller kleiner Schalter und vieler Bedienfelder: Die wichtigsten Instrumente sind vorn, das Elektrikfeld ist rechts, die Funkgeräte und der Autopilot sind in der Mitte, und die Triebwerks-, Kraftstoff- und Feuerlöschbedienung ist im Dach. Viele Beschriftungen sind russische Abkürzungen; dieser Führer nennt jedes Teil so, wie das Flughandbuch es nennt.",
+  "areas": {
+    "pilot-panel": {
+      "name": "Instrumententafel des Piloten und linkes Dreiecksfeld",
+      "text": "Die Haupttafel vor dem Piloten mit den Flug- und Triebwerksanzeigen und den Warnlampen und das kleine Feld daneben mit den Stromschaltern der Pilotenseite."
+    },
+    "copilot-panel": {
+      "name": "Instrumententafel des Kopiloten und rechtes Dreiecksfeld",
+      "text": "Die Tafel vor dem Kopiloten mit eigenen Fluganzeigen, der Kraftstoffanzeige, der Uhr und den Doppler-Anzeigen, und das Dreiecksfeld mit den Stromschaltern des Kopiloten."
+    },
+    "center-console": {
+      "name": "Mittelkonsole",
+      "text": "Das Feld zwischen den Sitzen, in der Mitte des Cockpits. Es trägt die Öl-Anzeigen, das Funkgerät R-863, die Schalter der Triebwerksregler, den Autopiloten und den Lampentest."
+    },
+    "left-console": {
+      "name": "Linke Seitenkonsole",
+      "text": "Das Feld links vom Piloten. Es trägt die roten Beleuchtungsdimmer, die Triebwerkstesttaster, die Signalraketen, das Fernbedienfeld der Sprachwarnung, die IFF-Boxen und die Aufzeichnungsgeräte."
+    },
+    "left-overhead": {
+      "name": "Linke Dachkonsole",
+      "text": "Das Deckenfeld über der Pilotenseite. Es trägt die Waffenfelder, das Enteisungsfeld, den Kanalwähler des R-863 und die Bordsprechbox des Piloten."
+    },
+    "center-overhead": {
+      "name": "Mittlere Dachkonsole",
+      "text": "Das Deckenfeld in der Mitte. Es trägt den Brandschutz, die APU, die Kraftstoffpumpen, den Triebwerksstart, die Hydraulikschalter und die Kraftstoffhebel der Triebwerke."
+    },
+    "right-overhead": {
+      "name": "Rechte Dachkonsole",
+      "text": "Das Deckenfeld über der Seite des Kopiloten. Es trägt die Funkpeiler ARK-9 und ARK-UD, das Kreiselkompassfeld und die Kabinenheizung."
+    },
+    "circuit-breakers": {
+      "name": "Sicherungskonsolen",
+      "text": "Die zwei Deckenkonsolen an den Seiten mit Hunderten von Sicherungen und der Bordsprechbox des Kopiloten. Die linke trägt die Waffensicherungen."
+    },
+    "weapons-copilot": {
+      "name": "Waffenfelder des Kopiloten und PKV-Visier",
+      "text": "Das Bombenbedienfeld, der Bombenabwurfkasten und das Visier, die rechts und vorn sitzen."
+    },
+    "right-console": {
+      "name": "Rechte Seitenkonsole",
+      "text": "Das Feld rechts vom Kopiloten. Es trägt die Gleichstromschalter, die Außenlichter und die Schalter für Heizung und Warnlampen."
+    },
+    "right-rear": {
+      "name": "Rechte hintere Konsole",
+      "text": "Das Feld hinter dem Kopiloten mit den elektrischen Messgeräten und den Wechselstromschaltern und den zweiten roten Beleuchtungsknöpfen."
+    },
+    "right-aux": {
+      "name": "Rechtes Hilfsfeld",
+      "text": "Ein Feld mit dem Funkgerät R-828, dem HF-Funkgerät Yadro-1A und der Programmeinheit des Flare-Werfers."
+    },
+    "hotas": {
+      "name": "Cyclic und Kollektivhebel",
+      "text": "Die Flugsteuerungen: der Steuerknüppel (Cyclic) zwischen den Knien und der Kollektivhebel links vom Sitz, für beide Piloten."
+    }
+  },
+  "panels": {
+    "left-instruments": {
+      "name": "Instrumententafel des Piloten (links)",
+      "text": "Die große Tafel vor dem linken Sitz. Sie zeigt Geschwindigkeit, Höhe, Kurs, Horizont, Rotor- und Triebwerksdrehzahl und die Triebwerkstemperatur und trägt die Warnlampen.",
+      "context": "Der Pilot fliegt hauptsächlich nach dieser Tafel. Der Kopilot hat rechts eine ähnliche Tafel mit ein paar anderen Instrumenten, zum Beispiel der Kraftstoffanzeige."
+    },
+    "left-triangular": {
+      "name": "Linkes Dreiecksfeld (Stromschalter des Piloten)",
+      "text": "Ein kleines dreieckiges Feld neben dem Piloten mit den Stromschaltern für seine Instrumente, Wischer, Ventilator und Deckenlampe.",
+      "context": "Der Pilot schaltet sie bei der Kontrolle vor dem Flug ein. Das passende Feld auf der Seite des Kopiloten trägt dieselbe Art von Schaltern."
+    },
+    "right-instruments": {
+      "name": "Instrumententafel des Kopiloten (rechts)",
+      "text": "Die Tafel vor dem rechten Sitz. Sie wiederholt die wichtigsten Fluganzeigen und fügt die Kraftstoffanzeige, die Uhr, die Kabinentemperaturanzeige und die Doppler-Anzeigen hinzu.",
+      "context": "Der Kopilot liest hier Kraftstoff- und Doppler-Daten. Laut Handbuch speist der rechte Horizont den Autopiloten."
+    },
+    "doppler-controls": {
+      "name": "Doppler-Navigator-Bedienelemente DISS-15",
+      "text": "Der Doppler-Navigator misst die Geschwindigkeit des Hubschraubers über Grund mit Funkwellen, die vom Heckausleger nach unten gesendet werden. Diese Bedienelemente testen ihn und stellen die Streckenzähler ein.",
+      "context": "Pilot oder Kopilot nutzt ihn zum Schweben über kahlem Boden und zum Fliegen eines geplanten Kurses. Der Doppler braucht seine Sicherung und seinen Stromschalter an; ein Bedienfeld hinter dem Kopiloten hat einen Betriebsartenwähler."
+    },
+    "right-triangular": {
+      "name": "Rechtes Dreiecksfeld (Stromschalter des Kopiloten)",
+      "text": "Ein kleines dreieckiges Feld neben dem Kopiloten mit den Stromschaltern für die rechten Instrumente, den Kompass, den Doppler, das HF-Funkgerät, den Wischer und den Ventilator.",
+      "context": "Die Piloten schalten sie bei der Kontrolle vor dem Flug ein. Die meisten versorgen Navigationsgeräte, die den ganzen Flug über gebraucht werden."
+    },
+    "oil-gauges": {
+      "name": "Getriebe- und Triebwerksöl-Anzeigen",
+      "text": "Diese Anzeigen zeigen Temperatur und Druck des Öls in den Getrieben und in jedem Triebwerk. Öl hält bewegliche Teile kühl und gleitfähig.",
+      "context": "Der Pilot beobachtet sie beim Start und im Flug. Niedriger Druck oder hohe Temperatur bedeutet ein Problem an diesem Teil."
+    },
+    "r863": {
+      "name": "VHF/UHF-Kommandofunkgerät R-863",
+      "text": "Das R-863 ist das Hauptfunkgerät des Hubschraubers. Es spricht mit anderen Flugzeugen und dem Boden, mit einer Stationsnummer (Frequenz), die mit vier Rädern eingegeben oder aus gespeicherten Kanälen gewählt wird.",
+      "context": "Der Pilot schaltet es zuerst mit seiner Sicherung ein und wählt das Funkgerät an der Bordsprechbox. Laut Handbuch sind 20 Kanäle gespeichert, die mit dem Kanalwähler an der linken Dachkonsole gewählt werden."
+    },
+    "engine-governor": {
+      "name": "Bedienfeld der Triebwerksregler",
+      "text": "Dieses Feld trägt die Schalter der elektronischen Regler der Triebwerke. Ein Regler ist ein Helfer, der das Triebwerk von selbst auf der richtigen Drehzahl hält.",
+      "context": "Der Pilot schaltet die Regler nach dem Start ein und benutzt die Test- und Notleistungsschalter nur in besonderen Fällen. Das Handbuch beschreibt die Prüfung des elektronischen Reglers im Leerlauf mit den Kanälen ST1 und ST2."
+    },
+    "lamp-test-backup": {
+      "name": "Lampentest- und Elektrik-Reserveschalter",
+      "text": "Diese Gruppe von Schaltern lässt den Piloten die Warnlampen testen und Reserveteile der Elektrik wählen.",
+      "context": "Der Pilot nutzt den Lampentest vor dem Start, um zu sehen, dass keine Birne durchgebrannt ist. Die Reserveschalter werden bei Ausfällen der Elektrik benutzt."
+    },
+    "autopilot-panel": {
+      "name": "Autopilot-Bedienfeld AP-34B",
+      "text": "Das ist das Bedienfeld des Autopiloten, eines Systems, das den Hubschrauber ruhig hält. Es hat Lampentaster, um jeden Kanal ein- und auszuschalten, und Knöpfe für kleine Korrekturen.",
+      "context": "Der Pilot schaltet normalerweise vor dem Start den Roll-Nick-Kanal ein. Der Höhenkanal kann erst danach eingeschaltet werden und arbeitet über 50 Metern. Die Anzeige IN-4 unter dem Feld zeigt, wie weit sich jeder Kanal bewegt hat."
+    },
+    "spuu52": {
+      "name": "SPUU-52-Steuergerät (Heckrotor-Anstellbegrenzer)",
+      "text": "Dieses Gerät steuert den Begrenzer für den Heckrotor. Der Begrenzer verhindert, dass das rechte Pedal zu weit geht, damit Heckrotor und Antrieb nicht überlastet werden.",
+      "context": "Der Hauptstromschalter ist am linken Dreiecksfeld. Ist das System aus, leuchtet eine rote OFF-Lampe an diesem Gerät. Fällt es im Flug aus, schaltet der Pilot es ab und fliegt vorsichtig."
+    },
+    "rotor-brake": {
+      "name": "Rotorbremshebel",
+      "text": "Die Rotorbremse hält den großen Hauptrotor still. Ihr Hebel sitzt neben dem Sitz des Piloten.",
+      "context": "Die Bremse wird vor dem Start gelöst und nach dem Abstellen benutzt, um den Rotor anzuhalten oder ihn beim Parken festzuhalten."
+    },
+    "left-red-lights": {
+      "name": "Rote Beleuchtungsdimmer (linke Seitenkonsole)",
+      "text": "Zwei Knöpfe, die einstellen, wie hell die rote Hintergrundbeleuchtung auf der Pilotenseite ist. Rotes Licht lässt den Piloten nachts die Anzeigen lesen, ohne geblendet zu werden.",
+      "context": "Laut Handbuch beleuchten Gruppe 1 und Gruppe 2 verschiedene Teile der Pilotenseite: die Instrumententafel, die linken Konsolen, das linke Dreiecksfeld und den Kompass. Sie werden bei Nachtflügen benutzt."
+    },
+    "engine-tests": {
+      "name": "Triebwerkstesttaster und Warnlampen",
+      "text": "Vier Gruppen von Testtastern und Lampen an der linken Konsole zur Prüfung der Triebwerksinstrumente: der Vibrationsüberwachung, der Temperaturanzeige und der Temperaturregler.",
+      "context": "Pilot oder Besatzung drücken sie bei der Kontrolle vor dem Flug, um zu sehen, dass die Warnsysteme funktionieren."
+    },
+    "signal-flares": {
+      "name": "Bedienfeld der Signalraketen 7P-662",
+      "text": "Dieses Feld feuert farbige Signalraketen ab, kleine Raketen, die ein helles farbiges Licht am Himmel machen. Jede der zwei Kassetten hat einen eigenen Stromschalter und vier Farbtaster.",
+      "context": "Die Besatzung nutzt Signalraketen, um Menschen am Boden oder anderen Flugzeugen farbige Lichtsignale zu geben. Das Handbuch führt die Signalraketen EKSR-46 unter der Ausrüstung auf, die von den Batterien gespeist wird."
+    },
+    "ri65-remote": {
+      "name": "Fernbedienfeld der Sprachwarnung RI-65B",
+      "text": "Das RI-65 ist das Sprachwarnsystem. Es spricht Meldungen über den Kopfhörer des Piloten, zum Beispiel bei einem Feuer oder dem Ausfall eines Generators. Mit diesem Feld kann der Pilot eine Meldung wiederholen oder stoppen und das System testen.",
+      "context": "Das System wird mit dem RI-65-Schalter am linken Dreiecksfeld eingeschaltet. Eine Lampe dort leuchtet, solange es noch aus ist."
+    },
+    "iff-panel": {
+      "name": "IFF-Bedienfelder 484 und 485 (Gerät 6201)",
+      "text": "IFF bedeutet Freund-Feind-Kennung. Das Gerät 6201 ist ein Funkgerät, das die Frage 'Wer bist du?' von fremden Radargeräten mit einem Code beantwortet. Diese zwei Felder steuern es.",
+      "context": "Das Handbuch führt die Felder auf, erklärt aber die Bedienelemente nicht. Die folgenden Texte richten sich nach den Namen, die das Spiel ihnen gibt."
+    },
+    "recorders-misc": {
+      "name": "Aufzeichnungsgeräte, automatische Lastauslösung, Lichtcode und Hupe",
+      "text": "Mehrere kleine Bedienelemente an der linken Konsole: der Sprachrekorder, der Flugdatenschreiber, die automatische Lastauslösung, der Lichtcode-Taster und die Hupe.",
+      "context": "Die Flugschreiber sind im Spiel nur animiert. Die Lastauslösung und der Lichtcode werden bei besonderen Aufgaben benutzt."
+    },
+    "left-pressure-gauges": {
+      "name": "Druckanzeigen der Luftanlage (linke Seitenkonsole)",
+      "text": "Zwei Anzeigen für die Druckluftanlage: eine für die Luftflaschen und eine für die Radbremsen.",
+      "context": "Die Druckluft betätigt die Radbremsen. Der Pilot prüft beide Anzeigen, bevor er den Hubschrauber bewegt."
+    },
+    "upper-weapons": {
+      "name": "Oberes Waffenbedienfeld des Piloten",
+      "text": "Das obere Waffenfeld über dem Piloten. Es zeigt, welche Waffen geladen und bereit sind, und trägt den Hauptwaffenschalter, den Notabwurf und den Helligkeitsknopf des Visiers.",
+      "context": "Der Pilot stellt es vor einem Angriff ein. Der Hauptschalter für die Waffen ist an der Sicherungskonsole; ist er aus, kann nichts abgefeuert oder abgeworfen werden."
+    },
+    "lower-weapons": {
+      "name": "Unteres Waffenbedienfeld des Piloten",
+      "text": "Das untere Waffenfeld wählt, was der FIRE-Knopf am Cyclic schießt und wie: Raketen, Kanonenbehälter oder Maschinengewehrbehälter, und wie viele oder wie lange.",
+      "context": "Der Pilot stellt es zusammen mit dem Zuladungsfeld des Kopiloten vor einem Angriff ein, weil die Maschinengewehrbehälter die Zuladungseinstellung des Kopiloten brauchen."
+    },
+    "anti-ice": {
+      "name": "Bedienfeld der Enteisungsanlage",
+      "text": "Das Feld, das die Heizung gegen Eis für die Frontscheiben, die Triebwerkseinläufe und die Rotorblätter einschaltet.",
+      "context": "Der Pilot nutzt es bei kaltem, nassem Wetter. Im Automatikbetrieb startet die Heizung, wenn der Eismelder Eis spürt."
+    },
+    "r863-left-overhead": {
+      "name": "R-863-Modulations- und Kanalwähler",
+      "text": "Zwei Bedienelemente des Hauptfunkgeräts R-863 in der Decke: wie die Stimme übertragen wird und welcher der 20 gespeicherten Kanäle benutzt wird.",
+      "context": "Der Pilot stellt den Kanal und die Modulationsart ein, bevor er mit einer anderen Station spricht. Die Art muss zur anderen Station passen."
+    },
+    "spu7-pilot": {
+      "name": "SPU-7-Sprechanlagenbox (Pilot)",
+      "text": "Die SPU-7 ist die Bordsprechanlage, die Telefonleitung zwischen den Besatzungsmitgliedern. Sie bestimmt auch, auf welchem Funkgerät der Pilot spricht und wie laut die Töne sind.",
+      "context": "Der Pilot stellt die Funkquelle ein, bevor er spricht. Der Cyclic-Abzug spricht dann auf der Bordsprechanlage oder dem gewählten Funkgerät."
+    },
+    "fire-protection": {
+      "name": "Bedienfeld der Brandschutzanlage",
+      "text": "Dieses Feld zeigt, wo ein Feuer ist, und lässt den Piloten die Löschflaschen abfeuern. Der Hubschrauber hat zwei Flaschen: Die erste feuert von selbst, die zweite ist für ein weiteres Feuer.",
+      "context": "Leuchtet eine Feuerlampe, geht die erste Flasche meist automatisch los. Tut sie es nicht, drückt der Pilot den Taster der brennenden Stelle. Testschalter prüfen die Melder."
+    },
+    "apu-panel": {
+      "name": "APU-Startbedienfeld (AI-9V)",
+      "text": "Die APU ist ein kleines Zusatztriebwerk hinten. Sie macht die Druckluft, die die Haupttriebwerke zum Starten dreht, und kann auch Strom machen. Dieses Feld startet und stoppt sie.",
+      "context": "Die APU wird zuerst gestartet. Laut Handbuch lässt man sie mindestens eine Minute laufen, bevor man die Haupttriebwerke startet, und schaltet sie ab, wenn beide Triebwerke laufen."
+    },
+    "fuel-panel": {
+      "name": "Bedienfeld der Kraftstoffanlage",
+      "text": "Das Feld für die Kraftstoffpumpen und Ventile. Der Kraftstoff ist in zwei Seitentanks und einem kleinen Betriebstank hinter dem Hauptfahrwerk gespeichert. Pumpen bewegen ihn, und Ventile können jede Leitung absperren.",
+      "context": "Vor dem Start schaltet der Pilot die Pumpen ein und prüft, dass ihre Lampen leuchten. Im Flug prüft der Pilot die Pumpenlampen und den restlichen Kraftstoff."
+    },
+    "engine-start-panel": {
+      "name": "Bedienfeld für den Triebwerksstart",
+      "text": "Das Feld zum Starten der zwei Haupttriebwerke. Ein Startrechner führt die Schritte von selbst aus, nachdem der Pilot die Betriebsart und das Triebwerk gewählt und START gedrückt hat.",
+      "context": "Die APU muss zuerst laufen. Nach dem Starttaster öffnet der Pilot den Kraftstoffabsperrhebel des Triebwerks, wenn die Triebwerksdrehzahl steigt."
+    },
+    "hydraulic-panel": {
+      "name": "Bedienfeld der Hydraulikanlage",
+      "text": "Hydraulik ist Öl unter hohem Druck, das dem Piloten hilft, die schweren Rotorsteuerungen zu bewegen. Der Hubschrauber hat eine Hauptanlage und eine Reserveanlage, mit je einem Schalter.",
+      "context": "Beide Schalter sind normalerweise an. Fällt die Hauptanlage aus, übernimmt die Reserve von selbst, und eine rote Lampe leuchtet."
+    },
+    "engine-stop-levers": {
+      "name": "Kraftstoffabsperrhebel der Triebwerke",
+      "text": "Zwei Hebel über dem Piloten, die den Kraftstoff zu jedem Triebwerk öffnen und schließen. Vorn ist offen, hinten ist geschlossen (STOP).",
+      "context": "Der Pilot öffnet einen Hebel, wenn sich das Triebwerk zu drehen beginnt, und schließt ihn, um das Triebwerk abzustellen."
+    },
+    "ark9": {
+      "name": "Bedienfeld des automatischen Funkpeilers ARK-9 (ADF)",
+      "text": "Der ARK-9 ist ein Funkkompass für Funkfeuer, die auf Mittelwellen senden (150 bis 1300 kHz). Er richtet eine dünne Nadel auf der Kursanzeige auf das Funkfeuer aus und lässt den Piloten den Namen des Funkfeuers in Morsezeichen hören.",
+      "context": "Der Pilot stellt die Frequenz des Funkfeuers ein und dreht die Betriebsart dann auf COMP. Das Feld hat einen Haupt- und einen Reservekanal, so kann der Pilot das nächste Funkfeuer vorbereiten, während er das erste nutzt."
+    },
+    "arkud": {
+      "name": "Bedienfeld des VHF-Anpeilgeräts ARK-UD",
+      "text": "Der ARK-UD ist ein Funkpeiler für VHF- und UHF-Stationen, gebaut, um abgestürzte Besatzungen mit einem kleinen Notfunkgerät zu finden. Er richtet die Peilnadel auf der Kursanzeige auf das Signal aus.",
+      "context": "Der Pilot wählt das Band und den Kanal und nutzt den schmalen oder breiten Modus. Damit der ARK-UD im Spiel arbeitet, muss in der Mission ein Funkfeuer gesetzt sein."
+    },
+    "gmk": {
+      "name": "Bedienfeld des Kreiselkompasses PU-26 (GMK-1A)",
+      "text": "Der GMK-1A ist der Kreiselkompass, das Hauptkurssystem des Hubschraubers. Dieses Feld stellt seine Betriebsart, die Heimatbreite und den Kurs ein.",
+      "context": "Der Pilot stellt die Erdhalbkugel und die Breite ein, testet das System und richtet es vor dem Start auf die richtige magnetische Richtung aus. Der Stromschalter ist am rechten Dreiecksfeld."
+    },
+    "ko50": {
+      "name": "Bedienfeld der Kabinenheizung KO-50",
+      "text": "Der KO-50 ist ein Kerosinbrenner, der das Cockpit und die Frachtkabine wärmt. Dieses kleine Feld startet ihn, wählt die Betriebsart und die Temperatur und zeigt seinen Zustand.",
+      "context": "Der Pilot nutzt es bei kaltem Wetter: Automatikbetrieb wählen, Temperatur einstellen, START drücken. Die Heizung braucht ihre Sicherung am rechten Sicherungsfeld."
+    },
+    "cb-groups": {
+      "name": "Gruppenschalter der Sicherungen",
+      "text": "Neun Drucktaster, die ganze Gruppen von Sicherungen auf einmal einschalten. So muss man nicht jede Sicherung einzeln anklicken.",
+      "context": "Der Spieltext sagt, dass der Pilot bei der Cockpitkontrolle alle Sicherungen schließt. Diese Taster machen das Gruppe für Gruppe."
+    },
+    "left-cb": {
+      "name": "Linke Sicherungskonsole: Waffensicherungen",
+      "text": "Die linke Konsole über dem Piloten trägt die Waffensicherungen und die Zielkorrekturtabelle, das Scharfmachfeld und die Munitionszähler.",
+      "context": "Die Waffen funktionieren nur, wenn die passenden Sicherungen und der Master-Arm-Schalter an sind. Der Pilot stellt sie vor einem Angriff ein."
+    },
+    "right-cb-radio": {
+      "name": "Rechte Sicherungskonsole: Funk- und Navigationssicherungen",
+      "text": "Die rechte Konsole trägt viele Sicherungen, hier nach Systemen gruppiert. Diese Gruppe ist für die Funkgeräte, die Bordsprechanlage und die Funknavigationsgeräte.",
+      "context": "Der Pilot schließt sie bei der Cockpitkontrolle. Ein Funkgerät arbeitet erst, wenn seine Sicherung und die Sicherung der Bordsprechanlage an sind."
+    },
+    "right-cb-spu7": {
+      "name": "SPU-7-Sprechanlagenbox (Kopilot)",
+      "text": "Die eigene SPU-7-Sprechanlagenbox des Kopiloten. Sie ist dieselbe wie die des Piloten und sitzt neben der rechten Sicherungskonsole.",
+      "context": "Der Kopilot stellt hier die Funkquelle und die Lautstärke ein, genau wie der Pilot links."
+    },
+    "right-cb-systems": {
+      "name": "Rechte Sicherungskonsole: Triebwerke, Kraftstoff, Hydraulik und Flugsysteme",
+      "text": "Weitere Sicherungen der rechten Konsole: für die Scheibenheizung und Wischer, die Heizung, den Brandschutz, die Hydraulik, den Autopiloten, die Kraftstoffpumpen, den Triebwerksstart und einige Instrumente.",
+      "context": "Der Pilot schließt sie bei der Cockpitkontrolle, bevor die APU gestartet wird."
+    },
+    "bombs-panel": {
+      "name": "Bombenbedienfeld des Kopiloten (Zuladungskonfiguration)",
+      "text": "Ein Feld auf der rechten Seite des Cockpits für den Kopiloten. Es steuert den Abwurf von Bomben und auch das Scharfmachen der Maschinengewehrbehälter.",
+      "context": "Der Kopilot stellt das Zuladungsprofil passend zu dem ein, was geladen ist. Bomben werden mit den Abwurfabzügen abgeworfen, nicht mit dem FIRE-Knopf."
+    },
+    "esbr": {
+      "name": "Elektrischer Auslösekasten ESBR-3P/A",
+      "text": "Der ESBR-Kasten sitzt unter der Instrumententafel des Kopiloten. Er lässt den Bombenabwurf einzeln oder paarweise und in einer festen Reihenfolge der Stationen ablaufen.",
+      "context": "Der Kopilot stellt den Knopf ein und schaltet dann den Kasten ein. Laut Handbuch müssen der Bomben-Hauptschalter und das Zuladungsprofil zuerst gesetzt sein."
+    },
+    "pkv-sight": {
+      "name": "PKV-Kollimatorvisier",
+      "text": "Das PKV ist ein Glasvisier vor dem Piloten. Es zeigt einen Ring und Marken als Zielbild, das der Pilot über das Ziel legt.",
+      "context": "Der Pilot zielt damit Raketen, Gewehre und Bomben. Die Marken helfen auch, die Entfernung zu einem Ziel bekannter Größe zu schätzen."
+    },
+    "dc-power": {
+      "name": "Gleichstrom-Bedienfeld (DC)",
+      "text": "Das Feld für den Gleichstrom (DC). Es hat die Schalter für die zwei Batterien, die drei Gleichrichter (die den Strom der Generatoren in Gleichstrom verwandeln), den Bodenstromstecker und den Reservegenerator der APU.",
+      "context": "Der erste Handgriff im Cockpit ist, die Batterien einzuschalten und ihre Spannung zu prüfen. Später werden die Gleichrichter eingeschaltet, wenn die Triebwerke laufen und die Generatoren Strom machen."
+    },
+    "exterior-lights": {
+      "name": "Schalter der Außenbeleuchtung",
+      "text": "Die Schalter für die Lichter außen am Hubschrauber: Navigationslichter, Formationslichter, Rotorspitzenlichter und das blinkende Antikollisionslicht.",
+      "context": "Sie werden nachts und bei schlechter Sicht benutzt. Die roten und grünen Navigationslichter zeigen, in welche Richtung der Hubschrauber fliegt."
+    },
+    "cabin-lights": {
+      "name": "Kabinenbeleuchtung und rote Hintergrundlicht-Dimmer (rechts)",
+      "text": "Die Schalter für die Lampen in der Frachtkabine und die Knöpfe, die das rote Hintergrundlicht im rechten und mittleren Teil des Cockpits einstellen.",
+      "context": "Rotes Licht lässt die Piloten nachts die Anzeigen lesen, ohne ihre Nachtsicht zu verlieren. Laut Handbuch ist die Beleuchtung der Frachtkabine nicht umgesetzt."
+    },
+    "heating-protection": {
+      "name": "Schalter für Heizung und Staubschutz",
+      "text": "Schalter für die Heizungen der Pitotrohre, der Uhr und der Batterien und für den Staubschutz der Triebwerke.",
+      "context": "Die Pitotheizungen werden im Flug bei Eisgefahr eingeschaltet. Der Staubschutz läuft, nachdem die Triebwerke gestartet sind."
+    },
+    "warning-light-controls": {
+      "name": "Schalter für Helligkeit und Blinken der Warnlampen",
+      "text": "Zwei Schalter, die ändern, wie sich die Warnlampen verhalten: Tag- oder Nachthelligkeit und Blinken.",
+      "context": "Das Blinken lässt wichtige Lampen aufblitzen, um den Blick des Piloten zu fangen. Die Nachteinstellung macht die Lampen dunkler."
+    },
+    "pkt-selector": {
+      "name": "PKT-Sitzwähler",
+      "text": "Ein Schalter, der wählt, wer das Bug-Maschinengewehr abfeuert: der Bordtechniker oder der Pilot.",
+      "context": "Laut Handbuch ist das Bug-Maschinengewehr (PKT) in der Simulation nicht umgesetzt."
+    },
+    "meters": {
+      "name": "Gleichstrom- und Wechselstrom-Messgeräte",
+      "text": "Die Reihe von Anzeigen an der rechten hinteren Konsole, die die Spannung und den Strom der Batterien, der Gleichrichter und der zwei Wechselstromgeneratoren zeigen.",
+      "context": "Die Piloten lesen sie bei der Kontrolle vor dem Flug und beim Einschalten der Generatoren ab. Die Wahlschalter bestimmen, was jedes Voltmeter zeigt."
+    },
+    "ac-power": {
+      "name": "Wechselstrom-Bedienfeld (AC)",
+      "text": "Das Feld für den Wechselstrom (AC): die zwei Generatoren am Hauptgetriebe, der Bodenstrom und die Wechselrichter (die aus den Batterien Wechselstrom machen).",
+      "context": "Nachdem die Triebwerke laufen, schaltet der Pilot beide Generatoren ein und prüft ihre Spannung. Die Wechselrichter werden auf Automatik gestellt."
+    },
+    "centre-red-lights": {
+      "name": "Zentrale rote Beleuchtungsdimmer (Türbereich)",
+      "text": "Zwei Knöpfe an der Cockpittür, die das rote Hintergrundlicht der mittleren Felder einstellen: der Mittelkonsole, der mittleren Dachkonsole und der Funkfelder.",
+      "context": "Der Pilot stellt sie nachts ein. Das Cockpit hat drei Stellen mit solchen Knöpfen."
+    },
+    "windows": {
+      "name": "Seitliche Schiebefenster (Beobachtungskuppeln)",
+      "text": "Jeder Pilot hat neben dem Sitz ein Schiebefenster, Beobachtungskuppel (Blister) genannt. Es kann geöffnet und geschlossen werden.",
+      "context": "Die Piloten öffnen sie zur Lüftung oder um hinauszuschauen. Laut Handbuch sitzt am linken ein Stab als Sichtanzeige für Eis."
+    },
+    "r828": {
+      "name": "UKW-FM-Funkgerät-Bedienfeld R-828",
+      "text": "Das R-828 ist ein zweites Funkgerät mit zehn gespeicherten Kanälen im Bereich von 20 bis 59,975 MHz. Es kann per Sprache sprechen und auch das Anpeilgerät ARK-UD zu einem Funkfeuer leiten.",
+      "context": "Laut Handbuch kann es im Spiel nicht mit dem Tower sprechen, weil der Tower eine andere Modulationsart nutzt."
+    },
+    "yadro": {
+      "name": "HF-Funkgerät-Bedienfeld Yadro-1A",
+      "text": "Das Yadro-1A ist ein HF-Langstreckenfunkgerät. Es lässt sich frei zwischen 2 und 17,999 MHz abstimmen und reicht laut Handbuch 900 km oder mehr.",
+      "context": "Der Pilot stellt die Betriebsart, die Frequenz und die Lautstärke ein und wartet dann, bis die TUNING-Lampe ausgeht. Sein Stromschalter ist am rechten Dreiecksfeld."
+    },
+    "uv26": {
+      "name": "Bedienfeld UV-26 für Täuschkörper (Flare-Werfer)",
+      "text": "Das UV-26-Feld programmiert die Flare-Werfer an den Seiten des Hubschraubers. Flares sind heiß brennende Täuschkörper, die wärmesuchende Raketen täuschen. Das Feld stellt ein, wie viele Flares abgefeuert werden, wie oft und von welcher Seite.",
+      "context": "Das Standardprogramm ist 110: jedes Mal ein Flare. Laut Handbuch trägt der Hubschrauber bis zu 128 Flares. Der Starttaster hier und der Flare-Taster auf der Instrumententafel des Piloten lassen das Programm laufen."
+    },
+    "pilot-cyclic": {
+      "name": "Cyclic-Steuerknüppel des Piloten (linker Sitz)",
+      "text": "Der Cyclic ist der Steuerknüppel des Hubschraubers, der zwischen den Knien des Piloten steht. Kippt man ihn, kippt der Hauptrotor, und der Hubschrauber fliegt vorwärts, rückwärts oder seitwärts. Taster am Griff bedienen Funk, Waffen, Autopilot und Trimmung.",
+      "context": "Der Pilot hält ihn mit der rechten Hand. Der Kopilot hat auf der anderen Seite einen fast gleichen Knüppel."
+    },
+    "pilot-collective": {
+      "name": "Kollektivhebel des Piloten (linker Sitz)",
+      "text": "Der Kollektivhebel ist ein Hebel links neben dem Sitz des Piloten. Hebt man ihn, greifen die Rotorblätter stärker, und der Hubschrauber steigt. Die Triebwerke geben von selbst Leistung dazu. Sein Griff trägt den Drehgriff für den Schub, Taster und Schalter.",
+      "context": "Der Pilot hält ihn mit der linken Hand. Ein Handrad stellt ein, wie stark die Reibung den Hebel an Ort und Stelle hält."
+    },
+    "copilot-cyclic": {
+      "name": "Cyclic-Steuerknüppel des Kopiloten (rechter Sitz)",
+      "text": "Der Cyclic des Kopiloten ist das Gegenstück zum Knüppel des Piloten, auf der rechten Seite. Er hat dieselben Taster außer der Radbremse.",
+      "context": "Jeder der beiden Piloten kann den Hubschrauber fliegen. Laut Handbuch sind die Steuerungen mechanisch verbunden."
+    },
+    "copilot-collective": {
+      "name": "Kollektivhebel des Kopiloten (rechter Sitz)",
+      "text": "Der Kollektivhebel des Kopiloten ist wie der des Piloten, hat aber keine Reibungskupplung, keine Lastauslösetaster und keine Zustandshebel für die Triebwerke.",
+      "context": "Jeder der beiden Piloten kann den Hebel heben, um zu steigen, oder den Drehgriff für den Schub benutzen."
+    },
+    "pedals": {
+      "name": "Pedale (Heckrotorsteuerung)",
+      "text": "Die zwei Fußpedale vor jedem Sitz. Sie drehen die Nase des Hubschraubers nach links und rechts, indem sie den Anstellwinkel des kleinen Heckrotors ändern.",
+      "context": "Ohne den Heckrotor würde sich der Rumpf in die andere Richtung drehen, wenn sich der Hauptrotor dreht. Der Pilot benutzt die Pedale ständig, am meisten im Schwebeflug und wenn sich die Triebwerksleistung ändert."
+    }
+  },
+  "controls": {
+    "left-instruments/taxi-light": {
+      "name": "Rollscheinwerfer-Schalter (FR-100)",
+      "text": "Dieser Schalter schaltet den Rollscheinwerfer ein und aus. Der Rollscheinwerfer ist eine Lampe unter dem Rumpf, die den Boden beleuchtet, während der Hubschrauber rollt oder dicht über dem Boden schwebt.",
+      "context": "Laut Handbuch schont er die Birnen der größeren Suchscheinwerfer bei Bewegungen am Boden. Er braucht seine Sicherung am rechten Sicherungsfeld.",
+      "positions": {
+        "ON": "Der Rollscheinwerfer leuchtet auf den Boden.",
+        "OFF": "Der Rollscheinwerfer ist aus."
+      }
+    },
+    "left-instruments/landing-light-left": {
+      "name": "Lande-/Suchscheinwerfer-Schalter (links, Pilot)",
+      "text": "Dieser Schalter steuert die große bewegliche Lampe des Piloten unter der Nase, den Such- und Landescheinwerfer. In einer Stellung leuchtet sie, in der anderen klappt er die Lampe weg.",
+      "context": "Nachts beleuchtet der Pilot damit die Landestelle oder ein Suchgebiet. Der Strahl wird mit dem Hat-Schalter am Kollektivhebel ausgerichtet; dieselbe Anordnung gibt es auf der Seite des Kopiloten.",
+      "positions": {
+        "LIGHT": "Die Lampe ist an und kann nach oben, unten, links und rechts gerichtet werden.",
+        "OFF": "Die Lampe ist aus und bleibt in der Richtung stehen, in der sie war.",
+        "RETRACT": "Die Lampe geht aus und schwenkt zurück in ihr Gehäuse unter der Nase."
+      }
+    },
+    "left-instruments/epr": {
+      "name": "Triebwerksdruckverhältnis-Anzeige UR-117M (EPR)",
+      "text": "Diese Anzeige zeigt, wie stark jedes Triebwerk arbeitet, im Vergleich zu den Marken O (Start), H (Nennleistung) und K (Reiseflug). Der Pilot liest daran die Leistung ab.",
+      "context": "Laut Handbuch ist sie nur für Außenluft bis +24 Grad C gedacht; darüber nimmt der Pilot stattdessen den Triebwerksdrehzahlmesser."
+    },
+    "left-instruments/rotor-pitch": {
+      "name": "Hauptrotor-Anstellwinkelanzeige IP-21",
+      "text": "Diese Anzeige zeigt in Grad, wie steil die Hauptrotorblätter angestellt sind. Sie steigt, wenn der Kollektivhebel angehoben wird, und sinkt, wenn er gesenkt wird.",
+      "context": "Der Pilot beobachtet sie zusammen mit dem Kollektivhebel: Mehr Blattwinkel bedeutet mehr Auftrieb, und die Triebwerke geben von selbst Leistung dazu. Die Skala geht von 1 bis 15 Grad."
+    },
+    "left-instruments/engine-tach": {
+      "name": "Doppeldrehzahlmesser ITE-2T für die Triebwerke",
+      "text": "Diese Anzeige hat zwei Nadeln. Nadel 1 zeigt, wie schnell sich der Kern des linken Triebwerks dreht, Nadel 2 den des rechten, in Prozent der höchsten Drehzahl.",
+      "context": "Der Pilot vergleicht die beiden Nadeln, um zu sehen, dass beide Triebwerke die Arbeit teilen. Die Skala geht von 0 bis 110 Prozent."
+    },
+    "left-instruments/rotor-tach": {
+      "name": "Hauptrotor-Drehzahlmesser ITE-1T",
+      "text": "Diese Anzeige zeigt, wie schnell sich der große Hauptrotor dreht, in Prozent seiner höchsten Drehzahl. Sie ist eine der wichtigsten Anzeigen des Hubschraubers.",
+      "context": "Der Pilot hält die Rotordrehzahl den ganzen Flug über im grünen Bereich. Der Kopilot hat einen zweiten auf der rechten Tafel."
+    },
+    "left-instruments/radalt-switch": {
+      "name": "Stromschalter RADAR ALTIMETER",
+      "text": "Dieser Schalter schaltet den Radarhöhenmesser ein und aus. Der Radarhöhenmesser ist ein Höhenmesser, der den wirklichen Abstand zum Boden darunter misst.",
+      "context": "Der Radarhöhenmesser braucht außerdem seine Sicherung. Nach dem Einschalten testet er sich ein bis zwei Minuten lang selbst, bevor die rote Flagge verschwindet.",
+      "positions": {
+        "ON": "Der Radarhöhenmesser hat Strom und startet seinen Selbsttest.",
+        "OFF": "Der Radarhöhenmesser ist aus, und seine rote Flagge ist zu sehen."
+      }
+    },
+    "left-instruments/airspeed": {
+      "name": "Fahrtmesser US-450K",
+      "text": "Diese Anzeige zeigt, wie schnell sich der Hubschrauber durch die Luft bewegt, in Kilometern pro Stunde. Sie liest von 0 bis 450.",
+      "context": "Sie bekommt ihren Luftdruck vom linken Pitotrohr (einem kleinen Rohr an der Nase, das den Wind misst). Piloten nutzen sie, um mit sicherer Geschwindigkeit zu fliegen und zu landen."
+    },
+    "left-instruments/radalt-indicator": {
+      "name": "Radarhöhenmesser-Anzeige UV-5M",
+      "text": "Diese Anzeige zeigt die Höhe über dem Boden in Metern, gemessen mit Funkwellen, die vom Heckausleger nach unten gesendet werden. Sie arbeitet von 0 bis 750 Metern.",
+      "context": "Der Pilot nutzt sie zum Schweben, Landen und Tieffliegen. Eine rote Flagge zeigt, wenn das Gerät aus ist, ausgefallen ist oder außerhalb des Bereichs liegt."
+    },
+    "left-instruments/radalt-test": {
+      "name": "TEST-Taster des Radarhöhenmessers",
+      "text": "Drückt man diesen Taster, schwingt die Nadel des Radarhöhenmessers in den ausgeblendeten Bereich oben an der Skala. So zeigt sich, dass die Anzeige funktioniert.",
+      "context": "Er gehört zur Prüfung des Radarhöhenmessers nach dem Einschalten. Wird der Taster losgelassen, kehrt die Nadel in ihre normale Stellung zurück."
+    },
+    "left-instruments/radalt-limit": {
+      "name": "Knopf für gefährliche Höhe (SET ALTITUDE)",
+      "text": "Dieser Knopf stellt eine Warnhöhe ein. Sinkt der Hubschrauber darunter, leuchtet im Knopf eine gelbe LOW-ALT-Lampe auf, und ein Warnton ertönt.",
+      "context": "Der Pilot stellt ihn auf eine sichere Höhe für den geplanten Flug ein, zum Beispiel vor dem Tiefflug oder Anflug. Laut Handbuch braucht die Warnung eine Einstellung von mindestens 5 Metern."
+    },
+    "left-instruments/baro-altimeter": {
+      "name": "Druckhöhenmesser VD-10VK",
+      "text": "Diese Anzeige zeigt die Höhe über dem Meeresspiegel oder über dem Flugplatz, aus dem Luftdruck berechnet. Die lange Nadel zeigt Meter, die kurze Tausende von Metern.",
+      "context": "Er ist das wichtigste Höheninstrument. Der Pilot stellt ihn vor dem Start mit dem Knopf an der Anzeige ein."
+    },
+    "left-instruments/baro-knob": {
+      "name": "Höhenmesser-Einstellknopf (QFE)",
+      "text": "Dieser Knopf am Druckhöhenmesser stellt den Luftdruck ein, der als Ausgangspunkt dient. Dreht man ihn, bewegen sich die Nadeln und die Drucksskala.",
+      "context": "Vor dem Start stellt der Pilot die Nadeln am Flugplatz auf null oder auf den örtlichen Druck. Zwei kleine Marken können auch für einen Landeplatz in anderer Höhe gesetzt werden."
+    },
+    "left-instruments/opb-indicator": {
+      "name": "Kursanzeige OPB-1R des Bombenvisiers",
+      "text": "Diese Anzeige würde die Kurssteuersignale des Bombenvisiers zeigen, das auf der Seite des Kopiloten sitzt. Sie gehört zum optischen Bombenvisier.",
+      "context": "Laut Handbuch ist das Bombenvisier OPB-1R in der Simulation nicht nachgebildet, deshalb ist diese Anzeige in DCS nutzlos."
+    },
+    "left-instruments/adf-selector": {
+      "name": "ADF-Schalter HF-VHF (ARK-9 / ARK-UD)",
+      "text": "Dieser Schalter wählt, welcher Funkpeiler die dünne Peilnadel auf der Kursanzeige bewegt. Eine Stellung ist der Mittelwellenpeiler ARK-9, die andere das VHF-Anpeilgerät ARK-UD.",
+      "context": "Der Pilot stellt ihn passend zum Funkgerät ein, mit dem er zu einem Funkfeuer oder Rettungssender fliegt. Das Spiel nennt ihn den HSI-Funkkompasswähler.",
+      "positions": {
+        "ARC-9": "Die Nadel zeigt die Richtung des Funkfeuerpeilers ARK-9.",
+        "ARC-UD": "Die Nadel zeigt die Richtung des VHF-Anpeilgeräts ARK-UD."
+      }
+    },
+    "left-instruments/directional-gyro": {
+      "name": "Kurskreisel UGR-4UK (Kursanzeige)",
+      "text": "Diese runde Anzeige zeigt als drehende Kompassrose, in welche Richtung der Hubschrauber zeigt. Nadeln darauf weisen auf Funkfeuer.",
+      "context": "Sie bekommt ihren Kurs vom Kreiselkompass GMK-1A. Der Pilot nutzt sie zur Navigation und zum Anflug auf eine Funkstation."
+    },
+    "left-instruments/course-knob": {
+      "name": "Kurseinstellknopf der Kursanzeige (HSI)",
+      "text": "Dieser Knopf an der Kursanzeige stellt eine gewünschte Kursmarke ein. Der Pilot dreht ihn, bis die Marke dort steht, wohin er steuern will.",
+      "context": "Das Spiel nennt ihn den HSI-Kurseinstellknopf. Die Kursanzeige des Kopiloten hat einen eigenen Knopf."
+    },
+    "left-instruments/attitude-indicator": {
+      "name": "Künstlicher Horizont AGB-3K",
+      "text": "Diese Anzeige zeigt den künstlichen Horizont: ob die Nase oben oder unten ist und ob sich der Hubschrauber nach links oder rechts neigt. Eine kleine Kugel zeigt seitliches Rutschen.",
+      "context": "Der Pilot nutzt sie im Flug in Wolken oder bei Nacht, wenn der echte Horizont nicht zu sehen ist. Eine Flagge zeigt, wenn sie keinen Strom hat."
+    },
+    "left-instruments/attitude-cage": {
+      "name": "Arretierknopf des künstlichen Horizonts (CAGE)",
+      "text": "Drückt man diesen Knopf, wird der Kreisel in der Horizontanzeige in seine Ausgangsstellung gesperrt. Der Kreisel ist das sich drehende Teil, das den Horizont ruhig hält.",
+      "context": "Laut Handbuch wird er vor dem Start gedrückt, während der Hubschrauber waagerecht steht. Der Horizont des Piloten speist den Flugdatenschreiber und das Doppler-System."
+    },
+    "left-instruments/attitude-pitch-knob": {
+      "name": "Nullpunkt-Nickknopf des künstlichen Horizonts",
+      "text": "Dieser Knopf bewegt das kleine Flugzeugsymbol gegen die Horizontlinie nach oben oder unten. Er stellt ein, welcher Nasenwinkel als Geradeausflug gilt.",
+      "context": "Der Pilot stellt ihn so ein, dass das Bild dazu passt, wie der Hubschrauber im Geradeausflug wirklich liegt."
+    },
+    "left-instruments/hover-indicator": {
+      "name": "Schwebeflug- und Langsamflug-Anzeige (Doppler)",
+      "text": "Diese Anzeige zeigt, wie schnell der Hubschrauber beim Schweben oder bei langsamer Fahrt nach vorn, hinten, zur Seite, nach oben oder unten treibt. Sie nutzt das Doppler-Radar unter dem Heckausleger.",
+      "context": "Der Pilot nutzt sie, um einen Schwebeflug zu halten, wenn draußen nichts Bewegung zeigt, zum Beispiel bei Nebel oder über kahlem Boden. Eine OFF-Lampe zeigt, wenn sie nicht gilt."
+    },
+    "left-instruments/vsi": {
+      "name": "Variometer VR-30MK (VSI)",
+      "text": "Diese Anzeige zeigt, wie schnell der Hubschrauber steigt oder sinkt, in Metern pro Sekunde. Sie liest plus und minus 30.",
+      "context": "Der Pilot beobachtet sie bei Steigflügen, Sinkflügen und Landeanflügen."
+    },
+    "left-instruments/vsi-knob": {
+      "name": "Einstellknopf des Variometers",
+      "text": "Dieser Knopf an der Steigratenanzeige bewegt die Nadel auf null. Der Pilot nutzt ihn, wenn die Nadel nicht auf null ruht, während der Hubschrauber stillsteht.",
+      "context": "Der Pilot prüft die Nulleinstellung bei der Kontrolle vor dem Flug."
+    },
+    "left-instruments/flare-button": {
+      "name": "Manueller Flare-Taster UV-26",
+      "text": "Drückt man diesen Taster, werden Täuschkörper-Flares aus den seitlichen Behältern ausgeworfen. Flares sind heiß brennende Lichter, die wärmesuchende Raketen täuschen.",
+      "context": "Der Pilot drückt ihn, wenn den Hubschrauber eine Rakete bedroht. Was ausgeworfen wird, folgt dem Programm, das am UV-26-Feld auf der rechten Seite eingestellt ist."
+    },
+    "left-instruments/gearbox-chips": {
+      "name": "Getriebespäne-Warnlampen",
+      "text": "Diese Lampen gehen an, wenn Metallspäne im Öl des Hauptgetriebes, des Zwischengetriebes oder des Heckrotorgetriebes gefunden werden. Späne bedeuten, dass Teile verschleißen.",
+      "context": "Der Pilot sieht sie als Warnung, dass ein Getriebe ausfallen könnte, und entscheidet, ob er landet."
+    },
+    "left-instruments/turn-indicator": {
+      "name": "Wendezeiger EUP-53",
+      "text": "Diese Anzeige zeigt, wie schnell der Hubschrauber dreht, mit einer Kugel, die zeigt, ob er seitlich rutscht. Eine Nadel bewegt sich nach links oder rechts.",
+      "context": "Das Handbuch weist darauf hin, dass die Nadel in Kurven mehr anzeigt als die echte Querneigung und dass sie stark wandert, deshalb liest der Pilot den Durchschnitt ab."
+    },
+    "left-instruments/battery-6201": {
+      "name": "Leuchten BATTERY IN USE und 6201 FAIL",
+      "text": "Die obere Lampe zeigt, dass die Batterien den Hubschrauber mit Strom versorgen. Die untere Lampe zeigt, dass das IFF-Antwortgerät, das Gerät 6201 heißt, ausgefallen ist.",
+      "context": "Der Pilot sieht sofort, dass die Generatoren keinen Strom liefern, zum Beispiel beim Triebwerksstart oder bei einer Störung."
+    },
+    "left-instruments/engine-annunciators": {
+      "name": "Triebwerks-Warnleuchten (Überdrehzahl, Öl, EEC, Notleistung)",
+      "text": "Dieser Block aus Lampen warnt für jedes Triebwerk: Die Nutzturbine dreht zu schnell, der Öldruck ist niedrig, der elektronische Regler ist aus oder die Notleistung ist in Gebrauch.",
+      "context": "Die Lampen für das linke und das rechte Triebwerk liegen nebeneinander, so sieht der Pilot, welches Triebwerk das Problem hat."
+    },
+    "left-instruments/egt-gauge": {
+      "name": "Abgastemperaturanzeige 2UT-6K (PTIT)",
+      "text": "Diese Anzeige zeigt die Temperatur des heißen Gases in jedem Triebwerk in Grad Celsius. Sie hat eine große Skala in Hundertern und eine kleine Skala in Fünferschritten.",
+      "context": "Der Pilot beobachtet sie beim Triebwerksstart und bei hoher Leistung, weil zu viel Hitze das Triebwerk beschädigt. Zwei Testtaster an der linken Seitenkonsole prüfen die Anzeige."
+    },
+    "left-instruments/engine-annunciators-2": {
+      "name": "Triebwerks-Warnleuchten (Späne, Filter, Vibration, Feuer)",
+      "text": "Dieser Block aus Lampen warnt für jedes Triebwerk: Metallspäne im Öl, ein verstopfter Kraftstofffilter, hohe Vibration, zu starke Vibration und Feuer.",
+      "context": "Eine Feuer- oder Vibrationslampe sagt dem Piloten, schnell zu handeln, zum Beispiel die Feuerlöschtaster zu drücken oder das Triebwerk abzustellen."
+    },
+    "left-instruments/static-selector": {
+      "name": "Statikdruck-Wähler (Pitotrohr-Wähler)",
+      "text": "Dieser Hebel wählt, welche Seite des Hubschraubers den Außenluftdruck zu den Instrumenten liefert. Er ist als Reserve gedacht, falls eine Seite verstopft ist.",
+      "context": "Laut Handbuch kombiniert die mittlere Stellung (COMMON, im Handbuch BOTH genannt) beide Seiten und wird normal benutzt. Das Ventil sitzt in der linken unteren Ecke der Tafel des Piloten.",
+      "positions": {
+        "LEFT": "Die Instrumente nutzen nur den Statikdruck der linken Öffnungen.",
+        "COMMON": "Die Instrumente nutzen den Druck beider Seiten zusammen.",
+        "RIGHT": "Die Instrumente nutzen nur den Statikdruck der rechten Öffnungen."
+      }
+    },
+    "left-triangular/l-wiper": {
+      "name": "Scheibenwischer-Schalter (links)",
+      "text": "Dieser Schalter bedient den Scheibenwischer des Piloten, den Arm, der Regen und Schnee von der Frontscheibe wischt. Im Spiel klickt man auf einen von fünf Bereichen des Schalters.",
+      "context": "Die Sicherungen der Wischer müssen an sein. Laut Handbuch werden Regen und Schnee auf den Scheiben im Spiel noch nicht gezeigt. Nach dem Ausschalten bringt RESET den Arm zurück in die Ruhelage.",
+      "positions": {
+        "START": "Startet den Wischer; er wird kurz gehalten.",
+        "SPEED 1": "Erste Geschwindigkeit: laut Handbuch 60 bis 90 Wischer pro Minute.",
+        "SPEED 2": "Zweite Geschwindigkeit: laut Handbuch 30 bis 60 Wischer pro Minute.",
+        "OFF": "Der Wischer ist aus, bleibt aber vielleicht irgendwo auf der Scheibe stehen.",
+        "RESET": "Bringt den Arm zurück in die Ruhelage; er springt zurück."
+      }
+    },
+    "left-triangular/spuu52-power": {
+      "name": "Stromschalter SPUU-52 (Heckrotor-Anstellbegrenzer)",
+      "text": "Dieser Schalter gibt dem Begrenzer für den Heckrotorwinkel Strom. Der Begrenzer verhindert, dass das rechte Pedal zu weit geht.",
+      "context": "Laut Handbuch wird er ausgeschaltet, wenn der Begrenzer ausfällt, wodurch die Begrenzung des rechten Pedals wegfällt.",
+      "positions": {
+        "ON": "Der Begrenzer hat Strom.",
+        "OFF": "Der Begrenzer ist aus; das rechte Pedal kann ganz durchgehen."
+      }
+    },
+    "left-triangular/l-radalt-power": {
+      "name": "Stromschalter des Radarhöhenmessers",
+      "text": "Dieser Schalter gibt dem Radarhöhenmesser Strom, dem Instrument, das die Höhe über dem Boden mit Funkwellen misst.",
+      "context": "Im Spiel sitzt der Radarhöhenmesser-Schalter auf der Instrumententafel des Piloten; dieser Katalogeintrag führt dieselbe Funktion am Dreiecksfeld auf.",
+      "positions": {
+        "ON": "Der Radarhöhenmesser hat Strom.",
+        "OFF": "Der Radarhöhenmesser ist aus."
+      }
+    },
+    "left-triangular/ri65-power": {
+      "name": "Stromschalter des Sprachwarnsystems RI-65",
+      "text": "Dieser Schalter schaltet das Sprachwarnsystem ein, das Warnmeldungen im Kopfhörer spricht.",
+      "context": "Eine gelbe Lampe TURN ON RI-65 leuchtet, solange das System aus ist. Das System bekommt seinen Strom von der Batterie-Sammelschiene.",
+      "positions": {
+        "ON": "Das Sprachwarnsystem ist an, und die Lampe geht aus.",
+        "OFF": "Das Sprachwarnsystem ist aus."
+      }
+    },
+    "left-triangular/l-pitot-test": {
+      "name": "Testtaster der linken Pitotheizung",
+      "text": "Drückt man diesen Taster, wird die Heizung des linken Pitotrohrs getestet. Das Pitotrohr ist ein kleines Rohr an der Nase, das die Windgeschwindigkeit misst; die Heizung hält es eisfrei.",
+      "context": "Funktioniert die Heizung, leuchtet die Lampe HEATER OK auf."
+    },
+    "left-triangular/l-heater-ok": {
+      "name": "HEATER-OK-Leuchte",
+      "text": "Diese Lampe leuchtet auf, wenn der Test der Pitotheizung zeigt, dass die Heizung funktioniert.",
+      "context": "Sie gehört zum Pitotheizungs-Testtaster daneben."
+    },
+    "left-triangular/turn-on-vws": {
+      "name": "TURN-ON-RI-65-Leuchte",
+      "text": "Diese Lampe erinnert den Piloten, das Sprachwarnsystem einzuschalten. Sie geht aus, wenn der RI-65-Schalter an ist.",
+      "context": "Sie leuchtet am Anfang, weil das System ausgeschaltet beginnt."
+    },
+    "left-triangular/vk53-power": {
+      "name": "Stromschalter der Kreiselkorrektur-Abschaltung VK-53",
+      "text": "Dieser Schalter gibt einem kleinen Helfer Strom, der verhindert, dass Horizont- und Kompasskreisel bei langem Beschleunigen, Bremsen oder Kurven mit Schräglage Fehler ansammeln.",
+      "context": "Laut Handbuch schaltet er die Kreiselkorrektur ab, sobald die Drehrate über 0,3 Grad pro Sekunde liegt.",
+      "positions": {
+        "ON": "Die Korrekturabschaltung arbeitet.",
+        "OFF": "Die Korrekturabschaltung ist aus."
+      }
+    },
+    "left-triangular/l-attitude-power": {
+      "name": "Stromschalter des linken künstlichen Horizonts (Kreiselhorizont)",
+      "text": "Dieser Schalter gibt dem künstlichen Horizont des Piloten Strom. Ohne Strom erscheint eine Warnflagge auf seiner Anzeige.",
+      "context": "Laut Handbuch braucht der Horizont etwa 1,5 Minuten, bis er bereit ist.",
+      "positions": {
+        "ON": "Der Horizont des Piloten hat Strom.",
+        "OFF": "Der Horizont des Piloten ist aus und zeigt eine Flagge."
+      }
+    },
+    "left-triangular/l-fan": {
+      "name": "Stromschalter des Ventilators (Pilot)",
+      "text": "Dieser Schalter schaltet den Cockpit-Ventilator des Piloten ein, der Luft auf den Piloten bläst.",
+      "context": "Das Cockpit hat zwei solche Ventilatoren, einen für jeden Piloten.",
+      "positions": {
+        "ON": "Der Ventilator läuft.",
+        "OFF": "Der Ventilator ist aus."
+      }
+    },
+    "left-triangular/l-dome-light": {
+      "name": "Deckenlampen-Schalter (RED / OFF / WHITE)",
+      "text": "Dieser Schalter steuert die Lampe in der Decke über dem Piloten. Sie kann weiß oder rot leuchten.",
+      "context": "Laut Handbuch ist Weiß das Hauptlicht und Rot die Reserve. Die Mittelstellung schaltet die Lampe aus.",
+      "positions": {
+        "RED": "Die Deckenlampe leuchtet rot.",
+        "OFF": "Die Deckenlampe ist aus.",
+        "WHITE": "Die Deckenlampe leuchtet weiß."
+      }
+    },
+    "right-instruments/r-airspeed": {
+      "name": "Fahrtmesser US-450K (Kopilot)",
+      "text": "Diese Anzeige zeigt die Geschwindigkeit durch die Luft in Kilometern pro Stunde, genau wie auf der Seite des Piloten. Sie liest von 0 bis 450.",
+      "context": "Sie wird vom rechten Pitotrohr gespeist, so kann der Kopilot sie mit der Anzeige des Piloten vergleichen."
+    },
+    "right-instruments/r-altimeter": {
+      "name": "Druckhöhenmesser VD-10VK (Kopilot)",
+      "text": "Diese Anzeige zeigt die Höhe nach Luftdruck. Die lange Nadel zeigt Meter, die kurze Tausende von Metern.",
+      "context": "Er arbeitet wie der Höhenmesser des Piloten und hat einen eigenen Einstellknopf."
+    },
+    "right-instruments/r-baro-knob": {
+      "name": "Höhenmesser-Einstellknopf (QFE, Kopilot)",
+      "text": "Dieser Knopf stellt den Ausgangsluftdruck des Höhenmessers des Kopiloten ein und bewegt seine Nadeln.",
+      "context": "Er wird bei der Kontrolle vor dem Flug benutzt wie der Knopf des Piloten."
+    },
+    "right-instruments/r-attitude": {
+      "name": "Künstlicher Horizont AGB-3K (Kopilot)",
+      "text": "Diese Anzeige zeigt den künstlichen Horizont: Nase oben oder unten und Neigung nach links oder rechts. Es ist der Horizont des Kopiloten.",
+      "context": "Laut Handbuch speist dieser Horizont den Autopiloten. Fällt er aus, fällt auch der Autopilot aus, und der Pilot nimmt den linken Horizont."
+    },
+    "right-instruments/r-attitude-cage": {
+      "name": "Arretierknopf des künstlichen Horizonts (Kopilot)",
+      "text": "Drückt man diesen Knopf, wird der sich drehende Kreisel des rechten Horizonts in seine Ausgangsstellung gesperrt.",
+      "context": "Er wird vor dem Start gedrückt, während der Hubschrauber waagerecht steht, wie auf der Seite des Piloten."
+    },
+    "right-instruments/r-attitude-pitch-knob": {
+      "name": "Nullpunkt-Nickknopf des künstlichen Horizonts (Kopilot)",
+      "text": "Dieser Knopf bewegt das Flugzeugsymbol gegen die Horizontlinie der rechten Anzeige nach oben oder unten.",
+      "context": "Er stellt ein, welcher Nasenwinkel auf dieser Anzeige als Geradeausflug gilt."
+    },
+    "right-instruments/r-directional-gyro": {
+      "name": "Kurskreisel UGR-4UK (Kopilot)",
+      "text": "Diese runde Anzeige zeigt den Kurs des Hubschraubers als drehende Kompassrose, mit Nadeln für Funkfeuer.",
+      "context": "Sie ist das Gegenstück zur Kursanzeige des Piloten und nutzt denselben Kreiselkompass."
+    },
+    "right-instruments/r-course-knob": {
+      "name": "Kurseinstellknopf der Kursanzeige (Kopilot)",
+      "text": "Dieser Knopf an der Kursanzeige des Kopiloten stellt eine gewünschte Kursmarke ein.",
+      "context": "Das Spiel nennt ihn den HSI-Kurseinstellknopf."
+    },
+    "right-instruments/r-vsi": {
+      "name": "Variometer VR-30MK (Kopilot)",
+      "text": "Diese Anzeige zeigt die Steig- oder Sinkrate in Metern pro Sekunde.",
+      "context": "Sie wiederholt die Steigratenanzeige des Piloten für den Kopiloten."
+    },
+    "right-instruments/r-vsi-knob": {
+      "name": "Einstellknopf des Variometers (Kopilot)",
+      "text": "Dieser Knopf bewegt die Nadel der Steigratenanzeige des Kopiloten auf null.",
+      "context": "Er wird geprüft, während der Hubschrauber stillsteht."
+    },
+    "right-instruments/doppler-fail": {
+      "name": "DOPP-FAIL-Leuchte (Ausfall des Doppler-Systems)",
+      "text": "Diese Lampe leuchtet auf, wenn das Doppler-Geschwindigkeitsmesssystem ausgefallen ist oder in den Speicherbetrieb gewechselt hat.",
+      "context": "Laut Handbuch tritt der Speicherbetrieb über unruhigem Wasser oder in starker Schräglage auf; die Anzeigen zeigen dann die zuletzt gemessenen Werte."
+    },
+    "right-instruments/r-rotor-tach": {
+      "name": "Hauptrotor-Drehzahlmesser ITE-1T (Kopilot)",
+      "text": "Diese Anzeige zeigt, wie schnell sich der Hauptrotor dreht, in Prozent seiner höchsten Drehzahl.",
+      "context": "Sie wiederholt die Rotordrehzahlanzeige des Piloten."
+    },
+    "right-instruments/r-engine-tach": {
+      "name": "Doppeldrehzahlmesser ITE-2T für die Triebwerke (Kopilot)",
+      "text": "Diese Anzeige hat zwei Nadeln für die Kerndrehzahl des linken und des rechten Triebwerks, in Prozent.",
+      "context": "Sie wiederholt die Triebwerksdrehzahlanzeige des Piloten."
+    },
+    "right-instruments/landing-light-right": {
+      "name": "Lande-/Suchscheinwerfer-Schalter (rechts, Kopilot)",
+      "text": "Dieser Schalter steuert die bewegliche Lampe des Kopiloten unter der Nase, den Such- und Landescheinwerfer. In einer Stellung leuchtet sie, in einer anderen klappt sie weg.",
+      "context": "Der Strahl wird mit dem Hat-Schalter am Kollektivhebel des Kopiloten ausgerichtet.",
+      "positions": {
+        "LIGHT": "Die Lampe ist an und kann ausgerichtet werden.",
+        "OFF": "Die Lampe ist aus und behält ihre Richtung.",
+        "RETRACT": "Die Lampe geht aus und klappt zurück in ihr Gehäuse."
+      }
+    },
+    "right-instruments/cabin-temp": {
+      "name": "Kabinentemperaturanzeige TV-1",
+      "text": "Diese Anzeige zeigt die Temperatur im Frachtraum der Kabine in Grad Celsius.",
+      "context": "Der Pilot liest sie ab, wenn er die Kabinenheizung benutzt."
+    },
+    "right-instruments/doppler-coords": {
+      "name": "Koordinatenanzeige DISS-15 (digitale Anzeigeeinheit)",
+      "text": "Diese Anzeige zählt, wie weit der Hubschrauber von seinem Startpunkt geflogen ist und wie weit er links oder rechts vom geplanten Kurs liegt. Sie nutzt die Geschwindigkeitsdaten des Dopplers.",
+      "context": "Der Pilot stellt den geplanten Kurs ein und startet die Zählung, dann folgt er den Zahlen zu einem Punkt. Sie hat kleine Taster für die Zähler."
+    },
+    "right-instruments/doppler-ground-speed": {
+      "name": "Grundgeschwindigkeits- und Abdriftanzeige DISS-15",
+      "text": "Diese Anzeige zeigt die Geschwindigkeit über Grund (ab 50 km/h) und den Abdriftwinkel, der sagt, wie weit der Hubschrauber seitlich rutscht.",
+      "context": "Sie übernimmt von der Schwebeflug-Anzeige, wenn der Hubschrauber schneller fliegt. Sie hat zwei Wahlknöpfe, einen für Test oder Betrieb und einen für Land oder See."
+    },
+    "right-instruments/fuel-gauge": {
+      "name": "Kraftstoffmengenanzeige BE-09K (CKES-2027B)",
+      "text": "Diese Anzeige zeigt, wie viel Kraftstoff im gewählten Tank ist, in Litern. Die äußere Skala zeigt die Summe aller Tanks.",
+      "context": "Der Wert muss mit 100 Litern multipliziert werden. Der Pilot prüft ihn vor dem Start und im Flug."
+    },
+    "right-instruments/low-fuel-light": {
+      "name": "Leuchte 270 L für wenig Kraftstoff",
+      "text": "Diese Lampe leuchtet auf, wenn im Betriebstank noch etwa 270 Liter Kraftstoff übrig sind. Sie ist eine Warnung, bald zu landen.",
+      "context": "Die Lampe blinkt mit der Blinkanlage, und auch eine Sprachwarnung ertönt."
+    },
+    "right-instruments/fuel-meter-switch": {
+      "name": "Kraftstoffmesser-Schalter P-8UK",
+      "text": "Dieser Wahlschalter wählt, welchen Tank die Kraftstoffanzeige zeigt: aus, die Summe aller, den linken Tank, den rechten Tank, den Betriebstank (Feed) oder einen Zusatztank.",
+      "context": "Laut Handbuch ist die Stellung für den Zusatztank nicht nachgebildet. Der Pilot stellt für den Flug auf den Betriebstank und zur Kontrolle des Kraftstoffs an Bord auf die Summe.",
+      "positions": {
+        "OFF": "Die Kraftstoffanzeige ist aus.",
+        "SUM": "Die Anzeige zeigt den gesamten Kraftstoff.",
+        "LEFT": "Die Anzeige zeigt den linken Seitentank.",
+        "RIGHT": "Die Anzeige zeigt den rechten Seitentank.",
+        "FEED": "Die Anzeige zeigt den Betriebstank, der die Triebwerke speist.",
+        "ADDITIONAL": "Die Anzeige würde einen Zusatztank zeigen; laut Handbuch ist er nicht nachgebildet."
+      }
+    },
+    "right-instruments/clock-levers": {
+      "name": "Uhrenhebel AChS-1 (linker und rechter Knopf)",
+      "text": "Die Uhr zeigt die Tageszeit, eine Flugzeituhr und eine Stoppuhr. Der linke Knopf startet, stoppt und setzt die Flugzeituhr zurück und zieht die Uhr auf und stellt sie. Der rechte Knopf bedient die Stoppuhr.",
+      "context": "Der Pilot startet die Flugzeituhr beim Abheben. Die Uhr hat eine Heizung für kaltes Wetter, die an der rechten Seitenkonsole eingeschaltet wird."
+    },
+    "right-instruments/g-meter-reset": {
+      "name": "Rücksetztaster der G-Last-Anzeige",
+      "text": "Der G-Messer zeigt, wie stark der Hubschrauber bei Manövern in den Sitz gedrückt wird. Drückt man diesen Taster, werden die roten Nadeln zurückgesetzt, die den höchsten und den niedrigsten Wert merken.",
+      "context": "Der Pilot setzt ihn vor einem Flug zurück, um zu sehen, was der Flug dem Hubschrauber angetan hat."
+    },
+    "doppler-controls/doppler-mode-selector": {
+      "name": "Betriebsartenwähler am Doppler-Bedienfeld (Test / Betrieb)",
+      "text": "Dieser Drehwähler am Doppler-Bedienfeld hinter dem Kopiloten wählt eine Teststellung oder die normale Betriebsart.",
+      "context": "Laut Handbuch führen die Stellungen 1 bis 4 Tests ohne Aussenden von Funkwellen durch, und Stellung 5 ist die normale Betriebsart OPERATE, die sendet und misst."
+    },
+    "doppler-controls/doppler-test-work": {
+      "name": "Doppler-Schalter TEST / WORK (Grundgeschwindigkeitsanzeige)",
+      "text": "Dieser Schalter an der Grundgeschwindigkeitsanzeige wählt Test oder normalen Betrieb. Im Test zeigt die Anzeige eine feste Testgeschwindigkeit und Abdrift.",
+      "context": "Laut Handbuch zeigt der Test 306 km/h und 15 Grad Abdrift.",
+      "positions": {
+        "TEST": "Die Anzeige zeigt Testwerte.",
+        "WORK": "Die Anzeige zeigt echte Messwerte."
+      }
+    },
+    "doppler-controls/doppler-land-sea": {
+      "name": "Doppler-Schalter LAND / SEA",
+      "text": "Dieser Schalter sagt dem Doppler, ob der Hubschrauber über Land oder über der See fliegt, weil Wasser die Funkwellen anders zurückwirft.",
+      "context": "Der Pilot stellt ihn passend zum geplanten Flug ein.",
+      "positions": {
+        "LAND": "Flug über Land.",
+        "SEA": "Flug über der See."
+      }
+    },
+    "doppler-controls/doppler-deviation-buttons": {
+      "name": "Taster für die seitliche Abweichung (verringern, erhöhen)",
+      "text": "Diese zwei Taster setzen den Zähler zurück oder bewegen ihn, der zeigt, wie weit der Hubschrauber links oder rechts vom geplanten Kurs liegt.",
+      "context": "Das Spiel nennt sie die Taster zum Verringern und Erhöhen der Abweichung. Laut Handbuch setzen sie den Zähler der seitlichen Abweichung zurück."
+    },
+    "doppler-controls/doppler-path-buttons": {
+      "name": "Streckentaster (verringern, erhöhen)",
+      "text": "Diese zwei Taster setzen den Zähler zurück oder bewegen ihn, der zeigt, wie weit der Hubschrauber von seinem Start vorwärts oder zurück geflogen ist.",
+      "context": "Laut Handbuch setzen sie den Streckenzähler zurück."
+    },
+    "doppler-controls/doppler-course-buttons": {
+      "name": "Kurswinkel-Taster (minus, plus)",
+      "text": "Diese zwei Taster stellen den gewünschten Kurs am Kurswinkelzähler ein, nach unten oder oben.",
+      "context": "Laut Handbuch springt der Zähler zwischen 0 und 360 Grad nicht über."
+    },
+    "doppler-controls/doppler-coords-on": {
+      "name": "Taster ON / OFF für den Koordinatenzähler",
+      "text": "Diese zwei Taster starten und stoppen das Zählen der geflogenen Strecke und der Abweichung.",
+      "context": "Der Pilot drückt ON am Anfang der Strecke."
+    },
+    "right-triangular/r-wiper": {
+      "name": "Scheibenwischer-Schalter (rechts)",
+      "text": "Dieser Schalter bedient den Scheibenwischer des Kopiloten. Im Spiel klickt man auf einen von fünf Bereichen des Schalters.",
+      "context": "Er funktioniert genau wie der Wischerschalter des Piloten. RESET bringt den Arm zurück in die Ruhelage.",
+      "positions": {
+        "START": "Startet den Wischer; er wird kurz gehalten.",
+        "SPEED 1": "Erste Geschwindigkeit: 60 bis 90 Wischer pro Minute.",
+        "SPEED 2": "Zweite Geschwindigkeit: 30 bis 60 Wischer pro Minute.",
+        "OFF": "Der Wischer ist aus, bleibt aber vielleicht irgendwo auf der Scheibe stehen.",
+        "RESET": "Bringt den Arm zurück in die Ruhelage; er springt zurück."
+      }
+    },
+    "right-triangular/backlight-55v": {
+      "name": "Schalter der 5,5-V-Hintergrundbeleuchtung",
+      "text": "Dieser Schalter schaltet die rote 5,5-Volt-Hintergrundbeleuchtung ein, die besondere Beleuchtung der Anzeigen, die bei der Modernisierung des Hubschraubers hinzukam.",
+      "context": "Laut Handbuch wird die Helligkeit mit einem Dimmer an der rechten Seitenkonsole eingestellt. Der Katalog führt den Schalter als Beleuchtung für die Felder von Doppler und Yadro-1A.",
+      "positions": {
+        "ON": "Die 5,5-Volt-Hintergrundbeleuchtung ist an.",
+        "OFF": "Die 5,5-Volt-Hintergrundbeleuchtung ist aus."
+      }
+    },
+    "right-triangular/laryngophone": {
+      "name": "Stromschalter des Kehlkopfmikrofons",
+      "text": "Dieser Schalter gibt dem Kehlkopfmikrofon (Laryngophon) Strom, das die Sprache am Hals abnimmt.",
+      "context": "Das Handbuch führt den Mikrofonschalter neben den Teilen der Bordsprechanlage auf.",
+      "positions": {
+        "ON": "Das Mikrofon hat Strom.",
+        "OFF": "Das Mikrofon ist aus."
+      }
+    },
+    "right-triangular/arkud-lock": {
+      "name": "ARK-UD-Sperrschalter (VHF-ADF-Verriegelung)",
+      "text": "Dieser Schalter verriegelt das VHF-Anpeilgerät ARK-UD gegen das VHF-Funkgerät. Er verhindert, dass das Funkgerät das Anpeilgerät stört.",
+      "context": "Das Handbuch nennt ihn den Schalter der VHF-ADF-Verriegelung.",
+      "positions": {
+        "LOCK": "Die Verriegelung ist an.",
+        "UNLOCK": "Die Verriegelung ist aus."
+      }
+    },
+    "right-triangular/r-pitot-test": {
+      "name": "Testtaster der rechten Pitotheizung",
+      "text": "Drückt man diesen Taster, wird die Heizung des rechten Pitotrohrs getestet. Funktioniert die Heizung, leuchtet die Lampe HEATER OK auf.",
+      "context": "Das rechte Pitotrohr speist die Fahrtanzeige des Kopiloten."
+    },
+    "right-triangular/r-heater-ok": {
+      "name": "HEATER-OK-Leuchte (rechts)",
+      "text": "Diese Lampe leuchtet auf, wenn der Test der rechten Pitotheizung zeigt, dass die Heizung funktioniert.",
+      "context": "Sie gehört zum Testtaster daneben."
+    },
+    "right-triangular/doppler-power": {
+      "name": "Stromschalter des Doppler-Systems",
+      "text": "Dieser Schalter gibt dem Doppler-Navigator Strom, der die Geschwindigkeit über Grund mit Funkwellen misst.",
+      "context": "Die Sicherung des Dopplers muss ebenfalls an sein. Der Doppler führt beim Einschalten eine Selbstprüfung durch.",
+      "positions": {
+        "ON": "Das Doppler-System hat Strom.",
+        "OFF": "Das Doppler-System ist aus."
+      }
+    },
+    "right-triangular/yadro-power": {
+      "name": "Stromschalter des HF-Funkgeräts Yadro-1A",
+      "text": "Dieser Schalter gibt dem Funkgerät Yadro-1A Strom, einem Langstrecken-Funkgerät für Sprache.",
+      "context": "Das Funkfeld ist am rechten Hilfsfeld. Laut Handbuch braucht das Gerät etwa 2 Minuten, bis es bereit ist.",
+      "positions": {
+        "ON": "Das HF-Funkgerät hat Strom.",
+        "OFF": "Das HF-Funkgerät ist aus."
+      }
+    },
+    "right-triangular/gmk-power": {
+      "name": "Stromschalter des Kreiselkompasses GMK-1",
+      "text": "Dieser Schalter gibt dem Kreiselkompasssystem Strom, das den Kurs auf beiden Kursanzeigen zeigt.",
+      "context": "Laut Handbuch wird das Kompasssystem mit diesem Schalter eingeschaltet. Das Betriebsartenfeld ist auf der rechten Dachkonsole.",
+      "positions": {
+        "ON": "Der Kreiselkompass hat Strom.",
+        "OFF": "Der Kreiselkompass ist aus."
+      }
+    },
+    "right-triangular/astro-power": {
+      "name": "Stromschalter des Astrokompasses",
+      "text": "Dieser Schalter würde den Astrokompass mit Strom versorgen, einen Kompass, der die Sterne nutzt. Er ist auf dem Feld aufgeführt.",
+      "context": "Das Handbuch führt den Schalter auf, erklärt ihn aber nicht, und das Spiel hat dafür kein Bedienteil.",
+      "positions": {
+        "ON": "Strom für den Astrokompass an; keine Funktion in DCS.",
+        "OFF": "Strom für den Astrokompass aus."
+      }
+    },
+    "right-triangular/r-attitude-power": {
+      "name": "Stromschalter des rechten künstlichen Horizonts",
+      "text": "Dieser Schalter gibt dem künstlichen Horizont des Kopiloten Strom.",
+      "context": "Laut Handbuch hängt der Autopilot von diesem Horizont ab.",
+      "positions": {
+        "ON": "Der rechte Horizont hat Strom.",
+        "OFF": "Der rechte Horizont ist aus und zeigt eine Flagge."
+      }
+    },
+    "right-triangular/r-fan": {
+      "name": "Stromschalter des Ventilators (Kopilot)",
+      "text": "Dieser Schalter schaltet den Cockpit-Ventilator des Kopiloten ein.",
+      "context": "Das Cockpit hat zwei solche Ventilatoren.",
+      "positions": {
+        "ON": "Der Ventilator läuft.",
+        "OFF": "Der Ventilator ist aus."
+      }
+    },
+    "right-triangular/r-dome-light": {
+      "name": "Deckenlampen-Schalter (RED / OFF / WHITE, rechts)",
+      "text": "Dieser Schalter steuert die Lampe in der Decke über dem Kopiloten. Sie kann weiß oder rot leuchten.",
+      "context": "Weiß ist das Hauptlicht und Rot die Reserve.",
+      "positions": {
+        "RED": "Die Deckenlampe leuchtet rot.",
+        "OFF": "Die Deckenlampe ist aus.",
+        "WHITE": "Die Deckenlampe leuchtet weiß."
+      }
+    },
+    "oil-gauges/transmission-oil-gauge": {
+      "name": "Getriebeöl-Anzeige UIZ-6",
+      "text": "Diese Anzeige mit drei Nadeln zeigt den Öldruck des Hauptgetriebes und die Öltemperatur des Zwischengetriebes und des Heckrotorgetriebes.",
+      "context": "Der Pilot prüft die Werte nach dem Start und im Flug, um zu sehen, dass der Antrieb gesund ist."
+    },
+    "oil-gauges/transmission-temp-gauge": {
+      "name": "Öltemperatur des Hauptgetriebes TUE-48",
+      "text": "Diese Anzeige zeigt die Temperatur des Öls im Hauptgetriebe in Grad Celsius.",
+      "context": "Laut Handbuch darf der Schubhebel aus dem Leerlauf geöffnet werden, sobald dieses Öl mindestens -15 Grad C hat und das Triebwerksöl warm genug ist."
+    },
+    "oil-gauges/left-engine-oil": {
+      "name": "Öl-Anzeige UIZ-3 für das linke Triebwerk",
+      "text": "Diese Anzeige zeigt den Öldruck und die Öltemperatur des linken Triebwerks.",
+      "context": "Der Pilot prüft sie beim Warmlaufen und im Flug."
+    },
+    "oil-gauges/right-engine-oil": {
+      "name": "Öl-Anzeige UIZ-3 für das rechte Triebwerk",
+      "text": "Diese Anzeige zeigt den Öldruck und die Öltemperatur des rechten Triebwerks.",
+      "context": "Der Pilot prüft sie beim Warmlaufen und im Flug."
+    },
+    "r863/r863-unit-switch": {
+      "name": "R-863-Wahlschalter (DIAL / MEMORY)",
+      "text": "Dieser Schalter bestimmt, wie das Funkgerät abgestimmt wird. In einer Stellung stellen die vier Frequenzräder die Stationsnummer ein; in der anderen nutzt das Funkgerät seine gespeicherten Kanäle.",
+      "context": "Das Handbuch nennt ihn den Schalter Festkanal/Hand. Die gespeicherten Kanäle werden am Kanalwähler in der linken Dachkonsole gewählt.",
+      "positions": {
+        "DIAL": "Die Frequenz wird mit den vier Rädern eingestellt.",
+        "MEMORY": "Das Funkgerät nutzt statt der Räder einen gespeicherten Kanal."
+      }
+    },
+    "r863/r863-squelch": {
+      "name": "R-863-Rauschsperrenschalter",
+      "text": "Dieser Schalter steuert den Rauschfilter des Funkgeräts. Ist der Filter an, wird das Rauschen zwischen den Nachrichten abgeschnitten.",
+      "context": "Laut Handbuch wird er zuerst ausgeschaltet gelassen und bei schlechtem Empfang ausgeschaltet.",
+      "positions": {
+        "ON": "Der Rauschfilter ist an, und das Rauschen wird abgeschnitten.",
+        "OFF": "Der Rauschfilter ist aus, so sind auch schwache Signale zu hören."
+      }
+    },
+    "r863/r863-volume": {
+      "name": "R-863-Lautstärkeknopf",
+      "text": "Dreht man diesen Knopf, wird das Funkgerät lauter oder leiser, wie der Lautstärkeknopf eines Autoradios.",
+      "context": "Laut Handbuch wird er auf Maximum gestellt, und die Lautstärke wird mit den Knöpfen an der Bordsprechbox geregelt."
+    },
+    "r863/r863-freq-wheels": {
+      "name": "R-863-Frequenzräder (10 MHz, 1 MHz, 100 kHz, 25 kHz)",
+      "text": "Diese vier Räder stellen die Frequenz des Funkgeräts, die Stationsnummer, Ziffer für Ziffer ein. Das erste ändert Zehner von Megahertz, das nächste ein Megahertz, dann 100 Kilohertz, dann Schritte von 25 Kilohertz.",
+      "context": "Sie arbeiten nur, wenn der Wahlschalter auf DIAL steht. Das Funkgerät deckt 100 bis 149,975 MHz (VHF) und 220 bis 399,975 MHz (UHF) ab."
+    },
+    "r863/r863-arc-switch": {
+      "name": "R-863-RK-Schalter (ARC)",
+      "text": "Dieser Schalter wird in diesem Hubschrauber nicht benutzt. Er hätte dem Piloten erlaubt, gleichzeitig den Funkkompass zu hören.",
+      "context": "Laut Handbuch wird der Funkkompass stattdessen über die Bordsprechanlage gehört, deshalb tut dieser Schalter in DCS nichts.",
+      "positions": {
+        "ON": "Keine Wirkung; laut Handbuch wird dieser Schalter nicht benutzt.",
+        "OFF": "Keine Wirkung; laut Handbuch wird dieser Schalter nicht benutzt."
+      }
+    },
+    "r863/r863-emerg-switch": {
+      "name": "R-863-Notempfänger-Schalter",
+      "text": "Dieser Schalter würde einen Notempfänger einschalten, der auf einer Notfrequenz lauscht. Dieser Hubschrauber hat keinen solchen Empfänger.",
+      "context": "Laut Handbuch werden der Schalter und seine Lampe bei der Mi-8MT und Mi-8MTV2 nicht benutzt.",
+      "positions": {
+        "ON": "Keine Wirkung; es gibt keinen Notempfänger.",
+        "OFF": "Keine Wirkung; es gibt keinen Notempfänger."
+      }
+    },
+    "r863/r863-panel": {
+      "name": "R-863-Bedienfeld (Überblick)",
+      "text": "Das ist der Block des Funkgeräts R-863 mit seinen Schaltern, Rädern und dem Frequenzfenster. Die einzelnen Bedienelemente sind daneben aufgeführt.",
+      "context": "Kopilot und Pilot benutzen ihn, um das Kommandofunkgerät abzustimmen."
+    },
+    "engine-governor/eec-left": {
+      "name": "EEC-Schalter (elektronischer Regler) des linken Triebwerks",
+      "text": "Dieser Schalter schaltet den elektronischen Regler des linken Triebwerks ein. Der Regler hilft, die Triebwerksdrehzahl gleichmäßig zu halten.",
+      "context": "Das Handbuch nennt ihn den Schalter des elektronischen Triebwerksreglers. Fällt er aus, schaltet ihn der Pilot ab, und das Triebwerk läuft mit seiner Grundsteuerung.",
+      "positions": {
+        "ON": "Der elektronische Regler des linken Triebwerks ist an.",
+        "OFF": "Der elektronische Regler des linken Triebwerks ist aus."
+      }
+    },
+    "engine-governor/eec-right": {
+      "name": "EEC-Schalter (elektronischer Regler) des rechten Triebwerks",
+      "text": "Dieser Schalter schaltet den elektronischen Regler des rechten Triebwerks ein.",
+      "context": "Er ist das Gegenstück zum linken Schalter. Der Pilot nutzt ihn nach dem Start und bei der Reglerprüfung.",
+      "positions": {
+        "ON": "Der elektronische Regler des rechten Triebwerks ist an.",
+        "OFF": "Der elektronische Regler des rechten Triebwerks ist aus."
+      }
+    },
+    "engine-governor/er-left": {
+      "name": "ER-Schalter (Notleistung) des linken Triebwerks",
+      "text": "Dieser Schalter erlaubt zusätzliche Notleistung vom linken Triebwerk. Laut Handbuch hebt er die obere Triebwerksgrenze ein wenig an und gibt etwa 200 PS mehr.",
+      "context": "Er ist für den Fall gedacht, dass das andere Triebwerk ausgefallen ist. Eine Lampe auf der Warntafel zeigt, wenn die Notleistung aktiv ist.",
+      "positions": {
+        "ON": "Der Notleistungskreis des linken Triebwerks ist scharf.",
+        "OFF": "Das linke Triebwerk läuft mit seiner normalen Leistungsgrenze."
+      }
+    },
+    "engine-governor/er-right": {
+      "name": "ER-Schalter (Notleistung) des rechten Triebwerks",
+      "text": "Dieser Schalter erlaubt zusätzliche Notleistung vom rechten Triebwerk, laut Handbuch etwa 200 PS mehr.",
+      "context": "Er ist für den Fall gedacht, dass das linke Triebwerk ausgefallen ist.",
+      "positions": {
+        "ON": "Der Notleistungskreis des rechten Triebwerks ist scharf.",
+        "OFF": "Das rechte Triebwerk läuft mit seiner normalen Leistungsgrenze."
+      }
+    },
+    "engine-governor/ft-check-left": {
+      "name": "FT-Prüfschalter des linken Triebwerks (ST1 / WORK / ST2)",
+      "text": "Dieser Federschalter prüft die zwei Kanäle des elektronischen Reglers des linken Triebwerks. Er hat zwei Teststellungen und eine mittlere Arbeitsstellung.",
+      "context": "Das Handbuch beschreibt die Prüfung im Leerlauf: erst Kanal ST1, dann Kanal ST2, wobei die Lampen für überschrittene Rotordrehzahl angehen. Der Schalter wird in der Teststellung gehalten und springt zurück.",
+      "positions": {
+        "ST1": "Prüft den Reglerkanal 1; der Schalter springt zurück.",
+        "WORK": "Normale Arbeitsstellung.",
+        "ST2": "Prüft den Reglerkanal 2; der Schalter springt zurück."
+      }
+    },
+    "engine-governor/ft-check-right": {
+      "name": "FT-Prüfschalter des rechten Triebwerks (ST1 / WORK / ST2)",
+      "text": "Dieser Federschalter prüft die zwei Kanäle des elektronischen Reglers des rechten Triebwerks.",
+      "context": "Er wird bei der Reglerprüfung im Leerlauf benutzt, wie der linke Schalter.",
+      "positions": {
+        "ST1": "Prüft den Reglerkanal 1; der Schalter springt zurück.",
+        "WORK": "Normale Arbeitsstellung.",
+        "ST2": "Prüft den Reglerkanal 2; der Schalter springt zurück."
+      }
+    },
+    "engine-governor/ct-check": {
+      "name": "CT-Prüfschalter (RIGHT / WORK / LEFT)",
+      "text": "Dieser Federschalter hat eine linke Teststellung, eine rechte Teststellung und eine mittlere Arbeitsstellung. Das Spiel nennt ihn den CT-Testschalter.",
+      "context": "Das Handbuch beschreibt diesen Schalter nicht; das Spiel nennt ihn 'CT Test Switch'.",
+      "positions": {
+        "LEFT": "Teststellung für das linke Triebwerk; der Schalter springt zurück.",
+        "WORK": "Normale Arbeitsstellung.",
+        "RIGHT": "Teststellung für das rechte Triebwerk; der Schalter springt zurück."
+      }
+    },
+    "lamp-test-backup/lamps-check-switch": {
+      "name": "WARN-LTS-Prüfschalter (FLASHER / LAMPS / OFF)",
+      "text": "Dieser Schalter testet die Warnlampen. In einer Stellung gehen alle Lampen an; in der anderen blinken die Blinklampen.",
+      "context": "Laut Handbuch braucht er die Sicherung des Lampentests. Die Feuerlampen blinken zum Beispiel, wenn die Stellung FLASHER benutzt wird.",
+      "positions": {
+        "FLASHER": "Die Lampen, die den Blinkkreis nutzen, blinken.",
+        "LAMPS": "Alle Warnlampen leuchten als Birnentest.",
+        "OFF": "Kein Test; die Lampen arbeiten normal."
+      }
+    },
+    "lamp-test-backup/transformer-36v": {
+      "name": "Schalter des 36-V-Transformators (MAIN / OFF / AUXILIARY)",
+      "text": "Dieser Schalter wählt, welcher Transformator den 36-Volt-Wechselstrom für die Instrumente macht: der Haupttransformator, der Hilfstransformator oder keiner.",
+      "context": "Das Handbuch beschreibt diesen Schalter nicht genauer; es sagt nur, dass die Stromversorgung des 36-Volt-Systems umgeschaltet wird, wenn ein Generator ausfällt.",
+      "positions": {
+        "MAIN": "Der Haupttransformator wird benutzt.",
+        "OFF": "Der 36-Volt-Transformator ist aus.",
+        "AUXILIARY": "Der Hilfstransformator wird benutzt."
+      }
+    },
+    "lamp-test-backup/net-rectifier-cover": {
+      "name": "Abdeckung des Schalters 'Net on rectifier'",
+      "text": "Diese kleine Klappe deckt den Schalter 'Net on rectifier' ab, damit er nicht aus Versehen umgelegt wird. Der Pilot hebt sie an, bevor er den Schalter benutzt.",
+      "context": "Wird die Klappe wieder geschlossen, schützt sie den Schalter.",
+      "positions": {
+        "OPEN": "Die Klappe ist oben, und der Schalter kann benutzt werden.",
+        "CLOSE": "Die Klappe schützt den Schalter."
+      }
+    },
+    "lamp-test-backup/net-rectifier-switch": {
+      "name": "Schalter 'Net on rectifier'",
+      "text": "Dieser geschützte Schalter verbindet einen Teil des Bordnetzes mit den Gleichrichtern. Gleichrichter machen aus Wechselstrom Gleichstrom.",
+      "context": "Das Handbuch beschreibt diesen Schalter nicht; das Spiel nennt ihn 'Net on Rectifier Switch'.",
+      "positions": {
+        "ON": "Der Schalter ist an.",
+        "OFF": "Der Schalter ist aus."
+      }
+    },
+    "autopilot-panel/ap-heading-on": {
+      "name": "Autopilot-Lampentaster HEADING ON",
+      "text": "Drückt man diesen Lampentaster, wird der Kurskanal eingeschaltet (im Handbuch Gierkanal genannt), der die Nasenrichtung mit dem Heckrotor hält. Die Lampe leuchtet grün, wenn er an ist.",
+      "context": "Das Mausrad auf dem Taster dimmt auch die Lampe. Laut Handbuch benutzen Piloten den Gierkanal vor dem Start selten."
+    },
+    "autopilot-panel/ap-heading-off": {
+      "name": "Autopilot-Lampentaster HEADING OFF",
+      "text": "Drückt man diesen Lampentaster, wird der Kurskanal wieder ausgeschaltet.",
+      "context": "Er wird benutzt, wenn der Pilot die Pedale selbst fliegen will."
+    },
+    "autopilot-panel/ap-rollpitch-on": {
+      "name": "Autopilot-Lampentaster ROLL-PITCH ON",
+      "text": "Drückt man diesen Lampentaster, werden Roll- und Nickkanal zusammen eingeschaltet. Sie verhindern, dass der Hubschrauber sich von selbst neigt oder kippt.",
+      "context": "Laut Handbuch sind diese Kanäle normalerweise vom Start bis zur Landung an. Sie können mit dem Autopilot-OFF-Taster am Cyclic ausgeschaltet werden."
+    },
+    "autopilot-panel/ap-altitude-on": {
+      "name": "Autopilot-Lampentaster ALTITUDE ON",
+      "text": "Drückt man diesen Lampentaster, wird der Höhenkanal eingeschaltet, der die Höhe hält, indem er den Kollektivhebel für den Piloten bewegt.",
+      "context": "Laut Handbuch kann er nicht ohne den Roll-Nick-Kanal eingeschaltet werden und arbeitet am besten im Geradeausflug über 50 Metern."
+    },
+    "autopilot-panel/ap-altitude-off": {
+      "name": "Autopilot-Lampentaster ALTITUDE OFF",
+      "text": "Drückt man diesen Lampentaster, wird der Höhenkanal ausgeschaltet.",
+      "context": "Auch das Bewegen des Kollektivhebels oder das Drücken des Kupplungslösetasters am Kollektivhebel schaltet diesen Kanal aus."
+    },
+    "autopilot-panel/ap-altitude-control": {
+      "name": "Steuertaster des Höhenkanals (UP / DOWN)",
+      "text": "Dieses Paar kleiner Taster ist die Steuerung des Höhenkanals. Der rechte Taster bewegt nach oben und der linke nach unten.",
+      "context": "Das Handbuch nennt den Steuertaster den Prüftaster des Höhenkanals."
+    },
+    "autopilot-panel/ap-knobs": {
+      "name": "Zentrierknöpfe des Autopiloten (HEADING, ROLL, PITCH)",
+      "text": "Diese drei Knöpfe machen kleine Korrekturen am Nullpunkt des Autopiloten für Gieren, Rollen und Nicken. Eine volle Umdrehung bewegt um etwa 10 Grad.",
+      "context": "Laut Handbuch gleicht ein Besatzungsmitglied damit den Autopiloten an den Hubschrauber an oder ändert den Kurs ein wenig, ohne die Knüppel zu bewegen."
+    },
+    "autopilot-panel/in4-indicator": {
+      "name": "Autopilot-Trimmanzeige IN-4",
+      "text": "Diese Anzeige zeigt, wie weit sich jeder Autopilotkanal von seiner Mitte entfernt hat: Gieren, Rollen, Nicken und Höhe.",
+      "context": "Sitzt eine Nadel am Rand, hat der Autopilot seinen begrenzten Bereich aufgebraucht, und der Pilot sollte ihn neu ausrichten."
+    },
+    "spuu52/spuu52-engage": {
+      "name": "SPUU-52-Einschalttaster (rote OFF-Lampe)",
+      "text": "Das ist der rote OFF-Lampentaster des Begrenzergeräts. Die Lampe leuchtet, wenn der Begrenzer ausgeschaltet oder ausgefallen ist.",
+      "context": "Das Spiel nennt ihn den SPUU-52-Einschalttaster. Der Schalter, der den Begrenzer mit Strom versorgt, ist am linken Dreiecksfeld."
+    },
+    "spuu52/spuu52-adjust": {
+      "name": "SPUU-52-Einstellknopf",
+      "text": "Dieser Knopf sitzt am Begrenzergerät und stellt es ein. Das Handbuch beschreibt diesen Knopf nicht; das Spiel nennt ihn 'SPUU-52 Adjustment Knob'.",
+      "context": "Eine Nadel am Gerät zeigt die Grenze; ganz links bedeutet keine Begrenzung des rechten Pedals."
+    },
+    "spuu52/spuu52-test": {
+      "name": "SPUU-52-Testschalter (P / OFF / t)",
+      "text": "Dieser Federschalter testet den Begrenzer. Das Spiel nennt die Stellungen P und t.",
+      "context": "Das Handbuch beschreibt diesen Schalter nicht genauer.",
+      "positions": {
+        "P": "Eine Teststellung; der Schalter springt zurück.",
+        "OFF": "Mittelstellung, kein Test.",
+        "t": "Die andere Teststellung; der Schalter springt zurück."
+      }
+    },
+    "rotor-brake/rotor-brake-lever": {
+      "name": "Rotorbremsgriff (UP / DOWN)",
+      "text": "Dieser Griff bedient die Rotorbremse. DOWN löst die Bremse, damit sich der Rotor drehen kann. UP zieht sie an und hält den Rotor fest.",
+      "context": "Der erste Punkt der Liste vor dem Flug ist, die Rotorbremse auf DOWN (gelöst) zu stellen. Nach dem Abstellen wird die Bremse angezogen, wenn der Rotor unter 15 Prozent langsamer geworden ist.",
+      "positions": {
+        "UP": "Die Bremse hält den Rotor.",
+        "DOWN": "Die Bremse ist gelöst."
+      }
+    },
+    "left-red-lights/left-red-dimmers": {
+      "name": "Rote Beleuchtungsdimmer der linken Seite (Gruppe 1 und 2)",
+      "text": "Jeder Knopf macht die rote Hintergrundbeleuchtung seiner Gruppe heller, wenn er in eine Richtung gedreht wird, und dunkler in der anderen. Ganz heruntergedreht schaltet er die Gruppe aus.",
+      "context": "Der Pilot stellt sie nachts so ein, dass die Anzeigen lesbar sind, aber die Augen an die Dunkelheit gewöhnt bleiben."
+    },
+    "engine-tests/vibration-test": {
+      "name": "Testtaster IV-500E für die Triebwerksvibration",
+      "text": "Drückt man diesen Taster, wird die Vibrationsüberwachung der Triebwerke getestet. Alle vier Vibrationswarnlampen müssen leuchten, solange er gehalten wird.",
+      "context": "Die Vibrationsüberwachung warnt, wenn ein Triebwerk zu stark schüttelt. Das Handbuch führt für jedes Triebwerk eine gelbe Warnlampe und eine rote Abschaltwarnlampe auf."
+    },
+    "engine-tests/egt-test-cold": {
+      "name": "COLD-Testtaster der Abgastemperaturanzeige",
+      "text": "Drückt man diesen Taster, wird die Abgastemperaturanzeige für ein kaltes Triebwerk getestet. Bei ausgeschalteten Triebwerken müssen die Nadeln bis etwa 960 Grad steigen und beim Loslassen zurückfallen.",
+      "context": "Das Handbuch nennt ihn den COLD-Testtaster. Er gehört zur Temperaturanzeige 2UT-6K auf der Tafel des Piloten."
+    },
+    "engine-tests/egt-test-hot": {
+      "name": "HOT-Testtaster der Abgastemperaturanzeige",
+      "text": "Drückt man diesen Taster, wird die Abgastemperaturanzeige bei laufenden Triebwerken getestet. Die Nadeln müssen Richtung null wandern und beim Loslassen auf den echten Wert zurückkehren.",
+      "context": "Das Handbuch nennt ihn den HOT-Testtaster. Er ist Teil der Prüfung der Temperaturanzeige."
+    },
+    "engine-tests/regulator-test": {
+      "name": "Testtaster der Triebwerkstemperaturregler (links, rechts)",
+      "text": "Diese zwei Taster testen die Temperaturregler des linken und des rechten Triebwerks. Ein Temperaturregler ist ein Helfer, der die Hitze des Triebwerks begrenzt.",
+      "context": "Laut Handbuch blinkt eine Lampe namens RT LEFT oder RT RIGHT an dieser Konsole, wenn der Temperaturbegrenzer arbeitet."
+    },
+    "engine-tests/regulator-lamps": {
+      "name": "Warnleuchten der Triebwerkstemperaturregler",
+      "text": "Diese zwei Lampen zeigen, dass der Temperaturregler des linken oder rechten Triebwerks arbeitet. Sie blinken, wenn das Triebwerk sehr heiß wird und der Regler es zurückhält.",
+      "context": "Der Pilot sieht sie als Zeichen, dass das Triebwerk an seiner Hitzegrenze ist."
+    },
+    "signal-flares/cassette1-power": {
+      "name": "Stromschalter der Signalraketen-Kassette 1",
+      "text": "Dieser Schalter gibt der ersten Kassette mit Signalraketen Strom. Ohne Strom tun ihre Farbtaster nichts.",
+      "context": "Der Pilot schaltet ihn ein, bevor er eine Signalrakete abfeuert.",
+      "positions": {
+        "ON": "Kassette 1 hat Strom.",
+        "OFF": "Kassette 1 ist aus."
+      }
+    },
+    "signal-flares/cassette1-buttons": {
+      "name": "Starttaster der Kassette 1 (rot, grün, gelb, weiß)",
+      "text": "Diese vier Taster feuern aus der ersten Kassette eine Signalrakete in der Farbe ab, die darauf steht (rot, grün, gelb oder weiß).",
+      "context": "Jede Rakete kann nur einmal abgefeuert werden, die erste Kassette hat also einen begrenzten Vorrat."
+    },
+    "signal-flares/cassette2-power": {
+      "name": "Stromschalter der Signalraketen-Kassette 2",
+      "text": "Dieser Schalter gibt der zweiten Kassette mit Signalraketen Strom.",
+      "context": "Der Pilot schaltet ihn ein, bevor er die zweite Kassette benutzt.",
+      "positions": {
+        "ON": "Kassette 2 hat Strom.",
+        "OFF": "Kassette 2 ist aus."
+      }
+    },
+    "signal-flares/cassette2-buttons": {
+      "name": "Starttaster der Kassette 2 (rot, grün, gelb, weiß)",
+      "text": "Diese vier Taster feuern aus der zweiten Kassette eine Signalrakete in der Farbe ab, die darauf steht.",
+      "context": "Die zweite Kassette hat einen eigenen Vorrat an Raketen, getrennt von der ersten."
+    },
+    "ri65-remote/ri65-amplifier": {
+      "name": "RI-65-Verstärkerschalter",
+      "text": "Dieser Schalter schaltet den Verstärker des Sprachwarnsystems ein. Der Verstärker macht die gesprochenen Meldungen laut genug, um sie zu hören.",
+      "context": "Das Handbuch beschreibt diesen Schalter nicht; das Spiel nennt ihn 'RI-65 Amplifier Switch'.",
+      "positions": {
+        "ON": "Der Verstärker ist an.",
+        "OFF": "Der Verstärker ist aus."
+      }
+    },
+    "ri65-remote/ri65-repeat": {
+      "name": "RI-65-REPEAT-Taster",
+      "text": "Drückt man diesen Taster, wird die aktuelle Sprachmeldung noch einmal abgespielt.",
+      "context": "Der Pilot nutzt ihn, wenn er eine Meldung nicht verstanden hat."
+    },
+    "ri65-remote/ri65-off": {
+      "name": "RI-65-OFF-Taster",
+      "text": "Drückt man diesen Taster, wird die laufende Sprachmeldung gestoppt, und das Funkgerät R-863 wird vom Senden zurück auf Empfangen geschaltet.",
+      "context": "Der Pilot nutzt ihn, um eine Meldung zum Schweigen zu bringen, sobald er sie verstanden hat."
+    },
+    "ri65-remote/ri65-test": {
+      "name": "RI-65-CHECK-(TEST-)Taster",
+      "text": "Drückt man diesen Taster, wird getestet, ob das Sprachwarnsystem arbeitet.",
+      "context": "Der Pilot drückt ihn bei der Kontrolle vor dem Flug."
+    },
+    "iff-panel/iff-erase": {
+      "name": "IFF-Löschtaster (abgedeckt)",
+      "text": "Dieser Drucktaster sitzt unter einer kleinen Schutzklappe, die der Pilot zuerst anhebt. Das Spiel nennt ihn 'IFF Transponder Erase Button'.",
+      "context": "Das Handbuch beschreibt diesen Taster nicht. Die Klappe schützt ihn davor, aus Versehen gedrückt zu werden."
+    },
+    "iff-panel/iff-disaster": {
+      "name": "IFF-Notschalter (Disaster, abgedeckt)",
+      "text": "Dieser Schalter sitzt unter einer Schutzklappe. Das Spiel nennt ihn 'IFF Transponder Disaster Switch', er ist also der Notschalter der IFF-Box.",
+      "context": "Das Handbuch beschreibt ihn nicht. Die Klappe schützt ihn davor, aus Versehen umgelegt zu werden.",
+      "positions": {
+        "ON": "Die Notstellung ist an.",
+        "OFF": "Die Notstellung ist aus."
+      }
+    },
+    "iff-panel/iff-device-mode": {
+      "name": "IFF-Betriebsartenschalter des Geräts (1 / 2)",
+      "text": "Dieser Schalter wählt Mode 1 oder Mode 2 des IFF-Geräts.",
+      "context": "Das Handbuch beschreibt diesen Schalter nicht.",
+      "positions": {
+        "1": "Mode 1 ist gewählt.",
+        "2": "Mode 2 ist gewählt."
+      }
+    },
+    "iff-panel/iff-work-reserve": {
+      "name": "IFF-Gerätewähler (WORK / RESERVE)",
+      "text": "Dieser Schalter wählt das Arbeitsgerät oder das Ersatzgerät (Reserve) des IFF. Eine Lampe namens 'Set Reserve' sagt dem Piloten, auf das Ersatzgerät umzuschalten.",
+      "context": "Der Pilot nutzt das Ersatzgerät, wenn das Arbeitsgerät ausgefallen ist. Eine 6201-FAIL-Lampe auf der Instrumententafel zeigt einen Ausfall.",
+      "positions": {
+        "WORK": "Das normale IFF-Gerät ist in Gebrauch.",
+        "RESERVE": "Das Ersatz-IFF-Gerät ist in Gebrauch."
+      }
+    },
+    "iff-panel/iff-mode-selector": {
+      "name": "IFF-Betriebsartenwähler (AUTO / KD / +-15 / KP)",
+      "text": "Dieser Drehschalter wählt die Betriebsart des IFF-Geräts. Die Stellungen heißen AUTO, KD, +-15 und KP.",
+      "context": "Das Handbuch erklärt die Stellungen nicht.",
+      "positions": {
+        "AUTO": "Das IFF-Gerät wählt seine Betriebsart selbst.",
+        "KD": "Betriebsart namens KD; das Handbuch beschreibt sie nicht.",
+        "+-15": "Betriebsart namens +-15; das Handbuch beschreibt sie nicht.",
+        "KP": "Betriebsart namens KP; das Handbuch beschreibt sie nicht."
+      }
+    },
+    "recorders-misc/p503-power": {
+      "name": "Stromschalter des Sprachrekorders P-503B",
+      "text": "Dieser Schalter schaltet den Sprachrekorder ein, eine Maschine, die aufnimmt, was der Pilot über Funk und Bordsprechanlage sagt.",
+      "context": "Laut Handbuch ist der Sprachrekorder nicht umgesetzt, aber sein Schalter bewegt sich.",
+      "positions": {
+        "ON": "Der Sprachrekorder ist an.",
+        "OFF": "Der Sprachrekorder ist aus."
+      }
+    },
+    "recorders-misc/p503-backlight": {
+      "name": "Hintergrundbeleuchtungsknopf des Rekorders P-503B",
+      "text": "Dieser Knopf stellt die Helligkeit der Hintergrundbeleuchtung des Sprachrekorder-Feldes ein.",
+      "context": "Der Pilot stellt ihn nachts ein, wie die anderen Hintergrundbeleuchtungen."
+    },
+    "recorders-misc/sarpp-mode": {
+      "name": "Betriebsartenschalter des Flugschreibers SARPP-12 (MANUAL / AUTO)",
+      "text": "Dieser Schalter steuert den Flugdatenschreiber. Er zeichnet Höhe, Geschwindigkeit und andere Flugwerte auf, wie die Blackbox eines Flugzeugs.",
+      "context": "Laut Handbuch ist der Schreiber im Spiel nicht umgesetzt, aber der Schalter und seine Lampe funktionieren. In AUTO startet er nach dem Abheben.",
+      "positions": {
+        "AUTO": "Der Schreiber startet nach dem Abheben von selbst.",
+        "MANUAL": "Der Schreiber läuft sofort."
+      }
+    },
+    "recorders-misc/sarpp-lamp": {
+      "name": "SARPP-Betriebsleuchte",
+      "text": "Diese Lampe blinkt, solange der Flugdatenschreiber arbeitet.",
+      "context": "Sie bestätigt, dass der Schreiber aufzeichnet."
+    },
+    "recorders-misc/cargo-auto-release": {
+      "name": "Schalter für die automatische Auslösung der Außenlast",
+      "text": "Dieser Schalter macht die automatische Auslösung einer Last scharf, die unter dem Hubschrauber an einem Seil hängt. Berührt die Last den Boden, öffnet sich der Haken von selbst.",
+      "context": "Der Pilot schaltet ihn vor dem Absetzen einer Außenlast ein. Die Sicherungen des Lasthakens am rechten Sicherungsfeld müssen an sein.",
+      "positions": {
+        "ON": "Der Haken öffnet sich von selbst, wenn die Last den Boden berührt.",
+        "OFF": "Der Haken öffnet sich nur mit den Auslösetastern."
+      }
+    },
+    "recorders-misc/cargo-lamps": {
+      "name": "Leuchten: Türen offen, Schäkel offen und Hupe an",
+      "text": "Diese drei Lampen zeigen, ob die Frachttüren offen sind, ob der Lasthaken offen ist und ob die Hupe an ist.",
+      "context": "Laut Handbuch leuchtet die Lampe HOOK OPEN, wenn der Lasthaken offen ist."
+    },
+    "recorders-misc/nav-code": {
+      "name": "Taster Code NAV (Lichtcode)",
+      "text": "Drückt und lässt man diesen Taster los, blinken die Navigationslichter, so kann der Pilot Lichtsignale wie einen Morsecode geben.",
+      "context": "Das Handbuch nennt ihn den Lichtcode-Taster der Navigationslichter."
+    },
+    "recorders-misc/air-horn": {
+      "name": "Taster der Hupe (Alarmglocke)",
+      "text": "Drückt man diesen Taster, ertönt eine Alarmglocke oder Hupe.",
+      "context": "Das Spiel nennt ihn den Alarmglocken-Taster; der Katalog nennt ihn den Hupentaster."
+    },
+    "left-pressure-gauges/pneumatic-gauge": {
+      "name": "Druckanzeige MVU-10K der Druckluftanlage",
+      "text": "Diese Anzeige zeigt, wie viel Luftdruck in den Luftflaschen der Druckluftanlage ist.",
+      "context": "Laut Handbuch liegt die normale Anzeige bei 40 bis 50 kg/cm2. Die Luft wird für die Radbremsen genutzt."
+    },
+    "left-pressure-gauges/brake-pressure-gauge": {
+      "name": "Bremsluftdruckanzeige MA-60K",
+      "text": "Diese Anzeige zeigt den Luftdruck in der Radbremsleitung, während die Bremsen betätigt werden.",
+      "context": "Laut Handbuch liegt die normale Anzeige bei 30 bis 36 kg/cm2 bei getretenen Bremsen und bei null nach dem Lösen."
+    },
+    "upper-weapons/sight-brightness": {
+      "name": "Helligkeitsknopf des PKV-Visiers",
+      "text": "Dieser Knopf stellt ein, wie hell die Zielmarke im PKV-Visier ist. Das PKV ist ein Glasvisier vor dem Piloten mit einem Ring und Marken.",
+      "context": "Laut Handbuch ist die Standardeinstellung 50 Prozent. Der Pilot dreht ihn bei hellem Tageslicht auf."
+    },
+    "upper-weapons/lamp-test-weapons": {
+      "name": "Lampentest-Taster des oberen Waffenfeldes",
+      "text": "Drückt man diesen Taster, leuchten alle Lampen des oberen Waffenfeldes des Piloten auf, um zu zeigen, dass keine Birne durchgebrannt ist.",
+      "context": "Der Pilot drückt ihn bei der Kontrolle vor dem Flug."
+    },
+    "upper-weapons/rkt-gun-master": {
+      "name": "RKT-GUN-MASTER-Schalter (Wähler RS/GUV)",
+      "text": "Das ist der Hauptschalter für die Raketen, die Kanonenbehälter und die Maschinengewehrbehälter. Ist er aus, können sie nicht feuern.",
+      "context": "Laut Handbuch wird er im Angriffsanflug eingeschaltet. Er versorgt die Feuerkreise und die Lampen für geladen und bereit.",
+      "positions": {
+        "ON": "Die Feuerkreise der Waffen haben Strom.",
+        "OFF": "Die Waffen können nicht feuern."
+      }
+    },
+    "upper-weapons/fcu-arm": {
+      "name": "FCU-ARM-Taster (PUS-Scharfmachen)",
+      "text": "Drückt man diesen Taster, werden die Feuerleitgeräte der Raketen bereit gemacht, sodass die erste Rakete aus Rohr Nummer 1 fliegt. Er wird gehalten, bis die Scharf-Lampen erscheinen.",
+      "context": "Er funktioniert nur, wenn der Schalter RKT-GUN MASTER an ist, die Sicherungen an sind und die Raketenwaffe gewählt ist."
+    },
+    "upper-weapons/minelaying-master": {
+      "name": "Hauptschalter des Minenlegesystems",
+      "text": "Das ist der Hauptschalter des Minenlegesystems, das Minen vom Hubschrauber abwerfen würde.",
+      "context": "Laut Handbuch ist das Minensystem in der Simulation nicht umgesetzt.",
+      "positions": {
+        "ON": "Der Minensystem-Hauptschalter ist an; er hat in DCS keine Wirkung.",
+        "OFF": "Der Minensystem-Hauptschalter ist aus."
+      }
+    },
+    "upper-weapons/jettison-armed": {
+      "name": "Schalter JETTISON ARMED mit Abdeckung",
+      "text": "Dieser geschützte Schalter bestimmt, ob abgeworfene Bomben scharf sind. Ist er an, explodieren notabgeworfene Bomben beim Aufprall.",
+      "context": "Die ARMED-Lampe leuchtet, wenn er an ist. Eine Klappe schützt den Schalter.",
+      "positions": {
+        "ON": "Notabgeworfene Bomben sind scharf und explodieren beim Aufprall.",
+        "OFF": "Notabgeworfene Bomben fallen unscharf."
+      }
+    },
+    "upper-weapons/jettison": {
+      "name": "Notabwurf-Schalter mit Abdeckung",
+      "text": "Dieser geschützte Taster wirft alles ab, was der Hubschrauber an seinen Außenträgern trägt. Der Pilot hebt zuerst die Klappe an.",
+      "context": "Laut Handbuch gibt er alle Waffenstationen frei und senkt in einem Notfall, etwa bei einer Notlandung, schnell das Gewicht."
+    },
+    "upper-weapons/weapon-status": {
+      "name": "Waffenstatus-Lampen und Munitionszähler",
+      "text": "Dieser Teil des oberen Feldes zeigt Lampen dafür, welche Stationen Waffen tragen und welche Raketeneinheiten bereit sind. Zähler zeigen die Schüsse, die in den Kanonen übrig sind.",
+      "context": "Laut Handbuch zeigen einige Zähler nur einen Bruchteil der echten Zahl, der Kanonenzähler zeigt zum Beispiel die Hälfte der Schüsse."
+    },
+    "lower-weapons/rockets-quantity": {
+      "name": "Raketenmengen-Schalter (8 / 16 / 4)",
+      "text": "Dieser Schalter stellt ein, wie viele Raketen jeden Raketenbehälter verlassen, solange der Feuerknopf gedrückt gehalten wird.",
+      "context": "Das Handbuch gibt ein Beispiel: Mit zwei geladenen Behältern und dem Schalter auf 4 werden bis zu 8 Raketen abgefeuert.",
+      "positions": {
+        "8": "Acht Raketen pro Behälter.",
+        "16": "Sechzehn Raketen pro Behälter.",
+        "4": "Vier Raketen pro Behälter."
+      }
+    },
+    "lower-weapons/rocket-stations": {
+      "name": "Raketenstations-Wähler (1-2-5-6 / AUTO / 3-4)",
+      "text": "Dieser Schalter wählt, welche Waffenträger ihre Raketen abfeuern.",
+      "context": "Laut Handbuch feuern im Modus AUTO zuerst die äußeren Träger, und die inneren Träger 3 und 4 folgen, wenn sie leer sind.",
+      "positions": {
+        "1-2-5-6": "Raketen werden von den Stationen 1, 2, 5 und 6 abgefeuert.",
+        "AUTO": "Zuerst die Stationen 1, 2, 5, 6, dann 3 und 4.",
+        "3-4": "Raketen werden von den Stationen 3 und 4 abgefeuert."
+      }
+    },
+    "lower-weapons/weapon-selector": {
+      "name": "Waffenwähler (UPK / PKT / RS)",
+      "text": "Dieser Schalter wählt, was der FIRE-Knopf schießt: die Kanonenbehälter, das Bug-Maschinengewehr oder die Raketen.",
+      "context": "Laut Handbuch ist das Bug-Maschinengewehr (PKT) nicht umgesetzt. Die Maschinengewehrbehälter haben einen eigenen Wähler.",
+      "positions": {
+        "UPK": "Die 23-mm-Kanonenbehälter feuern.",
+        "PKT": "Das Bug-Maschinengewehr; in DCS nicht umgesetzt.",
+        "RS": "Die ungelenkten Raketen feuern."
+      }
+    },
+    "lower-weapons/guv-cutoff": {
+      "name": "GUV-Abschaltschalter",
+      "text": "Dieser Schalter bestimmt, ob die Maschinengewehrbehälter feuern, solange der Abzug gehalten wird, oder in kurzen Feuerstößen.",
+      "context": "Im Feuerstoßbetrieb wird die Länge mit dem Feuerstoßknopf daneben eingestellt.",
+      "positions": {
+        "ON": "Die Behälter feuern in Feuerstößen, die der Feuerstoßknopf einstellt.",
+        "OFF": "Die Behälter feuern, solange der Abzug gehalten wird."
+      }
+    },
+    "lower-weapons/guv-burst": {
+      "name": "GUV-Feuerstoß-Längenknopf",
+      "text": "Dieser Knopf stellt ein, wie lange ein Feuerstoß der Maschinengewehrbehälter dauert, in Sekunden. Kurz sind 0,25 Sekunden, mittel 0,6.",
+      "context": "Ein längerer Feuerstoß bedeutet mehr Schüsse auf einmal."
+    },
+    "lower-weapons/guv-fire-selector": {
+      "name": "GUV-Feuerwähler",
+      "text": "Dieser Schalter wählt, welche Maschinengewehrbehälter feuern: Granatwerfer oder Maschinengewehre auf den verschiedenen Stationen.",
+      "context": "Laut Handbuch wird er zusammen mit dem GUV-Zuladungswähler benutzt. Die Stellungen sind 800, 800 plus 624 und 622.",
+      "positions": {
+        "800": "Granatwerfer auf den Stationen 1 und 6.",
+        "800+624": "Granaten oder das 12,7-mm-Maschinengewehr auf den Stationen 2 und 5.",
+        "622": "Die 7,62-mm-Maschinengewehre auf den Stationen 2 und 5."
+      }
+    },
+    "lower-weapons/guv-payload": {
+      "name": "GUV-Zuladungswähler mit Abdeckung",
+      "text": "Dieser Schalter sagt dem System, welche Art von Maschinengewehrbehältern angebaut ist. Eine Klappe schützt ihn.",
+      "context": "Laut Handbuch wird 800 gestellt, wenn nur Granatwerfer geladen sind, und die gemischte Stellung, wenn die Stationen 1 und 6 Granatwerfer und 2 und 5 Maschinengewehre haben.",
+      "positions": {
+        "800": "Nur Granatwerfer sind geladen.",
+        "624-622-800": "Eine gemischte Ladung aus Maschinengewehren und Granatwerfern."
+      }
+    },
+    "lower-weapons/yakb-charging": {
+      "name": "Ladeschalter der YakB-12,7-Maschinengewehre (links, rechts)",
+      "text": "Diese zwei Schalter laden die 12,7-mm-Maschinengewehre in den Waffenbehältern nach, wenn sie klemmen. Jeder hat drei Stellungen für die Gewehre I, II und III.",
+      "context": "Laut Handbuch muss der Schalter vor dem Schießen auf Stellung I gestellt werden.",
+      "positions": {
+        "I": "Ladestellung von Gewehr I.",
+        "II": "Ladestellung von Gewehr II.",
+        "III": "Ladestellung von Gewehr III."
+      }
+    },
+    "lower-weapons/gun-camera": {
+      "name": "Bordkamera-Schalter",
+      "text": "Dieser Schalter schaltet die Bordkamera ein, die bei jedem Schuss des Piloten ein Bild aufnimmt.",
+      "context": "Laut Handbuch nimmt die Bordkamera auf, sobald der Waffenfeuerschalter gedrückt wird.",
+      "positions": {
+        "ON": "Die Bordkamera ist an.",
+        "OFF": "Die Bordkamera ist aus."
+      }
+    },
+    "anti-ice/antiice-mode": {
+      "name": "Enteisung GENERAL-Schalter MANUAL-AUTO",
+      "text": "Dieser Schalter wählt die Hauptbetriebsart der Enteisungsanlage. In AUTO schaltet der Eismelder die Heizung ein. In MANUAL schaltet der Pilot die Teile selbst ein.",
+      "context": "Laut Handbuch werden im Automatikbetrieb alle Schalter des Feldes nach unten gestellt.",
+      "positions": {
+        "AUTO": "Der Eismelder startet die Enteisungsheizung.",
+        "MANUAL": "Der Pilot schaltet die Heizung von Hand ein."
+      }
+    },
+    "anti-ice/antiice-off": {
+      "name": "Enteisung-OFF-Taster",
+      "text": "Drückt man diesen Taster, wird die ganze Enteisungsanlage ausgeschaltet.",
+      "context": "Laut Handbuch werden alle Schalter nach unten gestellt und dieser Taster gedrückt, um das System auszuschalten."
+    },
+    "anti-ice/antiice-left-eng": {
+      "name": "Heizungsschalter des linken Triebwerks (PSS links)",
+      "text": "Dieser Schalter heizt den Lufteinlass und den Staubabscheider des linken Triebwerks, damit sich kein Eis bilden kann.",
+      "context": "Laut Handbuch wird diese Heizung immer von Hand ein- und ausgeschaltet und sollte bei kaltem Wetter vor dem Flug an sein.",
+      "positions": {
+        "ON": "Die Heizung des linken Triebwerkseinlaufs ist an.",
+        "OFF": "Die Heizung des linken Triebwerkseinlaufs ist aus."
+      }
+    },
+    "anti-ice/antiice-right-eng": {
+      "name": "Heizungsschalter des rechten Triebwerks (PSS rechts)",
+      "text": "Dieser Schalter heizt den Lufteinlass und den Staubabscheider des rechten Triebwerks. Er kann von Hand oder vom Eismelder gesteuert werden.",
+      "context": "Laut Handbuch kann die Heizung des rechten Triebwerks von Hand oder automatisch starten.",
+      "positions": {
+        "AUTO": "Der Eismelder kann die Heizung starten.",
+        "MANUAL": "Die Heizung wird von Hand eingeschaltet."
+      }
+    },
+    "anti-ice/antiice-glass": {
+      "name": "Scheibenheizungsschalter",
+      "text": "Dieser Schalter heizt die zwei Frontscheiben, um sie frei von Eis und Beschlag zu halten.",
+      "context": "Laut Handbuch werden die Scheiben auf etwa 30 Grad gehalten.",
+      "positions": {
+        "AUTO": "Der Eismelder kann die Scheibenheizung starten.",
+        "MANUAL": "Die Scheibenheizung wird von Hand eingeschaltet."
+      }
+    },
+    "anti-ice/antiice-detector-heat": {
+      "name": "Heizungsschalter des Eismelders",
+      "text": "Dieser Schalter heizt den Eismelder selbst, den kleinen Fühler, der Eis spürt.",
+      "context": "Das Spiel nennt ihn Ice Detector Heater Switch mit den Stellungen MANUAL und AUTO.",
+      "positions": {
+        "AUTO": "Die Heizung des Melders läuft von selbst.",
+        "MANUAL": "Die Heizung des Melders wird von Hand eingeschaltet."
+      }
+    },
+    "anti-ice/antiice-detector-test": {
+      "name": "Testtaster der Eismelderheizung",
+      "text": "Drückt man diesen Taster, wird die Heizung des Eismelders getestet. Eine Lampe zeigt, ob die Heizung funktioniert.",
+      "context": "Er gehört zur Prüfung der Enteisungsanlage."
+    },
+    "anti-ice/antiice-ammeter-selector": {
+      "name": "Lastwahlschalter des Amperemeters",
+      "text": "Dieser Drehschalter wählt, welchen Teil der Enteisungsheizung die Amperemeter-Anzeige misst: die Scheiben, die Triebwerkseinläufe oder die Rotorblattabschnitte.",
+      "context": "Laut Handbuch müssen die Amperemeter-Werte von Hauptrotor und Heckrotor durch 3 und 6 geteilt werden, um den wahren Strom zu erhalten."
+    },
+    "anti-ice/antiice-lamps": {
+      "name": "Enteisungslampen (normal, Vereisung, EIN, Rotorabschnitte)",
+      "text": "Diese Lampen zeigen, ob die Enteisungsanlage arbeitet, ob Eis erkannt wird, ob die Heizung an ist und welcher Rotorblattabschnitt gerade geheizt wird.",
+      "context": "Die rote Vereisungslampe blinkt mit der Blinkanlage, wenn der Eismelder Eis spürt."
+    },
+    "anti-ice/antiice-ammeter": {
+      "name": "Amperemeter AF1-150",
+      "text": "Diese Anzeige zeigt den elektrischen Strom der gewählten Enteisungsheizung.",
+      "context": "Der Pilot prüft, dass der Strom innerhalb des Bereichs bleibt, den das Handbuch nennt."
+    },
+    "r863-left-overhead/r863-fm-am": {
+      "name": "R-863-Modulationsschalter (FM / AM)",
+      "text": "Dieser Schalter wählt die Funkart, mit der die Stimme übertragen wird: FM oder AM. Beide Stationen müssen dieselbe benutzen, um einander zu hören.",
+      "context": "Das Handbuch zeigt FM als obere und AM als untere Stellung.",
+      "positions": {
+        "FM": "Das Funkgerät nutzt Frequenzmodulation.",
+        "AM": "Das Funkgerät nutzt Amplitudenmodulation."
+      }
+    },
+    "r863-left-overhead/r863-channel": {
+      "name": "R-863-Kanalwähler",
+      "text": "Dieser Knopf wählt einen der gespeicherten Funkkanäle. Jeder Kanal ist eine am Boden vorbereitete Frequenz.",
+      "context": "Laut Handbuch gibt es 20 Kanäle, und die Kanaltabelle wird im DCS-Missionseditor eingestellt. Die Kanäle werden benutzt, wenn der Wahlschalter auf MEMORY steht."
+    },
+    "spu7-pilot/spu-radio-ics": {
+      "name": "SPU-7-Schalter RADIO / ICS (Pilot)",
+      "text": "Dieser Schalter bestimmt, was der Abzug am Cyclic tut: auf der Bordsprechanlage oder auf dem gewählten Funkgerät sprechen.",
+      "context": "Laut Handbuch nutzt bei RADIO der erste Klick des Abzugs die Bordsprechanlage und der zweite Klick das Funkgerät.",
+      "positions": {
+        "RADIO": "Der zweite Abzugsklick sendet auf dem Funkgerät.",
+        "ICS": "Der Abzug spricht immer auf der Bordsprechanlage."
+      }
+    },
+    "spu7-pilot/spu-call": {
+      "name": "SPU-7-Rundruftaster (Pilot)",
+      "text": "Im echten Hubschrauber ruft dieser Taster alle Besatzungsplätze mit doppelter Lautstärke, für Notmeldungen. Das Spiel markiert ihn mit N/F, nicht funktionsfähig.",
+      "context": "Das Handbuch führt ihn als ALL-CALL-Taster auf."
+    },
+    "spu7-pilot/spu-network": {
+      "name": "SPU-7-Netzschalter 1/2 (Pilot)",
+      "text": "Dieser Schalter würde zwischen zwei Sprechanlagen-Netzen wählen. Laut Handbuch wird er nicht benutzt.",
+      "context": "Der Schalter dieser Art auf der Pilotenseite hat in DCS keine Funktion; der Kopilot hat ein Gegenstück.",
+      "positions": {
+        "1": "Netz 1; nicht benutzt.",
+        "2": "Netz 2; nicht benutzt."
+      }
+    },
+    "spu7-pilot/spu-source": {
+      "name": "SPU-7-Funkquellenwähler (Pilot)",
+      "text": "Dieser Drehknopf wählt, welches Funkgerät der Pilot hört und auf welchem er spricht: das R-863, das Yadro-1A, das R-828 oder die Funkpeiler ARK-9 und ARK-UD.",
+      "context": "Laut Handbuch muss die richtige Quelle gewählt werden, bevor die Funkgeräte über den Kopfhörer arbeiten."
+    },
+    "spu7-pilot/spu-master-volume": {
+      "name": "SPU-7-Gesamtlautstärkeknopf (Pilot)",
+      "text": "Dieser Knopf stellt die Lautstärke der Bordsprechanlage für den Piloten ein.",
+      "context": "Laut Handbuch tauschen der Gesamt- und der Mithörknopf ihre Rollen, wenn der Schalter RADIO/ICS wechselt."
+    },
+    "spu7-pilot/spu-monitor-volume": {
+      "name": "SPU-7-Mithörlautstärkeknopf (Pilot)",
+      "text": "Dieser Knopf stellt die Lautstärke des Funkgeräts ein, das der Pilot hört.",
+      "context": "Laut Handbuch tauschen die zwei Lautstärkeknöpfe ihre Rollen, wenn der Schalter RADIO/ICS wechselt."
+    },
+    "fire-protection/fire-first-order": {
+      "name": "Taster der ersten Löschstufe (Hauptstufe) (linkes Triebwerk, rechtes Triebwerk, KO-50, APU/Getriebe)",
+      "text": "Diese vier Taster leeren die erste Löschflasche an eine Stelle: das linke Triebwerk, das rechte Triebwerk, die Heizung KO-50 oder den Raum von APU und Hauptgetriebe.",
+      "context": "Die erste Flasche feuert normalerweise von selbst. Der Pilot drückt den Taster der brennenden Stelle, wenn sie es nicht tut."
+    },
+    "fire-protection/fire-second-order": {
+      "name": "Taster der zweiten Löschstufe (Reserve) (linkes Triebwerk, rechtes Triebwerk, KO-50, APU/Getriebe)",
+      "text": "Diese vier Taster leeren die zweite Löschflasche an eine Stelle. Sie ist die Reserve für ein zweites Feuer oder falls die erste nicht gewirkt hat.",
+      "context": "Laut Handbuch wird die zweite Flasche nur von Hand abgefeuert."
+    },
+    "fire-protection/fire-signal-off": {
+      "name": "Feuersignal-OFF-Taster (Alarm stumm)",
+      "text": "Drückt man diesen Taster, wird die Feueralarmlampe stumm geschaltet, nachdem das Feuer aus ist. Das Handbuch nennt ihn den Alarm-Stumm-Taster.",
+      "context": "Der Pilot drückt ihn, wenn die Feuerlampe nicht innerhalb von etwa 10 Sekunden von selbst ausgeht."
+    },
+    "fire-protection/fire-detector-test": {
+      "name": "Feuermelder-Testschalter (EXTINGUISH / TEST)",
+      "text": "Dieser Schalter stellt die Feueranlage zwischen normaler Bereitschaft und einem Test der Feuerfühler um. In der Teststellung leuchtet eine Lampe.",
+      "context": "Laut Handbuch muss die Anlage für den Betrieb im Flug auf EXTINGUISH stehen. Die Fühler werden am Boden vor dem Start getestet.",
+      "positions": {
+        "EXTINGUISH": "Die Feueranlage ist bereit, ein Feuer zu bekämpfen.",
+        "TEST": "Die Feuerfühler können mit dem Drehschalter getestet werden."
+      }
+    },
+    "fire-protection/fire-squib-test": {
+      "name": "Zündpatronen-Testschalter (I / II)",
+      "text": "Dieser Schalter testet die kleinen Ladungen, die die Löschflaschen öffnen. Stellung I prüft die erste Flasche und II die zweite.",
+      "context": "Laut Handbuch darf keine gelbe Lampe leuchten, wenn die Ladungen gut sind.",
+      "positions": {
+        "I": "Prüft die Ladungen der ersten Flasche.",
+        "II": "Prüft die Ladungen der zweiten Flasche."
+      }
+    },
+    "fire-protection/fire-circuits-check": {
+      "name": "Schalter zur Prüfung der Feuerkreise (OFF / CONTROL / 1-6)",
+      "text": "Dieser Drehschalter prüft die Feuerfühlergruppen Kanal für Kanal. Jede Stellung soll die passenden Feuerlampen aufleuchten lassen.",
+      "context": "Laut Handbuch wird er danach auf OFF zurückgedreht und dort gelassen, damit die erste Flasche nicht aus Versehen feuert."
+    },
+    "fire-protection/fire-lamps": {
+      "name": "Warnleuchten der Brandschutzanlage",
+      "text": "Diese Lampen zeigen ein Feuer im linken Triebwerk, im rechten Triebwerk, in der Heizung KO-50 oder im Raum von Getriebe und APU, und dass eine Flasche gefeuert hat.",
+      "context": "Die roten Feuerlampen blinken. Eine Stimme nennt außerdem die Stelle des Feuers."
+    },
+    "apu-panel/apu-mode": {
+      "name": "APU-Startartenschalter (START / COLD CRANKING / FALSE START)",
+      "text": "Dieser Schalter wählt, was der nächste Druck auf den Starttaster tut: wirklich starten, die APU nur ohne Kraftstoff drehen oder sie nach einem fehlgeschlagenen Start drehen.",
+      "context": "Das Handbuch nennt die Stellungen START, CRANK und FALSE START. Der normale Start nutzt START.",
+      "positions": {
+        "START": "Ein normaler Start der APU.",
+        "COLD CRANKING": "Dreht die APU durch, ohne zu starten.",
+        "FALSE START": "Lässt den Startablauf ohne Zündung laufen, zum Beispiel um einen fehlgeschlagenen Start zu löschen."
+      }
+    },
+    "apu-panel/apu-start": {
+      "name": "APU-START-Taster",
+      "text": "Drückt man diesen Taster zwei bis drei Sekunden lang, beginnt der automatische Start der APU.",
+      "context": "Die Lampe AUTO IGNITION leuchtet, dann läuft die APU in unter 20 Sekunden bis zum Leerlauf hoch."
+    },
+    "apu-panel/apu-stop": {
+      "name": "APU-OFF-Taster",
+      "text": "Drückt man diesen Taster zwei bis drei Sekunden lang, wird die APU gestoppt. Er bricht auch einen Start ab.",
+      "context": "Der Pilot schaltet die APU ab, nachdem beide Haupttriebwerke laufen."
+    },
+    "apu-panel/apu-gauges": {
+      "name": "APU-Abgastemperatur- und APU-Luftdruckanzeige",
+      "text": "Diese Anzeigen zeigen die Abgastemperatur der APU und den Luftdruck, den sie zum Starten der Haupttriebwerke macht.",
+      "context": "Laut Handbuch muss die Temperatur mal 100 gelesen werden und beim Start unter 880 Grad bleiben. Der Luftdruck sollte im Leerlauf 1,3 bis 2,0 betragen."
+    },
+    "fuel-panel/fuel-valve-left": {
+      "name": "Schalter des linken Absperrventils (abgedeckt)",
+      "text": "Dieser geschützte Schalter öffnet und schließt das linke Not-Kraftstoffabsperrventil. Geschlossen fließt kein Kraftstoff zum linken Triebwerk.",
+      "context": "Eine Lampe unter dem Schalter zeigt das geschlossene Ventil. Die Ventile werden bei einem Feuer geschlossen; der Pilot hebt zuerst die Klappe an.",
+      "positions": {
+        "ON": "Das Ventil ist offen, und das linke Triebwerk bekommt Kraftstoff.",
+        "OFF": "Das Ventil ist geschlossen, und das linke Triebwerk bekommt keinen Kraftstoff."
+      }
+    },
+    "fuel-panel/fuel-valve-right": {
+      "name": "Schalter des rechten Absperrventils (abgedeckt)",
+      "text": "Dieser geschützte Schalter öffnet und schließt das rechte Not-Kraftstoffabsperrventil. Geschlossen fließt kein Kraftstoff zum rechten Triebwerk.",
+      "context": "Eine Lampe unter dem Schalter zeigt das geschlossene Ventil. Der Pilot hebt zuerst die Klappe an.",
+      "positions": {
+        "ON": "Das Ventil ist offen, und das rechte Triebwerk bekommt Kraftstoff.",
+        "OFF": "Das Ventil ist geschlossen, und das rechte Triebwerk bekommt keinen Kraftstoff."
+      }
+    },
+    "fuel-panel/fuel-crossfeed": {
+      "name": "Kreuzspeise-Schalter (abgedeckt)",
+      "text": "Dieser geschützte Schalter öffnet oder schließt die Verbindung zwischen dem linken und dem rechten Seitentank. Kraftstoff kann dann von einem zum anderen fließen.",
+      "context": "Laut Handbuch ist die Normalstellung offen. Er wird geschlossen, wenn ein Tank beschädigt ist, um den Kraftstoff im anderen zu sparen. Eine gelbe Lampe zeigt, wenn er geschlossen ist.",
+      "positions": {
+        "ON": "Die Verbindung zwischen den zwei Seitentanks ist offen.",
+        "OFF": "Die Verbindung ist geschlossen."
+      }
+    },
+    "fuel-panel/fuel-bypass": {
+      "name": "Bypass-Schalter (abgedeckt)",
+      "text": "Dieser geschützte Schalter öffnet ein Umgehungsventil, einen Reserveweg für Kraftstoff von den Seitentanks zum Betriebstank. Er ist nur für den Fall, dass das Schwimmerventil ausfällt.",
+      "context": "Laut Handbuch ist die Normalstellung geschlossen. Ist er offen, muss der Pilot den Kraftstoff im Betriebstank beobachten.",
+      "positions": {
+        "ON": "Der Bypass ist offen.",
+        "OFF": "Der Bypass ist geschlossen (normal)."
+      }
+    },
+    "fuel-panel/fuel-feed-pump": {
+      "name": "Schalter der Betriebstankpumpe (FLOW)",
+      "text": "Dieser Schalter schaltet die Pumpe des Betriebstanks ein, des kleinen Tanks, der die Triebwerke speist. Eine grüne Lampe zeigt, dass sie arbeitet.",
+      "context": "Laut Handbuch schaltet der Pilot sie ein, bevor er die APU startet. Fällt sie aus, können die Triebwerke den Kraftstoff noch durch die Schwerkraft bekommen.",
+      "positions": {
+        "ON": "Die Betriebstankpumpe läuft.",
+        "OFF": "Die Betriebstankpumpe ist aus."
+      }
+    },
+    "fuel-panel/fuel-left-pump": {
+      "name": "Schalter der Pumpe des linken Tanks",
+      "text": "Dieser Schalter schaltet die Pumpe im linken Seitentank ein. Sie bewegt Kraftstoff zum Betriebstank.",
+      "context": "Laut Handbuch wird eine ausgefallene Pumpe abgeschaltet; die andere Pumpe kann den Betriebstank allein füllen.",
+      "positions": {
+        "ON": "Die Pumpe des linken Tanks läuft.",
+        "OFF": "Die Pumpe des linken Tanks ist aus."
+      }
+    },
+    "fuel-panel/fuel-right-pump": {
+      "name": "Schalter der Pumpe des rechten Tanks",
+      "text": "Dieser Schalter schaltet die Pumpe im rechten Seitentank ein. Sie bewegt Kraftstoff zum Betriebstank.",
+      "context": "Laut Handbuch prüft der Pilot im Flug die Pumpenlampen.",
+      "positions": {
+        "ON": "Die Pumpe des rechten Tanks läuft.",
+        "OFF": "Die Pumpe des rechten Tanks ist aus."
+      }
+    },
+    "fuel-panel/fuel-refuel-control": {
+      "name": "Betankungsschalter (REFUEL / OFF / CHECK)",
+      "text": "Dieser Schalter schaltet die Lampen, die beim Betanken am Boden einen vollen Tank zeigen.",
+      "context": "Laut Handbuch sind diese Lampen nahe den Einfüllstutzen und im Simulator nicht umgesetzt.",
+      "positions": {
+        "REFUEL": "Betankungsbetrieb der Voll-Lampen.",
+        "OFF": "Die Voll-Lampen sind aus.",
+        "CHECK": "Lampenprüfung der Voll-Lampen."
+      }
+    },
+    "engine-start-panel/engstart-mode": {
+      "name": "Startartenschalter des Triebwerks (START / OFF / COLD CRANKING)",
+      "text": "Dieser Schalter wählt, was der Start tut: ein echter Start oder nur das Durchdrehen des Triebwerks ohne Kraftstoff und Feuer.",
+      "context": "Das Handbuch nennt die zweite Art CRANK oder falschen Start. Der normale Start nutzt START.",
+      "positions": {
+        "START": "Ein normaler Triebwerksstart.",
+        "OFF": "Anlasser aus.",
+        "COLD CRANKING": "Dreht das Triebwerk durch, ohne es zu starten."
+      }
+    },
+    "engine-start-panel/engstart-select": {
+      "name": "Triebwerkswähler (LEFT / OFF / RIGHT)",
+      "text": "Dieser Schalter wählt, welches der zwei Triebwerke der Starttaster startet.",
+      "context": "Laut Handbuch wird zuerst das Triebwerk auf der Leeseite gestartet.",
+      "positions": {
+        "LEFT": "Das linke Triebwerk ist gewählt.",
+        "OFF": "Kein Triebwerk ist gewählt.",
+        "RIGHT": "Das rechte Triebwerk ist gewählt."
+      }
+    },
+    "engine-start-panel/engstart-start": {
+      "name": "Triebwerks-START-Taster",
+      "text": "Drückt man diesen Taster zwei bis drei Sekunden lang, beginnt der automatische Start des gewählten Triebwerks.",
+      "context": "Die Lampen AUTO IGNITION und STARTER leuchten während des Starts. Hat das Triebwerk nach 55 Sekunden nicht 55 Prozent Drehzahl, wird der Start abgebrochen."
+    },
+    "engine-start-panel/engstart-abort": {
+      "name": "Taster zum Abbrechen des Triebwerksstarts",
+      "text": "Drückt man diesen Taster, wird der Triebwerksstart jederzeit gestoppt.",
+      "context": "Der Pilot nutzt ihn, wenn beim Start etwas falsch aussieht."
+    },
+    "engine-start-panel/engstart-ignition-check": {
+      "name": "Zündungsprüfschalter des Triebwerks (LEFT / OFF / RIGHT)",
+      "text": "Dieser Federschalter prüft die Zündung des linken oder des rechten Triebwerks. Das Spiel nennt ihn 'Engine Ignition Check Switch'.",
+      "context": "Das Handbuch beschreibt diesen Schalter nicht.",
+      "positions": {
+        "LEFT": "Prüft die Zündung des linken Triebwerks; springt zurück.",
+        "OFF": "Keine Prüfung.",
+        "RIGHT": "Prüft die Zündung des rechten Triebwerks; springt zurück."
+      }
+    },
+    "hydraulic-panel/hydro-main": {
+      "name": "Schalter der Haupthydraulikanlage",
+      "text": "Dieser Schalter schaltet die Haupthydraulikanlage ein und aus. Eine grüne Lampe zeigt, dass sie arbeitet.",
+      "context": "Laut Handbuch übernimmt die Reserve, wenn sie ausgeschaltet wird, und deren rote Lampe leuchtet.",
+      "positions": {
+        "ON": "Die Haupthydraulikanlage arbeitet.",
+        "OFF": "Die Haupthydraulikanlage ist aus, und die Reserve übernimmt."
+      }
+    },
+    "hydraulic-panel/hydro-backup": {
+      "name": "Schalter der Reservehydraulik (abgedeckt)",
+      "text": "Dieser geschützte Schalter schaltet die Reservehydraulikanlage ein und aus. Eine Klappe schützt ihn.",
+      "context": "Die Reserve bleibt normalerweise an, damit sie von selbst übernehmen kann, wenn die Hauptanlage ausfällt.",
+      "positions": {
+        "ON": "Die Reserveanlage ist bereit.",
+        "OFF": "Die Reserveanlage ist aus."
+      }
+    },
+    "hydraulic-panel/hydro-backup-off": {
+      "name": "OFF-Taster der Reservehydraulik",
+      "text": "Drückt man diesen Taster, wird von der Reserveanlage zurück auf die Hauptanlage umgeschaltet. Er wird eine bis eineinhalb Sekunden gehalten.",
+      "context": "Laut Handbuch kann sich beim Triebwerksstart die Reserve zuerst einschalten; dieser Taster schaltet dann zurück auf die Hauptanlage."
+    },
+    "hydraulic-panel/hydro-gauges": {
+      "name": "Druckanzeigen der Haupt- und Reservehydraulik",
+      "text": "Diese Anzeigen zeigen den Druck der Haupt- und der Reservehydraulikanlage. Der Wert muss mit 10 multipliziert werden.",
+      "context": "Laut Handbuch liegt die normale Anzeige für die arbeitende Anlage bei 45 bis 68 kg/cm2."
+    },
+    "engine-stop-levers/engine-stop-left": {
+      "name": "Stopphebel des linken Triebwerks",
+      "text": "Dieser Hebel öffnet oder schließt den Kraftstoff zum linken Triebwerk. Zieht man ihn zurück, stoppt das Triebwerk.",
+      "context": "Laut Handbuch wird er nach vorn bewegt, wenn beim Start die Triebwerksdrehzahl zu steigen beginnt.",
+      "positions": {
+        "FORWARD": "Kraftstoff fließt zum linken Triebwerk.",
+        "AFT": "Der Kraftstoff ist abgesperrt, und das Triebwerk stoppt."
+      }
+    },
+    "engine-stop-levers/engine-stop-right": {
+      "name": "Stopphebel des rechten Triebwerks",
+      "text": "Dieser Hebel öffnet oder schließt den Kraftstoff zum rechten Triebwerk. Zieht man ihn zurück, stoppt das Triebwerk.",
+      "context": "Der Pilot nutzt ihn für den Start und beim Abstellen.",
+      "positions": {
+        "FORWARD": "Kraftstoff fließt zum rechten Triebwerk.",
+        "AFT": "Der Kraftstoff ist abgesperrt, und das Triebwerk stoppt."
+      }
+    },
+    "ark9/ark9-mode": {
+      "name": "ARK-9-Betriebsartenwähler (OFF / COMP / ANT / LOOP)",
+      "text": "Dieser Drehschalter schaltet den ADF ein und wählt seine Arbeitsweise: Kompass, Antenne oder Rahmen.",
+      "context": "COMP ist die Hauptbetriebsart und zeigt die Richtung zum Funkfeuer. ANT dient zum Hören und Abstimmen, und LOOP ist eine Reserve, die die Richtung findet, indem sie hört, wie das Signal schwächer wird.",
+      "positions": {
+        "OFF": "Der ARK-9 ist aus.",
+        "COMP": "Die Nadel zeigt auf das Funkfeuer; Hauptbetriebsart.",
+        "ANT": "Hört nur das Funkfeuer; keine Richtung.",
+        "LOOP": "Hört über die Rahmenantenne, um die Richtung nach Gehör zu finden."
+      }
+    },
+    "ark9/ark9-voice-cw": {
+      "name": "ARK-9-Schalter VOICE / CW (TLF / TLG)",
+      "text": "Dieser Schalter wählt, auf welche Art Signal der ADF hört: ein Sprach- oder Musiksignal oder einen stimmlosen Dauerton.",
+      "context": "Laut Handbuch hört VOICE einen Rundfunksender und den Namen des Funkfeuers, und CW ist für ein Dauerwellensignal.",
+      "positions": {
+        "TLF": "Sprachsignal (VOICE).",
+        "TLG": "Dauerwellensignal (CW)."
+      }
+    },
+    "ark9/ark9-loop": {
+      "name": "ARK-9-Rahmenschalter (LEFT / OFF / RIGHT)",
+      "text": "Dieser Federschalter dreht die Such-Rahmenantenne von Hand nach links oder rechts.",
+      "context": "Laut Handbuch kann der Pilot damit prüfen, dass die Peilnadel folgt, wenn die Antenne gedreht wird.",
+      "positions": {
+        "LEFT": "Dreht den Rahmen nach links; springt zurück.",
+        "OFF": "Der Rahmen wird nicht gedreht.",
+        "RIGHT": "Dreht den Rahmen nach rechts; springt zurück."
+      }
+    },
+    "ark9/ark9-volume": {
+      "name": "ARK-9-Lautstärkeknopf (GAIN)",
+      "text": "Dreht man diesen Knopf, wird der Ton des Funkfeuers im Kopfhörer lauter oder leiser.",
+      "context": "Laut Handbuch wird er beim Abstimmen auf Maximum gestellt."
+    },
+    "ark9/ark9-channel": {
+      "name": "ARK-9-Kanalwähler (MAIN / BACKUP)",
+      "text": "Dieser Schalter wählt, welche der zwei gespeicherten Frequenzen der ADF nutzt: den Hauptkanal oder den Reservekanal.",
+      "context": "Der Pilot kann das nächste Funkfeuer auf dem unbenutzten Kanal einstellen und dann umschalten.",
+      "positions": {
+        "MAIN": "Der Hauptkanal wird benutzt.",
+        "BACKUP": "Der Reservekanal wird benutzt."
+      }
+    },
+    "ark9/ark9-main-dials": {
+      "name": "ARK-9-Frequenzräder des Hauptkanals (100 kHz, 10 kHz)",
+      "text": "Diese zwei Räder stellen die Frequenz des Hauptkanals ein: das erste die Hunderter von Kilohertz, das zweite die Zehner.",
+      "context": "Der Pilot stellt hier die Frequenz des Funkfeuers ein und hört seine Kennbuchstaben."
+    },
+    "ark9/ark9-backup-dials": {
+      "name": "ARK-9-Frequenzräder des Reservekanals (100 kHz, 10 kHz)",
+      "text": "Diese zwei Räder stellen die Frequenz des Reservekanals auf dieselbe Weise ein.",
+      "context": "Sie lassen den Piloten ein zweites Funkfeuer vorbereiten."
+    },
+    "ark9/ark9-tune": {
+      "name": "ARK-9-Feinabstimmknöpfe (Haupt, Reserve)",
+      "text": "Diese zwei Knöpfe stimmen die Frequenz des Haupt- und des Reservekanals ein wenig nach oben oder unten fein ab.",
+      "context": "Laut Handbuch bewegen sie die Frequenz um -10 bis +20 kHz."
+    },
+    "arkud/arkud-mode": {
+      "name": "ARK-UD-Betriebsartenwähler (OFF / NARROW / WIDE / PULSE / RC)",
+      "text": "Dieser Drehschalter schaltet den ARK-UD ein und wählt, wie er hört. Schmalband ist für ein gleichmäßiges Signal, Breitband in der Nähe der Station.",
+      "context": "Laut Handbuch beginnt der Pilot mit Schmalband und geht auf Breitband, wenn die WIDE-Lampe nahe am Funkfeuer leuchtet. RC wird nicht benutzt.",
+      "positions": {
+        "OFF": "Der ARK-UD ist aus.",
+        "NARROW": "Schmalbandempfang.",
+        "WIDE": "Breitbandempfang.",
+        "PULSE": "Empfängt ein Pulssignal auf 243 MHz.",
+        "RC": "Laut Handbuch nicht benutzt."
+      }
+    },
+    "arkud/arkud-channel": {
+      "name": "ARK-UD-Kanalwähler (1-6)",
+      "text": "Dieser Drehschalter wählt eine von sechs gespeicherten VHF-Frequenzen.",
+      "context": "Das Handbuch nennt sie mit 114,166, 114,333, 114,583, 121,5, 123,1 und 124,1 MHz. Im UHF-Band spielt der Kanal keine Rolle.",
+      "positions": {
+        "1": "Kanal 1.",
+        "2": "Kanal 2.",
+        "3": "Kanal 3.",
+        "4": "Kanal 4.",
+        "5": "Kanal 5.",
+        "6": "Kanal 6."
+      }
+    },
+    "arkud/arkud-band": {
+      "name": "ARK-UD-Bandschalter (MW / DW, VHF / UHF)",
+      "text": "Dieser Schalter wählt das VHF- oder das UHF-Band des ARK-UD.",
+      "context": "Das Spiel beschriftet die Stellungen mit MW und DW (Meterwelle und Dezimeterwelle); das Handbuch nennt den Schalter FQ BAND mit VHF oben und UHF unten.",
+      "positions": {
+        "MW": "VHF-Band; der Kanalwähler wird benutzt.",
+        "DW": "UHF-Band."
+      }
+    },
+    "arkud/arkud-sens": {
+      "name": "ARK-UD-Empfindlichkeitsschalter (MORE / LESS)",
+      "text": "Dieser Schalter stellt ein, wie empfindlich der Anpeilempfänger ist.",
+      "context": "Das Handbuch nennt ihn den Empfindlichkeitsschalter HIGH-LOW.",
+      "positions": {
+        "MORE": "Höhere Empfindlichkeit.",
+        "LESS": "Niedrigere Empfindlichkeit."
+      }
+    },
+    "arkud/arkud-volume": {
+      "name": "ARK-UD-Lautstärkeknopf",
+      "text": "Dreht man diesen Knopf, wird der Ton des Anpeilgeräts lauter oder leiser.",
+      "context": "Der Pilot hört den Funkfeuerton im Kopfhörer, wenn die SPU-7-Quelle auf den ARK-UD gestellt ist."
+    },
+    "arkud/arkud-test": {
+      "name": "ARK-UD-Testtaster (Kontrolle)",
+      "text": "Drückt man diesen Taster, läuft der Selbsttest des ARK-UD. Die Nadel auf der Kursanzeige soll auf etwa 180 Grad zeigen.",
+      "context": "Er gehört zur Kontrolle vor dem Flug."
+    },
+    "arkud/arkud-antenna": {
+      "name": "ARK-UD-Antennentaster links und rechts",
+      "text": "Diese zwei Taster drehen die Rahmenantenne von Hand nach links oder nach rechts.",
+      "context": "Der Pilot kann damit die Richtungsfindung testen oder unterstützen."
+    },
+    "gmk/gmk-hemisphere": {
+      "name": "GMC-Halbkugelschalter (NORTH / SOUTH)",
+      "text": "Dieser Schalter sagt dem Kompass, ob sich der Hubschrauber auf der nördlichen oder südlichen Hälfte der Welt befindet.",
+      "context": "Laut Handbuch wird er vor dem Gebrauch auf die aktuelle Halbkugel gestellt.",
+      "positions": {
+        "NORTH": "Nördliche Halbkugel.",
+        "SOUTH": "Südliche Halbkugel."
+      }
+    },
+    "gmk/gmk-latitude": {
+      "name": "GMC-Breitenknopf",
+      "text": "Dieser Knopf stellt die Breite ein, also wie weit nördlich oder südlich der Hubschrauber ist. Der Kompass nutzt sie, um die Wirkung der Erddrehung aufzuheben.",
+      "context": "Der Pilot stellt sie bei der Vorbereitung auf die aktuelle Breite ein."
+    },
+    "gmk/gmk-mode": {
+      "name": "GMC-Betriebsartenschalter (MK / GPK / AK)",
+      "text": "Dieser Schalter wählt, wie der Kompass Norden findet: mit dem Magnetkompass (MK), mit dem Kreisel (GPK) oder mit dem Astrokompass (AK).",
+      "context": "Laut Handbuch ist GPK die Hauptbetriebsart. Das Umschalten von GPK auf MK gleicht den Kreisel schnell mit dem magnetischen Kurs ab.",
+      "positions": {
+        "MC": "Magnetkompass-Betrieb (MK).",
+        "DG": "Kurskreisel-Betrieb (GPK), die Hauptbetriebsart.",
+        "AC": "Astrokompass-Betrieb (AK)."
+      }
+    },
+    "gmk/gmk-test": {
+      "name": "GMC-Kontrollschalter (0 / CONTROL / 300)",
+      "text": "Dieser Federschalter testet den Kompass, indem er die Anzeige auf 0 oder 300 Grad dreht. Die Anzeige muss innerhalb von 10 Grad zurückkommen.",
+      "context": "Er lässt während des Tests auch die Lampe BANK CORR leuchten.",
+      "positions": {
+        "0": "Test auf 0 Grad.",
+        "CONTROL": "Mitte, Normalstellung.",
+        "300": "Test auf 300 Grad."
+      }
+    },
+    "gmk/gmk-course": {
+      "name": "GMC-Kurseinstellschalter (CCW / OFF / CW)",
+      "text": "Dieser Federschalter dreht die Kompassrose der Kursanzeige nach links oder rechts, um sie auf die richtige Richtung auszurichten.",
+      "context": "Im Handbuch ist das der Kurseinstellwähler, der benutzt wird, um den Kurs im GPK-Betrieb einzustellen.",
+      "positions": {
+        "LEFT": "Dreht die Rose gegen den Uhrzeigersinn; springt zurück.",
+        "OFF": "Keine Änderung.",
+        "RIGHT": "Dreht die Rose im Uhrzeigersinn; springt zurück."
+      }
+    },
+    "ko50/ko50-mode": {
+      "name": "KO-50-Betriebsartenschalter (MANUAL / OFF / AUTO)",
+      "text": "Dieser Schalter wählt, wie die Heizung arbeitet: automatisch bei einer eingestellten Temperatur, von Hand oder aus.",
+      "context": "Laut Handbuch schaltet die Neutralstellung die Heizung nach Gebrauch aus.",
+      "positions": {
+        "MANUAL": "Die Heizleistung wird von Hand gewählt.",
+        "OFF": "Die Heizung ist aus.",
+        "AUTO": "Die Heizung hält die mit dem Knopf eingestellte Temperatur."
+      }
+    },
+    "ko50/ko50-regime": {
+      "name": "KO-50-Heizleistungsschalter (FILLING / FULL / MEDIUM)",
+      "text": "Dieser Schalter wählt die Heizleistung im Handbetrieb: voll oder mittel. Die dritte Stellung ist für die Wartung.",
+      "context": "Laut Handbuch ist die Füllstellung für die Wartung gedacht und nicht nachgebildet.",
+      "positions": {
+        "FILLING": "Füllen für die Wartung; nicht nachgebildet.",
+        "FULL": "Hohe Heizleistung.",
+        "MEDIUM": "Mittlere Heizleistung."
+      }
+    },
+    "ko50/ko50-start": {
+      "name": "KO-50-START-Taster",
+      "text": "Drückt man diesen Taster, startet die Heizung. Lampen zeigen das Vorheizen, den Zünder und dass die Heizung läuft.",
+      "context": "Laut Handbuch soll nach dem Erlöschen der Vorheizlampe die Zündlampe in unter 40 Sekunden ausgehen, was stabiles Brennen zeigt."
+    },
+    "ko50/ko50-fan": {
+      "name": "KO-50-Ventilatorschalter (Lüftung)",
+      "text": "Dieser Schalter lässt den Ventilator der Heizung allein laufen, um frische Luft ohne Wärme durch die Kabine zu blasen.",
+      "context": "Laut Handbuch dient er zur Lüftung im Sommer und zum Abkühlen der Heizung, bevor sie ausgeschaltet wird.",
+      "positions": {
+        "ON": "Der Ventilator läuft.",
+        "OFF": "Der Ventilator ist aus."
+      }
+    },
+    "ko50/ko50-temp": {
+      "name": "KO-50-Solltemperaturknopf",
+      "text": "Dreht man diesen Knopf, stellt man die Temperatur ein, die die Heizung im Automatikbetrieb halten soll.",
+      "context": "Der Pilot stellt sie ein, bevor er START drückt."
+    },
+    "cb-groups/cb-group-buttons": {
+      "name": "ON-Taster der Sicherungsgruppen 1-9",
+      "text": "Jeder dieser neun Taster schaltet alle Sicherungen seiner Gruppe ein. Die Gruppen sind von 1 bis 9 nummeriert.",
+      "context": "Laut Handbuch werden vor dem Start alle Sicherungen eingeschaltet. Sicherungen für Enteisung und Triebwerkssteuerung können aus bleiben, wenn sie nicht gebraucht werden."
+    },
+    "left-cb/lcb-jettison": {
+      "name": "Notabwurf-Sicherungen (Signalrakete, scharf, Strom, Bomben und GUV)",
+      "text": "Diese vier Sicherungen versorgen den Notabwurf der Waffen und den Signalraketenkreis mit Strom. Ohne sie tut der Notabwurfschalter nichts.",
+      "context": "Der Pilot prüft sie vor einem Angriff. Die Notabwurfschalter sind an den Waffenfeldern.",
+      "positions": {
+        "ON": "Die Sicherung ist geschlossen, der Stromkreis hat Strom.",
+        "OFF": "Die Sicherung ist offen, der Stromkreis ist abgeschaltet."
+      }
+    },
+    "left-cb/lcb-guns": {
+      "name": "Sicherungen der Waffenbehälter (PKT, 800 elektrischer Start, 622, 800 außen, 311)",
+      "text": "Diese Sicherungen versorgen das Bug-Maschinengewehr und die Maschinengewehrbehälter (GUV) an den verschiedenen Waffenstationen. Die Zahlen 622, 800 und 624 sind die Waffentypen.",
+      "context": "Der Pilot schließt die für die geladenen Waffen. Das Handbuch führt das 7,62-mm-Gewehr 9-A-622 und den Granatwerfer 9-A-800 auf.",
+      "positions": {
+        "ON": "Die Sicherung ist geschlossen, der Stromkreis hat Strom.",
+        "OFF": "Die Sicherung ist offen, der Stromkreis ist abgeschaltet."
+      }
+    },
+    "left-cb/lcb-rs-guv": {
+      "name": "RS/GUV-Sicherungen (Heizung, Warnung, Feuer)",
+      "text": "Diese drei Sicherungen versorgen die Heizung des Auslösekastens (ESBR), die Warnlampen und den Feuerkreis der Raketen und Maschinengewehrbehälter.",
+      "context": "Ohne sie funktionieren die Feuerkreise der Raketen und Gewehre nicht.",
+      "positions": {
+        "ON": "Die Sicherung ist geschlossen, der Stromkreis hat Strom.",
+        "OFF": "Die Sicherung ist offen, der Stromkreis ist abgeschaltet."
+      }
+    },
+    "left-cb/lcb-bombs": {
+      "name": "Sicherungen des Bombensystems (Ausrüstung, Steuerung, Zündung, ESBR)",
+      "text": "Diese vier Sicherungen versorgen die Bombenabwurfausrüstung: die Ausrüstung, die Steuerung, den Zündkreis und den elektrischen Auslösekasten.",
+      "context": "Laut Handbuch müssen alle nötigen Sicherungen an sein, bevor Bomben abgeworfen werden.",
+      "positions": {
+        "ON": "Die Sicherung ist geschlossen, der Stromkreis hat Strom.",
+        "OFF": "Die Sicherung ist offen, der Stromkreis ist abgeschaltet."
+      }
+    },
+    "left-cb/master-arm": {
+      "name": "MASTER-ARM-Schalter (Waffen sicher / scharf)",
+      "text": "Das ist der Hauptsicherheitsschalter für alle Waffen. Ist er aus, kann nichts abgefeuert oder abgeworfen werden, auch wenn die anderen Waffenschalter an sind. Eine rote Lampe leuchtet, wenn er an ist.",
+      "context": "Er sitzt über der linken Beobachtungskuppel. Das Handbuch nennt ihn eine Schutzmaßnahme für Bodenarbeiten mit der Besatzung und für das Laden von Waffen.",
+      "positions": {
+        "ON": "Die Waffen sind scharf und können feuern.",
+        "OFF": "Die Waffen sind sicher; nichts kann feuern."
+      }
+    },
+    "left-cb/lcb-panels": {
+      "name": "Zielkorrekturtabelle, Waffen-Scharfmachfeld und Munitionsanzeigen",
+      "text": "Diese Teile der linken Konsole sind im Spiel keine Schalter: eine Tabelle für Visierkorrekturen, das Waffen-Scharfmachfeld, die Waffensicherungen und die Anzeigen der restlichen Munition.",
+      "context": "Das Handbuch zeigt den Master-Arm-Schalter über der linken Beobachtungskuppel; ist er aus, kann keine Waffe feuern."
+    },
+    "right-cb-radio/cb-intercom-radio": {
+      "name": "Sicherungen für Bordsprechanlage und Funk (SPU, R-863, 6201 IFF, Funkmesser)",
+      "text": "Jede davon ist eine Sicherung, ein Schutzschalter, der den Strom eines Stromkreises abschaltet, wenn er zu viel zieht. Diese Gruppe schützt die Bordsprechanlage, das Kommandofunkgerät R-863, die IFF-Box 6201 und den Funkmesser. Im Spiel kann jede an- und ausgeklickt werden.",
+      "context": "Das Handbuch des R-863 sagt, die Sicherung des Kommandofunkgeräts und die der Bordsprechanlage vor dem Gebrauch des Funkgeräts einzuschalten.",
+      "positions": {
+        "ON": "Die Sicherung ist geschlossen, der Stromkreis hat Strom.",
+        "OFF": "Die Sicherung ist offen, der Stromkreis ist abgeschaltet."
+      }
+    },
+    "right-cb-radio/cb-nav-radio": {
+      "name": "Sicherungen der Navigationsfunkgeräte (Doppler, Höhenmesser, ARK-9, ARK-UD)",
+      "text": "Jede davon ist eine Sicherung, ein Schutzschalter, der den Strom eines Stromkreises abschaltet, wenn er zu viel zieht. Diese Gruppe schützt den Doppler-Navigator, den Radarhöhenmesser und die Funkkompasse ARK-UD und ARK-9. Im Spiel kann jede an- und ausgeklickt werden.",
+      "context": "Der Radarhöhenmesser und der Doppler brauchen neben ihrem Stromschalter je eine eigene Sicherung.",
+      "positions": {
+        "ON": "Die Sicherung ist geschlossen, der Stromkreis hat Strom.",
+        "OFF": "Die Sicherung ist offen, der Stromkreis ist abgeschaltet."
+      }
+    },
+    "right-cb-spu7/cop-spu-radio-ics": {
+      "name": "SPU-7-Schalter RADIO / ICS (Kopilot)",
+      "text": "Dieser Schalter bestimmt, was der Abzug des Kopiloten tut: auf der Bordsprechanlage oder auf dem gewählten Funkgerät sprechen.",
+      "context": "Er funktioniert wie der Schalter des Piloten.",
+      "positions": {
+        "RADIO": "Der zweite Abzugsklick sendet auf dem Funkgerät.",
+        "ICS": "Der Abzug spricht immer auf der Bordsprechanlage."
+      }
+    },
+    "right-cb-spu7/cop-spu-call": {
+      "name": "SPU-7-Rundruftaster (Kopilot)",
+      "text": "Im echten Hubschrauber ruft dieser Taster alle Besatzungsplätze. Das Spiel markiert ihn mit N/F, nicht funktionsfähig.",
+      "context": "Er ist das Gegenstück des Kopiloten zum Rufknopf des Piloten."
+    },
+    "right-cb-spu7/cop-spu-network": {
+      "name": "SPU-7-Netzschalter 1/2 (Kopilot)",
+      "text": "Die Ausführung des Kopiloten des Netzschalters, der zwischen zwei Sprechanlagen-Netzen wählen würde. Laut Handbuch wird er nicht benutzt.",
+      "context": "Das ist das Gegenstück des Kopiloten zum Schalter des Piloten und hat in DCS ebenfalls keine Funktion.",
+      "positions": {
+        "1": "Netz 1; nicht benutzt.",
+        "2": "Netz 2; nicht benutzt."
+      }
+    },
+    "right-cb-spu7/cop-spu-source": {
+      "name": "SPU-7-Funkquellenwähler (Kopilot)",
+      "text": "Dieser Drehknopf wählt, welches Funkgerät der Kopilot hört und auf welchem er spricht.",
+      "context": "Die Auswahl ist dieselbe wie an der Box des Piloten."
+    },
+    "right-cb-spu7/cop-spu-master": {
+      "name": "SPU-7-Gesamtlautstärkeknopf (Kopilot)",
+      "text": "Dieser Knopf stellt die Lautstärke der Bordsprechanlage für den Kopiloten ein.",
+      "context": "Die zwei Lautstärkeknöpfe tauschen ihre Rollen, wenn der Schalter RADIO/ICS wechselt."
+    },
+    "right-cb-spu7/cop-spu-monitor": {
+      "name": "SPU-7-Mithörlautstärkeknopf (Kopilot)",
+      "text": "Dieser Knopf stellt die Lautstärke des Funkgeräts ein, das der Kopilot hört.",
+      "context": "Er wird zusammen mit dem Gesamtlautstärkeknopf benutzt."
+    },
+    "right-cb-systems/cb-defrost": {
+      "name": "Enteisungssicherungen (Triebwerks-Staubschutz, Steuerung, Scheibe, Eismelder)",
+      "text": "Jede davon ist eine Sicherung, ein Schutzschalter, der den Strom eines Stromkreises abschaltet, wenn er zu viel zieht. Diese Gruppe schützt die Enteisungsanlage: die Einlaufheizungen der Triebwerke, die Steuerung, die Scheibenheizung und den Eismelder RIO-3. Im Spiel kann jede an- und ausgeklickt werden.",
+      "context": "Laut Handbuch schaltet der Pilot die Sicherungen bei der Cockpitkontrolle vor dem Triebwerksstart ein. Die Enteisungssicherungen dürfen aus bleiben, wenn sie nicht gebraucht werden.",
+      "positions": {
+        "ON": "Die Sicherung ist geschlossen, der Stromkreis hat Strom.",
+        "OFF": "Die Sicherung ist offen, der Stromkreis ist abgeschaltet."
+      }
+    },
+    "right-cb-systems/cb-wipers": {
+      "name": "Scheibenwischer-Sicherungen (links, rechts)",
+      "text": "Jede davon ist eine Sicherung, ein Schutzschalter, der den Strom eines Stromkreises abschaltet, wenn er zu viel zieht. Diese Gruppe schützt die zwei Scheibenwischer. Im Spiel kann jede an- und ausgeklickt werden.",
+      "context": "Laut Handbuch schaltet der Pilot die Sicherungen bei der Cockpitkontrolle vor dem Triebwerksstart ein. Ohne sie laufen die Wischer nicht.",
+      "positions": {
+        "ON": "Die Sicherung ist geschlossen, der Stromkreis hat Strom.",
+        "OFF": "Die Sicherung ist offen, der Stromkreis ist abgeschaltet."
+      }
+    },
+    "right-cb-systems/cb-ko50": {
+      "name": "Sicherung der Heizung KO-50",
+      "text": "Jede davon ist eine Sicherung, ein Schutzschalter, der den Strom eines Stromkreises abschaltet, wenn er zu viel zieht. Diese Gruppe schützt die Kabinenheizung KO-50. Im Spiel kann jede an- und ausgeklickt werden.",
+      "context": "Laut Handbuch schaltet der Pilot die Sicherungen bei der Cockpitkontrolle vor dem Triebwerksstart ein. Sie muss an sein, damit die Heizung startet.",
+      "positions": {
+        "ON": "Die Sicherung ist geschlossen, der Stromkreis hat Strom.",
+        "OFF": "Die Sicherung ist offen, der Stromkreis ist abgeschaltet."
+      }
+    },
+    "right-cb-systems/cb-fire": {
+      "name": "Brandschutz-Sicherungen (Meldung, erste und zweite Flasche)",
+      "text": "Jede davon ist eine Sicherung, ein Schutzschalter, der den Strom eines Stromkreises abschaltet, wenn er zu viel zieht. Diese Gruppe schützt die Brandschutzanlage: die Feuermeldung und die Löschkreise der ersten und zweiten Stufe. Im Spiel kann jede an- und ausgeklickt werden.",
+      "context": "Laut Handbuch werden die Brandschutz-Sicherungen eingeschaltet und die Feuerkreise vor dem Start geprüft; nach dem Abstellen werden sie ausgeschaltet.",
+      "positions": {
+        "ON": "Die Sicherung ist geschlossen, der Stromkreis hat Strom.",
+        "OFF": "Die Sicherung ist offen, der Stromkreis ist abgeschaltet."
+      }
+    },
+    "right-cb-systems/cb-hydraulics": {
+      "name": "Hydraulik-Sicherungen (Haupt, Reserve)",
+      "text": "Jede davon ist eine Sicherung, ein Schutzschalter, der den Strom eines Stromkreises abschaltet, wenn er zu viel zieht. Diese Gruppe schützt die Haupt- und die Reservehydraulikanlage. Im Spiel kann jede an- und ausgeklickt werden.",
+      "context": "Laut Handbuch werden die Sicherungen der Haupt- und Reservehydraulik eingeschaltet, bevor die Hydraulikanlagen geprüft werden.",
+      "positions": {
+        "ON": "Die Sicherung ist geschlossen, der Stromkreis hat Strom.",
+        "OFF": "Die Sicherung ist offen, der Stromkreis ist abgeschaltet."
+      }
+    },
+    "right-cb-systems/cb-autopilot": {
+      "name": "Autopilot-Sicherungen (Haupt, Reibung, elektrische Kupplungen)",
+      "text": "Jede davon ist eine Sicherung, ein Schutzschalter, der den Strom eines Stromkreises abschaltet, wenn er zu viel zieht. Diese Gruppe schützt den Autopiloten AP-34B: die Hauptversorgung, die Reibung und die elektrischen Kupplungen. Im Spiel kann jede an- und ausgeklickt werden.",
+      "context": "Laut Handbuch wird der Autopilot über diese drei Sicherungen an der rechten Konsole mit Strom versorgt.",
+      "positions": {
+        "ON": "Die Sicherung ist geschlossen, der Stromkreis hat Strom.",
+        "OFF": "Die Sicherung ist offen, der Stromkreis ist abgeschaltet."
+      }
+    },
+    "right-cb-systems/cb-fuel": {
+      "name": "Sicherungen der Kraftstoffanlage (Pumpen, Kraftstoffmesser, Ventile)",
+      "text": "Jede davon ist eine Sicherung, ein Schutzschalter, der den Strom eines Stromkreises abschaltet, wenn er zu viel zieht. Diese Gruppe schützt die Kraftstoffanlage: die drei Tankpumpen, die Kraftstoffanzeige und die Absperr- und Bypassventile. Im Spiel kann jede an- und ausgeklickt werden.",
+      "context": "Die Schalter am Kraftstofffeld funktionieren nur, wenn diese Sicherungen an sind; das Handbuch führt sie vor der Kraftstoffkontrolle auf.",
+      "positions": {
+        "ON": "Die Sicherung ist geschlossen, der Stromkreis hat Strom.",
+        "OFF": "Die Sicherung ist offen, der Stromkreis ist abgeschaltet."
+      }
+    },
+    "right-cb-systems/cb-start": {
+      "name": "Sicherungen für Triebwerks- und APU-Start (Zündung, Start)",
+      "text": "Jede davon ist eine Sicherung, ein Schutzschalter, der den Strom eines Stromkreises abschaltet, wenn er zu viel zieht. Diese Gruppe schützt die Startanlage: die Zündung und die Startkreise der Haupttriebwerke und der APU. Im Spiel kann jede an- und ausgeklickt werden.",
+      "context": "Laut Handbuch werden die Start- und Zündungssicherungen eingeschaltet, bevor die Triebwerke gestartet werden.",
+      "positions": {
+        "ON": "Die Sicherung ist geschlossen, der Stromkreis hat Strom.",
+        "OFF": "Die Sicherung ist offen, der Stromkreis ist abgeschaltet."
+      }
+    },
+    "right-cb-systems/cb-instruments": {
+      "name": "Instrumentensicherungen (SPUU-52, T-819, Wendezeiger, Drehzahlregelung, unbenannt)",
+      "text": "Jede davon ist eine Sicherung, ein Schutzschalter, der den Strom eines Stromkreises abschaltet, wenn er zu viel zieht. Diese Gruppe schützt den Heckrotor-Anstellbegrenzer SPUU-52, das T-819, den Wendezeiger, die Rotordrehzahlregelung und eine Sicherung ohne Namen. Im Spiel kann jede an- und ausgeklickt werden.",
+      "context": "Laut Handbuch schaltet der Pilot die Sicherungen bei der Cockpitkontrolle vor dem Triebwerksstart ein. Das Handbuch beschreibt das T-819 und die unbenannte Sicherung nicht.",
+      "positions": {
+        "ON": "Die Sicherung ist geschlossen, der Stromkreis hat Strom.",
+        "OFF": "Die Sicherung ist offen, der Stromkreis ist abgeschaltet."
+      }
+    },
+    "right-cb-systems/cb-lamp-lights": {
+      "name": "Sicherungen für Lampentest und Außenbeleuchtung",
+      "text": "Jede davon ist eine Sicherung, ein Schutzschalter, der den Strom eines Stromkreises abschaltet, wenn er zu viel zieht. Diese Gruppe schützt den Lampentest, die Flügellichter, die Navigationslichter, die zwei Such- und Landescheinwerfer und die PRF-4-Lichter. Im Spiel kann jede an- und ausgeklickt werden.",
+      "context": "Laut Handbuch schaltet der Pilot die Sicherungen bei der Cockpitkontrolle vor dem Triebwerksstart ein. Laut Handbuch sind die PRF-4-Lichter an den Fahrwerksstreben nicht umgesetzt.",
+      "positions": {
+        "ON": "Die Sicherung ist geschlossen, der Stromkreis hat Strom.",
+        "OFF": "Die Sicherung ist offen, der Stromkreis ist abgeschaltet."
+      }
+    },
+    "right-cb-systems/cb-cargo-hook": {
+      "name": "Sicherungen der Schlossöffnungssteuerung (Haupt, Reserve)",
+      "text": "Jede davon ist eine Sicherung, ein Schutzschalter, der den Strom eines Stromkreises abschaltet, wenn er zu viel zieht. Diese Gruppe schützt die Schlossöffnungssteuerung, Haupt und Reserve. Laut Handbuch braucht der Lasthaken seine Haupt- und Hilfssicherung an diesem Feld. Im Spiel kann jede an- und ausgeklickt werden.",
+      "context": "Vor einem Flug mit Außenlast schließt der Pilot diese Sicherungen, damit der Haken geöffnet werden kann.",
+      "positions": {
+        "ON": "Die Sicherung ist geschlossen, der Stromkreis hat Strom.",
+        "OFF": "Die Sicherung ist offen, der Stromkreis ist abgeschaltet."
+      }
+    },
+    "bombs-panel/payload-profile": {
+      "name": "Zuladungsprofil-Wähler (I-V, GUV)",
+      "text": "Dieser Wähler sagt dem Abwurfsystem, was der Hubschrauber trägt und in welcher Reihenfolge die Stationen abwerfen. So wird verhindert, dass das Falsche abgeworfen wird.",
+      "context": "Das Handbuch erklärt Profil I als nur Raketen (nichts wird abgeworfen), II als nur Bomben und die Stellung GUV als Feuerkreise der Maschinengewehrbehälter.",
+      "positions": {
+        "I": "Nur Raketen; keine Bomben fallen.",
+        "II": "Alle Bomben fallen nacheinander, beginnend an Station 6.",
+        "III": "Vier Bomben plus zwei Raketenwerfer.",
+        "IV": "Zwei schwere Bomben plus zwei Raketenwerfer.",
+        "V": "Zwei schwere Bomben plus zwei Standardbomben.",
+        "GUV": "Die Kreise der Maschinengewehrbehälter haben Strom, andere sind gesperrt."
+      }
+    },
+    "bombs-panel/bombs-master": {
+      "name": "BOMBS-MASTER-Schalter (Hauptschalter Bomben)",
+      "text": "Das ist der Hauptschalter für das Abwerfen von Bomben. Ist er aus, wird keine Bombe ausgelöst.",
+      "context": "Die Lampe des Bombenkreises leuchtet, wenn er an ist.",
+      "positions": {
+        "ON": "Die Bombenabwurfkreise haben Strom.",
+        "OFF": "Die Bombenabwurfkreise sind aus."
+      }
+    },
+    "bombs-panel/cop-jettison-armed": {
+      "name": "Schalter JETTISON ARMED mit Abdeckung (Kopilot)",
+      "text": "Dieser geschützte Schalter bestimmt, ob Bomben, die im Notfall abgeworfen werden, beim Aufprall explodieren.",
+      "context": "Eine Lampe auf dem Feld zeigt, wenn der Schalter an ist.",
+      "positions": {
+        "ON": "Abgeworfene Bomben sind scharf.",
+        "OFF": "Abgeworfene Bomben sind nicht scharf."
+      }
+    },
+    "bombs-panel/cop-jettison": {
+      "name": "Notabwurf-Schalter mit Abdeckung (Kopilot)",
+      "text": "Dieser geschützte Taster wirft im Notfall Lasten ab. Die Klappe wird zuerst angehoben.",
+      "context": "Laut Handbuch gibt der Notabwurf des Kopiloten nur das frei, was zum gewählten Zuladungsprofil passt, anders als der Schalter des Piloten, der alles abwirft."
+    },
+    "bombs-panel/cop-lamp-test": {
+      "name": "Lampentest-Taster des Bombenfeldes",
+      "text": "Drückt man diesen Taster, leuchten alle Lampen des Bombenfeldes auf, um sie zu prüfen.",
+      "context": "Er gehört zur Kontrolle vor dem Flug."
+    },
+    "bombs-panel/cop-esbr-heat": {
+      "name": "Heizungsschalter des ESBR",
+      "text": "Dieser Schalter heizt den elektrischen Bombenabwurfkasten bei Frost.",
+      "context": "Laut Handbuch ist die Heizung nicht umgesetzt.",
+      "positions": {
+        "ON": "Die Heizung ist an; keine Wirkung in DCS.",
+        "OFF": "Die Heizung ist aus."
+      }
+    },
+    "esbr/esbr-knob": {
+      "name": "ESBR-Signaleinstellknopf",
+      "text": "Dieser Knopf stellt ein, ob Bomben einzeln oder paarweise fallen und welche Nummer in der Abwurfreihenfolge als Nächste dran ist.",
+      "context": "Die Stellungen I und II bedeuten Einzel- und Paarabwurf. Laut Handbuch sind die Stellungen 0 und der Schrägstrich nur für Bodentests und lösen nichts aus."
+    },
+    "esbr/esbr-power": {
+      "name": "ESBR-Stromschalter",
+      "text": "Dieser Schalter verbindet den Auslösekasten mit den Bombenabwurfkreisen.",
+      "context": "Laut Handbuch wird er vor dem Abwurf von Bomben auf ON (rechts) gestellt.",
+      "positions": {
+        "ON": "Der Auslösekasten ist verbunden.",
+        "OFF": "Der Auslösekasten ist aus."
+      }
+    },
+    "pkv-sight/pkv-elevation": {
+      "name": "PKV-Visier-Höhenknopf (Limbus)",
+      "text": "Dieser Knopf kippt das Spiegelglas des Visiers nach oben oder unten, um den Visierhöhenwinkel einzustellen.",
+      "context": "Laut Handbuch hängt der Visierhöhenwinkel von der Waffe und der Entfernung ab; Tabellen stehen im Kampfkapitel."
+    },
+    "pkv-sight/pkv-filter": {
+      "name": "PKV-Sonnenfilterhebel",
+      "text": "Dieser Hebel schwenkt ein dunkleres Filterglas vor das Visier. Das hilft, wenn der Hintergrund sehr hell ist, etwa durch die Sonne.",
+      "context": "Laut Handbuch ist das Filterglas wegklappbar.",
+      "positions": {
+        "SET UP": "Der Filter ist vor dem Visier.",
+        "REMOVE": "Der Filter ist weggeklappt."
+      }
+    },
+    "pkv-sight/pkv-reticle-mask": {
+      "name": "PKV-Zielmarken-Maskenhebel",
+      "text": "Dieser Hebel bringt einen zweiten Teil des Visiers hinein oder heraus. Das Spiel nennt ihn 'Sight Fixed Reticle Mask Lever'.",
+      "context": "Das Handbuch beschreibt diesen Hebel nicht. Es beschreibt aber ein wegklappbares mechanisches Ringvisier als Reserve.",
+      "positions": {
+        "SET UP": "Der Teil ist eingeschwenkt.",
+        "REMOVE": "Der Teil ist entfernt."
+      }
+    },
+    "dc-power/battery1": {
+      "name": "Schalter Batterie 1",
+      "text": "Dieser Schalter verbindet die erste Batterie mit der Elektrik des Hubschraubers.",
+      "context": "Laut Handbuch werden zu Beginn beide Batterien eingeschaltet und geprüft, dass die Spannung der Batterie-Sammelschiene mindestens 24 Volt beträgt.",
+      "positions": {
+        "ON": "Batterie 1 ist verbunden.",
+        "OFF": "Batterie 1 ist getrennt."
+      }
+    },
+    "dc-power/battery2": {
+      "name": "Schalter Batterie 2",
+      "text": "Dieser Schalter verbindet die zweite Batterie mit der Elektrik des Hubschraubers.",
+      "context": "Die zwei Batterien teilen sich die Last. Das Handbuch beschreibt, wie jede Batterie einzeln geprüft wird.",
+      "positions": {
+        "ON": "Batterie 2 ist verbunden.",
+        "OFF": "Batterie 2 ist getrennt."
+      }
+    },
+    "dc-power/rectifiers": {
+      "name": "Schalter Gleichrichter 1, 2, 3",
+      "text": "Diese drei Schalter verbinden die Gleichrichter, Geräte, die den Wechselstrom der Generatoren in Gleichstrom für den größten Teil des Hubschraubers verwandeln.",
+      "context": "Laut Handbuch werden die Gleichrichter eingeschaltet, nachdem die Triebwerke laufen. Der dritte Gleichrichter ist eine Reserve für die anderen.",
+      "positions": {
+        "ON": "Der Gleichrichter speist das Gleichstromnetz.",
+        "OFF": "Der Gleichrichter ist aus."
+      }
+    },
+    "dc-power/dc-ground-power": {
+      "name": "Schalter Bodenstrom (DC)",
+      "text": "Dieser Schalter verbindet den Strom einer externen Steckdose am Boden.",
+      "context": "Laut Handbuch leuchtet eine EXT-PWR-Lampe, wenn der Bodenstrom verbunden ist. Er wird vor dem Abheben ausgeschaltet.",
+      "positions": {
+        "ON": "Der Bodenstrom speist das Gleichstromnetz.",
+        "OFF": "Der Bodenstrom ist getrennt."
+      }
+    },
+    "dc-power/dc-annunciators": {
+      "name": "Leuchten für Gleichrichter, Fremdstrom und BIT",
+      "text": "Diese Lampen zeigen, dass ein Gleichrichter von der Batterie-Sammelschiene getrennt ist, dass Fremdstrom angeschlossen ist und das Ergebnis des eingebauten Tests.",
+      "context": "Laut Handbuch leuchtet eine EXT-PWR-Lampe, wenn Bodenstrom angeschlossen ist, und eine Lampe zeigt die von der Batterie-Sammelschiene getrennten Gleichrichter, während die Generatoren laufen."
+    },
+    "dc-power/equipment-test": {
+      "name": "Ausrüstungstest-Schalter (APU-Anlasser-Generator an Batterie-Sammelschiene)",
+      "text": "Dieser Schalter verbindet den Anlasser-Generator der APU mit der Batterie-Sammelschiene, damit die APU den Hubschrauber anstelle der Batterien versorgen kann.",
+      "context": "Laut Handbuch wird er zusammen mit dem Reservegeneratorschalter bei einem Start von den Batterien benutzt.",
+      "positions": {
+        "ON": "Der APU-Generator kann die Batterie-Sammelschiene speisen.",
+        "OFF": "Der APU-Generator ist nicht verbunden."
+      }
+    },
+    "dc-power/standby-gen": {
+      "name": "Reservegeneratorschalter (APU-Generator)",
+      "text": "Dieser Schalter lässt den Anlasser-Generator der APU als Generator arbeiten, eine kleine Reserve-Stromquelle.",
+      "context": "Laut Handbuch werden die Haupttriebwerke nicht gestartet, während die APU in dieser Generatorbetriebsart läuft.",
+      "positions": {
+        "ON": "Der Anlasser-Generator der APU macht Gleichstrom.",
+        "OFF": "Der Reservegenerator ist aus."
+      }
+    },
+    "dc-power/standby-gen-volts": {
+      "name": "Spannungsregler des Reservegenerators",
+      "text": "Dieser Knopf stellt die Spannung des Reservegenerators ein wenig nach oben oder unten ein.",
+      "context": "Laut Handbuch soll die Generatorspannung 27 bis 29 Volt betragen."
+    },
+    "dc-power/dc-voltmeter-selector": {
+      "name": "Gleichspannungs-Voltmeter-Wahlschalter",
+      "text": "Dieser Drehschalter wählt, welche Gleichstromquelle das Gleichspannungs-Voltmeter an der hinteren Konsole zeigt: die Batterien, die Batterie-Sammelschiene, die Gleichrichter oder den Bodenstrom.",
+      "context": "Laut Handbuch soll die Batterie-Sammelschiene mindestens 24 Volt und die Gleichrichter-Sammelschiene 27 bis 29 Volt zeigen."
+    },
+    "dc-power/dust-annunciators": {
+      "name": "Leuchten Staubschutz EIN der Triebwerke und Last des APU-Generators",
+      "text": "Zwei Lampen zeigen, dass die Staubschutzgeräte (PZU) des linken und rechten Triebwerks an sind. Eine kleine Anzeige zeigt die Last des APU-Generators.",
+      "context": "Laut Handbuch sollen die Staubschutzlampen etwa 30 Sekunden nach dem Einschalten leuchten."
+    },
+    "exterior-lights/nav-lights": {
+      "name": "Schalter der Navigationslichter (BRIGHT / OFF / DIM)",
+      "text": "Dieser Schalter schaltet die roten, grünen und weißen Positionslichter ein und stellt sie hell oder gedimmt.",
+      "context": "Andere Piloten sehen sie und wissen, wo der Hubschrauber ist. Die Neutralstellung schaltet alle aus.",
+      "positions": {
+        "BRIGHT": "Die Navigationslichter leuchten hell.",
+        "OFF": "Die Navigationslichter sind aus.",
+        "DIM": "Die Navigationslichter leuchten gedimmt."
+      }
+    },
+    "exterior-lights/formation-lights": {
+      "name": "Schalter der Formationslichter (BRIGHT / OFF / DIM)",
+      "text": "Dieser Schalter schaltet die drei Formationslichter ein und stellt sie hell oder gedimmt.",
+      "context": "Laut Handbuch helfen sie den Piloten, nachts die Formation zu halten.",
+      "positions": {
+        "BRIGHT": "Die Formationslichter leuchten hell.",
+        "OFF": "Die Formationslichter sind aus.",
+        "DIM": "Die Formationslichter leuchten gedimmt."
+      }
+    },
+    "exterior-lights/tip-lights": {
+      "name": "Schalter der Blattspitzenlichter",
+      "text": "Dieser Schalter schaltet kleine Lichter an den Spitzen der Hauptrotorblätter ein.",
+      "context": "Laut Handbuch zeigen sie bei Bewegung nachts oder bei schlechter Sicht, wo die Blätter sind.",
+      "positions": {
+        "ON": "Die Blattspitzenlichter sind an.",
+        "OFF": "Die Blattspitzenlichter sind aus."
+      }
+    },
+    "exterior-lights/strobe": {
+      "name": "Schalter des Blitzlichts (Antikollisionslicht)",
+      "text": "Dieser Schalter schaltet das blinkende Antikollisionslicht oben auf dem Heck ein.",
+      "context": "Laut Handbuch zeigt es nachts, bei schlechtem Wetter oder nach einer Notlandung, wo der Hubschrauber ist.",
+      "positions": {
+        "ON": "Das Blitzlicht blinkt.",
+        "OFF": "Das Blitzlicht ist aus."
+      }
+    },
+    "cabin-lights/cabin-lights-switches": {
+      "name": "Schalter für Dienst- und Allgemeinlicht der Frachtkabine",
+      "text": "Diese zwei Schalter schalten das Bereitschaftslicht (Dienstlicht) und das allgemeine Licht der Frachtkabine ein.",
+      "context": "Laut Handbuch ist die Beleuchtung der Frachtkabine im Spiel nicht umgesetzt.",
+      "positions": {
+        "ON": "Das Kabinenlicht ist an.",
+        "OFF": "Das Kabinenlicht ist aus."
+      }
+    },
+    "cabin-lights/right-red-dimmers": {
+      "name": "Rote Beleuchtungsdimmer der rechten Seite (Gruppe 1 und 2)",
+      "text": "Jeder Knopf stellt die Helligkeit des roten Hintergrundlichts seiner Gruppe auf der Seite des Kopiloten ein. Ganz heruntergedreht ist die Gruppe aus.",
+      "context": "Laut Handbuch beleuchten sie die Waffenkonsole, die R-863-Funkfelder, das rechte Sicherungsfeld und die Instrumente des Kopiloten."
+    },
+    "cabin-lights/backlight-55v-dimmer": {
+      "name": "Helligkeitsregler der 5,5-V-Hintergrundbeleuchtung",
+      "text": "Dieser Knopf stellt ein, wie hell das rote 5,5-Volt-Hintergrundlicht ist.",
+      "context": "Die 5,5-Volt-Hintergrundbeleuchtung wird am rechten Dreiecksfeld eingeschaltet."
+    },
+    "heating-protection/pitot-heaters": {
+      "name": "Schalter der linken und rechten Pitotheizung",
+      "text": "Diese zwei Schalter heizen das linke und das rechte Pitotrohr. Die Pitotrohre sind kleine Rohre an der Nase, die die Windgeschwindigkeit messen, und die Wärme hält sie eisfrei.",
+      "context": "Die Testtaster an den Dreiecksfeldern prüfen die Heizungen.",
+      "positions": {
+        "ON": "Die Pitotheizung ist an.",
+        "OFF": "Die Pitotheizung ist aus."
+      }
+    },
+    "heating-protection/clock-heat": {
+      "name": "Schalter der Uhrenheizung",
+      "text": "Dieser Schalter heizt die Uhr bei kaltem Wetter. Die Uhr braucht die Heizung, wenn die Temperatur unter 5 Grad C liegt.",
+      "context": "Er ist der Kältehelfer der Uhr AChS-1.",
+      "positions": {
+        "ON": "Die Uhrenheizung ist an.",
+        "OFF": "Die Uhrenheizung ist aus."
+      }
+    },
+    "heating-protection/battery-heat": {
+      "name": "Schalter der Batterieheizung",
+      "text": "Dieser Schalter heizt die Batterien bei kaltem Wetter.",
+      "context": "Das Handbuch beschreibt diesen Schalter nicht; das Spiel nennt ihn 'Battery Heating Switch'.",
+      "positions": {
+        "ON": "Die Batterieheizung ist an.",
+        "OFF": "Die Batterieheizung ist aus."
+      }
+    },
+    "heating-protection/dust-protection": {
+      "name": "Schalter des Triebwerks-Staubschutzes (links, rechts)",
+      "text": "Diese Schalter schalten den Staubschutz (PZU) jedes Triebwerks ein. Er fängt Sand und Staub ab, bevor sie das Triebwerk erreichen.",
+      "context": "Laut Handbuch werden sie gleich nach dem Start der Triebwerke eingeschaltet.",
+      "positions": {
+        "ON": "Der Staubschutz ist an.",
+        "OFF": "Der Staubschutz ist aus."
+      }
+    },
+    "warning-light-controls/flasher": {
+      "name": "Blinkerschalter",
+      "text": "Dieser Schalter lässt die wichtigen Warnlampen blinken, etwa Feuer, Vereisung und wenig Kraftstoff.",
+      "context": "Das Handbuch nennt es das System MIGALKA (Blinken).",
+      "positions": {
+        "ON": "Die Warnlampen blinken.",
+        "OFF": "Die Warnlampen leuchten ruhig."
+      }
+    },
+    "warning-light-controls/day-night": {
+      "name": "Helligkeitsschalter der Warnleuchten (DAY / NIGHT)",
+      "text": "Dieser Schalter stellt die Warnlampen auf Tag- oder Nachthelligkeit. Nachts leuchten die Lampen mit halber Helligkeit.",
+      "context": "Der Pilot stellt ihn für Nachtflüge auf NIGHT, damit die Lampen ihn nicht blenden.",
+      "positions": {
+        "DAY": "Die Lampen leuchten mit voller Helligkeit.",
+        "NIGHT": "Die Lampen leuchten mit halber Helligkeit."
+      }
+    },
+    "pkt-selector/pkt-seat-switch": {
+      "name": "PKT-Wahlschalter (FLIGHT ENGINEER / PILOT)",
+      "text": "Dieser Schalter wählt, wer das Bug-Maschinengewehr steuert: der Bordtechniker oder der Pilot.",
+      "context": "Laut Handbuch ist das Bug-Maschinengewehr nicht umgesetzt, deshalb ist dieser Schalter in DCS nutzlos.",
+      "positions": {
+        "FLIGHT ENGINEER": "Der Platz des Bordtechnikers ist gewählt.",
+        "PILOT": "Der Platz des Piloten ist gewählt."
+      }
+    },
+    "meters/dc-voltmeter": {
+      "name": "Gleichspannungs-Voltmeter",
+      "text": "Diese Anzeige zeigt die Gleichspannung der mit dem Wahlschalter gewählten Quelle.",
+      "context": "Laut Handbuch zeigt eine gesunde Batterie-Sammelschiene mindestens 24 Volt."
+    },
+    "meters/battery-ammeters": {
+      "name": "Amperemeter Batterie 1 und 2",
+      "text": "Diese zwei Anzeigen zeigen, wie viel Strom aus jeder Batterie heraus- oder in sie hineinfließt.",
+      "context": "Ein großer Strom aus einer Batterie heraus bedeutet, dass sie viel Leistung abgibt."
+    },
+    "meters/rectifier-voltmeters": {
+      "name": "Voltmeter Gleichrichter 1, 2 und 3",
+      "text": "Diese drei Anzeigen zeigen die Spannung, die jeder Gleichrichter macht.",
+      "context": "Laut Handbuch soll die Spannung 27 bis 29 Volt betragen."
+    },
+    "meters/ac-voltmeter": {
+      "name": "Wechselspannungs-Voltmeter der Generatoren",
+      "text": "Diese Anzeige zeigt die Wechselspannung der mit dem AC-Wahlschalter gewählten Quelle.",
+      "context": "Laut Handbuch sollen die Generatoren 200 bis 205 Volt machen."
+    },
+    "meters/generator-ammeters": {
+      "name": "Amperemeter Wechselstromgenerator 1 und 2",
+      "text": "Diese Anzeigen zeigen, wie viel Strom jeder Wechselstromgenerator liefert.",
+      "context": "Fällt ein Generator aus, fällt seine Anzeige auf null."
+    },
+    "ac-power/ac-voltmeter-selector": {
+      "name": "Wechselspannungs-Voltmeter-Wahlschalter",
+      "text": "Dieser Drehschalter wählt, welche Wechselstromquelle das Wechselspannungs-Voltmeter zeigt: Generator 1, Generator 2, den Bodenstrom oder das 115-Volt-System.",
+      "context": "Laut Handbuch wird hier die Generatorspannung nach dem Einschalten geprüft."
+    },
+    "ac-power/ac-voltage-rotaries": {
+      "name": "Spannungsregler der Wechselstromgeneratoren 1 und 2",
+      "text": "Diese zwei Knöpfe stellen die Spannung von Generator 1 und Generator 2 ein wenig ein.",
+      "context": "Laut Handbuch soll die Spannung zwischen 200 und 205 Volt liegen. Das Spiel nutzt sie nur als Einstellung."
+    },
+    "ac-power/generator1": {
+      "name": "Schalter Generator 1",
+      "text": "Dieser Schalter verbindet Generator 1, der vom Hauptgetriebe angetrieben wird, mit der Elektrik.",
+      "context": "Laut Handbuch speist Generator 1 den Gleichrichter 1, den 36-Volt-Transformator und die Rotorenteisung.",
+      "positions": {
+        "ON": "Generator 1 speist das Netz.",
+        "OFF": "Generator 1 ist getrennt."
+      }
+    },
+    "ac-power/generator2": {
+      "name": "Schalter Generator 2",
+      "text": "Dieser Schalter verbindet Generator 2 mit der Elektrik.",
+      "context": "Laut Handbuch speist Generator 2 die Gleichrichter 2 und 3, den 115-Volt-Transformator und die Scheibenenteisung.",
+      "positions": {
+        "ON": "Generator 2 speist das Netz.",
+        "OFF": "Generator 2 ist getrennt."
+      }
+    },
+    "ac-power/ac-ground-power": {
+      "name": "Schalter Bodenstrom (AC)",
+      "text": "Dieser Schalter verbindet den Wechselstrom einer externen Steckdose am Boden.",
+      "context": "In DCS werden laut Handbuch Wechsel- und Gleichstrom-Bodenstrom gleichzeitig verbunden.",
+      "positions": {
+        "ON": "Der Wechselstrom vom Boden speist das Netz.",
+        "OFF": "Der Wechselstrom vom Boden ist getrennt."
+      }
+    },
+    "ac-power/inverter-115": {
+      "name": "Schalter des 115-V-Wechselrichters (MANUAL / OFF / AUTO)",
+      "text": "Dieser Schalter steuert den Wechselrichter, der aus den Batterien 115 Volt Wechselstrom macht, wenn die Generatoren nicht laufen.",
+      "context": "Laut Handbuch wird er zu Beginn auf MANUAL gestellt, damit einige Anzeigen arbeiten, und auf AUTO, sobald die Generatoren laufen.",
+      "positions": {
+        "MANUAL": "Der Wechselrichter läuft.",
+        "OFF": "Der Wechselrichter ist aus.",
+        "AUTO": "Der Wechselrichter startet von selbst, wenn die Generatoren ausfallen."
+      }
+    },
+    "ac-power/inverter-36": {
+      "name": "Schalter des 36-V-Wechselrichters (MANUAL / OFF / AUTO)",
+      "text": "Dieser Schalter steuert den Wechselrichter, der aus den Batterien 36 Volt Wechselstrom macht.",
+      "context": "Laut Handbuch bleibt er bei einem Batteriestart aus, um die Batterien zu schonen, und kommt auf AUTO, sobald die Generatoren laufen.",
+      "positions": {
+        "MANUAL": "Der Wechselrichter läuft.",
+        "OFF": "Der Wechselrichter ist aus.",
+        "AUTO": "Der Wechselrichter startet von selbst, wenn die Generatoren ausfallen."
+      }
+    },
+    "ac-power/ac-lamps": {
+      "name": "Leuchten für Generatorausfall und Fremdstrom",
+      "text": "Diese Lampen zeigen einen Ausfall von Generator 1 oder 2, dass Bodenstrom angeschlossen ist und dass der 115-Volt-Wechselrichter läuft.",
+      "context": "Eine Generatorausfall-Lampe geht zusammen mit einer Sprachmeldung des Warnsystems an."
+    },
+    "centre-red-lights/centre-red-dimmers": {
+      "name": "Zentrale rote Beleuchtungsdimmer (Gruppe 1 und 2)",
+      "text": "Jeder Knopf stellt die Helligkeit des roten Hintergrundlichts seiner Gruppe ein. Ganz heruntergedreht ist die Gruppe aus.",
+      "context": "Laut Handbuch beleuchten diese Knöpfe die zentrale Autopilotkonsole, die mittlere Dachkonsole und das Wechselstromfeld."
+    },
+    "windows/blisters": {
+      "name": "Verriegelungstaster der linken und rechten Beobachtungskuppel",
+      "text": "Diese zwei Taster öffnen oder schließen das Schiebefenster auf der linken oder der rechten Seite.",
+      "context": "Das Spiel nennt sie Open/Close Left Blister und Open/Close Right Blister."
+    },
+    "r828/r828-power": {
+      "name": "R-828-Stromschalter",
+      "text": "Dieser Schalter schaltet das Funkgerät R-828 ein und aus.",
+      "context": "Das Funkgerät braucht etwa 3 Minuten, bis es bereit ist.",
+      "positions": {
+        "ON": "Das Funkgerät R-828 hat Strom.",
+        "OFF": "Das Funkgerät R-828 ist aus."
+      }
+    },
+    "r828/r828-mode": {
+      "name": "R-828-Betriebsartenschalter (COMM / NAV, Sprache oder Peilung)",
+      "text": "Dieser Schalter wählt, ob das R-828 als Sprechfunkgerät oder als Antenne für das Anpeilgerät ARK-UD benutzt wird.",
+      "context": "Das Handbuch nennt die Stellungen VOICE und HOMING. Bei HOMING zeigt die Nadel auf der Kursanzeige auf das Signal.",
+      "positions": {
+        "COMM": "Sprechfunk.",
+        "NAV": "Anpeilung mit dem Gerät ARK-UD."
+      }
+    },
+    "r828/r828-channel": {
+      "name": "R-828-Kanalwähler",
+      "text": "Dieser Knopf wählt einen der zehn gespeicherten Kanäle.",
+      "context": "Laut Handbuch leuchtet die TUNING-Lampe 1 bis 5 Sekunden lang, während das Funkgerät abstimmt."
+    },
+    "r828/r828-squelch": {
+      "name": "R-828-Rauschsperrenschalter",
+      "text": "Dieser Schalter steuert den Rauschfilter des Funkgeräts, der das Rauschen abschneidet.",
+      "context": "Laut Handbuch wird er am Anfang auf OFF gestellt.",
+      "positions": {
+        "ON": "Der Rauschfilter ist an.",
+        "OFF": "Der Rauschfilter ist aus."
+      }
+    },
+    "r828/r828-volume": {
+      "name": "R-828-Lautstärkeknopf",
+      "text": "Dreht man diesen Knopf, wird das Funkgerät lauter oder leiser.",
+      "context": "Laut Handbuch wird er auf Maximum gestellt und an der Sprechanlagenbox geregelt."
+    },
+    "r828/r828-agc": {
+      "name": "R-828-Abstimmtaster (AGC)",
+      "text": "Drückt man diesen Taster, wird die automatische Verstärkungsregelung eingeschaltet, die den Sender an die Antenne anpasst.",
+      "context": "Das Handbuch beschreibt diesen Taster am Bedienfeld des R-828."
+    },
+    "yadro/yadro-mode": {
+      "name": "Yadro-1A-Betriebsartenschalter (OFF / OM / AM)",
+      "text": "Dieser Schalter schaltet das HF-Funkgerät ein und wählt die Übertragungsart: Einseitenband oder Amplitudenmodulation.",
+      "context": "Das Handbuch nennt die Stellungen OFF, SSB und AM; das Spiel beschriftet Einseitenband mit OM.",
+      "positions": {
+        "OFF": "Das Funkgerät ist aus.",
+        "OM": "Einseitenband (SSB).",
+        "AM": "Amplitudenmodulation."
+      }
+    },
+    "yadro/yadro-freq": {
+      "name": "Yadro-1A-Frequenzknöpfe (1 MHz, 100 kHz, 10 kHz, 1 kHz / 100 Hz)",
+      "text": "Diese vier Knöpfe stellen die Frequenz des HF-Funkgeräts Ziffer für Ziffer ein, vom Megahertz bis hinunter zu den Hunderten von Hertz.",
+      "context": "Laut Handbuch leuchtet die TUNING-Lampe, während das Funkgerät abstimmt, bis zu etwa 5 Sekunden."
+    },
+    "yadro/yadro-squelch": {
+      "name": "Yadro-1A-Rauschsperrenschalter",
+      "text": "Dieser Schalter steuert den Rauschfilter des HF-Funkgeräts.",
+      "context": "Laut Handbuch wird er am Anfang auf OFF gestellt.",
+      "positions": {
+        "ON": "Der Rauschfilter ist an.",
+        "OFF": "Der Rauschfilter ist aus."
+      }
+    },
+    "yadro/yadro-test": {
+      "name": "Yadro-1A-Testtaster (Kontrolle)",
+      "text": "Drückt man diesen Taster, beginnt der Selbsttest des HF-Funkgeräts. Die TEST-Lampe leuchtet, und im Kopfhörer ist Rauschen zu hören.",
+      "context": "Der Test prüft Empfangen, Senden und Abstimmen."
+    },
+    "yadro/yadro-volume": {
+      "name": "Yadro-1A-Lautstärkeknopf",
+      "text": "Dreht man diesen Knopf, wird das HF-Funkgerät lauter oder leiser.",
+      "context": "Laut Handbuch wird er auf Maximum gestellt."
+    },
+    "uv26/uv26-power": {
+      "name": "UV-26-Stromschalter",
+      "text": "Dieser Schalter schaltet den Flare-Werfer ein und aus.",
+      "context": "Er muss an sein, bevor Flares ausgeworfen werden können.",
+      "positions": {
+        "ON": "Das UV-26 hat Strom.",
+        "OFF": "Das UV-26 ist aus."
+      }
+    },
+    "uv26/uv26-side": {
+      "name": "UV-26-Seitenschalter des Werfers (LEFT / BOTH / RIGHT)",
+      "text": "Dieser Schalter wählt, von welcher Seite die Flares kommen: links, rechts oder beide.",
+      "context": "Die passenden Lampen in der Anzeige zeigen die Wahl.",
+      "positions": {
+        "LEFT": "Flares werden nur von der linken Seite ausgeworfen.",
+        "BOTH": "Flares werden von beiden Seiten ausgeworfen.",
+        "RIGHT": "Flares werden nur von der rechten Seite ausgeworfen."
+      }
+    },
+    "uv26/uv26-display-mode": {
+      "name": "UV-26-Anzeigeschalter (COUNTER / PROGRAMMING)",
+      "text": "Dieser Schalter wählt, was die Anzeige zeigt: die übrigen Flares oder die Programmzahlen.",
+      "context": "In der Programmansicht sind die drei Ziffern die Zahl der Abfolgen, die Flares pro Abfolge und das Intervall.",
+      "positions": {
+        "COUNTER": "Die Anzeige zeigt, wie viele Flares übrig sind.",
+        "PROGRAMMING": "Die Anzeige zeigt das Programm."
+      }
+    },
+    "uv26/uv26-sequence-length": {
+      "name": "UV-26-Taster für die Zahl in der Abfolge",
+      "text": "Jeder Druck auf diesen Taster ändert, wie viele Flares in einem Stoß des Programms ausgeworfen werden.",
+      "context": "Das Handbuch nennt ihn den SALVO-Taster."
+    },
+    "uv26/uv26-sequences": {
+      "name": "UV-26-Taster für die Zahl der Abfolgen",
+      "text": "Jeder Druck auf diesen Taster ändert, wie oft sich das Programm wiederholt. Bei 0 werden die Flares ohne Ende ausgeworfen, bis gestoppt wird.",
+      "context": "Das Handbuch nennt ihn den SEQUENCES-Taster."
+    },
+    "uv26/uv26-interval": {
+      "name": "UV-26-Taster für das Auswurfintervall",
+      "text": "Jeder Druck auf diesen Taster ändert die Zeit zwischen zwei Flares.",
+      "context": "Laut Handbuch ist die Zeit in Sekunden angegeben, und einige Einstellungen ergeben 0,125, 0,25 oder 0,5 Sekunden."
+    },
+    "uv26/uv26-start": {
+      "name": "UV-26-Taster zum Starten des Auswurfs",
+      "text": "Drückt man diesen Taster, läuft das eingestellte Flare-Programm ab.",
+      "context": "Der Pilot kann auch den Flare-Taster auf der Instrumententafel benutzen."
+    },
+    "uv26/uv26-stop": {
+      "name": "UV-26-Taster zum Stoppen des Auswurfs",
+      "text": "Drückt man diesen Taster, wird das laufende Flare-Programm gestoppt.",
+      "context": "Er ist nützlich beim endlosen Programm 0."
+    },
+    "uv26/uv26-reset": {
+      "name": "UV-26-Taster zum Zurücksetzen auf das Standardprogramm",
+      "text": "Drückt man diesen Taster, wird das Programm auf das Standardprogramm 110 zurückgesetzt: eine Abfolge, ein Flare, kurze Verzögerung.",
+      "context": "Laut Handbuch wirft das Standardprogramm bei jedem Druck ein Flare aus."
+    },
+    "pilot-cyclic/cyclic-stick": {
+      "name": "Cyclic-Steuerknüppel",
+      "text": "Bewegt man diesen Knüppel nach vorn, fliegt der Hubschrauber vorwärts, bewegt man ihn zurück, fliegt er rückwärts, und seitlich bewegt rutscht er zur Seite. Der Rotor kippt in dieselbe Richtung.",
+      "context": "Der Pilot benutzt ihn ständig. Laut Handbuch wächst seine Kraft mit dem Ausschlag, und der Trimmtaster setzt die Kraft auf null."
+    },
+    "pilot-cyclic/wheel-brake-lever": {
+      "name": "Radbremshebel",
+      "text": "Dieser Hebel vorn am Griff bremst die Räder. Je fester er gedrückt wird, desto mehr Luftdruck geht zu den Bremsen.",
+      "context": "Der Pilot nutzt ihn beim Rollen und Landen auf Rädern. Die Bremsdruckanzeige an der linken Konsole zeigt den Druck."
+    },
+    "pilot-cyclic/parking-brake": {
+      "name": "Feststellbremsen-Riegel",
+      "text": "Dieser Riegel hält den Radbremshebel in der gedrückten Stellung, damit der Hubschrauber beim Parken stehen bleibt.",
+      "context": "Das Handbuch nennt ihn den Abzug der Feststellbremse.",
+      "positions": {
+        "ON": "Die Bremse ist festgestellt.",
+        "OFF": "Die Bremse ist frei."
+      }
+    },
+    "pilot-cyclic/ics-radio-trigger": {
+      "name": "Abzug ICS / RADIO",
+      "text": "Dieser zweistufige Abzug vorn am Griff ist die Sprechtaste. Der erste Klick spricht auf der Bordsprechanlage, der zweite auf dem Funkgerät.",
+      "context": "Was der zweite Klick tut, hängt vom Schalter RADIO/ICS an der Sprechanlagenbox ab. Das Spiel nennt ihn den Abzugstaster, mit linker Maustaste für Funk und rechter für die Bordsprechanlage."
+    },
+    "pilot-cyclic/autopilot-off-button": {
+      "name": "Autopilot-OFF-Taster",
+      "text": "Drückt man diesen Taster am Griff, wird der Autopilot sofort ausgeschaltet.",
+      "context": "Laut Handbuch wird der Autopilot nach der Landung damit ausgeschaltet."
+    },
+    "pilot-cyclic/fire-button-l": {
+      "name": "FIRE-Taster",
+      "text": "Drückt man diesen Taster oben am Griff, feuert die Waffe, die am Waffenfeld gewählt ist.",
+      "context": "Die Waffen feuern nur, wenn der Master-Arm-Schalter und der Waffen-Hauptschalter an sind. Im Spiel schützt eine kleine Klappe den Taster."
+    },
+    "pilot-cyclic/fire-button-cover-l": {
+      "name": "Abdeckung des FIRE-Tasters",
+      "text": "Diese Klappe schützt den Feuertaster davor, aus Versehen gedrückt zu werden.",
+      "context": "Der Pilot öffnet sie vor einem Angriff.",
+      "positions": {
+        "OPEN": "Die Klappe ist offen, und der Taster kann gedrückt werden.",
+        "CLOSE": "Die Klappe schützt den Taster."
+      }
+    },
+    "pilot-cyclic/trim-button": {
+      "name": "TRIM-Taster (Trimmung lösen)",
+      "text": "Hält man diesen Taster gedrückt, wird die Kraft von Knüppel und Pedalen genommen. Wird er losgelassen, wird die neue Knüppelstellung zur neuen Neutralstellung.",
+      "context": "Piloten nutzen ihn, um den Hubschrauber in einer ruhigen Fluglage zu halten, ohne auf den Knüppel zu drücken."
+    },
+    "pilot-collective/collective-lever": {
+      "name": "Kollektivhebel",
+      "text": "Hebt man diesen Hebel, steigt der Hubschrauber, und senkt man ihn, sinkt er. Im Spiel bewegt die linke Maustaste den Kollektivhebel und die rechte den Drehgriff für den Schub.",
+      "context": "Kollektivhebel und Triebwerksleistung sind gekoppelt: Mehr Auftrieb braucht mehr Leistung. Die Rotordrehzahl hält der Triebwerksregler."
+    },
+    "pilot-collective/twist-throttle": {
+      "name": "Drehgriff (Throttle)",
+      "text": "Dreht man diesen Drehgriff am Kollektivhebel, ändert sich die Leistung beider Triebwerke zusammen. Ganz links laufen die Triebwerke im Leerlauf. Ganz rechts hält der Regler die Rotordrehzahl.",
+      "context": "Laut Handbuch wird der Drehgriff für den normalen Flug ganz nach rechts gedreht. Nach links gedreht schaltet er die automatische Rotordrehzahlregelung aus."
+    },
+    "pilot-collective/ecl-left": {
+      "name": "Zustandshebel des linken Triebwerks (ECL)",
+      "text": "Dieser kleine Hebel stellt die Leistung des linken Triebwerks allein ein. Die Normalstellung ist die mittlere Raste.",
+      "context": "Laut Handbuch werden die Hebel für Bodentests und Sonderfälle wie einen Triebwerksausfall benutzt."
+    },
+    "pilot-collective/ecl-right": {
+      "name": "Zustandshebel des rechten Triebwerks (ECL)",
+      "text": "Dieser kleine Hebel stellt die Leistung des rechten Triebwerks allein ein. Die Normalstellung ist die mittlere Raste.",
+      "context": "Beide Hebel auf Maximum geben Startleistung."
+    },
+    "pilot-collective/n2-trim": {
+      "name": "N2-Trimmschalter INCR-DECR",
+      "text": "Dieser Schalter mit drei Stellungen ändert die Drehzahl der Nutzturbine der Triebwerke ein wenig und damit die Drehzahl des Hauptrotors.",
+      "context": "Laut Handbuch wird er benutzt, um die Rotordrehzahl für den Start auf etwa 95 Prozent einzustellen. Er springt in die Mitte zurück.",
+      "positions": {
+        "INCR": "Erhöht die Drehzahl der Nutzturbine, solange er gehalten wird.",
+        "Middle": "Keine Änderung.",
+        "DECR": "Senkt die Drehzahl der Nutzturbine, solange er gehalten wird."
+      }
+    },
+    "pilot-collective/searchlight-hat": {
+      "name": "Suchscheinwerfer-Steuerschalter (Hat)",
+      "text": "Dieser Schalter mit fünf Stellungen richtet den Suchscheinwerfer aus: nach oben oder unten, um den Strahl zu heben oder zu senken, nach links oder rechts, um ihn zu drehen.",
+      "context": "Laut Handbuch gibt es denselben Hat am Kollektivhebel des Kopiloten. Das Licht selbst wird an der Instrumententafel eingeschaltet."
+    },
+    "pilot-collective/grip-finger-buttons": {
+      "name": "Fingertaster am Kollektivgriff (Spielteile)",
+      "text": "Das Spiel markiert dieses mit dem Finger bediente Teil am Kollektivgriff mit dem Namen 'SG FNGR1 L'. Das Handbuch beschreibt es nicht einzeln.",
+      "context": "Es ist ein anklickbares Teil des Kollektivgriffs im 3D-Modell."
+    },
+    "pilot-collective/emergency-cargo-release": {
+      "name": "Notabwurf-Taster der Last mit Abdeckung",
+      "text": "Drückt man diesen Taster, öffnet sich der Haken, der eine Last unter dem Hubschrauber hält, und die Last fällt. Eine Schutzklappe muss zuerst angehoben werden.",
+      "context": "Laut Handbuch haben die Notauslösung und die taktische Auslösung dasselbe Ergebnis; nur der elektrische Kreis unterscheidet sich."
+    },
+    "pilot-collective/tactical-cargo-release": {
+      "name": "Taktischer Lastauslöser mit Abdeckung",
+      "text": "Drückt man diesen Taster, öffnet sich der Lasthaken auf normale Weise. Eine Klappe schützt ihn.",
+      "context": "Der Pilot nutzt ihn, um die Last am Zielort abzusetzen."
+    },
+    "pilot-collective/clutch-release": {
+      "name": "CLUTCH-RELEASE-Taster",
+      "text": "Hält man diesen Taster, wird der Kollektivhebel freigegeben, sodass er sich leicht bewegen lässt. Wird er losgelassen, wird der Hebel wieder festgehalten.",
+      "context": "Laut Handbuch schaltet er auch den Höhenkanal des Autopiloten aus."
+    },
+    "copilot-cyclic/cop-ics-radio-trigger": {
+      "name": "Abzug ICS / RADIO (Kopilot)",
+      "text": "Dieser zweistufige Abzug am Griff des Kopiloten ist die Sprechtaste. Der erste Klick nutzt die Bordsprechanlage, der zweite das Funkgerät.",
+      "context": "Er folgt der Einstellung des Schalters RADIO/ICS an der Sprechanlagenbox des Kopiloten."
+    },
+    "copilot-cyclic/cop-autopilot-off": {
+      "name": "Autopilot-OFF-Taster (Kopilot)",
+      "text": "Drückt man diesen Taster, wird der Autopilot sofort ausgeschaltet.",
+      "context": "Beide Cyclics haben so einen Taster."
+    },
+    "copilot-cyclic/cop-fire-button": {
+      "name": "FIRE-Taster mit Abdeckung (Kopilot)",
+      "text": "Drückt man diesen Taster, feuert die gewählte Waffe. Im Spiel schützt eine Klappe den Taster.",
+      "context": "Beide Cyclics haben einen Feuertaster. Die Waffen müssen zuerst scharf gemacht sein."
+    },
+    "copilot-cyclic/cop-trim-button": {
+      "name": "TRIM-Taster (Kopilot)",
+      "text": "Hält man diesen Taster gedrückt, wird die Kraft von Knüppel und Pedalen genommen. Das Loslassen setzt die neue Neutralstellung.",
+      "context": "Er funktioniert wie der Trimmtaster des Piloten."
+    },
+    "copilot-collective/cop-collective-lever": {
+      "name": "Kollektivhebel (Kopilot)",
+      "text": "Der Hebel des Kopiloten hebt oder senkt den Rotoranstellwinkel wie der des Piloten. Im Spiel bewegt die linke Maustaste den Kollektivhebel und die rechte den Drehgriff für den Schub.",
+      "context": "Er ist mechanisch mit dem Hebel des Piloten verbunden."
+    },
+    "copilot-collective/cop-twist-throttle": {
+      "name": "Drehgriff (Kopilot)",
+      "text": "Dreht man diesen Drehgriff, ändert sich die Leistung beider Triebwerke zusammen, wie beim Piloten.",
+      "context": "Laut Handbuch steuert der Drehgriff an jedem der Kollektivhebel beide Triebwerke zusammen."
+    },
+    "copilot-collective/cop-n2-trim": {
+      "name": "N2-Trimmschalter (Kopilot)",
+      "text": "Dieser Schalter mit drei Stellungen ändert die Drehzahl der Nutzturbine der Triebwerke ein wenig, wie der Schalter des Piloten.",
+      "context": "Das Spiel nennt ihn den Schalter Readjust Free Turbine RPM, MORE oder LESS.",
+      "positions": {
+        "MORE": "Erhöht die Drehzahl, solange er gehalten wird.",
+        "OFF": "Keine Änderung.",
+        "LESS": "Senkt die Drehzahl, solange er gehalten wird."
+      }
+    },
+    "copilot-collective/cop-grip-fingers": {
+      "name": "Fingertaster am Kollektivgriff (Spielteile, Kopilot)",
+      "text": "Das Spiel markiert diese mit dem Finger bedienten Teile am Kollektivgriff des Kopiloten mit den Namen 'SG FNGR1 R' und 'SG FNGR2 R'. Das Handbuch beschreibt sie nicht einzeln.",
+      "context": "Sie sind anklickbare Teile des Griffs im 3D-Modell."
+    },
+    "pedals/anti-torque-pedals": {
+      "name": "Pedale (Seitenruder)",
+      "text": "Drückt man das linke Pedal nach vorn, dreht die Nase des Hubschraubers nach links, drückt man das rechte nach vorn, dreht sie nach rechts. Die Pedale lassen sich für den Komfort des Piloten näher oder weiter weg stellen.",
+      "context": "Laut Handbuch wird der Weg des rechten Pedals vom Heckrotor-Anstellbegrenzer SPUU-52 begrenzt. Kleine Schalter in den Pedalen sagen dem Autopiloten, wann der Pilot selbst steuern will."
+    }
+  }
+}

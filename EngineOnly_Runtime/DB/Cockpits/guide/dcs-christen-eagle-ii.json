@@ -1,0 +1,907 @@
+{
+  "format": "joypro-cockpit-guide",
+  "version": 1,
+  "id": "dcs-christen-eagle-ii",
+  "title": "Christen Eagle II (DCS)",
+  "variants": [
+    "christen-eagle-ii"
+  ],
+  "games": [
+    "DCS"
+  ],
+  "sets": [
+    "DCS/Christen_Eagle_II"
+  ],
+  "sources": [
+    {
+      "id": "m1",
+      "title": "M3 Christen Eagle II Manual (EN)",
+      "file": "Mods/aircraft/Christen Eagle II/Doc/M3 CE2 Manual ENG.pdf"
+    }
+  ],
+  "intro": "The Christen Eagle II is a small two-seat aerobatic biplane with one piston engine and a propeller. It is normally flown from the back seat. Only the back cockpit has all the engine and electric controls. The front seat has a stick, a throttle, pedals and a radio button. The plane has no artificial horizon.",
+  "areas": [
+    {
+      "id": "front-center",
+      "where": "front-center",
+      "name": "Main control panel",
+      "text": "The main control panel is in the back cockpit, which is the pilot's seat. It holds the electric system, the engine switch and the radio.",
+      "panels": [
+        {
+          "id": "main-panel",
+          "name": "Main control panel (back cockpit)",
+          "db": "main-control-panel",
+          "src": "m1",
+          "page": "14",
+          "text": "This panel holds the electric switches, the key-like switch for the engine ignition and starter, the smoke switch and the volt and ampere meter. It exists in the back cockpit only.",
+          "context": "The pilot uses it first, to switch on the battery and the alternator, and again to start the engine. Almost everything electrical starts here.",
+          "controls": [
+            {
+              "id": "mags",
+              "name": "MAGS magneto and starter switch",
+              "type": "selector",
+              "match": [
+                "p_MAGNETS_KEY",
+                "item:main-control-panel:1"
+              ],
+              "positions": [
+                {
+                  "name": "OFF",
+                  "text": "Both magnetos are off and the engine is off."
+                },
+                {
+                  "name": "RIGHT",
+                  "text": "Only the right magneto is on."
+                },
+                {
+                  "name": "LEFT",
+                  "text": "Only the left magneto is on."
+                },
+                {
+                  "name": "BOTH",
+                  "text": "Both magnetos are on. This is the normal flying position."
+                },
+                {
+                  "name": "START",
+                  "text": "The starter turns the engine over. The switch springs back to BOTH."
+                }
+              ],
+              "text": "This switch works like the key of a car. It turns the engine's ignition on and off and it starts the engine. Magnetos are small generators that make the sparks in the engine.",
+              "context": "The pilot turns it to START to crank the engine and back to BOTH as soon as the engine fires. The engine runs on both magnetos in flight.",
+              "src": "m1",
+              "page": "14"
+            },
+            {
+              "id": "batt",
+              "name": "BATT battery switch",
+              "type": "switch2",
+              "match": [
+                "p_SWITCH_BATTERY",
+                "item:main-control-panel:3"
+              ],
+              "positions": [
+                {
+                  "name": "ON",
+                  "text": "The battery gives power to the plane (switch up)."
+                },
+                {
+                  "name": "OFF",
+                  "text": "The battery is disconnected (switch down)."
+                }
+              ],
+              "text": "This switch connects the plane's battery to the electric system. The battery is a box that stores electricity.",
+              "context": "It is the first step of the manual's engine start procedure.",
+              "src": "m1",
+              "page": "14"
+            },
+            {
+              "id": "alt-output",
+              "name": "ALTERNATOR output circuit breaker (Fuse)",
+              "type": "button",
+              "match": [
+                "p_AlternatorOutput"
+              ],
+              "text": "This is a circuit breaker button for the alternator. An alternator is a generator that makes electricity while the engine runs. Pressing the button lets its power into the plane's system.",
+              "context": "The manual presses it as the second step of the engine start. Pulling it out disables the alternator.",
+              "src": "m1",
+              "page": "14"
+            },
+            {
+              "id": "alt-field",
+              "name": "ALTERNATOR field switch",
+              "type": "switch2",
+              "match": [
+                "p_SWITCH_ALTERNATOR",
+                "item:main-control-panel:6"
+              ],
+              "positions": [
+                {
+                  "name": "OFF",
+                  "text": "The alternator feed is disabled."
+                },
+                {
+                  "name": "FIELD",
+                  "text": "The alternator feed is enabled."
+                }
+              ],
+              "text": "This switch turns the alternator's field on or off. Without the field the alternator makes no electricity.",
+              "context": "It is the third step of the manual's start procedure. The positions are marked OFF and FIELD.",
+              "src": "m1",
+              "page": "14"
+            },
+            {
+              "id": "spare-smoke",
+              "name": "SPARE switch (smoke)",
+              "type": "switch2",
+              "match": [
+                "p_SWITCH_SMOKE",
+                "item:main-control-panel:4",
+                "control:panel.switch.smoke"
+              ],
+              "positions": [
+                {
+                  "name": "ON",
+                  "text": "Smoke is on."
+                },
+                {
+                  "name": "OFF",
+                  "text": "Smoke is off."
+                }
+              ],
+              "text": "This spare switch turns on the smoke system, if the plane has smoke oil. The smoke leaves a white trail behind the plane.",
+              "context": "The manual says smoke helps aerobatics training, because the student can see the track the plane draws in the sky.",
+              "src": "m1",
+              "page": "14"
+            },
+            {
+              "id": "radio-sw",
+              "name": "RADIO switch (not used)",
+              "type": "switch2",
+              "match": [
+                "p_SWITCH_RADIO",
+                "item:main-control-panel:5"
+              ],
+              "positions": [
+                {
+                  "name": "ON",
+                  "text": "No effect."
+                },
+                {
+                  "name": "OFF",
+                  "text": "No effect."
+                }
+              ],
+              "text": "This switch is not used. The radio is switched on with the knob on the radio itself.",
+              "context": "The manual points to the KY-196B radio description instead.",
+              "src": "m1",
+              "page": "14"
+            },
+            {
+              "id": "fuel-btn",
+              "name": "FUEL display mode button (back cockpit)",
+              "type": "button",
+              "match": [
+                "p_FuelGaugeButtonR",
+                "item:main-control-panel:2"
+              ],
+              "text": "This push-button selects what the digital fuel display shows. The display is in the front cockpit's instrument panel. The button does the same job as the one on the display.",
+              "context": "A short press switches between fuel used and fuel flow. Holding it for 3 seconds resets the reading after refuelling.",
+              "src": "m1",
+              "page": "30"
+            },
+            {
+              "id": "vameter-btn",
+              "name": "VA meter button (volts or amps)",
+              "type": "button",
+              "match": [
+                "p_VAmeterButton",
+                "item:main-control-panel:7"
+              ],
+              "text": "This meter normally shows how much electric current flows, in amperes. Holding the button down shows the voltage instead.",
+              "context": "The manual gives 24 volts and 50 amperes as the nominal values.",
+              "src": "m1",
+              "page": "14"
+            }
+          ]
+        },
+        {
+          "id": "radio",
+          "name": "KY-196B radio",
+          "db": "radio-king-bendix-ky-196b",
+          "src": "m1",
+          "page": "15",
+          "text": "This is the plane's radio for talking to the ground and other planes. It has two windows with frequencies, a button to swap them, and knobs to tune. A frequency is the station number the radio talks on.",
+          "context": "The radio can only be set up from the back cockpit. The manual says to turn it on after the engine start, to protect its electronics.",
+          "controls": [
+            {
+              "id": "radio-body",
+              "name": "King/Bendix KY-196B radio",
+              "type": "other",
+              "match": [
+                "item:main-control-panel:8"
+              ],
+              "text": "This is the whole radio set in the main control panel. Its windows, buttons and knobs are listed as separate entries.",
+              "context": "The pilot in the front cockpit can only talk with it, not tune it.",
+              "src": "m1",
+              "page": "15"
+            },
+            {
+              "id": "radio-vol",
+              "name": "ON/OFF/Volume knob",
+              "type": "knob",
+              "match": [
+                "p_RadioVol",
+                "item:radio-king-bendix-ky-196b:5"
+              ],
+              "text": "Turning this knob clockwise switches the radio on and makes it louder. Pulled out, it switches the automatic noise filter off, so the volume can be set by the hiss. Pushed in, the filter is on again.",
+              "context": "When switched on, the radio shows the frequencies used last.",
+              "src": "m1",
+              "page": "15"
+            },
+            {
+              "id": "radio-use",
+              "name": "USE window",
+              "type": "display",
+              "match": [
+                "item:radio-king-bendix-ky-196b:1"
+              ],
+              "text": "This window shows the frequency the radio is now using to talk and listen.",
+              "context": "The pilot changes it by swapping it with the stand-by frequency.",
+              "src": "m1",
+              "page": "15"
+            },
+            {
+              "id": "radio-stby",
+              "name": "STBY window",
+              "type": "display",
+              "match": [
+                "item:radio-king-bendix-ky-196b:3"
+              ],
+              "text": "This window shows the stand-by frequency, which is the next one ready to be used.",
+              "context": "The pilot tunes the stand-by frequency first and then presses the transfer button.",
+              "src": "m1",
+              "page": "15"
+            },
+            {
+              "id": "radio-transfer",
+              "name": "Transfer switch",
+              "type": "button",
+              "match": [
+                "p_RadioSwitch",
+                "item:radio-king-bendix-ky-196b:2"
+              ],
+              "text": "Pressing this switch swaps the two frequencies. The stand-by frequency becomes the active one and the old one becomes the stand-by.",
+              "context": "Holding it for more than two seconds enters the direct tune mode, where the active frequency can be changed directly.",
+              "src": "m1",
+              "page": "16"
+            },
+            {
+              "id": "radio-chan",
+              "name": "CHAN channel button",
+              "type": "button",
+              "match": [
+                "p_RadioChannel",
+                "item:radio-king-bendix-ky-196b:4"
+              ],
+              "text": "This button calls up the saved channels, which are stored frequencies, like the station buttons of a car radio. Holding it more than two seconds starts programming.",
+              "context": "After five seconds without action the radio goes back to normal.",
+              "src": "m1",
+              "page": "16"
+            },
+            {
+              "id": "radio-mhz",
+              "name": "Frequency selection knob: MHz",
+              "type": "knob",
+              "match": [
+                "p_RadioFreqMHz"
+              ],
+              "text": "This large knob changes the frequency in steps of one megahertz. At the end of the band it wraps around.",
+              "context": "The band goes from 118 to 136 megahertz.",
+              "src": "m1",
+              "page": "16"
+            },
+            {
+              "id": "radio-khz",
+              "name": "Frequency selection knob: kHz",
+              "type": "knob",
+              "match": [
+                "p_RadioFreqKHz",
+                "item:radio-king-bendix-ky-196b:6"
+              ],
+              "text": "This small knob changes the fine part of the frequency in steps of 50 kilohertz when pushed in and 25 kilohertz when pulled out.",
+              "context": "It is used after the large knob has set the whole megahertz.",
+              "src": "m1",
+              "page": "16"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "front-left",
+      "where": "front-left",
+      "name": "Instrument panel (front cockpit)",
+      "text": "The instrument panel is in front of the front seat and is clearly visible from the back seat.",
+      "panels": [
+        {
+          "id": "instruments",
+          "name": "Instrument panel",
+          "db": "instrument-panel",
+          "src": "m1",
+          "page": "27",
+          "text": "This panel is in the front cockpit. It holds the speed, height, g-load, compass, engine and fuel dials. From the back seat most of them can be seen too.",
+          "context": "The plane has no artificial horizon, so the pilot flies by sight and by a simple sighting device on the wing strut. The dials show the engine's health.",
+          "controls": [
+            {
+              "id": "asi",
+              "name": "Airspeed indicator (mph)",
+              "type": "gauge",
+              "match": [
+                "item:instrument-panel:1"
+              ],
+              "text": "This dial shows how fast the plane flies through the air, in miles per hour. The colour marks show the stall speed (58 mph), the normal range and the never-exceed speed (210 mph).",
+              "context": "The pilot checks it all the time, especially in take-off and landing.",
+              "src": "m1",
+              "page": "27"
+            },
+            {
+              "id": "altimeter",
+              "name": "Altimeter and pressure knob",
+              "type": "gauge",
+              "match": [
+                "p_ALTIMETER_KNOB",
+                "item:instrument-panel:2"
+              ],
+              "text": "This dial shows the height in feet. The small hand shows thousands of feet and the large hand hundreds. The knob sets the air pressure scale.",
+              "context": "The pilot sets the knob to the air pressure of the day so the reading is right.",
+              "src": "m1",
+              "page": "27"
+            },
+            {
+              "id": "vsi",
+              "name": "Vertical speed indicator",
+              "type": "gauge",
+              "match": [
+                "item:instrument-panel:3"
+              ],
+              "text": "This dial shows how fast the plane climbs or sinks in feet per minute. A push-button on it sets the needles back to zero.",
+              "context": "It helps to hold the height steady.",
+              "src": "m1",
+              "page": "27"
+            },
+            {
+              "id": "accel",
+              "name": "Accelerometer and RESET button",
+              "type": "gauge",
+              "match": [
+                "p_AccelButton",
+                "item:instrument-panel:4"
+              ],
+              "text": "This dial shows the G-force, how strongly the pilot is pushed into the seat. Two extra needles remember the highest and lowest values. The RESET button sets them back to 1.",
+              "context": "It matters in aerobatics, where the g-loads change a lot.",
+              "src": "m1",
+              "page": "27"
+            },
+            {
+              "id": "compass",
+              "name": "Magnetic compass",
+              "type": "gauge",
+              "match": [
+                "item:instrument-panel:5"
+              ],
+              "text": "This is a plain compass. It shows which way the nose points.",
+              "context": "It sits in the middle of the panel, where the front cockpit's pilot hides most of the panel.",
+              "src": "m1",
+              "page": "28"
+            },
+            {
+              "id": "slip",
+              "name": "Slip indicator",
+              "type": "gauge",
+              "match": [
+                "item:instrument-panel:6"
+              ],
+              "text": "This instrument shows if the plane is sliding sideways, up to 20 degrees to either side.",
+              "context": "The pilot uses it to keep turns clean.",
+              "src": "m1",
+              "page": "28"
+            },
+            {
+              "id": "oil",
+              "name": "Oil pressure and temperature indicator",
+              "type": "gauge",
+              "match": [
+                "item:instrument-panel:7"
+              ],
+              "text": "The top scale shows the pressure of the engine oil in psi and the bottom scale the temperature in degrees Fahrenheit.",
+              "context": "The manual wants 60 to 85 psi within 30 seconds of the start.",
+              "src": "m1",
+              "page": "29"
+            },
+            {
+              "id": "map-fuel",
+              "name": "Manifold pressure and fuel flow indicator",
+              "type": "gauge",
+              "match": [
+                "item:instrument-panel:8"
+              ],
+              "text": "The left scale shows how hard air is pushed into the engine and the right scale shows how much fuel it burns per hour.",
+              "context": "The manual has the pilot pump the fuel until the fuel flow gauge shows pressure, during the start.",
+              "src": "m1",
+              "page": "29"
+            },
+            {
+              "id": "rpm",
+              "name": "RPM indicator",
+              "type": "gauge",
+              "match": [
+                "item:instrument-panel:9"
+              ],
+              "text": "This dial shows how fast the engine and propeller turn, in rotations per minute.",
+              "context": "The manual gives a limit of 2700 rpm and warns against steady running between 2000 and 2350 rpm.",
+              "src": "m1",
+              "page": "29"
+            },
+            {
+              "id": "egt",
+              "name": "EGT indicator (exhaust temperature)",
+              "type": "gauge",
+              "match": [
+                "item:instrument-panel:10"
+              ],
+              "text": "This dial shows how hot the exhaust gas is. A fixed needle marks the highest safe value.",
+              "context": "The pilot uses it when leaning the mixture.",
+              "src": "m1",
+              "page": "29"
+            },
+            {
+              "id": "fuel-display",
+              "name": "Fuel display 911-FD and mode button",
+              "type": "display",
+              "match": [
+                "p_FuelGaugeButton",
+                "item:instrument-panel:11"
+              ],
+              "text": "This digital display shows the fuel used (U) or the fuel flow (F). Its push-button picks the mode, sets the display up and resets it.",
+              "context": "After refuelling, holding the button for 3 seconds zeroes the reading.",
+              "src": "m1",
+              "page": "30"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "floor",
+      "where": "floor",
+      "name": "Fuel pump (floor)",
+      "text": "The manual fuel pump is below the left side of the back seat.",
+      "panels": [
+        {
+          "id": "fuel-pump",
+          "name": "Manual fuel pump",
+          "db": "manual-fuel-pump",
+          "src": "m1",
+          "page": "18",
+          "text": "This hand pump pulls fuel from the tank to the engine for a cold start. This is called priming. The pump body with its valve is hard to see from the seat.",
+          "context": "It is only needed for a cold start. For a hot start the fuel line is already full. The manual suggests binding the fuel on/off commands to keys, so the pilot need not look down.",
+          "controls": [
+            {
+              "id": "fuel-valve",
+              "name": "Fuel valve (OFF / FULL ON)",
+              "type": "switch2",
+              "match": [
+                "p_FuelPumpSwitch",
+                "item:manual-fuel-pump:1"
+              ],
+              "positions": [
+                {
+                  "name": "OFF",
+                  "text": "Fuel is cut off."
+                },
+                {
+                  "name": "FULL ON",
+                  "text": "Fuel can flow."
+                }
+              ],
+              "text": "This valve opens or closes the fuel flow to the engine.",
+              "context": "The valve is opened in the start-up and closed when the engine is stopped.",
+              "src": "m1",
+              "page": "18"
+            },
+            {
+              "id": "fuel-lever",
+              "name": "Fuel pump lever",
+              "type": "lever",
+              "match": [
+                "p_FuelPumpLever",
+                "item:manual-fuel-pump:2"
+              ],
+              "text": "Moving this lever back and forth pumps fuel to prime the engine for a cold start.",
+              "context": "The pilot pumps until the fuel flow gauge shows pressure. Pumps are not needed for a hot start.",
+              "src": "m1",
+              "page": "18"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "left-console",
+      "where": "left-console",
+      "name": "Engine and lights panel (left side)",
+      "text": "The left wall of the back cockpit has the throttle, the mixture and RPM levers and the light switches.",
+      "panels": [
+        {
+          "id": "engine-lights",
+          "name": "Engine and lights control panel",
+          "db": "engine-lights-panel",
+          "src": "m1",
+          "page": "19",
+          "text": "This panel is on the left wall of the back cockpit. It has the throttle lever, the light switches, the light dimmer knob and below them the mixture and RPM levers.",
+          "context": "The left hand works the throttle and the levers in flight. The lights are only controlled from the back cockpit.",
+          "controls": [
+            {
+              "id": "throttle",
+              "name": "Throttle lever with radio transmit button",
+              "type": "lever",
+              "match": [
+                "item:engine-lights-panel:1",
+                "control:quadrant.axis.lever.1"
+              ],
+              "text": "Pushing this lever forward makes the engine stronger and pulling it back makes it weaker, like the gas pedal of a car. Back is marked Close but it only means idle: the engine cannot be stopped with it.",
+              "context": "The radio transmit button is on the top of the lever. The front cockpit also has a throttle lever.",
+              "src": "m1",
+              "page": "19"
+            },
+            {
+              "id": "ptt",
+              "name": "Radio transmit button",
+              "type": "button",
+              "match": [
+                "control:quadrant.button.ptt"
+              ],
+              "text": "While this button on the throttle knob is pressed, the radio transmits and the pilot can talk.",
+              "context": "The radio is set up on the main panel; the button only opens the microphone.",
+              "src": "m1",
+              "page": "19"
+            },
+            {
+              "id": "mixture",
+              "name": "Mixture lever (red)",
+              "type": "lever",
+              "match": [
+                "p_AFMixtureLever",
+                "item:engine-lights-panel:4",
+                "control:quadrant.axis.lever.3"
+              ],
+              "text": "This red lever sets how much fuel is mixed into the air that goes to the engine. Front is full rich and back is full lean. Leaning in cruise saves fuel.",
+              "context": "For aerobatics and take-off it is pushed full forward. In the start-up it is pulled full back before cranking.",
+              "src": "m1",
+              "page": "20"
+            },
+            {
+              "id": "rpm-lever",
+              "name": "RPM lever (propeller)",
+              "type": "lever",
+              "match": [
+                "p_PropPitchLever",
+                "item:engine-lights-panel:5",
+                "control:quadrant.axis.lever.2"
+              ],
+              "text": "This lever sets how fast the engine and propeller turn, together with the throttle. The throttle gives the energy and this lever decides how it is used. Front is high rpm and back is low rpm.",
+              "context": "It is pushed full forward for take-off and aerobatics, and pulled back in cruise to save fuel.",
+              "src": "m1",
+              "page": "20"
+            },
+            {
+              "id": "nav-light",
+              "name": "NAV lights switch",
+              "type": "switch2",
+              "match": [
+                "p_NavLight",
+                "item:engine-lights-panel:2"
+              ],
+              "positions": [
+                {
+                  "name": "ON",
+                  "text": "The switch is on."
+                },
+                {
+                  "name": "OFF",
+                  "text": "The switch is off."
+                }
+              ],
+              "text": "This switch turns on the coloured position lights on the outside of the plane, so others can see it.",
+              "context": "The light switches sit in two rows on the panel. This one is top left.",
+              "src": "m1",
+              "page": "19"
+            },
+            {
+              "id": "red-light",
+              "name": "Cockpit red light switch",
+              "type": "switch2",
+              "match": [
+                "p_LightOmniRed"
+              ],
+              "positions": [
+                {
+                  "name": "ON",
+                  "text": "The switch is on."
+                },
+                {
+                  "name": "OFF",
+                  "text": "The switch is off."
+                }
+              ],
+              "text": "This switch turns on a red light in the cockpit, a soft light that does not spoil night vision.",
+              "context": "It is used when flying at night.",
+              "src": "m1",
+              "page": "19"
+            },
+            {
+              "id": "yellow-light",
+              "name": "Cockpit yellow light switch",
+              "type": "switch2",
+              "match": [
+                "p_LightSpotYellow"
+              ],
+              "positions": [
+                {
+                  "name": "ON",
+                  "text": "The switch is on."
+                },
+                {
+                  "name": "OFF",
+                  "text": "The switch is off."
+                }
+              ],
+              "text": "This switch turns on a yellow spot light in the cockpit.",
+              "context": "It is the second cockpit light, next to the red one.",
+              "src": "m1",
+              "page": "19"
+            },
+            {
+              "id": "landing-light",
+              "name": "Landing and taxi light switch",
+              "type": "switch2",
+              "match": [
+                "p_LandingLight"
+              ],
+              "positions": [
+                {
+                  "name": "ON",
+                  "text": "The switch is on."
+                },
+                {
+                  "name": "OFF",
+                  "text": "The switch is off."
+                }
+              ],
+              "text": "This switch turns on the light at the front of the plane that lights the runway when landing and taxiing.",
+              "context": "The two switches next to it in the bottom row are not used.",
+              "src": "m1",
+              "page": "19"
+            },
+            {
+              "id": "gauge-light",
+              "name": "Instrument light knob",
+              "type": "knob",
+              "match": [
+                "p_GaugeLight",
+                "item:engine-lights-panel:3"
+              ],
+              "text": "Turning this knob makes the light of the instrument panel brighter or darker.",
+              "context": "It sits below the light switches and is used at night.",
+              "src": "m1",
+              "page": "19"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "left-side",
+      "where": "left-side",
+      "name": "Trim lever",
+      "text": "The trim lever is on the left side of the back seat.",
+      "panels": [
+        {
+          "id": "trim",
+          "name": "Elevator trim lever",
+          "db": "trim-lever",
+          "src": "m1",
+          "page": "21",
+          "text": "This lever sets the elevator trim. Trim means a small adjustment so the plane flies level without the pilot pushing the stick. The plane has trim for pitch only.",
+          "context": "The manual recommends trimming at the cruising speed of 140 to 150 mph. For aerobatics, 150 mph is best.",
+          "controls": [
+            {
+              "id": "trim-lever",
+              "name": "Elevator trim lever",
+              "type": "lever",
+              "match": [
+                "p_TrimLever",
+                "item:trim-lever:1",
+                "control:quadrant.lever.trim"
+              ],
+              "positions": [
+                {
+                  "name": "NEUTRAL",
+                  "text": "No trim is applied (position 1)."
+                },
+                {
+                  "name": "NOSE DOWN",
+                  "text": "The trim pushes the nose down (position 2)."
+                },
+                {
+                  "name": "NOSE UP",
+                  "text": "The trim pulls the nose up (position 3)."
+                }
+              ],
+              "text": "Moving this lever up or down sets the trim of the elevator, the control surface that holds the nose up or down. The lever can be placed anywhere between the nose-down and nose-up positions.",
+              "context": "The lever is on the left side of the pilot's seat. The manual sets it to neutral before take-off.",
+              "src": "m1",
+              "page": "21"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "right-side",
+      "where": "right-side",
+      "name": "Canopy control area",
+      "text": "The canopy levers are on the right of the back cockpit and near the front cockpit.",
+      "panels": [
+        {
+          "id": "canopy",
+          "name": "Canopy control area",
+          "db": "canopy-control-area",
+          "src": "m1",
+          "page": "23",
+          "text": "The canopy is the clear roof over the cockpit. Three levers close it, lock it and open it. A small plate shows if it is locked, and a red lever throws it off in an emergency.",
+          "context": "The manual explains the closing and opening in order. The front cockpit has only a lock lever and the slider. The person there can lock, unlock and slide the canopy back, but cannot close it.",
+          "controls": [
+            {
+              "id": "close-lever",
+              "name": "Canopy close lever (rear)",
+              "type": "lever",
+              "match": [
+                "p_Canopy_Lever_Max",
+                "item:canopy-control-area:1"
+              ],
+              "text": "Clicking this lever closes the sliding canopy over the cockpit.",
+              "context": "After closing, the canopy must be locked with the lock lever.",
+              "src": "m1",
+              "page": "23"
+            },
+            {
+              "id": "open-lever",
+              "name": "Canopy open lever (rear)",
+              "type": "button",
+              "match": [
+                "p_Canopy_Lever_Min"
+              ],
+              "text": "Clicking this lever opens a canopy that was unlocked. The manual says to click the canopy crossbar to open it.",
+              "context": "The canopy must be unlocked first.",
+              "src": "m1",
+              "page": "24"
+            },
+            {
+              "id": "lock-lever",
+              "name": "Canopy lock / unlock lever (rear)",
+              "type": "lever",
+              "match": [
+                "p_Canopy_LockLever_Rear_Max",
+                "p_Canopy_LockLever_Rear_Min",
+                "item:canopy-control-area:2"
+              ],
+              "text": "This lever locks the canopy when pushed forward and unlocks it when pulled.",
+              "context": "The game has one command to lock and one to unlock. The info plate shows the result.",
+              "src": "m1",
+              "page": "23"
+            },
+            {
+              "id": "lock-front",
+              "name": "Canopy lock / unlock lever (front)",
+              "type": "lever",
+              "match": [
+                "p_Canopy_LockLever_Front_Max",
+                "p_Canopy_LockLever_Front_Min"
+              ],
+              "text": "This is the lock lever of the front cockpit. It locks or unlocks the canopy in the same way as the back one.",
+              "context": "The person in the front seat can unlock and slide the canopy back, but cannot close it.",
+              "src": "m1",
+              "page": "25"
+            },
+            {
+              "id": "info-plate",
+              "name": "Canopy locked / unlocked info plate",
+              "type": "indicator",
+              "match": [
+                "item:canopy-control-area:3"
+              ],
+              "text": "This small plate shows the word LOCKED or UNLOCKED, so the pilot can see the state of the canopy lock.",
+              "context": "Before take-off the plate should read LOCKED.",
+              "src": "m1",
+              "page": "23"
+            },
+            {
+              "id": "jettison",
+              "name": "Canopy jettison lever",
+              "type": "lever",
+              "match": [
+                "p_CanopyJet",
+                "item:canopy-control-area:4"
+              ],
+              "text": "Pulling this red lever throws the canopy away. It works when the canopy is closed and locked, in the air or on the ground.",
+              "context": "It is the emergency exit: the canopy is thrown off so the pilot can bail out.",
+              "src": "m1",
+              "page": "24"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "other",
+      "where": "other",
+      "name": "Air conditioning",
+      "text": "A lever for the cabin air sits on the right console.",
+      "panels": [
+        {
+          "id": "general",
+          "name": "Air conditioning lever",
+          "src": "m1",
+          "page": "12",
+          "text": "The game shows an air conditioning lever in the cockpit. The manual does not describe it.",
+          "context": "It has no entry in the manual's cockpit chapter.",
+          "controls": [
+            {
+              "id": "aircon",
+              "name": "Air Conditioning lever",
+              "type": "knob",
+              "match": [
+                "p_AirconLever"
+              ],
+              "text": "The game names this lever Air Conditioning. The manual does not describe it, so nothing more is known.",
+              "context": "It is the only clickable control in the game's General group.",
+              "src": "m1",
+              "page": "12"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "hotas",
+      "where": "hotas",
+      "name": "Stick and engine levers",
+      "text": "The pilot holds the stick with the right hand and the engine levers on the left wall with the left hand. Both cockpits have a stick.",
+      "panels": [
+        {
+          "id": "stick",
+          "name": "Control stick",
+          "src": "m1",
+          "page": "12",
+          "text": "The stick tilts forward, back, left and right to steer the plane. There is one in each cockpit.",
+          "context": "The plane is used for aerobatics, so the stick is used with small, gentle movements. The manual advises gentle inputs especially in take-off.",
+          "controls": [
+            {
+              "id": "g-stick",
+              "name": "Control stick",
+              "type": "other",
+              "match": [
+                "control:stick.gimbal"
+              ],
+              "text": "Moving the stick back makes the nose go up and forward makes it go down. Moving it sideways rolls the plane.",
+              "context": "In the back cockpit the pilot holds it while the front one is for a student or passenger.",
+              "src": "m1",
+              "page": "12"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

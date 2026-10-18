@@ -1,0 +1,291 @@
+{
+  "format": "joypro-cockpit-guide",
+  "version": 1,
+  "id": "il2-halberstadt-cl2",
+  "title": "Halberstadt CL.II (IL-2)",
+  "variants": [
+    "halberstadt-cl-ii"
+  ],
+  "games": [
+    "IL2Game"
+  ],
+  "sets": [],
+  "sources": [
+    {
+      "id": "c1",
+      "title": "JoyPro cockpit catalog (from the IL-2 and real aircraft manuals)",
+      "kind": "reference"
+    }
+  ],
+  "intro": "The Halberstadt CL.II was a German two-seat biplane of the First World War. Pilot and observer sit back to back in one shared open cockpit for easy communication. The pilot flies and fires the forward gun; the observer works a flexible gun on a ring mount.",
+  "areas": [
+    {
+      "id": "guns",
+      "where": "glareshield",
+      "name": "Gun breeches and sights",
+      "text": "The forward machine gun and its sights sit in front of the pilot.",
+      "panels": [
+        {
+          "id": "gun-breeches",
+          "name": "Gun breeches and sights",
+          "db": "gun-breeches",
+          "src": "c1",
+          "text": "This is the rear end of the forward machine gun and the sights next to it.",
+          "context": "The pilot clears jams with the charging handle and aims with the sights.",
+          "controls": [
+            {
+              "id": "spandau-1",
+              "name": "Spandau breech",
+              "type": "other",
+              "match": [
+                "item:gun-breeches:1"
+              ],
+              "text": "This is the rear end of the machine gun in front of the pilot, the breech, with a charging handle for clearing jams.",
+              "context": "The pilot fires the gun with the trigger on the control column."
+            },
+            {
+              "id": "ring-bead",
+              "name": "Ring-and-bead sight",
+              "type": "other",
+              "match": [
+                "item:gun-breeches:2"
+              ],
+              "text": "This is a simple open sight between the guns: a ring at the rear and a bead at the front. The pilot lines up the bead in the ring with the target to aim.",
+              "context": "It is how First World War pilots aimed before reflector sights existed."
+            },
+            {
+              "id": "oigee",
+              "name": "Oigee optical sight (when fitted)",
+              "type": "other",
+              "match": [
+                "item:gun-breeches:3"
+              ],
+              "text": "This is a tube sight between the guns. It is fitted in some planes. The pilot looks through it to aim at the target.",
+              "context": "It is an alternative to the ring-and-bead sight between the guns."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "instruments",
+      "where": "front-center",
+      "name": "Instruments",
+      "text": "The few instruments of a First World War plane sit on the panel.",
+      "panels": [
+        {
+          "id": "instruments",
+          "name": "Instruments",
+          "db": "instruments",
+          "src": "c1",
+          "text": "These are the few instruments: engine speed, height, fuel, fuel pressure, water temperature and the ignition switch.",
+          "context": "The pilot glances at them to keep the engine healthy.",
+          "controls": [
+            {
+              "id": "tacho",
+              "name": "Tachometer",
+              "type": "gauge",
+              "match": [
+                "item:instruments:1"
+              ],
+              "text": "This dial shows how fast the engine turns, in revolutions per minute (RPM).",
+              "context": "The pilot watches it all the time to keep the engine in its safe range."
+            },
+            {
+              "id": "altimeter",
+              "name": "Altimeter",
+              "type": "gauge",
+              "match": [
+                "item:instruments:2"
+              ],
+              "text": "This dial shows how high the plane is, measured from the air pressure. The needles work like the hands of a clock, one for the hundreds and one for the thousands of metres.",
+              "context": "The pilot checks it to stay clear of the ground and to hold the height the mission needs."
+            },
+            {
+              "id": "fuel-gauge",
+              "name": "Fuel gauge",
+              "type": "gauge",
+              "match": [
+                "item:instruments:3"
+              ],
+              "text": "This dial shows how much fuel is left in the main tank.",
+              "context": "The pilot checks it to know how long the plane can still fly."
+            },
+            {
+              "id": "fuel-press",
+              "name": "Fuel pressure gauge",
+              "type": "gauge",
+              "match": [
+                "item:instruments:4"
+              ],
+              "text": "This dial shows the pressure of the fuel. In the First World War planes it shows the pressure in the fuel tank that pushes the fuel to the engine.",
+              "context": "If the pressure drops, the pilot pumps it up again with the hand pump."
+            },
+            {
+              "id": "water-temp",
+              "name": "Water temperature gauge",
+              "type": "gauge",
+              "match": [
+                "item:instruments:5"
+              ],
+              "text": "This dial shows the temperature of the cooling water of the engine. The radiator cools the water.",
+              "context": "A rising temperature warns of overheating. The pilot can open the radiator shutters if the plane has them."
+            },
+            {
+              "id": "magneto-ww1",
+              "name": "Magneto (ignition) switch",
+              "type": "selector",
+              "match": [
+                "item:instruments:6"
+              ],
+              "text": "This switch turns the ignition of the engine on and off. The ignition makes the sparks that set the fuel alight.",
+              "context": "The pilot switches it on for the start. Switching it off stops the engine."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "left",
+      "where": "left-side",
+      "name": "Left side",
+      "text": "The throttle lever, the fuel cock and the hand pump are on the left.",
+      "panels": [
+        {
+          "id": "left-side",
+          "name": "Left side",
+          "db": "left-side",
+          "src": "c1",
+          "text": "This is the left side with the throttle lever, the fuel cock and the fuel pressure hand pump.",
+          "context": "The pilot works the fuel controls before the start.",
+          "controls": [
+            {
+              "id": "throttle-ww1b",
+              "name": "Throttle lever",
+              "type": "lever",
+              "match": [
+                "item:left-side:1"
+              ],
+              "text": "This lever sets the engine power, like the gas pedal of a car. On the First World War planes it is simple to work.",
+              "context": "On the First World War planes the throttle is simple. The pilot uses it for taxiing, take-off and landing."
+            },
+            {
+              "id": "fuel-cock",
+              "name": "Fuel cock",
+              "type": "selector",
+              "match": [
+                "item:left-side:2"
+              ],
+              "text": "This selector is the tap in the fuel line. It decides which tank feeds the engine. The catalog names the choice main or gravity tank for the First World War planes.",
+              "context": "The pilot opens it before starting and switches tanks when one runs dry."
+            },
+            {
+              "id": "fuel-pump",
+              "name": "Fuel pressure hand pump",
+              "type": "handle",
+              "match": [
+                "item:left-side:3"
+              ],
+              "text": "This handle is a hand pump. Moving it builds up pressure in the fuel tank, which pushes the fuel to the engine.",
+              "context": "The pilot pumps it before the start and again if the fuel pressure gauge shows too little."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "rear",
+      "where": "rear",
+      "name": "Gunner's ring",
+      "text": "The observer sits directly behind the pilot with a flexible gun and light bombs.",
+      "panels": [
+        {
+          "id": "gunners-ring",
+          "name": "Gunner's ring",
+          "db": "gunners-ring",
+          "src": "c1",
+          "text": "This is the observer's position directly behind the pilot, with a flexible machine gun on a ring mount and a stowage for light bombs and grenades.",
+          "context": "The observer defends the plane and can drop light bombs on ground targets.",
+          "controls": [
+            {
+              "id": "mg14",
+              "name": "Parabellum MG 14 on the ring mount",
+              "type": "other",
+              "match": [
+                "item:gunners-ring:1"
+              ],
+              "text": "This is the observer's flexible machine gun on a ring mount at the rear of the cockpit. The observer swings it around to defend the plane.",
+              "context": "The Halberstadt CL.II was a two-seat plane. The observer sat directly behind the pilot and also used the gun."
+            },
+            {
+              "id": "bomb-stowage",
+              "name": "Bomb / grenade stowage",
+              "type": "other",
+              "match": [
+                "item:gunners-ring:2"
+              ],
+              "text": "This is where the crew keeps light bombs and grenades. They are carried for attacks on targets on the ground.",
+              "context": "The Halberstadt CL.II was a two-seat plane for ground attack and observation; the crew could drop such light weapons on the enemy."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "hotas",
+      "where": "hotas",
+      "name": "Stick and throttle",
+      "text": "These are the controls on the pilot's stick or yoke and on the left-hand throttle side that JoyPro can assign to a joystick or throttle.",
+      "panels": [
+        {
+          "id": "stick",
+          "name": "Control stick",
+          "src": "c1",
+          "text": "This is the control stick and the buttons on its grip.",
+          "context": "The pilot flies with it and fires and drops the weapons from it.",
+          "controls": [
+            {
+              "id": "trigger",
+              "name": "Gun trigger",
+              "type": "trigger",
+              "match": [
+                "control:stick.trigger"
+              ],
+              "text": "This is the main trigger on the stick grip, pressed with the index finger. It fires the main guns of the plane. In the game: press: Fire the forward Spandau.",
+              "context": "The pilot presses it when the target sits in the gunsight. The ammunition counters on the instrument panel show how much is left."
+            },
+            {
+              "id": "gimbal",
+              "name": "Control column",
+              "type": "axis",
+              "match": [
+                "control:stick.gimbal"
+              ],
+              "text": "This is the control stick (or control column). Moving it forward and back tilts the plane's nose down and up, moving it left and right rolls the plane. In the game: pitch: Pitch; roll: Roll.",
+              "context": "It is the pilot's main flight control. Everything else in the cockpit supports it."
+            }
+          ]
+        },
+        {
+          "id": "throttle",
+          "name": "Throttle and left-hand controls",
+          "src": "c1",
+          "text": "These are the throttle levers and the other controls the pilot's left hand reaches on the left side.",
+          "context": "The pilot sets engine power, propeller, trim, flaps and gear with the left hand.",
+          "controls": [
+            {
+              "id": "axis-main",
+              "name": "Throttle",
+              "type": "axis",
+              "match": [
+                "control:throttle.axis.main"
+              ],
+              "text": "This is the throttle, the lever that makes the engine stronger or weaker, like the gas pedal of a car. In the game: axis: Engine power (Mercedes D.III).",
+              "context": "The pilot works it with the left hand: forward for take-off and fighting, back for landing."
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

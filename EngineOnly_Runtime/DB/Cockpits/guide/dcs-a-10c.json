@@ -1,0 +1,1344 @@
+{
+  "format": "joypro-cockpit-guide",
+  "version": 1,
+  "id": "dcs-a-10c",
+  "title": "A-10C Warthog (DCS)",
+  "inherits": "dcs-a-10c-ii",
+  "variants": [
+    "a-10c"
+  ],
+  "games": [
+    "DCS"
+  ],
+  "sets": [
+    "DCS/A-10C"
+  ],
+  "sources": [
+    {
+      "id": "m2",
+      "title": "DCS A-10C Flight Manual (EN)",
+      "file": "Mods/aircraft/A-10C/Doc/DCS A-10C Flight Manual EN.pdf"
+    },
+    {
+      "id": "m1",
+      "title": "DCS A-10C II Flight Manual (EN)",
+      "file": "Mods/aircraft/A-10C_2/Doc/DCS A-10C II Flight Manual EN.pdf"
+    }
+  ],
+  "intro": "The A-10C is the earlier version of the A-10C II in DCS: the same attack jet with two engines high at the back and a big gun in the nose. Its cockpit is nearly the same; the A-10C II adds newer radios, a helmet sight and newer weapons. This guide follows the A-10C II and fits the A-10C where the controls are the same.",
+  "areas": [
+    {
+      "id": "hud-glareshield",
+      "where": "glareshield",
+      "name": "HUD and Up Front Controller",
+      "text": "The area in front of the pilot's eyes, above the instrument dash: the head-up display, the keypad under it, the canopy mirrors and a few small gauges.",
+      "panels": [
+        {
+          "id": "ufc",
+          "name": "Up Front Controller (UFC)",
+          "db": "up-front-controller",
+          "src": "m1",
+          "page": "303",
+          "text": "This is the keypad under the HUD. The pilot types numbers and letters on it and changes values while keeping both eyes outside the cockpit.",
+          "context": "Many of its keys repeat keys of the CDU and the AAP on the right console, so the pilot can do navigation work without looking down. Digits show on the HUD scratchpad (its small text line) as well.",
+          "controls": [
+            {
+              "id": "mk",
+              "name": "MK key (mark point)",
+              "type": "button",
+              "match": [
+                "PNT-BTN-UFC-MK",
+                "item:up-front-controller:1"
+              ],
+              "text": "MK saves the place the plane is flying over right now as a new point on the map, a markpoint.",
+              "context": "It repeats the MK button of the CDU. The new point gets a letter and the CDU shows it at once.",
+              "src": "m1",
+              "page": "303"
+            },
+            {
+              "id": "clr",
+              "name": "CLR key (clear)",
+              "type": "button",
+              "match": [
+                "PNT-BTN-UFC-CLR",
+                "item:up-front-controller:2"
+              ],
+              "text": "A short press deletes the last typed character. Holding it for more than half a second clears the whole line.",
+              "context": "It works on the HUD and CDU scratchpads, so mistakes are quick to remove.",
+              "src": "m1",
+              "page": "303"
+            },
+            {
+              "id": "hack",
+              "name": "HACK key (time stopwatch)",
+              "type": "button",
+              "match": [
+                "PNT-BTN-UFC-HACK",
+                "item:up-front-controller:3"
+              ],
+              "text": "HACK shows or hides a countdown to the target time on the lower right of the HUD. Pressing it again returns the display to the real clock.",
+              "context": "The pilot sets a time with the DATA rocker and accepts it with ENT. It helps the pilot to arrive over a target exactly on time.",
+              "src": "m1",
+              "page": "303"
+            },
+            {
+              "id": "spc",
+              "name": "SPC key (space)",
+              "type": "button",
+              "match": [
+                "PNT-BTN-UFC-SPC",
+                "item:up-front-controller:4"
+              ],
+              "text": "This key puts an empty space into the scratchpad text.",
+              "context": "The pilot uses it between words or groups when typing names with the letter mode.",
+              "src": "m1",
+              "page": "304"
+            },
+            {
+              "id": "ent",
+              "name": "ENT key (enter)",
+              "type": "button",
+              "match": [
+                "PNT-BTN-UFC-ENT",
+                "item:up-front-controller:6"
+              ],
+              "text": "ENT confirms what was typed or chosen. It is the key that says 'yes, use this'.",
+              "context": "The pilot presses it to accept a target height, a hack time or a menu choice in the HUD test pages.",
+              "src": "m1",
+              "page": "304"
+            },
+            {
+              "id": "ltr",
+              "name": "LTR key (letter mode)",
+              "type": "button",
+              "match": [
+                "PNT-BTN-UFC-LTR",
+                "item:up-front-controller:7"
+              ],
+              "text": "This round button switches the number keys to letter mode. Pressing a key several times steps through its letters, and an L appears on the HUD scratchpad.",
+              "context": "Pressing LTR twice keeps letter mode on until it is pressed a third time. The pilot needs it for names of waypoints.",
+              "src": "m1",
+              "page": "304"
+            },
+            {
+              "id": "data",
+              "name": "DATA rocker",
+              "type": "rocker",
+              "match": [
+                "PNT-BTN-UFC-DATA-UP",
+                "PNT-BTN-UFC-DATA-DN",
+                "item:up-front-controller:9"
+              ],
+              "text": "This rocker raises or lowers the value that is currently shown or flashing, such as the target height or the hack time.",
+              "context": "In function mode it works like the page rocker of the CDU. The game lists several jobs for it depending on the mode.",
+              "src": "m1",
+              "page": "306"
+            },
+            {
+              "id": "sel",
+              "name": "SEL rocker (select)",
+              "type": "rocker",
+              "match": [
+                "PNT-BTN-UFC-SEL-UP",
+                "PNT-BTN-UFC-SEL-DN",
+                "item:up-front-controller:10"
+              ],
+              "text": "This rocker picks the next or previous choice: in the gun mode another gun sight, in bomb modes another weapon profile, in air-to-air mode another threat.",
+              "context": "In the HUD test it moves through the menus. The pilot uses it to change settings without leaving the stick and throttle.",
+              "src": "m1",
+              "page": "306"
+            },
+            {
+              "id": "steer",
+              "name": "STEER rocker (next steerpoint)",
+              "type": "rocker",
+              "match": [
+                "PNT-BTN-UFC-STEER-UP",
+                "PNT-BTN-UFC-STEER-DN",
+                "item:up-front-controller:11"
+              ],
+              "text": "This rocker moves to the next or the previous steerpoint, a point on the planned route that the plane steers to.",
+              "context": "It repeats the STEER switch of the AAP on the right console. In function mode it helps with the name search of the CDU.",
+              "src": "m1",
+              "page": "306"
+            },
+            {
+              "id": "inten",
+              "name": "INTEN rocker (HUD brightness)",
+              "type": "rocker",
+              "match": [
+                "PNT-BTN-UFC-INTEN-LFT",
+                "PNT-BTN-UFC-INTEN-RGT",
+                "item:up-front-controller:12"
+              ],
+              "text": "Holding this rocker makes the HUD picture darker or brighter.",
+              "context": "The pilot sets it at the start and when the light outside changes, for example when flying into the sun.",
+              "src": "m1",
+              "page": "306"
+            },
+            {
+              "id": "depr",
+              "name": "DEPR rocker (move the aiming mark)",
+              "type": "rocker",
+              "match": [
+                "PNT-BTN-UFC-DEPR-UP",
+                "PNT-BTN-UFC-DEPR-DN",
+                "item:up-front-controller:13"
+              ],
+              "text": "This rocker moves the depressible pipper, the aiming mark on the HUD, a little up or down. Each short press is one small step.",
+              "context": "The pilot uses it to fine-tune where the aiming mark sits when aiming weapons.",
+              "src": "m1",
+              "page": "306"
+            },
+            {
+              "id": "spare-keys",
+              "name": "Unused keys (no function)",
+              "type": "button",
+              "match": [
+                "PNT-BTN-UFC-FWD",
+                "PNT-BTN-UFC-MID",
+                "PNT-BTN-UFC-AFT",
+                "PNT-BTN-UFC-ADD-4",
+                "PNT-BTN-UFC-ADD-5",
+                "PNT-BTN-UFC-ADD-6"
+              ],
+              "count": 6,
+              "text": "These six keys of the bottom row have no function in the game. The game labels each of them 'No Function'.",
+              "context": "They sit under the number keys of the keypad below the HUD and do nothing in this version."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "front-left-dash",
+      "where": "front-left",
+      "name": "Left front dash",
+      "text": "The left part of the instrument dash: backup flight gauges, the radar warning scope, the left screen, the landing gear panel and the weapon arming panel.",
+      "panels": [
+        {
+          "id": "ahcp",
+          "name": "Armament HUD Control Panel (AHCP)",
+          "db": "armament-hud-control-panel",
+          "src": "m1",
+          "page": "129",
+          "text": "This panel has the switches that make weapons ready and that switch on the HUD, the screens and several computers. It has seven large and three small switches.",
+          "context": "It replaced the weapon panel of the old A-10A. Before a fight the pilot arms the weapons here, and at the start the pilot switches on the screens and the HUD here.",
+          "controls": [
+            {
+              "id": "master-arm",
+              "name": "MASTER ARM switch",
+              "type": "switch3",
+              "match": [
+                "PNT-TMB-AHCP-MARM",
+                "item:armament-hud-control-panel:1",
+                "item:left-front-dash:11"
+              ],
+              "positions": [
+                {
+                  "name": "ARM",
+                  "text": "Weapons can be fired: the gun, the trigger and selective release work."
+                },
+                {
+                  "name": "SAFE",
+                  "text": "All arming is off; nothing can be fired."
+                },
+                {
+                  "name": "TRAIN",
+                  "text": "The weapon system works in training mode, shown by blue symbols on the weapon page."
+                }
+              ],
+              "text": "This is the main safety switch for the weapons. Nothing fires while it is not set to ARM.",
+              "context": "The pilot sets it to ARM only when ready to attack. It must also be on ARM to fire the gun and to drop single weapons selectively.",
+              "src": "m1",
+              "page": "129"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "front-center-dash",
+      "where": "front-center",
+      "name": "Center front dash",
+      "text": "The middle of the instrument dash: the fire handles, the self-defence status panel, the main attitude and compass gauges and the navigation source buttons.",
+      "panels": [
+        {
+          "id": "nmsp",
+          "name": "Navigation Mode Select Panel (NMSP)",
+          "db": "navigation-mode-select-panel",
+          "src": "m1",
+          "page": "140",
+          "text": "A row of buttons that chooses which source steers the attitude indicator, the compass gauge and the HUD. A green triangle shows which button is active.",
+          "context": "Right after a cold start the HARS button is on. For normal navigation with the HUD the pilot should switch to EGI, the satellite and inertial system, because HARS and EGI cannot be on together.",
+          "controls": [
+            {
+              "id": "nmsp-hars",
+              "name": "HARS button",
+              "type": "button",
+              "match": [
+                "PTR-NMSP-HARS",
+                "item:navigation-mode-select-panel:1",
+                "item:center-front-dash:5"
+              ],
+              "text": "This button makes the backup heading and attitude system (HARS) the source for the ADI, HSI and HUD.",
+              "context": "HARS is on by default after a cold start. The manual reminds the pilot to switch to EGI.",
+              "src": "m1",
+              "page": "141"
+            }
+          ]
+        },
+        {
+          "id": "tisl",
+          "name": "TISL control panel (Target Identification Set, Laser)",
+          "db": "tisl-control-panel",
+          "src": "m2",
+          "page": "117",
+          "text": "This panel belongs to a passive laser spotter, a pod under the nose that can see the laser dots other aircraft or soldiers shine on a target. The panel sets where it looks and which laser code it searches for.",
+          "context": "The manual says this panel is not implemented in the simulation: all laser spot detection is done with the targeting pod. It sits low on the centre dash between the circuit breakers and the navigation mode panel.",
+          "controls": [
+            {
+              "id": "tisl-mode",
+              "name": "TISL mode dial",
+              "type": "selector",
+              "match": [
+                "PTR-TISLCP-MODE",
+                "item:tisl-control-panel:1"
+              ],
+              "positions": [
+                {
+                  "name": "OFF",
+                  "text": "The laser spotter has no power."
+                },
+                {
+                  "name": "CAGE",
+                  "text": "Standby after start-up; the spotter looks straight ahead along the plane's nose and cannot yet find or track targets."
+                },
+                {
+                  "name": "DIVE",
+                  "text": "The spotter searches below the HUD sight line, in a narrow 10-degree sector."
+                },
+                {
+                  "name": "LVL NAR",
+                  "text": "The spotter searches along the HUD sight line in a narrow 10-degree sector."
+                },
+                {
+                  "name": "LVL WIDE",
+                  "text": "The spotter searches along the HUD sight line in a wider 20-degree sector."
+                }
+              ],
+              "src": "m2",
+              "page": "117",
+              "text": "This dial switches the laser spotter on and chooses where it searches: straight ahead, below the sight line, or in a narrow or wide cone.",
+              "context": "After switching on, the dial rests in CAGE for 30 seconds before another position is chosen. The panel itself has no function in DCS."
+            },
+            {
+              "id": "tisl-slant",
+              "name": "SLANT RNG switch (expected distance)",
+              "type": "switch3",
+              "match": [
+                "PTR-TISLCP-SLANT-RNG",
+                "item:tisl-control-panel:2"
+              ],
+              "positions": [
+                {
+                  "name": "OVER 10",
+                  "text": "Search for targets 10 nautical miles away or more."
+                },
+                {
+                  "name": "5-10",
+                  "text": "Search for targets between 5 and 10 nautical miles away."
+                },
+                {
+                  "name": "UNDER 5",
+                  "text": "Search for targets closer than 5 nautical miles."
+                }
+              ],
+              "src": "m2",
+              "page": "118",
+              "text": "This switch tells the laser spotter roughly how far away the target is, so it knows where to look.",
+              "context": "It is used together with the altitude wheels. The panel is not functional in DCS."
+            },
+            {
+              "id": "tisl-alt",
+              "name": "ALT ABV TGT thumbwheels (height above target)",
+              "type": "wheel",
+              "match": [
+                "PTR-TISLCP-ALT-ABV-TGT-WH1",
+                "PTR-TISLCP-ALT-ABV-TGT-WH2",
+                "item:tisl-control-panel:3"
+              ],
+              "count": 2,
+              "src": "m2",
+              "page": "118",
+              "text": "These two thumbwheels each show a digit from 0 to 9. Together they enter how high the plane is above the target, in thousands of feet.",
+              "context": "With the distance switch, this height helps the spotter work out how steeply it must look down. The game names the wheels as tens and units of thousands of feet."
+            },
+            {
+              "id": "tisl-code",
+              "name": "CODE SELECT thumbwheels (laser code)",
+              "type": "wheel",
+              "match": [
+                "PTR-TISLCP-CODE-WH1",
+                "PTR-TISLCP-CODE-WH2",
+                "PTR-TISLCP-CODE-WH3",
+                "PTR-TISLCP-CODE-WH4",
+                "item:tisl-control-panel:4"
+              ],
+              "count": 4,
+              "src": "m2",
+              "page": "118",
+              "text": "These four thumbwheels each show a digit from 0 to 9. Together they enter the four-digit laser code the spotter should look for.",
+              "context": "A laser designator sends out a coded pulse; the spotter only reacts to the code the pilot has entered. The panel is not functional in DCS."
+            },
+            {
+              "id": "tisl-code-select",
+              "name": "TISL / BOTH / AUX code select switch",
+              "type": "switch3",
+              "match": [
+                "PTR-TISLCP-TISL-AUX",
+                "item:tisl-control-panel:5"
+              ],
+              "positions": [
+                {
+                  "name": "TISL",
+                  "text": "Only the laser spotter searches for the code."
+                },
+                {
+                  "name": "BOTH",
+                  "text": "The laser spotter and the auxiliary system search at the same time."
+                },
+                {
+                  "name": "AUX",
+                  "text": "Only an auxiliary system, for example a laser-guided weapon, searches for the code."
+                }
+              ],
+              "src": "m2",
+              "page": "118",
+              "text": "This switch chooses which system searches for the entered laser code.",
+              "context": "It sits in the lower right corner of the panel, next to the code wheels."
+            },
+            {
+              "id": "tisl-enter",
+              "name": "ENTER button",
+              "type": "button",
+              "match": [
+                "PTR-TISLCP-ENTER",
+                "item:tisl-control-panel:6"
+              ],
+              "src": "m2",
+              "page": "118",
+              "text": "Pressing this button confirms the laser code set on the wheels. If the code is valid, the button shows the word TISL.",
+              "context": "It is the last step after dialling the code. The panel is not functional in DCS."
+            },
+            {
+              "id": "tisl-track",
+              "name": "TRACK light",
+              "type": "light",
+              "match": [
+                "item:tisl-control-panel:7"
+              ],
+              "src": "m2",
+              "page": "118",
+              "text": "This light comes on when the laser spotter has found the entered laser code and is following it.",
+              "context": "It tells the pilot that the spotter has a valid lock. The game has no clickable part for this light."
+            },
+            {
+              "id": "tisl-overtemp",
+              "name": "OVER TEMP light",
+              "type": "light",
+              "match": [
+                "item:tisl-control-panel:8"
+              ],
+              "src": "m2",
+              "page": "118",
+              "text": "This light comes on when the detector in the spotter has become too hot to work.",
+              "context": "It is a warning light of the laser spotter. The game has no clickable part for this light."
+            },
+            {
+              "id": "tisl-bite",
+              "name": "BITE button (self test)",
+              "type": "button",
+              "match": [
+                "PTR-TISLCP-BITE",
+                "item:tisl-control-panel:9"
+              ],
+              "src": "m2",
+              "page": "118",
+              "text": "Pressing this button runs a self test of the laser spotter. If no fault is found, the button shows DET ACD for 10 seconds.",
+              "context": "The test only runs when the mode dial is not at OFF. The panel is not functional in DCS."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "left-console",
+      "where": "left-console",
+      "name": "Left console",
+      "text": "The side panel to the pilot's left: throttles and engine switches, the fuel panel, three radios, the autopilot panel, flight control backup switches, the intercom, lights and the ejection seat controls.",
+      "panels": [
+        {
+          "id": "fuel-panel",
+          "name": "Fuel system control panel",
+          "db": "fuel-system-control-panel",
+          "src": "m1",
+          "page": "158",
+          "text": "This panel controls how fuel flows from the tanks to the engines. It has pump switches, tank switches, a crossfeed switch and the controls for refuelling in the air.",
+          "context": "The plane has two separate fuel systems, left and right, so one failure cannot starve both engines. The pilot switches the pumps on during start-up and uses the crossfeed only if a pump fails.",
+          "controls": [
+            {
+              "id": "boost-main",
+              "name": "Main boost pump switches (L and R)",
+              "type": "switch2",
+              "match": [
+                "PTR-FSCP-BOOST-PUMPS-MAIN-*",
+                "item:fuel-system-control-panel:1",
+                "item:left-console:1"
+              ],
+              "positions": [
+                {
+                  "name": "ON",
+                  "text": "The pump of that main tank runs and pushes fuel to the engine."
+                },
+                {
+                  "name": "OFF",
+                  "text": "The pump of that main tank is off."
+                }
+              ],
+              "count": 2,
+              "text": "These two switches turn on the pumps of the left and right fuselage main tanks. A pump pushes the fuel towards the engine.",
+              "context": "The pre-flight list has them off. The pilot turns them on during the start-up, and a caution light shows if a pump pressure is low.",
+              "src": "m1",
+              "page": "158"
+            }
+          ]
+        },
+        {
+          "id": "throttle-quadrant",
+          "name": "Throttle quadrant (throttles panel)",
+          "db": "throttles-panel",
+          "src": "m1",
+          "page": "160",
+          "text": "This is the area around the two throttle levers. Next to them are the switches for the APU, the engine start, the fuel flow and the flaps.",
+          "context": "In the A-10C both engines are started with help of the APU, the small helper engine. The levers are moved from OFF to IDLE to start an engine.",
+          "controls": [
+            {
+              "id": "apu-switch",
+              "name": "APU switch",
+              "type": "switch2",
+              "match": [
+                "PTR-APU-START",
+                "item:throttles-panel:1",
+                "item:left-console:2"
+              ],
+              "positions": [
+                {
+                  "name": "START",
+                  "text": "The APU starts and the APU gauges come on."
+                },
+                {
+                  "name": "OFF",
+                  "text": "The APU is off."
+                }
+              ],
+              "text": "This switch starts the APU, a small extra engine in the back of the plane. It makes electricity and compressed air before the main engines run.",
+              "context": "It works only when the battery switch is on. It starts the fuel pump, opens the fuel valve, starts the starter and wakes up the APU gauges. The APU is then used to start both main engines.",
+              "src": "m1",
+              "page": "161"
+            }
+          ]
+        },
+        {
+          "id": "laste",
+          "name": "LASTE control panel",
+          "db": "laste-control-panel",
+          "src": "m1",
+          "page": "165",
+          "text": "This panel switches on the helpers that make low flying safer and the autopilot work. It has an arming switch, a radar altimeter switch, an autopilot mode switch and an engage button.",
+          "context": "LASTE stands for Low Altitude Safety and Targeting Enhancement. The pilot sets the mode first and then presses the engage button; the autopilot has no route mode.",
+          "controls": [
+            {
+              "id": "eac",
+              "name": "EAC switch (enhanced attitude control)",
+              "type": "switch2",
+              "match": [
+                "PTR-LCP-EAC",
+                "item:laste-control-panel:1",
+                "item:left-console:3"
+              ],
+              "positions": [
+                {
+                  "name": "ARM",
+                  "text": "Up: the system is ready for the autopilot and PAC."
+                },
+                {
+                  "name": "OFF",
+                  "text": "Down: the system is off and the EAC caution light shows."
+                }
+              ],
+              "text": "This switch arms the system that makes the autopilot and the gun steadying (PAC) possible.",
+              "context": "If the system switches itself off after a fault, the EAC caution light and the master caution come on.",
+              "src": "m1",
+              "page": "165"
+            }
+          ]
+        },
+        {
+          "id": "arc164",
+          "name": "AN/ARC-164 UHF radio",
+          "db": "arc-164-radio-head",
+          "src": "m1",
+          "page": "168",
+          "text": "This is the UHF radio, the main radio for talking to the pilot's own flight. It covers the frequencies from 225.000 to 399.975 MHz and can store 20 channels.",
+          "context": "Most mission talk goes through this radio. The pilot can turn its volume down if too much is said, or change the channel.",
+          "controls": [
+            {
+              "id": "arc164-channel",
+              "name": "Preset channel selector",
+              "type": "knob",
+              "match": [
+                "PTR-ANARC164-CHANNEL-SELECTOR",
+                "item:arc-164-radio-head:1",
+                "item:arc-164-radio-head:2",
+                "item:arc-164-radio-head:3",
+                "item:left-console:5"
+              ],
+              "text": "Turning this knob at the upper right goes through the 20 stored channels. The channel number and its frequency show in two windows, and the frequency is repeated on the front dash.",
+              "context": "A stored channel is like a station button on a car radio; this knob only has an effect with the mode dial set to PRESET."
+            }
+          ]
+        },
+        {
+          "id": "arc186",
+          "name": "AN/ARC-186 VHF/FM radio 2",
+          "db": "arc-186-radio-head",
+          "src": "m1",
+          "page": "171",
+          "text": "This is the second radio. It works in the VHF/FM band from 30.000 to 76.000 MHz and stores 20 channels. Its frequency is set with four knobs.",
+          "context": "In most missions this radio is used to talk to JTAC, the ground controllers who guide attacks.",
+          "controls": [
+            {
+              "id": "arc186-volume",
+              "name": "VOLUME knob",
+              "type": "knob",
+              "match": [
+                "PTR-ANARC186-VHFFM-VOLUME",
+                "item:arc-186-radio-head:5",
+                "item:left-console:6"
+              ],
+              "text": "Turning this knob makes the sound of the radio louder or quieter.",
+              "context": "The knob sits at the top left of the panel.",
+              "src": "m1",
+              "page": "171"
+            }
+          ]
+        },
+        {
+          "id": "ky58",
+          "name": "KY-58 secure voice panel",
+          "db": "ky-58-panel",
+          "src": "m1",
+          "page": "173",
+          "text": "This panel is meant to scramble the voice on the UHF and VHF radios so that the enemy cannot listen.",
+          "context": "The manual says this panel is not functional in the simulation.",
+          "controls": [
+            {
+              "id": "ky58-power",
+              "name": "Power switch",
+              "type": "switch",
+              "match": [
+                "PTR-TMB-PANKY58-POWER",
+                "item:ky-58-panel:1",
+                "item:left-console:7"
+              ],
+              "text": "This switch turns the voice encryption on.",
+              "context": "The panel is not functional in the game.",
+              "src": "m1",
+              "page": "173"
+            }
+          ]
+        },
+        {
+          "id": "aux-lighting",
+          "name": "Auxiliary lighting control panel",
+          "db": "auxiliary-lighting-control-panel",
+          "src": "m1",
+          "page": "175",
+          "text": "A panel with several small lighting and test controls: the brightness of the refuelling and landing-angle lights, the night-vision lights, a lamp test button, the HARS/SAS override and the fire detection test.",
+          "context": "The pilot uses the lamp test to check that the warning lights work and the fire test to see that the three fire handles light up.",
+          "controls": [
+            {
+              "id": "rsil-dial",
+              "name": "REFUEL STATUS & INDEXER LTS dial",
+              "type": "knob",
+              "match": [
+                "PTR-ALCP-RSIL",
+                "item:auxiliary-lighting-control-panel:1",
+                "item:left-console:9"
+              ],
+              "text": "This dial sets the brightness of the refuelling status lights and of the landing-angle lights on the left canopy frame.",
+              "context": "It turns between DIM for a faint light and BRT for the full brightness.",
+              "src": "m1",
+              "page": "175"
+            }
+          ]
+        },
+        {
+          "id": "sas",
+          "name": "SAS panel (stability augmentation)",
+          "db": "sas-panel",
+          "src": "m1",
+          "page": "177",
+          "text": "This panel switches the SAS, a helper that keeps the plane steady and smooth. It has engage switches for pitch and yaw, a yaw trim knob and the take-off trim button.",
+          "context": "SAS needs hydraulic power and switches itself off if the hydraulics fail. Pitch is the nose going up and down, yaw is the nose going left and right.",
+          "controls": [
+            {
+              "id": "sas-yaw-trim",
+              "name": "Yaw trim knob",
+              "type": "knob",
+              "match": [
+                "PTR-SASP-YAW-TRIM",
+                "item:sas-panel:1",
+                "item:left-console:10"
+              ],
+              "text": "Turning this knob gives the plane a small steady push to the left or right so it flies straight without rudder pedal pressure.",
+              "context": "It only works while the SAS is on.",
+              "src": "m1",
+              "page": "177"
+            }
+          ]
+        },
+        {
+          "id": "iff",
+          "name": "IFF/SIF control panel",
+          "db": "iff-sif-control-panel",
+          "src": "m1",
+          "page": "178",
+          "text": "IFF stands for identification friend or foe. This panel sets how the plane answers when a radar asks it who it is, with code numbers.",
+          "context": "The manual says that this panel is not functional in the simulation; the plane cannot ask other planes but could answer.",
+          "controls": [
+            {
+              "id": "iff-master",
+              "name": "Master mode dial (OFF / STBY / LOW / NORM / EMER)",
+              "type": "selector",
+              "match": [
+                "PTR-IFFCP-MASTER",
+                "item:iff-sif-control-panel:1",
+                "item:left-console:11"
+              ],
+              "positions": [
+                {
+                  "name": "OFF",
+                  "text": "No power to the IFF."
+                },
+                {
+                  "name": "STBY",
+                  "text": "Powered and ready, but not receiving."
+                },
+                {
+                  "name": "LOW",
+                  "text": "The receivers have low sensitivity."
+                },
+                {
+                  "name": "NORM",
+                  "text": "The receivers have normal sensitivity."
+                },
+                {
+                  "name": "EMER",
+                  "text": "No function."
+                }
+              ],
+              "text": "This dial switches the IFF on and sets how sensitive its receiver is.",
+              "context": "EMER has no function in the game; the other positions are explained below.",
+              "src": "m1",
+              "page": "179"
+            }
+          ]
+        },
+        {
+          "id": "efcp",
+          "name": "Emergency flight control panel",
+          "db": "emergency-flight-control-panel",
+          "src": "m1",
+          "page": "180",
+          "text": "A panel of switches for emergencies with the flight controls: emergency trim, retracting the flaps or speed brakes by air load, and cutting off a stuck aileron or elevator.",
+          "context": "In normal flight this panel is not used. All its switches should be in their normal positions before the start.",
+          "controls": [
+            {
+              "id": "efcp-trim-sw",
+              "name": "PITCH/ROLL TRIM switch (NORM / EMER OVERRIDE)",
+              "type": "switch2",
+              "match": [
+                "PTR-EFCP-PTCHROLL-TRIM",
+                "item:emergency-flight-control-panel:1",
+                "item:left-console:12"
+              ],
+              "positions": [
+                {
+                  "name": "NORM",
+                  "text": "The trim hat on the stick sets the trim."
+                },
+                {
+                  "name": "EMER OVERRIDE",
+                  "text": "The emergency trim buttons set the trim."
+                }
+              ],
+              "text": "This switch decides which control sets the trim. Trim is the small adjustment that lets the plane fly straight without holding the stick.",
+              "context": "In NORM the trim hat on the stick is used. In EMER OVERRIDE the four emergency trim buttons next to it are used.",
+              "src": "m1",
+              "page": "181"
+            }
+          ]
+        },
+        {
+          "id": "intercom",
+          "name": "Intercom control panel",
+          "db": "intercom-control-panel",
+          "src": "m1",
+          "page": "182",
+          "text": "This is the sound mixer of the cockpit. It decides which radios and signals the pilot hears and which one the pilot talks on, and it controls the volume.",
+          "context": "It also lets the pilot talk to the ground crew, which is needed to ask for arming or refuelling. Its volume overrides the volume knobs on the single radios.",
+          "controls": [
+            {
+              "id": "ic-vol",
+              "name": "VOL knob (master volume)",
+              "type": "knob",
+              "match": [
+                "PTR-INTERCOM-VOL",
+                "item:intercom-control-panel:1",
+                "item:left-console:13"
+              ],
+              "text": "Turning this knob makes all the sound of the cockpit louder or quieter.",
+              "context": "It affects every other volume setting of the panel.",
+              "src": "m1",
+              "page": "182"
+            }
+          ]
+        },
+        {
+          "id": "stall",
+          "name": "Stall warning control panel",
+          "db": "stall-warning-control-panel",
+          "src": "m1",
+          "page": "183",
+          "text": "Two dials set the loudness of the two warning tones that sound when the plane is close to a stall, which means the wing loses its lift.",
+          "context": "A steady tone sounds within 2 units of a stall, and it becomes a chopped tone within 1 unit. When the chopped tone sounds, the pilot should lower the angle of attack at once.",
+          "controls": [
+            {
+              "id": "stall-vol",
+              "name": "STALL volume dial",
+              "type": "knob",
+              "match": [
+                "PTR-STALLWCP-STALL",
+                "item:stall-warning-control-panel:1",
+                "item:left-console:14"
+              ],
+              "text": "This dial sets the loudness of the chopped warning tone, the louder warning very close to a stall.",
+              "context": "It cannot be turned fully down.",
+              "src": "m1",
+              "page": "184"
+            }
+          ]
+        },
+        {
+          "id": "arc186-am",
+          "name": "AN/ARC-186 VHF/AM radio 1",
+          "db": "arc-186-vhf-am",
+          "src": "m2",
+          "page": "139",
+          "text": "This is the first radio. It works in the VHF/AM band from 116.000 to 151.975 MHz, stores 20 channels and is used for talking to other aircraft and the tower.",
+          "context": "It sits on the left console behind the throttles. In the A-10C II this radio is replaced by the ARC-210.",
+          "controls": [
+            {
+              "id": "arc186am-volume",
+              "name": "Volume knob",
+              "type": "knob",
+              "match": [
+                "PTR-ANARC186-VHFAM-VOLUME",
+                "item:arc-186-vhf-am:5",
+                "item:left-console:4"
+              ],
+              "page": "139",
+              "src": "m2",
+              "text": "Turning this knob makes the sound of the AM radio louder or quieter.",
+              "context": "The manual suggests turning it down when there is too much radio traffic. It sits in the top left corner of the panel."
+            },
+            {
+              "id": "arc186am-squelch",
+              "name": "Squelch / TONE switch",
+              "type": "switch",
+              "match": [
+                "PTR-ANARC186-VHFAM-SQUELCH",
+                "item:arc-186-vhf-am:8"
+              ],
+              "page": "140",
+              "src": "m2",
+              "text": "Squelch means the radio stays quiet when nobody is talking. This switch sets that, or makes the radio sound a tone.",
+              "context": "On this AM radio the manual only says that the switch provides a squelch tone."
+            },
+            {
+              "id": "arc186am-freq",
+              "name": "Frequency selector knobs (1st to 4th)",
+              "type": "knob",
+              "match": [
+                "PTR-ANARC186-VHFAM-FREQ-1",
+                "PTR-ANARC186-VHFAM-FREQ-2",
+                "PTR-ANARC186-VHFAM-FREQ-3",
+                "PTR-ANARC186-VHFAM-FREQ-4",
+                "item:arc-186-vhf-am:3"
+              ],
+              "count": 4,
+              "page": "139",
+              "src": "m2",
+              "text": "Four knobs set the frequency digit above each of them. From left to right they set the tens of MHz, the ones, the tenths, and the last part in steps of 25.",
+              "context": "The pilot sets the frequency given in the briefing. A warning tone sounds when the frequency is outside the radio's band."
+            },
+            {
+              "id": "arc186am-emer",
+              "name": "Frequency selection dial (EMER FM / EMER AM / MAN / PRE)",
+              "type": "selector",
+              "match": [
+                "PTR-ANARC186-VHFAM-FREQEMER-CONTROL",
+                "item:arc-186-vhf-am:7"
+              ],
+              "positions": [
+                {
+                  "name": "EMER FM",
+                  "text": "The guard channel is tuned; this has no effect on the AM radio."
+                },
+                {
+                  "name": "EMER AM",
+                  "text": "The guard channel is tuned."
+                },
+                {
+                  "name": "MAN",
+                  "text": "The frequency is set with the four knobs."
+                },
+                {
+                  "name": "PRE",
+                  "text": "The stored channel shown in the preset window is used."
+                }
+              ],
+              "page": "140",
+              "src": "m2",
+              "text": "This dial decides how the AM radio picks its frequency: the emergency guard channel, a frequency set by hand, or a stored channel.",
+              "context": "For this AM radio, EMER AM is the position that tunes the guard channel."
+            },
+            {
+              "id": "arc186am-load",
+              "name": "LOAD button",
+              "type": "button",
+              "match": [
+                "PTR-ANARC186-VHFAM-LOAD",
+                "item:arc-186-vhf-am:4"
+              ],
+              "page": "140",
+              "src": "m2",
+              "text": "Pressing this button saves the frequency set by hand into the preset channel that is shown in the window.",
+              "context": "To store a channel: set MAN, dial the frequency, pick the channel number with the wheel, press LOAD, then set PRE."
+            },
+            {
+              "id": "arc186am-preset",
+              "name": "Preset channel selector wheel",
+              "type": "wheel",
+              "match": [
+                "PTR-ANARC186-VHFAM-PRESET",
+                "item:arc-186-vhf-am:1",
+                "item:arc-186-vhf-am:2"
+              ],
+              "page": "139",
+              "src": "m2",
+              "text": "This wheel at the bottom moves left and right to pick one of the 20 stored channels. The chosen number shows in the window above it.",
+              "context": "With PRE selected, the radio uses the frequency stored on the shown channel. That frequency is not shown in the frequency windows."
+            },
+            {
+              "id": "arc186am-mode",
+              "name": "Frequency mode dial (OFF / TR / DF)",
+              "type": "selector",
+              "match": [
+                "PTR-ANARC186-VHFAM-MODE",
+                "item:arc-186-vhf-am:6"
+              ],
+              "positions": [
+                {
+                  "name": "OFF",
+                  "text": "The radio has no power."
+                },
+                {
+                  "name": "TR",
+                  "text": "The radio sends and receives voice."
+                },
+                {
+                  "name": "DF",
+                  "text": "Direction finding; the manual says the AM radio cannot do it and it is not functional."
+                }
+              ],
+              "page": "140",
+              "src": "m2",
+              "text": "This dial turns the AM radio off or on. TR is the normal position to send and receive voice.",
+              "context": "The manual says DF (direction finding) is not available on the AM radio and not functional."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "right-console",
+      "where": "right-console",
+      "name": "Right console",
+      "text": "The side panel to the pilot's right: canopy and ladder, electrical power, air and oxygen, lights, self-defence panel, caution board, the navigation computer with its power panel, TACAN, ILS, HARS and the helmet sight power.",
+      "panels": [
+        {
+          "id": "elec",
+          "name": "Electrical power panel",
+          "db": "electrical-power-panel",
+          "src": "m1",
+          "page": "188",
+          "text": "This panel decides where the electricity of the plane comes from: the battery, the APU or the two engine generators. It also has the emergency floodlight switch.",
+          "context": "Electricity is the first thing the pilot turns on in a cold start. The battery comes first, then the APU, and when both engines run their generators take over.",
+          "controls": [
+            {
+              "id": "battery",
+              "name": "BATTERY switch",
+              "type": "switch2",
+              "match": [
+                "PTR-EPP-BATTERY-PWR",
+                "item:electrical-power-panel:1",
+                "item:right-console:2"
+              ],
+              "positions": [
+                {
+                  "name": "PWR",
+                  "text": "The battery gives power to the plane."
+                },
+                {
+                  "name": "OFF",
+                  "text": "The battery is disconnected; the plane is dead."
+                }
+              ],
+              "text": "This switch connects the plane's 24-volt battery. It is the first step of starting the plane.",
+              "context": "The battery alone gives power for the APU start and for the basic engine gauges.",
+              "src": "m1",
+              "page": "188"
+            }
+          ]
+        },
+        {
+          "id": "env",
+          "name": "Environment system panel",
+          "db": "environment-system-panel",
+          "src": "m1",
+          "page": "189",
+          "text": "This panel has two halves. The top half is the oxygen regulator that gives the pilot air to breathe. The bottom half controls cockpit air, heat, pressure, defogging and the heated sensor tube.",
+          "context": "The pilot turns the oxygen on before flying high. Above 18,000 feet, running out of oxygen makes the pilot lose consciousness.",
+          "controls": [
+            {
+              "id": "oxy-supply",
+              "name": "Oxygen supply lever (ON / OFF)",
+              "type": "lever",
+              "match": [
+                "PTR-OXYGENCP-SUPPLY",
+                "item:environment-system-panel:1",
+                "item:right-console:3"
+              ],
+              "positions": [
+                {
+                  "name": "ON",
+                  "text": "Oxygen flows to the pilot."
+                },
+                {
+                  "name": "OFF",
+                  "text": "No oxygen flows."
+                }
+              ],
+              "text": "This green lever opens or closes the flow of oxygen to the pilot's mask.",
+              "context": "Oxygen (the breathing gas for high altitude) is needed at height.",
+              "src": "m1",
+              "page": "189"
+            }
+          ]
+        },
+        {
+          "id": "lights",
+          "name": "Light control panel",
+          "db": "light-control-panel",
+          "src": "m1",
+          "page": "191",
+          "text": "This panel controls the lights outside the plane (the top part) and the lights inside the cockpit (the bottom part).",
+          "context": "A pinky switch on the left throttle can override the outside lights, so the pilot can turn them all off quickly in a fight.",
+          "controls": [
+            {
+              "id": "position",
+              "name": "POSITION lights switch (FLASH / OFF / STEADY)",
+              "type": "switch3",
+              "match": [
+                "PTR-LGHTCP-POSITION",
+                "item:light-control-panel:1",
+                "item:right-console:4"
+              ],
+              "positions": [
+                {
+                  "name": "FLASH",
+                  "text": "The position lights blink."
+                },
+                {
+                  "name": "OFF",
+                  "text": "The position lights are off."
+                },
+                {
+                  "name": "STEADY",
+                  "text": "The position lights stay on."
+                }
+              ],
+              "text": "This switch controls the coloured lights on the wingtips and the tail: red on the left wing, green on the right wing and white on the tail.",
+              "context": "The lights tell other pilots which way the plane is heading, mostly at night.",
+              "src": "m1",
+              "page": "192"
+            }
+          ]
+        },
+        {
+          "id": "cmsp",
+          "name": "Countermeasure Signal Processor (CMSP)",
+          "db": "cmsp",
+          "src": "m1",
+          "page": "491",
+          "text": "This panel programs and switches on the self-defence systems: the chaff and flare dispensers, the radar warning receiver (RWR), the jammer and the missile warning system.",
+          "context": "Chaff are clouds of metal strips that confuse radar missiles, and flares are hot burning decoys that confuse heat-seeking missiles. The status board of the same system is above the attitude indicator.",
+          "controls": [
+            {
+              "id": "cmsp-mode",
+              "name": "Mode select dial (OFF / STBY / MAN / SEMI / AUTO)",
+              "type": "selector",
+              "match": [
+                "PNT-LEV-CMSP-MODE",
+                "item:cmsp:1",
+                "item:right-console:5"
+              ],
+              "positions": [
+                {
+                  "name": "OFF",
+                  "text": "No power; the displays are blank."
+                },
+                {
+                  "name": "STBY",
+                  "text": "Powered and adjustable, but nothing is released."
+                },
+                {
+                  "name": "MAN",
+                  "text": "The pilot runs the chaff and flare program by hand."
+                },
+                {
+                  "name": "SEMI",
+                  "text": "The system chooses the program, the pilot releases."
+                },
+                {
+                  "name": "AUTO",
+                  "text": "The system chooses and releases by itself."
+                }
+              ],
+              "text": "This dial sets how much the defence system does by itself. OFF is dead, STBY is powered but does not release anything, and the three others range from manual to fully automatic.",
+              "context": "In MAN the pilot starts the program with the stick. In SEMI the system picks the program and the pilot starts it. In AUTO the system does everything.",
+              "src": "m1",
+              "page": "491"
+            }
+          ]
+        },
+        {
+          "id": "aap",
+          "name": "Auxiliary Avionics Panel (AAP)",
+          "db": "auxiliary-avionics-panel-aap",
+          "src": "m1",
+          "page": "203",
+          "text": "This panel is below the CDU. It gives power to the CDU and the EGI, and it has two dials and a switch that choose which CDU page and which waypoint is used.",
+          "context": "The pilot switches on the CDU and the EGI soon after the engine start, because the navigation system needs a lot of time to align.",
+          "controls": [
+            {
+              "id": "aap-cdu",
+              "name": "CDU power switch",
+              "type": "switch2",
+              "match": [
+                "PTR-TMB-CDU-SWITCH",
+                "item:auxiliary-avionics-panel-aap:1",
+                "item:right-console:8"
+              ],
+              "positions": [
+                {
+                  "name": "ON",
+                  "text": "The CDU has power."
+                },
+                {
+                  "name": "OFF",
+                  "text": "The CDU has no power."
+                }
+              ],
+              "text": "This switch gives power to the CDU, the computer with the keyboard and screen.",
+              "context": "The pilot turns it on early, because the navigation system needs time to line up.",
+              "src": "m1",
+              "page": "204"
+            }
+          ]
+        },
+        {
+          "id": "tacan",
+          "name": "TACAN control panel",
+          "db": "tacan-control-panel",
+          "src": "m1",
+          "page": "198",
+          "text": "This panel tunes the TACAN receiver. TACAN gives the direction and distance to a beacon on the ground or on a ship.",
+          "context": "The result shows on the compass gauge (HSI) when the navigation mode panel is set to TCN. The panel sits behind the CDU and AAP.",
+          "controls": [
+            {
+              "id": "tacan-mode",
+              "name": "Mode dial (OFF / REC / T/R / A/A REC / A/A T/R)",
+              "type": "selector",
+              "match": [
+                "PTR-TACAN-MODE",
+                "item:tacan-control-panel:1",
+                "item:right-console:9"
+              ],
+              "positions": [
+                {
+                  "name": "OFF",
+                  "text": "TACAN is off."
+                },
+                {
+                  "name": "REC",
+                  "text": "Receive only: direction and station name, no distance."
+                },
+                {
+                  "name": "T/R",
+                  "text": "Transmit and receive: direction and distance."
+                },
+                {
+                  "name": "A/A REC",
+                  "text": "Receives air-to-air direction, used to find tankers."
+                },
+                {
+                  "name": "A/A T/R",
+                  "text": "Two-way air-to-air data between two planes."
+                }
+              ],
+              "text": "This dial switches TACAN on and picks the mode: only receiving, receiving and giving distance, or the two air-to-air modes used to find a tanker or another plane.",
+              "context": "T/R is the usual setting to get both direction and distance.",
+              "src": "m1",
+              "page": "198"
+            }
+          ]
+        },
+        {
+          "id": "ils",
+          "name": "ILS control panel",
+          "db": "ils-control-panel",
+          "src": "m1",
+          "page": "199",
+          "text": "This panel switches on the ILS receiver and sets the frequency of the airfield's landing beam. ILS guides the plane down to the runway in bad weather.",
+          "context": "The localizer shows on the compass gauge and the glide slope on the attitude indicator. To hear the beam tones, the ILS switch on the intercom panel must be in.",
+          "controls": [
+            {
+              "id": "ils-power",
+              "name": "ILS power / MHz knob",
+              "type": "knob",
+              "match": [
+                "PTR-ILSCP-PWR",
+                "item:ils-control-panel:1",
+                "item:ils-control-panel:3",
+                "item:right-console:10"
+              ],
+              "positions": [
+                {
+                  "name": "PWR",
+                  "text": "The ILS receiver is on."
+                },
+                {
+                  "name": "OFF",
+                  "text": "The ILS receiver is off."
+                }
+              ],
+              "text": "The outer part of this knob turns the ILS on or off. Turning the base changes the whole-number part of the frequency, in MHz.",
+              "context": "The window above shows the frequency. The airfield's ILS frequencies are on the CDU DIVERT page.",
+              "src": "m1",
+              "page": "199"
+            }
+          ]
+        },
+        {
+          "id": "hars",
+          "name": "HARS control panel",
+          "db": "hars-control-panel",
+          "src": "m1",
+          "page": "200",
+          "text": "HARS is the backup system that gives heading and attitude. This panel sets it up: mode, latitude, hemisphere, magnetic variation and a sync button.",
+          "context": "Under normal conditions the pilot has little use for HARS, because the EGI does the job. The panel sits at the back of the right console.",
+          "controls": [
+            {
+              "id": "hars-synind",
+              "name": "SYN-IND meter",
+              "type": "indicator",
+              "match": [
+                "item:hars-control-panel:1",
+                "item:right-console:11"
+              ],
+              "text": "This small meter shows how well HARS agrees with the remote compass when it is in SLAVE mode. The needle should rest in the middle.",
+              "context": "A centred needle means the heading is correct.",
+              "src": "m1",
+              "page": "200"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "hotas",
+      "where": "hotas",
+      "name": "Stick and throttle",
+      "text": "The grips of the control stick and the two throttle levers. The buttons and switches on them are the ones the pilot uses most often in a fight.",
+      "panels": [
+        {
+          "id": "stick",
+          "name": "Stick (control stick grip)",
+          "text": "The control stick moves the plane's nose and wings. The buttons and hats on its grip let the pilot work the weapons, sensors, trim and countermeasures without letting go.",
+          "context": "HOTAS means hands on throttle and stick. In a fight the pilot rarely lets go of the grips, so the most used functions sit under the fingers.",
+          "controls": [
+            {
+              "id": "stick-dms",
+              "name": "Data Management Switch (DMS)",
+              "type": "hat",
+              "match": [
+                "STICK-BTN-DMS",
+                "control:stick.hat.dms"
+              ],
+              "text": "This four-way hat on the top left of the grip changes data on the sensor in control: it can zoom, change steerpoints, change the map scale or cycle the gun sight.",
+              "context": "Short and long presses do different things, so the pilot can work screens and sensors with the thumb."
+            }
+          ]
+        },
+        {
+          "id": "throttle-grip",
+          "name": "Throttle (split throttle grips)",
+          "text": "The two throttle levers are moved with the left hand. The buttons and switches on them work the radio, the speed brakes, the sensors and the lights.",
+          "context": "The right throttle grip carries the slew control and the coolie hat. The left grip has the speed brake, the mic switch and other switches.",
+          "controls": [
+            {
+              "id": "thr-coolie",
+              "name": "Coolie hat",
+              "type": "hat",
+              "match": [
+                "TRTL-R-HAT-COOLIE",
+                "control:throttle.coolie"
+              ],
+              "text": "This four-way hat on the right throttle chooses which screen or sensor the other switches control, and cycles screen pages.",
+              "context": "Up makes the HUD the screen in control, left and right pick the left or right screen. Long presses give quick looks at messages and status."
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "remove": [
+    "arc210",
+    "hmcs",
+    "ufc/comm-keys"
+  ]
+}

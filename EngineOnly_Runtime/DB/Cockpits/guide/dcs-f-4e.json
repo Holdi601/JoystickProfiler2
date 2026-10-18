@@ -1,0 +1,1713 @@
+{
+  "format": "joypro-cockpit-guide",
+  "version": 1,
+  "id": "dcs-f-4e",
+  "title": "F-4E Phantom II (DCS)",
+  "variants": [
+    "f-4e",
+    "f-4e-wso"
+  ],
+  "games": [
+    "DCS"
+  ],
+  "sets": [
+    "DCS/F-4E-45MC"
+  ],
+  "sources": [
+    {
+      "id": "m1",
+      "title": "DCS F-4E Phantom II Manual (Heatblur, EN)",
+      "file": "Mods/aircraft/F-4E/Doc/F-4E Manual.pdf"
+    }
+  ],
+  "intro": "The F-4E Phantom II is a big two-seat jet fighter and bomber with two engines. In this DCS module (by Heatblur) the guide covers both cockpits. The pilot sits in front. He has the control stick, the two throttles, the engine and weapon switches and the instruments. Behind him sits the weapon systems officer (WSO), who works the radar, the targeting pod, the navigation and the countermeasures, and who has his own stick and throttles. Many panels exist twice, for example the radio, the TACAN beacon receiver and the intercom, one in each seat. The areas of the back seat are named 'WSO cockpit'.",
+  "areas": [
+    {
+      "id": "canopy-bow",
+      "where": "glareshield",
+      "name": "Pilot cockpit: Canopy bow and mirrors",
+      "text": "The frame of the glass roof right in front of the pilot's eyes. It carries the rear-view mirrors, the missile and landing lights and the backup compass, so the pilot can read them while looking outside.",
+      "panels": [
+        {
+          "id": "mirrors",
+          "name": "Rear-view mirrors",
+          "src": "m1",
+          "page": "39",
+          "text": "Three small mirrors on the canopy frame let the pilot look behind the jet without turning around.",
+          "context": "The pilot checks them for enemy fighters sneaking up from behind. In the game, clicking a mirror switches the mirror view on or off.",
+          "controls": [
+            {
+              "id": "pilot-mirrors",
+              "name": "Mirrors (top, left, right)",
+              "type": "switch",
+              "match": [
+                "PNT_PilotMirror_*"
+              ],
+              "count": 3,
+              "text": "The three mirrors are clickable in the game. The game's hint for each one is 'Toggle Mirrors': a click shows or hides the mirror view.",
+              "context": "The mirrors only matter while the pilot looks around for other aircraft; they change no system of the plane.",
+              "src": "m1",
+              "page": "39"
+            }
+          ]
+        },
+        {
+          "id": "overhead-indicators",
+          "name": "Overhead indicators",
+          "src": "m1",
+          "page": "50",
+          "text": "A group of lights and the backup compass on the canopy frame. They sit in the pilot's line of sight, so he can read them without looking down.",
+          "context": "They help most when the pilot is busy looking outside: in a fight, during landing or when taking fuel from a tanker.",
+          "controls": [
+            {
+              "id": "shoot-lights",
+              "name": "SHOOT lights (5)",
+              "type": "light",
+              "match": [
+                "item:overhead-indicators:1"
+              ],
+              "text": "Five lights around the canopy frame that glow when a missile may be fired at the target. They stay dark for visual intercepts and for attacks on the ground.",
+              "context": "The pilot waits for these lights before pulling the trigger on a radar missile. The brightness knob of the flight instruments can switch them off when turned very dim.",
+              "src": "m1",
+              "page": "50"
+            },
+            {
+              "id": "air-refuel-lights",
+              "name": "Air refueling lights",
+              "type": "light",
+              "match": [
+                "item:overhead-indicators:2"
+              ],
+              "text": "A set of status lights for taking fuel in the air: READY, DISENGAGED and one FULL light each for the left, centre and right external tank.",
+              "context": "READY shows the fuel inlet is fully open. DISENGAGED lights when the tanker's boom lets go and stays on until the switch on the left console is reset.",
+              "src": "m1",
+              "page": "51"
+            },
+            {
+              "id": "labs-pull-up-light",
+              "name": "LABS PULL UP light",
+              "type": "light",
+              "match": [
+                "PNT_Pull_Up_Light",
+                "item:overhead-indicators:3"
+              ],
+              "text": "A light that comes on and goes off during a loft or LABS bombing run. It tells the pilot when to start pulling up. In the game it can be pushed to test and turned to dim.",
+              "context": "LABS is a low-altitude bombing method. The pilot follows the light as a timing signal during a loft or LABS bombing run.",
+              "src": "m1",
+              "page": "52"
+            },
+            {
+              "id": "standby-compass",
+              "name": "Standby magnetic compass",
+              "type": "gauge",
+              "match": [
+                "item:overhead-indicators:4"
+              ],
+              "text": "A simple magnetic compass, like a hiking compass. It is the backup if the main direction instruments fail.",
+              "context": "It is only reliable in level flight. The pilot normally uses the other direction instruments.",
+              "src": "m1",
+              "page": "52"
+            },
+            {
+              "id": "aoa-indexer",
+              "name": "Angle of attack indexer lights",
+              "type": "light",
+              "match": [
+                "item:overhead-indicators:5"
+              ],
+              "text": "Lights left and right of the sight that show whether the plane is flying too slowly, right or too fast for landing. The colour and position tell which one.",
+              "context": "The pilot uses them on the approach to the runway. They only work when the right landing gear is down, and they can also show weapon steering cues.",
+              "src": "m1",
+              "page": "53"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "dscg-sight",
+      "where": "front-center",
+      "name": "Pilot cockpit: Radar screen and optical sight",
+      "text": "The middle of the pilot's front panel: the optical gun sight with its glass plate and, below it, the round radar repeater screen. The knobs around them set brightness and sight mode.",
+      "panels": [
+        {
+          "id": "dscg-sight",
+          "name": "DSCG and optical sight controls",
+          "src": "m1",
+          "page": "41",
+          "text": "The DSCG is the round screen below the sight that shows what the radar sees (the pilot's copy of the back seat's radar). The knobs and tabs around it set how bright it is and how the gun sight behaves.",
+          "context": "The weapon officer in the back seat flies the radar; the pilot mostly looks at this screen and at the sight. The pilot can choose a different picture on it with the screen source switch on the pedestal.",
+          "controls": [
+            {
+              "id": "wheels-light",
+              "name": "WHEELS light",
+              "type": "light",
+              "match": [
+                "item:dscg-sight:1"
+              ],
+              "text": "A warning light that comes on when the plane is slow enough to land but the wheels are still up. It is a reminder to lower the landing gear.",
+              "context": "The light switches on below about 230 knots (the flap blow-up speed, which depends on height) with the gear raised.",
+              "src": "m1",
+              "page": "48"
+            },
+            {
+              "id": "ret-int",
+              "name": "RET INT knob (gun reticle brightness)",
+              "type": "knob",
+              "match": [
+                "Pilot_Hud_RET_IN_help",
+                "item:dscg-sight:2"
+              ],
+              "text": "Turning this knob makes the aiming mark (reticle) of the optical sight brighter or darker. The game's hint calls it 'Change HUD Brightness'.",
+              "context": "The pilot sets it so the mark is clear against the sky or the ground. It is the first half of the double knob with SCALE.",
+              "src": "m1",
+              "page": "42"
+            },
+            {
+              "id": "scale-bright",
+              "name": "SCALE knob (range scale light)",
+              "type": "knob",
+              "match": [
+                "Pilot_Hud_Scale_help"
+              ],
+              "text": "Turning this knob changes the brightness of the printed range scale on the edge of the radar screen. The game's hint is 'Scale Brightness'.",
+              "context": "It is the second half of the RET INT / SCALE double knob. The pilot dims it for night flying.",
+              "src": "m1",
+              "page": "42"
+            },
+            {
+              "id": "contr",
+              "name": "CONTR knob (screen contrast)",
+              "type": "knob",
+              "match": [
+                "Pilot_Hud_Contr_help",
+                "item:dscg-sight:3"
+              ],
+              "text": "Turning this knob changes the contrast of the radar picture on the front screen: how strongly bright and dark parts differ.",
+              "context": "The pilot adjusts it until the radar echoes can be seen clearly against the background.",
+              "src": "m1",
+              "page": "45"
+            },
+            {
+              "id": "opr-ers",
+              "name": "OPR / ERS button",
+              "type": "button",
+              "match": [
+                "Pilot_Hud_OPR_ERS_Help"
+              ],
+              "text": "This push button sits inside the contrast knob. On old aircraft it switched on or erased the stored radar picture. On this plane with the new screen (DSCG) it has no function.",
+              "context": "The game states that it does nothing here, so the pilot can ignore it.",
+              "src": "m1",
+              "page": "44"
+            },
+            {
+              "id": "brt",
+              "name": "BRT knob (screen brightness)",
+              "type": "knob",
+              "match": [
+                "Pilot_Hud_BRT_help",
+                "item:dscg-sight:6"
+              ],
+              "text": "Turning this knob makes the whole radar picture on the front screen brighter or darker.",
+              "context": "It is the first half of a double knob together with HOR LN. The pilot adjusts it for daylight or night.",
+              "src": "m1",
+              "page": "45"
+            },
+            {
+              "id": "hor-ln",
+              "name": "HOR LN knob (horizon line)",
+              "type": "knob",
+              "match": [
+                "Pilot_Hud_Hor_LN_help"
+              ],
+              "text": "Turning this knob moves the horizon line drawn on the radar screen up or down. The game's hint is 'Adjust Horizon on Display'.",
+              "context": "The line shows where the horizon is, so the picture can be matched to the real sky. The setting is shared by the screens of both cockpits.",
+              "src": "m1",
+              "page": "45"
+            },
+            {
+              "id": "int-tab",
+              "name": "INT tab (screen darkness)",
+              "type": "knob",
+              "match": [
+                "PNT_int_reticle",
+                "item:dscg-sight:7"
+              ],
+              "text": "A tab around the screen that turns a dark filter in front of it. Turning it makes the radar picture darker or lighter. The game's hint is 'Screen Intensity'.",
+              "context": "The pilot adjusts it to the light outside, much like sunglasses for the screen.",
+              "src": "m1",
+              "page": "46"
+            },
+            {
+              "id": "red-tab",
+              "name": "Red tab (night filter)",
+              "type": "switch2",
+              "match": [
+                "PNT_red_reticle",
+                "item:dscg-sight:8"
+              ],
+              "positions": [
+                {
+                  "name": "Off",
+                  "text": "The red filter is away; the picture has its normal colours."
+                },
+                {
+                  "name": "On",
+                  "text": "The red filter covers the screen for night flying."
+                }
+              ],
+              "text": "A tab that is turned to give the screen a red picture for night flying. Red light spoils the pilot's night vision less than white light.",
+              "context": "The pilot uses it for night flights.",
+              "src": "m1",
+              "page": "46"
+            },
+            {
+              "id": "sight-shutter",
+              "name": "Sight shutter lever",
+              "type": "switch2",
+              "match": [
+                "PNT_Shutter_Lever",
+                "item:dscg-sight:4"
+              ],
+              "positions": [
+                {
+                  "name": "Close",
+                  "text": "The shutter is closed; the sight is shielded from sunlight."
+                },
+                {
+                  "name": "Open",
+                  "text": "The shutter is open; the sight is ready to use."
+                }
+              ],
+              "text": "A small lever that shields the sight from the sun by changing its light source. The game calls it 'Toggle Collimator Shutter'.",
+              "context": "The pilot sets it after landing, to protect the sight while the jet is parked in the sun.",
+              "src": "m1",
+              "page": "42"
+            },
+            {
+              "id": "in-range-light",
+              "name": "IN RANGE light",
+              "type": "light",
+              "match": [
+                "item:dscg-sight:5"
+              ],
+              "text": "A light that comes on when the locked target is close enough to be hit by the weapon.",
+              "context": "The pilot reads it together with the SHOOT lights when attacking an aircraft.",
+              "src": "m1",
+              "page": "47"
+            },
+            {
+              "id": "range-lights",
+              "name": "Range lights",
+              "type": "light",
+              "match": [
+                "item:dscg-sight:9"
+              ],
+              "text": "A set of lights around the screen that follow the range chosen by the weapon officer. The range itself is also written in the upper right corner of the screen.",
+              "context": "They tell the pilot how far the radar is looking without having to read the numbers.",
+              "src": "m1",
+              "page": "49"
+            },
+            {
+              "id": "hold-alt-light",
+              "name": "HOLD ALT light",
+              "type": "light",
+              "match": [
+                "item:dscg-sight:10"
+              ],
+              "text": "A light by which the fire control computer asks the pilot to hold the present height. It is used when a target is high above the jet.",
+              "context": "When the light goes out, the pilot pulls up to centre the steering dot, a manoeuvre called a snap-up.",
+              "src": "m1",
+              "page": "47"
+            },
+            {
+              "id": "reticle-depression",
+              "name": "Reticle depression knob",
+              "type": "knob",
+              "match": [
+                "PNT_Reticle_Depressor",
+                "item:dscg-sight:11"
+              ],
+              "text": "Turning this knob moves the aiming mark down in the sight, in steps of one thousandth of a radian (a mil), from 0 to 245. The game's hint is 'Change Reticle Depression (mil)'.",
+              "context": "Pilots use it to aim bombs dropped straight down on a target and to aim the Maverick missile.",
+              "src": "m1",
+              "page": "43"
+            },
+            {
+              "id": "sight-mode",
+              "name": "Sight mode knob",
+              "type": "selector",
+              "match": [
+                "PNT_HUD_Mode_Knob",
+                "item:dscg-sight:12"
+              ],
+              "positions": [
+                {
+                  "name": "OFF",
+                  "text": "The sight is off."
+                },
+                {
+                  "name": "STBY",
+                  "text": "The sight warms up; the aiming mark stays off."
+                },
+                {
+                  "name": "CAGE",
+                  "text": "The mark is shown and locked to the radar line, used for take-off and landing."
+                },
+                {
+                  "name": "A/G",
+                  "text": "Mode for ground targets; the mark is moved down by the depression knob."
+                },
+                {
+                  "name": "A/A",
+                  "text": "Mode for air targets; the sight works out the lead for firing at moving aircraft."
+                },
+                {
+                  "name": "BIT 1",
+                  "text": "Self test number 1 of the sight."
+                },
+                {
+                  "name": "BIT 2",
+                  "text": "Self test number 2 of the sight."
+                }
+              ],
+              "text": "This knob chooses what the optical sight does. It can be off, warming up, show a fixed mark, aim for ground targets, calculate lead for air targets, or run two self tests.",
+              "context": "For take-off and landing the pilot uses CAGE. In a fight the pilot picks A/A for air targets or A/G for bombs and rockets.",
+              "src": "m1",
+              "page": "43"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "left-main-panel",
+      "where": "front-left",
+      "name": "Pilot cockpit: Left main panel (weapons)",
+      "text": "The left part of the front panel holds everything for the weapons: arming switches, the weapon and delivery knobs, the weapon timer and the jettison controls.",
+      "panels": [
+        {
+          "id": "range-indicator",
+          "name": "Range indicator (Pave Spike, left shoulder)",
+          "src": "m1",
+          "page": "56",
+          "text": "A small display on the left that shows how far away the target is, measured by the camera pod under the plane. A few controls set how it works.",
+          "context": "It supports bombing with the pod. The pilot can have the bomb dropped automatically or at a range he sets himself.",
+          "controls": [
+            {
+              "id": "range-mode",
+              "name": "Range mode switch (ROR / SET / WRCS)",
+              "type": "switch3",
+              "match": [
+                "Pilot_VRC_set_Helper"
+              ],
+              "positions": [
+                {
+                  "name": "ROR",
+                  "text": "Release on Range: the bomb is released at the range the pilot has set."
+                },
+                {
+                  "name": "SET",
+                  "text": "The display shows the desired release range so it can be changed."
+                },
+                {
+                  "name": "WRCS",
+                  "text": "Automatic delivery by the weapon release computer."
+                }
+              ],
+              "text": "Chooses how the bomb release is timed with the camera pod: by a range the pilot sets, or automatically by the weapon computer.",
+              "context": "In the middle position SET the display shows the release range, which is then adjusted with the knob under the display.",
+              "src": "m1",
+              "page": "56"
+            },
+            {
+              "id": "range-readout",
+              "name": "Range readout",
+              "type": "display",
+              "match": [
+                "item:weapon-management:18"
+              ],
+              "text": "A small number display. It shows the distance to the target in hundreds of feet, measured by the camera pod, and the release range in SET.",
+              "context": "The pilot reads the distance to the target while attacking with the pod.",
+              "src": "m1",
+              "page": "56"
+            },
+            {
+              "id": "range-test",
+              "name": "Test button",
+              "type": "button",
+              "match": [
+                "Pilot_Rng_test_help"
+              ],
+              "text": "Pushing this button makes the display show 888, so the pilot can check that all digits work.",
+              "context": "It is a lamp test for the range display.",
+              "src": "m1",
+              "page": "56"
+            },
+            {
+              "id": "range-bright",
+              "name": "Display brightness knob",
+              "type": "knob",
+              "match": [
+                "Pilot_Rng_set02_help"
+              ],
+              "text": "Turning this knob makes the number display brighter or darker.",
+              "context": "The pilot dims it at night so it does not dazzle him.",
+              "src": "m1",
+              "page": "56"
+            },
+            {
+              "id": "range-set",
+              "name": "Desired release range knob",
+              "type": "knob",
+              "match": [
+                "Pilot_Rng_set01_help"
+              ],
+              "text": "Turning this knob sets the range at which the bomb should be released. The number shows in the display when the switch is in SET.",
+              "context": "It is used for release on range bombing with the camera pod.",
+              "src": "m1",
+              "page": "56"
+            }
+          ]
+        },
+        {
+          "id": "weapon-management",
+          "name": "Weapon management panel",
+          "src": "m1",
+          "page": "55",
+          "text": "This is the control panel for the weapons under the wings. It decides which weapon type is used, which stations are armed, how bombs are dropped and which are dumped in an emergency.",
+          "context": "The pilot sets it before an attack and moves the master arm switch to ARM as the last step. As long as the master arm switch is on SAFE, nothing is released.",
+          "controls": [
+            {
+              "id": "station-buttons",
+              "name": "Station select buttons (LO, LI, CL, RI, RO, GUN)",
+              "type": "button",
+              "match": [
+                "PNT_LO_Arm",
+                "PNT_LI_Arm",
+                "PNT_CTR_Arm",
+                "PNT_RI_Arm",
+                "PNT_RO_Arm",
+                "PNT_Gun_Arm",
+                "item:weapon-management:5"
+              ],
+              "count": 6,
+              "text": "Six buttons, one for each weapon station under the wings and fuselage plus one for the nose gun. Pressing a button picks that station; its upper half lights green. The game's hints are 'Arm/Disarm ... Station'.",
+              "context": "The lower half lights amber once the mode, the weapon type and the master arm switch are right. L and R mean left and right, O is outboard and I is inboard; CL is the centreline under the belly.",
+              "src": "m1",
+              "page": "61"
+            },
+            {
+              "id": "master-arm",
+              "name": "MASTER ARM switch",
+              "type": "switch2",
+              "match": [
+                "PNT_MASTER_ARM",
+                "item:weapon-management:6"
+              ],
+              "positions": [
+                {
+                  "name": "SAFE",
+                  "text": "Weapons are safe; nothing can be fired or dropped."
+                },
+                {
+                  "name": "ARM",
+                  "text": "The selected weapons are ready to be fired or dropped."
+                }
+              ],
+              "text": "The main safety switch for all weapons. On SAFE nothing can be fired or released; on ARM the selected weapons are ready.",
+              "context": "The pilot sets it to ARM only shortly before an attack, and back to SAFE afterwards. The ARM light of the head-up indicators shows the setting.",
+              "src": "m1",
+              "page": "62"
+            },
+            {
+              "id": "delivery-mode",
+              "name": "Delivery mode knob",
+              "type": "selector",
+              "match": [
+                "PNT_Delivery_Mode_Knob",
+                "item:weapon-management:7"
+              ],
+              "positions": [
+                {
+                  "name": "INST O/S",
+                  "text": "Instantaneous over-the-shoulder: the bomb is thrown backward over the pilot's shoulder."
+                },
+                {
+                  "name": "LOFT",
+                  "text": "Loft: the pilot pulls up and the bomb is thrown forward in an arc."
+                },
+                {
+                  "name": "O/S",
+                  "text": "Timed over-the-shoulder toss."
+                },
+                {
+                  "name": "T LAD",
+                  "text": "Timed low-angle drogue delivery, a low-level bomb drop with a retarded bomb."
+                },
+                {
+                  "name": "TL",
+                  "text": "Timed level bomb drop."
+                },
+                {
+                  "name": "OFF",
+                  "text": "Off: used for air-to-air weapons and the gun."
+                },
+                {
+                  "name": "DIRECT",
+                  "text": "Manual direct: used for video-guided weapons and for plain bomb drops."
+                },
+                {
+                  "name": "TGT FIND",
+                  "text": "Target find: only for the navigation mode and the camera pod."
+                },
+                {
+                  "name": "DT",
+                  "text": "Dive toss."
+                },
+                {
+                  "name": "DL",
+                  "text": "Dive laydown."
+                },
+                {
+                  "name": "L",
+                  "text": "Laydown."
+                },
+                {
+                  "name": "OFF SET",
+                  "text": "Offset bombing."
+                },
+                {
+                  "name": "AGM-45",
+                  "text": "Mode for the Shrike anti-radar missile."
+                }
+              ],
+              "text": "This knob tells the plane how to drop bombs and fire rockets at ground targets. Each style is a different flight path for the attack. The OFF position is used for air-to-air weapons and the gun.",
+              "context": "The left half of the dial is for the older manual bombing computer (ARBCS), the right half for automatic release (WRCS). DIRECT is used for the Maverick and for plain bomb drops.",
+              "src": "m1",
+              "page": "63"
+            },
+            {
+              "id": "weapon-selector",
+              "name": "Weapon selector knob",
+              "type": "selector",
+              "match": [
+                "PNT_Weapon_Select_Knob",
+                "item:weapon-management:8"
+              ],
+              "positions": [
+                {
+                  "name": "AGM-12",
+                  "text": "For the AGM-12 Bullpup missile."
+                },
+                {
+                  "name": "BOMBS",
+                  "text": "Bombs of all types, including cluster bombs."
+                },
+                {
+                  "name": "RKTS & DISP",
+                  "text": "Rockets and dispensers."
+                },
+                {
+                  "name": "ARM",
+                  "text": "Anti-radiation missile (the AGM-45 Shrike)."
+                },
+                {
+                  "name": "TV",
+                  "text": "Electro-optical weapons (the AGM-65 Maverick)."
+                },
+                {
+                  "name": "C",
+                  "text": "Not used; it can serve as an off position."
+                },
+                {
+                  "name": "B",
+                  "text": "Not used; it can serve as an off position."
+                },
+                {
+                  "name": "A",
+                  "text": "Cancels the CAGE requirement, like the AIR TO AIR button in the back seat."
+                }
+              ],
+              "text": "This knob tells the release unit which kind of weapon is to be used: bombs, rockets, or one of several guided missiles.",
+              "context": "The pilot picks it together with the delivery mode. The ARM and TV positions lock out the air-to-air weapons unless the CAGE signal is given.",
+              "src": "m1",
+              "page": "64"
+            },
+            {
+              "id": "nose-tail-arming",
+              "name": "NOSE / TAIL arming switch",
+              "type": "selector",
+              "match": [
+                "PNT_ARM_Switch",
+                "item:weapon-management:4"
+              ],
+              "positions": [
+                {
+                  "name": "SAFE",
+                  "text": "No arming solenoids work; bombs fall without a fuze enabled."
+                },
+                {
+                  "name": "NOSE",
+                  "text": "The forward and centre positions hold their arming cords."
+                },
+                {
+                  "name": "TAIL",
+                  "text": "The aft position holds its arming cord."
+                },
+                {
+                  "name": "NOSE & TAIL",
+                  "text": "Forward, centre and aft positions all hold their arming cords."
+                }
+              ],
+              "text": "This switch decides at which points of the bomb racks the safety cords of the fuzes are held back, so that released bombs become live. The game's hint is 'Arm Fuze'.",
+              "context": "On SAFE the bombs fall without being armed. Some bombs only explode when the nose fuze is chosen.",
+              "src": "m1",
+              "page": "60"
+            },
+            {
+              "id": "radar-missile-power",
+              "name": "Radar missile power switch (CW)",
+              "type": "switch3",
+              "match": [
+                "PNT_CW_Switch",
+                "item:weapon-management:10"
+              ],
+              "positions": [
+                {
+                  "name": "OFF",
+                  "text": "The radar missile power is off."
+                },
+                {
+                  "name": "STBY",
+                  "text": "The missiles and the tuning drive are kept warm, but the missiles are not tuned."
+                },
+                {
+                  "name": "CW ON",
+                  "text": "The transmitter sends and the missiles are tuned and checked continuously."
+                }
+              ],
+              "text": "This switch gives power to the radar transmitter that guides the AIM-7 radar missiles and to the system that tunes the missiles. The game's hint is 'Select Radar-Missile CW'.",
+              "context": "The pilot switches it on before using radar missiles. After switching on, the power reaches the circuit after about 30 seconds.",
+              "src": "m1",
+              "page": "68"
+            },
+            {
+              "id": "interlock",
+              "name": "Interlock switch (IN / OUT)",
+              "type": "switch2",
+              "match": [
+                "PNT_INTLK_Switch",
+                "item:weapon-management:12"
+              ],
+              "positions": [
+                {
+                  "name": "IN",
+                  "text": "The computer's limits apply and a launch outside the limits is blocked."
+                },
+                {
+                  "name": "OUT",
+                  "text": "The limits are overridden; the AIM-7 fires when the trigger is pulled."
+                }
+              ],
+              "text": "This switch decides whether the fire control computer may stop an AIM-7 missile from launching when the conditions are not good enough.",
+              "context": "OUT is an override: the missile is fired whenever the trigger is pulled. The pilot uses it only when he accepts a bad shot.",
+              "src": "m1",
+              "page": "69"
+            },
+            {
+              "id": "panel-dimmer",
+              "name": "Dimmer knob for the panel buttons",
+              "type": "knob",
+              "match": [
+                "PNT_PILOT_DIM_KNOB"
+              ],
+              "text": "Turning this knob changes the brightness of the station select buttons. The game's hint is 'Change Panel Button Brightness'.",
+              "context": "If the flight instrument brightness knob is at its far left stop, the buttons always shine at full brightness instead.",
+              "src": "m1",
+              "page": "62"
+            },
+            {
+              "id": "flight-instr-bright",
+              "name": "Flight instrument brightness knob",
+              "type": "knob",
+              "match": [
+                "PNT_FLT_INST_KNOB",
+                "item:weapon-management:3"
+              ],
+              "text": "Turning this knob changes the light on the edges of the main flight instruments in both cockpits.",
+              "context": "Turning it up also dims most warning lamps, and the SHOOT lights go out when it is dimmed. The game links it to the INSTRUMENT PANEL knob on the right console for now.",
+              "src": "m1",
+              "page": "59"
+            },
+            {
+              "id": "head-up-indicators",
+              "name": "Head-up display indicator lights",
+              "type": "light",
+              "match": [
+                "item:weapon-management:2"
+              ],
+              "text": "Four status lights: RADAR, HEAT and GUN show which air-to-air weapon is selected, ARM shows that the master arm switch is on ARM.",
+              "context": "The pilot checks them before an attack. The weapon is chosen with the little switch on the left throttle.",
+              "src": "m1",
+              "page": "57"
+            },
+            {
+              "id": "missile-status-lights",
+              "name": "Missile status lights (RDR and HEAT)",
+              "type": "light",
+              "match": [
+                "item:weapon-management:9"
+              ],
+              "text": "Two groups of four lights. The RDR lights show that the radar missiles (AIM-7) are tuned and ready. The HEAT lights show the heat-seeking missile station that is selected.",
+              "context": "A light goes out when a missile is launched or its station is not usable.",
+              "src": "m1",
+              "page": "67"
+            },
+            {
+              "id": "centerline-tank-light",
+              "name": "Centerline tank aboard light",
+              "type": "light",
+              "match": [
+                "item:weapon-management:11"
+              ],
+              "text": "A light that comes on when the tank under the belly blocks the front radar missiles from being launched.",
+              "context": "To use these missiles, the pilot must first drop the centreline store.",
+              "src": "m1",
+              "page": "69"
+            },
+            {
+              "id": "tas-indicator",
+              "name": "True airspeed indicator",
+              "type": "gauge",
+              "match": [
+                "item:weapon-management:1"
+              ],
+              "text": "A counter that shows how fast the plane really moves through the air, in knots. It is accurate only from 150 to 1500 knots.",
+              "context": "Below 150 knots the pilot trusts the airspeed indicator in the middle of the panel instead.",
+              "src": "m1",
+              "page": "58"
+            },
+            {
+              "id": "uhf-remote-channel",
+              "name": "UHF remote channel indicator",
+              "type": "display",
+              "match": [
+                "item:weapon-management:17"
+              ],
+              "text": "A small window that shows the radio channel in use. It shows M for manual frequency, G for the guard channel or A.",
+              "context": "The pilot checks it to see which preset channel the radio is on.",
+              "src": "m1",
+              "page": "58"
+            }
+          ]
+        },
+        {
+          "id": "awru",
+          "name": "Aircraft weapons release unit (AWRU)",
+          "src": "m1",
+          "page": "65",
+          "text": "This small panel sets how a series of bombs, rockets or dispenser loads is dropped: how fast one after the other and how many at once.",
+          "context": "The pilot sets it before the attack run. When he presses the bomb button, the unit drops the stores in the pattern set here.",
+          "controls": [
+            {
+              "id": "awru-interval",
+              "name": "Interval knob",
+              "type": "knob",
+              "match": [
+                "PNT_Bomb_Interval_Knob",
+                "item:weapon-management:13"
+              ],
+              "text": "Sets the pause between two releases, from 0.05 up to 1 second. The game's hint is 'Select Interval (s)'.",
+              "context": "Together with the interval switch and the quantity knob it spaces the bombs along the ground.",
+              "src": "m1",
+              "page": "65"
+            },
+            {
+              "id": "awru-intervl",
+              "name": "INTRVL switch (x10)",
+              "type": "switch2",
+              "match": [
+                "PNT_Interval_Switch",
+                "item:weapon-management:14"
+              ],
+              "positions": [
+                {
+                  "name": "NORM",
+                  "text": "The interval knob value is the time between releases."
+                },
+                {
+                  "name": "X10",
+                  "text": "The interval is ten times the knob value."
+                }
+              ],
+              "text": "Multiplies the interval of the interval knob by ten, for longer pauses between releases.",
+              "context": "In NORM the knob value is used as it is.",
+              "src": "m1",
+              "page": "65"
+            },
+            {
+              "id": "awru-qty",
+              "name": "Quantity knob (QTY)",
+              "type": "selector",
+              "match": [
+                "PNT_Bomb_Qty_Knob",
+                "item:weapon-management:15"
+              ],
+              "text": "Sets how many stores are released with each press. Position 1 drops one bomb per press, 2 to 18 gives a series, C is continuous until the button is released, P drops pairs and S drops from all selected stations at once (salvo).",
+              "context": "The pilot chooses it with the interval to decide how widely the bombs are spread over the target.",
+              "src": "m1",
+              "page": "66"
+            }
+          ]
+        },
+        {
+          "id": "selective-jettison",
+          "name": "Selective jettison control",
+          "src": "m1",
+          "page": "70",
+          "text": "A knob with a button on its front. It dumps chosen stores (bombs, tanks, missiles) from the plane in an emergency or to get rid of weight.",
+          "context": "The pilot turns the knob to the wanted station and then presses the button on its front. In OFF the button does nothing.",
+          "controls": [
+            {
+              "id": "jett-selector",
+              "name": "Selective jettison knob",
+              "type": "selector",
+              "match": [
+                "Pilot_arm_panel_knob_help",
+                "item:weapon-management:16"
+              ],
+              "positions": [
+                {
+                  "name": "OFF",
+                  "text": "The jettison button is made safe."
+                },
+                {
+                  "name": "STORES",
+                  "text": "The stations selected on the station buttons are dumped."
+                },
+                {
+                  "name": "L FWD",
+                  "text": "Dumps the left forward missile station."
+                },
+                {
+                  "name": "R FWD",
+                  "text": "Dumps the right forward missile station."
+                },
+                {
+                  "name": "L AFT",
+                  "text": "Dumps the left aft missile station."
+                },
+                {
+                  "name": "R AFT",
+                  "text": "Dumps the right aft missile station."
+                },
+                {
+                  "name": "L WING",
+                  "text": "Dumps the left wing missile station."
+                },
+                {
+                  "name": "R WING",
+                  "text": "Dumps the right wing missile station."
+                }
+              ],
+              "text": "Chooses which stores are dumped when the PUSH TO JETT button is pressed. The game's hint is 'Select Stations to Jettison'.",
+              "context": "To drop the external fuel tanks, the pilot sets STORES, selects the outer station buttons and then pushes the button.",
+              "src": "m1",
+              "page": "70"
+            },
+            {
+              "id": "jett-button",
+              "name": "PUSH TO JETT button",
+              "type": "button",
+              "match": [
+                "Pilot_arm_panel_PushToJett_help"
+              ],
+              "text": "Pressing the button dumps the stores that were chosen on the selective jettison knob.",
+              "context": "It is a last resort measure, so it is guarded by the knob: with the knob on OFF nothing is released.",
+              "src": "m1",
+              "page": "70"
+            },
+            {
+              "id": "nuc-jett",
+              "name": "Nuclear weapon jettison button",
+              "type": "button",
+              "match": [
+                "PNT_Nuc_Push_to_Jett"
+              ],
+              "text": "A push button for dumping a nuclear weapon. The game lists it as 'Jettison Nuclear Weapon' but does not give it a command.",
+              "context": "The manual says the nuclear release system is not simulated in the game.",
+              "src": "m1",
+              "page": "164"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "flight-instruments",
+      "where": "front-center",
+      "name": "Pilot cockpit: Flight instruments",
+      "text": "The middle of the pilot's front panel: the dials that show height, speed, direction and the position of the nose and wings. Most are only read, a few have knobs.",
+      "panels": [
+        {
+          "id": "flight-director-group",
+          "name": "Flight director group",
+          "db": "flight-director-group",
+          "src": "m1",
+          "page": "72",
+          "text": "These instruments let the pilot fly the plane when he cannot see out, for example in clouds. They show height, speed, nose direction, compass direction and climb or sink rate.",
+          "context": "The pilot scans them constantly in flight. Several knobs set markers and reference values; the navigation function selector chooses what the compass instrument shows.",
+          "controls": [
+            {
+              "id": "radar-altimeter",
+              "name": "Radar altimeter and its function knob",
+              "type": "gauge",
+              "match": [
+                "PNT_RADAR_ALT_FUNC_CTRL",
+                "item:flight-director-group:1"
+              ],
+              "text": "A height gauge that measures the distance to the ground below, up to 5000 feet. The knob at its lower left switches it on and sets the low-height warning marker. Pushing it starts a test.",
+              "context": "A light comes on below the set height as a warning when flying low. The game's hint is 'Move Bug (push to test, rotate to 0 to turn off)'.",
+              "src": "m1",
+              "page": "73"
+            },
+            {
+              "id": "airspeed-mach",
+              "name": "Airspeed and Mach indicator",
+              "type": "gauge",
+              "match": [
+                "PNT_PILOT_MACHANDAIRSPEED_KNOB",
+                "item:flight-director-group:2"
+              ],
+              "text": "A dial that shows speed in knots and also the Mach number (speed as a multiple of the speed of sound). The knob on its face moves two marker bugs.",
+              "context": "The pilot sets one marker to the landing speed so he can see at a glance whether he is too fast or slow.",
+              "src": "m1",
+              "page": "73"
+            },
+            {
+              "id": "ref-system-switch",
+              "name": "Reference system selector switch",
+              "type": "switch2",
+              "match": [
+                "PNT_ADI_STBY_SWITCH",
+                "item:flight-director-group:3"
+              ],
+              "positions": [
+                {
+                  "name": "PRIM",
+                  "text": "The inertial navigation system gives the pilot's attitude and direction."
+                },
+                {
+                  "name": "STBY",
+                  "text": "The AN/AJB-7 gyro gives the attitude and direction."
+                }
+              ],
+              "text": "Chooses where the attitude instrument gets its picture from: the inertial navigation system or the older AJB-7 gyro.",
+              "context": "When changing over, the instrument may swing for a moment while the new source settles.",
+              "src": "m1",
+              "page": "75"
+            },
+            {
+              "id": "adi",
+              "name": "Attitude director indicator (ADI) and pitch knob",
+              "type": "gauge",
+              "match": [
+                "PNT_ADI_Knob",
+                "item:flight-director-group:4"
+              ],
+              "text": "The ADI is a ball that shows if the nose points up or down and how the wings are tilted. Steering bars and a glide slope pointer help with landing. The knob adjusts the nose position of the little aircraft symbol.",
+              "context": "It is the most important instrument for flying in clouds. The game's hint for the knob is 'Adjust Pitch'.",
+              "src": "m1",
+              "page": "76"
+            },
+            {
+              "id": "marker-beacon-lamp",
+              "name": "Marker beacon lamp",
+              "type": "button",
+              "match": [
+                "PNT_Marker_Beacon",
+                "item:flight-director-group:5"
+              ],
+              "text": "A light that comes on when the plane flies over a marker beacon, a radio transmitter near a runway. It can be pushed to test and turned to dim.",
+              "context": "A tone is played in the headset at the same time. It helps the pilot to know how far from the runway he is during an instrument landing.",
+              "src": "m1",
+              "page": "76"
+            },
+            {
+              "id": "altimeter-knob",
+              "name": "Altimeter pressure setting knob",
+              "type": "knob",
+              "match": [
+                "PNT_PILOT_ALTIMETER_KNOB",
+                "item:flight-director-group:6"
+              ],
+              "text": "Turning this knob enters the local air pressure into the altimeter, so that the height reads correctly. The game's hint is 'Change Reference Pressure'.",
+              "context": "The pilot sets the pressure given by the airfield before take-off and landing.",
+              "src": "m1",
+              "page": "79"
+            },
+            {
+              "id": "altimeter-mode",
+              "name": "Altimeter RESET / STBY switch",
+              "type": "button",
+              "match": [
+                "PNT_PILOT_ALTIMETER_MODESWITCH"
+              ],
+              "text": "A spring-loaded switch under the altimeter. It selects the backup air-pressure mode (STBY) or returns to the normal electric mode (RESET). The game's hint is 'Change Mode (hold to reset)'.",
+              "context": "Holding RESET for more than 3 seconds returns the altimeter to its normal mode.",
+              "src": "m1",
+              "page": "79"
+            },
+            {
+              "id": "aoa-gauge",
+              "name": "Angle of attack indicator",
+              "type": "gauge",
+              "match": [
+                "item:flight-director-group:7"
+              ],
+              "text": "A gauge that shows how steeply the wing meets the air in units. It also feeds the indexer lights and the stall warning.",
+              "context": "Cruise is about 7.9 units, approach about 19.2 and the stall about 30.",
+              "src": "m1",
+              "page": "74"
+            },
+            {
+              "id": "hsi-heading-knob",
+              "name": "HSI heading set knob",
+              "type": "knob",
+              "match": [
+                "PNT_PILOT_HSI_HEADING_SET_KNOB",
+                "item:flight-director-group:8"
+              ],
+              "text": "The HSI is a compass picture showing where the plane points and the way to the next navigation point. This knob at its lower left sets the wanted heading marker.",
+              "context": "The flight director steers the pilot towards the heading marker. The game offers fast and slow turns of this knob.",
+              "src": "m1",
+              "page": "77"
+            },
+            {
+              "id": "hsi-course-knob",
+              "name": "HSI course set knob",
+              "type": "knob",
+              "match": [
+                "PNT_PILOT_HSI_COURSE_SET_KNOB"
+              ],
+              "text": "This knob at the lower right of the HSI sets the course arrow: the radio beam or runway direction the pilot wants to follow.",
+              "context": "The pilot uses it for VOR radials and the approach course of an instrument landing.",
+              "src": "m1",
+              "page": "77"
+            },
+            {
+              "id": "vor-light",
+              "name": "VOR light",
+              "type": "light",
+              "match": [
+                "PNT_VOR_Light"
+              ],
+              "text": "A lamp of the HSI for VOR navigation. The game labels it 'VOR Light (no function)'; in this game it has no function when clicked.",
+              "context": "The HSI mode lights VOR, ILS, TAC, NAV, MAN, UHF and TGT show the active navigation mode.",
+              "src": "m1",
+              "page": "78"
+            },
+            {
+              "id": "vvi",
+              "name": "Vertical velocity indicator",
+              "type": "gauge",
+              "match": [
+                "item:flight-director-group:9"
+              ],
+              "text": "A dial that shows whether the plane climbs or sinks and how fast, in thousands of feet per minute.",
+              "context": "The pilot uses it to hold a level flight or a steady descent.",
+              "src": "m1",
+              "page": "80"
+            },
+            {
+              "id": "standby-attitude",
+              "name": "Standby attitude indicator (SAI)",
+              "type": "gauge",
+              "match": [
+                "PNT_EMERG_ADI",
+                "item:flight-director-group:10"
+              ],
+              "text": "A second, independent horizon ball. It keeps working for about 9 minutes even if the power fails. The knob is pressed to unlock it and turned to adjust the picture.",
+              "context": "It is the pilot's backup if the main attitude instrument fails. The game's hint is 'Cage/Uncage (turn to trim)'.",
+              "src": "m1",
+              "page": "80"
+            },
+            {
+              "id": "nav-bearing-dist",
+              "name": "Navigation function selector: bearing / distance knob",
+              "type": "selector",
+              "match": [
+                "PNT_PILOT_NAV_FUNCT_SEL_PANEL_BRG_DIST_SWITCH",
+                "item:flight-director-group:11"
+              ],
+              "positions": [
+                {
+                  "name": "VOR/TAC",
+                  "text": "Bearing to a VOR station and the distance from the TACAN."
+                },
+                {
+                  "name": "TAC",
+                  "text": "Bearing and distance to the TACAN station."
+                },
+                {
+                  "name": "ADF/TAC",
+                  "text": "Bearing to the ADF station and distance from the TACAN."
+                },
+                {
+                  "name": "NAV COMP",
+                  "text": "Bearing and distance from the navigation computer."
+                }
+              ],
+              "text": "The left knob of the navigation function panel. It chooses which source supplies the bearing and distance numbers for the HSI.",
+              "context": "The sources are the VOR radio beacon, the TACAN beacon, the radio compass (ADF) or the navigation computer with its waypoints.",
+              "src": "m1",
+              "page": "81"
+            },
+            {
+              "id": "nav-mode",
+              "name": "Navigation function selector: mode knob",
+              "type": "selector",
+              "match": [
+                "PNT_PILOT_NAV_FUNCT_SEL_PANEL_SOURCE_MODE_SELECTOR_KNOB"
+              ],
+              "positions": [
+                {
+                  "name": "HDG",
+                  "text": "The flight director steers to the heading marker (game name: Heading)."
+                },
+                {
+                  "name": "NAV COMP",
+                  "text": "Steering to the point set in the navigation computer."
+                },
+                {
+                  "name": "TAC",
+                  "text": "Steering by the TACAN beacon."
+                },
+                {
+                  "name": "VOR/ILS",
+                  "text": "Steering by the VOR beam or the runway localizer."
+                }
+              ],
+              "text": "The right knob of the navigation function panel. It decides what the HSI and ADI show and steer by: the heading, the navigation computer, the TACAN or the VOR/ILS.",
+              "context": "The pilot sets it to the navigation aid he is using, for example VOR & ILS on an instrument approach.",
+              "src": "m1",
+              "page": "81"
+            },
+            {
+              "id": "flight-director-switch",
+              "name": "FD (flight director) switch",
+              "type": "switch2",
+              "match": [
+                "PNT_PILOT_NAV_FUNCT_SEL_PANEL_FD_KNOB"
+              ],
+              "positions": [
+                {
+                  "name": "OFF",
+                  "text": "The pitch and bank steering bars are switched off."
+                },
+                {
+                  "name": "ON",
+                  "text": "The steering bars show where to steer."
+                }
+              ],
+              "text": "A small switch in the mode knob. It turns the steering bars on the attitude ball on or off.",
+              "context": "With the bars on, the pilot follows them to fly the planned course. The switch is off when it points straight up and down.",
+              "src": "m1",
+              "page": "81"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "right-main-panel",
+      "where": "front-right",
+      "name": "Pilot cockpit: Right main panel",
+      "text": "The right side of the front panel shows the state of the engines and fuel, the fire warning lights and the radar warning scope with its buttons.",
+      "panels": [
+        {
+          "id": "right-main-panel",
+          "name": "Right main panel (engines, fuel, fire)",
+          "db": "right-main-panel",
+          "src": "m1",
+          "page": "84",
+          "text": "This part of the front panel holds the engine gauges, the fuel quantity indicator, the fire and overheat lamps and the master caution light.",
+          "context": "The pilot glances here often to check that both engines run evenly and that there is enough fuel.",
+          "controls": [
+            {
+              "id": "fuel-quantity",
+              "name": "Fuel quantity indicator",
+              "type": "gauge",
+              "match": [
+                "item:right-main-panel:1"
+              ],
+              "text": "A gauge with a moving tape and a counter that show how much fuel is in the internal tanks, in pounds. The fuel in outside tanks is not counted.",
+              "context": "As a rule, the manual calls about 4000 pounds 'bingo' (time to go home) and 6000 pounds 'joker'.",
+              "src": "m1",
+              "page": "88"
+            },
+            {
+              "id": "fire-test",
+              "name": "Fire test button",
+              "type": "button",
+              "match": [
+                "PNT_FIRE_TEST_BUTTON",
+                "item:right-main-panel:2"
+              ],
+              "text": "Pressing this button should light up the fire and overheat lamps of both engines. If a lamp stays dark, it cannot be trusted. The game's hint is 'Test Fire System'.",
+              "context": "The pilot tests the lamps on the ground before flight.",
+              "src": "m1",
+              "page": "87"
+            },
+            {
+              "id": "master-caution-light",
+              "name": "MASTER CAUTION light",
+              "type": "light",
+              "match": [
+                "item:right-main-panel:3"
+              ],
+              "text": "A light that comes on when something needs attention. The telelight panel on the right sub-panel shows what it is.",
+              "context": "It is reset by correcting the cause or by pushing the reset button on the right console.",
+              "src": "m1",
+              "page": "86"
+            },
+            {
+              "id": "fire-lamps",
+              "name": "FIRE / OVRHT lamps",
+              "type": "light",
+              "match": [
+                "item:right-main-panel:4"
+              ],
+              "text": "Four warning lamps, a FIRE lamp and an overheat lamp (OVRHT) for each engine. FIRE means a fire in the engine bay, OVRHT means too hot at the exhaust nozzle.",
+              "context": "If a lamp lights in flight, the pilot reacts at once according to the emergency procedures.",
+              "src": "m1",
+              "page": "88"
+            },
+            {
+              "id": "fuel-flow",
+              "name": "Fuel flow gauges",
+              "type": "gauge",
+              "match": [
+                "item:right-main-panel:5"
+              ],
+              "text": "Two gauges, one for each engine, showing how much fuel the engine burns, in thousands of pounds per hour. With afterburner the real flow is about four times the dial value.",
+              "context": "The pilot compares the two to see whether the engines work evenly.",
+              "src": "m1",
+              "page": "89"
+            },
+            {
+              "id": "tachometers",
+              "name": "Tachometers (engine speed)",
+              "type": "gauge",
+              "match": [
+                "item:right-main-panel:6"
+              ],
+              "text": "Two gauges showing how fast each engine turns, in percent. Idle is about 65 %, full power without afterburner about 95 % and full afterburner 105 %.",
+              "context": "The pilot uses them when starting the engines and when setting the power.",
+              "src": "m1",
+              "page": "90"
+            },
+            {
+              "id": "egt",
+              "name": "Exhaust gas temperature gauges",
+              "type": "gauge",
+              "match": [
+                "item:right-main-panel:7"
+              ],
+              "text": "Two gauges showing the temperature of the hot gas leaving each engine. A big needle counts hundreds of degrees Celsius, a small needle tens.",
+              "context": "The pilot watches the temperature during the start and at high power so as not to burn the engines.",
+              "src": "m1",
+              "page": "90"
+            },
+            {
+              "id": "nozzle-position",
+              "name": "Exhaust nozzle position indicator",
+              "type": "gauge",
+              "match": [
+                "item:right-main-panel:8"
+              ],
+              "text": "One gauge with two needles, one per engine, showing how far the engine's exhaust nozzles are open. At idle they are open about seven eighths.",
+              "context": "Both needles should move together; if one lags, an engine has a problem.",
+              "src": "m1",
+              "page": "91"
+            },
+            {
+              "id": "rwr-display",
+              "name": "RWR azimuth indicator and brightness knob",
+              "type": "display",
+              "match": [
+                "PILOT_RWR_KNOB_help",
+                "item:right-main-panel:9"
+              ],
+              "text": "A small round screen that shows radars looking at the plane as marks around a centre, with the nose pointing up. The knob next to it makes the picture brighter or darker.",
+              "context": "The closer a mark is to the centre, the more dangerous the radar. The buttons below it control the warning receiver.",
+              "src": "m1",
+              "page": "85"
+            },
+            {
+              "id": "az-el-indicator",
+              "name": "Azimuth-elevation indicator",
+              "type": "gauge",
+              "match": [
+                "item:right-main-panel:10"
+              ],
+              "text": "A dial that shows the line of sight of the camera pod (Pave Spike) in roll. It has a needle and three warning flags.",
+              "context": "It helps keep the pod pointed where neither the plane nor the pod itself blocks the view.",
+              "src": "m1",
+              "page": "85"
+            }
+          ]
+        },
+        {
+          "id": "rwr-controls-pilot",
+          "name": "RWR control panel (ALR-46, pilot)",
+          "src": "m1",
+          "page": "607",
+          "text": "The radar warning receiver (RWR) tells the pilot when an enemy radar is looking at the plane. This panel below its screen has ten lit buttons and two knobs.",
+          "context": "The WSO has an identical panel in the back seat. After the power button is pushed the system runs a nine-second warm-up.",
+          "controls": [
+            {
+              "id": "rwr-power",
+              "name": "SYSTEM POWER button",
+              "type": "button",
+              "match": [
+                "PNT_APR_SYSTEM_POWER_BUTTON"
+              ],
+              "text": "Switches the radar warning receiver on and off. After switching on, the lights flash during a short warm-up of about nine seconds.",
+              "context": "The pilot switches it on before flight so the plane is warned of enemy radars.",
+              "src": "m1",
+              "page": "611"
+            },
+            {
+              "id": "rwr-mode",
+              "name": "Priority / Open mode button",
+              "type": "button",
+              "match": [
+                "PNT_APR_I_SAM_BUTTON"
+              ],
+              "text": "Changes between OPEN, which shows up to 16 radars, and PRIORITY, which only shows the five most dangerous ones.",
+              "context": "The pilot uses PRIORITY in a crowded situation to see what matters most.",
+              "src": "m1",
+              "page": "607"
+            },
+            {
+              "id": "rwr-search",
+              "name": "Search button",
+              "type": "button",
+              "match": [
+                "PNT_APR_G_SAM_BUTTON"
+              ],
+              "text": "Adds long-range search radars to the display, shown with an S. Normally the receiver shows only radars that can shoot at the plane.",
+              "context": "These marks can fall off the screen when the system is set to PRIORITY because they are less dangerous.",
+              "src": "m1",
+              "page": "607"
+            },
+            {
+              "id": "rwr-handoff",
+              "name": "Handoff button",
+              "type": "button",
+              "match": [
+                "PNT_APR_E_SAM_BUTTON"
+              ],
+              "text": "Lets the crew choose which radar is marked as the main threat with a diamond. Holding the button steps through the radars; releasing it fixes the choice.",
+              "context": "A short press returns to the automatic choice made by the receiver.",
+              "src": "m1",
+              "page": "608"
+            },
+            {
+              "id": "rwr-launch",
+              "name": "Missile launch button",
+              "type": "button",
+              "match": [
+                "PNT_APR_MISSILE_LAUNCH_BUTTON"
+              ],
+              "text": "The lamp in this button is meant to light when a missile launch is detected. The game labels it '(no function)', so clicking it does nothing.",
+              "context": "The activity and launch lamps would also draw a circle round the radar symbol that guides a missile.",
+              "src": "m1",
+              "page": "608"
+            },
+            {
+              "id": "rwr-low-alt",
+              "name": "Low altitude button",
+              "type": "button",
+              "match": [
+                "PNT_APR_AAA_DEF_BUTTON"
+              ],
+              "text": "Switches the LOW ALT mode on and off. In this mode threats that only work against low-flying planes keep their high priority.",
+              "context": "It is useful for a dive attack or a low-level approach to the target.",
+              "src": "m1",
+              "page": "609"
+            },
+            {
+              "id": "rwr-tgt-sep",
+              "name": "Target separation button",
+              "type": "button",
+              "match": [
+                "PNT_APR_AI_BUTTON"
+              ],
+              "text": "When several radar marks overlap on the screen, this button spreads them out for three seconds so they can be told apart.",
+              "context": "It helps to see how many radars are in the same area.",
+              "src": "m1",
+              "page": "609"
+            },
+            {
+              "id": "rwr-test",
+              "name": "System test button",
+              "type": "button",
+              "match": [
+                "PNT_APR_G_LORO_BUTTON"
+              ],
+              "text": "Starts a self test of the radar warning receiver, with marks and tones shown for all three radar bands. The game's hint is 'System Test'.",
+              "context": "The pilot uses it after power-up to see that the receiver works.",
+              "src": "m1",
+              "page": "610"
+            },
+            {
+              "id": "rwr-unknown",
+              "name": "Unknown button",
+              "type": "button",
+              "match": [
+                "PNT_APR_AAA_CGI_BUTTON"
+              ],
+              "text": "Its U lamp flashes when a radar is found that is not in the receiver's list. Pushing the button shows it with a U on the screen.",
+              "context": "The U symbol is normally lit steadily.",
+              "src": "m1",
+              "page": "610"
+            },
+            {
+              "id": "rwr-activity",
+              "name": "Activity / power button",
+              "type": "button",
+              "match": [
+                "PNT_APR_ACT_PWR_BUTTON"
+              ],
+              "text": "In the real system the lamp in this button lights when guidance signals of a surface-to-air missile are detected. The game labels it '(no function)'.",
+              "context": "Because the game gives this button no function, clicking it does nothing.",
+              "src": "m1",
+              "page": "610"
+            },
+            {
+              "id": "rwr-audio",
+              "name": "RWR audio volume knob",
+              "type": "knob",
+              "match": [
+                "PNT_APR_AUDIO_KNOB"
+              ],
+              "text": "Turning this knob changes the loudness of the warning tones that the receiver plays in the pilot's headset.",
+              "context": "The pilot sets it so the warning tones are heard over the radio.",
+              "src": "m1",
+              "page": "607"
+            },
+            {
+              "id": "rwr-dim",
+              "name": "RWR light brightness knob",
+              "type": "knob",
+              "match": [
+                "PNT_PILOT_APR_DIM_KNOB"
+              ],
+              "text": "Turning this knob makes the lamps of the RWR buttons brighter or darker. The game's hint is 'Light Brightness'.",
+              "context": "The pilot dims them at night so that they do not dazzle him.",
+              "src": "m1",
+              "page": "607"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "left-sub-panel",
+      "where": "front-left",
+      "name": "Pilot cockpit: Left sub-panel",
+      "text": "The panel under the left main panel with the landing gear handle, the clock, the gear and flap indicators and some emergency controls.",
+      "panels": [
+        {
+          "id": "left-sub-panel",
+          "name": "Left sub-panel (gear, lights, clock)",
+          "db": "left-sub-panel",
+          "src": "m1",
+          "page": "92",
+          "text": "This panel holds the handle that raises and lowers the landing gear, the windows that show the gear, slat and flap state, the clock and a few emergency controls.",
+          "context": "The pilot uses it for the gear handle at take-off and landing and checks the indicators before touching down.",
+          "controls": [
+            {
+              "id": "gear-handle",
+              "name": "Landing gear handle",
+              "type": "handle",
+              "match": [
+                "PNT_GEARHANDLE_PILOT",
+                "item:left-sub-panel:9"
+              ],
+              "text": "Pushing the handle up raises the wheels, putting it down lowers them. Pulling the handle out starts the emergency lowering with air from two bottles. The gear cannot be raised on the ground.",
+              "context": "The pilot raises the gear after take-off and lowers it before landing. The game's hint is 'Landing Gear (Pull Out for Emergency)'.",
+              "src": "m1",
+              "page": "93"
+            },
+            {
+              "id": "gear-indicators",
+              "name": "Landing gear position indicators",
+              "type": "indicator",
+              "match": [
+                "item:left-sub-panel:1"
+              ],
+              "text": "Little windows that show UP when a gear leg is raised, a striped barber pole while it moves, and a picture of a wheel when it is down and locked.",
+              "context": "The pilot waits for three wheels before landing.",
+              "src": "m1",
+              "page": "94"
+            },
+            {
+              "id": "slats-flaps-indicators",
+              "name": "Slats / flaps indicators",
+              "type": "indicator",
+              "match": [
+                "item:left-sub-panel:2"
+              ],
+              "text": "Two windows. One shows whether the slats are IN or OUT, the other whether the flaps are UP or DN (down), with a barber pole while moving.",
+              "context": "Slats and flaps give the wing more lift for slow flying, so they are out for landing.",
+              "src": "m1",
+              "page": "94"
+            },
+            {
+              "id": "recorder-lamp",
+              "name": "Recorder lamp (AVTR)",
+              "type": "button",
+              "match": [
+                "PNT_Recorder_Lamp",
+                "item:left-sub-panel:3"
+              ],
+              "text": "A lamp that shows that the video tape recorder in the back seat is recording. It can be pushed to test and turned to dim.",
+              "context": "The recorder is run by the weapon officer in the back seat.",
+              "src": "m1",
+              "page": "71"
+            },
+            {
+              "id": "boost-pump-pressure",
+              "name": "Boost pump pressure indicators",
+              "type": "gauge",
+              "match": [
+                "item:left-sub-panel:4"
+              ],
+              "text": "Two gauges, one per engine, showing the pressure of the fuel pumps. Multiply the reading by ten to get psi.",
+              "context": "They confirm that the pumps feed the engines.",
+              "src": "m1",
+              "page": "95"
+            },
+            {
+              "id": "stab-trim-indicator",
+              "name": "Stabilator trim indicator",
+              "type": "gauge",
+              "match": [
+                "item:left-sub-panel:5"
+              ],
+              "text": "A gauge showing the trim setting of the tail surface in units. Trim holds the nose at the right angle without stick force.",
+              "context": "For take-off the trim should be about 1 to 3 units nose down.",
+              "src": "m1",
+              "page": "95"
+            },
+            {
+              "id": "landing-taxi-lights",
+              "name": "Landing / taxi lights switch",
+              "type": "switch3",
+              "match": [
+                "Taxi_light_help",
+                "item:left-sub-panel:6"
+              ],
+              "positions": [
+                {
+                  "name": "LANDING",
+                  "text": "The landing light is on."
+                },
+                {
+                  "name": "OFF",
+                  "text": "Both lamps are off."
+                },
+                {
+                  "name": "TAXI",
+                  "text": "The taxi light is on."
+                }
+              ],
+              "text": "Switches the plane's landing lamp and taxi lamp: the landing light for the approach, the taxi light for driving on the ground, or both off.",
+              "context": "The left main gear must be down and locked for it to work; raising the gear turns it off by itself.",
+              "src": "m1",
+              "page": "96"
+            },
+            {
+              "id": "stores-emergency-release",
+              "name": "External stores emergency release (panic button)",
+              "type": "button",
+              "match": [
+                "PNT_EXT_STORES_EMERG_RELEASE_BUTTON",
+                "item:left-sub-panel:7"
+              ],
+              "text": "Pressing this button drops all external bombs, rockets and tanks at once. Air-to-air missiles and special weapons stay.",
+              "context": "It works only with the landing gear handle up or when the ground safety override button is held down.",
+              "src": "m1",
+              "page": "96"
+            },
+            {
+              "id": "ari-breaker",
+              "name": "ARI circuit breaker",
+              "type": "switch2",
+              "match": [
+                "CB_ari_help",
+                "item:left-sub-panel:8"
+              ],
+              "positions": [
+                {
+                  "name": "IN",
+                  "text": "The breaker is pushed in; the system has power."
+                },
+                {
+                  "name": "OUT",
+                  "text": "The breaker is pulled; the interconnect has no power."
+                }
+              ],
+              "text": "A safety switch that pops out to remove the aileron-rudder interconnect, a system that helps the plane turn smoothly.",
+              "context": "Pulling it out together with turning off the yaw stab aug removes the interconnect fully.",
+              "src": "m1",
+              "page": "97"
+            },
+            {
+              "id": "clock",
+              "name": "8-day clock (set knob)",
+              "type": "knob",
+              "match": [
+                "PNT_1051",
+                "item:left-sub-panel:10"
+              ],
+              "text": "A pilot's clock with hour and minute hands. The knob at its lower left sets the time (pulled out and turned).",
+              "context": "The clock also has a stopwatch with its own button.",
+              "src": "m1",
+              "page": "93"
+            },
+            {
+              "id": "stopwatch",
+              "name": "Stopwatch button",
+              "type": "button",
+              "match": [
+                "PNT_CLOCK_RESET"
+              ],
+              "text": "The top right button of the clock starts the stopwatch, stops it and sets it back to zero.",
+              "context": "The pilot uses the stopwatch to time legs of a flight.",
+              "src": "m1",
+              "page": "93"
+            },
+            {
+              "id": "emergency-brake",
+              "name": "Emergency brake handle",
+              "type": "handle",
+              "match": [
+                "PNT_PILOT_EMERG_BRAKE",
+                "item:left-sub-panel:11"
+              ],
+              "text": "Pulling this handle sends the pressure stored in a tank into the brakes, giving a limited number of braking actions if the normal brakes fail.",
+              "context": "Braking on one side only uses the stored pressure faster.",
+              "src": "m1",
+              "page": "97"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

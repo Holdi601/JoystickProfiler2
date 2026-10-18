@@ -1,6 +1,6 @@
 # Nuclear Option: Rewired joystick maps in the registry (Unity PlayerPrefs). Dot-sourced by engine_smoke_test.ps1 (Run-Engine,
 # Assert-*, $tempDir, $engineDir, $engineBin). The fixture registry.json is the integration's test hook (value name -> base64 of
-# the value bytes) and never touches the real registry. Its vJoy map is the real map of the dev PC (game 0.34.2: the default
+# the value bytes) and never touches the real registry. Its vJoy map is the real map of a test PC (game 0.34.2: the default
 # generic map with Pitch rebound to RY in the game) plus Pan View (camera) on RZ, Map (gameplay) on Button 19 and
 # Throttle.Negative on Button 14; Smoke Pedals has a saved map of its own, Smoke Stick and Smoke Panel have none.
 $noFixture = Join-Path $engineDir "tests\fixtures\nuclearoption"

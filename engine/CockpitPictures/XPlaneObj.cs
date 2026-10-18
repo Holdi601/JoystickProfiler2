@@ -84,19 +84,20 @@ namespace JoyPro.CockpitPictures
                     case "ANIM_trans":
                         if (t.Length >= 9 && t[8] != "none")
                             cur.Datarefs.Add(t[8]);
-                        if (t.Length >= 8)
+                        // A static offset may leave out the dataref range and the dataref ("ANIM_trans x1 y1 z1 x2 y2 z2").
+                        if (t.Length >= 6)
                         {
-                            double v1 = F(t[6]), v2 = F(t[7]);
-                            double k = Fraction(0, v1, v2);
+                            double k = t.Length >= 8 ? Fraction(0, F(t[6]), F(t[7])) : 0;
                             cur.Matrix = Mat4.Multiply(cur.Matrix, Mat4.Translation(F(t[0]) + (F(t[3]) - F(t[0])) * k, F(t[1]) + (F(t[4]) - F(t[1])) * k, F(t[2]) + (F(t[5]) - F(t[2])) * k));
                         }
                         break;
                     case "ANIM_rotate":
                         if (t.Length >= 8)
                             cur.Datarefs.Add(t[7]);
-                        if (t.Length >= 7)
+                        // A static rotation may leave out the dataref range ("ANIM_rotate x y z r1 r2").
+                        if (t.Length >= 5)
                         {
-                            double r = F(t[3]) + (F(t[4]) - F(t[3])) * Fraction(0, F(t[5]), F(t[6]));
+                            double r = F(t[3]) + (F(t[4]) - F(t[3])) * (t.Length >= 7 ? Fraction(0, F(t[5]), F(t[6])) : 0);
                             cur.Matrix = Mat4.Multiply(cur.Matrix, AxisAngle(F(t[0]), F(t[1]), F(t[2]), r));
                         }
                         break;
@@ -250,9 +251,54 @@ namespace JoyPro.CockpitPictures
     // A manipulator: its kind, the commands or datarefs it works and the tooltip.
     internal sealed class XPlaneManip
     {
+        // The dataref (or command) a manipulator moves and its range / positions where its kind gives them.
+        public ControlAnimation Animation()
+        {
+            string name = Datarefs.FirstOrDefault() ?? Commands.FirstOrDefault();
+            if (string.IsNullOrEmpty(name))
+                return null;
+            ControlAnimation a = new ControlAnimation { Source = Datarefs.Count > 0 ? "dataref" : "command", Name = name };
+            Func<int, double> n = i => i < Numbers.Count ? Numbers[i] : double.NaN;
+            switch (Kind)
+            {
+                case "axis_knob":
+                case "axis_switch_up_down":
+                case "axis_switch_left_right":
+                    a.Min = Math.Min(n(0), n(1));
+                    a.Max = Math.Max(n(0), n(1));
+                    break;
+                case "drag_axis":
+                    a.Min = Math.Min(n(3), n(4));
+                    a.Max = Math.Max(n(3), n(4));
+                    break;
+                case "drag_rotate":
+                    a.Min = Math.Min(n(9), n(10));
+                    a.Max = Math.Max(n(9), n(10));
+                    break;
+                case "delta":
+                case "wrap":
+                    a.Min = Math.Min(n(2), n(3));
+                    a.Max = Math.Max(n(2), n(3));
+                    break;
+                case "toggle":
+                case "push":
+                    if (!double.IsNaN(n(0)) && !double.IsNaN(n(1)))
+                    {
+                        a.Positions.Add(Math.Min(n(0), n(1)));
+                        a.Positions.Add(Math.Max(n(0), n(1)));
+                        a.Min = a.Positions[0];
+                        a.Max = a.Positions[1];
+                    }
+                    break;
+            }
+            return a;
+        }
+
         public string Kind = string.Empty;
         public List<string> Commands = new List<string>();
         public List<string> Datarefs = new List<string>();
+        // The manipulator's numbers in order (after the cursor): ranges, values, axes (by kind, OBJ8 spec).
+        public List<double> Numbers = new List<double>();
         public string Tooltip = string.Empty;
 
         public bool Clickable
@@ -274,6 +320,8 @@ namespace JoyPro.CockpitPictures
                 if (i == 0 || number || reference || s == "none")
                 {
                     last = i;
+                    if (number && i > 0)
+                        m.Numbers.Add(ignored);
                     if (reference)
                     {
                         if (kind.IndexOf("command", StringComparison.Ordinal) >= 0)

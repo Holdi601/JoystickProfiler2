@@ -34,20 +34,20 @@ namespace JoyPro.Gui.Tests;
 // with exit code and time, Avalonia binding errors, overlapping and cut-off texts found in the render).
 // Opt-in, as it needs the built engine and takes minutes:
 //   dotnet build engine\engine.csproj -c Debug -p:Platform=x64
-//   set JOYPRO_JOURNEY_OUT=E:\JoyProWork\journey\out & dotnet test gui/JoyPro.Gui.Tests --filter UserJourneyTests
+//   set JOYPRO_JOURNEY_OUT=<work folder>\journey\out & dotnet test gui/JoyPro.Gui.Tests --filter UserJourneyTests
 // Optional: JOYPRO_JOURNEY_ENGINE (engine.exe, default engine\bin\x64\Debug\engine.exe of this checkout),
 // JOYPRO_JOURNEY_SCENARIOS (comma list of empty,new-user,unbound,visual-assign,settings-updates,device-replace; also
 // msfs-store-import, best with a release-like engine folder as JOYPRO_JOURNEY_ENGINE so the MSFS command list is
 // built on demand),
-// JOYPRO_JOURNEY_OLD_PROFILE (the old-PC profile of device-replace).
-// Opt-in also detent: a copy of JOYPRO_JOURNEY_PROFILE, default E:\JoyProWork\detent\Holdi-2025-03.pr0file, through
+// JOYPRO_JOURNEY_OLD_PROFILE (the old-PC profile of device-replace, default <JOYPRO_WORK_DIR>\device-replace\oldpc-last.pr0file).
+// Opt-in also detent: a copy of JOYPRO_JOURNEY_PROFILE (default <JOYPRO_WORK_DIR>\detent\Holdi-2025-03.pr0file), through
 // detent mode: merge preview and merge of the per-aircraft throttle relations, the calibration wizard step by step,
 // the aircraft groups, undo.
 // Safety: every engine call goes through JourneyEngine, which refuses game writes (export without --dry-run outside the
 // output folder, restore, refresh, nuke, defaults, mod, undo, ffb set); the engine and the GUI keep their data in
 // <out>\<scenario>\data (JOYPRO_DATA_DIR); the game config locations are pointed at temp folders before the export.
 [SupportedOSPlatform("windows")]
-public sealed class UserJourneyTests
+public sealed partial class UserJourneyTests
 {
     [Fact]
     public void FirstTimeUserJourney()
@@ -86,7 +86,7 @@ public sealed class UserJourneyTests
         return dir == null ? "engine.exe" : Path.Combine(dir.FullName, "engine", "bin", "x64", "Debug", "engine.exe");
     }
 
-    private sealed class Journey
+    private sealed partial class Journey
     {
         private static readonly (int Width, int Height)[] Sizes = [(2267, 1250), (1280, 800)];
         private static readonly string[] JourneyGames = ["DCS", "MSFS2024", "XPlane12", "IL2Game", "WarThunder"];
@@ -158,6 +158,9 @@ public sealed class UserJourneyTests
                             case "msfs-store-import":
                                 RunMsfsStoreImport();
                                 break;
+                            case "start-import":
+                                RunStartImport();
+                                break;
                             case "big-profile":
                                 RunBigProfile();
                                 break;
@@ -169,6 +172,9 @@ public sealed class UserJourneyTests
                                 break;
                             case "telemetry-recording":
                                 RunTelemetryRecording();
+                                break;
+                            case "trailer":
+                                RunTrailer();
                                 break;
                             default:
                                 throw new ArgumentException("Unknown scenario " + scenario);
@@ -294,6 +300,54 @@ public sealed class UserJourneyTests
             {
                 Environment.SetEnvironmentVariable("JOYPRO_TEST_MSFS_HOME", oldHome);
                 Environment.SetEnvironmentVariable("JOYPRO_INSTALL_DETECTION", oldDetection);
+            }
+        }
+
+        // Tester report on 2.1.0: after an import from Start > Your games the games were gone until a restart. Imports
+        // of the installed games from their cards (read-only on the game; IL-2 has no saved binds, so it fails): after
+        // each the result is over the cards, leaving and coming back shows the cards.
+        private void RunStartImport()
+        {
+            FirstStart(answerSetup: "later");
+            Step("new profile", async () => await vm!.NewProfileAutoCommand.ExecuteAsync(null));
+            Step("start page: your games", async () =>
+            {
+                vm!.CurrentStage = UiStage.Start;
+                await vm.RefreshGameCardsCommand.ExecuteAsync(null);
+                Note("cards: " + string.Join(", ", vm.GameCards.Select(c => c.GameId + (c.CanImport ? "" : " (no import)"))));
+            }, extraRender: slug => RenderTall(slug, 3000));
+            foreach (string gameId in new[] { "IL2Game", "DCS" })
+            {
+                GameCardItem? card = vm!.GameCards.FirstOrDefault(c => c.GameId == gameId && c.CanImport);
+                if (card == null)
+                {
+                    Note(gameId + ": no card to import from");
+                    continue;
+                }
+                Step("import " + gameId + ": choose how", () =>
+                {
+                    vm!.RestartImportWizardCommand.Execute(null);
+                    vm.StartImportWizardCommand.Execute(card);
+                    return Task.CompletedTask;
+                });
+                Step("import " + gameId + ": run", async () =>
+                {
+                    await vm!.RunImportWizardCommand.ExecuteAsync(null);
+                    await SettleAsync(vm, 60000);
+                    Note(gameId + " import: failed=" + vm.ImportWizardFailed + " result '" + Short(vm.ImportWizardResult, 300) + "'; stage " + vm.CurrentStage +
+                         "; cards shown " + vm.ShowGameCardList + " (" + vm.GameCards.Count + ")");
+                    if (!vm.ShowGameCardList || vm.GameCards.Count == 0 || vm.CurrentStage != UiStage.Start)
+                        Failures.Add(gameId + " import: the Start page lost its games");
+                }, extraRender: slug => RenderTall(slug, 3000));
+                Step("import " + gameId + ": relations page and back to Start", () =>
+                {
+                    vm!.CurrentStage = UiStage.Relations;
+                    vm.CurrentStage = UiStage.Start;
+                    Note("after coming back: step " + vm.ImportWizardStep + ", cards shown " + vm.ShowGameCardList + "; card result '" + card.Result + "'");
+                    if (!vm.IsImportWizardPickStep || !vm.ShowGameCardList)
+                        Failures.Add(gameId + ": coming back to Start does not show the games");
+                    return Task.CompletedTask;
+                }, extraRender: slug => RenderTall(slug, 3000));
             }
         }
 
@@ -477,6 +531,22 @@ public sealed class UserJourneyTests
                     Note("panel page: " + (panel?.Title ?? "none"));
                     return Task.CompletedTask;
                 }, extraRender: slug => RenderTall(slug, 3000));
+                // The cockpit guide: search "battery", pick the control, its callout is marked and its explanation open.
+                Step("cockpits: the guide finds the battery and marks it", () =>
+                {
+                    vm!.Cockpits.PageSearchText = "battery";
+                    CockpitGuideRow? row = vm.Cockpits.GuideRows.FirstOrDefault(r => r.IsControl && r.Node.Hits.Any(h => h.Tag.StartsWith("click:", StringComparison.Ordinal)));
+                    if (row != null)
+                    {
+                        vm.Cockpits.SelectTag(row.Node.Hits.First(h => h.Tag.StartsWith("click:", StringComparison.Ordinal)).Tag);
+                        vm.Cockpits.ShowNode(row.Node);
+                    }
+                    Note("guide: " + vm.Cockpits.GuideStatus + " | " + vm.Cockpits.GuideSearchStatus + " | picked: " + (row?.Name ?? "none") + " | page: " + vm.Cockpits.CurrentPage?.Title + " | mark: " + vm.Cockpits.SelectedTag);
+                    if (vm.Cockpits.HasGuideTree && row == null)
+                        Failures.Add("cockpits: the guide found no battery control with a callout");
+                    return Task.CompletedTask;
+                }, extraRender: slug => RenderTall(slug, 3000));
+                Step("cockpits: the guide's search cleared", () => { vm!.Cockpits.PageSearchText = string.Empty; return Task.CompletedTask; });
                 Step("cockpits: the DCS stick page", () => { vm!.Cockpits.OpenPage("device:stick"); return Task.CompletedTask; }, extraRender: slug => RenderTall(slug, 3000));
                 Step("cockpits: JoyPro's drawing of the panel", () =>
                 {
@@ -519,6 +589,71 @@ public sealed class UserJourneyTests
                     }, extraRender: slug => RenderTall(slug, 3000));
                 }
             }
+            // Several games with the same aircraft: the Boeing 737-800 from X-Plane 12 (rendered) and MSFS 2024
+            // (screenshots); "Pictures from" switches between them (docs/cockpits.md "Picture quality").
+            if (!string.IsNullOrWhiteSpace(pictures) && Directory.Exists(Path.Combine(pictures, "XPlane12")) && Directory.Exists(Path.Combine(pictures, "MSFS2024")))
+            {
+                Step("cockpits: Boeing 737-800 with the pictures from X-Plane 12", () =>
+                {
+                    vm!.CurrentStage = UiStage.Cockpits;
+                    vm.Cockpits.PicturesRoot = pictures;
+                    vm.Cockpits.PictureModeIndex = CockpitsViewModel.ModePicture;
+                    vm.Cockpits.Show("b737", "b737-800");
+                    Note("737: " + vm.Cockpits.GamePicturesText + " | from: " + string.Join(", ", vm.Cockpits.GamePictureSources) + " | pages " + vm.Cockpits.Pages.Count);
+                    if (!vm.Cockpits.HasGamePictureChoice)
+                        Failures.Add("cockpits: the 737 offers no choice of the games' pictures");
+                    return Task.CompletedTask;
+                }, extraRender: slug => RenderTall(slug, 3000));
+                Step("cockpits: Boeing 737-800, an X-Plane 12 panel page", () =>
+                {
+                    CockpitPageItem? panel = vm!.Cockpits.PanelPages.FirstOrDefault(p => p.Page.Id.StartsWith("game:", StringComparison.Ordinal) && p.Page.Title.Contains("Pedestal", StringComparison.Ordinal))
+                                             ?? vm.Cockpits.PanelPages.FirstOrDefault(p => p.Page.Id.StartsWith("game:", StringComparison.Ordinal));
+                    if (panel != null)
+                        vm.Cockpits.SelectedPage = panel;
+                    Note("panel page: " + (panel?.Title ?? "none"));
+                    return Task.CompletedTask;
+                }, extraRender: slug => RenderTall(slug, 3000));
+                Step("cockpits: Boeing 737-800, pictures from MSFS 2024 chosen", () =>
+                {
+                    vm!.Cockpits.GamePictureSourceIndex = 1;
+                    Note("737: " + vm.Cockpits.GamePicturesText);
+                    return Task.CompletedTask;
+                }, extraRender: slug => RenderTall(slug, 3000));
+            }
+            // The photos at the bottom of the page (the 747: 2 of 5 used to load): served by a local stand-in for
+            // Wikimedia that answers the first request of each photo with "429 too many requests", as Wikimedia does
+            // with a program that asks for several at once; the page waits and loads every one.
+            Step("cockpits: the 747's photos (local stand-in server, 429 first)", async () =>
+            {
+                string cache = Path.Combine(folder, "photo-cache");
+                string? oldCache = Environment.GetEnvironmentVariable("JOYPRO_DEVICE_IMAGE_CACHE");
+                Environment.SetEnvironmentVariable("JOYPRO_DEVICE_IMAGE_CACHE", cache);
+                bool enabled = DeviceImageCache.InternetPicturesEnabled, blocked = DeviceImageCache.InternetPicturesBlocked;
+                TimeSpan retry = DeviceImageCache.FirstRetryDelay;
+                try
+                {
+                    DeviceImageCache.InternetPicturesEnabled = true;
+                    DeviceImageCache.InternetPicturesBlocked = false;
+                    DeviceImageCache.FirstRetryDelay = TimeSpan.FromMilliseconds(50);
+                    DeviceImageCache.TestHandler = new JourneyPhotoServer();
+                    vm!.CurrentStage = UiStage.Cockpits;
+                    vm.Cockpits.Show("b747", "b747-8");
+                    vm.Cockpits.PhotoAnswerCommand.Execute("yes");
+                    await vm.Cockpits.PhotoLoad;
+                    int loaded = vm.Cockpits.Photos.Count(p => p.Image != null), withFile = vm.Cockpits.Photos.Count(p => p.HasPhoto);
+                    Note("747 photos: " + vm.Cockpits.PhotoStatus + " (" + loaded + " of " + withFile + ")");
+                    if (loaded != withFile || withFile == 0)
+                        Failures.Add("cockpits: the 747 shows " + loaded + " of " + withFile + " photos");
+                }
+                finally
+                {
+                    DeviceImageCache.TestHandler = null;
+                    DeviceImageCache.FirstRetryDelay = retry;
+                    DeviceImageCache.InternetPicturesEnabled = enabled;
+                    DeviceImageCache.InternetPicturesBlocked = blocked;
+                    Environment.SetEnvironmentVariable("JOYPRO_DEVICE_IMAGE_CACHE", oldCache);
+                }
+            }, extraRender: slug => RenderTall(slug, 9000));
             // Cockpits with a picture pack of a release (docs/cockpits.md "Picture packs") from a local feed: the
             // F-16 without pictures gets the offer, then the downloaded pictures; the list of the release's games.
             // JOYPRO_JOURNEY_PICTURE_FEED names a pack folder as tools/build_cockpit_packs.ps1 makes it; without it a
@@ -605,12 +740,12 @@ public sealed class UserJourneyTests
         // Bind on the picture (Bind Studio > Visual assign) with the real devices of this PC: Pitch and three buttons,
         // two modifiers, binds with and without modifiers, then the Layout page's tables with one column per modifier
         // combination and the engine's cheat sheet of them.
-        // A profile from an old PC (a copy of JOYPRO_JOURNEY_OLD_PROFILE, default E:\JoyProWork\device-replace\oldpc-last.pr0file,
+        // A profile from an old PC (a copy of JOYPRO_JOURNEY_OLD_PROFILE, default <JOYPRO_WORK_DIR>\device-replace\oldpc-last.pr0file,
         // skipped without it): opening it moves the devices that came back with a new ID (notice with Undo); then the
         // Replace device window for a stick that was replaced by another one (by layout), Move binds, and Undo.
         private void RunDeviceReplace()
         {
-            string source = Environment.GetEnvironmentVariable("JOYPRO_JOURNEY_OLD_PROFILE") is { Length: > 0 } p ? p : @"E:\JoyProWork\device-replace\oldpc-last.pr0file";
+            string source = JourneyInput("JOYPRO_JOURNEY_OLD_PROFILE", "device-replace", "oldpc-last.pr0file");
             if (!File.Exists(source))
             {
                 Note("no old profile at " + source + "; scenario skipped");
@@ -780,6 +915,51 @@ public sealed class UserJourneyTests
             });
             Note("binds now: " + string.Join(" | ", vm!.Binds.Where(b => b.HasBind).Select(b => b.RelationName + " = " + b.InputLabel + " [" + b.ModifiersSummary + "]")) +
                  "; header: " + vm.ProfileBoundText);
+
+            // The Relations page: each card shows device, input and every modifier; the aircraft chip names its aircraft;
+            // follow input jumps to the relation here too (2.1.0 tester feedback).
+            Step("relations: cards with device, input and modifiers", async () =>
+            {
+                vm!.OpenVisualAssignMode = false;
+                vm.CurrentStage = UiStage.Relations;
+                await vm.RefreshRelationsCommand.ExecuteAsync(null);
+                await Task.Delay(500);
+                foreach (RelationListItem card in vm.Relations.Where(r => r.IsBound))
+                    Note("card " + card.Name + ": '" + card.BindDevice + "' '" + card.BindInputPart + "' modifiers [" + string.Join(", ", card.ModifierChips) + "]; tooltip '" + Short(card.PlanesTooltip.Replace("\n", " / "), 200) + "'");
+                RelationListItem? gear = vm.Relations.FirstOrDefault(r => r.Name == "Gear");
+                if (gear == null || gear.ModifierChips.Count != 2)
+                    Failures.Add("relations: Gear's card does not show its two modifiers");
+                if (vm.Relations.Any(r => r.HasPlanes && !r.PlanesTooltip.Contains(':')))
+                    Failures.Add("relations: an aircraft chip without its list");
+            }, extraRender: slug => RenderTall(slug, 2400));
+            Step("relations: follow input jumps to Gear", async () =>
+            {
+                BindListItem? gearBind = vm!.Binds.FirstOrDefault(b => b.RelationName == "Gear" && b.HasBind);
+                vm.SelectedRelation = vm.Relations.FirstOrDefault(r => r.Name == "Pitch");
+                await Task.Delay(300);
+                if (gearBind == null)
+                {
+                    Failures.Add("relations follow: Gear is not bound");
+                    return;
+                }
+                bool jumped = false;
+                void OnJump(object? s, EventArgs e) => jumped = true;
+                vm.FollowInputJumped += OnJump;
+                vm.OnLiveInput(new JoystickInputEvent(device, gearBind.Input, true));
+                vm.FollowInputJumped -= OnJump;
+                Note("follow on Relations: selected " + vm.SelectedRelation?.Name + "; note '" + vm.FollowInputToast + "'; jump event " + jumped + "; monitor " + vm.IsLiveInputMonitoring);
+                string expected = vm.RelationsOnInput(device, gearBind.Input).Select(r => r.Relation).FirstOrDefault() ?? "Gear";
+                if (vm.SelectedRelation?.Name != expected || !jumped)
+                    Failures.Add("relations follow: " + gearBind.Input + " did not select " + expected);
+                vm.OnLiveInput(new JoystickInputEvent(device, gearBind.Input, false));
+                await Task.Delay(300);
+            }, extraRender: slug => RenderTall(slug, 2400));
+            Step("binds: back to the picture after the Relations page", () =>
+            {
+                vm!.CurrentStage = UiStage.Binds;
+                vm.OpenVisualAssignMode = true;
+                return Task.CompletedTask;
+            });
 
             // The Layout page: the tables with a column per modifier combination.
             Step("layout: the device's tables", async () =>
@@ -1514,7 +1694,7 @@ public sealed class UserJourneyTests
         // groups show what each aircraft gets, and undo takes the merge back.
         private void RunDetent()
         {
-            string source = Environment.GetEnvironmentVariable("JOYPRO_JOURNEY_PROFILE") is { Length: > 0 } p ? p : @"E:\JoyProWork\detent\Holdi-2025-03.pr0file";
+            string source = JourneyInput("JOYPRO_JOURNEY_PROFILE", "detent", "Holdi-2025-03.pr0file");
             if (!File.Exists(source))
             {
                 Failures.Add("detent: no profile at " + source);
@@ -1683,7 +1863,7 @@ public sealed class UserJourneyTests
                 report.AppendLine("- engine " + call.Describe());
             foreach (string line in logSink.Since(logBefore).Distinct().Take(15))
                 report.AppendLine("- avalonia: " + line);
-            foreach ((int width, int height) in Sizes)
+            foreach ((int width, int height) in renderSteps ? Sizes : [])
             {
                 string file = Path.Combine(folder, slug + "-" + width + ".png");
                 try
@@ -1714,6 +1894,17 @@ public sealed class UserJourneyTests
             {
                 report.AppendLine("- tall render FAILED: " + ex.Message);
             }
+        }
+
+        // An input file of an opt-in scenario: the environment variable, else the file below JOYPRO_WORK_DIR (the
+        // maintainer's work folder), else "(set <variable>)", which never exists.
+        private static string JourneyInput(string variable, params string[] underWorkDir)
+        {
+            if (Environment.GetEnvironmentVariable(variable) is { Length: > 0 } path)
+                return path;
+            if (Environment.GetEnvironmentVariable("JOYPRO_WORK_DIR") is { Length: > 0 } work)
+                return Path.Combine(new[] { work }.Concat(underWorkDir).ToArray());
+            return "(set " + variable + " or JOYPRO_WORK_DIR)";
         }
 
         private void Note(string text) => report.AppendLine("> " + text.Replace("\n", " ").Replace("\r", string.Empty)).AppendLine();
@@ -2080,5 +2271,39 @@ public sealed class UserJourneyTests
         public void Hide()
         {
         }
+    }
+}
+
+// A stand-in for Wikimedia in the journey: the first request of every photo gets "429 too many requests", the next one
+// a picture (a cockpit-like pattern drawn here, so nothing is downloaded).
+internal sealed class JourneyPhotoServer : System.Net.Http.HttpMessageHandler
+{
+    private readonly System.Collections.Concurrent.ConcurrentDictionary<string, int> seen = new();
+
+    protected override Task<System.Net.Http.HttpResponseMessage> SendAsync(System.Net.Http.HttpRequestMessage request, System.Threading.CancellationToken cancellationToken)
+    {
+        string url = request.RequestUri?.ToString() ?? string.Empty;
+        int n = seen.AddOrUpdate(url, 1, (_, c) => c + 1);
+        if (n == 1)
+            return Task.FromResult(new System.Net.Http.HttpResponseMessage((System.Net.HttpStatusCode)429));
+        int w = 480, h = 300, seed = url.Length;
+        byte[] rgba = new byte[w * h * 4];
+        for (int y = 0; y < h; y++)
+        {
+            for (int x = 0; x < w; x++)
+            {
+                int o = (y * w + x) * 4;
+                bool screen = (x / 80 + seed) % 3 == 0 && y % 100 is > 20 and < 80;
+                bool knob = (x % 40 - 20) * (x % 40 - 20) + (y % 50 - 25) * (y % 50 - 25) < 30;
+                byte v = (byte)(screen ? 30 : knob ? 220 : 60 + (x + y + seed) % 40);
+                rgba[o] = v;
+                rgba[o + 1] = (byte)(screen ? 120 : v);
+                rgba[o + 2] = (byte)(screen ? 60 : v + 10);
+                rgba[o + 3] = 255;
+            }
+        }
+        System.Net.Http.HttpResponseMessage ok = new(System.Net.HttpStatusCode.OK) { Content = new System.Net.Http.ByteArrayContent(JoyPro.CockpitPictures.PngWriter.Encode(rgba, w, h, 4)) };
+        ok.Content.Headers.ContentType = new System.Net.Http.Headers.MediaTypeHeaderValue("image/png");
+        return Task.FromResult(ok);
     }
 }

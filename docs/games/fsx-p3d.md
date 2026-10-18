@@ -1,6 +1,6 @@
 # FSX, FSX: Steam Edition and Prepar3D v4 / v5 / v6
 
-> **Untested on a real install.** None of these sims is installed on the dev PC and the author has none of them. The
+> **Untested on a real install.** None of these sims is installed on a test PC and the author has none of them. The
 > integration was written blind from public sources (below) and is covered only by a synthetic fixture built from the
 > documented format (`engine/tests/fixtures/fsx`, `engine/tests/smoke/fsx.ps1`). After a first export, open the sim's
 > Controls page and check the assignments; please report differences.

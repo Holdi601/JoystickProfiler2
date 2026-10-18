@@ -191,8 +191,8 @@ into the GUI; `engine\EngineAxisDetents*.cs`).
   axis 1:1; if DCS stretches the axis over idle..max instead, 0.75 / 0.744 / 0.612, see the notes). FC3 jets, AJS 37
   and MiG-21 have no number in their files (their old curves in the profile give one). MiG-19P / F-100D switch the
   afterburner by a button. IL-2 (both) has no afterburner. Falcon BMS calibrates its own AB and idle detents in its
-  setup (stored in `joystick.cal`), X-Plane per aircraft in the .acf (`acf/_go_to_burner_50_above_thro`), MSFS's
-  aircraft files are encrypted.
+  setup (stored in `joystick.cal`), X-Plane per aircraft in the .acf (`acf/_go_to_burner_50_above_thro`); MSFS's
+  aircraft files are not read.
   DCS also has hidden filter fields `hardwareDetent`, `hardwareDetentAB`, `hardwareDetentMax` (`Scripts\Input\
   AxesTuneDialog.lua`, hidden in public builds); JoyPro does not use them.
 - **Calibration** per device axis (`Pr0file.AxisCalibrations`, `"<device>|<axis>"` -> `idle=0.02;det=0.79;full=..;cut=..;

@@ -142,15 +142,15 @@ Where the action list lives in the installed game: `gui.vromfs.bin` (`scripts/co
   so the file is right whatever the base preset is; import uses the code defaults for attributes the file does not set.
 - Catalog: `DB\WarThunder\actions.tsv`, built on the user's PC by `engine warthunder refresh-db`:
   - **Default: the full list from the installed game's archives** (the user approved reading them on 2026-10-12;
-    before, this needed an opt-in). Fresh build on the dev PC: 290 actions, the same as the development list.
+    before, this needed an opt-in). Fresh build: 290 actions, the same as the development list.
   - **`--no-game-archives`** (or `--read-game-archives false`; GUI: Settings > Games, untick "War Thunder: read the full
     command list from the game's archives"): no game file is read; JoyPro's own list, the War Thunder action ids of its
     function list (`DB\Functions\WarThunder.tsv`) with JoyPro's descriptions (116 actions); ids without `ID_` are axes.
-    Gaijin's EULA restricts unpacking game files, so the user can turn it off. `--read-game-archives` is still accepted.
+    `--read-game-archives` is still accepted.
     The GUI stores the choice under a new key (`ReadWarThunderArchives`, default on), so the old opt-in default of
     earlier builds is not taken as the user turning it off.
   - `engine\Games\WarThunderVromfs.cs` reads `scripts/controls/shortcutslist/shortcutsgroupaircraft.nut` and `...helicopter.nut` from `gui.vromfs.bin`, and `lang/controls.csv` (titles) from `lang.vromfs.bin`.
-  - The archives are Dagor Engine vromfs, the format of Gaijin's own open-source engine (BSD-3, `prog/engine/ioSys/vromfsLoad.cpp`): a `VRFx` header, then a zstd body whose first and last 16 bytes are masked as that source does it (`dag_zstdObfuscate.h`), then a name table and a data table. Read only, on the user's PC: the two scripts and `controls.csv` are unpacked into a temporary folder that is deleted after the refresh; only the command list (ids and titles) stays, in JoyPro's game-data folder; nothing is shipped and no game file is changed.
+  - The archives are Dagor Engine vromfs, the format of Gaijin's own open-source engine (BSD-3, `prog/engine/ioSys/vromfsLoad.cpp`): a `VRFx` header, then a zstd body whose first and last 16 bytes are masked as that source does it, then a name table and a data table. Read only, on the user's PC: the two scripts and `controls.csv` are unpacked into a temporary folder that is deleted after the refresh; only the command list (ids and titles) stays, in JoyPro's game-data folder; nothing is shipped and no game file is changed.
   - `--path <game folder, or a folder with the control scripts as plain files>` also works, including older script names with the `sl_` prefix.
   - Refresh 2026-10-10 on the installed game: 290 actions, the same as the shipped catalog.
 - Before writing: the game must be closed (`aces`/`aces_BE` running = refused), the file is backed up once to `.jpbak`.

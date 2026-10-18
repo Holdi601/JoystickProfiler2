@@ -1,0 +1,532 @@
+{
+  "format": "joypro-cockpit-guide",
+  "version": 1,
+  "id": "sim-mh-60r-s",
+  "title": "Sikorsky MH-60R / MH-60S Seahawk (helicopter cockpit)",
+  "variants": [
+    "mh-60r-s"
+  ],
+  "games": [
+    "MSFS2020",
+    "MSFS2024"
+  ],
+  "sets": [],
+  "intro": "The MH-60R and MH-60S Seahawk are navy versions of the Black Hawk helicopter. Two pilots sit side by side. The two engine power levers are overhead, above the windscreen, and the radios, the flight management units and the automatic flight control panels are on the lower console between the seats. Four multi-function screens show the flight and engine data.",
+  "sources": [
+    {
+      "id": "c1",
+      "title": "JoyPro cockpit catalog",
+      "kind": "reference"
+    },
+    {
+      "id": "t1",
+      "title": "TM 1-1520-237-10 Operator's Manual UH-60A/L (US Army, public domain)",
+      "url": "https://everyspec.com/ARMY/TM-Tech-Manual/TM_1-1520-237-10_CHG-10_13437/"
+    },
+    {
+      "id": "w2",
+      "title": "Sikorsky SH-60 Seahawk (Wikipedia)",
+      "url": "https://en.wikipedia.org/wiki/Sikorsky_SH-60_Seahawk"
+    },
+    {
+      "id": "r1",
+      "title": "simFlight: Miltech Simulations announces the MH-60 for MSFS",
+      "url": "https://www.simflight.com/2025/02/17/miltech-simulations-has-announced-the-mh-60-for-msfs-in-collaboration-with-blackbird-simulations/"
+    }
+  ],
+  "areas": [
+    {
+      "id": "overhead",
+      "where": "overhead",
+      "name": "Overhead console",
+      "text": "The panel above the windscreen with the engine power levers, the fuel levers, the fire handles, the APU and the electrical panels.",
+      "panels": [
+        {
+          "id": "overhead-console",
+          "name": "Overhead console",
+          "db": "overhead-console",
+          "src": "t1",
+          "text": "The overhead console holds the engine power and fuel levers, the fire handles, the APU (a small extra engine), the starter buttons and the electrical, anti-ice and lighting panels.",
+          "context": "The pilots use it for the engine start and the shut-down, and for emergencies like an engine fire.",
+          "controls": [
+            {
+              "id": "power-cont",
+              "name": "ENG POWER CONT levers",
+              "type": "lever",
+              "match": [
+                "item:overhead-console:1",
+                "control:panel.lever.power"
+              ],
+              "positions": [
+                {
+                  "name": "OFF",
+                  "text": "The engine fuel is off."
+                },
+                {
+                  "name": "IDLE",
+                  "text": "Start and ground idle."
+                },
+                {
+                  "name": "FLY",
+                  "text": "The engine is governed by the computer to 100 percent of the power turbine speed."
+                },
+                {
+                  "name": "LOCKOUT",
+                  "text": "The computer is bypassed and the pilot controls the engine by hand."
+                }
+              ],
+              "text": "The two engine power control levers, one per engine, in the overhead console. They shut the engine off, set it to idle, release it to flight setting where a computer (FADEC) controls it, or give manual control.",
+              "context": "The pilots move them to IDLE for the start and to FLY once the engine runs. The engines then run by themselves at the right speed."
+            },
+            {
+              "id": "fuel-sys",
+              "name": "ENG FUEL SYS selector levers",
+              "type": "lever",
+              "match": [
+                "item:overhead-console:2"
+              ],
+              "positions": [
+                {
+                  "name": "OFF",
+                  "text": "The fuel to this engine is shut off."
+                },
+                {
+                  "name": "DIR",
+                  "text": "The engine takes fuel directly from its own side."
+                },
+                {
+                  "name": "XFD",
+                  "text": "The engine takes fuel from the other side by crossfeed."
+                }
+              ],
+              "text": "These levers choose the fuel source for each engine: OFF, DIR (direct from the tanks) or XFD (crossfeed from the other side).",
+              "context": "The pilots set them to the normal source in the start-up and use XFD to feed an engine from the other side's tank."
+            },
+            {
+              "id": "emer-off",
+              "name": "ENG EMER OFF T-handles",
+              "type": "handle",
+              "match": [
+                "item:overhead-console:3"
+              ],
+              "text": "These T-shaped handles cut the fuel to an engine, arm the fire extinguisher and light up in case of fire.",
+              "context": "The pilots pull a handle only in an engine fire or an emergency."
+            },
+            {
+              "id": "fire-extgh",
+              "name": "FIRE EXTGH switch",
+              "type": "switch3",
+              "match": [
+                "item:overhead-console:4"
+              ],
+              "positions": [
+                {
+                  "name": "MAIN",
+                  "text": "The main fire bottle is released."
+                },
+                {
+                  "name": "OFF",
+                  "text": "The switch is in the centre, no bottle is fired."
+                },
+                {
+                  "name": "RESERVE",
+                  "text": "The reserve fire bottle is released."
+                }
+              ],
+              "text": "This switch fires the fire extinguisher bottles: the MAIN bottle or the RESERVE bottle.",
+              "context": "The pilots use it after an engine fire handle is pulled."
+            },
+            {
+              "id": "starters",
+              "name": "ENG 1 / ENG 2 starter buttons",
+              "type": "button",
+              "match": [
+                "item:overhead-console:5"
+              ],
+              "text": "These buttons start the air starter of each engine. Air spins the engine until it can run on its own.",
+              "context": "The pilots press one for each engine in the start-up."
+            },
+            {
+              "id": "apu",
+              "name": "APU control",
+              "type": "switch",
+              "match": [
+                "item:overhead-console:6"
+              ],
+              "text": "This control starts and runs the APU, a small extra engine that makes electricity and air before the main engines run, and turns on the APU generator.",
+              "context": "The pilots start the APU first, so the helicopter has power for the engine start."
+            },
+            {
+              "id": "electrical",
+              "name": "Electrical power panel",
+              "type": "switch",
+              "match": [
+                "item:overhead-console:7"
+              ],
+              "text": "This panel connects the battery (BATT), the two generators (GEN 1, GEN 2) and the APU generator (APU GEN) to the helicopter.",
+              "context": "The pilots switch the battery on first and bring the generators on-line after the engines run."
+            },
+            {
+              "id": "fuel-pump",
+              "name": "Fuel pump switch",
+              "type": "switch3",
+              "match": [
+                "item:overhead-console:8"
+              ],
+              "positions": [
+                {
+                  "name": "FUEL PRIME",
+                  "text": "The fuel pump primes the fuel lines for the start."
+                },
+                {
+                  "name": "OFF",
+                  "text": "The fuel pump is off."
+                },
+                {
+                  "name": "APU BOOST",
+                  "text": "The fuel pump boosts fuel to the APU."
+                }
+              ],
+              "text": "This switch runs the fuel pump for priming the engines (FUEL PRIME) or for boosting fuel to the APU (APU BOOST). OFF turns the pump off.",
+              "context": "The pilots use it during the start-up of the engines and of the APU."
+            },
+            {
+              "id": "anti-ice-lights",
+              "name": "Anti-ice and lighting panels",
+              "type": "switch",
+              "match": [
+                "item:overhead-console:9"
+              ],
+              "text": "These panels hold the switches for the engine anti-ice, the pitot heat (heating the speed tubes) and the exterior and interior lights.",
+              "context": "The pilots use the anti-ice in cold, wet weather and the lights at night."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "front-center",
+      "where": "front-center",
+      "name": "Instrument panel",
+      "text": "The panel in front of the pilots with four large screens and a standby instrument.",
+      "panels": [
+        {
+          "id": "instrument-panel",
+          "name": "Instrument panel",
+          "db": "instrument-panel",
+          "src": "w2",
+          "text": "Four multi-function screens and a standby display. The flight, navigation and engine pages are shown on the screens, and keys around each screen choose the pages.",
+          "context": "The pilots read nearly everything they need to fly and to watch the engines here.",
+          "controls": [
+            {
+              "id": "pilot-mfd",
+              "name": "Pilot MFDs (2)",
+              "type": "display",
+              "match": [
+                "item:instrument-panel:1"
+              ],
+              "text": "The two multi-function screens of the right seat. They show flight, navigation and engine pages.",
+              "context": "The pilot flies by these screens."
+            },
+            {
+              "id": "copilot-mfd",
+              "name": "Copilot MFDs (2)",
+              "type": "display",
+              "match": [
+                "item:instrument-panel:2"
+              ],
+              "text": "The two multi-function screens of the left seat. They show the same pages as the other seat.",
+              "context": "Either pilot can fly with their own screens."
+            },
+            {
+              "id": "bezel-keys",
+              "name": "MFD bezel keys",
+              "type": "button",
+              "match": [
+                "item:instrument-panel:3"
+              ],
+              "text": "The keys around each screen. They choose pages and options on the screen.",
+              "context": "The pilot uses them to change the pages."
+            },
+            {
+              "id": "standby",
+              "name": "Standby flight display",
+              "type": "display",
+              "match": [
+                "item:instrument-panel:4"
+              ],
+              "text": "A backup screen that shows the attitude, the speed and the height.",
+              "context": "It keeps the helicopter flyable if the main screens fail."
+            },
+            {
+              "id": "warn-lights",
+              "name": "Master warning / caution lights",
+              "type": "light",
+              "match": [
+                "item:instrument-panel:5"
+              ],
+              "text": "These lights point the pilots to warnings and cautions shown on the screens.",
+              "context": "The pilots read the message on the screen to see what is wrong."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "center-pedestal",
+      "where": "center-pedestal",
+      "name": "Centre console",
+      "text": "The console between the seats with the flight management units, the automatic flight control panels and the mission keyset.",
+      "panels": [
+        {
+          "id": "center-console",
+          "name": "Centre console",
+          "db": "center-console",
+          "src": "w2",
+          "text": "The mission and flight management controls between the seats: the control display units, the automatic flight control panels and the keyset for the crew.",
+          "context": "The pilots set the route and the automatic flight modes here, and the crew works with the sensors.",
+          "controls": [
+            {
+              "id": "cdu",
+              "name": "Control display units (2)",
+              "type": "keypad",
+              "match": [
+                "item:center-console:1"
+              ],
+              "text": "These keypads with a small screen are for the flight management: the pilot types the route, the radios and other data.",
+              "context": "The pilot enters the route before the flight."
+            },
+            {
+              "id": "afcs",
+              "name": "AFCS / flight director panel",
+              "type": "button",
+              "match": [
+                "item:center-console:2"
+              ],
+              "text": "This panel switches the stability helpers, the trim, the coupled modes and the flight director. The flight director shows where to point the nose.",
+              "context": "The pilots use it so the helicopter flies smoothly and holds a path by itself."
+            },
+            {
+              "id": "afc-panel",
+              "name": "Automatic flight control panel",
+              "type": "button",
+              "match": [
+                "item:center-console:3"
+              ],
+              "text": "This panel has the hover, the depth and the approach modes used for sonar and rescue work, which hold the helicopter at a place or a height over the water.",
+              "context": "The crew uses it for rescue and sonar work over the sea."
+            },
+            {
+              "id": "keyset",
+              "name": "Mission keyset",
+              "type": "keypad",
+              "match": [
+                "item:center-console:4"
+              ],
+              "text": "The keyset is a keypad for the crew members who work the sensors and weapons.",
+              "context": "The mission crew uses it for entries."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "hotas",
+      "where": "hotas",
+      "name": "Cyclic and collective",
+      "text": "The controls that match your helicopter stick and collective: the cyclic with its trigger and switches, and the collective lever with its switches.",
+      "panels": [
+        {
+          "id": "cyclic",
+          "name": "Cyclic",
+          "src": "t1",
+          "text": "The cyclic stick between the pilot's knees with the radio trigger, the trim buttons and the cargo hook release on its grip.",
+          "context": "The pilot steers the helicopter forward, back and sideways with it.",
+          "controls": [
+            {
+              "id": "ics-trigger",
+              "name": "Radio / ICS trigger",
+              "type": "trigger",
+              "match": [
+                "control:stick.switch.ics_radio"
+              ],
+              "text": "A trigger with two steps on the front of the grip, used with the index finger. The first step lets the pilot talk on the intercom (ICS) to the crew, the second step transmits on the selected radio.",
+              "context": "The pilot presses it halfway for the crew and fully for the radio."
+            },
+            {
+              "id": "trim-rel",
+              "name": "TRIM REL button",
+              "type": "button",
+              "match": [
+                "control:stick.button.trim_release"
+              ],
+              "text": "A button on the grip, used with the thumb. While held, the trim is off; releasing it sets a new trim reference.",
+              "context": "The pilot uses it to move the stick freely and then set the new position as the trim."
+            },
+            {
+              "id": "trim-hat",
+              "name": "Stick trim switch",
+              "type": "hat",
+              "match": [
+                "control:stick.hat.trim"
+              ],
+              "text": "A four-way switch on top of the grip, used with the thumb. Each push adjusts the trim a little: forward and aft for the pitch, left and right for the roll.",
+              "context": "The pilot makes small trim steps (called beeps) to take the force off the stick."
+            },
+            {
+              "id": "cargo-release",
+              "name": "Cargo hook release button",
+              "type": "button",
+              "match": [
+                "control:stick.button.cargo_release"
+              ],
+              "text": "A button on the grip that opens the armed cargo hook. A cargo hook carries loads hanging below the helicopter.",
+              "context": "The pilot presses it to drop the load at the right place."
+            },
+            {
+              "id": "cyclic-gimbal",
+              "name": "Cyclic",
+              "type": "axis",
+              "match": [
+                "control:stick.gimbal"
+              ],
+              "text": "The cyclic tilts the rotor. Pushing it forward makes the helicopter fly forward, pulling back slows it, and moving it sideways flies left or right.",
+              "context": "It is the main control for steering in the air."
+            }
+          ]
+        },
+        {
+          "id": "collective",
+          "name": "Collective",
+          "src": "t1",
+          "text": "The collective lever on the left of the seat with the switches on its head: the servo off switch, the engine rpm switch, the searchlight and landing light switches and the hook emergency release.",
+          "context": "The pilot makes the helicopter climb and sink with it.",
+          "controls": [
+            {
+              "id": "collective-axis",
+              "name": "Collective",
+              "type": "axis",
+              "match": [
+                "control:collective.axis.main"
+              ],
+              "text": "The collective lever on the left of the seat. Pulling it up makes the helicopter climb, pushing it down makes it sink. It changes the pitch of all rotor blades together.",
+              "context": "The pilot uses it for the take-off, the climb and the landing."
+            },
+            {
+              "id": "servo-off",
+              "name": "SVO OFF switch",
+              "type": "switch3",
+              "match": [
+                "control:collective.switch.servo"
+              ],
+              "positions": [
+                {
+                  "name": "up",
+                  "text": "1ST STG: the first stage of the servo is switched off."
+                },
+                {
+                  "name": "center",
+                  "text": "Both servo stages are on, the normal position."
+                },
+                {
+                  "name": "down",
+                  "text": "2ND STG: the second stage of the servo is switched off."
+                }
+              ],
+              "text": "A guarded three-position switch on the collective head. It switches one of the two stages of the flight control servos (hydraulic helpers that move the controls) off.",
+              "context": "The guard stops the pilot from moving it by accident."
+            },
+            {
+              "id": "eng-rpm",
+              "name": "ENG RPM switch",
+              "type": "switch3",
+              "match": [
+                "control:collective.switch.eng_rpm"
+              ],
+              "positions": [
+                {
+                  "name": "up",
+                  "text": "INCR: the engine and rotor speed goes up."
+                },
+                {
+                  "name": "center",
+                  "text": "The switch rests in the middle."
+                },
+                {
+                  "name": "down",
+                  "text": "DECR: the engine and rotor speed goes down."
+                }
+              ],
+              "text": "A switch on the collective head, used with the thumb. It raises (INCR) or lowers (DECR) the engine and rotor speed a little.",
+              "context": "The pilot makes small changes of the rotor speed with it."
+            },
+            {
+              "id": "searchlight",
+              "name": "Searchlight (SRCH LT) switch",
+              "type": "switch3",
+              "match": [
+                "control:collective.switch.searchlight"
+              ],
+              "positions": [
+                {
+                  "name": "up",
+                  "text": "ON / BRT: the light is on and gets brighter."
+                },
+                {
+                  "name": "center",
+                  "text": "The switch rests in the middle."
+                },
+                {
+                  "name": "down",
+                  "text": "OFF / DIM: the light gets dimmer and switches off."
+                }
+              ],
+              "text": "A switch on the collective head that turns the searchlight on and makes it brighter, or dimmer and off.",
+              "context": "The pilot uses the searchlight at night to see the ground."
+            },
+            {
+              "id": "searchlight-ctl",
+              "name": "Searchlight control switch",
+              "type": "hat",
+              "match": [
+                "control:collective.hat.searchlight"
+              ],
+              "text": "A four-way switch on the collective head, used with the thumb. It extends or retracts the searchlight and turns it left or right.",
+              "context": "The pilot aims the light at what he wants to see."
+            },
+            {
+              "id": "landing-light",
+              "name": "Landing light switch",
+              "type": "switch2",
+              "match": [
+                "control:collective.switch.landing_light"
+              ],
+              "positions": [
+                {
+                  "name": "on",
+                  "text": "The landing light is on."
+                },
+                {
+                  "name": "off",
+                  "text": "The landing light is off."
+                }
+              ],
+              "text": "A switch on the collective head that turns the landing light on or off.",
+              "context": "The pilot switches it on for landing at night."
+            },
+            {
+              "id": "hook-emer",
+              "name": "Cargo hook emergency release (HOOK EMER)",
+              "type": "button",
+              "match": [
+                "control:collective.button.hook_emer"
+              ],
+              "text": "A guarded button on the collective head that releases the cargo hook in an emergency.",
+              "context": "The pilot presses it if the load must be dropped at once."
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

@@ -4,6 +4,7 @@ using System.IO;
 using System.Net.Http;
 using System.Security.Cryptography;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using Avalonia.Media.Imaging;
 
@@ -52,7 +53,16 @@ public static class DeviceImageCache
         // Not allowed (yet): nothing is loaded and nothing is remembered, so a later "yes" loads it.
         if (IsInternet(source) && (!InternetPicturesEnabled || InternetPicturesBlocked || !MayLoad(source)))
             return Task.FromResult<Bitmap?>(null);
-        return Decoded.GetOrAdd(width + "|" + source, _ => LoadUncachedAsync(source, width));
+        string key = width + "|" + source;
+        Task<Bitmap?> task = Decoded.GetOrAdd(key, _ => LoadUncachedAsync(source, width));
+        // A picture that could not be loaded is not remembered as missing: the next look tries again (a busy server
+        // answers "too many requests" for a while).
+        _ = task.ContinueWith(t =>
+        {
+            if (t.IsFaulted || t.IsCanceled || t.Result == null)
+                Decoded.TryRemove(new System.Collections.Generic.KeyValuePair<string, Task<Bitmap?>>(key, task));
+        }, TaskScheduler.Default);
+        return task;
     }
 
     private static async Task<Bitmap?> LoadUncachedAsync(string source, int width)
@@ -97,20 +107,90 @@ public static class DeviceImageCache
         string file = Path.Combine(folder, Hash(source) + ".img");
         if (File.Exists(file))
             return file;
-        using HttpResponseMessage response = await Http.GetAsync(uri, HttpCompletionOption.ResponseHeadersRead).ConfigureAwait(false);
-        if (!response.IsSuccessStatusCode || (response.Content.Headers.ContentLength ?? 0) > MaxBytes)
-            return null;
-        byte[] data = await response.Content.ReadAsByteArrayAsync().ConfigureAwait(false);
-        if (data.Length == 0 || data.Length > MaxBytes)
+        byte[]? data = await DownloadAsync(uri).ConfigureAwait(false);
+        if (data == null || data.Length == 0 || data.Length > MaxBytes)
             return null;
         await File.WriteAllBytesAsync(file, data).ConfigureAwait(false);
         return file;
     }
 
-    private static HttpClient CreateClient()
+    // One download at a time per site, a little apart, and again after "too many requests" / "unavailable" (429, 503:
+    // Wikimedia answers so when a program asks for several pictures at once) as long as the server's Retry-After says,
+    // else after 2, 4, 8 seconds. Only an image answer counts (an error page is not a picture).
+    private static readonly ConcurrentDictionary<string, SemaphoreSlim> Sites = new(StringComparer.OrdinalIgnoreCase);
+    private static readonly ConcurrentDictionary<string, DateTime> LastRequest = new(StringComparer.OrdinalIgnoreCase);
+
+    // Waits between tries and between requests to one site (tests make them short).
+    public static TimeSpan RequestSpacing { get; set; } = TimeSpan.FromMilliseconds(400);
+    public static TimeSpan FirstRetryDelay { get; set; } = TimeSpan.FromSeconds(2);
+    public const int MaxTries = 4;
+
+    // The test's HTTP handler (null: the real one).
+    public static HttpMessageHandler? TestHandler
     {
-        HttpClient client = new() { Timeout = TimeSpan.FromSeconds(15) };
-        client.DefaultRequestHeaders.UserAgent.TryParseAdd("JoyPro2");
+        set => testClient = value == null ? null : CreateClient(value);
+    }
+
+    private static HttpClient? testClient;
+
+    public static async Task<byte[]?> DownloadAsync(Uri uri)
+    {
+        HttpClient http = testClient ?? Http;
+        SemaphoreSlim gate = Sites.GetOrAdd(uri.Host, _ => new SemaphoreSlim(1, 1));
+        await gate.WaitAsync().ConfigureAwait(false);
+        try
+        {
+            TimeSpan delay = FirstRetryDelay;
+            for (int attempt = 1; attempt <= MaxTries; attempt++)
+            {
+                if (LastRequest.TryGetValue(uri.Host, out DateTime last))
+                {
+                    TimeSpan wait = last + RequestSpacing - DateTime.UtcNow;
+                    if (wait > TimeSpan.Zero)
+                        await Task.Delay(wait).ConfigureAwait(false);
+                }
+                LastRequest[uri.Host] = DateTime.UtcNow;
+                using HttpResponseMessage response = await http.GetAsync(uri, HttpCompletionOption.ResponseHeadersRead).ConfigureAwait(false);
+                int code = (int)response.StatusCode;
+                if ((code == 429 || code == 503) && attempt < MaxTries)
+                {
+                    TimeSpan retry = response.Headers.RetryAfter?.Delta ?? (response.Headers.RetryAfter?.Date - DateTimeOffset.UtcNow) ?? delay;
+                    retry = retry < TimeSpan.Zero ? delay : retry > TimeSpan.FromSeconds(30) ? TimeSpan.FromSeconds(30) : retry;
+                    await Task.Delay(retry).ConfigureAwait(false);
+                    delay += delay;
+                    continue;
+                }
+                if (!response.IsSuccessStatusCode || (response.Content.Headers.ContentLength ?? 0) > MaxBytes)
+                    return null;
+                string? type = response.Content.Headers.ContentType?.MediaType;
+                if (type != null && !type.StartsWith("image/", StringComparison.OrdinalIgnoreCase) && type != "application/octet-stream")
+                    return null;
+                return await response.Content.ReadAsByteArrayAsync().ConfigureAwait(false);
+            }
+            return null;
+        }
+        catch (HttpRequestException)
+        {
+            return null;
+        }
+        catch (TaskCanceledException)
+        {
+            return null;
+        }
+        finally
+        {
+            gate.Release();
+        }
+    }
+
+    // Who asks (Wikimedia's robot policy wants a program's name, version and a way to reach its makers).
+    public static string UserAgent => "JoyPro2/" + AppInfo.Version + " (+https://github.com/" + AppInfo.RepositoryOwner + "/" + AppInfo.RepositoryName + ")";
+
+    private static HttpClient CreateClient(HttpMessageHandler? handler = null)
+    {
+        HttpClient client = handler == null ? new HttpClient() : new HttpClient(handler);
+        client.Timeout = TimeSpan.FromSeconds(30);
+        client.DefaultRequestHeaders.UserAgent.TryParseAdd(UserAgent);
         return client;
     }
 

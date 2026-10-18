@@ -1,0 +1,753 @@
+{
+  "format": "joypro-cockpit-guide",
+  "version": 1,
+  "id": "dcs-ch-47f-part3",
+  "partOf": "dcs-ch-47f",
+  "areas": [
+    {
+      "id": "circuit-breakers",
+      "where": "rear",
+      "name": "Power distribution panels (circuit breakers)",
+      "text": "Two walls of circuit breakers on the back wall of the cockpit, one beside each pilot seat. Pilots look at them before start-up and when a system fails.",
+      "panels": [
+        {
+          "id": "pdp1",
+          "name": "PDP 1 (circuit breakers, left side)",
+          "db": "power-distribution-panels",
+          "src": "m1",
+          "page": "55",
+          "text": "PDP 1 is a panel full of circuit breakers, which are safety switches for the electric lines. It sits on the rear wall of the cockpit. It is on the left side of the rear cockpit wall, outboard of the Copilot's seat.",
+          "context": "The crew looks at it before start-up to make sure no breaker has popped out. In the game, each breaker is a button that can be clicked.",
+          "controls": [
+            {
+              "id": "overview",
+              "name": "PDP 1 as a whole",
+              "type": "other",
+              "match": [
+                "item:power-distribution-panels:1"
+              ],
+              "text": "PDP 1 is a wall of circuit breakers. It is on the left side of the rear cockpit wall, outboard of the Copilot's seat. Each breaker protects the electric line of one piece of equipment.",
+              "context": "A circuit breaker pops out when too much current flows, and it can be pushed back in. The groups below sort the breakers of PDP 1 by the equipment they are named after.",
+              "src": "m1",
+              "page": "55"
+            },
+            {
+              "id": "fuel-pump-control",
+              "name": "Fuel pump control breakers, PDP 1",
+              "type": "button",
+              "match": [
+                "1A10",
+                "1A11",
+                "1A12",
+                "1A13"
+              ],
+              "text": "This group has 4 circuit breakers of PDP 1. These breakers are named after the control side of the fuel pumps. The word CONTR in a name stands for control. The game names them: L FUEL PUMP CONTR AUX AFT, L FUEL PUMP CONTR MAIN AFT, L FUEL PUMP CONTR MAIN FWD, L FUEL PUMP CONTR AUX FWD.",
+              "context": "The pumps themselves are switched on the Fuel control panel on the overhead. This is the PDP 1 group. The checklist before the APU start says to check that every breaker of PDP 1 and PDP 2 is in.",
+              "count": 4,
+              "src": "m1",
+              "page": "55"
+            },
+            {
+              "id": "fuel-pumps",
+              "name": "Fuel pump breakers, PDP 1",
+              "type": "button",
+              "match": [
+                "1A26",
+                "1A29",
+                "1B26",
+                "1B29"
+              ],
+              "text": "This group has 4 circuit breakers of PDP 1. These breakers are named after the fuel pumps in the main and auxiliary tanks. A boost pump moves fuel from a tank toward the engines. The game names them: L FUEL PUMP MAIN AFT, L FUEL PUMP MAIN FWD, L FUEL PUMP AUX AFT, L FUEL PUMP AUX FWD.",
+              "context": "The pumps are switched on the Fuel control panel on the overhead; without these breakers they get no power. This is the PDP 1 group. The checklist before the APU start says to check that every breaker of PDP 1 and PDP 2 is in.",
+              "count": 4,
+              "src": "m1",
+              "page": "55"
+            },
+            {
+              "id": "fuel-other",
+              "name": "Other fuel breakers, PDP 1",
+              "type": "button",
+              "match": [
+                "1A06",
+                "1A07",
+                "1A08",
+                "1A09"
+              ],
+              "text": "This group has 4 circuit breakers of PDP 1. These breakers are named after fuel quantity, low-level warning, refuel and crossfeed equipment. The game names them: FUEL REFUEL, FUEL XFEED CONTR, FUEL R QTY LO LVL, FUEL L QTY.",
+              "context": "The crossfeed and the refuel station are switched on the Fuel control panel on the overhead. This is the PDP 1 group. The checklist before the APU start says to check that every breaker of PDP 1 and PDP 2 is in.",
+              "count": 4,
+              "src": "m1",
+              "page": "55"
+            },
+            {
+              "id": "engine",
+              "name": "Engine monitoring breakers, PDP 1",
+              "type": "button",
+              "match": [
+                "1A17",
+                "1A18",
+                "1A19",
+                "1A20",
+                "1A21",
+                "1A22"
+              ],
+              "text": "This group has 6 circuit breakers of PDP 1. These breakers are named after the monitoring and safety equipment of one engine, such as fire detection, fire extinguisher, fuel flow, fuel shut-off, oil pressure and torque. The game names them: ENGINE NO 1 FUEL SHUT OFF, ENGINE NO 1 FIRE EXT, ENGINE NO 1 FIRE DET, ENGINE NO 1 TORQUE, ENGINE NO 1 FUEL FLOW, ENGINE NO 1 OIL PRESS.",
+              "context": "The engines are started with the FADEC panel and run with the ENG COND levers; these breakers protect the monitoring lines. This is the PDP 1 group. The checklist before the APU start says to check that every breaker of PDP 1 and PDP 2 is in.",
+              "count": 6,
+              "src": "m1",
+              "page": "55"
+            },
+            {
+              "id": "fadec",
+              "name": "FADEC engine computer breakers, PDP 1",
+              "type": "button",
+              "match": [
+                "1A14",
+                "1A15",
+                "1A16"
+              ],
+              "text": "This group has 3 circuit breakers of PDP 1. These breakers are named after the FADEC, the computer that runs one engine: its start and ignition, its primary power and its reversionary (backup) power. The game names them: FADEC NO 1 PRI PWR, FADEC NO 1 REV PWR, FADEC NO 1 START AND IGN.",
+              "context": "The engine start uses the ENG START switch on the FADEC panel, which needs these lines. This is the PDP 1 group. The checklist before the APU start says to check that every breaker of PDP 1 and PDP 2 is in.",
+              "count": 3,
+              "src": "m1",
+              "page": "55"
+            },
+            {
+              "id": "afcs",
+              "name": "AFCS flight control breakers, PDP 1",
+              "type": "button",
+              "match": [
+                "1B15",
+                "1B16",
+                "1B17",
+                "1B18",
+                "1B19",
+                "1B20",
+                "1B21",
+                "1B22"
+              ],
+              "text": "This group has 8 circuit breakers of PDP 1. These breakers are named after the automatic flight control system: its flight control computers, actuators and trim equipment. The game names them: AFCS THRUST BRAKE, AFCS CONTR CTR, AFCS CYC TRIM FWD ACTR, AFCS CYC TRIM MAN, AFCS CLTV DRIVER ACTR, AFCS FCC 1, AFCS FCC 1, AFCS CLTV DRIVER ACTR.",
+              "context": "The AFCS control panel on the canted console switches these systems on. This is the PDP 1 group. The checklist before the APU start says to check that every breaker of PDP 1 and PDP 2 is in.",
+              "count": 8,
+              "src": "m1",
+              "page": "55"
+            },
+            {
+              "id": "rotor-misc",
+              "name": "Rotor, transmission and flight breakers, PDP 1",
+              "type": "button",
+              "match": [
+                "1A24",
+                "1C22"
+              ],
+              "text": "This group has 2 circuit breakers of PDP 1. These breakers are named after rotor and transmission equipment and other flight items, such as blade tracking, vibration absorbers, the cruise guide and the transmission oil pressure. The game names them: COLL PONS, XMSN OIL PRESS.",
+              "context": "These lines serve the rotors and gearboxes; the pilots do not touch them in normal flight. This is the PDP 1 group. The checklist before the APU start says to check that every breaker of PDP 1 and PDP 2 is in.",
+              "count": 2,
+              "src": "m1",
+              "page": "55"
+            },
+            {
+              "id": "caas",
+              "name": "CAAS avionics breakers, PDP 1",
+              "type": "button",
+              "match": [
+                "1A23",
+                "1C10",
+                "1C11",
+                "1C12",
+                "1C26",
+                "1C29",
+                "1D26",
+                "1D29"
+              ],
+              "text": "This group has 8 circuit breakers of PDP 1. These breakers are named after the CAAS avionics system: the screens (MFD), the keypad units (CDU), the computers and the zeroize function that erases secret data. The game names them: DCU 1 26VAC, CAAS MFCU 1, CAAS CDU 1, CAAS ZEROIZE, CAAS GPPU 1, CAAS DCU 1, CAAS MFD 2, CAAS MFD 1.",
+              "context": "The screens and keypad units need these lines. Pilots check all breakers before starting. This is the PDP 1 group. The checklist before the APU start says to check that every breaker of PDP 1 and PDP 2 is in.",
+              "count": 8,
+              "src": "m1",
+              "page": "55"
+            },
+            {
+              "id": "comm",
+              "name": "Radio and intercom breakers, PDP 1",
+              "type": "button",
+              "match": [
+                "1D12",
+                "1D13",
+                "1D14",
+                "1D15",
+                "1D16",
+                "1D17",
+                "1D18",
+                "1D19"
+              ],
+              "text": "This group has 8 circuit breakers of PDP 1. These breakers are named after radios, the transponder, the intercom and data equipment. The game names them: COMM ICU, COMM L ICS, COMM UHF RT, COMM UHF SCTY SET, COMM SINCGARS 1 RT, COMM SINCGARS 1 PWR AMP, COMM IDM, COMM BFT.",
+              "context": "The radios and the intercom need these lines; the audio panels in each crew station use them. This is the PDP 1 group. The checklist before the APU start says to check that every breaker of PDP 1 and PDP 2 is in.",
+              "count": 8,
+              "src": "m1",
+              "page": "55"
+            },
+            {
+              "id": "nav",
+              "name": "Navigation breakers, PDP 1",
+              "type": "button",
+              "match": [
+                "1C13",
+                "1C14",
+                "1C15",
+                "1C16",
+                "1C17",
+                "1C18",
+                "1C19",
+                "1C21"
+              ],
+              "text": "This group has 8 circuit breakers of PDP 1. These breakers are named after navigation equipment, such as the satellite and inertial navigation (EGI), air data computers, radar altimeter, TACAN, VOR and ADF. The game names them: NAV EGI 1 BACKUP PWR, NAV SFD 1, NAV ADC 1, NAV ADF, NAV EGI 1, NAV DR-200, NAV ASG HUD, NAV MMS.",
+              "context": "The navigation pages on the screens need these lines. This is the PDP 1 group. The checklist before the APU start says to check that every breaker of PDP 1 and PDP 2 is in.",
+              "count": 8,
+              "src": "m1",
+              "page": "55"
+            },
+            {
+              "id": "anti-ice",
+              "name": "Anti-ice and wiper breakers, PDP 1",
+              "type": "button",
+              "match": [
+                "1D20",
+                "1D21",
+                "1D22"
+              ],
+              "text": "This group has 3 circuit breakers of PDP 1. These breakers are named after the heaters of the windshields, pitot tubes and static ports, and after the windshield wiper. The game names them: ANTI-ICE WSHLD CPLT CONTR, ANTI-ICE WSHLD CPLT HTR, ANTI-ICE PITOT 1 HTR.",
+              "context": "The anti-ice panel and the wiper knob on the overhead use these lines. This is the PDP 1 group. The checklist before the APU start says to check that every breaker of PDP 1 and PDP 2 is in.",
+              "count": 3,
+              "src": "m1",
+              "page": "55"
+            },
+            {
+              "id": "ase",
+              "name": "Survivability equipment breakers, PDP 1",
+              "type": "button",
+              "match": [
+                "1C20"
+              ],
+              "text": "This group has 1 circuit breakers of PDP 1. These breakers are named after the self-protection equipment: the countermeasures control, the missile warning system and the radar warning. The game names them: ASE CMDS CONTR.",
+              "context": "The ASE control panel on the center console uses these lines. This is the PDP 1 group. The checklist before the APU start says to check that every breaker of PDP 1 and PDP 2 is in.",
+              "count": 1,
+              "src": "m1",
+              "page": "55"
+            },
+            {
+              "id": "air-war",
+              "name": "AIR WAR breakers, PDP 1",
+              "type": "button",
+              "match": [
+                "1C08",
+                "1C09"
+              ],
+              "text": "This group has 2 circuit breakers of PDP 1. The game names these breakers AIR WAR. The manual does not explain them. The game names them: AIR WAR MASK BLWR, AIR WAR MCU 1 CPLT.",
+              "context": "The manual does not say what these lines do. This is the PDP 1 group. The checklist before the APU start says to check that every breaker of PDP 1 and PDP 2 is in.",
+              "count": 2,
+              "src": "m1",
+              "page": "55"
+            },
+            {
+              "id": "lighting",
+              "name": "Lighting breakers, PDP 1",
+              "type": "button",
+              "match": [
+                "1E14",
+                "1E15",
+                "1E16",
+                "1E17",
+                "1E18",
+                "1E19",
+                "1E20",
+                "1E22",
+                "1E23",
+                "1E24",
+                "1E25",
+                "1E26",
+                "1E27"
+              ],
+              "text": "This group has 13 circuit breakers of PDP 1. These breakers are named after lights: instrument, console, overhead, floodlights, searchlight, anti-collision, position and formation lights. The game names them: LIGHTING CARGO HOOK, LIGHTING EMER EXIT, LIGHTING OIL LVL CHK, LIGHTING CABIN AND RAMP, LIGHTING NVG FORM, LIGHTING CPLT SLT CONTR, LIGHTING CPLT SLT FIL, LIGHTING CPLT INSTR, LIGHTING CONSOLE, LIGHTING OVHD PNL, LIGHTING ILL SW, LIGHTING FORM, LIGHTING SEC CKPT LTG CONTR.",
+              "context": "The light switches and knobs on the overhead and the other panels use these lines. This is the PDP 1 group. The checklist before the APU start says to check that every breaker of PDP 1 and PDP 2 is in.",
+              "count": 13,
+              "src": "m1",
+              "page": "55"
+            },
+            {
+              "id": "hydraulics",
+              "name": "Hydraulic breakers, PDP 1",
+              "type": "button",
+              "match": [
+                "1C31",
+                "1D04",
+                "1D05",
+                "1D06",
+                "1D07",
+                "1D08",
+                "1D09",
+                "1D10",
+                "1D11",
+                "1E29"
+              ],
+              "text": "This group has 10 circuit breakers of PDP 1. These breakers are named after the hydraulic systems, which move heavy parts with oil under pressure: pumps, cooling blowers, brakes and steering, the ramp and the indicators. The game names them: UTIL HYD COOLING BLOWER, HYDRAULICS ACC PUMP, HYDRAULICS OIL LVL, HYDRAULICS MAINT PNL LTG, HYDRAULICS NO 1 BLO CONTR, HYDRAULICS UTIL BLO CONTR, HYDRAULICS SYS CONTR, HYDRAULICS BRAKE STEER, HYDRAULICS RAMP EMER CONTR, HYDRAULICS NO 1 COOLING BLOWER.",
+              "context": "The hydraulic control panel on the overhead and the ramp controls use these lines. This is the PDP 1 group. The checklist before the APU start says to check that every breaker of PDP 1 and PDP 2 is in.",
+              "count": 10,
+              "src": "m1",
+              "page": "55"
+            },
+            {
+              "id": "electrical",
+              "name": "Electrical system breakers, PDP 1",
+              "type": "button",
+              "match": [
+                "1B01",
+                "1B02",
+                "1B03",
+                "1B04",
+                "1B05",
+                "1B06",
+                "1B07",
+                "1B08",
+                "1B09",
+                "1B10",
+                "1B31",
+                "1B32",
+                "1B33",
+                "1C32",
+                "1D23",
+                "1D24",
+                "1E32",
+                "1E33"
+              ],
+              "text": "This group has 18 circuit breakers of PDP 1. These breakers are named after the electrical system itself: battery chargers, buses, transformer-rectifiers, current sensors, external power and the utility outlets. The game names them: ELECT BATT TEST LOW, ELECT CKPT UTIL RCPT 1, ELECT DC 1 BUS CONTR, ELECT DC 1 BUS CURR XDCR, ELECT AC 1 BUS CURR XDCR, ELECT BATT CHRG 1 RCCO CONTR, ELECT BATT CHRG 1 CONTR, ELECT DC 1 ESS BUS CONTR, ELECT NO 1 RVS CUR CUTOUT, ELECT EXT PWR CONTR, NO 1 XFMR RECT, DC ESS 1 BUS FEED, BATT BUS FEED, NO 1 DC CROSS TIE, NO 1 INSTR XFMR, NO 2 INSTR XFMR, BATT CHRG 1 RCCO, NO 1 DC AUX PDP FEED.",
+              "context": "The electrical power panel on the overhead uses these lines for the battery, the generators and the APU. This is the PDP 1 group. The checklist before the APU start says to check that every breaker of PDP 1 and PDP 2 is in.",
+              "count": 18,
+              "src": "m1",
+              "page": "55"
+            },
+            {
+              "id": "eaps",
+              "name": "EAPS breakers, PDP 1",
+              "type": "button",
+              "match": [
+                "1A31",
+                "1E07",
+                "1E08"
+              ],
+              "text": "This group has 3 circuit breakers of PDP 1. These breakers are named after the engine air particle separators: their fans and their bypass doors. The game names them: NO 1 EAPS FAN, NO 1 EAPS BYPASS DOORS, NO 1 EAPS FAN CONTR.",
+              "context": "The EAPS control panel on the overhead uses these lines. This is the PDP 1 group. The checklist before the APU start says to check that every breaker of PDP 1 and PDP 2 is in.",
+              "count": 3,
+              "src": "m1",
+              "page": "55"
+            },
+            {
+              "id": "apu",
+              "name": "APU breakers, PDP 1",
+              "type": "button",
+              "match": [
+                "1E05",
+                "1E06"
+              ],
+              "text": "This group has 2 circuit breakers of PDP 1. These breakers are named after the APU control, in normal and emergency mode. The game names them: APU CONTR NORM, APU CONTR EMER.",
+              "context": "The APU switch on the electrical power panel needs these lines. This is the PDP 1 group. The checklist before the APU start says to check that every breaker of PDP 1 and PDP 2 is in.",
+              "count": 2,
+              "src": "m1",
+              "page": "55"
+            },
+            {
+              "id": "cargo",
+              "name": "Cargo hook and hoist breakers, PDP 1",
+              "type": "button",
+              "match": [
+                "1B11",
+                "1B12",
+                "1B13",
+                "1B14"
+              ],
+              "text": "This group has 4 circuit breakers of PDP 1. These breakers are named after the cargo hooks (release control and power) and the hoist: its control and the cable cut. The game names them: HOIST CONTR, HOIST CABLE CUT, CARGO HOOK EMER REL PWR, CARGO HOOK EMER REL CONTR.",
+              "context": "The hoist and cargo hook panel on the overhead and the grips use these lines. This is the PDP 1 group. The checklist before the APU start says to check that every breaker of PDP 1 and PDP 2 is in.",
+              "count": 4,
+              "src": "m1",
+              "page": "55"
+            },
+            {
+              "id": "cabin-misc",
+              "name": "Cabin, clock and other breakers, PDP 1",
+              "type": "button",
+              "match": [
+                "1E04"
+              ],
+              "text": "This group has 1 circuit breakers of PDP 1. These breakers are named after the cabin heater, the troop alarm, the clock and the proximity switches. The game names them: L PROX SW.",
+              "context": "These lines serve the cabin and some small equipment. This is the PDP 1 group. The checklist before the APU start says to check that every breaker of PDP 1 and PDP 2 is in.",
+              "count": 1,
+              "src": "m1",
+              "page": "55"
+            }
+          ]
+        },
+        {
+          "id": "pdp2",
+          "name": "PDP 2 (circuit breakers, right side)",
+          "db": "power-distribution-panels",
+          "src": "m1",
+          "page": "55",
+          "text": "PDP 2 is a panel full of circuit breakers, which are safety switches for the electric lines. It sits on the rear wall of the cockpit. It is on the right side of the rear cockpit wall, outboard of the Pilot's seat.",
+          "context": "The crew looks at it before start-up to make sure no breaker has popped out. In the game, each breaker is a button that can be clicked.",
+          "controls": [
+            {
+              "id": "overview",
+              "name": "PDP 2 as a whole",
+              "type": "other",
+              "match": [
+                "item:power-distribution-panels:2"
+              ],
+              "text": "PDP 2 is a wall of circuit breakers. It is on the right side of the rear cockpit wall, outboard of the Pilot's seat. Each breaker protects the electric line of one piece of equipment.",
+              "context": "A circuit breaker pops out when too much current flows, and it can be pushed back in. The groups below sort the breakers of PDP 2 by the equipment they are named after.",
+              "src": "m1",
+              "page": "55"
+            },
+            {
+              "id": "fuel-pump-control",
+              "name": "Fuel pump control breakers, PDP 2",
+              "type": "button",
+              "match": [
+                "2A10",
+                "2A11",
+                "2A12",
+                "2A13"
+              ],
+              "text": "This group has 4 circuit breakers of PDP 2. These breakers are named after the control side of the fuel pumps. The word CONTR in a name stands for control. The game names them: R FUEL PUMP CONTR AUX AFT, R FUEL PUMP CONTR MAIN AFT, R FUEL PUMP CONTR MAIN FWD, R FUEL PUMP CONTR AUX FWD.",
+              "context": "The pumps themselves are switched on the Fuel control panel on the overhead. This is the PDP 2 group. The checklist before the APU start says to check that every breaker of PDP 1 and PDP 2 is in.",
+              "count": 4,
+              "src": "m1",
+              "page": "55"
+            },
+            {
+              "id": "fuel-pumps",
+              "name": "Fuel pump breakers, PDP 2",
+              "type": "button",
+              "match": [
+                "2A26",
+                "2A29",
+                "2B26",
+                "2B29"
+              ],
+              "text": "This group has 4 circuit breakers of PDP 2. These breakers are named after the fuel pumps in the main and auxiliary tanks. A boost pump moves fuel from a tank toward the engines. The game names them: R FUEL PUMP MAIN AFT, R FUEL PUMP MAIN FWD, R FUEL PUMP AUX AFT, R FUEL PUMP AUX FWD.",
+              "context": "The pumps are switched on the Fuel control panel on the overhead; without these breakers they get no power. This is the PDP 2 group. The checklist before the APU start says to check that every breaker of PDP 1 and PDP 2 is in.",
+              "count": 4,
+              "src": "m1",
+              "page": "55"
+            },
+            {
+              "id": "fuel-other",
+              "name": "Other fuel breakers, PDP 2",
+              "type": "button",
+              "match": [
+                "2A08",
+                "2A09"
+              ],
+              "text": "This group has 2 circuit breakers of PDP 2. These breakers are named after fuel quantity, low-level warning, refuel and crossfeed equipment. The game names them: FUEL L QTY LO LVL, FUEL R QTY.",
+              "context": "The crossfeed and the refuel station are switched on the Fuel control panel on the overhead. This is the PDP 2 group. The checklist before the APU start says to check that every breaker of PDP 1 and PDP 2 is in.",
+              "count": 2,
+              "src": "m1",
+              "page": "55"
+            },
+            {
+              "id": "engine",
+              "name": "Engine monitoring breakers, PDP 2",
+              "type": "button",
+              "match": [
+                "2A17",
+                "2A18",
+                "2A19",
+                "2A20",
+                "2A21",
+                "2A22"
+              ],
+              "text": "This group has 6 circuit breakers of PDP 2. These breakers are named after the monitoring and safety equipment of one engine, such as fire detection, fire extinguisher, fuel flow, fuel shut-off, oil pressure and torque. The game names them: ENGINE NO 2 FUEL SHUT OFF, ENGINE NO 2 FIRE EXT, ENGINE NO 2 FIRE DET, ENGINE NO 2 TORQUE, ENGINE NO 2 FUEL FLOW, ENGINE NO 2 OIL PRESS.",
+              "context": "The engines are started with the FADEC panel and run with the ENG COND levers; these breakers protect the monitoring lines. This is the PDP 2 group. The checklist before the APU start says to check that every breaker of PDP 1 and PDP 2 is in.",
+              "count": 6,
+              "src": "m1",
+              "page": "55"
+            },
+            {
+              "id": "fadec",
+              "name": "FADEC engine computer breakers, PDP 2",
+              "type": "button",
+              "match": [
+                "2A14",
+                "2A15",
+                "2A16"
+              ],
+              "text": "This group has 3 circuit breakers of PDP 2. These breakers are named after the FADEC, the computer that runs one engine: its start and ignition, its primary power and its reversionary (backup) power. The game names them: FADEC NO 2 PRI PWR, FADEC NO 2 REV PWR, FADEC NO 2 START AND IGN.",
+              "context": "The engine start uses the ENG START switch on the FADEC panel, which needs these lines. This is the PDP 2 group. The checklist before the APU start says to check that every breaker of PDP 1 and PDP 2 is in.",
+              "count": 3,
+              "src": "m1",
+              "page": "55"
+            },
+            {
+              "id": "afcs",
+              "name": "AFCS flight control breakers, PDP 2",
+              "type": "button",
+              "match": [
+                "2B18",
+                "2B19",
+                "2B20",
+                "2B21",
+                "2B22"
+              ],
+              "text": "This group has 5 circuit breakers of PDP 2. These breakers are named after the automatic flight control system: its flight control computers, actuators and trim equipment. The game names them: AFCS CYC TRIM AFT ACTR, AFCS LONG DRVR ACTR, AFCS FCC 2, AFCS FCC 2, AFCS LONG DRVR ACTR.",
+              "context": "The AFCS control panel on the canted console switches these systems on. This is the PDP 2 group. The checklist before the APU start says to check that every breaker of PDP 1 and PDP 2 is in.",
+              "count": 5,
+              "src": "m1",
+              "page": "55"
+            },
+            {
+              "id": "rotor-misc",
+              "name": "Rotor, transmission and flight breakers, PDP 2",
+              "type": "button",
+              "match": [
+                "2B16",
+                "2B17",
+                "2B23",
+                "2B24"
+              ],
+              "text": "This group has 4 circuit breakers of PDP 2. These breakers are named after rotor and transmission equipment and other flight items, such as blade tracking, vibration absorbers, the cruise guide and the transmission oil pressure. The game names them: BLADE TRACK, CRUISE GUIDE, VIB ABSORB R, VIB ABSORB L.",
+              "context": "These lines serve the rotors and gearboxes; the pilots do not touch them in normal flight. This is the PDP 2 group. The checklist before the APU start says to check that every breaker of PDP 1 and PDP 2 is in.",
+              "count": 4,
+              "src": "m1",
+              "page": "55"
+            },
+            {
+              "id": "caas",
+              "name": "CAAS avionics breakers, PDP 2",
+              "type": "button",
+              "match": [
+                "2A23",
+                "2C08",
+                "2C09",
+                "2C26",
+                "2C29",
+                "2D26",
+                "2D29",
+                "2E26"
+              ],
+              "text": "This group has 8 circuit breakers of PDP 2. These breakers are named after the CAAS avionics system: the screens (MFD), the keypad units (CDU), the computers and the zeroize function that erases secret data. The game names them: DCU 2 26VAC, CAAS MFCU 2, CAAS CDU 2, CAAS GPPU 2, CAAS DCU 2, CAAS MFD 3, CAAS MFD 4, CAAS MFD 5.",
+              "context": "The screens and keypad units need these lines. Pilots check all breakers before starting. This is the PDP 2 group. The checklist before the APU start says to check that every breaker of PDP 1 and PDP 2 is in.",
+              "count": 8,
+              "src": "m1",
+              "page": "55"
+            },
+            {
+              "id": "comm",
+              "name": "Radio and intercom breakers, PDP 2",
+              "type": "button",
+              "match": [
+                "2D08",
+                "2D09",
+                "2D10",
+                "2D11",
+                "2D12",
+                "2D13",
+                "2D14",
+                "2D15",
+                "2D16"
+              ],
+              "text": "This group has 9 circuit breakers of PDP 2. These breakers are named after radios, the transponder, the intercom and data equipment. The game names them: COMM R ICS, COMM VHF ANT SW, COMM VHF RT, COMM VHF SCTY SET, COMM IFF, COMM HF PA CLR, COMM HF KY-100, COMM SINCGARS 2 RT, COMM SINCGARS 2 PWR AMP.",
+              "context": "The radios and the intercom need these lines; the audio panels in each crew station use them. This is the PDP 2 group. The checklist before the APU start says to check that every breaker of PDP 1 and PDP 2 is in.",
+              "count": 9,
+              "src": "m1",
+              "page": "55"
+            },
+            {
+              "id": "nav",
+              "name": "Navigation breakers, PDP 2",
+              "type": "button",
+              "match": [
+                "2C10",
+                "2C11",
+                "2C12",
+                "2C13",
+                "2C14",
+                "2C15",
+                "2C16",
+                "2C17",
+                "2C18"
+              ],
+              "text": "This group has 9 circuit breakers of PDP 2. These breakers are named after navigation equipment, such as the satellite and inertial navigation (EGI), air data computers, radar altimeter, TACAN, VOR and ADF. The game names them: NAV CVR FDR, NAV EGI 2 BACKUP PWR, NAV SFD 2, NAV RDR ALT, NAV VOR, NAV TACAN, NAV STORM SCOPE, NAV EGI 2, NAV ADC 2.",
+              "context": "The navigation pages on the screens need these lines. This is the PDP 2 group. The checklist before the APU start says to check that every breaker of PDP 1 and PDP 2 is in.",
+              "count": 9,
+              "src": "m1",
+              "page": "55"
+            },
+            {
+              "id": "anti-ice",
+              "name": "Anti-ice and wiper breakers, PDP 2",
+              "type": "button",
+              "match": [
+                "2D17",
+                "2D18",
+                "2D19",
+                "2D20",
+                "2D21",
+                "2D22",
+                "2D23",
+                "2D24"
+              ],
+              "text": "This group has 8 circuit breakers of PDP 2. These breakers are named after the heaters of the windshields, pitot tubes and static ports, and after the windshield wiper. The game names them: WSHLD WIPER, ANTI-ICE PITOT 3 HTR, ANTI-ICE WSHLD PLT CONTR, ANTI-ICE WSHLD CTR CONTR, ANTI-ICE WSHLD PLT HTR, ANTI-ICE WSHLD CTR HTR, ANTI-ICE PITOT 2 HTR, ANTI-ICE STATIC PORT HTR.",
+              "context": "The anti-ice panel and the wiper knob on the overhead use these lines. This is the PDP 2 group. The checklist before the APU start says to check that every breaker of PDP 1 and PDP 2 is in.",
+              "count": 8,
+              "src": "m1",
+              "page": "55"
+            },
+            {
+              "id": "ase",
+              "name": "Survivability equipment breakers, PDP 2",
+              "type": "button",
+              "match": [
+                "2C19",
+                "2C20",
+                "2C22"
+              ],
+              "text": "This group has 3 circuit breakers of PDP 2. These breakers are named after the self-protection equipment: the countermeasures control, the missile warning system and the radar warning. The game names them: ASE RDR WARN, ASE MWS CONTR, ASE MWS PWR.",
+              "context": "The ASE control panel on the center console uses these lines. This is the PDP 2 group. The checklist before the APU start says to check that every breaker of PDP 1 and PDP 2 is in.",
+              "count": 3,
+              "src": "m1",
+              "page": "55"
+            },
+            {
+              "id": "air-war",
+              "name": "AIR WAR breakers, PDP 2",
+              "type": "button",
+              "match": [
+                "2B13"
+              ],
+              "text": "This group has 1 circuit breakers of PDP 2. The game names these breakers AIR WAR. The manual does not explain them. The game names them: AIR WAR MCU 3 PLT.",
+              "context": "The manual does not say what these lines do. This is the PDP 2 group. The checklist before the APU start says to check that every breaker of PDP 1 and PDP 2 is in.",
+              "count": 1,
+              "src": "m1",
+              "page": "55"
+            },
+            {
+              "id": "lighting",
+              "name": "Lighting breakers, PDP 2",
+              "type": "button",
+              "match": [
+                "2E10",
+                "2E11",
+                "2E12",
+                "2E13",
+                "2E14",
+                "2E15",
+                "2E16",
+                "2E17",
+                "2E18",
+                "2E19",
+                "2E20",
+                "2E22",
+                "2E23"
+              ],
+              "text": "This group has 13 circuit breakers of PDP 2. These breakers are named after lights: instrument, console, overhead, floodlights, searchlight, anti-collision, position and formation lights. The game names them: LIGHTING PLT SLT CONTR, LIGHTING PLT SLT FIL, LIGHTING PDP MAP, LIGHTING LAMP TEST, LIGHTING INSTR FLOOD, LIGHTING STBY CMPS, LIGHTING MODE SEL, LIGHTING CKPT DOME, LIGHTING POSN, LIGHTING BOT ANTI COL, LIGHTING TOP ANTI COL, LIGHTING PLT INSTR, LIGHTING CTR INSTR.",
+              "context": "The light switches and knobs on the overhead and the other panels use these lines. This is the PDP 2 group. The checklist before the APU start says to check that every breaker of PDP 1 and PDP 2 is in.",
+              "count": 13,
+              "src": "m1",
+              "page": "55"
+            },
+            {
+              "id": "hydraulics",
+              "name": "Hydraulic breakers, PDP 2",
+              "type": "button",
+              "match": [
+                "2D02",
+                "2D03",
+                "2D04",
+                "2D05",
+                "2D06",
+                "2D07",
+                "2E29"
+              ],
+              "text": "This group has 7 circuit breakers of PDP 2. These breakers are named after the hydraulic systems, which move heavy parts with oil under pressure: pumps, cooling blowers, brakes and steering, the ramp and the indicators. The game names them: HYDRAULICS NO 2 BLO CONTR, HYDRAULICS PWR XFER, HYDRAULICS PRESS IND, HYDRAULICS FLUID TEMP, HYDRAULICS FLT CONTR, HYDRAULICS MAINT PNL LTS, HYDRAULICS NO 2 COOLING BLOWER.",
+              "context": "The hydraulic control panel on the overhead and the ramp controls use these lines. This is the PDP 2 group. The checklist before the APU start says to check that every breaker of PDP 1 and PDP 2 is in.",
+              "count": 7,
+              "src": "m1",
+              "page": "55"
+            },
+            {
+              "id": "electrical",
+              "name": "Electrical system breakers, PDP 2",
+              "type": "button",
+              "match": [
+                "2A31",
+                "2B04",
+                "2B05",
+                "2B06",
+                "2B07",
+                "2B08",
+                "2B09",
+                "2B10",
+                "2B11",
+                "2B32",
+                "2B33",
+                "2E24",
+                "2E32",
+                "2E33"
+              ],
+              "text": "This group has 14 circuit breakers of PDP 2. These breakers are named after the electrical system itself: battery chargers, buses, transformer-rectifiers, current sensors, external power and the utility outlets. The game names them: NO 2 XFMR RECT, ELECT CKPT UTIL RCPT 2, ELECT DC 2 BUS CONTR, ELECT DC 2 BUS CURR XDCR, ELECT AC 2 BUS CURR XDCR, ELECT BATT CHRG 2 RCCO CONTR, ELECT BATT CHRG 2 CONTR, ELECT DC 2 ESS BUS CONTR, ELECT NO 2 RVS CUR CUTOUT, NO 2 DC AUX PDP FEED, NO 2 DC CROSS TIE, NO 2 INSTR XMFR, BATT CHRG 2 RCCO, DC ESS 2 BUS FEED.",
+              "context": "The electrical power panel on the overhead uses these lines for the battery, the generators and the APU. This is the PDP 2 group. The checklist before the APU start says to check that every breaker of PDP 1 and PDP 2 is in.",
+              "count": 14,
+              "src": "m1",
+              "page": "55"
+            },
+            {
+              "id": "eaps",
+              "name": "EAPS breakers, PDP 2",
+              "type": "button",
+              "match": [
+                "2B31",
+                "2E07",
+                "2E08"
+              ],
+              "text": "This group has 3 circuit breakers of PDP 2. These breakers are named after the engine air particle separators: their fans and their bypass doors. The game names them: NO 2 EAPS FAN, NO 2 EAPS BYPASS DOORS, NO 2 EAPS FAN CONTR.",
+              "context": "The EAPS control panel on the overhead uses these lines. This is the PDP 2 group. The checklist before the APU start says to check that every breaker of PDP 1 and PDP 2 is in.",
+              "count": 3,
+              "src": "m1",
+              "page": "55"
+            },
+            {
+              "id": "cargo",
+              "name": "Cargo hook and hoist breakers, PDP 2",
+              "type": "button",
+              "match": [
+                "2B14",
+                "2B15"
+              ],
+              "text": "This group has 2 circuit breakers of PDP 2. These breakers are named after the cargo hooks (release control and power) and the hoist: its control and the cable cut. The game names them: CARGO HOOK NORM REL PWR, CARGO HOOK NORM REL CONTR.",
+              "context": "The hoist and cargo hook panel on the overhead and the grips use these lines. This is the PDP 2 group. The checklist before the APU start says to check that every breaker of PDP 1 and PDP 2 is in.",
+              "count": 2,
+              "src": "m1",
+              "page": "55"
+            },
+            {
+              "id": "cabin-misc",
+              "name": "Cabin, clock and other breakers, PDP 2",
+              "type": "button",
+              "match": [
+                "2C31",
+                "2E02",
+                "2E03",
+                "2E04",
+                "2E05",
+                "2E06"
+              ],
+              "text": "This group has 6 circuit breakers of PDP 2. These breakers are named after the cabin heater, the troop alarm, the clock and the proximity switches. The game names them: CABIN HEATER BLOWER, R PROX SW, TROOP ALARM JUMP LT, TROOP ALARM BELL, CLOCK, CABIN HTR CONTR.",
+              "context": "These lines serve the cabin and some small equipment. This is the PDP 2 group. The checklist before the APU start says to check that every breaker of PDP 1 and PDP 2 is in.",
+              "count": 6,
+              "src": "m1",
+              "page": "55"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

@@ -6,7 +6,7 @@ Unreal Engine 5 game by Bulkhead. Joysticks are handled by the game's own "WD Jo
 - Joystick bindings: `%LOCALAPPDATA%\Wardogs\Saved\Config\WindowsClient\GameUserSettings.ini`, section `[/Script/WDJoystick.WDJoystickSettings]`.
 - HOTAS master switch: `bUseHOTASHelicopters` in `[/Script/WDGame.WDUserSettings]` of the same file = the in-game "Enable HOTAS" toggle (verified in game 2026-10-04). With it off the HOTAS menu lists no binds and the game ignores them, so JoyPro's export turns it on when it writes binds.
 - Keyboard bindings: `[/Script/BHEnhancedInput.BHEnhancedInputPlayerBinds]` and `Saved\SaveGames\EnhancedInputUserSettings.sav` (GVAS). Not needed for joysticks.
-- JoyPro does not read the install (exe and paks are packed and encrypted); the user's ini files are the source.
+- JoyPro does not read the install; the user's ini files are the source.
 
 File: ASCII, CRLF, no BOM, first line `;METADATA=(Diff=true, UseCommands=true)`. The game rewrites the whole file on save/exit, so edit only while `WardogsClient-Win64-Shipping.exe` is not running.
 
@@ -72,7 +72,7 @@ when the file already has the key; an export of a profile without WARDOGS binds 
   whether sensitivity > 1 is clipped at full deflection, whether the collective's dead zone sits at mid travel.
 - Slider ranges 0.1..2.0 and 0..0.5 come from the knob positions in the screenshots (1.00 at 47 % of the track,
   0.05 at 11 %); `WardogsSettings.ps1 -ProbeRange` records the real ends.
-## Obfuscated field names
+## Hashed field names
 The `_aaaa...` tokens are hashes of the property names: the same logical field has the same token in every struct, and they were stable across the 2026-09-13 and 2026-09-30 builds. If the studio changes the salt, all tokens change at once. So never hardcode them: identify fields by position relative to the readable anchors (`DeviceIdentifier`, `bInvert`, `Positive`, ...) and abort when the shape (field count, value types) changes.
 
 ## Device identifier
@@ -96,4 +96,4 @@ The `_aaaa...` tokens are hashes of the property names: the same logical field h
 5. In-game check of the settings: `tools\e2e\games\WardogsSettings.ps1` (random values, HOTAS page OCR, snapshot/restore; not run yet).
 4. ~~Whether `bUseHOTASHelicopters=True` is required~~: yes (see Files).
 
-Sources: thewardogsguide.com/wardogs-controls-hotas, allthings.how WARDOGS HOTAS guide; real files on the dev PC (current file plus three `.bak` versions).
+Sources: thewardogsguide.com/wardogs-controls-hotas, allthings.how WARDOGS HOTAS guide; real files on a test PC (current file plus three `.bak` versions).

@@ -13,7 +13,7 @@ namespace JoyPro.Gui.Tests;
 
 // The pages in other languages (docs/localization.md), to look at text length and clipping: German, Finnish, Russian,
 // Japanese and Chinese at 1280x800 and 2267x1250. Renders only when JOYPRO_LOC_OUT names an output folder:
-//   set JOYPRO_LOC_OUT=E:\JoyProWork\localization\renders & dotnet test gui/JoyPro.Gui.Tests --filter LocalizationRenderTests
+//   set JOYPRO_LOC_OUT=<work folder>\localization\renders & dotnet test gui/JoyPro.Gui.Tests --filter LocalizationRenderTests
 // JOYPRO_LOC_LANGS (comma list) and JOYPRO_LOC_PAGES (Start,Settings,...) choose others. Files: <page>-<lang>-<width>.png
 [SupportedOSPlatform("windows")]
 public sealed class LocalizationRenderTests

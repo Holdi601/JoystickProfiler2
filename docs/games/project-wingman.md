@@ -1,7 +1,7 @@
 # Project Wingman (Sector D2, Unreal Engine 4.27)
 
 Status: **integrated, native** (`engine pw`, game id `ProjectWingman`). Several devices at once. No anti-cheat.
-Installed on the dev PC (Steam 895870, Anniversary Edition 2.1.1208); everything below was observed on the game on
+Installed on a test PC (Steam 895870, Anniversary Edition 2.1.1208); everything below was observed on the game on
 2026-10-12 [OBS] unless marked.
 
 ## How the game stores controls

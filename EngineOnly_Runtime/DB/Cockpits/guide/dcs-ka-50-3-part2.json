@@ -1,0 +1,3861 @@
+{
+  "format": "joypro-cockpit-guide",
+  "version": 1,
+  "id": "dcs-ka-50-3-part2",
+  "partOf": "dcs-ka-50-3",
+  "sources": [
+    {
+      "id": "m1",
+      "title": "DCS Black Shark 3 Flight Manual (EN)",
+      "file": "Mods/aircraft/Ka-50_3/Doc/DCS BS3 Flight Manual EN.pdf"
+    },
+    {
+      "id": "m2",
+      "title": "DCS Black Shark 2 Flight Manual (EN), for the laser warning receiver panel",
+      "file": "Mods/aircraft/Ka-50/Doc/DCS BS2 Flight Manual EN.pdf"
+    }
+  ],
+  "areas": [
+    {
+      "id": "left-panel",
+      "where": "left-console",
+      "name": "Left panel",
+      "text": "This is the panel on the left, near the collective. It holds the engine start controls, the radio, the targeting mode switches and the levers for engine fuel.",
+      "panels": [
+        {
+          "id": "r800",
+          "name": "R-800L1 VHF radio control",
+          "db": "r-800-panel",
+          "src": "m1",
+          "page": "179",
+          "text": "This panel is the control box of the command radio, the VHF-2 radio called R-800L1. The pilot talks to other aircraft with it. It can also receive direction beacons.",
+          "context": "The radio needs the VHF-2 switch on the wall panel and the intercom dial on VHF-2 (the SPU-9 panel) to be heard.",
+          "controls": [
+            {
+              "id": "r800-test-lamp",
+              "name": "TEST lamp",
+              "type": "light",
+              "match": [
+                "item:r-800-panel:1"
+              ],
+              "text": "This lamp lights when the radio passes its self-test, while the TEST button is held.",
+              "context": "Both radio power switches on the wall panel should be on for the test.",
+              "src": "m1",
+              "page": "179"
+            },
+            {
+              "id": "r800-modulation",
+              "name": "AM-FM switch",
+              "type": "switch2",
+              "match": [
+                "CONTR-RADIO-CHM-AM-PTR",
+                "item:r-800-panel:2"
+              ],
+              "positions": [
+                {
+                  "name": "AM",
+                  "text": "Up: the AM band."
+                },
+                {
+                  "name": "FM",
+                  "text": "Down: the FM band."
+                }
+              ],
+              "text": "This switch chooses between the two radio bands, AM and FM.",
+              "context": "The two bands are two ways of sending voice by radio. Both partners must use the same one.",
+              "src": "m1",
+              "page": "179"
+            },
+            {
+              "id": "r800-em",
+              "name": "EM switch (emergency receiver)",
+              "type": "switch2",
+              "match": [
+                "CONTR-RADIO-AP-PTR",
+                "item:r-800-panel:3"
+              ],
+              "positions": [
+                {
+                  "name": "ON",
+                  "text": "Up: the radio listens on the fixed emergency frequency and does not transmit."
+                },
+                {
+                  "name": "OFF",
+                  "text": "Down: normal radio use."
+                }
+              ],
+              "text": "In the up position this switch makes the radio listen on the emergency frequency, 121.5 MHz. The transmitter is off then.",
+              "context": "In other air forces this is called the guard channel.",
+              "src": "m1",
+              "page": "179"
+            },
+            {
+              "id": "r800-adf",
+              "name": "ADF switch",
+              "type": "switch2",
+              "match": [
+                "CONTR-RADIO-ARK-PTR",
+                "item:r-800-panel:4"
+              ],
+              "positions": [
+                {
+                  "name": "ON",
+                  "text": "Up: the radio steers the direction needle of the HSI."
+                },
+                {
+                  "name": "OFF",
+                  "text": "Down: the direction finder is not connected to the radio."
+                }
+              ],
+              "text": "Up, this switch lets the radio act as a direction finder. The needle on the HSI then points to the sender on the radio's frequency.",
+              "context": "For example, a flight leader can keep track of the direction of a wingman who is talking.",
+              "src": "m1",
+              "page": "179"
+            },
+            {
+              "id": "r800-wheels",
+              "name": "Frequency thumb wheels",
+              "type": "wheel",
+              "match": [
+                "CONTROLLER-FREQ-?-PTR",
+                "item:r-800-panel:5"
+              ],
+              "count": 4,
+              "text": "These four ridged wheels set the radio frequency. The two left wheels show whole MHz and the two right wheels show the parts of a MHz.",
+              "context": "The frequency is the station number the radio talks on. It goes in 25 kHz steps.",
+              "src": "m1",
+              "page": "180"
+            },
+            {
+              "id": "r800-rate",
+              "name": "100-50 switch",
+              "type": "switch2",
+              "match": [
+                "CONTR-RADIO-50-100-PTR01",
+                "item:r-800-panel:6"
+              ],
+              "positions": [
+                {
+                  "name": "100",
+                  "text": "Rate setting 100."
+                },
+                {
+                  "name": "50",
+                  "text": "Rate setting 50."
+                }
+              ],
+              "text": "This switch is for the data transfer rate. The manual does not explain its use further.",
+              "context": "It is part of the R-800L1 panel.",
+              "src": "m1",
+              "page": "180"
+            },
+            {
+              "id": "r800-test-button",
+              "name": "TEST button",
+              "type": "button",
+              "match": [
+                "START-PANEL-CONTROL-PTR",
+                "item:r-800-panel:7"
+              ],
+              "text": "Pressing this button makes the radio check itself. If it passes, the TEST lamp lights.",
+              "context": "The pilot uses it in the checks before the flight.",
+              "src": "m1",
+              "page": "180"
+            },
+            {
+              "id": "r800-squelch",
+              "name": "SQ switch (squelch)",
+              "type": "switch2",
+              "match": [
+                "CONTR-RADIO-PSH-PTR",
+                "item:r-800-panel:8"
+              ],
+              "positions": [
+                {
+                  "name": "ON",
+                  "text": "Up: noise reduction is on."
+                },
+                {
+                  "name": "OFF",
+                  "text": "Down: noise reduction is off."
+                }
+              ],
+              "text": "Up, this switch turns on the noise reduction. The radio goes quiet when no signal is on the set frequency.",
+              "context": "Squelch cuts the hiss of a radio when nobody talks.",
+              "src": "m1",
+              "page": "180"
+            },
+            {
+              "id": "r800-display",
+              "name": "Frequency display",
+              "type": "display",
+              "match": [
+                "item:r-800-panel:9"
+              ],
+              "text": "These two fields show the frequency that the thumb wheels have set.",
+              "context": "The pilot reads it to check the radio is on the right frequency.",
+              "src": "m1",
+              "page": "180"
+            }
+          ]
+        },
+        {
+          "id": "k041",
+          "name": "K-041 targeting mode control panel",
+          "db": "targeting-mode-panel",
+          "src": "m1",
+          "page": "181",
+          "text": "This panel switches the targeting and navigation system on and chooses its modes. It controls the sensors, the weapons and the laser together.",
+          "context": "The pilot sets it up before an attack. The manual advises putting some of these on the joystick so the hand can stay on the stick.",
+          "controls": [
+            {
+              "id": "k041-aaho",
+              "name": "A/A HO button",
+              "type": "button",
+              "match": [
+                "PVR-PPS-PTR",
+                "item:targeting-mode-panel:1"
+              ],
+              "text": "This button sets the fuze of the Vikhr missiles for a head-on air target. The fuze is the part that decides when the warhead blows up.",
+              "context": "The pilot uses it when attacking an aircraft that comes straight at the helicopter.",
+              "src": "m1",
+              "page": "181"
+            },
+            {
+              "id": "k041-autoturn",
+              "name": "AUTO TURN button",
+              "type": "button",
+              "match": [
+                "PVR-ADV-PTR",
+                "item:targeting-mode-panel:2"
+              ],
+              "text": "When a target is marked with the Shkval, this button turns the helicopter's nose towards it by itself.",
+              "context": "It helps when the target is far off to the side of the weapons' aiming line.",
+              "src": "m1",
+              "page": "181"
+            },
+            {
+              "id": "k041-train",
+              "name": "TRAIN - OFF switch",
+              "type": "switch2",
+              "match": [
+                "PVR-DRILL-PTR",
+                "item:targeting-mode-panel:3"
+              ],
+              "positions": [
+                {
+                  "name": "TRAIN",
+                  "text": "Up: training mode, weapons cannot be released."
+                },
+                {
+                  "name": "OFF",
+                  "text": "Down: normal mode."
+                }
+              ],
+              "text": "In the TRAIN position no weapon can be released, but aiming and locking on targets still work. The training lamp on the overhead panel then lights.",
+              "context": "The pilot can practise safely.",
+              "src": "m1",
+              "page": "181"
+            },
+            {
+              "id": "k041-aa",
+              "name": "A/A button",
+              "type": "button",
+              "match": [
+                "PVR-VC-PTR",
+                "item:targeting-mode-panel:4"
+              ],
+              "text": "This button sets the Vikhr fuze for an air target that is not coming head-on. A proximity fuze blows up near the target, so no direct hit is needed.",
+              "context": "The pilot uses it against aircraft in general.",
+              "src": "m1",
+              "page": "181"
+            },
+            {
+              "id": "k041-power",
+              "name": "K-041 - OFF switch",
+              "type": "switch2",
+              "match": [
+                "K-041-PTR",
+                "item:targeting-mode-panel:5"
+              ],
+              "positions": [
+                {
+                  "name": "ON",
+                  "text": "Up: the targeting and navigation system has power."
+                },
+                {
+                  "name": "OFF",
+                  "text": "Down: it is off."
+                }
+              ],
+              "text": "This switch gives power to the K-041 targeting and navigation system. The Shkval screen turns on.",
+              "context": "It also switches on the radar altimeter. In flight it powers both navigation and targeting.",
+              "src": "m1",
+              "page": "181"
+            },
+            {
+              "id": "k041-hms",
+              "name": "HMS - OFF switch (helmet sight and night vision)",
+              "type": "switch2",
+              "match": [
+                "PVR-OBZ-PTR",
+                "item:targeting-mode-panel:6"
+              ],
+              "positions": [
+                {
+                  "name": "ON",
+                  "text": "Up: the helmet sight or night vision system is on."
+                },
+                {
+                  "name": "OFF",
+                  "text": "Down: both are off."
+                }
+              ],
+              "text": "This switch turns on the helmet-mounted sight and the night vision goggle system. These two can be changed over on the ground, with the ground crew's help.",
+              "context": "The helmet sight shows marks where the pilot looks. Its brightness is set on the centre panel.",
+              "src": "m1",
+              "page": "182"
+            },
+            {
+              "id": "k041-mov",
+              "name": "MOV GND TGT button",
+              "type": "button",
+              "match": [
+                "PVR-NPC-PTR",
+                "item:targeting-mode-panel:7"
+              ],
+              "text": "Pressing this button tells the weapon computer that the tracked target is a moving ground target. The Vikhr launch is adjusted for it, and the lead for gun and rockets too.",
+              "context": "The pilot presses it before launching at a target that moves.",
+              "src": "m1",
+              "page": "182"
+            },
+            {
+              "id": "k041-mode",
+              "name": "Weapon system mode selector",
+              "type": "selector",
+              "match": [
+                "PVR-MODE-PTR",
+                "item:targeting-mode-panel:8"
+              ],
+              "positions": [
+                {
+                  "name": "MOV",
+                  "text": "Automatic mode: the cannon follows the Shkval line of sight and the missile launchers adjust by themselves."
+                },
+                {
+                  "name": "FIX",
+                  "text": "The cannon is fixed along the zero line of the fuselage, used when the cannon drive fails."
+                },
+                {
+                  "name": "MAN",
+                  "text": "Backup manual mode: range and lead are not computed."
+                },
+                {
+                  "name": "FAIL",
+                  "text": "The combat computer does navigation tasks, for updating the inertial navigation unit."
+                },
+                {
+                  "name": "NAV",
+                  "text": "The navigation computer does combat tasks with limited function."
+                }
+              ],
+              "text": "This five-position dial sets the mode of the fire control system. MOV is the normal automatic mode. FIX fixes the cannon straight ahead. MAN is the backup manual mode.",
+              "context": "FAIL and NAV are for a computer fault: the navigation and combat computers can partly replace each other.",
+              "src": "m1",
+              "page": "182"
+            },
+            {
+              "id": "k041-laser",
+              "name": "LAS - OFF switch (laser standby)",
+              "type": "switch2",
+              "match": [
+                "PVR-IZL-PTR",
+                "item:targeting-mode-panel:9"
+              ],
+              "positions": [
+                {
+                  "name": "ON",
+                  "text": "Up: the laser is on stand-by."
+                },
+                {
+                  "name": "OFF",
+                  "text": "Down: the laser is off."
+                }
+              ],
+              "text": "Up, this switch prepares the laser. The laser has to be active for a good range figure and to guide the Vikhr.",
+              "context": "The pilot switches it on before an attack.",
+              "src": "m1",
+              "page": "182"
+            },
+            {
+              "id": "k041-reset",
+              "name": "RESET button",
+              "type": "button",
+              "match": [
+                "PVR-RESET-PTR",
+                "item:targeting-mode-panel:10"
+              ],
+              "text": "Pressing this button ends the targeting mode and puts the HUD back to navigation.",
+              "context": "It is the way out of an attack.",
+              "src": "m1",
+              "page": "182"
+            },
+            {
+              "id": "k041-at-ts",
+              "name": "AT - TS switch",
+              "type": "switch2",
+              "match": [
+                "PVR-AS-PM-PTR",
+                "item:targeting-mode-panel:11"
+              ],
+              "positions": [
+                {
+                  "name": "AT",
+                  "text": "Automatic tracking."
+                },
+                {
+                  "name": "TS",
+                  "text": "Gun sight reticle mode (the game also calls it RET)."
+                }
+              ],
+              "text": "This switch picks automatic tracking or the gun sight. Without laser ranging, the gun sight uses a fixed range of 1100 metres.",
+              "context": "It is for aiming without the Shkval.",
+              "src": "m1",
+              "page": "182"
+            }
+          ]
+        },
+        {
+          "id": "engine-start",
+          "name": "Engine start-up controls",
+          "db": "engine-start-panel",
+          "src": "m1",
+          "page": "183",
+          "text": "This panel starts the auxiliary power unit and the two engines. A selector chooses what to start and a button starts it.",
+          "context": "The auxiliary power unit (APU) is a small extra engine that makes electricity and air before the main engines run. It is started first and then it starts the main engines.",
+          "controls": [
+            {
+              "id": "start-button",
+              "name": "START button",
+              "type": "button",
+              "match": [
+                "START-PANEL-START-PTR",
+                "item:engine-start-panel:1"
+              ],
+              "text": "Pressing this button starts the APU or one of the engines, whichever the selector shows.",
+              "context": "Several things must be ready first, for example open fuel valves and the rotor brake off.",
+              "src": "m1",
+              "page": "183"
+            },
+            {
+              "id": "start-mode",
+              "name": "START - CRANK - FALSE START selector",
+              "type": "switch3",
+              "match": [
+                "START-PANEL-ROLLING-PTR",
+                "item:engine-start-panel:2"
+              ],
+              "positions": [
+                {
+                  "name": "START",
+                  "text": "The normal start with ignition."
+                },
+                {
+                  "name": "CRANK",
+                  "text": "Spins the engine without ignition to clear fuel after a failed start."
+                },
+                {
+                  "name": "FALSE START",
+                  "text": "A start-up check during ground maintenance."
+                }
+              ],
+              "text": "This selector chooses the way of starting. START is the normal one. CRANK spins the engine to blow fuel out after a failed start. FALSE START is for a check by the ground crew.",
+              "context": "The pilot uses START in nearly every start.",
+              "src": "m1",
+              "page": "183"
+            },
+            {
+              "id": "start-vlv",
+              "name": "START VLV lamp",
+              "type": "light",
+              "match": [
+                "item:engine-start-panel:3"
+              ],
+              "text": "This lamp lights while the air valve of the starter is open.",
+              "context": "It goes off by itself at about 60 percent engine speed, or when the start is interrupted.",
+              "src": "m1",
+              "page": "183"
+            },
+            {
+              "id": "stop-start",
+              "name": "STOP START button",
+              "type": "button",
+              "match": [
+                "START-PANEL-STOP-START-PTR",
+                "item:engine-start-panel:4"
+              ],
+              "text": "Pressing this button stops an engine start that is under way.",
+              "context": "The pilot uses it to abort a start.",
+              "src": "m1",
+              "page": "184"
+            },
+            {
+              "id": "apu-shutoff",
+              "name": "APU SHUTOFF button",
+              "type": "button",
+              "match": [
+                "START-PANEL-STOP-START-PTR01",
+                "item:engine-start-panel:5"
+              ],
+              "text": "Pressing this button stops the APU, the small helper engine.",
+              "context": "When both engines run well and the generators charge the batteries, the APU is no longer needed.",
+              "src": "m1",
+              "page": "184"
+            },
+            {
+              "id": "start-select",
+              "name": "Start select switch (TURBO GEAR - APU - ENG LH - ENG RH)",
+              "type": "selector",
+              "match": [
+                "START-ENGINE-SELECTOR-PTR",
+                "item:engine-start-panel:6"
+              ],
+              "positions": [
+                {
+                  "name": "TURBO GEAR",
+                  "text": "Tests of systems such as the generators and hydraulics without starting an engine."
+                },
+                {
+                  "name": "APU",
+                  "text": "The START button starts the APU."
+                },
+                {
+                  "name": "ENG LH",
+                  "text": "The START button starts the left engine."
+                },
+                {
+                  "name": "ENG RH",
+                  "text": "The START button starts the right engine."
+                }
+              ],
+              "text": "This four-position switch chooses what the START button starts: the APU, the left engine or the right engine. The top position is for tests.",
+              "context": "The top position, turbo gear, allows tests of the generators and hydraulics without starting the engines. It is used only for maintenance.",
+              "src": "m1",
+              "page": "184"
+            }
+          ]
+        },
+        {
+          "id": "engine-levers",
+          "name": "Engine cut-off levers, rotor brake and door",
+          "src": "m1",
+          "page": "81",
+          "text": "These are the levers on the left side near the collective for engine starting and stopping, and the cockpit door. The two red levers cut the fuel to an engine.",
+          "context": "The levers and the rotor brake are used mainly in the engine start-up and shut-down. They are rarely touched during a mission.",
+          "controls": [
+            {
+              "id": "cutoff-left",
+              "name": "Left engine cut-off lever",
+              "type": "lever",
+              "match": [
+                "EMERGENCY-BRAKE?ENGINE-LEFT-PTR"
+              ],
+              "text": "This red lever opens or closes the fuel to the left engine. It must be up for the engine to start.",
+              "context": "The pilot lifts it once the engine reaches about 20 percent speed in the start-up. Down, it stops the engine.",
+              "src": "m1",
+              "page": "81"
+            },
+            {
+              "id": "cutoff-right",
+              "name": "Right engine cut-off lever",
+              "type": "lever",
+              "match": [
+                "EMERGENCY-BRAKE?ENGINE-RIGHT-PTR"
+              ],
+              "text": "This red lever opens or closes the fuel to the right engine. It must be up for the engine to start.",
+              "context": "It works like the left lever, and each is moved on its own.",
+              "src": "m1",
+              "page": "81"
+            },
+            {
+              "id": "rotor-brake",
+              "name": "Rotor brake lever",
+              "type": "lever",
+              "match": [
+                "BRAKE-ROTOR-LOW-PTR01"
+              ],
+              "text": "This lever holds the main rotor still when it is on. It must be released (down) before an engine start.",
+              "context": "The pilot puts it on after landing when the rotor has slowed down below 30 percent.",
+              "src": "m1",
+              "page": "82"
+            },
+            {
+              "id": "door",
+              "name": "Cockpit door",
+              "type": "switch",
+              "match": [
+                "M_DOOR_1"
+              ],
+              "text": "This opens and closes the cockpit door at the side of the pilot.",
+              "context": "The door is closed before the start. With the door open and the rotor still, the pilot can talk to the ground crew directly.",
+              "src": "m1",
+              "page": "184"
+            },
+            {
+              "id": "throttle-levers",
+              "name": "Separate engine throttle levers",
+              "type": "lever",
+              "match": [
+                "control:panel.lever.engines"
+              ],
+              "text": "These two levers at the base of the collective set the power of the engines. They have four fixed positions: IDLE, GOVERNOR FAIL, AUTO and MAX. They can also be set with an axis on a joystick.",
+              "context": "IDLE is for starting and tests. AUTO is the normal mode for all flights. GOVERNOR FAIL helps if the power turbine speed governor fails. MAX gives full power of one engine if the other fails.",
+              "src": "m1",
+              "page": "88"
+            }
+          ]
+        },
+        {
+          "id": "spu9",
+          "name": "SPU-9 radio intercom panel",
+          "db": "spu-9-panel",
+          "src": "m1",
+          "page": "184",
+          "text": "This panel chooses which radio you hear in the headphones and talk on. The intercom is the phone line between the crew, or here between the pilot and the ground crew.",
+          "context": "The pilot sets it to the ground crew before asking for ground power, fuel or weapons, and to a radio for talking.",
+          "controls": [
+            {
+              "id": "spu-reset",
+              "name": "RESET button",
+              "type": "button",
+              "match": [
+                "item:spu-9-panel:1"
+              ],
+              "text": "In DCS this button has no function. It would reset the codes for secure radio calls.",
+              "context": "The Black Shark does not use it.",
+              "src": "m1",
+              "page": "184"
+            },
+            {
+              "id": "spu-select",
+              "name": "Intercom source selector",
+              "type": "selector",
+              "match": [
+                "RADIO-RATE-PTR",
+                "item:spu-9-panel:2"
+              ],
+              "positions": [
+                {
+                  "name": "VHF-2",
+                  "text": "The R-800L1 radio."
+                },
+                {
+                  "name": "VHF-1",
+                  "text": "The R-828 radio, for talking with ground units."
+                },
+                {
+                  "name": "SW",
+                  "text": "The short wave band, not used."
+                },
+                {
+                  "name": "GRND CREW",
+                  "text": "The wired phone to the ground crew, used when rearming or refuelling."
+                }
+              ],
+              "text": "This dial chooses the radio or the ground crew line that goes to the headphones.",
+              "context": "VHF-2 is the R-800L1 radio, VHF-1 is the R-828 radio. SW is not used.",
+              "src": "m1",
+              "page": "184"
+            }
+          ]
+        },
+        {
+          "id": "apu",
+          "name": "APU panel",
+          "db": "apu-panel",
+          "src": "m1",
+          "page": "185",
+          "text": "This panel shows the state of the auxiliary power unit with four lamps and a temperature gauge. Nothing here is clicked.",
+          "context": "The pilot watches it while starting the APU, the small extra engine that makes electricity and air before the main engines run.",
+          "controls": [
+            {
+              "id": "apu-lamps",
+              "name": "APU lamps",
+              "type": "light",
+              "match": [
+                "item:apu-panel:1",
+                "item:apu-panel:2",
+                "item:apu-panel:3",
+                "item:apu-panel:4"
+              ],
+              "text": "There are four lamps. VLV OPEN shows the APU fuel valve is open. Nmax SHUTOFF shows the APU stopped because it turned too fast. OIL P. NORM shows normal oil pressure. ON shows the APU runs.",
+              "context": "After a good start the ON lamp is lit.",
+              "src": "m1",
+              "page": "185"
+            },
+            {
+              "id": "apu-egt",
+              "name": "APU EGT gauge",
+              "type": "gauge",
+              "match": [
+                "item:apu-panel:5"
+              ],
+              "text": "This gauge shows the temperature of the hot gas leaving the APU. It peaks at about 680 degrees Celsius at start and settles at 590 to 600.",
+              "context": "The pilot watches it during the start of the APU.",
+              "src": "m1",
+              "page": "185"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "right-panel",
+      "where": "right-console",
+      "name": "Right panel",
+      "text": "This is the panel on the right of the pilot. It holds the navigation keypad, the data link mode, the autopilot, the direction finder, the radios and the signal flares.",
+      "panels": [
+        {
+          "id": "pvi800",
+          "name": "PVI-800 navigation control panel",
+          "db": "pvi-800-panel",
+          "src": "m1",
+          "page": "139",
+          "text": "This panel is the keypad and display of the navigation computer. The pilot types in waypoints, looks at coordinates and starts the alignment of the inertial navigation unit.",
+          "context": "The PVI-800 uses the inertial navigation unit, a system that always knows where the helicopter is by feeling its own motion. The ABRIS map uses satellite navigation instead.",
+          "controls": [
+            {
+              "id": "pvi-displays",
+              "name": "Upper and lower display windows",
+              "type": "display",
+              "match": [
+                "item:pvi-800-panel:1",
+                "item:pvi-800-panel:2"
+              ],
+              "text": "These two windows show the numbers for the chosen function, for example coordinates, angles and distances.",
+              "context": "What they show depends on the lit mode button.",
+              "src": "m1",
+              "page": "139"
+            },
+            {
+              "id": "pvi-point-windows",
+              "name": "Waypoint and point-number windows",
+              "type": "display",
+              "match": [
+                "item:pvi-800-panel:12",
+                "item:pvi-800-panel:13"
+              ],
+              "text": "The first window shows the chosen waypoint. The second shows the number of the airfield, fix, target or correction point.",
+              "context": "A waypoint is a point on the planned route that the helicopter can steer to.",
+              "src": "m1",
+              "page": "142"
+            },
+            {
+              "id": "pvi-keypad",
+              "name": "Keypad 0-9",
+              "type": "keypad",
+              "match": [
+                "PVI-?-PTR",
+                "item:pvi-800-panel:3"
+              ],
+              "count": 10,
+              "text": "These ten number keys are used to pick a waypoint number and to type coordinates and other numbers.",
+              "context": "In edit mode the first digit 0 or 1 makes a coordinate positive or negative.",
+              "src": "m1",
+              "page": "139"
+            },
+            {
+              "id": "pvi-wpt",
+              "name": "WPT button (waypoint mode)",
+              "type": "button",
+              "match": [
+                "PVI-PPM-PTR",
+                "item:pvi-800-panel:4"
+              ],
+              "text": "Press this button, then a number key, to pick a waypoint of the flight plan as the point to steer to. The panel can store up to six waypoints.",
+              "context": "The steering information on the HUD comes from the PVI-800 and not from the ABRIS.",
+              "src": "m1",
+              "page": "139"
+            },
+            {
+              "id": "pvi-fix",
+              "name": "FIX PNT button",
+              "type": "button",
+              "match": [
+                "PVI-OP-PTR",
+                "item:pvi-800-panel:5"
+              ],
+              "text": "This button picks a reference point to correct the navigation unit. Up to four such points can be set in the mission editor.",
+              "context": "The pilot flies over or looks at such a point to correct the position.",
+              "src": "m1",
+              "page": "140"
+            },
+            {
+              "id": "pvi-airfield",
+              "name": "AIRFIELD button",
+              "type": "button",
+              "match": [
+                "PVI-AER-PTR",
+                "item:pvi-800-panel:6"
+              ],
+              "text": "This button picks an airfield for returning. Airfield 1 is the take-off place and airfield 2 the landing place of the mission.",
+              "context": "If the mission has no such places, it does nothing.",
+              "src": "m1",
+              "page": "140"
+            },
+            {
+              "id": "pvi-navtgt",
+              "name": "NAV TGT button",
+              "type": "button",
+              "match": [
+                "PVI-OT-PTR",
+                "item:pvi-800-panel:7"
+              ],
+              "text": "This button picks a target point to fly towards or to store coordinates of a new one. Up to ten target points can be saved.",
+              "context": "A target point can be a fly-over place or one marked with the Shkval.",
+              "src": "m1",
+              "page": "140"
+            },
+            {
+              "id": "pvi-enter",
+              "name": "ENTER button",
+              "type": "button",
+              "match": [
+                "PVI-ENTER-PTR",
+                "item:pvi-800-panel:8"
+              ],
+              "text": "Pressing this button enters the typed data into the computer.",
+              "context": "It follows the typing of coordinates or other numbers.",
+              "src": "m1",
+              "page": "141"
+            },
+            {
+              "id": "pvi-clear",
+              "name": "CLEAR / CANCEL button",
+              "type": "button",
+              "match": [
+                "PVI-CANCEL-PTR",
+                "item:pvi-800-panel:17"
+              ],
+              "text": "Pressing this button removes data that was typed in the edit mode. It clears the display.",
+              "context": "The pilot uses it after a typing mistake.",
+              "src": "m1",
+              "page": "143"
+            },
+            {
+              "id": "pvi-inu-buttons",
+              "name": "INU RESET, INU PREC and INU NORM buttons",
+              "type": "button",
+              "match": [
+                "PVI-PZ-PTR",
+                "PVI-TB-PTR",
+                "PVI-HB-PTR",
+                "item:pvi-800-panel:14",
+                "item:pvi-800-panel:15",
+                "item:pvi-800-panel:16"
+              ],
+              "count": 3,
+              "text": "These three buttons start the alignment of the inertial navigation unit. INU RESET realigns it while flying. INU NORM does the normal alignment. INU PREC does the precise alignment, which takes about 20 minutes.",
+              "context": "The unit must be aligned before the navigation works. The game names these buttons Inflight INU Realignment (RESET), Precise INU Alignment (PREC) and Normal INU Alignment (NORM).",
+              "src": "m1",
+              "page": "143"
+            },
+            {
+              "id": "pvi-info-buttons",
+              "name": "Navigation data buttons (SELF/COOR, DTA/DH, INIT PNT and others)",
+              "type": "button",
+              "match": [
+                "PVI-FILAMBDA-PTR",
+                "PVI-FIZ-PTR",
+                "PVI-KC-PTR",
+                "PVI-FII-PTR",
+                "PVI-ACDC-PTR",
+                "PVI-DU-PTR",
+                "item:pvi-800-panel:9",
+                "item:pvi-800-panel:10",
+                "item:pvi-800-panel:18",
+                "item:pvi-800-panel:19",
+                "item:pvi-800-panel:20",
+                "item:pvi-800-panel:21"
+              ],
+              "count": 6,
+              "text": "These six buttons choose what the two display windows show. SELF/COOR shows own coordinates. DTA/DH shows track, time and distance to the current waypoint. INIT PNT shows the initial point. T-HEAD/TIME/DIS shows true heading, time and distance to the last waypoint. BRG/RA TGT PNT shows heading and range to the target. WIND DI/SP shows wind direction and speed.",
+              "context": "The game names them Self coordinates, Course, Initial Nav Pos, True Heading/Time/Range to final WPT, Bearing/Range to target, and Wind Heading/Speed.",
+              "src": "m1",
+              "page": "141"
+            },
+            {
+              "id": "pvi-mode",
+              "name": "PVI master mode selector",
+              "type": "selector",
+              "match": [
+                "PVI-SWITCH-PTR",
+                "item:pvi-800-panel:11"
+              ],
+              "positions": [
+                {
+                  "name": "OFF",
+                  "text": "The PVI-800 is off."
+                },
+                {
+                  "name": "CHECK",
+                  "text": "Look at waypoint data without changing the steering."
+                },
+                {
+                  "name": "ENT",
+                  "text": "Edit waypoints, wind and other data."
+                },
+                {
+                  "name": "OPER",
+                  "text": "Normal operation."
+                },
+                {
+                  "name": "STM",
+                  "text": "Simulated flight of the entered plan."
+                },
+                {
+                  "name": "K-1",
+                  "text": "A programming mode that does not work."
+                },
+                {
+                  "name": "K-2",
+                  "text": "A programming mode that does not work."
+                }
+              ],
+              "text": "This dial chooses what the PVI-800 does. OFF turns it off. CHECK looks at stored data. ENT edits waypoints. OPER is normal use. STM simulates the flight plan.",
+              "context": "In STM the entered route is flown virtually at 1000 km/h, to check bearings and distances before the flight. K-1 and K-2 are programming modes that do not work.",
+              "src": "m1",
+              "page": "142"
+            },
+            {
+              "id": "pvi-i251",
+              "name": "I-251V - OVER switch",
+              "type": "switch2",
+              "match": [
+                "PVI_I251V_PTR",
+                "item:pvi-800-panel:22"
+              ],
+              "positions": [
+                {
+                  "name": "I-251V",
+                  "text": "The coordinates are corrected using the Shkval."
+                },
+                {
+                  "name": "OVER",
+                  "text": "The coordinates are corrected by flying over a reference point."
+                }
+              ],
+              "text": "This switch chooses how the position of the navigation unit is corrected: with the Shkval or by flying over a known point.",
+              "context": "The correction removes small drift errors.",
+              "src": "m1",
+              "page": "144"
+            },
+            {
+              "id": "pvi-brt",
+              "name": "BRT knob",
+              "type": "knob",
+              "match": [
+                "PVI-BRIGHTNESS-PTR",
+                "item:pvi-800-panel:23"
+              ],
+              "text": "Turning this knob changes the backlight brightness of the PVI-800 panel.",
+              "context": "The pilot turns it down at night to avoid glare.",
+              "src": "m1",
+              "page": "144"
+            },
+            {
+              "id": "pvi-dl",
+              "name": "DL - OFF switch",
+              "type": "switch2",
+              "match": [
+                "PVI_VCU_PTR",
+                "item:pvi-800-panel:24"
+              ],
+              "positions": [
+                {
+                  "name": "DL",
+                  "text": "The off-board data link is on."
+                },
+                {
+                  "name": "OFF",
+                  "text": "The data link is off."
+                }
+              ],
+              "text": "This switch turns the data link equipment on and off.",
+              "context": "The data link power is also switched on the wall panel.",
+              "src": "m1",
+              "page": "144"
+            }
+          ]
+        },
+        {
+          "id": "pvtz800",
+          "name": "PVTz-800 data link mode panel",
+          "db": "pvtz-800-panel",
+          "src": "m1",
+          "page": "146",
+          "text": "This panel sits under the PVI-800. It sets the pilot's own number in the data link group and whether the helicopter sends, receives or both.",
+          "context": "A data link group has at most four helicopters. Everybody needs a different number, and the flight leader has number 1.",
+          "controls": [
+            {
+              "id": "pvtz-mode",
+              "name": "MODE dial (OFF - REC - WINGM - COM)",
+              "type": "selector",
+              "match": [
+                "DTLK-MASTER-MODES-PTR",
+                "item:pvtz-800-panel:1",
+                "item:pvtz-800-panel:2",
+                "item:pvtz-800-panel:3",
+                "item:pvtz-800-panel:4"
+              ],
+              "positions": [
+                {
+                  "name": "OFF",
+                  "text": "Data link communication with the flight is off."
+                },
+                {
+                  "name": "REC",
+                  "text": "Receive only: no data is sent."
+                },
+                {
+                  "name": "WINGM",
+                  "text": "Wingman mode: send and receive with all flight members including the leader."
+                },
+                {
+                  "name": "COM",
+                  "text": "Commander mode: send and receive only with the flight leader."
+                }
+              ],
+              "text": "This dial sets how the helicopter takes part in the data link. It can be off, receive only, send and receive with the flight, or talk only with the leader.",
+              "context": "REC is a quiet mode that is hard for the enemy to detect.",
+              "src": "m1",
+              "page": "146"
+            },
+            {
+              "id": "pvtz-id",
+              "name": "ID dial (own data link number)",
+              "type": "selector",
+              "match": [
+                "DTLK-SELF-ID-PTR"
+              ],
+              "text": "This dial sets the pilot's own number from 1 to 4 in the data link group.",
+              "context": "Each member needs a unique number, and the leader should have number 1.",
+              "src": "m1",
+              "page": "146"
+            }
+          ]
+        },
+        {
+          "id": "autopilot",
+          "name": "Autopilot panel",
+          "db": "autopilot-panel",
+          "src": "m1",
+          "page": "148",
+          "text": "This panel switches on the autopilot channels. The autopilot keeps the helicopter steady and can hold height or heading so the pilot does not have to.",
+          "context": "It has two jobs. It smooths the helicopter's motion, and it works with automatic flight modes. The pilot normally switches on the pitch, bank and heading channels in the start-up.",
+          "controls": [
+            {
+              "id": "ap-pitch",
+              "name": "PITCH HOLD button",
+              "type": "button",
+              "match": [
+                "PPR-T-PTR02",
+                "item:autopilot-panel:1"
+              ],
+              "text": "This button switches on the pitch channel, the autopilot part that steadies the nose up and down.",
+              "context": "The pilot normally switches it on during the start-up.",
+              "src": "m1",
+              "page": "148"
+            },
+            {
+              "id": "ap-bank",
+              "name": "BANK HOLD button",
+              "type": "button",
+              "match": [
+                "PPR-K-PTR01",
+                "item:autopilot-panel:2"
+              ],
+              "text": "This button switches on the bank channel, the autopilot part that steadies the sideways lean.",
+              "context": "The pilot normally switches it on during the start-up.",
+              "src": "m1",
+              "page": "148"
+            },
+            {
+              "id": "ap-hdg",
+              "name": "HDG HOLD button",
+              "type": "button",
+              "match": [
+                "PPR-N-PTR03",
+                "item:autopilot-panel:3"
+              ],
+              "text": "This button switches on the heading channel, which keeps the direction of the nose.",
+              "context": "It follows heading or course, depending on the DH-DT switch.",
+              "src": "m1",
+              "page": "148"
+            },
+            {
+              "id": "ap-alt",
+              "name": "ALT HOLD button",
+              "type": "button",
+              "match": [
+                "PPR-V-PTR04",
+                "item:autopilot-panel:4"
+              ],
+              "text": "This button switches on the altitude hold, which keeps the helicopter at one height. The BR-RD switch chooses where the height comes from.",
+              "context": "The collective brake lever on the collective sets the new height.",
+              "src": "m1",
+              "page": "148"
+            },
+            {
+              "id": "ap-fd",
+              "name": "FD AP button (flight director)",
+              "type": "button",
+              "match": [
+                "PPR-DIRUPR-PTR05",
+                "item:autopilot-panel:5"
+              ],
+              "text": "This button switches off the autopilot's automatic steadying, except the dampers, and shows flight director marks on the HUD.",
+              "context": "The pilot then flies by following the marks.",
+              "src": "m1",
+              "page": "148"
+            },
+            {
+              "id": "ap-baro-radar",
+              "name": "BR-RD altitude source switch",
+              "type": "switch3",
+              "match": [
+                "BAR-RV-PTR",
+                "item:autopilot-panel:6"
+              ],
+              "positions": [
+                {
+                  "name": "BR",
+                  "text": "Hold the height read by the pressure altimeter."
+                },
+                {
+                  "name": "Neutral",
+                  "text": "Neither: the sub-modes are off."
+                },
+                {
+                  "name": "RD",
+                  "text": "Hold the height read by the radar altimeter."
+                }
+              ],
+              "text": "This switch chooses where the altitude hold takes its height: the pressure altimeter or the radar altimeter. The middle position switches this off.",
+              "context": "The radar height is the height above the ground. The pressure height is the height above sea level.",
+              "src": "m1",
+              "page": "148"
+            },
+            {
+              "id": "ap-dh-dt",
+              "name": "DH-DT heading source switch",
+              "type": "switch3",
+              "match": [
+                "ZK-LZP-PTR",
+                "item:autopilot-panel:7"
+              ],
+              "positions": [
+                {
+                  "name": "DH",
+                  "text": "Hold the desired heading."
+                },
+                {
+                  "name": "Neutral",
+                  "text": "Neither: the sub-modes are off."
+                },
+                {
+                  "name": "DT",
+                  "text": "Hold the desired track angle."
+                }
+              ],
+              "text": "This switch chooses whether the autopilot holds the desired heading or the desired track angle. The middle position switches this off.",
+              "context": "The track angle is the direction over the ground, which includes the wind drift.",
+              "src": "m1",
+              "page": "149"
+            }
+          ]
+        },
+        {
+          "id": "right-middle",
+          "name": "Right panel, middle section",
+          "db": "right-panel-middle",
+          "src": "m1",
+          "page": "147",
+          "text": "This is the strip under the pilot's right arm with the autopilot, magnetic variation, Shkval scan, latitude and radio controls.",
+          "context": "The autopilot, ADF and R-828 panels are described on their own. These are the other controls on the strip.",
+          "controls": [
+            {
+              "id": "magvar-display",
+              "name": "Magnetic variation display",
+              "type": "display",
+              "match": [
+                "item:right-panel-middle:1"
+              ],
+              "text": "This window shows the magnetic variation that was set. This is the difference between the compass north and the true north.",
+              "context": "In the Caucasus the value is about 5 degrees.",
+              "src": "m1",
+              "page": "147"
+            },
+            {
+              "id": "magvar-knob",
+              "name": "Magnetic variation knob",
+              "type": "knob",
+              "match": [
+                "DCLIN-PTR"
+              ],
+              "text": "Turning this knob sets the magnetic variation in the window above.",
+              "context": "The pilot sets it to the value of the region.",
+              "src": "m1",
+              "page": "147"
+            },
+            {
+              "id": "scan-rate",
+              "name": "Shkval scan rate dial",
+              "type": "knob",
+              "match": [
+                "V-SCAN-PTR",
+                "item:right-panel-middle:2"
+              ],
+              "text": "This dial sets how fast the Shkval camera sweeps from side to side in its automatic scan.",
+              "context": "It only matters when the Shkval searches by itself.",
+              "src": "m1",
+              "page": "148"
+            },
+            {
+              "id": "lat-hemisphere",
+              "name": "Latitude hemisphere switch (N - S)",
+              "type": "switch",
+              "match": [
+                "N-S-PTR"
+              ],
+              "text": "This switch tells the navigation computer if the helicopter is in the northern or the southern hemisphere.",
+              "context": "It works with the latitude knob next to it.",
+              "src": "m1",
+              "page": "148"
+            },
+            {
+              "id": "lat-knob",
+              "name": "Latitude correction knob",
+              "type": "knob",
+              "match": [
+                "LATITUDE-PTR",
+                "item:right-panel-middle:3"
+              ],
+              "text": "Turning this knob sets the latitude for the navigation system's correction.",
+              "context": "The switch and this knob together give the navigation computer the working latitude.",
+              "src": "m1",
+              "page": "148"
+            },
+            {
+              "id": "iff-uplink",
+              "name": "IFF control and special uplink control",
+              "type": "switch",
+              "match": [
+                "item:right-panel-middle:4",
+                "item:right-panel-middle:5"
+              ],
+              "text": "In DCS these two switches have no function. One is for IFF, the radio that answers who-are-you questions, the other for a special uplink.",
+              "context": "The Black Shark does not use them.",
+              "src": "m1",
+              "page": "148"
+            }
+          ]
+        },
+        {
+          "id": "adf",
+          "name": "ARK-22 ADF panel (automatic direction finder)",
+          "db": "adf-panel",
+          "src": "m1",
+          "page": "149",
+          "text": "This panel controls the direction finder. It makes a needle on the HSI point to a radio beacon on the ground.",
+          "context": "Beacons are radio senders at airfields. The pilot can fly towards one or use two of them for a landing approach. The panel has power when the K-041 or the PVI-800 is on.",
+          "controls": [
+            {
+              "id": "adf-test",
+              "name": "TEST button",
+              "type": "button",
+              "match": [
+                "ARK-CONTROL-PTR",
+                "item:adf-panel:1"
+              ],
+              "text": "Pressing this button turns the HSI beacon needle to a set angle. In ANT mode it makes a steady tone.",
+              "context": "The radios VHF-1 and VHF-2 should be on for the test.",
+              "src": "m1",
+              "page": "149"
+            },
+            {
+              "id": "adf-tlg-tlf",
+              "name": "TLG - TLF switch",
+              "type": "switch",
+              "match": [
+                "TLF-TLG-PTR",
+                "item:adf-panel:2"
+              ],
+              "text": "This switch picks the type of beacon signal, telegraph or telephone. In the game every beacon uses telegraph (TLG).",
+              "context": "Down is TLG, the setting that matters in DCS.",
+              "src": "m1",
+              "page": "149"
+            },
+            {
+              "id": "adf-volume",
+              "name": "VOLUME knob",
+              "type": "knob",
+              "match": [
+                "VARK-VOLUME-PTR",
+                "item:adf-panel:3"
+              ],
+              "text": "Turning this knob changes the volume of the beacon's Morse code and of the test tone.",
+              "context": "The pilot listens to the code to be sure of the right beacon.",
+              "src": "m1",
+              "page": "150"
+            },
+            {
+              "id": "adf-mode",
+              "name": "COMPASS - ANT switch",
+              "type": "switch",
+              "match": [
+                "TLF-TLG-PTR01",
+                "item:adf-panel:4"
+              ],
+              "positions": [
+                {
+                  "name": "COMPASS",
+                  "text": "Direction finding: the needle on the HSI points to the beacon."
+                },
+                {
+                  "name": "ANT",
+                  "text": "Antenna reception: the beacon's Morse code is heard."
+                }
+              ],
+              "text": "In COMPASS the ADF steers the beacon needle. In ANT you hear the beacon's Morse code.",
+              "context": "To hear a beacon, the pilot sets ANT. For steering, COMPASS.",
+              "src": "m1",
+              "page": "150"
+            },
+            {
+              "id": "adf-chan",
+              "name": "ADF CHAN dial",
+              "type": "selector",
+              "match": [
+                "VARK-VOLUME-PTR01",
+                "item:adf-panel:5"
+              ],
+              "text": "This dial has ten positions. Each one picks a stored pair of beacons, an outer and an inner one.",
+              "context": "A list of the channels is on the sheet on the right wall. Positions 9 and 0 are service channels.",
+              "src": "m1",
+              "page": "150"
+            }
+          ]
+        },
+        {
+          "id": "r828",
+          "name": "R-828 VHF radio control",
+          "db": "r-828-panel",
+          "src": "m1",
+          "page": "153",
+          "text": "This panel is for the army VHF radio, used for talking to forward air controllers and ground forces. It works on ten stored channels.",
+          "context": "The radio needs the VHF-1 switch on the wall panel. After choosing a new channel, the pilot presses TUN to tune it.",
+          "controls": [
+            {
+              "id": "r828-id",
+              "name": "Channel ID window",
+              "type": "display",
+              "match": [
+                "item:r-828-panel:1"
+              ],
+              "text": "This window shows the channel number from 1 to 10.",
+              "context": "It changes when the channel wheel is turned.",
+              "src": "m1",
+              "page": "153"
+            },
+            {
+              "id": "r828-channel",
+              "name": "CHANNEL selector",
+              "type": "selector",
+              "match": [
+                "CHANNEL-PTR",
+                "item:r-828-panel:2"
+              ],
+              "text": "This red wheel picks the radio channel, 1 to 10. Left and right mouse clicks turn it.",
+              "context": "A channel is a stored frequency, like a station button on a car radio.",
+              "src": "m1",
+              "page": "153"
+            },
+            {
+              "id": "r828-volume",
+              "name": "VOLUME knob",
+              "type": "knob",
+              "match": [
+                "RADIO-VOLUME-PTR",
+                "item:r-828-panel:3"
+              ],
+              "text": "Turning this knob makes the R-828 radio louder or quieter.",
+              "context": "The pilot sets it to hear the calls comfortably.",
+              "src": "m1",
+              "page": "153"
+            },
+            {
+              "id": "r828-tun",
+              "name": "TUN button (automatic tuner)",
+              "type": "button",
+              "match": [
+                "ASU-PTR",
+                "item:r-828-panel:4"
+              ],
+              "text": "Pressing this button tunes the radio to the chosen channel.",
+              "context": "It must be pressed after every channel change.",
+              "src": "m1",
+              "page": "153"
+            },
+            {
+              "id": "r828-lamp",
+              "name": "TUNER lamp",
+              "type": "light",
+              "match": [
+                "item:r-828-panel:5"
+              ],
+              "text": "This lamp is on while the radio is not yet tuned to the chosen channel. It goes off when tuning is done.",
+              "context": "The pilot waits for it to go off before talking.",
+              "src": "m1",
+              "page": "154"
+            },
+            {
+              "id": "r828-sq",
+              "name": "SQ switch (squelch)",
+              "type": "switch2",
+              "match": [
+                "RADIO-PSH-SWITCH-PTR",
+                "item:r-828-panel:6"
+              ],
+              "positions": [
+                {
+                  "name": "ON",
+                  "text": "The noise reduction is on."
+                },
+                {
+                  "name": "OFF",
+                  "text": "The noise reduction is off."
+                }
+              ],
+              "text": "This switch turns the noise reduction on or off. Squelch cuts the hiss of a radio when nobody talks.",
+              "context": "It is the same idea as on the R-800L1 radio.",
+              "src": "m1",
+              "page": "154"
+            }
+          ]
+        },
+        {
+          "id": "signal-flares",
+          "name": "Signal flare panel",
+          "db": "signal-flare-panel",
+          "src": "m1",
+          "page": "154",
+          "text": "This panel fires coloured signal flares. They come in red, green, white and yellow. They are different from the decoy flares that fool missiles.",
+          "context": "Signal flares are used when the radios have failed or when the pilot keeps radio silence. A cassette with four flares sits at the edge of the left wing.",
+          "controls": [
+            {
+              "id": "flare-power",
+              "name": "Signal flare power switch",
+              "type": "switch2",
+              "match": [
+                "SIGNAL-FLARE-SWITCH-PTR",
+                "item:signal-flare-panel:2"
+              ],
+              "positions": [
+                {
+                  "name": "ON",
+                  "text": "Up: the signal flare system has power."
+                },
+                {
+                  "name": "OFF",
+                  "text": "Down: the system is off."
+                }
+              ],
+              "text": "This switch gives power to the signal flare system. The flare buttons only work when it is up.",
+              "context": "The pilot switches it on before using the flare buttons.",
+              "src": "m1",
+              "page": "154"
+            },
+            {
+              "id": "flare-red",
+              "name": "Red flare button",
+              "type": "button",
+              "match": [
+                "SIGNAL-FLARE-1-PTR",
+                "item:signal-flare-panel:1"
+              ],
+              "text": "Pressing this button shoots a red signal flare.",
+              "context": "The colour is the signal that the pilot gives.",
+              "src": "m1",
+              "page": "154"
+            },
+            {
+              "id": "flare-green",
+              "name": "Green flare button",
+              "type": "button",
+              "match": [
+                "SIGNAL-FLARE-2-PTR",
+                "item:signal-flare-panel:3"
+              ],
+              "text": "Pressing this button shoots a green signal flare.",
+              "context": "The colour is the signal that the pilot gives.",
+              "src": "m1",
+              "page": "154"
+            },
+            {
+              "id": "flare-white",
+              "name": "White flare button",
+              "type": "button",
+              "match": [
+                "SIGNAL-FLARE-3-PTR",
+                "item:signal-flare-panel:4"
+              ],
+              "text": "Pressing this button shoots a white signal flare.",
+              "context": "The colour is the signal that the pilot gives.",
+              "src": "m1",
+              "page": "154"
+            },
+            {
+              "id": "flare-yellow",
+              "name": "Yellow flare button",
+              "type": "button",
+              "match": [
+                "SIGNAL-FLARE-4-PTR",
+                "item:signal-flare-panel:5"
+              ],
+              "text": "Pressing this button shoots a yellow signal flare.",
+              "context": "The colour is the signal that the pilot gives.",
+              "src": "m1",
+              "page": "154"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "wall-panel",
+      "where": "right-side",
+      "name": "Wall panel",
+      "text": "This is the panel on the right wall of the cockpit. It has the electrical, radio, fuel, fire and ejection controls, and the oil gauges, the onboard equipment switches, the lighting and the engine governors.",
+      "panels": [
+        {
+          "id": "electric",
+          "name": "Electrical power controls",
+          "db": "electrical-power-controls",
+          "src": "m1",
+          "page": "157",
+          "text": "This panel decides where the helicopter's electricity comes from: the two batteries, a ground power cart, or the two generators. Some switches have a cover that has to be lifted first.",
+          "context": "The pilot uses it first in the cockpit. A generator is a machine on the engine that makes electricity while the engine runs. The batteries power the start-up.",
+          "controls": [
+            {
+              "id": "bat1",
+              "name": "BAT 1 switch (battery 1) with cover",
+              "type": "switch2",
+              "match": [
+                "ENERG-COVER-AKK1-PTR",
+                "ENERG-AKK1-PTR",
+                "item:electrical-power-controls:1"
+              ],
+              "positions": [
+                {
+                  "name": "ON",
+                  "text": "Battery 1 gives power."
+                },
+                {
+                  "name": "OFF",
+                  "text": "Battery 1 is not connected."
+                }
+              ],
+              "text": "This switch connects battery 1. A cover protects it. For a start without a ground power cart this switch is needed to start the APU and the engines.",
+              "context": "Both batteries should be on for normal operation.",
+              "src": "m1",
+              "page": "157"
+            },
+            {
+              "id": "bat2",
+              "name": "BAT 2 switch (battery 2) with cover",
+              "type": "switch2",
+              "match": [
+                "ENERG-COVER-AKK2-PTR",
+                "ENERG-AKK2-PTR",
+                "item:electrical-power-controls:2"
+              ],
+              "positions": [
+                {
+                  "name": "ON",
+                  "text": "Battery 2 gives power."
+                },
+                {
+                  "name": "OFF",
+                  "text": "Battery 2 is not connected."
+                }
+              ],
+              "text": "This switch connects battery 2. A cover protects it.",
+              "context": "Both batteries should be on for normal operation.",
+              "src": "m1",
+              "page": "157"
+            },
+            {
+              "id": "ext-dc",
+              "name": "EXT DC switch (ground DC power) with cover",
+              "type": "switch2",
+              "match": [
+                "ENERG-COVER-AER-RIT-PTR",
+                "ENERG-AER-RIT-PTR",
+                "item:electrical-power-controls:3"
+              ],
+              "positions": [
+                {
+                  "name": "ON",
+                  "text": "Ground direct current power is used."
+                },
+                {
+                  "name": "OFF",
+                  "text": "Ground direct current power is off."
+                }
+              ],
+              "text": "This switch takes direct current from a ground power cart. A cover protects it. The pilot first asks the ground crew by radio, with the intercom on GRND CREW.",
+              "context": "Ground power saves the batteries when starting the APU and the engines.",
+              "src": "m1",
+              "page": "157"
+            },
+            {
+              "id": "dc-lamp",
+              "name": "DC ground power lamp",
+              "type": "light",
+              "match": [
+                "item:electrical-power-controls:4"
+              ],
+              "text": "This lamp lights when the ground direct current power is on.",
+              "context": "It confirms that the ground power cart is connected and in use.",
+              "src": "m1",
+              "page": "157"
+            },
+            {
+              "id": "ext-ac",
+              "name": "EXT AC switch (ground AC power)",
+              "type": "switch2",
+              "match": [
+                "RAMP-POWER-PTR",
+                "item:electrical-power-controls:5"
+              ],
+              "positions": [
+                {
+                  "name": "ON",
+                  "text": "Ground alternating current power is used."
+                },
+                {
+                  "name": "OFF",
+                  "text": "Ground alternating current power is off."
+                }
+              ],
+              "text": "This switch takes alternating current from a ground power cart. The pilot first asks the ground crew by radio, with the intercom on GRND CREW.",
+              "context": "Some equipment needs this kind of current to start.",
+              "src": "m1",
+              "page": "157"
+            },
+            {
+              "id": "gen-left",
+              "name": "AC SYS GEN LH switch (left generator)",
+              "type": "switch2",
+              "match": [
+                "GEN-LEFT-PTR",
+                "item:electrical-power-controls:6"
+              ],
+              "positions": [
+                {
+                  "name": "ON",
+                  "text": "The left generator feeds the helicopter."
+                },
+                {
+                  "name": "OFF",
+                  "text": "The left generator is not connected."
+                }
+              ],
+              "text": "This switch connects the left generator. Once the engines run, the throttles are on AUTO and the rotor speed is steady above 83 to 85 percent, it is turned on.",
+              "context": "The generator powers the main busses and charges the batteries. A bus is a group of electric lines that feed a set of equipment.",
+              "src": "m1",
+              "page": "157"
+            },
+            {
+              "id": "inverter",
+              "name": "INV AUTO - MAN inverter switch",
+              "type": "switch2",
+              "match": [
+                "CONVERTER-PTR",
+                "item:electrical-power-controls:7"
+              ],
+              "positions": [
+                {
+                  "name": "AUTO",
+                  "text": "Up: the change is done automatically."
+                },
+                {
+                  "name": "MAN",
+                  "text": "Down: the change is done by hand."
+                }
+              ],
+              "text": "This switch controls the inverter, which changes direct current into alternating current for some equipment. The manual describes a middle position that is off.",
+              "context": "The pilot leaves it on AUTO. A lamp on the right overhead panel shows that the inverter is on.",
+              "src": "m1",
+              "page": "157"
+            },
+            {
+              "id": "gen-right",
+              "name": "AC SYS GEN RH switch (right generator)",
+              "type": "switch2",
+              "match": [
+                "GEN-RIGHT-PTR",
+                "item:electrical-power-controls:8"
+              ],
+              "positions": [
+                {
+                  "name": "ON",
+                  "text": "The right generator feeds the helicopter."
+                },
+                {
+                  "name": "OFF",
+                  "text": "The right generator is not connected."
+                }
+              ],
+              "text": "This switch connects the right generator. It is turned on under the same conditions as the left one.",
+              "context": "Both generators together power the helicopter in flight.",
+              "src": "m1",
+              "page": "158"
+            }
+          ]
+        },
+        {
+          "id": "radio-power",
+          "name": "Radio and data link power control panel",
+          "db": "radio-dl-power-panel",
+          "src": "m1",
+          "page": "158",
+          "text": "This panel turns on the power of the intercom, the two VHF radios and the data link. Each radio has its own switch.",
+          "context": "The helicopter needs alternating current power before these switches work. The pilot switches them on during the cockpit checks.",
+          "controls": [
+            {
+              "id": "intercom-pwr",
+              "name": "INT.COM switch",
+              "type": "switch2",
+              "match": [
+                "COMM-PWR-AVSK-PTR",
+                "item:radio-dl-power-panel:1"
+              ],
+              "positions": [
+                {
+                  "name": "ON",
+                  "text": "The intercom has power."
+                },
+                {
+                  "name": "OFF",
+                  "text": "The intercom is off."
+                }
+              ],
+              "text": "This switch powers the SPU-9 intercom. The intercom mixes the radios, the ground phone, the voice warnings and the warning tones into the headphones.",
+              "context": "Without it the pilot hears and says nothing.",
+              "src": "m1",
+              "page": "158"
+            },
+            {
+              "id": "vhf1-pwr",
+              "name": "VHF-1 switch (R-828 radio)",
+              "type": "switch2",
+              "match": [
+                "COMM-PWR-UKV-1-PTR",
+                "item:radio-dl-power-panel:2"
+              ],
+              "positions": [
+                {
+                  "name": "ON",
+                  "text": "The R-828 radio has power."
+                },
+                {
+                  "name": "OFF",
+                  "text": "The R-828 radio is off."
+                }
+              ],
+              "text": "This switch powers the R-828 radio, the army radio.",
+              "context": "The radio is used to talk with ground units.",
+              "src": "m1",
+              "page": "158"
+            },
+            {
+              "id": "vhf2-pwr",
+              "name": "VHF-2 switch (R-800 radio)",
+              "type": "switch2",
+              "match": [
+                "COMM-PWR-UKV-2-PTR",
+                "item:radio-dl-power-panel:3"
+              ],
+              "positions": [
+                {
+                  "name": "ON",
+                  "text": "The R-800 radio has power."
+                },
+                {
+                  "name": "OFF",
+                  "text": "The R-800 radio is off."
+                }
+              ],
+              "text": "This switch powers the R-800 command radio, which is the one for talking to other aircraft.",
+              "context": "The radio can also receive direction beacons for the ADF.",
+              "src": "m1",
+              "page": "158"
+            },
+            {
+              "id": "dl-pwr",
+              "name": "DL switch (data link power)",
+              "type": "switch2",
+              "match": [
+                "COMM-PWR-TLK-PTR",
+                "item:radio-dl-power-panel:4"
+              ],
+              "positions": [
+                {
+                  "name": "ON",
+                  "text": "The data link equipment has power."
+                },
+                {
+                  "name": "OFF",
+                  "text": "The data link is off."
+                }
+              ],
+              "text": "This switch powers the data link equipment, the system that shares targets with the other helicopters.",
+              "context": "The panels on the overhead and in the right console only work with it on.",
+              "src": "m1",
+              "page": "158"
+            },
+            {
+              "id": "sa-tlf",
+              "name": "SA-TLF switch",
+              "type": "switch",
+              "match": [
+                "COMM-PWR-SA-TLF-PTR",
+                "item:radio-dl-power-panel:5"
+              ],
+              "text": "In DCS this switch has no function. It is a switch of the radio equipment data link.",
+              "context": "The Black Shark does not use it.",
+              "src": "m1",
+              "page": "158"
+            },
+            {
+              "id": "vhf-tlk",
+              "name": "VHF-TLK switch",
+              "type": "switch2",
+              "match": [
+                "COMM-PWR-UKV-TLK-PTR",
+                "item:radio-dl-power-panel:6"
+              ],
+              "positions": [
+                {
+                  "name": "ON",
+                  "text": "The secure data link radio path has power."
+                },
+                {
+                  "name": "OFF",
+                  "text": "The path is off."
+                }
+              ],
+              "text": "This switch powers a radio path of the data link that is hard to jam, used to send target data.",
+              "context": "It is used for remote target marking.",
+              "src": "m1",
+              "page": "158"
+            }
+          ]
+        },
+        {
+          "id": "fuel-pumps",
+          "name": "Fuel pump controls",
+          "db": "fuel-pump-controls",
+          "src": "m1",
+          "page": "158",
+          "text": "This panel switches the electric fuel pumps on and off. It also powers the fuel gauge. Boost pumps are helper pumps that push fuel to the engines.",
+          "context": "The pumps must be on to start the APU and the engines. In flight the pilot keeps at least the front and rear tank pumps on.",
+          "controls": [
+            {
+              "id": "pump-aft",
+              "name": "AFT FUEL PUMP switch",
+              "type": "switch2",
+              "match": [
+                "FUEL-PUMP-BACK-PTR",
+                "item:fuel-pump-controls:1"
+              ],
+              "positions": [
+                {
+                  "name": "ON",
+                  "text": "The rear tank pumps run."
+                },
+                {
+                  "name": "OFF",
+                  "text": "The pumps are off."
+                }
+              ],
+              "text": "This switch powers the pumps of the rear fuel tank.",
+              "context": "The APU takes fuel from the rear tank, so this switch is needed for the APU start.",
+              "src": "m1",
+              "page": "159"
+            },
+            {
+              "id": "pump-fwd",
+              "name": "FWD FUEL PUMP switch",
+              "type": "switch2",
+              "match": [
+                "FUEL-PUMP-FRONT-PTR",
+                "item:fuel-pump-controls:2"
+              ],
+              "positions": [
+                {
+                  "name": "ON",
+                  "text": "The front tank pumps run."
+                },
+                {
+                  "name": "OFF",
+                  "text": "The pumps are off."
+                }
+              ],
+              "text": "This switch powers the pumps of the front fuel tank.",
+              "context": "The pilot keeps it on while the engines run.",
+              "src": "m1",
+              "page": "159"
+            },
+            {
+              "id": "pump-inner",
+              "name": "INNER EXT. FUEL PUMP switch",
+              "type": "switch2",
+              "match": [
+                "FUEL-PUMP-INNER-PTR",
+                "item:fuel-pump-controls:3"
+              ],
+              "positions": [
+                {
+                  "name": "ON",
+                  "text": "The inner external tank pumps run."
+                },
+                {
+                  "name": "OFF",
+                  "text": "The pumps are off."
+                }
+              ],
+              "text": "This switch powers the pumps of the external tanks on the inner wing stations.",
+              "context": "It only matters when drop tanks are loaded.",
+              "src": "m1",
+              "page": "159"
+            },
+            {
+              "id": "pump-outer",
+              "name": "OUTER EXT. FUEL PUMP switch",
+              "type": "switch2",
+              "match": [
+                "FUEL-PUMP-OUTER-PTR",
+                "item:fuel-pump-controls:4"
+              ],
+              "positions": [
+                {
+                  "name": "ON",
+                  "text": "The outer external tank pumps run."
+                },
+                {
+                  "name": "OFF",
+                  "text": "The pumps are off."
+                }
+              ],
+              "text": "This switch powers the pumps of the external tanks on the outer wing stations.",
+              "context": "It only matters when drop tanks are loaded.",
+              "src": "m1",
+              "page": "159"
+            },
+            {
+              "id": "fuel-qty-sw",
+              "name": "FUEL-QTY switch",
+              "type": "switch2",
+              "match": [
+                "FUEL-METER-PTR",
+                "item:fuel-pump-controls:5"
+              ],
+              "positions": [
+                {
+                  "name": "ON",
+                  "text": "The fuel metering has power."
+                },
+                {
+                  "name": "OFF",
+                  "text": "The fuel metering is off."
+                }
+              ],
+              "text": "This switch gives power to the fuel measuring system, so the fuel gauge works.",
+              "context": "The pilot switches it on and checks the gauge before the start.",
+              "src": "m1",
+              "page": "159"
+            }
+          ]
+        },
+        {
+          "id": "fire",
+          "name": "Fire extinguisher control panel",
+          "db": "fire-extinguisher-panel",
+          "src": "m1",
+          "page": "159",
+          "text": "This panel warns of fires and puts them out. It has fire lamps, two bottles of fire-killing agent and buttons for each place that can burn.",
+          "context": "The system watches the engine bays, the APU and the oil cooler area. If a fire lamp lights, the pilot can empty a bottle into the right place.",
+          "controls": [
+            {
+              "id": "fire-lamps",
+              "name": "Fire warning lamps",
+              "type": "light",
+              "match": [
+                "item:fire-extinguisher-panel:1",
+                "item:fire-extinguisher-panel:2",
+                "item:fire-extinguisher-panel:3",
+                "item:fire-extinguisher-panel:4"
+              ],
+              "text": "There are four fire lamps: FIRE LH ENG, FIRE APU, FIRE RH ENG and FIRE GRBX. A lamp lights when a fire is found in that place. GRBX is the oil cooler area.",
+              "context": "The caution panel and the master light also show a fire.",
+              "src": "m1",
+              "page": "160"
+            },
+            {
+              "id": "bottle-lamps",
+              "name": "Extinguisher bottle lamps 1 and 2",
+              "type": "light",
+              "match": [
+                "item:fire-extinguisher-panel:5",
+                "item:fire-extinguisher-panel:6"
+              ],
+              "text": "Each lamp shows that a fire bottle is full and ready. When a bottle has been used, its lamp goes off.",
+              "context": "Bottle 1 can be emptied by the system or by hand. Bottle 2 only by hand.",
+              "src": "m1",
+              "page": "160"
+            },
+            {
+              "id": "fire-left",
+              "name": "Left engine discharge button",
+              "type": "button",
+              "match": [
+                "PUI800-AVARCHOP-PTR01",
+                "item:fire-extinguisher-panel:7"
+              ],
+              "text": "Pressing this button empties the fire bottle into the left engine bay. It works in the manual mode.",
+              "context": "The pilot uses it when the left engine fire lamp is on.",
+              "src": "m1",
+              "page": "160"
+            },
+            {
+              "id": "fire-apu",
+              "name": "APU discharge button",
+              "type": "button",
+              "match": [
+                "PUI800-AVARCHOP-PTR02",
+                "item:fire-extinguisher-panel:8"
+              ],
+              "text": "Pressing this button empties the fire bottle into the APU bay. It works in the manual mode.",
+              "context": "The pilot uses it when the APU fire lamp is on.",
+              "src": "m1",
+              "page": "160"
+            },
+            {
+              "id": "fire-right",
+              "name": "Right engine discharge button",
+              "type": "button",
+              "match": [
+                "PUI800-AVARCHOP-PTR03",
+                "item:fire-extinguisher-panel:9"
+              ],
+              "text": "Pressing this button empties the fire bottle into the right engine bay. It works in the manual mode.",
+              "context": "The pilot uses it when the right engine fire lamp is on.",
+              "src": "m1",
+              "page": "160"
+            },
+            {
+              "id": "fire-vent",
+              "name": "Ventilator discharge button",
+              "type": "button",
+              "match": [
+                "PUI800-AVARCHOP-PTR04",
+                "item:fire-extinguisher-panel:10"
+              ],
+              "text": "Pressing this button empties the fire bottle into the oil cooler compartment. It works in the manual mode.",
+              "context": "The pilot uses it when the GRBX fire lamp is on.",
+              "src": "m1",
+              "page": "160"
+            },
+            {
+              "id": "tanks-aut-man",
+              "name": "TANKS AUT - MAN switch with cover",
+              "type": "switch2",
+              "match": [
+                "BALOONS-COVER-PTR",
+                "BALOONS-PTR",
+                "item:fire-extinguisher-panel:11"
+              ],
+              "positions": [
+                {
+                  "name": "AUT",
+                  "text": "Automatic: bottle 1 is emptied by the system in a fire."
+                },
+                {
+                  "name": "MAN",
+                  "text": "Manual: bottle 2 can be emptied only by pressing the button of the place."
+                }
+              ],
+              "text": "This switch chooses how the bottles are used. In AUT bottle 1 is emptied by the system if a fire starts. In MAN bottle 2 can be emptied only by pressing the button for the place.",
+              "context": "A cover protects it. Normally it stays on AUT.",
+              "src": "m1",
+              "page": "160"
+            },
+            {
+              "id": "oper-off-test",
+              "name": "OPER - OFF - TEST switch with cover",
+              "type": "switch3",
+              "match": [
+                "FIREEXT-COVER-PTR",
+                "FIREEXT-PTR",
+                "item:fire-extinguisher-panel:12"
+              ],
+              "positions": [
+                {
+                  "name": "OPER",
+                  "text": "The extinguisher system works."
+                },
+                {
+                  "name": "OFF",
+                  "text": "The system is off."
+                },
+                {
+                  "name": "TEST",
+                  "text": "The system is tested."
+                }
+              ],
+              "text": "This switch turns the fire extinguisher system on, off, or to its test. A cover protects it.",
+              "context": "OPER is the working position, used in normal flight.",
+              "src": "m1",
+              "page": "160"
+            },
+            {
+              "id": "warn-off",
+              "name": "WARN - OFF switch",
+              "type": "switch2",
+              "match": [
+                "FIREEXT-INDICATION-PTR",
+                "item:fire-extinguisher-panel:13"
+              ],
+              "positions": [
+                {
+                  "name": "WARN",
+                  "text": "The fire monitoring and alarm system is on."
+                },
+                {
+                  "name": "OFF",
+                  "text": "The system is off."
+                }
+              ],
+              "text": "This switch turns the fire watching and alarm system on or off.",
+              "context": "The pilot keeps it on WARN in flight.",
+              "src": "m1",
+              "page": "160"
+            },
+            {
+              "id": "test-groups",
+              "name": "TEST I - II - III GR buttons",
+              "type": "selector",
+              "match": [
+                "EXTING-GROUPS-CTRL-*",
+                "item:fire-extinguisher-panel:14"
+              ],
+              "count": 3,
+              "text": "These buttons pick the first, second or third group of fire sensors for a test.",
+              "context": "Each group is tested on its own.",
+              "src": "m1",
+              "page": "160"
+            }
+          ]
+        },
+        {
+          "id": "fuel-valves",
+          "name": "Fuel shutoff valve control",
+          "db": "fuel-shutoff-valves",
+          "src": "m1",
+          "page": "161",
+          "text": "This panel opens and closes the fuel valves of the left engine, the right engine and the APU. It also has the crossfeed valve. Each switch has a cover.",
+          "context": "The pilot opens the valves before starting the APU and the engines. The crossfeed lets fuel move from one tank to feed the other side.",
+          "controls": [
+            {
+              "id": "valve-left",
+              "name": "Left engine fuel valve (FUEL SHUTOFF LEFT) with cover",
+              "type": "switch2",
+              "match": [
+                "PAV-CRANE-COVER-ENGINE-LEFT-PTR",
+                "PAV-CRANE-ENGINE-LEFT-PTR",
+                "item:fuel-shutoff-valves:1"
+              ],
+              "positions": [
+                {
+                  "name": "OPEN",
+                  "text": "Up: fuel can flow to the left engine."
+                },
+                {
+                  "name": "CLOSED",
+                  "text": "Down: the valve is closed."
+                }
+              ],
+              "text": "Up, this switch opens the fuel valve between the tanks and the left engine. A cover protects it.",
+              "context": "It must be open before the left engine start.",
+              "src": "m1",
+              "page": "161"
+            },
+            {
+              "id": "valve-right",
+              "name": "Right engine fuel valve (FUEL SHUTOFF RIGHT) with cover",
+              "type": "switch2",
+              "match": [
+                "PAV-CRANE-COVER-ENGINE-RIGHT-PTR",
+                "PAV-CRANE-ENGINE-RIGHT-PTR",
+                "item:fuel-shutoff-valves:2"
+              ],
+              "positions": [
+                {
+                  "name": "OPEN",
+                  "text": "Up: fuel can flow to the right engine."
+                },
+                {
+                  "name": "CLOSED",
+                  "text": "Down: the valve is closed."
+                }
+              ],
+              "text": "Up, this switch opens the fuel valve between the tanks and the right engine. A cover protects it.",
+              "context": "It must be open before the right engine start.",
+              "src": "m1",
+              "page": "161"
+            },
+            {
+              "id": "valve-apu",
+              "name": "APU fuel valve with cover",
+              "type": "switch2",
+              "match": [
+                "PAV-CRANE-COVER-VSU-PTR",
+                "PAV-CRANE-VSU-PTR",
+                "item:fuel-shutoff-valves:3"
+              ],
+              "positions": [
+                {
+                  "name": "OPEN",
+                  "text": "Up: fuel can flow to the APU."
+                },
+                {
+                  "name": "CLOSED",
+                  "text": "Down: the valve is closed."
+                }
+              ],
+              "text": "Up, this switch opens the fuel valve to the APU. A cover protects it.",
+              "context": "It must be open before the APU start. The APU fuel valve is closed after the APU is stopped.",
+              "src": "m1",
+              "page": "161"
+            },
+            {
+              "id": "valve-xfeed",
+              "name": "X-FEED VLV crossfeed valve with cover",
+              "type": "switch2",
+              "match": [
+                "PAV-CRANE-COVER-CYKLIZATION-PTR",
+                "PAV-CRANE-CYKLIZATION-PTR",
+                "item:fuel-shutoff-valves:4"
+              ],
+              "positions": [
+                {
+                  "name": "OPEN",
+                  "text": "Up: fuel is shared between the tanks."
+                },
+                {
+                  "name": "CLOSED",
+                  "text": "Down: each tank feeds its own side."
+                }
+              ],
+              "text": "This switch opens the valve that lets the engines and APU use fuel from either tank. A cover protects it.",
+              "context": "It is normally closed. The pilot opens it if one engine fails, if a tank is hit, or on the 110 kg fuel warning.",
+              "src": "m1",
+              "page": "161"
+            }
+          ]
+        },
+        {
+          "id": "eject",
+          "name": "Pilot ejection system controls (EJECT-SEAT-SYS)",
+          "src": "m1",
+          "page": "155",
+          "text": "These three switches under one cover arm the ejection system. This system throws the pilot out of the helicopter in an emergency, together with a cut-off of the rotor blades.",
+          "context": "The pilot lifts the yellow-and-black cover and switches on all three switches before the flight. The circuit test on the rear panel checks them.",
+          "controls": [
+            {
+              "id": "eject-switches",
+              "name": "EJECT-SEAT-SYS switches (3) with cover",
+              "type": "switch",
+              "match": [
+                "RIGHT-COVER-EMERG-VACATION-PTR",
+                "RIGHT-EMERG-SW?-PTR"
+              ],
+              "count": 3,
+              "text": "A cover protects three switches. Lifting it and switching on all three arms the ejection system. An ejection seat is the seat that shoots the pilot out of the helicopter.",
+              "context": "It is part of the start-up checks. The three switches must be on for the circuit test of the system.",
+              "src": "m1",
+              "page": "155"
+            }
+          ]
+        },
+        {
+          "id": "engine-power",
+          "name": "Engine power indicator",
+          "src": "m1",
+          "page": "166",
+          "text": "This gauge compares the real engine power with the marks of the take-off, maximum and cruise modes. It has a yellow marker per engine and red marks in the middle.",
+          "context": "The pilot keeps the yellow markers near the red mark of the wanted mode. The red marks move with the air pressure and temperature.",
+          "controls": [
+            {
+              "id": "power-gauge",
+              "name": "Engine power indicator gauge",
+              "type": "gauge",
+              "match": [],
+              "text": "The two yellow markers show the air pressure at the compressor outlet for each engine. The middle red marks show where that pressure should be for take-off, maximum continuous power and cruise.",
+              "context": "It is a gauge only and is not clicked.",
+              "src": "m1",
+              "page": "166"
+            },
+            {
+              "id": "reductor",
+              "name": "REDUCTOR button",
+              "type": "button",
+              "match": [
+                "REDUCTOR-PTR"
+              ],
+              "text": "The game names this button REDUCTOR and describes it as the selector for the oil pressure indication of the reducing gearbox. The manual does not describe it.",
+              "context": "The gearbox is the unit between the engines and the rotors.",
+              "src": "m1",
+              "page": "166"
+            },
+            {
+              "id": "hanger",
+              "name": "HANGER switch",
+              "type": "switch",
+              "match": [
+                "HANGER-PTR"
+              ],
+              "text": "The game names this switch HANGER and describes it as a sling load Auto/Manual switch. The manual says the sling load controls have no function.",
+              "context": "A sling load is a load hanging under the helicopter on a cable.",
+              "src": "m1",
+              "page": "166"
+            }
+          ]
+        },
+        {
+          "id": "oil",
+          "name": "Oil pressure and temperature gauges",
+          "db": "oil-gauges",
+          "src": "m1",
+          "page": "162",
+          "text": "These six gauges show the oil pressure and the oil temperature of the left engine, the right engine and the transmission. The transmission is the gearbox that passes engine power to the rotors.",
+          "context": "The pilot watches them during the start and in flight. Oil problems also appear as caution lamps.",
+          "controls": [
+            {
+              "id": "oil-pressure",
+              "name": "Oil pressure gauges (left engine, right engine, transmission)",
+              "type": "gauge",
+              "match": [
+                "item:oil-gauges:1",
+                "item:oil-gauges:2",
+                "item:oil-gauges:3"
+              ],
+              "count": 3,
+              "text": "These three gauges show the oil pressure of the left engine, the right engine and the transmission.",
+              "context": "Low oil pressure is dangerous for the engine or the gearbox.",
+              "src": "m1",
+              "page": "162"
+            },
+            {
+              "id": "oil-temp",
+              "name": "Oil temperature gauges (left engine, right engine, transmission)",
+              "type": "gauge",
+              "match": [
+                "item:oil-gauges:4",
+                "item:oil-gauges:5",
+                "item:oil-gauges:6"
+              ],
+              "count": 3,
+              "text": "These three gauges show the oil temperature of the left engine, the right engine and the transmission.",
+              "context": "High oil temperature also gives a caution lamp.",
+              "src": "m1",
+              "page": "162"
+            }
+          ]
+        },
+        {
+          "id": "onboard",
+          "name": "Onboard equipment control panel",
+          "db": "onboard-equipment-panel",
+          "src": "m1",
+          "page": "163",
+          "text": "This panel has a mix of power switches for different systems. The weapon system, the standby horizon, the navigation system and the beacon are some of them.",
+          "context": "Unlike other wall panels, it is not grouped by one job. Several of its switches have no function in DCS.",
+          "controls": [
+            {
+              "id": "iff-disabled",
+              "name": "IFF - DISABLED switch with cover",
+              "type": "switch",
+              "match": [
+                "COVER-SRO-PTR",
+                "SRO-PTR",
+                "item:onboard-equipment-panel:1"
+              ],
+              "text": "In DCS this switch has no function. It is the power switch of the IFF, the radio box that answers who-are-you questions.",
+              "context": "The Black Shark does not use it.",
+              "src": "m1",
+              "page": "163"
+            },
+            {
+              "id": "main-hyd",
+              "name": "MAIN HYD OFF - SERVO TEST switch with cover",
+              "type": "switch",
+              "match": [
+                "HYDRO-COVER-PTR02",
+                "HYDRO-PTR",
+                "item:onboard-equipment-panel:2"
+              ],
+              "text": "This switch changes the source of oil pressure for the flight control servos between the main and the common hydraulic system. A cover protects it.",
+              "context": "It is used for checks on the ground. Lamps on the rear panel show when the supply has changed.",
+              "src": "m1",
+              "page": "163"
+            },
+            {
+              "id": "standby-sai",
+              "name": "STANDBY SAI switch",
+              "type": "switch2",
+              "match": [
+                "RES-AG-PTR",
+                "item:onboard-equipment-panel:3"
+              ],
+              "positions": [
+                {
+                  "name": "ON",
+                  "text": "The standby horizon has power."
+                },
+                {
+                  "name": "OFF",
+                  "text": "The standby horizon is off."
+                }
+              ],
+              "text": "This switch powers the standby attitude indicator, the backup artificial horizon.",
+              "context": "After switching on, the pilot waits about 60 seconds before releasing the gyro of the gauge.",
+              "src": "m1",
+              "page": "163"
+            },
+            {
+              "id": "heading-source",
+              "name": "MH - GYRO - MAN heading source switch",
+              "type": "switch3",
+              "match": [
+                "GYRO-MAG-MAN-HEADING-PTR",
+                "item:onboard-equipment-panel:4"
+              ],
+              "positions": [
+                {
+                  "name": "MH",
+                  "text": "Magnetic heading."
+                },
+                {
+                  "name": "GYRO",
+                  "text": "The flight gyroscope, the default."
+                },
+                {
+                  "name": "MAN",
+                  "text": "A manual heading."
+                }
+              ],
+              "text": "This switch chooses where the navigation unit takes its heading from for the alignment: the magnetic heading, the gyro or a manual value.",
+              "context": "The gyro is used by default, so the pilot rarely changes it.",
+              "src": "m1",
+              "page": "163"
+            },
+            {
+              "id": "w-sys",
+              "name": "W-SYS weapon system power switch with cover",
+              "type": "switch2",
+              "match": [
+                "SUO-COVER-PTR",
+                "SUO-PTR",
+                "item:onboard-equipment-panel:5"
+              ],
+              "positions": [
+                {
+                  "name": "ON",
+                  "text": "The weapon control system has power."
+                },
+                {
+                  "name": "OFF",
+                  "text": "The weapon control system is off."
+                }
+              ],
+              "text": "This switch powers the weapon control system. A cover protects it.",
+              "context": "Without it the weapons cannot be used.",
+              "src": "m1",
+              "page": "163"
+            },
+            {
+              "id": "beacon",
+              "name": "ANTI-COL BEACON switch",
+              "type": "switch2",
+              "match": [
+                "FLASHER-PTR",
+                "item:onboard-equipment-panel:6"
+              ],
+              "positions": [
+                {
+                  "name": "ON",
+                  "text": "The red anti-collision beacon rotates."
+                },
+                {
+                  "name": "OFF",
+                  "text": "The beacon is off."
+                }
+              ],
+              "text": "Up, this switch turns on the red rotating beacon that makes the helicopter visible to others.",
+              "context": "The pilot switches it on for flying at night or near other aircraft.",
+              "src": "m1",
+              "page": "163"
+            },
+            {
+              "id": "nav-onoff",
+              "name": "NAV ON - OFF switch",
+              "type": "switch2",
+              "match": [
+                "PNK-PTR",
+                "item:onboard-equipment-panel:7"
+              ],
+              "positions": [
+                {
+                  "name": "ON",
+                  "text": "The system has power."
+                },
+                {
+                  "name": "OFF",
+                  "text": "The system is off."
+                }
+              ],
+              "text": "This switch powers the targeting and navigation system for ground checks.",
+              "context": "In flight, the K-041 switch on the left panel powers both navigation and targeting.",
+              "src": "m1",
+              "page": "163"
+            },
+            {
+              "id": "nofunc-switches",
+              "name": "CAB PRESS, GUN CAM, CAB HEAT, FAN and DE ICE switches",
+              "type": "switch",
+              "match": [
+                "item:onboard-equipment-panel:8",
+                "item:onboard-equipment-panel:9",
+                "item:onboard-equipment-panel:10",
+                "item:onboard-equipment-panel:12",
+                "item:onboard-equipment-panel:13"
+              ],
+              "count": 5,
+              "text": "In DCS these five switches have no function. They are for cockpit pressure, the gun camera, the cockpit heating, the fan and the de-icing system.",
+              "context": "The Black Shark does not use them.",
+              "src": "m1",
+              "page": "163"
+            },
+            {
+              "id": "shkval-wiper",
+              "name": "SHKVAL WIPER button",
+              "type": "button",
+              "match": [
+                "WIPER-PTR",
+                "item:onboard-equipment-panel:11"
+              ],
+              "text": "Pressing this button wipes the glass window in front of the Shkval camera.",
+              "context": "The pilot uses it when rain or dirt makes the camera picture unclear.",
+              "src": "m1",
+              "page": "163"
+            }
+          ]
+        },
+        {
+          "id": "lighting",
+          "name": "Lighting control",
+          "db": "lighting-control",
+          "src": "m1",
+          "page": "164",
+          "text": "This panel controls the lights outside the helicopter and the lighting of the instruments inside. The switches are for formation lights, rotor tip lights and cockpit lighting.",
+          "context": "The pilot uses it for flying at night. Night vision goggles need a lower light level than normal.",
+          "controls": [
+            {
+              "id": "form-light",
+              "name": "FORM LIGHT switch (formation lights)",
+              "type": "switch",
+              "match": [
+                "FORMATION-PTR",
+                "item:lighting-control:1"
+              ],
+              "positions": [
+                {
+                  "name": "OFF",
+                  "text": "The lights are off."
+                },
+                {
+                  "name": "10%",
+                  "text": "Dim light, ten percent."
+                },
+                {
+                  "name": "30%",
+                  "text": "Medium light, thirty percent."
+                },
+                {
+                  "name": "100%",
+                  "text": "Full brightness."
+                }
+              ],
+              "text": "This switch sets the formation lights. They are weak light strips on the back of the fuselage and the wings.",
+              "context": "They can be seen only from close up, so they help flying in formation at night without being visible from afar.",
+              "src": "m1",
+              "page": "164"
+            },
+            {
+              "id": "tip-lights",
+              "name": "BLADE TIP LIGHTS switch",
+              "type": "switch2",
+              "match": [
+                "CONTUR-LIGHT-PTR",
+                "item:lighting-control:2"
+              ],
+              "positions": [
+                {
+                  "name": "ON",
+                  "text": "The blade tip lights are on."
+                },
+                {
+                  "name": "OFF",
+                  "text": "The blade tip lights are off."
+                }
+              ],
+              "text": "Up, this switch turns on the lights on the tips of the lower rotor blades.",
+              "context": "They help to judge the distance from the blades to obstacles, and help in formation flying.",
+              "src": "m1",
+              "page": "164"
+            },
+            {
+              "id": "adi-sai-light",
+              "name": "ADI SAI lighting switch",
+              "type": "switch2",
+              "match": [
+                "AGR-PKP-PTR",
+                "item:lighting-control:3"
+              ],
+              "positions": [
+                {
+                  "name": "ON",
+                  "text": "The ADI and the SAI are lit."
+                },
+                {
+                  "name": "OFF",
+                  "text": "Their lighting is off."
+                }
+              ],
+              "text": "This switch lights up the ADI and the SAI, the two horizon gauges. They have their own lighting.",
+              "context": "The other panels use the panel lighting switch.",
+              "src": "m1",
+              "page": "164"
+            },
+            {
+              "id": "nvg-light",
+              "name": "NVG lighting switch",
+              "type": "switch2",
+              "match": [
+                "DEVICES-PTR",
+                "item:lighting-control:4"
+              ],
+              "positions": [
+                {
+                  "name": "ON",
+                  "text": "The cockpit lighting for night vision is on."
+                },
+                {
+                  "name": "OFF",
+                  "text": "It is off."
+                }
+              ],
+              "text": "This switch gives the cockpit a low light that suits night vision goggles.",
+              "context": "The NV BRT knob on the rear panel sets its brightness.",
+              "src": "m1",
+              "page": "164"
+            },
+            {
+              "id": "panel-light",
+              "name": "PANEL HSI ADI lighting switch",
+              "type": "switch2",
+              "match": [
+                "DESK-PTR",
+                "item:lighting-control:5"
+              ],
+              "positions": [
+                {
+                  "name": "ON",
+                  "text": "The panel lighting is on."
+                },
+                {
+                  "name": "OFF",
+                  "text": "The panel lighting is off."
+                }
+              ],
+              "text": "This switch lights up the cockpit panels, except for the ADI and the SAI.",
+              "context": "The pilot uses it at night when not wearing night vision goggles.",
+              "src": "m1",
+              "page": "164"
+            }
+          ]
+        },
+        {
+          "id": "eeg",
+          "name": "Electronic engine governors (EEG)",
+          "db": "engine-governors",
+          "src": "m1",
+          "page": "165",
+          "text": "This panel switches the two electronic engine governors on and lets the pilot test them. A governor keeps an engine from turning too fast by itself.",
+          "context": "Each governor limits the fuel at high engine speed. It also shuts the engine down if the power turbine overspeeds. They are normally on, with the test switches on OPER.",
+          "controls": [
+            {
+              "id": "eeg-lh",
+              "name": "EEG LH switch (left governor) with cover",
+              "type": "switch2",
+              "match": [
+                "ERD-LEFT-COVER-PTR",
+                "ERD-LEFT-PTR",
+                "item:engine-governors:1"
+              ],
+              "positions": [
+                {
+                  "name": "ON",
+                  "text": "The left governor is on."
+                },
+                {
+                  "name": "OFF",
+                  "text": "The left governor is off."
+                }
+              ],
+              "text": "This switch turns on the electronic governor of the left engine. A cover protects it.",
+              "context": "The pilot leaves it on for normal flights.",
+              "src": "m1",
+              "page": "166"
+            },
+            {
+              "id": "eeg-rh",
+              "name": "EEG RH switch (right governor) with cover",
+              "type": "switch2",
+              "match": [
+                "ERD-RIGHT-COVER-PTR",
+                "ERD-RIGHT-PTR",
+                "item:engine-governors:2"
+              ],
+              "positions": [
+                {
+                  "name": "ON",
+                  "text": "The right governor is on."
+                },
+                {
+                  "name": "OFF",
+                  "text": "The right governor is off."
+                }
+              ],
+              "text": "This switch turns on the electronic governor of the right engine. A cover protects it.",
+              "context": "The pilot leaves it on for normal flights.",
+              "src": "m1",
+              "page": "166"
+            },
+            {
+              "id": "eeg-gg",
+              "name": "EEG GG TEST switch with cover",
+              "type": "switch2",
+              "match": [
+                "PAV-CRANE-COVER-VSU-PTR01",
+                "PAV-CRANE-VSU-PTR01",
+                "item:engine-governors:3"
+              ],
+              "positions": [
+                {
+                  "name": "TEST",
+                  "text": "The gas generator channel is tested."
+                },
+                {
+                  "name": "OPER",
+                  "text": "Normal operation."
+                }
+              ],
+              "text": "This switch starts a test of the gas generator part of the governors. A cover protects it.",
+              "context": "For normal operation it stays on OPER.",
+              "src": "m1",
+              "page": "166"
+            },
+            {
+              "id": "eeg-ft",
+              "name": "EEG FT TEST switch with cover",
+              "type": "switch3",
+              "match": [
+                "PAV-CRANE-COVER-VSU-PTR02",
+                "PAV-CRANE-VSU-PTR02",
+                "item:engine-governors:4"
+              ],
+              "positions": [
+                {
+                  "name": "FT-1",
+                  "text": "Tests channel 1 of the power turbine protection."
+                },
+                {
+                  "name": "OPER",
+                  "text": "Normal operation."
+                },
+                {
+                  "name": "FT-2",
+                  "text": "Tests channel 2."
+                }
+              ],
+              "text": "This switch tests the power turbine part of the governors. Its two test positions test one channel each. A cover protects it.",
+              "context": "For normal operation it stays on OPER.",
+              "src": "m1",
+              "page": "166"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "rear-panels",
+      "where": "rear",
+      "name": "Rear panels",
+      "text": "These are the panels on the back wall of the cockpit, behind the pilot's right. They are used mostly on the ground for tests and for switching on systems.",
+      "panels": [
+        {
+          "id": "rear-aux",
+          "name": "Rear auxiliary panel",
+          "db": "rear-auxiliary-panel",
+          "src": "m1",
+          "page": "168",
+          "text": "This panel is on the back wall to the pilot's right. It has built-in tests, the ejection circuit test, the hydraulic gauges and other checks.",
+          "context": "Built-in tests let the pilot check systems on the ground. Most of the buttons are used only in the checks before the flight.",
+          "controls": [
+            {
+              "id": "heat-bit",
+              "name": "Heating system BIT button",
+              "type": "button",
+              "match": [
+                "item:rear-auxiliary-panel:1"
+              ],
+              "text": "In DCS this button has no function. It is the test button of the de-icing system.",
+              "context": "The Black Shark does not use it.",
+              "src": "m1",
+              "page": "169"
+            },
+            {
+              "id": "ice-lamps",
+              "name": "Heating intact and ice detected lamps",
+              "type": "light",
+              "match": [
+                "item:rear-auxiliary-panel:2",
+                "item:rear-auxiliary-panel:3"
+              ],
+              "text": "One lamp shows that the de-icing works. The other shows that ice was found.",
+              "context": "An ice message also appears on the EKRAN.",
+              "src": "m1",
+              "page": "169"
+            },
+            {
+              "id": "rt-left",
+              "name": "RT-12-6 LH button",
+              "type": "button",
+              "match": [
+                "RT-12-6-LEFT-PTR",
+                "item:rear-auxiliary-panel:4"
+              ],
+              "text": "Pressing this button lowers the limit of the left exhaust temperature governor. This tests that the electronic governor works.",
+              "context": "It is used in the engine checks.",
+              "src": "m1",
+              "page": "169"
+            },
+            {
+              "id": "rt-right",
+              "name": "RT-12-6 RH button",
+              "type": "button",
+              "match": [
+                "RT-12-6-RIGHT-PTR",
+                "item:rear-auxiliary-panel:5"
+              ],
+              "text": "Pressing this button lowers the limit of the right exhaust temperature governor. This tests that the electronic governor works.",
+              "context": "It is used in the engine checks.",
+              "src": "m1",
+              "page": "169"
+            },
+            {
+              "id": "ev-button",
+              "name": "EV button (engine vibration test)",
+              "type": "button",
+              "match": [
+                "RT-12-6-IV-PTR",
+                "item:rear-auxiliary-panel:6"
+              ],
+              "text": "Pressing this button tests the system that watches the engine vibration.",
+              "context": "It is used in the engine checks.",
+              "src": "m1",
+              "page": "170"
+            },
+            {
+              "id": "eject-lamp",
+              "name": "Ejection system check lamp",
+              "type": "light",
+              "match": [
+                "item:rear-auxiliary-panel:7"
+              ],
+              "text": "This lamp shows the result of the check of the ejection system's circuit.",
+              "context": "It is used with the circuit test button.",
+              "src": "m1",
+              "page": "170"
+            },
+            {
+              "id": "eject-test",
+              "name": "Ejection circuit test button",
+              "type": "button",
+              "match": [
+                "CONTR-SAP-PTR",
+                "item:rear-auxiliary-panel:8"
+              ],
+              "text": "Pressing this button checks the electric circuit of the ejection system. It is done after the three wall switches are on.",
+              "context": "The pilot can also set the mode dial to each position and press the button again, except for MAN.",
+              "src": "m1",
+              "page": "170"
+            },
+            {
+              "id": "eject-mode",
+              "name": "Ejection mode switch (MAN - POWER - BLADES SEPARATION)",
+              "type": "switch3",
+              "match": [
+                "CONTR-SAPROTATE-PTR",
+                "item:rear-auxiliary-panel:9"
+              ],
+              "positions": [
+                {
+                  "name": "MAN",
+                  "text": "Manual ejection."
+                },
+                {
+                  "name": "POWER",
+                  "text": "Assisted ejection."
+                },
+                {
+                  "name": "BLADES SEPARATION",
+                  "text": "Full ejection with the rotor blades cut off."
+                }
+              ],
+              "text": "This switch chooses how the ejection works: by hand, with help, or with the rotor blades cut off first.",
+              "context": "BLADES SEPARATION is the full ejection, which gets rid of the blades so the pilot can leave safely.",
+              "src": "m1",
+              "page": "170"
+            },
+            {
+              "id": "betty-test",
+              "name": "BETTY VOICE TEST button",
+              "type": "button",
+              "match": [
+                "SPEECH-BIT-PTR",
+                "item:rear-auxiliary-panel:10"
+              ],
+              "text": "Pressing this button runs a test of the voice message system. If the test is good, the voice says so.",
+              "context": "The pilot does it in the checks before the flight.",
+              "src": "m1",
+              "page": "171"
+            },
+            {
+              "id": "hyd-gauges",
+              "name": "Hydraulic pressure and temperature indicators",
+              "type": "gauge",
+              "match": [
+                "item:rear-auxiliary-panel:11"
+              ],
+              "text": "These indicators show the oil pressure of the main and common hydraulic systems, the accumulators and the wheel brakes. They also show the temperature of the two systems and two valve lamps.",
+              "context": "The valve lamps light when the servos work from the common system instead of the main one.",
+              "src": "m1",
+              "page": "171"
+            }
+          ]
+        },
+        {
+          "id": "ppk800",
+          "name": "PPK-800 systems preparation and check panel",
+          "db": "ppk-800-panel",
+          "src": "m1",
+          "page": "173",
+          "text": "This panel has settings and checks for the weapon computer and the navigation computer. The inertial navigation unit is switched on here.",
+          "context": "Many of its controls are not used in DCS. The pilot uses the INU switches and the rocket selector.",
+          "controls": [
+            {
+              "id": "ppk-lamps",
+              "name": "Computer malfunction lights",
+              "type": "light",
+              "match": [
+                "item:ppk-800-panel:1"
+              ],
+              "count": 5,
+              "text": "Five lights show a fault of the combat computer, navigation computer, indication computer or the input-output device.",
+              "context": "The input-output device lamp has no function.",
+              "src": "m1",
+              "page": "173"
+            },
+            {
+              "id": "ppk-atgm",
+              "name": "ATGM temperature selector",
+              "type": "selector",
+              "match": [
+                "PPK-BBTZ-PTR",
+                "item:ppk-800-panel:2"
+              ],
+              "text": "This selector is for the outside temperature in the Vikhr missile preparation. In DCS it has no function.",
+              "context": "The Black Shark does not use it.",
+              "src": "m1",
+              "page": "173"
+            },
+            {
+              "id": "ppk-asc",
+              "name": "ASC selector (ballistics)",
+              "type": "selector",
+              "match": [
+                "PPK-NRAKS-PTR",
+                "item:ppk-800-panel:3"
+              ],
+              "text": "This selector tells the computer which unguided rockets or gun pods are loaded, so it can work out where they hit. 0 is S-8KOM, 1 is S-8TsM, 2 is S-13, 4 is S-8M and 5 is UPK-23 gun pods.",
+              "context": "Its position must match the selected weapon, or the impact point is wrong. It sets itself at the mission start, but must be set by hand for the second rocket type and after rearming.",
+              "src": "m1",
+              "page": "173"
+            },
+            {
+              "id": "ppk-rnp",
+              "name": "RNP selector",
+              "type": "selector",
+              "match": [
+                "PPK-RNP-PTR",
+                "item:ppk-800-panel:4"
+              ],
+              "text": "In DCS this selector has no function. It is a selector for a built-in test.",
+              "context": "The Black Shark does not use it.",
+              "src": "m1",
+              "page": "174"
+            },
+            {
+              "id": "ppk-inu",
+              "name": "INU - OFF switch",
+              "type": "switch2",
+              "match": [
+                "IKV-PTR",
+                "item:ppk-800-panel:6"
+              ],
+              "positions": [
+                {
+                  "name": "INU",
+                  "text": "The inertial navigation unit has power and starts its alignment."
+                },
+                {
+                  "name": "OFF",
+                  "text": "The unit is off."
+                }
+              ],
+              "text": "This switch powers the inertial navigation unit, which starts to align by itself. The unit works out the helicopter's position from its own motion.",
+              "context": "The pilot switches it on early in the start-up. The alignment must be finished before the navigation works. The game lists this switch as INU Power in its C-061K group, the data system the INU belongs to.",
+              "src": "m1",
+              "page": "174"
+            },
+            {
+              "id": "ppk-inu-heat",
+              "name": "INU HEAT switch",
+              "type": "switch2",
+              "match": [
+                "HEAT_IKV-PTR",
+                "item:ppk-800-panel:7"
+              ],
+              "positions": [
+                {
+                  "name": "ON",
+                  "text": "The heater of the navigation unit is on."
+                },
+                {
+                  "name": "OFF",
+                  "text": "The heater is off."
+                }
+              ],
+              "text": "This switch heats the inertial navigation unit. The game names it INU Heater. The start-up chapter of the manual says the heater must be on before the unit is switched on.",
+              "context": "The panel list of the manual says this switch has no function, but the start-up chapter uses it. The game lists it in its C-061K group.",
+              "src": "m1",
+              "page": "174"
+            },
+            {
+              "id": "ppk-test",
+              "name": "TEST - OFF switch (computer test)",
+              "type": "switch2",
+              "match": [
+                "KCVM-PTR",
+                "item:ppk-800-panel:5"
+              ],
+              "positions": [
+                {
+                  "name": "TEST",
+                  "text": "Would start the computer self-test; it does nothing in DCS."
+                },
+                {
+                  "name": "OFF",
+                  "text": "Normal position."
+                }
+              ],
+              "text": "In DCS this switch has no function, according to the manual. It is a test switch for the computers, and the game names it Control computers BIT switch.",
+              "context": "The Black Shark does not use it.",
+              "src": "m1",
+              "page": "174"
+            },
+            {
+              "id": "ppk-wcs-bit",
+              "name": "WCS BIT button (weapon system test)",
+              "type": "button",
+              "match": [
+                "AKS-PTR",
+                "item:ppk-800-panel:8"
+              ],
+              "text": "In DCS this button has no function. It is meant to test the weapon control system. The game names it Self test system push-button.",
+              "context": "The Black Shark does not use it.",
+              "src": "m1",
+              "page": "174"
+            },
+            {
+              "id": "ppk-vnk",
+              "name": "VnK - OFF switch",
+              "type": "switch2",
+              "match": [
+                "VnK-PTR",
+                "item:ppk-800-panel:9"
+              ],
+              "positions": [
+                {
+                  "name": "VnK",
+                  "text": "Would start an emergency alignment of the navigation unit; it does nothing in DCS."
+                },
+                {
+                  "name": "OFF",
+                  "text": "Normal position."
+                }
+              ],
+              "text": "In DCS this switch has no function, according to the manual. The game names it Emergency INU alignment switch.",
+              "context": "The Black Shark does not use it.",
+              "src": "m1",
+              "page": "174"
+            },
+            {
+              "id": "ppk-sling",
+              "name": "SLING - OFF switch",
+              "type": "switch2",
+              "match": [
+                "ROPE-PTR",
+                "item:ppk-800-panel:10"
+              ],
+              "positions": [
+                {
+                  "name": "SLING",
+                  "text": "Would steady the load cable; it does nothing in DCS."
+                },
+                {
+                  "name": "OFF",
+                  "text": "Normal position."
+                }
+              ],
+              "text": "In DCS this switch has no function. It is meant to steady the cable of a sling load, a load hanging under the helicopter. The game names it Stabilisation and indication of hanger cable switch.",
+              "context": "The Black Shark does not use it.",
+              "src": "m1",
+              "page": "174"
+            },
+            {
+              "id": "ppk-fk",
+              "name": "FK - OFF switch (video recorder)",
+              "type": "switch2",
+              "match": [
+                "FKP-PTR",
+                "item:ppk-800-panel:11"
+              ],
+              "positions": [
+                {
+                  "name": "FK",
+                  "text": "Would start the video recorder; it does nothing in DCS."
+                },
+                {
+                  "name": "OFF",
+                  "text": "Normal position."
+                }
+              ],
+              "text": "In DCS this switch has no function. It is meant for the video recorder that records the HUD picture. The game names it Video Tape Recorder switch.",
+              "context": "The Black Shark does not use it.",
+              "src": "m1",
+              "page": "174"
+            }
+          ]
+        },
+        {
+          "id": "lws",
+          "name": "LWS, WS and CMS power and test panel",
+          "db": "lws-ws-cms-panel",
+          "src": "m1",
+          "page": "175",
+          "text": "This panel powers and tests the laser warning system, the weapon system and the flare dispensers (counter-measures). The laser warning system detects laser beams aimed at the helicopter.",
+          "context": "The pilot switches on the laser warning and the flare system here, and tests them, in the rear panel checks before the flight.",
+          "controls": [
+            {
+              "id": "l140-power",
+              "name": "L-140 - OFF switch",
+              "type": "switch2",
+              "match": [
+                "L140-SWITCH",
+                "item:lws-ws-cms-panel:1"
+              ],
+              "positions": [
+                {
+                  "name": "ON",
+                  "text": "The laser warning system has power."
+                },
+                {
+                  "name": "OFF",
+                  "text": "The system is off."
+                }
+              ],
+              "text": "Up, this switch gives power to the laser warning system. After about 30 seconds it is ready.",
+              "context": "The laser warning panel is usable after that, and a self-test is possible.",
+              "src": "m1",
+              "page": "175"
+            },
+            {
+              "id": "l140-lamp",
+              "name": "L-140 OPER lamp",
+              "type": "light",
+              "match": [
+                "item:lws-ws-cms-panel:2"
+              ],
+              "text": "This green lamp lights when the laser warning system is ready. It goes out for the 30 seconds of a self-test.",
+              "context": "The lamp tells the pilot that the laser warning works.",
+              "src": "m1",
+              "page": "175"
+            },
+            {
+              "id": "l140-test",
+              "name": "L-140 TEST button",
+              "type": "button",
+              "match": [
+                "L140-CNOB",
+                "item:lws-ws-cms-panel:3"
+              ],
+              "text": "Pressing this button starts a 30 second self-test of the laser warning system.",
+              "context": "During the test the OPER lamp is off.",
+              "src": "m1",
+              "page": "175"
+            },
+            {
+              "id": "tb-bit",
+              "name": "TB-BIT indicator and switch",
+              "type": "switch",
+              "match": [
+                "item:lws-ws-cms-panel:4",
+                "item:lws-ws-cms-panel:5"
+              ],
+              "count": 2,
+              "text": "In DCS these two parts have no function. They are the lamp and the switch of the weapon system test.",
+              "context": "The Black Shark does not use them.",
+              "src": "m1",
+              "page": "175"
+            },
+            {
+              "id": "uv-oper",
+              "name": "UV-26 OPER - OFF switch with cover",
+              "type": "switch2",
+              "match": [
+                "UV26-POWER-COVER-PTR",
+                "UV26-POWER-PTR",
+                "item:lws-ws-cms-panel:6"
+              ],
+              "positions": [
+                {
+                  "name": "ON",
+                  "text": "The flare system has power."
+                },
+                {
+                  "name": "OFF",
+                  "text": "The flare system is off."
+                }
+              ],
+              "text": "Up, this switch powers the UV-26 flare system. A cover protects it. The control panel on the overhead then works.",
+              "context": "The pilot switches it on before the flight.",
+              "src": "m1",
+              "page": "175"
+            },
+            {
+              "id": "uv-test",
+              "name": "UV-26 TEST - OFF switch with cover",
+              "type": "switch2",
+              "match": [
+                "UV26-TEST-COVER-PTR",
+                "UV26-TEST-PTR",
+                "item:lws-ws-cms-panel:7"
+              ],
+              "positions": [
+                {
+                  "name": "TEST",
+                  "text": "Up: the flare system tests itself."
+                },
+                {
+                  "name": "OFF",
+                  "text": "Down: no test."
+                }
+              ],
+              "text": "While this switch is up, the flare system is in its self-test. A cover protects it. If all is well the display shows 990.",
+              "context": "The pilot uses it in the checks.",
+              "src": "m1",
+              "page": "175"
+            }
+          ]
+        },
+        {
+          "id": "elec-system",
+          "name": "Electrical system control panel",
+          "db": "electrical-system-control-panel",
+          "src": "m1",
+          "page": "176",
+          "text": "This panel has meters that do not work in DCS, the brightness of the rear panel lights and the power for the EKRAN warning system.",
+          "context": "The EKRAN power switch is the part the pilot uses in the start-up.",
+          "controls": [
+            {
+              "id": "meters",
+              "name": "Amp meter, volt meter and meter selectors",
+              "type": "gauge",
+              "match": [
+                "item:electrical-system-control-panel:1",
+                "item:electrical-system-control-panel:2",
+                "item:electrical-system-control-panel:3",
+                "item:electrical-system-control-panel:4",
+                "item:electrical-system-control-panel:5"
+              ],
+              "count": 5,
+              "text": "In DCS the two meters and the three selectors next to them have no function. They are for the current, the voltage and the choice of which electric group is measured.",
+              "context": "The Black Shark does not use them.",
+              "src": "m1",
+              "page": "176"
+            },
+            {
+              "id": "rear-bright",
+              "name": "Rear panel lights brightness knob",
+              "type": "knob",
+              "match": [
+                "P-CONTR-BRIGHT-PTR",
+                "item:electrical-system-control-panel:6"
+              ],
+              "text": "Turning this knob changes the brightness of the lighting of the rear panels.",
+              "context": "It works together with the rear panel lights switch.",
+              "src": "m1",
+              "page": "176"
+            },
+            {
+              "id": "rear-lights",
+              "name": "Rear panel lights switch",
+              "type": "switch2",
+              "match": [
+                "P-CONTR-ILLUM-PTR",
+                "item:electrical-system-control-panel:7"
+              ],
+              "positions": [
+                {
+                  "name": "ON",
+                  "text": "The rear panel lighting is on."
+                },
+                {
+                  "name": "OFF",
+                  "text": "The rear panel lighting is off."
+                }
+              ],
+              "text": "Up, this switch lights the switches and indicators of the rear panels.",
+              "context": "The pilot uses it for flying at night.",
+              "src": "m1",
+              "page": "176"
+            },
+            {
+              "id": "ekran-pwr",
+              "name": "EKRAN HYD TRANS PWR switch with cover",
+              "type": "switch2",
+              "match": [
+                "P-CONTR-VMG-HYDRO-COVER-PTR",
+                "P-CONTR-VMG-HYDRO-PTR",
+                "item:electrical-system-control-panel:8"
+              ],
+              "positions": [
+                {
+                  "name": "ON",
+                  "text": "Down: the EKRAN and the sensors have power."
+                },
+                {
+                  "name": "OFF",
+                  "text": "Up: they are off."
+                }
+              ],
+              "text": "This switch powers the EKRAN warning system and the sensors of the hydraulics and transmission. A cover protects it.",
+              "context": "The EKRAN needs it to show messages. Battery power can also feed the EKRAN in an emergency.",
+              "src": "m1",
+              "page": "176"
+            },
+            {
+              "id": "breaker",
+              "name": "Circuit breaker",
+              "type": "other",
+              "match": [
+                "item:electrical-system-control-panel:9"
+              ],
+              "text": "In DCS this circuit breaker has no function. A circuit breaker is a safety switch that pops out when something draws too much power.",
+              "context": "The Black Shark does not use it.",
+              "src": "m1",
+              "page": "176"
+            }
+          ]
+        },
+        {
+          "id": "brightness",
+          "name": "Lighting brightness control panel",
+          "db": "lighting-brightness-panel",
+          "src": "m1",
+          "page": "177",
+          "text": "This panel has three knobs for the brightness of the cockpit lights at night: the blue night lighting, the ADI and HSI lighting and the side panels.",
+          "context": "The pilot uses them at night to see the instruments without too much glare.",
+          "controls": [
+            {
+              "id": "nv-brt",
+              "name": "NV BRT knob",
+              "type": "knob",
+              "match": [
+                "BRIGHT-DEV-PTR",
+                "item:lighting-brightness-panel:1"
+              ],
+              "text": "Turning this knob changes the brightness of the blue cockpit light used for night operations.",
+              "context": "It goes with the NVG lighting switch on the wall panel.",
+              "src": "m1",
+              "page": "177"
+            },
+            {
+              "id": "adi-hsi-brt",
+              "name": "ADI HSI knob",
+              "type": "knob",
+              "match": [
+                "BRIGHT-AGR-PKP-PTR",
+                "item:lighting-brightness-panel:2"
+              ],
+              "text": "Turning this knob changes the lighting brightness of the ADI and HSI gauges.",
+              "context": "The pilot turns it down at night to avoid glare.",
+              "src": "m1",
+              "page": "177"
+            },
+            {
+              "id": "lh-rh-brt",
+              "name": "LH RH knob",
+              "type": "knob",
+              "match": [
+                "BRIGHT-LEFT-RIGHT-PTR",
+                "item:lighting-brightness-panel:3"
+              ],
+              "text": "Turning this knob changes the lighting brightness of the left and right side panels.",
+              "context": "It works with the panel lighting switch.",
+              "src": "m1",
+              "page": "177"
+            },
+            {
+              "id": "flood",
+              "name": "Flood light switch (LAMP)",
+              "type": "switch",
+              "match": [
+                "LAMP-PTR"
+              ],
+              "text": "This switch turns on a flood light, a lamp that lights the cockpit in general. The manual says the flood light switch is on the rear left panel.",
+              "context": "The pilot can use it to see the switches at night.",
+              "src": "m1",
+              "page": "164"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "hotas",
+      "where": "hotas",
+      "name": "Cyclic, collective and pedals",
+      "text": "The flight controls and the grips. The cyclic is in front of the pilot and the collective is at the left. Both have buttons for the weapons and sensors.",
+      "panels": [
+        {
+          "id": "cyclic",
+          "name": "Cyclic stick",
+          "src": "m1",
+          "page": "83",
+          "text": "The cyclic is the helicopter's stick between the pilot's knees. Tilting it tilts the rotors, so the helicopter flies forward, back or sideways. The grip carries buttons for the weapons, the Shkval and the autopilot.",
+          "context": "The pilot flies with the right hand on the cyclic. The weapon and sensor buttons are on the grip, so the hand never has to leave the stick.",
+          "controls": [
+            {
+              "id": "cyclic-axis",
+              "name": "Cyclic (pitch and roll)",
+              "type": "axis",
+              "match": [
+                "control:stick.gimbal"
+              ],
+              "text": "Pushing the stick forward or pulling it back tilts the helicopter's nose down or up. Moving it sideways leans the helicopter left or right.",
+              "context": "To start forward flight the pilot pitches the nose down. To slow down or fly backwards the pilot pulls the stick back.",
+              "src": "m1",
+              "page": "83"
+            },
+            {
+              "id": "weapon-trigger",
+              "name": "RELEASE WEAPONS trigger (large)",
+              "type": "trigger",
+              "match": [
+                "control:stick.weapon_release"
+              ],
+              "text": "Pressing this large trigger fires or drops the chosen external weapon: missiles, rockets, bombs or gun pods. Flipping it up uncovers the cannon trigger.",
+              "context": "A Vikhr missile needs the trigger held for up to a second. With the large trigger flipped up, only the cannon can fire.",
+              "src": "m1",
+              "page": "84"
+            },
+            {
+              "id": "helix-parts",
+              "name": "Cyclic parts named Helix (game)",
+              "type": "other",
+              "match": [
+                "Helix003",
+                "Helix004"
+              ],
+              "count": 2,
+              "text": "The game lists two parts of the cyclic grip under the name Helix without any description. The manual does not describe them.",
+              "context": "The game does not say which parts of the grip these are.",
+              "src": "m1",
+              "page": "83"
+            },
+            {
+              "id": "gun-trigger",
+              "name": "GUN FIRE trigger (small)",
+              "type": "trigger",
+              "match": [
+                "control:stick.trigger"
+              ],
+              "text": "This small trigger fires the 30 mm cannon. It works only after the large weapon trigger has been flipped up.",
+              "context": "The large trigger guards it by default, so the cannon does not fire by accident.",
+              "src": "m1",
+              "page": "85"
+            },
+            {
+              "id": "wheel-brake",
+              "name": "Wheel brake paddle",
+              "type": "lever",
+              "match": [
+                "control:stick.lever.wheel_brake"
+              ],
+              "text": "Squeezing this paddle brakes the wheels. The game also uses it as a parking brake latch.",
+              "context": "The helicopter uses the wheel brakes when it rolls on the ground.",
+              "src": "m1",
+              "page": "84"
+            },
+            {
+              "id": "hover",
+              "name": "HOVER button",
+              "type": "button",
+              "match": [
+                "control:stick.button.hover"
+              ],
+              "text": "Pressing this button turns the hover autopilot on or off. In hover mode the autopilot keeps the helicopter in one place.",
+              "context": "The hover marks are shown on the HSI.",
+              "src": "m1",
+              "page": "84"
+            },
+            {
+              "id": "radio-button",
+              "name": "RADIO button",
+              "type": "button",
+              "match": [
+                "control:stick.button.radio"
+              ],
+              "text": "In DCS this button has no function. It would key the radio transmitter.",
+              "context": "The Black Shark does not use it.",
+              "src": "m1",
+              "page": "84"
+            },
+            {
+              "id": "gauge-light",
+              "name": "GAUGE LGT button",
+              "type": "button",
+              "match": [
+                "control:stick.button.gauge_light"
+              ],
+              "text": "Pressing this button turns the cockpit and gauge lighting on and off.",
+              "context": "It is a quick way to change the light at night.",
+              "src": "m1",
+              "page": "84"
+            },
+            {
+              "id": "tgt-des",
+              "name": "TGT DES button (uncage Shkval)",
+              "type": "button",
+              "match": [
+                "control:stick.button.uncage"
+              ],
+              "text": "Pressing this button releases the Shkval camera from its locked position, so it can mark a target. It also confirms data when the navigation unit takes a fix.",
+              "context": "The Shkval is the TV targeting camera in the nose.",
+              "src": "m1",
+              "page": "84"
+            },
+            {
+              "id": "tdc-hat",
+              "name": "TDC (marker) hat",
+              "type": "hat",
+              "match": [
+                "control:stick.hat.marker"
+              ],
+              "text": "This small four-way switch under the thumb moves the line of sight of the Shkval camera up, down, left and right.",
+              "context": "The pilot points the camera at a target with it.",
+              "src": "m1",
+              "page": "84"
+            },
+            {
+              "id": "trimmer",
+              "name": "TRIMMER button",
+              "type": "button",
+              "match": [
+                "control:stick.button.trimmer"
+              ],
+              "text": "While this button is held, no force is felt on the stick. When it is released, the autopilot keeps the current pitch, bank and yaw angles.",
+              "context": "This is a different kind of trim from fixed-wing aircraft, where small adjustments are set once. Here the pilot trims by holding and releasing the button.",
+              "src": "m1",
+              "page": "84"
+            },
+            {
+              "id": "ap-off",
+              "name": "AUTOPILOT OFF button",
+              "type": "button",
+              "match": [
+                "control:stick.button.ap_off"
+              ],
+              "text": "Pressing this button switches the autopilot off at once in an emergency.",
+              "context": "The pilot then flies the helicopter by hand.",
+              "src": "m1",
+              "page": "84"
+            }
+          ]
+        },
+        {
+          "id": "collective",
+          "name": "Collective and its head",
+          "src": "m1",
+          "page": "87",
+          "text": "The collective is the lever at the left of the pilot. Lifting it makes the helicopter climb and lowering it makes the helicopter sink. The head of the lever has buttons and switches.",
+          "context": "The pilot uses the left hand on the collective. The buttons at the head control the Shkval, the weapons selection, the landing light and the autopilot modes.",
+          "controls": [
+            {
+              "id": "collective-axis",
+              "name": "Collective",
+              "type": "axis",
+              "match": [
+                "control:collective.axis.main"
+              ],
+              "text": "Pulling this lever up tilts the blades of both rotors to give more lift, so the helicopter climbs. Pushing it down gives less lift.",
+              "context": "The rotor pitch indicator on the left panel shows how much pitch is set.",
+              "src": "m1",
+              "page": "81"
+            },
+            {
+              "id": "collective-brake",
+              "name": "Collective brake and assign altitude lever",
+              "type": "lever",
+              "match": [
+                "control:collective.lever.brake"
+              ],
+              "text": "Pressing this lever frees the collective from its brake, so it can be moved. It also tells the navigation system to take a new altitude when the altitude hold is on.",
+              "context": "The brake keeps the stick from moving by itself because of vibration.",
+              "src": "m1",
+              "page": "87"
+            },
+            {
+              "id": "adj-free-tur",
+              "name": "ADJ FREE-TUR selector",
+              "type": "switch",
+              "match": [
+                "control:collective.switch.rotor_rpm"
+              ],
+              "positions": [
+                {
+                  "name": "NOMINAL",
+                  "text": "The rotor speed governor is set to the nominal speed."
+                },
+                {
+                  "name": "LOW",
+                  "text": "The rotor speed governor is set to the low speed."
+                }
+              ],
+              "text": "This selector changes the setting of the rotor speed governor, the device that keeps the rotor speed steady by itself. It chooses the nominal speed or a low speed.",
+              "context": "The pilot normally keeps the nominal setting.",
+              "src": "m1",
+              "page": "87"
+            },
+            {
+              "id": "sling-button",
+              "name": "SLING button",
+              "type": "button",
+              "match": [
+                "control:collective.button.sling"
+              ],
+              "text": "In DCS this button has no function. It would release a load that hangs under the helicopter.",
+              "context": "The Black Shark does not use it.",
+              "src": "m1",
+              "page": "87"
+            },
+            {
+              "id": "spot-hat",
+              "name": "SPOT LIGHT hat",
+              "type": "hat",
+              "match": [
+                "control:collective.hat.landing_light"
+              ],
+              "text": "This four-way switch moves the search and landing light up, down, left and right.",
+              "context": "The pilot aims the light at the landing place.",
+              "src": "m1",
+              "page": "87"
+            },
+            {
+              "id": "adj-shk",
+              "name": "ADJ SHK selector",
+              "type": "rocker",
+              "match": [
+                "control:collective.rocker.gate_size"
+              ],
+              "text": "This rocker makes the tracking frame of the Shkval bigger or smaller. The frame is the box around the target on the screen.",
+              "context": "The pilot sets it to the size of the target.",
+              "src": "m1",
+              "page": "87"
+            },
+            {
+              "id": "nar-wide",
+              "name": "NAR-WIDE switch",
+              "type": "switch2",
+              "match": [
+                "control:collective.switch.shkval_fov"
+              ],
+              "positions": [
+                {
+                  "name": "NAR",
+                  "text": "Narrow view, zoom 23x."
+                },
+                {
+                  "name": "WIDE",
+                  "text": "Wide view, zoom 7x."
+                }
+              ],
+              "text": "This switch zooms the Shkval camera in and out, between a wide and a narrow view.",
+              "context": "The wide view finds targets and the narrow view looks at them in detail.",
+              "src": "m1",
+              "page": "88"
+            },
+            {
+              "id": "descent-route",
+              "name": "DESCENT - ROUTE switch",
+              "type": "switch3",
+              "match": [
+                "control:collective.switch.ap_mode"
+              ],
+              "positions": [
+                {
+                  "name": "DESCENT",
+                  "text": "The autopilot flies a controlled descent."
+                },
+                {
+                  "name": "OFF",
+                  "text": "Both modes are off."
+                },
+                {
+                  "name": "ROUTE",
+                  "text": "The autopilot follows the route."
+                }
+              ],
+              "text": "This three-position switch picks an autopilot mode. DESCENT makes a controlled descent. ROUTE makes the autopilot follow the planned route.",
+              "context": "The middle position switches both modes off.",
+              "src": "m1",
+              "page": "88"
+            },
+            {
+              "id": "tgt-lock",
+              "name": "TGT LOCK button",
+              "type": "button",
+              "match": [
+                "control:collective.button.tgt_lock"
+              ],
+              "text": "Pressing this button locks the Shkval on a target or lets it go again.",
+              "context": "The pilot presses it after pointing the camera at the target.",
+              "src": "m1",
+              "page": "88"
+            },
+            {
+              "id": "hardpoint-hat",
+              "name": "Hardpoint selector hat",
+              "type": "hat",
+              "match": [
+                "control:collective.hat.hardpoint"
+              ],
+              "text": "This four-way hat chooses which weapon stations are used. Left picks the outer ones, right picks the inner ones and down picks all of them. Up picks the Igla air-to-air missiles.",
+              "context": "A hardpoint is a place under the wing where weapons hang.",
+              "src": "m1",
+              "page": "87"
+            }
+          ]
+        },
+        {
+          "id": "pedals",
+          "name": "Pedals",
+          "src": "m1",
+          "text": "The pedals turn the helicopter's nose left and right. The Ka-50 has two rotors on one shaft and no tail rotor. The pedals change the pitch of the rotors against each other to turn.",
+          "context": "The pilot uses the feet on the pedals. They do the job the tail rotor does in other helicopters.",
+          "controls": [
+            {
+              "id": "pedals-axis",
+              "name": "Pedals (yaw)",
+              "type": "pedal",
+              "match": [
+                "control:pedals.axis.rudder"
+              ],
+              "text": "Pushing the left pedal turns the nose to the left. Pushing the right pedal turns it to the right.",
+              "context": "In the Ka-50 the pedals work by changing the pitch of the two rotors against each other (differential rotor pitch).",
+              "src": "m1"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "extras",
+      "where": "other",
+      "name": "Other controls",
+      "text": "A single control from the game that is not part of any named panel.",
+      "panels": [
+        {
+          "id": "extras",
+          "name": "Controls the manual does not describe",
+          "src": "m1",
+          "page": "132",
+          "text": "This panel collects a control of the cockpit that the game has but the manual does not explain.",
+          "context": "It does not matter for normal flying.",
+          "controls": [
+            {
+              "id": "stick-visible",
+              "name": "STICK_VISIBILITY switch",
+              "type": "switch",
+              "match": [
+                "STICK_VISIBILITY"
+              ],
+              "text": "The manual does not describe this switch. The game calls it STICK_VISIBILITY, which points to the visibility of the cyclic stick.",
+              "context": "The manual says that the cyclic can be in the way of the centre panel, and then the pilot can use keyboard commands.",
+              "src": "m1",
+              "page": "132"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

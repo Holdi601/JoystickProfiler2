@@ -1,0 +1,2205 @@
+{
+  "format": "joypro-cockpit-guide",
+  "version": 1,
+  "partOf": "dcs-c-130j",
+  "areas": [
+    {
+      "id": "overhead",
+      "where": "overhead",
+      "name": "Overhead panel",
+      "text": "The panels in the roof above the pilots: control boost, oil cooler flaps, electrics, ice protection, bleed air, pressurization and fuel.",
+      "panels": [
+        {
+          "id": "control-boost",
+          "name": "Control boost panel",
+          "src": "m1",
+          "page": "67",
+          "text": "The ailerons, elevators and rudder are moved by hydraulic boosters, which make the controls light to move. This panel can shut the oil supply of each booster off if it leaks.",
+          "context": "Normally every switch stays ON. The pilots turn one OFF only after a hydraulic leak or fault in that booster.",
+          "controls": [
+            {
+              "id": "boost-guards",
+              "name": "Control boost switch guards (6)",
+              "type": "guard",
+              "match": [
+                "PNT_AILERON_UTIL_3*",
+                "PNT_AILERON_BOOST_3*",
+                "PNT_ELEV_UTIL_3*",
+                "PNT_ELEV_BOOST_3*",
+                "PNT_RUDDER_UTIL_3*",
+                "PNT_RUDDER_BOOST_3*"
+              ],
+              "count": 6,
+              "text": "These six little covers sit over the six control boost switches. They stop a switch from being moved by mistake. The pilot lifts a cover to reach the switch.",
+              "context": "Each switch has its own cover: one for the utility line and one for the booster line of the aileron, elevator and rudder.",
+              "src": "m1",
+              "page": "67"
+            },
+            {
+              "id": "boost-aileron",
+              "name": "AILERON control boost switches (UTIL and BOOST)",
+              "type": "switch",
+              "match": [
+                "PNT_AILERON_UTIL_505",
+                "PNT_AILERON_BOOST_504",
+                "item:upper-overhead-panel:6"
+              ],
+              "positions": [
+                {
+                  "name": "OFF",
+                  "text": "The shutoff valve is closed and the booster is cut off from that system."
+                },
+                {
+                  "name": "ON",
+                  "text": "The shutoff valve is open and oil from that system reaches the booster."
+                }
+              ],
+              "count": 2,
+              "text": "These two switches open or close the oil valves that feed the aileron booster from the utility and from the booster hydraulic system. The ailerons roll the plane.",
+              "context": "With both OFF, the aileron has no hydraulic help and is much heavier to move.",
+              "src": "m1",
+              "page": "67"
+            },
+            {
+              "id": "boost-elevator",
+              "name": "ELEVATOR control boost switches (UTIL and BOOST)",
+              "type": "switch",
+              "match": [
+                "PNT_ELEV_UTIL_501",
+                "PNT_ELEV_BOOST_500"
+              ],
+              "positions": [
+                {
+                  "name": "OFF",
+                  "text": "The shutoff valve is closed and the booster is cut off from that system."
+                },
+                {
+                  "name": "ON",
+                  "text": "The shutoff valve is open and oil from that system reaches the booster."
+                }
+              ],
+              "count": 2,
+              "text": "These two switches open or close the oil valves that feed the elevator booster from the utility and from the booster hydraulic system. The elevators pitch the nose up and down.",
+              "context": "With both OFF, the elevator has no hydraulic help.",
+              "src": "m1",
+              "page": "67"
+            },
+            {
+              "id": "boost-rudder",
+              "name": "RUDDER control boost switches (UTIL and BOOST)",
+              "type": "switch",
+              "match": [
+                "PNT_RUDDER_UTIL_503",
+                "PNT_RUDDER_BOOST_502"
+              ],
+              "positions": [
+                {
+                  "name": "OFF",
+                  "text": "The shutoff valve is closed and the booster is cut off from that system."
+                },
+                {
+                  "name": "ON",
+                  "text": "The shutoff valve is open and oil from that system reaches the booster."
+                }
+              ],
+              "count": 2,
+              "text": "These two switches open or close the oil valves that feed the rudder booster from the utility and from the booster hydraulic system. The rudder turns the nose left and right.",
+              "context": "With both OFF, the rudder has no hydraulic help.",
+              "src": "m1",
+              "page": "67"
+            }
+          ]
+        },
+        {
+          "id": "oil-cooler",
+          "name": "Oil cooler flap panel",
+          "src": "m1",
+          "page": "87",
+          "text": "Each engine has an oil radiator cooled by air. This panel has one switch for each engine to open or close the flap that controls the cooling air.",
+          "context": "The switches normally stay in AUTO. The flap changes the cooling for the engine oil.",
+          "controls": [
+            {
+              "id": "oil-flap-1",
+              "name": "Engine 1 oil cooler flap switch",
+              "type": "selector",
+              "match": [
+                "PNT_OIL_FLAP_1_*",
+                "item:upper-overhead-panel:7"
+              ],
+              "positions": [
+                {
+                  "name": "OPEN",
+                  "text": "The flap is driven open. The switch springs back to HOLD."
+                },
+                {
+                  "name": "AUTO",
+                  "text": "The flap moves by itself according to the oil temperature and the gear position."
+                },
+                {
+                  "name": "HOLD",
+                  "text": "The flap stays where it is. The game calls this position Fixed."
+                },
+                {
+                  "name": "CLOSE",
+                  "text": "The flap is driven closed. The switch springs back to HOLD."
+                }
+              ],
+              "count": 4,
+              "text": "This switch sets the oil cooler flap of engine 1. The flap is a door behind the oil radiator in the engine housing. Opening it lets more air through to cool the oil.",
+              "context": "AUTO lets the plane move the flap of engine 1 by itself according to oil temperature and gear position. The game shows the four positions (close, auto, fixed, open) of this engine as separate click spots.",
+              "src": "m1",
+              "page": "87"
+            },
+            {
+              "id": "oil-flap-2",
+              "name": "Engine 2 oil cooler flap switch",
+              "type": "selector",
+              "match": [
+                "PNT_OIL_FLAP_2_*"
+              ],
+              "positions": [
+                {
+                  "name": "OPEN",
+                  "text": "The flap is driven open. The switch springs back to HOLD."
+                },
+                {
+                  "name": "AUTO",
+                  "text": "The flap moves by itself according to the oil temperature and the gear position."
+                },
+                {
+                  "name": "HOLD",
+                  "text": "The flap stays where it is. The game calls this position Fixed."
+                },
+                {
+                  "name": "CLOSE",
+                  "text": "The flap is driven closed. The switch springs back to HOLD."
+                }
+              ],
+              "count": 4,
+              "text": "This switch sets the oil cooler flap of engine 2. The flap is a door behind the oil radiator in the engine housing. Opening it lets more air through to cool the oil.",
+              "context": "AUTO lets the plane move the flap of engine 2 by itself according to oil temperature and gear position. The game shows the four positions (close, auto, fixed, open) of this engine as separate click spots.",
+              "src": "m1",
+              "page": "87"
+            },
+            {
+              "id": "oil-flap-3",
+              "name": "Engine 3 oil cooler flap switch",
+              "type": "selector",
+              "match": [
+                "PNT_OIL_FLAP_3_*"
+              ],
+              "positions": [
+                {
+                  "name": "OPEN",
+                  "text": "The flap is driven open. The switch springs back to HOLD."
+                },
+                {
+                  "name": "AUTO",
+                  "text": "The flap moves by itself according to the oil temperature and the gear position."
+                },
+                {
+                  "name": "HOLD",
+                  "text": "The flap stays where it is. The game calls this position Fixed."
+                },
+                {
+                  "name": "CLOSE",
+                  "text": "The flap is driven closed. The switch springs back to HOLD."
+                }
+              ],
+              "count": 4,
+              "text": "This switch sets the oil cooler flap of engine 3. The flap is a door behind the oil radiator in the engine housing. Opening it lets more air through to cool the oil.",
+              "context": "AUTO lets the plane move the flap of engine 3 by itself according to oil temperature and gear position. The game shows the four positions (close, auto, fixed, open) of this engine as separate click spots.",
+              "src": "m1",
+              "page": "87"
+            },
+            {
+              "id": "oil-flap-4",
+              "name": "Engine 4 oil cooler flap switch",
+              "type": "selector",
+              "match": [
+                "PNT_OIL_FLAP_4_*"
+              ],
+              "positions": [
+                {
+                  "name": "OPEN",
+                  "text": "The flap is driven open. The switch springs back to HOLD."
+                },
+                {
+                  "name": "AUTO",
+                  "text": "The flap moves by itself according to the oil temperature and the gear position."
+                },
+                {
+                  "name": "HOLD",
+                  "text": "The flap stays where it is. The game calls this position Fixed."
+                },
+                {
+                  "name": "CLOSE",
+                  "text": "The flap is driven closed. The switch springs back to HOLD."
+                }
+              ],
+              "count": 4,
+              "text": "This switch sets the oil cooler flap of engine 4. The flap is a door behind the oil radiator in the engine housing. Opening it lets more air through to cool the oil.",
+              "context": "AUTO lets the plane move the flap of engine 4 by itself according to oil temperature and gear position. The game shows the four positions (close, auto, fixed, open) of this engine as separate click spots.",
+              "src": "m1",
+              "page": "87"
+            }
+          ]
+        },
+        {
+          "id": "electrical",
+          "name": "Electrical panel",
+          "src": "m1",
+          "page": "71",
+          "text": "This panel controls the plane's electricity: the two batteries, the four engine generators, and outside power or the APU.",
+          "context": "It is among the first things the pilots use at the start of a flight. The electrical system has direct current (DC, from batteries) and alternating current (AC, from generators).",
+          "controls": [
+            {
+              "id": "batt-test",
+              "name": "Battery test switch (AV / ISOL / UTIL)",
+              "type": "switch3",
+              "match": [
+                "PNT_BATT_TEST_383"
+              ],
+              "positions": [
+                {
+                  "name": "AV",
+                  "text": "The voltage of the avionics battery shows."
+                },
+                {
+                  "name": "ISOL",
+                  "text": "The voltage of the isolated DC bus shows."
+                },
+                {
+                  "name": "UTIL",
+                  "text": "The voltage of the utility battery shows."
+                }
+              ],
+              "text": "This switch shows the voltage of one battery on the DC VOLTS display, even with the plane's power off. It springs back to the center.",
+              "context": "The plane has two batteries, the avionics battery and the utility battery. The display is not part of the lamp test and does not show 8s.",
+              "src": "m1",
+              "page": "72"
+            },
+            {
+              "id": "ext-apu",
+              "name": "External power / APU switch",
+              "type": "switch3",
+              "match": [
+                "PNT_ELECT_EXT_APU_467",
+                "item:upper-overhead-panel:8"
+              ],
+              "positions": [
+                {
+                  "name": "EXT PWR",
+                  "text": "AC power from the ground power unit goes to the AC buses."
+                },
+                {
+                  "name": "OFF",
+                  "text": "The APU and outside power are disconnected."
+                },
+                {
+                  "name": "APU",
+                  "text": "The APU generator powers the plane. If another generator works, it powers only the essential AC bus."
+                }
+              ],
+              "text": "This switch picks the outside source of AC power: a ground power cart (EXT PWR) or the APU. In OFF neither is connected.",
+              "context": "A short delay in the switch keeps the power from going out when the pilots change between outside power and the engine generators. In the game, ground power is requested from the communications menu.",
+              "src": "m1",
+              "page": "71"
+            },
+            {
+              "id": "battery",
+              "name": "BATTERY switch",
+              "type": "switch2",
+              "match": [
+                "PNT_ELEC_BTRY_371"
+              ],
+              "positions": [
+                {
+                  "name": "OFF",
+                  "text": "Both battery relays open and the batteries are disconnected."
+                },
+                {
+                  "name": "ON",
+                  "text": "Both battery relays close and the batteries are connected to their buses."
+                }
+              ],
+              "text": "This switch connects the two batteries to the plane's electrical system, or disconnects them.",
+              "context": "It is one of the first switches used, because the batteries power the plane before any generator runs.",
+              "src": "m1",
+              "page": "72"
+            },
+            {
+              "id": "generators",
+              "name": "Generator 1-4 switches",
+              "type": "switch2",
+              "match": [
+                "PNT_ELECT_GEN_?_*"
+              ],
+              "positions": [
+                {
+                  "name": "OFF/RESET",
+                  "text": "The generator is disconnected and de-energized. It can reset here."
+                },
+                {
+                  "name": "ON",
+                  "text": "The generator is connected to the electrical system."
+                }
+              ],
+              "count": 4,
+              "text": "These four switches connect each engine's generator to the electrical system. A green light shows when a switch is at OFF/RESET. Moving it there also resets a generator that has switched itself off.",
+              "context": "A generator makes electricity only while its engine runs. The control unit of each generator drops it if the voltage or the frequency is out of range.",
+              "src": "m1",
+              "page": "71"
+            }
+          ]
+        },
+        {
+          "id": "ice",
+          "name": "Ice protection panel",
+          "src": "m1",
+          "page": "108",
+          "text": "Ice on the wings, propellers and windows is dangerous. This panel turns on the heaters and the hot-air systems that keep ice off.",
+          "context": "The pilots use it in cold, wet air. Two ice detectors on the nose tell the plane that ice is forming, and the AUTO settings then work by themselves.",
+          "controls": [
+            {
+              "id": "ice-prop",
+              "name": "Propeller 1-4 ice protection switches",
+              "type": "switch3",
+              "match": [
+                "PNT_ICE_PROP_?_*",
+                "item:upper-overhead-panel:10"
+              ],
+              "positions": [
+                {
+                  "name": "OFF",
+                  "text": "The heaters switch off."
+                },
+                {
+                  "name": "AUTO",
+                  "text": "The heaters start when ice is detected."
+                },
+                {
+                  "name": "ON",
+                  "text": "The heaters run while the propeller turns."
+                }
+              ],
+              "count": 4,
+              "text": "These four switches control the electric heaters in the propeller blades and spinners, one per propeller.",
+              "context": "In AUTO the heaters work when ice is detected. They only work in the air when the outside air is cold enough.",
+              "src": "m1",
+              "page": "108"
+            },
+            {
+              "id": "ice-engine",
+              "name": "Engine ice protection switch",
+              "type": "switch3",
+              "match": [
+                "PNT_ICE_ENGINE_385"
+              ],
+              "positions": [
+                {
+                  "name": "OFF",
+                  "text": "Ice protection is off for all engines."
+                },
+                {
+                  "name": "AUTO",
+                  "text": "It starts by itself when ice is detected."
+                },
+                {
+                  "name": "ON",
+                  "text": "It is on for all engines."
+                }
+              ],
+              "text": "This switch turns on the hot-air anti-ice system for the engines and nacelles (engine housings), all four together.",
+              "context": "Hot air from the engines keeps ice from forming at the engine inlets and other key parts.",
+              "src": "m1",
+              "page": "108"
+            },
+            {
+              "id": "ice-wing",
+              "name": "Wing/empennage ice protection switch",
+              "type": "switch3",
+              "match": [
+                "PNT_ICE_WING_EMP_384"
+              ],
+              "positions": [
+                {
+                  "name": "OFF",
+                  "text": "The tail boot and the wing and tail heating are off."
+                },
+                {
+                  "name": "AUTO",
+                  "text": "They start when icing is detected."
+                },
+                {
+                  "name": "ON",
+                  "text": "The boot inflates and the wing and tail system runs."
+                }
+              ],
+              "text": "This switch controls the hot-air heating of the wing and tail leading edges and the rubber boot at the base of the tail fin.",
+              "context": "In AUTO the system and the boot work when ice is detected. The system does not work under 60 knots.",
+              "src": "m1",
+              "page": "108"
+            },
+            {
+              "id": "ice-mode",
+              "name": "Anti-ice / de-ice switch",
+              "type": "switch2",
+              "match": [
+                "PNT_ICE_ANI_DE_ICE_382"
+              ],
+              "positions": [
+                {
+                  "name": "DE-ICE",
+                  "text": "The system removes ice by heating the zones one after another."
+                },
+                {
+                  "name": "ANTI-ICE",
+                  "text": "The system prevents ice; the tail zone is heated all the time."
+                }
+              ],
+              "text": "This switch picks how the wing and tail system works. ANTI-ICE stops ice from forming. DE-ICE removes ice that has formed.",
+              "context": "Moving it from DE-ICE to ANTI-ICE and back on the ground starts a 90-second test of the valves.",
+              "src": "m1",
+              "page": "109"
+            },
+            {
+              "id": "ice-pitot",
+              "name": "Pitot heat switches (pilot and copilot)",
+              "type": "switch",
+              "match": [
+                "PNT_ICE_P_PITOT_378",
+                "PNT_ICE_CP_PITOT_379"
+              ],
+              "positions": [
+                {
+                  "name": "OFF",
+                  "text": "The heaters in the probes are off."
+                },
+                {
+                  "name": "ON",
+                  "text": "The heaters in the probes are on."
+                }
+              ],
+              "count": 2,
+              "text": "These two switches heat the measuring probes of the pilot's and the copilot's side. The probes (pitot tubes) measure speed and height, and ice would block them.",
+              "context": "Probe heat belongs on in flight in icing conditions.",
+              "src": "m1",
+              "page": "109"
+            },
+            {
+              "id": "ice-nesa",
+              "name": "NESA window heat switches (center and side/lower)",
+              "type": "switch",
+              "match": [
+                "PNT_ICE_NESA_CTR_380",
+                "PNT_ICE_NESA_SIDE_LWR_381"
+              ],
+              "positions": [
+                {
+                  "name": "OFF",
+                  "text": "The heating of those windows is off."
+                },
+                {
+                  "name": "ON",
+                  "text": "The heating of those windows is on."
+                }
+              ],
+              "count": 2,
+              "text": "These two switches heat the windows. The center switch is for the windshields, the other for the side and lower windows. The heating layer in the glass keeps ice and fog off and makes the glass stronger.",
+              "context": "A bird or hail strikes a warm window less hard.",
+              "src": "m1",
+              "page": "109"
+            }
+          ]
+        },
+        {
+          "id": "bleed-air",
+          "name": "Bleed air control panel",
+          "src": "m1",
+          "page": "96",
+          "text": "Bleed air is hot, pressurized air taken from the engines (or the APU). It starts the engines, heats and cools the cabin and de-ices the wings. This panel opens and closes the valves in the air pipes.",
+          "context": "In flight the valves are mostly automatic. The panel lets the pilots isolate a pipe that leaks hot air.",
+          "controls": [
+            {
+              "id": "apu-bleed",
+              "name": "APU bleed air switch",
+              "type": "button",
+              "match": [
+                "PNT_BLEED_AIR_APU_355",
+                "item:upper-overhead-panel:11"
+              ],
+              "text": "This switch opens the valve that lets APU air into the plane's pipes. A green OPEN light shows when the valve is open.",
+              "context": "The valve cannot open when the APU runs slower than 95 percent. It closes by itself if the APU slows down.",
+              "src": "m1",
+              "page": "96"
+            },
+            {
+              "id": "nacelle-valves",
+              "name": "Engine 1-4 nacelle shutoff valve switches",
+              "type": "switch3",
+              "match": [
+                "PNT_BLEEDAIR_ENG_?_*"
+              ],
+              "positions": [
+                {
+                  "name": "CLOSE",
+                  "text": "The valve is closed."
+                },
+                {
+                  "name": "AUTO",
+                  "text": "If the engine start switch is in RUN, START or MOTOR, the plane controls the valve."
+                },
+                {
+                  "name": "OPEN",
+                  "text": "The valve is open."
+                }
+              ],
+              "count": 4,
+              "text": "These four switches open or close the bleed air valve at each engine. Closed, that engine's air is cut off from the plane's pipes.",
+              "context": "If an engine start is tried with the valve closed, the starter does not turn, because it needs that air.",
+              "src": "m1",
+              "page": "97"
+            },
+            {
+              "id": "wing-iso",
+              "name": "Wing isolation valve switches (left and right)",
+              "type": "switch3",
+              "match": [
+                "PNT_BLEEDAIR_L_ISO_394",
+                "PNT_BLEEDAIR_R_ISO_396"
+              ],
+              "positions": [
+                {
+                  "name": "CLOSE",
+                  "text": "The isolation valve is closed."
+                },
+                {
+                  "name": "AUTO",
+                  "text": "The valve closes by itself on an overheat."
+                },
+                {
+                  "name": "OPEN",
+                  "text": "The valve is open."
+                }
+              ],
+              "count": 2,
+              "text": "These two switches open or close the valves that cut the left or right wing's air pipes off from the rest.",
+              "context": "In AUTO, a valve closes by itself if an overheat is detected in that wing.",
+              "src": "m1",
+              "page": "97"
+            },
+            {
+              "id": "divider",
+              "name": "Divider valve switch",
+              "type": "switch3",
+              "match": [
+                "PNT_BLEEDAIR_DIVIDER_395"
+              ],
+              "positions": [
+                {
+                  "name": "CLOSE",
+                  "text": "The valve is closed."
+                },
+                {
+                  "name": "AUTO",
+                  "text": "The valve closes by itself on an overheat."
+                },
+                {
+                  "name": "OPEN",
+                  "text": "The valve is open."
+                }
+              ],
+              "text": "This switch controls the divider valve between the air systems of the flight station and the cargo bay. If a pipe overheats, one air conditioner can still feed the plane.",
+              "context": "In AUTO the valve closes by itself if the cross-ship ducts overheat.",
+              "src": "m1",
+              "page": "97"
+            }
+          ]
+        },
+        {
+          "id": "pressurization",
+          "name": "Pressurization control panel",
+          "src": "m1",
+          "page": "103",
+          "text": "At high altitude the air is thin. The plane keeps the cabin air pressure comfortable by blowing in air and letting it out through a valve. This panel controls that and shows the cabin height.",
+          "context": "Normally the AUTO mode works by itself. The pilots set the landing height before the descent.",
+          "controls": [
+            {
+              "id": "press-mode",
+              "name": "Pressurization mode switch",
+              "type": "selector",
+              "match": [
+                "PNT_PRES_MODE_468",
+                "item:upper-overhead-panel:12"
+              ],
+              "positions": [
+                {
+                  "name": "CONST ALT",
+                  "text": "The cabin height is held at the value set with the LDG/CONST knob."
+                },
+                {
+                  "name": "MAN",
+                  "text": "The pilot opens and closes the outflow valve by hand."
+                },
+                {
+                  "name": "AUTO",
+                  "text": "The cabin pressure controller works by itself."
+                },
+                {
+                  "name": "NO PRESS",
+                  "text": "The cabin is not pressurized; the safety valve opens."
+                },
+                {
+                  "name": "AUX VENT",
+                  "text": "The cabin is depressurized quickly and ventilated; the air conditioners are off."
+                }
+              ],
+              "text": "This switch chooses how the cabin pressure is controlled: automatic, constant altitude, by hand, none, or auxiliary ventilation.",
+              "context": "AUX VENT also turns off both air conditioners. In the game, a command exists for each position.",
+              "src": "m1",
+              "page": "104"
+            },
+            {
+              "id": "press-ldg",
+              "name": "LDG / CONST altitude selector knob",
+              "type": "knob",
+              "match": [
+                "PNT_PRESS_LND_ALT_1332"
+              ],
+              "text": "This knob sets the landing field height for the automatic mode, or the cabin height that is to be held in constant altitude mode. A digital display above it shows the value.",
+              "context": "Setting the landing height lets the cabin pressure match the airport at touchdown.",
+              "src": "m1",
+              "page": "104"
+            },
+            {
+              "id": "press-rate",
+              "name": "AUTO RATE knob",
+              "type": "knob",
+              "match": [
+                "PNT_PRESS_AUTO_RATE_1333"
+              ],
+              "text": "This knob limits how fast the cabin pressure may change in automatic mode, between MIN and MAX. NORM is the normal rate.",
+              "context": "A slow change is more comfortable for people's ears.",
+              "src": "m1",
+              "page": "104"
+            },
+            {
+              "id": "press-valve",
+              "name": "Manual outflow valve rocker",
+              "type": "rocker",
+              "match": [
+                "PNT_PRESS_MANUAL_VALVE_*"
+              ],
+              "count": 2,
+              "text": "This rocker opens or closes the outflow valve by hand when the manual mode is picked. The valve moves as long as the rocker is held.",
+              "context": "The outflow valve lets cabin air out. More open means less cabin pressure.",
+              "src": "m1",
+              "page": "104"
+            },
+            {
+              "id": "press-dump-guard",
+              "name": "EMER DEPRESS switch guard",
+              "type": "guard",
+              "match": [
+                "PNT_EMER_DUMP_GUARD_334"
+              ],
+              "text": "This cover sits over the emergency depressurization switch and stops it from being switched by mistake.",
+              "context": "The pilot lifts it only in an emergency, for example to clear smoke.",
+              "src": "m1",
+              "page": "104"
+            },
+            {
+              "id": "press-dump",
+              "name": "EMER DEPRESS switch",
+              "type": "switch2",
+              "match": [
+                "PNT_EMER_DUMP_1363"
+              ],
+              "positions": [
+                {
+                  "name": "NORM",
+                  "text": "The pressure is controlled normally."
+                },
+                {
+                  "name": "DUMP",
+                  "text": "The cabin pressure is dumped."
+                }
+              ],
+              "text": "This switch quickly dumps the cabin pressure to the outside pressure. It opens the valves, shuts off both air conditioners and closes the underfloor heat.",
+              "context": "It is used only in an emergency.",
+              "src": "m1",
+              "page": "104"
+            }
+          ]
+        },
+        {
+          "id": "fuel",
+          "name": "Fuel control panel",
+          "src": "m1",
+          "page": "200",
+          "text": "Fuel is kept in the wings: two main tanks and one auxiliary tank in each wing, and optional outer tanks. This panel moves fuel between tanks, feeds engines from other tanks, dumps fuel and sets the refuel amount.",
+          "context": "In normal flight little needs to be done here. It is used for fuel balance, fuel dump in an emergency and when refuelling on the ground.",
+          "controls": [
+            {
+              "id": "fuel-qty-set",
+              "name": "Fuel quantity set knob",
+              "type": "knob",
+              "match": [
+                "PNT_FUEL_QTY_SET_487",
+                "item:lower-overhead-panel:2"
+              ],
+              "text": "This knob sets the amount of fuel wanted in the tank chosen with the TANK SELECT switch. It is used before refuelling.",
+              "context": "The set amount is where the tank's fill valve closes by itself.",
+              "src": "m1",
+              "page": "201"
+            },
+            {
+              "id": "fuel-tank-select",
+              "name": "Tank select switch",
+              "type": "selector",
+              "match": [
+                "PNT_FUEL_TANKSEL_370"
+              ],
+              "text": "This switch picks which tank's refuel amount the quantity set knob changes. The chosen tank's setting display flashes.",
+              "context": "In OFF no tank is chosen and the preselect displays stay blank.",
+              "src": "m1",
+              "page": "201"
+            },
+            {
+              "id": "fuel-transfer",
+              "name": "Transfer pump selectors (8, one per tank)",
+              "type": "selector",
+              "match": [
+                "PNT_FUEL_TRANSF?_*"
+              ],
+              "positions": [
+                {
+                  "name": "FROM",
+                  "text": "The pump sends fuel from the tank to the wing manifold (fuel pipe)."
+                },
+                {
+                  "name": "OFF",
+                  "text": "The pump is off and the tank's fill valve is closed."
+                },
+                {
+                  "name": "TO",
+                  "text": "The pump brings fuel to the tank from the wing manifold."
+                }
+              ],
+              "count": 8,
+              "text": "These eight selectors control the transfer pump of each fuel tank: the main tanks, the auxiliary tanks and the outer tanks. An arrow on each shows which way the fuel flows.",
+              "context": "Transfer pumps move fuel between the tanks and the wing fuel pipe. The game labels the selectors for the tank they belong to.",
+              "src": "m1",
+              "page": "201"
+            },
+            {
+              "id": "fuel-crossfeed",
+              "name": "Crossfeed valve switches (engines 1-4)",
+              "type": "switch2",
+              "match": [
+                "PNT_FUEL_XFEED_ENG?_*"
+              ],
+              "positions": [
+                {
+                  "name": "Closed",
+                  "text": "The switch is vertical and the valve is closed."
+                },
+                {
+                  "name": "Open",
+                  "text": "The switch is horizontal and the valve is open."
+                }
+              ],
+              "count": 4,
+              "text": "These four switches open or close the crossfeed valve of each main tank. An open valve lets fuel from that tank feed another engine.",
+              "context": "A switch standing upright means closed and lying down means open.",
+              "src": "m1",
+              "page": "201"
+            },
+            {
+              "id": "fuel-crossship",
+              "name": "Crossship separation valve switch",
+              "type": "switch2",
+              "match": [
+                "PNT_FUEL_MAIN_XFEED_360"
+              ],
+              "positions": [
+                {
+                  "name": "Closed",
+                  "text": "The switch is vertical and the valve is closed."
+                },
+                {
+                  "name": "Open",
+                  "text": "The switch is horizontal and the valve is open."
+                }
+              ],
+              "text": "This switch opens or closes the cross-ship valve in the middle of the wing box. Open, it joins the fuel pipes of the left and right wings so fuel can go from one wing to the other.",
+              "context": "A vertical switch is closed and a horizontal one is open. It is used to balance the wings.",
+              "src": "m1",
+              "page": "200"
+            },
+            {
+              "id": "fuel-dump-guards",
+              "name": "Fuel dump switch guards (left, right)",
+              "type": "guard",
+              "match": [
+                "PNT_FUEL_DUMP_L_GUARD_332",
+                "PNT_FUEL_DUMP_R_GUARD_333"
+              ],
+              "count": 2,
+              "text": "These two covers sit over the fuel dump switches. They stop a dump from being started by mistake.",
+              "context": "The game has commands to open and close each cover.",
+              "src": "m1",
+              "page": "200"
+            },
+            {
+              "id": "fuel-dump",
+              "name": "Fuel dump switches (left, right)",
+              "type": "switch2",
+              "match": [
+                "PNT_FUEL_DUMP_L_1338",
+                "PNT_FUEL_DUMP_R_1339"
+              ],
+              "positions": [
+                {
+                  "name": "OFF",
+                  "text": "The dump valve is closed."
+                },
+                {
+                  "name": "ON",
+                  "text": "The dump valve is open and fuel is dumped."
+                }
+              ],
+              "count": 2,
+              "text": "These two switches open the fuel dump valve of the left or right wing. Fuel from the tanks is then pumped overboard at the wing tips.",
+              "context": "Fuel dump is for emergencies, to make the plane lighter. The main tanks stop dumping at 2,180 pounds.",
+              "src": "m1",
+              "page": "200"
+            },
+            {
+              "id": "fuel-spr",
+              "name": "SPR valve switch (single point refuelling)",
+              "type": "switch3",
+              "match": [
+                "PNT_SPR_VALVE_362"
+              ],
+              "positions": [
+                {
+                  "name": "DRAIN",
+                  "text": "The valve is closed and a pump drains the refuel pipe for 5 minutes."
+                },
+                {
+                  "name": "CLOSED",
+                  "text": "The valve is closed."
+                },
+                {
+                  "name": "OPEN",
+                  "text": "The valve is open."
+                }
+              ],
+              "text": "This switch controls the valve of the single point refuelling connection, one place on the plane through which all tanks are filled. A green light shows when the drain pump runs.",
+              "context": "It is used on the ground when fuel is filled.",
+              "src": "m1",
+              "page": "200"
+            },
+            {
+              "id": "fuel-flcv",
+              "name": "FLCV test button",
+              "type": "button",
+              "match": [
+                "PNT_FUEL_TEST_354"
+              ],
+              "text": "The game names this button 'FLCV Test Button'. FLCV means fuel level control valve, the valve that stops the filling of a tank. The manual does not describe the button.",
+              "context": "It is part of the fuel panel's refuelling controls.",
+              "src": "m1",
+              "page": "198"
+            }
+          ]
+        },
+        {
+          "id": "overhead-extras",
+          "name": "Overhead lights and ports",
+          "src": "m1",
+          "page": "17",
+          "text": "Small items on the overhead: reading lights, flood lights, interphone ports for headset cables and a temperature probe.",
+          "context": "These are not switches of the aircraft systems. They serve the crew's comfort.",
+          "controls": [
+            {
+              "id": "ovh-pilot-port",
+              "name": "Pilot interphone connection port",
+              "type": "other",
+              "match": [
+                "item:upper-overhead-panel:1"
+              ],
+              "text": "This is the socket in the overhead where the pilot plugs in the headset cable of the interphone.",
+              "context": "The interphone is the crew's phone line. The manual only names the port.",
+              "src": "m1",
+              "page": "17"
+            },
+            {
+              "id": "ovh-copilot-port",
+              "name": "Copilot interphone connection port",
+              "type": "other",
+              "match": [
+                "item:upper-overhead-panel:5"
+              ],
+              "text": "This is the socket in the overhead where the copilot plugs in the headset cable of the interphone.",
+              "context": "It is the copilot's counterpart of the pilot's port. The manual only names the port.",
+              "src": "m1",
+              "page": "17"
+            },
+            {
+              "id": "ovh-aug-light",
+              "name": "Aug crew reading light",
+              "type": "light",
+              "match": [
+                "item:upper-overhead-panel:2"
+              ],
+              "text": "This is a small reading lamp for the augmented crew member, the extra crew seat behind the center console.",
+              "context": "The manual only names the lamp.",
+              "src": "m1",
+              "page": "17"
+            },
+            {
+              "id": "ovh-pilot-light",
+              "name": "Pilot reading light",
+              "type": "light",
+              "match": [
+                "item:upper-overhead-panel:9"
+              ],
+              "text": "This is a small reading lamp over the pilot's seat.",
+              "context": "The manual only names the lamp.",
+              "src": "m1",
+              "page": "17"
+            },
+            {
+              "id": "ovh-copilot-light",
+              "name": "Copilot reading light",
+              "type": "light",
+              "match": [
+                "item:upper-overhead-panel:13"
+              ],
+              "text": "This is a small reading lamp over the copilot's seat.",
+              "context": "The manual only names the lamp.",
+              "src": "m1",
+              "page": "17"
+            },
+            {
+              "id": "ovh-flood",
+              "name": "Center console flood lights",
+              "type": "light",
+              "match": [
+                "item:upper-overhead-panel:4"
+              ],
+              "text": "These are the lights in the overhead that shine on the center console between the pilots.",
+              "context": "Their brightness is set with the knobs on the lighting control panels. The manual only names them.",
+              "src": "m1",
+              "page": "17"
+            },
+            {
+              "id": "ovh-temp",
+              "name": "Cockpit temperature probe",
+              "type": "other",
+              "match": [
+                "item:upper-overhead-panel:3"
+              ],
+              "text": "This is a small sensor in the roof that measures the air temperature in the cockpit for the air conditioning.",
+              "context": "The manual only names the probe.",
+              "src": "m1",
+              "page": "17"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "left-side",
+      "where": "left-side",
+      "name": "Left side window area",
+      "text": "The area by the pilot's side window: the exterior lighting panel, the sun visor, the headset cable and the upper galley.",
+      "panels": [
+        {
+          "id": "ext-lighting",
+          "name": "Exterior lighting control panel",
+          "src": "m1",
+          "page": "94",
+          "text": "This panel controls the lights on the outside of the plane: the navigation lights, the flashing strobes, the formation lights and the lights on the wing edges.",
+          "context": "Lights show other pilots where the plane is and which way it flies. The landing and taxi lights are not here; they are on the landing gear panel.",
+          "controls": [
+            {
+              "id": "ext-master",
+              "name": "Exterior lighting master switch",
+              "type": "switch2",
+              "match": [
+                "PNT_EXTLT_MASTER_421",
+                "item:lower-overhead-panel:4"
+              ],
+              "positions": [
+                {
+                  "name": "NORM",
+                  "text": "All exterior lights work in the visible light."
+                },
+                {
+                  "name": "COVERT",
+                  "text": "All visible exterior lights are put out."
+                }
+              ],
+              "text": "This switch chooses between normal lights that everyone can see (NORM) and covert lights that are visible only through night vision goggles (COVERT).",
+              "context": "In the game, covert lighting is not implemented because of limits of DCS; the covert position puts out the visible lights.",
+              "src": "m1",
+              "page": "94"
+            },
+            {
+              "id": "nav-mode",
+              "name": "Navigation light mode switch",
+              "type": "switch3",
+              "match": [
+                "PNT_EXTLT_NAVMODE_422"
+              ],
+              "positions": [
+                {
+                  "name": "FLASH",
+                  "text": "The wing and tail lights blink together, 90 times a minute."
+                },
+                {
+                  "name": "OFF",
+                  "text": "All navigation lights are off."
+                },
+                {
+                  "name": "STEADY",
+                  "text": "All navigation lights shine without blinking."
+                }
+              ],
+              "text": "This switch turns on the navigation lights: red on the left wing tip, green on the right wing tip and white at the tail. They show other pilots which way the plane is pointing.",
+              "context": "The lights can burn all the time or blink.",
+              "src": "m1",
+              "page": "94"
+            },
+            {
+              "id": "nav-bright",
+              "name": "Navigation light brightness switch",
+              "type": "switch2",
+              "match": [
+                "PNT_EXTLT_DIM_423"
+              ],
+              "positions": [
+                {
+                  "name": "DIM",
+                  "text": "The navigation lights shine at reduced brightness."
+                },
+                {
+                  "name": "BRIGHT",
+                  "text": "The navigation lights shine at full brightness."
+                }
+              ],
+              "text": "This switch makes the navigation lights dim or bright.",
+              "context": "Bright lights are seen from farther away; dim lights are used when bright lights are not wanted.",
+              "src": "m1",
+              "page": "95"
+            },
+            {
+              "id": "formation-dimmer",
+              "name": "Covert/formation light brightness knob",
+              "type": "knob",
+              "match": [
+                "PNT_EXTLT_COVERT_424"
+              ],
+              "text": "This knob sets the brightness of the formation lights, which let other pilots fly close behind this plane. Turning it clockwise makes them brighter.",
+              "context": "In NORM mode the visible formation lights are set; in COVERT mode the covert ones. The covert lights are not implemented in the game.",
+              "src": "m1",
+              "page": "95"
+            },
+            {
+              "id": "strobes",
+              "name": "Top and bottom strobe light switches",
+              "type": "switch3",
+              "match": [
+                "PNT_EXTLT_STROBETOP_418",
+                "PNT_EXTLT_STROBEBOTTOM_419"
+              ],
+              "positions": [
+                {
+                  "name": "RED",
+                  "text": "The strobe flashes red."
+                },
+                {
+                  "name": "OFF",
+                  "text": "The strobe is off."
+                },
+                {
+                  "name": "WHT",
+                  "text": "The strobe flashes white."
+                }
+              ],
+              "count": 2,
+              "text": "These two switches turn on the flashing anti-collision lights on the top and bottom of the fuselage. Each can flash red or white, 90 times a minute.",
+              "context": "Strobes make the plane easy to see for other aircraft. The bottom strobe stays off on the ground unless it is tested.",
+              "src": "m1",
+              "page": "95"
+            },
+            {
+              "id": "strobe-test",
+              "name": "Bottom strobe light test switch",
+              "type": "switch",
+              "match": [
+                "PNT_EXTLT_STROBETEST_420"
+              ],
+              "text": "This switch lets the pilot test the bottom strobe while the plane is on the ground. It springs back to its down position. Held up, the strobe works as it would in the air.",
+              "context": "On the ground the bottom strobe is otherwise kept off.",
+              "src": "m1",
+              "page": "95"
+            },
+            {
+              "id": "leading-edge",
+              "name": "Leading edge light switch",
+              "type": "switch2",
+              "match": [
+                "PNT_EXTLT_LEDGE_417"
+              ],
+              "positions": [
+                {
+                  "name": "OFF",
+                  "text": "Both lights are off."
+                },
+                {
+                  "name": "ON",
+                  "text": "Both lights are on."
+                }
+              ],
+              "text": "This switch turns on the two white floodlights on the sides of the fuselage that light up the engine housings and the front edge of the wings.",
+              "context": "The lights help to see ice on the wings at night. They have no covert mode.",
+              "src": "m1",
+              "page": "95"
+            }
+          ]
+        },
+        {
+          "id": "visors-pilot",
+          "name": "Pilot sun visor and ICS cable",
+          "src": "m1",
+          "text": "A sun visor keeps the sun out of the pilot's eyes. The headset cable connects the pilot to the interphone.",
+          "context": "These are comfort items for the pilot's seat.",
+          "controls": [
+            {
+              "id": "visor-pilot",
+              "name": "Pilot sun visor",
+              "type": "other",
+              "match": [
+                "PNT_P_VISOR_RAIL_1612"
+              ],
+              "text": "This clickable sun visor on a rail by the pilot's window can be shown or hidden. The game has commands for show and hide.",
+              "context": "The manual does not describe the visor.",
+              "src": "m1"
+            },
+            {
+              "id": "ics-cable-pilot",
+              "name": "Pilot ICS cable parts (11)",
+              "type": "other",
+              "match": [
+                "p_ics_helper_*"
+              ],
+              "count": 11,
+              "text": "The game names these 11 clickable parts 'Pilot ICS Cable'. They are the pieces of the pilot's headset cable.",
+              "context": "ICS is the intercom, the crew's phone line. The manual does not describe the cable. Eleven parts belong to the pilot's cable.",
+              "src": "m1"
+            }
+          ]
+        },
+        {
+          "id": "galley-top",
+          "name": "Galley cabinet and power",
+          "src": "m1",
+          "text": "The galley is the kitchen corner of the plane. This part holds its power, coffee maker and cabinets.",
+          "context": "The manual does not describe the galley. The game lets the player click these parts, and the names here are the game's names.",
+          "controls": [
+            {
+              "id": "galley-power",
+              "name": "Galley master power",
+              "type": "switch",
+              "match": [
+                "PNT_GALY_PWR_1636"
+              ],
+              "text": "The game calls this 'Galley Master Power'. It is the switch that gives power to the galley, the kitchen corner.",
+              "context": "The manual does not describe the galley.",
+              "src": "m1"
+            },
+            {
+              "id": "galley-coffee",
+              "name": "Galley coffee power",
+              "type": "switch",
+              "match": [
+                "PNT_GALY_COFFEE_1631"
+              ],
+              "text": "The game calls this 'Galley Coffee Power'. It is the switch for the coffee maker.",
+              "context": "The coffee maker is part of the galley. The manual does not describe it.",
+              "src": "m1"
+            },
+            {
+              "id": "galley-lqdcnt",
+              "name": "Galley LQCDNT 1 and 2",
+              "type": "other",
+              "match": [
+                "PNT_GALY_LQDCNT_?_*"
+              ],
+              "count": 2,
+              "text": "The game names these two controls 'Galley LQCDNT 1' and 'Galley LQCDNT 2'. What the name means is not given by the manual.",
+              "context": "They belong to the galley. Nothing more is known from the manual or the game.",
+              "src": "m1"
+            },
+            {
+              "id": "galley-top-latch",
+              "name": "Galley top cabinet latch",
+              "type": "other",
+              "match": [
+                "PNT_TOP_CABINET_1640"
+              ],
+              "text": "This latch opens the top cabinet of the galley.",
+              "context": "The manual does not describe the galley.",
+              "src": "m1"
+            },
+            {
+              "id": "galley-center-cab",
+              "name": "Galley center cabinet",
+              "type": "other",
+              "match": [
+                "PNT_GALY_BEV_SHEILD_1641"
+              ],
+              "text": "The game calls this the 'Galley Center Cabinet'. It can be opened by clicking it.",
+              "context": "The manual does not describe the galley.",
+              "src": "m1"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "right-side",
+      "where": "right-side",
+      "name": "Right side window area",
+      "text": "The area by the copilot's side window: the air conditioning panel, the sun visor and the headset cable.",
+      "panels": [
+        {
+          "id": "air-conditioning",
+          "name": "Air conditioning control panel",
+          "src": "m1",
+          "page": "99",
+          "text": "The plane has two air conditioners: one for the flight station (the cockpit) and one for the cargo compartment. This panel switches them on, sets the temperature and controls the crossflow and underfloor air.",
+          "context": "They use bleed air from the engines or the APU. The pilots set the air for comfort and for the avionics.",
+          "controls": [
+            {
+              "id": "ac-fltsta-power",
+              "name": "Flight station air conditioning power switch",
+              "type": "switch2",
+              "match": [
+                "PNT_AIRCOND_FLTSTA_PWR_352",
+                "item:lower-overhead-panel:3"
+              ],
+              "positions": [
+                {
+                  "name": "OFF",
+                  "text": "The flow valve is closed and no air reaches the cockpit unit."
+                },
+                {
+                  "name": "ON",
+                  "text": "The flow valve is open and bleed air reaches the unit."
+                }
+              ],
+              "text": "This switch turns the cockpit's air conditioner on or off by opening or closing its flow valve. A green OFF light shows that the valve is closed.",
+              "context": "An engine start closes the valve for a time and it reopens by itself.",
+              "src": "m1",
+              "page": "99"
+            },
+            {
+              "id": "ac-cargo-power",
+              "name": "Cargo compartment air conditioning power switch",
+              "type": "switch2",
+              "match": [
+                "PNT_AIRCOND_CARGO_PWR_353"
+              ],
+              "positions": [
+                {
+                  "name": "OFF",
+                  "text": "The flow valve is closed and no air reaches the cargo unit."
+                },
+                {
+                  "name": "ON",
+                  "text": "The flow valve is open and bleed air reaches the unit."
+                }
+              ],
+              "text": "This switch turns the cargo compartment's air conditioner on or off by opening or closing its flow valve. A green OFF light shows that the valve is closed.",
+              "context": "It works the same way as the cockpit's power switch but for the cargo bay.",
+              "src": "m1",
+              "page": "99"
+            },
+            {
+              "id": "ac-fltsta-man",
+              "name": "Flight station manual mode switch",
+              "type": "button",
+              "match": [
+                "PNT_AIRCOND_FLTSTA_MAN_350"
+              ],
+              "text": "This button switches the cockpit air conditioner between automatic and manual mode. A green MAN light shows manual mode.",
+              "context": "Automatic is the normal mode and shows a blank switch face.",
+              "src": "m1",
+              "page": "99"
+            },
+            {
+              "id": "ac-cargo-man",
+              "name": "Cargo compartment manual mode switch",
+              "type": "button",
+              "match": [
+                "PNT_AIRCOND_CARGO_MAN_351"
+              ],
+              "text": "This button switches the cargo air conditioner between automatic and manual mode. A green MAN light shows manual mode.",
+              "context": "In manual mode the temperature switches move the valve directly.",
+              "src": "m1",
+              "page": "99"
+            },
+            {
+              "id": "ac-fltsta-temp",
+              "name": "Flight station temperature rocker",
+              "type": "rocker",
+              "match": [
+                "PNT_AIRCOND_FLTSTA_PWR_DN_346",
+                "PNT_AIRCOND_FLTSTA_PWR_UP_346"
+              ],
+              "count": 2,
+              "text": "This rocker raises or lowers the wanted cockpit temperature, between 60 and 90 degrees Fahrenheit. In manual mode it moves the valve directly.",
+              "context": "A display shows the actual temperature and the set one. The game lists a key for warmer and one for cooler.",
+              "src": "m1",
+              "page": "99"
+            },
+            {
+              "id": "ac-cargo-temp",
+              "name": "Cargo compartment temperature rocker",
+              "type": "rocker",
+              "match": [
+                "PNT_AIRCOND_CARGO_UP_347",
+                "PNT_AIRCOND_CARGO_DN_347"
+              ],
+              "count": 2,
+              "text": "This rocker raises or lowers the wanted cargo bay temperature, between 60 and 90 degrees Fahrenheit.",
+              "context": "The game lists a key for warmer and one for cooler.",
+              "src": "m1",
+              "page": "99"
+            },
+            {
+              "id": "ac-crossflow-man",
+              "name": "Crossflow valve manual mode switch",
+              "type": "button",
+              "match": [
+                "PNT_AIRCOND_CROSSFLOW_MAN_349"
+              ],
+              "text": "This button switches the crossflow valve between automatic and manual. A green MAN light shows manual mode.",
+              "context": "In automatic mode the valve balances the work of the two air conditioners.",
+              "src": "m1",
+              "page": "100"
+            },
+            {
+              "id": "ac-crossflow",
+              "name": "Crossflow valve rocker",
+              "type": "rocker",
+              "match": [
+                "PNT_AIRCOND_CROSSFLOW_UP_348",
+                "PNT_AIRCOND_CROSSFLOW_DN_348"
+              ],
+              "count": 2,
+              "text": "This rocker opens or closes the crossflow valve by hand in manual mode. The crossflow valve joins the air of the two air conditioners.",
+              "context": "The game lists a key for open and one for close.",
+              "src": "m1",
+              "page": "100"
+            },
+            {
+              "id": "ac-underfloor",
+              "name": "Underfloor heat/fan switch",
+              "type": "switch3",
+              "match": [
+                "PNT_AIRCOND_UNDERFLOOR_469"
+              ],
+              "positions": [
+                {
+                  "name": "FAN",
+                  "text": "The fan runs and the heat valve is closed."
+                },
+                {
+                  "name": "OFF",
+                  "text": "The fan is off and the heat valve is closed."
+                },
+                {
+                  "name": "HEAT/FAN",
+                  "text": "The fan runs and the heat valve is open."
+                }
+              ],
+              "text": "This switch runs the fan and heat for the space under the cargo floor. Warm air under the floor keeps the avionics cool and the floor warm.",
+              "context": "Starting an engine closes the underfloor heat valve.",
+              "src": "m1",
+              "page": "100"
+            }
+          ]
+        },
+        {
+          "id": "visors-copilot",
+          "name": "Copilot sun visor and ICS cable",
+          "src": "m1",
+          "text": "A sun visor keeps the sun out of the copilot's eyes. The headset cable connects the copilot to the interphone.",
+          "context": "These are comfort items for the copilot's seat.",
+          "controls": [
+            {
+              "id": "visor-copilot",
+              "name": "Copilot sun visor",
+              "type": "other",
+              "match": [
+                "PNT_CP_VISOR_RAIL_1613"
+              ],
+              "text": "This clickable sun visor on a rail by the copilot's window can be shown or hidden. The game has commands for show and hide.",
+              "context": "The manual does not describe the visor.",
+              "src": "m1"
+            },
+            {
+              "id": "ics-cable-copilot",
+              "name": "Copilot ICS cable parts (11)",
+              "type": "other",
+              "match": [
+                "cp_ics_helper_*"
+              ],
+              "count": 11,
+              "text": "The game names these 11 clickable parts 'Copilot ICS Cable'. They are the pieces of the copilot's headset cable.",
+              "context": "ICS is the intercom, the crew's phone line. The manual does not describe the cable. Eleven parts belong to the copilot's cable.",
+              "src": "m1"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "rear",
+      "where": "rear",
+      "name": "Augmented crew station and defensive systems",
+      "text": "The extra crew seat behind the center console, with its own keypad, audio and intercom panels, and the defensive systems panel.",
+      "panels": [
+        {
+          "id": "cni-aug",
+          "name": "Augmented crew CNI-MU (communication / navigation / identification management unit)",
+          "src": "m1",
+          "page": "229",
+          "text": "The CNI-MU is a screen with keys and a keypad. It is the main way for the augmented crew member's side to tune radios, plan the route, and set up many mission tasks. Text is typed into the scratchpad line first and then sent to a field.",
+          "context": "There are three CNI-MUs in the C-130J: one for the pilot, one for the copilot and one for the augmented crew member. Together they replace the radio panels and navigation computers of older planes.",
+          "controls": [
+            {
+              "id": "lsk",
+              "name": "Augmented crew CNI-MU line select keys L1-L6, R1-R6",
+              "type": "button",
+              "match": [
+                "PNT_AUG_CNI_DISPL?_*",
+                "PNT_AUG_CNI_DISPR?_*",
+                "item:lower-center-console:8"
+              ],
+              "count": 12,
+              "text": "These 12 keys sit beside the screen of the augmented crew member's CNI-MU, six on the left (L1-L6) and six on the right (R1-R6). A key picks the line of text next to it, or sends the typed text to that line.",
+              "context": "The CNI-MU (communication, navigation and identification management unit) is the keypad and screen through which augmented crew member's side manages radios, routes and many mission tasks. The augmented crew seat sits behind the center console. This is the augmented crew member's unit.",
+              "src": "m1",
+              "page": "229"
+            },
+            {
+              "id": "key-comm",
+              "name": "COMM TUNE key",
+              "type": "button",
+              "match": [
+                "PNT_AUG_CNI_COMM_*"
+              ],
+              "text": "This key opens the COMM TUNE INDEX page, from which the communication radios (UHF, VHF and HF) are tuned. It is on the augmented crew member's CNI-MU.",
+              "context": "The pilots use it to change a radio frequency on a unit, for example to talk to the tower. It is on the augmented crew member's unit. This is the augmented crew member's unit.",
+              "src": "m1",
+              "page": "230"
+            },
+            {
+              "id": "key-nav-tune",
+              "name": "NAV TUNE key",
+              "type": "button",
+              "match": [
+                "PNT_AUG_CNI_NAV_*"
+              ],
+              "text": "This key opens the NAV TUNE INDEX page, from which the navigation radios are tuned. It is on the augmented crew member's CNI-MU.",
+              "context": "It leads to the tuning of the beacon radios (VOR, TACAN and ADF) that give the plane its direction and distance to the ground. It is on the augmented crew member's unit. This is the augmented crew member's unit.",
+              "src": "m1",
+              "page": "230"
+            },
+            {
+              "id": "key-iff",
+              "name": "IFF key",
+              "type": "button",
+              "match": [
+                "PNT_AUG_CNI_IFF_*"
+              ],
+              "text": "This key opens the IFF page, where the transponder is set (the radio box that answers 'who are you' queries with a code). It is on the augmented crew member's CNI-MU.",
+              "context": "The transponder code can also be changed on the CNBP; the entries are shared between both. It is on the augmented crew member's unit. This is the augmented crew member's unit.",
+              "src": "m1",
+              "page": "230"
+            },
+            {
+              "id": "key-nav-ctrl",
+              "name": "NAV CTRL key",
+              "type": "button",
+              "match": [
+                "PNT_AUG_CNI_NAVCTRL_*"
+              ],
+              "text": "This key opens the INAV control page, which handles the plane's inertial navigation system (its position sensor). It is on the augmented crew member's CNI-MU.",
+              "context": "The inertial navigation system finds the plane's position by sensing its own movement. It is on the augmented crew member's unit. This is the augmented crew member's unit.",
+              "src": "m1",
+              "page": "230"
+            },
+            {
+              "id": "key-msn",
+              "name": "MSN key",
+              "type": "button",
+              "match": [
+                "PNT_AUG_CNI_MSN_*"
+              ],
+              "text": "This key opens the MISSION page. It is on the augmented crew member's CNI-MU.",
+              "context": "From the mission page the crew reaches the mission functions of the mission computer. It is on the augmented crew member's unit. This is the augmented crew member's unit.",
+              "src": "m1",
+              "page": "230"
+            },
+            {
+              "id": "key-dir",
+              "name": "DIR INTC key",
+              "type": "button",
+              "match": [
+                "PNT_AUG_CNI_DIR_*"
+              ],
+              "text": "This key opens the DIR INTC page, used to go direct to a point or to intercept a leg of the route. It is on the augmented crew member's CNI-MU.",
+              "context": "It is used when the crew wants to fly straight to a point of the route. It is on the augmented crew member's unit. This is the augmented crew member's unit.",
+              "src": "m1",
+              "page": "230"
+            },
+            {
+              "id": "key-legs",
+              "name": "LEGS key",
+              "type": "button",
+              "match": [
+                "PNT_AUG_CNI_LEGS_*"
+              ],
+              "text": "This key opens the LEGS page, which lists the legs (route sections) of the flight plan. It is on the augmented crew member's CNI-MU.",
+              "context": "A route is made of legs, one from each waypoint (route point) to the next. The page shows them one after another. It is on the augmented crew member's unit. This is the augmented crew member's unit.",
+              "src": "m1",
+              "page": "230"
+            },
+            {
+              "id": "key-told",
+              "name": "TOLD key",
+              "type": "button",
+              "match": [
+                "PNT_AUG_CNI_TOLD_*"
+              ],
+              "text": "This key opens the TOLD INDEX page, with takeoff and landing data. It is on the augmented crew member's CNI-MU.",
+              "context": "Such data covers speeds and distances for takeoff and landing. It is on the augmented crew member's unit. This is the augmented crew member's unit.",
+              "src": "m1",
+              "page": "230"
+            },
+            {
+              "id": "key-mark",
+              "name": "MARK key",
+              "type": "button",
+              "match": [
+                "PNT_AUG_CNI_MARK_*"
+              ],
+              "text": "This key opens the MARK POSITION page, which stores the plane's present position. It is on the augmented crew member's CNI-MU.",
+              "context": "It is a quick way to store a place, for example the point where the plane passes over a target. It is on the augmented crew member's unit. This is the augmented crew member's unit.",
+              "src": "m1",
+              "page": "230"
+            },
+            {
+              "id": "key-indx",
+              "name": "INDX key",
+              "type": "button",
+              "match": [
+                "PNT_AUG_CNI_INDX_*"
+              ],
+              "text": "This key opens the INDEX page, a list of the CNI pages. It is on the augmented crew member's CNI-MU.",
+              "context": "From the index the crew can reach every CNI page. It is on the augmented crew member's unit. This is the augmented crew member's unit.",
+              "src": "m1",
+              "page": "230"
+            },
+            {
+              "id": "key-mc-indx",
+              "name": "MC INDX key",
+              "type": "button",
+              "match": [
+                "PNT_AUG_CNI_MC_INDEX_*"
+              ],
+              "text": "This key opens the MSN CMPTR INDEX page, the index of the mission computer pages. It is on the augmented crew member's CNI-MU.",
+              "context": "It leads to the pages of the mission computer, such as the ones for airdrop planning. It is on the augmented crew member's unit. This is the augmented crew member's unit.",
+              "src": "m1",
+              "page": "230"
+            },
+            {
+              "id": "key-caps",
+              "name": "CAPS key",
+              "type": "button",
+              "match": [
+                "PNT_AUG_CNI_CAPS_*"
+              ],
+              "text": "This key opens the CAPS COMMAND page. It is on the augmented crew member's CNI-MU.",
+              "context": "CAPS is the formation flying system (SKE). The key leads to the commands for it. It is on the augmented crew member's unit. This is the augmented crew member's unit.",
+              "src": "m1",
+              "page": "230"
+            },
+            {
+              "id": "key-prev-next",
+              "name": "PREV PAGE and NEXT PAGE keys",
+              "type": "button",
+              "match": [
+                "PNT_AUG_CNI_PREV_*",
+                "PNT_AUG_CNI_NEXT_*"
+              ],
+              "count": 2,
+              "text": "These two keys turn to the previous or next page when the page on the augmented crew member's CNI-MU has several pages.",
+              "context": "At the last page, NEXT PAGE goes on to the first page. This is the augmented crew member's unit.",
+              "src": "m1",
+              "page": "230"
+            },
+            {
+              "id": "key-exec",
+              "name": "EXEC key",
+              "type": "button",
+              "match": [
+                "PNT_AUG_CNI_EXEC_*"
+              ],
+              "text": "This key carries out a change to the flight plan made on the augmented crew member's CNI-MU. It works only while the green EXEC light above it is on.",
+              "context": "A flight plan change is only a draft until EXEC is pressed. After that, the light goes out. This is the augmented crew member's unit.",
+              "src": "m1",
+              "page": "231"
+            },
+            {
+              "id": "bright",
+              "name": "Brightness rocker",
+              "type": "rocker",
+              "match": [
+                "PNT_AUG_CNI_BRTUP_*",
+                "PNT_AUG_CNI_BRTDWN_*"
+              ],
+              "text": "This rocker makes the screen of the augmented crew member's CNI-MU brighter or darker.",
+              "context": "The game lists one key for brighter and one for darker. This is the augmented crew member's unit.",
+              "src": "m1",
+              "page": "230"
+            },
+            {
+              "id": "letters",
+              "name": "Letter keys A-Z",
+              "type": "keypad",
+              "match": [
+                "PNT_AUG_CNI_A_*",
+                "PNT_AUG_CNI_B_*",
+                "PNT_AUG_CNI_C_*",
+                "PNT_AUG_CNI_D_*",
+                "PNT_AUG_CNI_E_*",
+                "PNT_AUG_CNI_F_*",
+                "PNT_AUG_CNI_G_*",
+                "PNT_AUG_CNI_H_*",
+                "PNT_AUG_CNI_I_*",
+                "PNT_AUG_CNI_J_*",
+                "PNT_AUG_CNI_K_*",
+                "PNT_AUG_CNI_L_*",
+                "PNT_AUG_CNI_M_*",
+                "PNT_AUG_CNI_N_*",
+                "PNT_AUG_CNI_O_*",
+                "PNT_AUG_CNI_P_*",
+                "PNT_AUG_CNI_Q_*",
+                "PNT_AUG_CNI_R_*",
+                "PNT_AUG_CNI_S_*",
+                "PNT_AUG_CNI_T_*",
+                "PNT_AUG_CNI_U_*",
+                "PNT_AUG_CNI_V_*",
+                "PNT_AUG_CNI_W_*",
+                "PNT_AUG_CNI_X_*",
+                "PNT_AUG_CNI_Y_*",
+                "PNT_AUG_CNI_Z_*"
+              ],
+              "count": 26,
+              "text": "These 26 keys type the letters A to Z into the scratchpad, the line at the bottom of the augmented crew member's CNI-MU screen.",
+              "context": "Letters are needed for names such as airport codes, waypoints and radio names. Typed text goes to a field with a line select key. This is the augmented crew member's unit.",
+              "src": "m1",
+              "page": "231"
+            },
+            {
+              "id": "digits",
+              "name": "Number keys 0-9",
+              "type": "keypad",
+              "match": [
+                "PNT_AUG_CNI_0_*",
+                "PNT_AUG_CNI_1_*",
+                "PNT_AUG_CNI_2_*",
+                "PNT_AUG_CNI_3_*",
+                "PNT_AUG_CNI_4_*",
+                "PNT_AUG_CNI_5_*",
+                "PNT_AUG_CNI_6_*",
+                "PNT_AUG_CNI_7_*",
+                "PNT_AUG_CNI_8_*",
+                "PNT_AUG_CNI_9_*"
+              ],
+              "count": 10,
+              "text": "These ten keys type the numbers 0 to 9 into the scratchpad of the augmented crew member's CNI-MU.",
+              "context": "Numbers are used for frequencies, altitudes and weights. The scratchpad is 25 characters wide. This is the augmented crew member's unit.",
+              "src": "m1",
+              "page": "231"
+            },
+            {
+              "id": "dot",
+              "name": "Decimal key",
+              "type": "button",
+              "match": [
+                "PNT_AUG_CNI_DOT_*"
+              ],
+              "text": "This key types a decimal point into the scratchpad of the augmented crew member's CNI-MU.",
+              "context": "A radio frequency uses it, for example 251.0. This is the augmented crew member's unit.",
+              "src": "m1",
+              "page": "231"
+            },
+            {
+              "id": "plusminus",
+              "name": "Minus key (+/-)",
+              "type": "button",
+              "match": [
+                "PNT_AUG_CNI_PLUSMINUS_*"
+              ],
+              "text": "This key types a minus sign into the scratchpad of the augmented crew member's CNI-MU. The key shows a plus sign as well, but a plus cannot be entered.",
+              "context": "All numbers are taken as positive unless a minus comes first. This is the augmented crew member's unit.",
+              "src": "m1",
+              "page": "231"
+            },
+            {
+              "id": "slash",
+              "name": "Slash key",
+              "type": "button",
+              "match": [
+                "PNT_AUG_CNI_SLASH_*"
+              ],
+              "text": "This key types a slash (/) into the scratchpad of the augmented crew member's CNI-MU.",
+              "context": "Some fields need two values separated by a slash. This is the augmented crew member's unit.",
+              "src": "m1",
+              "page": "231"
+            },
+            {
+              "id": "del",
+              "name": "DEL key (delete)",
+              "type": "button",
+              "match": [
+                "PNT_AUG_CNI_DEL_*"
+              ],
+              "text": "This key puts the word *DELETE* into the scratchpad of the augmented crew member's CNI-MU. Together with a line select key, it removes the data of that field.",
+              "context": "A field that was deleted goes back to its default value, if it has one. This is the augmented crew member's unit.",
+              "src": "m1",
+              "page": "231"
+            },
+            {
+              "id": "clr",
+              "name": "CLR key (clear)",
+              "type": "button",
+              "match": [
+                "PNT_AUG_CNI_CLR_*"
+              ],
+              "text": "This key erases the scratchpad of the augmented crew member's CNI-MU. One press removes one character. Holding it for over three seconds removes everything.",
+              "context": "A single press also removes a message that the unit has put into the scratchpad. This is the augmented crew member's unit.",
+              "src": "m1",
+              "page": "231"
+            },
+            {
+              "id": "unused",
+              "name": "Unused key",
+              "type": "button",
+              "match": [
+                "PNT_AUG_CNI_MINUS_*"
+              ],
+              "text": "The game calls this key of the augmented crew member's CNI-MU the 'Unused Key'. It has no function.",
+              "context": "It sits near the minus key and is only a part of the keypad. This is the augmented crew member's unit.",
+              "src": "m1",
+              "page": "231"
+            }
+          ]
+        },
+        {
+          "id": "aug-audio",
+          "name": "Aug crew audio monitoring panel",
+          "src": "m1",
+          "page": "151",
+          "text": "This panel lets the augmented crew member, the extra crew seat, listen to the navigation radios and the radar warning receiver.",
+          "context": "It matches the pilots' audio monitoring panels.",
+          "controls": [
+            {
+              "id": "aug-mon-knobs",
+              "name": "Aug crew monitoring knobs (10)",
+              "type": "knob",
+              "match": [
+                "PNT_AUG_CTR_MON_*",
+                "item:lower-center-console:7"
+              ],
+              "count": 10,
+              "text": "These ten knobs control the audio for the extra crew seat: VOR 1 and 2, TACAN 1 and 2, ADF 1 and 2, SAR, BCN, RWR and one spare. Turning changes the volume; pulling a knob out switches its channel on.",
+              "context": "A white band at the foot of a knob shows that its channel is on. The extra crew seat has its own set.",
+              "src": "m1",
+              "page": "151"
+            }
+          ]
+        },
+        {
+          "id": "aug-ics",
+          "name": "Aug crew ICS control panel (intercom)",
+          "src": "m1",
+          "page": "152",
+          "text": "The ICS is the crew's intercom. This panel is where the augmented crew member chooses what to hear, how loud it is, and where the own voice goes.",
+          "context": "It acts like the pilots' ICS panels but for the extra crew seat.",
+          "controls": [
+            {
+              "id": "ics-radio-knobs",
+              "name": "Aug radio channel knobs (11)",
+              "type": "knob",
+              "match": [
+                "PNT_AUG_CTR_ICS_*_2??_2??",
+                "item:lower-center-console:9"
+              ],
+              "count": 11,
+              "text": "These 11 knobs are for listening on the augmented crew member's side: INT (interphone, the crew's own phone line), H1 and H2 (HF radios), V1 and V2 (VHF radios), U1 and U2 (UHF radios), SAT (satellite radio), PA (public address) and the channels PVT and VOX/HM. Turning a knob changes the volume. Pulling it out switches the channel on.",
+              "context": "A white band shows at the foot of a knob when its channel is switched on. The manual does not explain PVT and VOX/HM further. This is the augmented crew member's panel.",
+              "src": "m1",
+              "page": "152"
+            },
+            {
+              "id": "ics-pa-gain",
+              "name": "PA GAIN knob",
+              "type": "knob",
+              "match": [
+                "PNT_AUG_CTR_ICS_PAGAIN_*"
+              ],
+              "text": "This knob sets how loud the augmented crew member's public address announcements are in the cargo bay.",
+              "context": "The public address is the loudspeaker line to the people in the back. This is the augmented crew member's panel.",
+              "src": "m1",
+              "page": "152"
+            },
+            {
+              "id": "ics-vox-sens",
+              "name": "VOX SENS knob",
+              "type": "knob",
+              "match": [
+                "PNT_AUG_CTR_ICS_VOXSENS_*"
+              ],
+              "text": "This knob sets how sensitive the augmented crew member's microphone is for voice activation (VOX means voice operated). Lower settings need a louder voice before the microphone starts to send.",
+              "context": "It matters when the interphone is in voice mode, so that the pilot does not need a button to talk. This is the augmented crew member's panel.",
+              "src": "m1",
+              "page": "152"
+            },
+            {
+              "id": "ics-int-radio",
+              "name": "Interphone / radio transmit switch",
+              "type": "switch",
+              "match": [
+                "PNT_AUG_CTR_ICS_INT_290",
+                "PNT_AUG_CTR_ICS_RADIO_290"
+              ],
+              "positions": [
+                {
+                  "name": "INT",
+                  "text": "The voice goes to the interphone."
+                },
+                {
+                  "name": "RADIO",
+                  "text": "The voice goes out over the selected radio."
+                }
+              ],
+              "text": "This switch picks where the augmented crew member's microphone speaks to. INT sends the voice over the crew's interphone. RADIO sends it over the radio chosen with the transmission selector.",
+              "context": "The same switch exists as a thumb switch on the side of the yoke. In the game it has a command for each direction. This is the augmented crew member's panel.",
+              "src": "m1",
+              "page": "153"
+            },
+            {
+              "id": "ics-mode",
+              "name": "Interphone mode switch (CALL / INT / VOX / HOT MIC)",
+              "type": "selector",
+              "match": [
+                "PNT_AUG_CTR_ICS_MODE_297"
+              ],
+              "positions": [
+                {
+                  "name": "CALL",
+                  "text": "A priority call that is 6 decibels louder than other talk. It springs back to INT."
+                },
+                {
+                  "name": "INT",
+                  "text": "The microphone sends on the interphone only when the transmit switch is used."
+                },
+                {
+                  "name": "VOX",
+                  "text": "The interphone is voice-activated and sends only when it hears a voice."
+                },
+                {
+                  "name": "HOT MIC",
+                  "text": "The microphone sends all the time."
+                }
+              ],
+              "text": "This switch sets how the augmented crew member's microphone sends on the interphone. CALL is a loud priority call, INT needs the push-to-talk switch, VOX is voice-activated, and HOT MIC always sends.",
+              "context": "CALL springs back to INT after use. The other positions stay where they are put. This is the augmented crew member's panel.",
+              "src": "m1",
+              "page": "153"
+            },
+            {
+              "id": "ics-selector",
+              "name": "Transmission selector switch",
+              "type": "selector",
+              "match": [
+                "PNT_AUG_CTR_ICS_SELECTOR_298"
+              ],
+              "text": "This knob picks the radio or line that the augmented crew member's microphone transmits on when RADIO is chosen. It has ten positions, among them H-1, H-2, INT, PA, PVT and SAT.",
+              "context": "For example, the pilot chooses a UHF radio to speak with the tower and then uses the push-to-talk switch. This is the augmented crew member's panel.",
+              "src": "m1",
+              "page": "153"
+            },
+            {
+              "id": "ics-volume",
+              "name": "Master volume knob",
+              "type": "knob",
+              "match": [
+                "PNT_AUG_CTR_ICS_VOL_1361"
+              ],
+              "text": "This knob changes the overall volume of what the augmented crew member's headset receives, both from the radios and from the interphone.",
+              "context": "The single channel knobs set each channel's own loudness; this one sets the total. This is the augmented crew member's panel.",
+              "src": "m1",
+              "page": "153"
+            },
+            {
+              "id": "aug-port",
+              "name": "Aug crew interphone connection port",
+              "type": "other",
+              "match": [
+                "item:lower-center-console:10"
+              ],
+              "text": "This is the socket where the augmented crew member plugs in the headset cable of the interphone.",
+              "context": "The manual only names the port.",
+              "src": "m1",
+              "page": "16"
+            }
+          ]
+        },
+        {
+          "id": "defensive",
+          "name": "Defensive systems control panel",
+          "src": "m1",
+          "page": "56",
+          "text": "Defensive systems protect the plane from missiles and radar. They include a radar warning receiver (RWR) and a dispenser for countermeasures: chaff (metal strips that fool radar missiles) and flares (hot decoys that fool heat-seeking missiles).",
+          "context": "The panel arms and sets the defensive systems for the threats of the mission. Dispensing is done with the button on the yoke.",
+          "controls": [
+            {
+              "id": "def-master",
+              "name": "Defensive systems master switch",
+              "type": "switch2",
+              "match": [
+                "PNT_DSC_CMDS_MASTER_61",
+                "item:lower-center-console:4"
+              ],
+              "positions": [
+                {
+                  "name": "STBY",
+                  "text": "Every part is stopped from radiating or dispensing (the game's command is OFF)."
+                },
+                {
+                  "name": "OPR",
+                  "text": "All the parts work unless one was turned off on the DEF SYS CONTROL page (the game's command is ON)."
+                }
+              ],
+              "text": "This switch turns the whole defensive system on or off. The game's commands call the positions ON and OFF; the manual calls them OPR and STBY.",
+              "context": "In STBY nothing radiates or dispenses.",
+              "src": "m1",
+              "page": "56"
+            },
+            {
+              "id": "def-jett-cover",
+              "name": "CMS jettison switch guard",
+              "type": "guard",
+              "match": [
+                "PNT_DSC_CMDS_COVER_59"
+              ],
+              "text": "This cover sits over the jettison switch and stops it from being used by mistake.",
+              "context": "The game has commands to open and close it.",
+              "src": "m1",
+              "page": "56"
+            },
+            {
+              "id": "def-jett",
+              "name": "CMS jettison switch",
+              "type": "switch",
+              "match": [
+                "PNT_DSC_EMERG_JETT_60"
+              ],
+              "text": "This switch drops all the loaded flares quickly, one after another. It springs back to OFF and works only in the air. Chaff cannot be dropped with it.",
+              "context": "It empties the flare supply, for example in an emergency.",
+              "src": "m1",
+              "page": "56"
+            },
+            {
+              "id": "def-cmds-mode",
+              "name": "CMDS mode selector",
+              "type": "selector",
+              "match": [
+                "PNT_DSC_CMDS_MODE_74"
+              ],
+              "positions": [
+                {
+                  "name": "STBY",
+                  "text": "The dispenser has power for a self-test, but nothing is dispensed."
+                },
+                {
+                  "name": "MAN",
+                  "text": "Chaff and flares are dispensed by hand, using the program picked with MAN PRGMS."
+                },
+                {
+                  "name": "SEMI",
+                  "text": "The system waits for the crew's consent before dispensing against a radar threat. Missile launches get flares automatically."
+                },
+                {
+                  "name": "AUTO",
+                  "text": "Chaff and flares are dispensed automatically for the threat type."
+                },
+                {
+                  "name": "BYP",
+                  "text": "Dispensing is by hand with the dispense switch, while flares are dispensed automatically for missile launches."
+                }
+              ],
+              "text": "This selector chooses how the countermeasure dispenser works: standby, manual, semi-automatic, automatic or bypass.",
+              "context": "In MAN the crew drops chaff and flares by hand. In AUTO the system drops what suits the threat.",
+              "src": "m1",
+              "page": "57"
+            },
+            {
+              "id": "def-ecm",
+              "name": "ECM master switch",
+              "type": "switch2",
+              "match": [
+                "PNT_DSC_CMDS_ECM_62"
+              ],
+              "positions": [
+                {
+                  "name": "OFF",
+                  "text": "Nothing happens."
+                },
+                {
+                  "name": "ON",
+                  "text": "Nothing happens."
+                }
+              ],
+              "text": "This switch is labelled ECM, short for electronic countermeasures (jamming). The manual says it has no function in the real C-130J.",
+              "context": "It is only part of the panel; the real C-130J has no function for it either.",
+              "src": "m1",
+              "page": "57"
+            },
+            {
+              "id": "def-ircm",
+              "name": "IRCM master switch",
+              "type": "switch2",
+              "match": [
+                "PNT_DSC_CMDS_IRCM_63"
+              ],
+              "positions": [
+                {
+                  "name": "OFF",
+                  "text": "Nothing happens."
+                },
+                {
+                  "name": "ON",
+                  "text": "Nothing happens."
+                }
+              ],
+              "text": "This switch is labelled IRCM, short for infrared countermeasures. The manual says it has no function in the real C-130J.",
+              "context": "It is only part of the panel and does nothing.",
+              "src": "m1",
+              "page": "57"
+            },
+            {
+              "id": "def-prgm",
+              "name": "MAN PRGMS switch",
+              "type": "switch3",
+              "match": [
+                "PNT_DSC_CMDS_PRGM_64"
+              ],
+              "positions": [
+                {
+                  "name": "PROG 1-4",
+                  "text": "The program picked on the CMDS CONTROL page is used."
+                },
+                {
+                  "name": "PROG 5",
+                  "text": "Program 5 is used."
+                },
+                {
+                  "name": "PROG 6",
+                  "text": "Program 6 is used."
+                }
+              ],
+              "text": "This switch picks the countermeasure program used when dispensing by hand. A program says how many chaff and flares are dropped and how fast.",
+              "context": "Programs 1 to 4 are chosen on the CMDS CONTROL page of the CNI-MU.",
+              "src": "m1",
+              "page": "57"
+            },
+            {
+              "id": "rwr-srch",
+              "name": "RWR SRCH switch (search)",
+              "type": "button",
+              "match": [
+                "PNT_DSC_SRCH_54"
+              ],
+              "text": "This button turns on the display of search radars on the radar warning receiver. A green ON light shows it is on.",
+              "context": "With search mode on, an S shows at the center of the RWR overlay.",
+              "src": "m1",
+              "page": "57"
+            },
+            {
+              "id": "rwr-mode",
+              "name": "RWR MODE switch (priority)",
+              "type": "button",
+              "match": [
+                "PNT_DSC_MODE_55"
+              ],
+              "text": "This button limits the RWR display to the five most dangerous threats. A green PRI light shows priority mode.",
+              "context": "Without priority mode the display shows up to 12 threats.",
+              "src": "m1",
+              "page": "58"
+            },
+            {
+              "id": "rwr-handoff",
+              "name": "RWR HANDOFF switch",
+              "type": "button",
+              "match": [
+                "PNT_DSC_HANDOFF_56"
+              ],
+              "text": "This button is labelled HANDOFF. The manual says it has no function.",
+              "context": "It is only part of the panel and does nothing.",
+              "src": "m1",
+              "page": "58"
+            },
+            {
+              "id": "rwr-alt",
+              "name": "RWR ALT switch",
+              "type": "button",
+              "match": [
+                "PNT_DSC_ALT_57"
+              ],
+              "text": "This button picks whether the RWR shows low-altitude threats or high-altitude threats. A green HIGH light shows the high setting.",
+              "context": "An L at the center of the overlay shows that the low mode is on.",
+              "src": "m1",
+              "page": "58"
+            },
+            {
+              "id": "rwr-tgt-sep",
+              "name": "RWR TGT SEP switch (target separation)",
+              "type": "button",
+              "match": [
+                "PNT_DSC_TGT_SEP_58"
+              ],
+              "text": "This button spreads overlapping threat symbols apart along their line of bearing. A green TGT light shows it is on.",
+              "context": "Turning it off returns the symbols to their true places.",
+              "src": "m1",
+              "page": "58"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

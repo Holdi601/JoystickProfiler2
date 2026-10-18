@@ -1,0 +1,2387 @@
+{
+  "format": "joypro-cockpit-guide",
+  "version": 1,
+  "id": "dcs-av-8b-part2",
+  "partOf": "dcs-av-8b",
+  "areas": [
+    {
+      "id": "left-console",
+      "where": "left-console",
+      "name": "Left console",
+      "text": "The left console beside the pilot holds the throttle quadrant with the nozzle lever, the engine and fuel switches, the stability helpers, the lights and the canopy-related controls.",
+      "panels": [
+        {
+          "id": "throttle-quadrant",
+          "name": "Throttle quadrant (throttle, nozzle lever and stops)",
+          "db": "throttle-quadrant",
+          "src": "m2",
+          "page": "84",
+          "text": "This is the box on the left side where the pilot's left hand rests. It holds the throttle (power lever), the nozzle lever, and their stops, friction knobs, brake lock and some engine switches.",
+          "context": "In the Harrier the left hand works both the throttle and the nozzle lever, while the right hand holds the control stick. In a hover the pilot moves them together all the time.",
+          "controls": [
+            {
+              "id": "throttle-friction",
+              "name": "Throttle friction knob",
+              "type": "knob",
+              "match": [
+                "PTN_485",
+                "item:throttle-quadrant:1",
+                "control:throttle.knob.friction"
+              ],
+              "text": "This knob makes the throttle lever stiffer or looser to move, like a stiffness screw on a hinge.",
+              "context": "A stiffer lever stays where it is put and does not creep.",
+              "src": "m2",
+              "page": "84"
+            },
+            {
+              "id": "nozzle-friction",
+              "name": "Nozzle lever friction knob",
+              "type": "knob",
+              "match": [
+                "PTN_486",
+                "item:throttle-quadrant:2"
+              ],
+              "text": "This knob makes the nozzle lever stiffer or looser to move.",
+              "context": "A stiffer nozzle lever stays at its angle even when the pilot's hand lets go.",
+              "src": "m2",
+              "page": "84"
+            },
+            {
+              "id": "throttle",
+              "name": "Throttle (power lever)",
+              "type": "lever",
+              "match": [
+                "item:throttle-quadrant:3"
+              ],
+              "text": "The throttle makes the engine stronger or weaker, like the gas pedal of a car. The grip carries many buttons and switches for the left thumb and fingers.",
+              "context": "When it is pulled fully back the fuel is shut off. Moving it forward to idle opens the fuel valve, and it cannot go back except by lifting the cutoff lever. The parking brake locks it.",
+              "src": "m2",
+              "page": "128"
+            },
+            {
+              "id": "sto-stop",
+              "name": "STO stop lever (short take-off stop)",
+              "type": "lever",
+              "match": [
+                "PTN_488",
+                "item:throttle-quadrant:4",
+                "control:throttle.lever.sto_stop"
+              ],
+              "text": "This lever sets a stop for the nozzle lever. The stop can be set to an angle between 35 and 75 degrees in steps of 5, so the pilot can pull the nozzle lever quickly to exactly that angle.",
+              "context": "It is used for short take-offs. When it is not needed it must be moved fully aft, or it would block the nozzle lever.",
+              "src": "m2",
+              "page": "130"
+            },
+            {
+              "id": "cutoff",
+              "name": "Throttle cutoff lever",
+              "type": "lever",
+              "match": [
+                "PTN_490",
+                "item:throttle-quadrant:5",
+                "control:throttle.lever.cutoff"
+              ],
+              "text": "This small spring lever on the front of the throttle shuts off the engine by closing its fuel supply. It can be used only when the throttle is at idle.",
+              "context": "The manual warns: when releasing the parking brake with the mouse, take care not to click this lever, because the engine will stop.",
+              "src": "m2",
+              "page": "84"
+            },
+            {
+              "id": "rudder-trim",
+              "name": "Rudder trim switch",
+              "type": "switch3",
+              "match": [
+                "PTN_483",
+                "item:throttle-quadrant:6",
+                "control:throttle.switch.rudder_trim"
+              ],
+              "positions": [
+                {
+                  "name": "LEFT",
+                  "text": "The trim moves to the left."
+                },
+                {
+                  "name": "OFF",
+                  "text": "The trim stays as it is."
+                },
+                {
+                  "name": "RIGHT",
+                  "text": "The trim moves to the right."
+                }
+              ],
+              "text": "This switch sets the rudder trim, a small steady push on the rudder so that the plane flies straight without pushing the pedals.",
+              "context": "The game offers one command for the left and one for the right.",
+              "src": "m2",
+              "page": "85"
+            },
+            {
+              "id": "ems",
+              "name": "EMS pilot record button",
+              "type": "button",
+              "match": [
+                "PTN_482",
+                "item:throttle-quadrant:7",
+                "control:throttle.button.ems"
+              ],
+              "text": "Pressing this button makes the engine monitoring system write down the engine numbers for the ground crew.",
+              "context": "The ground crew can read the numbers after the flight.",
+              "src": "m2",
+              "page": "85"
+            },
+            {
+              "id": "nozzle-lever",
+              "name": "Nozzle angle control lever (thrust direction)",
+              "type": "lever",
+              "match": [
+                "PTN_487",
+                "item:throttle-quadrant:8",
+                "control:throttle.lever.nozzle"
+              ],
+              "text": "Most jets blow their hot air straight back. The Harrier has four swivelling pipes, called nozzles, and this lever tilts all four at the same time. Pointing back, the engine pushes the plane forward like any jet. Pointing down, the engine holds the plane up in the air, like a rocket, so the plane can hover and take off or land straight up.",
+              "context": "The lever covers the angles from 0 to 98.5 degrees. At 0 the nozzles point straight back, for normal flight. About 10 degrees is for driving on the ground. Around 82 to 84 degrees is the hover. At 98.5 (the braking stop) the nozzles point past straight down and slow the plane down, in the air and on the ground. The nozzle dial on the engine display shows the angle.",
+              "src": "m2",
+              "page": "85"
+            },
+            {
+              "id": "parking-brake",
+              "name": "Parking brake lever",
+              "type": "lever",
+              "match": [
+                "PTN_489",
+                "item:throttle-quadrant:9",
+                "control:throttle.lever.parking_brake"
+              ],
+              "positions": [
+                {
+                  "name": "ON",
+                  "text": "The brakes are locked and the throttle is locked."
+                },
+                {
+                  "name": "OFF",
+                  "text": "The brakes are free and the throttle can move."
+                }
+              ],
+              "text": "This lever holds the wheel brakes on while the plane is parked. While it is on, the throttle cannot be pushed forward.",
+              "context": "The INS can only align itself when this lever is in the aft (on) position.",
+              "src": "m2",
+              "page": "85"
+            },
+            {
+              "id": "jptl",
+              "name": "JPTL switch (jet pipe temperature limiter)",
+              "type": "switch2",
+              "match": [
+                "PTN_481",
+                "item:throttle-quadrant:10",
+                "control:throttle.switch.jptl"
+              ],
+              "positions": [
+                {
+                  "name": "ON",
+                  "text": "The computer limits the engine temperature."
+                },
+                {
+                  "name": "OFF",
+                  "text": "The limiter is off and the JPTL warning light flashes."
+                }
+              ],
+              "text": "This switch turns the engine temperature limiter on or off. With it off, the engine runs a few percent faster and hotter, and a warning sounds.",
+              "context": "The manual says pushing the throttle hard against its forward stop also switches the limiter off. Without the limiter the engine speed rises by 6 to 7 percent.",
+              "src": "m2",
+              "page": "85"
+            },
+            {
+              "id": "mfs",
+              "name": "Manual fuel switch (MFS)",
+              "type": "switch3",
+              "match": [
+                "PTN_484",
+                "item:throttle-quadrant:11",
+                "control:throttle.switch.mfs"
+              ],
+              "positions": [
+                {
+                  "name": "ON",
+                  "text": "Forward: the engine is controlled manually."
+                },
+                {
+                  "name": "NEUTRAL",
+                  "text": "Centre: neutral."
+                },
+                {
+                  "name": "OFF",
+                  "text": "Back: the engine goes back to computer control (DECS)."
+                }
+              ],
+              "text": "This switch hands the engine over from the digital computer to manual fuel control. It is the backup when the computer fails.",
+              "context": "With manual control the engine reacts more sharply to the throttle and has no automatic limits.",
+              "src": "m2",
+              "page": "85"
+            },
+            {
+              "id": "hvto-stop",
+              "name": "Hovering vertical take-off stop",
+              "type": "lever",
+              "match": [
+                "control:throttle.lever.hvto_stop"
+              ],
+              "text": "JoyPro's controls table lists a throttle stop for a hovering vertical take-off.",
+              "context": "The manual does not describe it as a separate part; it is listed here because the controls table contains it.",
+              "src": "m2",
+              "page": "84"
+            }
+          ]
+        },
+        {
+          "id": "pilot-services",
+          "name": "Pilot services panel",
+          "db": "pilot-services-panel",
+          "src": "m2",
+          "page": "78",
+          "text": "This panel on the left console has five switches for engine control lane, engine speed display, the lift fence under the plane, the oxygen supply and the water dump.",
+          "context": "The pilot mostly leaves them in their normal positions; they matter for checks and special cases.",
+          "controls": [
+            {
+              "id": "efc",
+              "name": "Engine fuel control switch (EFC)",
+              "type": "switch2",
+              "match": [
+                "PTN_518",
+                "item:pilot-services-panel:1"
+              ],
+              "positions": [
+                {
+                  "name": "POS 1",
+                  "text": "Engine computer 1 is in charge."
+                },
+                {
+                  "name": "POS 2",
+                  "text": "Engine computer 2 is in charge."
+                }
+              ],
+              "text": "This switch picks which of the two digital engine computers (DECU 1 or DECU 2) runs the engine. Either one can do the job alone.",
+              "context": "If one computer fails, the other takes over by itself. The pilot can choose the lane to help reset a failed unit.",
+              "src": "m2",
+              "page": "78"
+            },
+            {
+              "id": "eng-rpm",
+              "name": "ENG RPM switch (HI / LOW)",
+              "type": "switch2",
+              "match": [
+                "PTN_517",
+                "item:pilot-services-panel:2"
+              ],
+              "positions": [
+                {
+                  "name": "HI",
+                  "text": "The tachometer shows the compressor speed."
+                },
+                {
+                  "name": "LOW",
+                  "text": "The tachometer shows the fan speed."
+                }
+              ],
+              "text": "This switch chooses which engine speed the tachometer shows: the speed of the compressor (HI) or of the fan (LOW).",
+              "context": "The tachometer is on the engine display panel on the right of the main panel.",
+              "src": "m2",
+              "page": "78"
+            },
+            {
+              "id": "lids",
+              "name": "LIDS switch (lift improvement device)",
+              "type": "switch2",
+              "match": [
+                "PTN_516",
+                "item:pilot-services-panel:3"
+              ],
+              "positions": [
+                {
+                  "name": "NORM",
+                  "text": "The fence works normally."
+                },
+                {
+                  "name": "RETRACT",
+                  "text": "The fence is pulled in."
+                }
+              ],
+              "text": "This switch works the LIDS, a set of fixed strips and a fence under the plane. In a hover they hold the hot air stream together and add about 1200 pounds of lift.",
+              "context": "NORM lets the fence work by itself. RET (retract) pulls it in.",
+              "src": "m2",
+              "page": "79"
+            },
+            {
+              "id": "oxygen",
+              "name": "Oxygen switch",
+              "type": "switch2",
+              "match": [
+                "PTN_514",
+                "item:pilot-services-panel:4"
+              ],
+              "positions": [
+                {
+                  "name": "ON",
+                  "text": "The pilot gets breathing gas."
+                },
+                {
+                  "name": "OFF",
+                  "text": "The oxygen system is off."
+                }
+              ],
+              "text": "This switch turns on the OBOGS, a machine that makes breathing gas for the pilot from engine air.",
+              "context": "It supplies the pilot while the engine runs.",
+              "src": "m2",
+              "page": "79"
+            },
+            {
+              "id": "water-dump",
+              "name": "H2O dump switch",
+              "type": "switch2",
+              "match": [
+                "PTN_515",
+                "item:pilot-services-panel:5"
+              ],
+              "positions": [
+                {
+                  "name": "DUMP",
+                  "text": "The water is dumped."
+                },
+                {
+                  "name": "OFF",
+                  "text": "Dumping stops."
+                }
+              ],
+              "text": "This switch empties the water tank (500 pounds of pure water in the engine bay) that is used for water injection.",
+              "context": "The pilot dumps the water to make the plane lighter.",
+              "src": "m2",
+              "page": "79"
+            }
+          ]
+        },
+        {
+          "id": "exterior-lights",
+          "name": "Exterior lights panel",
+          "db": "exterior-lights-panel",
+          "src": "m2",
+          "page": "80",
+          "text": "This panel switches the lights on the outside of the plane: formation, position, anti-collision and a taxi lamp.",
+          "context": "Most of them need the external lights master switch on the miscellaneous switch panel. The auxiliary lamp works without it.",
+          "controls": [
+            {
+              "id": "formation",
+              "name": "Formation lights knob",
+              "type": "knob",
+              "match": [
+                "PTN_510",
+                "item:exterior-lights-panel:1"
+              ],
+              "text": "This knob sets the brightness of twelve formation lights, small lights along the plane that help other pilots to keep close formation.",
+              "context": "It can be turned from OFF to full brightness.",
+              "src": "m2",
+              "page": "80"
+            },
+            {
+              "id": "position-lights",
+              "name": "Position lights switch",
+              "type": "switch3",
+              "match": [
+                "PTN_511",
+                "item:exterior-lights-panel:2"
+              ],
+              "positions": [
+                {
+                  "name": "BRT",
+                  "text": "The lights shine at full strength."
+                },
+                {
+                  "name": "DIM",
+                  "text": "The lights shine at reduced strength."
+                },
+                {
+                  "name": "OFF",
+                  "text": "The lights are off."
+                }
+              ],
+              "text": "This switch sets the three position lights, the coloured lights that show other aircraft which way this plane points.",
+              "context": "The pilot uses them for night flying.",
+              "src": "m2",
+              "page": "80"
+            },
+            {
+              "id": "anti-collision",
+              "name": "Anti-collision lights switch",
+              "type": "switch2",
+              "match": [
+                "PTN_512",
+                "item:exterior-lights-panel:3"
+              ],
+              "positions": [
+                {
+                  "name": "ON",
+                  "text": "The light is on."
+                },
+                {
+                  "name": "OFF",
+                  "text": "The light is off."
+                }
+              ],
+              "text": "This switch turns on the anti-collision light, a bright flashing light that helps others see the plane.",
+              "context": "It needs the external lights master switch.",
+              "src": "m2",
+              "page": "80"
+            },
+            {
+              "id": "aux-light",
+              "name": "Auxiliary landing light switch (taxi lamp)",
+              "type": "switch2",
+              "match": [
+                "PTN_513",
+                "item:exterior-lights-panel:4"
+              ],
+              "positions": [
+                {
+                  "name": "ON",
+                  "text": "The taxi lamp is on."
+                },
+                {
+                  "name": "OFF",
+                  "text": "The taxi lamp is off."
+                }
+              ],
+              "text": "This switch turns on a 70 watt lamp, normally used as a taxi light for driving on the ground at night.",
+              "context": "The manual says it works without the external lights master switch.",
+              "src": "m2",
+              "page": "80"
+            }
+          ]
+        },
+        {
+          "id": "fuel-panel",
+          "name": "Fuel panel",
+          "db": "fuel-panel",
+          "src": "m2",
+          "page": "81",
+          "text": "This panel has the controls for the air refuelling probe, the pumps and the fuel balance, and the dump switches for the wing fuel.",
+          "context": "The pilot uses it in start-up to turn on the pumps and later for refuelling in the air or for balancing the fuel.",
+          "controls": [
+            {
+              "id": "ar-probe",
+              "name": "Air refuelling switch (probe)",
+              "type": "switch3",
+              "match": [
+                "PTN_507",
+                "item:fuel-panel:1"
+              ],
+              "positions": [
+                {
+                  "name": "IN",
+                  "text": "The probe is pulled in and the tanks are pressurised."
+                },
+                {
+                  "name": "OUT",
+                  "text": "The probe goes out and tank pressure stops, so fuel can flow in."
+                },
+                {
+                  "name": "PRESS",
+                  "text": "The probe stays out and the tanks are pressurised."
+                }
+              ],
+              "text": "This switch moves the refuelling probe, a pipe that sticks out of the plane to take fuel from a tanker aircraft in flight. It is held by a lever lock.",
+              "context": "IN pulls the probe back, OUT pushes it out, and PRESS keeps it out and pressurises the tanks.",
+              "src": "m2",
+              "page": "81"
+            },
+            {
+              "id": "fuel-prop",
+              "name": "Fuel flow proportioner switch (PROP)",
+              "type": "switch2",
+              "match": [
+                "PTN_504",
+                "item:fuel-panel:2"
+              ],
+              "positions": [
+                {
+                  "name": "ON",
+                  "text": "The system balances the two sides."
+                },
+                {
+                  "name": "OFF",
+                  "text": "The balancing is off."
+                }
+              ],
+              "text": "This switch keeps the flow of fuel from the left and right tanks equal. Turning it off lets the pilot correct an unbalanced load by hand.",
+              "context": "It is normally ON. The fuel shutoff handle also shuts it off.",
+              "src": "m2",
+              "page": "81"
+            },
+            {
+              "id": "boost-pumps",
+              "name": "Boost pump switches L and R",
+              "type": "switch3",
+              "match": [
+                "PTN_505",
+                "PTN_506",
+                "item:fuel-panel:3"
+              ],
+              "positions": [
+                {
+                  "name": "OFF",
+                  "text": "The pumps of that side are off."
+                },
+                {
+                  "name": "ON",
+                  "text": "The normal pumps work (they need the main generator or ground power)."
+                },
+                {
+                  "name": "DC OPR",
+                  "text": "The pumps run on direct current, which also works on battery power."
+                }
+              ],
+              "count": 2,
+              "text": "Two switches, one for each side, for the pumps that push fuel to the engine. Each side has two pumps: one electric from the generator and one from the battery.",
+              "context": "The pilot can switch off the pump of the fuller side to fix an unbalanced load. The game lists the positions OFF, ON and DC OPR.",
+              "src": "m2",
+              "page": "82"
+            },
+            {
+              "id": "wing-dump",
+              "name": "Wing fuel dump switches L and R",
+              "type": "switch2",
+              "match": [
+                "PTN_508",
+                "PTN_509",
+                "item:fuel-panel:4"
+              ],
+              "positions": [
+                {
+                  "name": "DUMP",
+                  "text": "Fuel of that wing is dumped."
+                },
+                {
+                  "name": "NORM",
+                  "text": "No dumping."
+                }
+              ],
+              "count": 2,
+              "text": "Two switches, one for each wing, that let the plane throw fuel overboard in flight to get lighter. Both can be used together or one by one.",
+              "context": "Dumping stops when the switch is set to NORM, when the wing tanks are empty, or when the total reaches the bingo setting.",
+              "src": "m2",
+              "page": "82"
+            }
+          ]
+        },
+        {
+          "id": "misc-switch",
+          "name": "Miscellaneous switch panel",
+          "db": "misc-switch-panel",
+          "src": "m2",
+          "page": "83",
+          "text": "Two controls on the left console: the master switch for the outside lights and the switch that moves the seat up and down.",
+          "context": "Both are used before take-off: the lights for night, the seat for a good view.",
+          "controls": [
+            {
+              "id": "ext-master",
+              "name": "External lights master switch",
+              "type": "switch3",
+              "match": [
+                "PTN_503",
+                "item:misc-switch-panel:1"
+              ],
+              "positions": [
+                {
+                  "name": "OFF",
+                  "text": "All lights controlled by this switch have no power."
+                },
+                {
+                  "name": "NVG",
+                  "text": "Anti-collision and formation lights are available in covert mode for night vision goggles."
+                },
+                {
+                  "name": "NORM",
+                  "text": "All these lights have power."
+                }
+              ],
+              "text": "This switch is the main switch for the outside lights: position, formation, anti-collision, landing and taxi lights, side-slip vane lights and the refuelling probe light.",
+              "context": "NVG makes only the anti-collision and formation lights usable in a covert mode that is only visible with night vision goggles.",
+              "src": "m2",
+              "page": "83"
+            },
+            {
+              "id": "seat-adjust",
+              "name": "Seat adjustment switch",
+              "type": "switch3",
+              "match": [
+                "PTN_502",
+                "item:misc-switch-panel:2"
+              ],
+              "positions": [
+                {
+                  "name": "UP",
+                  "text": "The seat goes up."
+                },
+                {
+                  "name": "OFF",
+                  "text": "The seat stays where it is."
+                },
+                {
+                  "name": "DOWN",
+                  "text": "The seat goes down."
+                }
+              ],
+              "text": "This switch moves the pilot's seat up or down for a better view out of the cockpit.",
+              "context": "The game lists the commands UP and DOWN.",
+              "src": "m2",
+              "page": "83"
+            }
+          ]
+        },
+        {
+          "id": "saahs",
+          "name": "SAAHS panel (stability augmentation and attitude hold)",
+          "db": "saahs-panel",
+          "src": "m2",
+          "page": "86",
+          "text": "This panel switches on the computer helpers that keep the plane steady and can hold its attitude. SAAHS stands for stability augmentation and attitude hold system.",
+          "context": "The pilot turns these on in the start-up checks. They work in three axes (yaw, roll, pitch) and the autopilot-like AFC.",
+          "controls": [
+            {
+              "id": "sas-yaw",
+              "name": "Yaw switch",
+              "type": "switch2",
+              "match": [
+                "PTN_478",
+                "item:saahs-panel:1"
+              ],
+              "positions": [
+                {
+                  "name": "ON",
+                  "text": "The yaw helper works."
+                },
+                {
+                  "name": "OFF",
+                  "text": "The yaw helper is off."
+                }
+              ],
+              "text": "This switch turns on the helper that steadies the plane's nose from side to side (yaw).",
+              "context": "Pitch, roll and yaw each have their own switch.",
+              "src": "m2",
+              "page": "87"
+            },
+            {
+              "id": "sas-roll",
+              "name": "Roll switch",
+              "type": "switch2",
+              "match": [
+                "PTN_479",
+                "item:saahs-panel:2"
+              ],
+              "positions": [
+                {
+                  "name": "ON",
+                  "text": "The roll helper works."
+                },
+                {
+                  "name": "OFF",
+                  "text": "The roll helper is off."
+                }
+              ],
+              "text": "This switch turns on the helper that steadies the plane's rolling movement.",
+              "context": "It works together with the yaw and the pitch helpers.",
+              "src": "m2",
+              "page": "87"
+            },
+            {
+              "id": "sas-pitch",
+              "name": "Pitch switch",
+              "type": "switch2",
+              "match": [
+                "PTN_480",
+                "item:saahs-panel:3"
+              ],
+              "positions": [
+                {
+                  "name": "ON",
+                  "text": "The pitch helper works."
+                },
+                {
+                  "name": "OFF",
+                  "text": "The pitch helper is off."
+                }
+              ],
+              "text": "This switch turns on the helper that steadies the nose up and down.",
+              "context": "It works together with the yaw and the roll helpers.",
+              "src": "m2",
+              "page": "87"
+            },
+            {
+              "id": "q-feel",
+              "name": "Q feel switch",
+              "type": "switch2",
+              "match": [
+                "PTN_475",
+                "item:saahs-panel:4"
+              ],
+              "positions": [
+                {
+                  "name": "ON",
+                  "text": "The stick force follows the speed."
+                },
+                {
+                  "name": "OFF",
+                  "text": "The speed-based stick feel is off."
+                }
+              ],
+              "text": "This switch turns on the artificial feel of the stick. The harder the plane flies through the air, the heavier the stick feels.",
+              "context": "Q means the pressure of the air flowing against the plane.",
+              "src": "m2",
+              "page": "87"
+            },
+            {
+              "id": "alt-hold",
+              "name": "Alt hold switch",
+              "type": "switch2",
+              "match": [
+                "PTN_476",
+                "item:saahs-panel:5"
+              ],
+              "positions": [
+                {
+                  "name": "ON",
+                  "text": "The plane tries to hold its height."
+                },
+                {
+                  "name": "OFF",
+                  "text": "Height hold is off."
+                }
+              ],
+              "text": "This switch asks the plane to hold its height. It needs the AFC switch to be on first.",
+              "context": "The manual's limits: it works above 160 knots and while climbing or sinking slower than 2000 feet per minute.",
+              "src": "m2",
+              "page": "87"
+            },
+            {
+              "id": "afc",
+              "name": "AFC switch (automatic flight control)",
+              "type": "switch3",
+              "match": [
+                "PTN_477",
+                "item:saahs-panel:6"
+              ],
+              "positions": [
+                {
+                  "name": "ON",
+                  "text": "The attitude hold is on."
+                },
+                {
+                  "name": "OFF",
+                  "text": "The attitude hold is off."
+                },
+                {
+                  "name": "RESET",
+                  "text": "The game lists a reset command for the attitude hold system."
+                }
+              ],
+              "text": "This switch turns on the automatic flight control, a simple autopilot that holds the plane's attitude (roll and pitch) and heading. The game also lists a reset command.",
+              "context": "The pilot can still manoeuvre with gentle stick movements; the system then holds the new attitude.",
+              "src": "m2",
+              "page": "87"
+            }
+          ]
+        },
+        {
+          "id": "trim-panel",
+          "name": "Trim panel",
+          "db": "trim-panel",
+          "src": "m2",
+          "page": "88",
+          "text": "This panel holds the rudder pedal shaker switch, the switch for the landing lights on the nose gear, and the two trim gauges.",
+          "context": "The pilot uses it for the early warning of a side-slip and for lights during landing and hover.",
+          "controls": [
+            {
+              "id": "pedal-shaker",
+              "name": "Rudder pedal shaker switch (RPS / YAW)",
+              "type": "switch3",
+              "match": [
+                "PTN_471",
+                "item:trim-panel:1"
+              ],
+              "positions": [
+                {
+                  "name": "OFF",
+                  "text": "The shaker is disabled."
+                },
+                {
+                  "name": "ON",
+                  "text": "The shaker is enabled."
+                },
+                {
+                  "name": "TEST",
+                  "text": "The shaker can be tested on the ground."
+                }
+              ],
+              "text": "This switch turns on the rudder pedal shaker. The shaker makes the pedals vibrate as an early warning when the plane slips sideways through the air.",
+              "context": "TEST lets the ground crew or the pilot check the shakers on the ground.",
+              "src": "m2",
+              "page": "88"
+            },
+            {
+              "id": "landing-light",
+              "name": "Landing / taxi lights switch",
+              "type": "switch3",
+              "match": [
+                "PTN_472",
+                "item:trim-panel:2"
+              ],
+              "positions": [
+                {
+                  "name": "APRCH",
+                  "text": "The 250 watt filament shines (the game calls it APP)."
+                },
+                {
+                  "name": "HVR",
+                  "text": "The 150 watt filament shines."
+                },
+                {
+                  "name": "OFF",
+                  "text": "The lights are off."
+                }
+              ],
+              "text": "This switch turns on the two lamps on the nose gear leg. The approach setting shines with a stronger 250 watt filament, the hover setting with a 150 watt filament.",
+              "context": "APP (approach) is for landing like an aeroplane, HVR for the hover.",
+              "src": "m2",
+              "page": "88"
+            },
+            {
+              "id": "trim-gauges",
+              "name": "Aileron and rudder trim indicators",
+              "type": "gauge",
+              "match": [
+                "item:trim-panel:3"
+              ],
+              "text": "These two small gauges show the current setting of the aileron trim and of the rudder trim.",
+              "context": "Trim is a small adjustment so the plane flies straight without pushing the stick or the pedals.",
+              "src": "m2",
+              "page": "88"
+            }
+          ]
+        },
+        {
+          "id": "flood-left",
+          "name": "Flood lamp knobs (left side)",
+          "src": "m2",
+          "page": "97",
+          "text": "Five small knobs on the left that the game names Flood Lamp. A flood lamp is a lamp that lights the cockpit for night flying.",
+          "context": "The main light knobs are on the interior lights panel on the right console.",
+          "controls": [
+            {
+              "id": "flood-lamps-l",
+              "name": "Flood lamp knobs (five, left side)",
+              "type": "knob",
+              "match": [
+                "PTN_155",
+                "PTN_156",
+                "PTN_157",
+                "PTN_158",
+                "PTN_159"
+              ],
+              "count": 5,
+              "text": "Five knobs named Flood Lamp by the game. The manual does not describe them separately, but a flood lamp is a lamp that lights the cockpit.",
+              "context": "The manual describes the flood lights only through the Floodlights knob on the interior lights panel on the right console.",
+              "src": "m2",
+              "page": "98"
+            }
+          ]
+        },
+        {
+          "id": "canopy-controls",
+          "name": "Canopy controls and emergency lever",
+          "src": "m2",
+          "page": "32",
+          "text": "The canopy is the clear glass roof over the cockpit. These controls open, close and lock it. One more lever is named MFS Emergency Lever in the game.",
+          "context": "The pocket guide limits: do not open the canopy in a wind over 40 knots, or when the engine runs over 70 percent speed.",
+          "controls": [
+            {
+              "id": "canopy-handle",
+              "name": "Canopy handle (two in the game)",
+              "type": "handle",
+              "match": [
+                "PTN_801",
+                "PTN_802"
+              ],
+              "count": 2,
+              "text": "The game has two clickable handles named Canopy Handle. They open and close the canopy.",
+              "context": "The manual does not describe the handles; the pocket guide only notes the limits for opening it.",
+              "src": "m1",
+              "page": "32"
+            },
+            {
+              "id": "canopy-lock",
+              "name": "Canopy locking lever",
+              "type": "lever",
+              "match": [
+                "PTN_803"
+              ],
+              "text": "This lever locks and unlocks the canopy. The game offers one toggle command that switches between locked and unlocked.",
+              "context": "The manual does not describe the lever. The start-up steps of the manual say the pilot confirms that the canopy is locked and that the canopy close light is on.",
+              "src": "m1",
+              "page": "32"
+            },
+            {
+              "id": "mfs-emergency",
+              "name": "MFS emergency lever",
+              "type": "lever",
+              "match": [
+                "PTN_501"
+              ],
+              "text": "The game names this lever MFS Emergency Lever. It is a clickable lever in the left cockpit area.",
+              "context": "The manual does not describe a lever by this name, so its function is not explained here.",
+              "src": "m2",
+              "page": "84"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "rear-left",
+      "where": "left-side",
+      "name": "Rear left panel",
+      "text": "A small panel behind the throttle with the engine control switch and the fuel shutoff handle.",
+      "panels": [
+        {
+          "id": "rear-panel-left",
+          "name": "Rear panel left (DECS and fuel shutoff)",
+          "db": "rear-panel-left",
+          "src": "m2",
+          "page": "77",
+          "text": "A small panel behind the throttle with the switch for the digital engine control and the handle that shuts off all fuel to the engine.",
+          "context": "The engine start-up and the fuel system depend on these two controls.",
+          "controls": [
+            {
+              "id": "decs",
+              "name": "DECS enable switch",
+              "type": "switch2",
+              "match": [
+                "PTN_520",
+                "item:rear-panel-left:1"
+              ],
+              "positions": [
+                {
+                  "name": "ON",
+                  "text": "The digital engine control is enabled."
+                },
+                {
+                  "name": "OFF",
+                  "text": "The digital engine control is disabled."
+                }
+              ],
+              "text": "This switch enables the DECS, the digital engine control system. The DECS runs the engine from throttle position, height, speed and other data.",
+              "context": "The EFC caution light shows when both computers have failed.",
+              "src": "m2",
+              "page": "77"
+            },
+            {
+              "id": "fuel-shutoff",
+              "name": "Fuel shutoff handle",
+              "type": "handle",
+              "match": [
+                "PTN_519",
+                "item:rear-panel-left:2"
+              ],
+              "positions": [
+                {
+                  "name": "ON",
+                  "text": "Fuel flows to the engine; the handle is locked."
+                },
+                {
+                  "name": "OFF",
+                  "text": "The fuel system is cut off from the engine."
+                }
+              ],
+              "text": "This handle cuts the connection between the plane's fuel system and the engine. In OFF the fuel flow proportioner is also shut off.",
+              "context": "Pushed down to ON, it locks there. To lift it back up, the pilot presses a button on its end.",
+              "src": "m2",
+              "page": "77"
+            },
+            {
+              "id": "shutoff-lock",
+              "name": "Fuel shutoff lever lock release button",
+              "type": "button",
+              "match": [
+                "item:rear-panel-left:3"
+              ],
+              "text": "A button at the end of the fuel shutoff handle. It must be pressed to move the handle from ON to OFF.",
+              "context": "The manual notes the game has no default key assigned to it.",
+              "src": "m2",
+              "page": "77"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "right-console",
+      "where": "right-console",
+      "name": "Right console",
+      "text": "The right console beside the pilot holds the electrical panel, the radios, the intercom and secure speech, the cockpit lights and the (not modelled) cabin air controls.",
+      "panels": [
+        {
+          "id": "electrical",
+          "name": "Electrical panel",
+          "db": "electrical-panel",
+          "src": "m2",
+          "page": "90",
+          "text": "This panel controls the plane's electricity: battery, generator, the backup generator (APU) and the engine start switch.",
+          "context": "It is the first panel the pilot uses in the start-up: battery on, then the start sequence, then the generator.",
+          "controls": [
+            {
+              "id": "voltmeter",
+              "name": "DC voltmeter",
+              "type": "gauge",
+              "match": [
+                "item:electrical-panel:1"
+              ],
+              "text": "This gauge shows the voltage of the direct-current system, in volts.",
+              "context": "With the battery switch on ALERT it shows the battery; on BATT it shows the emergency bus. The most exact battery check is with the generators off and BATT selected.",
+              "src": "m2",
+              "page": "90"
+            },
+            {
+              "id": "dc-test",
+              "name": "DC test switch",
+              "type": "switch3",
+              "match": [
+                "PTN_609",
+                "item:electrical-panel:2"
+              ],
+              "positions": [
+                {
+                  "name": "MAIN",
+                  "text": "Disables the standby TRU, so the main one is tested."
+                },
+                {
+                  "name": "OFF",
+                  "text": "The test is off (neutral)."
+                },
+                {
+                  "name": "STBY",
+                  "text": "Disables the main TRU, so the standby one is tested."
+                }
+              ],
+              "text": "This switch checks the main or the standby transformer-rectifier (TRU), the units that turn the generator's electricity into direct current.",
+              "context": "It is used for checks after a failure of one of the two units.",
+              "src": "m2",
+              "page": "90"
+            },
+            {
+              "id": "apu-gen",
+              "name": "APU GEN switch (auxiliary power unit)",
+              "type": "switch3",
+              "match": [
+                "PTN_610",
+                "item:electrical-panel:3"
+              ],
+              "positions": [
+                {
+                  "name": "OFF",
+                  "text": "The unit is off."
+                },
+                {
+                  "name": "ON",
+                  "text": "Starts the unit with battery on and engine start off; after engine start it is in standby."
+                },
+                {
+                  "name": "RESET",
+                  "text": "Brings the unit back on the line after a fault."
+                }
+              ],
+              "text": "This switch runs the backup power unit, a small gas turbine that drives a backup generator. It can start the engine on the ground and takes over in flight if the main generator fails.",
+              "context": "The manual calls it the 6 kVA emergency generator. RESET brings it back on the line after a fault.",
+              "src": "m2",
+              "page": "91"
+            },
+            {
+              "id": "eng-start",
+              "name": "Engine start switch (ENG ST)",
+              "type": "switch2",
+              "match": [
+                "PTN_611",
+                "item:electrical-panel:4"
+              ],
+              "positions": [
+                {
+                  "name": "ENG ST",
+                  "text": "Starts the starter and the engine start sequence."
+                },
+                {
+                  "name": "OFF",
+                  "text": "No start."
+                }
+              ],
+              "text": "This switch starts the small gas turbine starter and the engine start sequence. The starter spins the big engine until it can run by itself.",
+              "context": "The battery switch must be on first.",
+              "src": "m2",
+              "page": "91"
+            },
+            {
+              "id": "generator",
+              "name": "Generator switch",
+              "type": "switch3",
+              "match": [
+                "PTN_612",
+                "item:electrical-panel:5"
+              ],
+              "positions": [
+                {
+                  "name": "GEN",
+                  "text": "The generator may come on the line."
+                },
+                {
+                  "name": "OFF",
+                  "text": "The generator is taken off the line. Also used to reset after a fault."
+                },
+                {
+                  "name": "TEST",
+                  "text": "A ground test position that is not operative."
+                }
+              ],
+              "text": "This switch connects the main generator, which makes electricity while the engine runs, to the plane's power lines.",
+              "context": "The generator comes on the line at about 23 percent engine speed when everything is in order.",
+              "src": "m2",
+              "page": "91"
+            },
+            {
+              "id": "battery",
+              "name": "Battery switch",
+              "type": "switch3",
+              "match": [
+                "PTN_613",
+                "item:electrical-panel:6"
+              ],
+              "positions": [
+                {
+                  "name": "BATT",
+                  "text": "Normal operating position; one of the TRUs recharges the battery."
+                },
+                {
+                  "name": "OFF",
+                  "text": "The battery is off."
+                },
+                {
+                  "name": "ALERT",
+                  "text": "The battery is not charged, so its voltage can be checked."
+                }
+              ],
+              "text": "This switch turns on the battery. The battery stores electricity for when the engine is off.",
+              "context": "It must be on before the starter and the engine can be started. ALERT is a check position for the battery voltage.",
+              "src": "m2",
+              "page": "91"
+            }
+          ]
+        },
+        {
+          "id": "vuhf-radio",
+          "name": "V/UHF radio set control (backup radio panel)",
+          "db": "vuhf-radio-panel",
+          "src": "m2",
+          "page": "92",
+          "text": "This is the backup control panel for the two radios, with a small display and several selector switches. The radios are normally operated on the UFC.",
+          "context": "The manual says the manual (MAN) mode is a backup mode, used if the UFC fails or when the plane stands on the ground without power.",
+          "controls": [
+            {
+              "id": "rsc-volume",
+              "name": "V/UHF RSC volume knob and squelch switch",
+              "type": "knob",
+              "match": [
+                "PTN_614",
+                "item:vuhf-radio-panel:1"
+              ],
+              "text": "The volume knob here does not work, because the loudness is set on the UFC. The squelch switch next to it cuts the hiss of the radio when nobody talks.",
+              "context": "Squelch is on by default (SQ ON). SQ OFF turns the hiss-cutting off.",
+              "src": "m2",
+              "page": "92"
+            },
+            {
+              "id": "rsc-mode",
+              "name": "V/UHF RSC operational mode switch",
+              "type": "selector",
+              "match": [
+                "PTN_616",
+                "item:vuhf-radio-panel:2"
+              ],
+              "positions": [
+                {
+                  "name": "OFF",
+                  "text": "Power is removed from the panel."
+                },
+                {
+                  "name": "TEST",
+                  "text": "Starts the built-in test of the radio."
+                },
+                {
+                  "name": "TR",
+                  "text": "Transmit and receive on the main radio."
+                },
+                {
+                  "name": "TR+G",
+                  "text": "Transmit and receive, and also listen on the guard channel."
+                },
+                {
+                  "name": "ADF",
+                  "text": "Not used."
+                },
+                {
+                  "name": "CHNG PRST",
+                  "text": "Change preset mode; not available in the cockpit, presets are set in the mission editor."
+                }
+              ],
+              "text": "This switch decides the mode the radio works in: off, test, transmit and receive, or others.",
+              "context": "T/R+G also listens to the guard channel (243.000). The manual says ZRO and ADF are not used.",
+              "src": "m2",
+              "page": "92"
+            },
+            {
+              "id": "rsc-display",
+              "name": "CHAN FREQ / NET / TIME display",
+              "type": "display",
+              "match": [
+                "item:vuhf-radio-panel:3"
+              ],
+              "text": "This display shows the channel number, the frequency, the time, and test results of the radio.",
+              "context": "A frequency is the station number the radio talks on.",
+              "src": "m2",
+              "page": "93"
+            },
+            {
+              "id": "rsc-freq-mode",
+              "name": "V/UHF RSC frequency mode switch",
+              "type": "selector",
+              "match": [
+                "PTN_619",
+                "item:vuhf-radio-panel:4"
+              ],
+              "positions": [
+                {
+                  "name": "AJ/M",
+                  "text": "Not used."
+                },
+                {
+                  "name": "AJ",
+                  "text": "Not used."
+                },
+                {
+                  "name": "MAR",
+                  "text": "Selects one of the stored maritime channels."
+                },
+                {
+                  "name": "PRST",
+                  "text": "Channel preset selection."
+                },
+                {
+                  "name": "MAN",
+                  "text": "Manual frequency selection."
+                },
+                {
+                  "name": "243",
+                  "text": "Sets the UHF emergency frequency 243.000."
+                },
+                {
+                  "name": "121",
+                  "text": "Sets the VHF emergency frequency 121.000."
+                }
+              ],
+              "text": "This switch picks where the frequency comes from: a stored channel, manual entry, a marine channel, or one of the two emergency channels.",
+              "context": "243 is the UHF emergency channel and 121 is the VHF emergency channel (121.000). AJ/M and AJ are not used.",
+              "src": "m2",
+              "page": "93"
+            },
+            {
+              "id": "rsc-chan",
+              "name": "CHAN / FREQ knob and CRSR switch",
+              "type": "knob",
+              "match": [
+                "PTN_615",
+                "item:vuhf-radio-panel:5"
+              ],
+              "text": "Turning this knob changes the channel or the frequency, depending on the mode. In manual mode every step changes the frequency by 0.025.",
+              "context": "In the preset mode it cycles through the stored frequencies.",
+              "src": "m2",
+              "page": "93"
+            },
+            {
+              "id": "rsc-anc-switch",
+              "name": "V/UHF RSC ancillary mode switch",
+              "type": "button",
+              "match": [
+                "PTN_618",
+                "item:vuhf-radio-panel:6"
+              ],
+              "text": "This switch is used together with the ancillary mode pointer to select or deselect extra radio modes.",
+              "context": "The manual gives no further detail.",
+              "src": "m2",
+              "page": "93"
+            },
+            {
+              "id": "rsc-anc-pointer",
+              "name": "V/UHF RSC ancillary mode pointer",
+              "type": "button",
+              "match": [
+                "PTN_617",
+                "item:vuhf-radio-panel:7"
+              ],
+              "text": "This pointer picks the extra radio option that the ancillary mode switch will turn on or off.",
+              "context": "The manual gives no further detail.",
+              "src": "m2",
+              "page": "93"
+            },
+            {
+              "id": "rsc-load",
+              "name": "V/UHF RSC LOAD / OFST switch",
+              "type": "button",
+              "match": [
+                "PTN_620",
+                "item:vuhf-radio-panel:8"
+              ],
+              "text": "This switch calls up other functions of the radio panel, such as loading or an offset.",
+              "context": "The manual only says that it enables the selection of alternate functions.",
+              "src": "m2",
+              "page": "94"
+            }
+          ]
+        },
+        {
+          "id": "acnip",
+          "name": "ACNIP panel (secure speech, intercom, radio control)",
+          "db": "acnip-panel",
+          "src": "m2",
+          "page": "94",
+          "text": "ACNIP means auxiliary communication, navigation and identification panel. It has the controls for secure speech, the intercom volume and the choice between the UFC and the backup radio panel.",
+          "context": "Much of it is not simulated. The pilot uses the radio control switch to choose between the UFC and the backup panel.",
+          "controls": [
+            {
+              "id": "ky58-display",
+              "name": "KY-58 secure speech display",
+              "type": "display",
+              "match": [
+                "item:acnip-panel:1"
+              ],
+              "text": "This small display shows the mode and code of the two KY-58 secure speech units. A secure speech unit scrambles voice so that enemies cannot understand it.",
+              "context": "There is one unit for each of the two radios.",
+              "src": "m2",
+              "page": "94"
+            },
+            {
+              "id": "ky58-code",
+              "name": "KY-1 and KY-2 code / mode switches",
+              "type": "switch",
+              "match": [
+                "PTN_624",
+                "PTN_625",
+                "item:acnip-panel:2"
+              ],
+              "count": 2,
+              "text": "Two switches, one for each secure speech unit, that choose its code and mode.",
+              "context": "The game lists the positions only as clickable states.",
+              "src": "m2",
+              "page": "94"
+            },
+            {
+              "id": "ics-volume",
+              "name": "ICS volume knobs (ground and auxiliary)",
+              "type": "knob",
+              "match": [
+                "PTN_629",
+                "PTN_630",
+                "item:acnip-panel:3"
+              ],
+              "count": 2,
+              "text": "Two knobs for the intercom volume. The bigger lower one (GND) sets the sound to the ground crew's headset, the smaller upper one (AUX) sets the warning tones in the pilot's headset.",
+              "context": "The intercom (ICS) is the phone line between the pilot and the ground crew.",
+              "src": "m2",
+              "page": "94"
+            },
+            {
+              "id": "radio-ctl",
+              "name": "V/UHF radio control switch (MAN / UFC)",
+              "type": "switch2",
+              "match": [
+                "item:acnip-panel:4"
+              ],
+              "positions": [
+                {
+                  "name": "MAN",
+                  "text": "The radios are controlled from the backup radio set control and this panel."
+                },
+                {
+                  "name": "UFC",
+                  "text": "The radios are controlled from the UFC."
+                }
+              ],
+              "text": "This switch chooses which panel controls the radios: the UFC or the backup radio panel.",
+              "context": "UFC is the normal way. MAN is the backup, used if the UFC fails and on the ground without power.",
+              "src": "m2",
+              "page": "95"
+            },
+            {
+              "id": "radio-select",
+              "name": "ACNIP radio selector switch (program 1 / 2)",
+              "type": "switch2",
+              "match": [
+                "PTN_626",
+                "item:acnip-panel:5"
+              ],
+              "positions": [
+                {
+                  "name": "1",
+                  "text": "The settings go to radio 1."
+                },
+                {
+                  "name": "2",
+                  "text": "The settings go to radio 2."
+                }
+              ],
+              "text": "This switch picks which of the two radios the settings on the backup panel go to. It is used only in the manual mode.",
+              "context": "Radio 1 and radio 2 are the COMM 1 and COMM 2 of the UFC.",
+              "src": "m2",
+              "page": "95"
+            },
+            {
+              "id": "ics-mic",
+              "name": "ICS mic operational mode switch",
+              "type": "switch2",
+              "match": [
+                "PTN_631",
+                "item:acnip-panel:6"
+              ],
+              "positions": [
+                {
+                  "name": "RADIO",
+                  "text": "The microphone works for the radios."
+                },
+                {
+                  "name": "GND",
+                  "text": "The microphone talks to the ground crew."
+                }
+              ],
+              "text": "This switch lets the pilot talk to the ground crew or over a telephone line, without keying the radio.",
+              "context": "It is meant for use on the ground.",
+              "src": "m2",
+              "page": "95"
+            },
+            {
+              "id": "cipher-type",
+              "name": "KY-1 and KY-2 cipher type selector switches",
+              "type": "switch",
+              "match": [
+                "PTN_622",
+                "PTN_623",
+                "item:acnip-panel:7"
+              ],
+              "count": 2,
+              "text": "Two switches, called baseband and diphase switches, that choose the type of cipher (scrambling) for transmissions on the UHF radio.",
+              "context": "One is for each secure speech unit.",
+              "src": "m2",
+              "page": "95"
+            },
+            {
+              "id": "codes-clear",
+              "name": "KY-58 codes clear switch (ZERO / NORM)",
+              "type": "switch2",
+              "match": [
+                "PTN_627",
+                "item:acnip-panel:8"
+              ],
+              "positions": [
+                {
+                  "name": "ZERO",
+                  "text": "The stored codes are erased."
+                },
+                {
+                  "name": "NORM",
+                  "text": "Codes can be stored."
+                }
+              ],
+              "text": "This switch clears the secret codes stored in the secure speech units when it is set to ZERO. In NORM codes can be stored.",
+              "context": "Wiping the codes protects them if the plane is lost.",
+              "src": "m2",
+              "page": "95"
+            },
+            {
+              "id": "remote-load",
+              "name": "KY-58 remote codes load switch",
+              "type": "switch2",
+              "match": [
+                "PTN_628",
+                "item:acnip-panel:9"
+              ],
+              "positions": [
+                {
+                  "name": "PRELOADED",
+                  "text": "The codes that are already loaded are used."
+                },
+                {
+                  "name": "NEW",
+                  "text": "New codes (variables) are used."
+                }
+              ],
+              "text": "This switch lets the pilot use the codes already loaded or load new ones.",
+              "context": "It is part of the secure speech setup.",
+              "src": "m2",
+              "page": "95"
+            },
+            {
+              "id": "acnip-mode",
+              "name": "ACNIP mode switch",
+              "type": "switch",
+              "match": [
+                "PTN_621"
+              ],
+              "text": "The game names this switch ACNIP Mode Switch. It sits with the radio controls.",
+              "context": "The manual does not describe a switch by this name, so its function is not explained here.",
+              "src": "m2",
+              "page": "94"
+            },
+            {
+              "id": "iff-emer",
+              "name": "IFF emergency / normal switch",
+              "type": "switch2",
+              "match": [
+                "item:acnip-panel:10"
+              ],
+              "positions": [
+                {
+                  "name": "EMER",
+                  "text": "Emergency (not simulated)."
+                },
+                {
+                  "name": "NORM",
+                  "text": "Normal (not simulated)."
+                }
+              ],
+              "text": "This switch is part of the IFF, the radio box that answers the question who are you. The manual says it is not simulated.",
+              "context": "It has no function in the game.",
+              "src": "m2",
+              "page": "95"
+            },
+            {
+              "id": "iff-op",
+              "name": "IFF operational mode switch",
+              "type": "switch",
+              "match": [
+                "PTN_632"
+              ],
+              "text": "The game names this switch IFF Operational Mode Switch.",
+              "context": "The manual has no switch by this name, so the function of this one is not explained here.",
+              "src": "m2",
+              "page": "95"
+            },
+            {
+              "id": "iff-zero-hold",
+              "name": "IFF crypto mode switch (ZERO / HOLD / NORM)",
+              "type": "switch3",
+              "match": [
+                "PTN_633",
+                "item:acnip-panel:11"
+              ],
+              "positions": [
+                {
+                  "name": "HOLD",
+                  "text": "Hold (not simulated)."
+                },
+                {
+                  "name": "NORM",
+                  "text": "Normal (not simulated)."
+                },
+                {
+                  "name": "ZERO",
+                  "text": "Zero the codes (not simulated)."
+                }
+              ],
+              "text": "This switch belongs to the IFF code. The manual says its zero and hold function is not simulated.",
+              "context": "The game still lists the three positions ZERO, HOLD and NORM.",
+              "src": "m2",
+              "page": "95"
+            }
+          ]
+        },
+        {
+          "id": "interior-lights",
+          "name": "Interior lights panel",
+          "db": "interior-lights-panel",
+          "src": "m2",
+          "page": "97",
+          "text": "This panel sets the brightness of the cockpit lights and the warning lights, and tests the lights.",
+          "context": "At night the pilot dims these lights so they do not blind the eyes, but still light up the gauges.",
+          "controls": [
+            {
+              "id": "compass-test",
+              "name": "Compass / lights test switch",
+              "type": "switch3",
+              "match": [
+                "PTN_634",
+                "item:interior-lights-panel:1"
+              ],
+              "positions": [
+                {
+                  "name": "COMP",
+                  "text": "The compass light is on."
+                },
+                {
+                  "name": "OFF",
+                  "text": "Both functions are off."
+                },
+                {
+                  "name": "TEST",
+                  "text": "Spring-loaded; all warning, caution and advisory lights are tested."
+                }
+              ],
+              "text": "This switch has two jobs: it lights the standby compass, and it tests all the warning, caution and advisory lights of the cockpit.",
+              "context": "The compass light needs the console knob out of the OFF position.",
+              "src": "m2",
+              "page": "97"
+            },
+            {
+              "id": "instrument-lights",
+              "name": "Instrument lights knob",
+              "type": "knob",
+              "match": [
+                "PTN_635",
+                "item:interior-lights-panel:2"
+              ],
+              "text": "This knob sets the lighting of the main instrument panel.",
+              "context": "The game offers commands to turn it up and down.",
+              "src": "m2",
+              "page": "97"
+            },
+            {
+              "id": "console-lights",
+              "name": "Console lights knob",
+              "type": "knob",
+              "match": [
+                "PTN_636",
+                "item:interior-lights-panel:3"
+              ],
+              "text": "This knob sets the lighting of the left and right consoles, the landing gear panel, the emergency jettison panel, the hydraulic indicators and the cockpit altimeter.",
+              "context": "The game offers commands to turn it up and down.",
+              "src": "m2",
+              "page": "97"
+            },
+            {
+              "id": "flood-lights",
+              "name": "Flood lights knob",
+              "type": "knob",
+              "match": [
+                "PTN_637",
+                "item:interior-lights-panel:4"
+              ],
+              "text": "This knob sets the strength of the flood lights, the lamps that light the whole cockpit.",
+              "context": "The game offers commands to turn it up and down.",
+              "src": "m2",
+              "page": "98"
+            },
+            {
+              "id": "annunciator-lights",
+              "name": "Annunciator lights knob (warning / caution lights)",
+              "type": "knob",
+              "match": [
+                "PTN_638",
+                "item:interior-lights-panel:5"
+              ],
+              "text": "This knob changes the warning, caution and advisory lights from bright to a dimmer range, and then sets the brightness in that dimmer range.",
+              "context": "At night the pilot dims the lights so they do not hurt the eyes.",
+              "src": "m2",
+              "page": "98"
+            }
+          ]
+        },
+        {
+          "id": "flood-right",
+          "name": "Flood lamp knobs (right side)",
+          "src": "m2",
+          "page": "98",
+          "text": "Five small knobs on the right that the game names Flood Lamp. A flood lamp is a lamp that lights the cockpit for night flying.",
+          "context": "The main light knobs of the right console are on the interior lights panel.",
+          "controls": [
+            {
+              "id": "flood-lamps-r",
+              "name": "Flood lamp knobs (five, right side)",
+              "type": "knob",
+              "match": [
+                "PTN_150",
+                "PTN_151",
+                "PTN_152",
+                "PTN_153",
+                "PTN_154"
+              ],
+              "count": 5,
+              "text": "Five more knobs named Flood Lamp by the game. The manual does not describe them separately, but a flood lamp is a lamp that lights the cockpit.",
+              "context": "The manual describes the flood lights only through the Floodlights knob on the interior lights panel beside it.",
+              "src": "m2",
+              "page": "98"
+            }
+          ]
+        },
+        {
+          "id": "environmental",
+          "name": "Environmental control panel (not modelled)",
+          "db": "environmental-control-panel",
+          "src": "m2",
+          "page": "99",
+          "text": "This panel is for cockpit air: temperature, cooling of the equipment bays, windscreen defog and cabin pressure. The manual says the system is not modelled in the DCS AV-8B.",
+          "context": "In the real plane these controls keep the cockpit comfortable and the electronics cool. In the game the switches are clickable but have no effect on the flight.",
+          "controls": [
+            {
+              "id": "temp-knob",
+              "name": "Temperature controller knob",
+              "type": "knob",
+              "match": [
+                "PTN_639",
+                "item:environmental-control-panel:1"
+              ],
+              "text": "This knob sets the temperature of the cockpit air and of the air blown on the windscreen. It can be on AUTO or MAN.",
+              "context": "The manual says the environmental control system is not modelled.",
+              "src": "m2",
+              "page": "99"
+            },
+            {
+              "id": "fwd-bay",
+              "name": "Forward equipment bay cooling switch",
+              "type": "button",
+              "match": [
+                "PTN_640",
+                "item:environmental-control-panel:2"
+              ],
+              "text": "This switch controls the cooling of the electronics in the front of the plane, for example the INS.",
+              "context": "The manual says the system is not modelled.",
+              "src": "m2",
+              "page": "99"
+            },
+            {
+              "id": "aft-bay",
+              "name": "Aft equipment bay cooling switch",
+              "type": "switch3",
+              "match": [
+                "PTN_642",
+                "item:environmental-control-panel:3"
+              ],
+              "positions": [
+                {
+                  "name": "OFF",
+                  "text": "Cooling off."
+                },
+                {
+                  "name": "ON",
+                  "text": "Cooling on."
+                },
+                {
+                  "name": "RESET",
+                  "text": "Resets the cooling."
+                }
+              ],
+              "text": "This switch controls the cooling of the electronics in the rear of the plane.",
+              "context": "The manual says the system is not modelled.",
+              "src": "m2",
+              "page": "99"
+            },
+            {
+              "id": "defog",
+              "name": "Cabin defog switch",
+              "type": "switch3",
+              "match": [
+                "PTN_641",
+                "item:environmental-control-panel:4"
+              ],
+              "positions": [
+                {
+                  "name": "NORM",
+                  "text": "Normal split of the air."
+                },
+                {
+                  "name": "MAX",
+                  "text": "The game calls this setting MAX; the manual gives no detail."
+                },
+                {
+                  "name": "DEFOG",
+                  "text": "A setting the game calls DEFOG; the manual gives no detail."
+                }
+              ],
+              "text": "This switch decides how much of the conditioned air goes to the pilot and how much blows on the windscreen to stop it from misting.",
+              "context": "The manual says the system is not modelled.",
+              "src": "m2",
+              "page": "99"
+            },
+            {
+              "id": "cabin-press",
+              "name": "Cabin pressure switch",
+              "type": "switch3",
+              "match": [
+                "PTN_643",
+                "item:environmental-control-panel:5"
+              ],
+              "positions": [
+                {
+                  "name": "NORM",
+                  "text": "Normal pressurisation."
+                },
+                {
+                  "name": "DUMP",
+                  "text": "The game calls this setting DUMP; the manual gives no detail."
+                },
+                {
+                  "name": "RAM",
+                  "text": "The game calls this setting RAM; the manual gives no detail."
+                }
+              ],
+              "text": "This switch controls the air pressure inside the cockpit.",
+              "context": "The manual says the system is not modelled.",
+              "src": "m2",
+              "page": "99"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "right-side",
+      "where": "right-side",
+      "name": "Right side and aft right console",
+      "text": "The side of the seat holds the seat safety handles. Behind them are the video recorder, the holder for the night vision goggles and the ground power panel.",
+      "panels": [
+        {
+          "id": "seat-stowage",
+          "name": "Seat handles, video recorder and NVG stowage",
+          "db": "seat-and-stowage",
+          "src": "m2",
+          "page": "96",
+          "text": "Handles on the right side of the ejection seat, and the video recorder and the holder for the night vision goggles on the aft right panel.",
+          "context": "The seat safety handle must be down (armed) in flight and up (safe) on the ground.",
+          "controls": [
+            {
+              "id": "restraint-release",
+              "name": "Emergency restraint release handle",
+              "type": "handle",
+              "match": [
+                "item:seat-and-stowage:1"
+              ],
+              "text": "This handle cuts the straps that hold the pilot's legs to the seat. It does not eject the pilot.",
+              "context": "It is for a fast escape on the ground or for removing an unconscious pilot.",
+              "src": "m2",
+              "page": "96"
+            },
+            {
+              "id": "seat-safety",
+              "name": "Seat ground safety lever (ground safety control handle)",
+              "type": "lever",
+              "match": [
+                "PTN_800",
+                "item:seat-and-stowage:2"
+              ],
+              "positions": [
+                {
+                  "name": "SAFE",
+                  "text": "Up: the seat cannot fire."
+                },
+                {
+                  "name": "ARMED",
+                  "text": "Down: the seat is ready to eject."
+                }
+              ],
+              "text": "This lever makes the ejection seat safe or ready. Up and locked away from the seat is SAFE. Down and locked against the seat is ARMED.",
+              "context": "The game lists the commands Up and Down. The pilot makes sure the seat is armed before flight.",
+              "src": "m2",
+              "page": "100"
+            },
+            {
+              "id": "video-recorder",
+              "name": "Video recorder",
+              "type": "other",
+              "match": [
+                "item:seat-and-stowage:3"
+              ],
+              "text": "The digital video recorder holds a recording block where the HUD or MPCD pictures are saved.",
+              "context": "The old cassette-type selector knob is also shown.",
+              "src": "m2",
+              "page": "100"
+            },
+            {
+              "id": "nvg-stowage",
+              "name": "NVG stowage",
+              "type": "other",
+              "match": [
+                "item:seat-and-stowage:4"
+              ],
+              "text": "A holder behind the video recorder that sticks up from the panel. The night vision goggles clip onto it.",
+              "context": "Night vision goggles make the dark visible.",
+              "src": "m2",
+              "page": "100"
+            }
+          ]
+        },
+        {
+          "id": "ground-power",
+          "name": "Ground power control panel",
+          "db": "ground-power-control-panel",
+          "src": "m2",
+          "page": "101",
+          "text": "A panel with switches for ground crew and maintenance. It is on the aft right console.",
+          "context": "The manual says that this panel is not functional at the time of writing.",
+          "controls": [
+            {
+              "id": "ign-iso",
+              "name": "IGN ISO switch",
+              "type": "switch2",
+              "match": [
+                "item:ground-power-control-panel:1"
+              ],
+              "positions": [
+                {
+                  "name": "OFF",
+                  "text": "Ignition is automatic during engine start."
+                },
+                {
+                  "name": "ON",
+                  "text": "Normal start ignition is disabled, for wet or dry cycling of the engine."
+                }
+              ],
+              "text": "This switch turns the engine start ignition off, so the engine can be turned over without sparks.",
+              "context": "In OFF (the normal setting) ignition comes automatically during engine start.",
+              "src": "m2",
+              "page": "101"
+            },
+            {
+              "id": "jptl-test",
+              "name": "JPTL test switch",
+              "type": "switch3",
+              "match": [
+                "item:ground-power-control-panel:2"
+              ],
+              "positions": [
+                {
+                  "name": "AMP",
+                  "text": "Maintenance position."
+                },
+                {
+                  "name": "OFF",
+                  "text": "Normal position."
+                },
+                {
+                  "name": "MAX",
+                  "text": "Maintenance position."
+                }
+              ],
+              "text": "This three-position switch is for maintenance only and should not be used by the pilot.",
+              "context": "The switch is spring loaded back to OFF.",
+              "src": "m2",
+              "page": "101"
+            },
+            {
+              "id": "gp-misc",
+              "name": "MISC switch",
+              "type": "switch2",
+              "match": [
+                "item:ground-power-control-panel:3"
+              ],
+              "positions": [
+                {
+                  "name": "ON",
+                  "text": "These systems have power."
+                },
+                {
+                  "name": "OFF",
+                  "text": "These systems have no ground power."
+                }
+              ],
+              "text": "This switch gives power to the TACAN, the external lights and the RWR on the ground.",
+              "context": "RWR is the radar warning receiver.",
+              "src": "m2",
+              "page": "101"
+            },
+            {
+              "id": "gp-dsp-flt",
+              "name": "DSP / FLT switch",
+              "type": "switch2",
+              "match": [
+                "item:ground-power-control-panel:4"
+              ],
+              "positions": [
+                {
+                  "name": "ON",
+                  "text": "The displays and flight instruments have power."
+                },
+                {
+                  "name": "OFF",
+                  "text": "They have no ground power."
+                }
+              ],
+              "text": "This switch gives power on the ground to the displays and the flight instruments, for instance the HUD, the MPCD screens and the UFC.",
+              "context": "It is a ground maintenance switch.",
+              "src": "m2",
+              "page": "101"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "hotas",
+      "where": "hotas",
+      "name": "Stick and throttle",
+      "text": "The stick in the right hand and the throttle in the left hand carry buttons and switches that the pilot can reach without letting go (HOTAS means hands on throttle and stick).",
+      "panels": [
+        {
+          "id": "stick",
+          "name": "Control stick",
+          "src": "m2",
+          "page": "122",
+          "text": "The control stick is the handle in the pilot's right hand. Moving it steers the plane, and the buttons and switches on the grip are used without taking the hand off.",
+          "context": "The manual says the stick and the MPCD screens were taken from the F/A-18 Hornet. In a hover the stick also drives the small air jets in the nose, tail and wingtips.",
+          "controls": [
+            {
+              "id": "gimbal",
+              "name": "Control stick (pitch and roll)",
+              "type": "axis",
+              "match": [
+                "control:stick.gimbal"
+              ],
+              "text": "Moving the stick forward and back tilts the plane's nose down and up. Moving it left and right rolls the plane.",
+              "context": "In a hover the stick drives the reaction control jets in the nose, tail and wingtips, because the wings do no work at that speed.",
+              "src": "m2",
+              "page": "122"
+            },
+            {
+              "id": "trigger",
+              "name": "Trigger",
+              "type": "trigger",
+              "match": [
+                "Trigger",
+                "control:stick.trigger"
+              ],
+              "text": "The trigger fires the GAU-12 gun and launches the Sidewinder and Sidearm missiles. Which of them depends on the chosen weapon.",
+              "context": "The manual says the trigger is hidden in the picture of the stick.",
+              "src": "m2",
+              "page": "122"
+            },
+            {
+              "id": "pickle",
+              "name": "Bomb pickle button",
+              "type": "button",
+              "match": [
+                "Pickle",
+                "control:stick.weapon_release"
+              ],
+              "text": "This button releases bombs, rockets and flares in the air-to-ground modes. It also fires Maverick missiles.",
+              "context": "The word pickle is pilot slang for the release button.",
+              "src": "m2",
+              "page": "122"
+            },
+            {
+              "id": "trim-hat",
+              "name": "Trim switch",
+              "type": "hat",
+              "match": [
+                "control:stick.hat.trim"
+              ],
+              "text": "This four-way switch trims the plane, which means it moves the neutral point of the stick, so the plane flies straight with no hand force. Forward and aft trim the pitch, left and right trim the roll.",
+              "context": "When the trim button is pushed with the automatic flight control on, the system holds the new value.",
+              "src": "m2",
+              "page": "122"
+            },
+            {
+              "id": "sss",
+              "name": "Sensor select switch (SSS)",
+              "type": "hat",
+              "match": [
+                "Sensor_Select",
+                "control:stick.hat.sss"
+              ],
+              "text": "This switch on the grip head chooses which sensor the pilot uses and where the slew control goes: forward the INS, aft the DMT (laser and TV), left the map page, right the FLIR picture, down the HUD scene reject or the targeting pod.",
+              "context": "It has five momentary directions. The pocket guide lists what each direction does.",
+              "src": "m2",
+              "page": "122"
+            },
+            {
+              "id": "winc",
+              "name": "Waypoint increment button (WINC)",
+              "type": "button",
+              "match": [
+                "Waypoint_Select",
+                "control:stick.button.winc"
+              ],
+              "text": "This button steps to the next waypoint of the planned route.",
+              "context": "A long press opens the quick-access menu on the ODU, according to JoyPro's table.",
+              "src": "m2",
+              "page": "122"
+            },
+            {
+              "id": "aa-weapon",
+              "name": "Air-to-air weapon select switch",
+              "type": "hat",
+              "match": [
+                "control:stick.hat.aa_weapon"
+              ],
+              "text": "This three-position switch selects an air-to-air weapon: forward the Sidewinder in boresight, aft the Sidewinder in SEAM mode, and pressing down the gun.",
+              "context": "Selecting a weapon here automatically switches the plane to the air-to-air master mode.",
+              "src": "m2",
+              "page": "122"
+            },
+            {
+              "id": "nws",
+              "name": "NWS button (nosewheel steering / undesignate)",
+              "type": "button",
+              "match": [
+                "NWS",
+                "control:stick.button.nws"
+              ],
+              "text": "While this button is held on the ground, the nose wheel steering works with high gain, so the plane turns more sharply. In the air it undesignates a target.",
+              "context": "The button also toggles the field of view of a sensor. The pocket guide says the NWS works only while the button is pressed.",
+              "src": "m2",
+              "page": "122"
+            },
+            {
+              "id": "saahs-disengage",
+              "name": "Emergency SAAHS disengage switch",
+              "type": "lever",
+              "match": [
+                "control:stick.pinky.lever"
+              ],
+              "text": "This paddle on the grip turns the stability helpers off in all three axes and removes the rudder trim.",
+              "context": "It is for cases where the helpers do something unwanted.",
+              "src": "m2",
+              "page": "122"
+            },
+            {
+              "id": "stick-switches-unclear",
+              "name": "Stick switch parts Hat_Switch and castle_switch",
+              "type": "other",
+              "match": [
+                "Hat_Switch",
+                "castle_switch"
+              ],
+              "text": "These two parts of the stick are named Hat_Switch (labelled Switch) and castle switch in the game. The stick has a trim switch and an air-to-air weapon select switch among its grip switches.",
+              "context": "The game's labels do not say which of these two parts is which, so no further description is given here.",
+              "src": "m2",
+              "page": "122"
+            }
+          ]
+        },
+        {
+          "id": "throttle-grip",
+          "name": "Throttle grip",
+          "src": "m2",
+          "page": "124",
+          "text": "The throttle grip is the handle on the left lever. It carries many buttons and switches for the left thumb and fingers so the pilot can work them without letting go.",
+          "context": "The quadrant controls beside the throttle (nozzle lever, stops, friction, parking brake and so on) are described in the throttle quadrant panel on the left console.",
+          "controls": [
+            {
+              "id": "throttle-axis",
+              "name": "Throttle lever (engine thrust)",
+              "type": "axis",
+              "match": [
+                "control:throttle.axis.main"
+              ],
+              "text": "Pushing the throttle forward makes the engine stronger. Pulling it back makes it weaker, and all the way back shuts the fuel off.",
+              "context": "Pushing it hard against the forward stop switches the temperature limiter off.",
+              "src": "m2",
+              "page": "128"
+            },
+            {
+              "id": "ecm-dispense",
+              "name": "ECM dispense switch",
+              "type": "hat",
+              "match": [
+                "control:throttle.hat.cms"
+              ],
+              "text": "This four-way switch throws out the plane's decoys: forward the flares, aft the chaff, left the mini jammer, right everything at once.",
+              "context": "Chaff are clouds of metal strips that fool radar-guided missiles; flares are hot decoys for heat-seeking missiles.",
+              "src": "m2",
+              "page": "124"
+            },
+            {
+              "id": "cage",
+              "name": "Cage / uncage button",
+              "type": "button",
+              "match": [
+                "control:throttle.cage"
+              ],
+              "text": "This button controls some sensors and weapons, mostly the Maverick missiles. Pressing it frees the seeker of the missile, which then looks around by itself.",
+              "context": "What it does depends on the weapon and the mode. The manual refers to other sections.",
+              "src": "m2",
+              "page": "124"
+            },
+            {
+              "id": "ant-elev",
+              "name": "Antenna elevation switch",
+              "type": "switch3",
+              "match": [
+                "control:throttle.switch.ant_elev"
+              ],
+              "positions": [
+                {
+                  "name": "UP",
+                  "text": "No function."
+                },
+                {
+                  "name": "CENTRE",
+                  "text": "No function."
+                },
+                {
+                  "name": "DOWN",
+                  "text": "No function."
+                }
+              ],
+              "text": "This switch has no function in the AV-8B Night Attack, because that version has no radar.",
+              "context": "It is a leftover from the radar version of the plane.",
+              "src": "m2",
+              "page": "125"
+            },
+            {
+              "id": "airstart",
+              "name": "Airstart button",
+              "type": "button",
+              "match": [
+                "control:throttle.button.airstart"
+              ],
+              "text": "This button restarts the engine in flight. It is also pressed before the start to check the igniters, which make the sparks for the engine.",
+              "context": "Pressed before the start, the sparks crackle; an irregular crackle is normal and a regular one means an igniter failed.",
+              "src": "m2",
+              "page": "125"
+            },
+            {
+              "id": "emer-flap",
+              "name": "Emergency flap retract button",
+              "type": "button",
+              "match": [
+                "control:throttle.button.emer_flap"
+              ],
+              "text": "This button pulls the flaps up if both flap channels have failed.",
+              "context": "Flaps are parts of the wing that give more lift at low speed.",
+              "src": "m2",
+              "page": "125"
+            },
+            {
+              "id": "speedbrake",
+              "name": "Speed brake switch",
+              "type": "switch3",
+              "match": [
+                "control:throttle.speedbrake"
+              ],
+              "positions": [
+                {
+                  "name": "FWD",
+                  "text": "The speed brake retracts."
+                },
+                {
+                  "name": "CENTRE",
+                  "text": "The speed brake stays where it is."
+                },
+                {
+                  "name": "AFT",
+                  "text": "The speed brake extends."
+                }
+              ],
+              "text": "This switch opens or closes the speed brake, a panel that opens into the wind to slow the plane down.",
+              "context": "Forward retracts the brake, aft extends it.",
+              "src": "m2",
+              "page": "125"
+            },
+            {
+              "id": "comm-switch",
+              "name": "COMM switch",
+              "type": "rocker",
+              "match": [
+                "control:throttle.hat.mic"
+              ],
+              "text": "This rocker on the grip is the radio transmit button. Up talks on COMM 1, down talks on COMM 2.",
+              "context": "COMM 1 and COMM 2 are the two radios set on the UFC.",
+              "src": "m2",
+              "page": "125"
+            },
+            {
+              "id": "aa-program",
+              "name": "A/A programming switch",
+              "type": "switch3",
+              "match": [
+                "control:throttle.switch.aa_program"
+              ],
+              "positions": [
+                {
+                  "name": "UP",
+                  "text": "No function."
+                },
+                {
+                  "name": "CENTRE",
+                  "text": "No function."
+                },
+                {
+                  "name": "DOWN",
+                  "text": "No function."
+                }
+              ],
+              "text": "This switch has no function in the Night Attack version, because it belongs to the radar version.",
+              "context": "It is a leftover from the radar version of the plane.",
+              "src": "m2",
+              "page": "125"
+            },
+            {
+              "id": "tdc",
+              "name": "Target designator control (TDC, slew control)",
+              "type": "hat",
+              "match": [
+                "control:throttle.ministick"
+              ],
+              "text": "This small thumb stick slews (moves) the cursor or the sensor in every direction. Pressing it down marks the target on release.",
+              "context": "It moves the sensor chosen with the sensor select switch, especially the DMT and the targeting pod, but also weapons.",
+              "src": "m2",
+              "page": "125"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "other",
+      "where": "other",
+      "name": "Game helpers",
+      "text": "Clickable items that belong to the game, not to the real cockpit.",
+      "panels": [
+        {
+          "id": "game-helpers",
+          "name": "Game view helpers",
+          "src": "m2",
+          "page": "48",
+          "text": "A few clickable items of the DCS cockpit are not parts of the real plane. They are helpers of the game.",
+          "context": "They change what is drawn on the screen and have no effect on the plane's systems.",
+          "controls": [
+            {
+              "id": "mirror-toggle",
+              "name": "Mirror rendering toggle (three in the game)",
+              "type": "switch",
+              "match": [
+                "PTN_1124",
+                "PTN_1125",
+                "PTN_1126"
+              ],
+              "count": 3,
+              "text": "The game names these three clickable items Mirror Rendering Toggle. They switch the drawing of the mirrors on or off.",
+              "context": "Mirror drawing can slow the computer, so a player can turn it off.",
+              "src": "m2",
+              "page": "48"
+            },
+            {
+              "id": "show-hide-controls",
+              "name": "Show / hide controls",
+              "type": "switch",
+              "match": [
+                "PTN_999"
+              ],
+              "text": "The game names this clickable item Show/Hide Controls. It shows or hides the flight controls in the 3D cockpit.",
+              "context": "The manual does not describe it; it is a helper of the game.",
+              "src": "m2",
+              "page": "48"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

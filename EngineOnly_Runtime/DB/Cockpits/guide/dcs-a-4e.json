@@ -1,0 +1,861 @@
+{
+  "format": "joypro-cockpit-guide",
+  "version": 1,
+  "id": "dcs-a-4e",
+  "title": "A-4E Skyhawk (DCS, community mod)",
+  "variants": [
+    "a-4e"
+  ],
+  "games": [
+    "DCS"
+  ],
+  "sets": [],
+  "sources": [
+    {
+      "id": "s1",
+      "title": "Community A-4E-C for DCS (project repository, input definitions)",
+      "file": "https://github.com/Community-A-4E/community-a4e-c"
+    },
+    {
+      "id": "s2",
+      "title": "Skyhawk Association: stick grip notes",
+      "file": "https://skyhawk.org/node/337"
+    }
+  ],
+  "intro": "The A-4 Skyhawk is a small American attack plane that was flown from aircraft carriers. The cockpit is very small: a stick in the middle, one throttle on the left console and analogue gauges around a small radar scope. The A-4E-C is a community-made module for DCS. It has no afterburner. This guide follows the module's own control definitions; the module has no manual in the game folder.",
+  "areas": [
+    {
+      "id": "gunsight",
+      "where": "glareshield",
+      "name": "Gunsight",
+      "text": "The gunsight sits on top of the panel in front of the pilot's eyes. The angle-of-attack lamps for the landing are next to it.",
+      "panels": [
+        {
+          "id": "gunsight-panel",
+          "name": "Gunsight and angle-of-attack indexer",
+          "db": "main-panel",
+          "src": "s1",
+          "text": "The aiming glass for the guns, rockets and bombs, and the lamps that help to land at the right speed.",
+          "context": "The pilot aims through the sight and keeps an eye on the indexer during the approach.",
+          "controls": [
+            {
+              "id": "gunsight",
+              "name": "Gunsight (Mk 8 lead-computing / fixed reticle)",
+              "type": "display",
+              "match": [
+                "item:main-panel:1"
+              ],
+              "text": "The gunsight on top of the panel: a glass plate that shows an aiming mark. The aiming mark can be lowered or raised with a knob.",
+              "context": "The pilot aims the guns, rockets and bombs with it.",
+              "src": "s1"
+            },
+            {
+              "id": "aoa-indexer",
+              "name": "Angle-of-attack indexer",
+              "type": "light",
+              "match": [
+                "item:main-panel:2"
+              ],
+              "text": "Lamps that help the pilot on the approach to a landing. They show if the angle of attack (how steeply the wing meets the air) is too high, too low or right.",
+              "context": "The pilot keeps the indexer in the right position down to the landing.",
+              "src": "s1"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "main-instrument-panel",
+      "where": "front-center",
+      "name": "Main instrument panel",
+      "text": "The small radar scope sits in the middle. The flight instruments are on the left of it, the engine and fuel gauges on the right, and the handles for the gear and the hook at the sides.",
+      "panels": [
+        {
+          "id": "main-instruments",
+          "name": "Main instrument panel",
+          "db": "main-panel",
+          "src": "s1",
+          "text": "The round gauges, the radar scope, the landing gear and hook handles and the warning lamps.",
+          "context": "The pilot scans the gauges all the time in flight.",
+          "controls": [
+            {
+              "id": "radar-scope",
+              "name": "Radar scope (AN/APG-53A)",
+              "type": "display",
+              "match": [
+                "item:main-panel:3"
+              ],
+              "text": "The small round radar screen in the middle of the panel. It helps to keep clear of the ground and shows a picture of the ground below.",
+              "context": "The pilot uses it for flying low over land and for finding the ground.",
+              "src": "s1"
+            },
+            {
+              "id": "attitude",
+              "name": "Attitude indicator",
+              "type": "gauge",
+              "match": [
+                "item:main-panel:4"
+              ],
+              "text": "The artificial horizon: a ball that shows whether the nose is up or down and how far the wings are tilted.",
+              "context": "It is the main instrument when the real horizon cannot be seen.",
+              "src": "s1"
+            },
+            {
+              "id": "airspeed-mach",
+              "name": "Airspeed / Mach indicator",
+              "type": "gauge",
+              "match": [
+                "item:main-panel:5"
+              ],
+              "text": "A gauge that shows how fast the plane flies, as airspeed and as a Mach number (a multiple of the speed of sound).",
+              "context": "The pilot reads it on take-off, in the approach and in the fight.",
+              "src": "s1"
+            },
+            {
+              "id": "altimeter",
+              "name": "Altimeter",
+              "type": "gauge",
+              "match": [
+                "item:main-panel:6"
+              ],
+              "text": "The height gauge that works with the air pressure. It shows the height above sea level.",
+              "context": "The pilot uses it for the cruise height.",
+              "src": "s1"
+            },
+            {
+              "id": "radar-alt",
+              "name": "Radar altimeter",
+              "type": "gauge",
+              "match": [
+                "item:main-panel:7"
+              ],
+              "text": "A gauge that shows the height above the ground below the plane. It has a low-altitude warning.",
+              "context": "It is most useful low over the ground, for example on landing.",
+              "src": "s1"
+            },
+            {
+              "id": "vvi",
+              "name": "Vertical velocity indicator",
+              "type": "gauge",
+              "match": [
+                "item:main-panel:8"
+              ],
+              "text": "A gauge that shows how fast the plane climbs or sinks.",
+              "context": "The pilot keeps a steady climb or descent with it.",
+              "src": "s1"
+            },
+            {
+              "id": "bdhi",
+              "name": "BDHI (bearing, distance and heading indicator)",
+              "type": "gauge",
+              "match": [
+                "item:main-panel:9"
+              ],
+              "text": "A navigation gauge that shows the direction and distance to a radio beacon (TACAN, a beacon on the ground or on a ship) and the heading of the plane.",
+              "context": "The pilot flies towards the beacon with it.",
+              "src": "s1"
+            },
+            {
+              "id": "aoa",
+              "name": "Angle-of-attack indicator",
+              "type": "gauge",
+              "match": [
+                "item:main-panel:10"
+              ],
+              "text": "A gauge that shows how steeply the wing meets the air, in units that are not degrees.",
+              "context": "The pilot watches it in slow flight and in the approach.",
+              "src": "s1"
+            },
+            {
+              "id": "accelerometer",
+              "name": "Accelerometer",
+              "type": "gauge",
+              "match": [
+                "item:main-panel:11"
+              ],
+              "text": "A gauge that shows the G-load, the push into the seat in turns.",
+              "context": "The pilot watches it in hard turns to stay inside the limits of the plane.",
+              "src": "s1"
+            },
+            {
+              "id": "tacho",
+              "name": "Tachometer",
+              "type": "gauge",
+              "match": [
+                "item:main-panel:12"
+              ],
+              "text": "A gauge that shows how fast the engine turns, in percent of the maximum (RPM).",
+              "context": "The pilot reads it at engine start and when setting power.",
+              "src": "s1"
+            },
+            {
+              "id": "egt",
+              "name": "Exhaust gas temperature",
+              "type": "gauge",
+              "match": [
+                "item:main-panel:13"
+              ],
+              "text": "A gauge that shows how hot the exhaust gas of the engine is (EGT).",
+              "context": "A too hot engine is damaged; the pilot watches it at engine start and at high power.",
+              "src": "s1"
+            },
+            {
+              "id": "fuel",
+              "name": "Fuel quantity indicator",
+              "type": "gauge",
+              "match": [
+                "item:main-panel:14"
+              ],
+              "text": "A gauge that shows how much fuel is left, in the internal and in the external tanks.",
+              "context": "The pilot watches it to plan the way home.",
+              "src": "s1"
+            },
+            {
+              "id": "gear",
+              "name": "Landing gear handle and indicators",
+              "type": "handle",
+              "match": [
+                "control:panel.handle.gear",
+                "item:main-panel:15"
+              ],
+              "positions": [
+                {
+                  "name": "UP",
+                  "text": "The wheels are folded away for flight."
+                },
+                {
+                  "name": "DOWN",
+                  "text": "The wheels are out for take-off, landing and taxiing."
+                }
+              ],
+              "text": "A wheel-shaped handle on the left of the main panel. Moving it up raises the landing gear, the wheels and their legs, and moving it down lowers them. Lamps next to it show the position.",
+              "context": "The pilot lowers the gear for landing and raises it after take-off.",
+              "src": "s1"
+            },
+            {
+              "id": "flap-pos",
+              "name": "Flap position indicator",
+              "type": "indicator",
+              "match": [
+                "item:main-panel:16"
+              ],
+              "text": "A display that shows the position of the flaps, the parts of the wing that slide out to give more lift at low speed.",
+              "context": "The pilot checks it after moving the flap lever.",
+              "src": "s1"
+            },
+            {
+              "id": "hook",
+              "name": "Arresting hook handle",
+              "type": "handle",
+              "match": [
+                "control:panel.handle.hook",
+                "item:main-panel:17"
+              ],
+              "positions": [
+                {
+                  "name": "UP",
+                  "text": "The hook is raised."
+                },
+                {
+                  "name": "DOWN",
+                  "text": "The hook is lowered."
+                }
+              ],
+              "text": "A handle on the right of the main panel. Moving it down lowers the arresting hook at the tail, which catches the wire when landing on an aircraft carrier. Moving it up raises the hook.",
+              "context": "The pilot lowers the hook before a landing on the ship.",
+              "src": "s1"
+            },
+            {
+              "id": "jettison",
+              "name": "Emergency stores jettison button",
+              "type": "button",
+              "match": [
+                "item:main-panel:18"
+              ],
+              "text": "A button that drops all external stores (bombs, rockets and tanks hanging under the plane) in an emergency (jettison).",
+              "context": "The pilot uses it only in an emergency.",
+              "src": "s1"
+            },
+            {
+              "id": "fire-light",
+              "name": "Fire warning light",
+              "type": "light",
+              "match": [
+                "item:main-panel:19"
+              ],
+              "text": "A warning lamp that lights when there is a fire in the engine.",
+              "context": "It is among the most serious warnings of the plane.",
+              "src": "s1"
+            },
+            {
+              "id": "compass-clock",
+              "name": "Standby compass and clock",
+              "type": "gauge",
+              "match": [
+                "item:main-panel:20"
+              ],
+              "text": "A backup compass that shows the heading by the magnetic field of the earth, and the cockpit clock.",
+              "context": "The compass works even without electricity.",
+              "src": "s1"
+            }
+          ]
+        },
+        {
+          "id": "armament-panel",
+          "name": "Armament panel",
+          "db": "armament-panel",
+          "src": "s1",
+          "text": "The lower instrument panel with the switches that arm the weapons and choose the stations.",
+          "context": "The pilot sets these switches before an attack. The stick then fires or releases the chosen weapons.",
+          "controls": [
+            {
+              "id": "master-arm",
+              "name": "Master armament switch",
+              "type": "switch2",
+              "match": [
+                "item:armament-panel:1"
+              ],
+              "positions": [
+                {
+                  "name": "ON",
+                  "text": "The weapon release circuits are armed."
+                },
+                {
+                  "name": "OFF",
+                  "text": "The weapons are safe."
+                }
+              ],
+              "text": "The main safety switch for the weapons. It arms the release circuits. Nothing can be released or fired while it is off.",
+              "context": "The pilot switches it on only before an attack.",
+              "src": "s1"
+            },
+            {
+              "id": "station-switches",
+              "name": "Station selector switches (5)",
+              "type": "switch",
+              "match": [
+                "item:armament-panel:2"
+              ],
+              "count": 5,
+              "text": "Five switches, one for each weapon station (a mount under the wing or fuselage), from the left outboard to the right outboard. Each switch picks whether that station takes part in the release.",
+              "context": "The pilot selects the stations that carry the weapons to be used.",
+              "src": "s1"
+            },
+            {
+              "id": "function-selector",
+              "name": "Function selector",
+              "type": "selector",
+              "match": [
+                "item:armament-panel:3"
+              ],
+              "positions": [
+                {
+                  "name": "OFF",
+                  "text": "No weapon function is selected."
+                },
+                {
+                  "name": "ROCKETS",
+                  "text": "The trigger fires the rockets."
+                },
+                {
+                  "name": "GM UNARM",
+                  "text": "The guided missiles are selected but not armed."
+                },
+                {
+                  "name": "GM ARM",
+                  "text": "The guided missiles are armed; the release button launches them."
+                },
+                {
+                  "name": "BOMBS & GM ARM",
+                  "text": "Bombs can be released and guided missiles are armed."
+                },
+                {
+                  "name": "SPRAY TANK",
+                  "text": "The spray tank is selected; the catalog does not describe it further."
+                }
+              ],
+              "text": "A knob that chooses the kind of weapon use: rockets, guided missiles unarmed or armed (GM UNARM, GM ARM), bombs together with armed guided missiles, or a spray tank. In OFF nothing is selected.",
+              "context": "The pilot sets it before an attack. The trigger and the release button on the stick then act according to this setting.",
+              "src": "s1"
+            },
+            {
+              "id": "bomb-arm",
+              "name": "Bomb arm switch",
+              "type": "switch3",
+              "match": [
+                "item:armament-panel:4"
+              ],
+              "positions": [
+                {
+                  "name": "NOSE & TAIL",
+                  "text": "The nose and tail fuzes are armed."
+                },
+                {
+                  "name": "OFF",
+                  "text": "The fuzes are not armed."
+                },
+                {
+                  "name": "TAIL",
+                  "text": "Only the tail fuze is armed."
+                }
+              ],
+              "text": "A switch that chooses which fuzes of the bombs are armed. A fuze is the part that makes a bomb explode. The positions are nose and tail, off, and tail only.",
+              "context": "The pilot sets it before a bomb run.",
+              "src": "s1"
+            },
+            {
+              "id": "gun-switches",
+              "name": "Gun charging switches",
+              "type": "switch2",
+              "match": [
+                "item:armament-panel:5"
+              ],
+              "positions": [
+                {
+                  "name": "READY",
+                  "text": "The guns are ready to fire."
+                },
+                {
+                  "name": "SAFE",
+                  "text": "The guns are safe."
+                }
+              ],
+              "text": "Switches that make the guns ready to fire or safe. They charge the guns (bring the first round into place).",
+              "context": "With the gun switches on READY, the trigger on the stick fires the 20 mm guns.",
+              "src": "s1"
+            },
+            {
+              "id": "emergency-selector",
+              "name": "Emergency selector",
+              "type": "selector",
+              "match": [
+                "item:armament-panel:6"
+              ],
+              "text": "A selector for the emergency release of single weapon stations.",
+              "context": "The pilot uses it when a weapon must be dropped by an emergency path.",
+              "src": "s1"
+            },
+            {
+              "id": "awrs",
+              "name": "AWRS panel (release mode, quantity, interval)",
+              "type": "selector",
+              "match": [
+                "item:armament-panel:7"
+              ],
+              "text": "The panel that sets how bombs and rockets leave the plane: the release mode, how many are released and the time between them (ripple: one after another, or in pairs).",
+              "context": "The pilot sets it before a bomb run.",
+              "src": "s1"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "left-console",
+      "where": "left-console",
+      "name": "Left console",
+      "text": "The left console holds the throttle with the flap lever, and the panels for the engine, autopilot, radio and identification.",
+      "panels": [
+        {
+          "id": "left-console",
+          "name": "Left console",
+          "db": "left-console",
+          "src": "s1",
+          "text": "The throttle quadrant with the flap lever, the catapult grip and the panels for the engine, autopilot and radio.",
+          "context": "The pilot uses it for the engine start, the flaps and the radio.",
+          "controls": [
+            {
+              "id": "throttle",
+              "name": "Throttle",
+              "type": "lever",
+              "match": [
+                "control:throttle.axis.main",
+                "item:left-console:1"
+              ],
+              "positions": [
+                {
+                  "name": "OFF",
+                  "text": "The engine is off."
+                },
+                {
+                  "name": "START",
+                  "text": "The ignition is on for the start."
+                },
+                {
+                  "name": "IDLE",
+                  "text": "The engine runs at its lowest steady power."
+                },
+                {
+                  "name": "MIL",
+                  "text": "The engine runs at full power without afterburner."
+                }
+              ],
+              "text": "The throttle lever on the left console. Pushing it forward gives the engine more power. The positions are OFF, START (ignition), IDLE and MIL (full power without afterburner). The grip carries the radio switch, the speedbrake switch and the light switch. The A-4 has no afterburner.",
+              "context": "The pilot starts the engine with the lever and then keeps it between IDLE and MIL.",
+              "src": "s1"
+            },
+            {
+              "id": "flap-lever",
+              "name": "Flap control lever",
+              "type": "lever",
+              "match": [
+                "control:throttle.lever.flaps",
+                "item:left-console:2"
+              ],
+              "positions": [
+                {
+                  "name": "UP",
+                  "text": "The flaps are retracted."
+                },
+                {
+                  "name": "DOWN",
+                  "text": "The flaps are lowered (half or full)."
+                }
+              ],
+              "text": "A lever on the left console, outboard of the throttle. Moving it forward raises the flaps, moving it back lowers them to half or full.",
+              "context": "The pilot sets the flaps for take-off and landing.",
+              "src": "s1"
+            },
+            {
+              "id": "catapult-grip",
+              "name": "Catapult hand grip",
+              "type": "handle",
+              "match": [
+                "item:left-console:3"
+              ],
+              "text": "A handle on the left console that the pilot holds together with the throttle during the catapult shot (the launch from an aircraft carrier).",
+              "context": "The pilot holds it together with the throttle during the catapult launch.",
+              "src": "s1"
+            },
+            {
+              "id": "engine-control",
+              "name": "Engine control panel",
+              "type": "other",
+              "match": [
+                "item:left-console:4"
+              ],
+              "text": "A group of switches for the engine: manual fuel control, the starter and the pressure of the drop tanks.",
+              "context": "The pilot uses it for the engine start.",
+              "src": "s1"
+            },
+            {
+              "id": "afcs",
+              "name": "AFCS control panel",
+              "type": "other",
+              "match": [
+                "item:left-console:5"
+              ],
+              "text": "The panel for the autopilot (AFCS, a system that keeps the plane steady). It switches the autopilot between standby and engaged and holds altitude or heading.",
+              "context": "The pilot can switch the autopilot off at once with the lever on the stick.",
+              "src": "s1"
+            },
+            {
+              "id": "uhf",
+              "name": "UHF radio (AN/ARC-51)",
+              "type": "selector",
+              "match": [
+                "item:left-console:6"
+              ],
+              "text": "The radio for talking to other aircraft and the tower. A knob chooses a stored channel or a manual frequency, another one the function.",
+              "context": "The pilot talks with the microphone switch on the throttle grip.",
+              "src": "s1"
+            },
+            {
+              "id": "iff",
+              "name": "IFF / SIF control",
+              "type": "selector",
+              "match": [
+                "item:left-console:7"
+              ],
+              "text": "The control panel of the IFF (identification, friend or foe), a radio box that answers 'who are you?' with a code. It sets the codes and the mode.",
+              "context": "Other aircraft and radars use the answer to tell friends from foes.",
+              "src": "s1"
+            },
+            {
+              "id": "emergency-generator",
+              "name": "Emergency generator release",
+              "type": "handle",
+              "match": [
+                "item:left-console:8"
+              ],
+              "text": "A handle that lets out the ram-air generator, a small propeller in the wind that makes electricity if the normal power fails.",
+              "context": "The pilot uses it only in an emergency.",
+              "src": "s1"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "right-console",
+      "where": "right-console",
+      "name": "Right console",
+      "text": "The right console holds the panels for lights, navigation, oxygen and the cockpit air.",
+      "panels": [
+        {
+          "id": "right-console",
+          "name": "Right console",
+          "db": "right-console",
+          "src": "s1",
+          "text": "The panels for the lights, the navigation radios and computer, the oxygen and the cabin air.",
+          "context": "The pilot sets them before and during the flight.",
+          "controls": [
+            {
+              "id": "ext-lights",
+              "name": "Exterior lights panel",
+              "type": "other",
+              "match": [
+                "item:right-console:1"
+              ],
+              "text": "A group of switches for the lights outside: the probe light, the taxi light, the anti-collision light and the position lights.",
+              "context": "The pilot switches on the lights needed for the time of day and the position of the plane.",
+              "src": "s1"
+            },
+            {
+              "id": "int-lights",
+              "name": "Interior lights panel",
+              "type": "knob",
+              "match": [
+                "item:right-console:2"
+              ],
+              "text": "Knobs for the lights in the cockpit: the console lights and the instrument lights.",
+              "context": "The pilot turns them up or down at night.",
+              "src": "s1"
+            },
+            {
+              "id": "tacan",
+              "name": "TACAN control (AN/ARN-52)",
+              "type": "selector",
+              "match": [
+                "item:right-console:3"
+              ],
+              "text": "The control panel of the TACAN receiver. It sets the channel and the mode for a radio beacon on the ground or on a ship.",
+              "context": "The BDHI on the main panel then shows the direction and the distance to the beacon.",
+              "src": "s1"
+            },
+            {
+              "id": "nav-computer",
+              "name": "Navigation computer (ASN-41)",
+              "type": "knob",
+              "match": [
+                "item:right-console:4"
+              ],
+              "text": "A knob of the navigation computer. It chooses between the present position and a target or destination.",
+              "context": "The pilot uses it to navigate to a point on the map.",
+              "src": "s1"
+            },
+            {
+              "id": "doppler",
+              "name": "Doppler control (APN-153)",
+              "type": "selector",
+              "match": [
+                "item:right-console:5"
+              ],
+              "text": "The control for the Doppler radar, which measures the speed over the ground. It sets the Doppler mode.",
+              "context": "The navigation computer uses the Doppler speed for its position.",
+              "src": "s1"
+            },
+            {
+              "id": "compass-controller",
+              "name": "Compass controller",
+              "type": "switch",
+              "match": [
+                "item:right-console:6"
+              ],
+              "text": "A switch for the compass system. It chooses between a slaved gyro (kept in line with the earth's magnetic field) and a free gyro.",
+              "context": "It decides whether the compass follows the earth's magnetic field.",
+              "src": "s1"
+            },
+            {
+              "id": "oxygen",
+              "name": "Oxygen panel",
+              "type": "gauge",
+              "match": [
+                "item:right-console:7"
+              ],
+              "text": "The panel for the oxygen supply of the pilot: a gauge for the quantity and the supply control.",
+              "context": "The pilot uses oxygen at high altitude.",
+              "src": "s1"
+            },
+            {
+              "id": "cabin",
+              "name": "Cabin pressure and temperature",
+              "type": "knob",
+              "match": [
+                "item:right-console:8"
+              ],
+              "text": "Knobs for the air in the cockpit: its pressure and its temperature.",
+              "context": "The pilot sets them for a comfortable cockpit.",
+              "src": "s1"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "hotas",
+      "where": "hotas",
+      "name": "Stick, throttle and pedals",
+      "text": "The pilot flies with the stick in the middle, the throttle on the left console and the pedals at the feet. Trigger, release button and radio switch are on the grips.",
+      "panels": [
+        {
+          "id": "stick",
+          "name": "Control stick",
+          "src": "s1",
+          "text": "The stick with the trigger, the release button and the buttons for trim and nose wheel steering.",
+          "context": "The right hand flies the plane and fires from here.",
+          "controls": [
+            {
+              "id": "trim",
+              "name": "Trim switch",
+              "type": "hat",
+              "match": [
+                "control:stick.hat.trim"
+              ],
+              "text": "A five-way switch on top of the grip. Pushing it makes small adjustments (trim) so that the plane flies straight without force on the stick. Up trims the nose down, down trims it up; left and right trim the roll.",
+              "context": "The pilot trims after every change of speed.",
+              "src": "s1"
+            },
+            {
+              "id": "bomb-release",
+              "name": "Bomb release button",
+              "type": "button",
+              "match": [
+                "control:stick.weapon_release"
+              ],
+              "text": "A button on the top of the grip. Pressing it releases bombs (function selector on BOMBS & GM ARM) or launches the Bullpup guided missile (function selector on GM ARM).",
+              "context": "The pilot sets the armament panel first, then presses the button.",
+              "src": "s1"
+            },
+            {
+              "id": "trigger",
+              "name": "Trigger switch",
+              "type": "trigger",
+              "match": [
+                "control:stick.trigger"
+              ],
+              "text": "The trigger at the front of the grip. Pressing it fires the 20 mm guns, when the gun switches are on READY, or the rockets, when the function selector is on ROCKETS.",
+              "context": "The same trigger fires whatever the armament panel has set.",
+              "src": "s1"
+            },
+            {
+              "id": "nws",
+              "name": "Nose wheel steering",
+              "type": "button",
+              "match": [
+                "control:stick.button.nws"
+              ],
+              "text": "A button on the grip, set up in the A-4E-C mod's controls. While it is held, the nose wheel steers the plane on the ground, like the steering of a car.",
+              "context": "The pilot uses it for taxiing.",
+              "src": "s1"
+            },
+            {
+              "id": "afcs-disconnect",
+              "name": "AFCS emergency disconnect",
+              "type": "lever",
+              "match": [
+                "control:stick.pinky.lever"
+              ],
+              "text": "A lever on the lower grip. Pressing it overrides and disconnects the autopilot.",
+              "context": "The pilot uses it to take over the plane by hand at once.",
+              "src": "s1"
+            },
+            {
+              "id": "gimbal",
+              "name": "Control stick",
+              "type": "axis",
+              "match": [
+                "control:stick.gimbal"
+              ],
+              "text": "The stick in the middle. Pushing it forward lowers the nose, pulling back raises it. Moving it left or right rolls the plane.",
+              "context": "It is the main flight control of the plane.",
+              "src": "s1"
+            }
+          ]
+        },
+        {
+          "id": "throttle-grip",
+          "name": "Throttle grip",
+          "src": "s1",
+          "text": "The switches on the grip of the throttle: radio, speedbrake and exterior lights.",
+          "context": "The left hand sets the engine power and works these switches.",
+          "controls": [
+            {
+              "id": "mic",
+              "name": "Microphone switch",
+              "type": "button",
+              "match": [
+                "control:throttle.hat.mic"
+              ],
+              "text": "A switch on the throttle grip, worked with the thumb. While it is pressed, the pilot's voice goes out on the UHF radio.",
+              "context": "The pilot uses it to talk to the tower and to other aircraft.",
+              "src": "s1"
+            },
+            {
+              "id": "speedbrake",
+              "name": "Speedbrake switch",
+              "type": "switch2",
+              "match": [
+                "control:throttle.speedbrake"
+              ],
+              "positions": [
+                {
+                  "name": "FWD",
+                  "text": "The speedbrakes close."
+                },
+                {
+                  "name": "AFT",
+                  "text": "The speedbrakes open."
+                }
+              ],
+              "text": "A switch on the throttle grip. Moved forward it closes the speedbrakes, moved back it opens them. Speedbrakes are panels that open into the wind to slow the plane down.",
+              "context": "The pilot uses it to slow down.",
+              "src": "s1"
+            },
+            {
+              "id": "master-lights",
+              "name": "Master exterior lights switch",
+              "type": "switch2",
+              "match": [
+                "control:throttle.switch.ext_lights"
+              ],
+              "positions": [
+                {
+                  "name": "ON",
+                  "text": "The exterior lights are on."
+                },
+                {
+                  "name": "OFF",
+                  "text": "The exterior lights are off."
+                }
+              ],
+              "text": "A switch on the throttle grip that switches all exterior lights on and off together.",
+              "context": "The single lights are set on the exterior lights panel at the right console.",
+              "src": "s1"
+            }
+          ]
+        },
+        {
+          "id": "pedals",
+          "name": "Rudder pedals",
+          "src": "s1",
+          "text": "The foot pedals for steering with the rudder and for braking.",
+          "context": "The pilot steers and brakes on the ground with the feet.",
+          "controls": [
+            {
+              "id": "rudder-pedals",
+              "name": "Rudder pedals",
+              "type": "pedal",
+              "match": [
+                "control:pedals.axis.rudder"
+              ],
+              "text": "The foot pedals at the pilot's feet. Pushing one swings the nose left or right with the rudder. The toe brakes are on top of the pedals: pressing the top of the left or right pedal brakes that wheel.",
+              "context": "The pilot steers with the pedals on the ground and brakes with the toes.",
+              "src": "s1"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

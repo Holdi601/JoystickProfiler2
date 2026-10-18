@@ -539,8 +539,28 @@
                                                 <TextBlock Text="{l:T 'Done'}" VerticalAlignment="Center" FontWeight="SemiBold" />
                                             </StackPanel>
 
-                                            <!-- Step 1: the game cards -->
-                                            <StackPanel Spacing="8" IsVisible="{Binding IsImportWizardPickStep}">
+                                            <!-- Step 3: done. The result stays on top of the game cards (they never go away after an import), until closed. -->
+                                            <Border Classes="callout" Classes.ok="{Binding !ImportWizardFailed}" Classes.error="{Binding ImportWizardFailed}" IsVisible="{Binding IsImportWizardDoneStep}">
+                                                <StackPanel Spacing="10">
+                                                    <Grid ColumnDefinitions="Auto,*" ColumnSpacing="10">
+                                                        <Panel>
+                                                            <PathIcon Data="{StaticResource Icon.Ok}" Width="32" Height="32" Classes="ok" IsVisible="{Binding !ImportWizardFailed}" />
+                                                            <PathIcon Data="{StaticResource Icon.Error}" Width="32" Height="32" Classes="error" IsVisible="{Binding ImportWizardFailed}" />
+                                                        </Panel>
+                                                        <TextBlock Grid.Column="1" Text="{Binding ImportWizardResult}" TextWrapping="Wrap" FontWeight="SemiBold" VerticalAlignment="Center" />
+                                                    </Grid>
+                                                    <WrapPanel ItemSpacing="8" LineSpacing="8">
+                                                        <Button Classes="icon accent" Tag="{StaticResource Icon.Link}" Content="{l:T 'See my relations'}" Command="{Binding FinishImportWizardCommand}" IsVisible="{Binding !ImportWizardFailed}" />
+                                                        <Button Classes="icon" Tag="{StaticResource Icon.ArrowLeft}" Content="{l:T 'Try again'}" Command="{Binding ImportWizardBackCommand}" IsVisible="{Binding ImportWizardFailed}" />
+                                                        <Button Classes="icon" Tag="{StaticResource Icon.Close}" Content="{l:T 'Close'}" Command="{Binding RestartImportWizardCommand}"
+                                                                ToolTip.Tip="{l:T 'Hide this result; your games stay below'}" />
+                                                        <Button Classes="icon" Tag="{StaticResource Icon.Export}" Content="{l:T 'Export to games'}" Command="{Binding GoExportCommand}" />
+                                                    </WrapPanel>
+                                                </StackPanel>
+                                            </Border>
+
+                                            <!-- Step 1: the game cards (also after an import, under its result) -->
+                                            <StackPanel Spacing="8" IsVisible="{Binding ShowGameCardList}">
                                                 <TextBlock Classes="caption" Text="{l:T 'Import takes the binds you already made in a game into JoyPro (a profile is made for you if none is open). Export writes them back. Update reads a game\'s new commands after a game update. Undo export puts the game\'s files back from before the last export. Watch for changes: JoyPro notices when you change binds in a ticked game and offers to take them over.'}" />
                                                 <StackPanel Orientation="Horizontal" Spacing="6" IsVisible="{Binding !WatchGameConfigs}">
                                                     <PathIcon Data="{StaticResource Icon.Warning}" Width="13" Height="13" Classes="warn" />
@@ -739,23 +759,6 @@
                                                             ToolTip.Tip="{l:T 'Shows what the game has, without changing your profile'}" />
                                                     <Button Classes="icon accent" Tag="{StaticResource Icon.Import}" Content="{l:T 'Import now'}" Command="{Binding RunImportWizardCommand}" IsEnabled="{Binding CanRun}" />
                                                 </StackPanel>
-                                            </StackPanel>
-
-                                            <!-- Step 3: done -->
-                                            <StackPanel Spacing="10" IsVisible="{Binding IsImportWizardDoneStep}">
-                                                <Grid ColumnDefinitions="Auto,*" ColumnSpacing="10">
-                                                    <Panel>
-                                                        <PathIcon Data="{StaticResource Icon.Ok}" Width="32" Height="32" Classes="ok" IsVisible="{Binding !ImportWizardFailed}" />
-                                                        <PathIcon Data="{StaticResource Icon.Error}" Width="32" Height="32" Classes="error" IsVisible="{Binding ImportWizardFailed}" />
-                                                    </Panel>
-                                                    <TextBlock Grid.Column="1" Text="{Binding ImportWizardResult}" TextWrapping="Wrap" FontWeight="SemiBold" VerticalAlignment="Center" />
-                                                </Grid>
-                                                <WrapPanel ItemSpacing="8" LineSpacing="8">
-                                                    <Button Classes="icon accent" Tag="{StaticResource Icon.Link}" Content="{l:T 'See my relations'}" Command="{Binding FinishImportWizardCommand}" IsVisible="{Binding !ImportWizardFailed}" />
-                                                    <Button Classes="icon" Tag="{StaticResource Icon.ArrowLeft}" Content="{l:T 'Try again'}" Command="{Binding ImportWizardBackCommand}" IsVisible="{Binding ImportWizardFailed}" />
-                                                    <Button Classes="icon" Tag="{StaticResource Icon.Import}" Content="{l:T 'Import another game'}" Command="{Binding RestartImportWizardCommand}" />
-                                                    <Button Classes="icon" Tag="{StaticResource Icon.Export}" Content="{l:T 'Export to games'}" Command="{Binding GoExportCommand}" />
-                                                </WrapPanel>
                                             </StackPanel>
                                         </StackPanel>
                                     </Border>
@@ -1069,13 +1072,19 @@
                     <Grid x:Name="RelationsPaneGrid" ColumnDefinitions="300,12,*">
                         <Border Classes="surface" Padding="12">
                             <Grid x:Name="RelationsLeftGrid" RowDefinitions="Auto,Auto,Auto,Auto,*,Auto" RowSpacing="10">
-                                <Grid ColumnDefinitions="Auto,*,Auto" ColumnSpacing="10">
+                                <Grid ColumnDefinitions="Auto,*,Auto,Auto" ColumnSpacing="10">
                                     <Border Classes="iconBadge"><PathIcon Data="{StaticResource Icon.Link}" /></Border>
                                     <StackPanel Grid.Column="1" VerticalAlignment="Center">
                                         <TextBlock Classes="h2" FontSize="18" FontWeight="Bold" Text="{l:T 'Relations'}" />
                                         <TextBlock Classes="caption" Text="{l:T '{}{0} in your profile', Arg0={Binding ProfileRelationCount}}" />
                                     </StackPanel>
-                                    <Button Grid.Column="2" Classes="icon accent small" Tag="{StaticResource Icon.Plus}" Content="{l:T 'New'}" Command="{Binding StartNewRelationCommand}"
+                                    <!-- Follow input (the same switch as on the Binds page): pressing a button selects its relation here too. -->
+                                    <ToggleButton x:Name="RelationsFollowInputToggle" Grid.Column="2" Classes="filterChip" VerticalAlignment="Center"
+                                                  IsChecked="{Binding FollowInputOnBinds}"
+                                                  ToolTip.Tip="{l:T 'Follow input: press a button or move an axis a long way and the list jumps to its relation; press it again for the next relation on it (without modifiers first). Not while recording or typing. Settings > Binds switches it off for good.'}">
+                                        <PathIcon Data="{StaticResource Icon.Cursor}" Width="13" Height="13" />
+                                    </ToggleButton>
+                                    <Button Grid.Column="3" Classes="icon accent small" Tag="{StaticResource Icon.Plus}" Content="{l:T 'New'}" Command="{Binding StartNewRelationCommand}"
                                             ToolTip.Tip="{l:T 'New relation: give it a name, then tick its actions in the search over every game (Ctrl+N)'}" />
                                 </Grid>
                                 <TextBox x:Name="RelationSearchBox" Grid.Row="1" Classes="search" Text="{Binding RelationSearchText}" Watermark="{l:T 'Search relations (Ctrl+F)'}"
@@ -1112,16 +1121,41 @@
                                                             <TextBlock Text="{l:T 'not bound'}" />
                                                         </Border>
                                                     </Grid>
-                                                    <!-- "WarBRD · BTN 8 · Shift A": the device, the input and the modifiers held with it -->
-                                                    <Border Grid.Row="1" Classes="keycap" HorizontalAlignment="Left" IsVisible="{Binding IsBound}" ToolTip.Tip="{Binding BindTooltip}">
-                                                        <TextBlock Text="{Binding BindLabel}" TextTrimming="CharacterEllipsis" MaxWidth="240" />
-                                                    </Border>
-                                                    <StackPanel Grid.Row="2" Orientation="Horizontal" Spacing="4" ClipToBounds="True">
+                                                    <!-- "WarBRD · BTN 8" and the modifiers held with it as chips: a long device name shortens (the full
+                                                         name is in the tooltip), the input and every modifier always show; the chips wrap to a second line. -->
+                                                    <WrapPanel Grid.Row="1" ItemSpacing="4" LineSpacing="4" IsVisible="{Binding IsBound}">
+                                                        <Border Classes="keycap" ToolTip.Tip="{Binding BindTooltip}">
+                                                            <DockPanel>
+                                                                <TextBlock DockPanel.Dock="Right" Text="{Binding BindInputPart}" />
+                                                                <TextBlock Text="{Binding BindDevice}" TextTrimming="CharacterEllipsis" />
+                                                            </DockPanel>
+                                                        </Border>
+                                                        <ItemsControl ItemsSource="{Binding ModifierChips}" IsVisible="{Binding HasModifierChips}">
+                                                            <ItemsControl.ItemsPanel>
+                                                                <ItemsPanelTemplate>
+                                                                    <WrapPanel ItemSpacing="4" LineSpacing="4" />
+                                                                </ItemsPanelTemplate>
+                                                            </ItemsControl.ItemsPanel>
+                                                            <ItemsControl.ItemTemplate>
+                                                                <DataTemplate x:DataType="x:String">
+                                                                    <Border Classes="chip modifier" ToolTip.Tip="{l:T 'Modifier: hold it for this bind'}">
+                                                                        <StackPanel Orientation="Horizontal" Spacing="3">
+                                                                            <PathIcon Data="{StaticResource Icon.Shift}" />
+                                                                            <TextBlock Text="{Binding}" />
+                                                                        </StackPanel>
+                                                                    </Border>
+                                                                </DataTemplate>
+                                                            </ItemsControl.ItemTemplate>
+                                                        </ItemsControl>
+                                                    </WrapPanel>
+                                                    <!-- Type, games and the aircraft chip wrap (a relation of many games kept the aircraft chip, and its
+                                                         tooltip, out of reach). -->
+                                                    <WrapPanel Grid.Row="2" ItemSpacing="4" LineSpacing="4">
                                                         <Border Classes="chip axis" IsVisible="{Binding IsAxis}"><TextBlock Text="{l:T 'Axis'}" /></Border>
                                                         <ItemsControl ItemsSource="{Binding GameList}">
                                                             <ItemsControl.ItemsPanel>
                                                                 <ItemsPanelTemplate>
-                                                                    <StackPanel Orientation="Horizontal" Spacing="4" />
+                                                                    <WrapPanel ItemSpacing="4" LineSpacing="4" />
                                                                 </ItemsPanelTemplate>
                                                             </ItemsControl.ItemsPanel>
                                                             <ItemsControl.ItemTemplate>
@@ -1130,13 +1164,24 @@
                                                                 </DataTemplate>
                                                             </ItemsControl.ItemTemplate>
                                                         </ItemsControl>
-                                                        <Border Classes="chip aircraft" IsVisible="{Binding HasPlanes}"><TextBlock Text="{Binding PlanesText}" /></Border>
-                                                    </StackPanel>
+                                                        <!-- The tooltip lists the aircraft (the tooltip wraps a long list) -->
+                                                        <Border Classes="chip aircraft" IsVisible="{Binding HasPlanes}" ToolTip.Tip="{Binding PlanesTooltip}">
+                                                            <TextBlock Text="{Binding PlanesText}" />
+                                                        </Border>
+                                                    </WrapPanel>
                                                 </Grid>
                                             </DataTemplate>
                                         </ListBox.ItemTemplate>
                                     </ListBox>
 
+                                    <!-- Follow input: which input jumped where ("BTN 8 on WarBRD: Gear (1/3)"), for a moment. -->
+                                    <Border Classes="followToast" IsVisible="{Binding HasFollowInputToast}" IsHitTestVisible="False"
+                                            HorizontalAlignment="Center" VerticalAlignment="Bottom" Margin="8,0,8,14">
+                                        <StackPanel Orientation="Horizontal" Spacing="7">
+                                            <PathIcon Data="{StaticResource Icon.Gamepad}" Width="14" Height="14" Foreground="White" />
+                                            <TextBlock Text="{Binding FollowInputToast}" Foreground="White" FontWeight="SemiBold" TextWrapping="Wrap" MaxWidth="240" />
+                                        </StackPanel>
+                                    </Border>
                                     <Border Classes="emptyState" IsVisible="{Binding HasNoRelations}" VerticalAlignment="Top">
                                         <StackPanel Spacing="10">
                                             <PathIcon Classes="emptyIcon" Data="{StaticResource Icon.Link}" />
@@ -1480,7 +1525,29 @@
                                                 <WrapPanel ItemSpacing="6" LineSpacing="4">
                                                     <Border Classes="chip axis" IsVisible="{Binding SelectedRelation.IsAxis}" ToolTip.Tip="{l:T 'An axis relation: only axes go in'}"><TextBlock Text="{l:T 'Axis'}" /></Border>
                                                     <Border Classes="chip" IsVisible="{Binding !SelectedRelation.IsAxis}" ToolTip.Tip="{l:T 'A button relation: only buttons go in'}"><TextBlock Text="{l:T 'Button'}" /></Border>
-                                                    <Border Classes="keycap" IsVisible="{Binding SelectedRelation.IsBound}" ToolTip.Tip="{Binding SelectedRelation.BindTooltip}"><TextBlock Text="{Binding SelectedRelation.BindLabel}" MaxWidth="320" TextTrimming="CharacterEllipsis" /></Border>
+                                                    <Border Classes="keycap" IsVisible="{Binding SelectedRelation.IsBound}" ToolTip.Tip="{Binding SelectedRelation.BindTooltip}">
+                                                        <DockPanel MaxWidth="360">
+                                                            <TextBlock DockPanel.Dock="Right" Text="{Binding SelectedRelation.BindInputPart}" />
+                                                            <TextBlock Text="{Binding SelectedRelation.BindDevice}" TextTrimming="CharacterEllipsis" />
+                                                        </DockPanel>
+                                                    </Border>
+                                                    <ItemsControl ItemsSource="{Binding SelectedRelation.ModifierChips}" IsVisible="{Binding SelectedRelation.HasModifierChips}">
+                                                        <ItemsControl.ItemsPanel>
+                                                            <ItemsPanelTemplate>
+                                                                <WrapPanel ItemSpacing="4" LineSpacing="4" />
+                                                            </ItemsPanelTemplate>
+                                                        </ItemsControl.ItemsPanel>
+                                                        <ItemsControl.ItemTemplate>
+                                                            <DataTemplate x:DataType="x:String">
+                                                                <Border Classes="chip modifier" VerticalAlignment="Center" ToolTip.Tip="{l:T 'Modifier: hold it for this bind'}">
+                                                                    <StackPanel Orientation="Horizontal" Spacing="3">
+                                                                        <PathIcon Data="{StaticResource Icon.Shift}" />
+                                                                        <TextBlock Text="{Binding}" />
+                                                                    </StackPanel>
+                                                                </Border>
+                                                            </DataTemplate>
+                                                        </ItemsControl.ItemTemplate>
+                                                    </ItemsControl>
                                                     <Button Classes="small ghost" IsVisible="{Binding SelectedRelation.IsUnbound}" Content="{l:T 'Not bound yet: Binds page'}" Command="{Binding BindSelectedRelationCommand}"
                                                             ToolTip.Tip="{l:T 'Binding happens on the Binds page: this opens it with this relation selected'}" />
                                                     <Border Classes="chip ok" IsVisible="{Binding HasBuilderFunction}" ToolTip.Tip="{l:T 'The function JoyPro reads from its actions: {0}', Arg0={Binding BuilderFunctionText}}">
@@ -5312,8 +5379,8 @@
                             <!-- Settings > Binds (MainWindowViewModel live input): follow input, record options -->
                             <controls:SettingsSection SectionId="binds" Title="{l:T 'Binds'}" Icon="{StaticResource Icon.Gamepad}">
                                 <StackPanel Spacing="6">
-                                    <CheckBox Content="{l:T 'Follow input on the Binds page'}" IsChecked="{Binding FollowInputOnBinds}"
-                                              ToolTip.Tip="{l:T 'Press a button (or move an axis a long way) and the Binds page jumps to its relation; press it again for the next relation on it, the ones without modifiers first. Not while recording or typing in a box.'}" />
+                                    <CheckBox Content="{l:T 'Follow input on the Binds and Relations pages'}" IsChecked="{Binding FollowInputOnBinds}"
+                                              ToolTip.Tip="{l:T 'Press a button (or move an axis a long way) and the Binds or Relations page jumps to its relation; press it again for the next relation on it, the ones without modifiers first. Not while recording or typing in a box.'}" />
                                     <CheckBox Content="{l:T 'Record: also take a button that rests pressed when it is released'}" IsChecked="{Binding RecordReleaseOfHeldButtons}"
                                               ToolTip.Tip="{l:T 'Record only takes a button that changes state; a button already pressed when recording starts (a 3-way switch\'s middle, a mode switch) never counts. Ticked: letting it go counts as that button.'}" />
                                 </StackPanel>

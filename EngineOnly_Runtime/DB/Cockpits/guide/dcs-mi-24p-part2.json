@@ -1,0 +1,2382 @@
+{
+  "format": "joypro-cockpit-guide",
+  "version": 1,
+  "partOf": "dcs-mi-24p",
+  "areas": [
+    {
+      "id": "pilot-left-console",
+      "where": "left-console",
+      "name": "Left console and left wall",
+      "seat": 1,
+      "text": "The left wall and the left console of the pilot-commander. The circuit breaker panel, the engine start panel, the fuel panel, the radios and the side panel with many switches are here.",
+      "panels": [
+        {
+          "id": "left-cb",
+          "name": "Left circuit breaker panel",
+          "src": "m1",
+          "text": "A wall panel behind the pilot's left shoulder with rows of circuit breakers. A circuit breaker is a safety switch that cuts the power of one circuit when too much current flows. Each one is named for the system it protects.",
+          "context": "The manual says to turn on all circuit breakers on the left and right wall panels at the start. A lever lifts the frame and moves all the switches together, so the pilot does not have to click each one.",
+          "controls": [
+            {
+              "id": "cb-left-all",
+              "name": "All Left CBs ON (frame lever)",
+              "type": "button",
+              "match": [
+                "CB-FRAME-LEFT-1-PTR"
+              ],
+              "text": "This lever switches on all the breakers of the left panel at once. The game names it 'All Left CBs ON'.",
+              "context": "The manual's start-up list begins with it. The keyboard can do the same with RCtrl + RShift + 1.",
+              "src": "m1",
+              "page": "19"
+            },
+            {
+              "id": "cb-left-fire",
+              "name": "Fire protection breakers (auto, manual)",
+              "type": "switch2",
+              "match": [
+                "CB-LEFT-FIRE-1-AUTO-PTR",
+                "CB-LEFT-FIRE-1-MANUAL-PTR"
+              ],
+              "positions": [
+                {
+                  "name": "ON",
+                  "text": "The breaker is closed and the circuit has power."
+                },
+                {
+                  "name": "OFF",
+                  "text": "The breaker is open and the circuit is cut off."
+                }
+              ],
+              "count": 2,
+              "text": "These two breakers give power to the fire protection system. One is for the automatic mode and one for the manual mode of the first extinguisher bottle.",
+              "context": "Without them the extinguisher buttons on the fire panel have no power.",
+              "src": "m1",
+              "page": "19"
+            },
+            {
+              "id": "cb-left-gear",
+              "name": "Landing gear breakers (extend/retract, warning)",
+              "type": "switch2",
+              "match": [
+                "CB-LEFT-GEAR-EXTENT-HANDLE-PTR",
+                "CB-LEFT-GEAR-ALARM-PTR"
+              ],
+              "positions": [
+                {
+                  "name": "ON",
+                  "text": "The breaker is closed and the circuit has power."
+                },
+                {
+                  "name": "OFF",
+                  "text": "The breaker is open and the circuit is cut off."
+                }
+              ],
+              "count": 2,
+              "text": "These two breakers give power to the landing gear lever and to the landing gear warning.",
+              "context": "The game names them 'CB Landing Gear Extend / Retract' and 'CB Landing Gear Warning'.",
+              "src": "m1",
+              "page": "19"
+            },
+            {
+              "id": "cb-left-start",
+              "name": "Engine start breakers (auto start, igniter)",
+              "type": "switch2",
+              "match": [
+                "CB-LEFT-STARTUP-BLOCK-PTR",
+                "CB-LEFT-STARTUP-IGNITION-PTR"
+              ],
+              "positions": [
+                {
+                  "name": "ON",
+                  "text": "The breaker is closed and the circuit has power."
+                },
+                {
+                  "name": "OFF",
+                  "text": "The breaker is open and the circuit is cut off."
+                }
+              ],
+              "count": 2,
+              "text": "These two breakers give power to the automatic start system and to the igniter. The igniter makes the spark that lights the fuel in the engine.",
+              "context": "The engine start in the manual needs them on, together with the start buttons on the engine start panel.",
+              "src": "m1",
+              "page": "19"
+            },
+            {
+              "id": "cb-left-misc",
+              "name": "Inverter, AFCS warning, beacon, landing light, attitude indicator breakers",
+              "type": "switch2",
+              "match": [
+                "CB-LEFT-PT125TS-PTR",
+                "CB-LEFT-AUTOPILOT-ALARM-PTR",
+                "CB-LEFT-BEACON-PTR",
+                "CB-LEFT-HEADLIGHT-CONTROL-PTR",
+                "CB-LEFT-PILOTING-DEVICE-PTR"
+              ],
+              "positions": [
+                {
+                  "name": "ON",
+                  "text": "The breaker is closed and the circuit has power."
+                },
+                {
+                  "name": "OFF",
+                  "text": "The breaker is open and the circuit is cut off."
+                }
+              ],
+              "count": 5,
+              "text": "These five breakers protect the inverter, the warning of the automatic flight control system (the autopilot), the beacon light, the control of the landing light and the main attitude indicator (artificial horizon).",
+              "context": "The pilot closes them with the frame lever. The inverter turns electricity into the kind some instruments need.",
+              "src": "m1",
+              "page": "19"
+            },
+            {
+              "id": "cb-left-weapons",
+              "name": "Weapons breakers (missile power, emergency jettison, bombs, rockets)",
+              "type": "switch2",
+              "match": [
+                "CB-LEFT-MISSILE-POWER-PTR",
+                "CB-LEFT-BOMB-EMERGENCY-DETACH-PTR",
+                "CB-LEFT-BOMB-EXPLOSION-PTR",
+                "CB-LEFT-ROCKETS-PTR"
+              ],
+              "positions": [
+                {
+                  "name": "ON",
+                  "text": "The breaker is closed and the circuit has power."
+                },
+                {
+                  "name": "OFF",
+                  "text": "The breaker is open and the circuit is cut off."
+                }
+              ],
+              "count": 4,
+              "text": "These four breakers give power to the missile system, the emergency jettison, the bombs and the rockets. They sit in the radio view of the left wall panel.",
+              "context": "The manual says to turn on all weapons circuit breakers on the left and right wall panels before using the weapons.",
+              "src": "m1",
+              "page": "19"
+            },
+            {
+              "id": "cb-left-adf",
+              "name": "ADF breaker",
+              "type": "switch2",
+              "match": [
+                "CB-LEFT-RADIOCOMPASS-HF-PTR"
+              ],
+              "positions": [
+                {
+                  "name": "ON",
+                  "text": "The breaker is closed and the circuit has power."
+                },
+                {
+                  "name": "OFF",
+                  "text": "The breaker is open and the circuit is cut off."
+                }
+              ],
+              "text": "This breaker gives power to the ADF, the radio direction finder that points to a radio beacon. The game names it 'CB ADF'.",
+              "context": "The manual's start-up list sets the ARC-15 to COMPASS. The manual does not say which breaker feeds it.",
+              "src": "m1",
+              "page": "19"
+            },
+            {
+              "id": "cb-left-fuel",
+              "name": "Fuel breakers (shutoff, cross feed, tank 1 valve, left tank fire warning, separation)",
+              "type": "switch2",
+              "match": [
+                "CB-LEFT-PUMP-TANK-1-PTR",
+                "CB-LEFT-PUMP-TANK-5-PTR",
+                "CB-LEFT-VALVE-TANK-1-PTR",
+                "CB-LEFT-VALVE-FIRE-LEFT-PTR",
+                "CB-LEFT-VALVE-SEPARATION-PTR"
+              ],
+              "positions": [
+                {
+                  "name": "ON",
+                  "text": "The breaker is closed and the circuit has power."
+                },
+                {
+                  "name": "OFF",
+                  "text": "The breaker is open and the circuit is cut off."
+                }
+              ],
+              "count": 5,
+              "text": "These five breakers power fuel valves and a fire warning. The game names them 'Fuel Shutoff Valve', 'Cross Feed Valve', 'Tank 1 Valve', 'Left Tank Fire Warning' and 'Left Valve Separation'.",
+              "context": "The valves on the fuel control panel only move when their breakers are on. The names are the game's; the manual does not list them one by one.",
+              "src": "m1",
+              "page": "19"
+            },
+            {
+              "id": "cb-left-windscreen",
+              "name": "Windscreen breakers (spray, gunner wiper, pilot wiper)",
+              "type": "switch2",
+              "match": [
+                "CB-LEFT-GLASS-SPRINKLER-PTR",
+                "CB-LEFT-GLASS-WIPER-OP-PTR",
+                "CB-LEFT-GLASS-WIPER-PILOT-PTR"
+              ],
+              "positions": [
+                {
+                  "name": "ON",
+                  "text": "The breaker is closed and the circuit has power."
+                },
+                {
+                  "name": "OFF",
+                  "text": "The breaker is open and the circuit is cut off."
+                }
+              ],
+              "count": 3,
+              "text": "These three breakers power the window sprayer and the windscreen wipers of the operator and of the pilot.",
+              "context": "The game names them 'CB Windshield Spray' and 'CB Windshield Wiper Gunner/Pilot'.",
+              "src": "m1",
+              "page": "19"
+            },
+            {
+              "id": "cb-left-audio",
+              "name": "Audio warning system breaker",
+              "type": "switch2",
+              "match": [
+                "CB-LEFT-SPEECH-INFORMER-PTR"
+              ],
+              "positions": [
+                {
+                  "name": "ON",
+                  "text": "The breaker is closed and the circuit has power."
+                },
+                {
+                  "name": "OFF",
+                  "text": "The breaker is open and the circuit is cut off."
+                }
+              ],
+              "text": "This breaker gives power to the audio warning system, the voice that speaks warnings into the headset.",
+              "context": "The RI-65 buttons on the left panel belong to this system.",
+              "src": "m1",
+              "page": "19"
+            },
+            {
+              "id": "cb-left-recorder",
+              "name": "Flight recorder breaker",
+              "type": "switch2",
+              "match": [
+                "CB-LEFT-RECORDER-PARAMS-PTR"
+              ],
+              "positions": [
+                {
+                  "name": "ON",
+                  "text": "The breaker is closed and the circuit has power."
+                },
+                {
+                  "name": "OFF",
+                  "text": "The breaker is open and the circuit is cut off."
+                }
+              ],
+              "text": "This breaker gives power to the flight recorder, which records flight numbers like the black box of an aeroplane.",
+              "context": "The recorder controls are on the signal flare panel on the left wall.",
+              "src": "m1",
+              "page": "19"
+            },
+            {
+              "id": "cb-left-cargo",
+              "name": "External cargo emergency jettison breaker",
+              "type": "switch2",
+              "match": [
+                "CB-LEFT-EXT-CARGO-EMERGENCY-DROP-PTR"
+              ],
+              "positions": [
+                {
+                  "name": "ON",
+                  "text": "The breaker is closed and the circuit has power."
+                },
+                {
+                  "name": "OFF",
+                  "text": "The breaker is open and the circuit is cut off."
+                }
+              ],
+              "text": "This breaker gives power to the emergency release of a load that hangs under the helicopter.",
+              "context": "The emergency cargo release button on the collective needs it. A load under the helicopter is called external cargo.",
+              "src": "m1",
+              "page": "19"
+            },
+            {
+              "id": "cb-left-firealarm",
+              "name": "Fire protection warning breaker",
+              "type": "switch2",
+              "match": [
+                "CB-LEFT-FIRE-ALARM-PTR"
+              ],
+              "positions": [
+                {
+                  "name": "ON",
+                  "text": "The breaker is closed and the circuit has power."
+                },
+                {
+                  "name": "OFF",
+                  "text": "The breaker is open and the circuit is cut off."
+                }
+              ],
+              "text": "This breaker gives power to the warning part of the fire protection system, the lights and the alarm.",
+              "context": "The fire buttons themselves are on the fire extinguisher panel.",
+              "src": "m1",
+              "page": "19"
+            },
+            {
+              "id": "cb-left-airspeed",
+              "name": "Air speed sensor breaker",
+              "type": "switch2",
+              "match": [
+                "CB-LEFT-AIRSPEED-SENSOR-PTR"
+              ],
+              "positions": [
+                {
+                  "name": "ON",
+                  "text": "The breaker is closed and the circuit has power."
+                },
+                {
+                  "name": "OFF",
+                  "text": "The breaker is open and the circuit is cut off."
+                }
+              ],
+              "text": "This breaker gives power to the air speed sensor, which measures how fast the helicopter moves through the air.",
+              "context": "The game names it 'CB Air Speed Sensor'. The manual does not describe it.",
+              "src": "m1",
+              "page": "19"
+            }
+          ]
+        },
+        {
+          "id": "engine-levers",
+          "name": "Engine stop levers and individual throttle levers",
+          "db": "pilot-commander-cockpit-controls",
+          "src": "m1",
+          "page": "17",
+          "text": "Four levers beside the pilot's seat. Two red levers stop and release the fuel of each engine. Two engine power levers set the power of each engine on its own.",
+          "context": "The manual's cockpit list shows the fuel shutoff levers and the individual throttle levers next to the collective. The start-up list moves a red engine stop lever down after the start button is pressed.",
+          "controls": [
+            {
+              "id": "engine-stop-levers",
+              "name": "Engine stop levers (left, right)",
+              "type": "lever",
+              "match": [
+                "ENG-BRAKE-LEFT-PTR",
+                "ENG-BRAKE-RIGHT-PTR",
+                "item:pilot-commander-cockpit-controls:2"
+              ],
+              "count": 2,
+              "text": "These two red levers belong to the left and the right engine. Moved down, a lever lets fuel flow to its engine so that the start can go on. Moved up, it stops the engine.",
+              "context": "In the start-up list the pilot moves the lever of the engine that was started down (RCtrl + PgUp for the left, RCtrl + PgDn for the right). The manual's cockpit list calls them fuel shutoff levers.",
+              "src": "m1",
+              "page": "21"
+            },
+            {
+              "id": "throttle-levers-panel",
+              "name": "Individual throttle levers (cockpit list entry)",
+              "type": "lever",
+              "match": [
+                "item:pilot-commander-cockpit-controls:3"
+              ],
+              "text": "The cockpit list of the manual names two individual throttle levers. They set the power of the left and of the right engine separately.",
+              "context": "They are listed with their game controls under Stick and throttle, with the collective. The pilot must not move them during the engine start.",
+              "src": "m1",
+              "page": "17"
+            }
+          ]
+        },
+        {
+          "id": "static-valve",
+          "name": "Static valve sensor selector",
+          "src": "m1",
+          "text": "A single three-position switch of the engine interface group on the left wall. The game names it 'Static valve sensor select'.",
+          "context": "The Mi-24P manual does not describe it. Only the game's label and its three positions are known.",
+          "controls": [
+            {
+              "id": "static-valve-select",
+              "name": "Static valve sensor selector (LEFT / BOTH / RIGHT)",
+              "type": "switch3",
+              "match": [
+                "STATIC-VALVE-PTR"
+              ],
+              "positions": [
+                {
+                  "name": "LEFT",
+                  "text": "Only the left sensor is used."
+                },
+                {
+                  "name": "BOTH",
+                  "text": "Both sensors are used together."
+                },
+                {
+                  "name": "RIGHT",
+                  "text": "Only the right sensor is used."
+                }
+              ],
+              "text": "This switch chooses which static valve sensor is used: the left one, both together, or the right one. A static valve sensor is an opening that senses the outside air pressure for the instruments.",
+              "context": "The middle position uses both sensors. The manual does not say when the left or the right position is used.",
+              "src": "m1"
+            }
+          ]
+        },
+        {
+          "id": "engine-start",
+          "name": "APU and engine start panel",
+          "src": "m1",
+          "text": "This panel starts the small extra engine (the APU) and then the two main engines. The pilot chooses a start mode and which engine, then presses the start button. A computer does the steps by itself.",
+          "context": "The APU is started first. The manual then starts the engine on the downwind side, then the other one. The APU is stopped when both engines run.",
+          "controls": [
+            {
+              "id": "apu-mode",
+              "name": "APU start mode switch (START / COLD CRANKING / FALSE START)",
+              "type": "switch3",
+              "match": [
+                "APU-FALSE-CRANK-START-PTR"
+              ],
+              "positions": [
+                {
+                  "name": "START",
+                  "text": "A normal start of the APU."
+                },
+                {
+                  "name": "COLD CRANKING",
+                  "text": "The APU is turned over without a start."
+                },
+                {
+                  "name": "FALSE START",
+                  "text": "The game's false start mode."
+                }
+              ],
+              "text": "This switch chooses what the next press of the start button does for the APU: a real start, a cold turning without fuel, or a start that is treated as false.",
+              "context": "The manual's start-up list wants this selector at the START position (down) before the start button is pressed.",
+              "src": "m1",
+              "page": "20"
+            },
+            {
+              "id": "apu-start",
+              "name": "APU START button",
+              "type": "button",
+              "match": [
+                "APU-START-PTR"
+              ],
+              "text": "Pressing this button for two or three seconds starts the APU, the small extra engine in the back of the helicopter. It makes electricity and air for starting the main engines.",
+              "context": "The manual says to start the stopwatch at the same time and to watch that the exhaust temperature stays below 880 degrees Celsius.",
+              "src": "m1",
+              "page": "20"
+            },
+            {
+              "id": "apu-stop",
+              "name": "APU STOP button",
+              "type": "button",
+              "match": [
+                "APU-STOP-PTR"
+              ],
+              "text": "Pressing this button stops the APU, the small extra engine in the back.",
+              "context": "The manual's list stops the APU after both engines run and the generators are switched on.",
+              "src": "m1",
+              "page": "22"
+            },
+            {
+              "id": "engine-mode",
+              "name": "Engine start mode switch (START / COLD CRANK)",
+              "type": "switch2",
+              "match": [
+                "ENG-CRANK-START-PTR"
+              ],
+              "positions": [
+                {
+                  "name": "START",
+                  "text": "The engine is started with fuel and ignition."
+                },
+                {
+                  "name": "COLD CRANK",
+                  "text": "The engine is only turned over; it does not start."
+                }
+              ],
+              "text": "This switch chooses the type of the engine start. In START the engine starts for real. In COLD CRANK the engine is only turned over.",
+              "context": "The manual says to make sure it is at START (down) before the engine start button is pressed.",
+              "src": "m1",
+              "page": "21"
+            },
+            {
+              "id": "engine-select",
+              "name": "Engine selector switch (LEFT / RIGHT)",
+              "type": "switch2",
+              "match": [
+                "ENG-LEFT-RIGHT-PTR"
+              ],
+              "positions": [
+                {
+                  "name": "LEFT",
+                  "text": "The left engine is chosen."
+                },
+                {
+                  "name": "RIGHT",
+                  "text": "The right engine is chosen."
+                }
+              ],
+              "text": "This switch chooses which of the two main engines the start button starts.",
+              "context": "The manual says to start the engine on the downwind side first. With wind from the right, that is the left engine.",
+              "src": "m1",
+              "page": "21"
+            },
+            {
+              "id": "engine-start-button",
+              "name": "Engine START button",
+              "type": "button",
+              "match": [
+                "ENG-START-PTR"
+              ],
+              "text": "Pressing and holding this button for one or two seconds starts the engine chosen with the selector. The automatic start then runs.",
+              "context": "After it the pilot moves the red engine stop lever of that engine down. The manual says the engine reaches idle within 60 seconds.",
+              "src": "m1",
+              "page": "21"
+            },
+            {
+              "id": "engine-abort",
+              "name": "Engine interrupt start button",
+              "type": "button",
+              "match": [
+                "ENG-ABORT-PTR"
+              ],
+              "text": "Pressing this button stops an engine start that has begun. The game names it 'Engine Interrupt Start'.",
+              "context": "The pilot uses it if something looks wrong during the start. The manual does not describe it.",
+              "src": "m1"
+            }
+          ]
+        },
+        {
+          "id": "dust-seal",
+          "name": "Dust protection and cabin sealing",
+          "src": "m1",
+          "text": "A cover with the dust protection switch and the wheel that seals the cabin. Dust protection keeps sand and dust out of the engines. Sealing closes the cabin to the outside air.",
+          "context": "The manual says to open the sealing valve in the start-up list, and to turn on the dust protection before the engines go to full power. It is switched off again after take-off.",
+          "controls": [
+            {
+              "id": "dust-switch",
+              "name": "Dust protection (antidust) switch with cover",
+              "type": "switch2",
+              "match": [
+                "DEDUST-OFF-COVER-PTR",
+                "DEDUST-OFF-PTR"
+              ],
+              "positions": [
+                {
+                  "name": "ON",
+                  "text": "The engine dust protection is on."
+                },
+                {
+                  "name": "OFF",
+                  "text": "The engine dust protection is off."
+                }
+              ],
+              "text": "This switch turns on the dust protection of the engines, which keeps sand and dust out. A mint green cover protects it, and the pilot lifts the cover first.",
+              "context": "The manual says to turn it on before the correction grip is turned to full throttle, and to turn it off again after take-off.",
+              "src": "m1",
+              "page": "22"
+            },
+            {
+              "id": "cabin-seal-wheel",
+              "name": "Cabin sealing valve (pneumatic sealing wheel)",
+              "type": "wheel",
+              "match": [
+                "CABIN-PRESS-VALVE-PTR"
+              ],
+              "text": "Turning this wheel opens or closes the valve that seals the cabin. The game gives the positions OPEN and CLOSE.",
+              "context": "The manual's start-up list turns the wheel counterclockwise with the mouse to seal the cabin.",
+              "src": "m1",
+              "page": "20"
+            }
+          ]
+        },
+        {
+          "id": "fuel-control",
+          "name": "Fuel control panel",
+          "src": "m1",
+          "text": "This panel controls the fuel. It has switches for the pumps of the tanks, valves between the tanks and to the engines, and for the external tanks. Some valves have a cover.",
+          "context": "Before start the manual says to open the fuel tank valves, the engine fire cut-off valves and the separator valve, and to turn the fuel pumps on. The external tanks are switched on if they are filled.",
+          "controls": [
+            {
+              "id": "pump-1",
+              "name": "Tank 1 pump switch",
+              "type": "switch2",
+              "match": [
+                "TANK-1-PTR"
+              ],
+              "positions": [
+                {
+                  "name": "ON",
+                  "text": "The pump of tank 1 runs."
+                },
+                {
+                  "name": "OFF",
+                  "text": "The pump of tank 1 is off."
+                }
+              ],
+              "text": "This switch turns the pump of fuel tank 1 on and off. A pump moves fuel out of the tank.",
+              "context": "The manual says to turn the pumps on before the APU start.",
+              "src": "m1",
+              "page": "20"
+            },
+            {
+              "id": "pump-2",
+              "name": "Tank 2 pump switch",
+              "type": "switch2",
+              "match": [
+                "TANK-2-PTR"
+              ],
+              "positions": [
+                {
+                  "name": "ON",
+                  "text": "The pump of tank 2 runs."
+                },
+                {
+                  "name": "OFF",
+                  "text": "The pump of tank 2 is off."
+                }
+              ],
+              "text": "This switch turns the pump of fuel tank 2 on and off.",
+              "context": "Each tank has its own pump switch, so a failed pump can be switched off by itself.",
+              "src": "m1",
+              "page": "20"
+            },
+            {
+              "id": "pump-4",
+              "name": "Tank 4 pump switch",
+              "type": "switch2",
+              "match": [
+                "TANK-4-PTR"
+              ],
+              "positions": [
+                {
+                  "name": "ON",
+                  "text": "The pump of tank 4 runs."
+                },
+                {
+                  "name": "OFF",
+                  "text": "The pump of tank 4 is off."
+                }
+              ],
+              "text": "This switch turns the pump of fuel tank 4 on and off.",
+              "context": "It is one of the four pump switches on the panel, for the tanks 1, 2, 4 and 5.",
+              "src": "m1",
+              "page": "20"
+            },
+            {
+              "id": "pump-5",
+              "name": "Tank 5 pump switch",
+              "type": "switch2",
+              "match": [
+                "TANK-5-PTR"
+              ],
+              "positions": [
+                {
+                  "name": "ON",
+                  "text": "The pump of tank 5 runs."
+                },
+                {
+                  "name": "OFF",
+                  "text": "The pump of tank 5 is off."
+                }
+              ],
+              "text": "This switch turns the pump of fuel tank 5 on and off.",
+              "context": "The pump switches of the tanks 1, 2, 4 and 5 sit next to each other.",
+              "src": "m1",
+              "page": "20"
+            },
+            {
+              "id": "feed-1",
+              "name": "Feed tank 1 valve switch",
+              "type": "switch2",
+              "match": [
+                "FEED-TANK-1-PTR"
+              ],
+              "positions": [
+                {
+                  "name": "OPEN",
+                  "text": "The valve of feed tank 1 is open."
+                },
+                {
+                  "name": "CLOSE",
+                  "text": "The valve of feed tank 1 is closed."
+                }
+              ],
+              "text": "This switch opens or closes the valve of feed tank 1. A feed tank is a tank that supplies the engines.",
+              "context": "The manual says to open the fuel tank valves before the start.",
+              "src": "m1",
+              "page": "20"
+            },
+            {
+              "id": "feed-2",
+              "name": "Feed tank 2 valve switch",
+              "type": "switch2",
+              "match": [
+                "FEED-TANK-2-PTR"
+              ],
+              "positions": [
+                {
+                  "name": "OPEN",
+                  "text": "The valve of feed tank 2 is open."
+                },
+                {
+                  "name": "CLOSE",
+                  "text": "The valve of feed tank 2 is closed."
+                }
+              ],
+              "text": "This switch opens or closes the valve of feed tank 2.",
+              "context": "It works like the valve switch of feed tank 1 and is opened before the start.",
+              "src": "m1",
+              "page": "20"
+            },
+            {
+              "id": "fire-valve-left",
+              "name": "Left engine fire valve switch with cover",
+              "type": "switch2",
+              "match": [
+                "FIRE-VALVE-LEFT-PTR",
+                "FIRE-VALVE-LEFT-COVER-PTR"
+              ],
+              "positions": [
+                {
+                  "name": "OPEN",
+                  "text": "Fuel can flow to the left engine."
+                },
+                {
+                  "name": "CLOSE",
+                  "text": "Fuel to the left engine is cut off."
+                }
+              ],
+              "text": "This switch opens or closes the fuel valve of the left engine. In a fire the pilot closes it to cut the fuel. A cover protects it.",
+              "context": "The manual calls these the engine fire cut-off valves; they are opened before the start.",
+              "src": "m1",
+              "page": "20"
+            },
+            {
+              "id": "fire-valve-right",
+              "name": "Right engine fire valve switch with cover",
+              "type": "switch2",
+              "match": [
+                "FIRE-VALVE-RIGHT-PTR",
+                "FIRE-VALVE-RIGHT-COVER-PTR"
+              ],
+              "positions": [
+                {
+                  "name": "OPEN",
+                  "text": "Fuel can flow to the right engine."
+                },
+                {
+                  "name": "CLOSE",
+                  "text": "Fuel to the right engine is cut off."
+                }
+              ],
+              "text": "This switch opens or closes the fuel valve of the right engine. A cover protects it, and the pilot lifts the cover before moving the switch.",
+              "context": "In a fire of the right engine the pilot closes it to stop the fuel. It is open for normal flight.",
+              "src": "m1",
+              "page": "20"
+            },
+            {
+              "id": "delimiter",
+              "name": "Fuel delimiter (separator) valve switch",
+              "type": "switch2",
+              "match": [
+                "FUEL-DELIM-PTR"
+              ],
+              "positions": [
+                {
+                  "name": "OPEN",
+                  "text": "The delimiter valve is open."
+                },
+                {
+                  "name": "CLOSE",
+                  "text": "The delimiter valve is closed."
+                }
+              ],
+              "text": "This switch opens or closes the fuel delimiter valve. The manual calls it the separator valve.",
+              "context": "The manual's start-up list opens the separator valve before the APU start.",
+              "src": "m1",
+              "page": "20"
+            },
+            {
+              "id": "ext-tanks",
+              "name": "External tanks switch",
+              "type": "switch2",
+              "match": [
+                "EXT-TANKS-PTR"
+              ],
+              "positions": [
+                {
+                  "name": "OPEN",
+                  "text": "The external tanks are in use."
+                },
+                {
+                  "name": "CLOSE",
+                  "text": "The external tanks are not used."
+                }
+              ],
+              "text": "This switch turns on the fuel flow from the external tanks, the extra tanks carried outside the helicopter.",
+              "context": "The manual says to turn it on only when flying with filled external tanks.",
+              "src": "m1",
+              "page": "20"
+            }
+          ]
+        },
+        {
+          "id": "arc-u2",
+          "name": "ARK-U2 radio compass panel",
+          "src": "m1",
+          "text": "The ARK-U2 is a radio compass, a receiver that points to a radio station. This panel switches it on and sets how it listens.",
+          "context": "The manual's start-up list sets its power switch to On. It sits under the pilot's left elbow.",
+          "controls": [
+            {
+              "id": "arku2-source",
+              "name": "ARK-U2 compass connect switch (COMPASS R-852 / RADIOLINK / COMPASS R-828)",
+              "type": "switch3",
+              "match": [
+                "ARC-U2-COMPASS-CONNECT-PTR"
+              ],
+              "positions": [
+                {
+                  "name": "R-852",
+                  "text": "The position named COMPASS R-852 by the game."
+                },
+                {
+                  "name": "RADIOLINK",
+                  "text": "The position named RADIOLINK by the game."
+                },
+                {
+                  "name": "R-828",
+                  "text": "The position named COMPASS R-828 by the game."
+                }
+              ],
+              "text": "This three-way switch connects the radio compass to one of the radios: the R-852, the radio link or the R-828. The game names it 'ARC-U2 switcher'.",
+              "context": "The manual does not describe the positions. Only the game's names are known.",
+              "src": "m1"
+            },
+            {
+              "id": "arku2-frame",
+              "name": "ARK-U2 L - RAMKA - P switch",
+              "type": "button",
+              "match": [
+                "ARC-U2-FRAME-PTR"
+              ],
+              "text": "This switch turns the loop antenna of the radio compass to the left or to the right. The game names it 'ARC-U2 switcher L-RAMKA-P'.",
+              "context": "The manual does not describe it. RAMKA is the Russian word for frame, the loop antenna.",
+              "src": "m1"
+            },
+            {
+              "id": "arku2-sens",
+              "name": "ARK-U2 sensitivity switch (B / M)",
+              "type": "switch2",
+              "match": [
+                "ARC-U2-SENS-PTR"
+              ],
+              "positions": [
+                {
+                  "name": "B",
+                  "text": "Higher sensitivity."
+                },
+                {
+                  "name": "M",
+                  "text": "Lower sensitivity."
+                }
+              ],
+              "text": "This switch sets how sensitive the radio compass is, high or low.",
+              "context": "The game names it 'ARC-U2 switcher sensitivity B-M'. The manual does not explain the letters.",
+              "src": "m1"
+            },
+            {
+              "id": "arku2-power",
+              "name": "ARK-U2 power switch",
+              "type": "switch2",
+              "match": [
+                "ARC-U2-ON-OFF-PTR"
+              ],
+              "positions": [
+                {
+                  "name": "ON",
+                  "text": "The ARK-U2 radio compass has power."
+                },
+                {
+                  "name": "OFF",
+                  "text": "The ARK-U2 radio compass is off."
+                }
+              ],
+              "text": "This switch turns the ARK-U2 radio compass on and off.",
+              "context": "The manual's start-up list turns it on under the pilot's left elbow.",
+              "src": "m1",
+              "page": "23"
+            }
+          ]
+        },
+        {
+          "id": "greben",
+          "name": "Greben course system panel",
+          "src": "m1",
+          "text": "The Greben is the helicopter's course system. It knows which way the nose points. This panel sets its mode and its start, and the intercom controls sit in the same view.",
+          "context": "The manual says to switch the course system on, wait three minutes, then set the mode switch to the MAG position and hold the synchronize button for a few seconds.",
+          "controls": [
+            {
+              "id": "greben-latitude",
+              "name": "Greben latitude knob",
+              "type": "knob",
+              "match": [
+                "GREBEN-LATITUDE-PTR"
+              ],
+              "text": "This knob sets the latitude, the distance of the place from the equator, into the course system. The game names it 'Greben Set Latitude'.",
+              "context": "The manual does not describe this knob.",
+              "src": "m1"
+            },
+            {
+              "id": "greben-mode",
+              "name": "Greben mode switch (ZK / GPK / MK)",
+              "type": "switch3",
+              "match": [
+                "GREBEN-MODE-PTR"
+              ],
+              "positions": [
+                {
+                  "name": "ZK",
+                  "text": "Named ZK by the game; the manual does not describe it."
+                },
+                {
+                  "name": "GPK",
+                  "text": "Named GPK by the game; the manual does not describe it."
+                },
+                {
+                  "name": "MK",
+                  "text": "The game's MK position; the manual's start-up list uses the MAG position."
+                }
+              ],
+              "text": "This switch picks the mode of the course system. The game names the positions ZK, GPK and MK.",
+              "context": "The manual's start-up list sets the three-position mode switch to the MAG position. The game labels it MK; the manual does not list the other two.",
+              "src": "m1",
+              "page": "23"
+            },
+            {
+              "id": "greben-match",
+              "name": "Greben MATCH button",
+              "type": "button",
+              "match": [
+                "GREBEN-MATCH-PTR"
+              ],
+              "text": "Pressing and holding this button makes the course system match its picture to the magnetic compass. The manual calls it the synchronize button.",
+              "context": "The manual says to hold it for a few seconds after the course system has run for three minutes.",
+              "src": "m1",
+              "page": "23"
+            },
+            {
+              "id": "greben-setup",
+              "name": "Greben SETUP / OPER switch",
+              "type": "switch2",
+              "match": [
+                "GREBEN-SETUP-PTR"
+              ],
+              "positions": [
+                {
+                  "name": "SETUP",
+                  "text": "The course system is in set-up mode."
+                },
+                {
+                  "name": "OPER",
+                  "text": "The course system is in normal operation."
+                }
+              ],
+              "text": "This switch sets the course system to set-up or to normal operation.",
+              "context": "The game names it 'Greben mode SETUP/OPER'; the manual does not describe it.",
+              "src": "m1"
+            },
+            {
+              "id": "spu8-source",
+              "name": "Radio source selector (R-863 / NF / R-828 / JADRO-1A / ARC-15 / ARC-U2)",
+              "type": "selector",
+              "match": [
+                "SPU8-MODE-PTR"
+              ],
+              "positions": [
+                {
+                  "name": "R-863",
+                  "text": "The pilot hears the R-863 radio."
+                },
+                {
+                  "name": "NF",
+                  "text": "The game names this position NF."
+                },
+                {
+                  "name": "R-828",
+                  "text": "The pilot hears the R-828 (Eucalypt) radio."
+                },
+                {
+                  "name": "JADRO-1A",
+                  "text": "The pilot hears the Jadro-1A radio."
+                },
+                {
+                  "name": "ARC-15",
+                  "text": "The pilot hears the ARC-15 radio compass."
+                },
+                {
+                  "name": "ARC-U2",
+                  "text": "The pilot hears the ARC-U2 radio compass."
+                }
+              ],
+              "text": "This selector chooses which radio or receiver the pilot hears in the headset. It belongs to the SPU-8 intercom.",
+              "context": "The pilot sets it to the radio he wants to use. Its positions are named after the radio sets.",
+              "src": "m1"
+            },
+            {
+              "id": "spu8-net",
+              "name": "SPU-8 network switch (1 / 2)",
+              "type": "switch2",
+              "match": [
+                "SPU8-NET-PTR"
+              ],
+              "positions": [
+                {
+                  "name": "1",
+                  "text": "Network 1 is chosen."
+                },
+                {
+                  "name": "2",
+                  "text": "Network 2 is chosen."
+                }
+              ],
+              "text": "This switch picks the network (the channel of the intercom) 1 or 2. The game labels it 'Network 1/2 Switch (N/F)'.",
+              "context": "The manual only says the intercom has two nets. It does not describe the switch further.",
+              "src": "m1"
+            }
+          ]
+        },
+        {
+          "id": "iff-r828",
+          "name": "R-828 radio controls and IFF transponder",
+          "src": "m1",
+          "text": "A panel with two things: the controls of the R-828 radio and the controls of the IFF transponder, a box that answers 'who are you' questions with a code.",
+          "context": "The R-828 is turned on with a switch on the signal flare panel and the transponder with a switch on the left side panel. The manual lists both in its radio start-up step.",
+          "controls": [
+            {
+              "id": "r828-volume",
+              "name": "R-828 volume knob",
+              "type": "knob",
+              "match": [
+                "EUCAL-VOLUME-PTR"
+              ],
+              "text": "Turning this knob makes the R-828 radio louder or quieter, like the volume knob of a car radio.",
+              "context": "The R-828 is also called Eucalypt in the game's radio list.",
+              "src": "m1"
+            },
+            {
+              "id": "r828-asu",
+              "name": "R-828 ASU button",
+              "type": "button",
+              "match": [
+                "EUCAL-ASY-PTR"
+              ],
+              "text": "Pressing this button works a function of the R-828 radio. The game names it 'R-828 ASU'.",
+              "context": "The manual does not describe this button.",
+              "src": "m1"
+            },
+            {
+              "id": "r828-channel",
+              "name": "R-828 channel selector",
+              "type": "selector",
+              "match": [
+                "EUCAL-CHANNEL-PTR"
+              ],
+              "text": "This rotary selector picks the stored channel of the R-828 radio. A channel is a stored frequency, like a station button on a car radio.",
+              "context": "The pilot picks the channel before talking to other stations.",
+              "src": "m1"
+            },
+            {
+              "id": "r828-squelch",
+              "name": "R-828 squelch switch",
+              "type": "switch2",
+              "match": [
+                "EUCAL-PSH-PTR"
+              ],
+              "positions": [
+                {
+                  "name": "ON",
+                  "text": "The hiss between messages is cut."
+                },
+                {
+                  "name": "OFF",
+                  "text": "The squelch is off and the hiss is heard."
+                }
+              ],
+              "text": "This switch turns the squelch of the R-828 on or off. Squelch cuts the hiss of a radio when nobody talks.",
+              "context": "With it off weak signals can be heard but the hiss is there.",
+              "src": "m1"
+            },
+            {
+              "id": "iff-sos-cover",
+              "name": "IFF disaster switch cover",
+              "type": "cover",
+              "match": [
+                "DEV6201-SOS-COVER-PTR"
+              ],
+              "text": "This cover protects the disaster switch of the IFF so it is not switched on by accident. The pilot lifts it first.",
+              "context": "The disaster switch is next to it.",
+              "src": "m1"
+            },
+            {
+              "id": "iff-sos",
+              "name": "IFF disaster (distress) switch",
+              "type": "switch2",
+              "match": [
+                "DEV6201-SOS-PTR"
+              ],
+              "positions": [
+                {
+                  "name": "ON",
+                  "text": "The emergency signal is on."
+                },
+                {
+                  "name": "OFF",
+                  "text": "The emergency signal is off."
+                }
+              ],
+              "text": "This switch sets the IFF box to its emergency signal. The game names it 'IFF Transponder Disaster Switch'.",
+              "context": "It is for a real emergency. A cover protects it.",
+              "src": "m1"
+            },
+            {
+              "id": "iff-mode-12",
+              "name": "IFF device mode switch (1 / 2)",
+              "type": "switch2",
+              "match": [
+                "DEV6201-NOT-USED-PTR"
+              ],
+              "positions": [
+                {
+                  "name": "1",
+                  "text": "Mode 1 is selected."
+                },
+                {
+                  "name": "2",
+                  "text": "Mode 2 is selected."
+                }
+              ],
+              "text": "This switch picks mode 1 or 2 of the IFF device. The game names it 'IFF Transponder Device Mode Switch' and its id says 'not used'.",
+              "context": "The manual does not describe it.",
+              "src": "m1"
+            },
+            {
+              "id": "iff-work-reserve",
+              "name": "IFF device selector (WORK / RESERVE)",
+              "type": "switch2",
+              "match": [
+                "DEV6201-MAIN-BACKUP-PTR"
+              ],
+              "positions": [
+                {
+                  "name": "WORK",
+                  "text": "The normal IFF unit is in use."
+                },
+                {
+                  "name": "RESERVE",
+                  "text": "The spare IFF unit is in use."
+                }
+              ],
+              "text": "This switch picks the working IFF unit or the spare one.",
+              "context": "The pilot uses the reserve unit when the working one has failed.",
+              "src": "m1"
+            },
+            {
+              "id": "iff-erase-cover",
+              "name": "IFF erase button cover",
+              "type": "cover",
+              "match": [
+                "DEV6201-ERASE-COVER-PTR"
+              ],
+              "text": "This cover protects the erase button of the IFF so it is not pressed by accident.",
+              "context": "The pilot lifts it before pressing the erase button.",
+              "src": "m1"
+            },
+            {
+              "id": "iff-erase",
+              "name": "IFF erase button",
+              "type": "button",
+              "match": [
+                "DEV6201-ERASE-PTR"
+              ],
+              "text": "Pressing this button erases the codes in the IFF device. The game names it 'IFF Transponder Erase Button'.",
+              "context": "It is kept under a cover. The manual does not describe it.",
+              "src": "m1"
+            },
+            {
+              "id": "iff-code",
+              "name": "IFF mode selector (AUTO / KD / +-15 / KP)",
+              "type": "selector",
+              "match": [
+                "DEV6201-CODE-PTR"
+              ],
+              "positions": [
+                {
+                  "name": "AUTO",
+                  "text": "The IFF device picks its mode itself."
+                },
+                {
+                  "name": "KD",
+                  "text": "Mode named KD; the manual does not describe it."
+                },
+                {
+                  "name": "+-15",
+                  "text": "Mode named +-15; the manual does not describe it."
+                },
+                {
+                  "name": "KP",
+                  "text": "Mode named KP; the manual does not describe it."
+                }
+              ],
+              "text": "This rotary switch picks the code mode of the IFF device. The positions are named AUTO, KD, +-15 and KP.",
+              "context": "The manual does not explain the positions.",
+              "src": "m1"
+            }
+          ]
+        },
+        {
+          "id": "r852",
+          "name": "R-852 radio panel",
+          "src": "m1",
+          "text": "The R-852 is one of the helicopter's radios. This panel has its channel selector and its volume knob.",
+          "context": "The R-852 is one of the sources in the intercom selector. The manual does not describe it.",
+          "controls": [
+            {
+              "id": "r852-channel",
+              "name": "R-852 channel selector",
+              "type": "selector",
+              "match": [
+                "R852-CHANNEL-PTR"
+              ],
+              "text": "This rotary selector picks the stored channel of the R-852 radio.",
+              "context": "A channel is a stored frequency. The game names it 'R-852 Channel Select'.",
+              "src": "m1"
+            },
+            {
+              "id": "r852-volume",
+              "name": "R-852 volume knob",
+              "type": "knob",
+              "match": [
+                "R852-VOLUME-KNOB-PTR"
+              ],
+              "text": "Turning this knob makes the R-852 radio louder or quieter.",
+              "context": "The pilot sets the volume so that messages can be understood.",
+              "src": "m1"
+            }
+          ]
+        },
+        {
+          "id": "jadro-arc15-spu8",
+          "name": "Jadro-1A radio, ARC-15 radio compass and SPU-8 intercom",
+          "src": "m1",
+          "text": "A big radio panel. It has the Jadro-1I radio with its frequency knobs, the ARC-15 radio compass and the SPU-8 intercom volume knobs. The radio compass is a receiver that points to a radio station.",
+          "context": "The manual's start-up list turns the radios on from the radio panel on the left wall and sets the ARK-15 mode switch to COMPASS.",
+          "controls": [
+            {
+              "id": "arc-volume",
+              "name": "ARC-15 volume knob",
+              "type": "knob",
+              "match": [
+                "ARC-VOLUME-PTR"
+              ],
+              "text": "Turning this knob makes the sound of the ARC-15 radio compass louder or quieter.",
+              "context": "The ARC-15 is one of the sources on the radio source selector of the intercom.",
+              "src": "m1"
+            },
+            {
+              "id": "arc-tlf-tlg",
+              "name": "ARC-15 TLF / TLG switch",
+              "type": "switch2",
+              "match": [
+                "ARC-MODULATED-PTR"
+              ],
+              "positions": [
+                {
+                  "name": "TLF",
+                  "text": "Named TLF by the game."
+                },
+                {
+                  "name": "TLG",
+                  "text": "Named TLG by the game."
+                }
+              ],
+              "text": "This switch picks the type of signal the ARC-15 listens for. The game names the positions TLF and TLG.",
+              "context": "The manual does not describe it. Only the names TLF and TLG are known.",
+              "src": "m1"
+            },
+            {
+              "id": "arc-loop",
+              "name": "ARC-15 loop button",
+              "type": "button",
+              "match": [
+                "ARC-FRAME-PTR"
+              ],
+              "text": "Pressing this button turns the loop antenna of the ARC-15 by hand. The game names it 'ARC-15 Loop Button'.",
+              "context": "The manual does not describe it.",
+              "src": "m1"
+            },
+            {
+              "id": "arc-control",
+              "name": "ARC-15 control button",
+              "type": "button",
+              "match": [
+                "ARC-AUTH-PTR"
+              ],
+              "text": "Pressing this button runs a check of the ARC-15. The game names it 'ARC-15 Control Button'.",
+              "context": "The manual does not describe it in more detail.",
+              "src": "m1"
+            },
+            {
+              "id": "arc-channel",
+              "name": "ARC-15 channel switch (1 / 2)",
+              "type": "switch2",
+              "match": [
+                "ARC-CHANNEL-PTR"
+              ],
+              "positions": [
+                {
+                  "name": "1",
+                  "text": "Channel 1 is chosen."
+                },
+                {
+                  "name": "2",
+                  "text": "Channel 2 is chosen."
+                }
+              ],
+              "text": "This switch picks channel 1 or channel 2 of the ARC-15, each with its own frequency.",
+              "context": "The frequency for each channel is set with the frequency knobs on the ARC-15 panel.",
+              "src": "m1"
+            },
+            {
+              "id": "arc-mode",
+              "name": "ARC-15 mode selector (OFF / COMPASS / ANT / FRAME)",
+              "type": "selector",
+              "match": [
+                "ARC-MODE-PTR"
+              ],
+              "positions": [
+                {
+                  "name": "OFF",
+                  "text": "The ARC-15 is off."
+                },
+                {
+                  "name": "COMPASS",
+                  "text": "The ARC-15 works as a compass to a radio station."
+                },
+                {
+                  "name": "ANT",
+                  "text": "Antenna mode."
+                },
+                {
+                  "name": "FRAME",
+                  "text": "Loop antenna mode."
+                }
+              ],
+              "text": "This rotary selector turns the ARC-15 on and picks how it works. In COMPASS it points to a radio station.",
+              "context": "The manual's start-up list sets it to COMPASS.",
+              "src": "m1",
+              "page": "23"
+            },
+            {
+              "id": "arc-freq-left",
+              "name": "ARC-15 left frequency knobs (3)",
+              "type": "knob",
+              "match": [
+                "ARC-CH1-OUT-KNOB",
+                "ARC-CH1-CENTER-PTR",
+                "ARC-CH1-IN-PTR"
+              ],
+              "count": 3,
+              "text": "These three knobs set the frequency of the ARC-15 channel. The game names them 'ARC-15 Left Frequency'. They are on the centre console, in the R-863 view.",
+              "context": "The frequency is the 'station number' the radio compass listens to. It is set for the radio beacon the pilot wants to fly to.",
+              "src": "m1"
+            },
+            {
+              "id": "arc-freq-right",
+              "name": "ARC-15 right frequency knobs (3)",
+              "type": "knob",
+              "match": [
+                "ARC-CH2-OUT-KNOB",
+                "ARC-CH2-CENTER-PTR",
+                "ARC-CH2-IN-PTR"
+              ],
+              "count": 3,
+              "text": "These three knobs set the frequency of the second ARC-15 channel. The game names them 'ARC-15 Right Frequency'.",
+              "context": "They are used together with the channel switch.",
+              "src": "m1"
+            },
+            {
+              "id": "jadro-squelch",
+              "name": "Jadro-1I squelch knob",
+              "type": "knob",
+              "match": [
+                "JADRO-PSH-PTR"
+              ],
+              "text": "This knob sets the squelch of the Jadro-1I radio, which cuts the hiss of the radio when nobody talks.",
+              "context": "The pilot sets it so the hiss is gone but messages still come through.",
+              "src": "m1"
+            },
+            {
+              "id": "jadro-test",
+              "name": "Jadro-1I test button",
+              "type": "button",
+              "match": [
+                "JADRO-CONTROL-PTR"
+              ],
+              "text": "Pressing this button makes the Jadro-1I radio run a self-test.",
+              "context": "The game names it 'Jadro-1I Test'.",
+              "src": "m1"
+            },
+            {
+              "id": "jadro-volume",
+              "name": "Jadro-1I volume knob",
+              "type": "knob",
+              "match": [
+                "JADRO-VOLUME-PTR"
+              ],
+              "text": "Turning this knob makes the Jadro-1I radio louder or quieter.",
+              "context": "It sets only this radio; the overall level is set on the intercom knobs.",
+              "src": "m1"
+            },
+            {
+              "id": "jadro-freq",
+              "name": "Jadro-1I frequency knobs (5)",
+              "type": "knob",
+              "match": [
+                "JADRO-001-PTR",
+                "JADRO-01-PTR",
+                "JADRO-1-PTR",
+                "JADRO-10-PTR",
+                "JADRO-100-PTR"
+              ],
+              "count": 5,
+              "text": "These five knobs set the frequency of the Jadro-1I radio, one digit group per knob. The game names them 'Jadro-1I Frequency'.",
+              "context": "The frequency is the station number the radio talks on. The pilot sets it to match the station to talk to.",
+              "src": "m1"
+            },
+            {
+              "id": "jadro-mode",
+              "name": "Jadro-1I mode switch (OFF / AM / OM)",
+              "type": "switch3",
+              "match": [
+                "JADRO-MODULATION-PTR"
+              ],
+              "positions": [
+                {
+                  "name": "OFF",
+                  "text": "The radio is off."
+                },
+                {
+                  "name": "AM",
+                  "text": "Amplitude modulation."
+                },
+                {
+                  "name": "OM",
+                  "text": "The game's OM mode."
+                }
+              ],
+              "text": "This switch picks the type of transmission of the Jadro-1I radio: off, AM or OM.",
+              "context": "The manual does not describe the modes. The game names the positions OFF, AM and OM.",
+              "src": "m1"
+            },
+            {
+              "id": "spu8-radio-volume",
+              "name": "SPU-8 radio volume knob",
+              "type": "knob",
+              "match": [
+                "SPU8-RADIO-VOL-KNOB-PTR"
+              ],
+              "text": "Turning this knob sets how loud the radio is in the pilot's headset.",
+              "context": "The game names it 'SPU-8 Radio Volume Knob'. The SPU-8 is the intercom of the crew.",
+              "src": "m1"
+            },
+            {
+              "id": "spu8-volume",
+              "name": "SPU-8 volume knob",
+              "type": "knob",
+              "match": [
+                "SPU8-VOLUME-PTR"
+              ],
+              "text": "Turning this knob sets how loud the intercom is in the pilot's headset.",
+              "context": "The intercom is the phone line between the two crew members.",
+              "src": "m1"
+            },
+            {
+              "id": "spu8-ext",
+              "name": "Radio / ICS switch",
+              "type": "switch2",
+              "match": [
+                "SPU8-EXT-PTR"
+              ],
+              "positions": [
+                {
+                  "name": "RADIO",
+                  "text": "The radio side of the choice."
+                },
+                {
+                  "name": "ICS",
+                  "text": "The intercom side of the choice."
+                }
+              ],
+              "text": "This switch is the radio or intercom (ICS) choice of the SPU-8 intercom. The game names it 'Radio/ICS Switch'.",
+              "context": "The manual says the first step of the talk trigger is the intercom and the second the radio.",
+              "src": "m1"
+            },
+            {
+              "id": "spu8-call",
+              "name": "SPU-8 circular call button",
+              "type": "button",
+              "match": [
+                "SPU8-CV-PTR"
+              ],
+              "text": "Pressing this button calls the other crew member on the intercom. The game names it 'Circular Call Button'.",
+              "context": "The manual does not describe it.",
+              "src": "m1"
+            }
+          ]
+        },
+        {
+          "id": "r863-lights",
+          "name": "R-863 radio, intercom networks and cabin lighting",
+          "src": "m1",
+          "text": "This group sits in the R-863 view of the left wall panel. It has the switch of the R-863 radio, the on/off switches of the two intercom networks and the cabin and cargo lights.",
+          "context": "The manual's start-up list turns on the SPU-8 intercom networks and the R-863 from here.",
+          "controls": [
+            {
+              "id": "r863-power",
+              "name": "R-863 radio power switch",
+              "type": "switch2",
+              "match": [
+                "R863-ON-OFF-PTR"
+              ],
+              "positions": [
+                {
+                  "name": "ON",
+                  "text": "The R-863 radio is on."
+                },
+                {
+                  "name": "OFF",
+                  "text": "The R-863 radio is off."
+                }
+              ],
+              "text": "This switch turns the R-863 radio on and off. It is the helicopter's main voice radio.",
+              "context": "The manual's start-up list powers up the SPU-8, the R-863, the Jadro and the R-828.",
+              "src": "m1",
+              "page": "23"
+            },
+            {
+              "id": "spu8-net1",
+              "name": "SPU-8 network 1 on/off switch",
+              "type": "switch2",
+              "match": [
+                "SPU8-2-ON-OFF-PTR"
+              ],
+              "positions": [
+                {
+                  "name": "ON",
+                  "text": "Network 1 of the SPU-8 is on."
+                },
+                {
+                  "name": "OFF",
+                  "text": "Network 1 of the SPU-8 is off."
+                }
+              ],
+              "text": "This switch turns on the intercom network 1. The game names it 'Switch SPU-8 NET-1 ON/OFF'.",
+              "context": "The id and the name use different numbers; the name is followed here.",
+              "src": "m1",
+              "page": "23"
+            },
+            {
+              "id": "spu8-net2",
+              "name": "SPU-8 network 2 on/off switch",
+              "type": "switch2",
+              "match": [
+                "SPU8-1-ON-OFF-PTR"
+              ],
+              "positions": [
+                {
+                  "name": "ON",
+                  "text": "Network 2 of the SPU-8 is on."
+                },
+                {
+                  "name": "OFF",
+                  "text": "Network 2 of the SPU-8 is off."
+                }
+              ],
+              "text": "This switch turns on the intercom network 2. The game names it 'Switch SPU-8 NET-2 ON/OFF'.",
+              "context": "The manual says both networks are switched on in the start-up list.",
+              "src": "m1",
+              "page": "23"
+            },
+            {
+              "id": "cargo-light-cover",
+              "name": "Cargo lighting switch (white) with cover",
+              "type": "switch2",
+              "match": [
+                "LTG-WHITE-COVER-PTR",
+                "LTG-WHITE-PTR"
+              ],
+              "positions": [
+                {
+                  "name": "ON",
+                  "text": "The white cargo light is on."
+                },
+                {
+                  "name": "OFF",
+                  "text": "The white cargo light is off."
+                }
+              ],
+              "text": "This switch turns the white light in the cargo cabin on and off. A cover protects it.",
+              "context": "The pilot lifts the cover first.",
+              "src": "m1"
+            },
+            {
+              "id": "cargo-light",
+              "name": "Cargo lighting switch (WHITE / OFF / BLUE)",
+              "type": "switch3",
+              "match": [
+                "LTG-CARGO-PTR"
+              ],
+              "positions": [
+                {
+                  "name": "WHITE",
+                  "text": "The cargo cabin has white light."
+                },
+                {
+                  "name": "OFF",
+                  "text": "The cargo cabin light is off."
+                },
+                {
+                  "name": "BLUE",
+                  "text": "The cargo cabin has blue light."
+                }
+              ],
+              "text": "This switch picks the colour of the light in the cargo cabin: white, blue or off.",
+              "context": "Blue light is easier on the eyes at night.",
+              "src": "m1"
+            },
+            {
+              "id": "cabin-light",
+              "name": "Pilot cabin lighting switch (WHITE / OFF / RED)",
+              "type": "switch3",
+              "match": [
+                "LTG-COCKPIT-PTR"
+              ],
+              "positions": [
+                {
+                  "name": "WHITE",
+                  "text": "The cabin has white light."
+                },
+                {
+                  "name": "OFF",
+                  "text": "The cabin light is off."
+                },
+                {
+                  "name": "RED",
+                  "text": "The cabin has red light."
+                }
+              ],
+              "text": "This switch picks the colour of the light in the pilot's cabin: white, red or off.",
+              "context": "Red light is used at night so the eyes stay used to the dark.",
+              "src": "m1"
+            }
+          ]
+        },
+        {
+          "id": "signal-flares",
+          "name": "Signal flare dispenser, recorder and radio switches",
+          "src": "m1",
+          "text": "A panel with the controls of the signal flares, the recorder, the voice warning buttons and the on/off switches of a few radios and instruments. Signal flares are small coloured lights fired to signal to others.",
+          "context": "Most items are switched on once, in the manual's start-up list. The signal flares are used for signalling, not against missiles.",
+          "controls": [
+            {
+              "id": "sarpp-mode",
+              "name": "SARPP-12 flight recorder mode switch (MANUAL / AUTO)",
+              "type": "switch2",
+              "match": [
+                "SARPP-MAN-AUTO-OFF-PTR"
+              ],
+              "positions": [
+                {
+                  "name": "MANUAL",
+                  "text": "The pilot controls the recording."
+                },
+                {
+                  "name": "AUTO",
+                  "text": "The recorder works by itself."
+                }
+              ],
+              "text": "This switch sets how the flight recorder starts. The recorder writes down flight numbers like the black box of an aeroplane.",
+              "context": "The game names it 'SARPP-12 Mode Switch'; the manual does not describe it.",
+              "src": "m1"
+            },
+            {
+              "id": "ri65-off",
+              "name": "RI-65 OFF button",
+              "type": "button",
+              "match": [
+                "SPEECH-OFF-PTR"
+              ],
+              "text": "Pressing this button switches off the voice message that plays in the headset.",
+              "context": "RI-65 is the voice warning system, which speaks warnings. The game names it 'RI-65 OFF Button'.",
+              "src": "m1"
+            },
+            {
+              "id": "ri65-check",
+              "name": "RI-65 check button",
+              "type": "button",
+              "match": [
+                "SPEECH-CHECK-PTR"
+              ],
+              "text": "Pressing this button tests the voice warning system.",
+              "context": "The pilot uses it in the checks before flight.",
+              "src": "m1"
+            },
+            {
+              "id": "ri65-repeat",
+              "name": "RI-65 repeat button",
+              "type": "button",
+              "match": [
+                "SPEECH-REPEAT-PTR"
+              ],
+              "text": "Pressing this button plays the last voice message again.",
+              "context": "The pilot uses it when a message was not understood.",
+              "src": "m1"
+            },
+            {
+              "id": "jadro-power",
+              "name": "Jadro-1I radio power switch",
+              "type": "switch2",
+              "match": [
+                "JADRO-ON-OFF-PTR"
+              ],
+              "positions": [
+                {
+                  "name": "ON",
+                  "text": "The Jadro-1I radio is on."
+                },
+                {
+                  "name": "OFF",
+                  "text": "The Jadro-1I radio is off."
+                }
+              ],
+              "text": "This switch turns the Jadro-1I radio on and off.",
+              "context": "The manual's start-up list turns it on with the other radios.",
+              "src": "m1",
+              "page": "23"
+            },
+            {
+              "id": "r828-power",
+              "name": "R-828 radio power switch",
+              "type": "switch2",
+              "match": [
+                "R828-ON-OFF-PTR"
+              ],
+              "positions": [
+                {
+                  "name": "ON",
+                  "text": "The R-828 radio is on."
+                },
+                {
+                  "name": "OFF",
+                  "text": "The R-828 radio is off."
+                }
+              ],
+              "text": "This switch turns the R-828 radio on and off.",
+              "context": "The manual's start-up list turns it on together with the other radios.",
+              "src": "m1",
+              "page": "23"
+            },
+            {
+              "id": "rv5-power",
+              "name": "RV-5 radar altimeter power switch",
+              "type": "switch2",
+              "match": [
+                "RAD-ALT-ON-OFF-PTR"
+              ],
+              "positions": [
+                {
+                  "name": "ON",
+                  "text": "The radar altimeter is on."
+                },
+                {
+                  "name": "OFF",
+                  "text": "The radar altimeter is off."
+                }
+              ],
+              "text": "This switch turns the RV-5 radar altimeter on and off. The radar altimeter measures the real height above the ground with radio waves.",
+              "context": "The manual's start-up list turns it on near the end.",
+              "src": "m1",
+              "page": "23"
+            },
+            {
+              "id": "flare-top-power",
+              "name": "Signal flare cassette 1 power switch",
+              "type": "switch2",
+              "match": [
+                "FLARE-TOP-POWER-PTR"
+              ],
+              "positions": [
+                {
+                  "name": "ON",
+                  "text": "Cassette 1 has power."
+                },
+                {
+                  "name": "OFF",
+                  "text": "Cassette 1 is off."
+                }
+              ],
+              "text": "This switch gives power to the first cassette of signal flares.",
+              "context": "The cassette 1 buttons below only work with it on.",
+              "src": "m1"
+            },
+            {
+              "id": "flare-top-buttons",
+              "name": "Cassette 1 launch buttons (red, green, yellow, white)",
+              "type": "button",
+              "match": [
+                "FLARE-TOP-RED-PTR",
+                "FLARE-TOP-GREEN-PTR",
+                "FLARE-TOP-YELLOW-PTR",
+                "FLARE-TOP-WHITE-PTR"
+              ],
+              "count": 4,
+              "text": "These four buttons fire a signal flare of the colour named on the button from the first cassette.",
+              "context": "Each flare is used once, so a cassette has a limited supply.",
+              "src": "m1"
+            },
+            {
+              "id": "flare-bottom-power",
+              "name": "Signal flare cassette 2 power switch",
+              "type": "switch2",
+              "match": [
+                "FLARE-BOTTOM-POWER-PTR"
+              ],
+              "positions": [
+                {
+                  "name": "ON",
+                  "text": "Cassette 2 has power."
+                },
+                {
+                  "name": "OFF",
+                  "text": "Cassette 2 is off."
+                }
+              ],
+              "text": "This switch gives power to the second cassette of signal flares.",
+              "context": "The cassette 2 buttons only work with it on.",
+              "src": "m1"
+            },
+            {
+              "id": "flare-bottom-buttons",
+              "name": "Cassette 2 launch buttons (red, green, yellow, white)",
+              "type": "button",
+              "match": [
+                "FLARE-BOTTOM-WHITE-PTR",
+                "FLARE-BOTTOM-YELLOW-PTR",
+                "FLARE-BOTTOM-GREEN-PTR",
+                "FLARE-BOTTOM-RED-PTR"
+              ],
+              "count": 4,
+              "text": "These four buttons fire a signal flare from the second cassette. The game's names and ids do not use the same colour order, so the buttons are listed together.",
+              "context": "The second cassette has its own flares, separate from the first.",
+              "src": "m1"
+            },
+            {
+              "id": "recorder-power",
+              "name": "Recorder MC-61 power switch",
+              "type": "switch2",
+              "match": [
+                "RECORDER-POWER-PTR"
+              ],
+              "positions": [
+                {
+                  "name": "ON",
+                  "text": "The recorder has power."
+                },
+                {
+                  "name": "OFF",
+                  "text": "The recorder is off."
+                }
+              ],
+              "text": "This switch turns the MC-61 recorder on and off.",
+              "context": "The manual does not describe this recorder.",
+              "src": "m1"
+            },
+            {
+              "id": "recorder-mode",
+              "name": "Recorder MC-61 mode switch (AUTO / WORK)",
+              "type": "switch2",
+              "match": [
+                "RECORDER-MODE-PTR"
+              ],
+              "positions": [
+                {
+                  "name": "AUTO",
+                  "text": "The recorder works in automatic mode."
+                },
+                {
+                  "name": "WORK",
+                  "text": "The recorder runs in work mode."
+                }
+              ],
+              "text": "This switch sets the mode of the MC-61 recorder, automatic or working.",
+              "context": "The game names it 'Recorder MC 61 AUTO/WORK'; the manual does not describe it.",
+              "src": "m1"
+            }
+          ]
+        },
+        {
+          "id": "left-side-panel",
+          "name": "Left side panel (switches of the pilot)",
+          "src": "m1",
+          "text": "A big panel on the left wall with the switches for the gyros, the course system, lights, heating, wipers and other systems of the pilot's side.",
+          "context": "The manual's start-up list turns on the course system and the gyros here, then the radio altimeter, the blinker, the RWR and the IFF.",
+          "controls": [
+            {
+              "id": "day-night",
+              "name": "Day-Night switch (DAY / NIGHT)",
+              "type": "switch2",
+              "match": [
+                "DAY-NIGHT-PTR"
+              ],
+              "positions": [
+                {
+                  "name": "DAY",
+                  "text": "The cockpit is set for daytime lighting."
+                },
+                {
+                  "name": "NIGHT",
+                  "text": "The cockpit is set for night lighting."
+                }
+              ],
+              "text": "This switch sets the lighting of the cockpit instruments to day or to night.",
+              "context": "At night the instrument lights are made dimmer.",
+              "src": "m1"
+            },
+            {
+              "id": "lamp-test",
+              "name": "Test warning lights button",
+              "type": "button",
+              "match": [
+                "LAMP-CONTROL-PTR"
+              ],
+              "text": "Pressing this button lights all the warning lights so the pilot can see that none of the bulbs is burned out.",
+              "context": "The pilot presses it before the flight.",
+              "src": "m1"
+            },
+            {
+              "id": "blinker",
+              "name": "Blinker switch",
+              "type": "switch2",
+              "match": [
+                "FLASHER-PTR"
+              ],
+              "positions": [
+                {
+                  "name": "ON",
+                  "text": "The blinker is on."
+                },
+                {
+                  "name": "OFF",
+                  "text": "The blinker is off."
+                }
+              ],
+              "text": "This switch turns on the blinker, the circuit that makes warning lights flash.",
+              "context": "The manual's start-up list turns on the blinker.",
+              "src": "m1",
+              "page": "23"
+            },
+            {
+              "id": "diss-power",
+              "name": "DISS-15D power switch",
+              "type": "switch2",
+              "match": [
+                "DISS-ON-OFF-PTR"
+              ],
+              "positions": [
+                {
+                  "name": "ON",
+                  "text": "The DISS-15D has power."
+                },
+                {
+                  "name": "OFF",
+                  "text": "The DISS-15D is off."
+                }
+              ],
+              "text": "This switch turns the DISS-15D on. The DISS-15D measures the movement over the ground.",
+              "context": "The hover indicator and the moving map need it.",
+              "src": "m1"
+            },
+            {
+              "id": "diss-airspeed",
+              "name": "Airspeed to DISS switch",
+              "type": "switch2",
+              "match": [
+                "DVS-DISS-PTR"
+              ],
+              "positions": [
+                {
+                  "name": "ON",
+                  "text": "The airspeed goes to the DISS-15D."
+                },
+                {
+                  "name": "OFF",
+                  "text": "The airspeed is not sent to the DISS-15D."
+                }
+              ],
+              "text": "This switch sends the airspeed to the DISS-15D.",
+              "context": "The DISS-15D can use the airspeed in its calculation.",
+              "src": "m1"
+            },
+            {
+              "id": "gyro-1",
+              "name": "Gyro 1 power switch",
+              "type": "switch2",
+              "match": [
+                "MGV1-POWER-PTR"
+              ],
+              "positions": [
+                {
+                  "name": "ON",
+                  "text": "Gyro 1 has power."
+                },
+                {
+                  "name": "OFF",
+                  "text": "Gyro 1 is off."
+                }
+              ],
+              "text": "This switch gives power to gyro 1, one of the two gyros of the artificial horizon.",
+              "context": "The manual says to check the gyros with the cyclic after they are switched on.",
+              "src": "m1",
+              "page": "22"
+            },
+            {
+              "id": "gyro-2",
+              "name": "Gyro 2 power switch",
+              "type": "switch2",
+              "match": [
+                "MGV2-POWER-PTR"
+              ],
+              "positions": [
+                {
+                  "name": "ON",
+                  "text": "Gyro 2 has power."
+                },
+                {
+                  "name": "OFF",
+                  "text": "Gyro 2 is off."
+                }
+              ],
+              "text": "This switch gives power to gyro 2, the second gyro of the artificial horizon.",
+              "context": "After one to two minutes the pilot cages both gyros.",
+              "src": "m1",
+              "page": "22"
+            },
+            {
+              "id": "greben-power",
+              "name": "Greben power switch",
+              "type": "switch2",
+              "match": [
+                "GREBEN-ON-PFF-PTR"
+              ],
+              "positions": [
+                {
+                  "name": "ON",
+                  "text": "The Greben course system is on."
+                },
+                {
+                  "name": "OFF",
+                  "text": "The Greben course system is off."
+                }
+              ],
+              "text": "This switch turns on the Greben course system.",
+              "context": "The manual says to turn on the course system and then wait three minutes before it is set.",
+              "src": "m1",
+              "page": "22"
+            },
+            {
+              "id": "rwr-power",
+              "name": "RWR power switch (SPO-10)",
+              "type": "switch2",
+              "match": [
+                "SIRENA-POWER-PTR"
+              ],
+              "positions": [
+                {
+                  "name": "ON",
+                  "text": "The RWR is on."
+                },
+                {
+                  "name": "OFF",
+                  "text": "The RWR is off."
+                }
+              ],
+              "text": "This switch turns on the RWR, the radar warning receiver, which tells the pilot when an enemy radar is looking at the helicopter.",
+              "context": "The manual's start-up list turns on the SPO-10 RWR.",
+              "src": "m1",
+              "page": "23"
+            },
+            {
+              "id": "rwr-signal",
+              "name": "RWR signal switch",
+              "type": "switch",
+              "match": [
+                "SIRENA-SIGNAL-PTR"
+              ],
+              "text": "This switch sets the signal of the RWR. The game names it 'RWR Signal'.",
+              "context": "The manual does not describe it.",
+              "src": "m1"
+            },
+            {
+              "id": "window-sprayer",
+              "name": "Window sprayer button",
+              "type": "button",
+              "match": [
+                "WIPER-SPRINKLER-PTR"
+              ],
+              "text": "Pressing this button sprays liquid on the windscreen in front of the pilot.",
+              "context": "The wipers then clean the glass.",
+              "src": "m1"
+            },
+            {
+              "id": "clock-heating",
+              "name": "Clock heating switch",
+              "type": "switch2",
+              "match": [
+                "HEATER-CLOCK-PTR"
+              ],
+              "positions": [
+                {
+                  "name": "ON",
+                  "text": "The clock heater is on."
+                },
+                {
+                  "name": "OFF",
+                  "text": "The clock heater is off."
+                }
+              ],
+              "text": "This switch heats the pilot's clock so that it works in the cold.",
+              "context": "It is switched on in cold weather.",
+              "src": "m1"
+            },
+            {
+              "id": "pitot-left",
+              "name": "Left pitot heating switch",
+              "type": "switch2",
+              "match": [
+                "HEATER-PPD-LEFT-PTR"
+              ],
+              "positions": [
+                {
+                  "name": "ON",
+                  "text": "The left pitot heater is on."
+                },
+                {
+                  "name": "OFF",
+                  "text": "The left pitot heater is off."
+                }
+              ],
+              "text": "This switch heats the left pitot tube, the small tube outside that measures speed, so it does not freeze.",
+              "context": "The manual says to turn on the pitot heat when the outside temperature is at or below 5 degrees Celsius.",
+              "src": "m1",
+              "page": "42"
+            },
+            {
+              "id": "pitot-right",
+              "name": "Right pitot heating switch",
+              "type": "switch2",
+              "match": [
+                "HEATER-PPD-RIGHT-PTR"
+              ],
+              "positions": [
+                {
+                  "name": "ON",
+                  "text": "The right pitot heater is on."
+                },
+                {
+                  "name": "OFF",
+                  "text": "The right pitot heater is off."
+                }
+              ],
+              "text": "This switch heats the right pitot tube so it does not freeze.",
+              "context": "The right side has its own switch.",
+              "src": "m1"
+            },
+            {
+              "id": "recorder-light",
+              "name": "Recorder MC-61 brightness knob",
+              "type": "knob",
+              "match": [
+                "RECORDER-LTG-KNOB-PTR"
+              ],
+              "text": "Turning this knob changes the brightness of the light of the MC-61 recorder.",
+              "context": "The pilot sets it at night, like other panel lights.",
+              "src": "m1"
+            },
+            {
+              "id": "wiper-switch",
+              "name": "Windscreen wiper switch (START / SPEED 1 / SPEED 2 / OFF / RESET)",
+              "type": "selector",
+              "match": [
+                "WIPER-MODE-PTR-START",
+                "WIPER-MODE-PTR-RESET",
+                "WIPER-MODE-PTR-OFF",
+                "WIPER-MODE-PTR-HISPEED",
+                "WIPER-MODE-PTR-LOWSPEED"
+              ],
+              "positions": [
+                {
+                  "name": "START",
+                  "text": "Starts the wiper."
+                },
+                {
+                  "name": "SPEED 1",
+                  "text": "The wiper runs at the first speed."
+                },
+                {
+                  "name": "SPEED 2",
+                  "text": "The wiper runs at the second speed."
+                },
+                {
+                  "name": "OFF",
+                  "text": "The wiper is off."
+                },
+                {
+                  "name": "RESET",
+                  "text": "Moves the wiper arm back to its rest position."
+                }
+              ],
+              "count": 5,
+              "text": "This switch runs the windscreen wiper of the pilot. The game lets the pilot click five places on it.",
+              "context": "The wiper breaker on the left panel must be on.",
+              "src": "m1"
+            },
+            {
+              "id": "laryngophone",
+              "name": "Laryngophone switch",
+              "type": "switch2",
+              "match": [
+                "RECORDER-SOURCE-PTR"
+              ],
+              "positions": [
+                {
+                  "name": "ON",
+                  "text": "The laryngophone is on."
+                },
+                {
+                  "name": "OFF",
+                  "text": "The laryngophone is off."
+                }
+              ],
+              "text": "This switch turns on the laryngophone, a throat microphone.",
+              "context": "The game names it 'Laryngophone Switch'.",
+              "src": "m1"
+            },
+            {
+              "id": "iff-power",
+              "name": "IFF transponder power switch",
+              "type": "switch2",
+              "match": [
+                "DEV6201-POWER-PTR"
+              ],
+              "positions": [
+                {
+                  "name": "ON",
+                  "text": "The IFF is on."
+                },
+                {
+                  "name": "OFF",
+                  "text": "The IFF is off."
+                }
+              ],
+              "text": "This switch turns on the IFF transponder.",
+              "context": "The manual's start-up list turns on the IFF at the end.",
+              "src": "m1",
+              "page": "23"
+            },
+            {
+              "id": "pilot-fan",
+              "name": "Pilot fan switch",
+              "type": "switch2",
+              "match": [
+                "FAN-PTR"
+              ],
+              "positions": [
+                {
+                  "name": "ON",
+                  "text": "The fan runs."
+                },
+                {
+                  "name": "OFF",
+                  "text": "The fan is off."
+                }
+              ],
+              "text": "This switch turns on the fan that blows air at the pilot.",
+              "context": "It is only for the comfort of the pilot in a warm cockpit.",
+              "src": "m1"
+            },
+            {
+              "id": "strobe",
+              "name": "Strobe light switch",
+              "type": "switch2",
+              "match": [
+                "STROBE-TAIL-PTR"
+              ],
+              "positions": [
+                {
+                  "name": "ON",
+                  "text": "The strobe light flashes."
+                },
+                {
+                  "name": "OFF",
+                  "text": "The strobe light is off."
+                }
+              ],
+              "text": "This switch turns on the strobe light, a bright flashing light.",
+              "context": "It makes the helicopter easier to see.",
+              "src": "m1"
+            },
+            {
+              "id": "tip-lights",
+              "name": "Tip lights switch",
+              "type": "switch2",
+              "match": [
+                "ROTOR-LIGHTS-PTR"
+              ],
+              "positions": [
+                {
+                  "name": "ON",
+                  "text": "The tip lights are on."
+                },
+                {
+                  "name": "OFF",
+                  "text": "The tip lights are off."
+                }
+              ],
+              "text": "This switch turns on the lights at the tips of the rotor blades.",
+              "context": "They show other pilots the disc of the rotor.",
+              "src": "m1"
+            },
+            {
+              "id": "formation-lights",
+              "name": "Formation lights switch (BRIGHT / OFF / DIM)",
+              "type": "switch3",
+              "match": [
+                "FORMATION-LIGHTS-PTR"
+              ],
+              "positions": [
+                {
+                  "name": "BRIGHT",
+                  "text": "The formation lights are bright."
+                },
+                {
+                  "name": "OFF",
+                  "text": "The formation lights are off."
+                },
+                {
+                  "name": "DIM",
+                  "text": "The formation lights are dim."
+                }
+              ],
+              "text": "This switch turns the formation lights on, bright or dim, or off.",
+              "context": "They help pilots flying in a group to see each other.",
+              "src": "m1"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,1359 @@
+{
+  "format": "joypro-cockpit-guide",
+  "version": 1,
+  "id": "sim-hawk",
+  "title": "BAE Hawk T1 / T1A",
+  "variants": [
+    "hawk-t1"
+  ],
+  "games": [
+    "MSFS2020"
+  ],
+  "sets": [],
+  "sources": [
+    {
+      "id": "c1",
+      "title": "JoyPro cockpit catalog",
+      "kind": "reference"
+    },
+    {
+      "id": "j1",
+      "title": "Just Flight Hawk T1/A Advanced Trainer operations manual (MSFS)",
+      "kind": "manual",
+      "url": "https://downloads.justflight.com/products/JFF003464/Hawk_MSFS_Manuals.zip"
+    },
+    {
+      "id": "w1",
+      "title": "BAE Systems Hawk (Wikipedia)",
+      "kind": "reference",
+      "url": "https://en.wikipedia.org/wiki/BAE_Systems_Hawk"
+    }
+  ],
+  "intro": "The BAE Hawk is a British two-seat jet trainer. The student sits in front and the instructor sits raised behind. The cockpit has round dials and a stick and a throttle in both seats. The T1A can also carry weapons, so it has weapon and gunsight panels. The Hawk has one engine and no afterburner.",
+  "areas": [
+    {
+      "id": "isis",
+      "where": "glareshield",
+      "name": "Gunsight (ISIS)",
+      "text": "The sight on the glareshield in front of the pilot.",
+      "panels": [
+        {
+          "id": "isis-sight",
+          "name": "ISIS gunsight (T1A)",
+          "db": "isis-sight",
+          "src": "j1",
+          "page": "93",
+          "text": "The ISIS (Integrated Strike and Interception System) sight sits on the glareshield in front of the pilot. It shows aiming marks for the guns and weapons.",
+          "context": "It is used for weapons training on the armed T1A.",
+          "controls": [
+            {
+              "id": "head",
+              "name": "Sight head",
+              "type": "display",
+              "match": [
+                "item:isis-sight:1"
+              ],
+              "text": "This is the glass in front of the pilot's eyes, where the aiming marks appear.",
+              "context": "The pilot looks through it when aiming.",
+              "src": "j1",
+              "page": "93"
+            },
+            {
+              "id": "dimmer",
+              "name": "Lamp dimmer control",
+              "type": "knob",
+              "match": [
+                "item:isis-sight:2"
+              ],
+              "text": "This knob sets how bright the sight marks are.",
+              "context": "The pilot makes them dimmer at night and brighter in sunlight.",
+              "src": "j1",
+              "page": "93"
+            },
+            {
+              "id": "cross",
+              "name": "Fixed cross occulting switch",
+              "type": "switch",
+              "match": [
+                "item:isis-sight:3"
+              ],
+              "text": "This switch hides or shows the fixed cross, a marking in the sight.",
+              "context": "The pilot hides it when it is not needed.",
+              "src": "j1",
+              "page": "93"
+            },
+            {
+              "id": "drift",
+              "name": "Drift control",
+              "type": "knob",
+              "match": [
+                "item:isis-sight:4"
+              ],
+              "text": "This knob sets a sideways correction of the sight.",
+              "context": "The pilot sets it before the aiming exercise.",
+              "src": "j1",
+              "page": "93"
+            },
+            {
+              "id": "mode",
+              "name": "Mode selector",
+              "type": "selector",
+              "match": [
+                "item:isis-sight:5"
+              ],
+              "text": "This selector chooses the mode of the sight.",
+              "context": "The pilot sets the mode that fits the exercise.",
+              "src": "j1",
+              "page": "93"
+            },
+            {
+              "id": "depression",
+              "name": "Depression control",
+              "type": "knob",
+              "match": [
+                "item:isis-sight:6"
+              ],
+              "text": "This knob moves the aiming mark downwards, to set the angle of the sight.",
+              "context": "The pilot sets it before the aiming exercise.",
+              "src": "j1",
+              "page": "93"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "left-instrument-panel",
+      "where": "front-left",
+      "name": "Left instrument panel",
+      "text": "The weapon, radio and speed instruments on the left of the main panel.",
+      "panels": [
+        {
+          "id": "left-instrument-panel",
+          "name": "Left instrument panel",
+          "db": "left-instrument-panel",
+          "src": "j1",
+          "page": "88",
+          "text": "The weapon and missile panels (on the T1A), the UHF radio panel and the speed instruments on the left of the main panel.",
+          "context": "The panels for weapons are used on the armed T1A version.",
+          "controls": [
+            {
+              "id": "missile",
+              "name": "Missile (AIM-9) control panel",
+              "type": "other",
+              "match": [
+                "item:left-instrument-panel:1"
+              ],
+              "text": "This panel controls the AIM-9 missile, a short-range air-to-air missile carried by the T1A.",
+              "context": "It is used in weapons training.",
+              "src": "j1",
+              "page": "88"
+            },
+            {
+              "id": "left-card",
+              "name": "Left frequency card and stopwatch",
+              "type": "other",
+              "match": [
+                "item:left-instrument-panel:2"
+              ],
+              "text": "This holds a card on which the pilot notes radio frequencies, and a stopwatch.",
+              "context": "The pilot checks the frequencies here.",
+              "src": "j1",
+              "page": "88"
+            },
+            {
+              "id": "wcp",
+              "name": "Weapon control panel (WCP)",
+              "type": "other",
+              "match": [
+                "item:left-instrument-panel:3"
+              ],
+              "text": "This panel selects the weapon stations under the wings and the weapon to be used (T1A).",
+              "context": "The pilot sets it before a weapons exercise.",
+              "src": "j1",
+              "page": "88"
+            },
+            {
+              "id": "uhf",
+              "name": "UHF transceiver control panel",
+              "type": "other",
+              "match": [
+                "item:left-instrument-panel:4"
+              ],
+              "text": "This panel tunes the UHF radio, which the pilot uses to talk to other aircraft and the tower.",
+              "context": "The pilot sets the frequency from air traffic control.",
+              "src": "j1",
+              "page": "88"
+            },
+            {
+              "id": "cws",
+              "name": "CWS attention light",
+              "type": "light",
+              "match": [
+                "item:left-instrument-panel:5"
+              ],
+              "text": "This light comes on when the central warning system has a message. CWS means central warning system.",
+              "context": "The pilot looks at the central warning panel for the details.",
+              "src": "j1",
+              "page": "88"
+            },
+            {
+              "id": "accel",
+              "name": "Accelerometer",
+              "type": "gauge",
+              "match": [
+                "item:left-instrument-panel:6"
+              ],
+              "text": "This dial shows how strongly the pilot is pushed into the seat in turns and pulls (g-force).",
+              "context": "It tells the pilot how hard the jet is being pulled.",
+              "src": "j1",
+              "page": "88"
+            },
+            {
+              "id": "airbrake-ind",
+              "name": "Airbrake indicator",
+              "type": "indicator",
+              "match": [
+                "item:left-instrument-panel:7"
+              ],
+              "text": "This indicator shows whether the airbrake is out or in.",
+              "context": "The pilot checks it after using the airbrake.",
+              "src": "j1",
+              "page": "88"
+            },
+            {
+              "id": "turn-slip",
+              "name": "Turn-and-slip indicator",
+              "type": "indicator",
+              "match": [
+                "item:left-instrument-panel:8"
+              ],
+              "text": "This instrument shows how fast the jet turns, and whether the turn is smooth or the jet slides sideways.",
+              "context": "The pilot uses it as a backup for the other instruments.",
+              "src": "j1",
+              "page": "88"
+            },
+            {
+              "id": "tailplane-ind",
+              "name": "Tailplane position indicator",
+              "type": "indicator",
+              "match": [
+                "item:left-instrument-panel:9"
+              ],
+              "text": "This indicator shows the position of the tailplane, the horizontal wing at the tail which moves as a whole.",
+              "context": "The pilot can see the trim setting on it.",
+              "src": "j1",
+              "page": "88"
+            },
+            {
+              "id": "csi",
+              "name": "Combined speed indicator (CSI)",
+              "type": "indicator",
+              "match": [
+                "item:left-instrument-panel:10"
+              ],
+              "text": "This dial shows the airspeed and the Mach number, the speed relative to the speed of sound.",
+              "context": "The pilot watches it all the time in flight.",
+              "src": "j1",
+              "page": "88"
+            },
+            {
+              "id": "dgi",
+              "name": "Directional gyro indicator (DGI)",
+              "type": "indicator",
+              "match": [
+                "item:left-instrument-panel:11"
+              ],
+              "text": "This instrument shows the compass direction the nose points to. It is driven by a gyro, a spinning wheel that keeps its direction.",
+              "context": "The pilot uses it to keep a heading.",
+              "src": "j1",
+              "page": "88"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "centre-right",
+      "where": "front-center",
+      "name": "Centre and right panel",
+      "text": "The main flight instruments, the engine dials, the central warning panel and the other indicators.",
+      "panels": [
+        {
+          "id": "crp-flight",
+          "name": "Flight instruments",
+          "db": "centre-right-panel",
+          "src": "j1",
+          "page": "90",
+          "text": "The main flight instruments in the centre of the panel, with the standby instruments.",
+          "context": "The pilot looks at them to know how the jet flies.",
+          "controls": [
+            {
+              "id": "ai",
+              "name": "Attitude indicator",
+              "type": "indicator",
+              "match": [
+                "item:centre-right-panel:1"
+              ],
+              "text": "This instrument shows whether the nose is up or down and whether the wings are level, like a small model horizon.",
+              "context": "It is the main instrument for flying in cloud.",
+              "src": "j1",
+              "page": "90"
+            },
+            {
+              "id": "hsi",
+              "name": "Horizontal situation indicator (HSI)",
+              "type": "indicator",
+              "match": [
+                "item:centre-right-panel:2"
+              ],
+              "text": "This instrument shows the compass heading and the course to a radio beacon or runway beam.",
+              "context": "The pilot uses it for navigation and approaches.",
+              "src": "j1",
+              "page": "90"
+            },
+            {
+              "id": "standby-ai",
+              "name": "Standby attitude indicator",
+              "type": "indicator",
+              "match": [
+                "item:centre-right-panel:5"
+              ],
+              "text": "A backup instrument which shows the nose up or down and the wing tilt.",
+              "context": "The pilot uses it if the main one fails.",
+              "src": "j1",
+              "page": "90"
+            },
+            {
+              "id": "alt",
+              "name": "Main altimeter",
+              "type": "gauge",
+              "match": [
+                "item:centre-right-panel:6"
+              ],
+              "text": "This dial shows the height of the jet above sea level.",
+              "context": "The pilot sets the air-pressure value so that it reads correctly.",
+              "src": "j1",
+              "page": "90"
+            },
+            {
+              "id": "vsi",
+              "name": "Vertical speed indicator",
+              "type": "indicator",
+              "match": [
+                "item:centre-right-panel:7"
+              ],
+              "text": "This instrument shows how fast the jet climbs or sinks.",
+              "context": "The pilot uses it to see whether the jet is holding its height.",
+              "src": "j1",
+              "page": "90"
+            },
+            {
+              "id": "standby-alt",
+              "name": "Standby altimeter",
+              "type": "gauge",
+              "match": [
+                "item:centre-right-panel:13"
+              ],
+              "text": "A backup dial which shows the height of the jet.",
+              "context": "The pilot uses it if the main altimeter fails.",
+              "src": "j1",
+              "page": "90"
+            },
+            {
+              "id": "nav-mode",
+              "name": "Navigation mode selector",
+              "type": "selector",
+              "match": [
+                "item:centre-right-panel:8"
+              ],
+              "text": "This selector chooses which navigation source feeds the instruments.",
+              "context": "The pilot sets it to the beacon or runway beam to be followed.",
+              "src": "j1",
+              "page": "90"
+            },
+            {
+              "id": "ils-marker",
+              "name": "ILS marker light",
+              "type": "light",
+              "match": [
+                "item:centre-right-panel:9"
+              ],
+              "text": "This light flashes when the jet flies over a marker beacon at a runway approach (ILS, the runway guidance beams).",
+              "context": "It tells the pilot the distance to the runway.",
+              "src": "j1",
+              "page": "90"
+            },
+            {
+              "id": "fi-power",
+              "name": "Flight instruments power switch",
+              "type": "switch",
+              "match": [
+                "item:centre-right-panel:4"
+              ],
+              "text": "This switch powers the flight instruments.",
+              "context": "The pilot switches it on in the start-up.",
+              "src": "j1",
+              "page": "90"
+            }
+          ]
+        },
+        {
+          "id": "crp-engine",
+          "name": "Engine, warning and equipment indicators",
+          "db": "centre-right-panel",
+          "src": "j1",
+          "page": "90",
+          "text": "The engine dials, the central warning panel, the oxygen and fuel gauges and other indicators on the centre and right of the main panel.",
+          "context": "The pilot checks them after starting the engine and in flight.",
+          "controls": [
+            {
+              "id": "mass",
+              "name": "Master armament safety switch (MASS)",
+              "type": "switch",
+              "match": [
+                "item:centre-right-panel:3"
+              ],
+              "text": "This is the main safety switch for the weapons. It locks the armament supplies and is moved to UNLOCK and LIVE to enable them.",
+              "context": "Nothing can fire while it is in the safe position.",
+              "src": "j1",
+              "page": "90"
+            },
+            {
+              "id": "land-lamp",
+              "name": "Landing / taxi lamp switch",
+              "type": "switch",
+              "match": [
+                "item:centre-right-panel:10"
+              ],
+              "text": "This switch turns the landing and taxi lamps on and off.",
+              "context": "The pilot uses it to see the runway at night.",
+              "src": "j1",
+              "page": "90"
+            },
+            {
+              "id": "comms-power",
+              "name": "Communications power switch",
+              "type": "switch",
+              "match": [
+                "item:centre-right-panel:11"
+              ],
+              "text": "This switch powers the communications equipment such as the radios.",
+              "context": "The pilot switches it on in the start-up.",
+              "src": "j1",
+              "page": "90"
+            },
+            {
+              "id": "cws",
+              "name": "CWS attention light",
+              "type": "light",
+              "match": [
+                "item:centre-right-panel:12"
+              ],
+              "text": "This light comes on when the central warning system has a message.",
+              "context": "The pilot reads the captions on the central warning panel.",
+              "src": "j1",
+              "page": "90"
+            },
+            {
+              "id": "lp-shaft",
+              "name": "Engine LP shaft rotation indicator",
+              "type": "indicator",
+              "match": [
+                "item:centre-right-panel:14"
+              ],
+              "text": "This indicator shows that the engine's low-pressure shaft turns.",
+              "context": "The pilot checks it during the engine start.",
+              "src": "j1",
+              "page": "90"
+            },
+            {
+              "id": "rpm",
+              "name": "RPM indicator",
+              "type": "indicator",
+              "match": [
+                "item:centre-right-panel:15"
+              ],
+              "text": "This dial shows how fast the engine turns.",
+              "context": "The pilot watches it while starting and setting power.",
+              "src": "j1",
+              "page": "90"
+            },
+            {
+              "id": "cwp",
+              "name": "Central warning panel",
+              "type": "display",
+              "match": [
+                "item:centre-right-panel:16"
+              ],
+              "text": "This panel has captions that light up to tell about faults.",
+              "context": "A caption that lights up tells the pilot which system to check.",
+              "src": "j1",
+              "page": "90"
+            },
+            {
+              "id": "tgt",
+              "name": "TGT indicator",
+              "type": "indicator",
+              "match": [
+                "item:centre-right-panel:17"
+              ],
+              "text": "This dial shows the turbine gas temperature, the heat of the gas in the engine.",
+              "context": "The pilot watches it during the engine start, so the engine does not get too hot.",
+              "src": "j1",
+              "page": "90"
+            },
+            {
+              "id": "air-start",
+              "name": "Air producer start indicator",
+              "type": "indicator",
+              "match": [
+                "item:centre-right-panel:18"
+              ],
+              "text": "This indicator shows the state of the air producer, which gives air for the engine start.",
+              "context": "The pilot checks it during the engine start.",
+              "src": "j1",
+              "page": "90"
+            },
+            {
+              "id": "right-card",
+              "name": "Right frequency card",
+              "type": "other",
+              "match": [
+                "item:centre-right-panel:19"
+              ],
+              "text": "This holds a card on which the pilot notes radio frequencies.",
+              "context": "The pilot reads the frequencies here.",
+              "src": "j1",
+              "page": "90"
+            },
+            {
+              "id": "oxygen",
+              "name": "Oxygen flow indicator, contents gauge and cabin altimeter",
+              "type": "gauge",
+              "match": [
+                "item:centre-right-panel:20",
+                "item:centre-right-panel:22",
+                "item:centre-right-panel:21"
+              ],
+              "text": "These instruments show that oxygen flows, how much oxygen is left and the height that the cabin air pressure corresponds to.",
+              "context": "The pilot checks them at high altitude, where oxygen is needed.",
+              "src": "j1",
+              "page": "90"
+            },
+            {
+              "id": "fuel",
+              "name": "Fuel contents gauge",
+              "type": "gauge",
+              "match": [
+                "item:centre-right-panel:23"
+              ],
+              "text": "This dial shows how much fuel is in the tanks.",
+              "context": "The pilot keeps an eye on it so the jet does not run out of fuel.",
+              "src": "j1",
+              "page": "90"
+            },
+            {
+              "id": "lights",
+              "name": "Lighting switches",
+              "type": "switch",
+              "match": [
+                "item:centre-right-panel:24"
+              ],
+              "text": "These switches set the lights of the cockpit and the outside lights.",
+              "context": "The pilot uses them for night flying.",
+              "src": "j1",
+              "page": "90"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "leg",
+      "where": "center-pedestal",
+      "name": "Leg panel",
+      "text": "The panel below the main panel by the pilot's legs.",
+      "panels": [
+        {
+          "id": "leg-panel",
+          "name": "Leg panel",
+          "db": "leg-panel",
+          "src": "j1",
+          "page": "89",
+          "text": "A panel below the main instrument panel, by the pilot's legs, with the controls for the attitude reference, the gunsight and the rudder lock.",
+          "context": "The pilot uses it in the start-up and before weapons exercises.",
+          "controls": [
+            {
+              "id": "ahrs",
+              "name": "AHRS control unit",
+              "type": "other",
+              "match": [
+                "item:leg-panel:1"
+              ],
+              "text": "This unit controls the attitude and heading reference system, which tells the jet its tilt and heading.",
+              "context": "The pilot sets it in the start-up.",
+              "src": "j1",
+              "page": "89"
+            },
+            {
+              "id": "isis-ctl",
+              "name": "ISIS sight control unit (T1A)",
+              "type": "other",
+              "match": [
+                "item:leg-panel:2"
+              ],
+              "text": "This unit controls the ISIS gunsight (T1A). It selects the sight mode and settings.",
+              "context": "The pilot uses it before a weapons exercise.",
+              "src": "j1",
+              "page": "89"
+            },
+            {
+              "id": "rudder-lock",
+              "name": "Rudder bar locking handle",
+              "type": "handle",
+              "match": [
+                "item:leg-panel:3"
+              ],
+              "text": "This handle locks the rudder bar, which carries the rudder pedals, in place.",
+              "context": "The lock is used while the jet is parked on the ground.",
+              "src": "j1",
+              "page": "89"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "left-console",
+      "where": "left-console",
+      "name": "Left console",
+      "text": "The engine start controls, electrics, trims, throttle, brakes, landing gear and flaps.",
+      "panels": [
+        {
+          "id": "lc-start",
+          "name": "Engine start, batteries and electrics",
+          "db": "left-console",
+          "src": "j1",
+          "page": "86",
+          "text": "The switches on the left console to start the engine and to power the electric system, with the reset buttons for the generators.",
+          "context": "The pilot uses them in order while preparing the jet and starting its engine.",
+          "controls": [
+            {
+              "id": "start-master",
+              "name": "Engine start master switch",
+              "type": "switch",
+              "match": [
+                "item:left-console:1"
+              ],
+              "text": "This switch arms the engine start system. Without it, the engine cannot be started.",
+              "context": "It is one of the first switches the pilot uses in the start-up.",
+              "src": "j1",
+              "page": "86"
+            },
+            {
+              "id": "batt",
+              "name": "No. 1 and No. 2 battery switches",
+              "type": "switch",
+              "match": [
+                "item:left-console:2",
+                "item:left-console:3"
+              ],
+              "text": "These two switches connect battery No. 1 and battery No. 2 to the jet's electric system.",
+              "context": "The jet has two batteries so that one can back up the other.",
+              "src": "j1",
+              "page": "86"
+            },
+            {
+              "id": "boost",
+              "name": "Fuel booster pump switch",
+              "type": "switch",
+              "match": [
+                "item:left-console:4"
+              ],
+              "text": "This switch turns on the booster pump, which helps to push fuel to the engine.",
+              "context": "The pilot uses it while starting the engine and in flight.",
+              "src": "j1",
+              "page": "86"
+            },
+            {
+              "id": "pitot",
+              "name": "Pitot static tube heater switch",
+              "type": "switch",
+              "match": [
+                "item:left-console:5"
+              ],
+              "text": "This switch heats the pitot tube, the small tube outside that measures speed, so it does not freeze.",
+              "context": "The pilot uses it in cold and wet air.",
+              "src": "j1",
+              "page": "86"
+            },
+            {
+              "id": "ignition",
+              "name": "Engine ignition switch",
+              "type": "switch",
+              "match": [
+                "item:left-console:19"
+              ],
+              "text": "This switch controls the ignition, the sparks that light the fuel in the engine.",
+              "context": "The pilot uses it during the engine start and when relighting.",
+              "src": "j1",
+              "page": "86"
+            },
+            {
+              "id": "ac3",
+              "name": "AC 3 reset button",
+              "type": "button",
+              "match": [
+                "item:left-console:21"
+              ],
+              "text": "This button resets the third alternating-current supply after it has switched off.",
+              "context": "It is used after an electrical fault.",
+              "src": "j1",
+              "page": "86"
+            },
+            {
+              "id": "voltmeter",
+              "name": "DC voltmeter",
+              "type": "gauge",
+              "match": [
+                "item:left-console:22"
+              ],
+              "text": "This dial shows the voltage of the direct-current electric supply.",
+              "context": "It shows whether the electric system is healthy.",
+              "src": "j1",
+              "page": "86"
+            },
+            {
+              "id": "gen-reset",
+              "name": "Generator and inverter reset buttons",
+              "type": "button",
+              "match": [
+                "item:left-console:23"
+              ],
+              "text": "These buttons reset the generators, which make electricity while the engine runs, and the inverters, which change one kind of electricity into another.",
+              "context": "They are used after a fault switched one of them off.",
+              "src": "j1",
+              "page": "86"
+            }
+          ]
+        },
+        {
+          "id": "lc-trim",
+          "name": "Trims and throttle",
+          "db": "left-console",
+          "src": "j1",
+          "page": "86",
+          "text": "The trim controls, the throttle lever and the fuel cock on the left console.",
+          "context": "The left hand rests on the throttle in flight.",
+          "controls": [
+            {
+              "id": "tailplane-cover",
+              "name": "Cover for the tailplane trim standby switch",
+              "type": "guard",
+              "match": [
+                "item:left-console:6"
+              ],
+              "text": "This cover protects the standby tailplane trim switch. It is lifted to reach the switch, and says LIFT FOR STANDBY.",
+              "context": "The standby trim is a backup if the normal trim fails.",
+              "src": "j1",
+              "page": "86"
+            },
+            {
+              "id": "trim-ind",
+              "name": "Aileron and rudder trim indicators",
+              "type": "indicator",
+              "match": [
+                "item:left-console:7"
+              ],
+              "text": "These indicators show the position of the aileron trim and the rudder trim.",
+              "context": "The pilot checks them before take-off.",
+              "src": "j1",
+              "page": "86"
+            },
+            {
+              "id": "trim-sw",
+              "name": "Aileron and rudder trim switches",
+              "type": "switch",
+              "match": [
+                "item:left-console:8"
+              ],
+              "text": "These switches trim the ailerons and the rudder. Trim is a small constant push so that the jet flies straight without pressure on the controls.",
+              "context": "The pilot trims after changing speed or after a change in fuel load.",
+              "src": "j1",
+              "page": "86"
+            },
+            {
+              "id": "friction",
+              "name": "Throttle damper friction control",
+              "type": "other",
+              "match": [
+                "item:left-console:9"
+              ],
+              "text": "This control sets how stiff the throttle lever feels, so it stays where it is put.",
+              "context": "The pilot sets the stiffness that feels right.",
+              "src": "j1",
+              "page": "86"
+            },
+            {
+              "id": "throttle",
+              "name": "Throttle lever",
+              "type": "lever",
+              "match": [
+                "item:left-console:10",
+                "control:throttle.axis.main"
+              ],
+              "text": "This lever sets how much power the engine gives. Pushing it forward gives more power. The Hawk has no afterburner.",
+              "context": "The pilot's left hand holds it for most of the flight.",
+              "src": "j1",
+              "page": "86"
+            },
+            {
+              "id": "lp-cock",
+              "name": "LP fuel cock control lever",
+              "type": "lever",
+              "match": [
+                "item:left-console:30"
+              ],
+              "text": "This lever opens or closes the low-pressure fuel cock, the tap which lets fuel flow from the tanks to the engine.",
+              "context": "Closing it stops the fuel flow to the engine, for example in an emergency or to shut down.",
+              "src": "j1",
+              "page": "86"
+            }
+          ]
+        },
+        {
+          "id": "lc-hyd",
+          "name": "Brakes, hydraulics and altimeter test",
+          "db": "left-console",
+          "src": "j1",
+          "page": "86",
+          "text": "The brake and hydraulic gauges and switches on the left console. Hydraulics are oil under pressure that moves heavy parts such as the brakes and gear.",
+          "context": "The pilot checks them before taxiing and when something fails.",
+          "controls": [
+            {
+              "id": "antiskid",
+              "name": "Anti-skid switch",
+              "type": "switch",
+              "match": [
+                "item:left-console:11"
+              ],
+              "text": "This switch turns the anti-skid on, which stops the wheels from locking up when braking, like ABS in a car.",
+              "context": "The pilot has it on for landing.",
+              "src": "j1",
+              "page": "86"
+            },
+            {
+              "id": "hyd-gauges",
+              "name": "Hydraulic and brake pressure gauges",
+              "type": "gauge",
+              "match": [
+                "item:left-console:15",
+                "item:left-console:16",
+                "item:left-console:17"
+              ],
+              "text": "These dials show the pressure of hydraulic system No. 1 and No. 2, the brakes supply and the left and right brakes.",
+              "context": "The pilot checks them to see whether the brakes and controls have pressure.",
+              "src": "j1",
+              "page": "86"
+            },
+            {
+              "id": "pump-reset",
+              "name": "No. 2 hydraulic pump / RAT reset button",
+              "type": "button",
+              "match": [
+                "item:left-console:18"
+              ],
+              "text": "This button resets the second hydraulic pump and the RAT, a small emergency propeller that makes hydraulic power from the airflow.",
+              "context": "It is used after a hydraulic fault.",
+              "src": "j1",
+              "page": "86"
+            },
+            {
+              "id": "alt-test",
+              "name": "Altimeter ground test switch",
+              "type": "switch",
+              "match": [
+                "item:left-console:20"
+              ],
+              "text": "This switch tests the altimeter on the ground.",
+              "context": "The pilot uses it during the checks before flight.",
+              "src": "j1",
+              "page": "86"
+            }
+          ]
+        },
+        {
+          "id": "lc-radio",
+          "name": "Alternative radio switches",
+          "db": "left-console",
+          "src": "j1",
+          "page": "86",
+          "text": "The switches for the alternative radio transmit and receiver on the left console.",
+          "context": "They give the pilot another way to use the radio.",
+          "controls": [
+            {
+              "id": "alt-tx",
+              "name": "Alternative transmit switch",
+              "type": "switch",
+              "match": [
+                "item:left-console:12"
+              ],
+              "text": "This switch is a second way to make the radio transmit.",
+              "context": "The pilot can use it when the button on the throttle is not at hand.",
+              "src": "j1",
+              "page": "86"
+            },
+            {
+              "id": "alt-mute",
+              "name": "Alternative receiver mute switch",
+              "type": "switch",
+              "match": [
+                "item:left-console:13"
+              ],
+              "text": "This switch silences the radio receiver.",
+              "context": "It is a second way to mute the receiver.",
+              "src": "j1",
+              "page": "86"
+            },
+            {
+              "id": "standby-uhf",
+              "name": "Standby UHF switch",
+              "type": "switch",
+              "match": [
+                "item:left-console:14"
+              ],
+              "text": "This switch selects the standby UHF radio, a backup radio for talking to other aircraft and the tower.",
+              "context": "The pilot uses it if the main radio does not work.",
+              "src": "j1",
+              "page": "86"
+            }
+          ]
+        },
+        {
+          "id": "lc-gear",
+          "name": "Landing gear and flaps",
+          "db": "left-console",
+          "src": "j1",
+          "page": "86",
+          "text": "The buttons and selectors for the landing gear and the flaps on the left console, and their indicators.",
+          "context": "They are used on every take-off and landing.",
+          "controls": [
+            {
+              "id": "gear-btn",
+              "name": "Landing gear retraction / lowering buttons",
+              "type": "button",
+              "match": [
+                "item:left-console:26"
+              ],
+              "count": 2,
+              "text": "These buttons lift the wheels after take-off (UP) and lower them before landing (DOWN).",
+              "context": "The wheels fold away in flight to reduce drag.",
+              "src": "j1",
+              "page": "86"
+            },
+            {
+              "id": "gear-ind",
+              "name": "Landing gear position indicator",
+              "type": "indicator",
+              "match": [
+                "item:left-console:29"
+              ],
+              "text": "This indicator shows whether the wheels are up, down or moving.",
+              "context": "The pilot checks it before landing.",
+              "src": "j1",
+              "page": "86"
+            },
+            {
+              "id": "gear-standby",
+              "name": "Landing gear standby lowering selector",
+              "type": "selector",
+              "match": [
+                "item:left-console:24"
+              ],
+              "text": "This selector lowers the wheels by a backup system if the normal system fails.",
+              "context": "It is used only after a gear failure.",
+              "src": "j1",
+              "page": "86"
+            },
+            {
+              "id": "flap-sel",
+              "name": "Flap position selector",
+              "type": "selector",
+              "match": [
+                "item:left-console:27"
+              ],
+              "positions": [
+                {
+                  "name": "UP",
+                  "text": "The flaps are retracted for fast flight."
+                },
+                {
+                  "name": "MID",
+                  "text": "The middle flap setting."
+                },
+                {
+                  "name": "DOWN",
+                  "text": "The flaps are fully down, for landing."
+                }
+              ],
+              "text": "This selector moves the flaps, parts of the wing which extend to give more lift at low speed. In the rear seat it is marked PUPIL.",
+              "context": "The flaps are used for take-off and landing.",
+              "src": "j1",
+              "page": "86"
+            },
+            {
+              "id": "flap-ind",
+              "name": "Flap position indicator",
+              "type": "indicator",
+              "match": [
+                "item:left-console:28"
+              ],
+              "text": "This indicator shows the position of the flaps.",
+              "context": "The pilot checks it after moving the selector.",
+              "src": "j1",
+              "page": "86"
+            },
+            {
+              "id": "flap-standby",
+              "name": "Flap standby lowering selector",
+              "type": "selector",
+              "match": [
+                "item:left-console:25"
+              ],
+              "text": "This selector lowers the flaps by a backup system if the normal system fails.",
+              "context": "It is used only after a flap failure.",
+              "src": "j1",
+              "page": "86"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "right-console",
+      "where": "right-console",
+      "name": "Right console",
+      "text": "The radios, identification, navigation aids, oxygen and cabin air controls.",
+      "panels": [
+        {
+          "id": "right-console",
+          "name": "Right console",
+          "db": "right-console",
+          "src": "j1",
+          "page": "91",
+          "text": "The radios, the identification (IFF) unit, TACAN, ILS, the oxygen and the cabin air controls on the right side.",
+          "context": "The pilot sets them in the start-up and changes them during the flight.",
+          "controls": [
+            {
+              "id": "ccs",
+              "name": "CCS station box",
+              "type": "other",
+              "match": [
+                "item:right-console:1"
+              ],
+              "text": "This box controls the intercom and the radio selection of the crew (CCS).",
+              "context": "It lets the crew talk to each other.",
+              "src": "j1",
+              "page": "91"
+            },
+            {
+              "id": "vhf",
+              "name": "VHF transceiver control panel",
+              "type": "other",
+              "match": [
+                "item:right-console:2"
+              ],
+              "text": "This panel tunes the VHF radio, which the pilot uses to talk to air traffic control.",
+              "context": "The pilot sets the frequency from air traffic control.",
+              "src": "j1",
+              "page": "91"
+            },
+            {
+              "id": "uhf-aerial",
+              "name": "UHF aerial selector switch",
+              "type": "switch",
+              "match": [
+                "item:right-console:3"
+              ],
+              "text": "This switch picks which aerial (antenna) the UHF radio uses.",
+              "context": "It is set once for the flight.",
+              "src": "j1",
+              "page": "91"
+            },
+            {
+              "id": "iff",
+              "name": "IFF / SSR control unit",
+              "type": "other",
+              "match": [
+                "item:right-console:4"
+              ],
+              "text": "This unit sets the transponder (IFF/SSR), which answers radar so that air traffic control sees the jet. The pilot sets a code.",
+              "context": "Air traffic control tells the pilot which code to set.",
+              "src": "j1",
+              "page": "91"
+            },
+            {
+              "id": "ext-intercom",
+              "name": "External intercom switch",
+              "type": "switch",
+              "match": [
+                "item:right-console:5"
+              ],
+              "text": "This switch is for the external intercom, a talk line between the cockpit and the ground crew.",
+              "context": "It is used while the jet is on the ground.",
+              "src": "j1",
+              "page": "91"
+            },
+            {
+              "id": "adr",
+              "name": "ADR status indicator",
+              "type": "indicator",
+              "match": [
+                "item:right-console:6"
+              ],
+              "text": "This indicator shows the state of the air data reference.",
+              "context": "It tells the pilot that the air data system works.",
+              "src": "j1",
+              "page": "91"
+            },
+            {
+              "id": "tacan",
+              "name": "TACAN control unit",
+              "type": "other",
+              "match": [
+                "item:right-console:7"
+              ],
+              "text": "This unit sets TACAN, a navigation aid that gives the direction and distance to a ground station.",
+              "context": "The pilot enters the station's channel.",
+              "src": "j1",
+              "page": "91"
+            },
+            {
+              "id": "oxygen-sel",
+              "name": "Oxygen supply selector",
+              "type": "selector",
+              "match": [
+                "item:right-console:8"
+              ],
+              "text": "This selector controls the supply of oxygen for the pilot to breathe.",
+              "context": "The pilot checks it before flight.",
+              "src": "j1",
+              "page": "91"
+            },
+            {
+              "id": "ils",
+              "name": "ILS control unit",
+              "type": "other",
+              "match": [
+                "item:right-console:9"
+              ],
+              "text": "This unit tunes the ILS, the radio beams at a runway that guide the jet down to land.",
+              "context": "The pilot sets the runway's frequency for an approach.",
+              "src": "j1",
+              "page": "91"
+            },
+            {
+              "id": "seat-pan",
+              "name": "Seat pan height switch",
+              "type": "switch",
+              "match": [
+                "item:right-console:10"
+              ],
+              "text": "This switch moves the seat pan, the part of the seat the pilot sits on, up or down.",
+              "context": "The pilot adjusts it to sit comfortably.",
+              "src": "j1",
+              "page": "91"
+            },
+            {
+              "id": "airbrake-test",
+              "name": "Airbrake test switch",
+              "type": "switch",
+              "match": [
+                "item:right-console:11"
+              ],
+              "text": "This switch tests the airbrake on the ground.",
+              "context": "The pilot uses it during the checks before flight.",
+              "src": "j1",
+              "page": "91"
+            },
+            {
+              "id": "cabin-air",
+              "name": "Cabin conditioning and temperature switches",
+              "type": "switch",
+              "match": [
+                "item:right-console:12"
+              ],
+              "text": "These switches control the heating, the cooling and the air in the cockpit.",
+              "context": "The pilot sets them for comfort.",
+              "src": "j1",
+              "page": "91"
+            },
+            {
+              "id": "park-brake",
+              "name": "Parking brake T-handle",
+              "type": "handle",
+              "match": [
+                "item:right-console:13"
+              ],
+              "text": "This T-shaped handle sets the parking brake, which holds the wheels still while parked.",
+              "context": "It is set when parked and released before taxiing.",
+              "src": "j1",
+              "page": "91"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "hotas",
+      "where": "hotas",
+      "name": "Control stick and throttle",
+      "text": "The controls the pilot holds, with the buttons on the stick and the throttle.",
+      "panels": [
+        {
+          "id": "grips",
+          "name": "Control stick and throttle",
+          "src": "j1",
+          "page": "86",
+          "text": "The controls the pilot holds. The control stick is in the centre, and the throttle is on the left console. The instructor in the rear seat has a stick and a throttle too.",
+          "context": "The stick and throttle of the two seats are linked.",
+          "controls": [
+            {
+              "id": "gimbal",
+              "name": "Control column",
+              "type": "axis",
+              "match": [
+                "control:stick.gimbal"
+              ],
+              "text": "Pushing the stick forward points the nose down, pulling it back points it up. Moving it sideways rolls the jet. The controls are powered, which means that hydraulics help to move them.",
+              "context": "The stick is connected to the one in the other seat.",
+              "src": "j1",
+              "page": "86"
+            },
+            {
+              "id": "trim",
+              "name": "Tailplane trim switches",
+              "type": "rocker",
+              "match": [
+                "control:stick.hat.trim"
+              ],
+              "text": "This pair of switches on top of the stick trims the tailplane (the horizontal tail wing) to point the nose up or down.",
+              "context": "Trim takes away the steady force on the stick.",
+              "src": "j1",
+              "page": "86"
+            },
+            {
+              "id": "camera",
+              "name": "Camera button",
+              "type": "button",
+              "match": [
+                "control:stick.button.camera"
+              ],
+              "text": "This button on the stick top runs the camera. In the Red Arrows version it also makes white smoke.",
+              "context": "It records the aiming exercises.",
+              "src": "j1",
+              "page": "86"
+            },
+            {
+              "id": "guard",
+              "name": "Bomb / RP release button safety flap",
+              "type": "guard",
+              "match": [
+                "control:stick.guard.weapon_release"
+              ],
+              "positions": [
+                {
+                  "name": "down",
+                  "text": "The release button is covered and cannot be pressed."
+                },
+                {
+                  "name": "up",
+                  "text": "The release button is exposed and a SAFETY FLAP light shows it."
+                }
+              ],
+              "text": "This flap covers the release button, so it cannot be pressed by accident. Lifting it makes a SAFETY FLAP light come on.",
+              "context": "The pilot lifts it only when about to release.",
+              "src": "j1",
+              "page": "86"
+            },
+            {
+              "id": "release",
+              "name": "Bomb / RP release button",
+              "type": "button",
+              "match": [
+                "control:stick.weapon_release"
+              ],
+              "text": "This button under the safety flap releases bombs or fires rockets (RP). In the Red Arrows version it makes red smoke.",
+              "context": "It can only be pressed after lifting the flap.",
+              "src": "j1",
+              "page": "86"
+            },
+            {
+              "id": "trigger",
+              "name": "Gun firing trigger",
+              "type": "trigger",
+              "match": [
+                "control:stick.trigger"
+              ],
+              "text": "This trigger on the front of the grip, with a safety catch, fires the Aden gun pod or the AIM-9 missile on the T1A.",
+              "context": "The pilot uses it in weapons exercises.",
+              "src": "j1",
+              "page": "86"
+            },
+            {
+              "id": "mute",
+              "name": "Receiver mute button",
+              "type": "button",
+              "match": [
+                "control:stick.button.mute"
+              ],
+              "text": "This button on the stick mutes the radio receiver. In the Red Arrows version it also makes blue smoke.",
+              "context": "The pilot uses it to silence the radio.",
+              "src": "j1",
+              "page": "86"
+            },
+            {
+              "id": "speedbrake",
+              "name": "AIR BRAKE IN / OUT switch",
+              "type": "switch3",
+              "match": [
+                "control:throttle.speedbrake"
+              ],
+              "positions": [
+                {
+                  "name": "OUT",
+                  "text": "The airbrake opens."
+                },
+                {
+                  "name": "Centre",
+                  "text": "The switch rests here and the airbrake stays where it is."
+                },
+                {
+                  "name": "IN",
+                  "text": "The airbrake closes."
+                }
+              ],
+              "text": "This switch on top of the throttle handle moves the airbrake, a panel that opens into the wind to slow the jet down. It springs back to the centre.",
+              "context": "The airbrake goes in by itself when the gear is lowered.",
+              "src": "j1",
+              "page": "86"
+            },
+            {
+              "id": "ptt",
+              "name": "Press-to-transmit",
+              "type": "button",
+              "match": [
+                "control:throttle.hat.mic"
+              ],
+              "text": "While this switch on the throttle handle is pressed, the radio transmits. There is a second switch on the left console.",
+              "context": "The pilot uses it to talk to air traffic control.",
+              "src": "j1",
+              "page": "86"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

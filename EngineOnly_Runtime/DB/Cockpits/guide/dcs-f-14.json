@@ -1,0 +1,1194 @@
+{
+  "format": "joypro-cockpit-guide",
+  "version": 1,
+  "id": "dcs-f-14",
+  "title": "F-14 Tomcat (DCS)",
+  "variants": [
+    "f-14a",
+    "f-14b",
+    "f-14b-rio"
+  ],
+  "games": [
+    "DCS"
+  ],
+  "sets": [
+    "DCS/F-14A-95-GR"
+  ],
+  "sources": [
+    {
+      "id": "g1",
+      "title": "DCS F-14 cockpit (game hint texts and command list)",
+      "kind": "game-files"
+    },
+    {
+      "id": "m1",
+      "title": "Chuck's Guide DCS F-14B Tomcat",
+      "file": "Mods/aircraft/F14/Docs/Chucks Guide.pdf"
+    },
+    {
+      "id": "m2",
+      "title": "F-14 Manual (Heatblur, EN)",
+      "file": "Mods/aircraft/F14/Docs/F-14 Manual.pdf"
+    }
+  ],
+  "intro": "The F-14 Tomcat is a big two-seat fighter with wings that swing back for speed and forward for slow flight. The pilot sits in front and flies the plane. The RIO (radar intercept officer) sits behind and runs the radar, the navigation and the countermeasures. This guide covers the pilot's cockpit first, then the RIO's cockpit, which the game shows in the same pictures as the pilot's.",
+  "areas": [
+    {
+      "id": "pilot-glareshield",
+      "where": "glareshield",
+      "name": "Pilot: windshield frame, HUD and mirrors",
+      "text": "The frame around the front windshield. It has the HUD in the middle, warning lights on both sides and the rear-view mirrors.",
+      "panels": [
+        {
+          "id": "hud",
+          "name": "Heads-up display (HUD) and its controls",
+          "db": "hud",
+          "src": "m2",
+          "page": "64",
+          "text": "The HUD is the glass screen in front of the pilot's eyes that shows flight numbers and aiming marks. The controls here make it brighter, line up its marks or put a night filter in front of it. Two lights at its sides, L STALL and R STALL, warn of an engine stall.",
+          "context": "The pilot looks through the HUD in every phase of flight, for example to line up with the runway or to aim weapons. What the HUD shows (take-off, cruise, air-to-air, air-to-ground, landing) is chosen on the displays control panel on the right.",
+          "controls": [
+            {
+              "id": "hud-camera",
+              "name": "CTVS camera (HUD camera)",
+              "type": "switch",
+              "match": [
+                "PNT_HUDCAM",
+                "item:hud:2"
+              ],
+              "text": "Above the HUD sits the cockpit television sensor (CTVS), a small camera that films the HUD. This switch hides it or shows it again in the game.",
+              "context": "Real pilots sometimes took the camera off to see better during carrier landings. The recording itself is not part of DCS.",
+              "page": "65",
+              "src": "m2"
+            },
+            {
+              "id": "hud-filter",
+              "name": "HUD FILTER handle (night filter)",
+              "type": "handle",
+              "match": [
+                "PNT_1033",
+                "item:vdi:4"
+              ],
+              "text": "Pulling this handle puts a night filter in front of the HUD. The filter is used for night flying, so the HUD does not glare in the dark.",
+              "context": "The handle sits with the VDI controls. The pilot pushes it back in for day flying. A matching red filter for the VDI is put in by clicking the VDI screen.",
+              "page": "70",
+              "src": "m2"
+            },
+            {
+              "id": "hud-brightness",
+              "name": "HUD BRIGHTNESS knob",
+              "type": "knob",
+              "match": [
+                "PNT_1037",
+                "item:vdi:1"
+              ],
+              "text": "Turning this knob makes the HUD picture brighter or dimmer, like the brightness control of a screen.",
+              "context": "The pilot sets it so the HUD marks stay readable in daylight but do not glare at night.",
+              "page": "70",
+              "src": "m2"
+            },
+            {
+              "id": "hud-trim",
+              "name": "HUD TRIM knob",
+              "type": "knob",
+              "match": [
+                "PNT_1034",
+                "item:vdi:5"
+              ],
+              "text": "This knob moves the pitch lines on the HUD up or down a little, so they line up with the real horizon.",
+              "context": "It is a fine adjustment, normally set once. The matching knob for the VDI is next to it.",
+              "page": "70",
+              "src": "m2"
+            },
+            {
+              "id": "hud-combiner",
+              "name": "HUD combiner (the glass)",
+              "type": "display",
+              "match": [
+                "item:hud:1"
+              ],
+              "text": "The clear glass in front of the pilot where flight and weapon marks appear to float over the outside world.",
+              "context": "It shows different marks depending on the display mode chosen on the displays control panel: take-off, cruise, air-to-air, air-to-ground or landing.",
+              "page": "64",
+              "src": "m2"
+            }
+          ]
+        },
+        {
+          "id": "left-windshield-frame",
+          "name": "Left windshield frame (approach indexer, HUD caution lights)",
+          "db": "left-windshield-frame",
+          "src": "m2",
+          "page": "60",
+          "text": "Two sets of lights on the left side of the windshield. They give the pilot information without looking down into the cockpit.",
+          "context": "The pilot sees them in the corner of the eye during the landing approach and the whole flight.",
+          "controls": [
+            {
+              "id": "approach-indexer",
+              "name": "Approach indexer",
+              "type": "light",
+              "match": [
+                "item:left-windshield-frame:1"
+              ],
+              "text": "Three lights on the left side of the windshield tell the pilot whether the plane is too slow, too fast or right on speed for landing. Green means too slow, amber means right, red means too fast.",
+              "context": "It is used on the landing approach, especially on an aircraft carrier, where the lights are repeated on the nosewheel so the landing officer can watch them. With the HOOK BYPASS switch on CARRIER and the gear down, they flash if the hook is not down.",
+              "page": "60-61",
+              "src": "m2"
+            },
+            {
+              "id": "hud-caution-lights",
+              "name": "HUD caution lights",
+              "type": "light",
+              "match": [
+                "item:left-windshield-frame:2"
+              ],
+              "text": "A column of labelled lights to the left of the HUD. WHEELS flashes when the gear is not down and locked on a landing approach. BRAKES shows a brake or anti-skid fault and also lights when the parking brake is set. ACLS/AP says the carrier landing system or the autopilot is off. NWS ENGA says nosewheel steering is on. AUTO THROT says the automatic throttle switched off by itself.",
+              "context": "They are indicators only. The pilot reads them at a glance while looking forward.",
+              "page": "62-63",
+              "src": "m2"
+            }
+          ]
+        },
+        {
+          "id": "right-windshield-frame",
+          "name": "Right windshield frame (threat lights, standby compass)",
+          "db": "right-windshield-frame",
+          "src": "m2",
+          "page": "79-81",
+          "text": "On the right side of the windshield are the lights of the radar warning system and a simple magnetic compass.",
+          "context": "The threat lights warn the pilot that an enemy radar or missile is active. The compass works without electricity.",
+          "controls": [
+            {
+              "id": "ecm-warning-lights",
+              "name": "ECM warning lights",
+              "type": "light",
+              "match": [
+                "item:right-windshield-frame:1"
+              ],
+              "text": "Lights that say what kind of threat is near: SAM (a ground missile site), AAA (anti-aircraft guns) and AI (an enemy fighter's radar). A steady light means a radar has locked on; a flashing SAM or AAA light means a missile launch or gun fire was detected.",
+              "context": "They belong to the radar warning receiver (RWR), which tells the pilot when an enemy radar is looking at the plane. Older F-14A versions use a differently labelled set of lights.",
+              "page": "79-80",
+              "src": "m2"
+            },
+            {
+              "id": "standby-compass",
+              "name": "Standby compass",
+              "type": "gauge",
+              "match": [
+                "item:right-windshield-frame:2"
+              ],
+              "text": "A conventional magnetic compass. It shows the direction the plane is flying without needing any power.",
+              "context": "It is the last backup for knowing the heading if the electric compass systems fail.",
+              "page": "81",
+              "src": "m2"
+            }
+          ]
+        },
+        {
+          "id": "mirrors",
+          "name": "Rear-view mirrors",
+          "src": "g1",
+          "text": "Three small mirrors on the canopy frame let the pilot look behind the plane. Each has a knob in the game that tilts it.",
+          "context": "Looking behind matters in a fight and in the traffic pattern. The knobs only change where the mirror points.",
+          "controls": [
+            {
+              "id": "mirror-top",
+              "name": "Top mirror adjust",
+              "type": "knob",
+              "match": [
+                "PNT_PILOT_MIRROR_MOVE_TOP"
+              ],
+              "text": "Clicking this knob tilts the top mirror, the one above the pilot's head. The pilot uses it to see what is behind and above.",
+              "context": "It is a comfort setting. It does not change anything else in the plane."
+            },
+            {
+              "id": "mirror-right",
+              "name": "Right mirror adjust",
+              "type": "knob",
+              "match": [
+                "PNT_PILOT_MIRROR_MOVE_LEFT"
+              ],
+              "text": "Tilts the mirror on the right side of the canopy frame. The game hint calls it 'Adjust Right Mirror'.",
+              "context": "It lets the pilot check the area behind the right wing without turning around."
+            },
+            {
+              "id": "mirror-left",
+              "name": "Left mirror adjust",
+              "type": "knob",
+              "match": [
+                "PNT_PILOT_MIRROR_MOVE_RIGHT"
+              ],
+              "text": "Tilts the mirror on the left side of the canopy frame. The game hint calls it 'Adjust Left Mirror'.",
+              "context": "It lets the pilot check the area behind the left wing without turning around."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "pilot-front-panel",
+      "where": "front-center",
+      "name": "Pilot: front panel under the HUD",
+      "text": "The middle of the pilot's instrument panel: the weapon controls, the VDI and the HSD under the HUD, and the pressure gauges.",
+      "panels": [
+        {
+          "id": "acm-panel",
+          "name": "Air combat maneuver (ACM) panel",
+          "db": "acm-panel",
+          "src": "m2",
+          "page": "66",
+          "text": "A panel under the HUD with the pilot's weapon controls: the ACM cover, the master arm switch, the missile and gun buttons, the weapon lights, the master caution light and the engine fire lights.",
+          "context": "In a fight the pilot reaches for this panel first. Nothing fires until the master arm switch is turned on.",
+          "controls": [
+            {
+              "id": "acm-cover",
+              "name": "ACM cover",
+              "type": "guard",
+              "match": [
+                "PNT_1049",
+                "item:acm-panel:1"
+              ],
+              "positions": [
+                {
+                  "name": "UP",
+                  "text": "The cover is lifted: ACM mode is on and the jettison button can be pressed."
+                },
+                {
+                  "name": "DOWN",
+                  "text": "The cover is closed over the jettison button."
+                }
+              ],
+              "text": "A flip-up cover. Lifting it switches on the air combat maneuver (ACM) mode and uncovers the ACM jettison button below it.",
+              "context": "In ACM mode the plane sets the gun to HIGH rate, the Sidewinder cooling to ON and the missile preparation to ON by itself.",
+              "page": "66-67",
+              "src": "m2"
+            },
+            {
+              "id": "acm-jettison",
+              "name": "ACM JETT button",
+              "type": "button",
+              "match": [
+                "PNT_1048",
+                "item:acm-panel:2"
+              ],
+              "text": "Pressing this button drops the weapon stations that the RIO picked on his armament panel. Dropping them makes the plane lighter in an emergency. Sidewinder missiles are not dropped, even if they were picked.",
+              "context": "It sits under the ACM cover. The pilot uses it in a dogfight when he needs to get rid of load fast.",
+              "page": "66",
+              "src": "m2"
+            },
+            {
+              "id": "gun-rate",
+              "name": "GUN RATE button",
+              "type": "button",
+              "match": [
+                "PNT_GUN_RATE",
+                "item:acm-panel:6"
+              ],
+              "text": "This button chooses how fast the built-in M61 cannon fires. HIGH is 6,000 rounds per minute and LOW is 4,000. The button has a light that shows the choice.",
+              "context": "HIGH is normally used against aircraft and LOW against ground targets. Switching on the ACM mode sets HIGH by itself.",
+              "page": "67",
+              "src": "m2"
+            },
+            {
+              "id": "sidewinder-cool",
+              "name": "SW COOL button",
+              "type": "button",
+              "match": [
+                "PNT_SW_COOL",
+                "item:acm-panel:7"
+              ],
+              "text": "This button cools the seeker of the AIM-9 Sidewinder missile by hand. The Sidewinder follows heat, and its seeker needs to be cold to see it. The button has a light that shows when it is on.",
+              "context": "Switching on the ACM mode sets the cooling to ON by itself.",
+              "page": "67",
+              "src": "m2"
+            },
+            {
+              "id": "msl-prep",
+              "name": "MSL PREP button",
+              "type": "button",
+              "match": [
+                "PNT_MSL_PREP",
+                "item:acm-panel:8"
+              ],
+              "text": "This button gets the long-range AIM-54 Phoenix and AIM-7 Sparrow missiles ready for launch. It has a light that shows when it is on.",
+              "context": "These are the radar-guided missiles; the Sidewinder is prepared with its own button next to it. Switching on the ACM mode sets this button to ON by itself.",
+              "page": "67",
+              "src": "m2"
+            },
+            {
+              "id": "msl-mode",
+              "name": "MSL MODE button",
+              "type": "button",
+              "match": [
+                "PNT_MSL_MODE",
+                "item:acm-panel:9"
+              ],
+              "text": "This button switches the missile launch mode between normal (NORM) and boresight (BRSIT), where the missile looks straight ahead along the plane's nose. It has a light that shows the mode.",
+              "context": "In ACM mode the weapon control system chooses the mode and the button is not used.",
+              "page": "67-68",
+              "src": "m2"
+            },
+            {
+              "id": "master-arm-cover",
+              "name": "MASTER ARM cover",
+              "type": "guard",
+              "match": [
+                "PNT_1046"
+              ],
+              "text": "A guard over the master arm switch. The ON position of the switch stays locked until the cover is lifted.",
+              "context": "It protects the weapons from being armed by accident.",
+              "page": "68",
+              "src": "m2"
+            },
+            {
+              "id": "master-arm",
+              "name": "MASTER ARM switch",
+              "type": "switch3",
+              "match": [
+                "PNT_1047",
+                "item:acm-panel:10"
+              ],
+              "positions": [
+                {
+                  "name": "OFF",
+                  "text": "No power reaches the release circuits. Nothing can be released."
+                },
+                {
+                  "name": "ON",
+                  "text": "Power reaches the release circuits. Weapons can be released and stores can be dropped selectively. The switch is locked here until the cover is lifted."
+                },
+                {
+                  "name": "TNG",
+                  "text": "In-flight training mode."
+                }
+              ],
+              "text": "This is the main safety switch of the weapons. While it is OFF, nothing can be fired or dropped. TNG switches on a training mode for use in the air. In the cockpit the switch is up for ON, in the middle for OFF and down for TNG.",
+              "context": "The weapon release is cut off while the landing gear is down, except the emergency jettison. The ACM jettison and the emergency jettison work even with MASTER ARM off.",
+              "page": "68",
+              "src": "m2"
+            },
+            {
+              "id": "master-caution-reset",
+              "name": "MASTER CAUTION button",
+              "type": "button",
+              "match": [
+                "PNT_9199",
+                "item:acm-panel:12"
+              ],
+              "text": "This big light flashes when something new appears on the pilot's caution and advisory panel. Pressing it switches the flashing off until the next event.",
+              "context": "It tells the pilot that something needs attention; the labelled lights on the panel show what.",
+              "page": "68",
+              "src": "m2"
+            },
+            {
+              "id": "station-flags",
+              "name": "Station status flags",
+              "type": "indicator",
+              "match": [
+                "item:acm-panel:11"
+              ],
+              "text": "Small flags that show whether each weapon station is ready. Black means no weapon or not ready, white means ready, and checkerboard means the weapon is selected and ready to launch.",
+              "context": "On the ground a checkerboard flag also means the fuselage missile rails are up and locked and the loaded weapons are armed.",
+              "page": "68",
+              "src": "m2"
+            },
+            {
+              "id": "acm-lights",
+              "name": "SEAM LOCK, COLLISION and HOT TRIGGER lights",
+              "type": "light",
+              "match": [
+                "item:acm-panel:3",
+                "item:acm-panel:4",
+                "item:acm-panel:5"
+              ],
+              "count": 3,
+              "text": "Three lights. SEAM LOCK shows that a Sidewinder is searching for a target (a try lasts 4.5 seconds) and stays on if the seeker locks. COLLISION shows that collision steering is chosen during a radar lock on one target. HOT TRIG shows the conditions for firing are met, so pulling the trigger releases a weapon.",
+              "context": "They tell the pilot the state of the weapons without looking at the screens.",
+              "page": "66-67",
+              "src": "m2"
+            },
+            {
+              "id": "fire-lights",
+              "name": "L FIRE / R FIRE warning lights",
+              "type": "light",
+              "match": [
+                "item:acm-panel:13"
+              ],
+              "text": "Red lights that come on when a fire is detected in the left or right engine.",
+              "context": "A fire light calls for the engine fire procedure. The matching fire bottle button and fuel shutoff are on the instrument panels beside it.",
+              "page": "69",
+              "src": "m2"
+            },
+            {
+              "id": "turn-slip",
+              "name": "Turn-and-slip indicator",
+              "type": "gauge",
+              "match": [
+                "item:acm-panel:14"
+              ],
+              "text": "A small gauge that shows how fast the plane turns and whether it slides sideways in the turn. A ball floating in fluid shows the sideways slip.",
+              "context": "The pilot uses it to keep turns coordinated.",
+              "page": "69",
+              "src": "m2"
+            }
+          ]
+        },
+        {
+          "id": "vdi",
+          "name": "Vertical display indicator (VDI)",
+          "db": "vdi",
+          "src": "m2",
+          "page": "69",
+          "text": "The VDI is the screen under the HUD that adds flight and weapon information to the HUD. The knobs around it set its picture, and a column of lights shows data link messages.",
+          "context": "The pilot flies mostly by the VDI and the HUD together. What the VDI shows is chosen on the displays control panel.",
+          "controls": [
+            {
+              "id": "vdi-filter",
+              "name": "VDI filter button",
+              "type": "button",
+              "match": [
+                "PNT_VDI"
+              ],
+              "text": "Clicking the middle of the VDI screen puts a red night filter over it. The game names this control 'VDI filter'.",
+              "context": "The filter is used for night flying.",
+              "page": "69-70",
+              "src": "m2"
+            },
+            {
+              "id": "vdi-brightness",
+              "name": "VDI BRIGHTNESS knob",
+              "type": "knob",
+              "match": [
+                "PNT_1036",
+                "item:vdi:2"
+              ],
+              "text": "Turning this knob makes the VDI screen brighter or dimmer.",
+              "context": "The pilot sets it to suit the light in the cockpit.",
+              "page": "70",
+              "src": "m2"
+            },
+            {
+              "id": "vdi-contrast",
+              "name": "VDI CONTRAST knob",
+              "type": "knob",
+              "match": [
+                "PNT_1038",
+                "item:vdi:3"
+              ],
+              "text": "Turning this knob changes how strongly the dark and light parts of the VDI picture differ.",
+              "context": "It works together with the brightness knob to make the picture clear.",
+              "page": "70",
+              "src": "m2"
+            },
+            {
+              "id": "vdi-trim",
+              "name": "VDI TRIM knob",
+              "type": "knob",
+              "match": [
+                "PNT_1035",
+                "item:vdi:6"
+              ],
+              "text": "This knob moves the pitch lines on the VDI up or down a little to line them up with the real horizon.",
+              "context": "It is a fine adjustment, like the HUD TRIM knob.",
+              "page": "70",
+              "src": "m2"
+            },
+            {
+              "id": "vdi-lights",
+              "name": "VDI caution lights",
+              "type": "light",
+              "match": [
+                "item:vdi:7"
+              ],
+              "text": "A block of lights on the VDI frame with data link messages, for example ACL READY (the carrier is ready for an automatic landing), A/P CPLR (the plane is under data link control), WAVEOFF (go around), WING SWEEP (a wing sweep fault) and REDUCE SPEED (flaps or Mach limit exceeded). The data link shares information between aircraft and the carrier by radio.",
+              "context": "They are indicators only; the pilot cannot change them. They matter most during an automatic carrier landing.",
+              "page": "70-72",
+              "src": "m2"
+            }
+          ]
+        },
+        {
+          "id": "hsd",
+          "name": "Horizontal situation display (HSD)",
+          "db": "hsd",
+          "src": "m2",
+          "page": "72-73",
+          "text": "The HSD is a navigation display that shows where to steer and can repeat the RIO's tactical screen. The knobs set the heading and the course, and a button tests the display.",
+          "context": "The pilot uses it to see where to fly next. Which content it shows (navigation or the RIO's picture) is chosen on the displays control panel.",
+          "controls": [
+            {
+              "id": "hsd-brightness",
+              "name": "HSD BRIGHTNESS knob",
+              "type": "knob",
+              "match": [
+                "PNT_1043",
+                "item:hsd:1"
+              ],
+              "text": "Turning this knob makes the HSD brighter or dimmer.",
+              "context": "The pilot sets it to suit the light in the cockpit.",
+              "page": "73",
+              "src": "m2"
+            },
+            {
+              "id": "hsd-heading",
+              "name": "HSD HDG knob (selected heading)",
+              "type": "knob",
+              "match": [
+                "PNT_1039",
+                "item:hsd:2"
+              ],
+              "text": "This knob moves the heading marker (bug) around the display. The marker shows the direction the pilot wants to fly in the TACAN mode.",
+              "context": "TACAN is the radio beacon system that gives direction and distance to a beacon.",
+              "page": "73",
+              "src": "m2"
+            },
+            {
+              "id": "hsd-course",
+              "name": "HSD CRS knob (selected course)",
+              "type": "knob",
+              "match": [
+                "PNT_1040",
+                "item:hsd:3"
+              ],
+              "text": "This knob sets the wanted course, the line on the ground the pilot wants to follow, in the manual and TACAN modes.",
+              "context": "It is used in the manual and TACAN steering modes.",
+              "page": "73",
+              "src": "m2"
+            },
+            {
+              "id": "hsd-test",
+              "name": "HSD TEST button",
+              "type": "button",
+              "match": [
+                "PNT_1041",
+                "item:hsd:4"
+              ],
+              "text": "Pressing this button shows a test picture on the HSD and resets the display's overload protection if it has tripped.",
+              "context": "It is a quick check that the display works.",
+              "page": "73",
+              "src": "m2"
+            },
+            {
+              "id": "hsd-bit",
+              "name": "HSD BIT indicator",
+              "type": "indicator",
+              "match": [
+                "item:hsd:5"
+              ],
+              "text": "White flags that appear on the HSD when the display has failed. Turning the indicator clockwise resets it.",
+              "context": "The pilot sees them when the self-test finds a fault.",
+              "page": "73",
+              "src": "m2"
+            }
+          ]
+        },
+        {
+          "id": "center-pressure-gauges",
+          "name": "Cabin and brake pressure gauges",
+          "db": "center-pressure-gauges",
+          "src": "m2",
+          "page": "74-75",
+          "text": "Two round gauges in the middle of the panel. One shows how high the cockpit air pressure feels, the other shows the pressure in the emergency brake system.",
+          "context": "They are for checking, not for control. The pilot looks at them in the pre-flight checks and in emergencies.",
+          "controls": [
+            {
+              "id": "cabin-altimeter",
+              "name": "Cabin pressure altimeter",
+              "type": "gauge",
+              "match": [
+                "item:center-pressure-gauges:1"
+              ],
+              "text": "A gauge that tells how high the air in the cockpit feels, from 0 to 50,000 feet.",
+              "context": "It tells how well the cockpit pressurization works. The pilot looks at it in the pre-flight checks and in emergencies.",
+              "page": "74",
+              "src": "m2"
+            },
+            {
+              "id": "brake-pressure",
+              "name": "Emergency brake pressure indicator",
+              "type": "gauge",
+              "match": [
+                "item:center-pressure-gauges:2"
+              ],
+              "text": "A gauge for the pressure stored for the emergency brakes. PARK is the parking brake (about three applications while in the green) and AUX is the backup brake used with the toe pedals (about 13 to 14 applications in the green).",
+              "context": "It tells the pilot whether the backup brakes can still work.",
+              "page": "75",
+              "src": "m2"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "pilot-left-instruments",
+      "where": "front-left",
+      "name": "Pilot: left instrument panel and knee panel",
+      "text": "The left part of the pilot's instrument panel: engine gauges, the height and speed gauges, the radar altimeter and the left engine fire controls.",
+      "panels": [
+        {
+          "id": "engine-instruments",
+          "name": "Engine instruments (left knee panel)",
+          "db": "engine-instruments",
+          "src": "m2",
+          "page": "47-50",
+          "text": "Gauges for the plane's hydraulics and its two engines. They show pressures, how far the exhaust nozzles are open, engine speed, heat and fuel use.",
+          "context": "The pilot watches them in the engine start and during flight. They have no controls of their own.",
+          "controls": [
+            {
+              "id": "hyd-pressure",
+              "name": "Hydraulic pressure indicator",
+              "type": "gauge",
+              "match": [
+                "item:engine-instruments:1"
+              ],
+              "text": "A gauge for the pressure of the combined and the flight hydraulic systems, the oil under high pressure that moves heavy parts. Flags marked SPOIL and EMER FLT HI show the pressure of the outer spoiler module and of the backup flight hydraulics.",
+              "context": "Low pressure means the controls may not work normally.",
+              "page": "47",
+              "src": "m2"
+            },
+            {
+              "id": "oil-pressure",
+              "name": "Oil pressure indicator",
+              "type": "gauge",
+              "match": [
+                "item:engine-instruments:2"
+              ],
+              "text": "A gauge for the engine oil pressure of each engine, from 0 to 100 psi. The normal range is 25 to 65 psi and changes with the engine speed.",
+              "context": "The pilot checks it after the engine start and in flight.",
+              "page": "48",
+              "src": "m2"
+            },
+            {
+              "id": "nozzle-position",
+              "name": "Exhaust nozzle position indicator",
+              "type": "gauge",
+              "match": [
+                "item:engine-instruments:3"
+              ],
+              "text": "A gauge for how far the exhaust nozzle of each engine is open, from 0 (closed) to 5 (fully open).",
+              "context": "The nozzle opens and closes with the engine power.",
+              "page": "48",
+              "src": "m2"
+            },
+            {
+              "id": "eig",
+              "name": "Electronic instrument group",
+              "type": "display",
+              "match": [
+                "item:engine-instruments:4"
+              ],
+              "text": "A display with the engine speed (RPM of the high-pressure compressor, N2), the exhaust temperature (EGT) and the fuel flow (FF) for each engine. The fuel flow does not count the extra fuel burned in the afterburner.",
+              "context": "It is the main way to see how hard each engine works.",
+              "page": "49-50",
+              "src": "m2"
+            }
+          ]
+        },
+        {
+          "id": "radar-altimeter",
+          "name": "Radar altimeter",
+          "db": "radar-altimeter",
+          "src": "m2",
+          "page": "51-52",
+          "text": "A gauge that shows the height above the ground, measured with radio waves, and warns when the plane gets too low.",
+          "context": "It matters most in low flying and on the landing approach.",
+          "controls": [
+            {
+              "id": "radalt-knob",
+              "name": "Radar altimeter control knob",
+              "type": "knob",
+              "match": [
+                "PNT_308",
+                "item:radar-altimeter:1"
+              ],
+              "text": "Fully counterclockwise this knob switches the radar altimeter off. Turning it clockwise sets the height at which the low warning light comes on. Pushing the knob starts a self-test.",
+              "context": "The pilot sets the warning height before a low approach.",
+              "page": "51-52",
+              "src": "m2"
+            },
+            {
+              "id": "radalt-indications",
+              "name": "Radar altimeter flag and lights",
+              "type": "indicator",
+              "match": [
+                "item:radar-altimeter:2",
+                "item:radar-altimeter:3",
+                "item:radar-altimeter:4",
+                "item:radar-altimeter:5"
+              ],
+              "count": 4,
+              "text": "An OFF flag shows when the unit is off, has no power or has lost the ground signal. A red light shows when the plane is below the set height. A green light shows the self-test, when the reading should be 100 feet, give or take 10. A small triangular bug on the dial marks the set height.",
+              "context": "They tell the pilot whether the height reading can be trusted and when to pull up.",
+              "page": "52",
+              "src": "m2"
+            }
+          ]
+        },
+        {
+          "id": "altimeter",
+          "name": "Altimeter (pilot)",
+          "db": "altimeter",
+          "src": "m2",
+          "page": "53-54",
+          "text": "The height gauge. It shows the plane's height above sea level, calculated from the air pressure.",
+          "context": "The pilot sets the local air pressure so the gauge reads right. A mode switch chooses the normal or the backup way to measure.",
+          "controls": [
+            {
+              "id": "alt-baro",
+              "name": "Altimeter pressure setting knob",
+              "type": "knob",
+              "match": [
+                "PNT_306",
+                "item:altimeter:2"
+              ],
+              "text": "Turning this knob sets the local air pressure that the altimeter uses, shown in a small window in inches of mercury.",
+              "context": "The pilot sets it from the weather report so the height reads correctly.",
+              "page": "54",
+              "src": "m2"
+            },
+            {
+              "id": "alt-mode",
+              "name": "Altimeter mode switch (RESET / STBY)",
+              "type": "switch2",
+              "match": [
+                "PNT_307",
+                "item:altimeter:4"
+              ],
+              "positions": [
+                {
+                  "name": "RESET",
+                  "text": "Holding the switch here for about three seconds, with air data and power available, starts the normal servo-driven mode. It springs back."
+                },
+                {
+                  "name": "STBY",
+                  "text": "The altimeter works on air pressure alone (backup mode) and a red STBY flag shows."
+                }
+              ],
+              "text": "This switch chooses how the altimeter works. In RESET it goes back to the normal mode that uses the air data computer. In STBY it works on air pressure alone. It also falls back to STBY by itself when data or power is missing for more than three seconds.",
+              "context": "The standby flag shows when the backup mode is in use.",
+              "page": "54",
+              "src": "m2"
+            },
+            {
+              "id": "alt-readout",
+              "name": "Altimeter readout and pressure window",
+              "type": "display",
+              "match": [
+                "item:altimeter:1",
+                "item:altimeter:3",
+                "item:altimeter:5"
+              ],
+              "count": 3,
+              "text": "Drums count the ten-thousands, thousands and hundreds of feet and a pointer on a dial shows the hundreds. A window shows the set air pressure. A red STBY flag shows when the standby mode is in use.",
+              "context": "It is the pilot's main height display.",
+              "page": "53-54",
+              "src": "m2"
+            }
+          ]
+        },
+        {
+          "id": "airspeed-mach",
+          "name": "Airspeed / Mach indicator (pilot)",
+          "db": "airspeed-mach",
+          "src": "m2",
+          "page": "55-56",
+          "text": "The speed gauge. It shows how fast the plane flies through the air and the Mach number, the speed compared to the speed of sound.",
+          "context": "The pilot uses it all the time. A knob sets small marks (index pointers) to remember speeds.",
+          "controls": [
+            {
+              "id": "asi-index-knob",
+              "name": "Airspeed index knob",
+              "type": "knob",
+              "match": [
+                "PNT_310",
+                "item:airspeed-mach:8"
+              ],
+              "text": "This push-pull knob moves the small speed marks on the gauge. One position moves the airspeed mark and the other moves the Mach mark.",
+              "context": "The pilot sets a mark to a speed to remember it.",
+              "page": "56",
+              "src": "m2"
+            },
+            {
+              "id": "asi-scales",
+              "name": "Airspeed dial and scales",
+              "type": "indicator",
+              "match": [
+                "item:airspeed-mach:1",
+                "item:airspeed-mach:2",
+                "item:airspeed-mach:3",
+                "item:airspeed-mach:4"
+              ],
+              "count": 4,
+              "text": "The dial turns to show the speed on three scales: an outer scale up to 200 knots, an inner scale from 200 to 850 knots, and a Mach scale.",
+              "context": "It is read like a clock face, with the speed at the marker.",
+              "page": "55-56",
+              "src": "m2"
+            },
+            {
+              "id": "asi-pointers",
+              "name": "Index pointers (airspeed, Mach, safe Mach)",
+              "type": "indicator",
+              "match": [
+                "item:airspeed-mach:5",
+                "item:airspeed-mach:6",
+                "item:airspeed-mach:7"
+              ],
+              "count": 3,
+              "text": "Three marks on the gauge. Two can be set by the pilot to a wanted speed and a wanted Mach number. The third shows the highest safe Mach number, which the air data computer calculates.",
+              "context": "The pilot keeps the speed near the marks he set.",
+              "page": "56",
+              "src": "m2"
+            }
+          ]
+        },
+        {
+          "id": "fire-bottle-left",
+          "name": "Left engine fire controls",
+          "src": "m2",
+          "text": "A button that sets off the fire extinguisher bottle for the left engine. It sits behind the left engine fuel shutoff handle.",
+          "context": "The pilot pulls the fuel shutoff handle of the left engine, then reaches the button behind it. The handle is on the left flight instruments.",
+          "controls": [
+            {
+              "id": "fire-ext-left",
+              "name": "Left fire extinguisher bottle button",
+              "type": "button",
+              "match": [
+                "PNT_FIRE_EXT_SW_L"
+              ],
+              "text": "Pressing this button discharges the fire extinguisher bottle into the left engine. The button is behind the fuel shutoff handle and is reachable only when that handle is pulled out.",
+              "context": "It is used for an engine fire.",
+              "page": "58",
+              "src": "m2"
+            }
+          ],
+          "page": "58"
+        },
+        {
+          "id": "left-flight-instruments",
+          "name": "Left flight instruments",
+          "db": "left-flight-instruments",
+          "src": "m2",
+          "page": "57-59",
+          "text": "The vertical speed gauge, the angle of attack gauge and the emergency fuel shutoff handle of the left engine.",
+          "context": "The shutoff handle stops the fuel to the left engine in an emergency such as a fire.",
+          "controls": [
+            {
+              "id": "fuel-shutoff-left",
+              "name": "Left engine fuel shutoff handle",
+              "type": "handle",
+              "match": [
+                "PNT_15081",
+                "item:left-flight-instruments:2"
+              ],
+              "text": "Pulling this handle cuts off the fuel to the left engine and pushing it in gives the fuel back. It is for emergencies, for example an engine fire, not for the normal engine shutdown.",
+              "context": "The left fire extinguisher button sits behind it. The right engine has the same handle on the right side.",
+              "page": "58",
+              "src": "m2"
+            },
+            {
+              "id": "vvi",
+              "name": "Vertical velocity indicator",
+              "type": "gauge",
+              "match": [
+                "item:left-flight-instruments:1"
+              ],
+              "text": "A gauge that shows how fast the plane climbs or sinks, in thousands of feet per minute. Sudden changes of the plane's attitude can make it read wrong for a moment.",
+              "context": "It is a basic flight instrument that the pilot checks during climb and descent.",
+              "page": "57",
+              "src": "m2"
+            },
+            {
+              "id": "aoa",
+              "name": "Angle-of-attack indicator",
+              "type": "gauge",
+              "match": [
+                "item:left-flight-instruments:3"
+              ],
+              "text": "A tape that shows the angle of attack, how steeply the wing meets the air, from 0 to 30 units. Marks beside it show the values for climb (5), cruise (8.5) and stall (29), and a bar shows the on-speed value for the approach (15).",
+              "context": "The pilot flies the landing approach to the on-speed value.",
+              "page": "59",
+              "src": "m2"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "pilot-right-instruments",
+      "where": "front-right",
+      "name": "Pilot: right instrument panel and knee panel",
+      "text": "The right part of the pilot's instrument panel: the wing sweep display, backup instruments, the radio repeaters, the beacon compass, the radar warning scope and the fuel gauge.",
+      "panels": [
+        {
+          "id": "right-instruments",
+          "name": "Right instrument panel",
+          "db": "right-instruments",
+          "src": "m2",
+          "page": "82-84",
+          "text": "The right part of the panel has the wing sweep display, the backup attitude gauge, the right engine fuel shutoff handle, the right fire bottle button and the canopy jettison handle.",
+          "context": "The wing sweep display is important because the F-14's wings move. The handles are for emergencies.",
+          "controls": [
+            {
+              "id": "wing-sweep-indicator",
+              "name": "Wing-sweep indicator",
+              "type": "indicator",
+              "match": [
+                "item:right-instruments:1"
+              ],
+              "text": "A display with three readings and a mode window. The left pointer shows the farthest-forward sweep allowed at the present speed and height. The middle tape shows the sweep the computer commands, and the right tape shows the real sweep. Five windows show the sweep mode.",
+              "context": "The wings swing forward for slow flight and back for high speed. The wing-sweep switch on the throttle chooses the mode.",
+              "page": "82-83",
+              "src": "m2"
+            },
+            {
+              "id": "fuel-shutoff-right",
+              "name": "Right engine fuel shutoff handle",
+              "type": "handle",
+              "match": [
+                "PNT_1044",
+                "item:right-instruments:2"
+              ],
+              "text": "Pulling this handle cuts off the fuel to the right engine and pushing it in gives the fuel back. It is for emergencies, for example an engine fire, not for the normal engine shutdown.",
+              "context": "The right fire extinguisher button sits behind it. The left engine has the same handle on the left side.",
+              "page": "83",
+              "src": "m2"
+            },
+            {
+              "id": "fire-ext-right",
+              "name": "Right fire extinguisher bottle button",
+              "type": "button",
+              "match": [
+                "PNT_FIRE_EXT_SW_R"
+              ],
+              "text": "Pressing this button discharges the fire extinguisher bottle into the right engine. The button is behind the right fuel shutoff handle and is reachable only when that handle is pulled out.",
+              "context": "It is used for an engine fire.",
+              "page": "83",
+              "src": "m2"
+            },
+            {
+              "id": "standby-adi-knob",
+              "name": "Standby attitude indicator knob",
+              "type": "knob",
+              "match": [
+                "PNT_1032",
+                "item:right-instruments:3"
+              ],
+              "text": "The standby attitude indicator is a backup artificial horizon with an OFF flag. Pulled out, this knob cages the instrument, which locks its gyroscope, and the OFF flag shows. Pushed in, it frees the instrument, and turning the knob then trims the pitch.",
+              "context": "The pilot uses the backup if the main attitude displays fail.",
+              "page": "84",
+              "src": "m2"
+            },
+            {
+              "id": "canopy-jettison-pilot",
+              "name": "Canopy jettison handle",
+              "type": "handle",
+              "match": [
+                "PNT_224",
+                "item:right-instruments:4"
+              ],
+              "text": "Pulling this handle throws the glass roof (canopy) off the plane. It is for emergencies, when the pilot must leave the plane quickly.",
+              "context": "It is used only in an emergency. The normal canopy handle is on the right wall.",
+              "page": "90",
+              "src": "m2"
+            }
+          ]
+        },
+        {
+          "id": "radio-remote-indicators",
+          "name": "UHF / VHF remote indicators",
+          "db": "radio-remote-indicators",
+          "src": "m2",
+          "page": "85-86",
+          "text": "Two small displays that repeat the frequency or channel of the two radios, so the pilot can read them without looking at the radio panels.",
+          "context": "The pilot reads them when changing channels. Each has a test button and a brightness knob.",
+          "controls": [
+            {
+              "id": "uhf1-remote",
+              "name": "UHF 1 remote indicator",
+              "type": "display",
+              "match": [
+                "UHF_BIT_TEST",
+                "PNT_1031",
+                "item:radio-remote-indicators:1"
+              ],
+              "text": "A small display that shows the frequency or channel of the first radio (AN/ARC-159). A knob sets its brightness and a TEST button starts a self-test; a correct test shows 888.888.",
+              "context": "It repeats what is set on the UHF 1 radio on the left console.",
+              "page": "85-86",
+              "src": "m2"
+            },
+            {
+              "id": "vuhf2-remote",
+              "name": "V/UHF 2 remote indicator",
+              "type": "display",
+              "match": [
+                "VHF_BIT_TEST",
+                "PNT_1030",
+                "item:radio-remote-indicators:2"
+              ],
+              "text": "A small display that shows the frequency or channel of the second radio (AN/ARC-182). A knob sets its brightness and a TEST button starts a self-test; a correct test shows 888.888.",
+              "context": "It repeats what is set on the V/UHF 2 radio.",
+              "page": "85-86",
+              "src": "m2"
+            }
+          ]
+        },
+        {
+          "id": "bdhi",
+          "name": "Bearing distance heading indicator (BDHI)",
+          "db": "bdhi",
+          "src": "m2",
+          "page": "86-87",
+          "text": "A round compass display with two pointers. It shows the plane's heading, the direction to the tuned beacon and the distance to it.",
+          "context": "The pilot uses it to fly to a beacon on the ground or on a ship. The pointers show which way to turn.",
+          "controls": [
+            {
+              "id": "bdhi-all",
+              "name": "BDHI display",
+              "type": "indicator",
+              "match": [
+                "item:bdhi:1",
+                "item:bdhi:2",
+                "item:bdhi:3",
+                "item:bdhi:4"
+              ],
+              "count": 4,
+              "text": "A compass rose shows the magnetic heading. Pointer 2 shows the magnetic course to the tuned TACAN station and pointer 1 the bearing to the tuned UHF/ADF radio station. A counter shows the slant distance to the TACAN station in nautical miles.",
+              "context": "TACAN is a radio beacon system that tells the plane its direction and distance to a beacon.",
+              "page": "87",
+              "src": "m2"
+            }
+          ]
+        },
+        {
+          "id": "alr67",
+          "name": "ALR-67 indicator (radar warning scope)",
+          "db": "alr67",
+          "src": "m2",
+          "page": "88-89",
+          "text": "The scope of the radar warning receiver. It shows where enemy radars are and how dangerous they are, in three rings.",
+          "context": "The pilot watches it for threats. The more central a mark, the more dangerous it is.",
+          "controls": [
+            {
+              "id": "alr67-brightness",
+              "name": "ALR-67 intensity knob",
+              "type": "knob",
+              "match": [
+                "PNT_16011",
+                "item:alr67:5"
+              ],
+              "text": "Turning this knob makes the radar warning scope brighter or dimmer.",
+              "context": "The pilot sets it to suit the light in the cockpit.",
+              "page": "89",
+              "src": "m2"
+            },
+            {
+              "id": "alr67-scope",
+              "name": "ALR-67 scope: status circle and threat bands",
+              "type": "indicator",
+              "match": [
+                "item:alr67:1",
+                "item:alr67:2",
+                "item:alr67:3",
+                "item:alr67:4"
+              ],
+              "count": 4,
+              "text": "The centre circle shows the system status: the top left shows which kind of threat is given priority, the top right shows whether the limited mode is on (only the six most important threats), and the lower half shows faults or the offset display. Three bands show the emitters: not an immediate threat, able to engage but not doing so, and direct threats.",
+              "context": "The outer ring holds emitters that are no immediate threat, the middle ring those able to engage, the inner ring direct threats. The more central a mark, the more dangerous it is.",
+              "page": "88-89",
+              "src": "m2"
+            }
+          ]
+        },
+        {
+          "id": "fuel-quantity",
+          "name": "Fuel quantity indicator (right knee panel)",
+          "db": "fuel-quantity",
+          "src": "m2",
+          "page": "91-92",
+          "text": "The fuel gauge. It shows the total fuel, the fuel in the left and right tanks and the fuel that feeds the engines. A knob sets the BINGO fuel.",
+          "context": "BINGO fuel is the fuel level at which the pilot must head home. The gauge shows what the quantity selector on the left side has chosen.",
+          "controls": [
+            {
+              "id": "bingo-knob",
+              "name": "BINGO fuel level knob",
+              "type": "knob",
+              "match": [
+                "PNT_1050",
+                "item:fuel-quantity:5"
+              ],
+              "text": "Turning this knob sets the BINGO fuel level, which is shown in the BINGO readout. It is the amount of fuel at which the pilot should go home, and a BINGO caution light comes on when the fuel is at or below it.",
+              "context": "The pilot sets it to the value the mission needs.",
+              "page": "92",
+              "src": "m2"
+            },
+            {
+              "id": "fuel-displays",
+              "name": "Fuel counters and tapes",
+              "type": "display",
+              "match": [
+                "item:fuel-quantity:1",
+                "item:fuel-quantity:2",
+                "item:fuel-quantity:3",
+                "item:fuel-quantity:4"
+              ],
+              "count": 4,
+              "text": "Counters show the set BINGO value, the total fuel and the fuel in the left and right tank group chosen with the QTY SEL switch. Two tapes show the fuselage and feed fuel: the left tape the left feed and rear fuselage tanks, the right tape the right feed and front fuselage tanks.",
+              "context": "The pilot checks them during the flight to see how much fuel is left.",
+              "page": "92",
+              "src": "m2"
+            }
+          ]
+        },
+        {
+          "id": "right-knee-instruments",
+          "name": "Accelerometer and clock",
+          "db": "right-knee-instruments",
+          "src": "m2",
+          "page": "93-94",
+          "text": "The G-meter and the clock on the right knee panel. The G-meter shows how strong the push into the seat is in turns, from minus 5 to plus 10. The clock shows the time and can time events.",
+          "context": "The pilot checks the G-meter to see how hard the plane was flown. The clock times legs of the flight.",
+          "controls": [
+            {
+              "id": "accel-reset",
+              "name": "Accelerometer reset button",
+              "type": "button",
+              "match": [
+                "PNT_228",
+                "item:right-knee-instruments:1"
+              ],
+              "text": "Pressing this button (PUSH TO SET) sets the G-meter's two peak pointers back. They keep the highest positive and the highest negative G value reached.",
+              "context": "The pilot resets them after a maneuver.",
+              "page": "93",
+              "src": "m2"
+            },
+            {
+              "id": "clock-timer",
+              "name": "Clock timer button",
+              "type": "button",
+              "match": [
+                "PNT_CLOCK_RESET"
+              ],
+              "text": "Pressing this control starts, stops and resets the clock's 1-hour elapsed time counter, like a stopwatch.",
+              "context": "The pilot uses it to time a leg or a run.",
+              "page": "94",
+              "src": "m2"
+            },
+            {
+              "id": "clock-wind",
+              "name": "Clock wind knob",
+              "type": "knob",
+              "match": [
+                "PNT_1051",
+                "item:right-knee-instruments:2"
+              ],
+              "text": "Turning this knob clockwise winds the clock. Pulled out and turned, it sets the hour and minute hands.",
+              "context": "The clock is a wind-up clock, so it needs winding to keep running.",
+              "page": "94",
+              "src": "m2"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

@@ -11,7 +11,7 @@ Catalogs: `EngineOnly_Runtime/DB/VTOLVR` (`actions.tsv`, `seats.tsv`), `DB/VTOLV
 
 Native export rules as implemented: only maps of devices VTOL VR has listed (map, calibration or assignment entry) are written; the device element is the n-th axis the device has (unverified); clean and nuke remove the three actions from the other devices' maps; the toe brakes get the `axisRange` of the relation's `vtolnative` tuning (0 Full, 1 Positive); `HARDWARE_RUDDER` and the other Settings > Controls values are written to `gameSettings.cfg` when the profile sets them (`engine ffb set --device * --game VTOLVR`), otherwise a missing/off `HARDWARE_RUDDER` gives a warning. See "Every setting the game offers" below.
 
-Tags: **[OBS]** seen in real files on the dev PC · **[OBS-bin]** seen in the installed game's own assemblies and data files (`Assembly-CSharp.dll`, `Rewired_Core.dll`, `Rewired_Windows.dll`; the Rewired `InputManager` and `HardwareJoystickMap` objects in `level0` / `sharedassets0.assets`), looked at for interoperability only, nothing modified · **[SRC]** third-party source or post with URL · **[INF]** inferred · **[UNVERIFIED]** needs one check with the running game. Research 2026-10-01 on VTOL VR **1.13.4f1** (Steam build 25514272, `globalgamemanagers` PlayerSettings; changelog head "v1.13.0fX"). The game has never been started on the dev PC (`appmanifest_667970.acf` `LastPlayed 0`, no `%APPDATA%\Boundless Dynamics, LLC`, no `LocalLow\Boundless Dynamics, LLC`).
+Tags: **[OBS]** seen in real files on a test PC · **[OBS-bin]** seen in the installed game's own assemblies and data files (`Assembly-CSharp.dll`, `Rewired_Core.dll`, `Rewired_Windows.dll`; the Rewired `InputManager` and `HardwareJoystickMap` objects in `level0` / `sharedassets0.assets`), looked at for interoperability only, nothing modified · **[SRC]** third-party source or post with URL · **[INF]** inferred · **[UNVERIFIED]** needs one check with the running game. Research 2026-10-01 on VTOL VR **1.13.4f1** (Steam build 25514272, `globalgamemanagers` PlayerSettings; changelog head "v1.13.0fX"). The game has never been started on a test PC (`appmanifest_667970.acf` `LastPlayed 0`, no `%APPDATA%\Boundless Dynamics, LLC`, no `LocalLow\Boundless Dynamics, LLC`).
 
 The maintainer's research notes (Rewired hardware definitions, sample generators) are not part of the repo. At run time JoyPro reads only the user's save files, the installed `level0` (native action list) and, after the user installed it, the BYOJoystick mod.
 
@@ -243,7 +243,7 @@ Source: https://github.com/sicsix/BYOJoystick (last commit ffc106e 2024-09-08), 
   SaveData; `--path` with the SaveData folder, a file in it or the VTOL VR folder): the mod drops targets a vehicle does
   not have when it loads a file, so every target there exists in that seat. Targets found only in the files come in
   with title = target, category `Misc`, axis when bound to axes only (else button); `seats.tsv` gets their seats and
-  the seats a known target was found in; files of unknown seats are reported and skipped. Run on the dev PC
+  the seats a known target was found in; files of unknown seats are reported and skipped. Run on a test PC
   (2026-10-12): neither the mod nor a `BYOJ_*.xml` is there, so the refresh says to install the mod.
 - Older mods: VTOLVRPhysicalInput (evilC/solidshadow1126, last 2022, XML `Mappings` by device name, legacy Mod Loader) and TriquetraInput 2 (muskit, 2024-06, `<install>\SaveData\triquetrainput.xml`, unmaintained) [SRC github.com/solidshadow1126-zz/VTOLVRPhysicalInput, github.com/muskit/TriquetraInput2]. Not worth supporting.
 
@@ -296,11 +296,11 @@ brake (Slider) through `VTRWGetAxis` (axisRange 1 assumed to map the whole trave
 Import: BYOJ `<Deadzone>` becomes `takeover`/`cut` of `game:VTOLVR` by target (no longer a relation dead zone); native
 `axisRange` becomes `game:VTOLVRNative` tuning.
 ## Open questions (one real start needed)
-1. The real `hardwareIdentifier` of the dev-PC devices (product string source, PID decimal, GUID case) and the JSON player order.
+1. The real `hardwareIdentifier` of the test-PC devices (product string source, PID decimal, GUID case) and the JSON player order.
 2. `Axis n` ↔ DirectInput axis for an unknown device (e.g. MFG Crosswind: expected rudder Rz = Axis 2, toe brakes X/Y = Axis 0/1).
 3. Exact blank-map XML the game writes (`<name />`, `enabled`, KnownActionIds string, which Keyboard/Mouse/InputBehavior/Calibration keys appear) — to replace the constructed fixture with a real one.
 4. Whether a JoyPro-created map key for a device the game has not saved yet is loaded (expected yes: lookup by key at connect).
-5. Brake direction of the dev-PC pedals and whether invert or `axisRange 1` gives full travel.
+5. Brake direction of the test-PC pedals and whether invert or `axisRange 1` gives full travel.
 6. Steam Cloud behaviour after an offline edit (upload vs conflict prompt).
 7. BYOJoystick compatibility with 1.13.4 (only if JoyPro wants that target).
 

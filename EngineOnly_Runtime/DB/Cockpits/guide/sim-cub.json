@@ -1,0 +1,453 @@
+{
+  "format": "joypro-cockpit-guide",
+  "version": 1,
+  "id": "sim-cub",
+  "title": "Piper PA-18 Super Cub and CubCrafters XCub (cockpit)",
+  "variants": [
+    "pa-18-super-cub",
+    "xcub"
+  ],
+  "games": [
+    "XPlane12",
+    "MSFS2020",
+    "MSFS2024"
+  ],
+  "sets": [],
+  "intro": "The Super Cub and the XCub are small bush-flying aeroplanes with two seats one behind the other. The pilot usually flies alone from the rear seat. The cockpit is very simple: a stick in the middle, rudder pedals, the engine levers and the flap lever on the left wall, and only a few round instruments on the panel. The propeller is fixed and the wheels do not fold away.",
+  "sources": [
+    {
+      "id": "c1",
+      "title": "JoyPro cockpit catalog",
+      "kind": "reference"
+    },
+    {
+      "id": "s1",
+      "title": "Piper PA-18 Super Cub (Wikipedia)",
+      "url": "https://en.wikipedia.org/wiki/Piper_PA-18_Super_Cub"
+    },
+    {
+      "id": "s2",
+      "title": "X-Plane 12 Desktop Manual",
+      "url": "https://www.x-plane.com/manuals/desktop/"
+    },
+    {
+      "id": "x1",
+      "title": "X-Plane PA-18 Super Cub Pilot Operating Manual (Laminar Research)",
+      "file": "H:/SteamLibrary/steamapps/common/X-Plane 12/Aircraft/Laminar Research/Piper PA-18 Super Cub/X-Plane_PA18_Super_Cub_Pilot_Operating_Manual.pdf"
+    },
+    {
+      "id": "fn",
+      "title": "JoyPro function tables MSFS2020/2024 and X-Plane 11/12 (DB/Functions)"
+    },
+    {
+      "id": "y1",
+      "title": "CubCrafters CC19 XCub (Wikipedia)",
+      "url": "https://en.wikipedia.org/wiki/CubCrafters_XCub"
+    }
+  ],
+  "areas": [
+    {
+      "id": "overhead",
+      "where": "overhead",
+      "name": "Overhead: fuel gauges and electrical panel",
+      "text": "The small panel above the pilot with the fuel gauges and the electrical switches.",
+      "panels": [
+        {
+          "id": "overhead",
+          "name": "Overhead",
+          "db": "overhead",
+          "src": "x1",
+          "page": "15",
+          "text": "The fuel gauges for the wing tanks and the panel with the electrical switches.",
+          "context": "The pilot checks the fuel and switches the electricity on here before the start.",
+          "controls": [
+            {
+              "id": "fuel-gauges",
+              "name": "Fuel gauges",
+              "type": "gauge",
+              "match": [
+                "item:overhead:1"
+              ],
+              "text": "These gauges show how much fuel is in the wing tanks.",
+              "context": "The pilot checks them before and during the flight."
+            },
+            {
+              "id": "electrical",
+              "name": "Electrical panel",
+              "type": "switch",
+              "match": [
+                "item:overhead:2"
+              ],
+              "text": "This panel has the switches for the master (battery) power, the lights and the avionics (radios).",
+              "context": "The pilot switches the master on before starting the engine."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "left-side",
+      "where": "left-side",
+      "name": "Left wall: engine and flap controls",
+      "text": "The left wall of the cockpit with the levers for the engine, the flaps and the trim.",
+      "panels": [
+        {
+          "id": "left-wall",
+          "name": "Left wall controls",
+          "db": "left-wall",
+          "src": "x1",
+          "page": "16",
+          "text": "The levers and handles on the left wall: the flap lever, the throttle, the magneto switch, the carburettor heat, the trim crank and the fuel selector.",
+          "context": "The pilot handles the engine, the flaps and the trim with the left hand from here.",
+          "controls": [
+            {
+              "id": "flaps",
+              "name": "Flap lever",
+              "type": "lever",
+              "match": [
+                "item:left-wall:1"
+              ],
+              "text": "This lever on the left wall moves the flaps, the parts of the wing that extend for more lift at low speed.",
+              "context": "The pilot extends the flaps for take-off and landing, so the Cub can fly very slowly."
+            },
+            {
+              "id": "throttle",
+              "name": "Throttle",
+              "type": "lever",
+              "match": [
+                "item:left-wall:2"
+              ],
+              "text": "This lever on the left wall controls the engine power. Moving it forward gives more power.",
+              "context": "The pilot pushes it forward for take-off and pulls it back for landing."
+            },
+            {
+              "id": "magneto",
+              "name": "Magneto switch",
+              "type": "selector",
+              "match": [
+                "item:left-wall:3"
+              ],
+              "positions": [
+                {
+                  "name": "OFF",
+                  "text": "The magnetos are off and the engine stops."
+                },
+                {
+                  "name": "R",
+                  "text": "Only the right magneto gives sparks."
+                },
+                {
+                  "name": "L",
+                  "text": "Only the left magneto gives sparks."
+                },
+                {
+                  "name": "BOTH",
+                  "text": "Both magnetos work, the normal setting."
+                }
+              ],
+              "text": "This switch turns on the magnetos, the sparks of the engine. The engine has two for safety.",
+              "context": "It is set to BOTH for flight and to OFF to stop the engine."
+            },
+            {
+              "id": "carb-heat",
+              "name": "Carburettor heater",
+              "type": "knob",
+              "match": [
+                "item:left-wall:4"
+              ],
+              "text": "This knob sends hot air to the carburettor (the part that mixes fuel and air) to melt ice that may form there.",
+              "context": "The pilot uses it in damp air and when reducing the power."
+            },
+            {
+              "id": "trim",
+              "name": "Pitch trim handle",
+              "type": "handle",
+              "match": [
+                "item:left-wall:5"
+              ],
+              "text": "This handle is a crank that trims the elevator, the flap on the tail that pitches the nose. It takes the force from the stick.",
+              "context": "The pilot trims whenever the speed changes."
+            },
+            {
+              "id": "fuel-selector",
+              "name": "Fuel selector",
+              "type": "selector",
+              "match": [
+                "item:left-wall:6"
+              ],
+              "text": "This selector chooses the fuel tank for the engine.",
+              "context": "The pilot sets it to the tank he wants and can change if needed."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "front-center",
+      "where": "front-center",
+      "name": "Primary instrument panel",
+      "text": "A small panel with a few round instruments, the engine controls and the radios.",
+      "panels": [
+        {
+          "id": "instrument-panel",
+          "name": "Primary instrument panel",
+          "db": "instrument-panel",
+          "src": "x1",
+          "page": "19",
+          "text": "The few instruments of the Cub: speed, attitude, heading, turn, height, climb rate, the engine gauges and the radios. The starter button and the mixture control are here too.",
+          "context": "The pilot flies mostly by looking outside and uses the instruments as a check.",
+          "controls": [
+            {
+              "id": "asi",
+              "name": "Airspeed indicator",
+              "type": "gauge",
+              "match": [
+                "item:instrument-panel:1"
+              ],
+              "text": "This gauge shows how fast the aircraft moves through the air.",
+              "context": "The pilot watches it constantly. Too slow and the wing stops lifting."
+            },
+            {
+              "id": "attitude",
+              "name": "Attitude indicator",
+              "type": "gauge",
+              "match": [
+                "item:instrument-panel:2"
+              ],
+              "text": "This gauge shows whether the nose points up or down and whether the wings are level. It is also called the artificial horizon.",
+              "context": "It is most useful when the horizon cannot be seen."
+            },
+            {
+              "id": "heading",
+              "name": "Heading indicator",
+              "type": "gauge",
+              "match": [
+                "item:instrument-panel:3"
+              ],
+              "text": "This gauge shows the compass direction the nose points to, driven by a gyro.",
+              "context": "The pilot sets it to the magnetic compass every so often, as gyros drift."
+            },
+            {
+              "id": "turn",
+              "name": "Turn coordinator",
+              "type": "gauge",
+              "match": [
+                "item:instrument-panel:4"
+              ],
+              "text": "This gauge shows how fast the aircraft turns and whether the turn is balanced.",
+              "context": "The pilot keeps the ball in the middle with the pedals."
+            },
+            {
+              "id": "altimeter",
+              "name": "Altimeter",
+              "type": "gauge",
+              "match": [
+                "item:instrument-panel:5"
+              ],
+              "text": "This gauge shows the height above sea level. A knob sets the local air pressure so the reading is right.",
+              "context": "The pilot sets the pressure before the flight."
+            },
+            {
+              "id": "vsi",
+              "name": "Vertical speed indicator",
+              "type": "gauge",
+              "match": [
+                "item:instrument-panel:6"
+              ],
+              "text": "This gauge shows how fast the aircraft climbs or sinks.",
+              "context": "The pilot uses it to hold a steady climb or descent."
+            },
+            {
+              "id": "rpm",
+              "name": "Propeller RPM and Hobbs meter",
+              "type": "gauge",
+              "match": [
+                "item:instrument-panel:7"
+              ],
+              "text": "This gauge shows how fast the propeller and the engine turn, in revolutions per minute, with an hour meter of the engine's running time.",
+              "context": "The pilot reads it to set the power and to check the engine."
+            },
+            {
+              "id": "vor",
+              "name": "VOR1 / ILS receiver",
+              "type": "gauge",
+              "match": [
+                "item:instrument-panel:8"
+              ],
+              "text": "This gauge shows whether the aircraft is left or right of a chosen radio beam.",
+              "context": "The pilot follows the needle to stay on the beam."
+            },
+            {
+              "id": "oil",
+              "name": "Oil temperature and pressure",
+              "type": "gauge",
+              "match": [
+                "item:instrument-panel:9"
+              ],
+              "text": "This gauge shows the temperature and the pressure of the engine oil. Oil lubricates the moving parts.",
+              "context": "The pilot keeps the values in the green range."
+            },
+            {
+              "id": "cht",
+              "name": "Cylinder head temperature",
+              "type": "gauge",
+              "match": [
+                "item:instrument-panel:10"
+              ],
+              "text": "This gauge shows how hot the engine cylinders are.",
+              "context": "The pilot watches it to avoid overheating of the engine."
+            },
+            {
+              "id": "starter",
+              "name": "Engine starter button",
+              "type": "button",
+              "match": [
+                "item:instrument-panel:11"
+              ],
+              "text": "This button turns the engine with the electric starter until the engine runs, like the starter of a car.",
+              "context": "The pilot presses it after the magnetos and the master are on."
+            },
+            {
+              "id": "mixture",
+              "name": "Mixture control",
+              "type": "knob",
+              "match": [
+                "item:instrument-panel:12"
+              ],
+              "text": "This knob sets the fuel and air mixture from rich to lean. Pulling it out leans the mixture, and fully out stops the engine.",
+              "context": "The pilot leans the mixture at high altitude and uses it to stop the engine."
+            },
+            {
+              "id": "radios",
+              "name": "Radios",
+              "type": "keypad",
+              "match": [
+                "item:instrument-panel:13"
+              ],
+              "text": "The radios tune the frequencies used to talk with air traffic control and to receive navigation beacons.",
+              "context": "The pilot sets the frequency before talking."
+            },
+            {
+              "id": "xpdr",
+              "name": "Transponder",
+              "type": "keypad",
+              "match": [
+                "item:instrument-panel:14"
+              ],
+              "text": "The transponder is a radio box that answers questions from radar. The pilot sets the four-number code that air traffic control gives.",
+              "context": "The code lets the radar identify the aircraft."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "hotas",
+      "where": "hotas",
+      "name": "Stick, throttle and pedals",
+      "text": "The controls that match your joystick, throttle and pedals: the stick, the levers on the left wall and the rudder pedals with the heel brakes.",
+      "panels": [
+        {
+          "id": "stick",
+          "name": "Control stick",
+          "src": "x1",
+          "page": "15",
+          "text": "The control stick in the middle in front of each tandem seat.",
+          "context": "The pilot flies by moving the stick.",
+          "controls": [
+            {
+              "id": "stick-gimbal",
+              "name": "Control stick",
+              "type": "axis",
+              "match": [
+                "control:stick.gimbal"
+              ],
+              "text": "Pushing the stick forward and pulling it back moves the elevator and pitches the nose down and up. Moving it sideways rolls the aircraft.",
+              "context": "It is the main control for flying by hand."
+            }
+          ]
+        },
+        {
+          "id": "throttle",
+          "name": "Left wall levers",
+          "src": "x1",
+          "page": "16",
+          "text": "The throttle, mixture, flap lever, trim crank and carburettor heat on the left wall, as they match a throttle device.",
+          "context": "The pilot handles them with the left hand.",
+          "controls": [
+            {
+              "id": "lever-1",
+              "name": "Throttle",
+              "type": "axis",
+              "match": [
+                "control:quadrant.axis.lever.1"
+              ],
+              "text": "The throttle lever on the left wall. Moving it forward gives more engine power.",
+              "context": "On a throttle device this is the main lever axis; the Cub has no propeller lever."
+            },
+            {
+              "id": "lever-2",
+              "name": "Mixture",
+              "type": "axis",
+              "match": [
+                "control:quadrant.axis.lever.2"
+              ],
+              "text": "The mixture lever beside the throttle on the left wall. It sets the fuel and air mixture from rich to cut-off.",
+              "context": "The pilot leans the mixture at high altitude and pulls it fully to stop the engine."
+            },
+            {
+              "id": "flaps-hotas",
+              "name": "Flap lever",
+              "type": "lever",
+              "match": [
+                "control:quadrant.lever.flaps"
+              ],
+              "text": "The flap lever on the left wall. Moving it one way extends the flaps by a notch, the other way retracts them.",
+              "context": "The pilot extends the flaps for take-off and landing."
+            },
+            {
+              "id": "trim-hotas",
+              "name": "Pitch trim crank",
+              "type": "wheel",
+              "match": [
+                "control:quadrant.wheel.pitch_trim"
+              ],
+              "text": "The crank handle on the left wall or overhead. Turning it one way trims the nose down, the other way trims it up.",
+              "context": "Trim removes the force from the stick."
+            },
+            {
+              "id": "carb-hotas",
+              "name": "Carburettor heat",
+              "type": "knob",
+              "match": [
+                "control:quadrant.knob.carb_heat"
+              ],
+              "text": "The knob on the left wall by the throttle. Pulling it sends hot air to the carburettor to melt ice, pushing it turns the hot air off.",
+              "context": "The pilot uses it in damp air and when reducing the power."
+            }
+          ]
+        },
+        {
+          "id": "pedals",
+          "name": "Rudder pedals",
+          "src": "x1",
+          "page": "15",
+          "text": "The rudder pedals at the pilot's feet with the heel brakes.",
+          "context": "They steer the aircraft in the air and on the ground.",
+          "controls": [
+            {
+              "id": "pedals-hotas",
+              "name": "Rudder and heel brake pedals",
+              "type": "axis",
+              "match": [
+                "control:pedals.axis.rudder"
+              ],
+              "text": "The pedals move the rudder left and right. On the ground they also steer the tail wheel. The heel brakes at the lower end of the pedals brake the left and right wheels.",
+              "context": "The pilot keeps the aircraft straight with the pedals when taking off and landing."
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

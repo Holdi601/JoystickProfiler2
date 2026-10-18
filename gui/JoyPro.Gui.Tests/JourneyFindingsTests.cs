@@ -12,7 +12,7 @@ using Xunit;
 
 namespace JoyPro.Gui.Tests;
 
-// The user journey's findings (E:\JoyProWork\journey\findings.md, 2026-10-13): bound counts after Set Bind, the
+// The user journey's findings (2026-10-13): bound counts after Set Bind, the
 // Binds page's hand pick (real game controllers, inputs by device and relation kind), the export tiles (ticks, failure
 // reason, X of Y, Undo only after an export, the backups list) and a status line that says what happened.
 [SupportedOSPlatform("windows")]

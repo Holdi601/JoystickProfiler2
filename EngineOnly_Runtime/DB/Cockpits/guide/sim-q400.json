@@ -1,0 +1,641 @@
+{
+  "format": "joypro-cockpit-guide",
+  "version": 1,
+  "id": "sim-q400",
+  "title": "De Havilland Canada Dash 8 Q400 (flight deck)",
+  "variants": [
+    "q400-dash8"
+  ],
+  "games": [
+    "P3D5",
+    "FSX",
+    "XPlane11",
+    "XPlane12"
+  ],
+  "sets": [],
+  "intro": "The Dash 8 Q400 is a twin-engine regional airliner with two propellers. Its flight deck has five large screens, a control column with a wheel in front of each pilot, and on the pedestal two power levers and two condition levers (the second pair sets the propeller speed and shuts the fuel off). A hand wheel on the captain's side steers the nose wheel on the ground.",
+  "sources": [
+    {
+      "id": "c1",
+      "title": "JoyPro cockpit catalog",
+      "kind": "reference"
+    },
+    {
+      "id": "s1",
+      "title": "Chuck's Guides: Majestic Q400 (cockpit layout chapter)",
+      "url": "https://chucksguides.com/aircraft/p3d/majestic-q400"
+    },
+    {
+      "id": "s2",
+      "title": "De Havilland Canada Dash 8 (Wikipedia)",
+      "url": "https://en.wikipedia.org/wiki/De_Havilland_Canada_Dash_8"
+    },
+    {
+      "id": "r2",
+      "title": "Dash 8 Q400 AOM (public knowledge)"
+    },
+    {
+      "id": "fn",
+      "title": "JoyPro function tables MSFS2020/2024 and X-Plane 11/12 (DB/Functions)"
+    }
+  ],
+  "areas": [
+    {
+      "id": "glareshield",
+      "where": "glareshield",
+      "name": "Glareshield: flight guidance panel",
+      "text": "The strip under the windscreen. In the middle is the flight guidance control panel (the autopilot panel), with the display controls of each pilot at the sides.",
+      "panels": [
+        {
+          "id": "glareshield",
+          "name": "Glareshield: flight guidance panel",
+          "db": "glareshield",
+          "src": "r2",
+          "text": "The flight guidance control panel (FGCP) is the autopilot panel in the middle. At each end sit the warning lights and the EFIS panel that sets what the screens show.",
+          "context": "The pilots set the autopilot modes and targets here and choose the screen formats.",
+          "controls": [
+            {
+              "id": "master-warn",
+              "name": "MASTER WARNING / CAUTION",
+              "type": "light",
+              "match": [
+                "item:glareshield:1"
+              ],
+              "text": "These lights tell the pilots that a warning or a caution message is active. Pressing them resets the light and the sound.",
+              "context": "Details of the message appear on the screens. They are to catch the pilots' eyes."
+            },
+            {
+              "id": "efis",
+              "name": "EFIS panels",
+              "type": "selector",
+              "match": [
+                "item:glareshield:2"
+              ],
+              "text": "The EFIS panels choose what the screens show and how far the map looks ahead, with their range and format controls.",
+              "context": "Each pilot sets his own screens for the phase of flight."
+            },
+            {
+              "id": "ap-yd",
+              "name": "AP and YD buttons",
+              "type": "button",
+              "match": [
+                "item:glareshield:3"
+              ],
+              "text": "The AP button switches the autopilot on or off. The YD button switches the yaw damper on or off; it is a helper that steadies the tail movement left and right.",
+              "context": "The yaw damper is switched on for flight, as it makes the ride smoother."
+            },
+            {
+              "id": "lateral",
+              "name": "HDG / NAV / APPR / BC buttons",
+              "type": "button",
+              "match": [
+                "item:glareshield:4"
+              ],
+              "text": "These buttons choose the autopilot's sideways mode: HDG holds a heading, NAV follows the route or radio beam, APPR flies an approach and BC flies a back course (a localizer beam from the other side).",
+              "context": "The pilot chooses how the autopilot steers left and right."
+            },
+            {
+              "id": "vertical",
+              "name": "IAS / VS / ALT / ALT SEL buttons",
+              "type": "button",
+              "match": [
+                "item:glareshield:5"
+              ],
+              "text": "These buttons choose the autopilot's up and down mode: IAS holds a speed, VS holds a climb rate, ALT holds the current height and ALT SEL climbs or descends to the selected height.",
+              "context": "The pilot picks how the autopilot climbs and descends."
+            },
+            {
+              "id": "hdg-crs",
+              "name": "HDG and CRS knobs",
+              "type": "knob",
+              "match": [
+                "item:glareshield:6"
+              ],
+              "text": "The HDG knob sets the compass direction the autopilot should fly and the CRS knob sets the course of the radio beam or route.",
+              "context": "The numbers show in the windows on the panel and on the screens."
+            },
+            {
+              "id": "alt-sel",
+              "name": "ALT SEL knob and pitch wheel",
+              "type": "wheel",
+              "match": [
+                "item:glareshield:7"
+              ],
+              "text": "The ALT SEL knob sets the target height. The pitch wheel next to it changes the climb rate or the speed target of the autopilot.",
+              "context": "The pilot dials the cleared height from air traffic control with it."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "front-center",
+      "where": "front-center",
+      "name": "Main instrument panel",
+      "text": "Five large screens, a backup instrument and the gear lever.",
+      "panels": [
+        {
+          "id": "main-panel",
+          "name": "Main instrument panel",
+          "db": "main-panel",
+          "src": "r2",
+          "text": "Five Thales LCD screens: a PFD and an MFD for each pilot and the engine display in the middle. A small standby instrument and the landing gear lever sit there too.",
+          "context": "The pilots read flight data, the map and the engines here.",
+          "controls": [
+            {
+              "id": "pfd",
+              "name": "PFD (each pilot)",
+              "type": "display",
+              "match": [
+                "item:main-panel:1"
+              ],
+              "text": "The primary flight display shows the nose up-down attitude, speed, height and the autopilot modes. It is the main flying instrument.",
+              "context": "It replaces the old round instruments with one picture."
+            },
+            {
+              "id": "mfd",
+              "name": "MFD (each pilot)",
+              "type": "display",
+              "match": [
+                "item:main-panel:2"
+              ],
+              "text": "The multi-function display shows the navigation map and pages about the aircraft's systems.",
+              "context": "The pilot uses it to see the route and to check the systems."
+            },
+            {
+              "id": "engine-display",
+              "name": "Engine display (centre)",
+              "type": "display",
+              "match": [
+                "item:main-panel:3"
+              ],
+              "text": "The middle screen shows the data of the two engines: the torque (twisting force of the propellers), the propeller speed NP, the core speed NH and the internal temperature ITT.",
+              "context": "The pilots watch it to see that the engines work well."
+            },
+            {
+              "id": "standby",
+              "name": "Standby instrument",
+              "type": "display",
+              "match": [
+                "item:main-panel:4"
+              ],
+              "text": "A small backup instrument for the attitude, the speed and the height if the main screens fail.",
+              "context": "It keeps the aircraft flyable if the big screens fail."
+            },
+            {
+              "id": "gear",
+              "name": "Landing gear lever",
+              "type": "lever",
+              "match": [
+                "item:main-panel:5"
+              ],
+              "positions": [
+                {
+                  "name": "UP",
+                  "text": "The landing gear is raised."
+                },
+                {
+                  "name": "DN",
+                  "text": "The landing gear is lowered."
+                }
+              ],
+              "text": "This lever lowers or raises the wheels. Down puts them out for landing, up folds them away after take-off.",
+              "context": "The wheels go up after take-off and down before landing."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "overhead",
+      "where": "overhead",
+      "name": "Overhead panel",
+      "text": "The ceiling panel with the switches for the systems.",
+      "panels": [
+        {
+          "id": "overhead-panel",
+          "name": "Overhead panel",
+          "db": "overhead-panel",
+          "src": "r2",
+          "text": "The overhead panel holds the system controls: engine starting, fuel, electrics, ice protection, air and the exterior lights.",
+          "context": "The pilots set most switches before the flight and check the lights during the flight.",
+          "controls": [
+            {
+              "id": "eng-start",
+              "name": "Engine start panel",
+              "type": "selector",
+              "match": [
+                "item:overhead-panel:1"
+              ],
+              "text": "This panel is used to select and start the engines.",
+              "context": "The pilots use it when starting the engines on the ground."
+            },
+            {
+              "id": "fuel",
+              "name": "Fuel panel",
+              "type": "button",
+              "match": [
+                "item:overhead-panel:2"
+              ],
+              "text": "This panel controls the fuel pumps and the transfer of fuel between the tanks.",
+              "context": "The pilots keep the fuel feeding the engines and balanced."
+            },
+            {
+              "id": "elec",
+              "name": "Electrical panel",
+              "type": "button",
+              "match": [
+                "item:overhead-panel:3"
+              ],
+              "text": "This panel controls the DC and AC generators, the sources of the aircraft's electricity.",
+              "context": "The pilots switch the generators on once the engines run."
+            },
+            {
+              "id": "ice",
+              "name": "Ice protection",
+              "type": "button",
+              "match": [
+                "item:overhead-panel:4"
+              ],
+              "text": "This panel controls the boots on the wings and tail, which inflate to crack ice, and the propeller heating.",
+              "context": "The pilots use it when flying in icing conditions."
+            },
+            {
+              "id": "bleed",
+              "name": "Bleed and air panel",
+              "type": "button",
+              "match": [
+                "item:overhead-panel:5"
+              ],
+              "text": "This panel controls the bleed air taken from the engines and the packs that make the cabin air, heating and pressure.",
+              "context": "It keeps the cabin comfortable."
+            },
+            {
+              "id": "ext-lights",
+              "name": "Exterior lights",
+              "type": "switch",
+              "match": [
+                "item:overhead-panel:6"
+              ],
+              "text": "These switches control the lights outside the aircraft.",
+              "context": "The pilots switch them on for taxi, take-off and landing so others can see the aircraft."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "center-pedestal",
+      "where": "center-pedestal",
+      "name": "Pedestal",
+      "text": "The block between the pilots with the power and condition levers, the flap lever, the radio and flight management units and the trim.",
+      "panels": [
+        {
+          "id": "pedestal",
+          "name": "Centre pedestal",
+          "db": "pedestal",
+          "src": "r2",
+          "text": "The pedestal holds the power levers, condition levers and flap lever, the park brake handle, the trim panel, the radio control units and the flight management keypad.",
+          "context": "The pilots use it for the engines, the flaps and the radios throughout the flight.",
+          "controls": [
+            {
+              "id": "power-levers",
+              "name": "Power levers",
+              "type": "lever",
+              "match": [
+                "item:pedestal:1"
+              ],
+              "positions": [
+                {
+                  "name": "MAX REV",
+                  "text": "Maximum reverse thrust, used on the ground."
+                },
+                {
+                  "name": "DISC",
+                  "text": "The disc range, where the propeller gives roughly no push; used on the ground."
+                },
+                {
+                  "name": "FLT IDLE",
+                  "text": "Flight idle, the lowest power for flying."
+                },
+                {
+                  "name": "RATING",
+                  "text": "A detent for the chosen power rating."
+                },
+                {
+                  "name": "MTOP",
+                  "text": "Maximum take-off power, the highest setting."
+                }
+              ],
+              "text": "The two power levers set the engine power. Moving forward gives more power. Below the flight idle gate the levers reach the disc and reverse range, which slows the aircraft on the ground.",
+              "context": "The pilot uses them for take-off, climb and landing."
+            },
+            {
+              "id": "condition-levers",
+              "name": "Condition levers",
+              "type": "lever",
+              "match": [
+                "item:pedestal:2"
+              ],
+              "positions": [
+                {
+                  "name": "FUEL OFF",
+                  "text": "The fuel is cut off and the engine stops."
+                },
+                {
+                  "name": "START FEATHER",
+                  "text": "Used to start the engine with the propeller feathered (turned edge-on to the wind so it does not turn the engine)."
+                },
+                {
+                  "name": "850",
+                  "text": "Propeller speed of 850 revolutions per minute."
+                },
+                {
+                  "name": "900",
+                  "text": "Propeller speed of 900 revolutions per minute."
+                },
+                {
+                  "name": "1020",
+                  "text": "Propeller speed of 1020 revolutions per minute, the maximum."
+                }
+              ],
+              "text": "The two condition levers shut the fuel off and set the propeller speed. FUEL OFF stops the engine, START and FEATHER is used for starting, and the settings from 850 to 1020 are propeller speeds in revolutions per minute.",
+              "context": "The levers are set for the start and then to the speed needed for take-off or cruise."
+            },
+            {
+              "id": "flaps",
+              "name": "Flap lever",
+              "type": "lever",
+              "match": [
+                "item:pedestal:3"
+              ],
+              "positions": [
+                {
+                  "name": "0",
+                  "text": "The flaps are folded in."
+                },
+                {
+                  "name": "5",
+                  "text": "Flaps at 5 degrees."
+                },
+                {
+                  "name": "10",
+                  "text": "Flaps at 10 degrees."
+                },
+                {
+                  "name": "15",
+                  "text": "Flaps at 15 degrees."
+                },
+                {
+                  "name": "35",
+                  "text": "Flaps at 35 degrees, used for landing."
+                }
+              ],
+              "text": "This lever sets the flaps, the parts of the wing that extend for more lift at low speed. The positions are 0, 5, 10, 15 and 35.",
+              "context": "The pilot sets the flaps for take-off and landing."
+            },
+            {
+              "id": "park-brake",
+              "name": "PARK BRAKE handle",
+              "type": "handle",
+              "match": [
+                "item:pedestal:4"
+              ],
+              "text": "This handle sets the parking brake, which holds the wheels when the aircraft is parked.",
+              "context": "It is set when the aircraft is parked."
+            },
+            {
+              "id": "trim",
+              "name": "Trim panel",
+              "type": "knob",
+              "match": [
+                "item:pedestal:5"
+              ],
+              "text": "This panel has knobs for the aileron and rudder trim, small settings that keep the aircraft flying straight without holding the controls.",
+              "context": "The pilot adjusts them in flight as needed."
+            },
+            {
+              "id": "arcdu",
+              "name": "ARCDUs",
+              "type": "keypad",
+              "match": [
+                "item:pedestal:6"
+              ],
+              "text": "The audio and radio control display units tune the radios and select the audio. The pilot types or turns in the frequency.",
+              "context": "The pilot sets the frequency before talking to air traffic control."
+            },
+            {
+              "id": "fms",
+              "name": "FMS CDU",
+              "type": "keypad",
+              "match": [
+                "item:pedestal:7"
+              ],
+              "text": "The flight management system control display unit is a keypad with a small screen where the pilot types the route and other data.",
+              "context": "The flight management system then provides the plan for the autopilot and the map."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "hotas",
+      "where": "hotas",
+      "name": "Control column, levers and pedals",
+      "text": "The controls that match your yoke, throttle and pedals: the control wheel, the power and condition levers, the flap lever, the steering hand wheel and the pedals.",
+      "panels": [
+        {
+          "id": "yoke",
+          "name": "Control column and wheel",
+          "src": "r2",
+          "text": "The control column with the wheel in front of each pilot. Switches on the wheel horns trim the elevator, disengage the autopilot and transmit on the radio.",
+          "context": "The pilot flies by moving the column and the wheel.",
+          "controls": [
+            {
+              "id": "yoke-gimbal",
+              "name": "Control column and wheel",
+              "type": "axis",
+              "match": [
+                "control:yoke.gimbal"
+              ],
+              "text": "Pushing and pulling the column moves the elevators and pitches the nose down and up. Turning the wheel rolls the aircraft with the ailerons and the roll spoilers.",
+              "context": "It is the main way the pilot flies by hand."
+            },
+            {
+              "id": "pitch-trim",
+              "name": "Elevator trim switches",
+              "type": "rocker",
+              "match": [
+                "control:yoke.rocker.pitch_trim"
+              ],
+              "text": "The thumb switches on the outer horn of the wheel move the elevator trim: one way for nose down, the other for nose up.",
+              "context": "Trim takes the force off the pilot's hands."
+            },
+            {
+              "id": "ap-disc",
+              "name": "Autopilot disengage pushbutton",
+              "type": "button",
+              "match": [
+                "control:yoke.button.ap_disc"
+              ],
+              "text": "A button on the wheel horn that switches the autopilot off when pressed with the thumb.",
+              "context": "The pilot uses it to take over by hand."
+            },
+            {
+              "id": "tcs",
+              "name": "TCS (touch control steering) pushbutton",
+              "type": "button",
+              "match": [
+                "control:yoke.button.tcs"
+              ],
+              "text": "A button on the inner horn of the wheel. While it is held, the pilot can fly by hand with the autopilot still engaged; the servos are released.",
+              "context": "The pilot uses it for a small change of course without switching the autopilot off."
+            },
+            {
+              "id": "mic",
+              "name": "Transmit / interphone push-to-talk",
+              "type": "switch3",
+              "match": [
+                "control:yoke.switch.mic"
+              ],
+              "positions": [
+                {
+                  "name": "up",
+                  "text": "Transmit on the radio."
+                },
+                {
+                  "name": "center",
+                  "text": "The switch rests in the middle."
+                },
+                {
+                  "name": "down",
+                  "text": "Speak on the interphone."
+                }
+              ],
+              "text": "A rocker switch on the wheel horn. Up transmits on the radio, down speaks on the interphone, the phone line inside the aircraft.",
+              "context": "The pilot presses it before speaking."
+            }
+          ]
+        },
+        {
+          "id": "throttle",
+          "name": "Power and condition levers",
+          "src": "r2",
+          "text": "The power levers, condition levers, take-off and go-around buttons and flap lever as they match the controls of a throttle device.",
+          "context": "The pilot uses them from engine start to landing.",
+          "controls": [
+            {
+              "id": "lever-1",
+              "name": "Power lever 1",
+              "type": "axis",
+              "match": [
+                "control:quadrant.axis.lever.1"
+              ],
+              "text": "The left power lever sets the power of engine 1. Lifting the triggers and pulling it back below flight idle gives the disc range and reverse.",
+              "context": "It is moved forward for take-off and back for the descent and landing."
+            },
+            {
+              "id": "lever-2",
+              "name": "Power lever 2",
+              "type": "axis",
+              "match": [
+                "control:quadrant.axis.lever.2"
+              ],
+              "text": "The right power lever sets the power of engine 2 and reaches reverse like lever 1.",
+              "context": "It is usually moved together with lever 1."
+            },
+            {
+              "id": "ga",
+              "name": "Take-off / go-around buttons",
+              "type": "button",
+              "match": [
+                "control:quadrant.button.ga"
+              ],
+              "text": "Buttons on the power levers. Pressing one selects the go-around mode on the flight director, the guidance for climbing away from a landing that is stopped.",
+              "context": "The pilot presses it for a go-around."
+            },
+            {
+              "id": "lever-3",
+              "name": "Condition lever 1",
+              "type": "axis",
+              "match": [
+                "control:quadrant.axis.lever.3"
+              ],
+              "text": "The left condition lever shuts off the fuel of engine 1 and sets the propeller speed of engine 1.",
+              "context": "It is set once for the start and again for the different phases of flight."
+            },
+            {
+              "id": "lever-4",
+              "name": "Condition lever 2",
+              "type": "axis",
+              "match": [
+                "control:quadrant.axis.lever.4"
+              ],
+              "text": "The second condition lever shuts off the fuel of engine 2 and sets the propeller speed of engine 2.",
+              "context": "It works like condition lever 1."
+            },
+            {
+              "id": "flaps-hotas",
+              "name": "Flaps lever",
+              "type": "lever",
+              "match": [
+                "control:quadrant.lever.flaps"
+              ],
+              "text": "The flap lever on the right of the pedestal. Forward moves one step up (less flap), aft one step down (more flap).",
+              "context": "The positions are 0, 5, 10, 15 and 35."
+            },
+            {
+              "id": "park-brake-hotas",
+              "name": "Parking brake handle",
+              "type": "lever",
+              "match": [
+                "control:quadrant.lever.parking_brake"
+              ],
+              "text": "The PARK BRAKE handle on the pedestal. Pulling it sets the parking brake, pushing it releases it.",
+              "context": "It is set when the aircraft stands still."
+            },
+            {
+              "id": "rud-trim",
+              "name": "Rudder / aileron trim",
+              "type": "knob",
+              "match": [
+                "control:quadrant.switch.rudder_trim"
+              ],
+              "text": "A knob on the trim panel of the pedestal. Turning it clockwise trims the rudder to the right (nose right), counter-clockwise to the left.",
+              "context": "The rudder trim keeps the aircraft straight when one side pulls more."
+            }
+          ]
+        },
+        {
+          "id": "pedals-gear",
+          "name": "Pedals and steering",
+          "src": "r2",
+          "text": "The rudder pedals at the pilot's feet and the nosewheel steering hand wheel.",
+          "context": "They keep the aircraft on the runway and the taxiway.",
+          "controls": [
+            {
+              "id": "tiller",
+              "name": "Nosewheel steering tiller",
+              "type": "wheel",
+              "match": [
+                "control:panel.wheel.tiller"
+              ],
+              "text": "The hand wheel on the captain's left side console. It steers the nose wheel left and right on the ground.",
+              "context": "The pilot uses it for taxiing at low speed on the ground."
+            },
+            {
+              "id": "pedals",
+              "name": "Rudder pedals",
+              "type": "axis",
+              "match": [
+                "control:pedals.axis.rudder"
+              ],
+              "text": "The pedals move the rudder left and right. The toe brakes on top of the pedals brake the left and right wheels.",
+              "context": "The pedals keep the aircraft straight and help to turn on the ground."
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

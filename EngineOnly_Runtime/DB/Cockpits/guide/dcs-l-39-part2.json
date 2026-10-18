@@ -1,0 +1,1588 @@
+{
+  "format": "joypro-cockpit-guide",
+  "version": 1,
+  "id": "dcs-l-39-part2",
+  "partOf": "dcs-l-39",
+  "areas": [
+    {
+      "id": "rear-front-panel",
+      "where": "front-center",
+      "name": "Rear instrument panel",
+      "seat": 2,
+      "text": "The instructor's seat is raised behind the student. Its instrument panel has a copy of the main dials, the flight practice hood handle and the panel to simulate failures of the student's instruments.",
+      "panels": [
+        {
+          "id": "r-instruments",
+          "name": "Rear instrument panel controls",
+          "src": "m1",
+          "page": "121",
+          "text": "The instructor's seat has its own instrument panel with a copy of the main flight dials. These are the knobs and buttons on it: the artificial horizon, the compass, the clock, the altimeter setting, and the flight practice hood.",
+          "context": "The instructor sits higher than the student and can fly the plane. The controls in the rear cockpit are mostly the same as in the front. Some are 'command' controls that override the front ones.",
+          "controls": [
+            {
+              "id": "r-hood",
+              "name": "Instrument flight practice hood control handle",
+              "type": "handle",
+              "match": [
+                "HOOD"
+              ],
+              "text": "This handle raises or lowers the hood over the front cockpit. With the hood down the student cannot see outside and must fly by the instruments.",
+              "context": "The manual says that a hood raised from the rear cockpit can only be lowered from the rear cockpit.",
+              "src": "m1",
+              "page": "46"
+            },
+            {
+              "id": "r-kpp-cage",
+              "name": "KPP-1273K ADI cage button (rear)",
+              "type": "button",
+              "match": [
+                "KPP_ARRETIR_CPT2"
+              ],
+              "text": "Pressing this button locks (cages) the artificial horizon in the rear cockpit and resets it to zero angles.",
+              "context": "It does the same as the front cage button. The red lamp in the button lights while it works.",
+              "src": "m1",
+              "page": "135"
+            },
+            {
+              "id": "r-kpp-trim",
+              "name": "KPP-1273K ADI pitch trim knob (rear)",
+              "type": "knob",
+              "match": [
+                "KPP_SET_0_CPT2"
+              ],
+              "text": "Turning this knob moves the pitch scale of the artificial horizon in the rear cockpit up or down so it can be lined up.",
+              "context": "It is the same as the front knob.",
+              "src": "m1",
+              "page": "135"
+            },
+            {
+              "id": "r-vvi-knob",
+              "name": "Variometer adjustment knob (rear)",
+              "type": "knob",
+              "match": [
+                "VV_SET_0_CPT2"
+              ],
+              "text": "Turning this knob sets the climb-rate pointer of the rear variometer back to zero when the plane is level.",
+              "context": "It is the same as the front knob.",
+              "src": "m1",
+              "page": "134"
+            },
+            {
+              "id": "r-qfe",
+              "name": "Baro pressure QFE knob (rear)",
+              "type": "knob",
+              "match": [
+                "VD_PRESSUR_CPT2"
+              ],
+              "text": "Turning this knob sets the air pressure for the rear altimeter, so the dial reads zero at the airfield.",
+              "context": "It is the same as the front knob.",
+              "src": "m1",
+              "page": "131"
+            },
+            {
+              "id": "r-course",
+              "name": "RMI course knob (rear)",
+              "type": "knob",
+              "match": [
+                "NPP_COURSE_CPT2"
+              ],
+              "text": "Turning this knob sets the course pointer on the rear compass dial to the course the pilot wants to follow.",
+              "context": "The game calls it the HSI course set knob.",
+              "src": "m1",
+              "page": "143"
+            },
+            {
+              "id": "r-clock-left",
+              "name": "Clock left crown button (rear)",
+              "type": "button",
+              "match": [
+                "CLOCK_LEFT_BTN_CPT2"
+              ],
+              "text": "Pressing this left button on the rear clock starts, stops and resets the flight timer.",
+              "context": "It is the same as the front clock button.",
+              "src": "m1",
+              "page": "140"
+            },
+            {
+              "id": "r-clock-right",
+              "name": "Clock right crown button (rear)",
+              "type": "button",
+              "match": [
+                "CLOCK_RIGHT_BTN_CPT2"
+              ],
+              "text": "Pressing this right button on the rear clock starts, stops and resets the stopwatch.",
+              "context": "It is the same as the front clock button.",
+              "src": "m1",
+              "page": "140"
+            },
+            {
+              "id": "r-mc-synchr",
+              "name": "MC SYNCHR (magnetic heading alignment) button (rear)",
+              "type": "button",
+              "match": [
+                "SET_GIRO_CPT2"
+              ],
+              "text": "Pressing this button lines up the gyro compass with the magnetic heading. Either pilot can do it.",
+              "context": "The manual says to do it in straight, level flight, and again after about 45 minutes.",
+              "src": "m1",
+              "page": "142"
+            },
+            {
+              "id": "r-rv5",
+              "name": "RV-5M radar altimeter test button / decision height knob (rear)",
+              "type": "button",
+              "match": [
+                "RV_SELECT_ALT_CPT2"
+              ],
+              "text": "Turning this knob sets the dangerous altitude, the height under which the warning comes on. Pressing it tests the instrument.",
+              "context": "It is the same as the front knob.",
+              "src": "m1",
+              "page": "161"
+            },
+            {
+              "id": "r-beacon-switch",
+              "name": "RKL-41 ADF outer / inner beacon switch (rear)",
+              "type": "switch",
+              "match": [
+                "BEACON_SWITCH_CPT2"
+              ],
+              "positions": [
+                {
+                  "name": "O",
+                  "text": "The outer (far) beacon."
+                },
+                {
+                  "name": "I",
+                  "text": "The inner (near) beacon."
+                }
+              ],
+              "text": "This switch picks which of the two beacons the ADF follows: the far (outer) one or the near (inner) one.",
+              "context": "It sits under the rear instrument panel and does the same as the front switch.",
+              "src": "m1",
+              "page": "153"
+            }
+          ]
+        },
+        {
+          "id": "r-fault-simulation",
+          "name": "Gauge fault simulation panel",
+          "src": "m1",
+          "page": "121",
+          "text": "The instructor can switch off parts of the student's instruments on this panel, to practise what to do if they fail. Each switch breaks one instrument or measuring line in the front cockpit.",
+          "context": "This is a training tool. The manual says to bring the pressure switches back through a protected step so the gauges are not damaged.",
+          "controls": [
+            {
+              "id": "r-fail-total",
+              "name": "Full pressure failure lever (ON / STBY / FAILURE)",
+              "type": "switch3",
+              "match": [
+                "SWITCH_TOTAL_PRESSURE"
+              ],
+              "positions": [
+                {
+                  "name": "ON",
+                  "text": "Normal. The front airspeed indicator works."
+                },
+                {
+                  "name": "STBY",
+                  "text": "The intermediate step: wait 30 seconds here before going to ON."
+                },
+                {
+                  "name": "FAILURE",
+                  "text": "The front airspeed and Mach indicator fails."
+                }
+              ],
+              "text": "This lever simulates a failure of the total-pressure line, which breaks the airspeed and Mach indicator in the front cockpit.",
+              "context": "To switch back on, the manual says to move the lever from FAILURE first to the marked middle position, wait 30 seconds, and only then go to ON.",
+              "src": "m1",
+              "page": "129"
+            },
+            {
+              "id": "r-fail-static",
+              "name": "Static pressure failure lever (ON / STBY / FAILURE)",
+              "type": "switch3",
+              "match": [
+                "SWITCH_STATIC_PRESSURE"
+              ],
+              "positions": [
+                {
+                  "name": "ON",
+                  "text": "Normal. The front altimeter, variometer and UVPD work."
+                },
+                {
+                  "name": "STBY",
+                  "text": "The intermediate step: wait 30 seconds here before going to ON."
+                },
+                {
+                  "name": "FAILURE",
+                  "text": "The front altimeter, variometer and UVPD fail."
+                }
+              ],
+              "text": "This lever simulates a failure of the static-pressure line, which breaks the front altimeter, the variometer and the cockpit pressure gauge.",
+              "context": "The static-pressure line feeds the altimeter and the variometer. The same 30-second waiting step applies as for the total-pressure lever.",
+              "src": "m1",
+              "page": "129"
+            },
+            {
+              "id": "r-fail-gmk",
+              "name": "GMK failure switch",
+              "type": "switch",
+              "match": [
+                "SWITCH_GMK"
+              ],
+              "text": "This switch simulates a failure of the GMK-1AE gyro compass in the front cockpit.",
+              "context": "The manual says the trainer in the rear cockpit can simulate this failure.",
+              "src": "m1",
+              "page": "145"
+            },
+            {
+              "id": "r-fail-ark",
+              "name": "ARK (ADF) failure switch",
+              "type": "switch",
+              "match": [
+                "SWITCH_ARK"
+              ],
+              "text": "This switch simulates a failure of the RKL-41 direction finder in the front cockpit.",
+              "context": "The manual shows the RKL-41 failure simulate switch next to the ADF check procedure.",
+              "src": "m1",
+              "page": "155"
+            },
+            {
+              "id": "r-fail-pitch",
+              "name": "AGD pitch failure switch",
+              "type": "switch",
+              "match": [
+                "SWITCH_AGD_PITCH"
+              ],
+              "text": "This switch simulates a failure of the pitch scale of the artificial horizon in the front cockpit.",
+              "context": "The manual says the trainer in the rear cockpit can simulate a failure of the KPP-1273K.",
+              "src": "m1",
+              "page": "135"
+            },
+            {
+              "id": "r-fail-roll",
+              "name": "AGD bank (roll) failure switch",
+              "type": "switch",
+              "match": [
+                "SWITCH_AGD_ROLL"
+              ],
+              "text": "This switch simulates a failure of the bank (roll) scale of the artificial horizon in the front cockpit.",
+              "context": "Together with the pitch switch it lets the instructor take away the horizon from the student.",
+              "src": "m1",
+              "page": "135"
+            }
+          ]
+        },
+        {
+          "id": "r-gear-lights",
+          "name": "Rear landing gear lever and taxi lights",
+          "src": "m1",
+          "page": "105",
+          "text": "The rear gear lever raises and lowers the wheels from the instructor's seat. It has an extra middle position, and it is a command control: it overrides the front lever.",
+          "context": "The front lever only works while the rear lever is in the middle (neutral) position.",
+          "controls": [
+            {
+              "id": "r-gear-lever",
+              "name": "Landing gear control lever (rear, three positions)",
+              "type": "switch3",
+              "match": [
+                "L_G_CONTRIOL_LEVEL_CPT2"
+              ],
+              "positions": [
+                {
+                  "name": "UP",
+                  "text": "The landing gear is retracted."
+                },
+                {
+                  "name": "NEUTRAL",
+                  "text": "The front lever can control the gear."
+                },
+                {
+                  "name": "DOWN",
+                  "text": "The landing gear is extended."
+                }
+              ],
+              "text": "Moving this lever up folds the wheels in and moving it down brings them out. In the middle, the front lever decides.",
+              "context": "The manual calls it a command control. Pushing it to the UP position and to the right for 1 to 2 seconds retracts the gear in an emergency when the engine has stopped.",
+              "src": "m1",
+              "page": "52"
+            },
+            {
+              "id": "r-landing-lights",
+              "name": "Taxi and landing lights switch (rear)",
+              "type": "switch3",
+              "match": [
+                "LANDING_LIGHTS_CPT2"
+              ],
+              "positions": [
+                {
+                  "name": "TAXI",
+                  "text": "Taxi lights on. They go off when the gear is retracted."
+                },
+                {
+                  "name": "OFF",
+                  "text": "The lights are off."
+                },
+                {
+                  "name": "LANDING",
+                  "text": "Landing lights on."
+                }
+              ],
+              "text": "This switch turns on the lights in the wingtip tanks. TAX. is a wide beam for rolling on the ground, LAND. is a narrower beam for landing.",
+              "context": "It does the same as the front switch.",
+              "src": "m1",
+              "page": "105"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "rear-left-console",
+      "where": "left-console",
+      "name": "Rear left panel",
+      "seat": 2,
+      "text": "The instructor's left panel has the engine start controls, the flap buttons, the fuel and fire controls, the oxygen valves and the radio and intercom panels.",
+      "panels": [
+        {
+          "id": "r-engine-start",
+          "name": "Rear engine start, stop, flap and brake controls",
+          "src": "m1",
+          "page": "87",
+          "text": "The instructor can start and stop the engine, set the flaps and use the emergency brake from the rear seat. Many of these controls are command controls that override the front ones.",
+          "context": "The manual says the engine can only be put to STOP from the front throttle, because only the front throttle has the STOP latch.",
+          "controls": [
+            {
+              "id": "r-turbo-cover",
+              "name": "Turbo button cover (rear)",
+              "type": "cover",
+              "match": [
+                "COVER_TURBO_CPT2"
+              ],
+              "text": "This guard covers the TURBO button of the rear cockpit. It is lifted before the button is pressed.",
+              "context": "It prevents the helper engine from being started by accident.",
+              "src": "m1",
+              "page": "87"
+            },
+            {
+              "id": "r-turbo",
+              "name": "TURBO button (rear)",
+              "type": "button",
+              "match": [
+                "TURBO_CPT2"
+              ],
+              "text": "Pressing this button starts the Saphir-5 APU, a small engine that provides compressed air for the main engine start.",
+              "context": "It does the same as the front button. The engine start is described with the front cockpit.",
+              "src": "m1",
+              "page": "87"
+            },
+            {
+              "id": "r-engine-cover",
+              "name": "Engine button cover (rear)",
+              "type": "cover",
+              "match": [
+                "COVER_ENGINE_CPT2"
+              ],
+              "text": "This guard covers the ENGINE button of the rear cockpit. It is lifted before the button is pressed.",
+              "context": "It prevents the engine start by accident.",
+              "src": "m1",
+              "page": "87"
+            },
+            {
+              "id": "r-engine-btn",
+              "name": "Engine button (rear)",
+              "type": "button",
+              "match": [
+                "ENGINE_CPT2"
+              ],
+              "text": "Pressing this button starts the main engine, once the helper engine runs.",
+              "context": "It does the same as the front button.",
+              "src": "m1",
+              "page": "87"
+            },
+            {
+              "id": "r-engine-stop-cover",
+              "name": "Stop engine switch cover (rear)",
+              "type": "cover",
+              "match": [
+                "COVER_ENGINE_STOP_CPT2"
+              ],
+              "text": "This guard covers the ENGINE STOP switch of the rear cockpit. It is lifted before the switch is moved.",
+              "context": "It prevents the engine from being stopped by accident.",
+              "src": "m1",
+              "page": "88"
+            },
+            {
+              "id": "r-engine-stop",
+              "name": "Stop engine switch (rear)",
+              "type": "switch2",
+              "match": [
+                "ENGINE_STOP_CPT2"
+              ],
+              "positions": [
+                {
+                  "name": "ON",
+                  "text": "The engine is stopped."
+                },
+                {
+                  "name": "OFF",
+                  "text": "Normal position."
+                }
+              ],
+              "text": "This switch stops the engine at once by an electric signal, wherever the throttle lever is.",
+              "context": "It does the same as the front switch.",
+              "src": "m1",
+              "page": "88"
+            },
+            {
+              "id": "r-flaps-0",
+              "name": "Flaps flight position (0 degrees) button (rear)",
+              "type": "button",
+              "match": [
+                "FLAPS_00_CPT2"
+              ],
+              "text": "Pressing this button retracts the flaps to the flight position, 0 degrees.",
+              "context": "The rear flap buttons are command controls: the instructor can override the front ones.",
+              "src": "m1",
+              "page": "54"
+            },
+            {
+              "id": "r-flaps-25",
+              "name": "Flaps take-off position (25 degrees) button (rear)",
+              "type": "button",
+              "match": [
+                "FLAPS_25_CPT2"
+              ],
+              "text": "Pressing this button sets the flaps to the take-off position, 25 degrees.",
+              "context": "The rear flap buttons are command controls. This one gives the take-off setting from the rear seat.",
+              "src": "m1",
+              "page": "54"
+            },
+            {
+              "id": "r-flaps-44",
+              "name": "Flaps landing position (44 degrees) button (rear)",
+              "type": "button",
+              "match": [
+                "FLAPS_44_CPT2"
+              ],
+              "text": "Pressing this button sets the flaps to the landing position, 44 degrees.",
+              "context": "The rear flap buttons are command controls. This one gives the landing setting from the rear seat.",
+              "src": "m1",
+              "page": "54"
+            },
+            {
+              "id": "r-brake",
+              "name": "Emergency wheel brake lever (rear)",
+              "type": "handle",
+              "match": [
+                "BRAKE_CONTROL_CPT2"
+              ],
+              "text": "Pulling this handle backward brakes the wheels in an emergency.",
+              "context": "In emergency braking the plane cannot use differential braking to turn. There is no parking brake in the rear cockpit.",
+              "src": "m1",
+              "page": "60"
+            },
+            {
+              "id": "r-light-switch",
+              "name": "Instrument lighting switch (Red / OFF / White) (rear)",
+              "type": "switch3",
+              "match": [
+                "INSTRUMENT_LIGHTING_CPT2"
+              ],
+              "positions": [
+                {
+                  "name": "Red",
+                  "text": "The main red lights are on."
+                },
+                {
+                  "name": "OFF",
+                  "text": "The red and white lights are off."
+                },
+                {
+                  "name": "White",
+                  "text": "The auxiliary white lights are on."
+                }
+              ],
+              "text": "This switch picks the colour of the rear cockpit lights: red as the main light, white as the backup, or off.",
+              "context": "It does the same as the front switch.",
+              "src": "m1",
+              "page": "106"
+            },
+            {
+              "id": "r-light-knob",
+              "name": "Instrument lights intensity knob (rear)",
+              "type": "knob",
+              "match": [
+                "INSTRUMENT_LIGHTING_CONTROL_CPT2"
+              ],
+              "text": "Turning this knob makes the rear instrument lights brighter (clockwise) or darker (counter-clockwise).",
+              "context": "It does the same as the front knob.",
+              "src": "m1",
+              "page": "107"
+            }
+          ]
+        },
+        {
+          "id": "r-fuel-fire",
+          "name": "Rear fuel, fire and throttle lock controls",
+          "src": "m1",
+          "page": "88",
+          "text": "These are the rear copies of the fuel shut-off lever, the emergency fuel switch and the fire extinguisher button. The throttle lock stops the throttle from being pulled to STOP in flight.",
+          "context": "The EGT selector decides in which seat the exhaust temperature gauge is displayed.",
+          "controls": [
+            {
+              "id": "r-fuel-shutoff",
+              "name": "Fuel shut-off lever (rear)",
+              "type": "lever",
+              "match": [
+                "FUEL_SHUT_OFF_CPT2"
+              ],
+              "text": "This lever opens or closes the fuel pipe from the tanks to the engine. Forward is open.",
+              "context": "Closing it stops the engine. The front lever does the same.",
+              "src": "m1",
+              "page": "71"
+            },
+            {
+              "id": "r-emerg-fuel-cover",
+              "name": "SEC. REG. emergency fuel switch cover (rear)",
+              "type": "cover",
+              "match": [
+                "COVER_EMERCENCY_FUEL_CPT2"
+              ],
+              "text": "This guard covers the emergency fuel switch of the rear cockpit. It is lifted before the switch is moved.",
+              "context": "It prevents the emergency fuel system from being used by accident.",
+              "src": "m1",
+              "page": "81"
+            },
+            {
+              "id": "r-emerg-fuel",
+              "name": "SEC. REG. emergency fuel switch (rear)",
+              "type": "switch",
+              "match": [
+                "EMERCENCY_FUEL_CPT2"
+              ],
+              "text": "This switch changes the engine's fuel supply to the emergency system. It is used if the main fuel system is damaged.",
+              "context": "It does the same as the front switch.",
+              "src": "m1",
+              "page": "81"
+            },
+            {
+              "id": "r-fire-cover",
+              "name": "Fire extinguisher button cover (rear)",
+              "type": "cover",
+              "match": [
+                "COVER_FIRE_CPT2"
+              ],
+              "text": "This guard covers the fire extinguisher button of the rear cockpit. It is lifted before the button is pressed.",
+              "context": "It prevents the extinguisher from being fired by accident.",
+              "src": "m1",
+              "page": "76"
+            },
+            {
+              "id": "r-fire",
+              "name": "Fire extinguisher button (rear)",
+              "type": "button",
+              "match": [
+                "FIRE_CPT2"
+              ],
+              "text": "Pressing this button fires the fire extinguisher in the engine compartment.",
+              "context": "It does the same as the front button.",
+              "src": "m1",
+              "page": "76"
+            },
+            {
+              "id": "r-egt-select",
+              "name": "EGT indicator selector switch (FRONT / REAR)",
+              "type": "switch",
+              "match": [
+                "CONTROL_EGT_IND"
+              ],
+              "positions": [
+                {
+                  "name": "FRONT",
+                  "text": "The temperature shows on the front gauge."
+                },
+                {
+                  "name": "REAR",
+                  "text": "The temperature shows on the rear gauge."
+                }
+              ],
+              "text": "This switch picks in which cockpit the exhaust gas temperature is shown. The temperature signal can only go to one gauge at a time.",
+              "context": "The manual calls it the ENG IND switch with the positions FWD and AFT.",
+              "src": "m1",
+              "page": "89"
+            },
+            {
+              "id": "r-throttle-lock",
+              "name": "Throttle limiter (extendable lock)",
+              "type": "switch",
+              "match": [
+                "THROTTLE_LIMIT"
+              ],
+              "text": "This lock on the rear throttle stops the throttle from being pulled to STOP by accident in flight.",
+              "context": "To put the front throttle to STOP, the lock in the rear cockpit has to be opened (retracted) first.",
+              "src": "m1",
+              "page": "88"
+            }
+          ]
+        },
+        {
+          "id": "r-radio-intercom",
+          "name": "Rear radio, intercom and oxygen controls",
+          "src": "m1",
+          "page": "148",
+          "text": "The rear seat has its own copies of the radio and intercom panels and the oxygen valves.",
+          "context": "The radio can be controlled from one cockpit at a time. The oxygen lines of the two cockpits can be connected by a valve in the rear cockpit.",
+          "controls": [
+            {
+              "id": "r-radio-channel",
+              "name": "R-832M preset channel selector knob (rear)",
+              "type": "selector",
+              "match": [
+                "RADIO_CHANNEL_CPT2"
+              ],
+              "text": "Turning this knob picks the radio channel.",
+              "context": "It does the same as the front knob.",
+              "src": "m1",
+              "page": "150"
+            },
+            {
+              "id": "r-radio-squelch",
+              "name": "Radio squelch switch (rear)",
+              "type": "switch",
+              "match": [
+                "RADIO_NOISE_SUPPR_CPT2"
+              ],
+              "positions": [
+                {
+                  "name": "ON",
+                  "text": "The noise suppression is on."
+                },
+                {
+                  "name": "OFF",
+                  "text": "The noise suppression is off."
+                }
+              ],
+              "text": "This switch turns the hiss-cutting noise suppression of the radio on or off.",
+              "context": "It does the same as the front switch.",
+              "src": "m1",
+              "page": "150"
+            },
+            {
+              "id": "r-radio-remote",
+              "name": "Radio control switch (rear)",
+              "type": "switch",
+              "match": [
+                "RADIO_REMOTE_CPT2"
+              ],
+              "text": "Flipping this switch takes the control of the radio for the rear cockpit.",
+              "context": "The radio can be controlled from one cockpit at a time.",
+              "src": "m1",
+              "page": "150"
+            },
+            {
+              "id": "r-radio-volume",
+              "name": "Radio volume knob (rear)",
+              "type": "knob",
+              "match": [
+                "RADIO_VOLUME_CPT2"
+              ],
+              "text": "Turning this knob sets the volume of the outside radio channels in the rear headset.",
+              "context": "It does the same as the front knob.",
+              "src": "m1",
+              "page": "151"
+            },
+            {
+              "id": "r-spu-volume",
+              "name": "Intercom volume knob (rear)",
+              "type": "knob",
+              "match": [
+                "SPU_VOLUME_CPT2"
+              ],
+              "text": "Turning this knob sets the volume of the intercom in the rear cockpit.",
+              "context": "It does the same as the front knob.",
+              "src": "m1",
+              "page": "151"
+            },
+            {
+              "id": "r-spu-reserve",
+              "name": "Reserve intercom switch (rear)",
+              "type": "switch",
+              "match": [
+                "SPU_REZ_CPT2"
+              ],
+              "positions": [
+                {
+                  "name": "ON",
+                  "text": "The reserve intercom is used."
+                },
+                {
+                  "name": "OFF",
+                  "text": "The main intercom is used."
+                }
+              ],
+              "text": "This switch turns on the reserve (standby) intercom in the rear cockpit.",
+              "context": "It does the same as the front switch.",
+              "src": "m1",
+              "page": "151"
+            },
+            {
+              "id": "r-spu-adf",
+              "name": "ADF audio switch (rear)",
+              "type": "switch",
+              "match": [
+                "SPU_RK_CPT2"
+              ],
+              "positions": [
+                {
+                  "name": "ADF",
+                  "text": "The beacon signals are heard."
+                },
+                {
+                  "name": "OFF",
+                  "text": "The beacon signals are off."
+                }
+              ],
+              "text": "This switch lets the instructor listen to the sound of the radio beacons (NDBs) on the headset.",
+              "context": "It does the same as the front switch.",
+              "src": "m1",
+              "page": "151"
+            },
+            {
+              "id": "r-oxy-supply",
+              "name": "Oxygen supply valve (rear)",
+              "type": "knob",
+              "match": [
+                "VALVE_OXYGEN_CPT2"
+              ],
+              "text": "Turning this valve opens or closes the oxygen supply from the tanks to the rear cockpit.",
+              "context": "The game labels it CLOSE for clockwise and OPEN for counter-clockwise.",
+              "src": "m1",
+              "page": "148"
+            },
+            {
+              "id": "r-oxy-diluter",
+              "name": "Diluter demand switch (100% / MIX) (rear)",
+              "type": "switch",
+              "match": [
+                "SWITSH_OXYGEN_CPT2"
+              ],
+              "positions": [
+                {
+                  "name": "MIX",
+                  "text": "The automatic mix of oxygen and cabin air by altitude."
+                },
+                {
+                  "name": "100%",
+                  "text": "Pure oxygen."
+                }
+              ],
+              "text": "This switch decides if the pilot gets the automatic mix of oxygen and air or pure oxygen.",
+              "context": "It does the same as the front switch.",
+              "src": "m1",
+              "page": "148"
+            },
+            {
+              "id": "r-oxy-emerg",
+              "name": "Emergency oxygen switch (rear)",
+              "type": "switch",
+              "match": [
+                "EMERG_OXYGEN_CPT2"
+              ],
+              "positions": [
+                {
+                  "name": "ON",
+                  "text": "Oxygen flows continuously."
+                },
+                {
+                  "name": "OFF",
+                  "text": "Normal position."
+                }
+              ],
+              "text": "This switch gives the pilot a steady stream of oxygen for emergencies.",
+              "context": "It does the same as the front switch.",
+              "src": "m1",
+              "page": "148"
+            },
+            {
+              "id": "r-oxy-interconnect",
+              "name": "Oxygen bottles interconnection valve",
+              "type": "knob",
+              "match": [
+                "BOTTLES_*INTERCON"
+              ],
+              "text": "Turning this valve connects the oxygen lines of the front and the rear cockpit. Clockwise closes it and counter-clockwise opens it.",
+              "context": "It exists in the rear cockpit only.",
+              "src": "m1",
+              "page": "148"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "rear-pedestal",
+      "where": "center-pedestal",
+      "name": "Rear pedestal and canopy",
+      "seat": 2,
+      "text": "The rear pedestal has the ADF panel, the small breaker panel, the emergency jettison switches and the canopy handles.",
+      "panels": [
+        {
+          "id": "r-adf-panel",
+          "name": "Rear RKL-41 ADF control panel",
+          "src": "m1",
+          "page": "154",
+          "text": "This is the rear copy of the ADF control panel. The ADF can be controlled from one cockpit at a time; the control switch gives the control to this cockpit.",
+          "context": "The beacon frequencies are normally set from the front cockpit. The rear panel has its own mode and volume controls.",
+          "controls": [
+            {
+              "id": "r-adf-volume",
+              "name": "RKL-41 volume knob (rear)",
+              "type": "knob",
+              "match": [
+                "RKL_VOLUME_CPT2"
+              ],
+              "text": "Turning this knob sets the volume of the beacon signal in the rear headset.",
+              "context": "It does the same as the front knob.",
+              "src": "m1",
+              "page": "154"
+            },
+            {
+              "id": "r-adf-remote",
+              "name": "RKL-41 control switch (rear)",
+              "type": "switch",
+              "match": [
+                "RKL_REMOTE_CPT2"
+              ],
+              "positions": [
+                {
+                  "name": "TAKE CONTROL",
+                  "text": "This cockpit controls the ADF."
+                },
+                {
+                  "name": "HAND OVER CONTROL",
+                  "text": "The other cockpit controls the ADF."
+                }
+              ],
+              "text": "This switch decides which cockpit controls the ADF: take control or hand over control.",
+              "context": "The ADF is connected to one control panel at a time.",
+              "src": "m1",
+              "page": "154"
+            },
+            {
+              "id": "r-adf-tlf",
+              "name": "RKL-41 TLF / TLG switch (rear)",
+              "type": "switch",
+              "match": [
+                "RKL_TLF_TLG_CPT2"
+              ],
+              "positions": [
+                {
+                  "name": "TLF",
+                  "text": "Telephone mode (A3)."
+                },
+                {
+                  "name": "TLG",
+                  "text": "Telegraph mode (A1, A2)."
+                }
+              ],
+              "text": "This switch picks the filter for the receiver: TLF for voice beacons or TLG for beacons that send a Morse tone.",
+              "context": "It does the same as the front switch.",
+              "src": "m1",
+              "page": "154"
+            },
+            {
+              "id": "r-adf-mode",
+              "name": "RKL-41 function selector (rear)",
+              "type": "selector",
+              "match": [
+                "RKL_MODE_CPT2"
+              ],
+              "positions": [
+                {
+                  "name": "OFF",
+                  "text": "The ADF is off."
+                },
+                {
+                  "name": "COMP(AUTO)",
+                  "text": "Compass mode with automatic beacon switching."
+                },
+                {
+                  "name": "COMP(MAN)",
+                  "text": "Compass mode without automatic switching."
+                },
+                {
+                  "name": "ANT",
+                  "text": "Antenna mode, used to tune the ADF."
+                },
+                {
+                  "name": "LOOP",
+                  "text": "Loop mode, for finding the direction of a station by listening."
+                }
+              ],
+              "text": "This switch turns on the ADF and picks the mode: compass automatic, compass manual, antenna or loop.",
+              "context": "It does the same as the front switch.",
+              "src": "m1",
+              "page": "154"
+            },
+            {
+              "id": "r-adf-near-100",
+              "name": "RKL-41 near NDB 100 kHz rotary (rear)",
+              "type": "knob",
+              "match": [
+                "RKL_FREQ_2_XX_CPT2"
+              ],
+              "text": "This ring sets the hundreds of kilohertz of the near (inner) beacon's frequency.",
+              "context": "The two rings and the fine tuning knob together set the near beacon.",
+              "src": "m1",
+              "page": "154"
+            },
+            {
+              "id": "r-adf-near-10",
+              "name": "RKL-41 near NDB 10 kHz rotary (rear)",
+              "type": "knob",
+              "match": [
+                "RKL_FREQ_2_00XX_CPT2"
+              ],
+              "text": "This knob sets the tens of kilohertz of the near beacon's frequency.",
+              "context": "The near beacon is the inner NDB.",
+              "src": "m1",
+              "page": "154"
+            },
+            {
+              "id": "r-adf-near-tune",
+              "name": "RKL-41 near NDB fine tuning (rear)",
+              "type": "knob",
+              "match": [
+                "RKL_FREQ_2_TUNING_CPT2"
+              ],
+              "text": "Turning this knob fine-tunes the near beacon for the loudest sound or the biggest needle swing.",
+              "context": "The tuning indicator on the panel shows the best setting.",
+              "src": "m1",
+              "page": "154"
+            },
+            {
+              "id": "r-adf-far-100",
+              "name": "RKL-41 far NDB 100 kHz rotary (rear)",
+              "type": "knob",
+              "match": [
+                "RKL_FREQ_1_XX_CPT2"
+              ],
+              "text": "This ring sets the hundreds of kilohertz of the far (outer) beacon's frequency.",
+              "context": "The two rings and the fine tuning knob together set the far beacon.",
+              "src": "m1",
+              "page": "154"
+            },
+            {
+              "id": "r-adf-far-10",
+              "name": "RKL-41 far NDB 10 kHz rotary (rear)",
+              "type": "knob",
+              "match": [
+                "RKL_FREQ_1_00XX_CPT2"
+              ],
+              "text": "This knob sets the tens of kilohertz of the far beacon's frequency.",
+              "context": "The far beacon is the outer NDB.",
+              "src": "m1",
+              "page": "154"
+            },
+            {
+              "id": "r-adf-far-tune",
+              "name": "RKL-41 far NDB fine tuning (rear)",
+              "type": "knob",
+              "match": [
+                "RKL_FREQ_1_TUNING_CPT2"
+              ],
+              "text": "Turning this knob fine-tunes the far beacon for the loudest sound or the biggest needle swing.",
+              "context": "The tuning indicator on the panel shows the best setting.",
+              "src": "m1",
+              "page": "154"
+            },
+            {
+              "id": "r-adf-brightness",
+              "name": "RKL-41 brightness knob (rear)",
+              "type": "knob",
+              "match": [
+                "RKL_BRIGHTNESS_CPT2"
+              ],
+              "text": "Turning this knob makes the lighting of the rear ADF control panel brighter or darker.",
+              "context": "It helps reading the panel at night.",
+              "src": "m1",
+              "page": "154"
+            },
+            {
+              "id": "r-adf-loop",
+              "name": "RKL-41 loop switch (L / R) (rear)",
+              "type": "button",
+              "match": [
+                "RKL_L_R_CPT2"
+              ],
+              "text": "This switch turns the ADF antenna by hand to the left or to the right. It springs back to the middle.",
+              "context": "The pilot uses it for the ADF check, to move the needle by hand.",
+              "src": "m1",
+              "page": "154"
+            }
+          ]
+        },
+        {
+          "id": "r-cb-jettison",
+          "name": "Rear breakers, emergency jettison and bomb arming",
+          "src": "m1",
+          "page": "99",
+          "text": "The rear cockpit has its own small breaker panel and the switches for emergency jettison. Rear breakers and switches are command ones: they override the front cockpit.",
+          "context": "The manual says the NETW, ARMS and SIGNAL breakers must be on in the rear cockpit before any armament is used.",
+          "controls": [
+            {
+              "id": "r-cb-netw",
+              "name": "NETW switch (network)",
+              "type": "switch2",
+              "match": [
+                "NETW"
+              ],
+              "positions": [
+                {
+                  "name": "ON",
+                  "text": "The circuit breaker is on and the system has power."
+                },
+                {
+                  "name": "OFF",
+                  "text": "The circuit breaker is off and the system has no power."
+                }
+              ],
+              "text": "This switch lets any current source join the onboard network. The manual says it must always be on.",
+              "context": "Without it the electric network of the plane may not get any power.",
+              "src": "m1",
+              "page": "99"
+            },
+            {
+              "id": "r-cb-seat",
+              "name": "SEAT breaker",
+              "type": "switch2",
+              "match": [
+                "SEAT"
+              ],
+              "positions": [
+                {
+                  "name": "ON",
+                  "text": "The circuit breaker is on and the system has power."
+                },
+                {
+                  "name": "OFF",
+                  "text": "The circuit breaker is off and the system has no power."
+                }
+              ],
+              "text": "This breaker powers the seat height adjustment of the rear cockpit.",
+              "context": "The game names it 'CB Seat'. The manual describes the SEAT CB.",
+              "src": "m1",
+              "page": "99"
+            },
+            {
+              "id": "r-cb-signal",
+              "name": "SIGNAL breaker",
+              "type": "switch2",
+              "match": [
+                "SIGNAL"
+              ],
+              "positions": [
+                {
+                  "name": "ON",
+                  "text": "The circuit breaker is on and the system has power."
+                },
+                {
+                  "name": "OFF",
+                  "text": "The circuit breaker is off and the system has no power."
+                }
+              ],
+              "text": "This breaker powers the indicator lamps in the rear cockpit.",
+              "context": "Without it the rear warning lamps stay dark.",
+              "src": "m1",
+              "page": "99"
+            },
+            {
+              "id": "r-cb-arms",
+              "name": "ARMS breaker (rear)",
+              "type": "switch2",
+              "match": [
+                "ARMS"
+              ],
+              "positions": [
+                {
+                  "name": "ON",
+                  "text": "The circuit breaker is on and the system has power."
+                },
+                {
+                  "name": "OFF",
+                  "text": "The circuit breaker is off and the system has no power."
+                }
+              ],
+              "text": "This breaker powers the weapon control system. It overrides the ARMS breaker in the front cockpit.",
+              "context": "It is a command breaker, so its setting wins over the front one.",
+              "src": "m1",
+              "page": "99"
+            },
+            {
+              "id": "r-cb-intercom-ground",
+              "name": "INTERCOM GROUND breaker",
+              "type": "switch2",
+              "match": [
+                "INTERCOM_GRND"
+              ],
+              "positions": [
+                {
+                  "name": "ON",
+                  "text": "The circuit breaker is on and the system has power."
+                },
+                {
+                  "name": "OFF",
+                  "text": "The circuit breaker is off and the system has no power."
+                }
+              ],
+              "text": "This breaker switches on the intercom link to the ground crew.",
+              "context": "The pilot talks to the ground crew through it.",
+              "src": "m1",
+              "page": "99"
+            },
+            {
+              "id": "r-live-cover",
+              "name": "Arm/Safe bombs emergency jettison switch cover (rear)",
+              "type": "cover",
+              "match": [
+                "COVER_LIVE_CPT2"
+              ],
+              "text": "This guard covers the LIVE / BLANK switch of the rear cockpit. It is lifted before the switch is moved.",
+              "context": "The guard prevents the switch from being moved by accident.",
+              "src": "m1",
+              "page": "240"
+            },
+            {
+              "id": "r-live",
+              "name": "Arm/Safe bombs emergency jettison switch (rear: LIVE / BOMBS / BLANK)",
+              "type": "switch3",
+              "match": [
+                "LIVE_CPT2"
+              ],
+              "positions": [
+                {
+                  "name": "LIVE",
+                  "text": "Emergency released bombs are live."
+                },
+                {
+                  "name": "BOMBS",
+                  "text": "The neutral position, the front switch decides."
+                },
+                {
+                  "name": "BLANK",
+                  "text": "Emergency released bombs are blank."
+                }
+              ],
+              "text": "This switch decides if bombs dropped with the emergency system are live (they can explode) or blank. It overrides the front switch.",
+              "context": "The manual says it must be in the neutral position unless the instructor wants to set it. In the middle the front switch decides.",
+              "src": "m1",
+              "page": "240"
+            },
+            {
+              "id": "r-emerg-jett-cover",
+              "name": "Emergency jettison switch cover (rear)",
+              "type": "cover",
+              "match": [
+                "COVER_EMER_JETTISON_CPT2"
+              ],
+              "text": "This guard covers the emergency jettison switch of the rear cockpit. It is lifted before the switch is moved.",
+              "context": "The guard stops the stores from being dropped by accident.",
+              "src": "m1",
+              "page": "240"
+            },
+            {
+              "id": "r-emerg-jett",
+              "name": "Emergency jettison switch (rear)",
+              "type": "switch2",
+              "match": [
+                "EMER_JETTISON_CPT2"
+              ],
+              "positions": [
+                {
+                  "name": "ON",
+                  "text": "The stores of all pylons are released."
+                },
+                {
+                  "name": "OFF",
+                  "text": "Normal position."
+                }
+              ],
+              "text": "This switch drops the stores of all pylons at once in an emergency. It overrides the front switches.",
+              "context": "The manual says this switch must be in the neutral position unless an emergency release is wanted.",
+              "src": "m1",
+              "page": "240"
+            }
+          ]
+        },
+        {
+          "id": "r-canopy",
+          "name": "Rear canopy handles and jettison",
+          "src": "m1",
+          "page": "47",
+          "text": "These are the handles that lock the rear canopy and seal the cockpit, and the handle that throws the canopy off in an emergency.",
+          "context": "The rear pilot ejects first if both leave the plane after the canopy has been thrown off.",
+          "controls": [
+            {
+              "id": "r-canopy-lock",
+              "name": "Rearward canopy lock handle",
+              "type": "handle",
+              "match": [
+                "CANOPY_LOCK_CPT2",
+                "CANOPY_CPT2"
+              ],
+              "text": "This handle locks and unlocks the rear canopy. Forward is locked.",
+              "context": "The CANOPY UNLOCKED warning is off when the handle is locked.",
+              "src": "m1",
+              "page": "47"
+            },
+            {
+              "id": "r-canopy-jettison",
+              "name": "Rearward canopy emergency jettison handle",
+              "type": "handle",
+              "match": [
+                "EJECT_CANOPY_CPT2"
+              ],
+              "text": "Pushing this handle down throws the rear canopy off with small charges, without ejecting.",
+              "context": "The seat has its own double handle that also removes the canopy and ejects the pilot.",
+              "src": "m1",
+              "page": "47"
+            },
+            {
+              "id": "r-ecs",
+              "name": "ECS and pressurization handle (rear)",
+              "type": "handle",
+              "match": [
+                "PRESSUR_CPT2"
+              ],
+              "positions": [
+                {
+                  "name": "OFF",
+                  "text": "The air supply is closed and the cockpit is not sealed."
+                },
+                {
+                  "name": "CANOPIES SEALED",
+                  "text": "The canopy seals are filled with air."
+                },
+                {
+                  "name": "ECS ON",
+                  "text": "The cockpit is sealed and ventilated with engine air."
+                }
+              ],
+              "text": "Moving this handle all the way forward seals the cockpit and starts the air flow. Moving it back unseals the cockpit.",
+              "context": "Both cockpits are sealed by their handle. The air conditioning shut-off switch can override it.",
+              "src": "m1",
+              "page": "65"
+            },
+            {
+              "id": "r-aircond-cover",
+              "name": "Conditioning shut-off switch cover",
+              "type": "cover",
+              "match": [
+                "COVER_AIR_COND"
+              ],
+              "text": "This guard covers the air conditioning emergency shut-off switch. It is lifted before the switch is moved.",
+              "context": "The guard stops the air supply from being shut off by accident.",
+              "src": "m1",
+              "page": "66"
+            },
+            {
+              "id": "r-aircond",
+              "name": "Conditioning shut-off switch (air conditioning emergency shut-off)",
+              "type": "switch3",
+              "match": [
+                "AIR_COND"
+              ],
+              "positions": [
+                {
+                  "name": "OPEN",
+                  "text": "The air supply valve is open."
+                },
+                {
+                  "name": "FRONT PILOT CONTROL",
+                  "text": "The front pilot's handle controls the valve. This is the neutral position."
+                },
+                {
+                  "name": "CLOSE",
+                  "text": "The air supply valve is closed."
+                }
+              ],
+              "text": "This switch can shut off the air supply to the cockpits in an emergency. In the middle the front pilot's handle decides.",
+              "context": "The manual says the cockpit handle can only control the air valve if this switch is in the neutral position.",
+              "src": "m1",
+              "page": "66"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "rear-right-console",
+      "where": "right-console",
+      "name": "Rear right panel",
+      "seat": 2,
+      "text": "The instructor's right panel has the emergency hydraulic levers, the warning light controls and the controls for the RSBN azimuth and magnetic variation.",
+      "panels": [
+        {
+          "id": "r-right-console",
+          "name": "Rear right panel",
+          "src": "m1",
+          "page": "125",
+          "text": "The instructor's right panel has the emergency hydraulic levers, the warning light controls and the controls for the RSBN azimuth and magnetic variation.",
+          "context": "It is the rear copy of the emergency levers and the warning light controls of the front right panel.",
+          "controls": [
+            {
+              "id": "r-emerg-gear",
+              "name": "Emergency landing gear extension lever (rear)",
+              "type": "switch2",
+              "match": [
+                "EMERGENCY_VALVE_GEAR_CPT2"
+              ],
+              "positions": [
+                {
+                  "name": "FORWARD (OFF)",
+                  "text": "Normal position."
+                },
+                {
+                  "name": "BACKWARD (ON)",
+                  "text": "The emergency system extends the landing gear."
+                }
+              ],
+              "text": "Pulling this lever backward puts the landing gear down with emergency hydraulic pressure.",
+              "context": "It does the same as the front lever. There is no priority between the front and the rear emergency levers.",
+              "src": "m1",
+              "page": "58"
+            },
+            {
+              "id": "r-emerg-flaps",
+              "name": "Emergency flaps extension lever (rear)",
+              "type": "switch2",
+              "match": [
+                "EMERGENCY_VALVE_FLAPS_CPT2"
+              ],
+              "positions": [
+                {
+                  "name": "FORWARD (OFF)",
+                  "text": "Normal position."
+                },
+                {
+                  "name": "BACKWARD (ON)",
+                  "text": "The emergency system extends the flaps."
+                }
+              ],
+              "text": "Pulling this lever backward puts the flaps down with emergency pressure to the landing position.",
+              "context": "It does the same as the front lever.",
+              "src": "m1",
+              "page": "58"
+            },
+            {
+              "id": "r-emerg-rat",
+              "name": "RAT (emergency generator) emergency lever (rear)",
+              "type": "switch2",
+              "match": [
+                "EMERGENCY_VALVE_GENERATOR_CPT2"
+              ],
+              "positions": [
+                {
+                  "name": "FORWARD (OFF)",
+                  "text": "Normal position."
+                },
+                {
+                  "name": "BACKWARD (ON)",
+                  "text": "The ram air turbine is extended."
+                }
+              ],
+              "text": "Pulling this lever backward pushes out the ram air turbine that drives the backup generator.",
+              "context": "It does the same as the front lever.",
+              "src": "m1",
+              "page": "59"
+            },
+            {
+              "id": "r-emerg-interconnect",
+              "name": "Main and emergency hydraulic systems interconnection lever (rear)",
+              "type": "switch2",
+              "match": [
+                "EMERGENCY_VALVE_HYDRAULIC_CPT2"
+              ],
+              "positions": [
+                {
+                  "name": "FORWARD (OFF)",
+                  "text": "The systems are separate."
+                },
+                {
+                  "name": "BACKWARD (ON)",
+                  "text": "The two systems are connected."
+                }
+              ],
+              "text": "Pulling this lever backward connects the main and the emergency hydraulic systems.",
+              "context": "It does the same as the front lever.",
+              "src": "m1",
+              "page": "57"
+            },
+            {
+              "id": "r-warn-intensity",
+              "name": "Warning light intensity knob (rear)",
+              "type": "knob",
+              "match": [
+                "WARNING_LIGHT_INTENSITY_CPT2"
+              ],
+              "text": "Turning this knob makes the warning, caution and advisory lights in the rear cockpit brighter or darker.",
+              "context": "It does the same as the front knob.",
+              "src": "m1",
+              "page": "111"
+            },
+            {
+              "id": "r-warn-check",
+              "name": "Warning light check button (rear)",
+              "type": "button",
+              "match": [
+                "WARNING_LIGHT_CHECK_CPT2"
+              ],
+              "text": "While this button is held, all warning lights of the rear cockpit light up. It is a lamp test.",
+              "context": "It does the same as the front button.",
+              "src": "m1",
+              "page": "111"
+            },
+            {
+              "id": "r-azimuth",
+              "name": "Azimuth accordance (course accordance) button",
+              "type": "button",
+              "match": [
+                "WARNING_LIGHT_CHECK003"
+              ],
+              "text": "Pressing this button lines up the compass course in the rear cockpit with the course of the front cockpit pilot. The game labels it 'Course Accordance'.",
+              "context": "The CONFORM. AZIMUTH light then shows on the front caution panel.",
+              "src": "m1",
+              "page": "159"
+            },
+            {
+              "id": "r-emerg-landing",
+              "name": "RSBN emergency landing switch",
+              "type": "switch2",
+              "match": [
+                "EMER_LANDING_ON"
+              ],
+              "positions": [
+                {
+                  "name": "ON",
+                  "text": "The rear pilot flies the RSBN landing."
+                },
+                {
+                  "name": "OFF",
+                  "text": "Normal position."
+                }
+              ],
+              "text": "The rear pilot switches this on when taking over the plane to land. The desired landing course is then set by hand on the compass.",
+              "context": "The manual calls it the EMERGENCY SWITCH FOR LANDING.",
+              "src": "m1",
+              "page": "160"
+            },
+            {
+              "id": "r-km8",
+              "name": "KM-8 magnetic variation knob",
+              "type": "knob",
+              "match": [
+                "MAGNETIC_VAR_KNOB"
+              ],
+              "text": "Turning this knob enters the magnetic variation into the compass system. The variation is the difference between true and magnetic north.",
+              "context": "The KM-8 correction mechanism is in the rear cockpit and takes the place of the front PU-26E panel.",
+              "src": "m1",
+              "page": "142"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "rear-hotas",
+      "where": "hotas",
+      "name": "Rear stick and throttle",
+      "seat": 2,
+      "text": "The rear stick is in the middle between the instructor's knees and the rear throttle is on the left panel.",
+      "panels": [
+        {
+          "id": "r-stick-throttle",
+          "name": "Rear stick and throttle",
+          "src": "m1",
+          "page": "151",
+          "text": "The instructor's stick and throttle work like the front ones. The rear stick has the intercom button, the rear throttle has the buttons for the radio, the intercom and the air brakes.",
+          "context": "Some rear controls are command ones: the air brake switch and the brake lever in the rear cockpit override the front ones.",
+          "controls": [
+            {
+              "id": "r-stick-part",
+              "name": "Rear stick part 'RUS'",
+              "type": "other",
+              "match": [
+                "RUS011"
+              ],
+              "text": "The game lists the rear stick body in its device view under the name 'RUS'. The manual does not describe this part separately.",
+              "context": "The control stick works like the front one.",
+              "src": "m1"
+            },
+            {
+              "id": "r-throttle-part",
+              "name": "Rear throttle part 'Details'",
+              "type": "other",
+              "match": [
+                "Details041"
+              ],
+              "text": "The game lists a part of the rear throttle under the name 'Details'. The manual does not describe this part.",
+              "context": "It has no known function in the game.",
+              "src": "m1"
+            },
+            {
+              "id": "r-airbrake",
+              "name": "Air brake switch (rear)",
+              "type": "switch",
+              "match": [
+                "AIR_BRAKE_BTN_CPT2"
+              ],
+              "positions": [
+                {
+                  "name": "RETRACT",
+                  "text": "The air brakes close (forward)."
+                },
+                {
+                  "name": "NEUTRAL",
+                  "text": "The front switch can control the air brakes."
+                },
+                {
+                  "name": "EXTEND",
+                  "text": "The air brakes open (aft)."
+                }
+              ],
+              "text": "This switch on the rear throttle opens and closes the air brakes. In the rear cockpit it has three positions and it overrides the front switch.",
+              "context": "The air brakes can only be controlled from the front cockpit if this switch is in the neutral position.",
+              "src": "m1",
+              "page": "55"
+            },
+            {
+              "id": "r-radio-btn",
+              "name": "RADIO button (rear)",
+              "type": "button",
+              "match": [
+                "RADIO_BTN_CPT2"
+              ],
+              "text": "While this button is held, the instructor talks on the radio. It is the push-to-talk button.",
+              "context": "It does the same as the front button.",
+              "src": "m1",
+              "page": "150"
+            },
+            {
+              "id": "r-intercom-btn",
+              "name": "SPU intercom button (rear)",
+              "type": "button",
+              "match": [
+                "SPU_BTN_CPT2"
+              ],
+              "text": "While this button is held, the instructor talks to the front cockpit over the intercom.",
+              "context": "The rear stick has an intercom button as well.",
+              "src": "m1",
+              "page": "151"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

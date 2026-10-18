@@ -1,0 +1,3495 @@
+{
+  "format": "joypro-cockpit-guide",
+  "version": 1,
+  "id": "dcs-uh-1h",
+  "title": "UH-1H Huey (DCS)",
+  "variants": [
+    "uh-1h"
+  ],
+  "games": [
+    "DCS"
+  ],
+  "sets": [
+    "DCS/UH-1H"
+  ],
+  "sources": [
+    {
+      "id": "m1",
+      "title": "DCS UH-1H Flight Manual (EN)",
+      "file": "Mods/aircraft/Uh-1H/Doc/DCS UH-1H Flight Manual_EN.pdf"
+    }
+  ],
+  "intro": "The UH-1H Huey is a transport and utility helicopter from the 1960s with a turbine engine and one big two-bladed rotor on top. The two pilots sit side by side, the pilot on the right, and each has a cyclic stick, a collective lever and pedals. The instrument panel is in front, the radios, engine switches and weapon panels are on the tall pedestal between the seats, and the electrical switches and circuit breakers are in the roof.",
+  "areas": [
+    {
+      "id": "instrument-panel",
+      "where": "front-center",
+      "name": "Instrument panel",
+      "text": "The big panel in front of both pilots. It holds the flight dials, the engine dials, the warning lights and a few radio and compass knobs. The right-hand seat is the pilot's seat.",
+      "panels": [
+        {
+          "id": "warning-lights",
+          "name": "Warning lights and glareshield (top of the panel)",
+          "db": "instrument-panel",
+          "src": "m1",
+          "page": "47",
+          "text": "The top of the instrument panel holds the lights that shout when something is wrong, plus the cover that shades the dials from sunlight.",
+          "context": "The pilot glances at these lights all the time. A lit master caution light means: look at the CAUTION panel on the pedestal to see what is wrong.",
+          "controls": [
+            {
+              "id": "glareshield",
+              "name": "Glareshield (sun shade)",
+              "type": "other",
+              "match": [
+                "item:instrument-panel:1"
+              ],
+              "text": "The glareshield is the shelf above the instruments. It keeps the sun off the dials so they stay easy to read.",
+              "context": "It is a fixed part of the panel and has nothing to switch.",
+              "src": "m1",
+              "page": "47"
+            },
+            {
+              "id": "secondary-lights",
+              "name": "Secondary instrument lights",
+              "type": "light",
+              "match": [
+                "item:instrument-panel:2"
+              ],
+              "text": "These small lamps light up some of the dials so they can be read in the dark. Their brightness is set with a knob on the overhead panel.",
+              "context": "The pilot uses them at night together with the other instrument lights. They are named SEC on the overhead rheostats.",
+              "src": "m1",
+              "page": "47"
+            },
+            {
+              "id": "master-caution",
+              "name": "MASTER CAUTION light",
+              "type": "light",
+              "match": [
+                "item:instrument-panel:3"
+              ],
+              "text": "This light comes on when something in the helicopter is not right. It says 'look at the caution panel'; it does not say what is wrong.",
+              "context": "The pilot looks down at the CAUTION panel on the pedestal, where the lit word names the fault. The RESET-TEST switch on that panel turns the master light off again.",
+              "src": "m1",
+              "page": "48"
+            },
+            {
+              "id": "rpm-warning-light",
+              "name": "Rotor and engine RPM warning light",
+              "type": "light",
+              "match": [
+                "item:instrument-panel:4"
+              ],
+              "text": "This light comes on when the main rotor or the engine turns too slowly or too fast. A rotor that turns too slowly cannot hold the helicopter up.",
+              "context": "The manual lists a high warning for the rotor and low warnings for rotor and engine. A warning tone sounds in the headset when both are low, unless the LOW RPM AUDIO switch is off.",
+              "src": "m1",
+              "page": "49"
+            },
+            {
+              "id": "fire-detector-test",
+              "name": "FIRE DETECTOR TEST button",
+              "type": "button",
+              "match": [
+                "FIRE-DETECTOR-PTR",
+                "item:instrument-panel:5"
+              ],
+              "text": "Pressing this button lights the red FIRE warning light next to it. It shows that the light works.",
+              "context": "The pilot tests it during the checks before starting the engine. In a real emergency, the same light comes on by itself when the engine room gets too hot.",
+              "src": "m1",
+              "page": "50"
+            },
+            {
+              "id": "fire-warning-light",
+              "name": "FIRE warning light",
+              "type": "light",
+              "match": [
+                "item:instrument-panel:6"
+              ],
+              "text": "This red light comes on when it is too hot in the engine compartment. It is the helicopter's fire alarm.",
+              "context": "It lights during the press-to-test check and on a real overheat. The pilot reacts with the engine fire procedures.",
+              "src": "m1",
+              "page": "50"
+            },
+            {
+              "id": "cargo-armed-light",
+              "name": "Cargo release armed light",
+              "type": "light",
+              "match": [
+                "item:instrument-panel:36"
+              ],
+              "text": "This light shows that the cargo hook release is armed, so a press of the cargo release button would let go of the load.",
+              "context": "The arming switch is the cargo safety switch on the overhead panel. The light matters when the helicopter carries a load on a sling under its belly.",
+              "src": "m1",
+              "page": "62"
+            },
+            {
+              "id": "marker-beacon-light",
+              "name": "Marker beacon light",
+              "type": "light",
+              "match": [
+                "item:instrument-panel:38"
+              ],
+              "text": "This light flashes when the helicopter flies over a ground transmitter called a marker beacon, which marks a spot on the approach to a runway.",
+              "context": "It only works when the marker beacon receiver is switched on with its volume knob.",
+              "src": "m1",
+              "page": "62"
+            }
+          ]
+        },
+        {
+          "id": "flight-instruments",
+          "name": "Flight instruments (speed, height, attitude, turn)",
+          "db": "instrument-panel",
+          "src": "m1",
+          "page": "47",
+          "text": "These dials tell the pilot how fast the helicopter flies, how high it is, whether it is level, and whether it climbs, sinks or turns.",
+          "context": "The pilot looks at these dials almost all the time, mostly when there is no clear view outside, such as in clouds or at night. The copilot side has its own copies.",
+          "controls": [
+            {
+              "id": "airspeed",
+              "name": "Airspeed indicator",
+              "type": "gauge",
+              "match": [
+                "item:instrument-panel:8"
+              ],
+              "text": "This dial shows how fast the helicopter moves through the air, in knots. The scale runs from 0 to 150 knots with a red line at 124 knots.",
+              "context": "The pilot keeps the needle below the red line. Below about 20 knots the reading is unreliable, because the rotor wind disturbs it.",
+              "src": "m1",
+              "page": "50"
+            },
+            {
+              "id": "pilot-attitude",
+              "name": "Pilot attitude indicator (artificial horizon)",
+              "type": "gauge",
+              "match": [
+                "item:instrument-panel:9"
+              ],
+              "text": "This dial shows a little ball with a line for the horizon. It tells the pilot whether the nose is up or down and whether the helicopter leans left or right.",
+              "context": "It is the main dial for flying without a view outside. An OFF flag appears when it has no electricity. It has a roll knob and a pitch knob, described next to it.",
+              "src": "m1",
+              "page": "51"
+            },
+            {
+              "id": "pilot-att-pitch-knob",
+              "name": "Pilot attitude indicator adjust knob (game: roll trim)",
+              "type": "knob",
+              "match": [
+                "PILOT-ATT-PITCH-ADJ-KNOB-PTR"
+              ],
+              "text": "Turning this knob moves the little model aircraft in the pilot's artificial horizon, to match the helicopter's real position. The game hint calls it the 'Attitude Indicator Roll Trim Knob'.",
+              "context": "The manual says this indicator has an electrical trim for roll in addition to the usual pitch adjustment. The game's two hints for the two knobs seem swapped, so the text stays general.",
+              "src": "m1",
+              "page": "51"
+            },
+            {
+              "id": "pilot-att-roll-knob",
+              "name": "Pilot attitude indicator adjust knob (game: pitch trim)",
+              "type": "knob",
+              "match": [
+                "PILOT-ATT-ROLL-ADJ-KNOB-PTR"
+              ],
+              "text": "Turning this knob moves the little model aircraft in the pilot's artificial horizon up or down. The game hint calls it the 'Attitude Indicator Pitch Trim Knob'.",
+              "context": "The pilot uses it to match the dial to the helicopter's real position in straight and level flight. The game's labels of the two knobs seem swapped, so the text stays general.",
+              "src": "m1",
+              "page": "51"
+            },
+            {
+              "id": "copilot-attitude",
+              "name": "Copilot attitude indicator (artificial horizon)",
+              "type": "gauge",
+              "match": [
+                "item:instrument-panel:12"
+              ],
+              "text": "This is the copilot's own artificial horizon. It shows nose up or down and leaning left or right.",
+              "context": "It works with the inverter's electricity. In a climb or dive over 27 degrees the bar stops at the edge and the ball becomes the reference.",
+              "src": "m1",
+              "page": "51"
+            },
+            {
+              "id": "copilot-att-pitch",
+              "name": "Copilot attitude indicator pitch trim knob",
+              "type": "knob",
+              "match": [
+                "PITCH-ADJUSTMENT-PTR"
+              ],
+              "text": "Turning this knob moves the little model aircraft in the copilot's artificial horizon, so it matches the real position of the helicopter.",
+              "context": "It sits on the copilot's attitude indicator. The game names it 'Attitude Indicator Pitch Trim Knob'.",
+              "src": "m1",
+              "page": "51"
+            },
+            {
+              "id": "copilot-att-cage",
+              "name": "Copilot attitude indicator cage knob (PULL TO CAGE)",
+              "type": "button",
+              "match": [
+                "CAGING-KNOB-ROTATION-PTR"
+              ],
+              "text": "Pulling this knob locks the gyro of the copilot's artificial horizon to its middle position, which is called caging. The knob is pulled smoothly and released quickly.",
+              "context": "The manual says to cage only in straight and level flight, and never to pull the knob hard. It is part of the engine start routine, when the inverter turns on.",
+              "src": "m1",
+              "page": "51"
+            },
+            {
+              "id": "pilot-altimeter",
+              "name": "Pilot altimeter (AAU-31/A) and pressure knob",
+              "type": "gauge",
+              "match": [
+                "item:instrument-panel:11",
+                "PILOT-ALT-SET-KNOB-PTR"
+              ],
+              "text": "This dial shows the height above sea level, read from the air pressure. The small knob sets the local air pressure so the dial reads right.",
+              "context": "Before take-off the pilot sets it to the field height. The manual asks for about one minute of warm-up first. It reads true within about 70 feet when set correctly.",
+              "src": "m1",
+              "page": "53"
+            },
+            {
+              "id": "copilot-altimeter",
+              "name": "Copilot altimeter (AAU-32/A) and pressure knob",
+              "type": "gauge",
+              "match": [
+                "item:instrument-panel:14",
+                "SET-PRESSURE-KNOB-PTR"
+              ],
+              "text": "This is the copilot's height dial, with a small knob to set the local air pressure. It also has a red CODE OFF flag.",
+              "context": "The CODE OFF flag must not be visible for the transponder to send height information. In DCS the transponder is not modelled.",
+              "src": "m1",
+              "page": "55"
+            },
+            {
+              "id": "vvi",
+              "name": "Vertical velocity indicators (pilot and copilot)",
+              "type": "gauge",
+              "match": [
+                "item:instrument-panel:15",
+                "item:instrument-panel:42"
+              ],
+              "count": 2,
+              "text": "These dials show how fast the helicopter climbs or sinks, in feet per minute. There is one on the pilot's side and one on the copilot's.",
+              "context": "The pilot watches them in a hover or an approach to keep the climb or sink rate under control.",
+              "src": "m1",
+              "page": "56"
+            },
+            {
+              "id": "turn-slip",
+              "name": "Turn and slip indicator",
+              "type": "gauge",
+              "match": [
+                "item:instrument-panel:32"
+              ],
+              "text": "A needle shows how fast the helicopter turns and in which direction. A small ball shows whether it slides sideways.",
+              "context": "To fly a clean turn the pilot keeps the ball in the middle with the pedals. The manual's rule is 'step on the ball'.",
+              "src": "m1",
+              "page": "61"
+            },
+            {
+              "id": "magnetic-compass",
+              "name": "Magnetic compass",
+              "type": "gauge",
+              "match": [
+                "item:instrument-panel:40"
+              ],
+              "text": "This is the standby compass. It is a simple magnet that always points north and works without electricity.",
+              "context": "Turning on the landing light, the searchlights or the pitot heater makes its reading drift a little, says the manual.",
+              "src": "m1",
+              "page": "64"
+            },
+            {
+              "id": "compass-card",
+              "name": "Compass correction card holder",
+              "type": "other",
+              "match": [
+                "item:instrument-panel:16"
+              ],
+              "text": "This is a small holder for the card that lists the small errors of the standby compass.",
+              "context": "It is only a holder and has no switch. A real pilot would read the card to correct the compass reading.",
+              "src": "m1",
+              "page": "48"
+            },
+            {
+              "id": "clock",
+              "name": "Clock and winding/adjustment knob",
+              "type": "gauge",
+              "match": [
+                "item:instrument-panel:37",
+                "WINDING/ADJUSTMENT-KNOB-PULL/PUSH-PTR"
+              ],
+              "text": "This is an ordinary clock. Clicking its knob pulls it out, then the mouse wheel sets the time.",
+              "context": "The pilot uses the clock to time legs of a flight.",
+              "src": "m1",
+              "page": "62"
+            }
+          ]
+        },
+        {
+          "id": "nav-instruments",
+          "name": "Navigation instruments and compass system",
+          "src": "m1",
+          "page": "54",
+          "text": "These dials and knobs show where the helicopter points and where a radio station is, and let the pilot set and correct the compass.",
+          "context": "They work together with the navigation radios on the pedestal. The pilot tunes a station there and follows it with these dials.",
+          "controls": [
+            {
+              "id": "rmi",
+              "name": "Radio compass indicators (RMI, pilot and copilot)",
+              "type": "gauge",
+              "match": [
+                "item:instrument-panel:13",
+                "item:instrument-panel:41"
+              ],
+              "count": 2,
+              "text": "This round dial turns a compass card to show the heading. Two pointers point to a radio station. The copilot's dial is a copy of the pilot's.",
+              "context": "Pointer 1 shows the direction to the ADF or VOR station, pointer 2 shows the VOR course. The pilot flies toward the station by turning until the pointer is straight up.",
+              "src": "m1",
+              "page": "54"
+            },
+            {
+              "id": "cdi",
+              "name": "Course deviation indicator (CDI) and course select knob",
+              "type": "gauge",
+              "match": [
+                "item:instrument-panel:39",
+                "CDI-OBS-PTR"
+              ],
+              "text": "This dial shows whether the helicopter is left or right of a radio beam to follow. The knob chooses the course. Flags show when the signal is not good.",
+              "context": "The pilot follows a VOR radio beam or an approach beam toward a runway with it. It also shows the FM homing direction when the FM radio is in HOME mode.",
+              "src": "m1",
+              "page": "62"
+            },
+            {
+              "id": "hdg-sync",
+              "name": "HDG SYNC knob (compass synchronizing)",
+              "type": "knob",
+              "match": [
+                "HDG-SYNC-PTR"
+              ],
+              "text": "Turning this knob lines up the compass card of the radio compass with the real direction. A small marker on the dial shows which way to turn.",
+              "context": "In the slaved mode the system corrects itself. In the free gyro mode the pilot checks it from time to time against a known direction.",
+              "src": "m1",
+              "page": "54"
+            },
+            {
+              "id": "hdg-set",
+              "name": "HDG SET knob (heading set)",
+              "type": "knob",
+              "match": [
+                "HDG-SET-PTR"
+              ],
+              "text": "This knob is named 'Heading Set Knob' by the game. The manual does not describe it.",
+              "context": "It belongs to the compass control panel with the DG/SLAVE switch, next to the radio compass indicator.",
+              "src": "m1",
+              "page": "54"
+            },
+            {
+              "id": "dg-slave",
+              "name": "Compass slaving switch (DG / MAG)",
+              "type": "switch2",
+              "match": [
+                "DG-SLAVE-PTR",
+                "item:instrument-panel:25"
+              ],
+              "positions": [
+                {
+                  "name": "MAG",
+                  "text": "The compass is slaved to the earth's magnetic field and corrects itself during normal flight."
+                },
+                {
+                  "name": "DG",
+                  "text": "Free gyro mode: the compass holds its own direction and the pilot must set it with the synchronizing knob from time to time."
+                }
+              ],
+              "text": "This switch chooses how the compass of the helicopter works. In one position it follows the earth's magnetic field by itself, in the other it holds its own direction.",
+              "context": "The manual recommends the free gyro position (DG) for flying far in the north, above 70 degrees. Normally the pilot leaves it on MAG.",
+              "src": "m1",
+              "page": "58"
+            },
+            {
+              "id": "adf-vor",
+              "name": "ADF/VOR control switch",
+              "type": "switch",
+              "match": [
+                "ADF-VOR-PTR"
+              ],
+              "text": "The game calls this the 'ADF/VOR Control Switch'. The manual does not describe it.",
+              "context": "It sits with the other compass controls beside the radio compass indicator, which shows direction to ADF or VOR stations.",
+              "src": "m1",
+              "page": "54"
+            }
+          ]
+        },
+        {
+          "id": "marker-beacon",
+          "name": "Marker beacon controls",
+          "src": "m1",
+          "page": "62",
+          "text": "The marker beacon receiver listens for small ground transmitters that sit below the approach path to a runway. These two controls set it up.",
+          "context": "A marker beacon tells the pilot that a certain spot on the approach is reached. The receiver gets its power from the navigation radio on the pedestal, and the light for it is on the top of the panel.",
+          "controls": [
+            {
+              "id": "marker-volume",
+              "name": "Marker beacon volume knob (ON/OFF)",
+              "type": "knob",
+              "match": [
+                "VOLUME-OFF-INCR-CONTROL-PTR",
+                "item:instrument-panel:34"
+              ],
+              "text": "This knob turns the marker beacon receiver on and off and makes its beep louder or quieter.",
+              "context": "The pilot turns it on for an approach. When the helicopter passes a marker, the beep is heard and the marker beacon light flashes.",
+              "src": "m1",
+              "page": "62"
+            },
+            {
+              "id": "marker-sensing",
+              "name": "Marker beacon sensing switch (HIGH / LOW)",
+              "type": "switch2",
+              "match": [
+                "SENSING-SWITCH-PTR",
+                "item:instrument-panel:35"
+              ],
+              "positions": [
+                {
+                  "name": "HIGH",
+                  "text": "The receiver is very sensitive and reacts to weaker signals."
+                },
+                {
+                  "name": "LOW",
+                  "text": "The receiver is less sensitive and reacts only to stronger signals."
+                }
+              ],
+              "text": "This switch decides how sensitive the marker beacon receiver is. HIGH hears weaker signals, LOW only strong ones.",
+              "context": "The manual only says it switches the receiver between HIGH and LOW sensitivity.",
+              "src": "m1",
+              "page": "62"
+            }
+          ]
+        },
+        {
+          "id": "engine-instruments",
+          "name": "Engine and transmission instruments",
+          "db": "instrument-panel",
+          "src": "m1",
+          "page": "52",
+          "text": "These dials show how the engine and the gearbox (the transmission between the engine and the rotor) are doing: speed, heat, pressure and power.",
+          "context": "The pilot checks them during start-up and keeps looking at them in flight. Needles outside the green marks mean the engine or gearbox is being pushed too hard.",
+          "controls": [
+            {
+              "id": "dual-tach",
+              "name": "Dual tachometer (engine and rotor RPM)",
+              "type": "gauge",
+              "match": [
+                "item:instrument-panel:10"
+              ],
+              "text": "This dial has two needles. The outer scale shows how fast the engine turns and the inner scale how fast the main rotor turns.",
+              "context": "When both needles are joined, the engine and the rotor run together normally. The pilot keeps them joined at the correct speed.",
+              "src": "m1",
+              "page": "52"
+            },
+            {
+              "id": "n1-tach",
+              "name": "Gas producer tachometer (N1)",
+              "type": "gauge",
+              "match": [
+                "item:instrument-panel:31"
+              ],
+              "text": "This dial shows in percent how fast the core of the jet engine (the gas producer) turns. 101.5 percent is the red limit.",
+              "context": "The pilot watches it during engine start: the starter is released at about 40 percent, and idle is around 68 to 72 percent.",
+              "src": "m1",
+              "page": "61"
+            },
+            {
+              "id": "torque",
+              "name": "Torquemeter",
+              "type": "gauge",
+              "match": [
+                "item:instrument-panel:33"
+              ],
+              "text": "This dial shows how hard the engine twists the shaft to the rotor. It shows the power the helicopter takes from the engine.",
+              "context": "The red mark is the maximum for this engine, 50 psi on this one. The pilot watches it while pulling the collective lever.",
+              "src": "m1",
+              "page": "62"
+            },
+            {
+              "id": "egt",
+              "name": "Exhaust gas temperature indicator (EXH TEMP)",
+              "type": "gauge",
+              "match": [
+                "item:instrument-panel:30"
+              ],
+              "text": "This dial shows how hot the gas leaving the engine is, in degrees Celsius. Green is the normal range.",
+              "context": "During the start the pilot makes sure the needle does not rise above the red limits. 760 degrees is the absolute maximum.",
+              "src": "m1",
+              "page": "60"
+            },
+            {
+              "id": "engine-oil-pressure",
+              "name": "Engine oil pressure indicator",
+              "type": "gauge",
+              "match": [
+                "item:instrument-panel:23"
+              ],
+              "text": "This dial shows the pressure of the engine oil in psi. Oil keeps the moving parts of the engine from grinding.",
+              "context": "The green range is 80 to 100 psi. Below 25 psi at idle, or above 100 psi, is red. A caution light also comes on if the pressure is low.",
+              "src": "m1",
+              "page": "58"
+            },
+            {
+              "id": "engine-oil-temp",
+              "name": "Engine oil temperature indicator",
+              "type": "gauge",
+              "match": [
+                "item:instrument-panel:28"
+              ],
+              "text": "This dial shows how hot the engine oil is, in degrees Celsius.",
+              "context": "The manual gives 93 degrees as the maximum for cooler air and 100 degrees in air at 30 degrees or warmer.",
+              "src": "m1",
+              "page": "59"
+            },
+            {
+              "id": "xmsn-oil-pressure",
+              "name": "Transmission oil pressure indicator",
+              "type": "gauge",
+              "match": [
+                "item:instrument-panel:20"
+              ],
+              "text": "This dial shows the pressure of the oil in the transmission, the gearbox that links the engine to the rotors.",
+              "context": "The manual gives 40 to 60 psi as the continuous range, 30 psi as the minimum and 70 psi as the maximum.",
+              "src": "m1",
+              "page": "57"
+            },
+            {
+              "id": "xmsn-oil-temp",
+              "name": "Transmission oil temperature indicator",
+              "type": "gauge",
+              "match": [
+                "item:instrument-panel:27"
+              ],
+              "text": "This dial shows how hot the oil in the transmission gearbox is, in degrees Celsius.",
+              "context": "The maximum is 110 degrees Celsius. The XMSN OIL HOT light on the caution panel comes on above that.",
+              "src": "m1",
+              "page": "59"
+            },
+            {
+              "id": "fuel-pressure",
+              "name": "Fuel pressure indicator",
+              "type": "gauge",
+              "match": [
+                "item:instrument-panel:17"
+              ],
+              "text": "This dial shows how hard the pumps push fuel toward the engine, in psi.",
+              "context": "Normal is 5 to 35 psi. The electric boost pumps, started with the MAIN FUEL switch, make this pressure.",
+              "src": "m1",
+              "page": "56"
+            },
+            {
+              "id": "fuel-quantity",
+              "name": "Fuel quantity indicator and test button",
+              "type": "gauge",
+              "match": [
+                "item:instrument-panel:29",
+                "FUEL-GAUGE-PTR",
+                "item:instrument-panel:7"
+              ],
+              "text": "This dial shows how much fuel is left, in pounds. The reading must be multiplied by 100. Pressing the test button below it moves the needle down for a moment.",
+              "context": "When the needle jumps down and returns after releasing the button, the gauge works. The 20 MINUTE light on the caution panel warns when only a little fuel is left.",
+              "src": "m1",
+              "page": "60"
+            }
+          ]
+        },
+        {
+          "id": "electrical-gauges",
+          "name": "Electrical gauges (loadmeters and voltmeters)",
+          "db": "instrument-panel",
+          "src": "m1",
+          "page": "57",
+          "text": "These dials show how much electricity the helicopter makes and uses, in percent and in volts.",
+          "context": "The pilot checks them after the engine start. The two voltmeters show what the selector switches on the overhead panel choose.",
+          "controls": [
+            {
+              "id": "loadmeters",
+              "name": "Main and standby generator loadmeters",
+              "type": "gauge",
+              "match": [
+                "item:instrument-panel:21",
+                "item:instrument-panel:22"
+              ],
+              "count": 2,
+              "text": "These two dials show how much of its capacity each generator is using, in percent. A generator that is not running shows nothing.",
+              "context": "The main generator may read up to 1.25 for a short time. The standby generator should not go above 1.0.",
+              "src": "m1",
+              "page": "57"
+            },
+            {
+              "id": "ac-voltmeter",
+              "name": "AC voltmeter",
+              "type": "gauge",
+              "match": [
+                "item:instrument-panel:24"
+              ],
+              "text": "This dial shows the alternating current made by the inverter. The AC PHASE switch on the overhead panel chooses which of three phases is shown.",
+              "context": "The reading should be 112 to 118 volts in all three positions.",
+              "src": "m1",
+              "page": "58"
+            },
+            {
+              "id": "dc-voltmeter",
+              "name": "DC voltmeter (VOLT DC)",
+              "type": "gauge",
+              "match": [
+                "item:instrument-panel:26"
+              ],
+              "text": "This dial shows the voltage of the electricity source chosen with the VM selector on the overhead panel: the battery, a generator or a bus.",
+              "context": "On the ground it should read 27 to 28.5 volts after the generator takes over.",
+              "src": "m1",
+              "page": "59"
+            }
+          ]
+        },
+        {
+          "id": "radar-altimeter",
+          "name": "AN/APN-209 radar altimeter",
+          "db": "an-apn-209-radar-altimeter",
+          "src": "m1",
+          "page": "65",
+          "text": "This dial shows the real height above the ground, from 0 to 1,500 feet, measured by a small radar that looks downward. It also warns if the helicopter gets too low or too high.",
+          "context": "The pilot sets a low and a high limit with the two knobs. When the helicopter goes below the low limit or above the high limit, a LO or HI flag lights up. It is very handy when flying low over the ground.",
+          "controls": [
+            {
+              "id": "ralt-lo-set",
+              "name": "LO SET knob (power and low limit)",
+              "type": "knob",
+              "match": [
+                "PITCH-LO-ALT-PTR",
+                "item:an-apn-209-radar-altimeter:1"
+              ],
+              "text": "Turning this knob clockwise switches the radar altimeter on. Further turning moves the low limit mark on the dial.",
+              "context": "The pilot sets it to the lowest height he wants to keep. The LO flag lights up when the helicopter goes below that mark.",
+              "src": "m1",
+              "page": "65"
+            },
+            {
+              "id": "ralt-hi-set",
+              "name": "HI SET knob (high limit and test)",
+              "type": "button",
+              "match": [
+                "PITCH-HI-ALT-PTR",
+                "item:an-apn-209-radar-altimeter:7"
+              ],
+              "text": "Pressing this knob tests the radar altimeter. The mouse wheel moves the high limit mark on the dial.",
+              "context": "The manual says to press it for the test after switching on, then to set both limit marks. The HI flag lights up when the helicopter climbs above the mark.",
+              "src": "m1",
+              "page": "66"
+            },
+            {
+              "id": "ralt-dial",
+              "name": "Radar altimeter dial (pointer, limit marks and flags)",
+              "type": "gauge",
+              "match": [
+                "item:an-apn-209-radar-altimeter:2",
+                "item:an-apn-209-radar-altimeter:3",
+                "item:an-apn-209-radar-altimeter:4",
+                "item:an-apn-209-radar-altimeter:5",
+                "item:an-apn-209-radar-altimeter:6",
+                "item:instrument-panel:43"
+              ],
+              "text": "The pointer shows the height above the ground in feet. Two movable marks show the low and high limits, and the LO and HI flags light up when a limit is passed. An OFF flag shows when it is unpowered.",
+              "context": "It reads from 0 to 1,500 feet. It is accurate over land, water, forest and snow, says the manual.",
+              "src": "m1",
+              "page": "65"
+            }
+          ]
+        },
+        {
+          "id": "iff-code-hold",
+          "name": "IFF code hold",
+          "db": "instrument-panel",
+          "src": "m1",
+          "page": "57",
+          "text": "The IFF is a radio box that answers the question 'friend or foe' from other radars. These two parts hold its code.",
+          "context": "The manual says these two parts are not modelled in DCS. They are in the cockpit as a copy of the real helicopter only.",
+          "controls": [
+            {
+              "id": "iff-code-hold-switch",
+              "name": "IFF code hold switch",
+              "type": "switch",
+              "match": [
+                "item:instrument-panel:18"
+              ],
+              "text": "In the real helicopter this switch holds the secret code of the IFF radio box. In DCS it does nothing.",
+              "context": "The manual says it is not implemented in DCS.",
+              "src": "m1",
+              "page": "57"
+            },
+            {
+              "id": "iff-code-hold-light",
+              "name": "IFF code hold light",
+              "type": "light",
+              "match": [
+                "item:instrument-panel:19"
+              ],
+              "text": "This light belongs to the IFF code hold switch. In DCS it has no function.",
+              "context": "The manual says it is not implemented in DCS.",
+              "src": "m1",
+              "page": "57"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "center-pedestal",
+      "where": "center-pedestal",
+      "name": "Center pedestal",
+      "text": "The tall console between the two seats. It holds the caution panel, the engine and fuel switches, all the radios and the weapon panels.",
+      "panels": [
+        {
+          "id": "caution-panel",
+          "name": "CAUTION panel (worded fault lights)",
+          "db": "caution-panel",
+          "src": "m1",
+          "page": "67",
+          "text": "This is a board of small windows. Each window shows a word when its problem happens, for example low oil pressure or a failed generator. The words are only readable while lit.",
+          "context": "When the MASTER CAUTION light on the instrument panel comes on, the pilot looks here to find which word is lit. It sits on the pilot's side of the pedestal.",
+          "controls": [
+            {
+              "id": "caution-segments",
+              "name": "Caution segments (worded fault lights)",
+              "type": "light",
+              "match": [
+                "item:caution-panel:1"
+              ],
+              "text": "Each window lights with the name of a fault. Examples from the manual: ENGINE OIL PRESS, LEFT and RIGHT FUEL BOOST, 20 MINUTE (fuel nearly out), XMSN OIL PRESS and HOT, HYD PRESSURE, INST INVERTER, DC GENERATOR, CHIP DETECTOR, GOV EMER.",
+              "context": "A lit word stays lit as long as the fault is there. Some words, such as ENGINE ICING and IFF, are not connected or not working in DCS.",
+              "src": "m1",
+              "page": "67"
+            },
+            {
+              "id": "caution-bright-dim",
+              "name": "BRIGHT-DIM switch",
+              "type": "switch2",
+              "match": [
+                "BRIGHT-DIM-SWITCH-PTR",
+                "item:caution-panel:2"
+              ],
+              "positions": [
+                {
+                  "name": "BRIGHT",
+                  "text": "All caution segments and the master caution light shine at full brightness."
+                },
+                {
+                  "name": "DIM",
+                  "text": "The lights are dimmed, but only while the pilot's instrument lights are on."
+                }
+              ],
+              "text": "This switch makes the caution lights and the master caution light bright or dim.",
+              "context": "DIM only works when the pilot's instrument lights are on, which is useful at night so the lights do not dazzle the pilot.",
+              "src": "m1",
+              "page": "67"
+            },
+            {
+              "id": "caution-reset-test",
+              "name": "RESET-TEST switch",
+              "type": "switch3",
+              "match": [
+                "RESET-TEST-SWITCH-PTR",
+                "item:caution-panel:3"
+              ],
+              "positions": [
+                {
+                  "name": "RESET",
+                  "text": "Briefly held: the master caution light goes out and is ready to light again for the next fault."
+                },
+                {
+                  "name": "OFF",
+                  "text": "The middle position: nothing happens."
+                },
+                {
+                  "name": "TEST",
+                  "text": "Briefly held: all the worded segments and the master caution light turn on, which checks the bulbs."
+                }
+              ],
+              "text": "This switch has a spring in the RESET and TEST positions, so it returns to the middle. RESET puts the master caution light out so it can warn again. TEST lights all the words to check the bulbs.",
+              "context": "The pilot tests the lights during the checks before engine start. The test checks only the bulbs, not the faults themselves.",
+              "src": "m1",
+              "page": "68"
+            }
+          ]
+        },
+        {
+          "id": "misc-panel",
+          "name": "Miscellaneous control panel",
+          "db": "miscellaneous-control-panel",
+          "src": "m1",
+          "page": "66",
+          "text": "This small panel holds four unrelated but important switches: hydraulic power, force trim, a cable cutter and the chip detector.",
+          "context": "The hydraulic and force trim switches are set during the checks before engine start. The chip detector is only used after the CHIP DETECTOR caution light comes on.",
+          "controls": [
+            {
+              "id": "hyd-cont",
+              "name": "HYD CONT switch (hydraulic control)",
+              "type": "switch2",
+              "match": [
+                "HYD-CONT-PTR",
+                "item:miscellaneous-control-panel:1"
+              ],
+              "positions": [
+                {
+                  "name": "ON",
+                  "text": "Hydraulic pressure goes to the control servos and helps move the controls."
+                },
+                {
+                  "name": "OFF",
+                  "text": "The valve closes and no pressure goes to the servos, so the controls are heavy."
+                }
+              ],
+              "text": "This switch turns on the hydraulic power that helps the pilot move the stick, the lever and the pedals. Without it the controls are heavy to move.",
+              "context": "Hydraulics are oil under high pressure that moves heavy parts. It is on for flight; the HYD PRESSURE caution light shows low pressure.",
+              "src": "m1",
+              "page": "79"
+            },
+            {
+              "id": "force-trim-switch",
+              "name": "FORCE TRIM switch",
+              "type": "switch2",
+              "match": [
+                "FORCE-TRIM-PTR",
+                "item:miscellaneous-control-panel:2"
+              ],
+              "positions": [
+                {
+                  "name": "ON",
+                  "text": "The force centring devices work and hold the stick and the pedals in place."
+                },
+                {
+                  "name": "OFF",
+                  "text": "The force centring is switched off, so the controls feel loose and have no spring."
+                }
+              ],
+              "text": "This switch turns the force trim system on or off. Force trim makes the cyclic stick and the pedals stay where the pilot left them, with a little springy feel.",
+              "context": "With it on, the pilot can hold the force trim button on the cyclic to let the stick move freely and then release it to set a new rest position.",
+              "src": "m1",
+              "page": "41"
+            },
+            {
+              "id": "cable-cut",
+              "name": "CABLE CUT switch (hoist cable)",
+              "type": "switch2",
+              "match": [
+                "item:miscellaneous-control-panel:3"
+              ],
+              "positions": [
+                {
+                  "name": "OFF",
+                  "text": "The hoist cable is not cut."
+                },
+                {
+                  "name": "ON",
+                  "text": "Emergency release of the hoist cable."
+                }
+              ],
+              "text": "In the real helicopter this switch cuts the rescue hoist cable in an emergency. The game has no clickable for it.",
+              "context": "It is used if the hoist cable gets stuck with a person or load on it.",
+              "src": "m1",
+              "page": "66"
+            },
+            {
+              "id": "chip-det",
+              "name": "CHIP DET switch (chip detector)",
+              "type": "switch3",
+              "match": [
+                "CHIP-DET-PTR",
+                "item:miscellaneous-control-panel:4"
+              ],
+              "positions": [
+                {
+                  "name": "XMSN",
+                  "text": "Checks the main transmission only. The CHIP DETECTOR light stays on if this gearbox has chips."
+                },
+                {
+                  "name": "BOTH",
+                  "text": "The normal middle position, where both gearboxes are checked. The switch springs back to it."
+                },
+                {
+                  "name": "TAIL ROTOR",
+                  "text": "Checks the tail rotor gearbox only. The light stays on if that one has chips."
+                }
+              ],
+              "text": "This switch finds out which gearbox has metal chips in its oil. It springs back to BOTH. In the game a left click chooses TAIL ROTOR and a right click XMSN.",
+              "context": "When the CHIP DETECTOR light on the caution panel is lit, the pilot moves the switch to XMSN and then TAIL ROTOR. The light stays on for the gearbox with the problem.",
+              "src": "m1",
+              "page": "66"
+            }
+          ]
+        },
+        {
+          "id": "engine-panel",
+          "name": "ENGINE control panel (fuel, governor, de-ice)",
+          "db": "engine-control-panel",
+          "src": "m1",
+          "page": "68",
+          "text": "This panel has the main fuel switch, the engine speed governor switch, the low RPM tone switch and the engine de-ice switch.",
+          "context": "The fuel switch is the first thing used to give the engine fuel for the start. The governor switch normally stays on AUTO.",
+          "controls": [
+            {
+              "id": "main-fuel",
+              "name": "MAIN FUEL switch",
+              "type": "switch2",
+              "match": [
+                "FUEL-PTR",
+                "item:engine-control-panel:1"
+              ],
+              "positions": [
+                {
+                  "name": "ON",
+                  "text": "The fuel valve opens, the electric boost pumps run and fuel flows to the engine."
+                },
+                {
+                  "name": "OFF",
+                  "text": "The fuel valve closes and the boost pumps stop, so the engine gets no fuel."
+                }
+              ],
+              "text": "This switch lets fuel flow to the engine. The toggle must be pulled up before it can move, so it cannot be hit by mistake.",
+              "context": "It must be ON before the engine start. In ON the fuel valve opens and the electric fuel pumps run. Turning it OFF shuts the fuel to the engine.",
+              "src": "m1",
+              "page": "68"
+            },
+            {
+              "id": "low-rpm-audio",
+              "name": "LOW RPM AUDIO switch",
+              "type": "switch2",
+              "match": [
+                "LOW-RPM-PTR",
+                "item:engine-control-panel:2"
+              ],
+              "positions": [
+                {
+                  "name": "AUDIO",
+                  "text": "The warning tone can sound together with the warning light."
+                },
+                {
+                  "name": "OFF",
+                  "text": "The tone is muted for starting the engine. The light still works."
+                }
+              ],
+              "text": "This switch turns the low RPM warning tone on or off. The tone warns that the rotor or the engine turns too slowly.",
+              "context": "It is turned off for the engine start, when the engine is slow on purpose. The current switch springs back to AUDIO once the engine runs normally.",
+              "src": "m1",
+              "page": "49"
+            },
+            {
+              "id": "gov-switch",
+              "name": "GOV switch (AUTO / EMER)",
+              "type": "switch2",
+              "match": [
+                "GOV-PTR",
+                "item:engine-control-panel:3"
+              ],
+              "positions": [
+                {
+                  "name": "AUTO",
+                  "text": "The overspeed governor keeps the engine speed constant while the throttle is fully open."
+                },
+                {
+                  "name": "EMER",
+                  "text": "Emergency mode: no automatic control, the pilot sets the engine speed by turning the throttle by hand."
+                }
+              ],
+              "text": "This switch chooses who keeps the engine speed steady: the automatic governor, or the pilot by hand with the throttle twist grip.",
+              "context": "It stays on AUTO normally. In EMER the pilot has to turn the throttle smoothly, or the engine can be damaged, and the GOV EMER caution light comes on.",
+              "src": "m1",
+              "page": "68"
+            },
+            {
+              "id": "de-ice",
+              "name": "DE-ICE switch (engine)",
+              "type": "switch2",
+              "match": [
+                "DE-ICE-PTR",
+                "item:engine-control-panel:4"
+              ],
+              "positions": [
+                {
+                  "name": "ON",
+                  "text": "Hot bleed air flows through the engine inlet to prevent ice, with some loss of engine power."
+                },
+                {
+                  "name": "OFF",
+                  "text": "No hot air goes to the inlet."
+                }
+              ],
+              "text": "This switch sends hot air from the engine into the engine inlet so ice cannot build up there. It costs some engine power.",
+              "context": "The pilot uses it in cold, wet air. If the DC electricity fails, or its circuit breaker is out, the de-ice turns on by itself.",
+              "src": "m1",
+              "page": "69"
+            },
+            {
+              "id": "int-aux-fuel",
+              "name": "INT AUX FUEL switches (not implemented)",
+              "type": "switch",
+              "match": [
+                "item:engine-control-panel:5"
+              ],
+              "text": "There are two switches that would transfer fuel from extra internal tanks into the main tanks. The manual says they are not implemented in DCS.",
+              "context": "They belong to a helicopter with auxiliary tanks. In DCS they have no function.",
+              "src": "m1",
+              "page": "69"
+            }
+          ]
+        },
+        {
+          "id": "intercom-panel",
+          "name": "C-1611/AIC signal distribution panel (intercom)",
+          "db": "c-1611-aic-signal-distribution-panel",
+          "src": "m1",
+          "page": "85",
+          "text": "This panel is the control box of the headset: it chooses which radios the pilot hears, which radio the microphone talks into, and how loud it is.",
+          "context": "The pilot first picks the radio to talk on with the transmit selector and turns on its receiver. The talk button is on the cyclic stick.",
+          "controls": [
+            {
+              "id": "receivers",
+              "name": "RECEIVERS switches (1 FM, 2 UHF, 3 VHF, 4, INT, NAV)",
+              "type": "switch2",
+              "match": [
+                "RECEIVER-1-PTR",
+                "RECEIVER-2-PTR",
+                "RECEIVER-3-PTR",
+                "RECEIVER-4-PTR",
+                "RECEIVER-INT-PTR",
+                "RECEIVER-NAV-PTR",
+                "item:c-1611-aic-signal-distribution-panel:1"
+              ],
+              "positions": [
+                {
+                  "name": "ON",
+                  "text": "The pilot hears this receiver in the headset."
+                },
+                {
+                  "name": "OFF",
+                  "text": "This receiver is muted."
+                }
+              ],
+              "count": 6,
+              "text": "Each of these six switches lets the pilot hear one thing in the headset: 1 is the FM radio, 2 the UHF radio, 3 the VHF radio, INT the intercom, NAV the navigation radio. Number 4 does nothing in the game.",
+              "context": "A radio can be tuned and powered, but the pilot hears it only when its switch here is ON. The manual says switch 2 is on by default in the game.",
+              "src": "m1",
+              "page": "86"
+            },
+            {
+              "id": "transmit-selector",
+              "name": "Transmit-interphone selector",
+              "type": "selector",
+              "match": [
+                "TRANSMIT-INTERPHONE-SWITCH-PTR",
+                "item:c-1611-aic-signal-distribution-panel:2"
+              ],
+              "positions": [
+                {
+                  "name": "PVT",
+                  "text": "Private line: the microphone is always open to crew members who also have PVT."
+                },
+                {
+                  "name": "INT",
+                  "text": "Talk on the intercom to the crew."
+                },
+                {
+                  "name": "1",
+                  "text": "Talk on the FM radio."
+                },
+                {
+                  "name": "2",
+                  "text": "Talk on the UHF radio."
+                },
+                {
+                  "name": "3",
+                  "text": "Talk on the VHF AM radio."
+                },
+                {
+                  "name": "4",
+                  "text": "Not used in the game."
+                }
+              ],
+              "text": "This knob picks where the microphone goes: to the intercom, or to one of the radios. PVT is a private hot line to another crew member, with no button needed.",
+              "context": "The cyclic stick switch is the push-to-talk button for the radio chosen here. Position 4 is not used in the game.",
+              "src": "m1",
+              "page": "86"
+            },
+            {
+              "id": "intercom-volume",
+              "name": "VOL control (intercom volume)",
+              "type": "knob",
+              "match": [
+                "SDP-VOLUME-CONTROL-PTR",
+                "item:c-1611-aic-signal-distribution-panel:3"
+              ],
+              "text": "This knob makes the sound in the headset louder or quieter. It does not change the navigation radio.",
+              "context": "The pilot adjusts it when the radio sound is too soft or too loud.",
+              "src": "m1",
+              "page": "86"
+            }
+          ]
+        },
+        {
+          "id": "uhf-radio",
+          "name": "UHF radio control panel (AN/ARC-51BX)",
+          "db": "uhf-control-panel-c-6287-arc-51bx",
+          "src": "m1",
+          "page": "86",
+          "text": "This is the control panel of the UHF radio, a radio to talk to other aircraft and the ground on frequencies from 225.0 to 399.9 MHz. It sits on the left side of the pedestal.",
+          "context": "The pilot turns it on with the function dial, picks a preset channel or types in a frequency, then talks with the cyclic switch while the selector is on position 2.",
+          "controls": [
+            {
+              "id": "uhf-function",
+              "name": "UHF function dial (OFF / T/R / T/R+G / ADF)",
+              "type": "selector",
+              "match": [
+                "FUNCTION-SELECT-SWITCH-PTR",
+                "item:uhf-control-panel-c-6287-arc-51bx:3"
+              ],
+              "positions": [
+                {
+                  "name": "OFF",
+                  "text": "The radio has no power."
+                },
+                {
+                  "name": "T/R",
+                  "text": "The transmitter and the main receiver work."
+                },
+                {
+                  "name": "T/R+G",
+                  "text": "Like T/R, and the guard receiver also listens to the emergency channel."
+                },
+                {
+                  "name": "ADF",
+                  "text": "Switches on the UHF direction finding when it is installed."
+                }
+              ],
+              "text": "This dial switches the UHF radio on and chooses how it works. OFF has no power. T/R sends and receives. T/R+G also listens to the guard channel for emergencies.",
+              "context": "The ADF position makes the radio find direction to a station, if the helicopter has this equipment.",
+              "src": "m1",
+              "page": "87"
+            },
+            {
+              "id": "uhf-mode",
+              "name": "UHF mode dial (PRESET CHAN / MAN / GD XMIT)",
+              "type": "selector",
+              "match": [
+                "MODE-SELECT-SWITCH-PTR",
+                "item:uhf-control-panel-c-6287-arc-51bx:2"
+              ],
+              "positions": [
+                {
+                  "name": "PRESET CHAN",
+                  "text": "One of the 20 stored channels, picked with the channel knob."
+                },
+                {
+                  "name": "MAN",
+                  "text": "The frequency is set by hand with the three frequency knobs."
+                },
+                {
+                  "name": "GD XMIT",
+                  "text": "The radio tunes by itself to the guard frequency, 243.00 MHz."
+                }
+              ],
+              "text": "This dial decides how the frequency is chosen. PRESET CHAN uses a stored channel. MAN uses the three frequency knobs. GD XMIT jumps to the guard frequency 243.00 MHz.",
+              "context": "GD XMIT is for emergency calls: the manual lists it, with T/R+G, as the emergency operation.",
+              "src": "m1",
+              "page": "87"
+            },
+            {
+              "id": "uhf-preset",
+              "name": "Preset channel selector",
+              "type": "knob",
+              "match": [
+                "PRESET-CHANNEL-PTR",
+                "item:uhf-control-panel-c-6287-arc-51bx:1"
+              ],
+              "text": "This knob picks one of 20 channels stored in the radio, like the station buttons of a car radio.",
+              "context": "It only counts when the mode dial is on PRESET CHAN. A window shows the chosen channel.",
+              "src": "m1",
+              "page": "87"
+            },
+            {
+              "id": "uhf-freq",
+              "name": "UHF frequency knobs (10 MHz, 1 MHz, 0.05 MHz)",
+              "type": "knob",
+              "match": [
+                "10-MHZ-CONTROL-PTR",
+                "1-MHZ-CONTROL-PTR",
+                "0.05-MHZ-CONTROL-PTR",
+                "item:uhf-control-panel-c-6287-arc-51bx:4",
+                "item:uhf-control-panel-c-6287-arc-51bx:5",
+                "item:uhf-control-panel-c-6287-arc-51bx:6"
+              ],
+              "count": 3,
+              "text": "These three knobs set the frequency by hand: the first two digits, the third digit and the last two digits.",
+              "context": "They are used with the mode dial on MAN. The radio tunes in steps of 0.05 MHz.",
+              "src": "m1",
+              "page": "87"
+            },
+            {
+              "id": "uhf-volume",
+              "name": "VOL knob (UHF volume)",
+              "type": "knob",
+              "match": [
+                "UHF-VOLUME-CONTROL-PTR",
+                "item:uhf-control-panel-c-6287-arc-51bx:7"
+              ],
+              "text": "This knob makes the UHF radio louder or quieter in the headset.",
+              "context": "The pilot also needs the UHF receiver switch (2) on the intercom panel to be ON.",
+              "src": "m1",
+              "page": "87"
+            },
+            {
+              "id": "uhf-squelch",
+              "name": "SQ DISABLE switch (squelch)",
+              "type": "switch2",
+              "match": [
+                "SQ-DISABLE-SWITCH-PTR"
+              ],
+              "positions": [
+                {
+                  "name": "ON",
+                  "text": "The squelch is disabled and the radio hiss can be heard."
+                },
+                {
+                  "name": "OFF",
+                  "text": "The squelch works and mutes the hiss when no one speaks."
+                }
+              ],
+              "text": "This switch controls the squelch, the part that mutes the hiss of the radio while nobody speaks. When it is ON, the squelch is off and the hiss is heard.",
+              "context": "The manual's start-up steps leave it OFF, so the radio is quiet until someone speaks.",
+              "src": "m1",
+              "page": "87"
+            }
+          ]
+        },
+        {
+          "id": "vhf-am-radio",
+          "name": "VHF AM radio control panel (AN/ARC-134)",
+          "db": "vhf-control-panel-c-7197-arc-134",
+          "src": "m1",
+          "page": "88",
+          "text": "This is the control panel of the VHF AM radio, for talking on frequencies from 116.000 to 149.975 MHz. This is the radio used for airfields and the tower. It sits on the left of the pedestal.",
+          "context": "The pilot turns it on, sets a frequency, makes sure receiver switch 3 is ON and the transmit selector is on 3, then talks with the cyclic switch.",
+          "controls": [
+            {
+              "id": "vhf-mhz",
+              "name": "MHz selector and power switch",
+              "type": "knob",
+              "match": [
+                "MHZ-SELECTOR-PTR",
+                "item:vhf-control-panel-c-7197-arc-134:6",
+                "item:vhf-control-panel-c-7197-arc-134:3"
+              ],
+              "text": "This knob sets the whole megahertz number of the frequency, and a right click switches the radio on or off.",
+              "context": "The OFF/PWR switch is built into the knob in the game. After switching on, the radio needs time to warm up.",
+              "src": "m1",
+              "page": "88"
+            },
+            {
+              "id": "vhf-khz",
+              "name": "kHz selector and volume",
+              "type": "knob",
+              "match": [
+                "KHZ-SELECTOR-PTR",
+                "item:vhf-control-panel-c-7197-arc-134:5",
+                "item:vhf-control-panel-c-7197-arc-134:4"
+              ],
+              "text": "This knob sets the decimal part of the frequency with the mouse wheel. A left or right click turns the volume down or up.",
+              "context": "The volume matters when the signal is soft. If no signal can be heard, the manual suggests the COMM TEST button.",
+              "src": "m1",
+              "page": "88"
+            },
+            {
+              "id": "vhf-display",
+              "name": "VHF frequency display",
+              "type": "display",
+              "match": [
+                "item:vhf-control-panel-c-7197-arc-134:1"
+              ],
+              "text": "This small window shows the frequency the radio is set to.",
+              "context": "The pilot checks it after turning the two selectors.",
+              "src": "m1",
+              "page": "88"
+            },
+            {
+              "id": "vhf-comm-test",
+              "name": "COMM TEST button",
+              "type": "button",
+              "match": [
+                "COMMUNICATION-TEST-SWITCH-PTR",
+                "item:vhf-control-panel-c-7197-arc-134:2"
+              ],
+              "text": "Pressing this button opens the squelch of the VHF radio, so the pilot hears the hiss and can see if the radio works.",
+              "context": "The manual says to press it when a signal is not audible even with the volume at its maximum.",
+              "src": "m1",
+              "page": "88"
+            }
+          ]
+        },
+        {
+          "id": "fm-radio",
+          "name": "FM radio control panel (AN/ARC-131)",
+          "db": "fm-radio-set-control-panel-an-arc-131",
+          "src": "m1",
+          "page": "89",
+          "text": "This is the control panel of the FM radio, which uses the frequencies 30.00 to 75.95 MHz. It is used to talk to ground troops and also to find the direction of a station (homing).",
+          "context": "The pilot sets the mode, picks a frequency with the four digit knobs and a squelch setting, and talks with the transmit selector on 1.",
+          "controls": [
+            {
+              "id": "fm-frequency",
+              "name": "FM frequency digit knobs (tens, units, tenths, hundredths)",
+              "type": "knob",
+              "match": [
+                "FREQUENCY-SELECTOR-1-PTR",
+                "FREQUENCY-SELECTOR-2-PTR",
+                "FREQUENCY-SELECTOR-3-PTR",
+                "FREQUENCY-SELECTOR-4-PTR",
+                "item:fm-radio-set-control-panel-an-arc-131:1",
+                "item:fm-radio-set-control-panel-an-arc-131:3",
+                "item:fm-radio-set-control-panel-an-arc-131:4",
+                "item:fm-radio-set-control-panel-an-arc-131:6"
+              ],
+              "count": 4,
+              "text": "These four knobs set the frequency one digit at a time: tens of MHz, units, tenths and hundredths. Windows next to them show the result.",
+              "context": "The pilot dials in the frequency of the friendly unit or of the homing station.",
+              "src": "m1",
+              "page": "89"
+            },
+            {
+              "id": "fm-display",
+              "name": "FM frequency indicators",
+              "type": "display",
+              "match": [
+                "item:fm-radio-set-control-panel-an-arc-131:2",
+                "item:fm-radio-set-control-panel-an-arc-131:5"
+              ],
+              "count": 2,
+              "text": "Two small windows show the frequency that is set on the radio.",
+              "context": "They belong to the digit knobs next to them.",
+              "src": "m1",
+              "page": "89"
+            },
+            {
+              "id": "fm-mode",
+              "name": "Mode switch (OFF / T/R / RETRAN / HOME)",
+              "type": "selector",
+              "match": [
+                "MODE-SWITCH-PTR",
+                "item:fm-radio-set-control-panel-an-arc-131:7"
+              ],
+              "positions": [
+                {
+                  "name": "OFF",
+                  "text": "The radio has no power."
+                },
+                {
+                  "name": "T/R",
+                  "text": "Normal talking and listening."
+                },
+                {
+                  "name": "RETRAN",
+                  "text": "The radio acts as a relay station between two sets; the game hint marks it N/F."
+                },
+                {
+                  "name": "HOME",
+                  "text": "The radio shows the direction to a homing station on the course indicator; the game hint marks it N/F."
+                }
+              ],
+              "text": "This switch turns the FM radio on and picks what it does: normal talking, relaying, or homing.",
+              "context": "RETRAN and HOME are marked N/F by the game hint. The manual explains HOME as the homing mode that shows direction on the course deviation indicator.",
+              "src": "m1",
+              "page": "90"
+            },
+            {
+              "id": "fm-volume-squelch",
+              "name": "VOL knob and SQUELCH switch (DIS / CARR / TONE)",
+              "type": "knob",
+              "match": [
+                "VOLUME-CONTROL-PTR",
+                "SQUELCH-SWITCH-PTR",
+                "item:fm-radio-set-control-panel-an-arc-131:8"
+              ],
+              "text": "The volume part makes the radio louder or quieter. The squelch switch decides how the hiss is cut: DIS leaves it open, CARR opens on any carrier signal, TONE only on signals with a special tone.",
+              "context": "Normal use is CARR. In HOME mode the radio selects the carrier squelch by itself.",
+              "src": "m1",
+              "page": "91"
+            }
+          ]
+        },
+        {
+          "id": "vhf-nav-radio",
+          "name": "VHF NAV control panel (AN/ARN-82)",
+          "db": "vhf-nav-control-panel-arn-82",
+          "src": "m1",
+          "page": "92",
+          "text": "This panel is the receiver for VOR radio beacons and for runway approach beams, on 108.0 to 126.95 MHz. It lets the pilot follow beams instead of looking out the window.",
+          "context": "The pilot turns it on, tunes the beacon and listens to it with the NAV receiver switch on the intercom panel. The result appears on the radio compass and the course deviation indicator.",
+          "controls": [
+            {
+              "id": "nav-mhz",
+              "name": "Whole MHz knob and power (VOR/ILS)",
+              "type": "knob",
+              "match": [
+                "WHOLE-MHZ-SELECTOR-KNOB-PTR",
+                "item:vhf-nav-control-panel-arn-82:3",
+                "item:vhf-nav-control-panel-arn-82:2"
+              ],
+              "positions": [
+                {
+                  "name": "OFF",
+                  "text": "The navigation set and marker beacon receiver have no power."
+                },
+                {
+                  "name": "PWR",
+                  "text": "The set works."
+                },
+                {
+                  "name": "TEST",
+                  "text": "Used to test the course deviation indicator and the marker beacon lamp."
+                }
+              ],
+              "text": "The mouse wheel sets the whole megahertz number of the frequency. A right click goes round the power positions OFF, PWR and TEST.",
+              "context": "TEST checks the course deviation indicator and the marker beacon lamp. PWR also turns on the marker beacon receiver.",
+              "src": "m1",
+              "page": "92"
+            },
+            {
+              "id": "nav-fraction",
+              "name": "Fractional MHz knob and volume",
+              "type": "knob",
+              "match": [
+                "FRACTIONAL-MHZ-SELECTOR-KNOB-KNOB-PTR",
+                "item:vhf-nav-control-panel-arn-82:4",
+                "item:vhf-nav-control-panel-arn-82:1"
+              ],
+              "text": "The mouse wheel sets the decimal part of the frequency. A left or right click turns the volume down or up.",
+              "context": "Tuning a beacon is done with both knobs of this panel together.",
+              "src": "m1",
+              "page": "92"
+            }
+          ]
+        },
+        {
+          "id": "adf-radio",
+          "name": "ADF control panel (AN/ARN-83)",
+          "db": "direction-finder-control-panel-arn-83",
+          "src": "m1",
+          "page": "93",
+          "text": "This panel is a receiver for old radio beacons on the ground (NDBs) and for ordinary AM radio stations, on 190 to 1750 kHz. It can point to a station.",
+          "context": "In automatic mode the radio compass needle points to the tuned station. In manual mode the pilot turns the loop antenna by hand and listens for the quietest sound.",
+          "controls": [
+            {
+              "id": "adf-mode",
+              "name": "Mode selector and gain control",
+              "type": "selector",
+              "match": [
+                "GAIN-CONTROL-PTR",
+                "item:direction-finder-control-panel-arn-83:3",
+                "item:direction-finder-control-panel-arn-83:4"
+              ],
+              "positions": [
+                {
+                  "name": "OFF",
+                  "text": "The set is off."
+                },
+                {
+                  "name": "ADF",
+                  "text": "Automatic direction finding: the needle points to the station."
+                },
+                {
+                  "name": "ANT",
+                  "text": "The set works as a plain receiver with no direction."
+                },
+                {
+                  "name": "LOOP",
+                  "text": "Manual mode: the pilot turns the loop antenna by hand."
+                }
+              ],
+              "text": "A right click moves between OFF, ADF, ANT and LOOP. The mouse wheel turns the gain, which is the volume of the receiver.",
+              "context": "ADF is the automatic bearing mode, ANT works as a simple radio receiver and LOOP is the manual mode.",
+              "src": "m1",
+              "page": "93"
+            },
+            {
+              "id": "adf-tune",
+              "name": "TUNE control and band selector",
+              "type": "knob",
+              "match": [
+                "TUNE-CONTROL-PTR",
+                "item:direction-finder-control-panel-arn-83:7",
+                "item:direction-finder-control-panel-arn-83:6"
+              ],
+              "text": "A right click picks one of three bands: 190-400, 400-850 or 850-1750 kHz. The mouse wheel tunes the station. A tuning meter shows when the tuning is best.",
+              "context": "The pilot picks the band, then turns the tuning until the meter peaks.",
+              "src": "m1",
+              "page": "93"
+            },
+            {
+              "id": "adf-display",
+              "name": "ADF frequency dial",
+              "type": "display",
+              "match": [
+                "item:direction-finder-control-panel-arn-83:5"
+              ],
+              "text": "This dial shows the frequency of the radio station that the receiver is tuned to.",
+              "context": "It lets the pilot read the station number while turning the tuning knob.",
+              "src": "m1",
+              "page": "93"
+            },
+            {
+              "id": "adf-loop",
+              "name": "LOOP L/R switch (turn the loop antenna)",
+              "type": "switch",
+              "match": [
+                "LOOP-L-PTR",
+                "LOOP-L1-PTR",
+                "LOOP-O-PTR",
+                "LOOP-R1-PTR",
+                "LOOP-R-PTR",
+                "LOOP-L-R-SWITCH-PTR",
+                "item:direction-finder-control-panel-arn-83:1"
+              ],
+              "positions": [
+                {
+                  "name": "Left fast",
+                  "text": "The loop antenna turns quickly to the left."
+                },
+                {
+                  "name": "Left slow",
+                  "text": "The loop antenna turns slowly to the left."
+                },
+                {
+                  "name": "Off",
+                  "text": "The loop antenna does not turn."
+                },
+                {
+                  "name": "Right slow",
+                  "text": "The loop antenna turns slowly to the right."
+                },
+                {
+                  "name": "Right fast",
+                  "text": "The loop antenna turns quickly to the right."
+                }
+              ],
+              "text": "This spring switch turns the loop antenna to the left or to the right, fast or slowly, for the manual mode. In the middle it does nothing.",
+              "context": "In the manual mode the pilot holds it until the sound is quietest. The direction of the station is then read from the antenna.",
+              "src": "m1",
+              "page": "94"
+            },
+            {
+              "id": "adf-bfo",
+              "name": "BFO switch (beat frequency oscillator)",
+              "type": "switch2",
+              "match": [
+                "BFO-SWITCH-PTR",
+                "item:direction-finder-control-panel-arn-83:2"
+              ],
+              "positions": [
+                {
+                  "name": "BFO",
+                  "text": "The beat frequency oscillator is on."
+                },
+                {
+                  "name": "OFF",
+                  "text": "The beat frequency oscillator is off."
+                }
+              ],
+              "text": "This switch turns on the beat frequency oscillator. It makes a steady tone so stations without voice can be heard in manual mode.",
+              "context": "The manual lists it in the manual operation steps. The game hint marks it N/F.",
+              "src": "m1",
+              "page": "94"
+            }
+          ]
+        },
+        {
+          "id": "iff-panel",
+          "name": "IFF / transponder panel (AN/APX-72, not modelled)",
+          "src": "m1",
+          "page": "91",
+          "text": "The IFF or transponder is a radio box that answers 'who are you' questions from radars with a code number. This panel is its control box.",
+          "context": "The manual says the equipment is installed but its functions are not implemented in DCS: UH-1H. The controls can be clicked but do not do anything useful.",
+          "controls": [
+            {
+              "id": "iff-master",
+              "name": "MASTER knob (OFF / STBY / LOW / NORM / EMER)",
+              "type": "selector",
+              "match": [
+                "MASTER-CONTROL-PTR"
+              ],
+              "positions": [
+                {
+                  "name": "OFF",
+                  "text": "The OFF setting of the master knob."
+                },
+                {
+                  "name": "STBY",
+                  "text": "The STBY setting of the master knob."
+                },
+                {
+                  "name": "LOW",
+                  "text": "The LOW setting of the master knob."
+                },
+                {
+                  "name": "NORM",
+                  "text": "The NORM setting of the master knob."
+                },
+                {
+                  "name": "EMER",
+                  "text": "The EMER setting of the master knob."
+                }
+              ],
+              "text": "The game hint calls this the master knob with five positions: OFF, STBY, LOW, NORM and EMER. On a real transponder it is the main on-off and mode knob.",
+              "context": "The transponder is not implemented in DCS, so this knob has no effect.",
+              "src": "m1",
+              "page": "91"
+            },
+            {
+              "id": "iff-code",
+              "name": "CODE knob",
+              "type": "knob",
+              "match": [
+                "CODE-PTR"
+              ],
+              "text": "A knob named CODE. The manual does not describe it, and the transponder does nothing in DCS.",
+              "context": "It is part of the same unimplemented IFF panel.",
+              "src": "m1",
+              "page": "91"
+            },
+            {
+              "id": "iff-mode-wheels",
+              "name": "MODE 1 and MODE 3A code wheels",
+              "type": "other",
+              "match": [
+                "MODE-1-WHEEL-1-WINDOW-PTR",
+                "MODE-1-WHEEL-2-WINDOW-PTR",
+                "MODE-3A-WHEEL-1-WINDOW-PTR",
+                "MODE-3A-WHEEL-2-WINDOW-PTR",
+                "MODE-3A-WHEEL-3-WINDOW-PTR",
+                "MODE-3A-WHEEL-4-WINDOW-PTR"
+              ],
+              "count": 6,
+              "text": "These are six small number wheels with windows. On a real transponder they hold the secret code numbers for mode 1 and mode 3A. They do nothing in DCS.",
+              "context": "Codes like these tell a radar who is flying. The transponder is not modelled in DCS.",
+              "src": "m1",
+              "page": "91"
+            },
+            {
+              "id": "iff-test-switches",
+              "name": "TEST switches (M-1, M-2, M-3A, M-C)",
+              "type": "switch",
+              "match": [
+                "TEST-M-1-PTR",
+                "TEST-M-2-PTR",
+                "TEST-M-3A-PTR",
+                "TEST-M-3C-PTR"
+              ],
+              "count": 4,
+              "text": "These four switches would test the transponder modes. They have no function in DCS.",
+              "context": "They belong to the transponder panel that the manual describes as not implemented.",
+              "src": "m1",
+              "page": "91"
+            },
+            {
+              "id": "iff-lights",
+              "name": "REPLY and TEST lamps (buttons)",
+              "type": "button",
+              "match": [
+                "REPLY-LIGHT-PTR",
+                "TEST-LIGHT-PTR"
+              ],
+              "count": 2,
+              "text": "Two lamps on the transponder that can also be pressed. In a real helicopter they show the answer of the transponder and test the lamp. In DCS they do nothing.",
+              "context": "They are part of the unimplemented IFF panel.",
+              "src": "m1",
+              "page": "91"
+            },
+            {
+              "id": "iff-audio-light",
+              "name": "AUDIO/LIGHT switch",
+              "type": "switch",
+              "match": [
+                "OUT-(AUDIO-LIGHT)-PTR"
+              ],
+              "text": "A switch named Audio/light in the game. It has no function in DCS.",
+              "context": "It is part of the unimplemented IFF panel.",
+              "src": "m1",
+              "page": "91"
+            },
+            {
+              "id": "iff-ident-mic",
+              "name": "IDENT/MIC switch",
+              "type": "switch",
+              "match": [
+                "IDENT-MIC SWITCH-PTR"
+              ],
+              "text": "A switch named Ident/Mic in the game. It has no function in DCS.",
+              "context": "It is part of the unimplemented IFF panel.",
+              "src": "m1",
+              "page": "91"
+            },
+            {
+              "id": "iff-rad-test",
+              "name": "RAD TEST/MON switch",
+              "type": "switch",
+              "match": [
+                "RAD-TEST-MON-SWITCH-PTR"
+              ],
+              "text": "A switch named RAD with the positions TEST and MON. It has no function in DCS.",
+              "context": "It is part of the unimplemented IFF panel.",
+              "src": "m1",
+              "page": "91"
+            },
+            {
+              "id": "iff-mode4",
+              "name": "MODE 4 ON/OUT switch",
+              "type": "switch",
+              "match": [
+                "MODE-4-SWITCH-PTR"
+              ],
+              "text": "A switch named IFF On/Out in the game for the secret mode 4. It has no function in DCS.",
+              "context": "It is part of the unimplemented IFF panel.",
+              "src": "m1",
+              "page": "91"
+            }
+          ]
+        },
+        {
+          "id": "m21-panel",
+          "name": "M21 armament control panel (guns and rockets)",
+          "db": "m21-armament-control-panel",
+          "src": "m1",
+          "page": "102",
+          "text": "This panel prepares the guns and the rockets of the helicopter. It decides what the fire button on the cyclic fires and whether it fires at all.",
+          "context": "Before firing, the pilot sets the ARMED switch, picks guns or rockets, and for rockets how many pairs to fire. After firing, the pilot sets it back to SAFE.",
+          "controls": [
+            {
+              "id": "armed-switch",
+              "name": "OFF-SAFE-ARMED switch (master arm)",
+              "type": "switch3",
+              "match": [
+                "ARMED-SWITCH-PTR",
+                "item:m21-armament-control-panel:1"
+              ],
+              "positions": [
+                {
+                  "name": "OFF",
+                  "text": "The weapons have no power."
+                },
+                {
+                  "name": "SAFE",
+                  "text": "Powered but nothing can fire; the green SAFE light is on."
+                },
+                {
+                  "name": "ARMED",
+                  "text": "The weapons can fire; the ARMED light is on and the SAFE light is off."
+                }
+              ],
+              "text": "This is the master safety switch of the weapons. Nothing fires unless it is on ARMED. A green SAFE light and an ARMED light show the state.",
+              "context": "The manual sets it to SAFE before take-off and to ARMED only before firing. Before shutdown it goes to OFF.",
+              "src": "m1",
+              "page": "104"
+            },
+            {
+              "id": "armament-selector",
+              "name": "Armament selector switch (7.62 / 2.75 / 40)",
+              "type": "switch3",
+              "match": [
+                "762-SWITCH-PTR",
+                "item:m21-armament-control-panel:2"
+              ],
+              "positions": [
+                {
+                  "name": "7.62",
+                  "text": "The cyclic fire button fires the 7.62 mm machine guns."
+                },
+                {
+                  "name": "2.75",
+                  "text": "The cyclic fire button fires the 2.75 inch rockets."
+                },
+                {
+                  "name": "40",
+                  "text": "The manual does not describe this position."
+                }
+              ],
+              "text": "This switch chooses what the fire button on the cyclic fires: the machine guns (7.62) or the rockets (2.75). The position 40 is printed on it but the manual does not describe it.",
+              "context": "The manual puts it on 7.62 before take-off so that the rockets cannot go off by mistake.",
+              "src": "m1",
+              "page": "106"
+            },
+            {
+              "id": "gun-selector",
+              "name": "GUN SELECTOR switch (LEFT / ALL / RIGHT)",
+              "type": "switch3",
+              "match": [
+                "LRGUN-SWITCH-PTR",
+                "item:m21-armament-control-panel:3"
+              ],
+              "positions": [
+                {
+                  "name": "LEFT",
+                  "text": "Only the left gun fires."
+                },
+                {
+                  "name": "ALL",
+                  "text": "Both guns fire."
+                },
+                {
+                  "name": "RIGHT",
+                  "text": "Only the right gun fires."
+                }
+              ],
+              "text": "This switch picks which machine guns fire: only the left gun, both guns, or only the right gun.",
+              "context": "With one gun the rate of fire is about 2,400 rounds a minute, says the manual. Both guns together fire faster.",
+              "src": "m1",
+              "page": "101"
+            },
+            {
+              "id": "rocket-pairs",
+              "name": "Rocket PAIR SELECTOR switch (0-7)",
+              "type": "selector",
+              "match": [
+                "RKT-PAIR-PTR",
+                "item:m21-armament-control-panel:4"
+              ],
+              "text": "This switch picks how many pairs of rockets leave the launchers each time the fire button is pressed. The numbers go from 0 to 7.",
+              "context": "The manual says the pilot checks that it shows zero pairs before take-off and sets the number only before firing.",
+              "src": "m1",
+              "page": "102"
+            },
+            {
+              "id": "rocket-reset",
+              "name": "Rocket RESET button",
+              "type": "button",
+              "match": [
+                "RKT-RESET-PTR",
+                "item:m21-armament-control-panel:5"
+              ],
+              "text": "Pressing this button resets the firing switches on the rocket launchers.",
+              "context": "The manual includes it in the checks before take-off.",
+              "src": "m1",
+              "page": "102"
+            },
+            {
+              "id": "jettison-cover",
+              "name": "JETTISON switch cover (red guard)",
+              "type": "cover",
+              "match": [
+                "JETT-COVER-PTR"
+              ],
+              "text": "This red guard covers the jettison switch so it cannot be pushed by mistake. Lifting it breaks the thin safety wire.",
+              "context": "It is only opened in an emergency, when the rocket launchers have to be dropped.",
+              "src": "m1",
+              "page": "108"
+            },
+            {
+              "id": "jettison-switch",
+              "name": "JETTISON switch (rocket launchers)",
+              "type": "button",
+              "match": [
+                "JETT-SWITCH-PTR",
+                "item:m21-armament-control-panel:6"
+              ],
+              "text": "Pushing this switch drops the rocket launchers off the helicopter. It is for emergencies only.",
+              "context": "It sits under the red guard. The manual says the launchers may be dropped in hover, climb and level flight up to 100 knots.",
+              "src": "m1",
+              "page": "108"
+            }
+          ]
+        },
+        {
+          "id": "m130-panel",
+          "name": "M130 flare dispenser control panel",
+          "db": "m130-control-panel",
+          "src": "m1",
+          "page": "109",
+          "text": "This panel controls the flare dispenser, which throws out hot burning flares to fool heat-seeking missiles. Only flares work in this helicopter.",
+          "context": "The pilot sets the number of flares loaded, then switches the system to ARM when he wants to be able to use it. The flares are dispensed with the dispense button.",
+          "controls": [
+            {
+              "id": "flare-arm-safe",
+              "name": "ARM/SAFE switch (flare dispenser power)",
+              "type": "switch2",
+              "match": [
+                "CHAFF-ARM-SWITCH-PTR",
+                "item:m130-control-panel:3"
+              ],
+              "positions": [
+                {
+                  "name": "ARM",
+                  "text": "The dispenser has power and the ARM light comes on when the safety pins are removed."
+                },
+                {
+                  "name": "SAFE",
+                  "text": "The dispenser has no power."
+                }
+              ],
+              "text": "This switch gives power to the flare dispenser. In SAFE nothing can be dispensed.",
+              "context": "The manual checks it is on SAFE before the engine start and uses ARM when countermeasures are needed.",
+              "src": "m1",
+              "page": "109"
+            },
+            {
+              "id": "flare-arm-light",
+              "name": "ARM lamp and test button",
+              "type": "button",
+              "match": [
+                "CHAFF-ARM-TEST-PTR",
+                "item:m130-control-panel:4"
+              ],
+              "text": "The ARM lamp shows that the dispenser is armed. Pressing the button tests the lamp.",
+              "context": "The lamp lights when the switch is on ARM and the safety flag pins have been removed.",
+              "src": "m1",
+              "page": "109"
+            },
+            {
+              "id": "flare-dispense",
+              "name": "FLARE DISPENSE button",
+              "type": "button",
+              "match": [
+                "FLARE-DISP-PTR"
+              ],
+              "text": "Pressing this button throws out one flare from each of the two dispensers. Holding it down dispenses one flare from each every 3 seconds.",
+              "context": "The system must be armed first. Flares fool missiles that follow heat.",
+              "src": "m1",
+              "page": "110"
+            },
+            {
+              "id": "ripple-fire-cover",
+              "name": "RIPPLE FIRE switch cover",
+              "type": "cover",
+              "match": [
+                "RIPPLE-FIRE-COVER-PTR"
+              ],
+              "text": "This is the guard over the ripple fire switch.",
+              "context": "It is opened only if the pilot must empty the flares fast in an emergency.",
+              "src": "m1",
+              "page": "109"
+            },
+            {
+              "id": "ripple-fire",
+              "name": "RIPPLE FIRE switch",
+              "type": "switch2",
+              "match": [
+                "RIPPLE-FIRE-PTR",
+                "item:m130-control-panel:1"
+              ],
+              "positions": [
+                {
+                  "name": "ON",
+                  "text": "Fires all the remaining flares one after another while held."
+                },
+                {
+                  "name": "OFF",
+                  "text": "Normal position."
+                }
+              ],
+              "text": "While this switch is held ON, all the remaining flares are fired one after another. It is for emergencies.",
+              "context": "It sits under a cover so it cannot be touched by mistake.",
+              "src": "m1",
+              "page": "109"
+            },
+            {
+              "id": "flare-counter",
+              "name": "FLARE counter",
+              "type": "display",
+              "match": [
+                "FLARE-PTR",
+                "item:m130-control-panel:2"
+              ],
+              "text": "This counter shows how many flares are left in one dispenser. The mouse wheel sets the number.",
+              "context": "Before take-off it is set to the number of flares loaded. As two dispensers are carried, the real number is double.",
+              "src": "m1",
+              "page": "109"
+            },
+            {
+              "id": "chaff-counter",
+              "name": "CHAFF counter (not used)",
+              "type": "display",
+              "match": [
+                "CHAFF-PTR",
+                "item:m130-control-panel:5"
+              ],
+              "text": "This counter is for chaff, strips of metal that fool radar missiles. The manual says chaff cannot be dispensed in this helicopter.",
+              "context": "It is not used in this installation.",
+              "src": "m1",
+              "page": "109"
+            },
+            {
+              "id": "chaff-mode",
+              "name": "MAN/PGRM switch (not used)",
+              "type": "switch2",
+              "match": [
+                "PGRM-SWITCH-PTR",
+                "item:m130-control-panel:6"
+              ],
+              "positions": [
+                {
+                  "name": "MAN",
+                  "text": "Manual chaff release; not functional here."
+                },
+                {
+                  "name": "PGRM",
+                  "text": "Programmed chaff release; not functional here."
+                }
+              ],
+              "text": "This switch chooses manual or programmed chaff release. It does nothing in this helicopter because only flares are fitted.",
+              "context": "The manual says the switch is not functional in this installation.",
+              "src": "m1",
+              "page": "109"
+            }
+          ]
+        },
+        {
+          "id": "ac-breakers",
+          "name": "AC circuit breaker panel (right side of the pedestal)",
+          "src": "m1",
+          "page": "79",
+          "text": "A circuit breaker is a safety switch that pops out when too much current flows, and it can be pushed back in. This panel holds those for the 115 volt and 28 volt AC equipment, mostly instruments.",
+          "context": "The manual says the breakers are normally pushed in, so the gauges and the artificial horizons have power. A pulled breaker switches that circuit off.",
+          "controls": [
+            {
+              "id": "cb-attitude",
+              "name": "Attitude indicator breakers (pilot and copilot)",
+              "type": "switch2",
+              "match": [
+                "PILOT-ATTD1-PTR",
+                "PILOT-ATTD2-PTR",
+                "COPILOT-ATTD1-PTR",
+                "COPILOT-ATTD2--PTR"
+              ],
+              "positions": [
+                {
+                  "name": "ON",
+                  "text": "The breaker is pushed in and the circuit has power."
+                },
+                {
+                  "name": "OFF",
+                  "text": "The breaker is pulled out and the circuit has no power."
+                }
+              ],
+              "count": 4,
+              "text": "These four breakers protect the pilot's and the copilot's artificial horizons. Pulling one cuts power to it. The game hint marks some of them N/F.",
+              "context": "The manual names the PILOT ATTD and COPILOT ATTD breakers as the protection for the two attitude indicators.",
+              "src": "m1",
+              "page": "79"
+            },
+            {
+              "id": "cb-compass",
+              "name": "Gyro compass and course indicator breakers",
+              "type": "switch2",
+              "match": [
+                "GYRO-CMPS-PTR",
+                "COURSE-IND-PTR"
+              ],
+              "positions": [
+                {
+                  "name": "ON",
+                  "text": "The breaker is pushed in and the circuit has power."
+                },
+                {
+                  "name": "OFF",
+                  "text": "The breaker is pulled out and the circuit has no power."
+                }
+              ],
+              "count": 2,
+              "text": "These two breakers protect the gyro compass and the course deviation indicator. The game hint marks them N/F.",
+              "context": "They have no deeper description in the manual.",
+              "src": "m1",
+              "page": "79"
+            },
+            {
+              "id": "cb-gauges",
+              "name": "Fuel and pressure gauge breakers",
+              "type": "switch2",
+              "match": [
+                "FUEL-QTY-PTR",
+                "PRESS-FUEL-PTR",
+                "PRESS-TORQ-PTR",
+                "PRESS-XMSN-PTR",
+                "PRESS-ENG-PTR"
+              ],
+              "positions": [
+                {
+                  "name": "ON",
+                  "text": "The breaker is pushed in and the circuit has power."
+                },
+                {
+                  "name": "OFF",
+                  "text": "The breaker is pulled out and the circuit has no power."
+                }
+              ],
+              "count": 5,
+              "text": "These five breakers protect the fuel quantity gauge and the pressure gauges for fuel, torque, transmission oil and engine oil.",
+              "context": "The manual names FUEL QTY, FUEL PRESSURE, TORQUE, XMSN and ENG as the breakers of those gauges.",
+              "src": "m1",
+              "page": "79"
+            },
+            {
+              "id": "cb-ac-misc",
+              "name": "28 volt transformer and fail relay breakers",
+              "type": "switch2",
+              "match": [
+                "TRANS-28V-PTR",
+                "FAIL-RELAY-PTR"
+              ],
+              "positions": [
+                {
+                  "name": "ON",
+                  "text": "The breaker is pushed in and the circuit has power."
+                },
+                {
+                  "name": "OFF",
+                  "text": "The breaker is pulled out and the circuit has no power."
+                }
+              ],
+              "count": 2,
+              "text": "These two breakers protect the 28 volt transformer, which makes 28 volt AC from the inverter's power, and a relay named 'fail relay'. The game hint marks them N/F.",
+              "context": "The manual describes the transformer in general but not these breakers.",
+              "src": "m1",
+              "page": "79"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "overhead",
+      "where": "overhead",
+      "name": "Overhead console",
+      "text": "The panel in the roof above the pilots. It holds the power switches, the light switches, the wiper switches and the big groups of circuit breakers.",
+      "panels": [
+        {
+          "id": "dc-ac-power",
+          "name": "DC and AC power panel (electrics)",
+          "db": "dc-ac-power-panel",
+          "src": "m1",
+          "page": "77",
+          "text": "This panel on the roof controls the helicopter's electricity: the battery, the two generators, the inverters and the two voltmeter selectors.",
+          "context": "The pilot sets these switches in order before the engine start and again after it. Almost every instrument and radio depends on them.",
+          "controls": [
+            {
+              "id": "main-gen-cover",
+              "name": "MAIN GEN switch cover",
+              "type": "cover",
+              "match": [
+                "MAIN-GEN-SWITCHER-COVER-PTR"
+              ],
+              "text": "This is a flip-down cover over the main generator switch. It protects the switch from being moved by accident.",
+              "context": "In the start-up steps the switch is set to ON 'and cover down'.",
+              "src": "m1",
+              "page": "113"
+            },
+            {
+              "id": "main-gen",
+              "name": "MAIN GEN switch",
+              "type": "switch3",
+              "match": [
+                "MAIN-GEN-SWITCHER-PTR",
+                "item:dc-ac-power-panel:1"
+              ],
+              "positions": [
+                {
+                  "name": "ON",
+                  "text": "The main generator supplies the electrical system."
+                },
+                {
+                  "name": "OFF",
+                  "text": "The main generator is cut off from the system."
+                },
+                {
+                  "name": "RESET",
+                  "text": "Held for a moment, it resets the generator; the switch springs back to OFF."
+                }
+              ],
+              "text": "This switch connects the main generator, which makes electricity while the engine runs, to the helicopter. A click on the right side is RESET and returns by spring.",
+              "context": "After the engine runs, the main generator takes over from the battery. The RESET position tries to put a tripped generator online again.",
+              "src": "m1",
+              "page": "77"
+            },
+            {
+              "id": "bat-switch",
+              "name": "BAT switch (battery)",
+              "type": "switch2",
+              "match": [
+                "BAT-SWITCHER-PTR",
+                "item:dc-ac-power-panel:2"
+              ],
+              "positions": [
+                {
+                  "name": "ON",
+                  "text": "The battery gives power to the system and is charged by the generator."
+                },
+                {
+                  "name": "OFF",
+                  "text": "The battery is cut off from the system."
+                }
+              ],
+              "text": "This switch connects the battery to the helicopter. The battery is also recharged by the generator.",
+              "context": "It is the first thing switched on in the cockpit so that the equipment has electricity before the engine runs.",
+              "src": "m1",
+              "page": "77"
+            },
+            {
+              "id": "starter-gen",
+              "name": "STARTER GEN switch (START / STBY GEN)",
+              "type": "switch2",
+              "match": [
+                "STARTER-GEN-SWITCHERr-PTR",
+                "item:dc-ac-power-panel:3"
+              ],
+              "positions": [
+                {
+                  "name": "START",
+                  "text": "The starter-generator works as a starter and spins the engine."
+                },
+                {
+                  "name": "STBY GEN",
+                  "text": "The starter-generator works as the standby generator."
+                }
+              ],
+              "text": "A machine on the engine can be a starter that spins the engine, or a second generator once the engine runs. This switch decides which job it does.",
+              "context": "It is set to START for the engine start and to STBY GEN once the engine is running.",
+              "src": "m1",
+              "page": "77"
+            },
+            {
+              "id": "non-ess-bus",
+              "name": "NON-ESS BUS switch (NORMAL ON / MANUAL ON)",
+              "type": "switch2",
+              "match": [
+                "NON-ESS-BUS-SWITCHERr-PTR",
+                "item:dc-ac-power-panel:4"
+              ],
+              "positions": [
+                {
+                  "name": "NORMAL ON",
+                  "text": "The non-essential bus gets power from the main generator."
+                },
+                {
+                  "name": "MANUAL ON",
+                  "text": "The bus can get power from the standby generator when the main generator is offline."
+                }
+              ],
+              "text": "The non-essential bus is a group of electric lines for equipment that is not needed to keep flying. This switch decides where it gets power.",
+              "context": "If the main generator fails, the group is switched off by itself. MANUAL ON lets the pilot power it from the standby generator instead.",
+              "src": "m1",
+              "page": "77"
+            },
+            {
+              "id": "dc-vm-selector",
+              "name": "DC VM selector",
+              "type": "selector",
+              "match": [
+                "VM-SWITCHER-PTR",
+                "item:dc-ac-power-panel:5"
+              ],
+              "positions": [
+                {
+                  "name": "BAT",
+                  "text": "The voltmeter shows the battery."
+                },
+                {
+                  "name": "MAIN GEN",
+                  "text": "The voltmeter shows the main generator."
+                },
+                {
+                  "name": "STBY GEN",
+                  "text": "The voltmeter shows the standby generator."
+                },
+                {
+                  "name": "ESS BUS",
+                  "text": "The voltmeter shows the essential bus."
+                },
+                {
+                  "name": "NON-ESS BUS",
+                  "text": "The voltmeter shows the non-essential bus."
+                }
+              ],
+              "text": "This selector chooses what the DC voltmeter on the instrument panel measures: the battery, a generator or one of the buses.",
+              "context": "The pilot uses it to check the electricity before and after the engine start. BAT, MAIN GEN, STBY GEN, ESS BUS and NON-ESS BUS are available.",
+              "src": "m1",
+              "page": "78"
+            },
+            {
+              "id": "invtr-switch",
+              "name": "INVTR switch (inverter)",
+              "type": "switch3",
+              "match": [
+                "INVTR-SWITCHER-PTR",
+                "item:dc-ac-power-panel:6"
+              ],
+              "positions": [
+                {
+                  "name": "MAIN ON",
+                  "text": "The main inverter works."
+                },
+                {
+                  "name": "OFF",
+                  "text": "No inverter works."
+                },
+                {
+                  "name": "SPARE ON",
+                  "text": "The spare inverter works."
+                }
+              ],
+              "text": "An inverter turns the battery-type electricity into the alternating current that some instruments need. This switch picks the main inverter, the spare, or none.",
+              "context": "It normally sits on MAIN ON. If the main inverter fails, the pilot moves it to SPARE ON. The INST INVERTER caution light comes on when the inverter fails or is OFF.",
+              "src": "m1",
+              "page": "78"
+            },
+            {
+              "id": "ac-phase-selector",
+              "name": "AC PHASE VM selector",
+              "type": "selector",
+              "match": [
+                "PHASE-SWITCHER-PTR",
+                "item:dc-ac-power-panel:7"
+              ],
+              "positions": [
+                {
+                  "name": "AB",
+                  "text": "The AC voltmeter shows the AB phase."
+                },
+                {
+                  "name": "AC",
+                  "text": "The AC voltmeter shows the AC phase."
+                },
+                {
+                  "name": "BC",
+                  "text": "The AC voltmeter shows the BC phase."
+                }
+              ],
+              "text": "This selector chooses which of the three phases of the alternating current the AC voltmeter shows.",
+              "context": "In all three positions the voltage should read 112 to 118 volts.",
+              "src": "m1",
+              "page": "78"
+            }
+          ]
+        },
+        {
+          "id": "lights-panel",
+          "name": "Overhead lighting and heat switches",
+          "db": "overhead-lighting-panel",
+          "src": "m1",
+          "page": "69",
+          "text": "These switches and knobs on the roof panel control the lights outside and inside the helicopter, and the heater of the speed probe.",
+          "context": "The pilot uses the outside lights so other aircraft can see the helicopter. The inside lights are used at night to read the dials.",
+          "controls": [
+            {
+              "id": "nav-lights",
+              "name": "NAV lights switch (OFF / 1 / 2 / 3 / 4 / BRT)",
+              "type": "selector",
+              "match": [
+                "NVG-POSITION-LTS-PTR",
+                "item:overhead-lighting-panel:1"
+              ],
+              "positions": [
+                {
+                  "name": "OFF",
+                  "text": "The navigation lights are off."
+                },
+                {
+                  "name": "1",
+                  "text": "Dimmest step."
+                },
+                {
+                  "name": "2",
+                  "text": "Second step."
+                },
+                {
+                  "name": "3",
+                  "text": "Third step."
+                },
+                {
+                  "name": "4",
+                  "text": "Fourth step."
+                },
+                {
+                  "name": "BRT",
+                  "text": "Brightest setting."
+                }
+              ],
+              "text": "This knob sets how bright the navigation lights are. The lights are the coloured lamps that show other aircraft which way the helicopter is going.",
+              "context": "The positions 1 to 4 are steps of brightness, BRT is the brightest.",
+              "src": "m1",
+              "page": "69"
+            },
+            {
+              "id": "position-lights-mode",
+              "name": "Position lights switch (STEADY / OFF / FLASH)",
+              "type": "switch3",
+              "match": [
+                "STEADY-OFF-FLASH-PTR",
+                "item:overhead-lighting-panel:2"
+              ],
+              "positions": [
+                {
+                  "name": "STEADY",
+                  "text": "The position lights shine without flashing."
+                },
+                {
+                  "name": "OFF",
+                  "text": "The position lights are off."
+                },
+                {
+                  "name": "FLASH",
+                  "text": "The position lights flash."
+                }
+              ],
+              "text": "This switch makes the position lights shine steadily, flash, or stay off.",
+              "context": "Other aircraft see the position lights and know where the helicopter is.",
+              "src": "m1",
+              "page": "69"
+            },
+            {
+              "id": "position-lights-bright",
+              "name": "Position lights switch (DIM / BRIGHT)",
+              "type": "switch2",
+              "match": [
+                "DIM-BRIGHT-PTR",
+                "item:overhead-lighting-panel:3"
+              ],
+              "positions": [
+                {
+                  "name": "DIM",
+                  "text": "The position lights are dim."
+                },
+                {
+                  "name": "BRIGHT",
+                  "text": "The position lights are bright."
+                }
+              ],
+              "text": "This switch makes the position lights dimmer or brighter.",
+              "context": "A dim light is used when a bright light would be uncomfortable for other crews, for example in formation flights.",
+              "src": "m1",
+              "page": "69"
+            },
+            {
+              "id": "anti-collision",
+              "name": "ANTI-COLL switch (anti-collision light)",
+              "type": "switch2",
+              "match": [
+                "ANTI-COLL-PTR",
+                "item:overhead-lighting-panel:4"
+              ],
+              "positions": [
+                {
+                  "name": "ON",
+                  "text": "The anti-collision light is on."
+                },
+                {
+                  "name": "OFF",
+                  "text": "The anti-collision light is off."
+                }
+              ],
+              "text": "This switch turns the anti-collision light on or off. This is a bright flashing light that makes the helicopter easy to see.",
+              "context": "The pilot turns it on when the engine runs, so that nobody walks or flies into the helicopter.",
+              "src": "m1",
+              "page": "69"
+            },
+            {
+              "id": "dome-light",
+              "name": "DOME LIGHT switch (WHITE / OFF / GREEN)",
+              "type": "switch3",
+              "match": [
+                "FWD-PTR",
+                "item:overhead-lighting-panel:5"
+              ],
+              "positions": [
+                {
+                  "name": "WHITE",
+                  "text": "The dome light shines white."
+                },
+                {
+                  "name": "OFF",
+                  "text": "The dome light is off."
+                },
+                {
+                  "name": "GREEN",
+                  "text": "The dome light shines green."
+                }
+              ],
+              "text": "This switch controls the lamp in the roof of the cabin. It gives white light, green light, or none.",
+              "context": "The manual lists the dome light switch in the start-up steps as 'as required'. The softer green light is meant for the night.",
+              "src": "m1",
+              "page": "113"
+            },
+            {
+              "id": "light-rheostats",
+              "name": "Instrument light rheostats (6 knobs)",
+              "type": "knob",
+              "match": [
+                "PILOT-PTR",
+                "COPILOT-PTR",
+                "CONSOLE-PTR",
+                "ENGINE-PTR",
+                "SEC-PTR",
+                "PED-PTR",
+                "item:overhead-lighting-panel:6"
+              ],
+              "count": 6,
+              "text": "A rheostat is a dimmer knob. There are six: pilot, copilot, overhead console, engine, secondary and pedestal. Each makes the lamps of its group brighter or dimmer.",
+              "context": "They are used at night. The names say which instruments each one lights.",
+              "src": "m1",
+              "page": "69"
+            },
+            {
+              "id": "pitot-heater",
+              "name": "PITOT HTR switch (speed probe heater)",
+              "type": "switch2",
+              "match": [
+                "MTR-PTR",
+                "item:overhead-lighting-panel:7"
+              ],
+              "positions": [
+                {
+                  "name": "ON",
+                  "text": "The pitot tube is heated."
+                },
+                {
+                  "name": "OFF",
+                  "text": "The pitot tube is not heated."
+                }
+              ],
+              "text": "This switch heats the pitot tube, the small tube outside that measures speed, so that it does not freeze.",
+              "context": "It is used in cold, wet air. The manual says it also makes the standby compass drift a little.",
+              "src": "m1",
+              "page": "64"
+            }
+          ]
+        },
+        {
+          "id": "overhead-misc",
+          "name": "Overhead switches (wipers, bleed air, cargo, radar altimeter power)",
+          "src": "m1",
+          "page": "69",
+          "text": "A few more switches on the roof panel: the windshield wipers, the heater air, the cargo safety and the power switch of the radar altimeter.",
+          "context": "They are used when needed: the wipers in rain, the cargo safety before lifting a load, and the radar altimeter power for low flying.",
+          "controls": [
+            {
+              "id": "wipers",
+              "name": "Wipers speed switch (PARK / OFF / LOW / MED / HIGH)",
+              "type": "selector",
+              "match": [
+                "WIPERS-PTR"
+              ],
+              "positions": [
+                {
+                  "name": "PARK",
+                  "text": "The wipers go to their resting place."
+                },
+                {
+                  "name": "OFF",
+                  "text": "The wipers are off."
+                },
+                {
+                  "name": "LOW",
+                  "text": "Slow wiping."
+                },
+                {
+                  "name": "MED",
+                  "text": "Medium wiping."
+                },
+                {
+                  "name": "HIGH",
+                  "text": "Fast wiping."
+                }
+              ],
+              "text": "This switch turns the windshield wipers on and sets their speed. PARK folds the wipers to their resting place.",
+              "context": "A left or right click in the game moves the switch down or up one position.",
+              "src": "m1",
+              "page": "69"
+            },
+            {
+              "id": "wiper-select",
+              "name": "Wiper selector (PILOT / BOTH / COPILOT)",
+              "type": "switch3",
+              "match": [
+                "WIPER PILOT-BOTH-COPILOT-PTR"
+              ],
+              "positions": [
+                {
+                  "name": "PILOT",
+                  "text": "Only the pilot's wiper works."
+                },
+                {
+                  "name": "BOTH",
+                  "text": "Both wipers work."
+                },
+                {
+                  "name": "COPILOT",
+                  "text": "Only the copilot's wiper works."
+                }
+              ],
+              "text": "This switch chooses which windshield wiper works: the pilot's, the copilot's or both.",
+              "context": "It goes with the wipers speed switch.",
+              "src": "m1",
+              "page": "69"
+            },
+            {
+              "id": "bleed-air",
+              "name": "Bleed air switch (OFF / 1 / 2 / 3 / 4)",
+              "type": "selector",
+              "match": [
+                "BLEND-AIR-PTR"
+              ],
+              "positions": [
+                {
+                  "name": "OFF",
+                  "text": "The bleed air is off."
+                },
+                {
+                  "name": "1",
+                  "text": "Setting 1 of the bleed air switch."
+                },
+                {
+                  "name": "2",
+                  "text": "Setting 2 of the bleed air switch."
+                },
+                {
+                  "name": "3",
+                  "text": "Setting 3 of the bleed air switch."
+                },
+                {
+                  "name": "4",
+                  "text": "Setting 4 of the bleed air switch."
+                }
+              ],
+              "text": "The game names this the Bleed Air switch with the positions OFF, 1, 2, 3 and 4. The manual does not describe it.",
+              "context": "It belongs to the cabin heater system, according to the game.",
+              "src": "m1",
+              "page": "69"
+            },
+            {
+              "id": "cargo-safety",
+              "name": "Cargo safety (CARGO RELEASE) switch",
+              "type": "switch",
+              "match": [
+                "CARGO-REL-PTR"
+              ],
+              "text": "This switch arms the cargo hook. When it is armed, the CARGO RELEASE armed light on the instrument panel comes on and the release button on the stick can drop the load.",
+              "context": "It is used when a load hangs under the helicopter. Without arming, the load stays on the hook.",
+              "src": "m1",
+              "page": "62"
+            },
+            {
+              "id": "radar-alt-power",
+              "name": "Radar altimeter power switch",
+              "type": "switch2",
+              "match": [
+                "RADAR-ALT-PTR"
+              ],
+              "positions": [
+                {
+                  "name": "ON",
+                  "text": "The radar altimeter has power."
+                },
+                {
+                  "name": "OFF",
+                  "text": "The radar altimeter has no power."
+                }
+              ],
+              "text": "This switch gives power to the radar altimeter, the dial that measures the height above the ground.",
+              "context": "The radar altimeter is also turned on with its LO SET knob on the instrument panel.",
+              "src": "m1",
+              "page": "65"
+            }
+          ]
+        },
+        {
+          "id": "dc-breakers",
+          "name": "DC circuit breaker panel",
+          "src": "m1",
+          "page": "78",
+          "text": "The roof panel has two big groups of circuit breakers. A circuit breaker is a safety switch that pops out when too much current flows, and it can be pushed back in. Each one protects one device.",
+          "context": "The start-up steps say the DC breakers are pushed in, except those for armament and special equipment. A pulled-out breaker takes that device out of service.",
+          "controls": [
+            {
+              "id": "cb-engine",
+              "name": "Engine, fuel and governor breakers",
+              "type": "switch2",
+              "match": [
+                "IGNITER-SOL-PTR",
+                "STARTER-RELAY-PTR",
+                "FUEL-VALVES-PTR",
+                "FUEL-TRANS-PTR",
+                "RH-FUEL-PTR",
+                "LH-FUEL-PTR",
+                "IDLE-STOP-PTR",
+                "GOV-CONT-PTR",
+                "ANTI-ICE-PTR"
+              ],
+              "positions": [
+                {
+                  "name": "ON",
+                  "text": "The breaker is pushed in and the circuit has power."
+                },
+                {
+                  "name": "OFF",
+                  "text": "The breaker is pulled out and the circuit has no power."
+                }
+              ],
+              "count": 9,
+              "text": "These nine breakers protect the engine start, the fuel valves and boost pumps, the idle stop release, the governor control and the engine de-ice. Some carry N/F in the game hint.",
+              "context": "They are named in the manual as the protection of the fuel pumps, the governor and the de-ice. Without them the matching parts stop working.",
+              "src": "m1",
+              "page": "78"
+            },
+            {
+              "id": "cb-power",
+              "name": "Electric power breakers",
+              "type": "switch2",
+              "match": [
+                "STBY-GEN-PTR",
+                "GEN-BUS-PTR",
+                "MAIN-INVTR-PTR",
+                "INVTR-PTR",
+                "SPARE-INVTR-PTR"
+              ],
+              "positions": [
+                {
+                  "name": "ON",
+                  "text": "The breaker is pushed in and the circuit has power."
+                },
+                {
+                  "name": "OFF",
+                  "text": "The breaker is pulled out and the circuit has no power."
+                }
+              ],
+              "count": 5,
+              "text": "These five breakers protect the standby generator, the generator and bus reset, and the main and spare inverters with their control.",
+              "context": "Without them the generators or inverters cannot supply the helicopter. Some carry N/F in the game hint.",
+              "src": "m1",
+              "page": "78"
+            },
+            {
+              "id": "cb-controls",
+              "name": "Force trim and hydraulic control breakers",
+              "type": "switch2",
+              "match": [
+                "FORCE-TRIM-CB-PTR",
+                "HYD-CONT-CB-PTR"
+              ],
+              "positions": [
+                {
+                  "name": "ON",
+                  "text": "The breaker is pushed in and the circuit has power."
+                },
+                {
+                  "name": "OFF",
+                  "text": "The breaker is pulled out and the circuit has no power."
+                }
+              ],
+              "count": 2,
+              "text": "These two breakers protect the force trim system and the hydraulic control switch.",
+              "context": "The manual names HYD CONT as the protection of the hydraulic control circuit. Force trim feels the same way.",
+              "src": "m1",
+              "page": "78"
+            },
+            {
+              "id": "cb-interior-lights",
+              "name": "Interior light breakers",
+              "type": "switch2",
+              "match": [
+                "INST-SEC-LIGHTS-PTR",
+                "INST-PANEL-LIGHTS-PTR",
+                "CONSOLE-LIGHTS-PTR",
+                "CAUTION-LIGHTS-PTR",
+                "COCKPIT-LIGHTS-PTR",
+                "DOME-LIGHTS-PTR"
+              ],
+              "positions": [
+                {
+                  "name": "ON",
+                  "text": "The breaker is pushed in and the circuit has power."
+                },
+                {
+                  "name": "OFF",
+                  "text": "The breaker is pulled out and the circuit has no power."
+                }
+              ],
+              "count": 6,
+              "text": "These six breakers protect the lights inside the cockpit: secondary and panel lights, console, caution panel, cockpit and dome lights.",
+              "context": "The manual names the CAUTION LIGHTS breakers as the protection of the master caution system.",
+              "src": "m1",
+              "page": "78"
+            },
+            {
+              "id": "cb-exterior-lights",
+              "name": "Exterior light breakers",
+              "type": "switch2",
+              "match": [
+                "NAV-LIGHTS-PTR",
+                "FUS-LIGHTS-PTR",
+                "ANTI-COLL-CB-PTR",
+                "LDG-SEARCH-PTR",
+                "LDG-LIGHT-PTR",
+                "SEARCH-LIGHT-PTR"
+              ],
+              "positions": [
+                {
+                  "name": "ON",
+                  "text": "The breaker is pushed in and the circuit has power."
+                },
+                {
+                  "name": "OFF",
+                  "text": "The breaker is pulled out and the circuit has no power."
+                }
+              ],
+              "count": 6,
+              "text": "These six breakers protect the lights outside: navigation, fuselage, anti-collision, landing and search lights and the control of the last two.",
+              "context": "If a lamp does not shine, a popped breaker is one of the places to look. Some carry N/F in the game hint.",
+              "src": "m1",
+              "page": "78"
+            },
+            {
+              "id": "cb-wipers-heat",
+              "name": "Wiper, heater and pitot breakers",
+              "type": "switch2",
+              "match": [
+                "WIND-SHIELD2-CB-PTR",
+                "WIND-SHIELD-CB-PTR",
+                "AIR-VALVE-PTR",
+                "OUTLET-VALVE-PTR",
+                "PITOT-TUBE-PTR",
+                "HEATED-BLANKET2-PTR",
+                "HEATED-BLANKET-PTR"
+              ],
+              "positions": [
+                {
+                  "name": "ON",
+                  "text": "The breaker is pushed in and the circuit has power."
+                },
+                {
+                  "name": "OFF",
+                  "text": "The breaker is pulled out and the circuit has no power."
+                }
+              ],
+              "count": 7,
+              "text": "These seven breakers protect the two windshield wipers, the cabin heater valves, the pitot tube heater and two heated blankets.",
+              "context": "They are the electrical safety for comfort and weather equipment. Most carry N/F in the game hint.",
+              "src": "m1",
+              "page": "78"
+            },
+            {
+              "id": "cb-radios",
+              "name": "Radio and intercom breakers",
+              "type": "switch2",
+              "match": [
+                "K-Y20-PTR",
+                "VXFXCVR-COMM-PTR",
+                "FM2-ARC-114-PTR",
+                "UHF-ARC-51-PTR",
+                "FM-ARC-54-PTR",
+                "HF-ANT-PTR",
+                "INTER-COM-CPLT-PTR",
+                "HF-ARC-102-PTR",
+                "ARC-102-PTR",
+                "INTER-COM-PLT-PTR",
+                "IFF-APX-PTR",
+                "IFF-API-PTR"
+              ],
+              "positions": [
+                {
+                  "name": "ON",
+                  "text": "The breaker is pushed in and the circuit has power."
+                },
+                {
+                  "name": "OFF",
+                  "text": "The breaker is pulled out and the circuit has no power."
+                }
+              ],
+              "count": 12,
+              "text": "These twelve breakers protect the radios (VHF AM, UHF, FM, HF), the voice security box, the intercoms of the pilot and copilot and the IFF.",
+              "context": "A radio that does not work may have a popped breaker. In DCS only the VHF AM, UHF and FM radios and the pilot intercom are modelled as working.",
+              "src": "m1",
+              "page": "78"
+            },
+            {
+              "id": "cb-nav-instruments",
+              "name": "Navigation and instrument breakers",
+              "type": "switch2",
+              "match": [
+                "LF-NAV-PTR",
+                "VHF-NAV-PTR",
+                "MARKER-BEACON-PTR",
+                "TEMP-IND-PTR",
+                "TURN-SLIP-PTR",
+                "VOLT-METER-PTR"
+              ],
+              "positions": [
+                {
+                  "name": "ON",
+                  "text": "The breaker is pushed in and the circuit has power."
+                },
+                {
+                  "name": "OFF",
+                  "text": "The breaker is pulled out and the circuit has no power."
+                }
+              ],
+              "count": 6,
+              "text": "These six breakers protect the ADF receiver, the VOR receiver, the marker beacon, the temperature gauges, the turn and slip indicator and the voltmeter.",
+              "context": "The manual names TEMP IND ENG & XMSN as the breaker of the two temperature gauges.",
+              "src": "m1",
+              "page": "78"
+            },
+            {
+              "id": "cb-warnings",
+              "name": "Warning system breakers",
+              "type": "switch2",
+              "match": [
+                "FIRE-PTR",
+                "RPM-WARN-PTR",
+                "PROX-WARN-PTR"
+              ],
+              "positions": [
+                {
+                  "name": "ON",
+                  "text": "The breaker is pushed in and the circuit has power."
+                },
+                {
+                  "name": "OFF",
+                  "text": "The breaker is pulled out and the circuit has no power."
+                }
+              ],
+              "count": 3,
+              "text": "These three breakers protect the fire detector, the RPM warning system and the proximity warning.",
+              "context": "The manual names FIRE DET as the breaker of the fire warning circuit.",
+              "src": "m1",
+              "page": "78"
+            },
+            {
+              "id": "cb-hoist-cargo",
+              "name": "Rescue hoist, cargo hook and jettison breakers",
+              "type": "switch2",
+              "match": [
+                "RESCUE-CABLE-PTR",
+                "RESCUE-CONT-PTR",
+                "RESCUE-POWER-PTR",
+                "EXT-STORES-PTR",
+                "CARGO-HOOK-PTR"
+              ],
+              "positions": [
+                {
+                  "name": "ON",
+                  "text": "The breaker is pushed in and the circuit has power."
+                },
+                {
+                  "name": "OFF",
+                  "text": "The breaker is pulled out and the circuit has no power."
+                }
+              ],
+              "count": 5,
+              "text": "These five breakers protect the rescue hoist, its cable cutter, the dropping of external stores and the cargo hook release.",
+              "context": "The rescue hoist is not working in DCS. The cargo hook release needs its breaker in before the load can be dropped.",
+              "src": "m1",
+              "page": "78"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "sights",
+      "where": "glareshield",
+      "name": "Sights",
+      "text": "Two aiming devices for the machine guns and rockets: the pilot's reflex sight that folds up under the roof, and the gunner's flexible sighting station.",
+      "panels": [
+        {
+          "id": "xm60-sight",
+          "name": "XM60 reflex sight (pilot's sight)",
+          "db": "xm60-reflex-sight",
+          "src": "m1",
+          "page": "103",
+          "text": "The XM60 is the pilot's sight for the rockets and the guns in the stowed position. It is a glass that shows a lit aiming mark. When not in use it is folded up near the ceiling.",
+          "context": "The pilot unlocks the sight, swings it down and puts the helicopter's nose so that the mark sits on the target, then fires. The gunner has a separate sight.",
+          "controls": [
+            {
+              "id": "sight-lamp",
+              "name": "Reticle lamp switch (pilot sight)",
+              "type": "switch3",
+              "match": [
+                "PILOT-SIGHT-SWITCH-PTR",
+                "item:xm60-reflex-sight:1"
+              ],
+              "positions": [
+                {
+                  "name": "Forward",
+                  "text": "The lamp of the aiming mark is on."
+                },
+                {
+                  "name": "Center",
+                  "text": "The lamp is off."
+                },
+                {
+                  "name": "Aft",
+                  "text": "The lamp of the aiming mark is on."
+                }
+              ],
+              "text": "This switch lights the aiming mark. Forward or aft of the centre switches the lamp on, the centre is off.",
+              "context": "The game hint names it Pilot Sight switch ON/OFF. The sight needs light to be useful.",
+              "src": "m1",
+              "page": "105"
+            },
+            {
+              "id": "sight-intensity",
+              "name": "Reticle intensity knob (pilot sight)",
+              "type": "knob",
+              "match": [
+                "PILOT-SIGHT-BRIGHT-PTR",
+                "item:xm60-reflex-sight:2"
+              ],
+              "text": "This knob makes the aiming mark brighter or dimmer. The mouse wheel turns it.",
+              "context": "The pilot sets it to be visible in daylight or night without dazzling.",
+              "src": "m1",
+              "page": "107"
+            },
+            {
+              "id": "sight-elevation",
+              "name": "Reticle elevation knob (pilot sight)",
+              "type": "knob",
+              "match": [
+                "PILOT-SIGHT-SCALE-PTR",
+                "item:xm60-reflex-sight:3"
+              ],
+              "text": "This knob moves the aiming mark up or down. The mouse wheel turns it.",
+              "context": "The manual says the pilot turns it until the aiming mark matches where the bullets strike.",
+              "src": "m1",
+              "page": "107"
+            },
+            {
+              "id": "sight-lock",
+              "name": "Locking lever and armed/safe position (pilot sight)",
+              "type": "lever",
+              "match": [
+                "PILOT-SIGHT-POS-PTR",
+                "item:xm60-reflex-sight:4"
+              ],
+              "positions": [
+                {
+                  "name": "Safe",
+                  "text": "The sight is folded up in its resting place."
+                },
+                {
+                  "name": "Armed",
+                  "text": "The sight is swung down and locked in the position for use."
+                }
+              ],
+              "text": "This lever holds the sight folded in its resting place. Pressing it lets the sight swing out and down, where it locks again for use. The game hint names the positions Armed and Safe.",
+              "context": "The sight is folded away when not needed, so it does not block the view.",
+              "src": "m1",
+              "page": "107"
+            },
+            {
+              "id": "sight-placard",
+              "name": "Reticle elevation placard",
+              "type": "indicator",
+              "match": [
+                "item:xm60-reflex-sight:5"
+              ],
+              "text": "A printed scale that shows how far the aiming mark has been moved.",
+              "context": "It has no switch. It helps the pilot to read the elevation setting.",
+              "src": "m1",
+              "page": "103"
+            },
+            {
+              "id": "sight-inclinometer",
+              "name": "Inclinometer (bank/slip indicator)",
+              "type": "gauge",
+              "match": [
+                "item:xm60-reflex-sight:6"
+              ],
+              "text": "A small ball in a curved tube on the sight. It shows whether the helicopter leans or slips sideways.",
+              "context": "It has no switch. It helps the pilot to keep the sight level when aiming.",
+              "src": "m1",
+              "page": "103"
+            }
+          ]
+        },
+        {
+          "id": "flexible-sight",
+          "name": "Flexible sighting station (gunner's sight)",
+          "src": "m1",
+          "page": "105",
+          "text": "This is the sight of the gunner in the left seat. By moving it, the gunner aims the two machine guns electrically.",
+          "context": "The gunner unlocks the station, lights the reticle, and moves the handle to aim. The pilot's own fire button works only for guns in the stowed position.",
+          "controls": [
+            {
+              "id": "flex-intensity",
+              "name": "Sighting station intensity knob",
+              "type": "knob",
+              "match": [
+                "SIGHT-BRIGHT-SWITCHER-PTR"
+              ],
+              "text": "This knob makes the aiming mark of the gunner's sight brighter or dimmer.",
+              "context": "The manual says the gunner turns the rheostat knob to set the reticle light.",
+              "src": "m1",
+              "page": "105"
+            },
+            {
+              "id": "flex-lamp",
+              "name": "Sighting station lamp switch (BACKUP / OFF / MAIN)",
+              "type": "switch3",
+              "match": [
+                "SIGHT-TUMB-PTR"
+              ],
+              "positions": [
+                {
+                  "name": "BACKUP",
+                  "text": "The backup lamp lights the reticle."
+                },
+                {
+                  "name": "OFF",
+                  "text": "The reticle lamp is off."
+                },
+                {
+                  "name": "MAIN",
+                  "text": "The main lamp lights the reticle."
+                }
+              ],
+              "text": "This switch lights the aiming mark of the gunner's sight. It can use the main lamp or a backup lamp, or be off.",
+              "context": "The manual says the lamp lights when the switch is moved either forward or aft of the centre OFF position.",
+              "src": "m1",
+              "page": "105"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "doors",
+      "where": "other",
+      "name": "Doors",
+      "text": "The two sliding cabin doors.",
+      "panels": [
+        {
+          "id": "cabin-doors",
+          "name": "Cabin doors",
+          "src": "m1",
+          "text": "The Huey has sliding doors on both sides of the cabin that can be opened and closed.",
+          "context": "The doors are usually open in flight in DCS so that the door gunners can use their machine guns and troops can get in and out.",
+          "controls": [
+            {
+              "id": "door-left",
+              "name": "Open left door",
+              "type": "button",
+              "match": [
+                "DOOR_L-PTR"
+              ],
+              "text": "Clicking this opens or closes the left sliding door.",
+              "context": "The left door gunner works through this opening.",
+              "src": "m1",
+              "page": "48"
+            },
+            {
+              "id": "door-right",
+              "name": "Open right door",
+              "type": "button",
+              "match": [
+                "DOOR_R-PTR"
+              ],
+              "text": "Clicking this opens or closes the right sliding door.",
+              "context": "The right door gunner works through this opening.",
+              "src": "m1",
+              "page": "48"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "hotas",
+      "where": "hotas",
+      "name": "Cyclic, collective and pedals",
+      "text": "The three flight controls of a helicopter, with the switches on their grips: the cyclic stick, the collective lever and the pedals.",
+      "panels": [
+        {
+          "id": "cyclic",
+          "name": "Cyclic stick (between the pilot's knees)",
+          "src": "m1",
+          "page": "38",
+          "text": "The cyclic is the helicopter's stick. Moving it tilts the main rotor, and the helicopter moves forward, back or to the side. A set of switches sits on its grip.",
+          "context": "The copilot has a second cyclic with its own force trim and cargo release buttons. The pilot's grip also carries the radio switch and the fire button.",
+          "controls": [
+            {
+              "id": "cyclic-stick",
+              "name": "Cyclic stick",
+              "type": "axis",
+              "match": [
+                "control:stick.gimbal"
+              ],
+              "text": "Pushing the stick forward makes the helicopter fly forward. Pulling it back slows it down or makes it go back. Moving it left or right makes it slide or lean to that side.",
+              "context": "Together with the collective and the pedals, it is the control used all the time in flight. A friction adjuster can make it stiffer.",
+              "src": "m1",
+              "page": "38"
+            },
+            {
+              "id": "cyclic-force-trim",
+              "name": "Force trim button",
+              "type": "button",
+              "match": [
+                "control:stick.button.force_trim",
+                "FORCE-TRIM-1-PTR",
+                "FORCE-TRIM-2-PTR"
+              ],
+              "text": "While this button is held, the springy feel of the stick and the pedals is removed. When it is released, the stick holds the new position.",
+              "context": "It is how the pilot sets the 'trim', the position where the controls rest. The FORCE TRIM switch on the pedestal must be ON. The copilot has the same button.",
+              "src": "m1",
+              "page": "42"
+            },
+            {
+              "id": "cyclic-ics-radio",
+              "name": "Radio / ICS switch",
+              "type": "trigger",
+              "match": [
+                "control:stick.switch.ics_radio",
+                "RADIO/ICS-1-PTR"
+              ],
+              "text": "This trigger is the talk button. The first click is for the intercom with the crew. Pressing it further sends the voice over the radio chosen on the intercom panel.",
+              "context": "The transmit selector on the pedestal chooses which radio is used. In the game, two commands call the radio menu.",
+              "src": "m1",
+              "page": "38"
+            },
+            {
+              "id": "cyclic-fire",
+              "name": "Armament fire control switch",
+              "type": "button",
+              "match": [
+                "control:stick.button.fire"
+              ],
+              "text": "This button fires the weapons. It fires the machine guns or the rockets, depending on the armament selector.",
+              "context": "The ARMED switch on the M21 panel must be on ARMED. The pilot fires the guns only when they are in the stowed position.",
+              "src": "m1",
+              "page": "104"
+            },
+            {
+              "id": "cyclic-cargo-release",
+              "name": "Cargo release switch",
+              "type": "button",
+              "match": [
+                "control:stick.button.cargo_release",
+                "CARGO-RELEASE-1-PTR",
+                "CARGO-RELEASE-2-PTR"
+              ],
+              "text": "Pressing this button lets go of a load that hangs under the helicopter on the cargo hook. The copilot's stick has one too.",
+              "context": "The cargo safety switch on the overhead panel must be set first. The hook can carry up to 4,000 pounds.",
+              "src": "m1",
+              "page": "38"
+            },
+            {
+              "id": "cyclic-hoist",
+              "name": "Hoist switch",
+              "type": "hat",
+              "match": [
+                "control:stick.hat.hoist"
+              ],
+              "text": "This small switch is for the rescue hoist, a winch with a cable. Up pulls the cable in and down lets it out. It has no function in DCS.",
+              "context": "The manual lists the hoist switch on the cyclic grip. The hoist is not working in DCS.",
+              "src": "m1",
+              "page": "38"
+            }
+          ]
+        },
+        {
+          "id": "collective",
+          "name": "Collective lever (left of the pilot's seat)",
+          "src": "m1",
+          "page": "40",
+          "text": "The collective is the lever at the left side of the pilot. Pulling it up makes the helicopter climb and pushing it down makes it sink. A twist grip and a box of switches sit on its end.",
+          "context": "The throttle twist grip, the starter trigger and the light switches are on the grip. The copilot has a collective with throttle, governor and starter.",
+          "controls": [
+            {
+              "id": "collective-lever",
+              "name": "Collective lever",
+              "type": "axis",
+              "match": [
+                "control:collective.axis.main"
+              ],
+              "text": "Pulling this lever up makes all the main rotor blades bite the air more, and the helicopter climbs. Lowering it makes the helicopter sink.",
+              "context": "The pilot raises it gently at take-off until the skids lift off the ground. It needs more of the left pedal as it rises, says the manual.",
+              "src": "m1",
+              "page": "40"
+            },
+            {
+              "id": "throttle",
+              "name": "Throttle (twist grip)",
+              "type": "axis",
+              "match": [
+                "control:collective.axis.throttle_twist",
+                "THROTTLE-1-PTR",
+                "THROTTLE-2-PTR"
+              ],
+              "text": "This twist grip at the end of the collective works like a motorcycle's throttle. It gives the engine more or less fuel. Fully closed it shuts the engine off.",
+              "context": "It is turned to the idle stop for the start and then fully open for flight, with the governor keeping the speed steady. The copilot has a second throttle.",
+              "src": "m1",
+              "page": "16"
+            },
+            {
+              "id": "idle-release",
+              "name": "Engine idle stop release button",
+              "type": "button",
+              "match": [
+                "control:collective.button.idle_release",
+                "ENGINE-BTN-1-PTR"
+              ],
+              "text": "A stop prevents the throttle from being closed by accident. Pressing this button lets the pilot move the throttle past the stop.",
+              "context": "The manual uses it for setting the throttle just below idle before the engine start.",
+              "src": "m1",
+              "page": "17"
+            },
+            {
+              "id": "starter-trigger",
+              "name": "Starter switch (trigger)",
+              "type": "trigger",
+              "match": [
+                "control:collective.button.starter"
+              ],
+              "text": "Holding this trigger spins the engine with the starter-generator so that it can start.",
+              "context": "The pilot holds it, watches the dials, and lets go at 40 percent N1 or after 40 seconds, whichever comes first.",
+              "src": "m1",
+              "page": "115"
+            },
+            {
+              "id": "gov-rpm",
+              "name": "Governor RPM switch (INCR / DECR)",
+              "type": "switch3",
+              "match": [
+                "control:collective.switch.gov_rpm",
+                "GOV-RPM-1-PTR",
+                "GOV-RPM-2-PTR"
+              ],
+              "positions": [
+                {
+                  "name": "INCR",
+                  "text": "Held up, the governed engine speed increases."
+                },
+                {
+                  "name": "Center",
+                  "text": "The speed setting is left as it is."
+                },
+                {
+                  "name": "DECR",
+                  "text": "Held down, the governed engine speed decreases."
+                }
+              ],
+              "text": "This switch raises or lowers the engine and rotor speed that the automatic governor holds. It springs back to the middle.",
+              "context": "The pilot taps it to fine tune the speed. The copilot has the same switch.",
+              "src": "m1",
+              "page": "17"
+            },
+            {
+              "id": "searchlight-switch",
+              "name": "Searchlight switch (ON / OFF / STOW)",
+              "type": "switch3",
+              "match": [
+                "control:collective.switch.searchlight",
+                "SL-ON-OFF-STOW-1-PTR"
+              ],
+              "positions": [
+                {
+                  "name": "ON",
+                  "text": "The searchlight is on."
+                },
+                {
+                  "name": "OFF",
+                  "text": "The searchlight is off."
+                },
+                {
+                  "name": "STOW",
+                  "text": "The searchlight is folded back into its resting place."
+                }
+              ],
+              "text": "This switch turns the searchlight, a powerful lamp under the helicopter, on or off, or stows it away.",
+              "context": "It is used at night to light up the ground. The searchlight breaker on the overhead panel must be in.",
+              "src": "m1",
+              "page": "40"
+            },
+            {
+              "id": "searchlight-hat",
+              "name": "Searchlight control switch (4-way)",
+              "type": "hat",
+              "match": [
+                "control:collective.hat.searchlight"
+              ],
+              "text": "This 4-way switch moves the searchlight. Up extends it, down retracts it, left and right turn it.",
+              "context": "It points the beam where the pilot wants to look at night.",
+              "src": "m1",
+              "page": "40"
+            },
+            {
+              "id": "landing-light-onoff",
+              "name": "Landing light ON/OFF switch",
+              "type": "switch2",
+              "match": [
+                "control:collective.switch.landing_light",
+                "LDG-LT-1-PTR"
+              ],
+              "positions": [
+                {
+                  "name": "ON",
+                  "text": "The landing light is on."
+                },
+                {
+                  "name": "OFF",
+                  "text": "The landing light is off."
+                }
+              ],
+              "text": "This switch turns the landing light on or off. The landing light lights the ground in front of the helicopter.",
+              "context": "It is used for night landings. The manual notes that the compass drifts a little when it is on.",
+              "src": "m1",
+              "page": "40"
+            },
+            {
+              "id": "landing-light-ext",
+              "name": "Landing light extend/retract switch",
+              "type": "switch3",
+              "match": [
+                "control:collective.switch.landing_light_control",
+                "LDG-LT-2-1-PTR"
+              ],
+              "positions": [
+                {
+                  "name": "EXT",
+                  "text": "The landing light is extended."
+                },
+                {
+                  "name": "OFF",
+                  "text": "The light stays where it is."
+                },
+                {
+                  "name": "RETR",
+                  "text": "The landing light is retracted."
+                }
+              ],
+              "text": "This switch moves the landing light out of the belly or back in. EXT extends it, RETR retracts it.",
+              "context": "The light is extended for use and retracted for flight when not needed.",
+              "src": "m1",
+              "page": "40"
+            }
+          ]
+        },
+        {
+          "id": "pedals",
+          "name": "Anti-torque pedals",
+          "src": "m1",
+          "page": "41",
+          "text": "These are the pedals under the pilot's feet. They turn the helicopter's nose left and right by changing the tail rotor's pitch, like the steering of a car.",
+          "context": "The pilot uses them all the time, especially in a hover. The pedal adjusters let the pilot set the pedal distance. A force trim system also acts on the pedals.",
+          "controls": [
+            {
+              "id": "pedals-axis",
+              "name": "Anti-torque pedals (tail rotor)",
+              "type": "pedal",
+              "match": [
+                "control:pedals.axis.rudder"
+              ],
+              "text": "Pushing the left pedal turns the nose left and pushing the right pedal turns it right. They change how hard the small rotor on the tail pushes.",
+              "context": "In forward flight they keep the ball of the turn and slip indicator in the middle. At take-off the pilot needs a little left pedal.",
+              "src": "m1",
+              "page": "41"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

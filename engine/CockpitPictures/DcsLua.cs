@@ -32,6 +32,9 @@ namespace JoyPro.CockpitPictures
             public List<string> Actions = new List<string>();
             public List<string> Args = new List<string>();
             public List<string> Classes = new List<string>();
+            // Per action: the argument's step (arg_value) and its limits ("min:max", arg_lim); empty where not given.
+            public List<string> Values = new List<string>();
+            public List<string> Limits = new List<string>();
         }
 
         public sealed class Gauge
@@ -85,6 +88,7 @@ for line in io.lines(arg[2]) do
     current_mod_path = modsRoot .. folder,
     __DCS_VERSION__ = '2.9.0',
     _ = function(s) return s end,
+  LOCALIZE = function(s) return s end,
     make_flyable = function(name, cockpit) out('FLY', folder, clean(tostring(name)), clean(tostring(cockpit))) end,
     declare_plugin = function(id, t)
       if type(t) == 'table' and type(t.InputProfiles) == 'table' then
@@ -106,6 +110,7 @@ local env
 env = sandbox({
   class_type = setmetatable({}, { __index = function(t, k) return k end }),
   _ = function(s) return s end,
+  LOCALIZE = function(s) return s end,
   LockOn_Options = {
     script_path = scriptPath,
     common_script_path = dcsPath .. 'Scripts/Aircrafts/_Common/Cockpit/',
@@ -134,7 +139,14 @@ if type(els) == 'table' then
     if type(e) == 'table' then
       local dev = e.device
       if dev == dummy then dev = nil end
-      out('EL', clean(tostring(name)), clean(e.hint), tostring(dev), clean(devnames[dev] or ''), list(e.action), list(e.arg), list(e.class))
+      local lims = {}
+      if type(e.arg_lim) == 'table' then
+        for i = 1, #e.arg_lim do
+          local l = e.arg_lim[i]
+          if type(l) == 'table' and type(l[1]) == 'number' and type(l[2]) == 'number' then lims[#lims + 1] = tostring(l[1]) .. ':' .. tostring(l[2]) else lims[#lims + 1] = '' end
+        end
+      end
+      out('EL', clean(tostring(name)), clean(e.hint), tostring(dev), clean(devnames[dev] or ''), list(e.action), list(e.arg), list(e.class), list(e.arg_value), table.concat(lims, ';'))
     end
   end
 end
@@ -148,6 +160,7 @@ local function newgauge() local g = { args = {} }; gauges[g] = true; return g en
 local env
 env = sandbox({
   _ = function(s) return s end,
+  LOCALIZE = function(s) return s end,
   controllers = setmetatable({}, { __index = function(t, k) return k end }),
   CreateGauge = function() return newgauge() end,
   CreateGaugeLocal = function(a, i, o, c) local g = newgauge(); g.arg_number = a; g.controller = c; return g end,
@@ -331,7 +344,9 @@ out('END')
                     DeviceName = c[4],
                     Actions = Split(c[5]),
                     Args = Split(c[6]),
-                    Classes = Split(c[7])
+                    Classes = Split(c[7]),
+                    Values = c.Length > 8 ? Split(c[8]) : new List<string>(),
+                    Limits = c.Length > 9 ? c[9].Split(';').ToList() : new List<string>()
                 });
             }
             return list;

@@ -21,7 +21,8 @@
 # set, planes (the game's aircraft names of the set), asset (the zip), size, sha256, version, built, picturesBuilt.
 # A set whose pictures did not change keeps its zip and version; a changed one gets the next version (the GUI updates
 # installed packs to a newer version). Default source: <data>\GameData\CockpitPictures (JOYPRO_DATA_DIR, else
-# %LOCALAPPDATA%\JoyPro); default output: E:\JoyProWork\release\cockpit-packs. The output must be outside the repository.
+# %LOCALAPPDATA%\JoyPro); default output: <JOYPRO_RELEASE_DIR>\cockpit-packs (the environment variable). The output must be outside the
+# repository.
 param(
     [string]$Source = "",
     [string]$Out = "",
@@ -39,7 +40,7 @@ $ErrorActionPreference = "Stop"
 # The main release and the further ones: their games and default output folders.
 $mainTag = "cockpit-pictures-v1"
 $feedGames = [ordered]@{ "cockpit-pictures-wt-v1" = @("WarThunder") }
-$feedOut = @{ "cockpit-pictures-v1" = "E:\JoyProWork\release\cockpit-packs"; "cockpit-pictures-wt-v1" = "E:\JoyProWork\release\cockpit-packs-wt" }
+$feedOut = @{ "cockpit-pictures-v1" = "cockpit-packs"; "cockpit-pictures-wt-v1" = "cockpit-packs-wt" }
 
 # System.Drawing's JPEG encoder of Windows PowerShell (5.1); PowerShell 7 runs the script there.
 if ($PSVersionTable.PSEdition -eq "Core") {
@@ -57,7 +58,8 @@ if ($PSVersionTable.PSEdition -eq "Core") {
 if ($MaxAssets -lt 2) { throw "-MaxAssets must be at least 2 (one pack and manifest.json)." }
 if ($Out -eq "") {
     if (-not $feedOut.ContainsKey($Tag)) { throw "No default output folder for the tag $($Tag): give -Out." }
-    $Out = $feedOut[$Tag]
+    if ([string]::IsNullOrWhiteSpace($env:JOYPRO_RELEASE_DIR)) { throw "Give -Out or set JOYPRO_RELEASE_DIR (the folder that holds the release folders)." }
+    $Out = Join-Path $env:JOYPRO_RELEASE_DIR $feedOut[$Tag]
 }
 $Game = @($Game | ForEach-Object { $_ -split "," } | Where-Object { $_ -ne "" })
 # Games of the release: -Game, else the tag's games; the main release leaves out the games of the further releases.
@@ -358,7 +360,7 @@ if ($ManifestOnly) {
         [void]$packs.Add([pscustomobject][ordered]@{
             id = $p.id; game = $p.game; set = $p.set; planes = @($p.planes); asset = $p.asset; size = $size
             sha256 = [JoyProCockpitPacks]::Sha256($zip); version = [int]$p.version; built = $p.built; picturesBuilt = $p.picturesBuilt; sourceHash = $p.sourceHash
-            path = $zip; part = $k
+            low = [bool]$p.low; path = $zip; part = $k
         })
         $reused++
     }
@@ -395,6 +397,8 @@ foreach ($gameDir in $(if ($ManifestOnly) { @() } else { Get-ChildItem $Source -
         $planes.Sort([StringComparer]::OrdinalIgnoreCase)
         $picturesBuilt = [JoyProCockpitPacks]::Field($json, "built")
         $module = [JoyProCockpitPacks]::Field($json, "module")
+        # The quality gate's verdict (pictures.json "quality": {"low": true}): the GUI offers another game's pack first.
+        $low = $json -match '"quality"\s*:\s*\{[^}]*"low"\s*:\s*true'
         $hash = [JoyProCockpitPacks]::SourceHash($setDir.FullName, $settingsTag)
         $prev = $previous[$id]
         $asset = if ($prev -and $prev.asset) { $prev.asset } else { (Safe-AssetName "$gameId-$set") + ".zip" }
@@ -436,7 +440,7 @@ foreach ($gameDir in $(if ($ManifestOnly) { @() } else { Get-ChildItem $Source -
         [void]$packs.Add([pscustomobject][ordered]@{
             id = $id; game = $gameId; set = $set; planes = @($planes); asset = $asset; size = $size
             sha256 = [JoyProCockpitPacks]::Sha256($zip); version = $version; built = $packBuilt; picturesBuilt = $picturesBuilt; sourceHash = $hash
-            path = $zip; part = $part
+            low = [bool]$low; path = $zip; part = $part
         })
     }
 }
@@ -476,7 +480,7 @@ for ($k = 1; $k -le $partCount; $k++) {
     $lines = New-Object System.Collections.ArrayList
     foreach ($p in @($packs | Where-Object { $_.part -eq $k })) {
         $planesJson = ($p.planes | ForEach-Object { Json-Text $_ }) -join ","
-        [void]$lines.Add("    {`"id`":$(Json-Text $p.id),`"game`":$(Json-Text $p.game),`"set`":$(Json-Text $p.set),`"planes`":[$planesJson],`"asset`":$(Json-Text $p.asset),`"size`":$($p.size),`"sha256`":`"$($p.sha256)`",`"version`":$($p.version),`"built`":$(Json-Text $p.built),`"picturesBuilt`":$(Json-Text $p.picturesBuilt),`"sourceHash`":`"$($p.sourceHash)`"}")
+        [void]$lines.Add("    {`"id`":$(Json-Text $p.id),`"game`":$(Json-Text $p.game),`"set`":$(Json-Text $p.set),`"planes`":[$planesJson],`"asset`":$(Json-Text $p.asset),`"size`":$($p.size),`"sha256`":`"$($p.sha256)`",`"version`":$($p.version),`"built`":$(Json-Text $p.built),`"picturesBuilt`":$(Json-Text $p.picturesBuilt),`"sourceHash`":`"$($p.sourceHash)`"$(if ($p.low) { ',"low":true' })}")
     }
     $feedsLine = ""
     if ($k -eq 1 -and $allFeeds.Count -gt 0) { $feedsLine = "  `"feeds`": [" + (($allFeeds | ForEach-Object { Json-Text $_ }) -join ", ") + "],`r`n" }

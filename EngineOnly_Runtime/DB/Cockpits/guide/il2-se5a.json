@@ -1,0 +1,393 @@
+{
+  "format": "joypro-cockpit-guide",
+  "version": 1,
+  "id": "il2-se5a",
+  "title": "S.E.5a (IL-2 Great Battles)",
+  "variants": [
+    "se5a"
+  ],
+  "games": [
+    "IL2Game"
+  ],
+  "sets": [],
+  "sources": [
+    {
+      "id": "c1",
+      "title": "JoyPro cockpit catalog (from the IL-2 and real aircraft manuals)",
+      "kind": "reference"
+    }
+  ],
+  "intro": "The S.E.5a is a British biplane fighter of the First World War with a water-cooled engine. The cockpit is open and has a plain instrument board, a Vickers machine gun in front of the pilot and a Lewis gun on the top wing. A few levers are on the left.",
+  "areas": [
+    {
+      "id": "glareshield",
+      "where": "glareshield",
+      "name": "Gunsight",
+      "text": "This is the top of the instrument panel where the gunsight sits.",
+      "panels": [
+        {
+          "id": "guns-and-sight",
+          "name": "Guns and sight",
+          "db": "guns-and-sight",
+          "src": "c1",
+          "text": "This is the machine guns and the sight at the front of the cockpit. The pilot aims the whole plane at the target.",
+          "context": "The pilot aims with the sight, and clears stoppages by working the cocking handles.",
+          "controls": [
+            {
+              "id": "aldis",
+              "name": "Aldis sight",
+              "type": "other",
+              "match": [
+                "item:guns-and-sight:1"
+              ],
+              "text": "This is a small telescope used as a gunsight. It shows the target magnified with a mark in the picture and sits between or above the guns.",
+              "context": "The pilot looks through it to aim."
+            },
+            {
+              "id": "ring-bead",
+              "name": "Ring and bead sight",
+              "type": "other",
+              "match": [
+                "item:guns-and-sight:2"
+              ],
+              "text": "This is a plain metal ring with a small bead in front of it, the old way of aiming. The pilot looks through the ring and puts the bead on the target.",
+              "context": "It is the backup aiming device when the main sight is broken, and on the oldest planes the way of aiming at all."
+            },
+            {
+              "id": "cocking",
+              "name": "Vickers cocking handle",
+              "type": "handle",
+              "match": [
+                "item:guns-and-sight:3"
+              ],
+              "text": "This is the handle that loads the machine gun, called cocking. If a round jams, the pilot works it to clear the stoppage.",
+              "context": "The pilot cocks the gun on the ground before take-off. In the air it clears a stoppage and the gun fires again."
+            },
+            {
+              "id": "foster",
+              "name": "Foster mount rail",
+              "type": "other",
+              "match": [
+                "item:guns-and-sight:4"
+              ],
+              "text": "This is a curved rail on the top wing along which the Lewis machine gun slides. The pilot pulls the gun down on the rail to change the ammunition drum.",
+              "context": "The gun fires over the propeller, so no synchronising is needed. Changing the drum is a hard task in flight."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "front-center",
+      "where": "front-center",
+      "name": "Instrument panel",
+      "text": "This is the panel in front of the pilot with the flight and engine gauges and the main switches.",
+      "panels": [
+        {
+          "id": "instrument-board",
+          "name": "Instrument board",
+          "db": "instrument-board",
+          "src": "c1",
+          "text": "This is the instrument board, a simple board with very few gauges and the switches for the engine. First World War planes have few instruments.",
+          "context": "The pilot flies mostly by eye and sound. The board only tells the basic things about the engine and the height.",
+          "controls": [
+            {
+              "id": "rpm",
+              "name": "Rev counter",
+              "type": "gauge",
+              "match": [
+                "item:instrument-board:1"
+              ],
+              "text": "This gauge shows how fast the engine turns, in turns per minute (RPM). The needle moves up as the engine speeds up.",
+              "context": "The pilot watches it when starting the engine and when setting power. On planes with a propeller lever, the lever sets this speed."
+            },
+            {
+              "id": "airspeed",
+              "name": "Airspeed indicator",
+              "type": "gauge",
+              "match": [
+                "item:instrument-board:2"
+              ],
+              "text": "This gauge shows how fast the plane moves through the air. The needle turns further round the dial as the plane gets faster.",
+              "context": "The pilot watches it all the time. Too slow and the wings stop lifting the plane, too fast and the plane can be damaged. It shows speed through the air, not speed over the ground."
+            },
+            {
+              "id": "altimeter",
+              "name": "Altimeter",
+              "type": "gauge",
+              "match": [
+                "item:instrument-board:3"
+              ],
+              "text": "This is the height gauge. Its needles show how high the plane is above the sea.",
+              "context": "The pilot checks it to stay clear of the ground and to hold the right height for a climb, a patrol or an attack. It reads the height from the air pressure outside."
+            },
+            {
+              "id": "ignition",
+              "name": "Magneto switches",
+              "type": "switch2",
+              "match": [
+                "item:instrument-board:4"
+              ],
+              "text": "This is the ignition switch. It turns on the magnetos, the two small generators that make the sparks in the engine. Two are fitted for safety. The positions choose none, one or both.",
+              "context": "The pilot checks each magneto on its own before take-off and then runs on both. Without a magneto switched on the engine will not run.",
+              "positions": [
+                {
+                  "name": "ON",
+                  "text": "This position switches the equipment on."
+                },
+                {
+                  "name": "OFF",
+                  "text": "This position switches the equipment off."
+                }
+              ]
+            },
+            {
+              "id": "coolant-temp",
+              "name": "Radiator thermometer",
+              "type": "gauge",
+              "match": [
+                "item:instrument-board:5"
+              ],
+              "text": "This gauge shows the temperature of the liquid that cools the engine. The liquid flows through the engine and then through a radiator that gives the heat to the air.",
+              "context": "If the needle goes too high, the pilot opens the radiator flaps or shutters so that more cooling air flows through. Too hot an engine can seize up."
+            },
+            {
+              "id": "oil-press",
+              "name": "Oil pressure gauge",
+              "type": "gauge",
+              "match": [
+                "item:instrument-board:6"
+              ],
+              "text": "This gauge shows the pressure of the engine oil. The oil lubricates the moving parts inside the engine, and the pump needs to push it round with enough pressure.",
+              "context": "The pilot checks it right after the engine starts. If the pressure is too low or falls during flight, the engine could be damaged."
+            },
+            {
+              "id": "air-press",
+              "name": "Air pressure gauge",
+              "type": "gauge",
+              "match": [
+                "item:instrument-board:7"
+              ],
+              "text": "This gauge shows the air pressure in the fuel tank system. Air pressure pushes the fuel to the engine.",
+              "context": "The pilot builds the pressure with the hand pump and watches the gauge to keep it in the right range."
+            },
+            {
+              "id": "hand-pump",
+              "name": "Hand air pump",
+              "type": "handle",
+              "match": [
+                "item:instrument-board:8"
+              ],
+              "text": "This is a hand pump. The pilot works it by hand to build pressure that pushes the fuel from the tank to the engine.",
+              "context": "The pilot uses it for the engine start and when the engine's own pump cannot keep up. Without pressure the engine may run dry."
+            },
+            {
+              "id": "tank-sel",
+              "name": "Petrol tank selector",
+              "type": "selector",
+              "match": [
+                "item:instrument-board:9"
+              ],
+              "text": "This control chooses which fuel tank feeds the engine. The pilot turns it to a tank. Some planes have a pressure tank and a gravity tank.",
+              "context": "The pilot changes tanks when one runs low. The gravity tank is a backup that feeds the engine by gravity without a pump."
+            },
+            {
+              "id": "clock",
+              "name": "Clock",
+              "type": "gauge",
+              "match": [
+                "item:instrument-board:10"
+              ],
+              "text": "This is the clock. It shows the time of day, like a wall clock.",
+              "context": "The pilot uses it for timing, for example how long a certain course has been flown or when to be at a place. On long flights it helps to work out how much fuel is left."
+            },
+            {
+              "id": "compass",
+              "name": "Compass",
+              "type": "gauge",
+              "match": [
+                "item:instrument-board:11"
+              ],
+              "text": "This is the compass. A magnetised needle or card floats in a liquid and always points to north, so the pilot can read which way the plane is heading.",
+              "context": "It is the basic way to find the direction, and it works without any electricity. It swings about in turns, so the pilot reads it in straight flight."
+            }
+          ]
+        },
+        {
+          "id": "radiator-shutters",
+          "name": "Radiator shutters",
+          "db": "radiator-shutters",
+          "src": "c1",
+          "text": "This is the control for the radiator shutters, the louvres in front of the radiator that cool the engine liquid.",
+          "context": "The pilot opens them to cool the engine and closes them in fast flight to reduce air drag.",
+          "controls": [
+            {
+              "id": "radiator",
+              "name": "Radiator shutter lever",
+              "type": "lever",
+              "match": [
+                "item:radiator-shutters:1"
+              ],
+              "text": "This control opens or closes the flaps or shutters of the radiator, the part that cools the engine liquid. Open flaps let in more cooling air and also add air drag.",
+              "context": "The pilot opens them when the engine gets hot, for example on the ground or in a slow climb, and closes them in fast flight to reduce drag. The temperature gauge shows the need.",
+              "positions": [
+                {
+                  "name": "OPEN",
+                  "text": "The flaps or doors are open."
+                },
+                {
+                  "name": "CLOSED",
+                  "text": "The flaps or doors are closed."
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "left-side",
+      "where": "left-side",
+      "name": "Left side wall",
+      "text": "This is the left wall of the cockpit. It holds the engine and everyday controls within reach of the left hand.",
+      "panels": [
+        {
+          "id": "engine-levers",
+          "name": "Engine levers",
+          "db": "engine-levers",
+          "src": "c1",
+          "text": "These are the engine levers on the left side of the cockpit. They set the power and the fuel flow of the engine, and the trim.",
+          "context": "The pilot's left hand rests on them in flight.",
+          "controls": [
+            {
+              "id": "throttle",
+              "name": "Throttle",
+              "type": "lever",
+              "match": [
+                "item:engine-levers:1"
+              ],
+              "text": "This lever sets how much power the engine makes. Pushing it forward gives more power and the plane goes faster, pulling it back gives less.",
+              "context": "The pilot uses it all the time, at full power for take-off and a fight and at less power for cruising. It works like the gas pedal of a car."
+            },
+            {
+              "id": "alt-mixture",
+              "name": "Altitude mixture lever",
+              "type": "lever",
+              "match": [
+                "item:engine-levers:2"
+              ],
+              "text": "This lever makes the mixture of fuel and air leaner as the plane climbs. Higher up the air is thinner, so less fuel is needed.",
+              "context": "The pilot adjusts it during a climb. Too rich a mixture at height makes the engine run roughly and waste fuel."
+            },
+            {
+              "id": "tailplane",
+              "name": "Tailplane incidence wheel",
+              "type": "wheel",
+              "match": [
+                "item:engine-levers:3"
+              ],
+              "text": "This handwheel tilts the tailplane, the small horizontal wing at the back, to trim the plane. It sets the nose a bit up or down so that the plane flies straight without holding the stick.",
+              "context": "The pilot turns it after take-off and when the speed changes, until the stick feels light."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "hotas",
+      "where": "hotas",
+      "name": "Stick and throttle",
+      "text": "This is what the pilot holds in the hands: the stick or wheel with its buttons, and the throttle and engine levers with their controls.",
+      "panels": [
+        {
+          "id": "stick",
+          "name": "Control stick",
+          "controls": [
+            {
+              "id": "stick",
+              "name": "Control stick",
+              "type": "axis",
+              "match": [
+                "control:stick.gimbal"
+              ],
+              "text": "This is the control stick, the plane's main flight control. Pulling it back lifts the nose, pushing it forward lowers the nose, and moving it sideways rolls the plane.",
+              "context": "The pilot holds it with the right hand all the time, and the weapon buttons are on its grip. In the game it is mapped to the pitch and roll axes of the joystick."
+            },
+            {
+              "id": "trigger",
+              "name": "Vickers trigger",
+              "type": "trigger",
+              "match": [
+                "control:stick.trigger"
+              ],
+              "text": "This is the trigger for the plane's guns. Pressing it fires the guns, and releasing it stops them.",
+              "context": "The pilot fires in short bursts when the enemy fills the gunsight. The firing mode and the weapons depend on the plane and on the switches that arm the guns."
+            },
+            {
+              "id": "trigger-lewis",
+              "name": "Lewis gun trigger",
+              "type": "trigger",
+              "match": [
+                "control:stick.trigger.lewis"
+              ],
+              "text": "This is the trigger lever for the Lewis gun on the top wing. It is pulled by a cable, and it fires the Lewis gun.",
+              "context": "This trigger is separate from the one of the Vickers gun, so the pilot can choose which gun to fire."
+            }
+          ],
+          "src": "c1",
+          "text": "This is the control stick (or column) that the pilot holds with the right hand. Its grip carries the trigger, the firing button and other small controls.",
+          "context": "The pilot flies the plane with it all the time and fires the weapons with the buttons on its grip. In JoyPro each control of this panel can be given a button or axis on the joystick."
+        },
+        {
+          "id": "throttle",
+          "name": "Throttle and engine levers",
+          "controls": [
+            {
+              "id": "throttle-main",
+              "name": "Throttle",
+              "type": "axis",
+              "match": [
+                "control:throttle.axis.main"
+              ],
+              "text": "This is the throttle lever. Pushing it forward gives the engine more power, and pulling it back gives less. It works like the gas pedal of a car.",
+              "context": "The pilot uses it all the time. In the game it is mapped to the throttle axis of the joystick."
+            },
+            {
+              "id": "alt-mixture-grip",
+              "name": "Altitude mixture lever",
+              "type": "lever",
+              "match": [
+                "control:throttle.lever.mixture"
+              ],
+              "text": "This is the altitude mixture lever, which makes the mixture of fuel and air leaner when the plane climbs.",
+              "context": "The thinner air higher up needs less fuel. The pilot moves the lever back during a climb and forward again on the way down."
+            },
+            {
+              "id": "radiator-grip",
+              "name": "Radiator shutter control",
+              "type": "lever",
+              "match": [
+                "control:throttle.lever.radiator"
+              ],
+              "text": "This lever opens and closes the radiator flaps or shutters by hand. The radiator cools the engine's coolant liquid, and open flaps let in more cooling air.",
+              "context": "The pilot opens it when the engine gets hot and closes it in fast flight to reduce air drag."
+            },
+            {
+              "id": "tailplane-wheel",
+              "name": "Tailplane incidence wheel",
+              "type": "wheel",
+              "match": [
+                "control:throttle.wheel.elevator_trim"
+              ],
+              "text": "This handwheel tilts the tailplane, the small horizontal wing at the back, to trim the plane. It sets the nose a bit up or down so that the plane flies straight without holding the stick. The catalog lists it as 'Tailplane incidence wheel' in the Throttle and engine levers panel.",
+              "context": "The pilot turns it after take-off and when the speed changes, until the stick feels light. This entry is the one called 'Tailplane incidence wheel'."
+            }
+          ],
+          "src": "c1",
+          "text": "These are the engine and trim controls that the pilot's left hand works: the throttle, the propeller and mixture levers, the cooling control and the trim controls.",
+          "context": "They sit on the left side of the cockpit or on a pedestal. In JoyPro each control of this panel can be given a button or axis on the joystick or the throttle."
+        }
+      ]
+    }
+  ]
+}

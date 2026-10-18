@@ -1,0 +1,272 @@
+{
+  "format": "joypro-cockpit-guide",
+  "version": 1,
+  "id": "il2-u-2",
+  "title": "U-2VS (IL-2)",
+  "variants": [
+    "u-2vs"
+  ],
+  "games": [
+    "IL2Game"
+  ],
+  "sets": [],
+  "sources": [
+    {
+      "id": "c1",
+      "title": "JoyPro cockpit catalog (from the IL-2 and real aircraft manuals)",
+      "kind": "reference"
+    },
+    {
+      "id": "g1",
+      "title": "IL-2 Sturmovik 1946 Aircraft Guide",
+      "file": "IL 2 Sturmovik 1946/Aircraft Guide.pdf",
+      "kind": "manual"
+    }
+  ],
+  "intro": "The Polikarpov U-2 is a small Soviet biplane with one engine and two open seats, one behind the other. It was a trainer and, in the VS version, a light night bomber. The cockpit has only a few instruments and a throttle. The plane has no wheel brakes.",
+  "areas": [
+    {
+      "id": "instrument-panel",
+      "where": "front-center",
+      "name": "Instrument panel",
+      "text": "The board in front of the pilot with a few dials for speed, height, direction and the engine.",
+      "panels": [
+        {
+          "id": "instrument-panel",
+          "name": "Instrument panel",
+          "db": "instrument-panel",
+          "text": "This is the small board in front of the pilot with the basic dials. They show speed, height, direction and the state of the engine.",
+          "context": "The U-2 is a simple plane for flying in good weather and by sight, so only a few dials are needed.",
+          "controls": [
+            {
+              "id": "airspeed-indicator",
+              "name": "Airspeed indicator (km/h)",
+              "type": "gauge",
+              "match": [
+                "item:instrument-panel:1"
+              ],
+              "text": "This dial shows how fast the plane moves through the air, in kilometres per hour. The faster the plane flies, the further the needle turns.",
+              "context": "The pilot watches it at take-off, in the climb and when landing. Too slow and the wings stop carrying the plane, too fast can damage it."
+            },
+            {
+              "id": "altimeter",
+              "name": "Altimeter (height gauge)",
+              "type": "gauge",
+              "match": [
+                "item:instrument-panel:2"
+              ],
+              "text": "This dial shows how high the plane is. It measures the height from the air pressure, which gets lower the higher the plane climbs.",
+              "context": "The pilot uses it to hold a height, to know when the thin air needs a different engine setting, and to keep clear of the ground on the way down."
+            },
+            {
+              "id": "tachometer",
+              "name": "Tachometer (engine RPM)",
+              "type": "gauge",
+              "match": [
+                "item:instrument-panel:3"
+              ],
+              "text": "This dial shows how fast the engine turns, in rotations per minute (RPM). A higher number means the engine and propeller spin faster.",
+              "context": "The propeller pitch lever sets this number. The pilot reads the dial to check that the engine runs at the speed chosen for take-off, climb or cruise."
+            },
+            {
+              "id": "oil-pressure-and-temperature-gauge",
+              "name": "Oil pressure and temperature gauge",
+              "type": "gauge",
+              "match": [
+                "item:instrument-panel:4"
+              ],
+              "text": "This gauge shows the pressure and the temperature of the engine oil.",
+              "context": "The pilot checks it to see that the engine is healthy. Oil pressure that falls is a warning."
+            },
+            {
+              "id": "magnetic-compass",
+              "name": "Magnetic compass",
+              "type": "gauge",
+              "match": [
+                "item:instrument-panel:5"
+              ],
+              "text": "This is a compass. It shows the direction the plane's nose points, using the Earth's magnetic field, as a hiking compass does.",
+              "context": "With the clock and a map it is how a pilot of this time finds the way. The pilot reads it to fly a chosen direction."
+            },
+            {
+              "id": "magneto-switch",
+              "name": "Magneto switch (ignition)",
+              "type": "selector",
+              "match": [
+                "item:instrument-panel:6"
+              ],
+              "positions": [
+                {
+                  "name": "0",
+                  "text": "Ignition is off; the engine gets no sparks and stops."
+                },
+                {
+                  "name": "Left",
+                  "text": "Only the left magneto makes sparks. The pilot can use this to test it."
+                },
+                {
+                  "name": "Right",
+                  "text": "Only the right magneto makes sparks. The pilot can use this to test it."
+                },
+                {
+                  "name": "Both (1+2)",
+                  "text": "Both magnetos make sparks. This is the normal position for flying."
+                }
+              ],
+              "text": "This switch controls the ignition, the sparks that light the fuel in the engine. The engine has two magnetos, which are small generators for the sparks, so it still runs if one fails. The switch turns them on and off.",
+              "context": "The pilot sets it to both magnetos for flight and to 0 to stop the sparks. In a test the pilot may use each magneto alone."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "left-side",
+      "where": "left-side",
+      "name": "Left side and engine quadrant",
+      "text": "The levers the pilot moves with the left hand: the engine levers, the trim wheels, the gear and flap levers.",
+      "panels": [
+        {
+          "id": "left-side",
+          "name": "Left side: throttle and fuel cock",
+          "db": "left-side",
+          "text": "This is the left wall of the cockpit. It holds the throttle, the altitude corrector and the fuel cock.",
+          "context": "The pilot works the throttle with the left hand while the right hand holds the stick.",
+          "controls": [
+            {
+              "id": "throttle-lever",
+              "name": "Throttle lever (engine power)",
+              "type": "lever",
+              "match": [
+                "item:left-side:1"
+              ],
+              "text": "This lever makes the engine stronger or weaker, like the gas pedal of a car. Here it sets the boost, the pressure with which air is pushed into the engine. Pushing it forward gives more power.",
+              "context": "The pilot pushes it forward for take-off and combat, and pulls it back for cruising and landing. It sits on the left side, under the left hand."
+            },
+            {
+              "id": "altitude-corrector-lever",
+              "name": "Altitude corrector lever (mixture)",
+              "type": "lever",
+              "match": [
+                "item:left-side:2"
+              ],
+              "text": "This lever sets how much fuel is mixed into the engine's air. In the high, thin air the engine needs less fuel, so the lever is moved to correct for altitude.",
+              "context": "The pilot moves it when the plane climbs."
+            },
+            {
+              "id": "fuel-cock",
+              "name": "Fuel cock (fuel tank selector)",
+              "type": "selector",
+              "match": [
+                "item:left-side:3"
+              ],
+              "text": "This handle is the tap for the fuel. It chooses which tank feeds the engine and can shut the fuel off.",
+              "context": "The pilot switches tanks to use the fuel evenly. In an emergency, such as a fire, the fuel can be shut off."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "rear-cockpit",
+      "where": "rear",
+      "name": "Rear cockpit",
+      "text": "The second seat behind the pilot has its own controls.",
+      "panels": [
+        {
+          "id": "rear-cockpit",
+          "name": "Rear cockpit controls",
+          "db": "rear-cockpit",
+          "text": "This is the second seat, behind the pilot. It has copies of the basic controls, and in the VS version a ring for a machine gun.",
+          "context": "In the trainer, an instructor sat here. In the light-bomber version a gunner or navigator sat here.",
+          "controls": [
+            {
+              "id": "rear-seat-stick-and-throttle",
+              "name": "Rear seat stick and throttle",
+              "type": "other",
+              "match": [
+                "item:rear-cockpit:1"
+              ],
+              "text": "The rear seat has its own stick and throttle. They copy the front controls, so the instructor or the second crew member can fly the plane.",
+              "context": "The U-2 was a trainer, and its second seat let an instructor fly along with a student."
+            },
+            {
+              "id": "navigator-s-gun-ring",
+              "name": "Navigator's gun ring (VS version)",
+              "type": "other",
+              "match": [
+                "item:rear-cockpit:2"
+              ],
+              "text": "This is a ring in the rear cockpit that carries a machine gun, a ShKAS, which the rear crew member can aim. The gun is only in the light-bomber version.",
+              "context": "It lets the rear crew member defend the slow plane against attacks from behind."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "hotas",
+      "where": "hotas",
+      "name": "Stick and throttle",
+      "text": "The controls that the game lets you bind to a joystick and a throttle: the stick with its grip, and the engine levers at the left hand.",
+      "panels": [
+        {
+          "id": "stick",
+          "name": "Control stick and grip",
+          "text": "The control stick is the main steering control of the plane. The buttons and levers on its grip fire the weapons, drop the bombs and work the wheel brakes.",
+          "context": "The pilot holds the stick with the right hand. In JoyPro these controls are the ones bound to a joystick grip.",
+          "controls": [
+            {
+              "id": "stick-gimbal",
+              "name": "Control stick",
+              "type": "axis",
+              "match": [
+                "control:stick.gimbal"
+              ],
+              "text": "This is the control stick in the front seat, where the pilot sits. Pushing it forward and pulling it back pitches the nose down and up. Moving it left and right rolls the plane onto its side.",
+              "context": "On a joystick this is the main stick axis. The rear seat has a copy of the stick."
+            },
+            {
+              "id": "stick-weapon-release",
+              "name": "Bomb release",
+              "type": "button",
+              "match": [
+                "control:stick.weapon_release"
+              ],
+              "text": "A control that releases the light bombs of the U-2. The catalog does not confirm where it is in the cockpit.",
+              "context": "The U-2 can carry small bombs in its light-bomber role."
+            }
+          ]
+        },
+        {
+          "id": "throttle",
+          "name": "Engine levers and throttle",
+          "text": "These are the levers at the pilot's left hand: the throttle and the other engine levers, with the trim wheels and the buttons the game binds to a throttle device.",
+          "context": "The pilot keeps the left hand there during the whole flight. In JoyPro these controls are the ones bound to a throttle device.",
+          "controls": [
+            {
+              "id": "throttle-axis-main",
+              "name": "Throttle lever",
+              "type": "axis",
+              "match": [
+                "control:throttle.axis.main"
+              ],
+              "text": "This is the throttle lever on the left side of the cockpit. It sets the power of the M-11 engine. Forward gives more power.",
+              "context": "On a joystick set this is the main throttle axis."
+            },
+            {
+              "id": "throttle-axis-mixture",
+              "name": "Altitude corrector (mixture)",
+              "type": "axis",
+              "match": [
+                "control:throttle.axis.mixture"
+              ],
+              "text": "This lever sits beside the throttle. It sets the mixture, the fuel in the engine's air, and corrects it for altitude.",
+              "context": "The pilot moves it when the plane climbs. On a throttle device it is an axis of its own."
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

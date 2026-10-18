@@ -1,0 +1,2261 @@
+{
+  "format": "joypro-cockpit-guide",
+  "version": 1,
+  "partOf": "dcs-mi-24p",
+  "areas": [
+    {
+      "id": "op-front-left",
+      "where": "front-left",
+      "name": "Operator weapons (left)",
+      "seat": 2,
+      "text": "The left side of the operator's front panel with the first group of weapons controls.",
+      "panels": [
+        {
+          "id": "op-weapons-left",
+          "name": "Operator weapons panel (left)",
+          "src": "m1",
+          "text": "The left part of the operator's weapons controls: the sight brightness, the emergency jettison, the weapon choice and the gyro cage. Several of them have a cover.",
+          "context": "The operator in the front seat controls the anti-tank missiles and, if needed, the other weapons. The manual says the operator's cockpit has fewer controls than the pilot's.",
+          "controls": [
+            {
+              "id": "op-pki-brightness",
+              "name": "PKI brightness knob",
+              "type": "knob",
+              "match": [
+                "SIGHT-OP-BRIGHTNESS-PTR"
+              ],
+              "text": "Turning this knob changes the brightness of the PKI, the operator's aiming mark.",
+              "context": "The game names it 'PKI Brightness Adjustment'; the manual does not describe it.",
+              "src": "m1"
+            },
+            {
+              "id": "op-emergency-jettison",
+              "name": "Emergency jettison button with cover",
+              "type": "button",
+              "match": [
+                "WEAP-JETTISON-OP-PTR",
+                "WEAP-JETTISON-OP-COVER-PTR"
+              ],
+              "text": "Pressing this button drops the external loads in an emergency. A cover protects it.",
+              "context": "It is the operator's copy of the emergency jettison. The pilot has one on the weapons panel.",
+              "src": "m1"
+            },
+            {
+              "id": "op-bombs-blocks",
+              "name": "Bombs/blocks mode switch with cover",
+              "type": "switch",
+              "match": [
+                "WEAP-BOMBS-BLOCKS-OP-PTR",
+                "WEAP-BOMBS-BLOCKS-OP-COVER-PTR"
+              ],
+              "text": "This switch picks the mode for bombs or blocks. A cover protects it.",
+              "context": "The manual does not describe it. Only the game's name is certain.",
+              "src": "m1"
+            },
+            {
+              "id": "op-explosion",
+              "name": "Explosion on jettison switch with cover",
+              "type": "switch",
+              "match": [
+                "WEAP-JETTISON-EXPLOSION-OP-PTR",
+                "WEAP-JETTISON-EXPLOSION-OP-COVER-PTR"
+              ],
+              "text": "This switch decides whether bombs are armed when they are jettisoned. A cover protects it.",
+              "context": "The pilot has the same switch on the weapons panel, called the jettison arm switch in the manual.",
+              "src": "m1"
+            },
+            {
+              "id": "op-weapon-control",
+              "name": "Weapon control switch with cover",
+              "type": "switch",
+              "match": [
+                "WEAP-PRIORITY-OP-PTR",
+                "WEAP-PRIORITY-OP-COVER-PTR"
+              ],
+              "text": "This switch is named 'Weapon Control' by the game. A cover protects it.",
+              "context": "The id of the switch says 'priority'. The manual does not describe it.",
+              "src": "m1"
+            },
+            {
+              "id": "op-container-start",
+              "name": "Start container button",
+              "type": "button",
+              "match": [
+                "WEAP-KMG-COMMENCE-OP-PTR"
+              ],
+              "text": "Pressing this button starts the cluster dispenser container. The game names it 'Start container'.",
+              "context": "The pilot has the stop button on the weapons panel. The manual does not describe the start button.",
+              "src": "m1"
+            },
+            {
+              "id": "op-container-stop",
+              "name": "Stop container button",
+              "type": "button",
+              "match": [
+                "WEAP-KMG-INTERRUPT-OP-PTR"
+              ],
+              "text": "Pressing this button stops the container. The game names it 'Stop container'.",
+              "context": "The pilot's weapons panel has the same function as the USLP discontinue button.",
+              "src": "m1"
+            },
+            {
+              "id": "op-gyro-cage",
+              "name": "Cage gyro 2 button",
+              "type": "button",
+              "match": [
+                "GYRO-CAGE-OP-PTR"
+              ],
+              "text": "Pressing and holding this button cages gyro 2 from the operator's seat.",
+              "context": "Caging holds the gyro in its starting position.",
+              "src": "m1"
+            },
+            {
+              "id": "op-weapon-select",
+              "name": "Select weapon switch",
+              "type": "selector",
+              "match": [
+                "WEAP-SELECT-KNOB-OP-PTR"
+              ],
+              "text": "This rotary switch picks the weapon from the operator's seat. The game names it 'Select Weapon'.",
+              "context": "The pilot's weapons selector switch has nine positions, listed on the pilot's panel. The manual does not list this one.",
+              "src": "m1"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "op-front-center",
+      "where": "front-center",
+      "name": "Operator instruments",
+      "seat": 2,
+      "text": "The operator's attitude indicator and its controls.",
+      "panels": [
+        {
+          "id": "op-pkp",
+          "name": "Operator PKP-72M attitude indicator",
+          "src": "m1",
+          "text": "The operator's attitude indicator with its test button and pitch knob, and a switch for its heading display.",
+          "context": "It is the front-seat copy of the pilot's PKP-72M.",
+          "controls": [
+            {
+              "id": "op-pkp-test",
+              "name": "Test ADI button",
+              "type": "button",
+              "match": [
+                "PKP-TEST-OP-PTR"
+              ],
+              "text": "Pressing this button tests the operator's attitude indicator, the artificial horizon.",
+              "context": "The game names it 'Test ADI Button'.",
+              "src": "m1"
+            },
+            {
+              "id": "op-pkp-pitch",
+              "name": "Pitch trim knob",
+              "type": "knob",
+              "match": [
+                "PKP-INIT-PITCH-KNOB-OP-PTR"
+              ],
+              "text": "This knob moves the pitch mark of the operator's attitude indicator up or down.",
+              "context": "The game names it 'Pitch Trim Knob'.",
+              "src": "m1"
+            },
+            {
+              "id": "op-rmi-mode",
+              "name": "Mode switch (ZK / ARK-U2)",
+              "type": "switch2",
+              "match": [
+                "ZK_ARK_U005"
+              ],
+              "positions": [
+                {
+                  "name": "ZK",
+                  "text": "The indicator shows the course system."
+                },
+                {
+                  "name": "ARKU2",
+                  "text": "The indicator shows the ARK-U2 radio compass."
+                }
+              ],
+              "text": "This switch picks what the operator's heading indicator shows: the course system (ZK) or the ARK-U2 radio compass.",
+              "context": "It is the operator's copy of the pilot's RMI-2 mode switch.",
+              "src": "m1"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "op-front-right",
+      "where": "front-right",
+      "name": "Operator right panel",
+      "seat": 2,
+      "text": "The right side of the operator's front panel with power switches, the weapons controls and the missile station selector.",
+      "panels": [
+        {
+          "id": "op-sight-misc",
+          "name": "Operator right panel: USR, heating and fan",
+          "src": "m1",
+          "text": "A group of small switches on the right of the operator's panel: the USR power and check, the heating of the air data computer and the cockpit fan.",
+          "context": "The manual's guided weapon steps turn on the USR-24 power switch here and check that the test switch is at OPER.",
+          "controls": [
+            {
+              "id": "op-fan",
+              "name": "Cockpit fan (touch spot)",
+              "type": "button",
+              "match": [
+                "EASTER_OP"
+              ],
+              "text": "This is a clickable spot on the fan of the operator's cockpit. The game names it 'Cockpit Fan - Touch'.",
+              "context": "The fan itself is switched on with the Operator Fan switch.",
+              "src": "m1"
+            },
+            {
+              "id": "op-usr-power",
+              "name": "USR power switch",
+              "type": "switch2",
+              "match": [
+                "WEAP-DISTR-POWER-OP-PTR",
+                "item:operator-atgm-panels:8"
+              ],
+              "positions": [
+                {
+                  "name": "ON",
+                  "text": "The USR-24 has power."
+                },
+                {
+                  "name": "OFF",
+                  "text": "The USR-24 is off."
+                }
+              ],
+              "text": "This switch gives power to the USR-24 unit. The game names it 'USR power'.",
+              "context": "The manual's guided weapon steps turn it on and then check that the test switch is at OPER.",
+              "src": "m1",
+              "page": "42"
+            },
+            {
+              "id": "op-usr-check",
+              "name": "USR check switch",
+              "type": "switch2",
+              "match": [
+                "WEAP-DISTR-CONTROL-OP-PTR"
+              ],
+              "positions": [
+                {
+                  "name": "OPER",
+                  "text": "Normal operation."
+                },
+                {
+                  "name": "CHECK",
+                  "text": "The unit runs its check."
+                }
+              ],
+              "text": "This switch is the test switch of the USR-24. The game names it 'USR check'.",
+              "context": "The manual says to keep it in the OPER position.",
+              "src": "m1",
+              "page": "42"
+            },
+            {
+              "id": "op-duas-heat",
+              "name": "Air data computer heating switch",
+              "type": "switch2",
+              "match": [
+                "DUAS-V-HEATING-OP-PTR"
+              ],
+              "positions": [
+                {
+                  "name": "ON",
+                  "text": "The heating is on."
+                },
+                {
+                  "name": "OFF",
+                  "text": "The heating is off."
+                }
+              ],
+              "text": "This switch heats the DUAS sensor, the air data computer. The game names it 'Heating DUAS'.",
+              "context": "The manual's guided weapon steps list a pitot heat switch next to the USR switches, to be turned on at 5 degrees Celsius or lower.",
+              "src": "m1",
+              "page": "42"
+            }
+          ]
+        },
+        {
+          "id": "op-adi-baro",
+          "name": "ADI switch, barometric knob and sight fan",
+          "src": "m1",
+          "text": "A group of controls on the right of the operator's panel: the power of the attitude indicator, the barometric knob and the sight fan.",
+          "context": "The sight fan cools the missile sight. The other two serve the operator's flight instruments.",
+          "controls": [
+            {
+              "id": "op-adi-power",
+              "name": "ADI switch",
+              "type": "switch2",
+              "match": [
+                "PKP-POWER-OP-PTR"
+              ],
+              "positions": [
+                {
+                  "name": "ON",
+                  "text": "The ADI has power."
+                },
+                {
+                  "name": "OFF",
+                  "text": "The ADI is off."
+                }
+              ],
+              "text": "This switch gives power to the operator's attitude indicator.",
+              "context": "Without power a warning flag shows on the indicator.",
+              "src": "m1"
+            },
+            {
+              "id": "op-baro",
+              "name": "Operator barometric pressure knob",
+              "type": "knob",
+              "match": [
+                "ALTIMETER-KNOB-OP-PTR"
+              ],
+              "text": "This knob sets the air pressure of the operator's altimeter.",
+              "context": "The game names it 'Operator Baro Pressure Knob'.",
+              "src": "m1"
+            },
+            {
+              "id": "op-sight-fan",
+              "name": "Sight fan switch",
+              "type": "switch2",
+              "match": [
+                "WEAP-MISSILES-SIGHT-FAN-OP-PTR",
+                "item:operator-atgm-panels:9"
+              ],
+              "positions": [
+                {
+                  "name": "ON",
+                  "text": "The sight fan runs."
+                },
+                {
+                  "name": "OFF",
+                  "text": "The sight fan is off."
+                }
+              ],
+              "text": "This switch turns on the fan of the missile sight. The game names it 'Sight Fan'.",
+              "context": "The catalog lists the sight doors and the sight fan switches together.",
+              "src": "m1"
+            }
+          ]
+        },
+        {
+          "id": "op-pkv",
+          "name": "PKI control",
+          "src": "m1",
+          "text": "A single switch of the operator's PKI aiming mark.",
+          "context": "The game names it 'PKI control'. The manual does not describe it.",
+          "controls": [
+            {
+              "id": "op-pki-control",
+              "name": "PKI control switch",
+              "type": "switch",
+              "match": [
+                "BRAKE-LEVEL-OP-PTR"
+              ],
+              "text": "This switch is the control of the PKI aiming mark. The game names it 'PKI control'.",
+              "context": "Only the label of the switch is certain; the manual is silent.",
+              "src": "m1"
+            }
+          ]
+        },
+        {
+          "id": "op-weapons-right",
+          "name": "Operator weapons panel (right) and missile station selector",
+          "src": "m1",
+          "text": "The right part of the operator's weapons controls: the missile power, the jettison of the launcher, the cannon controls, and the missile station selector with its power switch.",
+          "context": "The manual's guided missile steps turn on the Missiles Power switch, then the operator panel Power switch, and select a missile station.",
+          "controls": [
+            {
+              "id": "op-missile-power",
+              "name": "Missiles power switch",
+              "type": "switch2",
+              "match": [
+                "WEAP-MISSILES-POWER-OP-PTR",
+                "item:operator-atgm-panels:1"
+              ],
+              "positions": [
+                {
+                  "name": "ON",
+                  "text": "The missile system has power."
+                },
+                {
+                  "name": "OFF",
+                  "text": "The missile system is off."
+                }
+              ],
+              "text": "This switch gives power to the missile system. The manual calls it the Missile Power switch on the right instrument panel.",
+              "context": "It is the first switch of the guided missile steps.",
+              "src": "m1",
+              "page": "50"
+            },
+            {
+              "id": "op-jettison-launcher",
+              "name": "Jettison launcher button with cover",
+              "type": "button",
+              "match": [
+                "WEAP-JETTISON-SPECIAL-OP-PTR",
+                "WEAP-JETTISON-SPECIAL-OP-COVER-PTR"
+              ],
+              "text": "Pressing this button throws off the missile launchers in an emergency. A cover protects it.",
+              "context": "It is the operator's copy of the ATGM emergency release.",
+              "src": "m1"
+            },
+            {
+              "id": "op-release-check",
+              "name": "Release check PU button",
+              "type": "button",
+              "match": [
+                "WEAP-JETTISON-TEST-OP-PTR"
+              ],
+              "text": "Pressing this button checks the release. The game names it 'Release Check PU'.",
+              "context": "The manual does not describe it.",
+              "src": "m1"
+            },
+            {
+              "id": "op-cannon-rate",
+              "name": "Cannon fire rate switch (SLOW / FAST)",
+              "type": "switch2",
+              "match": [
+                "WEAP-CANNON-PACE-OP-PTR"
+              ],
+              "positions": [
+                {
+                  "name": "SLOW",
+                  "text": "A slow rate of fire."
+                },
+                {
+                  "name": "FAST",
+                  "text": "A fast rate of fire."
+                }
+              ],
+              "text": "This switch sets how fast the cannon fires, from the operator's seat.",
+              "context": "The pilot has the same switch on the weapons panel.",
+              "src": "m1"
+            },
+            {
+              "id": "op-burst",
+              "name": "Burst length switch (SHORT / MED / LONG)",
+              "type": "switch3",
+              "match": [
+                "WEAP-BURST-LENGTH-OP-PTR"
+              ],
+              "positions": [
+                {
+                  "name": "SHORT",
+                  "text": "A short burst."
+                },
+                {
+                  "name": "MED",
+                  "text": "A medium burst."
+                },
+                {
+                  "name": "LONG",
+                  "text": "A long burst."
+                }
+              ],
+              "text": "This switch sets how long a burst of the gun lasts, from the operator's seat.",
+              "context": "The pilot's switch has the same positions.",
+              "src": "m1"
+            },
+            {
+              "id": "op-reload-cannon",
+              "name": "Reload cannon button",
+              "type": "button",
+              "match": [
+                "WEAP-NPU-RELOAD-OP-PTR"
+              ],
+              "text": "This button is used after an ammunition feed failure of the cannon.",
+              "context": "The manual says the failure is not modelled.",
+              "src": "m1"
+            },
+            {
+              "id": "op-scho-power",
+              "name": "SCHO power switch (operator panel power)",
+              "type": "switch2",
+              "match": [
+                "SHSCHO-POWER-PTR",
+                "item:operator-atgm-panels:2"
+              ],
+              "positions": [
+                {
+                  "name": "ON",
+                  "text": "The operator panel has power."
+                },
+                {
+                  "name": "OFF",
+                  "text": "The operator panel is off."
+                }
+              ],
+              "text": "This switch gives power to the operator panel. The game names it 'SCHO Power'. The manual turns on the Power switch of the operator panel, and the first two lights come on.",
+              "context": "It comes after the missile power switch.",
+              "src": "m1",
+              "page": "50"
+            },
+            {
+              "id": "op-scho-check",
+              "name": "SCHO lamps check button",
+              "type": "button",
+              "match": [
+                "SHSCHO-CHECK-PTR"
+              ],
+              "text": "Pressing this button lights the lamps of the operator panel so the operator can see that all of them work.",
+              "context": "The game names it 'SCHO Lamps Check'.",
+              "src": "m1"
+            },
+            {
+              "id": "op-station",
+              "name": "Missile station selector",
+              "type": "selector",
+              "match": [
+                "SHSCHO-KNOB-PTR",
+                "item:operator-atgm-panels:5"
+              ],
+              "text": "This rotary selector picks the missile station. A green MSL ON LNCHR light shows that a missile is loaded on the station.",
+              "context": "The manual says to select the next station after each launch. The game names it 'Select Station'.",
+              "src": "m1",
+              "page": "55"
+            },
+            {
+              "id": "op-ready-lights",
+              "name": "READY and LAUNCH APPRVL lights",
+              "type": "light",
+              "match": [
+                "item:operator-atgm-panels:6"
+              ],
+              "text": "The READY light comes on when the missile system is ready. The red LAUNCH APPRVL light comes on when the launch conditions are met.",
+              "context": "The manual says a continuous beep sounds in both crew members' headphones at the same time.",
+              "src": "m1",
+              "page": "58"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "op-left-console",
+      "where": "left-console",
+      "name": "Operator left console",
+      "seat": 2,
+      "text": "The left side of the operator's cockpit with the radio compass, the intercom, the weapon safe switch, the clock and the timer.",
+      "panels": [
+        {
+          "id": "op-arc15",
+          "name": "Operator ARC-15 radio compass panel",
+          "src": "m1",
+          "text": "The operator's copy of the ARC-15 radio compass panel. A radio compass is a receiver that points to a radio station.",
+          "context": "The pilot has the same panel. The controls act on the radio compass of the operator's side.",
+          "controls": [
+            {
+              "id": "op-arc-volume",
+              "name": "ARC-15 volume knob",
+              "type": "knob",
+              "match": [
+                "ARC-OP-VOLUME-PTR"
+              ],
+              "text": "Turning this knob changes the sound level of the operator's ARC-15.",
+              "context": "The game names it 'ARC-15 Volume'.",
+              "src": "m1"
+            },
+            {
+              "id": "op-arc-tlf",
+              "name": "ARC-15 TLF / TLG switch",
+              "type": "switch2",
+              "match": [
+                "ARC-OP-MODULATED-PTR"
+              ],
+              "positions": [
+                {
+                  "name": "TLF",
+                  "text": "Named TLF by the game."
+                },
+                {
+                  "name": "TLG",
+                  "text": "Named TLG by the game."
+                }
+              ],
+              "text": "This switch picks the signal type of the operator's ARC-15, TLF or TLG.",
+              "context": "The manual does not describe it.",
+              "src": "m1"
+            },
+            {
+              "id": "op-arc-loop",
+              "name": "ARC-15 loop button",
+              "type": "button",
+              "match": [
+                "ARC-OP-FRAME-PTR"
+              ],
+              "text": "Pressing this button turns the loop antenna by hand.",
+              "context": "The game names it 'ARC-15 Loop Button'.",
+              "src": "m1"
+            },
+            {
+              "id": "op-arc-channel",
+              "name": "ARC-15 channel switch (1 / 2)",
+              "type": "switch2",
+              "match": [
+                "ARC-OP-CHANNEL-PTR"
+              ],
+              "positions": [
+                {
+                  "name": "1",
+                  "text": "Channel 1."
+                },
+                {
+                  "name": "2",
+                  "text": "Channel 2."
+                }
+              ],
+              "text": "This switch picks channel 1 or 2 of the operator's ARC-15.",
+              "context": "Each channel has its own frequency.",
+              "src": "m1"
+            },
+            {
+              "id": "op-arc-control",
+              "name": "ARC-15 control button",
+              "type": "button",
+              "match": [
+                "ARC-OP-AUTH-PTR"
+              ],
+              "text": "Pressing this button runs a check of the ARC-15.",
+              "context": "The game names it 'ARC-15 Control Button'.",
+              "src": "m1"
+            },
+            {
+              "id": "op-arc-mode",
+              "name": "ARC-15 mode selector (OFF / COMPASS / ANT / FRAME)",
+              "type": "selector",
+              "match": [
+                "ARC-OP-MODE-PTR"
+              ],
+              "positions": [
+                {
+                  "name": "OFF",
+                  "text": "The ARC-15 is off."
+                },
+                {
+                  "name": "COMPASS",
+                  "text": "Works as a compass to a radio station."
+                },
+                {
+                  "name": "ANT",
+                  "text": "Antenna mode."
+                },
+                {
+                  "name": "FRAME",
+                  "text": "Loop antenna mode."
+                }
+              ],
+              "text": "This rotary selector turns the operator's ARC-15 on and picks its mode.",
+              "context": "In COMPASS it points to a radio station.",
+              "src": "m1"
+            },
+            {
+              "id": "op-arc-right",
+              "name": "ARC-15 right frequency knobs (3)",
+              "type": "knob",
+              "match": [
+                "ARC-OP-CH1-OUT-KNOB",
+                "ARC-OP-CH1-CENTER-PTR",
+                "ARC-OP-CH1-IN-PTR"
+              ],
+              "count": 3,
+              "text": "Three knobs that set the frequency on the right side of the ARC-15.",
+              "context": "The game names them 'ARC-15 Right Frequency'.",
+              "src": "m1"
+            },
+            {
+              "id": "op-arc-left",
+              "name": "ARC-15 left frequency knobs (3)",
+              "type": "knob",
+              "match": [
+                "ARC-OP-CH2-OUT-KNOB",
+                "ARC-OP-CH2-CENTER-PTR",
+                "ARC-OP-CH2-IN-PTR"
+              ],
+              "count": 3,
+              "text": "Three knobs that set the frequency on the left side of the ARC-15.",
+              "context": "The game names them 'ARC-15 Left Frequency'.",
+              "src": "m1"
+            }
+          ]
+        },
+        {
+          "id": "op-clock",
+          "name": "Operator clock",
+          "src": "m1",
+          "text": "The levers of the operator's mechanical clock.",
+          "context": "The clock also has a stopwatch.",
+          "controls": [
+            {
+              "id": "op-clock-levers",
+              "name": "Mechanical clock levers (left, right)",
+              "type": "button",
+              "match": [
+                "CLOCK-LEFT-OP-PTR",
+                "CLOCK-RIGHT-OP-PTR"
+              ],
+              "count": 2,
+              "text": "These two buttons work the left and right levers of the clock.",
+              "context": "The game names them 'Mech clock left/right lever'.",
+              "src": "m1"
+            }
+          ]
+        },
+        {
+          "id": "op-cpt-mech-1",
+          "name": "Operator cockpit switches (fan, pedal damper, trimmer, clock heating)",
+          "src": "m1",
+          "text": "A group of switches on the operator's left side: the fan, the pedal damper, the autopilot trimmer for the operator and the clock heating.",
+          "context": "Several of these switches have a cover that the operator lifts first.",
+          "controls": [
+            {
+              "id": "op-fan-switch",
+              "name": "Operator fan switch",
+              "type": "switch2",
+              "match": [
+                "FAN-OP-PTR"
+              ],
+              "positions": [
+                {
+                  "name": "ON",
+                  "text": "The fan runs."
+                },
+                {
+                  "name": "OFF",
+                  "text": "The fan is off."
+                }
+              ],
+              "text": "This switch turns on the fan that blows air at the operator.",
+              "context": "It is only for the comfort of the operator in a warm cockpit.",
+              "src": "m1"
+            },
+            {
+              "id": "op-pedal-damper",
+              "name": "Pedal damper switch with cover",
+              "type": "switch2",
+              "match": [
+                "PEDAL-DAMPER-OP-COVER-PTR",
+                "PEDAL-DAMPER-OP-PTR"
+              ],
+              "positions": [
+                {
+                  "name": "ON",
+                  "text": "The pedal damper is on."
+                },
+                {
+                  "name": "OFF",
+                  "text": "The pedal damper is off."
+                }
+              ],
+              "text": "This switch turns the pedal damper of the operator's pedals on and off. A cover protects it.",
+              "context": "A damper makes the pedals move smoothly.",
+              "src": "m1"
+            },
+            {
+              "id": "op-trimmer-switch",
+              "name": "Autopilot trimmer for yourself switch with cover",
+              "type": "switch2",
+              "match": [
+                "CONTROL-TRIMMER-OP-PTR",
+                "CONTROL-TRIMMER-OP-COVER-PTR"
+              ],
+              "positions": [
+                {
+                  "name": "ON",
+                  "text": "The trimmer is on."
+                },
+                {
+                  "name": "OFF",
+                  "text": "The trimmer is off."
+                }
+              ],
+              "text": "This switch lets the operator trim the autopilot for himself. A cover protects it.",
+              "context": "The game names it 'Autopilot Trimmer for yourself'; the manual does not describe it.",
+              "src": "m1"
+            },
+            {
+              "id": "op-clock-heating",
+              "name": "Clock heating switch",
+              "type": "switch2",
+              "match": [
+                "CLOCK-HEATING-OP-PTR"
+              ],
+              "positions": [
+                {
+                  "name": "ON",
+                  "text": "The clock heater is on."
+                },
+                {
+                  "name": "OFF",
+                  "text": "The clock heater is off."
+                }
+              ],
+              "text": "This switch heats the operator's clock so it works in the cold.",
+              "context": "The operator switches it on in cold weather.",
+              "src": "m1"
+            }
+          ]
+        },
+        {
+          "id": "op-cpt-mech-2",
+          "name": "Operator canopy, gear switch, wiper and lights",
+          "src": "m1",
+          "text": "The operator's canopy lock, a landing gear switch with cover, the wiper switch and the anti-ice and light switches.",
+          "context": "The gear switch lets the operator work the landing gear. The canopy is the clear roof over the front cockpit.",
+          "controls": [
+            {
+              "id": "op-canopy",
+              "name": "Operator canopy lock (OPEN / CLOSE)",
+              "type": "handle",
+              "match": [
+                "CANOPY-HANDLE-OP-PTR"
+              ],
+              "positions": [
+                {
+                  "name": "OPEN",
+                  "text": "The canopy is unlocked."
+                },
+                {
+                  "name": "CLOSE",
+                  "text": "The canopy is locked."
+                }
+              ],
+              "text": "This handle opens and closes the lock of the operator's canopy.",
+              "context": "The manual says the AI copilot closes its canopy when the player closes his own.",
+              "src": "m1",
+              "page": "76"
+            },
+            {
+              "id": "op-gear",
+              "name": "Operator gear switch with cover (UP / DOWN)",
+              "type": "switch2",
+              "match": [
+                "LANDING-GEAR-OP-PTR",
+                "LANDING-GEAR-OP-COVER-PTR"
+              ],
+              "positions": [
+                {
+                  "name": "UP",
+                  "text": "The landing gear is raised."
+                },
+                {
+                  "name": "DOWN",
+                  "text": "The landing gear is lowered."
+                }
+              ],
+              "text": "This switch raises and lowers the wheels from the operator's seat. A cover protects it.",
+              "context": "The pilot's landing gear lever does the same.",
+              "src": "m1"
+            },
+            {
+              "id": "op-wiper",
+              "name": "Operator windscreen wiper switch (RESET / OFF / SPEED 1 / SPEED 2 / START)",
+              "type": "selector",
+              "match": [
+                "WIPER-MODE-OP-PTR-RESET",
+                "WIPER-MODE-OP-PTR-OFF",
+                "WIPER-MODE-OP-PTR-HISPEED",
+                "WIPER-MODE-OP-PTR-START",
+                "WIPER-MODE-OP-PTR-LOWSPEED"
+              ],
+              "positions": [
+                {
+                  "name": "START",
+                  "text": "Starts the wiper."
+                },
+                {
+                  "name": "SPEED 1",
+                  "text": "The wiper runs at the first speed."
+                },
+                {
+                  "name": "SPEED 2",
+                  "text": "The wiper runs at the second speed."
+                },
+                {
+                  "name": "OFF",
+                  "text": "The wiper is off."
+                },
+                {
+                  "name": "RESET",
+                  "text": "Moves the wiper arm back to its rest position."
+                }
+              ],
+              "count": 5,
+              "text": "This switch runs the windscreen wiper of the operator. The game lets the operator click five places on it.",
+              "context": "The wiper breaker on the left panel must be on.",
+              "src": "m1"
+            },
+            {
+              "id": "op-windshield-deice",
+              "name": "Operator windshield anti-ice switch (LOW / OFF / HIGH)",
+              "type": "switch3",
+              "match": [
+                "WINDSHIELD-DEICER-OP-PTR"
+              ],
+              "positions": [
+                {
+                  "name": "LOW",
+                  "text": "Low heating."
+                },
+                {
+                  "name": "OFF",
+                  "text": "The heating is off."
+                },
+                {
+                  "name": "HIGH",
+                  "text": "High heating."
+                }
+              ],
+              "text": "This switch heats the operator's windscreen to keep it free of ice.",
+              "context": "The operator uses it when ice may form on the glass.",
+              "src": "m1"
+            },
+            {
+              "id": "op-red-2",
+              "name": "Red lights transformer 2, left and operator panel (OFF to 20V)",
+              "type": "selector",
+              "match": [
+                "RED-LTG2-OP-PTR"
+              ],
+              "positions": [
+                {
+                  "name": "OFF",
+                  "text": "The red lights of this group are off."
+                },
+                {
+                  "name": "8V",
+                  "text": "The lights get 8 volts."
+                },
+                {
+                  "name": "9V",
+                  "text": "The lights get 9 volts."
+                },
+                {
+                  "name": "10V",
+                  "text": "The lights get 10 volts."
+                },
+                {
+                  "name": "11V",
+                  "text": "The lights get 11 volts."
+                },
+                {
+                  "name": "12V",
+                  "text": "The lights get 12 volts."
+                },
+                {
+                  "name": "13V",
+                  "text": "The lights get 13 volts."
+                },
+                {
+                  "name": "14V",
+                  "text": "The lights get 14 volts."
+                },
+                {
+                  "name": "16V",
+                  "text": "The lights get 16 volts."
+                },
+                {
+                  "name": "18V",
+                  "text": "The lights get 18 volts."
+                },
+                {
+                  "name": "20V",
+                  "text": "The lights get 20 volts."
+                }
+              ],
+              "text": "This rotary switch sets the brightness of the second group of red lights on the left and the operator panel.",
+              "context": "A step switch from OFF to 20 volts.",
+              "src": "m1"
+            }
+          ]
+        },
+        {
+          "id": "op-ext-lights",
+          "name": "Operator exterior lights",
+          "src": "m1",
+          "text": "Switches for the taxi light and the landing light from the operator's seat.",
+          "context": "They are used at night and in poor light.",
+          "controls": [
+            {
+              "id": "op-taxi",
+              "name": "Operator taxi light switch",
+              "type": "switch2",
+              "match": [
+                "TAXILIGHT-OP-PTR"
+              ],
+              "positions": [
+                {
+                  "name": "ON",
+                  "text": "The taxi light is on."
+                },
+                {
+                  "name": "OFF",
+                  "text": "The taxi light is off."
+                }
+              ],
+              "text": "This switch turns the taxi light on and off from the operator's seat.",
+              "context": "The taxi light shines on the ground ahead.",
+              "src": "m1"
+            },
+            {
+              "id": "op-headlight",
+              "name": "Landing light assumed switch with cover",
+              "type": "switch2",
+              "match": [
+                "CONTROL-HEADLIGHT-OP-PTR",
+                "CONTROL-HEADLIGHT-OP-COVER-PTR"
+              ],
+              "positions": [
+                {
+                  "name": "ON",
+                  "text": "The operator controls the landing light."
+                },
+                {
+                  "name": "OFF",
+                  "text": "The operator does not control the landing light."
+                }
+              ],
+              "text": "This switch takes over the control of the landing light. The game names it 'LND Light Assumed Switch'. A cover protects it.",
+              "context": "The manual does not describe it.",
+              "src": "m1"
+            }
+          ]
+        },
+        {
+          "id": "op-km2",
+          "name": "KM-2 compass controls",
+          "src": "m1",
+          "text": "Two controls of the KM-2: a knob for the magnetic declination and a test button.",
+          "context": "The magnetic declination is the difference between the true north and the north of a magnetic compass.",
+          "controls": [
+            {
+              "id": "km2-knob",
+              "name": "KM-2 magnetic declination knob",
+              "type": "knob",
+              "match": [
+                "KM2-KNOB-PTR"
+              ],
+              "text": "This knob sets the magnetic declination into the KM-2.",
+              "context": "The game names it 'KM-2 set magnetic declination'.",
+              "src": "m1"
+            },
+            {
+              "id": "km2-test",
+              "name": "KM-2 test button",
+              "type": "button",
+              "match": [
+                "KM2-CONTR-BUTTON-PTR"
+              ],
+              "text": "Pressing this button runs the test of the KM-2 unit.",
+              "context": "The game names it 'KM-2 Test button'.",
+              "src": "m1"
+            }
+          ]
+        },
+        {
+          "id": "op-spu8",
+          "name": "Operator SPU-8 intercom panel",
+          "src": "m1",
+          "text": "The intercom controls of the operator: volumes, radio selector, network, call button and power.",
+          "context": "The intercom is the phone line between the two crew members. The pilot has the same panel.",
+          "controls": [
+            {
+              "id": "op-spu-volume",
+              "name": "SPU-8 volume knob",
+              "type": "knob",
+              "match": [
+                "SPU8-OP-VOLUME-PTR"
+              ],
+              "text": "Turning this knob sets how loud the intercom is in the operator's headset.",
+              "context": "It is the operator's copy of the pilot's knob.",
+              "src": "m1"
+            },
+            {
+              "id": "op-spu-radio-volume",
+              "name": "SPU-8 radio volume knob",
+              "type": "knob",
+              "match": [
+                "SPU8-OP-RADIO-VOL-KNOB-PTR"
+              ],
+              "text": "Turning this knob sets how loud the radio is in the operator's headset.",
+              "context": "The radio is chosen with the source selector.",
+              "src": "m1"
+            },
+            {
+              "id": "op-spu-source",
+              "name": "Radio source selector (R-863 / NF / R-828 / JADRO-1A / ARC-15 / ARC-U2)",
+              "type": "selector",
+              "match": [
+                "SPU8-OP-MODE-PTR"
+              ],
+              "positions": [
+                {
+                  "name": "R-863",
+                  "text": "The R-863 radio."
+                },
+                {
+                  "name": "NF",
+                  "text": "Named NF by the game."
+                },
+                {
+                  "name": "R-828",
+                  "text": "The R-828 (Eucalypt) radio."
+                },
+                {
+                  "name": "JADRO-1A",
+                  "text": "The Jadro-1A radio."
+                },
+                {
+                  "name": "ARC-15",
+                  "text": "The ARC-15 radio compass."
+                },
+                {
+                  "name": "ARC-U2",
+                  "text": "The ARC-U2 radio compass."
+                }
+              ],
+              "text": "This selector chooses which radio the operator hears.",
+              "context": "Its positions are named after the radio sets.",
+              "src": "m1"
+            },
+            {
+              "id": "op-spu-ext",
+              "name": "Radio / ICS switch",
+              "type": "switch2",
+              "match": [
+                "SPU8-OP-EXT-PTR"
+              ],
+              "positions": [
+                {
+                  "name": "RADIO",
+                  "text": "The trigger sends on the radio."
+                },
+                {
+                  "name": "ICS",
+                  "text": "The trigger sends on the intercom."
+                }
+              ],
+              "text": "This switch decides whether the talk trigger sends on the radio or on the intercom.",
+              "context": "The game names it 'Radio/ICS Switch'.",
+              "src": "m1"
+            },
+            {
+              "id": "op-spu-net",
+              "name": "Network 1 / 2 switch",
+              "type": "switch2",
+              "match": [
+                "SPU8-OP-NET-PTR"
+              ],
+              "positions": [
+                {
+                  "name": "1",
+                  "text": "Network 1."
+                },
+                {
+                  "name": "2",
+                  "text": "Network 2."
+                }
+              ],
+              "text": "This switch picks the network 1 or 2 of the intercom.",
+              "context": "The game labels it 'Network 1/2 Switch (N/F)'.",
+              "src": "m1"
+            },
+            {
+              "id": "op-spu-call",
+              "name": "Circular call button",
+              "type": "button",
+              "match": [
+                "SPU8-OP-CV-PTR"
+              ],
+              "text": "Pressing this button calls the other crew member on the intercom.",
+              "context": "The game names it 'Circular Call Button'.",
+              "src": "m1"
+            },
+            {
+              "id": "op-spu-power",
+              "name": "SPU-8 intercom power switch",
+              "type": "switch2",
+              "match": [
+                "SPU8-OP-PTR"
+              ],
+              "positions": [
+                {
+                  "name": "ON",
+                  "text": "The intercom is on."
+                },
+                {
+                  "name": "OFF",
+                  "text": "The intercom is off."
+                }
+              ],
+              "text": "This switch turns the operator's intercom on and off.",
+              "context": "Without it the operator cannot speak to the pilot.",
+              "src": "m1"
+            }
+          ]
+        },
+        {
+          "id": "op-timer",
+          "name": "Timer",
+          "src": "m1",
+          "text": "The controls of the timer: two timer controls, a start/stop switch and a selector for the active timer.",
+          "context": "The timer works like a stopwatch.",
+          "controls": [
+            {
+              "id": "op-timer-right",
+              "name": "Right timer control",
+              "type": "switch",
+              "match": [
+                "TIMIR-LEFT-OP-PTR_8-38"
+              ],
+              "text": "This control works the right timer of the timer unit.",
+              "context": "The game names it 'Right timer control'.",
+              "src": "m1"
+            },
+            {
+              "id": "op-timer-left",
+              "name": "Left timer control",
+              "type": "switch",
+              "match": [
+                "TIMIR-LEFT-OP-PTR_2-9_5"
+              ],
+              "text": "This control works the left timer of the timer unit.",
+              "context": "The game names it 'Left timer control'.",
+              "src": "m1"
+            },
+            {
+              "id": "op-timer-run",
+              "name": "Active timer start/stop switch",
+              "type": "switch2",
+              "match": [
+                "TIMIR-COUNTING-OP-PTR"
+              ],
+              "positions": [
+                {
+                  "name": "START",
+                  "text": "The active timer runs."
+                },
+                {
+                  "name": "STOP",
+                  "text": "The active timer stops."
+                }
+              ],
+              "text": "This switch starts and stops the active timer.",
+              "context": "It works on the timer chosen with the select switch.",
+              "src": "m1"
+            },
+            {
+              "id": "op-timer-select",
+              "name": "Active timer select switch",
+              "type": "switch2",
+              "match": [
+                "TIMIR-SECONDS-OP-PTR"
+              ],
+              "positions": [
+                {
+                  "name": "LEFT",
+                  "text": "The left timer is active."
+                },
+                {
+                  "name": "RIGHT",
+                  "text": "The right timer is active."
+                }
+              ],
+              "text": "This switch picks which timer is active.",
+              "context": "The game names it 'Active timer select'.",
+              "src": "m1"
+            }
+          ]
+        },
+        {
+          "id": "op-weapon-panel",
+          "name": "Operator weapon safe, lighting and wiper controls",
+          "src": "m1",
+          "page": "42",
+          "text": "The main weapon safe switch of the front cockpit, with the lamp test, the cabin light, the window sprayer, the wiper and a red light selector.",
+          "context": "The manual says to switch on the Main Weapon Safe switch of the front cockpit before using the weapons.",
+          "controls": [
+            {
+              "id": "op-weapon-safe",
+              "name": "Main weapon safe switch",
+              "type": "switch2",
+              "match": [
+                "ARMAMENT-POWER-OP-PTR",
+                "item:operator-atgm-panels:7"
+              ],
+              "positions": [
+                {
+                  "name": "ON",
+                  "text": "The weapons of the front cockpit have power."
+                },
+                {
+                  "name": "OFF",
+                  "text": "The weapons of the front cockpit are off."
+                }
+              ],
+              "text": "This is the master power switch of the weapons in the front cockpit. Nothing fires when it is off.",
+              "context": "The manual's weapon steps switch it on, or ask the AI copilot to do it with LCtrl + W.",
+              "src": "m1",
+              "page": "42"
+            },
+            {
+              "id": "op-cabin-light",
+              "name": "Operator cabin lighting switch (WHITE / OFF / RED)",
+              "type": "switch3",
+              "match": [
+                "LTG-COCKPIT-OP-PTR"
+              ],
+              "positions": [
+                {
+                  "name": "WHITE",
+                  "text": "White light."
+                },
+                {
+                  "name": "OFF",
+                  "text": "The light is off."
+                },
+                {
+                  "name": "RED",
+                  "text": "Red light."
+                }
+              ],
+              "text": "This switch picks the colour of the light in the operator's cabin.",
+              "context": "Red light is used at night to keep the eyes used to the dark.",
+              "src": "m1"
+            },
+            {
+              "id": "op-lamp-test",
+              "name": "Test warning lights button",
+              "type": "button",
+              "match": [
+                "LAMP-CONTROL-OP-PTR"
+              ],
+              "text": "Pressing this button lights all the warning lights of the operator's side, so he can see that none is burned out.",
+              "context": "The operator presses it in the checks before the flight.",
+              "src": "m1"
+            },
+            {
+              "id": "op-sprayer",
+              "name": "Operator window sprayer button",
+              "type": "button",
+              "match": [
+                "WIPER-SPRINKLER-OP-PTR"
+              ],
+              "text": "Pressing this button sprays liquid on the operator's windscreen.",
+              "context": "The wiper then cleans the glass.",
+              "src": "m1"
+            },
+            {
+              "id": "op-red-1",
+              "name": "Red lights transformer 1, left and operator panel (OFF to 20V)",
+              "type": "selector",
+              "match": [
+                "RED-LTG1-OP-PTR"
+              ],
+              "positions": [
+                {
+                  "name": "OFF",
+                  "text": "The red lights of this group are off."
+                },
+                {
+                  "name": "8V",
+                  "text": "The lights get 8 volts."
+                },
+                {
+                  "name": "9V",
+                  "text": "The lights get 9 volts."
+                },
+                {
+                  "name": "10V",
+                  "text": "The lights get 10 volts."
+                },
+                {
+                  "name": "11V",
+                  "text": "The lights get 11 volts."
+                },
+                {
+                  "name": "12V",
+                  "text": "The lights get 12 volts."
+                },
+                {
+                  "name": "13V",
+                  "text": "The lights get 13 volts."
+                },
+                {
+                  "name": "14V",
+                  "text": "The lights get 14 volts."
+                },
+                {
+                  "name": "16V",
+                  "text": "The lights get 16 volts."
+                },
+                {
+                  "name": "18V",
+                  "text": "The lights get 18 volts."
+                },
+                {
+                  "name": "20V",
+                  "text": "The lights get 20 volts."
+                }
+              ],
+              "text": "This rotary switch sets the brightness of the first group of red lights on the left and the operator panel.",
+              "context": "A step switch from OFF to 20 volts.",
+              "src": "m1"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "op-hotas",
+      "where": "hotas",
+      "name": "Operator stick and throttle",
+      "seat": 2,
+      "text": "The controls the operator holds: the cyclic, the collective, the pedals and the missile sight handles.",
+      "panels": [
+        {
+          "id": "op-cyclic",
+          "name": "Operator cyclic stick (front seat)",
+          "src": "m1",
+          "text": "The cyclic of the front seat. The operator's controls are usually stowed and folded away. When they are engaged the operator can fly the helicopter.",
+          "context": "The pilot of the rear seat normally flies. The flight controls change hands with the Assume Control switch.",
+          "controls": [
+            {
+              "id": "op-stick",
+              "name": "Cyclic stick",
+              "type": "axis",
+              "match": [
+                "control:stick.gimbal"
+              ],
+              "text": "Moving this stick forward makes the helicopter fly forward, back makes it slow down, sideways makes it roll.",
+              "context": "It works only when the front controls are engaged.",
+              "src": "m1"
+            },
+            {
+              "id": "op-wheel-brake",
+              "name": "Wheel brake lever and parking brake",
+              "type": "lever",
+              "match": [
+                "control:stick.lever.wheel_brake"
+              ],
+              "text": "This lever brakes the wheels. A latch holds it as the parking brake.",
+              "context": "It is on the front of the operator's grip.",
+              "src": "m1"
+            },
+            {
+              "id": "op-ptt",
+              "name": "SPU radio trigger",
+              "type": "trigger",
+              "match": [
+                "OP-STICK-PTT-PTR",
+                "control:stick.switch.ics_radio"
+              ],
+              "text": "This two-step trigger is the talk button of the operator. The first step speaks on the intercom and the second on the radio.",
+              "context": "In the game left mouse is the radio and right mouse the intercom.",
+              "src": "m1"
+            },
+            {
+              "id": "op-trim-hat",
+              "name": "Trimmer hat",
+              "type": "hat",
+              "match": [
+                "control:stick.hat.trim"
+              ],
+              "text": "This four-way hat nudges the trim up, down, left and right.",
+              "context": "Trim holds the controls in place.",
+              "src": "m1"
+            },
+            {
+              "id": "op-fire",
+              "name": "Weapons release button with cover",
+              "type": "button",
+              "match": [
+                "OP-STICK-RS-PTR",
+                "OP-STICK-RS-COVER-PTR",
+                "control:stick.weapon_release"
+              ],
+              "text": "Pressing this button fires the weapon chosen on the operator panel. A cover protects it.",
+              "context": "The fire button of the front stick.",
+              "src": "m1"
+            },
+            {
+              "id": "op-trimmer",
+              "name": "Trimmer button",
+              "type": "button",
+              "match": [
+                "OP-STICK-TRIMMER-PTR",
+                "control:stick.button.trim"
+              ],
+              "text": "Pressing this button trims the cyclic at its present position.",
+              "context": "The game names it 'Autopilot Trimmer Button'.",
+              "src": "m1"
+            },
+            {
+              "id": "op-disconnect",
+              "name": "Front cyclic disconnect button with cover",
+              "type": "button",
+              "match": [
+                "OP-STICK-DISENGAGE-PTR",
+                "OP-STICK-DISENGAGE-COVER-PTR",
+                "control:stick.guard.disconnect"
+              ],
+              "text": "Pressing this button disconnects the operator's cyclic. A cover protects it.",
+              "context": "The game names it 'Disengage Stick'.",
+              "src": "m1"
+            }
+          ]
+        },
+        {
+          "id": "op-collective",
+          "name": "Operator collective and throttle",
+          "src": "m1",
+          "text": "The collective and throttle of the front seat, with the trigger that engages them.",
+          "context": "As with the stick, they are usually stowed.",
+          "controls": [
+            {
+              "id": "op-collective-lever",
+              "name": "Collective lever",
+              "type": "axis",
+              "match": [
+                "control:collective.axis.main"
+              ],
+              "text": "Raising this lever makes the helicopter climb.",
+              "context": "It is the operator's copy of the collective.",
+              "src": "m1"
+            },
+            {
+              "id": "op-throttle",
+              "name": "Throttle correction twist grip",
+              "type": "axis",
+              "match": [
+                "OP-COLL-THROTTLE-PTR",
+                "control:collective.axis.throttle_twist"
+              ],
+              "text": "Turning this twist grip changes the power of both engines. In the game the left mouse button moves the collective and the right mouse button the throttle.",
+              "context": "The twist grip changes the power of both engines together.",
+              "src": "m1"
+            },
+            {
+              "id": "op-n2",
+              "name": "Readjust free turbine RPM switch",
+              "type": "switch3",
+              "match": [
+                "control:collective.switch.n2_trim"
+              ],
+              "positions": [
+                {
+                  "name": "UP",
+                  "text": "Free turbine speed goes up."
+                },
+                {
+                  "name": "MIDDLE",
+                  "text": "No change."
+                },
+                {
+                  "name": "DOWN",
+                  "text": "Free turbine speed goes down."
+                }
+              ],
+              "text": "This three-position switch changes the free turbine speed a little.",
+              "context": "It springs back to the middle.",
+              "src": "m1"
+            },
+            {
+              "id": "op-engage",
+              "name": "Operator flight control engagement trigger",
+              "type": "trigger",
+              "match": [
+                "OP-COLL-ENGAGE-PTR",
+                "control:collective.trigger.cpg_engage"
+              ],
+              "positions": [
+                {
+                  "name": "UP",
+                  "text": "The front controls are engaged."
+                },
+                {
+                  "name": "DOWN",
+                  "text": "The front controls are stowed."
+                }
+              ],
+              "text": "This trigger engages or stows the operator's flight controls. Up engages the front controls, down stows them.",
+              "context": "The game names it 'Engage Stick'.",
+              "src": "m1"
+            },
+            {
+              "id": "op-cargo",
+              "name": "Emergency cargo release button with cover",
+              "type": "button",
+              "match": [
+                "OP-COLL-CARGO-DROP-PTR",
+                "OP-COLL-CARGO-DROP-COVER-PTR"
+              ],
+              "text": "Pressing this button drops a load under the helicopter. A cover must be opened first.",
+              "context": "It is the operator's copy of the pilot's button.",
+              "src": "m1"
+            }
+          ]
+        },
+        {
+          "id": "op-pedals",
+          "name": "Operator anti-torque pedals",
+          "src": "m1",
+          "text": "The pedals of the front seat turn the nose to the left or right.",
+          "context": "They act on the tail rotor like the pedals of the pilot.",
+          "controls": [
+            {
+              "id": "op-pedals",
+              "name": "Anti-torque pedals",
+              "type": "pedal",
+              "match": [
+                "control:pedals.axis.rudder"
+              ],
+              "text": "Pushing the left pedal turns the nose left, the right pedal turns it right.",
+              "context": "They are linked to the pilot's pedals.",
+              "src": "m1"
+            }
+          ]
+        },
+        {
+          "id": "op-sight-handles",
+          "name": "9K113 guidance handles",
+          "src": "m1",
+          "text": "The two handles of the missile sight steer the sight and the missile. A covered button on them launches the missile.",
+          "context": "The manual says the operator guides the missile with the sight until it hits, after a delay of 0.9 seconds from the launch.",
+          "controls": [
+            {
+              "id": "op-ministick",
+              "name": "9K113 missile sight guidance handles",
+              "type": "other",
+              "match": [
+                "control:panel.ministick.missile_sight"
+              ],
+              "text": "Moving the handles moves the sight and the missile up, down, left and right.",
+              "context": "The operator holds them with both hands.",
+              "src": "m1",
+              "page": "59"
+            },
+            {
+              "id": "op-launch",
+              "name": "ATGM launch button",
+              "type": "button",
+              "match": [
+                "control:panel.button.missile_fire"
+              ],
+              "text": "Pressing this covered button on the handles launches the anti-tank guided missile.",
+              "context": "The missile leaves 0.9 seconds after the press.",
+              "src": "m1",
+              "page": "59"
+            },
+            {
+              "id": "op-rad-reset",
+              "name": "Radiation reset button (guidance unit)",
+              "type": "button",
+              "match": [
+                "control:panel.button.radiation_reset"
+              ],
+              "text": "Pressing this button resets the guidance radio for the next missile.",
+              "context": "The button sits on the guidance unit of the sight.",
+              "src": "m1",
+              "page": "59"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "op-right-console",
+      "where": "right-console",
+      "name": "Operator right console",
+      "seat": 2,
+      "text": "The right side of the operator's cockpit with the countermeasure dispenser and the controls of the 9K113 missile sight.",
+      "panels": [
+        {
+          "id": "op-aso-2v",
+          "name": "ASO-2V countermeasure dispenser panel",
+          "src": "m1",
+          "text": "The ASO-2V throws out countermeasures, things that fool enemy missiles. This panel has the interval, series and set settings and the launch button.",
+          "context": "The manual says the AI copilot moves the cassette selector to the next position when a cassette is used up.",
+          "controls": [
+            {
+              "id": "aso-interval",
+              "name": "ASO-2V interval switch",
+              "type": "selector",
+              "match": [
+                "ASO2V-INTERV-PTR"
+              ],
+              "text": "This switch sets the time between two launches.",
+              "context": "The game names it 'Interval'; the manual does not describe it.",
+              "src": "m1"
+            },
+            {
+              "id": "aso-series",
+              "name": "ASO-2V series switch",
+              "type": "selector",
+              "match": [
+                "ASO2V-SERIES-PTR"
+              ],
+              "text": "This switch sets how many launches follow each other in a series.",
+              "context": "The game names it 'Serie'; the manual does not describe it.",
+              "src": "m1"
+            },
+            {
+              "id": "aso-launch",
+              "name": "Launch countermeasures button",
+              "type": "button",
+              "match": [
+                "ASO2V-RESET-PTR"
+              ],
+              "text": "Pressing this button launches the countermeasures.",
+              "context": "The game names it 'Launch Countermeasures'.",
+              "src": "m1"
+            },
+            {
+              "id": "aso-left",
+              "name": "ASO-2V left side switch",
+              "type": "switch",
+              "match": [
+                "ASO2V-LEFT-PTR"
+              ],
+              "text": "This switch is the control for the left side cassettes of the dispenser.",
+              "context": "The game names it 'Left Side'.",
+              "src": "m1"
+            },
+            {
+              "id": "aso-right",
+              "name": "ASO-2V right side switch",
+              "type": "switch",
+              "match": [
+                "ASO2V-RIGHT-PTR"
+              ],
+              "text": "This switch is the control for the right side cassettes of the dispenser.",
+              "context": "The game names it 'Right Side'.",
+              "src": "m1"
+            },
+            {
+              "id": "aso-sets",
+              "name": "ASO-2V set selector (I / II / III)",
+              "type": "selector",
+              "match": [
+                "ASO2V-SETS-PTR"
+              ],
+              "positions": [
+                {
+                  "name": "I",
+                  "text": "The first set of cassettes is chosen."
+                },
+                {
+                  "name": "II",
+                  "text": "The second set of cassettes is chosen."
+                },
+                {
+                  "name": "III",
+                  "text": "The third set of cassettes is chosen."
+                }
+              ],
+              "text": "This selector picks the set I, II or III of the cassettes.",
+              "context": "The game names it 'Set I/II/III'.",
+              "src": "m1"
+            }
+          ]
+        },
+        {
+          "id": "op-9k113-1",
+          "name": "9K113 sight switches (doors, lamps, zoom, filters)",
+          "src": "m1",
+          "text": "Switches on the 9K113 anti-tank missile sight: the sight doors, the lamp check, the zoom and two filters.",
+          "context": "The sight is the periscope the operator looks through. The manual says the zoom toggles between 3.3 and 10 degrees with LCtrl + X.",
+          "controls": [
+            {
+              "id": "k113-doors",
+              "name": "Sight doors switch",
+              "type": "switch2",
+              "match": [
+                "WEAP-MISSILES-SIGHT-HEATING-OP-PTR"
+              ],
+              "positions": [
+                {
+                  "name": "ON",
+                  "text": "The sight doors are open."
+                },
+                {
+                  "name": "OFF",
+                  "text": "The sight doors are closed."
+                }
+              ],
+              "text": "This switch opens and closes the doors of the sight. The game names it 'Sight Doors'.",
+              "context": "The manual says the doors open when the OBSERVE switch is turned on.",
+              "src": "m1"
+            },
+            {
+              "id": "k113-lamps",
+              "name": "Lamps check switch",
+              "type": "switch2",
+              "match": [
+                "L166V-SWITCH-PTR"
+              ],
+              "positions": [
+                {
+                  "name": "ON",
+                  "text": "The lamps are checked."
+                },
+                {
+                  "name": "OFF",
+                  "text": "No lamp check."
+                }
+              ],
+              "text": "This switch checks the lamps of the sight.",
+              "context": "The game names it 'Lamps Check'.",
+              "src": "m1"
+            },
+            {
+              "id": "k113-zoom",
+              "name": "Zoom in-out switch",
+              "type": "switch2",
+              "match": [
+                "OP-SIGHT-SCOPE-PTR"
+              ],
+              "positions": [
+                {
+                  "name": "IN",
+                  "text": "The narrow, zoomed view."
+                },
+                {
+                  "name": "OUT",
+                  "text": "The wide view."
+                }
+              ],
+              "text": "This switch changes the zoom of the sight between the wide and the narrow view.",
+              "context": "The manual gives the two views as 3.3 and 10 degrees.",
+              "src": "m1",
+              "page": "55"
+            },
+            {
+              "id": "k113-orange",
+              "name": "Orange filter switch",
+              "type": "switch2",
+              "match": [
+                "OP-SIGHT-ORANGE-PTR"
+              ],
+              "positions": [
+                {
+                  "name": "ON",
+                  "text": "The orange filter is in."
+                },
+                {
+                  "name": "OFF",
+                  "text": "The orange filter is out."
+                }
+              ],
+              "text": "This switch puts an orange filter in front of the view.",
+              "context": "The game names it 'Orange Filter'.",
+              "src": "m1"
+            },
+            {
+              "id": "k113-laser",
+              "name": "Laser filter switch",
+              "type": "switch2",
+              "match": [
+                "OP-SIGHT-ANTILASER-PTR"
+              ],
+              "positions": [
+                {
+                  "name": "ON",
+                  "text": "The laser filter is in."
+                },
+                {
+                  "name": "OFF",
+                  "text": "The laser filter is out."
+                }
+              ],
+              "text": "This switch puts a laser protection filter in front of the view.",
+              "context": "The game names it 'Laser Filter'.",
+              "src": "m1"
+            }
+          ]
+        },
+        {
+          "id": "op-9k113-2",
+          "name": "9K113 radiation reset",
+          "src": "m1",
+          "text": "A button on the guidance unit that resets the guidance radio after a missile is launched.",
+          "context": "The manual says to press it after each missile.",
+          "controls": [
+            {
+              "id": "k113-reset",
+              "name": "Radiation reset button",
+              "type": "button",
+              "match": [
+                "OP-AIM-RESET-RAD-PTR"
+              ],
+              "text": "Pressing this button resets the guidance command radio so the next missile can be launched.",
+              "context": "The manual says the AI copilot presses this button too.",
+              "src": "m1",
+              "page": "59"
+            }
+          ]
+        },
+        {
+          "id": "op-9k113-3",
+          "name": "9K113 guidance unit panel",
+          "src": "m1",
+          "text": "The main panel of the guidance unit of the missile sight. It has power, heating, check and mode switches and a display lamp block.",
+          "context": "The manual's guided missile steps turn on the sight power, wait three to four minutes, and then turn on the OBSERVE switch.",
+          "controls": [
+            {
+              "id": "k113-work-check",
+              "name": "Work-check switch with cover (WORK / CHECK)",
+              "type": "switch2",
+              "match": [
+                "WEAP-JETTISON-SPECIAL-OP-COVER-PTR002"
+              ],
+              "positions": [
+                {
+                  "name": "WORK",
+                  "text": "Normal work."
+                },
+                {
+                  "name": "CHECK",
+                  "text": "The check position."
+                }
+              ],
+              "text": "This switch picks normal work or a check. The game names it 'WORK-CHECK'.",
+              "context": "The manual's steps check that the OPER/CHECK switch of the ATGM sight control panel is at OPER.",
+              "src": "m1",
+              "page": "49"
+            },
+            {
+              "id": "k113-check12",
+              "name": "Check switch (CHECK2 / NEUTR / CHECK1)",
+              "type": "selector",
+              "match": [
+                "PK-CHECK-PTR"
+              ],
+              "positions": [
+                {
+                  "name": "CHECK2",
+                  "text": "Check 2."
+                },
+                {
+                  "name": "NEUTR",
+                  "text": "Neutral."
+                },
+                {
+                  "name": "CHECK1",
+                  "text": "Check 1."
+                }
+              ],
+              "text": "This three-position switch picks a check. The game names it 'CHECK2-NEUTR-CHECK1'.",
+              "context": "The manual does not describe it.",
+              "src": "m1"
+            },
+            {
+              "id": "k113-heating",
+              "name": "Sight heating switch",
+              "type": "switch2",
+              "match": [
+                "PK-HEATING-PTR"
+              ],
+              "positions": [
+                {
+                  "name": "ON",
+                  "text": "The heating is on."
+                },
+                {
+                  "name": "OFF",
+                  "text": "The heating is off."
+                }
+              ],
+              "text": "This switch turns the heating of the missile sight on and off.",
+              "context": "The game names it 'Sight Heating'.",
+              "src": "m1"
+            },
+            {
+              "id": "k113-gener-imit",
+              "name": "Generator-imit switch",
+              "type": "switch2",
+              "match": [
+                "PK-IMIT-GENER-PTR"
+              ],
+              "positions": [
+                {
+                  "name": "GENERATOR",
+                  "text": "The generator position."
+                },
+                {
+                  "name": "IMIT",
+                  "text": "The imitation position."
+                }
+              ],
+              "text": "This switch picks the generator or the imitation. The game names it 'GENERATOR-IMIT'.",
+              "context": "The manual does not describe it.",
+              "src": "m1"
+            },
+            {
+              "id": "k113-start-pm",
+              "name": "Start PM button",
+              "type": "button",
+              "match": [
+                "PK-LAUNCH-PTR"
+              ],
+              "text": "The game names this button 'Start PM'. The manual does not describe it.",
+              "context": "The missile is launched with the ATGM launch button on the guidance handles.",
+              "src": "m1"
+            },
+            {
+              "id": "k113-bvk",
+              "name": "BVK set switch (WORK / CHECK)",
+              "type": "switch2",
+              "match": [
+                "PK-WORK-CHECK-PTR"
+              ],
+              "positions": [
+                {
+                  "name": "WORK",
+                  "text": "The BVK works normally."
+                },
+                {
+                  "name": "CHECK",
+                  "text": "The BVK is in its check state."
+                }
+              ],
+              "text": "This switch picks the working or the check state of the BVK. The game names it 'BVK Set'.",
+              "context": "The manual does not describe it.",
+              "src": "m1"
+            },
+            {
+              "id": "k113-backlight",
+              "name": "Backlight switch",
+              "type": "switch2",
+              "match": [
+                "PK-LIGHT-PTR"
+              ],
+              "positions": [
+                {
+                  "name": "ON",
+                  "text": "The backlight is on."
+                },
+                {
+                  "name": "OFF",
+                  "text": "The backlight is off."
+                }
+              ],
+              "text": "This switch turns on the backlight of the panel.",
+              "context": "The operator uses it at night.",
+              "src": "m1"
+            },
+            {
+              "id": "k113-power",
+              "name": "Sight power switch",
+              "type": "switch2",
+              "match": [
+                "PK-PN-POWER-PTR",
+                "item:operator-atgm-panels:3"
+              ],
+              "positions": [
+                {
+                  "name": "ON",
+                  "text": "The sight has power."
+                },
+                {
+                  "name": "OFF",
+                  "text": "The sight is off."
+                }
+              ],
+              "text": "This switch gives power to the 9K113 sight and the guidance unit. The L3 light comes on.",
+              "context": "The manual says the READNS light comes on after three to four minutes.",
+              "src": "m1",
+              "page": "51"
+            },
+            {
+              "id": "k113-observe",
+              "name": "OBSERVE gyros switch",
+              "type": "switch2",
+              "match": [
+                "PK-OBSERVE-PTR",
+                "item:operator-atgm-panels:4"
+              ],
+              "positions": [
+                {
+                  "name": "ON",
+                  "text": "The gyros run and the sight can be moved."
+                },
+                {
+                  "name": "OFF",
+                  "text": "The gyros are off."
+                }
+              ],
+              "text": "This switch starts the gyros that steady the sight and opens its doors. The L3 light blinks and the L4 light comes on after 10 to 15 seconds.",
+              "context": "The manual says to turn it off before any bank or pitch greater than 25 degrees.",
+              "src": "m1",
+              "page": "54"
+            },
+            {
+              "id": "k113-diaph",
+              "name": "Diaphragm open switch",
+              "type": "switch2",
+              "match": [
+                "PK-DIAPH-PTR"
+              ],
+              "positions": [
+                {
+                  "name": "ON",
+                  "text": "The diaphragm is open."
+                },
+                {
+                  "name": "OFF",
+                  "text": "The diaphragm is closed."
+                }
+              ],
+              "text": "This switch opens the diaphragm. The game names it 'DIAFR Open'.",
+              "context": "The manual does not describe it.",
+              "src": "m1"
+            },
+            {
+              "id": "k113-lock",
+              "name": "Lock ARU switch",
+              "type": "switch2",
+              "match": [
+                "PK-LOCK-PTR"
+              ],
+              "positions": [
+                {
+                  "name": "ON",
+                  "text": "The lock is on."
+                },
+                {
+                  "name": "OFF",
+                  "text": "The lock is off."
+                }
+              ],
+              "text": "This switch locks the ARU. The game names it 'LOCK ARU'.",
+              "context": "The manual does not describe it.",
+              "src": "m1"
+            },
+            {
+              "id": "k113-ssp",
+              "name": "SSP on switch",
+              "type": "switch2",
+              "match": [
+                "PK-SSP-PTR"
+              ],
+              "positions": [
+                {
+                  "name": "ON",
+                  "text": "The SSP is on."
+                },
+                {
+                  "name": "OFF",
+                  "text": "The SSP is off."
+                }
+              ],
+              "text": "This switch turns on the SSP. The game names it 'SSP On'.",
+              "context": "The manual does not describe it.",
+              "src": "m1"
+            },
+            {
+              "id": "k113-value",
+              "name": "Switcher 0 - 0.4",
+              "type": "switch2",
+              "match": [
+                "SHTV-CHECK-VALUE-PTR"
+              ],
+              "positions": [
+                {
+                  "name": "0",
+                  "text": "The switch is at the value 0."
+                },
+                {
+                  "name": "0.4",
+                  "text": "The switch is at the value 0.4."
+                }
+              ],
+              "text": "This switch picks 0 or 0.4. The game names it 'Switcher 0 - 0.4'.",
+              "context": "The manual does not describe it.",
+              "src": "m1"
+            },
+            {
+              "id": "k113-in-out",
+              "name": "Switcher IN - OUT",
+              "type": "switch2",
+              "match": [
+                "SHTV-IN-OUT-PTR"
+              ],
+              "positions": [
+                {
+                  "name": "IN",
+                  "text": "The switch is in the IN position."
+                },
+                {
+                  "name": "OUT",
+                  "text": "The switch is in the OUT position."
+                }
+              ],
+              "text": "This switch picks IN or OUT. The game names it 'Switcher IN-OUT'.",
+              "context": "The manual does not describe it.",
+              "src": "m1"
+            },
+            {
+              "id": "k113-code",
+              "name": "Switcher CODE1 - CODE2",
+              "type": "switch2",
+              "match": [
+                "SHTV-CODE-PTR"
+              ],
+              "positions": [
+                {
+                  "name": "CODE1",
+                  "text": "The switch is at code 1."
+                },
+                {
+                  "name": "CODE2",
+                  "text": "The switch is at code 2."
+                }
+              ],
+              "text": "This switch picks the code 1 or 2. The game names it 'Switcher CODE1-CODE2'.",
+              "context": "The manual does not describe it.",
+              "src": "m1"
+            },
+            {
+              "id": "k113-display-lamps",
+              "name": "Display lamps check button",
+              "type": "button",
+              "match": [
+                "SHTV-LAMP-CHECK-PTR"
+              ],
+              "text": "Pressing this button lights the lamps of the display so they can be checked.",
+              "context": "The game names it 'Display Lamps Check'.",
+              "src": "m1"
+            },
+            {
+              "id": "k113-checking",
+              "name": "Checking button",
+              "type": "button",
+              "match": [
+                "SHTV-CHECK-PTR"
+              ],
+              "text": "Pressing this button starts a check. The game names it 'Checking'.",
+              "context": "The manual does not describe it.",
+              "src": "m1"
+            },
+            {
+              "id": "k113-high-k",
+              "name": "High K button",
+              "type": "button",
+              "match": [
+                "SHTV-HIGH-K-PTR"
+              ],
+              "text": "Pressing this button is named 'High K' by the game.",
+              "context": "The manual does not describe it.",
+              "src": "m1"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

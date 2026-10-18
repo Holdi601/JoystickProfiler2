@@ -1,0 +1,370 @@
+{
+  "format": "joypro-cockpit-guide",
+  "version": 1,
+  "id": "sim-h135",
+  "title": "Airbus H135 / EC135 T2-T3",
+  "variants": [
+    "h135-t3"
+  ],
+  "games": [
+    "MSFS2020",
+    "MSFS2024"
+  ],
+  "sets": [],
+  "sources": [
+    {
+      "id": "c1",
+      "title": "JoyPro cockpit catalog",
+      "kind": "reference"
+    },
+    {
+      "id": "s1",
+      "title": "Eurocopter EC135 (Wikipedia)",
+      "kind": "reference",
+      "url": "https://en.wikipedia.org/wiki/Eurocopter_EC135"
+    },
+    {
+      "id": "s2",
+      "title": "MSFS forums: Working Force Trim Release for (most) helicopters in MSFS2024",
+      "kind": "reference",
+      "url": "https://forums.flightsimulator.com/t/working-force-trim-release-for-most-helicopters-in-msfs2024/673158"
+    },
+    {
+      "id": "h2",
+      "title": "Airbus H135 T3 / Helionix (public knowledge)",
+      "kind": "reference"
+    },
+    {
+      "id": "fn",
+      "title": "JoyPro function tables MSFS2020/2024 and X-Plane 11/12 (DB/Functions)",
+      "kind": "reference"
+    }
+  ],
+  "intro": "The Airbus H135 is a light twin-engine helicopter with two seats up front. Each pilot has a cyclic stick, a collective lever and pedals. Big screens (Helionix) show flight and engine data. A computer manages each of the two engines, and the engine switches are in the overhead panel.",
+  "areas": [
+    {
+      "id": "instrument-panel",
+      "where": "front-center",
+      "name": "Instrument panel: Helionix displays",
+      "text": "The big screens, the standby instrument and the warning unit.",
+      "panels": [
+        {
+          "id": "instrument-panel",
+          "name": "Instrument panel (Helionix displays)",
+          "db": "instrument-panel",
+          "src": "h2",
+          "text": "Big flat screens show the flight data, the map and the engines. A small standby instrument and a warning unit are next to them.",
+          "context": "The Helionix glass cockpit replaces the many round dials of older helicopters.",
+          "controls": [
+            {
+              "id": "mfd",
+              "name": "MFD 1-3 (multi-function displays)",
+              "type": "display",
+              "match": [
+                "item:instrument-panel:1"
+              ],
+              "count": 3,
+              "text": "These three screens show the flight data, the navigation map and the engine page, which is called FLI (first limit indicator).",
+              "context": "The pilot picks the pages with the display control panel.",
+              "src": "h2"
+            },
+            {
+              "id": "standby",
+              "name": "Standby instrument",
+              "type": "display",
+              "match": [
+                "item:instrument-panel:2"
+              ],
+              "text": "A small separate instrument which shows tilt, speed and height. It works even if the big screens fail.",
+              "context": "It is the backup if the main displays are lost.",
+              "src": "h2"
+            },
+            {
+              "id": "warning",
+              "name": "Warning unit",
+              "type": "light",
+              "match": [
+                "item:instrument-panel:3"
+              ],
+              "text": "This unit has the master warning and master caution lights. They come on when something needs attention.",
+              "context": "The screens then say what is wrong.",
+              "src": "h2"
+            },
+            {
+              "id": "display-ctl",
+              "name": "Display control panel",
+              "type": "button",
+              "match": [
+                "item:instrument-panel:4"
+              ],
+              "text": "These buttons choose which pages the screens show.",
+              "context": "The pilot uses them to change between flight, map and engine pages.",
+              "src": "h2"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "console",
+      "where": "center-pedestal",
+      "name": "Centre console",
+      "text": "The console with the autopilot panel, the navigation and radio controller and the transponder.",
+      "panels": [
+        {
+          "id": "console",
+          "name": "Centre console",
+          "db": "console",
+          "src": "h2",
+          "text": "The console between the seats with the autopilot panel, the navigation and radio controller and the transponder.",
+          "context": "The pilots set it before the flight and adjust it in flight.",
+          "controls": [
+            {
+              "id": "afcs",
+              "name": "AFCS control panel (autopilot)",
+              "type": "button",
+              "match": [
+                "item:console:1"
+              ],
+              "text": "These buttons switch on the autopilot (AFCS) and choose what it holds, for example the speed, height or heading. The autopilot flies the helicopter so the pilot does not have to.",
+              "context": "The pilot uses it on longer flights to reduce workload.",
+              "src": "h2"
+            },
+            {
+              "id": "fms-radio",
+              "name": "FMS / radio controller",
+              "type": "keypad",
+              "match": [
+                "item:console:2"
+              ],
+              "text": "This keypad sets the route in the navigation system and the frequencies, the station numbers, of the radios.",
+              "context": "The pilot types the route and frequencies here.",
+              "src": "h2"
+            },
+            {
+              "id": "xpdr",
+              "name": "Transponder",
+              "type": "keypad",
+              "match": [
+                "item:console:3"
+              ],
+              "text": "The transponder answers radar so air traffic control can see the helicopter. The pilot sets a four-digit code, called the squawk.",
+              "context": "Air traffic control tells the pilot which code to set.",
+              "src": "h2"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "overhead",
+      "where": "overhead",
+      "name": "Overhead panel: engine control",
+      "text": "The switches above the pilots for the engines, electricity, fuel and lights.",
+      "panels": [
+        {
+          "id": "overhead-panel",
+          "name": "Overhead panel: engine control",
+          "db": "overhead-panel",
+          "src": "h2",
+          "text": "The panel above the pilots with the engine switches, the fuel switches, the electrical switches, the lights and the rotor brake.",
+          "context": "The pilots use it for starting and stopping the engines.",
+          "controls": [
+            {
+              "id": "eng-main",
+              "name": "Engine main switches (1 / 2)",
+              "type": "switch3",
+              "match": [
+                "item:overhead-panel:1"
+              ],
+              "positions": [
+                {
+                  "name": "OFF",
+                  "text": "The engine is shut down."
+                },
+                {
+                  "name": "IDLE",
+                  "text": "The engine runs at ground idle after the start."
+                },
+                {
+                  "name": "FLIGHT",
+                  "text": "The computer holds the rotor speed; this is the normal setting for flying."
+                }
+              ],
+              "text": "Each switch starts one of the two engines and chooses how it is controlled. A computer (FADEC) manages each engine.",
+              "context": "The pilot moves a switch from OFF to IDLE for the start, then to FLIGHT.",
+              "src": "h2"
+            },
+            {
+              "id": "fuel",
+              "name": "Fuel pump / valve switches",
+              "type": "switch",
+              "match": [
+                "item:overhead-panel:2"
+              ],
+              "text": "These switches control the fuel pumps and the valves that let fuel flow to the engines.",
+              "context": "The pilot uses them for the start and in case of a fuel problem.",
+              "src": "h2"
+            },
+            {
+              "id": "elec",
+              "name": "Electrical switches",
+              "type": "switch",
+              "match": [
+                "item:overhead-panel:3"
+              ],
+              "text": "These switches connect the battery and the generators to the helicopter's electricity.",
+              "context": "They are one of the first things switched on.",
+              "src": "h2"
+            },
+            {
+              "id": "lights",
+              "name": "Light switches",
+              "type": "switch",
+              "match": [
+                "item:overhead-panel:4"
+              ],
+              "text": "These switches turn on the lights of the helicopter.",
+              "context": "The pilot uses them to be seen and to see the ground.",
+              "src": "h2"
+            },
+            {
+              "id": "rotor-brake",
+              "name": "Rotor brake",
+              "type": "lever",
+              "match": [
+                "item:overhead-panel:5"
+              ],
+              "text": "This lever brakes the main rotor to a stop after the engines have been shut down.",
+              "context": "The pilot uses it on the ground after shutdown, so the blades stop sooner.",
+              "src": "h2"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "hotas",
+      "where": "hotas",
+      "name": "Cyclic, collective and pedals",
+      "text": "The controls the pilot holds or pushes with the feet.",
+      "panels": [
+        {
+          "id": "cyclic",
+          "name": "Cyclic",
+          "src": "h2",
+          "text": "The cyclic is the stick between the pilot's knees. It tilts the rotor so that the helicopter flies forward, back and sideways.",
+          "context": "Each pilot has one; the right hand holds it nearly all the time.",
+          "controls": [
+            {
+              "id": "gimbal",
+              "name": "Cyclic",
+              "type": "axis",
+              "match": [
+                "control:stick.gimbal"
+              ],
+              "text": "Pushing the cyclic forward makes the helicopter fly forward, pulling back slows it down, and moving it sideways moves the helicopter sideways.",
+              "context": "The pilot holds it nearly all the time in flight.",
+              "src": "h2"
+            },
+            {
+              "id": "trim",
+              "name": "Beep trim switch",
+              "type": "hat",
+              "match": [
+                "control:stick.hat.trim"
+              ],
+              "text": "This four-way switch on top of the grip moves the point where the cyclic feels light. The pilot presses it forward, back, left or right in small steps.",
+              "context": "Trim takes away the steady force on the cyclic.",
+              "src": "h2"
+            },
+            {
+              "id": "ftr",
+              "name": "Force trim release",
+              "type": "button",
+              "match": [
+                "control:stick.button.ftr"
+              ],
+              "text": "While this button on the grip is pressed, the trim force is released. After letting go, the trim holds the new stick position.",
+              "context": "The pilot presses it to move the cyclic freely and to set a new neutral position.",
+              "src": "s2"
+            },
+            {
+              "id": "trigger",
+              "name": "Radio / intercom trigger",
+              "type": "trigger",
+              "match": [
+                "control:stick.trigger"
+              ],
+              "text": "While this trigger on the front of the grip is pressed, the radio transmits.",
+              "context": "The pilot uses it to talk to air traffic control.",
+              "src": "h2"
+            }
+          ]
+        },
+        {
+          "id": "collective",
+          "name": "Collective",
+          "src": "h2",
+          "text": "The collective is the lever at the left of the pilot's seat. It makes the helicopter climb or sink, and has switches on its head.",
+          "context": "The left hand holds it nearly all the time, and the pedals work together with it.",
+          "controls": [
+            {
+              "id": "main",
+              "name": "Collective",
+              "type": "axis",
+              "match": [
+                "control:collective.axis.main"
+              ],
+              "text": "Raising the lever makes all rotor blades bite the air more and the helicopter climbs. Lowering it makes the helicopter sink.",
+              "context": "The pilot moves it gently, because it changes the load on the engines.",
+              "src": "h2"
+            },
+            {
+              "id": "light",
+              "name": "Landing / search light switches",
+              "type": "switch",
+              "match": [
+                "control:collective.switch.landing_light"
+              ],
+              "text": "These switches on the collective head turn the landing light and the search light on and off.",
+              "context": "The pilot uses them without taking a hand off the controls.",
+              "src": "h2"
+            },
+            {
+              "id": "afcs-btn",
+              "name": "AFCS / trim release",
+              "type": "button",
+              "match": [
+                "control:collective.button.afcs"
+              ],
+              "text": "This button on the collective head switches the upper modes of the autopilot off and releases the collective trim.",
+              "context": "The pilot presses it to take over from the autopilot.",
+              "src": "h2"
+            }
+          ]
+        },
+        {
+          "id": "pedals",
+          "name": "Anti-torque pedals",
+          "src": "h2",
+          "text": "The pedals at the pilot's feet turn the helicopter's nose to the left or the right.",
+          "context": "The tail rotor, a small propeller at the tail, stops the helicopter from spinning around, and the pedals change its pitch.",
+          "controls": [
+            {
+              "id": "pedals",
+              "name": "Anti-torque pedals",
+              "type": "pedal",
+              "match": [
+                "control:pedals.axis.rudder"
+              ],
+              "text": "Pushing the left or right pedal changes the pitch of the tail rotor blades, which turns the nose to the left or the right.",
+              "context": "The pilot uses them all the time, especially in a hover.",
+              "src": "h2"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

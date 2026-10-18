@@ -1,0 +1,1939 @@
+{
+  "format": "joypro-cockpit-guide",
+  "version": 1,
+  "id": "dcs-mi-8mtv2-part2",
+  "partOf": "dcs-mi-8mtv2",
+  "areas": [
+    {
+      "id": "left-overhead",
+      "where": "overhead",
+      "name": "Left overhead console",
+      "text": "The ceiling panel above the pilot's side. It holds the weapons panels, the anti-ice panel, the R-863 channel selector and the pilot's intercom box.",
+      "panels": [
+        {
+          "id": "upper-weapons",
+          "name": "Pilot's upper weapons control panel",
+          "db": "left-overhead-console",
+          "src": "m1",
+          "page": "309",
+          "text": "The upper weapons panel above the pilot. It shows which weapons are loaded and ready, and holds the main weapon switch, the emergency jettison and the sight brightness knob.",
+          "context": "The pilot sets it before an attack. The master arm switch for the weapons is on the circuit breaker console; with it off, nothing can be fired or dropped.",
+          "controls": [
+            {
+              "id": "sight-brightness",
+              "name": "PKV sight brightness knob",
+              "type": "knob",
+              "match": [
+                "PTR-LAZS-LVR-AIMLGT"
+              ],
+              "text": "This knob sets how bright the aiming mark in the PKV sight is. The PKV is a glass sight in front of the pilot with a ring and marks.",
+              "context": "The manual says the default is 50 percent. The pilot turns it up in bright daylight.",
+              "src": "m1",
+              "page": "320"
+            },
+            {
+              "id": "lamp-test-weapons",
+              "name": "Upper weapons panel lamp check button",
+              "type": "button",
+              "match": [
+                "PTR-LAZS-BTN-LAMPTEST"
+              ],
+              "text": "Pressing this button lights all lamps of the pilot's upper weapons panel, to show that no bulb is burned out.",
+              "context": "The pilot presses it during the preflight check.",
+              "src": "m1",
+              "page": "310"
+            },
+            {
+              "id": "rkt-gun-master",
+              "name": "RKT-GUN MASTER switch (RS/GUV selector)",
+              "type": "switch2",
+              "match": [
+                "PTR-LAZS-TMB-RSGUV"
+              ],
+              "positions": [
+                {
+                  "name": "ON",
+                  "text": "The weapon fire circuits are powered."
+                },
+                {
+                  "name": "OFF",
+                  "text": "The weapons cannot fire."
+                }
+              ],
+              "text": "This is the main switch for the rockets, the cannon pods and the gun containers. With it off, they cannot fire.",
+              "context": "The manual says to set it on during the attack run. It powers the fire circuits and the loaded and ready lamps.",
+              "src": "m1",
+              "page": "311"
+            },
+            {
+              "id": "fcu-arm",
+              "name": "FCU ARM button (PUS arming)",
+              "type": "button",
+              "match": [
+                "PTR-LAZS-BTN-ENTER"
+              ],
+              "text": "Pressing this button gets the rocket fire control units ready, so that the first rocket flies from tube number 1. It is held until the armed lamps appear.",
+              "context": "It works only when the RKT-GUN MASTER switch is on, the circuit breakers are on and the rocket weapon is chosen.",
+              "src": "m1",
+              "page": "310"
+            },
+            {
+              "id": "minelaying-master",
+              "name": "Minelaying system master switch",
+              "type": "switch2",
+              "match": [
+                "PTR-LAZS-TMB-MAINOFF"
+              ],
+              "positions": [
+                {
+                  "name": "ON",
+                  "text": "The mine system master is on; it has no effect in DCS."
+                },
+                {
+                  "name": "OFF",
+                  "text": "The mine system master is off."
+                }
+              ],
+              "text": "This is the main switch of the mine laying system, which would drop mines from the helicopter.",
+              "context": "The manual says the mine system is not implemented in the simulation.",
+              "src": "m1",
+              "page": "310"
+            },
+            {
+              "id": "jettison-armed",
+              "name": "Jettison ARMED switch and cover",
+              "type": "switch2",
+              "match": [
+                "PTR-LAZS-TMB-EMRGEXP",
+                "PTR-LAZS-CVR-EMRGEXP"
+              ],
+              "positions": [
+                {
+                  "name": "ON",
+                  "text": "Jettisoned bombs are armed to explode on impact."
+                },
+                {
+                  "name": "OFF",
+                  "text": "Jettisoned bombs fall unarmed."
+                }
+              ],
+              "text": "This guarded switch decides whether dropped bombs are armed. When it is on, jettisoned bombs will explode on impact.",
+              "context": "The ARMED lamp lights when it is on. A cover protects the switch.",
+              "src": "m1",
+              "page": "310"
+            },
+            {
+              "id": "jettison",
+              "name": "Emergency jettison switch and cover",
+              "type": "button",
+              "match": [
+                "PTR-LAZS-TMB-EMRGJET",
+                "PTR-LAZS-CVR-EMRGJET"
+              ],
+              "text": "This guarded button drops everything the helicopter carries on its outside racks. The pilot lifts the cover first.",
+              "context": "The manual says it frees all weapon stations, quickly lowering the weight in an emergency such as a forced landing.",
+              "src": "m1",
+              "page": "310"
+            },
+            {
+              "id": "weapon-status",
+              "name": "Weapons status lamps and ammunition counters",
+              "type": "display",
+              "match": [
+                "item:left-overhead-console:1"
+              ],
+              "text": "This part of the upper panel shows lamps for which stations carry weapons and which rocket units are ready. Counters show the rounds left in the guns.",
+              "context": "The manual says some counters show a fraction of the real number, for example the cannon counter shows half of the rounds.",
+              "src": "m1",
+              "page": "309"
+            }
+          ]
+        },
+        {
+          "id": "lower-weapons",
+          "name": "Pilot's lower weapons control panel",
+          "db": "left-overhead-console",
+          "src": "m1",
+          "page": "311",
+          "text": "The lower weapons panel chooses what the FIRE button on the cyclic shoots and how: rockets, cannon pods or gun containers, and how many or how long.",
+          "context": "The pilot sets it with the copilot's payload panel before an attack, because the gun containers need the copilot's payload setting.",
+          "controls": [
+            {
+              "id": "rockets-quantity",
+              "name": "Rockets quantity switch (8 / 16 / 4)",
+              "type": "switch3",
+              "match": [
+                "PTR-LPE-TMB-SHOOT1"
+              ],
+              "positions": [
+                {
+                  "name": "8",
+                  "text": "Eight rockets per pod."
+                },
+                {
+                  "name": "16",
+                  "text": "Sixteen rockets per pod."
+                },
+                {
+                  "name": "4",
+                  "text": "Four rockets per pod."
+                }
+              ],
+              "text": "This switch sets how many rockets leave each rocket pod while the fire button is held down.",
+              "context": "The manual gives an example: with two pods loaded and the switch on 4, up to 8 rockets are fired.",
+              "src": "m1",
+              "page": "313"
+            },
+            {
+              "id": "rocket-stations",
+              "name": "Rocket station selector (1-2-5-6 / AUTO / 3-4)",
+              "type": "switch3",
+              "match": [
+                "PTR-LPE-TMB-SHOOT2"
+              ],
+              "positions": [
+                {
+                  "name": "1-2-5-6",
+                  "text": "Rockets are fired from stations 1, 2, 5 and 6."
+                },
+                {
+                  "name": "AUTO",
+                  "text": "Stations 1, 2, 5, 6 first, then 3 and 4."
+                },
+                {
+                  "name": "3-4",
+                  "text": "Rockets are fired from stations 3 and 4."
+                }
+              ],
+              "text": "This switch chooses which weapon racks fire their rockets.",
+              "context": "The manual says in AUTO mode the outer racks fire first and the inner racks 3 and 4 follow when they are empty.",
+              "src": "m1",
+              "page": "314"
+            },
+            {
+              "id": "weapon-selector",
+              "name": "Weapon selector (UPK / PKT / RS)",
+              "type": "switch3",
+              "match": [
+                "PTR-LPE-TMB-RS"
+              ],
+              "positions": [
+                {
+                  "name": "UPK",
+                  "text": "The 23 mm cannon pods fire."
+                },
+                {
+                  "name": "PKT",
+                  "text": "The nose machine gun; not implemented in DCS."
+                },
+                {
+                  "name": "RS",
+                  "text": "The unguided rockets fire."
+                }
+              ],
+              "text": "This switch chooses what the FIRE button shoots: the cannon pods, the nose machine gun or the rockets.",
+              "context": "The manual says the nose machine gun (PKT) is not implemented. The gun containers have their own selector.",
+              "src": "m1",
+              "page": "313"
+            },
+            {
+              "id": "guv-cutoff",
+              "name": "GUV cutoff switch",
+              "type": "switch2",
+              "match": [
+                "PTR-LPE-TMB-GUV"
+              ],
+              "positions": [
+                {
+                  "name": "ON",
+                  "text": "The gun containers fire in bursts set by the burst knob."
+                },
+                {
+                  "name": "OFF",
+                  "text": "The gun containers fire as long as the trigger is held."
+                }
+              ],
+              "text": "This switch decides if the gun containers fire as long as the trigger is held, or in short bursts.",
+              "context": "In burst mode the length is set with the burst knob next to it.",
+              "src": "m1",
+              "page": "313"
+            },
+            {
+              "id": "guv-burst",
+              "name": "GUV burst length knob",
+              "type": "knob",
+              "match": [
+                "PTR-LPE-LVR-SHELL"
+              ],
+              "text": "This knob sets how long one burst of the gun containers lasts, in seconds. Short is 0.25 seconds, medium 0.6.",
+              "context": "A longer burst means more rounds in one burst.",
+              "src": "m1",
+              "page": "313"
+            },
+            {
+              "id": "guv-fire-selector",
+              "name": "GUV fire selector",
+              "type": "selector",
+              "match": [
+                "PTR-LPE-TMB-VAR"
+              ],
+              "positions": [
+                {
+                  "name": "800",
+                  "text": "Grenade launchers on stations 1 and 6."
+                },
+                {
+                  "name": "800+624",
+                  "text": "Grenades or the 12.7 mm machine gun on stations 2 and 5."
+                },
+                {
+                  "name": "622",
+                  "text": "The 7.62 mm machine guns on stations 2 and 5."
+                }
+              ],
+              "text": "This switch chooses which gun containers fire: grenade launchers or machine guns on the different stations.",
+              "context": "The manual says it is used with the GUV payload selector. The positions are 800, 800 plus 624 and 622.",
+              "src": "m1",
+              "page": "313"
+            },
+            {
+              "id": "guv-payload",
+              "name": "GUV payload selector and cover",
+              "type": "switch2",
+              "match": [
+                "PTR-LAZS-TMB-MAINOFF05",
+                "PTR-LAZS-CVR-EMRGEXP01"
+              ],
+              "positions": [
+                {
+                  "name": "800",
+                  "text": "Only grenade launchers are loaded."
+                },
+                {
+                  "name": "624-622-800",
+                  "text": "A mixed load of machine guns and grenade launchers."
+                }
+              ],
+              "text": "This switch tells the system what kind of gun containers are fitted. A cover protects it.",
+              "context": "The manual says to set 800 when only grenade launchers are loaded and the mixed position when stations 1 and 6 have grenade launchers and 2 and 5 machine guns.",
+              "src": "m1",
+              "page": "313"
+            },
+            {
+              "id": "yakb-charging",
+              "name": "YakB-12.7 gun charging switches (left, right)",
+              "type": "selector",
+              "match": [
+                "PTR-LPE-TMB-PYRO-L",
+                "PTR-LPE-TMB-PYRO-R"
+              ],
+              "positions": [
+                {
+                  "name": "I",
+                  "text": "Charging position of gun I."
+                },
+                {
+                  "name": "II",
+                  "text": "Charging position of gun II."
+                },
+                {
+                  "name": "III",
+                  "text": "Charging position of gun III."
+                }
+              ],
+              "text": "These two switches reload the 12.7 mm machine guns in the gun pods if they jam. Each has three positions for the guns I, II and III.",
+              "context": "The manual says the switch must be put to position I before firing.",
+              "count": 2,
+              "src": "m1",
+              "page": "313"
+            },
+            {
+              "id": "gun-camera",
+              "name": "Gun camera switch",
+              "type": "switch2",
+              "match": [
+                "PTR-LPE-TMB-FKP"
+              ],
+              "positions": [
+                {
+                  "name": "ON",
+                  "text": "The gun camera is on."
+                },
+                {
+                  "name": "OFF",
+                  "text": "The gun camera is off."
+                }
+              ],
+              "text": "This switch turns on the gun camera, which records a picture each time the pilot fires.",
+              "context": "The manual says the gun camera records whenever the weapon fire switch is pressed.",
+              "src": "m1",
+              "page": "313"
+            }
+          ]
+        },
+        {
+          "id": "anti-ice",
+          "name": "Anti-ice (defrost) system control panel",
+          "db": "left-overhead-console",
+          "src": "m1",
+          "page": "175",
+          "text": "The panel that switches on the heating against ice for the front windows, the engine air intakes and the rotor blades.",
+          "context": "The pilot uses it in cold, wet weather. The automatic mode starts the heating when the ice detector senses ice.",
+          "controls": [
+            {
+              "id": "antiice-mode",
+              "name": "Anti-ice GENERAL MANUAL-AUTO switch",
+              "type": "switch2",
+              "match": [
+                "PTR-LPE-TMB-MANAUT"
+              ],
+              "positions": [
+                {
+                  "name": "AUTO",
+                  "text": "The ice detector starts the anti-ice heating."
+                },
+                {
+                  "name": "MANUAL",
+                  "text": "The pilot switches the heating on by hand."
+                }
+              ],
+              "text": "This switch picks the main mode of the anti-ice system. In AUTO the ice detector switches the heating on. In MANUAL the pilot switches parts on himself.",
+              "context": "The manual says that in automatic mode all switches on the panel are put down.",
+              "src": "m1",
+              "page": "176"
+            },
+            {
+              "id": "antiice-off",
+              "name": "Anti-ice OFF button",
+              "type": "button",
+              "match": [
+                "PTR-LPE-BTN-OVR"
+              ],
+              "text": "Pressing this button turns the whole anti-ice system off.",
+              "context": "The manual says to put all switches down and press this button to switch the system off.",
+              "src": "m1",
+              "page": "178"
+            },
+            {
+              "id": "antiice-left-eng",
+              "name": "Left engine heater switch (PSS left)",
+              "type": "switch2",
+              "match": [
+                "PTR-LPE-TMB-PZU-L"
+              ],
+              "positions": [
+                {
+                  "name": "ON",
+                  "text": "The left engine intake heating is on."
+                },
+                {
+                  "name": "OFF",
+                  "text": "The left engine intake heating is off."
+                }
+              ],
+              "text": "This switch heats the air intake and the dust separator of the left engine so ice cannot form.",
+              "context": "The manual says this heating is always switched on and off by hand, and should be on before flight in cold weather.",
+              "src": "m1",
+              "page": "172"
+            },
+            {
+              "id": "antiice-right-eng",
+              "name": "Right engine heater switch (PSS right)",
+              "type": "switch2",
+              "match": [
+                "PTR-LPE-TMB-PZU-R"
+              ],
+              "positions": [
+                {
+                  "name": "AUTO",
+                  "text": "The ice detector can start the heating."
+                },
+                {
+                  "name": "MANUAL",
+                  "text": "The heating is switched on by hand."
+                }
+              ],
+              "text": "This switch heats the air intake and the dust separator of the right engine. It can work by hand or by the ice detector.",
+              "context": "The manual says the right engine heating can start by hand or automatically.",
+              "src": "m1",
+              "page": "172"
+            },
+            {
+              "id": "antiice-glass",
+              "name": "Glass heater switch",
+              "type": "switch2",
+              "match": [
+                "PTR-LPE-TMB-GLASS"
+              ],
+              "positions": [
+                {
+                  "name": "AUTO",
+                  "text": "The ice detector can start the window heating."
+                },
+                {
+                  "name": "MANUAL",
+                  "text": "The window heating is switched on by hand."
+                }
+              ],
+              "text": "This switch heats the two front windows to keep them free of ice and fog.",
+              "context": "The manual says the windows are kept at about 30 degrees.",
+              "src": "m1",
+              "page": "167"
+            },
+            {
+              "id": "antiice-detector-heat",
+              "name": "Ice detector heater switch",
+              "type": "switch2",
+              "match": [
+                "PTR-LPE-TMB-RIO"
+              ],
+              "positions": [
+                {
+                  "name": "AUTO",
+                  "text": "The detector heater runs by itself."
+                },
+                {
+                  "name": "MANUAL",
+                  "text": "The detector heater is switched on by hand."
+                }
+              ],
+              "text": "This switch heats the ice detector itself, the small sensor that senses ice.",
+              "context": "The game names it the Ice Detector Heater Switch with positions MANUAL and AUTO.",
+              "src": "m1",
+              "page": "174"
+            },
+            {
+              "id": "antiice-detector-test",
+              "name": "Ice detector heater test button",
+              "type": "button",
+              "match": [
+                "PTR-LPE-BTN-RIOCONTR"
+              ],
+              "text": "Pressing this button tests the heater of the ice detector. A lamp shows if the heater works.",
+              "context": "It belongs to the check of the anti-ice system.",
+              "src": "m1",
+              "page": "176"
+            },
+            {
+              "id": "antiice-ammeter-selector",
+              "name": "Ammeter load selector switch",
+              "type": "selector",
+              "match": [
+                "PTR-LPE-LVR-FEEDMODE",
+                "item:left-overhead-console:9"
+              ],
+              "text": "This rotary switch picks which part of the anti-ice heating the ammeter dial measures: windows, engine intakes or the rotor blade sections.",
+              "context": "The manual says the ammeter readings of the main rotor and tail rotor must be divided by 3 and 6 to get the true current.",
+              "src": "m1",
+              "page": "173"
+            },
+            {
+              "id": "antiice-lamps",
+              "name": "Anti-ice lamps (normal, icing, ON, rotor sections)",
+              "type": "light",
+              "match": [
+                "item:left-overhead-console:3",
+                "item:left-overhead-console:6",
+                "item:left-overhead-console:8"
+              ],
+              "text": "These lamps show if the anti-ice system works, whether ice is detected, whether the heating is on, and which rotor blade section is being heated now.",
+              "context": "The red icing lamp flashes with the flasher system when the ice detector senses ice.",
+              "count": 3,
+              "src": "m1",
+              "page": "176"
+            },
+            {
+              "id": "antiice-ammeter",
+              "name": "AF1-150 ammeter",
+              "type": "gauge",
+              "match": [
+                "item:left-overhead-console:7"
+              ],
+              "text": "This dial shows the electric current of the selected anti-ice heater.",
+              "context": "The pilot checks that the current stays inside the range given in the manual.",
+              "src": "m1",
+              "page": "173"
+            }
+          ]
+        },
+        {
+          "id": "r863-left-overhead",
+          "name": "R-863 modulation and channel selector",
+          "db": "left-overhead-console",
+          "src": "m1",
+          "page": "112",
+          "text": "Two controls of the main radio R-863 in the ceiling: how the voice is carried, and which of the 20 stored channels is used.",
+          "context": "The pilot sets the channel and the type of modulation before talking to another station. The type must match the other station.",
+          "controls": [
+            {
+              "id": "r863-fm-am",
+              "name": "R-863 modulation switch (FM / AM)",
+              "type": "switch2",
+              "match": [
+                "PTR-LPE-TMB-COMAND",
+                "item:left-overhead-console:4"
+              ],
+              "positions": [
+                {
+                  "name": "FM",
+                  "text": "The radio uses frequency modulation."
+                },
+                {
+                  "name": "AM",
+                  "text": "The radio uses amplitude modulation."
+                }
+              ],
+              "text": "This switch picks the radio way the voice is carried: FM or AM. Both stations must use the same one to hear each other.",
+              "context": "The manual shows FM as the up position and AM as the down position.",
+              "src": "m1",
+              "page": "112"
+            },
+            {
+              "id": "r863-channel",
+              "name": "R-863 channel selector",
+              "type": "selector",
+              "match": [
+                "PTR-LPE-LVR-CHANNEL",
+                "item:left-overhead-console:5"
+              ],
+              "text": "This knob picks one of the stored radio channels. Each channel is a frequency prepared on the ground.",
+              "context": "The manual says there are 20 channels, and the channel table is set in the DCS mission editor. The channels are used with the unit switch on MEMORY.",
+              "src": "m1",
+              "page": "112"
+            }
+          ]
+        },
+        {
+          "id": "spu7-pilot",
+          "name": "SPU-7 intercom control box (pilot)",
+          "src": "m1",
+          "page": "110",
+          "text": "The SPU-7 is the intercom, the telephone line between the crew members. It also decides which radio the pilot talks on and how loud the sounds are.",
+          "context": "The pilot sets the radio source before talking. The cyclic trigger then speaks on the intercom or the chosen radio.",
+          "controls": [
+            {
+              "id": "spu-radio-ics",
+              "name": "SPU-7 RADIO / ICS switch (pilot)",
+              "type": "switch2",
+              "match": [
+                "PTR-LAZS-TMB-RADSPU"
+              ],
+              "positions": [
+                {
+                  "name": "RADIO",
+                  "text": "The second trigger click transmits on the radio."
+                },
+                {
+                  "name": "ICS",
+                  "text": "The trigger always talks on the intercom."
+                }
+              ],
+              "text": "This switch decides what the trigger on the cyclic does: talks on the intercom or on the chosen radio.",
+              "context": "The manual says with RADIO set, the first click of the trigger uses the intercom and the second click uses the radio.",
+              "src": "m1",
+              "page": "111"
+            },
+            {
+              "id": "spu-call",
+              "name": "SPU-7 circular call button (pilot)",
+              "type": "button",
+              "match": [
+                "PTR-LAZS-BTN-CB"
+              ],
+              "text": "In the real helicopter this button calls all crew stations at doubled volume, for emergency messages. The game marks it N/F, not functional.",
+              "context": "The manual lists it as the ALL CALL button.",
+              "src": "m1",
+              "page": "111"
+            },
+            {
+              "id": "spu-network",
+              "name": "SPU-7 network 1/2 switch (pilot)",
+              "type": "switch2",
+              "match": [
+                "PTR-LAZS-TMB-CIRC"
+              ],
+              "positions": [
+                {
+                  "name": "1",
+                  "text": "Network 1; not used."
+                },
+                {
+                  "name": "2",
+                  "text": "Network 2; not used."
+                }
+              ],
+              "text": "This switch would pick between two intercom networks. The manual says it is not used.",
+              "context": "The pilot's switch of this kind has no function in DCS; the copilot has a twin.",
+              "src": "m1",
+              "page": "111"
+            },
+            {
+              "id": "spu-source",
+              "name": "SPU-7 radio source selector (pilot)",
+              "type": "selector",
+              "match": [
+                "PTR-LAZS-LVR-MODES",
+                "item:left-overhead-console:2"
+              ],
+              "text": "This rotary knob picks which radio the pilot listens to and talks on: the R-863, the Yadro-1A, the R-828 or the radio direction finders ARK-9 and ARK-UD.",
+              "context": "The manual says the right source must be picked before the radios work through the headset.",
+              "src": "m1",
+              "page": "111"
+            },
+            {
+              "id": "spu-master-volume",
+              "name": "SPU-7 common (master) volume knob (pilot)",
+              "type": "knob",
+              "match": [
+                "PTR-LAZS-LVR-ALL"
+              ],
+              "text": "This knob sets the loudness of the intercom for the pilot.",
+              "context": "The manual says the master and monitor knobs swap roles when the RADIO/ICS switch changes.",
+              "src": "m1",
+              "page": "112"
+            },
+            {
+              "id": "spu-monitor-volume",
+              "name": "SPU-7 listening (monitor) volume knob (pilot)",
+              "type": "knob",
+              "match": [
+                "PTR-LAZS-LVR-AUDIT"
+              ],
+              "text": "This knob sets the loudness of the radio the pilot listens to.",
+              "context": "The manual says the two volume knobs swap roles when the RADIO/ICS switch changes.",
+              "src": "m1",
+              "page": "112"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "center-overhead",
+      "where": "overhead",
+      "name": "Center overhead console",
+      "text": "The ceiling panel in the middle. It holds the fire protection, the APU, the fuel pumps, the engine start and the hydraulic switches, and the engine fuel levers.",
+      "panels": [
+        {
+          "id": "fire-protection",
+          "name": "Fire protection system panel",
+          "db": "center-overhead-console",
+          "src": "m1",
+          "page": "181",
+          "text": "This panel shows where a fire is and lets the pilot fire the extinguisher bottles. The helicopter has two bottles: the first bottle fires by itself, the second one is for another fire.",
+          "context": "If a fire lamp lights up, the first bottle usually goes off automatically. If it does not, the pilot presses the button of the burning place. Test switches check the detectors.",
+          "controls": [
+            {
+              "id": "fire-first-order",
+              "name": "First order (main) discharge buttons (left engine, right engine, KO-50, APU/gearbox)",
+              "type": "button",
+              "match": [
+                "PTR-CPE-BTN-QUE1-*"
+              ],
+              "text": "These four buttons empty the first extinguisher bottle into one place: the left engine, the right engine, the KO-50 heater or the APU and main gearbox compartment.",
+              "context": "The first bottle normally fires by itself. The pilot presses the button of the burning place if it does not.",
+              "count": 4,
+              "src": "m1",
+              "page": "186"
+            },
+            {
+              "id": "fire-second-order",
+              "name": "Second order (alternate) discharge buttons (left engine, right engine, KO-50, APU/gearbox)",
+              "type": "button",
+              "match": [
+                "PTR-CPE-BTN-QUE2-*"
+              ],
+              "text": "These four buttons empty the second extinguisher bottle into one place. It is the reserve for a second fire or if the first did not work.",
+              "context": "The manual says the second bottle is fired by hand only.",
+              "count": 4,
+              "src": "m1",
+              "page": "186"
+            },
+            {
+              "id": "fire-signal-off",
+              "name": "Fire signal OFF button (alarm silence)",
+              "type": "button",
+              "match": [
+                "PTR-CPE-BTN-FIRE-OFF"
+              ],
+              "text": "Pressing this button silences the fire alarm lamp after the fire is out. The manual calls it the alarm silence button.",
+              "context": "The pilot presses it if the fire lamp does not go out by itself within about 10 seconds.",
+              "src": "m1",
+              "page": "190"
+            },
+            {
+              "id": "fire-detector-test",
+              "name": "Fire detector test switch (EXTINGUISH / TEST)",
+              "type": "switch2",
+              "match": [
+                "PTR-CPE-TMB-CONTR-FIRE"
+              ],
+              "positions": [
+                {
+                  "name": "EXTINGUISH",
+                  "text": "The fire system is ready for fighting a fire."
+                },
+                {
+                  "name": "TEST",
+                  "text": "The fire sensors can be tested with the rotary switch."
+                }
+              ],
+              "text": "This switch changes the fire system between normal readiness and a test of the fire sensors. In the test position a lamp lights.",
+              "context": "The manual says the system must be in the EXTINGUISH position to work in flight. Test the sensors on the ground before start.",
+              "src": "m1",
+              "page": "185"
+            },
+            {
+              "id": "fire-squib-test",
+              "name": "Squib test switch (I / II)",
+              "type": "switch2",
+              "match": [
+                "PTR-CPE-TMB-CONTR-PYRO"
+              ],
+              "positions": [
+                {
+                  "name": "I",
+                  "text": "Checks the charges of the first bottle."
+                },
+                {
+                  "name": "II",
+                  "text": "Checks the charges of the second bottle."
+                }
+              ],
+              "text": "This switch tests the small charges that open the extinguisher bottles. Position I checks the first bottle and II the second.",
+              "context": "The manual says that no yellow lamp should light if the charges are good.",
+              "src": "m1",
+              "page": "186"
+            },
+            {
+              "id": "fire-circuits-check",
+              "name": "Check fire circuits switch (OFF / CONTROL / 1-6)",
+              "type": "selector",
+              "match": [
+                "PTR-CPE-LVR-CONTR-MODE"
+              ],
+              "text": "This rotary switch checks the fire sensor groups one channel at a time. Each position should make the matching fire lamps light.",
+              "context": "The manual says to turn it back to OFF afterwards and to keep it there so the first bottle does not fire by accident.",
+              "src": "m1",
+              "page": "186"
+            },
+            {
+              "id": "fire-lamps",
+              "name": "Fire protection annunciators",
+              "type": "light",
+              "match": [
+                "item:center-overhead-console:1",
+                "item:center-overhead-console:2",
+                "item:center-overhead-console:4"
+              ],
+              "text": "These lamps show a fire in the left engine, right engine, KO-50 heater or the transmission and APU compartment, and that a bottle has fired.",
+              "context": "The red fire lamps flash. A voice also speaks the place of the fire.",
+              "count": 3,
+              "src": "m1",
+              "page": "184"
+            }
+          ]
+        },
+        {
+          "id": "apu-panel",
+          "name": "APU start control panel (AI-9V)",
+          "db": "center-overhead-console",
+          "src": "m1",
+          "page": "59",
+          "text": "The APU is a small extra engine at the back. It makes the compressed air that spins the main engines for starting, and can also make electricity. This panel starts and stops it.",
+          "context": "The APU is started first. The manual says to let it run at least one minute before starting the main engines, then shut it off when both engines run.",
+          "controls": [
+            {
+              "id": "apu-mode",
+              "name": "APU start mode switch (START / COLD CRANKING / FALSE START)",
+              "type": "switch3",
+              "match": [
+                "PTR-CPE-TMB-TURBOSTART-ST"
+              ],
+              "positions": [
+                {
+                  "name": "START",
+                  "text": "A normal start of the APU."
+                },
+                {
+                  "name": "COLD CRANKING",
+                  "text": "Turns the APU over without a start."
+                },
+                {
+                  "name": "FALSE START",
+                  "text": "Runs the start cycle without ignition, for example to clear a failed start."
+                }
+              ],
+              "text": "This switch picks what the next push of the start button does: really start, only spin the APU without fuel, or spin it after a failed start.",
+              "context": "The manual calls the positions START, CRANK and FALSE START. The normal start uses START.",
+              "src": "m1",
+              "page": "250"
+            },
+            {
+              "id": "apu-start",
+              "name": "APU START button",
+              "type": "button",
+              "match": [
+                "PTR-CPE-BTN-TURBOSTART-ON"
+              ],
+              "text": "Pressing this button for two to three seconds starts the automatic start of the APU.",
+              "context": "The AUTO IGNITION lamp lights, then the APU runs up to idle in under 20 seconds.",
+              "src": "m1",
+              "page": "251"
+            },
+            {
+              "id": "apu-stop",
+              "name": "APU OFF button",
+              "type": "button",
+              "match": [
+                "PTR-CPE-BTN-TURBOSTART-OFF"
+              ],
+              "text": "Pressing this button for two to three seconds stops the APU. It also aborts a start.",
+              "context": "The pilot shuts the APU down after both main engines are running.",
+              "src": "m1",
+              "page": "252"
+            },
+            {
+              "id": "apu-gauges",
+              "name": "APU EGT and APU air pressure gauges",
+              "type": "gauge",
+              "match": [
+                "item:center-overhead-console:3",
+                "item:center-overhead-console:5",
+                "item:center-overhead-console:6"
+              ],
+              "text": "These dials show the exhaust gas temperature of the APU and the air pressure it makes for starting the main engines.",
+              "context": "The manual says the temperature must be read times 100 and stay below 880 degrees during start. The air pressure should be 1.3 to 2.0 at idle.",
+              "count": 3,
+              "src": "m1",
+              "page": "92"
+            }
+          ]
+        },
+        {
+          "id": "fuel-panel",
+          "name": "Fuel system control panel",
+          "db": "center-overhead-console",
+          "src": "m1",
+          "page": "157",
+          "text": "The panel for the fuel pumps and valves. Fuel is stored in two side tanks and a small feed tank behind the main gear. Pumps move it, and valves can shut each line off.",
+          "context": "Before start the pilot switches the pumps on and checks that their lamps light. In flight the pilot checks the pump lamps and the fuel left.",
+          "controls": [
+            {
+              "id": "fuel-valve-left",
+              "name": "Left shutoff valve switch (guarded)",
+              "type": "switch2",
+              "match": [
+                "PTR-CPE-TMB-PUMP-L",
+                "PTR-CPE-CVR-PUMP-L"
+              ],
+              "positions": [
+                {
+                  "name": "ON",
+                  "text": "The valve is open and the left engine gets fuel."
+                },
+                {
+                  "name": "OFF",
+                  "text": "The valve is closed and the left engine gets no fuel."
+                }
+              ],
+              "text": "This guarded switch opens and closes the left emergency fuel shutoff valve. Closed, no fuel flows to the left engine.",
+              "context": "A lamp below the switch shows the closed valve. The valves are closed in a fire; the pilot lifts the cover first.",
+              "src": "m1",
+              "page": "156"
+            },
+            {
+              "id": "fuel-valve-right",
+              "name": "Right shutoff valve switch (guarded)",
+              "type": "switch2",
+              "match": [
+                "PTR-CPE-TMB-PUMP-R",
+                "PTR-CPE-CVR-PUMP-R"
+              ],
+              "positions": [
+                {
+                  "name": "ON",
+                  "text": "The valve is open and the right engine gets fuel."
+                },
+                {
+                  "name": "OFF",
+                  "text": "The valve is closed and the right engine gets no fuel."
+                }
+              ],
+              "text": "This guarded switch opens and closes the right emergency fuel shutoff valve. Closed, no fuel flows to the right engine.",
+              "context": "A lamp below the switch shows the closed valve. The pilot lifts the cover first.",
+              "src": "m1",
+              "page": "156"
+            },
+            {
+              "id": "fuel-crossfeed",
+              "name": "Crossfeed switch (guarded)",
+              "type": "switch2",
+              "match": [
+                "PTR-CPE-TMB-PUMP-RING",
+                "PTR-CPE-CVR-PUMP-RING"
+              ],
+              "positions": [
+                {
+                  "name": "ON",
+                  "text": "The connection between the two side tanks is open."
+                },
+                {
+                  "name": "OFF",
+                  "text": "The connection is shut."
+                }
+              ],
+              "text": "This guarded switch opens or closes the connection between the left and the right side tank. Fuel can then flow from one to the other.",
+              "context": "The manual says the normal position is open. It is shut when one tank is damaged, to save the fuel in the other. A yellow lamp shows when it is shut.",
+              "src": "m1",
+              "page": "156"
+            },
+            {
+              "id": "fuel-bypass",
+              "name": "Bypass switch (guarded)",
+              "type": "switch2",
+              "match": [
+                "PTR-CPE-TMB-PUMP-PASS",
+                "PTR-CPE-CVR-PUMP-PASS"
+              ],
+              "positions": [
+                {
+                  "name": "ON",
+                  "text": "The bypass is open."
+                },
+                {
+                  "name": "OFF",
+                  "text": "The bypass is closed (normal)."
+                }
+              ],
+              "text": "This guarded switch opens a bypass valve, a backup path for fuel from the side tanks to the feed tank. It is only for the case that the float valve fails.",
+              "context": "The manual says the normal position is closed. With it open, the pilot must watch the fuel in the feed tank.",
+              "src": "m1",
+              "page": "158"
+            },
+            {
+              "id": "fuel-feed-pump",
+              "name": "Feed tank pump switch (FLOW)",
+              "type": "switch2",
+              "match": [
+                "PTR-CPE-TMB-PUMP-RATE"
+              ],
+              "positions": [
+                {
+                  "name": "ON",
+                  "text": "The feed tank pump runs."
+                },
+                {
+                  "name": "OFF",
+                  "text": "The feed tank pump is off."
+                }
+              ],
+              "text": "This switch turns on the pump of the feed tank, the small tank that feeds the engines. A green lamp shows it works.",
+              "context": "The manual says the pilot switches it on before starting the APU. The engines can still get fuel by gravity if it fails.",
+              "src": "m1",
+              "page": "155"
+            },
+            {
+              "id": "fuel-left-pump",
+              "name": "Left tank pump switch",
+              "type": "switch2",
+              "match": [
+                "PTR-CPE-TMB-PUMPTNK-L"
+              ],
+              "positions": [
+                {
+                  "name": "ON",
+                  "text": "The left tank pump runs."
+                },
+                {
+                  "name": "OFF",
+                  "text": "The left tank pump is off."
+                }
+              ],
+              "text": "This switch turns on the pump in the left side tank. It moves fuel to the feed tank.",
+              "context": "The manual says to turn off a failed pump; the other pump can fill the feed tank alone.",
+              "src": "m1",
+              "page": "155"
+            },
+            {
+              "id": "fuel-right-pump",
+              "name": "Right tank pump switch",
+              "type": "switch2",
+              "match": [
+                "PTR-CPE-TMB-PUMPTNK-R"
+              ],
+              "positions": [
+                {
+                  "name": "ON",
+                  "text": "The right tank pump runs."
+                },
+                {
+                  "name": "OFF",
+                  "text": "The right tank pump is off."
+                }
+              ],
+              "text": "This switch turns on the pump in the right side tank. It moves fuel to the feed tank.",
+              "context": "The manual says the pilot checks the pump lamps in flight.",
+              "src": "m1",
+              "page": "155"
+            },
+            {
+              "id": "fuel-refuel-control",
+              "name": "Refueling control switch (REFUEL / OFF / CHECK)",
+              "type": "switch3",
+              "match": [
+                "PTR-CPE-TMB-PUMP-CONTR",
+                "item:center-overhead-console:7"
+              ],
+              "positions": [
+                {
+                  "name": "REFUEL",
+                  "text": "Refuelling mode of the full-tank lamps."
+                },
+                {
+                  "name": "OFF",
+                  "text": "The full-tank lamps are off."
+                },
+                {
+                  "name": "CHECK",
+                  "text": "Lamp check of the full-tank lamps."
+                }
+              ],
+              "text": "This switch sets the lamps that show a full tank during refuelling on the ground.",
+              "context": "The manual says these lamps are near the filler necks and are not implemented in the simulator.",
+              "src": "m1",
+              "page": "158"
+            }
+          ]
+        },
+        {
+          "id": "engine-start-panel",
+          "name": "Engine start control panel",
+          "db": "center-overhead-console",
+          "src": "m1",
+          "page": "57",
+          "text": "The panel for starting the two main engines. A start computer runs the steps by itself after the pilot picks the mode and the engine and presses START.",
+          "context": "The APU must run first. After the start button, the pilot opens the fuel shutoff lever of the engine when the engine speed rises.",
+          "controls": [
+            {
+              "id": "engstart-mode",
+              "name": "Engine start mode switch (START / OFF / COLD CRANKING)",
+              "type": "switch3",
+              "match": [
+                "PTR-CPE-TMB-ENGSTART-ROLL",
+                "item:center-overhead-console:8"
+              ],
+              "positions": [
+                {
+                  "name": "START",
+                  "text": "A normal engine start."
+                },
+                {
+                  "name": "OFF",
+                  "text": "Starter off."
+                },
+                {
+                  "name": "COLD CRANKING",
+                  "text": "Turns the engine over without starting it."
+                }
+              ],
+              "text": "This switch picks what the start does: a real start, or only turning the engine over without fuel and fire.",
+              "context": "The manual calls the second mode CRANK or false start. The normal start uses START.",
+              "src": "m1",
+              "page": "57"
+            },
+            {
+              "id": "engstart-select",
+              "name": "Engine selector switch (LEFT / OFF / RIGHT)",
+              "type": "switch3",
+              "match": [
+                "PTR-CPE-TMB-ENGSTART-LFTRGT"
+              ],
+              "positions": [
+                {
+                  "name": "LEFT",
+                  "text": "The left engine is chosen."
+                },
+                {
+                  "name": "OFF",
+                  "text": "No engine is chosen."
+                },
+                {
+                  "name": "RIGHT",
+                  "text": "The right engine is chosen."
+                }
+              ],
+              "text": "This switch chooses which of the two engines the start button starts.",
+              "context": "The manual says to start the engine on the downwind side first.",
+              "src": "m1",
+              "page": "253"
+            },
+            {
+              "id": "engstart-start",
+              "name": "Engine START button",
+              "type": "button",
+              "match": [
+                "PTR-CPE-BTN-ENGSTART-ON"
+              ],
+              "text": "Pressing this button for two to three seconds begins the automatic start of the chosen engine.",
+              "context": "The AUTO IGNITION and STARTER lamps light during the start. If the engine is not at 55 percent speed after 55 seconds, the start is aborted.",
+              "src": "m1",
+              "page": "58"
+            },
+            {
+              "id": "engstart-abort",
+              "name": "Abort engine start button",
+              "type": "button",
+              "match": [
+                "PTR-CPE-BTN-ENGSTART-OFF"
+              ],
+              "text": "Pressing this button stops the engine start at any time.",
+              "context": "The pilot uses it when something looks wrong during start.",
+              "src": "m1",
+              "page": "58"
+            },
+            {
+              "id": "engstart-ignition-check",
+              "name": "Engine ignition check switch (LEFT / OFF / RIGHT)",
+              "type": "switch3",
+              "match": [
+                "PTR-CPE-TMB-ENGSTART-TEST"
+              ],
+              "positions": [
+                {
+                  "name": "LEFT",
+                  "text": "Checks the left engine ignition; springs back."
+                },
+                {
+                  "name": "OFF",
+                  "text": "No check."
+                },
+                {
+                  "name": "RIGHT",
+                  "text": "Checks the right engine ignition; springs back."
+                }
+              ],
+              "text": "This spring switch checks the ignition of the left or the right engine. The game names it 'Engine Ignition Check Switch'.",
+              "context": "The manual does not describe this switch.",
+              "src": "m1",
+              "page": "57"
+            }
+          ]
+        },
+        {
+          "id": "hydraulic-panel",
+          "name": "Hydraulic system control panel",
+          "db": "center-overhead-console",
+          "src": "m1",
+          "page": "163",
+          "text": "Hydraulics is oil under high pressure that helps the pilot move the heavy rotor controls. The helicopter has a main system and a backup system, with a switch for each.",
+          "context": "Both switches are normally on. If the main system fails, the backup takes over by itself and a red lamp lights.",
+          "controls": [
+            {
+              "id": "hydro-main",
+              "name": "Main hydraulic system switch",
+              "type": "switch2",
+              "match": [
+                "PTR-CPE-TMB-HYDRO-MAIN"
+              ],
+              "positions": [
+                {
+                  "name": "ON",
+                  "text": "The main hydraulic system works."
+                },
+                {
+                  "name": "OFF",
+                  "text": "The main hydraulic system is off and the backup takes over."
+                }
+              ],
+              "text": "This switch turns the main hydraulic system on and off. A green lamp shows that it is working.",
+              "context": "The manual says that if it is switched off the backup takes over and its red lamp lights.",
+              "src": "m1",
+              "page": "165"
+            },
+            {
+              "id": "hydro-backup",
+              "name": "Backup (auxiliary) hydraulic switch (guarded)",
+              "type": "switch2",
+              "match": [
+                "PTR-CPE-TMB-HYDRO-DBL",
+                "PTR-CPE-CVR-HYDRO-DBL"
+              ],
+              "positions": [
+                {
+                  "name": "ON",
+                  "text": "The backup system is ready."
+                },
+                {
+                  "name": "OFF",
+                  "text": "The backup system is off."
+                }
+              ],
+              "text": "This guarded switch turns the backup hydraulic system on and off. A cover protects it.",
+              "context": "The backup is normally left on, so that it can take over by itself when the main system fails.",
+              "src": "m1",
+              "page": "165"
+            },
+            {
+              "id": "hydro-backup-off",
+              "name": "Backup hydraulic OFF button",
+              "type": "button",
+              "match": [
+                "PTR-CPE-BTN-DBLOFF"
+              ],
+              "text": "Pressing this button switches from the backup system back to the main system. It is held for one to one and a half seconds.",
+              "context": "The manual says that during engine start the backup may switch on first; this button then returns to the main system.",
+              "src": "m1",
+              "page": "164"
+            },
+            {
+              "id": "hydro-gauges",
+              "name": "Main and backup hydraulic pressure gauges",
+              "type": "gauge",
+              "match": [
+                "item:center-overhead-console:9",
+                "item:center-overhead-console:10",
+                "item:center-overhead-console:11"
+              ],
+              "text": "These dials show the pressure of the main and the backup hydraulic system. The reading must be multiplied by 10.",
+              "context": "The manual says the normal reading is 45 to 68 kg/cm2 for the working system.",
+              "count": 3,
+              "src": "m1",
+              "page": "92"
+            }
+          ]
+        },
+        {
+          "id": "engine-stop-levers",
+          "name": "Engine fuel shutoff levers",
+          "src": "m1",
+          "page": "54",
+          "text": "Two levers over the pilot that open and close the fuel to each engine. Forward is open and aft is closed (STOP).",
+          "context": "The pilot opens a lever when the engine starts spinning and closes it to shut the engine down.",
+          "controls": [
+            {
+              "id": "engine-stop-left",
+              "name": "Left engine stop lever",
+              "type": "lever",
+              "match": [
+                "PTR-ENGSTOP-ARM-L"
+              ],
+              "positions": [
+                {
+                  "name": "FORWARD",
+                  "text": "Fuel flows to the left engine."
+                },
+                {
+                  "name": "AFT",
+                  "text": "Fuel is cut off and the engine stops."
+                }
+              ],
+              "text": "This lever opens or closes the fuel to the left engine. Pulling it back stops the engine.",
+              "context": "The manual says it is moved forward when the engine speed starts to rise during start.",
+              "src": "m1",
+              "page": "54"
+            },
+            {
+              "id": "engine-stop-right",
+              "name": "Right engine stop lever",
+              "type": "lever",
+              "match": [
+                "PTR-ENGSTOP-ARM-R"
+              ],
+              "positions": [
+                {
+                  "name": "FORWARD",
+                  "text": "Fuel flows to the right engine."
+                },
+                {
+                  "name": "AFT",
+                  "text": "Fuel is cut off and the engine stops."
+                }
+              ],
+              "text": "This lever opens or closes the fuel to the right engine. Pulling it back stops the engine.",
+              "context": "The pilot uses it for the start and when shutting down.",
+              "src": "m1",
+              "page": "54"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "right-overhead",
+      "where": "overhead",
+      "name": "Right overhead console",
+      "text": "The ceiling panel above the copilot's side. It holds the radio direction finders ARK-9 and ARK-UD, the gyro compass panel and the cabin heater.",
+      "panels": [
+        {
+          "id": "ark9",
+          "name": "ARK-9 automatic direction finder (ADF) control panel",
+          "db": "right-overhead-console",
+          "src": "m1",
+          "page": "122",
+          "text": "The ARK-9 is a radio compass for beacons that send on medium waves (150 to 1300 kHz). It points a thin needle on the heading dial toward the beacon, and lets the pilot hear the beacon's name in Morse code.",
+          "context": "The pilot sets the beacon's frequency, then turns the mode to COMP. The panel has a main and a reserve channel, so the pilot can prepare the next beacon while using the first.",
+          "controls": [
+            {
+              "id": "ark9-mode",
+              "name": "ARK-9 mode selector (OFF / COMP / ANT / LOOP)",
+              "type": "selector",
+              "match": [
+                "PTR-RPE-LVR-FRQMODE",
+                "item:right-overhead-console:1"
+              ],
+              "positions": [
+                {
+                  "name": "OFF",
+                  "text": "The ARK-9 is off."
+                },
+                {
+                  "name": "COMP",
+                  "text": "The needle points to the beacon; main working mode."
+                },
+                {
+                  "name": "ANT",
+                  "text": "Only listens to the beacon; no direction."
+                },
+                {
+                  "name": "LOOP",
+                  "text": "Listens through the loop antenna to find the direction by ear."
+                }
+              ],
+              "text": "This rotary switch turns the ADF on and picks its way of working: compass, antenna or loop.",
+              "context": "COMP is the main mode and shows the direction to the beacon. ANT is for listening and tuning, and LOOP is a backup that finds the direction by listening to the signal fade.",
+              "src": "m1",
+              "page": "123"
+            },
+            {
+              "id": "ark9-voice-cw",
+              "name": "ARK-9 VOICE / CW switch (TLF / TLG)",
+              "type": "switch2",
+              "match": [
+                "PTR-RPE-TMB-FRQTLG"
+              ],
+              "positions": [
+                {
+                  "name": "TLF",
+                  "text": "Voice signal (VOICE)."
+                },
+                {
+                  "name": "TLG",
+                  "text": "Continuous wave signal (CW)."
+                }
+              ],
+              "text": "This switch picks what kind of signal the ADF listens for: a voice or music signal, or an unvoiced continuous tone.",
+              "context": "The manual says VOICE listens to a broadcasting station and the beacon name, and CW is for a continuous wave signal.",
+              "src": "m1",
+              "page": "124"
+            },
+            {
+              "id": "ark9-loop",
+              "name": "ARK-9 loop control switch (LEFT / OFF / RIGHT)",
+              "type": "switch3",
+              "match": [
+                "PTR-RPE-TMB-FRQFRAME"
+              ],
+              "positions": [
+                {
+                  "name": "LEFT",
+                  "text": "Turns the loop to the left; springs back."
+                },
+                {
+                  "name": "OFF",
+                  "text": "The loop is not turned."
+                },
+                {
+                  "name": "RIGHT",
+                  "text": "Turns the loop to the right; springs back."
+                }
+              ],
+              "text": "This spring switch turns the search loop antenna by hand to the left or right.",
+              "context": "The manual says the pilot can use it to check that the bearing needle follows when the antenna is turned.",
+              "src": "m1",
+              "page": "125"
+            },
+            {
+              "id": "ark9-volume",
+              "name": "ARK-9 volume (GAIN) knob",
+              "type": "knob",
+              "match": [
+                "PTR-RPE-LVR-FRQVOLUME"
+              ],
+              "text": "Turning this knob makes the beacon sound in the headset louder or quieter.",
+              "context": "The manual says to set it to maximum when tuning.",
+              "src": "m1",
+              "page": "125"
+            },
+            {
+              "id": "ark9-channel",
+              "name": "ARK-9 channel selector (MAIN / BACKUP)",
+              "type": "switch2",
+              "match": [
+                "PTR-RPE-TMB-NEARFAR"
+              ],
+              "positions": [
+                {
+                  "name": "MAIN",
+                  "text": "The main channel is used."
+                },
+                {
+                  "name": "BACKUP",
+                  "text": "The reserve channel is used."
+                }
+              ],
+              "text": "This switch picks which of the two stored frequencies the ADF uses: the main channel or the backup (reserve) channel.",
+              "context": "The pilot can set the next beacon on the unused channel and then switch over.",
+              "src": "m1",
+              "page": "123"
+            },
+            {
+              "id": "ark9-main-dials",
+              "name": "ARK-9 main channel frequency dials (100 kHz, 10 kHz)",
+              "type": "knob",
+              "match": [
+                "PTR-RPE-LVR-FRQMAIN-SEC",
+                "PTR-RPE-LVR-FRQMAIN",
+                "item:right-overhead-console:4"
+              ],
+              "text": "These two dials set the frequency of the main channel: the first the hundreds of kilohertz, the second the tens.",
+              "context": "The pilot dials the beacon frequency here and listens to its call letters.",
+              "count": 2,
+              "src": "m1",
+              "page": "123"
+            },
+            {
+              "id": "ark9-backup-dials",
+              "name": "ARK-9 backup channel frequency dials (100 kHz, 10 kHz)",
+              "type": "knob",
+              "match": [
+                "PTR-RPE-LVR-FRQRES-SEC",
+                "PTR-RPE-LVR-FRQRES"
+              ],
+              "text": "These two dials set the frequency of the backup (reserve) channel in the same way.",
+              "context": "They let the pilot prepare a second beacon.",
+              "count": 2,
+              "src": "m1",
+              "page": "123"
+            },
+            {
+              "id": "ark9-tune",
+              "name": "ARK-9 fine tune knobs (main, backup)",
+              "type": "knob",
+              "match": [
+                "PTR-RPE-LVR-FRQADJMAIN",
+                "PTR-RPE-LVR-FRQADJRES"
+              ],
+              "text": "These two knobs fine-tune the frequency of the main and of the backup channel a little up or down.",
+              "context": "The manual says they move the frequency by -10 to +20 kHz.",
+              "count": 2,
+              "src": "m1",
+              "page": "123"
+            }
+          ]
+        },
+        {
+          "id": "arkud",
+          "name": "ARK-UD VHF homing set control panel",
+          "db": "right-overhead-console",
+          "src": "m1",
+          "page": "125",
+          "text": "The ARK-UD is a radio finder for VHF and UHF stations, made to find downed crews with a small emergency radio. It points the bearing needle on the heading dial toward the signal.",
+          "context": "The pilot picks the band and channel and uses the narrow or wide mode. A beacon must be placed in the mission for the ARK-UD to work in the game.",
+          "controls": [
+            {
+              "id": "arkud-mode",
+              "name": "ARK-UD mode selector (OFF / NARROW / WIDE / PULSE / RC)",
+              "type": "selector",
+              "match": [
+                "PTR-RPE-LVR-ARKMODE1",
+                "item:right-overhead-console:2"
+              ],
+              "positions": [
+                {
+                  "name": "OFF",
+                  "text": "The ARK-UD is off."
+                },
+                {
+                  "name": "NARROW",
+                  "text": "Narrow band reception."
+                },
+                {
+                  "name": "WIDE",
+                  "text": "Wide band reception."
+                },
+                {
+                  "name": "PULSE",
+                  "text": "Receives a pulse signal on 243 MHz."
+                },
+                {
+                  "name": "RC",
+                  "text": "Not used according to the manual."
+                }
+              ],
+              "text": "This rotary switch turns the ARK-UD on and picks how it listens. Narrow band is for a steady signal, wide band when close to the station.",
+              "context": "The manual says the pilot starts with narrow band and goes to wide when the WIDE lamp lights near the beacon. RC is not used.",
+              "src": "m1",
+              "page": "127"
+            },
+            {
+              "id": "arkud-channel",
+              "name": "ARK-UD channel selector (1-6)",
+              "type": "selector",
+              "match": [
+                "PTR-RPE-LVR-ARKMODE2"
+              ],
+              "positions": [
+                {
+                  "name": "1",
+                  "text": "Channel 1."
+                },
+                {
+                  "name": "2",
+                  "text": "Channel 2."
+                },
+                {
+                  "name": "3",
+                  "text": "Channel 3."
+                },
+                {
+                  "name": "4",
+                  "text": "Channel 4."
+                },
+                {
+                  "name": "5",
+                  "text": "Channel 5."
+                },
+                {
+                  "name": "6",
+                  "text": "Channel 6."
+                }
+              ],
+              "text": "This rotary switch picks one of six stored VHF frequencies.",
+              "context": "The manual lists them as 114.166, 114.333, 114.583, 121.5, 123.1 and 124.1 MHz. In the UHF band the channel does not matter.",
+              "src": "m1",
+              "page": "128"
+            },
+            {
+              "id": "arkud-band",
+              "name": "ARK-UD band switch (MW / DW, VHF / UHF)",
+              "type": "switch2",
+              "match": [
+                "PTR-RPE-TMB-ARKUKV"
+              ],
+              "positions": [
+                {
+                  "name": "MW",
+                  "text": "VHF band; use the channel selector."
+                },
+                {
+                  "name": "DW",
+                  "text": "UHF band."
+                }
+              ],
+              "text": "This switch picks the VHF or the UHF band of the ARK-UD.",
+              "context": "The game labels the positions MW and DW (metre wave and decimetre wave); the manual calls the switch FQ BAND with VHF up and UHF down.",
+              "src": "m1",
+              "page": "127"
+            },
+            {
+              "id": "arkud-sens",
+              "name": "ARK-UD sensitivity switch (MORE / LESS)",
+              "type": "switch2",
+              "match": [
+                "PTR-RPE-TMB-ARKSENS"
+              ],
+              "positions": [
+                {
+                  "name": "MORE",
+                  "text": "Higher sensitivity."
+                },
+                {
+                  "name": "LESS",
+                  "text": "Lower sensitivity."
+                }
+              ],
+              "text": "This switch sets how sensitive the homing receiver is.",
+              "context": "The manual calls it the sensitivity HIGH-LOW switch.",
+              "src": "m1",
+              "page": "128"
+            },
+            {
+              "id": "arkud-volume",
+              "name": "ARK-UD volume knob",
+              "type": "knob",
+              "match": [
+                "PTR-RPE-LVR-ARKVOL"
+              ],
+              "text": "Turning this knob makes the sound of the homing set louder or quieter.",
+              "context": "The pilot hears the beacon tone in the headset when the SPU-7 source is set to the ARK-UD.",
+              "src": "m1",
+              "page": "127"
+            },
+            {
+              "id": "arkud-test",
+              "name": "ARK-UD test (control) button",
+              "type": "button",
+              "match": [
+                "PTR-RPE-BTN-CONTR"
+              ],
+              "text": "Pressing this button runs the self-test of the ARK-UD. The needle on the heading dial should point to about 180 degrees.",
+              "context": "It is part of the check before flight.",
+              "src": "m1",
+              "page": "128"
+            },
+            {
+              "id": "arkud-antenna",
+              "name": "ARK-UD left and right antenna buttons",
+              "type": "button",
+              "match": [
+                "PTR-RPE-BTN-ANTL",
+                "PTR-RPE-BTN-ANTR"
+              ],
+              "text": "These two buttons turn the loop antenna by hand to the left or to the right.",
+              "context": "The pilot can use them to test or help the direction finding.",
+              "count": 2,
+              "src": "m1",
+              "page": "127"
+            }
+          ]
+        },
+        {
+          "id": "gmk",
+          "name": "PU-26 gyro compass (GMK-1A) control panel",
+          "db": "right-overhead-console",
+          "src": "m1",
+          "page": "102",
+          "text": "The GMK-1A is the gyro compass, the helicopter's main heading system. This panel sets its mode, the home latitude and the course.",
+          "context": "The pilot sets the hemisphere and latitude, tests the system, and aligns it to the right magnetic direction before take-off. The power switch is on the right triangular panel.",
+          "controls": [
+            {
+              "id": "gmk-hemisphere",
+              "name": "GMC hemisphere switch (NORTH / SOUTH)",
+              "type": "switch2",
+              "match": [
+                "PTR-RPE-LVR-CRDNS",
+                "item:right-overhead-console:3"
+              ],
+              "positions": [
+                {
+                  "name": "NORTH",
+                  "text": "Northern hemisphere."
+                },
+                {
+                  "name": "SOUTH",
+                  "text": "Southern hemisphere."
+                }
+              ],
+              "text": "This switch tells the compass if the helicopter is in the northern or the southern half of the world.",
+              "context": "The manual says to set it to the current hemisphere before use.",
+              "src": "m1",
+              "page": "104"
+            },
+            {
+              "id": "gmk-latitude",
+              "name": "GMC latitude knob",
+              "type": "knob",
+              "match": [
+                "PTR-RPE-LVR-CRDLAT"
+              ],
+              "text": "This knob sets the latitude, how far north or south the helicopter is. The compass uses it to cancel the effect of the Earth turning.",
+              "context": "The pilot sets it to the current latitude during the preparation.",
+              "src": "m1",
+              "page": "104"
+            },
+            {
+              "id": "gmk-mode",
+              "name": "GMC mode switch (MK / GPK / AK)",
+              "type": "selector",
+              "match": [
+                "PTR-RPE-LVR-CRDMK"
+              ],
+              "positions": [
+                {
+                  "name": "MC",
+                  "text": "Magnetic compass mode (MK)."
+                },
+                {
+                  "name": "DG",
+                  "text": "Directional gyro mode (GPK), the main mode."
+                },
+                {
+                  "name": "AC",
+                  "text": "Astrocompass mode (AK)."
+                }
+              ],
+              "text": "This switch picks how the compass finds north: by the magnetic compass (MK), by the gyroscope (GPK) or by the astrocompass (AK).",
+              "context": "The manual says GPK is the main mode. Switching from GPK to MK aligns the gyro quickly with the magnetic heading.",
+              "src": "m1",
+              "page": "104"
+            },
+            {
+              "id": "gmk-test",
+              "name": "GMC control (test) switch (0 / CONTROL / 300)",
+              "type": "switch3",
+              "match": [
+                "PTR-RPE-LVR-CRDCONTR"
+              ],
+              "positions": [
+                {
+                  "name": "0",
+                  "text": "Test to 0 degrees."
+                },
+                {
+                  "name": "CONTROL",
+                  "text": "Middle, normal position."
+                },
+                {
+                  "name": "300",
+                  "text": "Test to 300 degrees."
+                }
+              ],
+              "text": "This spring switch tests the compass by turning the indication to 0 or 300 degrees. The reading must come back within 10 degrees.",
+              "context": "It also lights the BANK CORR lamp during the test.",
+              "src": "m1",
+              "page": "104"
+            },
+            {
+              "id": "gmk-course",
+              "name": "GMC course set switch (CCW / OFF / CW)",
+              "type": "switch3",
+              "match": [
+                "PTR-RPE-LVR-CRDZK"
+              ],
+              "positions": [
+                {
+                  "name": "LEFT",
+                  "text": "Turns the card counter-clockwise; springs back."
+                },
+                {
+                  "name": "OFF",
+                  "text": "No change."
+                },
+                {
+                  "name": "RIGHT",
+                  "text": "Turns the card clockwise; springs back."
+                }
+              ],
+              "text": "This spring switch turns the compass card of the heading dial left or right to line it up with the right direction.",
+              "context": "In the manual this is the course setting selector, used to set the heading in GPK mode.",
+              "src": "m1",
+              "page": "104"
+            }
+          ]
+        },
+        {
+          "id": "ko50",
+          "name": "KO-50 cabin heater control panel",
+          "db": "right-overhead-console",
+          "src": "m1",
+          "page": "191",
+          "text": "The KO-50 is a kerosene burner that warms the cockpit and the cargo cabin. This small panel starts it, picks the mode and the temperature, and shows its status.",
+          "context": "The pilot uses it in cold weather: set automatic mode, set the temperature, press START. The heater needs its circuit breaker on the right breaker panel.",
+          "controls": [
+            {
+              "id": "ko50-mode",
+              "name": "KO-50 mode switch (MANUAL / OFF / AUTO)",
+              "type": "switch3",
+              "match": [
+                "PTR-RPE-TMB-KO50MODE"
+              ],
+              "positions": [
+                {
+                  "name": "MANUAL",
+                  "text": "The heat output is picked by hand."
+                },
+                {
+                  "name": "OFF",
+                  "text": "The heater is off."
+                },
+                {
+                  "name": "AUTO",
+                  "text": "The heater holds the temperature set by the knob."
+                }
+              ],
+              "text": "This switch picks how the heater works: automatic at a set temperature, or by hand, or off.",
+              "context": "The manual says the neutral position switches the heater off after use.",
+              "src": "m1",
+              "page": "193"
+            },
+            {
+              "id": "ko50-regime",
+              "name": "KO-50 heat output switch (FILLING / FULL / MEDIUM)",
+              "type": "switch3",
+              "match": [
+                "PTR-RPE-TMB-KO50FILL"
+              ],
+              "positions": [
+                {
+                  "name": "FILLING",
+                  "text": "Priming for maintenance; not modelled."
+                },
+                {
+                  "name": "FULL",
+                  "text": "High heat output."
+                },
+                {
+                  "name": "MEDIUM",
+                  "text": "Medium heat output."
+                }
+              ],
+              "text": "This switch picks the heat output in manual mode: full or medium. The third position is for servicing.",
+              "context": "The manual says the priming position is for maintenance and is not modelled.",
+              "src": "m1",
+              "page": "192"
+            },
+            {
+              "id": "ko50-start",
+              "name": "KO-50 heater START button",
+              "type": "button",
+              "match": [
+                "PTR-RPE-BTN-KO50START",
+                "item:right-overhead-console:6"
+              ],
+              "text": "Pressing this button starts the heater. Lamps show the preheating, the igniter and that the heater runs.",
+              "context": "The manual says that after the preheater lamp goes out the ignition lamp should go out in under 40 seconds, which shows stable burning.",
+              "src": "m1",
+              "page": "193"
+            },
+            {
+              "id": "ko50-fan",
+              "name": "KO-50 fan switch (ventilation)",
+              "type": "switch2",
+              "match": [
+                "PTR-RPE-TMB-KO50VENT"
+              ],
+              "positions": [
+                {
+                  "name": "ON",
+                  "text": "The fan runs."
+                },
+                {
+                  "name": "OFF",
+                  "text": "The fan is off."
+                }
+              ],
+              "text": "This switch runs the heater's fan alone, to blow fresh air through the cabin without heat.",
+              "context": "The manual says it is for ventilation in summer and for cooling the heater before it is switched off.",
+              "src": "m1",
+              "page": "193"
+            },
+            {
+              "id": "ko50-temp",
+              "name": "KO-50 target temperature knob",
+              "type": "knob",
+              "match": [
+                "PTR-RPE-LVR-KO50TMP",
+                "item:right-overhead-console:5"
+              ],
+              "text": "Turning this knob sets the temperature the heater should hold in automatic mode.",
+              "context": "The pilot sets it before pressing START.",
+              "src": "m1",
+              "page": "193"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

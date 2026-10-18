@@ -1,0 +1,1677 @@
+{
+  "format": "joypro-cockpit-guide",
+  "version": 1,
+  "id": "dcs-m-2000c",
+  "title": "Mirage 2000C (DCS)",
+  "variants": [
+    "mirage-2000c"
+  ],
+  "games": [
+    "DCS"
+  ],
+  "sets": [
+    "DCS/M-2000C"
+  ],
+  "sources": [
+    {
+      "id": "m1",
+      "title": "DCS M-2000C Flight Manual (EN)",
+      "file": "Mods/aircraft/M-2000C/Doc/DCS M-2000C Flight Manual EN.pdf"
+    }
+  ],
+  "intro": "The Mirage 2000C is a single-seat French delta-wing fighter with one jet engine. The pilot sits under a bubble canopy. The throttle is on the left console and the stick between the knees. In the middle of the main panel are the head-up display (the glass screen with flight numbers and aiming marks) and the radar screen. The weapon panels, the radios, the navigation panels and the engine switches sit on the sides and the consoles.",
+  "areas": [
+    {
+      "id": "front-center",
+      "where": "front-center",
+      "name": "Main panel: head-up display and radar screen",
+      "text": "The middle of the main panel. The head-up display sits in front of the pilot's eyes, the radar screen below it, and the flight instruments around it.",
+      "panels": [
+        {
+          "id": "hud-control",
+          "name": "HUD control panel (PCTH)",
+          "src": "m1",
+          "page": "149",
+          "text": "This small panel sits just above the radar screen. It switches the head-up display on, sets how bright it is and chooses what it shows. The head-up display (VTH) is the glass screen in front of the pilot's eyes that shows flight numbers and aiming marks.",
+          "context": "The pilot switches the HUD on during the start-up, because the Mirage can take off, navigate and land using the HUD alone. It needs about 30 seconds to warm up.",
+          "controls": [
+            {
+              "id": "hud-power",
+              "name": "HUD power switch (VTH)",
+              "type": "switch3",
+              "match": [
+                "PTN_201"
+              ],
+              "positions": [
+                {
+                  "name": "OFF",
+                  "text": "The head-up display is off and shows nothing."
+                },
+                {
+                  "name": "ON",
+                  "text": "The display is on. It starts after a warm-up of about 30 seconds."
+                },
+                {
+                  "name": "TEST",
+                  "text": "The game offers a test position. The manual says the HUD test does not work in this simulation."
+                }
+              ],
+              "text": "This switch turns the head-up display on and off. It also has a position to start a test of the display.",
+              "context": "It is one of the first things switched on during start-up. After switching on, the glass screen first needs to warm up.",
+              "src": "m1",
+              "page": "149"
+            },
+            {
+              "id": "hud-bright",
+              "name": "HUD brightness knob (LUM)",
+              "type": "knob",
+              "match": [
+                "PTN_202"
+              ],
+              "text": "Turning this knob makes the symbols on the head-up display brighter or darker.",
+              "context": "The pilot turns it down at night and up in bright daylight so the marks stay easy to read.",
+              "src": "m1",
+              "page": "149"
+            },
+            {
+              "id": "hud-declutter",
+              "name": "HUD declutter switch (ALL)",
+              "type": "button",
+              "match": [
+                "PTN_203"
+              ],
+              "text": "This switch removes extra symbols from the head-up display so that only the most important ones stay. Pushing it again brings them back.",
+              "context": "The pilot uses it when the display is too crowded, for example during a fight. The up position springs back.",
+              "src": "m1",
+              "page": "149"
+            },
+            {
+              "id": "hud-alt-select",
+              "name": "Altitude display selector (ZB / H / SELH)",
+              "type": "switch3",
+              "match": [
+                "PTN_204"
+              ],
+              "positions": [
+                {
+                  "name": "ZB",
+                  "text": "Only the height measured from air pressure (above sea level) is shown."
+                },
+                {
+                  "name": "H",
+                  "text": "The radar height above the ground is shown in addition to the pressure height."
+                },
+                {
+                  "name": "SELH",
+                  "text": "The minimum height chosen with the minimum altitude knob is shown, plus the pressure height."
+                }
+              ],
+              "text": "This switch chooses which heights the head-up display writes. The height can come from the air pressure or from a radar that looks down at the ground.",
+              "context": "Low flying and landing use the radar height above the ground. The pilot picks the setting that matches the phase of flight.",
+              "src": "m1",
+              "page": "150"
+            },
+            {
+              "id": "hud-radalt-power",
+              "name": "Radar altimeter power switch",
+              "type": "switch3",
+              "match": [
+                "PTN_205"
+              ],
+              "positions": [
+                {
+                  "name": "OFF",
+                  "text": "The radar altimeter is off."
+                },
+                {
+                  "name": "ON",
+                  "text": "The radar altimeter is on and measures the height above the ground."
+                },
+                {
+                  "name": "TEST",
+                  "text": "The game offers a test position that runs the self-test of the radar altimeter."
+                }
+              ],
+              "text": "This switch turns on the radar altimeter, a small radar that measures how high the plane is above the ground. It also starts the self-test of that radar.",
+              "context": "The radar altimeter only reads up to 5,000 feet above the ground and shows stars above that. The pilot switches it on during start-up.",
+              "src": "m1",
+              "page": "150"
+            },
+            {
+              "id": "hud-min-alt",
+              "name": "Minimum altitude selector (RAD ALT)",
+              "type": "knob",
+              "match": [
+                "PTN_192"
+              ],
+              "text": "This knob sets a safety height. When the plane flies lower than this height, an arrow appears on the head-up display and on the radar screen.",
+              "context": "During a landing with the HUD in approach mode, the same setting works as the decision height, the height at which the pilot must decide to land or to go around.",
+              "src": "m1",
+              "page": "150"
+            },
+            {
+              "id": "hud-wingspan",
+              "name": "Target wingspan knob (ENV)",
+              "type": "knob",
+              "match": [
+                "PTN_209"
+              ],
+              "text": "This knob tells the gun sight how wide the enemy aircraft is. The values go from 7 to 40 metres.",
+              "context": "In an air-to-air gun fight, the sight uses this width to show how far away the target is.",
+              "src": "m1",
+              "page": "149"
+            },
+            {
+              "id": "hud-ag-reticle",
+              "name": "A/G gun reticle switch",
+              "type": "switch",
+              "match": [
+                "PTN_208"
+              ],
+              "text": "The game names this switch 'A/G Gun Reticle Switch' (air-to-ground gun reticle). The manual does not describe a switch with this name.",
+              "context": "It sits on the HUD control panel, among the controls for the gun sight. Its exact function is not described in the manual.",
+              "src": "m1",
+              "page": "149"
+            },
+            {
+              "id": "hud-clear",
+              "name": "HUD Clear button",
+              "type": "button",
+              "match": [
+                "PTN_210"
+              ],
+              "text": "The game names this button 'HUD Clear Button'. The manual lists on this panel a button called EFF (French for erase) and says it does not work in the simulator.",
+              "context": "The game's name does not say whether it is that EFF button, so no function is claimed here.",
+              "src": "m1",
+              "page": "149"
+            },
+            {
+              "id": "hud-aux-sight",
+              "name": "Auxiliary gunsight switch (HAUSSE)",
+              "type": "switch2",
+              "match": [
+                "PTN_206"
+              ],
+              "positions": [
+                {
+                  "name": "OFF",
+                  "text": "The back-up aiming mark is off."
+                },
+                {
+                  "name": "ON",
+                  "text": "The back-up fixed aiming mark is shown on the head-up display."
+                }
+              ],
+              "text": "This switch turns on a simple back-up aiming mark on the head-up display. It is used when the normal symbols cannot be used.",
+              "context": "It works like the iron sights of a rifle: a fixed mark that does not need the computer. The knob next to it sets how far below the line of sight the mark sits.",
+              "src": "m1",
+              "page": "149"
+            },
+            {
+              "id": "hud-aux-defl",
+              "name": "Auxiliary gunsight deflection knob",
+              "type": "knob",
+              "match": [
+                "PTN_207"
+              ],
+              "text": "This knob moves the back-up aiming mark up or down. The pilot sets it for the distance at which the weapon will be used.",
+              "context": "The right setting comes from tables for the weapon and the target distance.",
+              "src": "m1",
+              "page": "150"
+            },
+            {
+              "id": "hud-display",
+              "name": "Head-up display (VTH)",
+              "type": "display",
+              "match": [
+                "item:front-dash:1"
+              ],
+              "text": "This is the glass screen in front of the pilot's eyes. It shows flight numbers and aiming marks over the view outside, so the pilot does not have to look down.",
+              "context": "The image is focused far away, so the pilot looks outside, not at the glass. The Mirage can take off, navigate and land using the head-up display alone.",
+              "src": "m1",
+              "page": "148"
+            },
+            {
+              "id": "hud-panel",
+              "name": "HUD control panel (PCTH)",
+              "type": "other",
+              "match": [
+                "item:front-dash:2"
+              ],
+              "text": "This is the control panel of the head-up display, above the radar screen. It sets how the display works and how bright it is.",
+              "context": "Its switches and knobs are listed in this panel.",
+              "src": "m1",
+              "page": "148"
+            }
+          ]
+        },
+        {
+          "id": "vtb-controls",
+          "name": "Radar screen controls (VTB)",
+          "src": "m1",
+          "page": "311",
+          "text": "These controls sit around the head-down radar screen (VTB) in the middle of the main panel. They turn the screen on, set how bright it is and let the pilot type in a target by hand.",
+          "context": "The pilot switches the screen on in the start-up and keeps it on in flight, because the radar picture and the weapon load-out are shown here. It needs about 30 seconds to warm up.",
+          "controls": [
+            {
+              "id": "vtb-screen",
+              "name": "Radar screen (VTB, head-down display)",
+              "type": "screen",
+              "match": [
+                "item:front-dash:15"
+              ],
+              "text": "This is the radar screen in the middle of the main panel. It shows the radar picture with other aircraft and can also show the weapons the plane carries.",
+              "context": "The pilot looks at it to find enemy aircraft and to prepare an attack. The controls around the screen set its brightness and what it shows.",
+              "src": "m1",
+              "page": "28"
+            },
+            {
+              "id": "vtb-power",
+              "name": "VTB power switch",
+              "type": "switch2",
+              "match": [
+                "PTN_221"
+              ],
+              "positions": [
+                {
+                  "name": "OFF",
+                  "text": "The radar screen is off."
+                },
+                {
+                  "name": "ON",
+                  "text": "The radar screen is on after a warm-up of about 30 seconds."
+                }
+              ],
+              "text": "This switch turns the radar screen on and off.",
+              "context": "The screen needs a warm-up of about 30 seconds after it is switched on.",
+              "src": "m1",
+              "page": "311"
+            },
+            {
+              "id": "vtb-bright",
+              "name": "VTB brightness switches (4)",
+              "type": "switch",
+              "match": [
+                "PTN_224",
+                "PTN_225",
+                "PTN_226",
+                "PTN_227"
+              ],
+              "count": 4,
+              "text": "These four small switches set how bright parts of the radar screen are. The manual lists four settings, each from 0 to 7: the target cursor, the radar picture, the symbols and the marks.",
+              "context": "The game names them Markers, Main, Video and Cavalier. The manual does not say which switch is which, so only the names are given here.",
+              "src": "m1",
+              "page": "311"
+            },
+            {
+              "id": "vtb-declutter",
+              "name": "VTB declutter button (ALLEG)",
+              "type": "button",
+              "match": [
+                "PTN_222"
+              ],
+              "text": "This button removes the extra navigation symbols from the radar screen, including the stored waypoints. Pushing it again brings them back.",
+              "context": "The pilot uses it when the radar picture is too full to read.",
+              "src": "m1",
+              "page": "312"
+            },
+            {
+              "id": "vtb-front-rear",
+              "name": "VTB display switch (CADR AV / AR)",
+              "type": "switch3",
+              "match": [
+                "PTN_223"
+              ],
+              "positions": [
+                {
+                  "name": "AV",
+                  "text": "Map forward: the screen shows the normal radar picture of the area in front of the plane."
+                },
+                {
+                  "name": "AR",
+                  "text": "Map all around: the plane sits in the middle of the screen and no radar information is shown."
+                },
+                {
+                  "name": "AR glance",
+                  "text": "The game lists a short 'glance' version of the all-around view."
+                }
+              ],
+              "text": "This switch chooses what the radar screen shows. Either the normal radar picture in front of the plane, or a view with the plane in the middle and no radar picture.",
+              "context": "The normal radar work is done with the front setting.",
+              "src": "m1",
+              "page": "311"
+            },
+            {
+              "id": "vtb-manual-entry",
+              "name": "DEB / FIN switch (manual target entry)",
+              "type": "button",
+              "match": [
+                "PTN_213"
+              ],
+              "positions": [
+                {
+                  "name": "DEB",
+                  "text": "Start: the bands for entering the target data appear on the screen."
+                },
+                {
+                  "name": "FIN",
+                  "text": "End: the entered target data is stored."
+                }
+              ],
+              "text": "This switch lets the pilot type in a target by hand. One position starts the entry, the other position stores it.",
+              "context": "The pilot can enter where a target is from information received by radio. The next switches on this panel set the target's values.",
+              "src": "m1",
+              "page": "312"
+            },
+            {
+              "id": "vtb-n",
+              "name": "N switch (reference waypoint)",
+              "type": "button",
+              "match": [
+                "PTN_214"
+              ],
+              "text": "This switch chooses the waypoint that the manually entered target is measured from. Pushing it up or down changes the waypoint number.",
+              "context": "The same waypoint is also used for the distance and direction shown at the radar cursor.",
+              "src": "m1",
+              "page": "312"
+            },
+            {
+              "id": "vtb-rho",
+              "name": "Rho switch (target distance)",
+              "type": "button",
+              "match": [
+                "PTN_215"
+              ],
+              "text": "This switch sets how far away the manually entered target is from the chosen waypoint, in nautical miles. Up makes the number bigger, down makes it smaller.",
+              "context": "It is one of the five value switches used for entering a target by hand.",
+              "src": "m1",
+              "page": "312"
+            },
+            {
+              "id": "vtb-theta",
+              "name": "Theta switch (target bearing)",
+              "type": "button",
+              "match": [
+                "PTN_216"
+              ],
+              "text": "This switch sets in which direction from the chosen waypoint the manually entered target lies. Up and down change the number.",
+              "context": "When the word RAZ appears next to it, using it clears the entered target.",
+              "src": "m1",
+              "page": "312"
+            },
+            {
+              "id": "vtb-c",
+              "name": "C switch (target heading)",
+              "type": "button",
+              "match": [
+                "PTN_217"
+              ],
+              "text": "This switch sets the direction in which the manually entered target is flying. Up and down change the number.",
+              "context": "It is part of the hand entry of a target together with distance, direction, height and speed.",
+              "src": "m1",
+              "page": "312"
+            },
+            {
+              "id": "vtb-z",
+              "name": "Z switch (target altitude)",
+              "type": "button",
+              "match": [
+                "PTN_218"
+              ],
+              "text": "This switch sets the height of the manually entered target. Up and down change the number.",
+              "context": "The radar uses the entered height to look for the target at the right level.",
+              "src": "m1",
+              "page": "312"
+            },
+            {
+              "id": "vtb-m",
+              "name": "M switch (target Mach number)",
+              "type": "button",
+              "match": [
+                "PTN_219"
+              ],
+              "text": "This switch sets the speed of the manually entered target as a Mach number (1.0 is the speed of sound). Up and down change the number.",
+              "context": "The entered speed helps the radar to guess where the target will be a little later.",
+              "src": "m1",
+              "page": "312"
+            },
+            {
+              "id": "vtb-t",
+              "name": "T switch (target age)",
+              "type": "button",
+              "match": [
+                "PTN_220"
+              ],
+              "text": "This switch sets how old the information about the manually entered target is. Up and down change the number of seconds.",
+              "context": "Old information means the target has moved on, so the computer takes the age into account.",
+              "src": "m1",
+              "page": "312"
+            }
+          ]
+        },
+        {
+          "id": "flight-instruments",
+          "name": "Flight instruments",
+          "src": "m1",
+          "page": "109",
+          "text": "These round gauges show the basics of the flight: the height, the speed, the climb, the angle of the wings and the angle of the nose against the air.",
+          "context": "The pilot checks them all the time. The Mirage also repeats most of this information on the head-up display.",
+          "controls": [
+            {
+              "id": "is-main",
+              "name": "Main attitude indicator (IS)",
+              "type": "gauge",
+              "match": [
+                "item:front-dash:30"
+              ],
+              "text": "This ball-shaped gauge shows whether the plane's nose is up or down and whether the wings are level. It also shows the heading and, near a runway, needles that guide the plane to the landing strip.",
+              "context": "It gets its information from the inertial navigation system. A flag appears when the instrument is not working.",
+              "src": "m1",
+              "page": "110"
+            },
+            {
+              "id": "bak-adi",
+              "name": "Backup attitude indicator (cage / pitch knob)",
+              "type": "gauge",
+              "match": [
+                "PTN_325",
+                "item:front-dash:16"
+              ],
+              "text": "This small artificial horizon is the spare. It works on its own and shows nose up or down and the tilt of the wings. Pulling and turning its knob frees the gyro (uncage) and moves the little plane symbol.",
+              "context": "The pilot uncages and sets it before flight. It is powered by the emergency attitude and heading switch on the right console.",
+              "src": "m1",
+              "page": "111"
+            },
+            {
+              "id": "adi-cage-lever",
+              "name": "ADI cage lever",
+              "type": "switch",
+              "match": [
+                "PTN_314"
+              ],
+              "text": "The game names this control 'ADI Cage Lever'. The manual describes a cage knob only on the backup attitude indicator, so no further function is claimed here.",
+              "context": "It sits next to the attitude indicators on the left side of the main panel.",
+              "src": "m1",
+              "page": "111"
+            },
+            {
+              "id": "adi-backlight",
+              "name": "ADI backlight switch",
+              "type": "switch",
+              "match": [
+                "PTN_315"
+              ],
+              "text": "The game names this control 'ADI Backlight Switch'. The manual does not describe it.",
+              "context": "It sits near the attitude indicators. Only its name is known.",
+              "src": "m1",
+              "page": "110"
+            },
+            {
+              "id": "altimeter",
+              "name": "Altimeter and pressure setting knob",
+              "type": "gauge",
+              "match": [
+                "PTN_309",
+                "item:front-dash:18"
+              ],
+              "text": "This gauge shows the height of the plane in feet. The knob next to it sets the local air pressure, and the pressure is shown in a small window in millibars.",
+              "context": "The pilot sets the pressure before take-off and landing so that the height reads right. The autopilot's selected altitude depends on this setting.",
+              "src": "m1",
+              "page": "109"
+            },
+            {
+              "id": "anemomach",
+              "name": "Anemomachmeter (speed in knots and Mach)",
+              "type": "gauge",
+              "match": [
+                "item:front-dash:19"
+              ],
+              "text": "This gauge shows how fast the plane flies. The needle shows the speed in knots, and a wheel behind it shows the speed as a Mach number.",
+              "context": "Mach 1 is the speed of sound. The speed is also repeated on the head-up display.",
+              "src": "m1",
+              "page": "109"
+            },
+            {
+              "id": "vvi",
+              "name": "Vertical velocity indicator (variometer)",
+              "type": "gauge",
+              "match": [
+                "item:front-dash:23"
+              ],
+              "text": "This gauge shows how fast the plane climbs or sinks. It shows thousands of feet per minute.",
+              "context": "The pilot watches it during climb, descent and on the landing approach.",
+              "src": "m1",
+              "page": "109"
+            },
+            {
+              "id": "aoa",
+              "name": "Angle of attack indicator",
+              "type": "gauge",
+              "match": [
+                "item:front-dash:28"
+              ],
+              "text": "This gauge shows how steeply the wing meets the air. A green mark between 13 and 15 degrees shows the best angle for the landing approach.",
+              "context": "A flag appears when the gauge has no power or the angle is outside its range.",
+              "src": "m1",
+              "page": "110"
+            },
+            {
+              "id": "accel",
+              "name": "Accelerometer and G-meter reset button",
+              "type": "gauge",
+              "match": [
+                "PTN_348",
+                "item:front-dash:3"
+              ],
+              "text": "This gauge shows how strong the push into the seat is during turns (the load factor, in g). The button next to it resets the G-meter, as the game names it.",
+              "context": "The pilot watches it in hard turns, because too much load can damage the plane.",
+              "src": "m1",
+              "page": "110"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "front-left",
+      "where": "front-left",
+      "name": "Left side of the main panel",
+      "text": "Left of the radar screen. It holds the weapon panel, the autopilot, the landing gear handle and the fly-by-wire switches.",
+      "panels": [
+        {
+          "id": "pca",
+          "name": "Weapon control panel (PCA)",
+          "src": "m1",
+          "page": "137",
+          "text": "This panel on the left of the radar screen is where the pilot picks the weapons. It has the master safety switch, two rows of small displays with buttons below them, and a switch to drop loads in an emergency.",
+          "context": "The top row shows options for the current mode (navigation, air-to-air or air-to-ground). The bottom row shows what hangs under the plane. The pilot selects a weapon here and fires it with the stick trigger.",
+          "controls": [
+            {
+              "id": "master-arm",
+              "name": "MASTER ARM switch (Sécurité armement)",
+              "type": "switch2",
+              "match": [
+                "PTN_234"
+              ],
+              "positions": [
+                {
+                  "name": "SAFE",
+                  "text": "Weapons are locked. The trigger safety stays on."
+                },
+                {
+                  "name": "ARMED",
+                  "text": "Weapons may be released with the trigger."
+                }
+              ],
+              "text": "This is the main safety switch for the weapons. Nothing can be fired or dropped while it is on SAFE.",
+              "context": "The pilot sets it to ARMED only when ready to attack. The trigger safety on the stick follows this switch.",
+              "src": "m1",
+              "page": "137"
+            },
+            {
+              "id": "pca-options",
+              "name": "PCA option buttons 1-5 (top row)",
+              "type": "button",
+              "match": [
+                "PTN_235",
+                "PTN_237",
+                "PTN_239",
+                "PTN_241",
+                "PTN_243",
+                "item:front-dash:17"
+              ],
+              "count": 5,
+              "text": "These five buttons sit under the top row of the displays. Each picks the three-letter option shown above it, for example an approach, a police mode or a gun rate. A yellow S lights on a chosen button.",
+              "context": "The options change with the mode: in navigation mode they set up the flight to a waypoint, in air-to-air and air-to-ground mode they set up the weapon.",
+              "src": "m1",
+              "page": "137"
+            },
+            {
+              "id": "pca-gun-ag",
+              "name": "Gun mode button (CAS, air-to-ground guns)",
+              "type": "button",
+              "match": [
+                "PTN_245"
+              ],
+              "text": "This button selects the guns for shooting at targets on the ground.",
+              "context": "It sits next to the weapon buttons. The pilot presses it before a strafing run.",
+              "src": "m1",
+              "page": "137"
+            },
+            {
+              "id": "pca-stores",
+              "name": "PCA store buttons 1-5 (bottom row)",
+              "type": "button",
+              "match": [
+                "PTN_250",
+                "PTN_253",
+                "PTN_256",
+                "PTN_259",
+                "PTN_262"
+              ],
+              "count": 5,
+              "text": "These five buttons sit under the bottom row, which shows what the plane carries. Each selects the weapon shown above it. A yellow S lights on the chosen one and a yellow P when it is ready to fire.",
+              "context": "The left button is for the MAGIC missiles. It switches a background search on and off instead of selecting the missile.",
+              "src": "m1",
+              "page": "140"
+            },
+            {
+              "id": "sel-jett-cover",
+              "name": "Selective jettison switch cover",
+              "type": "cover",
+              "match": [
+                "PTN_248"
+              ],
+              "text": "This small cover protects the selective jettison switch against being moved by mistake. It is lifted before the switch can be used.",
+              "context": "It is part of the safety of the emergency drop system.",
+              "src": "m1",
+              "page": "141"
+            },
+            {
+              "id": "sel-jett",
+              "name": "Selective jettison switch",
+              "type": "switch2",
+              "match": [
+                "PTN_249"
+              ],
+              "positions": [
+                {
+                  "name": "N",
+                  "text": "Normal: the plane keeps its regular weapon mode."
+                },
+                {
+                  "name": "SEL",
+                  "text": "Selective jettison mode: chosen stores can be dropped."
+                }
+              ],
+              "text": "This switch prepares the plane to drop chosen loads in an emergency. The pilot picks the loads with the store buttons and drops them with the second step of the stick trigger.",
+              "context": "While it is on, the PCA bottom row shows only the loads that can be dropped. Jettison means dropping loads to make the plane lighter.",
+              "src": "m1",
+              "page": "141"
+            },
+            {
+              "id": "gun-safe",
+              "name": "Gun safety switch",
+              "type": "switch2",
+              "match": [
+                "PTN_463",
+                "item:left-vertical-panel:9"
+              ],
+              "positions": [
+                {
+                  "name": "SAFE",
+                  "text": "The guns are locked."
+                },
+                {
+                  "name": "ARMED",
+                  "text": "The guns can be fired with the trigger."
+                }
+              ],
+              "text": "This switch arms the cannons. With it on SAFE, the guns cannot fire.",
+              "context": "The pilot sets it to ARMED together with the master arm switch when shooting.",
+              "src": "m1",
+              "page": "31"
+            },
+            {
+              "id": "emerg-jett",
+              "name": "Emergency jettison button",
+              "type": "button",
+              "match": [
+                "PTN_409",
+                "item:left-vertical-panel:2"
+              ],
+              "text": "Pressing this button drops the external loads of the plane in an emergency, to make it lighter.",
+              "context": "It is a last resort, for example before a crash landing. The normal way is the selective jettison switch.",
+              "src": "m1",
+              "page": "31"
+            }
+          ]
+        },
+        {
+          "id": "autopilot",
+          "name": "Autopilot panel and altitude selector",
+          "src": "m1",
+          "page": "94",
+          "text": "This panel has the buttons of the autopilot. The autopilot is the system that can hold the plane's height, heading or path so the pilot does not have to. Next to it sits the altitude selector, a box with three number wheels.",
+          "context": "The basic autopilot mode must be on first. The other modes (altitude, approach) are added on top of it. Pulling the AP disconnect trigger on the stick switches everything off.",
+          "controls": [
+            {
+              "id": "ap-master",
+              "name": "AP engage button (autopilot master)",
+              "type": "button",
+              "match": [
+                "PTN_282",
+                "item:front-dash:25"
+              ],
+              "text": "Pressing this button switches the autopilot on in its basic mode, which keeps the nose and wings as they are. Pressing it again switches the autopilot off. A green A lights when the mode is on.",
+              "context": "The other autopilot modes only work when this basic mode is on. A gong sounds when the autopilot is switched off.",
+              "src": "m1",
+              "page": "94"
+            },
+            {
+              "id": "ap-alt",
+              "name": "ALT button (altitude hold)",
+              "type": "button",
+              "match": [
+                "PTN_285"
+              ],
+              "text": "This button makes the autopilot keep the height the plane has at that moment. A green ALT lights when the mode is on.",
+              "context": "It needs the basic autopilot mode first. The autopilot flies back to that height when it is moved away.",
+              "src": "m1",
+              "page": "97"
+            },
+            {
+              "id": "ap-sel-alt",
+              "name": "Selected altitude button",
+              "type": "button",
+              "match": [
+                "PTN_288"
+              ],
+              "text": "This button makes the autopilot climb or sink to the height set on the altitude selector and then hold it. A green ALT lights while it catches the height.",
+              "context": "The pilot sets the wanted height first on the three wheels of the altitude selector. When the height is reached, the plain altitude hold takes over.",
+              "src": "m1",
+              "page": "98"
+            },
+            {
+              "id": "ap-app",
+              "name": "Approach button (automatic approach)",
+              "type": "button",
+              "match": [
+                "PTN_294"
+              ],
+              "text": "This button makes the autopilot follow the radio beams of the runway (ILS) down toward landing. The left half is for the sideways beam, the right half for the beam that guides the descent.",
+              "context": "It guides the plane down to about 200 feet. It does not land the plane; the pilot takes over there.",
+              "src": "m1",
+              "page": "99"
+            },
+            {
+              "id": "ap-test",
+              "name": "AP test button",
+              "type": "button",
+              "match": [
+                "PTN_302"
+              ],
+              "text": "This button tests the lights of the autopilot panel and the gong sound.",
+              "context": "The pilot also runs a longer autopilot test on the left console after engine start.",
+              "src": "m1",
+              "page": "94"
+            },
+            {
+              "id": "alt-selector",
+              "name": "Altitude selector wheels (10,000 / 1,000 / 100 ft)",
+              "type": "knob",
+              "match": [
+                "PTN_299",
+                "PTN_300",
+                "PTN_301",
+                "item:front-dash:22"
+              ],
+              "count": 3,
+              "text": "These three number wheels set the wanted height for the autopilot: tens of thousands, thousands and hundreds of feet. The same setting makes an alert gong sound when the plane descends toward that height.",
+              "context": "The height is measured with the pressure set on the altimeter. The wheels are needed for the selected altitude mode of the autopilot.",
+              "src": "m1",
+              "page": "94"
+            }
+          ]
+        },
+        {
+          "id": "landing-gear",
+          "name": "Landing gear and brake controls",
+          "src": "m1",
+          "page": "105",
+          "text": "These controls are on the left vertical panel next to the radar screen. They let the pilot lower or raise the wheels, and lower them in an emergency if the normal system fails.",
+          "context": "The Mirage has one nose wheel and two main wheels. The pilot lowers the wheels for landing and raises them after take-off.",
+          "controls": [
+            {
+              "id": "gear-handle",
+              "name": "Landing gear handle",
+              "type": "lever",
+              "match": [
+                "PTN_404",
+                "item:left-vertical-panel:8"
+              ],
+              "positions": [
+                {
+                  "name": "UP",
+                  "text": "The wheels fold into the plane."
+                },
+                {
+                  "name": "DOWN",
+                  "text": "The wheels are lowered and locked for landing."
+                }
+              ],
+              "text": "Moving this handle down lowers the wheels, moving it up folds them away. The handle also lights red as a warning while the wheels move, and when they are up and the speed is low.",
+              "context": "The pilot lowers the gear before landing and raises it after take-off. The warning blinks when the gear is up and the speed falls below 230 knots.",
+              "src": "m1",
+              "page": "105"
+            },
+            {
+              "id": "gear-emerg",
+              "name": "Emergency gear handle",
+              "type": "handle",
+              "match": [
+                "PTN_408",
+                "item:left-vertical-panel:1"
+              ],
+              "text": "Pulling this handle lowers the wheels by the second hydraulic system when the normal system has failed. Hydraulics is oil under high pressure that moves heavy parts.",
+              "context": "It is only used in an emergency. It stays in its normal upright position otherwise.",
+              "src": "m1",
+              "page": "105"
+            },
+            {
+              "id": "gear-tone",
+              "name": "Landing gear tone button",
+              "type": "button",
+              "match": [
+                "PTN_926"
+              ],
+              "text": "The game names this button 'Landing Gear Tone'. The manual does not describe a button of this name.",
+              "context": "The manual only says that the gear handle blinks red and warns when the gear is up and the speed is low.",
+              "src": "m1",
+              "page": "105"
+            },
+            {
+              "id": "gear-config",
+              "name": "Landing configuration panel",
+              "type": "indicator",
+              "match": [
+                "item:left-vertical-panel:3"
+              ],
+              "text": "This panel of lights shows the state of the landing systems: if the airbrakes are out, the nose wheel steering is on, the brakes are pressed, and whether each wheel is down and locked.",
+              "context": "A green light for each wheel means it is down and locked. The pilot checks it before every landing.",
+              "src": "m1",
+              "page": "107"
+            },
+            {
+              "id": "nws-panel",
+              "name": "Nose wheel steering / IFF button (on the panel)",
+              "type": "button",
+              "match": [
+                "PTN_807"
+              ],
+              "text": "The game names this button 'Nose Wheel Steering / IFF Interrogation Button'. It is a clickable copy of the button on the stick. With the wheels down, it turns the nose wheel steering on or off; with the wheels up, it sends an IFF question.",
+              "context": "Nose wheel steering turns the front wheel with the rudder pedals on the ground, like a car's steering. It switches itself off at about 40 knots.",
+              "src": "m1",
+              "page": "43"
+            }
+          ]
+        },
+        {
+          "id": "fbw",
+          "name": "Fly-by-wire controls",
+          "src": "m1",
+          "page": "90",
+          "text": "These switches belong to the fly-by-wire system, the computers between the stick and the control surfaces. The pilot never moves the surfaces directly, the computers do it.",
+          "context": "The system limits the turns and angles to protect the plane. These switches tell it what the plane carries and let the pilot react to failures.",
+          "controls": [
+            {
+              "id": "fbw-mode",
+              "name": "FBW mode switch (Air-Air / Charges)",
+              "type": "switch2",
+              "match": [
+                "PTN_422",
+                "item:left-vertical-panel:4"
+              ],
+              "positions": [
+                {
+                  "name": "A/A",
+                  "text": "Air-to-air: for a clean plane or one carrying only air-to-air missiles. More load and roll rate are allowed."
+                },
+                {
+                  "name": "CHARGES",
+                  "text": "Loads: for bombs, rocket pods or drop tanks. Smaller limits protect the plane."
+                }
+              ],
+              "text": "This switch tells the flight computers what the plane carries. They then set how hard the pilot may turn the plane.",
+              "context": "It must be on CHARGES with loads like bombs, rockets or drop tanks, otherwise parts could break. A warning light shows when the switch is wrong for the load.",
+              "src": "m1",
+              "page": "90"
+            },
+            {
+              "id": "fbw-gain",
+              "name": "Emergency FBW gain switch (GAIN CDVE)",
+              "type": "switch2",
+              "match": [
+                "PTN_421",
+                "item:left-vertical-panel:7"
+              ],
+              "positions": [
+                {
+                  "name": "NORM",
+                  "text": "Normal: the computers use all the flight data."
+                },
+                {
+                  "name": "EMER",
+                  "text": "Emergency: the computers no longer use the flight data. The pilot must keep the plane stable."
+                }
+              ],
+              "text": "This switch sets the flight computers to emergency gain. They then ignore speed, height, angle and slip information.",
+              "context": "The manual says the change cannot be undone. It is used only when part of the air data system is broken and the plane flies unstable. A cover protects it.",
+              "src": "m1",
+              "page": "91"
+            },
+            {
+              "id": "fbw-gain-cover",
+              "name": "Emergency FBW gain switch cover",
+              "type": "cover",
+              "match": [
+                "PTN_420"
+              ],
+              "text": "This cover protects the emergency FBW gain switch against being moved by accident.",
+              "context": "It stays closed in normal flight.",
+              "src": "m1",
+              "page": "91"
+            },
+            {
+              "id": "fbw-reset",
+              "name": "FBW rearm button (RESET)",
+              "type": "button",
+              "match": [
+                "PTN_423",
+                "item:left-vertical-panel:5"
+              ],
+              "text": "This button rearms the fly-by-wire system after a fault.",
+              "context": "The pilot presses it if the computers report a problem which has gone away.",
+              "src": "m1",
+              "page": "31"
+            },
+            {
+              "id": "cs-indicator",
+              "name": "Control surfaces position indicator",
+              "type": "gauge",
+              "match": [
+                "item:left-vertical-panel:6"
+              ],
+              "text": "This gauge shows where the four elevons and the rudder are. Elevons are wing flaps that work as both elevator and aileron.",
+              "context": "It lets the pilot see what the computers are doing with the control surfaces.",
+              "src": "m1",
+              "page": "31"
+            },
+            {
+              "id": "spin-switch",
+              "name": "SPIN switch (VRILLE)",
+              "type": "switch2",
+              "match": [
+                "PTN_330",
+                "item:front-dash:24"
+              ],
+              "positions": [
+                {
+                  "name": "NORM",
+                  "text": "Normal: the computers keep the plane stable."
+                },
+                {
+                  "name": "VRILLE",
+                  "text": "Spin recovery: the pilot has full yaw and roll authority."
+                }
+              ],
+              "text": "This switch gives the pilot full control of yaw and roll to get out of a flat spin. A spin is a turn in which the plane falls and cannot be steered normally.",
+              "context": "The manual warns that it must not be used in normal flight, because the computers then no longer keep the plane stable.",
+              "src": "m1",
+              "page": "91"
+            }
+          ]
+        },
+        {
+          "id": "clock",
+          "name": "Clock and waypoint buttons",
+          "src": "m1",
+          "page": "29",
+          "text": "On the left of the main panel sits the onboard chronograph, a round clock with a stopwatch. Two small buttons next to it step the target waypoint forward and back.",
+          "context": "The pilot uses the stopwatch to time legs of the flight. A waypoint is a point on the planned route that the plane can steer to.",
+          "controls": [
+            {
+              "id": "chronograph",
+              "name": "Onboard chronograph (clock with stopwatch)",
+              "type": "gauge",
+              "match": [
+                "item:front-dash:20",
+                "PTN_925",
+                "PTN_924"
+              ],
+              "text": "This is an analogue clock with a stopwatch. The ring around it can be turned, and the setting knob lets the pilot set the time.",
+              "context": "The game offers a ring turn and a set-time on/off command for the clock. Timing is useful for flying a route to a set time.",
+              "src": "m1",
+              "page": "29"
+            },
+            {
+              "id": "clock-button",
+              "name": "Clock start / stop / reset button",
+              "type": "button",
+              "match": [
+                "PTN_922"
+              ],
+              "text": "This button starts, stops and resets the stopwatch of the clock. The game also names it for rewinding and adjusting.",
+              "context": "Each push does the next step of the cycle.",
+              "src": "m1",
+              "page": "29"
+            },
+            {
+              "id": "dest-buttons",
+              "name": "DEST BUT increment and decrement buttons",
+              "type": "button",
+              "match": [
+                "PTN_110",
+                "PTN_111",
+                "item:front-dash:21"
+              ],
+              "text": "These two buttons choose the next waypoint the plane steers to: one steps up to the next waypoint number, the other goes back to the previous one.",
+              "context": "The navigation system then shows direction and distance to the chosen waypoint on the head-up display and the navigation indicator.",
+              "src": "m1",
+              "page": "29"
+            }
+          ]
+        },
+        {
+          "id": "fault-button",
+          "name": "Fault indicator button",
+          "src": "m1",
+          "page": "218",
+          "text": "At the top left of the main panel sits one big button with two lights. The amber light means something needs attention, the red light means danger. Pressing the button says 'I have seen it' and stops the warning sounds.",
+          "context": "The alarm panel on the right names the actual fault. The pilot acknowledges here after reading it.",
+          "controls": [
+            {
+              "id": "panne-button",
+              "name": "Fault indicator button (PANNE)",
+              "type": "button",
+              "match": [
+                "PTN_191",
+                "item:front-dash:27"
+              ],
+              "text": "This button lights amber for a caution and red for a warning. Pressing it acknowledges the fault and silences the warning tones.",
+              "context": "A caution gives a double chime after 20 seconds, a warning gives a loud tone every second. The alarm panel shows which fault it is.",
+              "src": "m1",
+              "page": "218"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "front-right",
+      "where": "front-right",
+      "name": "Right side of the main panel",
+      "text": "Right of the radar screen. It has the weapon preparation panel, the navigation indicator, the engine and fuel gauges and the alarm panel with the electrical switches.",
+      "panels": [
+        {
+          "id": "ppa",
+          "name": "Weapon preparation panel (PPA)",
+          "src": "m1",
+          "page": "144",
+          "text": "This panel on the right of the radar screen prepares the weapons before use. It has the missile switches, the bomb settings and a test switch for the lights.",
+          "context": "The pilot sets it before the attack: which Super 530 missile goes first, how many bombs fall and how far apart, and how the bombs are fused.",
+          "controls": [
+            {
+              "id": "ppa-missile-sel",
+              "name": "Missile selection switch (G / AUTO / D)",
+              "type": "switch3",
+              "match": [
+                "PTN_265"
+              ],
+              "positions": [
+                {
+                  "name": "G",
+                  "text": "The left missile has priority."
+                },
+                {
+                  "name": "AUTO",
+                  "text": "The computer chooses which missile goes first."
+                },
+                {
+                  "name": "D",
+                  "text": "The right missile has priority."
+                }
+              ],
+              "text": "This switch chooses which of the two big Super 530D missiles is fired first.",
+              "context": "G is the left one and D (French droite) the right one. AUTO lets the computer decide.",
+              "src": "m1",
+              "page": "144"
+            },
+            {
+              "id": "ppa-s530",
+              "name": "S530 preparation button",
+              "type": "button",
+              "match": [
+                "PTN_266"
+              ],
+              "text": "This button starts or stops the warm-up of the Super 530D missiles. A yellow P lights when they are ready and flashes while they prepare. A yellow MIS lights when these missiles are loaded.",
+              "context": "Missiles need this preparation before they can be fired.",
+              "src": "m1",
+              "page": "144"
+            },
+            {
+              "id": "ppa-autman",
+              "name": "S530 fire selection button (AUT / MAN)",
+              "type": "button",
+              "match": [
+                "PTN_269"
+              ],
+              "text": "This button was meant to choose automatic or manual firing of the Super 530D missile. The manual says it has no effect in this version of the aircraft.",
+              "context": "It comes from older Mirage versions.",
+              "src": "m1",
+              "page": "145"
+            },
+            {
+              "id": "ppa-magic",
+              "name": "MAGIC preparation button",
+              "type": "button",
+              "match": [
+                "PTN_272"
+              ],
+              "text": "This button starts or stops the warm-up of the MAGIC II heat-seeking missiles. A yellow P lights when they are ready and flashes while they prepare. A yellow MAG lights when they are loaded.",
+              "context": "The missiles need this preparation before they can be fired.",
+              "src": "m1",
+              "page": "145"
+            },
+            {
+              "id": "ppa-test",
+              "name": "Light test and stores visualization switch",
+              "type": "switch2",
+              "match": [
+                "PTN_275",
+                "item:front-dash:14"
+              ],
+              "positions": [
+                {
+                  "name": "TEST",
+                  "text": "All yellow lights of the PCA and PPA buttons come on while held."
+                },
+                {
+                  "name": "PRES",
+                  "text": "The radar screen shows the stores the plane carries."
+                }
+              ],
+              "text": "This spring-loaded switch has two jobs. One side lights all the lamps of the weapon panels as a test. The other side shows the stores picture on the radar screen.",
+              "context": "The test shows the pilot that no yellow lamp is broken.",
+              "src": "m1",
+              "page": "145"
+            },
+            {
+              "id": "ppa-fuze",
+              "name": "Fuse selection switch (INST / RET / INERT)",
+              "type": "switch3",
+              "match": [
+                "PTN_276"
+              ],
+              "positions": [
+                {
+                  "name": "INST",
+                  "text": "Instantaneous: the bomb explodes at once on impact."
+                },
+                {
+                  "name": "RET",
+                  "text": "Retarded: the bomb explodes shortly after impact."
+                },
+                {
+                  "name": "INERT",
+                  "text": "Inert: no fuse is armed and the bombs will not explode."
+                }
+              ],
+              "text": "This switch decides when the bombs may explode. A fuse is the part of a bomb that makes it explode.",
+              "context": "The pilot picks it for the target and the bomb type. INERT is used for practice.",
+              "src": "m1",
+              "page": "145"
+            },
+            {
+              "id": "ppa-qty",
+              "name": "Salvo bomb quantity switch",
+              "type": "button",
+              "match": [
+                "PTN_277"
+              ],
+              "text": "This switch sets how many bombs are dropped in one go (a salvo). Up raises the number, down lowers it. A window shows 00 to 18.",
+              "context": "It works with the interval switch next to it.",
+              "src": "m1",
+              "page": "145"
+            },
+            {
+              "id": "ppa-interval",
+              "name": "Salvo bomb interval switch",
+              "type": "button",
+              "match": [
+                "PTN_278"
+              ],
+              "text": "This switch sets the distance between the bombs of a salvo, in tens of metres. A window shows 00 to 20.",
+              "context": "A bigger gap spreads the bombs out along the ground.",
+              "src": "m1",
+              "page": "146"
+            },
+            {
+              "id": "ppa-totpar",
+              "name": "Weapon salvo selection button (TOT / PAR)",
+              "type": "button",
+              "match": [
+                "PTN_279"
+              ],
+              "text": "This button chooses between firing everything (TOT) and firing in portions (PAR) for the guns, the rockets and the Super 530D missiles.",
+              "context": "With TOT the guns and rockets fire as long as the trigger is held. With PAR they fire in short bursts or small groups.",
+              "src": "m1",
+              "page": "146"
+            }
+          ]
+        },
+        {
+          "id": "idn",
+          "name": "Navigation indicator (IDN)",
+          "src": "m1",
+          "page": "112",
+          "text": "This round instrument shows the plane's heading and where the next waypoint or radio beacon lies. Its mode selector chooses which source it uses.",
+          "context": "The IDN is the Mirage's main navigation gauge. The setting also decides if all navigation uses true north or magnetic north.",
+          "controls": [
+            {
+              "id": "idn-mode",
+              "name": "IDN mode selector",
+              "type": "selector",
+              "match": [
+                "PTN_341",
+                "item:front-dash:13"
+              ],
+              "positions": [
+                {
+                  "name": "Mode 1 Nav CV",
+                  "text": "Direction and distance to the chosen waypoint, with true heading."
+                },
+                {
+                  "name": "Mode 2 Nav",
+                  "text": "Direction and distance to the chosen waypoint, with magnetic heading."
+                },
+                {
+                  "name": "Mode 3 TAC",
+                  "text": "Direction and distance to the TACAN beacon."
+                },
+                {
+                  "name": "Mode 4 VAD",
+                  "text": "Shows the VAD, an additional point set with the VAD knob."
+                },
+                {
+                  "name": "Mode 5 VAD rho",
+                  "text": "A VAD display option; the game lists it as VAD rho."
+                },
+                {
+                  "name": "Mode 6 VAD theta",
+                  "text": "A VAD display option; the game lists it as VAD theta."
+                }
+              ],
+              "text": "This switch chooses what the navigation indicator shows. The game lists seven modes; the first six are given here.",
+              "context": "It also chooses if the headings are true or magnetic.",
+              "src": "m1",
+              "page": "114"
+            },
+            {
+              "id": "idn-vad",
+              "name": "VAD knob",
+              "type": "knob",
+              "match": [
+                "PTN_340"
+              ],
+              "text": "This knob sets the values of the VAD, an additional point defined by a distance and a direction.",
+              "context": "The manual only says the knob sets the VAD parameters.",
+              "src": "m1",
+              "page": "113"
+            }
+          ]
+        },
+        {
+          "id": "fuel-engine",
+          "name": "Fuel and engine gauges",
+          "src": "m1",
+          "page": "50",
+          "text": "These gauges and lights on the right of the main panel show the state of the engine and of the fuel. Some of them are clickable in the game.",
+          "context": "The pilot keeps an eye on them from start-up to landing, particularly the engine speed, the temperature and the fuel left.",
+          "controls": [
+            {
+              "id": "n-tt7",
+              "name": "Engine RPM and temperature indicator (N / Tt7)",
+              "type": "gauge",
+              "match": [
+                "item:front-dash:8"
+              ],
+              "text": "This double gauge shows how fast the engine turns (in percent) and how hot the exhaust is (in hundreds of degrees).",
+              "context": "The pilot watches the temperature during start-up. The manual gives a maximum of 950 degrees.",
+              "src": "m1",
+              "page": "50"
+            },
+            {
+              "id": "ab-light",
+              "name": "Afterburner light",
+              "type": "light",
+              "match": [
+                "item:front-dash:6"
+              ],
+              "text": "This light shows that the afterburner is on. The afterburner is extra fuel burned at the back of the jet engine for much more push.",
+              "context": "The light comes on only when all afterburner ramps are in use. It flashes if the engine nozzle is stuck open.",
+              "src": "m1",
+              "page": "51"
+            },
+            {
+              "id": "start-light",
+              "name": "Engine start light (DEMAR)",
+              "type": "light",
+              "match": [
+                "item:front-dash:7"
+              ],
+              "text": "This light shows how the engine start is going. It lights if the starter turns too fast and blinks when the starter lets go of the engine.",
+              "context": "During a normal start it blinks at about 45 percent engine speed, then goes out.",
+              "src": "m1",
+              "page": "51"
+            },
+            {
+              "id": "fire-lights",
+              "name": "Engine fire lights",
+              "type": "light",
+              "match": [
+                "item:front-dash:11"
+              ],
+              "text": "These lights come on when fire or too much heat is found in the engine, or in the afterburner.",
+              "context": "They are warning lights. The pilot reacts at once when one comes on.",
+              "src": "m1",
+              "page": "51"
+            },
+            {
+              "id": "fuel-flow",
+              "name": "Fuel flow indicator",
+              "type": "gauge",
+              "match": [
+                "item:front-dash:9"
+              ],
+              "text": "This gauge shows how much fuel the engine burns, in kilograms per minute.",
+              "context": "It helps the pilot estimate how long the fuel will last.",
+              "src": "m1",
+              "page": "82"
+            },
+            {
+              "id": "bingo",
+              "name": "BINGO selector wheels (1,000 / 100 kg)",
+              "type": "knob",
+              "match": [
+                "PTN_360",
+                "PTN_361",
+                "item:front-dash:10"
+              ],
+              "count": 2,
+              "text": "These two number wheels set the fuel amount at which a BINGO warning appears. One wheel sets the thousands of kilograms, the other the hundreds.",
+              "context": "Bingo is the minimum fuel needed to fly home safely. When the fuel falls below it, the BINGO light on the alarm panel comes on.",
+              "src": "m1",
+              "page": "82"
+            },
+            {
+              "id": "fuel-panel",
+              "name": "Fuel control panel (counters and tank gauges)",
+              "type": "other",
+              "match": [
+                "item:front-dash:12"
+              ],
+              "text": "This panel shows the fuel: the internal quantity counter (JAUG), the total counter (DETOT), the feeder tank gauges and lights for tanks that stop feeding.",
+              "context": "The DETOT counter is set by hand and counts down with the fuel burned. If set wrongly, it shows a wrong value.",
+              "src": "m1",
+              "page": "79"
+            },
+            {
+              "id": "detot",
+              "name": "DETOT fuel counter buttons",
+              "type": "button",
+              "match": [
+                "PTN_355"
+              ],
+              "text": "These buttons set the DETOT counter up or down. DETOT shows all the fuel the plane has, including the drop tanks.",
+              "context": "The ground crew sets it at the start. After refuelling in the game, the pilot sets it by hand to match the kneeboard page.",
+              "src": "m1",
+              "page": "78"
+            },
+            {
+              "id": "crossfeed",
+              "name": "Fuel crossfeed switch",
+              "type": "switch",
+              "match": [
+                "PTN_357"
+              ],
+              "text": "The game names this switch 'Fuel Crossfeed Switch'. The manual lists a feeder tank intercom control that moves fuel between the left and right feeder tanks, and says it does not work.",
+              "context": "The game name does not say that it is the same control, so no function is claimed here.",
+              "src": "m1",
+              "page": "80"
+            },
+            {
+              "id": "vuhf-repeater",
+              "name": "V/UHF frequency repeater",
+              "type": "display",
+              "match": [
+                "item:front-dash:29"
+              ],
+              "text": "This display on the main panel repeats the frequency of the green V/UHF radio, so the pilot can read it without looking down at the left console. Lights show when the radio receives.",
+              "context": "The red UHF line of the repeater cannot show the Mirage's UHF radio and only shows stars. The display flashes while the radio transmits.",
+              "src": "m1",
+              "page": "126"
+            }
+          ]
+        },
+        {
+          "id": "countermeasure-display",
+          "name": "Countermeasure display and decoy lights",
+          "src": "m1",
+          "page": "366",
+          "text": "On the upper right of the main panel sit the radar warning display (VCM) and the small panel of decoy lights.",
+          "context": "They show which enemy radars look at the plane and how many chaff and flares are left. The settings are on the PCCM panel of the right console.",
+          "controls": [
+            {
+              "id": "vcm",
+              "name": "Countermeasure display (VCM)",
+              "type": "display",
+              "match": [
+                "item:front-dash:5",
+                "PTN_228"
+              ],
+              "text": "This is a small round screen that shows enemy radars and missile launches around the plane, as seen from above. A knob sets the brightness. Five lights show the state of the warning systems.",
+              "context": "The game names its knob 'RWR Light Brightnes Control'. RWR is the radar warning receiver, which tells the pilot when an enemy radar is looking at the plane.",
+              "src": "m1",
+              "page": "366"
+            },
+            {
+              "id": "decoy-lights",
+              "name": "Decoy launcher indicator panel and EFF button",
+              "type": "indicator",
+              "match": [
+                "item:front-dash:4",
+                "PTN_990"
+              ],
+              "text": "This panel shows when a chaff or flare is released and when they run low or are empty. Chaff are clouds of metal strips for radar missiles; flares are hot burning decoys for heat-seeking missiles. The EFF button turns off all its lights.",
+              "context": "The lights test themselves for one second when the panel is powered. The game names the button 'ECM Box Clear Button'. The panel gets power from the decoy mode switch on the PCCM panel.",
+              "src": "m1",
+              "page": "377"
+            }
+          ]
+        },
+        {
+          "id": "alarm-panel",
+          "name": "Alarm panel and oxygen indicators",
+          "src": "m1",
+          "page": "219",
+          "text": "This is the board of lights on the right vertical panel. Each light names one fault. Next to it are two oxygen indicators.",
+          "context": "Amber lights are cautions and red lights are warnings. The fault button on the top left repeats them.",
+          "controls": [
+            {
+              "id": "alarm",
+              "name": "Alarm panel (warning lights)",
+              "type": "light",
+              "match": [
+                "item:right-vertical-panel:3"
+              ],
+              "text": "A board of labelled lights. Each light names one fault, for example BATT for the battery, HUILE for the oil, or NIVEAU for low fuel.",
+              "context": "It lights while a fault lasts. The labels are in French, and the manual has a table with each one.",
+              "src": "m1",
+              "page": "219"
+            },
+            {
+              "id": "o2-blinker",
+              "name": "O2 blinker",
+              "type": "indicator",
+              "match": [
+                "item:right-vertical-panel:1"
+              ],
+              "text": "This is a small indicator that blinks when the breathing oxygen flows into the pilot's mask.",
+              "context": "The pilot can see that breathing works.",
+              "src": "m1",
+              "page": "32"
+            },
+            {
+              "id": "o2-ind",
+              "name": "O2 indicator",
+              "type": "gauge",
+              "match": [
+                "item:right-vertical-panel:2"
+              ],
+              "text": "This gauge shows how much breathing oxygen is left.",
+              "context": "The alarm panel also has a light for when only five minutes of oxygen remain.",
+              "src": "m1",
+              "page": "32"
+            }
+          ]
+        },
+        {
+          "id": "electric",
+          "name": "Electrical power switches",
+          "src": "m1",
+          "page": "74",
+          "text": "These switches control the plane's electricity: the battery, the converters and the two alternators. An alternator is a generator that runs when the engine turns.",
+          "context": "They sit at the top of the alarm panel on the right vertical panel. They are used first in the start-up. The checklist sets the battery switch on before the rest.",
+          "controls": [
+            {
+              "id": "batt",
+              "name": "Battery switch (Main Battery)",
+              "type": "switch2",
+              "match": [
+                "PTN_520"
+              ],
+              "positions": [
+                {
+                  "name": "OFF",
+                  "text": "The battery is disconnected."
+                },
+                {
+                  "name": "ON",
+                  "text": "The battery is connected and powers the plane."
+                }
+              ],
+              "text": "This switch connects the battery. The battery stores electricity for when the engines are off.",
+              "context": "It is the first switch of the start-up. The rearm button next to it brings the battery back if it was disconnected.",
+              "src": "m1",
+              "page": "74"
+            },
+            {
+              "id": "batt-rearm",
+              "name": "Battery rearm switch",
+              "type": "button",
+              "match": [
+                "PTN_995"
+              ],
+              "text": "The game has this separate control named 'Battery Rearm Switch'. The manual says the battery switch can turn the battery on or rearm it.",
+              "context": "A battery that failed or was cut off by the system is reconnected this way.",
+              "src": "m1",
+              "page": "74"
+            },
+            {
+              "id": "el-transfer",
+              "name": "Electric power transfer switch",
+              "type": "switch2",
+              "match": [
+                "PTN_521"
+              ],
+              "positions": [
+                {
+                  "name": "OFF",
+                  "text": "The game command 'Electric Power Transfer OFF'."
+                },
+                {
+                  "name": "ON",
+                  "text": "The game command 'Electric Power Transfer ON'."
+                }
+              ],
+              "text": "The game names this switch 'Electric Power Transfer Switch' with the positions ON and OFF. The manual lists a transformer-rectifier switch in the same row, which chooses the main or the emergency converter.",
+              "context": "The game name does not say that it is the same switch, so no further function is claimed.",
+              "src": "m1",
+              "page": "74"
+            },
+            {
+              "id": "alt1",
+              "name": "Alternator 1 switch",
+              "type": "switch2",
+              "match": [
+                "PTN_522"
+              ],
+              "positions": [
+                {
+                  "name": "OFF",
+                  "text": "The alternator is disconnected."
+                },
+                {
+                  "name": "ON",
+                  "text": "The alternator can feed the plane."
+                }
+              ],
+              "text": "This switch lets the first alternator feed the plane's main AC power line.",
+              "context": "The alternators run once the engine runs. The alarm panel shows ALT.1 if it is off or has failed.",
+              "src": "m1",
+              "page": "74"
+            },
+            {
+              "id": "alt2",
+              "name": "Alternator 2 switch",
+              "type": "switch2",
+              "match": [
+                "PTN_523"
+              ],
+              "positions": [
+                {
+                  "name": "OFF",
+                  "text": "The alternator is disconnected."
+                },
+                {
+                  "name": "ON",
+                  "text": "The alternator can feed the plane."
+                }
+              ],
+              "text": "This switch lets the second alternator feed the plane's second main AC power line.",
+              "context": "The alarm panel shows ALT.2 if it is off or has failed. One alternator can power both lines through an automatic link.",
+              "src": "m1",
+              "page": "74"
+            },
+            {
+              "id": "lights-test",
+              "name": "Lights test switch",
+              "type": "button",
+              "match": [
+                "PTN_524"
+              ],
+              "text": "This switch tests the lights of the cockpit. Each of its two positions tests one of the lights in every cell of the alarm panel.",
+              "context": "A pilot uses it to find out that no warning light is burnt out.",
+              "src": "m1",
+              "page": "74"
+            },
+            {
+              "id": "qra",
+              "name": "QRA switch (alert network)",
+              "type": "switch2",
+              "match": [
+                "PTN_654",
+                "item:right-vertical-panel:4"
+              ],
+              "positions": [
+                {
+                  "name": "OFF",
+                  "text": "Normal: the alert network is off."
+                },
+                {
+                  "name": "ON",
+                  "text": "Alert network on. The manual says this is not functional."
+                }
+              ],
+              "text": "This switch sets the plane in QRA mode, the quick reaction alert. Some equipment stays powered during alert so the plane can start fast.",
+              "context": "The manual says the QRA function is not functional in the simulator. The checklist keeps the switch off.",
+              "src": "m1",
+              "page": "70"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

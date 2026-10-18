@@ -152,8 +152,9 @@ public sealed class CockpitPictureTests
     internal static CockpitScene SyntheticCockpit(out List<CockpitCallout> callouts, out List<CockpitGrip> grips, out Vec3 head)
     {
         CockpitScene scene = new();
-        scene.Materials.Add(new SceneMaterial { Name = "paint", Color = [90, 95, 100] });
-        scene.Materials.Add(new SceneMaterial { Name = "knob", Color = [220, 220, 210] });
+        // Painted panels with printed labels and rivets (textures), as a game's cockpit has.
+        scene.Materials.Add(new SceneMaterial { Name = "paint", Color = [90, 95, 100], Albedo = PanelTexture(90, 95, 100) });
+        scene.Materials.Add(new SceneMaterial { Name = "knob", Color = [220, 220, 210], Albedo = PanelTexture(220, 220, 210) });
         AddBox(scene, 0, 1, new Vec3(0.8, -0.35, -0.3), new Vec3(0.85, 0.0, 0.3));        // front panel
         AddBox(scene, 1, 2, new Vec3(0.78, -0.12, -0.12), new Vec3(0.8, -0.1, -0.1));     // switch 1
         AddBox(scene, 1, 3, new Vec3(0.78, -0.12, 0.1), new Vec3(0.8, -0.1, 0.12));       // switch 2
@@ -175,6 +176,28 @@ public sealed class CockpitPictureTests
         return scene;
     }
 
+    // A 64 x 64 texture: the colour with a grid of light "labels" and dark "rivets".
+    internal static TextureImage PanelTexture(byte r, byte g, byte b)
+    {
+        TextureImage t = new() { Width = 64, Height = 64, Rgba = new byte[64 * 64 * 4] };
+        for (int y = 0; y < 64; y++)
+        {
+            for (int x = 0; x < 64; x++)
+            {
+                int o = (y * 64 + x) * 4;
+                bool label = y % 16 is >= 3 and <= 5 && x % 16 is >= 2 and <= 12 && (x + y) % 3 != 0;
+                bool rivet = x % 16 == 14 && y % 16 == 14;
+                double k = label ? 1.9 : rivet ? 0.3 : 1.0 + ((x * 7 + y * 13) % 11 - 5) * 0.02;
+                t.Rgba[o] = (byte)Math.Min(255, r * k);
+                t.Rgba[o + 1] = (byte)Math.Min(255, g * k);
+                t.Rgba[o + 2] = (byte)Math.Min(255, b * k);
+                t.Rgba[o + 3] = 255;
+            }
+        }
+        t.Mean = [r, g, b, 255];
+        return t;
+    }
+
     private static void AddBox(CockpitScene scene, int material, int part, Vec3 a, Vec3 b)
     {
         Vec3 Corner(int i) => new((i & 1) == 0 ? a.X : b.X, (i & 2) == 0 ? a.Y : b.Y, (i & 4) == 0 ? a.Z : b.Z);
@@ -182,19 +205,27 @@ public sealed class CockpitPictureTests
         Vec3[] normals = [new(-1, 0, 0), new(1, 0, 0), new(0, -1, 0), new(0, 1, 0), new(0, 0, -1), new(0, 0, 1)];
         List<float> p = [];
         List<float> n = [];
+        List<float> uv = [];
         List<int> idx = [];
+        // Texture coordinates: a 64-pixel texture tile per 10 cm.
+        float[][] corners = [[0, 0], [1, 0], [1, 1], [0, 1]];
         for (int f = 0; f < 6; f++)
         {
             int start = p.Count / 3;
+            int k = 0;
             foreach (int c in faces[f])
             {
                 Vec3 v = Corner(c);
                 p.AddRange([(float)v.X, (float)v.Y, (float)v.Z]);
                 n.AddRange([(float)normals[f].X, (float)normals[f].Y, (float)normals[f].Z]);
+                Vec3 size = b - a;
+                double su = Math.Max(Math.Abs(f < 2 ? size.Z : size.X), 0.01) * 10, sv = Math.Max(Math.Abs(f < 4 && f >= 2 ? size.Z : size.Y), 0.01) * 10;
+                uv.AddRange([(float)(corners[k][0] * su), (float)(corners[k][1] * sv)]);
+                k++;
             }
             idx.AddRange([start, start + 1, start + 2, start, start + 2, start + 3]);
         }
-        scene.Meshes.Add(new SceneMesh { Name = "box" + part, Material = material, Part = part, Positions = p.ToArray(), Normals = n.ToArray(), Indices = idx.ToArray() });
+        scene.Meshes.Add(new SceneMesh { Name = "box" + part, Material = material, Part = part, Positions = p.ToArray(), Normals = n.ToArray(), Uvs = uv.ToArray(), Indices = idx.ToArray() });
     }
 
     [Fact]

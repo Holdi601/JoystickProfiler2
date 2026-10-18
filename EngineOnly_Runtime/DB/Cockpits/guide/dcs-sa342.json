@@ -1,0 +1,2001 @@
+{
+  "format": "joypro-cockpit-guide",
+  "version": 1,
+  "id": "dcs-sa342",
+  "title": "SA 342 Gazelle (DCS)",
+  "variants": [
+    "sa342m",
+    "sa342m-copilot"
+  ],
+  "games": [
+    "DCS"
+  ],
+  "sets": [],
+  "sources": [
+    {
+      "id": "m3",
+      "title": "DCS SA342M Flight Manual (EN)",
+      "file": "Mods/aircraft/SA342/Doc/DCS SA342M Flight manual_en.pdf"
+    },
+    {
+      "id": "m1",
+      "title": "DCS SA342 Multicrew Manual (EN)",
+      "file": "Mods/aircraft/SA342/Doc/DCS SA342 Multicrew manual_en.pdf"
+    }
+  ],
+  "intro": "The SA 342 Gazelle is a small French light helicopter. This version, the SA 342M, carries HOT3 anti-tank missiles and a sighting camera called Viviane. The pilot sits on the right, the copilot or gunner on the left. The copilot uses the camera and fires the missiles; the pilot flies. The cockpit has round gauges in front, the engine start and radios on the centre console, and the levers for the rotor brake and the fuel in the roof.",
+  "areas": [
+    {
+      "id": "main-panel",
+      "where": "front-center",
+      "name": "Main instrument panel",
+      "text": "The panel in front of the pilot with the flight and engine gauges, the warning lamps and the electrical switches below them.",
+      "panels": [
+        {
+          "id": "main-instrument-panel",
+          "name": "Main Instrument Panel: flight and engine gauges",
+          "db": "main-instrument-panel",
+          "src": "m3",
+          "page": "51",
+          "text": "The round gauges for climb rate, attitude, speed, height, navigation, torque, oil, fuel and voltage.",
+          "context": "The pilot scans these gauges all the time in flight.",
+          "controls": [
+            {
+              "id": "vvi",
+              "name": "Vertical velocity indicator",
+              "type": "gauge",
+              "match": [
+                "item:main-instrument-panel:2"
+              ],
+              "text": "A gauge that shows how fast the helicopter climbs or sinks, in hundreds of metres per minute, up to 800 in each direction.",
+              "context": "The manual says that 60 metres per minute is the limit for a safe landing.",
+              "src": "m3",
+              "page": "55"
+            },
+            {
+              "id": "main-horizon",
+              "name": "Main artificial horizon",
+              "type": "gauge",
+              "match": [
+                "item:main-instrument-panel:3"
+              ],
+              "text": "The main attitude instrument: a ball that shows whether the nose is up or down and how far the helicopter is tilted. Flags and bars show landing beam signals and faults. Holding the pitch setting button resets it, and its knob sets the pitch shown at rest.",
+              "context": "It needs the 28 V DC and the 115 V AC power to work without a fault flag. The vertical bar shows the heading of the source chosen on the selector.",
+              "src": "m3",
+              "page": "56"
+            },
+            {
+              "id": "airspeed",
+              "name": "Indicated airspeed indicator",
+              "type": "gauge",
+              "match": [
+                "item:main-instrument-panel:5"
+              ],
+              "text": "A round gauge that shows the speed of the helicopter through the air in kilometres per hour. It shows only the speed in forward flight.",
+              "context": "The pilot reads it in cruise and in the approach.",
+              "src": "m3",
+              "page": "63"
+            },
+            {
+              "id": "standby-horizon",
+              "name": "Standby artificial horizon",
+              "type": "gauge",
+              "match": [
+                "item:main-instrument-panel:6"
+              ],
+              "text": "A small backup attitude ball. Its large lines stand for 10 degrees and its small lines for 5 degrees. The knob unlocks the ball and sets the pitch shown at rest.",
+              "context": "It can be unlocked and set once the 28 V DC bus has power.",
+              "src": "m3",
+              "page": "64"
+            },
+            {
+              "id": "altimeter",
+              "name": "Barometric altimeter",
+              "type": "gauge",
+              "match": [
+                "item:main-instrument-panel:7"
+              ],
+              "text": "The height gauge that works with the air pressure. A short needle shows thousands of metres and a long needle shows hundreds, up to 10,000 metres. A small drum shows the pressure setting in hPa, and a knob changes it.",
+              "context": "The pilot sets the pressure to the local value so that the height reads right.",
+              "src": "m3",
+              "page": "66"
+            },
+            {
+              "id": "nadir-adf",
+              "name": "NADIR / ADF indicator",
+              "type": "gauge",
+              "match": [
+                "item:main-instrument-panel:8"
+              ],
+              "text": "A round navigation gauge. The compass card shows the heading, a needle points to the stored waypoint of the NADIR navigation computer, and a second needle points to a radio beacon found by the ADF radio. A drum shows the distance to the waypoint in kilometres.",
+              "context": "The pilot flies towards the needle. The NADIR has its own manual.",
+              "src": "m3",
+              "page": "67"
+            },
+            {
+              "id": "torque",
+              "name": "Torque indicator",
+              "type": "gauge",
+              "match": [
+                "item:main-instrument-panel:9"
+              ],
+              "text": "A gauge that shows how hard the engine pulls on the rotor (torque), with a bug (a movable mark) and a red lamp. The lamp blinks at 95 percent and shines steadily at 100 percent. The bug and test knob sets the mark; pressing it tests the lamp.",
+              "context": "At a steady red lamp the engine breaks after 8 to 12 seconds, so the pilot must lower the collective at once.",
+              "src": "m3",
+              "page": "72"
+            },
+            {
+              "id": "radar-alt",
+              "name": "Radar altimeter",
+              "type": "gauge",
+              "match": [
+                "item:main-instrument-panel:11"
+              ],
+              "text": "A gauge that shows the height above the ground in metres, measured with radio waves. A knob turns it on and tests it. A second knob sets a warning height; a lamp lights when the helicopter is lower than that.",
+              "context": "It needs the 115 V AC bus to work.",
+              "src": "m3",
+              "page": "75"
+            },
+            {
+              "id": "bar-source",
+              "name": "Horizon vertical bar source selector",
+              "type": "selector",
+              "match": [
+                "item:main-instrument-panel:13"
+              ],
+              "positions": [
+                {
+                  "name": "ART.",
+                  "text": "No bar is shown."
+                },
+                {
+                  "name": "VIS",
+                  "text": "The bar points to the target point of the camera."
+                },
+                {
+                  "name": "VHF",
+                  "text": "The bar points to the transmitter tuned in the ADF radio."
+                },
+                {
+                  "name": "DOP",
+                  "text": "The bar points to the NADIR waypoint."
+                }
+              ],
+              "text": "A selector that decides what the vertical bar of the main horizon shows: nothing (ART), the target point of the camera (VIS), the direction to the ADF radio beacon (VHF) or the NADIR waypoint (DOP).",
+              "context": "The pilot chooses the thing to fly towards.",
+              "src": "m3",
+              "page": "61"
+            },
+            {
+              "id": "oil-temp",
+              "name": "Engine oil temperature indicator",
+              "type": "gauge",
+              "match": [
+                "item:main-instrument-panel:14"
+              ],
+              "text": "A gauge that shows how hot the engine oil is, in degrees Celsius.",
+              "context": "The pilot watches it during start-up and flight.",
+              "src": "m3",
+              "page": "79"
+            },
+            {
+              "id": "fuel",
+              "name": "Fuel indicator",
+              "type": "gauge",
+              "match": [
+                "item:main-instrument-panel:15"
+              ],
+              "text": "A gauge that shows the fuel in the main tank only, in tenths of litres. A mark between 30 and 40 shows the level at which the additional tank starts to refill the main tank.",
+              "context": "The additional tank is not shown on this gauge.",
+              "src": "m3",
+              "page": "80"
+            },
+            {
+              "id": "voltmeter",
+              "name": "Voltmeter",
+              "type": "gauge",
+              "match": [
+                "item:main-instrument-panel:16"
+              ],
+              "text": "A gauge that shows the voltage of the 28 V DC electrical bus. The green section from 23 to 29 volts is the normal range.",
+              "context": "A needle outside the green section means the power supply has a problem.",
+              "src": "m3",
+              "page": "81"
+            }
+          ]
+        },
+        {
+          "id": "warning-lamps",
+          "name": "Warning and engine lamps",
+          "src": "m3",
+          "page": "52",
+          "text": "The board of warning lamps, the alarm lamp and the three lamps for the engine start.",
+          "context": "The pilot checks them at start-up and when something seems wrong.",
+          "controls": [
+            {
+              "id": "warning-panel",
+              "name": "Warning panel",
+              "type": "light",
+              "match": [
+                "item:main-instrument-panel:1"
+              ],
+              "text": "A board of warning lamps with short French labels, for example H.MOT (oil pressure of the turbine not normal), H.BTP (oil pressure of the main rotor gearbox), GENE (generator not connected) and COMB (main fuel tank below 50 litres). Pressing the general test button lights them all.",
+              "context": "The board works as soon as the 28 V DC bus has power. Two lamps (LIM and FILT) are not simulated.",
+              "src": "m3",
+              "page": "52"
+            },
+            {
+              "id": "alarm-lamp",
+              "name": "Alarm lamp",
+              "type": "light",
+              "match": [
+                "item:main-instrument-panel:4"
+              ],
+              "text": "The master alarm lamp. It lights if the fuel flow lever is not pushed completely forward, if the turbine turns too fast (above 44,300), if the turbine does not turn or if it is damaged.",
+              "context": "It is the main sign that the engine needs attention.",
+              "src": "m3",
+              "page": "62"
+            },
+            {
+              "id": "start-lamp",
+              "name": "Start lamp",
+              "type": "light",
+              "match": [
+                "item:main-instrument-panel:23"
+              ],
+              "text": "A green lamp. It lights while the turbine is being started.",
+              "context": "It goes out when the engine has started. The starter switch is on the centre console.",
+              "src": "m3",
+              "page": "86"
+            },
+            {
+              "id": "idle-lamp",
+              "name": "Idle lamp",
+              "type": "light",
+              "match": [
+                "item:main-instrument-panel:24"
+              ],
+              "text": "A yellow lamp. It lights while the turbine has not yet reached its idle speed.",
+              "context": "It is part of the start-up check.",
+              "src": "m3",
+              "page": "86"
+            },
+            {
+              "id": "blocked-lamp",
+              "name": "Blocked engine lamp",
+              "type": "light",
+              "match": [
+                "item:main-instrument-panel:25"
+              ],
+              "text": "A red lamp. It lights when the turbine is blocked and cannot turn.",
+              "context": "The pilot cannot start the engine while it is lit.",
+              "src": "m3",
+              "page": "87"
+            }
+          ]
+        },
+        {
+          "id": "panel-switches",
+          "name": "Light panel and electrical switches",
+          "src": "m3",
+          "page": "51",
+          "text": "The switches for lights, wipers, heating, tests, weapons arming and the electrical power.",
+          "context": "The pilot uses them first when starting the helicopter: battery, alternator and generator for the electricity.",
+          "controls": [
+            {
+              "id": "light-panel",
+              "name": "Light panel",
+              "type": "other",
+              "match": [
+                "item:main-instrument-panel:10"
+              ],
+              "text": "A group of switches and knobs for the lights of the helicopter: the navigation lights (steady or blinking), the anti-collision light (normal or dimmed with a wheel) and the instrument lights.",
+              "context": "The lights work as soon as the 28 V DC bus has power.",
+              "src": "m3",
+              "page": "18"
+            },
+            {
+              "id": "pilot-wipers",
+              "name": "Pilot wipers switch",
+              "type": "switch",
+              "match": [
+                "item:main-instrument-panel:12"
+              ],
+              "text": "A switch for the windscreen wiper on the pilot's side. The manual describes three positions: L (slow), A (off) and R (fast). The game lists it as a two-position switch.",
+              "context": "The wipers need the 28 V DC bus.",
+              "src": "m3",
+              "page": "78"
+            },
+            {
+              "id": "copilot-wipers",
+              "name": "Copilot wiper switch",
+              "type": "switch",
+              "match": [
+                "item:main-instrument-panel:17"
+              ],
+              "text": "A switch for the windscreen wiper on the copilot's side. The manual describes three positions: L (slow), A (off) and R (fast).",
+              "context": "The wipers need the 28 V DC bus.",
+              "src": "m3",
+              "page": "78"
+            },
+            {
+              "id": "pitot-heat",
+              "name": "Pitot heat switch",
+              "type": "switch2",
+              "match": [
+                "item:main-instrument-panel:18"
+              ],
+              "positions": [
+                {
+                  "name": "ON (M, marche)",
+                  "text": "The pitot tube is heated."
+                },
+                {
+                  "name": "OFF (A, arret)",
+                  "text": "The pitot tube is not heated and the PITOT lamp lights."
+                }
+              ],
+              "text": "A switch that heats the small tube outside that measures the speed, so it does not freeze. When it is off, the PITOT lamp lights on the warning panel.",
+              "context": "The pilot switches it on before flight in cold or wet air.",
+              "src": "m3",
+              "page": "82"
+            },
+            {
+              "id": "hydraulic-test",
+              "name": "Hydraulic test switch",
+              "type": "switch",
+              "match": [
+                "item:main-instrument-panel:19"
+              ],
+              "text": "A switch with the positions TEST and NOR (normal) for the hydraulic system. In this game it is not simulated.",
+              "context": "The manual says it is not simulated, so the switch has no function in DCS.",
+              "src": "m3",
+              "page": "83"
+            },
+            {
+              "id": "master-arm",
+              "name": "Master Arm switch",
+              "type": "switch2",
+              "match": [
+                "item:main-instrument-panel:20"
+              ],
+              "positions": [
+                {
+                  "name": "ON (M, marche)",
+                  "text": "The weapons can be fired when the other conditions are met."
+                },
+                {
+                  "name": "OFF (A, arret)",
+                  "text": "The weapons are safe."
+                }
+              ],
+              "text": "The main safety switch for the weapons: nothing can be fired while it is off.",
+              "context": "It is one of the conditions that must be met before a missile can be fired.",
+              "src": "m3",
+              "page": "83"
+            },
+            {
+              "id": "trim-actuator",
+              "name": "Trim actuator switch",
+              "type": "switch2",
+              "match": [
+                "item:main-instrument-panel:21"
+              ],
+              "positions": [
+                {
+                  "name": "ON (M, marche)",
+                  "text": "The china hat trims the helicopter."
+                },
+                {
+                  "name": "OFF (A, arret)",
+                  "text": "The china hat does nothing."
+                }
+              ],
+              "text": "A switch that turns on the trim actuator. This makes the china hat on the cyclic work for fine trimming (small adjustments so the helicopter flies steadily without force on the stick).",
+              "context": "It works only when the 28 V DC bus has power.",
+              "src": "m3",
+              "page": "84"
+            },
+            {
+              "id": "general-test",
+              "name": "General test switch",
+              "type": "switch",
+              "match": [
+                "item:main-instrument-panel:22"
+              ],
+              "text": "A button that lights test lamps: the gyro test, the voltmeter test and the lamps DEM, RLT, BLOC, RSUPP and RCONV. The warning panel and the torque lamp are not part of it.",
+              "context": "The pilot uses it during the checks before start-up.",
+              "src": "m3",
+              "page": "84"
+            },
+            {
+              "id": "battery",
+              "name": "Battery switch",
+              "type": "switch2",
+              "match": [
+                "item:main-instrument-panel:26"
+              ],
+              "positions": [
+                {
+                  "name": "ON (M, marche)",
+                  "text": "The battery powers the DC bus."
+                },
+                {
+                  "name": "OFF (A, arret)",
+                  "text": "The battery is disconnected."
+                }
+              ],
+              "text": "A switch that connects the battery to the 28 V DC bus. The battery supplies electricity before the engine runs.",
+              "context": "It is among the first switches the pilot moves; the cabin lamp and UV light work without it.",
+              "src": "m3",
+              "page": "87"
+            },
+            {
+              "id": "alternator",
+              "name": "Alternator switch",
+              "type": "switch2",
+              "match": [
+                "item:main-instrument-panel:27"
+              ],
+              "positions": [
+                {
+                  "name": "ON (M, marche)",
+                  "text": "The alternator is connected."
+                },
+                {
+                  "name": "OFF (A, arret)",
+                  "text": "The alternator is disconnected."
+                }
+              ],
+              "text": "A switch for the alternator, which makes 115 V AC electricity. The alternator comes on when the turbine is above 41,300.",
+              "context": "AC power is needed for the radar altimeter, the RWR, the HOT3 panel and the flare dispenser.",
+              "src": "m3",
+              "page": "88"
+            },
+            {
+              "id": "generator",
+              "name": "Generator switch",
+              "type": "switch2",
+              "match": [
+                "item:main-instrument-panel:28"
+              ],
+              "positions": [
+                {
+                  "name": "ON (M, marche)",
+                  "text": "The generator is connected."
+                },
+                {
+                  "name": "OFF (A, arret)",
+                  "text": "The generator is disconnected."
+                }
+              ],
+              "text": "A switch for the generator, which makes the 28 V DC electricity once the engine turns. The generator comes on when the turbine reaches 22,000.",
+              "context": "If it is not connected the GENE lamp lights on the warning panel.",
+              "src": "m3",
+              "page": "88"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "other-instruments-area",
+      "where": "glareshield",
+      "name": "Standby compass and outside temperature",
+      "text": "The IFF panel, the standby compass and the outside temperature gauge sit above and around the main panel.",
+      "panels": [
+        {
+          "id": "other-instruments",
+          "name": "Other Instruments",
+          "db": "other-instruments",
+          "src": "m3",
+          "page": "104",
+          "text": "The IFF panel, the standby magnetic compass and the outside temperature gauge.",
+          "context": "They are simple extra instruments.",
+          "controls": [
+            {
+              "id": "iff",
+              "name": "IFF panel",
+              "type": "other",
+              "match": [
+                "item:other-instruments:1"
+              ],
+              "text": "The control panel of the IFF (identification, friend or foe), a radio box that answers 'who are you?' with a code. In this game it is not simulated.",
+              "context": "The manual says the IFF device is not simulated, so it has no function in DCS.",
+              "src": "m3",
+              "page": "104"
+            },
+            {
+              "id": "compass",
+              "name": "Standby magnetic compass",
+              "type": "gauge",
+              "match": [
+                "item:other-instruments:2"
+              ],
+              "text": "A simple compass that shows the heading of the helicopter by the magnetic field of the earth.",
+              "context": "It works without any electricity.",
+              "src": "m3",
+              "page": "106"
+            },
+            {
+              "id": "outside-temp",
+              "name": "External temperature indicator",
+              "type": "gauge",
+              "match": [
+                "item:other-instruments:3"
+              ],
+              "text": "A thermometer that shows the temperature of the outside air in degrees Celsius, from minus 40 to plus 70.",
+              "context": "It helps to judge the engine power.",
+              "src": "m3",
+              "page": "108"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "center-console",
+      "where": "center-pedestal",
+      "name": "Centre console",
+      "text": "The console between the seats holds the engine start panel, the autopilot, the gyro panel, the radios, the missile panel and the camera box and screen.",
+      "panels": [
+        {
+          "id": "start-panel",
+          "name": "Start Panel",
+          "db": "start-panel",
+          "src": "m3",
+          "page": "89",
+          "text": "The panel for the engine start, the fuel switches, the temperature gauge, the clock and the speed gauge for the turbine and rotor.",
+          "context": "The pilot uses it for the whole start-up of the engine.",
+          "controls": [
+            {
+              "id": "t4",
+              "name": "T4 indicator",
+              "type": "gauge",
+              "match": [
+                "item:start-panel:1"
+              ],
+              "text": "A gauge that shows the temperature of the engine gas, in hundreds of degrees Celsius.",
+              "context": "The pilot watches it while starting the engine.",
+              "src": "m3",
+              "page": "89"
+            },
+            {
+              "id": "add-tank-lamp",
+              "name": "Additional fuel tank lamp",
+              "type": "light",
+              "match": [
+                "item:start-panel:2"
+              ],
+              "text": "A red lamp. It lights if the additional tank switch is on and the additional tank is empty (the RSUPP lamp).",
+              "context": "It tells the pilot that there is nothing left to transfer.",
+              "src": "m3",
+              "page": "89"
+            },
+            {
+              "id": "convoy-lamp",
+              "name": "Convoy fuel tank lamp",
+              "type": "light",
+              "match": [
+                "item:start-panel:3"
+              ],
+              "text": "A lamp for the convoy (travel) fuel tank. In this game it is not simulated.",
+              "context": "The manual marks the convoy tank as not simulated, so the lamp never lights in DCS.",
+              "src": "m3",
+              "page": "89"
+            },
+            {
+              "id": "sand-lamp",
+              "name": "Sand filter lamp",
+              "type": "light",
+              "match": [
+                "item:start-panel:4"
+              ],
+              "text": "A green lamp. It lights when the sand filter is fitted and its switch is on.",
+              "context": "The sand filter protects the engine in dusty places.",
+              "src": "m3",
+              "page": "89"
+            },
+            {
+              "id": "add-tank-switch",
+              "name": "Additional fuel tank switch",
+              "type": "switch2",
+              "match": [
+                "item:start-panel:5"
+              ],
+              "positions": [
+                {
+                  "name": "ON (M, marche)",
+                  "text": "The additional tank refills the main tank when the main tank has room."
+                },
+                {
+                  "name": "OFF (A, arret)",
+                  "text": "No fuel is transferred."
+                }
+              ],
+              "text": "A switch that lets the additional tank (90 litres) pour its fuel into the main tank. This happens only if the main tank is below 347 litres.",
+              "context": "A full transfer takes about 15 minutes. It needs the 28 V DC bus.",
+              "src": "m3",
+              "page": "13"
+            },
+            {
+              "id": "convoy-switch",
+              "name": "Convoy fuel tank switch",
+              "type": "switch",
+              "match": [
+                "item:start-panel:6"
+              ],
+              "text": "A switch for the convoy (travel) fuel tank. In this game it is not simulated.",
+              "context": "The manual marks the convoy tank as not simulated, so the switch does nothing in DCS.",
+              "src": "m3",
+              "page": "89"
+            },
+            {
+              "id": "sand-switch",
+              "name": "Sand filter switch",
+              "type": "switch",
+              "match": [
+                "item:start-panel:7"
+              ],
+              "text": "A switch for the sand filter that protects the engine intake in dusty places.",
+              "context": "The green lamp next to it shows the filter is on.",
+              "src": "m3",
+              "page": "89"
+            },
+            {
+              "id": "mag-brake-switch",
+              "name": "Magnetic brake switch (DEBR. EFF.)",
+              "type": "switch2",
+              "match": [
+                "item:start-panel:8"
+              ],
+              "positions": [
+                {
+                  "name": "ON (M, marche)",
+                  "text": "The magnetic brake button works."
+                },
+                {
+                  "name": "OFF (A, arret)",
+                  "text": "The magnetic brake button does nothing."
+                }
+              ],
+              "text": "A switch that allows the magnetic brake button on the cyclic to work. The magnetic brake holds the cyclic stick in a chosen position.",
+              "context": "It works only when the 28 V DC bus has power.",
+              "src": "m3",
+              "page": "14"
+            },
+            {
+              "id": "alt-rearm",
+              "name": "Alternator rearm button",
+              "type": "button",
+              "match": [
+                "item:start-panel:9"
+              ],
+              "text": "A button to reset the alternator after a fault. In this game it is not simulated.",
+              "context": "The manual says the button is not simulated, so it has no function in DCS.",
+              "src": "m3",
+              "page": "89"
+            },
+            {
+              "id": "gen-rearm",
+              "name": "Generator rearm switch",
+              "type": "switch",
+              "match": [
+                "item:start-panel:10"
+              ],
+              "text": "A switch to reset the generator after a fault. In this game it is not simulated.",
+              "context": "The manual says the switch is not simulated, so it has no function in DCS.",
+              "src": "m3",
+              "page": "89"
+            },
+            {
+              "id": "starter",
+              "name": "Starter / ventilation switch",
+              "type": "switch",
+              "match": [
+                "item:start-panel:11"
+              ],
+              "text": "A switch that spins the engine to start it (the starter) or to turn it without fuel (ventilation, also called dry crank). The green start lamp on the main panel lights while it works.",
+              "context": "It is used after the battery is on and the fuel pump is running. The manual does not name the positions.",
+              "src": "m3",
+              "page": "89"
+            },
+            {
+              "id": "fuel-pump",
+              "name": "Fuel pump switch",
+              "type": "switch2",
+              "match": [
+                "item:start-panel:12"
+              ],
+              "positions": [
+                {
+                  "name": "ON (M, marche)",
+                  "text": "The boost pump runs."
+                },
+                {
+                  "name": "OFF (A, arret)",
+                  "text": "The boost pump is off."
+                }
+              ],
+              "text": "A switch for the fuel boost pump, which pushes fuel from the tank to the engine.",
+              "context": "The pilot switches it on before starting the engine.",
+              "src": "m3",
+              "page": "89"
+            },
+            {
+              "id": "clock",
+              "name": "Clock",
+              "type": "gauge",
+              "match": [
+                "item:start-panel:13"
+              ],
+              "text": "The cockpit clock with a stopwatch. A knob on the outer ring sets a time mark. One button starts and stops the stopwatch and another resets it.",
+              "context": "The pilot uses it to time legs of the flight.",
+              "src": "m3",
+              "page": "90"
+            },
+            {
+              "id": "rpm",
+              "name": "Turbine and rotor RPM",
+              "type": "gauge",
+              "match": [
+                "item:start-panel:14"
+              ],
+              "text": "A gauge with two needles that show how fast the turbine and the rotor turn. At idle the turbine runs at 25,100. When the turbine reaches about 29,000 the rotor clutch joins the rotor. In steady flight the turbine runs at 43,500 and the rotor at 387.",
+              "context": "The pilot watches the needles during start-up until both run steadily together.",
+              "src": "m3",
+              "page": "92"
+            }
+          ]
+        },
+        {
+          "id": "autopilot-panel",
+          "name": "Autopilot Panel",
+          "db": "autopilot-panel",
+          "src": "m3",
+          "page": "98",
+          "text": "The switches and gauges of the autopilot, which can hold attitude, height or speed.",
+          "context": "The pilot switches the channels on after the gyro has warmed up.",
+          "controls": [
+            {
+              "id": "ap-master",
+              "name": "Autopilot main switch",
+              "type": "switch2",
+              "match": [
+                "item:autopilot-panel:1"
+              ],
+              "positions": [
+                {
+                  "name": "ON (M, marche)",
+                  "text": "The autopilot is powered."
+                },
+                {
+                  "name": "OFF (A, arret)",
+                  "text": "The autopilot is off."
+                }
+              ],
+              "text": "The main switch of the autopilot (the system that can hold the helicopter's attitude, height or speed). It cannot be switched on until the 26 V AC bus has power.",
+              "context": "The autopilot also needs the gyro to be warmed up.",
+              "src": "m3",
+              "page": "98"
+            },
+            {
+              "id": "ap-pitch",
+              "name": "Pitch channel switch",
+              "type": "switch",
+              "match": [
+                "item:autopilot-panel:2"
+              ],
+              "text": "A switch that turns on the autopilot's control of the pitch, the nose up and down.",
+              "context": "The pitch channel is one of three channels that work together with the main switch.",
+              "src": "m3",
+              "page": "129"
+            },
+            {
+              "id": "ap-roll",
+              "name": "Roll channel switch",
+              "type": "switch",
+              "match": [
+                "item:autopilot-panel:3"
+              ],
+              "text": "A switch that turns on the autopilot's control of the roll, the tilt to the left and right.",
+              "context": "The roll channel is one of three channels that work together with the main switch.",
+              "src": "m3",
+              "page": "129"
+            },
+            {
+              "id": "ap-yaw",
+              "name": "Yaw channel switch",
+              "type": "switch",
+              "match": [
+                "item:autopilot-panel:4"
+              ],
+              "text": "A switch that turns on the autopilot's control of the yaw, the turning of the nose to the left and right.",
+              "context": "The yaw channel is one of three channels that work together with the main switch.",
+              "src": "m3",
+              "page": "129"
+            },
+            {
+              "id": "ap-alt-speed",
+              "name": "Altitude / Off / Speed switch",
+              "type": "switch3",
+              "match": [
+                "item:autopilot-panel:5"
+              ],
+              "positions": [
+                {
+                  "name": "ALT",
+                  "text": "The autopilot holds the current altitude."
+                },
+                {
+                  "name": "OFF",
+                  "text": "Neither altitude nor speed is held."
+                },
+                {
+                  "name": "SPEED",
+                  "text": "The autopilot holds the current speed."
+                }
+              ],
+              "text": "A switch that chooses what the autopilot holds. ALT holds the current height. SPEED holds the current speed.",
+              "context": "In the altitude mode the autopilot stops holding height below 120 km/h and the PA lamp lights on the warning panel.",
+              "src": "m3",
+              "page": "130"
+            },
+            {
+              "id": "ap-pitch-mon",
+              "name": "Pitch correction indicator",
+              "type": "gauge",
+              "match": [
+                "item:autopilot-panel:6"
+              ],
+              "text": "A gauge that shows how much the autopilot corrects the pitch.",
+              "context": "It lets the pilot see what the autopilot does.",
+              "src": "m3",
+              "page": "129"
+            },
+            {
+              "id": "ap-roll-mon",
+              "name": "Roll correction indicator",
+              "type": "gauge",
+              "match": [
+                "item:autopilot-panel:7"
+              ],
+              "text": "A gauge that shows how much the autopilot corrects the roll.",
+              "context": "It lets the pilot see what the autopilot does.",
+              "src": "m3",
+              "page": "129"
+            },
+            {
+              "id": "ap-yaw-mon",
+              "name": "Yaw correction indicator",
+              "type": "gauge",
+              "match": [
+                "item:autopilot-panel:8"
+              ],
+              "text": "A gauge that shows how much the autopilot corrects the yaw.",
+              "context": "It lets the pilot see what the autopilot does.",
+              "src": "m3",
+              "page": "129"
+            }
+          ]
+        },
+        {
+          "id": "gyro-panel",
+          "name": "Gyro Panel",
+          "db": "gyro-panel",
+          "src": "m3",
+          "page": "100",
+          "text": "The gyro and the test block of the autopilot.",
+          "context": "The autopilot needs a warm, running gyro. The gyro needs about one minute to warm up.",
+          "controls": [
+            {
+              "id": "trim-lamp",
+              "name": "TRIM advisory lamp",
+              "type": "light",
+              "match": [
+                "item:gyro-panel:1"
+              ],
+              "text": "A lamp on the autopilot test block. The manual lists it as the trim advisory lamp and does not describe it further.",
+              "context": "It belongs to the autopilot test.",
+              "src": "m3",
+              "page": "100"
+            },
+            {
+              "id": "bpp-lamp",
+              "name": "BPP lamp",
+              "type": "light",
+              "match": [
+                "item:gyro-panel:2"
+              ],
+              "text": "A lamp on the autopilot test block. The manual lists it as the BPP advisory lamp and does not describe it further.",
+              "context": "It belongs to the autopilot test.",
+              "src": "m3",
+              "page": "100"
+            },
+            {
+              "id": "test-lamp",
+              "name": "Test lamp",
+              "type": "light",
+              "match": [
+                "item:gyro-panel:3"
+              ],
+              "text": "A lamp of the autopilot test block. The manual lists it as the test lamp and does not describe it further.",
+              "context": "The tests can also be run with the general test button.",
+              "src": "m3",
+              "page": "100"
+            },
+            {
+              "id": "test-cover",
+              "name": "Gyro test switch cover",
+              "type": "guard",
+              "match": [
+                "item:gyro-panel:4"
+              ],
+              "text": "A small cover over the gyro test switch. It stops the switch from being pressed by mistake.",
+              "context": "The pilot lifts it before using the switch.",
+              "src": "m3",
+              "page": "100"
+            },
+            {
+              "id": "test-switch",
+              "name": "Gyro test switch",
+              "type": "switch",
+              "match": [
+                "item:gyro-panel:5"
+              ],
+              "text": "A switch that tests the gyro (the spinning wheel that keeps the autopilot's sense of direction).",
+              "context": "The test is part of the checks before flight.",
+              "src": "m3",
+              "page": "100"
+            },
+            {
+              "id": "flags",
+              "name": "On/Off flags",
+              "type": "gauge",
+              "match": [
+                "item:gyro-panel:6"
+              ],
+              "text": "Flags that show whether the gyro is switched on.",
+              "context": "A flag in view means the gyro is not ready.",
+              "src": "m3",
+              "page": "100"
+            },
+            {
+              "id": "sync",
+              "name": "Sync monitor",
+              "type": "gauge",
+              "match": [
+                "item:gyro-panel:7"
+              ],
+              "text": "A gauge that shows whether the gyro is in step with the magnetic compass.",
+              "context": "It needs about one minute to warm up after the 26 V AC bus has power.",
+              "src": "m3",
+              "page": "100"
+            },
+            {
+              "id": "gyro-knob",
+              "name": "Gyro knob",
+              "type": "knob",
+              "match": [
+                "item:gyro-panel:8"
+              ],
+              "text": "A knob for the mode of the gyro. Position A is off and GM is the gyro-magnetic mode, in which the gyro follows the magnetic compass. The other positions are not simulated.",
+              "context": "The autopilot needs the gyro to be warmed up and running.",
+              "src": "m3",
+              "page": "100"
+            },
+            {
+              "id": "lr-switch",
+              "name": "Left/Right switch",
+              "type": "switch",
+              "match": [
+                "item:gyro-panel:9"
+              ],
+              "text": "A left and right switch on the gyro panel. In this game it is not simulated.",
+              "context": "The manual says this switch is not simulated, so it has no function in DCS.",
+              "src": "m3",
+              "page": "100"
+            }
+          ]
+        },
+        {
+          "id": "radio-panels",
+          "name": "Radio and Navigation Panels",
+          "db": "radio-panels",
+          "src": "m3",
+          "page": "110",
+          "text": "The intercom, VHF AM, PR4G FM, UHF and ADF radios, and the radar warning receiver.",
+          "context": "The pilot sets the volume and frequencies here before talking or navigating.",
+          "controls": [
+            {
+              "id": "intercom-pilot",
+              "name": "Pilot intercom",
+              "type": "knob",
+              "match": [
+                "item:radio-panels:1"
+              ],
+              "text": "The upper box of the intercom (the phone line in the cockpit). Knobs set the volume of the VHF AM, UHF and FM1 radios.",
+              "context": "Only these three volume knobs work at the moment.",
+              "src": "m3",
+              "page": "110"
+            },
+            {
+              "id": "intercom-copilot",
+              "name": "Copilot intercom",
+              "type": "knob",
+              "match": [
+                "item:radio-panels:2"
+              ],
+              "text": "The lower box of the intercom for the copilot. The manual says it works once the module has a crew of two.",
+              "context": "See the multicrew manual for the crew of two.",
+              "src": "m3",
+              "page": "110"
+            },
+            {
+              "id": "vhf-am",
+              "name": "VHF AM radio",
+              "type": "selector",
+              "match": [
+                "item:radio-panels:3"
+              ],
+              "positions": [
+                {
+                  "name": "A",
+                  "text": "The radio is off (arret)."
+                },
+                {
+                  "name": "M",
+                  "text": "The radio is on (marche)."
+                },
+                {
+                  "name": "SIL",
+                  "text": "The squelch setting (the manual says SIL stands for not silenced)."
+                },
+                {
+                  "name": "TEST",
+                  "text": "A tone of 1,000 Hz is played to test the radio."
+                }
+              ],
+              "text": "The radio for the frequencies 118 to 143.975 MHz. A selector turns it on and sets squelch (cutting the hiss when nobody talks) and a test tone.",
+              "context": "The pilot uses it to talk to airfield control and other aircraft.",
+              "src": "m3",
+              "page": "111"
+            },
+            {
+              "id": "fm-radio",
+              "name": "PR4G FM radio",
+              "type": "selector",
+              "match": [
+                "item:radio-panels:4"
+              ],
+              "positions": [
+                {
+                  "name": "AR",
+                  "text": "The radio is off (arret)."
+                },
+                {
+                  "name": "TRAFFIC",
+                  "text": "The radio is on."
+                },
+                {
+                  "name": "CH OTAN",
+                  "text": "The radio is on."
+                },
+                {
+                  "name": "REL",
+                  "text": "The radio is on."
+                },
+                {
+                  "name": "TST",
+                  "text": "A tone of 1,000 Hz is played to test the radio."
+                }
+              ],
+              "text": "The FM radio for the frequencies 30 to 87.975 MHz. A mode selector turns it on, a second selector picks one of the stored channels. The channels are set in the mission editor.",
+              "context": "In the game only AR (off), the on positions and TST (test tone) work.",
+              "src": "m3",
+              "page": "112"
+            },
+            {
+              "id": "uhf",
+              "name": "UHF radio",
+              "type": "selector",
+              "match": [
+                "item:radio-panels:5"
+              ],
+              "positions": [
+                {
+                  "name": "FF",
+                  "text": "The radio is on. Other positions also switch it on."
+                }
+              ],
+              "text": "The radio for the frequencies 225 to 399.975 MHz. The main selector turns it on. The pilot types a frequency on the number pad and presses the validation key.",
+              "context": "For example 2-5-1-0-0-0 and Valid selects 251 MHz.",
+              "src": "m3",
+              "page": "114"
+            },
+            {
+              "id": "adf",
+              "name": "ADF radio",
+              "type": "selector",
+              "match": [
+                "item:radio-panels:6"
+              ],
+              "positions": [
+                {
+                  "name": "OFF",
+                  "text": "The radio is off."
+                },
+                {
+                  "name": "ANT",
+                  "text": "The sound can be heard, but the needle does not point to the transmitter."
+                },
+                {
+                  "name": "ADF",
+                  "text": "The sound can be heard and the needle points to the transmitter."
+                },
+                {
+                  "name": "TEST",
+                  "text": "A test tone is played and the needle points to 45 degrees."
+                }
+              ],
+              "text": "The radio compass (ADF) panel with a mode selector, two stored frequencies, a tone switch and a gain knob. In the ADF position a needle on the main panel points to the transmitter.",
+              "context": "The pilot tunes a beacon and flies towards the needle.",
+              "src": "m3",
+              "page": "116"
+            },
+            {
+              "id": "rwr",
+              "name": "DRAX 33 RWR",
+              "type": "display",
+              "match": [
+                "item:radio-panels:7"
+              ],
+              "text": "The radar warning receiver. Its screen shows symbols of radars that look at the helicopter. A knob sets the brightness, another the volume of the warning sounds. A switch turns it on.",
+              "context": "It needs the 115 V AC bus. It cannot see radars straight above or below the helicopter.",
+              "src": "m3",
+              "page": "120"
+            }
+          ]
+        },
+        {
+          "id": "hot3-panel",
+          "name": "HOT3 Missile Panel",
+          "db": "hot3-panel",
+          "src": "m3",
+          "page": "31",
+          "text": "The panel that selects and prepares a HOT3 missile (a wire-guided anti-tank missile).",
+          "context": "A missile can only be launched with the AC 115 V bus powered.",
+          "controls": [
+            {
+              "id": "weapon-key",
+              "name": "Weapon key",
+              "type": "switch",
+              "match": [
+                "item:hot3-panel:1"
+              ],
+              "positions": [
+                {
+                  "name": "ARRET",
+                  "text": "The missile system is off."
+                },
+                {
+                  "name": "MARCHE",
+                  "text": "The missile system is on."
+                }
+              ],
+              "text": "A key switch on the left of the HOT3 panel. It switches the missile system on and off. The launch positions are the ones clockwise from ARRET (off).",
+              "context": "The AC 115 V bus must have power.",
+              "src": "m3",
+              "page": "31"
+            },
+            {
+              "id": "station",
+              "name": "Station selector",
+              "type": "selector",
+              "match": [
+                "item:hot3-panel:2"
+              ],
+              "positions": [
+                {
+                  "name": "0",
+                  "text": "Safety position."
+                },
+                {
+                  "name": "1",
+                  "text": "Missile 1 is selected."
+                },
+                {
+                  "name": "2",
+                  "text": "Missile 2 is selected."
+                },
+                {
+                  "name": "3",
+                  "text": "Missile 3 is selected."
+                },
+                {
+                  "name": "4",
+                  "text": "Missile 4 is selected."
+                }
+              ],
+              "text": "A large knob that picks which of the four missiles to launch (1 to 4). Position 0 is a safety position.",
+              "context": "Turning it after a launch cuts the wire of the missile in flight, and the pilot loses control of it.",
+              "src": "m3",
+              "page": "31"
+            }
+          ]
+        },
+        {
+          "id": "video-command-box",
+          "name": "Video Command Box (BCV)",
+          "db": "video-command-box",
+          "src": "m3",
+          "page": "38",
+          "text": "The box that powers the Viviane sighting camera and sets its mode and zoom.",
+          "context": "The pilot or the gunner uses it to aim the camera at a target.",
+          "controls": [
+            {
+              "id": "bcv-power",
+              "name": "Power knob",
+              "type": "knob",
+              "match": [
+                "item:video-command-box:1"
+              ],
+              "text": "A knob that switches the video command box on (M, marche) or off (A, arret).",
+              "context": "The camera needs the box to be on.",
+              "src": "m3",
+              "page": "38"
+            },
+            {
+              "id": "bcv-ir",
+              "name": "IR power knob",
+              "type": "knob",
+              "match": [
+                "item:video-command-box:2"
+              ],
+              "text": "A knob for the thermal channel (VTH) and the laser rangefinder: A is off, V is standby, M is on.",
+              "context": "The thermal camera needs about three minutes to cool down after switching on.",
+              "src": "m3",
+              "page": "39"
+            },
+            {
+              "id": "bcv-mode",
+              "name": "Mode knob",
+              "type": "knob",
+              "match": [
+                "item:video-command-box:3"
+              ],
+              "text": "A knob for the camera mode. In A, C and V the camera looks backward in its safe position. In PIL (manned) the pilot slews the camera. In ASS (locked) it stays in its last position.",
+              "context": "The pilot sets PIL before looking for a target.",
+              "src": "m3",
+              "page": "39"
+            },
+            {
+              "id": "bcv-ministick",
+              "name": "Mini stick",
+              "type": "hat",
+              "match": [
+                "item:video-command-box:4"
+              ],
+              "text": "A small stick that slews the camera when the mode knob is on PIL. In auto-hover mode, the pilot's main stick can use it.",
+              "context": "It aims the camera at the target.",
+              "src": "m3",
+              "page": "40"
+            },
+            {
+              "id": "bcv-center",
+              "name": "Centering toggle",
+              "type": "switch",
+              "match": [
+                "item:video-command-box:5"
+              ],
+              "text": "A toggle that turns the camera to look straight forward.",
+              "context": "The manual warns to keep the power knob on ALI when maneuvering, or the camera will lock on the first point within 8 km.",
+              "src": "m3",
+              "page": "40"
+            },
+            {
+              "id": "bcv-zoom",
+              "name": "Zoom knob",
+              "type": "knob",
+              "match": [
+                "item:video-command-box:6"
+              ],
+              "text": "A knob that swaps between the five zoom levels of the camera.",
+              "context": "The pilot zooms in to see a target more closely.",
+              "src": "m3",
+              "page": "40"
+            },
+            {
+              "id": "bcv-vdo-vth",
+              "name": "VDO/VTH toggle",
+              "type": "switch2",
+              "match": [
+                "item:video-command-box:7"
+              ],
+              "positions": [
+                {
+                  "name": "VDO",
+                  "text": "The direct day view."
+                },
+                {
+                  "name": "VTH",
+                  "text": "The thermal (infrared) view."
+                }
+              ],
+              "text": "A toggle that swaps between the direct view (VDO) and the thermal view (VTH) of the camera.",
+              "context": "The thermal view shows heat and also works at night.",
+              "src": "m3",
+              "page": "40"
+            }
+          ]
+        },
+        {
+          "id": "tv-display",
+          "name": "TV Display",
+          "db": "tv-display",
+          "src": "m3",
+          "page": "34",
+          "text": "The black-and-white screen that shows the picture of the sighting camera.",
+          "context": "The crew looks at it to find and aim at targets.",
+          "controls": [
+            {
+              "id": "tv-contrast",
+              "name": "Contrast knob",
+              "type": "knob",
+              "match": [
+                "item:tv-display:1"
+              ],
+              "text": "A knob for the contrast of the black-and-white screen.",
+              "context": "The pilot adjusts it to see the picture well.",
+              "src": "m3",
+              "page": "34"
+            },
+            {
+              "id": "tv-power",
+              "name": "Power switch",
+              "type": "switch2",
+              "match": [
+                "item:tv-display:2"
+              ],
+              "positions": [
+                {
+                  "name": "ON (M, marche)",
+                  "text": "The screen is on."
+                },
+                {
+                  "name": "OFF (A, arret)",
+                  "text": "The screen is off."
+                }
+              ],
+              "text": "The switch that turns the screen on and off.",
+              "context": "The cockpit video equipment needs the 28 V DC bus.",
+              "src": "m3",
+              "page": "34"
+            },
+            {
+              "id": "tv-lamp",
+              "name": "Power on lamp",
+              "type": "light",
+              "match": [
+                "item:tv-display:3"
+              ],
+              "text": "A green lamp that shows that the screen is on.",
+              "context": "It lights when the power switch is on.",
+              "src": "m3",
+              "page": "34"
+            },
+            {
+              "id": "tv-brightness",
+              "name": "Brightness knob",
+              "type": "knob",
+              "match": [
+                "item:tv-display:4"
+              ],
+              "text": "A knob for the brightness of the black-and-white screen.",
+              "context": "The pilot adjusts it to see the picture well.",
+              "src": "m3",
+              "page": "34"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "roof",
+      "where": "overhead",
+      "name": "Roof console",
+      "text": "The roof holds the levers for the rotor brake and the fuel flow, the formation lights and the cabin lamp.",
+      "panels": [
+        {
+          "id": "roof-console",
+          "name": "Roof Console",
+          "db": "roof-console",
+          "src": "m3",
+          "page": "103",
+          "text": "The levers in the roof: rotor brake, fuel flow and fuel cut-off.",
+          "context": "The pilot uses them for the start and the shutdown of the engine.",
+          "controls": [
+            {
+              "id": "rotor-brake",
+              "name": "Rotor brake lever",
+              "type": "lever",
+              "match": [
+                "item:roof-console:1"
+              ],
+              "text": "A lever in the roof that stops the main rotor from turning when the helicopter is parked. It can be moved with the mouse or assigned to a controller axis or keys.",
+              "context": "The pilot releases it before starting the engine and uses it to stop the rotor after shutdown.",
+              "src": "m3",
+              "page": "103"
+            },
+            {
+              "id": "fuel-flow-lever",
+              "name": "Fuel flow lever",
+              "type": "lever",
+              "match": [
+                "item:roof-console:2"
+              ],
+              "text": "A lever in the roof that sets how much fuel flows to the engine, from start to flight. It can be moved with the mouse or assigned to a controller axis or keys.",
+              "context": "The alarm lamp lights if it is not pushed completely forward.",
+              "src": "m3",
+              "page": "103"
+            },
+            {
+              "id": "fuel-cutoff",
+              "name": "Fuel cut-off lever",
+              "type": "lever",
+              "match": [
+                "item:roof-console:3"
+              ],
+              "text": "A lever for cutting the fuel in an emergency. In this game it is not simulated.",
+              "context": "The manual says this lever is not simulated, so it has no function in DCS.",
+              "src": "m3",
+              "page": "103"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "pilot-seat",
+      "where": "hotas",
+      "name": "Pilot: cyclic, collective and pedals",
+      "seat": 1,
+      "text": "The pilot sits on the right. The right hand holds the cyclic stick, the left hand the collective lever. The feet work the pedals.",
+      "panels": [
+        {
+          "id": "pilot-cyclic",
+          "name": "Cyclic, collective and pedals (pilot)",
+          "src": "m3",
+          "page": "43",
+          "text": "The stick, the lever and the pedals with the buttons and switches on them.",
+          "context": "The pilot flies the helicopter with them and works trim, autopilot, wipers and flares without letting go.",
+          "controls": [
+            {
+              "id": "slaved",
+              "name": "Camera slaved button",
+              "type": "button",
+              "match": [
+                "control:stick.button.ap_slave"
+              ],
+              "text": "A button on the top left of the grip head. It switches the autopilot's slaved mode on and off. In this mode the helicopter turns to the heading of the camera's target point.",
+              "context": "It works once a target point has been set with the sighting camera.",
+              "src": "m3",
+              "page": "131"
+            },
+            {
+              "id": "china-hat",
+              "name": "Trim china hat",
+              "type": "hat",
+              "match": [
+                "control:stick.hat.trim"
+              ],
+              "text": "A four-way hat on top of the grip. It works the trim actuator for fine trimming (small changes so the helicopter flies steadily without force on the stick): up for nose down, down for nose up, left and right for the roll.",
+              "context": "It works when the TRIM switch on the main panel is on.",
+              "src": "m3",
+              "page": "16"
+            },
+            {
+              "id": "autopilot-button",
+              "name": "Autopilot button",
+              "type": "button",
+              "match": [
+                "control:stick.button.autopilot"
+              ],
+              "text": "A button on the top right of the grip head. It switches the autopilot on and off.",
+              "context": "The autopilot panel must be set first.",
+              "src": "m3",
+              "page": "129"
+            },
+            {
+              "id": "mag-brake",
+              "name": "Magnetic brake button",
+              "type": "button",
+              "match": [
+                "control:stick.button.trim"
+              ],
+              "text": "A button on the side of the grip. Pressing it makes the stick stay where it is, so the pilot can let go of the stick (the magnetic brake).",
+              "context": "The magnetic brake switch on the start panel must be on. The manual advises it mainly for pilots without force feedback sticks.",
+              "src": "m3",
+              "page": "14"
+            },
+            {
+              "id": "hover",
+              "name": "Auto-hover button",
+              "type": "button",
+              "match": [
+                "control:stick.button.hover"
+              ],
+              "text": "A button on the side of the grip. It switches the auto-hover on and off. In auto-hover the autopilot keeps the helicopter hanging in place.",
+              "context": "The helicopter must be slower than 18 km/h and tilted less than 30 degrees, or auto-hover switches itself off.",
+              "src": "m3",
+              "page": "130"
+            },
+            {
+              "id": "wiper",
+              "name": "Wiper button",
+              "type": "button",
+              "match": [
+                "control:stick.button.wiper"
+              ],
+              "text": "A button low on the side of the grip. One press makes the windscreen wiper do one stroke.",
+              "context": "The wiper needs the 28 V DC bus.",
+              "src": "m3",
+              "page": "78"
+            },
+            {
+              "id": "pilot-radio",
+              "name": "Radio button",
+              "type": "trigger",
+              "match": [
+                "control:stick.trigger"
+              ],
+              "text": "The trigger at the front of the grip. While it is held, the pilot's voice goes out on the radio (the DCS binding).",
+              "context": "The pilot uses it to speak to other aircraft and the airfield.",
+              "src": "m3"
+            },
+            {
+              "id": "landing-light",
+              "name": "Landing light switch",
+              "type": "switch3",
+              "match": [
+                "control:collective.switch.landing_light"
+              ],
+              "positions": [
+                {
+                  "name": "PHARE",
+                  "text": "The landing light is on."
+                },
+                {
+                  "name": "VARIO",
+                  "text": "The landing light is in the variable mode."
+                },
+                {
+                  "name": "ARRET",
+                  "text": "The landing light is off."
+                }
+              ],
+              "text": "A switch on the collective switch box for the landing light. PHARE turns the light on, ARRET turns it off, VARIO is the variable setting.",
+              "context": "The pilot uses the light when approaching a landing place at night.",
+              "src": "m3",
+              "page": "23"
+            },
+            {
+              "id": "landing-light-pos",
+              "name": "Landing light extend / retract switch",
+              "type": "switch2",
+              "match": [
+                "control:collective.switch.landing_light_position"
+              ],
+              "positions": [
+                {
+                  "name": "SORTI",
+                  "text": "The landing light is extended."
+                },
+                {
+                  "name": "RENTRE",
+                  "text": "The landing light is retracted."
+                }
+              ],
+              "text": "A rocker on the collective switch box. SORTI extends the landing light out of the body, RENTRE pulls it back in.",
+              "context": "The light must be out to light the way.",
+              "src": "m3",
+              "page": "23"
+            },
+            {
+              "id": "servo",
+              "name": "SERVO switch",
+              "type": "switch2",
+              "match": [
+                "control:collective.switch.servo"
+              ],
+              "positions": [
+                {
+                  "name": "M",
+                  "text": "The hydraulic servos are on."
+                },
+                {
+                  "name": "A",
+                  "text": "The hydraulic servos are off."
+                }
+              ],
+              "text": "A guarded switch on the collective switch box. Position M switches the hydraulic servos on, position A switches them off. Hydraulics are oil under high pressure that helps to move the controls.",
+              "context": "The hydraulic servos help to move the controls.",
+              "src": "m3"
+            },
+            {
+              "id": "flares",
+              "name": "Flare dispenser button",
+              "type": "button",
+              "match": [
+                "control:collective.button.flare"
+              ],
+              "text": "A button on the collective head, under a cover. Lifting the cover and pressing the button dispenses flares (hot decoys against heat-seeking missiles).",
+              "context": "The flare dispenser needs the 115 V AC bus.",
+              "src": "m3",
+              "page": "127"
+            },
+            {
+              "id": "collective",
+              "name": "Collective",
+              "type": "axis",
+              "match": [
+                "control:collective.axis.main"
+              ],
+              "text": "The lever on the left of the seat. Pulling it up makes the helicopter climb, lowering it makes the helicopter sink, because it changes the angle of all main rotor blades together.",
+              "context": "The pilot moves it gently; moving it too fast can break the engine.",
+              "src": "m3",
+              "page": "45"
+            },
+            {
+              "id": "pedals",
+              "name": "Pedals",
+              "type": "axis",
+              "match": [
+                "control:pedals.axis.rudder"
+              ],
+              "text": "The foot pedals. They change the pitch of the blades of the Fenestron, the ducted tail rotor, and so turn the nose of the helicopter left and right.",
+              "context": "The pilot uses them to point the nose and to fly without slipping sideways.",
+              "src": "m3"
+            },
+            {
+              "id": "pilot-gimbal",
+              "name": "Cyclic",
+              "type": "axis",
+              "match": [
+                "control:stick.gimbal"
+              ],
+              "text": "The stick between the pilot's knees. Tilting it forward, back, left or right tilts the rotor, and so the helicopter flies in that direction.",
+              "context": "It is the main flight control in the air, together with the collective and the pedals.",
+              "src": "m3",
+              "page": "43"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "copilot-seat",
+      "where": "hotas",
+      "name": "Copilot / gunner: stick, video stick and controls",
+      "seat": 2,
+      "text": "The left seat has its own stick, the video stick of the sighting camera and the same switch box and pedals.",
+      "panels": [
+        {
+          "id": "copilot-controls",
+          "name": "Stick, collective and pedals (left seat)",
+          "src": "m3",
+          "page": "41",
+          "text": "The stick of the left seat and the buttons, the switch box and the pedals that the catalog lists for it.",
+          "context": "While the pilot flies, the left stick slews the camera.",
+          "controls": [
+            {
+              "id": "slaved",
+              "name": "Camera slaved button",
+              "type": "button",
+              "match": [
+                "control:stick.button.ap_slave"
+              ],
+              "text": "A button on the top left of the grip head. It switches the autopilot's slaved mode on and off. In this mode the helicopter turns to the heading of the camera's target point.",
+              "context": "It works once a target point has been set with the sighting camera.",
+              "src": "m3",
+              "page": "131"
+            },
+            {
+              "id": "china-hat",
+              "name": "Trim china hat",
+              "type": "hat",
+              "match": [
+                "control:stick.hat.trim"
+              ],
+              "text": "A four-way hat on top of the grip. It works the trim actuator for fine trimming (small changes so the helicopter flies steadily without force on the stick): up for nose down, down for nose up, left and right for the roll.",
+              "context": "It works when the TRIM switch on the main panel is on.",
+              "src": "m3",
+              "page": "16"
+            },
+            {
+              "id": "autopilot-button",
+              "name": "Autopilot button",
+              "type": "button",
+              "match": [
+                "control:stick.button.autopilot"
+              ],
+              "text": "A button on the top right of the grip head. It switches the autopilot on and off.",
+              "context": "The autopilot panel must be set first.",
+              "src": "m3",
+              "page": "129"
+            },
+            {
+              "id": "mag-brake",
+              "name": "Magnetic brake button",
+              "type": "button",
+              "match": [
+                "control:stick.button.trim"
+              ],
+              "text": "A button on the side of the grip. Pressing it makes the stick stay where it is, so the pilot can let go of the stick (the magnetic brake).",
+              "context": "The magnetic brake switch on the start panel must be on. The manual advises it mainly for pilots without force feedback sticks.",
+              "src": "m3",
+              "page": "14"
+            },
+            {
+              "id": "hover",
+              "name": "Auto-hover button",
+              "type": "button",
+              "match": [
+                "control:stick.button.hover"
+              ],
+              "text": "A button on the side of the grip. It switches the auto-hover on and off. In auto-hover the autopilot keeps the helicopter hanging in place.",
+              "context": "The helicopter must be slower than 18 km/h and tilted less than 30 degrees, or auto-hover switches itself off.",
+              "src": "m3",
+              "page": "130"
+            },
+            {
+              "id": "wiper",
+              "name": "Wiper button",
+              "type": "button",
+              "match": [
+                "control:stick.button.wiper"
+              ],
+              "text": "A button low on the side of the grip. One press makes the windscreen wiper do one stroke.",
+              "context": "The wiper needs the 28 V DC bus.",
+              "src": "m3",
+              "page": "78"
+            },
+            {
+              "id": "landing-light",
+              "name": "Landing light switch",
+              "type": "switch3",
+              "match": [
+                "control:collective.switch.landing_light"
+              ],
+              "positions": [
+                {
+                  "name": "PHARE",
+                  "text": "The landing light is on."
+                },
+                {
+                  "name": "VARIO",
+                  "text": "The landing light is in the variable mode."
+                },
+                {
+                  "name": "ARRET",
+                  "text": "The landing light is off."
+                }
+              ],
+              "text": "A switch on the collective switch box for the landing light. PHARE turns the light on, ARRET turns it off, VARIO is the variable setting.",
+              "context": "The pilot uses the light when approaching a landing place at night.",
+              "src": "m3",
+              "page": "23"
+            },
+            {
+              "id": "landing-light-pos",
+              "name": "Landing light extend / retract switch",
+              "type": "switch2",
+              "match": [
+                "control:collective.switch.landing_light_position"
+              ],
+              "positions": [
+                {
+                  "name": "SORTI",
+                  "text": "The landing light is extended."
+                },
+                {
+                  "name": "RENTRE",
+                  "text": "The landing light is retracted."
+                }
+              ],
+              "text": "A rocker on the collective switch box. SORTI extends the landing light out of the body, RENTRE pulls it back in.",
+              "context": "The light must be out to light the way.",
+              "src": "m3",
+              "page": "23"
+            },
+            {
+              "id": "servo",
+              "name": "SERVO switch",
+              "type": "switch2",
+              "match": [
+                "control:collective.switch.servo"
+              ],
+              "positions": [
+                {
+                  "name": "M",
+                  "text": "The hydraulic servos are on."
+                },
+                {
+                  "name": "A",
+                  "text": "The hydraulic servos are off."
+                }
+              ],
+              "text": "A guarded switch on the collective switch box. Position M switches the hydraulic servos on, position A switches them off. Hydraulics are oil under high pressure that helps to move the controls.",
+              "context": "The hydraulic servos help to move the controls.",
+              "src": "m3"
+            },
+            {
+              "id": "flares",
+              "name": "Flare dispenser button",
+              "type": "button",
+              "match": [
+                "control:collective.button.flare"
+              ],
+              "text": "A button on the collective head, under a cover. Lifting the cover and pressing the button dispenses flares (hot decoys against heat-seeking missiles).",
+              "context": "The flare dispenser needs the 115 V AC bus.",
+              "src": "m3",
+              "page": "127"
+            },
+            {
+              "id": "collective",
+              "name": "Collective",
+              "type": "axis",
+              "match": [
+                "control:collective.axis.main"
+              ],
+              "text": "The lever on the left of the seat. Pulling it up makes the helicopter climb, lowering it makes the helicopter sink, because it changes the angle of all main rotor blades together.",
+              "context": "The pilot moves it gently; moving it too fast can break the engine.",
+              "src": "m3",
+              "page": "45"
+            },
+            {
+              "id": "pedals",
+              "name": "Pedals",
+              "type": "axis",
+              "match": [
+                "control:pedals.axis.rudder"
+              ],
+              "text": "The foot pedals. They change the pitch of the blades of the Fenestron, the ducted tail rotor, and so turn the nose of the helicopter left and right.",
+              "context": "The pilot uses them to point the nose and to fly without slipping sideways.",
+              "src": "m3"
+            },
+            {
+              "id": "co-radio",
+              "name": "Radio button",
+              "type": "trigger",
+              "match": [
+                "control:stick.trigger"
+              ],
+              "text": "The trigger at the front of the grip of the left seat. While it is held, the voice goes out on the radio (the DCS binding).",
+              "context": "The copilot uses it to speak on the radio.",
+              "src": "m3"
+            },
+            {
+              "id": "co-cyclic",
+              "name": "Copilot cyclic",
+              "type": "axis",
+              "match": [
+                "control:stick.gimbal"
+              ],
+              "text": "The stick of the left seat. While the pilot flies, it slews the sighting camera up, down, left and right. When the copilot flies, it works like the pilot's cyclic: forward, back, left and right.",
+              "context": "The left seat's stick flies the helicopter only when the copilot has taken control; a key command hands the controls over.",
+              "src": "m1",
+              "page": "4"
+            }
+          ]
+        },
+        {
+          "id": "copilot-video-stick",
+          "name": "Video stick and video command box mini stick (left seat)",
+          "src": "m3",
+          "page": "41",
+          "text": "The extra stick with buttons for the laser, the camera picture and the missile launch.",
+          "context": "The copilot aims the camera and fires the HOT3 missile with it.",
+          "controls": [
+            {
+              "id": "lasing",
+              "name": "Lasing button and cover",
+              "type": "button",
+              "match": [
+                "control:panel.button.lasing"
+              ],
+              "text": "A button on the video stick under a cover. Lifting the cover and pressing the button measures the distance to the point the camera looks at with a laser. The distance is shown for 5 seconds.",
+              "context": "The distance helps the gunner to judge the shot.",
+              "src": "m3",
+              "page": "41"
+            },
+            {
+              "id": "gain",
+              "name": "Camera gain (contrast)",
+              "type": "rocker",
+              "match": [
+                "control:panel.rocker.gain"
+              ],
+              "text": "A two-way rocker on the video stick. It raises or lowers the gain (contrast) of the thermal picture, from 1 to 8.",
+              "context": "It works only in the thermal view (VTH).",
+              "src": "m3",
+              "page": "36"
+            },
+            {
+              "id": "symbology-brightness",
+              "name": "Symbology brightness",
+              "type": "rocker",
+              "match": [
+                "control:panel.rocker.symbology_brightness"
+              ],
+              "text": "A two-way rocker on the video stick. It makes the symbols on the camera picture brighter or dimmer.",
+              "context": "The symbols show distance, camera direction and the shoot mark.",
+              "src": "m3",
+              "page": "41"
+            },
+            {
+              "id": "image-brightness",
+              "name": "Image brightness",
+              "type": "rocker",
+              "match": [
+                "control:panel.rocker.image_brightness"
+              ],
+              "text": "A two-way rocker on the video stick. It makes the camera picture brighter or darker.",
+              "context": "The gunner adjusts it for the light.",
+              "src": "m3",
+              "page": "41"
+            },
+            {
+              "id": "missile-launch",
+              "name": "Missile launch button and cover",
+              "type": "button",
+              "match": [
+                "control:panel.button.missile_launch"
+              ],
+              "text": "A button on the video stick under a cover, worked with the thumb. It launches the HOT3 missile. The small SHOOT mark shows on the picture when the conditions for a launch are met.",
+              "context": "The conditions are: a missile is chosen, the camera looks within 3 degrees of the nose, Master Arm is on and the weapon key is on MARCHE.",
+              "src": "m3",
+              "page": "37"
+            },
+            {
+              "id": "symbology-inverse",
+              "name": "Symbology inverse toggle",
+              "type": "button",
+              "match": [
+                "control:panel.button.symbology_inverse"
+              ],
+              "text": "A button on the video stick. It inverts the colours of the symbols on the camera picture.",
+              "context": "It helps to read the symbols on a bright or dark picture.",
+              "src": "m3",
+              "page": "41"
+            },
+            {
+              "id": "image-inverse",
+              "name": "Image inverse toggle",
+              "type": "button",
+              "match": [
+                "control:panel.button.image_inverse"
+              ],
+              "text": "A button on the video stick. It swaps the thermal picture between white-hot and black-hot.",
+              "context": "Some targets show up better one way or the other.",
+              "src": "m3",
+              "page": "37"
+            },
+            {
+              "id": "co-ministick",
+              "name": "Video command box mini stick",
+              "type": "hat",
+              "match": [
+                "control:panel.ministick.viviane"
+              ],
+              "text": "The mini stick on the video command box. It slews the camera up, down, left and right when the mode knob is on PIL.",
+              "context": "It aims the camera at the target.",
+              "src": "m3",
+              "page": "40"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

@@ -67,7 +67,7 @@ public sealed partial class MainWindowViewModel
 
     public bool WorkspacePlainLabels => LayoutShowsLayoutFile && layoutHasTextStyle;
 
-    public FontFamily WorkspaceLabelFont => layoutTextFont.Length > 0 ? new FontFamily(layoutTextFont + ", Segoe UI") : FontFamily.Default;
+    public FontFamily WorkspaceLabelFont => layoutTextFont.Length > 0 ? new FontFamily(layoutTextFont + ", Segoe UI, " + JoyPro.Gui.Localization.Languages.FallbackFonts(JoyPro.Gui.Localization.Loc.Current)) : FontFamily.Default;
 
     public double WorkspaceLabelSize => layoutTextSize > 0 ? layoutTextSize : 14;
 

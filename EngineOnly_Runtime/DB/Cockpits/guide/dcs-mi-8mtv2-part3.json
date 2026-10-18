@@ -1,0 +1,1473 @@
+{
+  "format": "joypro-cockpit-guide",
+  "version": 1,
+  "id": "dcs-mi-8mtv2-part3",
+  "partOf": "dcs-mi-8mtv2",
+  "areas": [
+    {
+      "id": "circuit-breakers",
+      "where": "overhead",
+      "name": "Circuit breaker consoles",
+      "text": "The two ceiling consoles at the sides with hundreds of circuit breakers and the copilot's intercom box. The left one holds the weapons breakers.",
+      "panels": [
+        {
+          "id": "cb-groups",
+          "name": "Circuit breaker group switches",
+          "src": "m1",
+          "page": "76",
+          "text": "Nine push-buttons that switch whole groups of circuit breakers on at once. This saves clicking each breaker one by one.",
+          "context": "The game text says the pilot closes all breakers during the cockpit check. These buttons do that group by group.",
+          "controls": [
+            {
+              "id": "cb-group-buttons",
+              "name": "CB group 1-9 ON buttons",
+              "type": "button",
+              "match": [
+                "PTR-GRAZS-*"
+              ],
+              "text": "Each of these nine buttons switches on all breakers of its group. The groups are numbered 1 to 9.",
+              "context": "The manual says all circuit breakers are set on before start. Breakers for anti-ice and the engine controls can stay off if not needed.",
+              "count": 9,
+              "src": "m1",
+              "page": "244"
+            }
+          ]
+        },
+        {
+          "id": "left-cb",
+          "name": "Left circuit breaker console: weapons breakers",
+          "db": "left-circuit-breaker-console",
+          "src": "m1",
+          "page": "76",
+          "text": "The left console over the pilot holds the weapons breakers and the aiming correction table, the arming panel and the ammunition counters.",
+          "context": "The weapons only work when the matching breakers are on and the master arm switch is on. The pilot sets them before an attack.",
+          "controls": [
+            {
+              "id": "lcb-jettison",
+              "name": "Emergency jettison breakers (signal flare, armed, power, bombs and GUV)",
+              "type": "switch2",
+              "match": [
+                "PTR-LAZS-TMB-JETRCKT",
+                "PTR-LAZS-TMB-JETEXPL",
+                "PTR-LAZS-TMB-JETPWR",
+                "PTR-LAZS-TMB-JETBOMB"
+              ],
+              "positions": [
+                {
+                  "name": "ON",
+                  "text": "The breaker is closed and the circuit has power."
+                },
+                {
+                  "name": "OFF",
+                  "text": "The breaker is open and the circuit is cut off."
+                }
+              ],
+              "text": "These four breakers power the emergency drop of the weapons and the signal flare circuit. Without them the emergency jettison switch does nothing.",
+              "context": "The pilot checks them before an attack. The emergency release switches are on the weapons panels.",
+              "count": 4,
+              "src": "m1",
+              "page": "76"
+            },
+            {
+              "id": "lcb-guns",
+              "name": "Gun pod breakers (PKT, 800 electric launch, 622, 800 outer, 311)",
+              "type": "switch2",
+              "match": [
+                "PTR-LAZS-TMB-PKT",
+                "PTR-LAZS-TMB-ES-*",
+                "PTR-LAZS-TMB-GUOUT*",
+                "PTR-LAZS-TMB-311"
+              ],
+              "positions": [
+                {
+                  "name": "ON",
+                  "text": "The breaker is closed and the circuit has power."
+                },
+                {
+                  "name": "OFF",
+                  "text": "The breaker is open and the circuit is cut off."
+                }
+              ],
+              "text": "These breakers power the nose machine gun and the gun containers (GUV) on the different weapon stations. The numbers 622, 800 and 624 are the gun types.",
+              "context": "The pilot closes the ones for the loaded guns. The manual lists the 7.62 mm gun 9-A-622 and the grenade launcher 9-A-800.",
+              "count": 10,
+              "src": "m1",
+              "page": "76"
+            },
+            {
+              "id": "lcb-rs-guv",
+              "name": "RS/GUV breakers (heating, warning, fire)",
+              "type": "switch2",
+              "match": [
+                "PTR-LAZS-TMB-RSGUV-WARM",
+                "PTR-LAZS-TMB-RSGUV-SIGN",
+                "PTR-LAZS-TMB-RSGUV-FIRE"
+              ],
+              "positions": [
+                {
+                  "name": "ON",
+                  "text": "The breaker is closed and the circuit has power."
+                },
+                {
+                  "name": "OFF",
+                  "text": "The breaker is open and the circuit is cut off."
+                }
+              ],
+              "text": "These three breakers power the heating of the release box (ESBR), the warning lamps and the fire circuit of the rockets and gun containers.",
+              "context": "The rocket and gun fire circuits do not work without them.",
+              "count": 3,
+              "src": "m1",
+              "page": "76"
+            },
+            {
+              "id": "lcb-bombs",
+              "name": "Bomb system breakers (equipment, control, explode, ESBR)",
+              "type": "switch2",
+              "match": [
+                "PTR-LAZS-TMB-BV-*"
+              ],
+              "positions": [
+                {
+                  "name": "ON",
+                  "text": "The breaker is closed and the circuit has power."
+                },
+                {
+                  "name": "OFF",
+                  "text": "The breaker is open and the circuit is cut off."
+                }
+              ],
+              "text": "These four breakers power the bomb release equipment: the equipment, the control, the exploding circuit and the electrical release box.",
+              "context": "The manual says all needed breakers must be on before bombs are released.",
+              "count": 4,
+              "src": "m1",
+              "page": "315"
+            },
+            {
+              "id": "master-arm",
+              "name": "MASTER ARM switch (weapons safe / armed)",
+              "type": "switch2",
+              "match": [
+                "PTR-SAFE-WEAPON"
+              ],
+              "positions": [
+                {
+                  "name": "ON",
+                  "text": "The weapons are armed and can fire."
+                },
+                {
+                  "name": "OFF",
+                  "text": "The weapons are safe; nothing can fire."
+                }
+              ],
+              "text": "This is the main safety switch for all weapons. With it off, nothing can be fired or dropped, even if the other weapon switches are on. A red lamp lights when it is on.",
+              "context": "It sits above the left blister. The manual calls it a safety measure for ground work with the crew and for loading weapons.",
+              "src": "m1",
+              "page": "308"
+            },
+            {
+              "id": "lcb-panels",
+              "name": "Aiming correction table, weapons arming panel and ammunition indicators",
+              "type": "other",
+              "match": [
+                "item:left-circuit-breaker-console:1",
+                "item:left-circuit-breaker-console:2",
+                "item:left-circuit-breaker-console:3",
+                "item:left-circuit-breaker-console:4"
+              ],
+              "text": "These parts of the left console are not switches in the game: a table for sight corrections, the weapons arming panel, the weapon breakers and the remaining ammunition indicators.",
+              "context": "The manual shows the master arm switch above the left blister; with it off, no weapon can fire.",
+              "count": 4,
+              "src": "m1",
+              "page": "76"
+            }
+          ]
+        },
+        {
+          "id": "right-cb-radio",
+          "name": "Right circuit breaker console: radio and navigation breakers",
+          "src": "m1",
+          "page": "76",
+          "text": "The right console holds many breakers, grouped here by system. This group is for the radios, the intercom and the radio navigation devices.",
+          "context": "The pilot closes them in the cockpit check. A radio does not work until its breaker and the intercom breaker are on.",
+          "controls": [
+            {
+              "id": "cb-intercom-radio",
+              "name": "Intercom and radio breakers (SPU, R-863, 6201 IFF, radio meter)",
+              "type": "switch2",
+              "match": [
+                "PTR-RAZS-TMB-RADSPU",
+                "PTR-RAZS-TMB-RADCOMM",
+                "PTR-RAZS-TMB-RADRS",
+                "PTR-RAZS-TMB-RADRNTG"
+              ],
+              "positions": [
+                {
+                  "name": "ON",
+                  "text": "The breaker is closed and the circuit has power."
+                },
+                {
+                  "name": "OFF",
+                  "text": "The breaker is open and the circuit is cut off."
+                }
+              ],
+              "text": "Each of these is a circuit breaker, a safety switch that cuts the power of one circuit when it draws too much. This group protects the intercom, the R-863 command radio, the 6201 IFF box and the radio meter. In the game each can be clicked on and off.",
+              "context": "The R-863 manual says to turn on the command radio breaker and the intercom breaker before using the radio.",
+              "count": 4,
+              "src": "m1",
+              "page": "76"
+            },
+            {
+              "id": "cb-nav-radio",
+              "name": "Navigation radio breakers (Doppler, altimeter, ARK-9, ARK-UD)",
+              "type": "switch2",
+              "match": [
+                "PTR-RAZS-TMB-RADDISS",
+                "PTR-RAZS-TMB-RADALT",
+                "PTR-RAZS-TMB-RADCMP-UKV",
+                "PTR-RAZS-TMB-RADCMP-SV"
+              ],
+              "positions": [
+                {
+                  "name": "ON",
+                  "text": "The breaker is closed and the circuit has power."
+                },
+                {
+                  "name": "OFF",
+                  "text": "The breaker is open and the circuit is cut off."
+                }
+              ],
+              "text": "Each of these is a circuit breaker, a safety switch that cuts the power of one circuit when it draws too much. This group protects the Doppler navigator, the radar altimeter and the radio compasses ARK-UD and ARK-9. In the game each can be clicked on and off.",
+              "context": "The radar altimeter and the Doppler each need their own breaker besides their power switch.",
+              "count": 4,
+              "src": "m1",
+              "page": "76"
+            }
+          ]
+        },
+        {
+          "id": "right-cb-spu7",
+          "name": "SPU-7 intercom control box (copilot)",
+          "src": "m1",
+          "page": "110",
+          "text": "The copilot's own SPU-7 intercom box. It is the same as the pilot's box and sits next to the right breaker console.",
+          "context": "The copilot sets the radio source and the volume here, exactly like the pilot does on the left.",
+          "controls": [
+            {
+              "id": "cop-spu-radio-ics",
+              "name": "SPU-7 RADIO / ICS switch (copilot)",
+              "type": "switch2",
+              "match": [
+                "PTR-RAZS-TMB-RADSPU002"
+              ],
+              "positions": [
+                {
+                  "name": "RADIO",
+                  "text": "The second trigger click transmits on the radio."
+                },
+                {
+                  "name": "ICS",
+                  "text": "The trigger always talks on the intercom."
+                }
+              ],
+              "text": "This switch decides what the copilot's trigger does: talks on the intercom or on the chosen radio.",
+              "context": "It works like the pilot's switch.",
+              "src": "m1",
+              "page": "111"
+            },
+            {
+              "id": "cop-spu-call",
+              "name": "SPU-7 circular call button (copilot)",
+              "type": "button",
+              "match": [
+                "PTR-RAZS-BTN-CB002"
+              ],
+              "text": "In the real helicopter this button calls all crew stations. The game marks it N/F, not functional.",
+              "context": "It is the copilot's twin of the pilot's call button.",
+              "src": "m1",
+              "page": "111"
+            },
+            {
+              "id": "cop-spu-network",
+              "name": "SPU-7 network 1/2 switch (copilot)",
+              "type": "switch2",
+              "match": [
+                "PTR-RAZS-TMB-CIRC002"
+              ],
+              "positions": [
+                {
+                  "name": "1",
+                  "text": "Network 1; not used."
+                },
+                {
+                  "name": "2",
+                  "text": "Network 2; not used."
+                }
+              ],
+              "text": "The copilot's version of the network switch, which would pick between two intercom networks. The manual says it is not used.",
+              "context": "This is the copilot's twin of the pilot's switch and has no function in DCS either.",
+              "src": "m1",
+              "page": "111"
+            },
+            {
+              "id": "cop-spu-source",
+              "name": "SPU-7 radio source selector (copilot)",
+              "type": "selector",
+              "match": [
+                "PTR-RAZS-LVR-MODES002"
+              ],
+              "text": "This rotary knob picks which radio the copilot listens to and talks on.",
+              "context": "The choices are the same as on the pilot's box.",
+              "src": "m1",
+              "page": "111"
+            },
+            {
+              "id": "cop-spu-master",
+              "name": "SPU-7 common volume knob (copilot)",
+              "type": "knob",
+              "match": [
+                "PTR-RAZS-LVR-ALL002"
+              ],
+              "text": "This knob sets the loudness of the intercom for the copilot.",
+              "context": "The two volume knobs swap roles when the RADIO/ICS switch changes.",
+              "src": "m1",
+              "page": "112"
+            },
+            {
+              "id": "cop-spu-monitor",
+              "name": "SPU-7 listening volume knob (copilot)",
+              "type": "knob",
+              "match": [
+                "PTR-RAZS-LVR-AUDIT002"
+              ],
+              "text": "This knob sets the loudness of the radio the copilot listens to.",
+              "context": "It is used together with the common volume knob.",
+              "src": "m1",
+              "page": "112"
+            }
+          ]
+        },
+        {
+          "id": "right-cb-systems",
+          "name": "Right circuit breaker console: engines, fuel, hydraulics and flight systems",
+          "src": "m1",
+          "page": "76",
+          "text": "More breakers from the right console: for the glass heating and wipers, the heater, the fire protection, hydraulics, autopilot, fuel pumps, engine start and some instruments.",
+          "context": "The pilot closes them in the cockpit check before the APU is started.",
+          "controls": [
+            {
+              "id": "cb-defrost",
+              "name": "Anti-ice breakers (engine dust protection, control, glass, ice detector)",
+              "type": "switch2",
+              "match": [
+                "PTR-RAZS-TMB-POSPZUENG-R",
+                "PTR-RAZS-TMB-POSPZUENG-L",
+                "PTR-RAZS-TMB-POSDIR",
+                "PTR-RAZS-TMB-POSGLS",
+                "PTR-RAZS-TMB-POSRIO3",
+                "PTR-RAZS-TMB-L1800"
+              ],
+              "positions": [
+                {
+                  "name": "ON",
+                  "text": "The breaker is closed and the circuit has power."
+                },
+                {
+                  "name": "OFF",
+                  "text": "The breaker is open and the circuit is cut off."
+                }
+              ],
+              "text": "Each of these is a circuit breaker, a safety switch that cuts the power of one circuit when it draws too much. This group protects the anti-ice system: the engine intake heaters, the control, the window heating and the ice detector RIO-3. In the game each can be clicked on and off.",
+              "context": "The manual says the pilot switches the breakers on during the cockpit check before the engines start. The manual says the anti-ice breakers may be left off unless needed.",
+              "count": 6,
+              "src": "m1",
+              "page": "76"
+            },
+            {
+              "id": "cb-wipers",
+              "name": "Windshield wiper breakers (left, right)",
+              "type": "switch2",
+              "match": [
+                "PTR-RAZS-TMB-WIPER-R",
+                "PTR-RAZS-TMB-WIPER-L"
+              ],
+              "positions": [
+                {
+                  "name": "ON",
+                  "text": "The breaker is closed and the circuit has power."
+                },
+                {
+                  "name": "OFF",
+                  "text": "The breaker is open and the circuit is cut off."
+                }
+              ],
+              "text": "Each of these is a circuit breaker, a safety switch that cuts the power of one circuit when it draws too much. This group protects the two windshield wipers. In the game each can be clicked on and off.",
+              "context": "The manual says the pilot switches the breakers on during the cockpit check before the engines start. The wipers do not run without them.",
+              "count": 2,
+              "src": "m1",
+              "page": "76"
+            },
+            {
+              "id": "cb-ko50",
+              "name": "KO-50 heater breaker",
+              "type": "switch2",
+              "match": [
+                "PTR-RAZS-TMB-KO50"
+              ],
+              "positions": [
+                {
+                  "name": "ON",
+                  "text": "The breaker is closed and the circuit has power."
+                },
+                {
+                  "name": "OFF",
+                  "text": "The breaker is open and the circuit is cut off."
+                }
+              ],
+              "text": "Each of these is a circuit breaker, a safety switch that cuts the power of one circuit when it draws too much. This group protects the KO-50 cabin heater. In the game each can be clicked on and off.",
+              "context": "The manual says the pilot switches the breakers on during the cockpit check before the engines start. The manual says it must be on for the heater to start.",
+              "src": "m1",
+              "page": "76"
+            },
+            {
+              "id": "cb-fire",
+              "name": "Fire protection breakers (signalling, first and second bottle)",
+              "type": "switch2",
+              "match": [
+                "PTR-RAZS-TMB-PPSQUE2-R",
+                "PTR-RAZS-TMB-PPSQUE2-L",
+                "PTR-RAZS-TMB-PPSQUE1-R",
+                "PTR-RAZS-TMB-PPSQUE1-L",
+                "PTR-RAZS-TMB-PPSSIGN"
+              ],
+              "positions": [
+                {
+                  "name": "ON",
+                  "text": "The breaker is closed and the circuit has power."
+                },
+                {
+                  "name": "OFF",
+                  "text": "The breaker is open and the circuit is cut off."
+                }
+              ],
+              "text": "Each of these is a circuit breaker, a safety switch that cuts the power of one circuit when it draws too much. This group protects the fire protection system: the fire signalling and the first and second order extinguisher circuits. In the game each can be clicked on and off.",
+              "context": "The manual says to set the fire protection breakers on and check the fire circuits before starting; they are set off after shutdown.",
+              "count": 5,
+              "src": "m1",
+              "page": "181"
+            },
+            {
+              "id": "cb-hydraulics",
+              "name": "Hydraulic breakers (main, auxiliary)",
+              "type": "switch2",
+              "match": [
+                "PTR-RAZS-TMB-GSDBL",
+                "PTR-RAZS-TMB-GSMAIN"
+              ],
+              "positions": [
+                {
+                  "name": "ON",
+                  "text": "The breaker is closed and the circuit has power."
+                },
+                {
+                  "name": "OFF",
+                  "text": "The breaker is open and the circuit is cut off."
+                }
+              ],
+              "text": "Each of these is a circuit breaker, a safety switch that cuts the power of one circuit when it draws too much. This group protects the main and the backup (auxiliary) hydraulic system. In the game each can be clicked on and off.",
+              "context": "The manual says to set the main and backup hydraulic breakers on before checking the hydraulic systems.",
+              "count": 2,
+              "src": "m1",
+              "page": "165"
+            },
+            {
+              "id": "cb-autopilot",
+              "name": "Autopilot breakers (main, friction, electric clutches)",
+              "type": "switch2",
+              "match": [
+                "PTR-RAZS-TMB-APELCT",
+                "PTR-RAZS-TMB-APFRICT",
+                "PTR-RAZS-TMB-APMAIN"
+              ],
+              "positions": [
+                {
+                  "name": "ON",
+                  "text": "The breaker is closed and the circuit has power."
+                },
+                {
+                  "name": "OFF",
+                  "text": "The breaker is open and the circuit is cut off."
+                }
+              ],
+              "text": "Each of these is a circuit breaker, a safety switch that cuts the power of one circuit when it draws too much. This group protects the AP-34B autopilot: the main supply, the friction and the electric clutches. In the game each can be clicked on and off.",
+              "context": "The manual says the autopilot is powered through these three breakers on the right console.",
+              "count": 3,
+              "src": "m1",
+              "page": "218"
+            },
+            {
+              "id": "cb-fuel",
+              "name": "Fuel system breakers (pumps, fuel meter, valves)",
+              "type": "switch2",
+              "match": [
+                "PTR-RAZS-TMB-TSPMP-R",
+                "PTR-RAZS-TMB-TSPMP-L",
+                "PTR-RAZS-TMB-TSPMP-C",
+                "PTR-RAZS-TMB-TSCOUNT",
+                "PTR-RAZS-TMB-TSCOCK-R",
+                "PTR-RAZS-TMB-TSCOCK-L",
+                "PTR-RAZS-TMB-TSCOCK-ON"
+              ],
+              "positions": [
+                {
+                  "name": "ON",
+                  "text": "The breaker is closed and the circuit has power."
+                },
+                {
+                  "name": "OFF",
+                  "text": "The breaker is open and the circuit is cut off."
+                }
+              ],
+              "text": "Each of these is a circuit breaker, a safety switch that cuts the power of one circuit when it draws too much. This group protects the fuel system: the three tank pumps, the fuel gauge and the shutoff and bypass valves. In the game each can be clicked on and off.",
+              "context": "The fuel panel switches only work when these breakers are on; the manual lists them before the fuel check.",
+              "count": 7,
+              "src": "m1",
+              "page": "155"
+            },
+            {
+              "id": "cb-start",
+              "name": "Engine and APU start breakers (ignition, start)",
+              "type": "switch2",
+              "match": [
+                "PTR-RAZS-TMB-START-ENGIGN",
+                "PTR-RAZS-TMB-START-ENGON",
+                "PTR-RAZS-TMB-START-TRBIGN",
+                "PTR-RAZS-TMB-START-TRBON"
+              ],
+              "positions": [
+                {
+                  "name": "ON",
+                  "text": "The breaker is closed and the circuit has power."
+                },
+                {
+                  "name": "OFF",
+                  "text": "The breaker is open and the circuit is cut off."
+                }
+              ],
+              "text": "Each of these is a circuit breaker, a safety switch that cuts the power of one circuit when it draws too much. This group protects the starting system: the ignition and the start circuits of the main engines and of the APU. In the game each can be clicked on and off.",
+              "context": "The manual says to turn on the start and ignition breakers before starting the engines.",
+              "count": 4,
+              "src": "m1",
+              "page": "57"
+            },
+            {
+              "id": "cb-instruments",
+              "name": "Instrument breakers (SPUU-52, T-819, turn indicator, RPM control, unnamed)",
+              "type": "switch2",
+              "match": [
+                "PTR-RAZS-TMB-SPPU52",
+                "PTR-RAZS-TMB-T819",
+                "PTR-RAZS-TMB-TURN",
+                "PTR-RAZS-TMB-RPM",
+                "PTR-NONAME"
+              ],
+              "positions": [
+                {
+                  "name": "ON",
+                  "text": "The breaker is closed and the circuit has power."
+                },
+                {
+                  "name": "OFF",
+                  "text": "The breaker is open and the circuit is cut off."
+                }
+              ],
+              "text": "Each of these is a circuit breaker, a safety switch that cuts the power of one circuit when it draws too much. This group protects the tail rotor pitch limiter SPUU-52, the T-819, the turn indicator, the rotor speed control and one breaker without a name. In the game each can be clicked on and off.",
+              "context": "The manual says the pilot switches the breakers on during the cockpit check before the engines start. The manual does not describe the T-819 and the unnamed breaker.",
+              "count": 5,
+              "src": "m1",
+              "page": "76"
+            },
+            {
+              "id": "cb-lamp-lights",
+              "name": "Lamp test and exterior light breakers",
+              "type": "switch2",
+              "match": [
+                "PTR-RAZS-TMB-LAMPTEST",
+                "PTR-RAZS-TMB-WNGLGT",
+                "PTR-RAZS-TMB-ANO",
+                "PTR-RAZS-TMB-HLGT-*",
+                "PTR-SW-LIGHT-PRF4-*"
+              ],
+              "positions": [
+                {
+                  "name": "ON",
+                  "text": "The breaker is closed and the circuit has power."
+                },
+                {
+                  "name": "OFF",
+                  "text": "The breaker is open and the circuit is cut off."
+                }
+              ],
+              "text": "Each of these is a circuit breaker, a safety switch that cuts the power of one circuit when it draws too much. This group protects the lamp test, the wing lights, the navigation lights, the two search and landing lights and the PRF-4 lights. In the game each can be clicked on and off.",
+              "context": "The manual says the pilot switches the breakers on during the cockpit check before the engines start. The manual says the PRF-4 lights on the landing gear struts are not implemented.",
+              "count": 9,
+              "src": "m1",
+              "page": "195"
+            },
+            {
+              "id": "cb-cargo-hook",
+              "name": "Lock opening control breakers (main, reserve)",
+              "type": "switch2",
+              "match": [
+                "PTR-SW-LOCKER-RES",
+                "PTR-SW-LOCKER-BASE"
+              ],
+              "positions": [
+                {
+                  "name": "ON",
+                  "text": "The breaker is closed and the circuit has power."
+                },
+                {
+                  "name": "OFF",
+                  "text": "The breaker is open and the circuit is cut off."
+                }
+              ],
+              "text": "Each of these is a circuit breaker, a safety switch that cuts the power of one circuit when it draws too much. This group protects the lock opening control, main and reserve. The manual says the cargo hook needs its main and auxiliary breakers on this panel. In the game each can be clicked on and off.",
+              "context": "Before a sling load flight the pilot closes these breakers so that the hook can be opened.",
+              "count": 2,
+              "src": "m1",
+              "page": "215"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "weapons-copilot",
+      "where": "front-right",
+      "name": "Copilot's weapon panels and PKV sight",
+      "text": "The bombs control panel, the bomb release box and the sight, which sit at the right and in front.",
+      "panels": [
+        {
+          "id": "bombs-panel",
+          "name": "Copilot's bombs control panel (payload configuration)",
+          "src": "m1",
+          "page": "314",
+          "text": "A panel on the right side of the cockpit for the copilot. It controls the release of bombs and also the arming of the gun containers.",
+          "context": "The copilot sets the payload profile to match what is loaded. Bombs are dropped with the release triggers, not with the FIRE button.",
+          "controls": [
+            {
+              "id": "payload-profile",
+              "name": "Payload profile selector (I-V, GUV)",
+              "type": "selector",
+              "match": [
+                "PTR-ADDPBV-LVR-MODE"
+              ],
+              "positions": [
+                {
+                  "name": "I",
+                  "text": "All rockets; no bombs drop."
+                },
+                {
+                  "name": "II",
+                  "text": "All bombs drop in sequence from station 6."
+                },
+                {
+                  "name": "III",
+                  "text": "Four bombs plus two rocket launchers."
+                },
+                {
+                  "name": "IV",
+                  "text": "Two heavy bombs plus two rocket launchers."
+                },
+                {
+                  "name": "V",
+                  "text": "Two heavy bombs plus two standard bombs."
+                },
+                {
+                  "name": "GUV",
+                  "text": "The gun container circuits are powered and others are blocked."
+                }
+              ],
+              "text": "This selector tells the release system what the helicopter carries and in which order the stations drop. Its use prevents dropping the wrong stores.",
+              "context": "The manual explains profile I as all rockets (nothing is dropped), II as all bombs, and the GUV position as the gun container fire circuits.",
+              "src": "m1",
+              "page": "315"
+            },
+            {
+              "id": "bombs-master",
+              "name": "BOMBS MASTER switch (main bombs)",
+              "type": "switch2",
+              "match": [
+                "PTR-ADDPBV-TMB-MAINOFF"
+              ],
+              "positions": [
+                {
+                  "name": "ON",
+                  "text": "The bomb release circuits have power."
+                },
+                {
+                  "name": "OFF",
+                  "text": "The bomb release circuits are off."
+                }
+              ],
+              "text": "This is the main switch for dropping bombs. With it off, no bomb is released.",
+              "context": "The bombs circuit lamp lights when it is on.",
+              "src": "m1",
+              "page": "315"
+            },
+            {
+              "id": "cop-jettison-armed",
+              "name": "Jettison ARMED switch and cover (copilot)",
+              "type": "switch2",
+              "match": [
+                "PTR-ADDPBV-TMB-EMRGEXP",
+                "PTR-ADDPBV-CVR-EMRGEXP"
+              ],
+              "positions": [
+                {
+                  "name": "ON",
+                  "text": "Dropped bombs are armed."
+                },
+                {
+                  "name": "OFF",
+                  "text": "Dropped bombs are not armed."
+                }
+              ],
+              "text": "This guarded switch decides if bombs that are dropped in an emergency are armed to explode on impact.",
+              "context": "A lamp on the panel shows when the switch is on.",
+              "src": "m1",
+              "page": "315"
+            },
+            {
+              "id": "cop-jettison",
+              "name": "Jettison (emergency release) switch and cover (copilot)",
+              "type": "button",
+              "match": [
+                "PTR-ADDPBV-TMB-EMRGJET",
+                "PTR-ADDPBV-CVR-EMRGJET"
+              ],
+              "text": "This guarded button drops stores in an emergency. The cover is lifted first.",
+              "context": "The manual says the copilot's jettison only releases what matches the selected payload profile, unlike the pilot's switch which drops everything.",
+              "src": "m1",
+              "page": "310"
+            },
+            {
+              "id": "cop-lamp-test",
+              "name": "Bombs panel lamp test button",
+              "type": "button",
+              "match": [
+                "PTR-ADDPBV-BTN-LAMPTEST"
+              ],
+              "text": "Pressing this button lights all lamps of the bombs panel to check them.",
+              "context": "It is part of the preflight check.",
+              "src": "m1",
+              "page": "315"
+            },
+            {
+              "id": "cop-esbr-heat",
+              "name": "ESBR heating switch",
+              "type": "switch2",
+              "match": [
+                "PTR-ADDPBV-TMB-WARM"
+              ],
+              "positions": [
+                {
+                  "name": "ON",
+                  "text": "The heater is on; no effect in DCS."
+                },
+                {
+                  "name": "OFF",
+                  "text": "The heater is off."
+                }
+              ],
+              "text": "This switch heats the electrical bomb release box in freezing weather.",
+              "context": "The manual says the heating is not implemented.",
+              "src": "m1",
+              "page": "316"
+            }
+          ]
+        },
+        {
+          "id": "esbr",
+          "name": "ESBR-3P/A electrical release control box",
+          "src": "m1",
+          "page": "316",
+          "text": "The ESBR box sits under the copilot's instrument panel. It makes the bomb release run in single drops or in pairs, and in a set order of stations.",
+          "context": "The copilot sets the knob, then switches the box on. The manual says the bomb master switch and the payload profile must be set first.",
+          "controls": [
+            {
+              "id": "esbr-knob",
+              "name": "ESBR signal setting knob",
+              "type": "knob",
+              "match": [
+                "PTR-ADDESBR-LVR-MODE"
+              ],
+              "text": "This knob sets whether bombs fall one at a time or in pairs, and which number in the release order is next.",
+              "context": "Positions I and II mean single and paired release. The manual says positions 0 and the slash are for ground tests only and release nothing.",
+              "src": "m1",
+              "page": "317"
+            },
+            {
+              "id": "esbr-power",
+              "name": "ESBR power switch",
+              "type": "switch2",
+              "match": [
+                "PTR-ADDESBR-LVR-ONOFF"
+              ],
+              "positions": [
+                {
+                  "name": "ON",
+                  "text": "The release box is connected."
+                },
+                {
+                  "name": "OFF",
+                  "text": "The release box is off."
+                }
+              ],
+              "text": "This switch connects the release box to the bomb release circuits.",
+              "context": "The manual says to set it ON (right) before releasing bombs.",
+              "src": "m1",
+              "page": "316"
+            }
+          ]
+        },
+        {
+          "id": "pkv-sight",
+          "name": "PKV collimating sight",
+          "src": "m1",
+          "page": "317",
+          "text": "The PKV is a glass sight in front of the pilot. It shows a ring and marks as an aiming picture that the pilot puts over the target.",
+          "context": "The pilot uses it to aim rockets, guns and bombs. The marks also help estimate distance to a target of known size.",
+          "controls": [
+            {
+              "id": "pkv-elevation",
+              "name": "PKV sight elevation (limb) knob",
+              "type": "knob",
+              "match": [
+                "PTR-PKV-ROTARY"
+              ],
+              "text": "This knob tilts the reflector glass of the sight up or down, to set the sight elevation angle.",
+              "context": "The manual says the sight elevation depends on the weapon and distance; charts are in the combat chapter.",
+              "src": "m1",
+              "page": "319"
+            },
+            {
+              "id": "pkv-filter",
+              "name": "PKV sun filter lever",
+              "type": "switch2",
+              "match": [
+                "PTR-PKV-GLASS-FILTER"
+              ],
+              "positions": [
+                {
+                  "name": "SET UP",
+                  "text": "The filter is in front of the sight."
+                },
+                {
+                  "name": "REMOVE",
+                  "text": "The filter is stowed away."
+                }
+              ],
+              "text": "This lever swings a darker filter glass in front of the sight. It helps when the background is very bright, like the sun.",
+              "context": "The manual says the filter glass is stowable.",
+              "src": "m1",
+              "page": "320"
+            },
+            {
+              "id": "pkv-reticle-mask",
+              "name": "PKV reticle mask lever",
+              "type": "switch2",
+              "match": [
+                "PTR-PKV-DOUBLE"
+              ],
+              "positions": [
+                {
+                  "name": "SET UP",
+                  "text": "The part is set up."
+                },
+                {
+                  "name": "REMOVE",
+                  "text": "The part is removed."
+                }
+              ],
+              "text": "This lever puts a second part of the sight in or out. The game names it 'Sight Fixed Reticle Mask Lever'.",
+              "context": "The manual does not describe this lever. It does describe a stowable mechanical ring sight as a backup.",
+              "src": "m1",
+              "page": "320"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "right-console",
+      "where": "right-console",
+      "name": "Right side console",
+      "text": "The panel at the copilot's right. It holds the DC power switches, the exterior lights and the heater and warning lamp switches.",
+      "panels": [
+        {
+          "id": "dc-power",
+          "name": "DC power control panel",
+          "db": "right-side-console",
+          "src": "m1",
+          "page": "148",
+          "text": "The panel for the direct current (DC) electricity. It has the switches for the two batteries, the three rectifiers (which turn the generators' current into DC), the ground power plug and the APU's backup generator.",
+          "context": "The first move in the cockpit is to switch on the batteries and check their voltage. Later the rectifiers are switched on when the engines run and the generators make power.",
+          "controls": [
+            {
+              "id": "battery1",
+              "name": "Battery 1 switch",
+              "type": "switch2",
+              "match": [
+                "PTR-RSPE-TMB-AKK1"
+              ],
+              "positions": [
+                {
+                  "name": "ON",
+                  "text": "Battery 1 is connected."
+                },
+                {
+                  "name": "OFF",
+                  "text": "Battery 1 is disconnected."
+                }
+              ],
+              "text": "This switch connects the first battery to the helicopter's electricity.",
+              "context": "The manual says to switch on both batteries at the start and check that the battery bus voltage is at least 24 volts.",
+              "src": "m1",
+              "page": "244"
+            },
+            {
+              "id": "battery2",
+              "name": "Battery 2 switch",
+              "type": "switch2",
+              "match": [
+                "PTR-RSPE-TMB-AKK2"
+              ],
+              "positions": [
+                {
+                  "name": "ON",
+                  "text": "Battery 2 is connected."
+                },
+                {
+                  "name": "OFF",
+                  "text": "Battery 2 is disconnected."
+                }
+              ],
+              "text": "This switch connects the second battery to the helicopter's electricity.",
+              "context": "The two batteries share the load. The manual describes how to check each battery on its own.",
+              "src": "m1",
+              "page": "244"
+            },
+            {
+              "id": "rectifiers",
+              "name": "Rectifier 1, 2, 3 switches",
+              "type": "switch2",
+              "match": [
+                "PTR-RSPE-TMB-RECT?"
+              ],
+              "positions": [
+                {
+                  "name": "ON",
+                  "text": "The rectifier feeds the DC network."
+                },
+                {
+                  "name": "OFF",
+                  "text": "The rectifier is off."
+                }
+              ],
+              "text": "These three switches connect the rectifiers, devices that turn the generators' alternating current into direct current for most of the helicopter.",
+              "context": "The manual says the rectifiers are switched on after the engines run. The third rectifier is a backup for the others.",
+              "count": 3,
+              "src": "m1",
+              "page": "258"
+            },
+            {
+              "id": "dc-ground-power",
+              "name": "DC ground power switch",
+              "type": "switch2",
+              "match": [
+                "PTR-RSPE-TMB-AERF"
+              ],
+              "positions": [
+                {
+                  "name": "ON",
+                  "text": "Ground power feeds the DC network."
+                },
+                {
+                  "name": "OFF",
+                  "text": "Ground power is disconnected."
+                }
+              ],
+              "text": "This switch connects power from an outside plug-in power source on the ground.",
+              "context": "The manual says an EXT PWR lamp lights when the ground power is connected. It is switched off before taking off.",
+              "src": "m1",
+              "page": "246"
+            },
+            {
+              "id": "dc-annunciators",
+              "name": "Rectifier, external power and BIT annunciators",
+              "type": "light",
+              "match": [
+                "item:right-side-console:7"
+              ],
+              "text": "These lamps show that a rectifier is cut off from the battery bus, that outside power is connected, and the result of the built-in test.",
+              "context": "The manual says an EXT PWR lamp lights when ground power is connected and a lamp shows the rectifiers disconnected from the battery bus while the generators run.",
+              "src": "m1",
+              "page": "148"
+            },
+            {
+              "id": "equipment-test",
+              "name": "Equipment test switch (APU starter-generator to battery bus)",
+              "type": "switch2",
+              "match": [
+                "PTR-RSPE-TMB-TESTEQU"
+              ],
+              "positions": [
+                {
+                  "name": "ON",
+                  "text": "The APU generator can feed the battery bus."
+                },
+                {
+                  "name": "OFF",
+                  "text": "The APU generator is not connected."
+                }
+              ],
+              "text": "This switch connects the APU's starter-generator to the battery bus, so the APU can power the helicopter instead of the batteries.",
+              "context": "The manual says it is used together with the standby generator switch during a start from batteries.",
+              "src": "m1",
+              "page": "255"
+            },
+            {
+              "id": "standby-gen",
+              "name": "Standby generator switch (APU generator)",
+              "type": "switch2",
+              "match": [
+                "PTR-RSPE-TMB-RESGEN"
+              ],
+              "positions": [
+                {
+                  "name": "ON",
+                  "text": "The APU starter-generator makes DC power."
+                },
+                {
+                  "name": "OFF",
+                  "text": "The standby generator is off."
+                }
+              ],
+              "text": "This switch makes the APU's starter-generator work as a generator, a small backup source of electricity.",
+              "context": "The manual says not to start the main engines while the APU runs in this generator mode.",
+              "src": "m1",
+              "page": "253"
+            },
+            {
+              "id": "standby-gen-volts",
+              "name": "Standby generator voltage rheostat",
+              "type": "knob",
+              "match": [
+                "PTR-RSPE-LVR-V"
+              ],
+              "text": "This knob adjusts the voltage of the standby generator a little up or down.",
+              "context": "The manual says the generator voltage should be 27 to 29 volts.",
+              "src": "m1",
+              "page": "149"
+            },
+            {
+              "id": "dc-voltmeter-selector",
+              "name": "DC voltmeter selector",
+              "type": "selector",
+              "match": [
+                "PTR-RSPE-LVR-FEEDMODE",
+                "item:right-side-console:4"
+              ],
+              "text": "This rotary switch picks which DC power source the DC voltmeter on the rear console shows: the batteries, the battery bus, the rectifiers or the ground power.",
+              "context": "The manual says the battery bus should read at least 24 volts and the rectifier bus 27 to 29 volts.",
+              "src": "m1",
+              "page": "148"
+            },
+            {
+              "id": "dust-annunciators",
+              "name": "Engine dust protection ON annunciators and APU generator load",
+              "type": "light",
+              "match": [
+                "item:right-side-console:2",
+                "item:right-side-console:3"
+              ],
+              "text": "Two lamps show that the engine dust protection devices (PZU) of the left and right engine are on. A small dial shows the load of the APU generator.",
+              "context": "The manual says the dust protection lamps should light within about 30 seconds after switching on.",
+              "count": 2,
+              "src": "m1",
+              "page": "256"
+            }
+          ]
+        },
+        {
+          "id": "exterior-lights",
+          "name": "Exterior light switches",
+          "db": "right-side-console",
+          "src": "m1",
+          "page": "199",
+          "text": "The switches for the lights outside the helicopter: navigation lights, formation lights, rotor tip lights and the blinking anti-collision light.",
+          "context": "They are used at night and in bad visibility. The red and green navigation lights show which way the helicopter flies.",
+          "controls": [
+            {
+              "id": "nav-lights",
+              "name": "Navigation lights switch (BRIGHT / OFF / DIM)",
+              "type": "switch3",
+              "match": [
+                "PTR-RSPE-TMB-ANO",
+                "item:right-side-console:12"
+              ],
+              "positions": [
+                {
+                  "name": "BRIGHT",
+                  "text": "The navigation lights shine bright."
+                },
+                {
+                  "name": "OFF",
+                  "text": "The navigation lights are off."
+                },
+                {
+                  "name": "DIM",
+                  "text": "The navigation lights shine dim."
+                }
+              ],
+              "text": "This switch turns the red, green and white position lights on and sets them bright or dim.",
+              "context": "Other pilots see them and know where the helicopter is. The neutral position turns all of them off.",
+              "src": "m1",
+              "page": "200"
+            },
+            {
+              "id": "formation-lights",
+              "name": "Formation lights switch (BRIGHT / OFF / DIM)",
+              "type": "switch3",
+              "match": [
+                "PTR-RSPE-TMB-LGTWING"
+              ],
+              "positions": [
+                {
+                  "name": "BRIGHT",
+                  "text": "The formation lights shine bright."
+                },
+                {
+                  "name": "OFF",
+                  "text": "The formation lights are off."
+                },
+                {
+                  "name": "DIM",
+                  "text": "The formation lights shine dim."
+                }
+              ],
+              "text": "This switch turns on the three formation lights and sets them bright or dim.",
+              "context": "The manual says they help pilots keep formation at night.",
+              "src": "m1",
+              "page": "201"
+            },
+            {
+              "id": "tip-lights",
+              "name": "Blade tip lights switch",
+              "type": "switch2",
+              "match": [
+                "PTR-RSPE-TMB-LGTCONT",
+                "item:right-side-console:11"
+              ],
+              "positions": [
+                {
+                  "name": "ON",
+                  "text": "The blade tip lights are on."
+                },
+                {
+                  "name": "OFF",
+                  "text": "The blade tip lights are off."
+                }
+              ],
+              "text": "This switch turns on small lights at the tips of the main rotor blades.",
+              "context": "The manual says they show where the blades are when moving at night or in poor visibility.",
+              "src": "m1",
+              "page": "202"
+            },
+            {
+              "id": "strobe",
+              "name": "Strobe (anti-collision) light switch",
+              "type": "switch2",
+              "match": [
+                "PTR-RSPE-TMB-BEAC",
+                "item:right-side-console:10"
+              ],
+              "positions": [
+                {
+                  "name": "ON",
+                  "text": "The strobe light flashes."
+                },
+                {
+                  "name": "OFF",
+                  "text": "The strobe light is off."
+                }
+              ],
+              "text": "This switch turns on the flashing anti-collision light on top of the tail.",
+              "context": "The manual says it shows where the helicopter is at night, in bad weather or after an emergency landing.",
+              "src": "m1",
+              "page": "198"
+            }
+          ]
+        },
+        {
+          "id": "cabin-lights",
+          "name": "Cabin lighting and red backlight dimmers (right)",
+          "db": "right-side-console",
+          "src": "m1",
+          "page": "202",
+          "text": "The switches for the lamps in the cargo cabin and the knobs that set the red backlight on the right and middle parts of the cockpit.",
+          "context": "Red light at night lets the pilots read the dials without losing their night vision. The manual says the cargo cabin lighting is not implemented.",
+          "controls": [
+            {
+              "id": "cabin-lights-switches",
+              "name": "Cargo cabin duty and common lights switches",
+              "type": "switch2",
+              "match": [
+                "PTR-RSPE-TMB-DUTY",
+                "PTR-RSPE-TMB-ALL",
+                "item:right-side-console:13"
+              ],
+              "positions": [
+                {
+                  "name": "ON",
+                  "text": "The cabin lights are on."
+                },
+                {
+                  "name": "OFF",
+                  "text": "The cabin lights are off."
+                }
+              ],
+              "text": "These two switches turn on the standby (duty) and the general lights of the cargo cabin.",
+              "context": "The manual says the cargo cabin lighting is not implemented in the game.",
+              "count": 2,
+              "src": "m1",
+              "page": "207"
+            },
+            {
+              "id": "right-red-dimmers",
+              "name": "Right side red lighting dimmers (group 1 and 2)",
+              "type": "knob",
+              "match": [
+                "PTR-RSPE-LVR-REDGRP1",
+                "PTR-RSPE-LVR-REDGRP2",
+                "item:right-side-console:1"
+              ],
+              "text": "Each knob sets the brightness of the red backlight of its group on the copilot's side. Turned down fully, the group is off.",
+              "context": "The manual says they light the weapons console, the R-863 radio panels, the right breaker panel and the copilot's instruments.",
+              "count": 2,
+              "src": "m1",
+              "page": "205"
+            },
+            {
+              "id": "backlight-55v-dimmer",
+              "name": "5.5V backlight brightness rheostat",
+              "type": "knob",
+              "match": [
+                "PTR-RSPE-LVR-REDGRP005"
+              ],
+              "text": "This knob sets how bright the 5.5 volt red backlight is.",
+              "context": "The 5.5 volt backlight is switched on at the right triangular panel.",
+              "src": "m1",
+              "page": "206"
+            }
+          ]
+        },
+        {
+          "id": "heating-protection",
+          "name": "Heating and dust protection switches",
+          "db": "right-side-console",
+          "src": "m1",
+          "page": "78",
+          "text": "Switches for the heaters of the pitot tubes, the clock and the batteries, and for the dust protection of the engines.",
+          "context": "The pitot heaters are switched on in flight when there is a risk of ice. The dust protection runs after the engines are started.",
+          "controls": [
+            {
+              "id": "pitot-heaters",
+              "name": "Left and right pitot heater switches",
+              "type": "switch2",
+              "match": [
+                "PTR-RSPE-TMB-WRMPVD-L",
+                "PTR-RSPE-TMB-WRMPVD-R",
+                "item:right-side-console:8"
+              ],
+              "positions": [
+                {
+                  "name": "ON",
+                  "text": "The pitot heater is on."
+                },
+                {
+                  "name": "OFF",
+                  "text": "The pitot heater is off."
+                }
+              ],
+              "text": "These two switches heat the left and the right pitot tube. The pitot tubes are small tubes on the nose that measure the wind speed, and the heat keeps ice off them.",
+              "context": "The test buttons on the triangular panels check the heaters.",
+              "count": 2,
+              "src": "m1",
+              "page": "96"
+            },
+            {
+              "id": "clock-heat",
+              "name": "Clock heating switch",
+              "type": "switch2",
+              "match": [
+                "PTR-RSPE-TMB-WRMWTCH"
+              ],
+              "positions": [
+                {
+                  "name": "ON",
+                  "text": "The clock heater is on."
+                },
+                {
+                  "name": "OFF",
+                  "text": "The clock heater is off."
+                }
+              ],
+              "text": "This switch heats the clock for cold weather. The clock needs the heater when the temperature is below 5 degrees C.",
+              "context": "It is the cold weather helper of the AChS-1 clock.",
+              "src": "m1",
+              "page": "105"
+            },
+            {
+              "id": "battery-heat",
+              "name": "Battery heating switch",
+              "type": "switch2",
+              "match": [
+                "PTR-RSPE-TMB-WRMAKK"
+              ],
+              "positions": [
+                {
+                  "name": "ON",
+                  "text": "The battery heater is on."
+                },
+                {
+                  "name": "OFF",
+                  "text": "The battery heater is off."
+                }
+              ],
+              "text": "This switch heats the batteries for cold weather.",
+              "context": "The manual does not describe this switch; the game names it 'Battery Heating Switch'.",
+              "src": "m1",
+              "page": "78"
+            },
+            {
+              "id": "dust-protection",
+              "name": "Engine dust protection switches (left, right)",
+              "type": "switch2",
+              "match": [
+                "PTR-RSPE-TMB-PZUENG-L",
+                "PTR-RSPE-TMB-PZUENG-R",
+                "item:right-side-console:9"
+              ],
+              "positions": [
+                {
+                  "name": "ON",
+                  "text": "The dust protection is on."
+                },
+                {
+                  "name": "OFF",
+                  "text": "The dust protection is off."
+                }
+              ],
+              "text": "These switches turn on the dust protection (PZU) of each engine. It catches sand and dust before it reaches the engine.",
+              "context": "The manual says to switch them on right after the engines have been started.",
+              "count": 2,
+              "src": "m1",
+              "page": "256"
+            }
+          ]
+        },
+        {
+          "id": "warning-light-controls",
+          "name": "Warning lamp brightness and flasher switches",
+          "db": "right-side-console",
+          "src": "m1",
+          "page": "207",
+          "text": "Two switches that change how the warning lamps behave: day or night brightness, and flashing.",
+          "context": "The flasher makes important lamps blink to catch the pilot's eye. The night setting makes the lamps dimmer.",
+          "controls": [
+            {
+              "id": "flasher",
+              "name": "Flasher (blinker) switch",
+              "type": "switch2",
+              "match": [
+                "PTR-RSPE-TMB-WINK",
+                "item:right-side-console:6"
+              ],
+              "positions": [
+                {
+                  "name": "ON",
+                  "text": "The warning lamps blink."
+                },
+                {
+                  "name": "OFF",
+                  "text": "The warning lamps stay steady."
+                }
+              ],
+              "text": "This switch makes the important warning lamps blink, such as fire, icing and low fuel.",
+              "context": "The manual calls it the MIGALKA (flash) system.",
+              "src": "m1",
+              "page": "207"
+            },
+            {
+              "id": "day-night",
+              "name": "Annunciator brightness switch (DAY / NIGHT)",
+              "type": "switch2",
+              "match": [
+                "PTR-RSPE-TMB-TAB",
+                "item:right-side-console:5"
+              ],
+              "positions": [
+                {
+                  "name": "DAY",
+                  "text": "The lamps shine at full brightness."
+                },
+                {
+                  "name": "NIGHT",
+                  "text": "The lamps shine at half brightness."
+                }
+              ],
+              "text": "This switch sets the warning lamps to day or night brightness. At night the lamps shine at half brightness.",
+              "context": "The pilot sets it to NIGHT for night flights so the lamps do not blind him.",
+              "src": "m1",
+              "page": "208"
+            }
+          ]
+        },
+        {
+          "id": "pkt-selector",
+          "name": "PKT seat selector",
+          "src": "m1",
+          "page": "305",
+          "text": "A switch that picks who fires the nose machine gun: the flight engineer or the pilot.",
+          "context": "The manual says the nose machine gun (PKT) is not implemented in the simulation.",
+          "controls": [
+            {
+              "id": "pkt-seat-switch",
+              "name": "PKT selector switch (FLIGHT ENGINEER / PILOT)",
+              "type": "switch2",
+              "match": [
+                "PTR-RSPE-TMB-PKT"
+              ],
+              "positions": [
+                {
+                  "name": "FLIGHT ENGINEER",
+                  "text": "The flight engineer's seat is chosen."
+                },
+                {
+                  "name": "PILOT",
+                  "text": "The pilot's seat is chosen."
+                }
+              ],
+              "text": "This switch picks who controls the nose machine gun: the flight engineer or the pilot.",
+              "context": "The manual says the nose machine gun is not implemented, so this switch has no use in DCS.",
+              "src": "m1",
+              "page": "305"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

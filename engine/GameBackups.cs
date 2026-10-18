@@ -78,7 +78,7 @@ namespace JoyPro.Engine
                     entry.Stored = (set.Manifest.Files.Count + 1).ToString("D4", CultureInfo.InvariantCulture) + "_" + Path.GetFileName(fullPath);
                     string target = Path.Combine(set.Folder, "files", entry.Stored);
                     Directory.CreateDirectory(Path.GetDirectoryName(target));
-                    File.Copy(fullPath, target, true);
+                    SafeFileIo.CopyFile(fullPath, target, true, ownTarget: true);
                     entry.Size = new FileInfo(target).Length;
                 }
                 set.Manifest.Files.Add(entry);
@@ -219,7 +219,7 @@ namespace JoyPro.Engine
                         {
                             Directory.CreateDirectory(Path.GetDirectoryName(file.Original));
                             int? before = WarThunderCloudVersion.Read(file.Original);
-                            File.Copy(Path.Combine(folder, "files", file.Stored), file.Original, true);
+                            SafeFileIo.CopyFile(Path.Combine(folder, "files", file.Stored), file.Original, true, ownTarget: false);
                             // War Thunder keeps the higher of the file's and the server's version: an older copy
                             // needs a version above the one it replaces, or the server's copy comes back at login.
                             if (WarThunderCloudVersion.RaiseAbove(file.Original, before))

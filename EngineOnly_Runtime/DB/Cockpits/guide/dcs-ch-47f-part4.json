@@ -1,0 +1,1211 @@
+{
+  "format": "joypro-cockpit-guide",
+  "version": 1,
+  "id": "dcs-ch-47f-part4",
+  "partOf": "dcs-ch-47f",
+  "areas": [
+    {
+      "id": "aft-cabin",
+      "where": "rear",
+      "name": "Aft cabin (crew stations behind the cockpit)",
+      "text": "The long cabin behind the cockpit. It has the crew audio panels of the gunners and the flight engineer, and the hand controls for the fuel valves, the tail ramp, the hoist and the cargo hooks.",
+      "panels": [
+        {
+          "id": "audio-lh-gunner",
+          "name": "Left gunner control audio panel (ICS 4)",
+          "src": "m1",
+          "page": "41",
+          "text": "This panel is the volume and microphone control of the left gunner. It decides what that person hears and where their voice goes.",
+          "context": "Every crew station has such a panel. This one belongs to the left gunner; the panels do not influence each other.",
+          "controls": [
+            {
+              "id": "radio-volumes",
+              "name": "F1 U2 V3 H4 F5 radio volume knobs (Left gunner)",
+              "type": "knob",
+              "match": [
+                "ICS4_R1",
+                "ICS4_R2",
+                "ICS4_R3",
+                "ICS4_R4",
+                "ICS4_R5"
+              ],
+              "text": "These 5 knobs set how loud each radio is in the headset of the left gunner: F1 (FM radio), U2 (UHF), V3 (VHF), H4 (HF) and F5 (second FM radio). Turning clockwise is louder and pulling the knob out mutes that radio.",
+              "context": "Each crew member sets the volumes on their own panel (Left gunner); it only changes what that person hears.",
+              "count": 5,
+              "src": "m1",
+              "page": "41"
+            },
+            {
+              "id": "spare",
+              "name": "Unused knob (Left gunner)",
+              "type": "knob",
+              "match": [
+                "ICS4_R6"
+              ],
+              "text": "The sixth knob in the row on the panel of the left gunner is not used. The manual says it has no function.",
+              "context": "It is on the Left gunner panel only because the real panel has it.",
+              "src": "m1",
+              "page": "41"
+            },
+            {
+              "id": "rwr-volume",
+              "name": "RWR volume knob (Left gunner)",
+              "type": "knob",
+              "match": [
+                "ICS4_R7"
+              ],
+              "text": "This knob sets how loud the spoken warnings of the radar warning receiver are in the headset of the left gunner. Pulling it out mutes them.",
+              "context": "The warnings come from the APR-39 system. The Left gunner knob only affects that crew member.",
+              "src": "m1",
+              "page": "41"
+            },
+            {
+              "id": "operation-buttons",
+              "name": "ICS VOX HOT MIC CALL buttons (Left gunner)",
+              "type": "button",
+              "match": [
+                "ICS4_ICS",
+                "ICS4_VOX",
+                "ICS4_HOT",
+                "ICS4_CALL"
+              ],
+              "text": "These 4 buttons choose how the microphone of the left gunner is opened: ICS, VOX (opens when you speak), HOT MIC (always open) and CALL (speaks to everybody while held). The ICS button has no function.",
+              "context": "VOX and HOT MIC need a hold of two seconds. The panel of Left gunner keeps its own settings.",
+              "count": 4,
+              "src": "m1",
+              "page": "41"
+            },
+            {
+              "id": "nav-volumes",
+              "name": "VOR/ILS TACAN ADF MB/CAWS volume knobs (Left gunner)",
+              "type": "knob",
+              "match": [
+                "ICS4_N1",
+                "ICS4_N2",
+                "ICS4_N3",
+                "ICS4_N4"
+              ],
+              "text": "These 4 knobs set how loud the sounds of the navigation receivers are for the left gunner: VOR/ILS, TACAN, ADF and the marker beacon with the aural warning tones (CAWS). Pulling a knob out mutes it.",
+              "context": "VOR, TACAN and ADF are ground radio beacons the crew can listen to. The settings of the Left gunner panel affect only that person.",
+              "count": 4,
+              "src": "m1",
+              "page": "41"
+            },
+            {
+              "id": "tx-select",
+              "name": "Transmit Select knob TX (Left gunner)",
+              "type": "selector",
+              "match": [
+                "ICS4_TX"
+              ],
+              "text": "This knob decides where the voice of the left gunner goes when the microphone is keyed: private line, intercom or one of the radios.",
+              "context": "For the pilots the key is the transmit switch on the cyclic grip. The other crew members use a push-to-talk switch on their microphone cord. This knob is on the panel of the left gunner.",
+              "positions": [
+                {
+                  "name": "PVT",
+                  "text": "Private: only the crew members on the same private intercom line hear the voice."
+                },
+                {
+                  "name": "ICS",
+                  "text": "The voice goes to everybody on the aircraft intercom."
+                },
+                {
+                  "name": "1",
+                  "text": "The voice goes out over the FM radio F1."
+                },
+                {
+                  "name": "2",
+                  "text": "The voice goes out over the UHF radio U2."
+                },
+                {
+                  "name": "3",
+                  "text": "The voice goes out over the VHF radio V3."
+                },
+                {
+                  "name": "4",
+                  "text": "The voice goes out over the HF radio H4."
+                },
+                {
+                  "name": "5",
+                  "text": "The voice goes out over the second FM radio F5."
+                },
+                {
+                  "name": "RMT",
+                  "text": "The voice goes out over the radio picked with the switch on the thrust control grip. Only the pilots' panels have this."
+                },
+                {
+                  "name": "BU",
+                  "text": "The voice goes over the intercom or the backup radio chosen on the miscellaneous switch panel."
+                }
+              ],
+              "src": "m1",
+              "page": "42"
+            },
+            {
+              "id": "master-volume",
+              "name": "Master volume knob MVOL/VOX (Left gunner)",
+              "type": "knob",
+              "match": [
+                "ICS4_VOL"
+              ],
+              "text": "This knob sets the overall loudness of everything in the headset of the left gunner. When VOX mode is on, it sets how loud one has to speak to open the microphone instead.",
+              "context": "It is the knob to turn first if the whole headset is too quiet or too loud (Left gunner).",
+              "src": "m1",
+              "page": "42"
+            }
+          ]
+        },
+        {
+          "id": "audio-rh-gunner",
+          "name": "Right gunner control audio panel (ICS 5)",
+          "src": "m1",
+          "page": "41",
+          "text": "This panel is the volume and microphone control of the right gunner. It decides what that person hears and where their voice goes.",
+          "context": "Every crew station has such a panel. This one belongs to the right gunner; the panels do not influence each other.",
+          "controls": [
+            {
+              "id": "radio-volumes",
+              "name": "F1 U2 V3 H4 F5 radio volume knobs (Right gunner)",
+              "type": "knob",
+              "match": [
+                "ICS5_R1",
+                "ICS5_R2",
+                "ICS5_R3",
+                "ICS5_R4",
+                "ICS5_R5"
+              ],
+              "text": "These 5 knobs set how loud each radio is in the headset of the right gunner: F1 (FM radio), U2 (UHF), V3 (VHF), H4 (HF) and F5 (second FM radio). Turning clockwise is louder and pulling the knob out mutes that radio.",
+              "context": "Each crew member sets the volumes on their own panel (Right gunner); it only changes what that person hears.",
+              "count": 5,
+              "src": "m1",
+              "page": "41"
+            },
+            {
+              "id": "spare",
+              "name": "Unused knob (Right gunner)",
+              "type": "knob",
+              "match": [
+                "ICS5_R6"
+              ],
+              "text": "The sixth knob in the row on the panel of the right gunner is not used. The manual says it has no function.",
+              "context": "It is on the Right gunner panel only because the real panel has it.",
+              "src": "m1",
+              "page": "41"
+            },
+            {
+              "id": "rwr-volume",
+              "name": "RWR volume knob (Right gunner)",
+              "type": "knob",
+              "match": [
+                "ICS5_R7"
+              ],
+              "text": "This knob sets how loud the spoken warnings of the radar warning receiver are in the headset of the right gunner. Pulling it out mutes them.",
+              "context": "The warnings come from the APR-39 system. The Right gunner knob only affects that crew member.",
+              "src": "m1",
+              "page": "41"
+            },
+            {
+              "id": "operation-buttons",
+              "name": "ICS VOX HOT MIC CALL buttons (Right gunner)",
+              "type": "button",
+              "match": [
+                "ICS5_ICS",
+                "ICS5_VOX",
+                "ICS5_HOT",
+                "ICS5_CALL"
+              ],
+              "text": "These 4 buttons choose how the microphone of the right gunner is opened: ICS, VOX (opens when you speak), HOT MIC (always open) and CALL (speaks to everybody while held). The ICS button has no function.",
+              "context": "VOX and HOT MIC need a hold of two seconds. The panel of Right gunner keeps its own settings.",
+              "count": 4,
+              "src": "m1",
+              "page": "41"
+            },
+            {
+              "id": "nav-volumes",
+              "name": "VOR/ILS TACAN ADF MB/CAWS volume knobs (Right gunner)",
+              "type": "knob",
+              "match": [
+                "ICS5_N1",
+                "ICS5_N2",
+                "ICS5_N3",
+                "ICS5_N4"
+              ],
+              "text": "These 4 knobs set how loud the sounds of the navigation receivers are for the right gunner: VOR/ILS, TACAN, ADF and the marker beacon with the aural warning tones (CAWS). Pulling a knob out mutes it.",
+              "context": "VOR, TACAN and ADF are ground radio beacons the crew can listen to. The settings of the Right gunner panel affect only that person.",
+              "count": 4,
+              "src": "m1",
+              "page": "41"
+            },
+            {
+              "id": "tx-select",
+              "name": "Transmit Select knob TX (Right gunner)",
+              "type": "selector",
+              "match": [
+                "ICS5_TX"
+              ],
+              "text": "This knob decides where the voice of the right gunner goes when the microphone is keyed: private line, intercom or one of the radios.",
+              "context": "For the pilots the key is the transmit switch on the cyclic grip. The other crew members use a push-to-talk switch on their microphone cord. This knob is on the panel of the right gunner.",
+              "positions": [
+                {
+                  "name": "PVT",
+                  "text": "Private: only the crew members on the same private intercom line hear the voice."
+                },
+                {
+                  "name": "ICS",
+                  "text": "The voice goes to everybody on the aircraft intercom."
+                },
+                {
+                  "name": "1",
+                  "text": "The voice goes out over the FM radio F1."
+                },
+                {
+                  "name": "2",
+                  "text": "The voice goes out over the UHF radio U2."
+                },
+                {
+                  "name": "3",
+                  "text": "The voice goes out over the VHF radio V3."
+                },
+                {
+                  "name": "4",
+                  "text": "The voice goes out over the HF radio H4."
+                },
+                {
+                  "name": "5",
+                  "text": "The voice goes out over the second FM radio F5."
+                },
+                {
+                  "name": "RMT",
+                  "text": "The voice goes out over the radio picked with the switch on the thrust control grip. Only the pilots' panels have this."
+                },
+                {
+                  "name": "BU",
+                  "text": "The voice goes over the intercom or the backup radio chosen on the miscellaneous switch panel."
+                }
+              ],
+              "src": "m1",
+              "page": "42"
+            },
+            {
+              "id": "master-volume",
+              "name": "Master volume knob MVOL/VOX (Right gunner)",
+              "type": "knob",
+              "match": [
+                "ICS5_VOL"
+              ],
+              "text": "This knob sets the overall loudness of everything in the headset of the right gunner. When VOX mode is on, it sets how loud one has to speak to open the microphone instead.",
+              "context": "It is the knob to turn first if the whole headset is too quiet or too loud (Right gunner).",
+              "src": "m1",
+              "page": "42"
+            }
+          ]
+        },
+        {
+          "id": "audio-engineer",
+          "name": "Aft engineer control audio panel (ICS 6)",
+          "src": "m1",
+          "page": "41",
+          "text": "This panel is the volume and microphone control of the aft flight engineer. It decides what that person hears and where their voice goes.",
+          "context": "Every crew station has such a panel. This one belongs to the aft flight engineer; the panels do not influence each other.",
+          "controls": [
+            {
+              "id": "radio-volumes",
+              "name": "F1 U2 V3 H4 F5 radio volume knobs (Aft engineer)",
+              "type": "knob",
+              "match": [
+                "ICS6_R1",
+                "ICS6_R2",
+                "ICS6_R3",
+                "ICS6_R4",
+                "ICS6_R5"
+              ],
+              "text": "These 5 knobs set how loud each radio is in the headset of the aft flight engineer: F1 (FM radio), U2 (UHF), V3 (VHF), H4 (HF) and F5 (second FM radio). Turning clockwise is louder and pulling the knob out mutes that radio.",
+              "context": "Each crew member sets the volumes on their own panel (Aft engineer); it only changes what that person hears.",
+              "count": 5,
+              "src": "m1",
+              "page": "41"
+            },
+            {
+              "id": "spare",
+              "name": "Unused knob (Aft engineer)",
+              "type": "knob",
+              "match": [
+                "ICS6_R6"
+              ],
+              "text": "The sixth knob in the row on the panel of the aft flight engineer is not used. The manual says it has no function.",
+              "context": "It is on the Aft engineer panel only because the real panel has it.",
+              "src": "m1",
+              "page": "41"
+            },
+            {
+              "id": "rwr-volume",
+              "name": "RWR volume knob (Aft engineer)",
+              "type": "knob",
+              "match": [
+                "ICS6_R7"
+              ],
+              "text": "This knob sets how loud the spoken warnings of the radar warning receiver are in the headset of the aft flight engineer. Pulling it out mutes them.",
+              "context": "The warnings come from the APR-39 system. The Aft engineer knob only affects that crew member.",
+              "src": "m1",
+              "page": "41"
+            },
+            {
+              "id": "operation-buttons",
+              "name": "ICS VOX HOT MIC CALL buttons (Aft engineer)",
+              "type": "button",
+              "match": [
+                "ICS6_ICS",
+                "ICS6_VOX",
+                "ICS6_HOT",
+                "ICS6_CALL"
+              ],
+              "text": "These 4 buttons choose how the microphone of the aft flight engineer is opened: ICS, VOX (opens when you speak), HOT MIC (always open) and CALL (speaks to everybody while held). The ICS button has no function.",
+              "context": "VOX and HOT MIC need a hold of two seconds. The panel of Aft engineer keeps its own settings.",
+              "count": 4,
+              "src": "m1",
+              "page": "41"
+            },
+            {
+              "id": "nav-volumes",
+              "name": "VOR/ILS TACAN ADF MB/CAWS volume knobs (Aft engineer)",
+              "type": "knob",
+              "match": [
+                "ICS6_N1",
+                "ICS6_N2",
+                "ICS6_N3",
+                "ICS6_N4"
+              ],
+              "text": "These 4 knobs set how loud the sounds of the navigation receivers are for the aft flight engineer: VOR/ILS, TACAN, ADF and the marker beacon with the aural warning tones (CAWS). Pulling a knob out mutes it.",
+              "context": "VOR, TACAN and ADF are ground radio beacons the crew can listen to. The settings of the Aft engineer panel affect only that person.",
+              "count": 4,
+              "src": "m1",
+              "page": "41"
+            },
+            {
+              "id": "tx-select",
+              "name": "Transmit Select knob TX (Aft engineer)",
+              "type": "selector",
+              "match": [
+                "ICS6_TX"
+              ],
+              "text": "This knob decides where the voice of the aft flight engineer goes when the microphone is keyed: private line, intercom or one of the radios.",
+              "context": "For the pilots the key is the transmit switch on the cyclic grip. The other crew members use a push-to-talk switch on their microphone cord. This knob is on the panel of the aft flight engineer.",
+              "positions": [
+                {
+                  "name": "PVT",
+                  "text": "Private: only the crew members on the same private intercom line hear the voice."
+                },
+                {
+                  "name": "ICS",
+                  "text": "The voice goes to everybody on the aircraft intercom."
+                },
+                {
+                  "name": "1",
+                  "text": "The voice goes out over the FM radio F1."
+                },
+                {
+                  "name": "2",
+                  "text": "The voice goes out over the UHF radio U2."
+                },
+                {
+                  "name": "3",
+                  "text": "The voice goes out over the VHF radio V3."
+                },
+                {
+                  "name": "4",
+                  "text": "The voice goes out over the HF radio H4."
+                },
+                {
+                  "name": "5",
+                  "text": "The voice goes out over the second FM radio F5."
+                },
+                {
+                  "name": "RMT",
+                  "text": "The voice goes out over the radio picked with the switch on the thrust control grip. Only the pilots' panels have this."
+                },
+                {
+                  "name": "BU",
+                  "text": "The voice goes over the intercom or the backup radio chosen on the miscellaneous switch panel."
+                }
+              ],
+              "src": "m1",
+              "page": "42"
+            },
+            {
+              "id": "master-volume",
+              "name": "Master volume knob MVOL/VOX (Aft engineer)",
+              "type": "knob",
+              "match": [
+                "ICS6_VOL"
+              ],
+              "text": "This knob sets the overall loudness of everything in the headset of the aft flight engineer. When VOX mode is on, it sets how loud one has to speak to open the microphone instead.",
+              "context": "It is the knob to turn first if the whole headset is too quiet or too loud (Aft engineer).",
+              "src": "m1",
+              "page": "42"
+            }
+          ]
+        },
+        {
+          "id": "fuel-valves",
+          "name": "Fuel service valves (cabin workstation)",
+          "src": "m1",
+          "text": "In the cabin the flight engineer can work the fuel valves by hand. There is a shut-off lever for each engine and a crossfeed valve lever for each side, with a light beside each.",
+          "context": "These are for emergencies and for service on the ground. The manual does not describe the cabin workstation, so the texts follow the game's names.",
+          "controls": [
+            {
+              "id": "eng-valve",
+              "name": "Engine fuel valve levers (ENG 1 and ENG 2)",
+              "type": "lever",
+              "match": [
+                "FSVC_ENG_?_VALVE"
+              ],
+              "text": "These two levers open and close the fuel valve of engine 1 and of engine 2 by hand. The game gives them open and close commands. The game labels them manual shutoff levers.",
+              "context": "Closing the valve of an engine cuts its fuel. The pilots normally do this with the fire handle in the cockpit.",
+              "count": 2,
+              "src": "m1"
+            },
+            {
+              "id": "xfeed-valve",
+              "name": "Crossfeed valve levers (XFEED 1 and 2)",
+              "type": "lever",
+              "match": [
+                "FSVC_XFEED_?_VALVE"
+              ],
+              "text": "These two levers open and close the crossfeed valves by hand. The game gives them open and close commands.",
+              "context": "The crossfeed valve links the left and the right fuel system. In the cockpit the XFEED switch does the same job electrically.",
+              "count": 2,
+              "src": "m1"
+            },
+            {
+              "id": "valve-lights",
+              "name": "Fuel valve lights (4 callouts)",
+              "type": "light",
+              "match": [
+                "FSVC_*_LIGHT"
+              ],
+              "text": "These four lights belong to the engine and crossfeed valve levers. The game lets the engineer click them.",
+              "context": "The game names them fuel valve lights; the manual does not describe them.",
+              "count": 4,
+              "src": "m1"
+            }
+          ]
+        },
+        {
+          "id": "ramp-station",
+          "name": "Ramp and hydraulic workstation (cabin)",
+          "src": "m1",
+          "text": "These are the hand controls for the tail ramp and for the hydraulic system near the ramp. The ramp is the big loading door at the tail.",
+          "context": "The cockpit has an emergency ramp switch. These hand controls are the cabin side. The manual does not describe them, so the texts follow the game's names.",
+          "controls": [
+            {
+              "id": "ramp-control",
+              "name": "Ramp control valve handle",
+              "type": "lever",
+              "match": [
+                "RAMP_CONTROL_LV"
+              ],
+              "text": "The game names this handle the ramp control valve handle. It has commands for up, down, stop, and next and previous positions, so it is the hand control for moving the ramp.",
+              "context": "The ramp can also be driven from the cockpit hydraulic panel.",
+              "src": "m1"
+            },
+            {
+              "id": "ramp-seq",
+              "name": "Ramp sequence valve (plunger and lock)",
+              "type": "other",
+              "match": [
+                "RAMP_SEQ_?"
+              ],
+              "text": "The game has a ramp sequence valve with a plunger that can be pulled or pushed and a lock that can be locked or unlocked. The manual does not describe it.",
+              "context": "These are the two callouts RAMP_SEQ_1 (plunger) and RAMP_SEQ_2 (lock).",
+              "count": 2,
+              "src": "m1"
+            },
+            {
+              "id": "ramp-pressure",
+              "name": "Ramp pressure activated valve",
+              "type": "button",
+              "match": [
+                "RAMP_PRSVLV"
+              ],
+              "text": "The game names this button the ramp pressure activated valve and lets the pilot press it. The manual does not describe it.",
+              "context": "It belongs to the ramp hydraulics.",
+              "src": "m1"
+            },
+            {
+              "id": "aux-ramp",
+              "name": "Auxiliary ramp fold control",
+              "type": "button",
+              "match": [
+                "RAMP_AUX_FOLD"
+              ],
+              "text": "The game gives this control extend and fold commands for the auxiliary ramp. The manual does not describe this control.",
+              "context": "The manual describes ramp extensions that are deployed when cargo is loaded or unloaded.",
+              "src": "m1",
+              "page": "118"
+            },
+            {
+              "id": "hand-pump",
+              "name": "Hand hydraulic pump lever",
+              "type": "lever",
+              "match": [
+                "RAMP_MANUAL_LV"
+              ],
+              "text": "The game names this lever the hand hydraulic pump lever and gives it a pull command. A hand pump builds pressure by muscle power when no pump runs.",
+              "context": "It is a backup for the ramp when the normal hydraulic power fails.",
+              "src": "m1"
+            },
+            {
+              "id": "util-reservoir-valve",
+              "name": "Hydraulic reservoir valve (UTIL DEPR)",
+              "type": "switch",
+              "match": [
+                "RAMP_UTIL_DEPRVLV"
+              ],
+              "text": "The game names this valve the hydraulic reservoir valve and gives it open and close commands. The manual does not describe it.",
+              "context": "The callout name is RAMP_UTIL_DEPRVLV.",
+              "src": "m1"
+            },
+            {
+              "id": "util-emergency-valve",
+              "name": "Emergency utility pressure valve",
+              "type": "switch",
+              "match": [
+                "RAMP_UTIL_EMERVLV"
+              ],
+              "text": "The game names this valve the emergency utility pressure valve and gives it open and close commands. The manual does not describe it.",
+              "context": "The callout name is RAMP_UTIL_EMERVLV.",
+              "src": "m1"
+            },
+            {
+              "id": "epusha",
+              "name": "EPUSHA switch",
+              "type": "button",
+              "match": [
+                "RAMP_EPUSHA_SW"
+              ],
+              "text": "The game gives this button an on and an off press command under the name EPUSHA. The manual does not describe it.",
+              "context": "What EPUSHA stands for is not stated.",
+              "src": "m1"
+            },
+            {
+              "id": "apu-depr",
+              "name": "APU depressurization valve",
+              "type": "button",
+              "match": [
+                "RAMP_APU_DEPRVLV"
+              ],
+              "text": "The game names this button the APU depressurization valve and lets the pilot press it. The manual does not describe it.",
+              "context": "The APU is the small helper engine in the tail.",
+              "src": "m1"
+            }
+          ]
+        },
+        {
+          "id": "maintenance",
+          "name": "Maintenance panel (cabin)",
+          "src": "m1",
+          "text": "This panel in the cabin has five controls named PWR ASSR, LTG, FLT CONT, LEVEL CHECK and FAULT IND. The manual does not describe the panel.",
+          "context": "The manual mentions a Power Assurance Test and a DECU BIT display in the aft cabin, but it does not say that these controls are used for it.",
+          "controls": [
+            {
+              "id": "mp-pwr-assr",
+              "name": "PWR ASSR switch",
+              "type": "switch",
+              "match": [
+                "MP_PWR_ASSR"
+              ],
+              "text": "The game names this switch PWR ASSR of the maintenance panel. The manual does not describe it.",
+              "context": "It is the first of the five controls of the maintenance panel in the cabin.",
+              "src": "m1"
+            },
+            {
+              "id": "mp-ltg",
+              "name": "LTG switch",
+              "type": "switch",
+              "match": [
+                "MP_LTG"
+              ],
+              "text": "The game names this switch LTG of the maintenance panel. The manual does not describe it.",
+              "context": "It is part of the maintenance panel in the cabin.",
+              "src": "m1"
+            },
+            {
+              "id": "mp-flt-cont",
+              "name": "FLT CONT switch",
+              "type": "switch",
+              "match": [
+                "MP_FLT_CONT"
+              ],
+              "text": "The game names this switch FLT CONT and gives it the positions 1 and 2. The manual does not describe it.",
+              "context": "The cockpit has a different FLT CONTR switch on the hydraulic panel.",
+              "src": "m1"
+            },
+            {
+              "id": "mp-level-check",
+              "name": "LEVEL CHECK button",
+              "type": "button",
+              "match": [
+                "MP_LEVEL_CHECK"
+              ],
+              "text": "The game names this button LEVEL CHECK and lets the pilot press it. The manual does not describe it.",
+              "context": "It is part of the maintenance panel in the cabin.",
+              "src": "m1"
+            },
+            {
+              "id": "mp-fault-ind",
+              "name": "FAULT IND button",
+              "type": "button",
+              "match": [
+                "MP_FAULT_IND"
+              ],
+              "text": "The game names this button FAULT IND and gives it a test press and a reset press. The manual does not describe it.",
+              "context": "It is part of the maintenance panel in the cabin.",
+              "src": "m1"
+            }
+          ]
+        },
+        {
+          "id": "hoist-operator",
+          "name": "Hoist operator station and cargo hook controls (cabin)",
+          "src": "m1",
+          "text": "This is the working place of the hoist operator in the cabin. It has the winch grip with the cargo hook release button, a lever, a floor trap door lock and the hook panel.",
+          "context": "The pilots can also release the hooks from the cockpit. The manual says the winch grip and the cyclic grips both release the hooks when the cargo hook master switch is ARM.",
+          "controls": [
+            {
+              "id": "hop-arm",
+              "name": "HOP ARM switch",
+              "type": "switch",
+              "match": [
+                "HOP_ARM"
+              ],
+              "text": "The game names this switch HOP ARM at the hoist operator station. The manual does not describe it.",
+              "context": "It is at the hoist operator station in the cabin; the winch and the hooks are described in the manual's transport chapter.",
+              "src": "m1"
+            },
+            {
+              "id": "hop-lever",
+              "name": "Hoist operator lever (callout HOP_EMER)",
+              "type": "lever",
+              "match": [
+                "HOP_EMER"
+              ],
+              "text": "The game names this lever HOP_LEVER and moves it forward or backward. The manual does not describe it.",
+              "context": "The manual describes an EMERGENCY RELEASE lever in the center hatch; it does not say whether this is that lever.",
+              "src": "m1",
+              "page": "123"
+            },
+            {
+              "id": "trap-door",
+              "name": "Trap door lock (HOP_DOOR1)",
+              "type": "button",
+              "match": [
+                "HOP_DOOR1"
+              ],
+              "text": "The game names this control the trap door lock and gives it an operate command. The manual does not describe it.",
+              "context": "The trap door is a hatch in the floor of the cabin.",
+              "src": "m1"
+            },
+            {
+              "id": "winch-hook-cover",
+              "name": "Winch grip hook release cover",
+              "type": "cover",
+              "match": [
+                "WGRIP_HOOK_COVER"
+              ],
+              "text": "This is the guard over the cargo hook release button on the winch grip.",
+              "context": "The guard is lifted first, and then the button can be pressed.",
+              "src": "m1",
+              "page": "123"
+            },
+            {
+              "id": "winch-hook",
+              "name": "Winch grip cargo hook release button",
+              "type": "button",
+              "match": [
+                "WGRIP_HOOK"
+              ],
+              "text": "This button on the winch grip opens the cargo hooks. It works only when the cargo hook master switch in the cockpit is at ARM, and the hooks it opens are the ones chosen with the HOOK SEL knob.",
+              "context": "It is the cabin counterpart of the hook release button on the cyclic grips.",
+              "src": "m1",
+              "page": "117"
+            },
+            {
+              "id": "hook-panel-lights",
+              "name": "Cargo hook panel buttons FWD, CTR, AFT",
+              "type": "button",
+              "match": [
+                "CHLP_FWD",
+                "CHLP_CTR",
+                "CHLP_AFT"
+              ],
+              "text": "The game has three buttons named CHLP_FWD, CHLP_CTR and CHLP_AFT, with a test press each. The manual does not describe them.",
+              "context": "The hooks are the three cargo hooks under the belly.",
+              "count": 3,
+              "src": "m1"
+            },
+            {
+              "id": "hook-panel-switches",
+              "name": "Cargo hook panel switches FWD, CTR, AFT",
+              "type": "switch",
+              "match": [
+                "CHLP_FWD_SW",
+                "CHLP_CTR_SW",
+                "CHLP_AFT_SW"
+              ],
+              "text": "The game has three switches named CHLP_FWD, CHLP_CTR and CHLP_AFT, each with two positions. The manual does not describe them.",
+              "context": "They sit with the three buttons of the same name.",
+              "count": 3,
+              "src": "m1"
+            }
+          ]
+        },
+        {
+          "id": "cabin-lighting",
+          "name": "Aft cabin lighting panel (game name LCP)",
+          "src": "m1",
+          "text": "These are lighting controls in the cabin behind the cockpit. The manual does not describe this panel; the game calls its parts DIMMER, INST_SW and AFT_POSN.",
+          "context": "The cabin is where the flight engineer and the passengers work. The cockpit's own light switches are on the overhead panel.",
+          "controls": [
+            {
+              "id": "cabin-knob",
+              "name": "Cabin lighting knob (callout INTRLTG_CABIN_KNOB)",
+              "type": "knob",
+              "match": [
+                "INTRLTG_CABIN_KNOB"
+              ],
+              "text": "The game names this knob DIMMER of the cabin lighting panel. A dimmer sets how bright a light is. The manual does not describe it.",
+              "context": "It is part of the aft workstation of the flight engineer.",
+              "src": "m1"
+            },
+            {
+              "id": "cabin-switch",
+              "name": "Cabin lighting switch (callout INTRLTG_CABIN_SW)",
+              "type": "switch",
+              "match": [
+                "INTRLTG_CABIN_SW"
+              ],
+              "text": "The game names this switch INST_SW of the cabin lighting panel. The manual does not describe it.",
+              "context": "It sits next to the cabin lighting knob.",
+              "src": "m1"
+            },
+            {
+              "id": "aft-posn-cover",
+              "name": "AFT POSN switch cover",
+              "type": "cover",
+              "match": [
+                "E_AFT_POSN_COVER"
+              ],
+              "text": "This is the guard over the AFT POSN switch in the cabin.",
+              "context": "The game gives the guard and the switch separate clicks, so they are two entries.",
+              "src": "m1"
+            },
+            {
+              "id": "aft-posn",
+              "name": "AFT POSN switch",
+              "type": "switch2",
+              "match": [
+                "E_AFT_POSN"
+              ],
+              "text": "The game names this switch AFT POSN and gives it an ON and an OFF position. The manual does not describe it.",
+              "context": "The position lights on the outside of the helicopter are switched on the exterior lighting panel on the overhead.",
+              "positions": [
+                {
+                  "name": "OFF",
+                  "text": "The switch is off, as the game's OFF command names it."
+                },
+                {
+                  "name": "ON",
+                  "text": "The switch is on, as the game's ON command names it."
+                }
+              ],
+              "src": "m1"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "hotas",
+      "where": "hotas",
+      "name": "Cyclic and thrust control lever (HOTAS)",
+      "text": "The hand controls of the two pilots: the cyclic stick and the thrust control lever with the buttons on their grips. The hands stay on these controls for most of the flight.",
+      "panels": [
+        {
+          "id": "cyclic-grip",
+          "name": "Cyclic grips (Pilot and Copilot)",
+          "src": "m1",
+          "page": "56",
+          "text": "The cyclic is the stick between the pilot's knees. The buttons on its grip let the pilot work the radios, the screens' cursor and the decoys without letting go.",
+          "context": "Both pilots have identical grips. The game lists each button twice, once per grip, and this guide explains the pair together.",
+          "controls": [
+            {
+              "id": "trim-hat",
+              "name": "DAFCS trim switch",
+              "type": "hat",
+              "match": [
+                "C?_TRIM_*",
+                "control:stick.hat.trim"
+              ],
+              "text": "This four-way switch on top of the grip is meant to shift the trim of the helicopter in pitch and roll: nose down, nose up, left, right. The manual marks it as not implemented.",
+              "context": "Trim removes the need to hold the stick against a force. The DAFCS is the automatic flight control system.",
+              "count": 2,
+              "src": "m1",
+              "page": "56"
+            },
+            {
+              "id": "cursor-button",
+              "name": "MFD cursor activation button",
+              "type": "button",
+              "match": [
+                "C?_ACT",
+                "control:stick.button.cursor"
+              ],
+              "text": "This button selects the item under the pointer (cursor) on the screens.",
+              "context": "It works with the cursor switch, so a pilot can choose a menu entry without reaching for the screen buttons.",
+              "count": 2,
+              "src": "m1",
+              "page": "56"
+            },
+            {
+              "id": "cursor-switch",
+              "name": "MFD cursor switch",
+              "type": "hat",
+              "match": [
+                "C?_CRSR_*",
+                "control:stick.ministick.cursor"
+              ],
+              "text": "This small switch moves the pointer (cursor) on the screens left, right, up and down.",
+              "context": "Pilot and Copilot each have their own pointer. The pointer replaces pressing the screen buttons around the edge.",
+              "count": 2,
+              "src": "m1",
+              "page": "56"
+            },
+            {
+              "id": "xmit",
+              "name": "Radio / ICS transmit switch",
+              "type": "trigger",
+              "match": [
+                "C?_XMIT",
+                "control:stick.switch.ics_radio"
+              ],
+              "text": "This two-stage trigger opens the pilot's microphone. The first stage speaks over the intercom (the phone line between the crew). The second stage speaks over the radio chosen with the TX knob.",
+              "context": "The TX knob is on the pilot's own control audio panel.",
+              "count": 2,
+              "src": "m1",
+              "page": "56"
+            },
+            {
+              "id": "cd-release",
+              "name": "Centering device release (CD REL) button",
+              "type": "button",
+              "match": [
+                "C?_CDREL",
+                "control:stick.button.cd_release"
+              ],
+              "text": "Held down, this button frees the stick and pedals from the magnetic brakes that hold them in place. When it is released, the current position becomes the new reference.",
+              "context": "While it is held, bank angle hold and heading hold are off and the flight director link is cut. In this game version the same job is done by the trim keys.",
+              "count": 2,
+              "src": "m1",
+              "page": "56"
+            },
+            {
+              "id": "acknowledge",
+              "name": "Acknowledge button",
+              "type": "button",
+              "match": [
+                "C?_ACK",
+                "control:stick.button.caution_ack"
+              ],
+              "text": "This button puts out the MASTER CAUTION light and stops the spoken warning.",
+              "context": "It does the same as pressing the MASTER CAUTION button on the instrument panel.",
+              "count": 2,
+              "src": "m1",
+              "page": "57"
+            },
+            {
+              "id": "cms",
+              "name": "Flare / chaff dispense switch",
+              "type": "switch3",
+              "match": [
+                "C?_CMDS",
+                "control:stick.switch.cms"
+              ],
+              "text": "Pushing this switch for a moment drops decoys by hand: forward drops flares from the tail dispensers, aft drops chaff from the middle of the fuselage. It springs back to the middle.",
+              "context": "The ARM/SAFE switch on the ASE panel must be at ARM, and the helicopter must be off the ground.",
+              "positions": [
+                {
+                  "name": "Forward",
+                  "text": "Dispenses one flare program."
+                },
+                {
+                  "name": "Center",
+                  "text": "The middle position; the switch springs back here."
+                },
+                {
+                  "name": "Aft",
+                  "text": "Dispenses one chaff program."
+                }
+              ],
+              "count": 2,
+              "src": "m1",
+              "page": "57"
+            },
+            {
+              "id": "hook-release-cover",
+              "name": "Hook release button cover",
+              "type": "cover",
+              "match": [
+                "C?_HOOKREL_COVER"
+              ],
+              "text": "This is the guard over the hook release button on the cyclic grip.",
+              "context": "The guard stops a release by accident.",
+              "count": 2,
+              "src": "m1",
+              "page": "57"
+            },
+            {
+              "id": "hook-release",
+              "name": "Hook release button (guarded)",
+              "type": "button",
+              "match": [
+                "C?_HOOKREL",
+                "control:stick.button.hook_release"
+              ],
+              "text": "With the cargo hook master switch at ARM, this button opens the cargo hooks selected with the HOOK SEL knob, and so releases a hanging load.",
+              "context": "A forward or aft hook opens and then closes. The center hook stays open until the master switch goes to OFF.",
+              "count": 2,
+              "src": "m1",
+              "page": "57"
+            },
+            {
+              "id": "fd-release",
+              "name": "Flight director coupler release button",
+              "type": "button",
+              "match": [
+                "C?_FDREL",
+                "control:stick.button.coupler_release"
+              ],
+              "text": "This button cuts the link between the flight director and the automatic flight control.",
+              "context": "The flight director is the helper that works out where to fly; this button hands control back to the pilot.",
+              "count": 2,
+              "src": "m1",
+              "page": "57"
+            },
+            {
+              "id": "cyclic-stick",
+              "name": "Cyclic stick",
+              "type": "axis",
+              "match": [
+                "control:stick.gimbal"
+              ],
+              "text": "The cyclic stick steers the helicopter. Moving it forward or back tips the nose down or up, by giving the front and the rear rotor different lift. Moving it sideways rolls the helicopter.",
+              "context": "The game has no clickable callout for the stick itself; it is moved with the player's joystick.",
+              "src": "m1",
+              "page": "56"
+            }
+          ]
+        },
+        {
+          "id": "thrust-grip",
+          "name": "Thrust control grips (Pilot and Copilot)",
+          "src": "m1",
+          "page": "58",
+          "text": "The thrust control lever is the helicopter's collective, the lever at the pilot's left that makes the helicopter climb or sink. The switches on its grip run the searchlight and the automatic flight functions.",
+          "context": "Both pilots have identical grips. The game lists each switch twice, once per grip, and this guide explains the pair together.",
+          "controls": [
+            {
+              "id": "srchlt-mode",
+              "name": "Searchlight mode switch",
+              "type": "switch2",
+              "match": [
+                "T?_IRWHT",
+                "control:collective.switch.searchlight_mode"
+              ],
+              "text": "This switch picks the kind of light of the pilot's searchlight: invisible infrared light for night vision goggles or visible white light.",
+              "context": "It only chooses the kind of light; another switch turns the light on.",
+              "positions": [
+                {
+                  "name": "IR",
+                  "text": "The searchlight, when on, shines infrared light that only night vision goggles show."
+                },
+                {
+                  "name": "WHT",
+                  "text": "The searchlight, when on, shines visible white light."
+                }
+              ],
+              "count": 2,
+              "src": "m1",
+              "page": "58"
+            },
+            {
+              "id": "srchlt-switches",
+              "name": "Searchlight intensity and position switches",
+              "type": "hat",
+              "match": [
+                "T?_SRCH*",
+                "control:collective.button.searchlight",
+                "control:collective.switch.searchlight_position"
+              ],
+              "text": "These switches run the movable searchlight. One switch makes the light brighter (BRT) or dimmer (DIM) and turns it on and off by pressing it. The other turns the light sideways and tilts it up and down.",
+              "context": "The game gives three callouts for them (SRCH, SRCH_H, SRCH_V). The position switch only works when the SRCHLT CONTR switch on the overhead is ON.",
+              "count": 2,
+              "src": "m1",
+              "page": "58"
+            },
+            {
+              "id": "thrust-brake",
+              "name": "Thrust brake switch",
+              "type": "button",
+              "match": [
+                "T?_BRAKE",
+                "control:collective.button.thrust_brake"
+              ],
+              "text": "While held, this switch releases the magnetic brake that holds the thrust control lever, so the lever moves freely.",
+              "context": "If altitude hold is on, it is paused for that moment.",
+              "count": 2,
+              "src": "m1",
+              "page": "59"
+            },
+            {
+              "id": "go-around",
+              "name": "Go around switch",
+              "type": "button",
+              "match": [
+                "T?_GA",
+                "control:collective.button.go_around"
+              ],
+              "text": "This switch is meant to start the flight director's go-around mode, which helps to abort a landing. The manual marks it as not implemented.",
+              "context": "It sits on the opposite side of the grip.",
+              "count": 2,
+              "src": "m1",
+              "page": "59"
+            },
+            {
+              "id": "hover-alt",
+              "name": "Hover altitude switch",
+              "type": "switch3",
+              "match": [
+                "T?_UPDN",
+                "control:collective.switch.hover_alt"
+              ],
+              "text": "This switch is meant to raise or lower the hover height by one foot when altitude hold is on. Held down, it would climb or sink at 3 feet per second. The manual marks it as not implemented.",
+              "context": "Hovering means holding the helicopter at one spot in the air.",
+              "positions": [
+                {
+                  "name": "UP",
+                  "text": "Raises the hover altitude (not implemented)."
+                },
+                {
+                  "name": "Center",
+                  "text": "The middle position."
+                },
+                {
+                  "name": "DN",
+                  "text": "Lowers the hover altitude (not implemented)."
+                }
+              ],
+              "count": 2,
+              "src": "m1",
+              "page": "59"
+            },
+            {
+              "id": "hold-modes",
+              "name": "DAFCS hold mode switch",
+              "type": "hat",
+              "match": [
+                "T?_DAFCSMODE_*",
+                "control:collective.switch.hold"
+              ],
+              "text": "This multi-position switch is meant to switch the automatic hold modes on and off: ALT (hold height), IN/RA (height from inertial or radar), PH (hold position) and TRC (translational rate command, a mode where the stick sets the speed over the ground). The manual marks it as not implemented.",
+              "context": "The game has two callouts for it (horizontal and vertical).",
+              "count": 2,
+              "src": "m1",
+              "page": "59"
+            },
+            {
+              "id": "mark-button",
+              "name": "Mark button",
+              "type": "button",
+              "match": [
+                "T?_MARK"
+              ],
+              "text": "The manual says this button has no function.",
+              "context": "The game still lists it as a callout of the thrust control grip.",
+              "count": 2,
+              "src": "m1",
+              "page": "59"
+            },
+            {
+              "id": "radio-select",
+              "name": "Radio select switch",
+              "type": "hat",
+              "match": [
+                "T?_FRQ_*"
+              ],
+              "text": "This switch is meant to select the radio and its frequency for the RMT setting of the TX knob. The manual marks it as not implemented.",
+              "context": "It has directions for frequency up and down, radio up and down, and a recall.",
+              "count": 2,
+              "src": "m1",
+              "page": "59"
+            },
+            {
+              "id": "hud-switch",
+              "name": "HUD control switch",
+              "type": "hat",
+              "match": [
+                "T?_HUDMODE_*"
+              ],
+              "text": "This switch is meant to adjust the brightness and the amount of detail of the helmet display. The manual marks it as not implemented.",
+              "context": "The game has two callouts for it (horizontal and vertical).",
+              "count": 2,
+              "src": "m1",
+              "page": "59"
+            }
+          ]
+        },
+        {
+          "id": "thrust-lever",
+          "name": "Thrust control lever",
+          "src": "m1",
+          "page": "58",
+          "text": "The thrust control lever is the collective of the helicopter. Pulling it up makes both rotors bite the air harder, so the helicopter climbs; lowering it makes the helicopter sink.",
+          "context": "It sits at the left of each seat. A magnetic brake holds it in place and the thrust brake switch on its grip releases the brake.",
+          "controls": [
+            {
+              "id": "collective-axis",
+              "name": "Thrust control lever (THRCL)",
+              "type": "axis",
+              "match": [
+                "control:collective.axis.main"
+              ],
+              "text": "Moving this lever up or down changes the pitch of the blades of both rotors at once. A larger pitch gives more lift.",
+              "context": "The game has no clickable callout for the lever itself; it is moved with an axis of the player's joystick or throttle.",
+              "src": "m1",
+              "page": "58"
+            }
+          ]
+        },
+        {
+          "id": "pedals",
+          "name": "Directional pedals",
+          "src": "m1",
+          "text": "The two foot pedals turn the helicopter's nose left and right. The toes of the same pedals work the wheel brakes.",
+          "context": "This helicopter has no tail rotor. The pedals tilt the front and the rear rotor in opposite directions, which turns the helicopter around its upright axis.",
+          "controls": [
+            {
+              "id": "rudder-axis",
+              "name": "Directional pedals (yaw and toe brakes)",
+              "type": "pedal",
+              "match": [
+                "control:pedals.axis.rudder"
+              ],
+              "text": "Pushing the left or right pedal turns the nose of the helicopter to that side. Pressing the top of the pedals with the toes brakes the wheels.",
+              "context": "The manual says the pedals tilt the two rotor discs in opposite directions. The game has no clickable callout for the pedals; they are moved with the player's pedals or twist axis.",
+              "src": "m1"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

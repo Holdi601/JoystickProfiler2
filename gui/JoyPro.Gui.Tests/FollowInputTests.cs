@@ -146,7 +146,104 @@ public sealed class FollowInputTests
         vm.FollowInputOnBinds = true;
         Assert.True(vm.IsLiveInputMonitoring);
         vm.CurrentStage = UiStage.Relations;
+        Assert.True(vm.IsLiveInputMonitoring);
+        vm.CurrentStage = UiStage.Export;
         Assert.False(vm.IsLiveInputMonitoring);
+    }
+
+    // ---- The Relations page (same switch, same rules) ----
+
+    [Fact]
+    public async Task Follow_OnTheRelationsPage_SelectsTheCard_AndCyclesUnshiftedFirst()
+    {
+        (MainWindowViewModel vm, _) = await CreateBindsPageAsync();
+        vm.CurrentStage = UiStage.Relations;
+        Assert.True(vm.IsLiveInputMonitoring);
+        int jumps = 0;
+        vm.FollowInputJumped += (_, _) => jumps++;
+
+        vm.OnLiveInput(new JoystickInputEvent(Stick, "JOY_BTN8", true));
+        Assert.Equal("Gear", vm.SelectedRelation?.Name);
+        Assert.Equal("BTN 8 on L-VPC Stick WarBRD: Gear (1/3)", vm.FollowInputToast);
+        vm.OnLiveInput(new JoystickInputEvent(Stick, "JOY_BTN8", false));
+        await Task.Delay((int)FollowInputTracker.ButtonDebounceMs + 30);
+        vm.OnLiveInput(new JoystickInputEvent(Stick, "JOY_BTN8", true));
+        Assert.Equal("Hook", vm.SelectedRelation?.Name);
+        vm.OnLiveInput(new JoystickInputEvent(Stick, "JOY_BTN8", false));
+        await Task.Delay((int)FollowInputTracker.ButtonDebounceMs + 30);
+        vm.OnLiveInput(new JoystickInputEvent(Stick, "JOY_BTN8", true));
+        Assert.Equal("Lights", vm.SelectedRelation?.Name);
+        Assert.Contains("(with modifier) (3/3)", vm.FollowInputToast);
+        Assert.Equal(3, jumps);
+        // The Binds page's selection is not touched by the Relations page.
+        Assert.Null(vm.SelectedBind);
+
+        // An axis moved a long way.
+        vm.OnLiveAxes(new JoystickAxisSnapshot(Throttle, [0.5, 0.5, 0, 0, 0, 0, 0, 0]));
+        vm.OnLiveAxes(new JoystickAxisSnapshot(Throttle, [0.5, 0.5, 0.9, 0, 0, 0, 0, 0]));
+        Assert.Equal("Thrust", vm.SelectedRelation?.Name);
+
+        // Hidden by the search: the search is cleared.
+        vm.RelationSearchText = "Fire";
+        Assert.DoesNotContain(vm.Relations, r => r.Name == "Gear");
+        vm.OnLiveInput(new JoystickInputEvent(Stick, "JOY_BTN1", true));
+        vm.OnLiveInput(new JoystickInputEvent(Stick, "JOY_BTN1", false));
+        await Task.Delay((int)FollowInputTracker.ButtonDebounceMs + 30);
+        Assert.Equal("Fire", vm.SelectedRelation?.Name);
+        vm.OnLiveInput(new JoystickInputEvent(Stick, "JOY_BTN8", true));
+        Assert.Equal(string.Empty, vm.RelationSearchText);
+        Assert.Equal("Gear", vm.SelectedRelation?.Name);
+    }
+
+    [Fact]
+    public async Task Follow_OnTheRelationsPage_NotWhileTypingRecordingOrSwitchedOff()
+    {
+        (MainWindowViewModel vm, _) = await CreateBindsPageAsync();
+        vm.CurrentStage = UiStage.Relations;
+        vm.SelectedRelation = vm.Relations.Single(r => r.Name == "Fire");
+
+        vm.IsTextInputFocused = true;
+        vm.OnLiveInput(new JoystickInputEvent(Stick, "JOY_BTN8", true));
+        Assert.Equal("Fire", vm.SelectedRelation?.Name);
+        vm.IsTextInputFocused = false;
+
+        vm.IsRecordingInput = true;
+        vm.OnLiveInput(new JoystickInputEvent(Stick, "JOY_BTN8", true));
+        Assert.Equal("Fire", vm.SelectedRelation?.Name);
+        vm.IsRecordingInput = false;
+
+        vm.FollowInputOnBinds = false;
+        Assert.False(vm.IsLiveInputMonitoring);
+        vm.OnLiveInput(new JoystickInputEvent(Stick, "JOY_BTN8", true));
+        Assert.Equal("Fire", vm.SelectedRelation?.Name);
+    }
+
+    // A jump moves the list under a mouse that did not move: the window holds tooltips back until the mouse moves.
+    [Fact]
+    public void Follow_Jump_HoldsTooltipsBack_UntilTheMouseMoves()
+    {
+        AvaloniaRenderThread.Run(() =>
+        {
+            (MainWindowViewModel vm, _) = AvaloniaRenderThread.Wait(CreateBindsPageAsync());
+            vm.CurrentStage = UiStage.Relations;
+            Views.MainWindow main = new() { DataContext = vm, Width = 1280, Height = 800 };
+            Avalonia.Controls.Control inner = Avalonia.LogicalTree.LogicalExtensions.GetLogicalDescendants(main)
+                .OfType<Avalonia.Controls.ListBox>().First(l => l.Name == "RelationsListBox");
+            main.TooltipHold.PointerAt(new Avalonia.Point(200, 300));
+            Assert.True(Avalonia.Controls.ToolTip.GetServiceEnabled(inner));
+
+            vm.OnLiveInput(new JoystickInputEvent(Stick, "JOY_BTN8", true));
+            Assert.Equal("Gear", vm.SelectedRelation?.Name);
+            Assert.True(main.TooltipHold.IsHolding);
+            Assert.False(Avalonia.Controls.ToolTip.GetServiceEnabled(inner));
+
+            // The layout moving under the pointer (same place) keeps them back; a real move brings them back.
+            main.TooltipHold.PointerAt(new Avalonia.Point(201, 301));
+            Assert.True(main.TooltipHold.IsHolding);
+            main.TooltipHold.PointerAt(new Avalonia.Point(220, 300));
+            Assert.False(main.TooltipHold.IsHolding);
+            Assert.True(Avalonia.Controls.ToolTip.GetServiceEnabled(inner));
+        });
     }
 
     [Fact]

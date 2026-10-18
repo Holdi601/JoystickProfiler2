@@ -4,7 +4,7 @@
 
 Record (Bind Studio, modifiers, the marker assistant, the FFB graph editor) takes a button or hat that changes state,
 never one that was already pressed when recording started. Many devices have buttons that rest pressed: the middle of a
-3-way switch, a mode switch, VPC throttles' detents (the left MT-50 on the dev PC rests on 10 buttons, the WinWing F18
+3-way switch, a mode switch, VPC throttles' detents (the left MT-50 on a test PC rests on 10 buttons, the WinWing F18
 takeoff panel on 9).
 
 - `Services/RecordButtonTracker.cs` decides per device. Buttons pressed during the warmup are "held at start" and only
@@ -18,9 +18,11 @@ takeoff panel on 9).
 - Axes were already measured from the baseline at arming, with the first report re-centring jumped axes
   (`RebaseJumpedAxes`); unchanged.
 
-## Follow input (Binds page)
+## Follow input (Binds and Relations pages)
 
-On by default; the "Follow input" chip in Bind Studio's header and Settings > Binds switch it (`FollowInputOnBinds`).
+On by default; the "Follow input" chip in Bind Studio's header, the cursor chip in the Relations list's header and
+Settings > Binds switch it (`FollowInputOnBinds`, one switch for both pages). On the Relations page the jump selects
+(and opens) the relation's card, in the order of the relation list; the same rules and the same note.
 Pressing a button or hat selects the relation bound to it; pressing it again selects the next relation on the same
 input: the ones without modifiers first, then the ones with, each in list order. An axis moved more than 40 % of its
 travel selects its relation; every further large move (at least 350 ms apart) steps on, until the axis stops. A note
@@ -28,6 +30,11 @@ over the list says what happened: "BTN 8 on L-VPC Stick WarBRD: Gear (1/3)". A r
 clearing the search. No jumping while Record runs, a text box has the focus, or the picture (Visual Assign) is open.
 Logic: `Services/FollowInputTracker.cs` (debounce 120 ms; a press in a device's first report counts only when released
 within 1.5 s), `MainWindowViewModel.LiveInput.cs`.
+
+A jump moves the list under a mouse that did not move; the card that slides under the pointer must not pop its tooltip.
+The VM raises `FollowInputJumped`; the window (`Views/TooltipHold.cs`) switches tooltips off (`ToolTip.ServiceEnabled`,
+inherited), closes an open one and switches them on again once the mouse moves more than 3 px, is pressed, scrolls or
+leaves the window.
 
 ## Live highlight (Visual Assign, Layout page)
 

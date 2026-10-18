@@ -1,0 +1,2327 @@
+{
+  "format": "joypro-cockpit-guide",
+  "version": 1,
+  "id": "dcs-av-8b",
+  "title": "AV-8B Harrier II Night Attack (DCS)",
+  "variants": [
+    "av-8b-na"
+  ],
+  "games": [
+    "DCS"
+  ],
+  "sets": [
+    "DCS/AV8BNA"
+  ],
+  "sources": [
+    {
+      "id": "m1",
+      "title": "DCS AV-8B Night Attack Pocket Guide",
+      "file": "Mods/aircraft/AV8BNA/Doc/AV8BNA Pocket Guide.pdf"
+    },
+    {
+      "id": "m2",
+      "title": "DCS AV-8B Night Attack Harrier Manual CH 1-15",
+      "file": "Mods/aircraft/AV8BNA/Doc/Harrier Manual CH 1-15.pdf"
+    }
+  ],
+  "intro": "The AV-8B Harrier II is a jet that can take off and land straight up, like a helicopter, because its engine blows its hot air out of four swivelling nozzles. The pilot sits in a single-seat cockpit with a HUD (the glass screen in front of the pilot's eyes that shows flight numbers and aiming marks) and two colour screens. The left hand works two levers at once, the throttle and the nozzle lever beside it, and the right hand holds the stick.",
+  "areas": [
+    {
+      "id": "front-left",
+      "where": "front-left",
+      "name": "Left part of the main instrument panel",
+      "text": "The left side of the panel in front of the pilot holds the landing gear and flap controls, the weapon settings, the master mode buttons and the left colour screen.",
+      "panels": [
+        {
+          "id": "landing-gear",
+          "name": "Landing gear control panel",
+          "db": "landing-gear-control-panel",
+          "src": "m2",
+          "page": "48",
+          "text": "This panel on the left of the main panel holds the lever for the wheels, the controls for the wing flaps, the anti-skid switch and the emergency jettison button.",
+          "context": "The pilot uses it at every take-off and landing: wheels and flaps are set here. In the Harrier the flaps also help the engine nozzles lift the plane in a hover.",
+          "controls": [
+            {
+              "id": "emer-jettison",
+              "name": "Emergency jettison button",
+              "type": "button",
+              "match": [
+                "PTN_458",
+                "item:landing-gear-control-panel:1"
+              ],
+              "text": "Pressing this button drops the weapons and tanks hanging under the plane, together with their racks, all at once. It makes the plane lighter in an emergency.",
+              "context": "Two Sidewinder-type missiles on the outer stations 1 and 7 stay on the plane. The pocket guide says the gear must be up or the plane in the air before it works.",
+              "src": "m2",
+              "page": "48"
+            },
+            {
+              "id": "anti-skid",
+              "name": "Anti-skid switch",
+              "type": "switch3",
+              "match": [
+                "PTN_459",
+                "item:landing-gear-control-panel:2"
+              ],
+              "positions": [
+                {
+                  "name": "TEST",
+                  "text": "Lets the pilot test the system on the ground. It does not work while the parking brake is on."
+                },
+                {
+                  "name": "ON",
+                  "text": "Anti-skid works. This is the normal position."
+                },
+                {
+                  "name": "NWS",
+                  "text": "Anti-skid is off and the front wheel steers more sharply, for tight turns while taxiing."
+                }
+              ],
+              "text": "This switch controls the anti-skid system, which stops the wheels from locking when the pilot brakes, like the ABS of a car. One of its positions turns that help off for tighter turns on the ground.",
+              "context": "The pilot leaves it on ON for normal driving and landing. NWS is for slow, tight turns while taxiing; the Skid light on the caution panel then shows that anti-skid is off.",
+              "src": "m2",
+              "page": "48"
+            },
+            {
+              "id": "flaps-bit",
+              "name": "Flaps BIT button",
+              "type": "button",
+              "match": [
+                "PTN_460",
+                "item:landing-gear-control-panel:3"
+              ],
+              "text": "This button starts a self-test of the flaps. The flaps then move up and down by themselves while the pilot watches the flap indicator.",
+              "context": "The pilot sets the flaps power switch to ON first, then presses this button as part of the checks before flight.",
+              "src": "m2",
+              "page": "48"
+            },
+            {
+              "id": "down-lock-override",
+              "name": "Down lock override button",
+              "type": "button",
+              "match": [
+                "PTN_448",
+                "item:landing-gear-control-panel:4"
+              ],
+              "text": "Normally the wheel lever cannot be moved up while the plane stands on its wheels. Pressing this button releases that lock.",
+              "context": "It is a safety against raising the wheels by mistake on the ground; the pilot only needs it when the lever must go up with weight on the wheels.",
+              "src": "m2",
+              "page": "49"
+            },
+            {
+              "id": "gear-handle",
+              "name": "Landing gear handle (RMB up / LMB down / wheel emergency)",
+              "type": "handle",
+              "match": [
+                "PTN_461",
+                "item:landing-gear-control-panel:5"
+              ],
+              "positions": [
+                {
+                  "name": "UP",
+                  "text": "The wheels fold into the plane. This is the position in flight."
+                },
+                {
+                  "name": "DOWN",
+                  "text": "The wheels extend and lock for take-off and landing."
+                },
+                {
+                  "name": "EMER",
+                  "text": "Emergency extension of the wheels by air pressure when electric power is lost."
+                }
+              ],
+              "text": "Move this handle and the wheels go down or up. The game hint says: right mouse button for UP, left mouse button for DOWN, and the mouse wheel for EMERGENCY DOWN.",
+              "context": "The wheels come down for landing and fold away after take-off. In EMER the wheels are pushed out by air pressure, which needs the emergency battery handle (see Gear position indicator).",
+              "src": "m2",
+              "page": "49"
+            },
+            {
+              "id": "flaps-power",
+              "name": "Flaps power switch",
+              "type": "switch3",
+              "match": [
+                "PTN_457",
+                "item:landing-gear-control-panel:6"
+              ],
+              "positions": [
+                {
+                  "name": "ON",
+                  "text": "Power goes to the flaps mode switch and the flaps computer."
+                },
+                {
+                  "name": "OFF",
+                  "text": "The flaps mode switch has no power."
+                },
+                {
+                  "name": "RESET",
+                  "text": "Springs back to ON. It resets the flaps computer logic and stops a started self-test."
+                }
+              ],
+              "text": "This switch gives electric power to the flaps and their computer. The flaps are the wing parts that move down to give more lift.",
+              "context": "The pilot switches it ON before the flaps mode switch can be used. RESET clears a flap computer problem and cancels a running self-test.",
+              "src": "m2",
+              "page": "49"
+            },
+            {
+              "id": "flap-indicator",
+              "name": "Left flap position indicator",
+              "type": "indicator",
+              "match": [
+                "item:landing-gear-control-panel:7"
+              ],
+              "text": "This small display shows how far down the flaps are, as a number of degrees between 00 and 98.",
+              "context": "The pilot watches it while the flaps move, for instance during the flaps self-test or when the flaps follow the nozzle angle.",
+              "src": "m2",
+              "page": "49"
+            },
+            {
+              "id": "flaps-mode",
+              "name": "Flaps mode switch",
+              "type": "switch3",
+              "match": [
+                "PTN_454",
+                "item:landing-gear-control-panel:8"
+              ],
+              "positions": [
+                {
+                  "name": "STOL",
+                  "text": "Flaps and aileron droop are set for short take-off and landing, depending on speed and nozzle angle."
+                },
+                {
+                  "name": "AUTO",
+                  "text": "The computer sets the flaps from speed, Mach number and angle of attack; with the gear down they are at 5 degrees."
+                },
+                {
+                  "name": "CRUISE",
+                  "text": "Fixed flap setting of 25 degrees with no aileron droop."
+                }
+              ],
+              "text": "This switch picks how the flaps and the aileron droop (ailerons hanging slightly down) are set. In AUTO a computer chooses by itself.",
+              "context": "STOL is for take-off and landing with the nozzles tilted; the flap angle then follows the nozzle angle so the hot jet does not burn the flaps. CRUISE and AUTO are used in normal flight.",
+              "src": "m2",
+              "page": "49"
+            }
+          ]
+        },
+        {
+          "id": "gear-indicator",
+          "name": "Gear position indicator",
+          "db": "gear-position-indicator",
+          "src": "m2",
+          "page": "51",
+          "text": "This panel shows with little lights whether each wheel is down and locked. It also holds the pull handle of the emergency battery that can push the wheels out.",
+          "context": "The pilot checks it after moving the gear handle: all green means the wheels are down and safe for landing.",
+          "controls": [
+            {
+              "id": "gear-lights",
+              "name": "Gear position lights N / L / R / M",
+              "type": "light",
+              "match": [
+                "item:gear-position-indicator:1"
+              ],
+              "text": "Four lights, one for the nose wheel (N), the left wing wheel (L), the right wing wheel (R) and the main wheel (M). Green means that wheel is down and locked; amber means it is on the way or not locked.",
+              "context": "After the gear lever is moved, the lights turn amber while the wheels travel and green when they are down and locked.",
+              "src": "m2",
+              "page": "51"
+            },
+            {
+              "id": "gear-emer-battery",
+              "name": "Landing gear emergency battery lever",
+              "type": "lever",
+              "match": [
+                "PTN_470",
+                "item:gear-position-indicator:2"
+              ],
+              "text": "Pulling this lever up switches on a one-use battery. The battery lets the emergency system push the wheels out when the normal electric power is gone.",
+              "context": "It only works with the landing gear handle already in EMER. After it is pulled, a white-painted band on the rod shows that it was used.",
+              "src": "m2",
+              "page": "51"
+            }
+          ]
+        },
+        {
+          "id": "combat-water",
+          "name": "Combat / water panel",
+          "db": "combat-water-panel",
+          "src": "m2",
+          "page": "50",
+          "text": "This panel has the switch for water injection (spraying water into the engine for cooling) and the button for combat thrust (extra engine power for a short time).",
+          "context": "The pilot uses water for take-off and landing, when the engine is hot and the plane needs all its lift. Combat thrust is kept for flights with the nozzles aft.",
+          "controls": [
+            {
+              "id": "water-switch",
+              "name": "Water injection switch (TO / OFF / LDG)",
+              "type": "switch3",
+              "match": [
+                "PTN_449",
+                "item:combat-water-panel:1"
+              ],
+              "positions": [
+                {
+                  "name": "TO",
+                  "text": "Water injection for take-off."
+                },
+                {
+                  "name": "OFF",
+                  "text": "No water flows."
+                },
+                {
+                  "name": "LDG",
+                  "text": "Water injection for landing."
+                }
+              ],
+              "text": "This switch turns on water injection. The water cools the engine so it can give more push for take-off and landing.",
+              "context": "TO and LDG are set for take-off and landing. The water lasts only a short time; a green W light on the engine display shows that water flows.",
+              "src": "m2",
+              "page": "50"
+            },
+            {
+              "id": "cmbt-button",
+              "name": "CMBT button (combat thrust)",
+              "type": "button",
+              "match": [
+                "PTN_450",
+                "item:combat-water-panel:2"
+              ],
+              "text": "This button arms combat thrust, an extra-high engine speed limit for a short time. The first press lights a green SEL light, a second press turns it off.",
+              "context": "The green CMBT light comes on when the engine is hot enough with the gear up and the nozzles aft. The manual says the pilot must watch the time carefully.",
+              "src": "m2",
+              "page": "50"
+            }
+          ]
+        },
+        {
+          "id": "stopwatch",
+          "name": "Stopwatch",
+          "db": "stopwatch",
+          "src": "m2",
+          "page": "50",
+          "text": "This is a small mechanical stopwatch on the main panel, with two push buttons.",
+          "context": "The pilot can time a leg of the flight with it. The manual also mentions a digital stopwatch on the UFC.",
+          "controls": [
+            {
+              "id": "sw-start",
+              "name": "Stopwatch start / stop / wind button",
+              "type": "button",
+              "match": [
+                "PTN_1121",
+                "item:stopwatch:1"
+              ],
+              "text": "This button winds the stopwatch, starts it and stops it.",
+              "context": "It is used together with the reset button next to it.",
+              "src": "m2",
+              "page": "50"
+            },
+            {
+              "id": "sw-reset",
+              "name": "Stopwatch lap / reset button",
+              "type": "button",
+              "match": [
+                "PTN_1122",
+                "item:stopwatch:2"
+              ],
+              "text": "This button sets the stopwatch back to zero.",
+              "context": "The pilot presses it before timing a new leg.",
+              "src": "m2",
+              "page": "50"
+            }
+          ]
+        },
+        {
+          "id": "acp",
+          "name": "Armament control panel (ACP)",
+          "db": "armament-control-panel",
+          "src": "m1",
+          "page": "81",
+          "text": "This panel is the weapon settings box. With its switches the pilot says which weapons to use, how many to drop, how far apart, and which stations to drop in an emergency.",
+          "context": "It talks to the stores management computer. The same settings can also be made on the UFC and the MPCD stores page. All the switches here are spring-loaded: a click up or down changes the value.",
+          "controls": [
+            {
+              "id": "delivery-mode",
+              "name": "Delivery mode control",
+              "type": "switch3",
+              "match": [
+                "PTN_396",
+                "item:armament-control-panel:1"
+              ],
+              "positions": [
+                {
+                  "name": "UP",
+                  "text": "Clicking up steps the delivery mode in one direction."
+                },
+                {
+                  "name": "OFF",
+                  "text": "Centre position with no change."
+                },
+                {
+                  "name": "DOWN",
+                  "text": "Clicking down steps the delivery mode the other way."
+                }
+              ],
+              "text": "This switch picks how a weapon is released. The window above it shows the choice: AUT (automatic), CIP (aim point shown on the HUD), DSL (fixed sight line) or DIR (direct).",
+              "context": "Only modes that fit the chosen weapon can be picked. For guided missiles of the AGM type the panel sets its own mode.",
+              "src": "m1",
+              "page": "81"
+            },
+            {
+              "id": "fuzing",
+              "name": "Fuzing control",
+              "type": "switch3",
+              "match": [
+                "PTN_397",
+                "item:armament-control-panel:2"
+              ],
+              "positions": [
+                {
+                  "name": "UP",
+                  "text": "Clicking up steps through the fuzing options."
+                },
+                {
+                  "name": "OFF",
+                  "text": "Centre position with no change."
+                },
+                {
+                  "name": "DOWN",
+                  "text": "Clicking down steps through the options the other way."
+                }
+              ],
+              "text": "This switch chooses the fuze of a bomb, which is the part that decides when it explodes. A window shows the choice. Where the weapon has no choice, it shows a dash.",
+              "context": "The pilot sets it before the attack. Only options of the selected weapon can be picked.",
+              "src": "m1",
+              "page": "81"
+            },
+            {
+              "id": "quantity",
+              "name": "Quantity switches (tens and units)",
+              "type": "switch3",
+              "match": [
+                "PTN_398",
+                "PTN_399",
+                "item:armament-control-panel:3"
+              ],
+              "positions": [
+                {
+                  "name": "UP",
+                  "text": "Clicking up raises the digit."
+                },
+                {
+                  "name": "OFF",
+                  "text": "Centre position with no change."
+                },
+                {
+                  "name": "DOWN",
+                  "text": "Clicking down lowers the digit."
+                }
+              ],
+              "count": 2,
+              "text": "Two switches that set how many weapons are released with one press of the button. Two windows show the number.",
+              "context": "A number larger than the weapons on board cannot be picked.",
+              "src": "m1",
+              "page": "82"
+            },
+            {
+              "id": "multiple",
+              "name": "Multiple release control",
+              "type": "switch3",
+              "match": [
+                "PTN_400",
+                "item:armament-control-panel:4"
+              ],
+              "positions": [
+                {
+                  "name": "UP",
+                  "text": "Clicking up raises the number."
+                },
+                {
+                  "name": "OFF",
+                  "text": "Centre position with no change."
+                },
+                {
+                  "name": "DOWN",
+                  "text": "Clicking down lowers the number."
+                }
+              ],
+              "text": "This switch sets how many weapon stations release at the same moment.",
+              "context": "The number cannot be higher than the number of stations that carry the chosen weapon.",
+              "src": "m1",
+              "page": "82"
+            },
+            {
+              "id": "interval",
+              "name": "Release interval switches (hundreds, tens, units)",
+              "type": "switch3",
+              "match": [
+                "PTN_401",
+                "PTN_402",
+                "PTN_403",
+                "item:armament-control-panel:5"
+              ],
+              "positions": [
+                {
+                  "name": "UP",
+                  "text": "Clicking up raises the digit."
+                },
+                {
+                  "name": "OFF",
+                  "text": "Centre position with no change."
+                },
+                {
+                  "name": "DOWN",
+                  "text": "Clicking down lowers the digit."
+                }
+              ],
+              "count": 3,
+              "text": "Three switches that set the gap between the bombs of a series. The number is the distance in feet between the places where they hit the ground.",
+              "context": "The pilot uses it for a multiple release, to spread the bombs along the target.",
+              "src": "m1",
+              "page": "82"
+            },
+            {
+              "id": "manual-control",
+              "name": "Manual release control knob",
+              "type": "selector",
+              "match": [
+                "PTN_395",
+                "item:armament-control-panel:6"
+              ],
+              "positions": [
+                {
+                  "name": "NORM",
+                  "text": "Normal setting, the default."
+                },
+                {
+                  "name": "N/T",
+                  "text": "Nose and tail fuzing, manual mode."
+                },
+                {
+                  "name": "N",
+                  "text": "Nose fuzing, manual mode."
+                },
+                {
+                  "name": "T",
+                  "text": "Tail fuzing, manual mode."
+                }
+              ],
+              "text": "This knob puts the weapon computer into a manual mode and selects the backup arming. In NORM, the computer works as usual.",
+              "context": "N/T, N and T mean fuzing at nose and tail, nose only, or tail only. In those settings the stored weapon programs are ignored. The pocket guide notes that manual delivery was not yet enabled in the early access version.",
+              "src": "m1",
+              "page": "82"
+            },
+            {
+              "id": "ir-cool",
+              "name": "IR cool switch",
+              "type": "switch2",
+              "match": [
+                "PTN_420",
+                "item:armament-control-panel:7"
+              ],
+              "positions": [
+                {
+                  "name": "IR COOL",
+                  "text": "Cooling is applied to every Sidewinder or Sidearm on the plane."
+                },
+                {
+                  "name": "OFF",
+                  "text": "No cooling. This position is required before flight."
+                }
+              ],
+              "text": "This switch cools the seeker heads of heat-seeking missiles (Sidewinder and Sidearm) so they can see targets before flight or if the computer fails.",
+              "context": "It must be in OFF before the plane takes off. In the game the extra command IR Cooling control can toggle it.",
+              "src": "m1",
+              "page": "82"
+            },
+            {
+              "id": "stations",
+              "name": "Station select buttons 1-7",
+              "type": "button",
+              "match": [
+                "PTN_407",
+                "PTN_409",
+                "PTN_411",
+                "PTN_413",
+                "PTN_415",
+                "PTN_417",
+                "PTN_419",
+                "item:armament-control-panel:8"
+              ],
+              "count": 7,
+              "text": "Seven buttons, one for each place under the wings and body where weapons hang. Pressing a button selects or deselects that station. A small window above it shows SEL when selected.",
+              "context": "In the normal mode, picking one station selects all stations that carry the same weapon.",
+              "src": "m1",
+              "page": "82"
+            },
+            {
+              "id": "jettison-mode",
+              "name": "Selective jettison knob",
+              "type": "selector",
+              "match": [
+                "PTN_404",
+                "item:armament-control-panel:9"
+              ],
+              "positions": [
+                {
+                  "name": "SAFE",
+                  "text": "No selective jettison; normal weapon release is possible."
+                },
+                {
+                  "name": "FUEL",
+                  "text": "Only fuel tanks on stations 2, 3, 5 and 6 are dropped, in pairs."
+                },
+                {
+                  "name": "STOR",
+                  "text": "Drops the selected stores and keeps their suspension equipment."
+                },
+                {
+                  "name": "STA",
+                  "text": "Drops the selected stations including their racks."
+                },
+                {
+                  "name": "CMBT",
+                  "text": "Drops all stores on all stations except Sidewinders on stations 1 and 7."
+                }
+              ],
+              "text": "This knob chooses how weapons are dropped on purpose. In SAFE nothing is dropped. The other positions are FUEL (only fuel tanks), STOR (selected stores), STA (selected stations, with their racks) and CMBT (everything except Sidewinders on stations 1 and 7).",
+              "context": "After the drop the knob springs back to the off position by itself. While the knob is away from SAFE, normal weapon release is blocked.",
+              "src": "m1",
+              "page": "96"
+            },
+            {
+              "id": "jettison-button",
+              "name": "Selective jettison pushbutton",
+              "type": "button",
+              "match": [
+                "PTN_405",
+                "item:armament-control-panel:10"
+              ],
+              "text": "This button carries out the drop chosen with the selective jettison knob.",
+              "context": "The gear must be up and the plane in the air. It does nothing while the knob is on SAFE.",
+              "src": "m1",
+              "page": "96"
+            }
+          ]
+        },
+        {
+          "id": "master-mode",
+          "name": "Master mode / master arm panel",
+          "db": "master-mode-panel",
+          "src": "m2",
+          "page": "53",
+          "text": "This panel switches the whole plane between its working modes (air-to-ground, navigation, vertical landing) and holds the master arm switch, the main weapon safety, and the flare button.",
+          "context": "The pilot picks a master mode so the HUD and screens show what is needed, and turns master arm on only when ready to use weapons.",
+          "controls": [
+            {
+              "id": "ag-mode",
+              "name": "A/G master mode button",
+              "type": "button",
+              "match": [
+                "PTN_280",
+                "item:master-mode-panel:1"
+              ],
+              "text": "This button puts the plane in air-to-ground mode, the mode for attacking things on the ground.",
+              "context": "After it is pressed the HUD and the screens show the weapon and sight data.",
+              "src": "m2",
+              "page": "53"
+            },
+            {
+              "id": "nav-mode",
+              "name": "NAV master mode button",
+              "type": "button",
+              "match": [
+                "PTN_282",
+                "item:master-mode-panel:2"
+              ],
+              "text": "This button puts the plane in navigation mode, the normal mode for flying from place to place.",
+              "context": "In this mode the HUD shows the main flight numbers and the map screen shows the route.",
+              "src": "m2",
+              "page": "53"
+            },
+            {
+              "id": "vstol-mode",
+              "name": "VSTOL master mode button",
+              "type": "button",
+              "match": [
+                "PTN_284",
+                "item:master-mode-panel:3"
+              ],
+              "text": "This button puts the plane in V/STOL mode, the mode for short and vertical take-off and landing.",
+              "context": "It shows the extra marks on the HUD and the option display that help a hover and a short take-off.",
+              "src": "m2",
+              "page": "53"
+            },
+            {
+              "id": "flare-salvo",
+              "name": "Flare salvo button (FLRSAL)",
+              "type": "button",
+              "match": [
+                "PTN_286",
+                "item:master-mode-panel:4"
+              ],
+              "text": "Pressing this button makes the plane throw out flares, hot burning decoys for heat-seeking missiles, as fast as the dispensers can.",
+              "context": "The pilot uses it when a missile is coming at the plane.",
+              "src": "m2",
+              "page": "53"
+            },
+            {
+              "id": "master-arm",
+              "name": "MASTER ARM switch",
+              "type": "switch2",
+              "match": [
+                "PTN_287",
+                "item:master-mode-panel:5"
+              ],
+              "positions": [
+                {
+                  "name": "ARM",
+                  "text": "Weapons can be released."
+                },
+                {
+                  "name": "SAFE",
+                  "text": "Weapons cannot be released."
+                }
+              ],
+              "text": "This is the main safety switch for the weapons. Nothing can be released while it is on SAFE.",
+              "context": "The pilot sets it to ARM only shortly before an attack and back to SAFE afterwards.",
+              "src": "m2",
+              "page": "53"
+            }
+          ]
+        },
+        {
+          "id": "left-mpcd",
+          "name": "Left MPCD (multipurpose colour display)",
+          "db": "mpcd",
+          "src": "m2",
+          "page": "54",
+          "text": "This is one of two colour screens on the main panel. Twenty buttons around its edge pick what the screen shows. A few more controls change its brightness and picture.",
+          "context": "The two MPCDs are the main screens for the map, the weapons, the sensors and the engine data. The buttons are numbered from the bottom left clockwise: 1 to 20.",
+          "controls": [
+            {
+              "id": "osb",
+              "name": "Pushbuttons 1-20 around the left screen",
+              "type": "button",
+              "match": [
+                "PTN_200",
+                "PTN_201",
+                "PTN_202",
+                "PTN_203",
+                "PTN_204",
+                "PTN_205",
+                "PTN_206",
+                "PTN_207",
+                "PTN_208",
+                "PTN_209",
+                "PTN_210",
+                "PTN_211",
+                "PTN_212",
+                "PTN_213",
+                "PTN_214",
+                "PTN_215",
+                "PTN_216",
+                "PTN_217",
+                "PTN_218",
+                "PTN_219",
+                "item:mpcd:1"
+              ],
+              "count": 20,
+              "text": "These 20 buttons sit around the edge of the left screen. Each one picks the word printed next to it on the screen, so the same button does different things on different pages.",
+              "context": "The pilot uses them to switch the left screen between the map, the weapons, the sensor picture and more. In other parts of the manual they are called PB1 to PB20.",
+              "src": "m2",
+              "page": "55"
+            },
+            {
+              "id": "brightness",
+              "name": "OFF / brightness knob",
+              "type": "knob",
+              "match": [
+                "PTN_194",
+                "item:mpcd:2"
+              ],
+              "text": "Turning this knob switches the left screen on and makes it brighter. Turned all the way back it switches the screen off.",
+              "context": "The pilot turns the left screen on early in the start-up, as the screens show most of the plane's data.",
+              "src": "m2",
+              "page": "55"
+            },
+            {
+              "id": "day-night",
+              "name": "DAY / NGT rocker",
+              "type": "rocker",
+              "match": [
+                "PTN_220_1",
+                "PTN_220_2",
+                "item:mpcd:3"
+              ],
+              "text": "This rocker switch sets the left screen to day mode (normal bright) or night mode (dimmed).",
+              "context": "At night the pilot uses NGT so the left screen does not blind the eyes.",
+              "src": "m2",
+              "page": "55"
+            },
+            {
+              "id": "sym",
+              "name": "SYM rocker (symbol brightness)",
+              "type": "rocker",
+              "match": [
+                "PTN_221_1",
+                "PTN_221_2",
+                "item:mpcd:4"
+              ],
+              "text": "This rocker makes the lines, letters and symbols on the left screen brighter or dimmer.",
+              "context": "It is set to taste on the left screen together with the contrast and gain rockers.",
+              "src": "m2",
+              "page": "55"
+            },
+            {
+              "id": "cont",
+              "name": "CONT rocker (contrast)",
+              "type": "rocker",
+              "match": [
+                "PTN_223_1",
+                "PTN_223_2",
+                "item:mpcd:5"
+              ],
+              "text": "This rocker changes the contrast of the left screen picture, the difference between light and dark parts.",
+              "context": "It matters most for the left screen when it shows the camera picture of the infra-red sensor.",
+              "src": "m2",
+              "page": "55"
+            },
+            {
+              "id": "gain",
+              "name": "GAIN rocker",
+              "type": "rocker",
+              "match": [
+                "PTN_222_1",
+                "PTN_222_2",
+                "item:mpcd:6"
+              ],
+              "text": "This rocker changes the gain of the left screen picture, which is how strongly the picture signal is amplified.",
+              "context": "It is set on the left screen together with the contrast for a clear picture of the sensor video.",
+              "src": "m2",
+              "page": "55"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "front-center",
+      "where": "front-center",
+      "name": "Centre of the main panel",
+      "text": "The middle of the panel holds the keypad (UFC), the alarm lights, the HUD controls, the standby round gauges and the switches for sensors and computers.",
+      "panels": [
+        {
+          "id": "warning-lights",
+          "name": "Master warning and caution lights",
+          "db": "master-warning-caution-lights",
+          "src": "m2",
+          "page": "57",
+          "text": "These are the alarm lights beside the UFC. The big red MASTER WARNING light and the group of green warning lights on its right mean danger. The yellow MASTER CAUTION and its group on the left mean something needs attention soon.",
+          "context": "When a warning light shows, the pilot looks at the small light to see what is wrong. The two master lights can be clicked in the game.",
+          "controls": [
+            {
+              "id": "master-warning",
+              "name": "MASTER WARNING light",
+              "type": "button",
+              "match": [
+                "PTN_199",
+                "item:master-warning-caution-lights:1"
+              ],
+              "text": "This big red light and button come on when any of the warning lights below it comes on. It tells the pilot that something dangerous is happening.",
+              "context": "The pilot then looks at the labelled warning light to see what the problem is.",
+              "src": "m2",
+              "page": "57"
+            },
+            {
+              "id": "fire",
+              "name": "Engine fire light",
+              "type": "light",
+              "match": [
+                "item:master-warning-caution-lights:2"
+              ],
+              "text": "This warning light comes on when there is a fire in the engine compartment.",
+              "context": "It is one of the eleven warning lights that need immediate action; the master warning light comes on with it.",
+              "src": "m2",
+              "page": "57"
+            },
+            {
+              "id": "law",
+              "name": "Low altitude warning light (LAW)",
+              "type": "light",
+              "match": [
+                "item:master-warning-caution-lights:3"
+              ],
+              "text": "This warning light comes on when the plane flies lower than the minimum height the pilot has set.",
+              "context": "It helps the pilot not to fly into the ground.",
+              "src": "m2",
+              "page": "57"
+            },
+            {
+              "id": "flaps-light",
+              "name": "FLAPS light",
+              "type": "light",
+              "match": [
+                "item:master-warning-caution-lights:4"
+              ],
+              "text": "This warning light comes on when the flap system has failed.",
+              "context": "The emergency flap retract button on the throttle is meant for the case that both flap channels fail.",
+              "src": "m2",
+              "page": "57"
+            },
+            {
+              "id": "tank-lights",
+              "name": "L TANK and R TANK lights",
+              "type": "light",
+              "match": [
+                "item:master-warning-caution-lights:5"
+              ],
+              "text": "These warning lights come on when the pressure or the heat in the left or right fuel tank system is too high.",
+              "context": "They are part of the warning row to the right of the UFC.",
+              "src": "m2",
+              "page": "57"
+            },
+            {
+              "id": "hyd-light",
+              "name": "HYD light",
+              "type": "light",
+              "match": [
+                "item:master-warning-caution-lights:6"
+              ],
+              "text": "This warning light comes on when both hydraulic systems (HYD 1 and HYD 2) have failed. Hydraulics are oil under pressure that moves heavy parts.",
+              "context": "It is a danger signal because the controls depend on the hydraulics.",
+              "src": "m2",
+              "page": "57"
+            },
+            {
+              "id": "gear-light",
+              "name": "GEAR light",
+              "type": "light",
+              "match": [
+                "item:master-warning-caution-lights:7"
+              ],
+              "text": "This warning light comes on when the landing gear is not safe or does not extend.",
+              "context": "The pilot checks it together with the gear position lights.",
+              "src": "m2",
+              "page": "57"
+            },
+            {
+              "id": "overtemp-light",
+              "name": "OT light (overtemp)",
+              "type": "light",
+              "match": [
+                "item:master-warning-caution-lights:8"
+              ],
+              "text": "This warning light comes on when the exhaust temperature of the engine (the JPT) is above its limit.",
+              "context": "JPT is the temperature of the exhaust gas inside the engine.",
+              "src": "m2",
+              "page": "57"
+            },
+            {
+              "id": "jptl-light",
+              "name": "JPTL light",
+              "type": "light",
+              "match": [
+                "item:master-warning-caution-lights:9"
+              ],
+              "text": "This warning light comes on when the jet pipe temperature limiter is not working, so the computer is not guarding the engine temperature.",
+              "context": "It also flashes if the JPTL switch is turned off.",
+              "src": "m2",
+              "page": "57"
+            },
+            {
+              "id": "efc-light",
+              "name": "EFC light",
+              "type": "light",
+              "match": [
+                "item:master-warning-caution-lights:10"
+              ],
+              "text": "This warning light comes on when both digital engine control units have failed. The engine then runs on manual fuel control.",
+              "context": "The pilot then uses the manual fuel switch on the throttle quadrant.",
+              "src": "m2",
+              "page": "57"
+            },
+            {
+              "id": "gen-light",
+              "name": "GEN light",
+              "type": "light",
+              "match": [
+                "item:master-warning-caution-lights:11"
+              ],
+              "text": "This warning light comes on when the alternating-current generator is off the line.",
+              "context": "A generator makes the plane's electricity while the engine runs.",
+              "src": "m2",
+              "page": "57"
+            },
+            {
+              "id": "master-caution",
+              "name": "MASTER CAUTION light",
+              "type": "button",
+              "match": [
+                "PTN_198",
+                "item:master-warning-caution-lights:12"
+              ],
+              "text": "This yellow light and button come on when any of the caution lights below it comes on. It means something needs attention soon, but not at this very second.",
+              "context": "The pilot looks at the labelled caution light next to it to see what the problem is.",
+              "src": "m2",
+              "page": "58"
+            },
+            {
+              "id": "fuel-lights",
+              "name": "L / R fuel lights",
+              "type": "light",
+              "match": [
+                "item:master-warning-caution-lights:13"
+              ],
+              "text": "These lights come on when the fuel in the left or right feed group is low. A steady light means less than 750 pounds, a flashing light less than 250 pounds.",
+              "context": "The master caution light comes on with them.",
+              "src": "m2",
+              "page": "58"
+            },
+            {
+              "id": "fifteen-sec",
+              "name": "15 SEC light",
+              "type": "light",
+              "match": [
+                "item:master-warning-caution-lights:14"
+              ],
+              "text": "This light comes on when the engine exhaust temperature is above the normal lift limit; it flashes after 15 seconds.",
+              "context": "It matters in a hover, where the engine works at its hardest.",
+              "src": "m2",
+              "page": "58"
+            },
+            {
+              "id": "mfs-light",
+              "name": "MFS light",
+              "type": "light",
+              "match": [
+                "item:master-warning-caution-lights:15"
+              ],
+              "text": "This light comes on when manual fuel control is switched on.",
+              "context": "It reminds the pilot that the engine is not controlled by the digital computer.",
+              "src": "m2",
+              "page": "58"
+            },
+            {
+              "id": "bingo-light",
+              "name": "BINGO light",
+              "type": "light",
+              "match": [
+                "item:master-warning-caution-lights:16"
+              ],
+              "text": "This light comes on when the total fuel falls below the amount the pilot has set with the bingo knob.",
+              "context": "A warning tone plays at the same time. Bingo fuel is the amount needed to get home.",
+              "src": "m2",
+              "page": "58"
+            },
+            {
+              "id": "h2o-light",
+              "name": "H2O light",
+              "type": "light",
+              "match": [
+                "item:master-warning-caution-lights:17"
+              ],
+              "text": "This light comes on when less than 15 seconds of water for water injection remain.",
+              "context": "The engine then loses the extra cooling that the water gives.",
+              "src": "m2",
+              "page": "58"
+            }
+          ]
+        },
+        {
+          "id": "up-front-control",
+          "name": "Up front control (UFC) and option display unit (ODU)",
+          "db": "up-front-control",
+          "src": "m2",
+          "page": "59",
+          "text": "The UFC is the keypad and small text screen right below the HUD, where the pilot types numbers. Below it sits the ODU, five little windows with a button each.",
+          "context": "It is also the main radio controller: both radios are set here. The ODU shows the options of the function chosen with the keys.",
+          "controls": [
+            {
+              "id": "ufc-lcd",
+              "name": "UFC LCD scratchpad",
+              "type": "display",
+              "match": [
+                "item:up-front-control:1"
+              ],
+              "text": "This small screen shows what the pilot types on the keypad and the data of the chosen function.",
+              "context": "It works both as a display and as a scratchpad, the place where numbers wait until they are entered.",
+              "src": "m2",
+              "page": "60"
+            },
+            {
+              "id": "ufc-brightness",
+              "name": "UFC display brightness knob",
+              "type": "knob",
+              "match": [
+                "PTN_295",
+                "item:up-front-control:2"
+              ],
+              "text": "This knob switches the UFC on and sets how bright its screen and buttons are.",
+              "context": "The pilot turns it on during start-up, before the radios can be used.",
+              "src": "m2",
+              "page": "60"
+            },
+            {
+              "id": "comm-volume",
+              "name": "COMM 1 and COMM 2 volume knobs",
+              "type": "knob",
+              "match": [
+                "PTN_298",
+                "PTN_299",
+                "item:up-front-control:3"
+              ],
+              "count": 2,
+              "text": "Two knobs that set how loud each of the two radios is. The knob for COMM 1 and the knob for COMM 2 sit on the left and right of the UFC.",
+              "context": "In the Harrier the radio volume is set here, even when the backup radio panel is used.",
+              "src": "m2",
+              "page": "60"
+            },
+            {
+              "id": "comm-channel",
+              "name": "COMM 1 and COMM 2 channel selectors",
+              "type": "button",
+              "match": [
+                "PTN_300",
+                "PTN_301"
+              ],
+              "count": 2,
+              "text": "Two buttons, one for each radio, that pick a stored radio channel. The channel number shows on the small screen.",
+              "context": "The pilot changes channels here to talk to different stations. The channels are set up in the mission editor.",
+              "src": "m2",
+              "page": "60"
+            },
+            {
+              "id": "tmr",
+              "name": "TMR button (timer)",
+              "type": "button",
+              "match": [
+                "PTN_294",
+                "item:up-front-control:4"
+              ],
+              "text": "This button switches the UFC to the clock and timer functions: the time, a digital stopwatch and time on target.",
+              "context": "The pilot uses it to check or set the clock and to time a run to a target.",
+              "src": "m2",
+              "page": "60"
+            },
+            {
+              "id": "too",
+              "name": "TOO button (target of opportunity)",
+              "type": "button",
+              "match": [
+                "PTN_296",
+                "item:up-front-control:5"
+              ],
+              "text": "This button marks a target the pilot has just found and quickly prepares the weapons for it.",
+              "context": "It is used during combat for targets that were not planned.",
+              "src": "m2",
+              "page": "60"
+            },
+            {
+              "id": "ip",
+              "name": "I/P button (identification of position)",
+              "type": "button",
+              "match": [
+                "PTN_297",
+                "item:up-front-control:6"
+              ],
+              "text": "Pressing this button makes the plane's IFF radio box send out an identification pulse.",
+              "context": "The manual says it works in IFF modes 1, 2 and 3/A.",
+              "src": "m2",
+              "page": "60"
+            },
+            {
+              "id": "keypad-digits",
+              "name": "Keypad digits 0-9 (with N, E, S, W)",
+              "type": "keypad",
+              "match": [
+                "PTN_302",
+                "PTN_303",
+                "PTN_304",
+                "PTN_306",
+                "PTN_307",
+                "PTN_308",
+                "PTN_310",
+                "PTN_311",
+                "PTN_312",
+                "PTN_315",
+                "item:up-front-control:7"
+              ],
+              "count": 10,
+              "text": "Ten number keys. Four of them also carry the letters N, E, S and W, for compass directions when a position is typed in. The typed digits appear in the small text window.",
+              "context": "The pilot uses them to type radio numbers, waypoint positions and weapon settings.",
+              "src": "m2",
+              "page": "60"
+            },
+            {
+              "id": "keypad-clr",
+              "name": "CLR key (clear)",
+              "type": "button",
+              "match": [
+                "PTN_305"
+              ],
+              "text": "This key wipes everything typed so far from the small screen, without saving it.",
+              "context": "The pilot uses it after a typing error.",
+              "src": "m2",
+              "page": "60"
+            },
+            {
+              "id": "keypad-sve",
+              "name": "SVE key (save)",
+              "type": "button",
+              "match": [
+                "PTN_309"
+              ],
+              "text": "This key saves the value that the pilot has typed on the small screen.",
+              "context": "It belongs to the keypad that the pilot uses to enter data on the UFC.",
+              "src": "m2",
+              "page": "60"
+            },
+            {
+              "id": "keypad-minus",
+              "name": "Minus key (-)",
+              "type": "button",
+              "match": [
+                "PTN_313"
+              ],
+              "text": "This key turns a typed number negative. Pressing it again turns it positive again.",
+              "context": "It is one of the keys of the UFC keypad.",
+              "src": "m2",
+              "page": "60"
+            },
+            {
+              "id": "keypad-dot",
+              "name": "Decimal point key (.)",
+              "type": "button",
+              "match": [
+                "PTN_316"
+              ],
+              "text": "This key types a decimal point. Digits typed after it are the part after the point.",
+              "context": "The pilot needs it for radio frequencies, for example.",
+              "src": "m2",
+              "page": "60"
+            },
+            {
+              "id": "keypad-onoff",
+              "name": "ON/OFF toggle key",
+              "type": "button",
+              "match": [
+                "PTN_317"
+              ],
+              "text": "This key switches the chosen function or device on or off, for example the radar altimeter, TACAN or IFF.",
+              "context": "It is used after one of the function keys has been pressed.",
+              "src": "m2",
+              "page": "60"
+            },
+            {
+              "id": "keypad-enter",
+              "name": "ENT key (enter)",
+              "type": "button",
+              "match": [
+                "PTN_314"
+              ],
+              "text": "This key accepts the typed values and stores them.",
+              "context": "It ends every data entry on the UFC.",
+              "src": "m2",
+              "page": "60"
+            },
+            {
+              "id": "function-keys",
+              "name": "Function keys IFF, TCN, AWL, WPN, WOF, BCN, ALT, EMCON",
+              "type": "button",
+              "match": [
+                "PTN_318",
+                "PTN_319",
+                "PTN_320",
+                "PTN_321",
+                "PTN_322",
+                "PTN_323",
+                "PTN_324",
+                "PTN_325",
+                "item:up-front-control:8"
+              ],
+              "count": 8,
+              "text": "Eight keys that choose which system the UFC and the ODU are now talking to. IFF is the identification radio, TCN the TACAN beacon, AWL the all-weather landing system and WPN the weapon programming.",
+              "context": "WOF (waypoint over fly) updates the plane's position, BCN is the radar beacon system, ALT sets the altimeters, and EMCON switches the emission control (the plane stays quiet on radio and radar).",
+              "src": "m2",
+              "page": "61"
+            },
+            {
+              "id": "odu",
+              "name": "ODU option buttons OB1-OB5",
+              "type": "button",
+              "match": [
+                "PTN_250",
+                "PTN_251",
+                "PTN_252",
+                "PTN_248",
+                "PTN_249",
+                "item:up-front-control:9"
+              ],
+              "count": 5,
+              "text": "Five small windows under the UFC, each with a button. The windows show the options of the chosen UFC function, and the button picks or switches that option.",
+              "context": "The words in the windows change with whatever the pilot does on the UFC or the screens. The manual calls them OB1 to OB5.",
+              "src": "m2",
+              "page": "56"
+            }
+          ]
+        },
+        {
+          "id": "hud-control",
+          "name": "HUD control panel",
+          "db": "hud-control-panel",
+          "src": "m2",
+          "page": "62",
+          "text": "This panel sets the HUD, the glass screen in front of the pilot's eyes that shows flight numbers and aiming marks. It controls how bright it is, how much it shows, and where the height number comes from.",
+          "context": "It sits right above the UFC. The pilot turns the HUD on here and uses the knobs for the infra-red camera picture at night.",
+          "controls": [
+            {
+              "id": "hud-reject",
+              "name": "HUD symbology reject switch",
+              "type": "switch3",
+              "match": [
+                "PTN_288",
+                "item:hud-control-panel:1"
+              ],
+              "positions": [
+                {
+                  "name": "NORM",
+                  "text": "The HUD shows all its symbols."
+                },
+                {
+                  "name": "REJ1",
+                  "text": "The HUD removes part of the symbols (first level)."
+                },
+                {
+                  "name": "REJ2",
+                  "text": "The HUD removes more symbols (second level)."
+                }
+              ],
+              "text": "This switch decides how much information the HUD shows. It removes marks from the glass to make the view less crowded.",
+              "context": "The three levels (NORM, REJ1, REJ2) are explained in the HUD part of the manual.",
+              "src": "m2",
+              "page": "62"
+            },
+            {
+              "id": "hud-brightness",
+              "name": "HUD brightness control (OFF / brightness knob)",
+              "type": "knob",
+              "match": [
+                "PTN_289",
+                "item:hud-control-panel:2"
+              ],
+              "text": "This knob turns the HUD on and sets how bright its symbols are.",
+              "context": "It works together with the brightness selector switch next to it.",
+              "src": "m2",
+              "page": "62"
+            },
+            {
+              "id": "hud-mode",
+              "name": "HUD brightness selector (DAY / NIGHT / AUTO)",
+              "type": "switch3",
+              "match": [
+                "PTN_290",
+                "item:hud-control-panel:3"
+              ],
+              "positions": [
+                {
+                  "name": "AUTO",
+                  "text": "The brightness follows the light outside automatically."
+                },
+                {
+                  "name": "DAY",
+                  "text": "The HUD is bright for daylight."
+                },
+                {
+                  "name": "NIGHT",
+                  "text": "The HUD is dimmed for the dark and can show the infra-red camera picture."
+                }
+              ],
+              "text": "This switch decides how the HUD brightness is set. NIGHT must be chosen to see the infra-red camera picture on the HUD.",
+              "context": "The pilot uses AUTO for ordinary flying and NIGHT for flights with the camera picture.",
+              "src": "m2",
+              "page": "62"
+            },
+            {
+              "id": "flir-brightness",
+              "name": "FLIR brightness knob (video brightness)",
+              "type": "knob",
+              "match": [
+                "PTN_291",
+                "item:hud-control-panel:4"
+              ],
+              "text": "This knob sets how bright the infra-red camera picture (FLIR) on the HUD is. Pressing it swaps the pictures on the two MPCD screens.",
+              "context": "FLIR is the forward-looking infra-red camera that lets the pilot see at night.",
+              "src": "m2",
+              "page": "62"
+            },
+            {
+              "id": "flir-contrast",
+              "name": "FLIR contrast knob (video contrast)",
+              "type": "knob",
+              "match": [
+                "PTN_292",
+                "item:hud-control-panel:5"
+              ],
+              "text": "This knob changes the contrast of the infra-red camera picture on the HUD.",
+              "context": "It is adjusted together with the brightness knob.",
+              "src": "m2",
+              "page": "62"
+            },
+            {
+              "id": "hud-altitude",
+              "name": "Altitude switch (RDR / BARO)",
+              "type": "switch2",
+              "match": [
+                "PTN_293",
+                "item:hud-control-panel:6"
+              ],
+              "positions": [
+                {
+                  "name": "RDR",
+                  "text": "The HUD shows the radar altitude, the height above the ground."
+                },
+                {
+                  "name": "BARO",
+                  "text": "The HUD shows the barometric altitude, measured with air pressure."
+                }
+              ],
+              "text": "This switch picks which height number the HUD shows: the height over the ground measured by radar, or the height above sea level measured with air pressure.",
+              "context": "Radar height is the height above the ground right below the plane, which is useful for low flying and landing.",
+              "src": "m2",
+              "page": "62"
+            }
+          ]
+        },
+        {
+          "id": "flight-indicators",
+          "name": "Standby flight indicators",
+          "db": "flight-indicators",
+          "src": "m2",
+          "page": "63",
+          "text": "This is a group of old-style round gauges below the HUD. They are the backup instruments that still work if the screens fail.",
+          "context": "The pilot uses them as a second opinion for speed, height, direction of climb and turn. Some of them have a knob that can be clicked.",
+          "controls": [
+            {
+              "id": "crs-knob",
+              "name": "CRS knob (course set)",
+              "type": "knob",
+              "match": [
+                "PTN_364",
+                "item:flight-indicators:1"
+              ],
+              "text": "This knob sets the course the pilot wants to fly to a TACAN beacon. TACAN is a radio beacon on the ground or a ship that tells the plane its direction and distance.",
+              "context": "The game calls it the NAV course setting.",
+              "src": "m2",
+              "page": "63"
+            },
+            {
+              "id": "sb-adi",
+              "name": "Standby attitude indicator (with pitch adjust knob)",
+              "type": "gauge",
+              "match": [
+                "PTN_351",
+                "item:flight-indicators:2"
+              ],
+              "text": "This gauge shows whether the nose is up or down and whether the wings are level. The knob at the bottom right adjusts the picture up or down.",
+              "context": "It is the artificial horizon of the backup instruments. An OFF flag shows when no electric power reaches it.",
+              "src": "m2",
+              "page": "63"
+            },
+            {
+              "id": "sb-airspeed",
+              "name": "Standby airspeed indicator",
+              "type": "gauge",
+              "match": [
+                "item:flight-indicators:3"
+              ],
+              "text": "This gauge shows how fast the plane flies. It has two pointers: the thin one reads speeds below 100 knots, the thick one above.",
+              "context": "A knot is a nautical mile per hour. The pilot can compare it with the speed on the HUD.",
+              "src": "m2",
+              "page": "64"
+            },
+            {
+              "id": "sb-aoa",
+              "name": "Standby angle of attack indicator",
+              "type": "gauge",
+              "match": [
+                "item:flight-indicators:4"
+              ],
+              "text": "This gauge shows the angle of attack (AoA), which is how steeply the wing meets the air.",
+              "context": "A word OFF appears if electric power is lost.",
+              "src": "m2",
+              "page": "64"
+            },
+            {
+              "id": "turn-slip",
+              "name": "Turn and slip indicator",
+              "type": "gauge",
+              "match": [
+                "item:flight-indicators:5"
+              ],
+              "text": "This gauge shows how fast the plane is turning, with a needle, and whether the plane slides sideways, with a ball in a tube.",
+              "context": "A ball in the middle means the turn is clean.",
+              "src": "m2",
+              "page": "64"
+            },
+            {
+              "id": "sb-vvi",
+              "name": "Standby vertical velocity indicator",
+              "type": "gauge",
+              "match": [
+                "item:flight-indicators:6"
+              ],
+              "text": "This gauge shows how fast the plane climbs or sinks, up to 6000 feet per minute.",
+              "context": "The pilot watches it on approach to see how fast the plane sinks.",
+              "src": "m2",
+              "page": "64"
+            },
+            {
+              "id": "sb-altimeter",
+              "name": "Standby altimeter (with barometric knob)",
+              "type": "gauge",
+              "match": [
+                "PTN_653",
+                "item:flight-indicators:7"
+              ],
+              "text": "This gauge shows the height above sea level. The knob sets the local air pressure so the height reads right.",
+              "context": "The same pressure setting is also used by the air data computer.",
+              "src": "m2",
+              "page": "64"
+            }
+          ]
+        },
+        {
+          "id": "misc-control",
+          "name": "Miscellaneous control panel",
+          "db": "misc-control-panel",
+          "src": "m2",
+          "page": "65",
+          "text": "This panel below the standby gauges powers some sensors and sets the navigation system (INS), the video recorder and the backup computers.",
+          "context": "It sits behind the control stick. The pilot uses it mostly in the start-up checks.",
+          "controls": [
+            {
+              "id": "flir-power",
+              "name": "FLIR power switch",
+              "type": "switch2",
+              "match": [
+                "PTN_429",
+                "item:misc-control-panel:1"
+              ],
+              "positions": [
+                {
+                  "name": "FLIR",
+                  "text": "The camera gets power and begins to cool down."
+                },
+                {
+                  "name": "OFF",
+                  "text": "The camera has no power."
+                }
+              ],
+              "text": "This switch powers the infra-red camera that looks forward (FLIR) so the pilot can see in the dark.",
+              "context": "The camera needs about five minutes to cool down. Until then its picture shows NOT RDY.",
+              "src": "m2",
+              "page": "65"
+            },
+            {
+              "id": "ins-mode",
+              "name": "INS mode knob",
+              "type": "selector",
+              "match": [
+                "PTN_421",
+                "item:misc-control-panel:2"
+              ],
+              "positions": [
+                {
+                  "name": "OFF",
+                  "text": "The INS is off."
+                },
+                {
+                  "name": "GND ALIGN",
+                  "text": "The INS aligns itself while the plane stands on land, with the parking brake on."
+                },
+                {
+                  "name": "SEA ALIGN",
+                  "text": "The INS aligns itself on a ship, with the parking brake on."
+                },
+                {
+                  "name": "NAV",
+                  "text": "The INS works as the navigation system and gives steering information."
+                },
+                {
+                  "name": "IFA",
+                  "text": "In-flight alignment: the INS is aligned while flying, using GPS data."
+                },
+                {
+                  "name": "GYRO",
+                  "text": "A quick 33-second attitude mode on the ground, without true heading in flight."
+                }
+              ],
+              "text": "This knob sets the mode of the INS, the system that always knows where the plane is. Its positions include OFF, GND ALIGN, SEA ALIGN, NAV, IFA and GYRO.",
+              "context": "The INS must be aligned (told where it stands) before flight; alignment needs the parking brake on.",
+              "src": "m2",
+              "page": "65"
+            },
+            {
+              "id": "vrs-mode",
+              "name": "VRS AUTO / RUN switch",
+              "type": "switch2",
+              "match": [
+                "PTN_422",
+                "item:misc-control-panel:3"
+              ],
+              "positions": [
+                {
+                  "name": "AUTO",
+                  "text": "The recorder turns on when the plane is in air-to-air or air-to-ground mode."
+                },
+                {
+                  "name": "RUN",
+                  "text": "The recorder records without stopping."
+                }
+              ],
+              "text": "This switch decides when the video recorder runs. In AUTO the computer starts it in the attack modes. In RUN it records all the time.",
+              "context": "The video recorder keeps a film of what the HUD or the screen showed.",
+              "src": "m2",
+              "page": "65"
+            },
+            {
+              "id": "vrs-display",
+              "name": "VRS display select switch",
+              "type": "switch2",
+              "match": [
+                "PTN_423",
+                "item:misc-control-panel:4"
+              ],
+              "positions": [
+                {
+                  "name": "MPCD",
+                  "text": "The recorder films the MPCD picture (the manual calls it DDI)."
+                },
+                {
+                  "name": "HUD",
+                  "text": "The recorder films the HUD picture with its symbols."
+                }
+              ],
+              "text": "This switch picks what the video recorder films: the picture of the MPCD screen or the picture of the HUD.",
+              "context": "The pilot sets it before the flight starts.",
+              "src": "m2",
+              "page": "66"
+            },
+            {
+              "id": "dmt-power",
+              "name": "DMT power switch",
+              "type": "switch2",
+              "match": [
+                "PTN_424",
+                "item:misc-control-panel:5"
+              ],
+              "positions": [
+                {
+                  "name": "DMT",
+                  "text": "The DMT gets power."
+                },
+                {
+                  "name": "OFF",
+                  "text": "The DMT has no power."
+                }
+              ],
+              "text": "This switch powers the dual mode tracker (DMT), a sensor that sees laser spots and TV pictures in the nose.",
+              "context": "The manual advises keeping it on during flight to protect the sensor.",
+              "src": "m2",
+              "page": "66"
+            },
+            {
+              "id": "dp-switch",
+              "name": "DP switch (display computer)",
+              "type": "switch3",
+              "match": [
+                "PTN_425",
+                "item:misc-control-panel:6"
+              ],
+              "positions": [
+                {
+                  "name": "PRIM",
+                  "text": "The primary display channel runs."
+                },
+                {
+                  "name": "ALTER",
+                  "text": "The alternate display channel runs."
+                },
+                {
+                  "name": "AUTO",
+                  "text": "The channel is picked automatically and switches over if one fails."
+                }
+              ],
+              "text": "This switch chooses which of two backup channels of the display computer runs. That computer drives the HUD and the MPCD screens.",
+              "context": "The manual calls AUTO the preferred position.",
+              "src": "m2",
+              "page": "66"
+            },
+            {
+              "id": "probe-heat",
+              "name": "Probe heat switch",
+              "type": "switch2",
+              "match": [
+                "PTN_426",
+                "item:misc-control-panel:7"
+              ],
+              "positions": [
+                {
+                  "name": "AUTO",
+                  "text": "On the ground the heaters are off (except one); in the air they are on."
+                },
+                {
+                  "name": "HT",
+                  "text": "Heaters are on (PRB HT); on the ground the pitot tubes get reduced power."
+                }
+              ],
+              "text": "This switch heats the small tubes outside that measure speed and air data, so that they do not freeze.",
+              "context": "In AUTO the heaters work in the air. PRB switches them on also on the ground; it is held by a magnet and drops back to AUTO when power is lost.",
+              "src": "m2",
+              "page": "66"
+            },
+            {
+              "id": "mc-switch",
+              "name": "Mission computer switch",
+              "type": "switch3",
+              "match": [
+                "PTN_427",
+                "item:misc-control-panel:8"
+              ],
+              "positions": [
+                {
+                  "name": "OVRD",
+                  "text": "Prevents backup mode; brings power back to the mission computer after a fall back."
+                },
+                {
+                  "name": "OFF",
+                  "text": "Switches off the mission computer and enables the display computer backup."
+                },
+                {
+                  "name": "AUTO",
+                  "text": "The mission computer works, with automatic fall back to the display computer."
+                }
+              ],
+              "text": "This switch controls the mission computer, the main computer of the plane's systems, and its backup.",
+              "context": "AUTO is the normal setting; the system then falls back to the display computer by itself if the mission computer fails.",
+              "src": "m2",
+              "page": "67"
+            }
+          ]
+        },
+        {
+          "id": "circuit-breakers",
+          "name": "Circuit breaker panel",
+          "db": "circuit-breaker-panel",
+          "src": "m2",
+          "page": "67",
+          "text": "A small panel low on the main panel with seven circuit breakers. A circuit breaker is a safety switch that cuts power when something draws too much, and can be pushed back in.",
+          "context": "These seven are the only ones the pilot can reach. The others are hidden in the plane.",
+          "controls": [
+            {
+              "id": "breakers",
+              "name": "Circuit breakers AIL TRIM, STAB TRIM, RUD SVO, FLAPS, SP BK, LG, RH PROBE HEAT",
+              "type": "button",
+              "match": [
+                "item:circuit-breaker-panel:1",
+                "item:circuit-breaker-panel:2",
+                "item:circuit-breaker-panel:3",
+                "item:circuit-breaker-panel:4",
+                "item:circuit-breaker-panel:5",
+                "item:circuit-breaker-panel:6",
+                "item:circuit-breaker-panel:7"
+              ],
+              "count": 7,
+              "text": "Seven push-in safety switches. AIL TRIM is the manual aileron trim, STAB TRIM the manual stabilator trim, RUD SVO the rudder trim and the SAS servo shutoff, FLAPS the flaps channel 2, SP BK the speed brake, LG the normal landing gear control and RH PROBE HEAT the right pitot heater.",
+              "context": "If one pops out, that part stops working until the pilot pushes it back in.",
+              "src": "m2",
+              "page": "67"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "front-right",
+      "where": "front-right",
+      "name": "Right part of the main instrument panel",
+      "text": "The right side of the panel holds the right colour screen, the engine and fuel readouts, the defence panel, the clock and the pressure gauges.",
+      "panels": [
+        {
+          "id": "right-mpcd",
+          "name": "Right MPCD (multipurpose colour display)",
+          "db": "mpcd",
+          "src": "m2",
+          "page": "54",
+          "text": "This is one of two colour screens on the main panel. Twenty buttons around its edge pick what the screen shows. A few more controls change its brightness and picture.",
+          "context": "The two MPCDs are the main screens for the map, the weapons, the sensors and the engine data. The buttons are numbered from the bottom left clockwise: 1 to 20.",
+          "controls": [
+            {
+              "id": "osb",
+              "name": "Pushbuttons 1-20 around the right screen",
+              "type": "button",
+              "match": [
+                "PTN_224",
+                "PTN_225",
+                "PTN_226",
+                "PTN_227",
+                "PTN_228",
+                "PTN_229",
+                "PTN_230",
+                "PTN_231",
+                "PTN_232",
+                "PTN_233",
+                "PTN_234",
+                "PTN_235",
+                "PTN_236",
+                "PTN_237",
+                "PTN_238",
+                "PTN_239",
+                "PTN_240",
+                "PTN_241",
+                "PTN_242",
+                "PTN_243"
+              ],
+              "count": 20,
+              "text": "These 20 buttons sit around the edge of the right screen. Each one picks the word printed next to it on the screen, so the same button does different things on different pages.",
+              "context": "The pilot uses them to switch the right screen between the map, the weapons, the sensor picture and more. In other parts of the manual they are called PB1 to PB20.",
+              "src": "m2",
+              "page": "55"
+            },
+            {
+              "id": "brightness",
+              "name": "OFF / brightness knob",
+              "type": "knob",
+              "match": [
+                "PTN_195"
+              ],
+              "text": "Turning this knob switches the right screen on and makes it brighter. Turned all the way back it switches the screen off.",
+              "context": "The pilot turns the right screen on early in the start-up, as the screens show most of the plane's data.",
+              "src": "m2",
+              "page": "55"
+            },
+            {
+              "id": "day-night",
+              "name": "DAY / NGT rocker",
+              "type": "rocker",
+              "match": [
+                "PTN_244_1",
+                "PTN_244_2"
+              ],
+              "text": "This rocker switch sets the right screen to day mode (normal bright) or night mode (dimmed).",
+              "context": "At night the pilot uses NGT so the right screen does not blind the eyes.",
+              "src": "m2",
+              "page": "55"
+            },
+            {
+              "id": "sym",
+              "name": "SYM rocker (symbol brightness)",
+              "type": "rocker",
+              "match": [
+                "PTN_245_1",
+                "PTN_245_2"
+              ],
+              "text": "This rocker makes the lines, letters and symbols on the right screen brighter or dimmer.",
+              "context": "It is set to taste on the right screen together with the contrast and gain rockers.",
+              "src": "m2",
+              "page": "55"
+            },
+            {
+              "id": "cont",
+              "name": "CONT rocker (contrast)",
+              "type": "rocker",
+              "match": [
+                "PTN_247_1",
+                "PTN_247_2"
+              ],
+              "text": "This rocker changes the contrast of the right screen picture, the difference between light and dark parts.",
+              "context": "It matters most for the right screen when it shows the camera picture of the infra-red sensor.",
+              "src": "m2",
+              "page": "55"
+            },
+            {
+              "id": "gain",
+              "name": "GAIN rocker",
+              "type": "rocker",
+              "match": [
+                "PTN_246_1",
+                "PTN_246_2"
+              ],
+              "text": "This rocker changes the gain of the right screen picture, which is how strongly the picture signal is amplified.",
+              "context": "It is set on the right screen together with the contrast for a clear picture of the sensor video.",
+              "src": "m2",
+              "page": "55"
+            }
+          ]
+        },
+        {
+          "id": "engine-display",
+          "name": "Engine display panel (EDP)",
+          "db": "engine-display-panel",
+          "src": "m2",
+          "page": "68",
+          "text": "The engine display panel shows the engine's health: how fast it spins, how hot it is, how much fuel it burns, how much water is left and which way the nozzles point.",
+          "context": "It sits on the right of the main panel. The pilot watches it all the time, especially in a hover.",
+          "controls": [
+            {
+              "id": "edp-bit",
+              "name": "Engine display BIT button",
+              "type": "button",
+              "match": [
+                "PTN_655",
+                "item:engine-display-panel:1"
+              ],
+              "text": "This button tests the engine display. The number drums spin through all digits and some lights come on. After a good test all the lights go out.",
+              "context": "The pilot presses it among the checks before flight. BIT means built-in test.",
+              "src": "m2",
+              "page": "68"
+            },
+            {
+              "id": "duct-pressure",
+              "name": "Duct pressure indicator",
+              "type": "display",
+              "match": [
+                "item:engine-display-panel:2"
+              ],
+              "text": "This number drum shows the air pressure in the ducts that feed the small jets on the nose, tail and wingtips, in psi.",
+              "context": "Those small jets (reaction control) steer the plane in a hover when the wings cannot.",
+              "src": "m2",
+              "page": "68"
+            },
+            {
+              "id": "fuel-flow",
+              "name": "Fuel flow indicator",
+              "type": "display",
+              "match": [
+                "item:engine-display-panel:3"
+              ],
+              "text": "This number drum shows how much fuel the engine burns, in pounds per minute.",
+              "context": "The pilot watches it to know how long the fuel will last.",
+              "src": "m2",
+              "page": "68"
+            },
+            {
+              "id": "stab-position",
+              "name": "Stabilator position indicator",
+              "type": "display",
+              "match": [
+                "item:engine-display-panel:4"
+              ],
+              "text": "This number drum shows where the stabilator, the movable tail wing, is, in degrees nose up or nose down.",
+              "context": "An arrow on the left drum shows the direction.",
+              "src": "m2",
+              "page": "69"
+            },
+            {
+              "id": "tachometer",
+              "name": "Tachometer (engine rpm)",
+              "type": "display",
+              "match": [
+                "item:engine-display-panel:5"
+              ],
+              "text": "This number drum shows how fast the engine spins, in percent.",
+              "context": "The switch on the left console selects whether it shows the fan (LO) or the compressor (HI) speed.",
+              "src": "m2",
+              "page": "69"
+            },
+            {
+              "id": "jpt",
+              "name": "Jet pipe temperature indicator (JPT)",
+              "type": "display",
+              "match": [
+                "item:engine-display-panel:6"
+              ],
+              "text": "This number drum shows the temperature of the exhaust gas inside the engine, in degrees Celsius.",
+              "context": "It is one of the most important engine numbers because too much heat damages the engine.",
+              "src": "m2",
+              "page": "69"
+            },
+            {
+              "id": "water-qty",
+              "name": "Water quantity indicator",
+              "type": "display",
+              "match": [
+                "item:engine-display-panel:7"
+              ],
+              "text": "This number drum shows how many pounds of injection water are left. It changes in steps of ten.",
+              "context": "The water is used for take-off and landing power.",
+              "src": "m2",
+              "page": "69"
+            },
+            {
+              "id": "nozzle-position",
+              "name": "Nozzle position indicator",
+              "type": "gauge",
+              "match": [
+                "item:engine-display-panel:8"
+              ],
+              "text": "This round dial shows the angle of the engine nozzles in degrees, from 0 (straight back) to 120.",
+              "context": "The pilot checks it against the nozzle lever on the left: about 10 degrees for taxiing and about 82 for a hover.",
+              "src": "m2",
+              "page": "69"
+            },
+            {
+              "id": "water-flow-light",
+              "name": "Water flow light (W)",
+              "type": "light",
+              "match": [
+                "item:engine-display-panel:9"
+              ],
+              "text": "This light shows a green W when water is flowing into the engine.",
+              "context": "If it does not light although water injection is on, the engine can reach its heat limit very quickly.",
+              "src": "m2",
+              "page": "69"
+            },
+            {
+              "id": "edp-brightness",
+              "name": "EDP brightness knob",
+              "type": "knob",
+              "match": [
+                "PTN_272",
+                "item:engine-display-panel:10"
+              ],
+              "text": "This knob sets the backlight of the engine display.",
+              "context": "It is a lighting knob in the lower right corner of the panel.",
+              "src": "m2",
+              "page": "69"
+            }
+          ]
+        },
+        {
+          "id": "ecm",
+          "name": "ECM panel (radar warning, expendables, jammer)",
+          "db": "ecm-panel",
+          "src": "m2",
+          "page": "70",
+          "text": "This panel holds the controls of the plane's defence: the radar warning receiver, the dispenser of chaff and flares, and the jammer pod.",
+          "context": "The pilot sets it before flying into enemy territory. The dispense switch on the throttle then fires the countermeasures.",
+          "controls": [
+            {
+              "id": "rwr-knob",
+              "name": "RWR knob (radar warning receiver power / volume)",
+              "type": "knob",
+              "match": [
+                "PTN_273",
+                "item:ecm-panel:1"
+              ],
+              "text": "This knob switches the radar warning receiver on and sets the loudness of its warning tones. The RWR tells the pilot when an enemy radar is looking at the plane.",
+              "context": "The threat lights SAM, CW, AI and AAA on the right of the main panel go with it.",
+              "src": "m2",
+              "page": "70"
+            },
+            {
+              "id": "exp-switch",
+              "name": "Expendables switch (EXP)",
+              "type": "selector",
+              "match": [
+                "PTN_274",
+                "item:ecm-panel:2"
+              ],
+              "positions": [
+                {
+                  "name": "OFF",
+                  "text": "The dispensers have no power."
+                },
+                {
+                  "name": "AUT",
+                  "text": "The system picks the dispenser by itself from altitude and flight path."
+                },
+                {
+                  "name": "UP",
+                  "text": "The dispensers on top of the rear body are used first."
+                },
+                {
+                  "name": "DWN",
+                  "text": "The dispensers below the rear body are used first."
+                },
+                {
+                  "name": "RWR",
+                  "text": "Not available in the manual; the game lists it as a command."
+                }
+              ],
+              "text": "This switch powers the dispensers of chaff (metal strips that fool radar missiles) and flares (hot decoys that fool heat-seeking missiles) and sets which dispensers go first.",
+              "context": "The manual says the RWR position is not available.",
+              "src": "m2",
+              "page": "70"
+            },
+            {
+              "id": "ecm-switch",
+              "name": "ECM switch (jammer control)",
+              "type": "selector",
+              "match": [
+                "PTN_275",
+                "item:ecm-panel:3"
+              ],
+              "positions": [
+                {
+                  "name": "OFF",
+                  "text": "The jammer is off."
+                },
+                {
+                  "name": "STBY",
+                  "text": "Standby."
+                },
+                {
+                  "name": "RCV",
+                  "text": "Receive mode."
+                },
+                {
+                  "name": "RPT",
+                  "text": "Repeat mode."
+                },
+                {
+                  "name": "BIT",
+                  "text": "Built-in test of the jammer."
+                }
+              ],
+              "text": "This switch controls the AN/ALQ-164 jammer pod, a radio transmitter that blinds enemy radars. Its game positions are OFF, STBY, RCV, RPT and BIT.",
+              "context": "The manual refers to another section for the pod; this guide does not explain the modes further.",
+              "src": "m2",
+              "page": "70"
+            }
+          ]
+        },
+        {
+          "id": "clock",
+          "name": "Clock",
+          "db": "clock",
+          "src": "m2",
+          "page": "71",
+          "text": "A round analogue clock on the main panel, right of the ECM panel.",
+          "context": "It always shows ZULU time, which is the world standard time, whatever the mission editor sets.",
+          "controls": [
+            {
+              "id": "clock-dial",
+              "name": "Analogue clock",
+              "type": "gauge",
+              "match": [
+                "item:clock:1"
+              ],
+              "text": "This is a plain wall-clock style clock. It always shows ZULU time (the world standard time).",
+              "context": "The digital clock on the UFC can show another time; this one does not change.",
+              "src": "m2",
+              "page": "71"
+            }
+          ]
+        },
+        {
+          "id": "fuel-quantity",
+          "name": "Fuel quantity indicator",
+          "db": "fuel-quantity-indicator",
+          "src": "m2",
+          "page": "71",
+          "text": "This panel tells how much fuel is left. It has number windows for the total and for the left and right groups, a bingo knob and a selector.",
+          "context": "The pilot watches it to decide when to head home. The selector decides what the left and right windows show.",
+          "controls": [
+            {
+              "id": "fq-total",
+              "name": "Total fuel window (TOT)",
+              "type": "display",
+              "match": [
+                "item:fuel-quantity-indicator:1"
+              ],
+              "text": "This window shows all the usable fuel in the plane, in steps of 100 pounds.",
+              "context": "Pounds is the weight of the fuel.",
+              "src": "m2",
+              "page": "72"
+            },
+            {
+              "id": "fq-left",
+              "name": "Left feed group window (L)",
+              "type": "display",
+              "match": [
+                "item:fuel-quantity-indicator:2"
+              ],
+              "text": "This window shows the fuel in the left feed group, in steps of 50 pounds.",
+              "context": "What exactly it shows depends on the selector switch.",
+              "src": "m2",
+              "page": "72"
+            },
+            {
+              "id": "fq-right",
+              "name": "Right feed group window (R)",
+              "type": "display",
+              "match": [
+                "item:fuel-quantity-indicator:3"
+              ],
+              "text": "This window shows the fuel in the right feed group, in steps of 50 pounds.",
+              "context": "What exactly it shows depends on the selector switch.",
+              "src": "m2",
+              "page": "72"
+            },
+            {
+              "id": "bingo-knob",
+              "name": "Bingo window and bingo set knob",
+              "type": "knob",
+              "match": [
+                "PTN_380",
+                "item:fuel-quantity-indicator:4"
+              ],
+              "text": "This knob sets the bingo fuel in the little window, in steps of 100 pounds. When the total reaches this number, the BINGO caution light and a tone come on.",
+              "context": "Bingo fuel is the amount that the pilot wants to keep for the way home.",
+              "src": "m2",
+              "page": "72"
+            },
+            {
+              "id": "fq-selector",
+              "name": "Fuel quantity selector",
+              "type": "selector",
+              "match": [
+                "PTN_379",
+                "item:fuel-quantity-indicator:5"
+              ],
+              "positions": [
+                {
+                  "name": "BIT",
+                  "text": "Spring-loaded; starts a built-in test."
+                },
+                {
+                  "name": "FEED",
+                  "text": "Shows the fuel in the centre feed tanks."
+                },
+                {
+                  "name": "TOT",
+                  "text": "Shows the total fuel of each feed group."
+                },
+                {
+                  "name": "INT",
+                  "text": "Shows the fuel in the internal tanks."
+                },
+                {
+                  "name": "WING",
+                  "text": "Shows the fuel in the internal wing tanks."
+                },
+                {
+                  "name": "INBD",
+                  "text": "Shows the fuel in the inboard external tanks."
+                },
+                {
+                  "name": "OUTBD",
+                  "text": "Shows the fuel in the outboard external tanks."
+                }
+              ],
+              "text": "This selector chooses what the left and right windows show. BIT starts a test of the system.",
+              "context": "The manual says TOT is most accurate when external tanks are carried and INT with internal fuel only.",
+              "src": "m2",
+              "page": "72"
+            }
+          ]
+        },
+        {
+          "id": "brake-hyd",
+          "name": "Brake / hydraulic pressure indicator",
+          "db": "brake-hydraulic-indicator",
+          "src": "m2",
+          "page": "73",
+          "text": "These gauges show the pressure of the wheel brakes and of the two hydraulic systems. Hydraulics are oil under high pressure that moves heavy parts.",
+          "context": "The pilot checks that both hydraulic systems read normal after the engine start.",
+          "controls": [
+            {
+              "id": "hyd-drums",
+              "name": "Brake and hydraulic pressure drums",
+              "type": "display",
+              "match": [
+                "item:brake-hydraulic-indicator:1"
+              ],
+              "text": "Three number drums. The top one shows how hard the brakes are pressed. The two below show the pressure of hydraulic system 1 and 2.",
+              "context": "About 3000 psi is normal for the two hydraulic systems.",
+              "src": "m2",
+              "page": "73"
+            },
+            {
+              "id": "brake-accu",
+              "name": "Brake accumulator pressure gauge",
+              "type": "gauge",
+              "match": [
+                "item:brake-hydraulic-indicator:2"
+              ],
+              "text": "This gauge shows the pressure in the brake accumulator, a reserve tank of pressure for the brakes.",
+              "context": "Below 1000 psi the brakes stop working.",
+              "src": "m2",
+              "page": "73"
+            }
+          ]
+        },
+        {
+          "id": "caution-advisory",
+          "name": "Caution panel, cockpit altimeter and threat lights",
+          "db": "right-lower-indicators",
+          "src": "m2",
+          "page": "74",
+          "text": "This panel holds a board of labelled lights (amber for caution, green for advisory), a cabin pressure gauge and four threat lights from the radar warning system.",
+          "context": "The pilot glances here to see which system has a problem or which radars are tracking the plane.",
+          "controls": [
+            {
+              "id": "caution-board",
+              "name": "Caution / advisory light panel",
+              "type": "light",
+              "match": [
+                "item:right-lower-indicators:1"
+              ],
+              "text": "A board of small labelled lights. Amber ones are cautions: something may become dangerous soon. Green ones are advisories: something is in a safe or normal state.",
+              "context": "Each light is explained in the chapter of the system it belongs to.",
+              "src": "m2",
+              "page": "74"
+            },
+            {
+              "id": "cabin-altimeter",
+              "name": "Cockpit altimeter",
+              "type": "gauge",
+              "match": [
+                "item:right-lower-indicators:2"
+              ],
+              "text": "This gauge shows the air pressure in the cockpit, written as a height from 0 to 50,000 feet.",
+              "context": "Between 8,000 and 23,000 feet of flight height the cockpit stays at 8,000 feet.",
+              "src": "m2",
+              "page": "75"
+            },
+            {
+              "id": "sam-light",
+              "name": "SAM light",
+              "type": "light",
+              "match": [
+                "item:right-lower-indicators:3"
+              ],
+              "text": "This light comes on when a surface-to-air missile launch is detected.",
+              "context": "It is one of four threat lights.",
+              "src": "m2",
+              "page": "75"
+            },
+            {
+              "id": "cw-light",
+              "name": "CW light",
+              "type": "light",
+              "match": [
+                "item:right-lower-indicators:4"
+              ],
+              "text": "This light comes on when a ground tracking radar of the continuous wave type has locked on the plane.",
+              "context": "It is one of four threat lights.",
+              "src": "m2",
+              "page": "75"
+            },
+            {
+              "id": "ai-light",
+              "name": "AI light",
+              "type": "light",
+              "match": [
+                "item:right-lower-indicators:5"
+              ],
+              "text": "This light comes on when an air intercept radar, the radar of an enemy fighter, has locked on the plane. It flashes if a missile launch is seen.",
+              "context": "It is one of four threat lights.",
+              "src": "m2",
+              "page": "75"
+            },
+            {
+              "id": "aaa-light",
+              "name": "AAA light",
+              "type": "light",
+              "match": [
+                "item:right-lower-indicators:6"
+              ],
+              "text": "This light comes on when the radar of an anti-aircraft gun has locked on the plane.",
+              "context": "It is one of four threat lights.",
+              "src": "m2",
+              "page": "75"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

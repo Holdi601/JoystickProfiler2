@@ -288,8 +288,18 @@ namespace JoyPro.CockpitPictures
             {
                 if (r.Error.Length > 0 || !File.Exists(Path.Combine(r.Folder, PictureWriter.ManifestName)))
                     continue;
+                string folder = Path.GetFileName(r.Folder);
                 foreach (string p in r.Planes)
-                    map[p] = Path.GetFileName(r.Folder);
+                {
+                    // A name several sets share ("Cessna 172 SP" of the plain, the G1000 and the seaplane version) leads to
+                    // the plain one: no special-version word, then the shorter folder name.
+                    string other;
+                    if (map.TryGetValue(p, out other) && !string.Equals(other, folder, StringComparison.OrdinalIgnoreCase) &&
+                        !string.Equals(p, folder, StringComparison.OrdinalIgnoreCase) && Directory.Exists(Path.Combine(outRoot, other)) &&
+                        IndexRank(other) <= IndexRank(folder))
+                        continue;
+                    map[p] = folder;
+                }
             }
             StringBuilder sb = new StringBuilder();
             PictureWriter.Json j = new PictureWriter.Json(sb);
@@ -302,6 +312,14 @@ namespace JoyPro.CockpitPictures
             j.Close('}');
             j.Close('}');
             File.WriteAllText(file, sb.ToString(), new UTF8Encoding(false));
+        }
+
+        private static readonly Regex SpecialVersion = new Regex("(^|[_\\- ])(seaplane|floats?|floaters|skis?|amphib(ian)?|mariner|ai|tundra)($|[_\\- ])", RegexOptions.IgnoreCase | RegexOptions.Compiled);
+
+        // Lower is a better set for a shared aircraft name.
+        internal static int IndexRank(string folder)
+        {
+            return (SpecialVersion.IsMatch(folder ?? string.Empty) ? 1000 : 0) + (folder ?? string.Empty).Length;
         }
 
         private static void BuildOne(Job job, Cockpit c, string folder, string version, SetResult r)
@@ -318,6 +336,16 @@ namespace JoyPro.CockpitPictures
                     if (Regex.IsMatch(name, "^(Liveries|Sounds|Doc|Docs|Missions|ImagesGui|Input|Options|Skins|l10n|bin|Entry|FM|Kneeboard)$", RegexOptions.IgnoreCase))
                         continue;
                     lib.AddFolder(dir, true);
+                }
+                // Some modules keep their textures in CoreMods (the C-130J, the F-14, the OH-58D: CoreMods/aircraft/<module>/Textures).
+                string coreDir = Path.Combine(job.DcsRoot, "CoreMods", "aircraft", c.Module);
+                if (Directory.Exists(coreDir))
+                {
+                    foreach (string dir in Directory.GetDirectories(coreDir))
+                    {
+                        if (!Regex.IsMatch(Path.GetFileName(dir), "^(Liveries|Sounds|Doc|Docs|Missions|bin)$", RegexOptions.IgnoreCase))
+                            lib.AddFolder(dir, true);
+                    }
                 }
                 lib.AddFolder(Path.Combine(job.DcsRoot, "Bazar", "World", "textures"), false);
                 lib.AddFolder(Path.Combine(job.DcsRoot, "Bazar", "Textures"), false);
@@ -356,23 +384,53 @@ namespace JoyPro.CockpitPictures
                 if (commands.Count == 0)
                     r.Notes.Add("no command list of this aircraft yet (refresh DCS in JoyPro): callouts show the game's hint texts only");
                 List<CockpitCallout> callouts = Callouts(scene, clickables, commands);
+                // Connectors far from all the others (unplaced elements: the F-100D has some hundreds of metres away)
+                // are no places in the cockpit: they pulled the eye estimate out of the cockpit.
+                int outliers = CockpitViews.DropOutliers(callouts, 2.5);
+                if (outliers > 0)
+                    r.Notes.Add(outliers + " clickable connectors far outside the cockpit left out");
                 // Seats and the pilot's eye.
-                List<DcsLua.Seat> seats = DcsLua.Seats(job.DcsRoot, Path.Combine(moduleDir, "Views.lua"), job.WorkDir);
+                // Views.lua next to entry.lua, or in Entry\ (the F-100D).
+                string viewsLua = Path.Combine(moduleDir, "Views.lua");
+                if (!File.Exists(viewsLua) && File.Exists(Path.Combine(moduleDir, "Entry", "Views.lua")))
+                    viewsLua = Path.Combine(moduleDir, "Entry", "Views.lua");
+                List<DcsLua.Seat> seats = DcsLua.Seats(job.DcsRoot, viewsLua, job.WorkDir);
                 List<Vec3> heads = seats.Select(s => new Vec3(s.EyePoint[0], s.EyePoint[1], s.EyePoint[2])).ToList();
+                // An eye point of (0, 0, 0) is "not set" (the game then uses its own default): checked against the
+                // controls below like the model's origin.
+                bool unset = heads.Count > 0 && heads.All(h => h.Length < 1e-6);
+                if (unset)
+                    heads.Clear();
                 ScenePoint headPoint;
                 if (heads.Count == 0 && scene.Points.TryGetValue("head_cpt", out headPoint))
                     heads.Add(headPoint.Position);
                 List<CockpitGrip> grips = Grips(edm, scene, c.Gauges);
                 // Without Views.lua the game's camera sits at the model's origin (plus DCS's usual eye offset).
                 Vec3 origin = new Vec3(0.05, 0.1, 0);
-                if (heads.Count == 0 && callouts.Count > 0 && (CockpitViews.Centre(callouts.Select(x => x.Position).ToList()) - origin).Length < 1.2)
+                if (heads.Count == 0 && callouts.Count > 0 && (CockpitViews.Median(callouts.Select(x => x.Position).ToList()) - origin).Length < 1.2)
                     heads.Add(origin);
                 if (heads.Count == 0)
                     heads.Add(EstimateHead(scene, grips, callouts));
+                // An eye below most of the controls (the origin of a model whose eye is not there: the F-100D's camera sat
+                // inside its compass) is estimated from the stick and the controls instead.
+                if (heads.Count == 1 && callouts.Count >= 8 && callouts.Count(x => x.Position.Y > heads[0].Y - 0.1) > callouts.Count * 0.6)
+                {
+                    r.Notes.Add("the eye point is below most controls: placed above and behind the stick");
+                    heads[0] = EstimateHead(scene, grips, callouts);
+                }
                 // Eye points far from every control (a seat of another cockpit model) are dropped.
                 heads = heads.Where(h => callouts.Count == 0 || callouts.Any(x => (x.Position - h).Length < 1.4)).ToList();
                 if (heads.Count == 0)
                     heads.Add(EstimateHead(scene, grips, callouts));
+                // JOYPRO_PICTURE_DEBUG=1: where the eyes, grips and controls were found (in the build report).
+                if (Environment.GetEnvironmentVariable("JOYPRO_PICTURE_DEBUG") == "1")
+                {
+                    Vec3 bmn, bmx;
+                    scene.Bounds(Enumerable.Range(0, scene.Meshes.Count), out bmn, out bmx);
+                    r.Notes.Add("debug: heads " + string.Join(" ", heads) + "; seats " + seats.Count + (unset ? " (unset)" : "") + "; grips " + string.Join(" ", grips.Select(g => g.Device + g.Pivot)) +
+                                "; callouts centre " + (callouts.Count > 0 ? CockpitViews.Centre(callouts.Select(x => x.Position).ToList()).ToString() : "-") + "; bounds " + bmn + " " + bmx +
+                                (callouts.Count > 0 ? "; callouts box " + callouts.Select(x => x.Position).Aggregate(Vec3.Min) + " " + callouts.Select(x => x.Position).Aggregate(Vec3.Max) : ""));
+                }
                 List<CockpitViewPlan> views = new List<CockpitViewPlan>();
                 for (int s = 0; s < heads.Count; s++)
                 {
@@ -437,7 +495,7 @@ namespace JoyPro.CockpitPictures
                 return stick.Pivot + new Vec3(-0.3, 0.6, -stick.Pivot.Z);
             if (callouts.Count > 0)
             {
-                Vec3 c = CockpitViews.Centre(callouts.Select(x => x.Position).ToList());
+                Vec3 c = CockpitViews.Median(callouts.Select(x => x.Position).ToList());
                 return c + new Vec3(-0.6, 0.35, 0);
             }
             return new Vec3(0, 0.1, 0);
@@ -500,6 +558,8 @@ namespace JoyPro.CockpitPictures
                     Actions = k.Actions.Distinct().ToList(),
                     Args = k.Args.Distinct().ToList()
                 };
+                c.Animation = DcsAnimation(k);
+                c.GameKind = string.Join(",", k.Classes.Distinct());
                 List<InputCommand> dev;
                 if (k.Device >= 0 && byDevice.TryGetValue(k.Device.ToString(CultureInfo.InvariantCulture), out dev))
                 {
@@ -554,6 +614,48 @@ namespace JoyPro.CockpitPictures
             if (Regex.IsMatch(panel, "^(General|Systems|Cockpit|Miscellaneous|Misc|Others?|Special For Joystick|View Cockpit|Flight Control|Sensors|Weapons|Countermeasures|Communications|Navigation|Autopilot|Engine|Lights?|Fuel|Electric|Hydraulic)$", RegexOptions.IgnoreCase))
                 return string.Empty;
             return panel;
+        }
+
+        // The clickable element's draw argument, its range (arg_lim) and, for a switch, its positions (arg_value steps
+        // over the range): clickabledata.lua of the cockpit.
+        internal static ControlAnimation DcsAnimation(DcsLua.Clickable k)
+        {
+            string arg = k.Args.FirstOrDefault(x => x.Length > 0 && x != "nil");
+            if (arg == null)
+                return null;
+            ControlAnimation a = new ControlAnimation { Source = "draw argument", Name = arg };
+            double min = double.NaN, max = double.NaN, step = double.NaN;
+            foreach (string l in k.Limits)
+            {
+                string[] mm = (l ?? string.Empty).Split(':');
+                double lo, hi;
+                if (mm.Length == 2 && double.TryParse(mm[0], NumberStyles.Float, CultureInfo.InvariantCulture, out lo) && double.TryParse(mm[1], NumberStyles.Float, CultureInfo.InvariantCulture, out hi))
+                {
+                    min = double.IsNaN(min) ? Math.Min(lo, hi) : Math.Min(min, Math.Min(lo, hi));
+                    max = double.IsNaN(max) ? Math.Max(lo, hi) : Math.Max(max, Math.Max(lo, hi));
+                }
+            }
+            foreach (string v in k.Values)
+            {
+                double d;
+                if (double.TryParse(v, NumberStyles.Float, CultureInfo.InvariantCulture, out d) && Math.Abs(d) > 1e-9)
+                {
+                    step = double.IsNaN(step) ? Math.Abs(d) : Math.Min(step, Math.Abs(d));
+                }
+            }
+            a.Min = min;
+            a.Max = max;
+            string cls = (k.Classes.FirstOrDefault() ?? string.Empty).ToUpperInvariant();
+            if (!double.IsNaN(min) && !double.IsNaN(max) && !double.IsNaN(step) && max > min && (cls == "TUMB" || cls == "BTN" || cls == "BTN_FIX" || cls == "SNGBTN"))
+            {
+                int n = (int)Math.Round((max - min) / step) + 1;
+                if (n >= 2 && n <= 24)
+                {
+                    for (int i = 0; i < n; i++)
+                        a.Positions.Add(Math.Round(min + i * step, 4));
+                }
+            }
+            return a;
         }
 
         private static string Kind(List<string> classes)
@@ -713,7 +815,7 @@ namespace JoyPro.CockpitPictures
                 CockpitGrip near = grips.FirstOrDefault(g => g.Device == kind && (g.Pivot - centre).Length < 0.32);
                 if (near == null)
                 {
-                    near = new CockpitGrip { Device = kind };
+                    near = new CockpitGrip { Device = kind, Animation = new ControlAnimation { Source = "model node", Name = edm.Nodes[root].Name } };
                     grips.Add(near);
                 }
                 foreach (int m in meshes)

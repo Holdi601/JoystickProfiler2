@@ -461,8 +461,7 @@ namespace JoyPro.Engine.Games
                         raw[name] = Convert.ToBase64String(values[name]);
                     string temp = fakePath + ".jptmp";
                     File.WriteAllText(temp, EngineSerialization.ToJson(raw), new UTF8Encoding(false));
-                    File.Copy(temp, fakePath, true);
-                    File.Delete(temp);
+                    SafeFileIo.CopyOverAndDelete(temp, fakePath);
                     return true;
                 }
                 using (RegistryKey key = Registry.CurrentUser.OpenSubKey(subKey, true))

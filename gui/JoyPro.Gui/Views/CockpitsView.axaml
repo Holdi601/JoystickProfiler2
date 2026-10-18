@@ -93,7 +93,10 @@
                             <Button Grid.Column="2" Content="{l:T 'Build pictures from my games'}" Command="{Binding BuildPicturesCommand}" IsEnabled="{Binding !IsBuildingPictures}"
                                     VerticalAlignment="Center"
                                     ToolTip.Tip="{l:T 'Renders the cockpits of your installed games ({0}) with every clickable control numbered and named as the game names it. Made on this PC, kept with your game data.', Arg0={Binding PictureGames}}" />
-                            <TextBlock Grid.Row="1" Grid.ColumnSpan="3" Text="{Binding GamePicturesText}" FontSize="12" Opacity="0.7" IsVisible="{Binding HasGamePictures}" />
+                            <TextBlock Grid.Row="1" Text="{Binding GamePicturesText}" FontSize="12" Opacity="0.7" IsVisible="{Binding HasGamePictures}" TextWrapping="Wrap" VerticalAlignment="Center" />
+                            <ComboBox Grid.Row="1" Grid.Column="1" ItemsSource="{Binding GamePictureSources}" SelectedIndex="{Binding GamePictureSourceIndex}" MinWidth="200"
+                                      IsVisible="{Binding HasGamePictureChoice}" VerticalAlignment="Center"
+                                      ToolTip.Tip="{l:T 'Pictures from: several of your games have this aircraft. The best set comes first; a set rated low quality comes last.'}" />
                             <!-- Picture packs of JoyPro's releases (CockpitsViewModel.PicturePacks.cs): the offer for this
                                  aircraft, the download with its progress, all my aircraft / one game. -->
                             <StackPanel Grid.Row="2" Grid.ColumnSpan="3" Spacing="6">
@@ -182,7 +185,7 @@
                                 <TextBlock Text="{l:T 'Panels'}" VerticalAlignment="Center" FontWeight="SemiBold" IsVisible="{Binding HasPanelPages}" />
                                 <ComboBox Grid.Column="1" ItemsSource="{Binding PanelPages}" SelectedItem="{Binding SelectedPanelPage}" HorizontalAlignment="Stretch"
                                           PlaceholderText="{l:T 'Pick a panel...'}" IsVisible="{Binding HasPanelPages}" MaxDropDownHeight="520" />
-                                <TextBox Grid.Column="2" Text="{Binding PageSearchText}" Watermark="{l:T 'Search this cockpit: a control or a function (TMS, gear, laser)...'}" />
+                                <TextBox Grid.Column="2" Text="{Binding PageSearchText}" Watermark="{l:T 'Search this cockpit: a control or a function (battery, autopilot, TMS)...'}" />
                             </Grid>
                         </Grid>
                     </Border>
@@ -204,8 +207,78 @@
                             </DataTemplate>
                         </ItemsControl.ItemTemplate>
                     </ItemsControl>
-                    <controls:ManualPageView x:Name="PageView" Page="{Binding CurrentPage}" DrawingStyle="{Binding PageStyle}" IsVisible="{Binding HasPage}"
-                                             HorizontalAlignment="Stretch" />
+                    <!-- The cockpit guide (CockpitsViewModel.Guide.cs, docs/cockpits.md "The cockpit guide"): area > panel >
+                         control with "What does it do?"; next to the page on a wide window, above it on a narrow one
+                         (CockpitsView.axaml.cs). A click on a control marks its callout, a click on a callout picks its control. -->
+                    <Grid x:Name="GuideSplit" ColumnDefinitions="430,*" RowDefinitions="Auto,Auto" ColumnSpacing="12" RowSpacing="10" IsVisible="{Binding HasVariant}">
+                        <Border x:Name="GuidePane" BorderBrush="#334155" BorderThickness="1" CornerRadius="8" Padding="8" VerticalAlignment="Top" IsVisible="{Binding HasGuideTree}">
+                            <Grid RowDefinitions="Auto,Auto,Auto,Auto" RowSpacing="6">
+                                <Grid ColumnDefinitions="*,Auto,Auto" ColumnSpacing="6">
+                                    <StackPanel Orientation="Horizontal" Spacing="6" VerticalAlignment="Center">
+                                        <PathIcon Data="{StaticResource Icon.Airplane}" Width="16" Height="16" />
+                                        <TextBlock Text="{l:T 'Cockpit guide'}" FontWeight="Bold" FontSize="16" VerticalAlignment="Center" />
+                                    </StackPanel>
+                                    <Button Grid.Column="1" Classes="small" Content="{l:T 'Open all'}" Command="{Binding ExpandAllGuideCommand}" ToolTip.Tip="{l:T 'Opens every area and panel'}" />
+                                    <Button Grid.Column="2" Classes="small" Content="{l:T 'Close all'}" Command="{Binding CollapseAllGuideCommand}" ToolTip.Tip="{l:T 'Shows the areas only'}" />
+                                </Grid>
+                                <TextBlock Grid.Row="1" Text="{Binding GuideStatus}" FontSize="12" Opacity="0.75" TextWrapping="Wrap" />
+                                <Expander Grid.Row="2" Header="{l:T 'About this cockpit'}" IsVisible="{Binding HasGuideIntro}" HorizontalAlignment="Stretch">
+                                    <TextBlock Text="{Binding GuideIntro}" TextWrapping="Wrap" />
+                                </Expander>
+                                <StackPanel Grid.Row="3" Spacing="4">
+                                    <TextBlock Text="{Binding GuideSearchStatus}" FontSize="12" FontWeight="SemiBold" IsVisible="{Binding HasGuideSearchHits}" />
+                                    <ListBox x:Name="GuideList" ItemsSource="{Binding GuideRows}" SelectedItem="{Binding SelectedGuideRow}" Height="720" Background="Transparent">
+                                        <!-- Not virtualized: rows grow when their explanation opens (a few hundred rows at most). -->
+                                        <ListBox.ItemsPanel>
+                                            <ItemsPanelTemplate>
+                                                <StackPanel />
+                                            </ItemsPanelTemplate>
+                                        </ListBox.ItemsPanel>
+                                        <ListBox.ItemTemplate>
+                                            <DataTemplate x:DataType="vm:CockpitGuideRow">
+                                                <StackPanel Margin="{Binding Indent}" Spacing="2">
+                                                    <Grid ColumnDefinitions="24,*,Auto" ColumnSpacing="4">
+                                                        <Button Classes="small" Content="{Binding Chevron}" Padding="0" Width="22" Height="22" VerticalAlignment="Top"
+                                                                IsVisible="{Binding HasChildren}" Background="Transparent" BorderThickness="0"
+                                                                Command="{Binding $parent[ListBox].((vm:CockpitsViewModel)DataContext).ToggleGuideRowCommand}" CommandParameter="{Binding}"
+                                                                ToolTip.Tip="{l:T 'Open or close'}" />
+                                                        <StackPanel Grid.Column="1" Spacing="0">
+                                                            <TextBlock Text="{Binding Name}" FontWeight="{Binding NameWeight}" TextWrapping="Wrap" />
+                                                            <TextBlock Text="{Binding Subtitle}" FontSize="11" Opacity="0.65" TextWrapping="Wrap" />
+                                                        </StackPanel>
+                                                        <ToggleButton Grid.Column="2" Classes="small" VerticalAlignment="Top" IsVisible="{Binding HasDetails}"
+                                                                      IsChecked="{Binding ShowDetails, Mode=OneWay}" Content="{l:T 'What does it do?'}"
+                                                                      Command="{Binding $parent[ListBox].((vm:CockpitsViewModel)DataContext).ToggleGuideDetailsCommand}" CommandParameter="{Binding}" />
+                                                    </Grid>
+                                                    <Border IsVisible="{Binding ShowDetails}" Padding="8,6" CornerRadius="6" Background="#1A38BDF8" BorderBrush="#3338BDF8" BorderThickness="1" Margin="24,2,0,4">
+                                                        <StackPanel Spacing="5">
+                                                            <TextBlock Text="{Binding Explanation}" TextWrapping="Wrap" IsVisible="{Binding HasExplanation}" />
+                                                            <TextBlock Text="{Binding GenericHint}" IsVisible="{Binding IsGeneric}" FontSize="11" Opacity="0.7" TextWrapping="Wrap" />
+                                                            <StackPanel Spacing="1" IsVisible="{Binding HasContext}">
+                                                                <TextBlock Text="{l:T 'In the bigger picture'}" FontSize="11" FontWeight="SemiBold" Opacity="0.8" />
+                                                                <TextBlock Text="{Binding Context}" TextWrapping="Wrap" />
+                                                            </StackPanel>
+                                                            <StackPanel Spacing="1" IsVisible="{Binding HasPositions}">
+                                                                <TextBlock Text="{l:T 'Positions'}" FontSize="11" FontWeight="SemiBold" Opacity="0.8" />
+                                                                <TextBlock Text="{Binding PositionsText}" TextWrapping="Wrap" />
+                                                            </StackPanel>
+                                                            <TextBlock Text="{Binding Note}" IsVisible="{Binding HasNote}" FontSize="12" Opacity="0.8" TextWrapping="Wrap" />
+                                                            <TextBlock Text="{Binding GameText}" IsVisible="{Binding HasGameText}" FontSize="11" Opacity="0.7" TextWrapping="Wrap" />
+                                                            <TextBlock Text="{Binding CommandsText}" IsVisible="{Binding HasCommands}" FontSize="11" Opacity="0.7" TextWrapping="Wrap" />
+                                                            <TextBlock Text="{Binding Relations}" IsVisible="{Binding HasRelations}" FontSize="12" FontWeight="SemiBold" TextWrapping="Wrap" />
+                                                            <TextBlock Text="{Binding Source}" IsVisible="{Binding HasSource}" FontSize="11" Opacity="0.6" TextWrapping="Wrap" />
+                                                        </StackPanel>
+                                                    </Border>
+                                                </StackPanel>
+                                            </DataTemplate>
+                                        </ListBox.ItemTemplate>
+                                    </ListBox>
+                                </StackPanel>
+                            </Grid>
+                        </Border>
+                        <controls:ManualPageView x:Name="PageView" Grid.Column="1" Page="{Binding CurrentPage}" DrawingStyle="{Binding PageStyle}" SelectedTag="{Binding SelectedTag}"
+                                                 IsVisible="{Binding HasPage}" HorizontalAlignment="Stretch" VerticalAlignment="Top" />
+                    </Grid>
                     <StackPanel Spacing="4" IsVisible="{Binding HasNotes}">
                         <TextBlock Text="{l:T 'Notes'}" FontWeight="SemiBold" />
                         <TextBlock Text="{Binding Notes}" TextWrapping="Wrap" />
@@ -259,7 +332,12 @@
                                                 <TextBlock Text="{Binding Caption}" FontWeight="SemiBold" TextWrapping="Wrap" />
                                                 <TextBlock Text="{Binding Credit}" FontSize="12" Opacity="0.75" TextWrapping="Wrap" />
                                                 <TextBlock Text="{Binding Status}" FontSize="12" Opacity="0.75" TextWrapping="Wrap" IsVisible="{Binding Status, Converter={x:Static StringConverters.IsNotNullOrEmpty}}" />
-                                                <Button Classes="small" Content="{l:T 'Open the page'}" Command="{Binding OpenPageCommand}" />
+                                                <WrapPanel Orientation="Horizontal">
+                                                    <Button Classes="small" Margin="0,0,6,4" Content="{l:T 'Try again'}" Command="{Binding TryAgainCommand}" IsVisible="{Binding Failed}" />
+                                                    <Button Classes="small" Margin="0,0,6,4" Content="{l:T 'Open the photo'}" Command="{Binding OpenPhotoCommand}" IsVisible="{Binding HasPhoto}"
+                                                            ToolTip.Tip="{l:T 'Opens the photo itself in your browser (full size, to save it from there)'}" />
+                                                    <Button Classes="small" Margin="0,0,6,4" Content="{l:T 'Open the page'}" Command="{Binding OpenPageCommand}" />
+                                                </WrapPanel>
                                             </StackPanel>
                                         </Border>
                                     </DataTemplate>

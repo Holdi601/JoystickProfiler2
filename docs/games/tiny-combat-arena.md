@@ -2,10 +2,10 @@
 
 Status: **integrated, experimental: `engine tca`** (aliases `tinycombatarena`, `tinycombat`;
 `engine/Games/TinyCombatArenaIntegration.cs`) with `paths`, `catalog`, `scan`, `import`, `export` (clean / add / merge /
-merge-overwrite, `--nuke-untouched-devices`, `--dry-run`) and `refresh-db`. Built and checked in game on the dev PC
+merge-overwrite, `--nuke-untouched-devices`, `--dry-run`) and `refresh-db`. Built and checked in game on a test PC
 (game 0.17.2.3, Steam app 1347550, `<SteamLibrary>\steamapps\common\TinyCombatArena`, process `Arena`) on 2026-10-11.
 
-Tags: **[OBS]** seen on the dev PC · **[SRC]** the installed game's own files (`Arena_Data`, `Assembly-CSharp.dll`) ·
+Tags: **[OBS]** seen on a test PC · **[SRC]** the installed game's own files (`Arena_Data`, `Assembly-CSharp.dll`) ·
 **[INF]** inferred.
 
 ## Where the binds are

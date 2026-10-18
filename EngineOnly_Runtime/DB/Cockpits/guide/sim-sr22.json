@@ -1,0 +1,765 @@
+{
+  "format": "joypro-cockpit-guide",
+  "version": 1,
+  "id": "sim-sr22",
+  "title": "Cirrus SR22 / SR22T",
+  "variants": [
+    "sr22-g1000"
+  ],
+  "games": [
+    "MSFS2020",
+    "MSFS2024",
+    "XPlane11",
+    "XPlane12"
+  ],
+  "sets": [],
+  "sources": [
+    {
+      "id": "c1",
+      "title": "JoyPro cockpit catalog",
+      "kind": "reference"
+    },
+    {
+      "id": "s1",
+      "title": "Redbird YK2 Cirrus side-stick replica",
+      "url": "https://simulators.redbirdflight.com/products/yk2",
+      "kind": "web"
+    },
+    {
+      "id": "s2",
+      "title": "Cirrus pilots forum: Hat switch pitch trim controller location",
+      "url": "https://forum.cirruspilots.org/t/hat-switch-pitch-trim-controller-location/284505",
+      "kind": "web"
+    },
+    {
+      "id": "s3",
+      "title": "Cirrus SR22 (Wikipedia)",
+      "url": "https://en.wikipedia.org/wiki/Cirrus_SR22",
+      "kind": "web"
+    },
+    {
+      "id": "x1",
+      "title": "X-Plane Cirrus SR22 Pilot Operating Manual (Laminar Research)",
+      "file": "Aircraft/Laminar Research/Cirrus SR22/X-Plane_Cirrus_SR22_Pilot_Operating_Manual.pdf",
+      "kind": "manual"
+    },
+    {
+      "id": "fn",
+      "title": "JoyPro function tables MSFS2020/2024 and X-Plane 11/12 (DB/Functions)",
+      "kind": "reference"
+    }
+  ],
+  "intro": "The Cirrus SR22 is a fast four-seat piston aircraft with a built-in parachute for the whole aircraft. Its cockpit has a side yoke for each front seat instead of a wheel, two large screens and a centre console with a single power lever.",
+  "areas": [
+    {
+      "id": "overhead",
+      "where": "overhead",
+      "name": "Overhead: CAPS handle",
+      "text": "The ceiling above the pilots, with the red parachute handle and the cabin lights.",
+      "panels": [
+        {
+          "id": "overhead",
+          "name": "Overhead panel",
+          "db": "overhead",
+          "src": "x1",
+          "page": "17",
+          "text": "The ceiling holds the red handle of the aircraft's built-in parachute (CAPS) and the switches for the map and cabin lights.",
+          "context": "The parachute handle is for a real emergency only. The lights are used at night.",
+          "controls": [
+            {
+              "id": "caps-item",
+              "name": "CAPS DEPLOY handle",
+              "type": "handle",
+              "match": [
+                "item:overhead:1"
+              ],
+              "text": "This red handle in the ceiling fires a rocket that pulls a big parachute out of the aircraft. The whole aircraft then floats down. The handle has a cover and needs a hard pull.",
+              "context": "CAPS means Cirrus Airframe Parachute System. It is the last choice in an emergency such as an engine failure at a place with no landing spot.",
+              "src": "x1",
+              "page": "17"
+            },
+            {
+              "id": "ovhd-lights",
+              "name": "Overhead lights",
+              "type": "switch",
+              "match": [
+                "item:overhead:2"
+              ],
+              "text": "These switches turn on the map light and the cabin lights in the ceiling.",
+              "context": "The pilot uses them at night to read charts.",
+              "src": "x1",
+              "page": "17"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "front-left",
+      "where": "front-left",
+      "name": "Bolster switch panel",
+      "text": "The switch strip below the screens with the engine key, the electricity switches and the lights.",
+      "panels": [
+        {
+          "id": "bolster-switches",
+          "name": "Battery and electrical panel (bolster)",
+          "db": "bolster-switches",
+          "src": "x1",
+          "page": "19",
+          "text": "This strip holds the starter key, the battery and alternator switches, the lights, the ice protection and the backup fuel pump.",
+          "context": "The pilot uses it for the start-up and shutdown, and the ice protection in clouds in cold air.",
+          "controls": [
+            {
+              "id": "starter-key",
+              "name": "Starter key",
+              "type": "selector",
+              "match": [
+                "item:bolster-switches:1"
+              ],
+              "positions": [
+                {
+                  "name": "OFF",
+                  "text": "Both magnetos are off and the engine is stopped."
+                },
+                {
+                  "name": "R",
+                  "text": "Only the right magneto works; used for a check."
+                },
+                {
+                  "name": "L",
+                  "text": "Only the left magneto works; used for a check."
+                },
+                {
+                  "name": "BOTH",
+                  "text": "Both magnetos work. This is the normal running position."
+                },
+                {
+                  "name": "START",
+                  "text": "The starter turns the engine; the key springs back to BOTH."
+                }
+              ],
+              "text": "This key switch works the magnetos, the two sparks makers of a piston engine, and the starter. The pilot turns it to START to spin the engine.",
+              "context": "The pilot turns it to BOTH for the engine to run on both magnetos. After the start the key springs back from START to BOTH.",
+              "src": "x1",
+              "page": "19"
+            },
+            {
+              "id": "bat",
+              "name": "BAT 1 and BAT 2 switches",
+              "type": "switch",
+              "match": [
+                "item:bolster-switches:2"
+              ],
+              "count": 2,
+              "text": "These switches connect the two batteries to the aircraft's electric system.",
+              "context": "The pilot switches them on first when getting into the cockpit.",
+              "src": "x1",
+              "page": "19"
+            },
+            {
+              "id": "alt",
+              "name": "ALT 1 and ALT 2 switches",
+              "type": "switch",
+              "match": [
+                "item:bolster-switches:3"
+              ],
+              "count": 2,
+              "text": "These switches connect the two alternators, the electric generators driven by the engine, to the electric system.",
+              "context": "The pilot switches them on after the engine starts. They power the aircraft and recharge the batteries.",
+              "src": "x1",
+              "page": "19"
+            },
+            {
+              "id": "lights",
+              "name": "NAV, STROBE and LAND light switches",
+              "type": "switch",
+              "match": [
+                "item:bolster-switches:4"
+              ],
+              "count": 3,
+              "text": "These switches turn on the lights outside: the position lights (NAV), the flashing strobe and the landing light.",
+              "context": "The pilot switches them on for taxiing and take-off so other aircraft can see the plane.",
+              "src": "x1",
+              "page": "19"
+            },
+            {
+              "id": "ice",
+              "name": "ICE, PITOT HEAT and ICE PROTECT switches",
+              "type": "switch",
+              "match": [
+                "item:bolster-switches:5"
+              ],
+              "text": "These switches heat the pitot tube, a small tube that measures speed, and switch on the ice protection of the wings.",
+              "context": "The pilot uses them in clouds in cold air to keep ice off.",
+              "src": "x1",
+              "page": "19"
+            },
+            {
+              "id": "pump",
+              "name": "PUMP BKUP switch",
+              "type": "switch",
+              "match": [
+                "item:bolster-switches:6"
+              ],
+              "text": "This switch turns on the backup fuel pump, a spare pump that pushes fuel to the engine.",
+              "context": "The pilot uses it for the start, take-off and landing, and if the normal pump fails.",
+              "src": "x1",
+              "page": "19"
+            },
+            {
+              "id": "windshield",
+              "name": "WIND SHLD switch",
+              "type": "switch",
+              "match": [
+                "item:bolster-switches:7"
+              ],
+              "text": "This switch heats the windshield to clear ice.",
+              "context": "The pilot uses it in icing conditions.",
+              "src": "x1",
+              "page": "19"
+            },
+            {
+              "id": "dimmers",
+              "name": "Instrument lighting dimmers",
+              "type": "knob",
+              "match": [
+                "item:bolster-switches:8"
+              ],
+              "text": "These knobs make the panel and screen lights brighter or darker.",
+              "context": "The pilot dims them at night so the cockpit does not glare.",
+              "src": "x1",
+              "page": "19"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "front-center",
+      "where": "front-center",
+      "name": "PFD and MFD",
+      "text": "The two big screens in the middle of the dashboard, with their keys and knobs around the edge.",
+      "panels": [
+        {
+          "id": "displays",
+          "name": "Perspective PFD / MFD and control panel",
+          "db": "displays",
+          "src": "x1",
+          "page": "31",
+          "text": "The frame around the screens holds the knobs and keys that tune the radios, set the heading and height, and work the flight plan. The frame of the second screen, the MFD, has the same keys.",
+          "context": "The pilot uses these knobs and keys all through the flight, for example to tune the next radio frequency or to set the altitude target.",
+          "controls": [
+            {
+              "id": "nav-vol",
+              "name": "NAV VOL/ID knob",
+              "type": "knob",
+              "match": [
+                "item:displays:1"
+              ],
+              "text": "Turning this knob changes the volume of the navigation radio, the receiver for radio beacons on the ground. Pushing it switches the beacon's Morse code identifier on or off, so the pilot can hear which beacon it is.",
+              "context": "The pilot checks the identifier after tuning a beacon to be sure it is the right one. The NAV radio feeds the course needles and the approach guidance on the screen.",
+              "src": "x1",
+              "page": "31"
+            },
+            {
+              "id": "nav-swap",
+              "name": "NAV frequency toggle key",
+              "type": "button",
+              "match": [
+                "item:displays:2"
+              ],
+              "text": "Pressing this key swaps the two navigation numbers: the one in use (active) and the one waiting (standby). It is like flipping between two stations on a car radio.",
+              "context": "The pilot types the next beacon or runway frequency into the standby slot while the active one still works, then presses this key to switch over.",
+              "src": "x1",
+              "page": "31"
+            },
+            {
+              "id": "nav-dual",
+              "name": "NAV dual knob (outer and inner)",
+              "type": "knob",
+              "match": [
+                "item:displays:3"
+              ],
+              "text": "This double knob types in the standby navigation frequency. The big outer ring changes the whole numbers and the small inner knob changes the digits after the dot. Pushing it moves the tuning cursor between NAV 1 and NAV 2.",
+              "context": "It is how the pilot dials a ground beacon or an instrument-landing frequency before using it for navigation.",
+              "src": "x1",
+              "page": "31"
+            },
+            {
+              "id": "hdg",
+              "name": "HDG knob (heading bug)",
+              "type": "knob",
+              "match": [
+                "item:displays:4"
+              ],
+              "text": "Turning this knob moves the heading bug, a marker on the compass that shows the direction the pilot wants to fly. Pushing the knob puts the bug straight onto the direction the aircraft is flying right now.",
+              "context": "With the autopilot in heading mode, the aircraft turns to follow this bug, so the knob is how the pilot steers the autopilot.",
+              "src": "x1",
+              "page": "31"
+            },
+            {
+              "id": "alt",
+              "name": "ALT knob (selected altitude)",
+              "type": "knob",
+              "match": [
+                "item:displays:5"
+              ],
+              "text": "Turning this knob sets the height the pilot wants the aircraft to climb or descend to. The outer ring changes it in big steps and the inner knob in small steps.",
+              "context": "The autopilot uses this selected altitude as the target it levels off at, and the screen shows an alert when the aircraft gets close to it.",
+              "src": "x1",
+              "page": "31"
+            },
+            {
+              "id": "softkeys",
+              "name": "Softkeys (12 keys under the screen)",
+              "type": "button",
+              "match": [
+                "item:displays:6"
+              ],
+              "count": 12,
+              "text": "These twelve keys sit in a row under the screen. The screen prints a label above each key, and the key does what the label says. The labels change from page to page, so the same key does different jobs.",
+              "context": "The pilot uses them for things like showing the inset map, setting the transponder code, starting the timer or reading the alerts list.",
+              "src": "x1",
+              "page": "31"
+            },
+            {
+              "id": "com-vol",
+              "name": "COM VOL/SQ knob",
+              "type": "knob",
+              "match": [
+                "item:displays:7"
+              ],
+              "text": "Turning this knob changes the volume of the voice radio. Pushing it switches the squelch (the filter that hides radio hiss) between automatic and fully open.",
+              "context": "The pilot turns the volume up to hear the controller. Opening the squelch lets very faint calls through, together with hiss.",
+              "src": "x1",
+              "page": "31"
+            },
+            {
+              "id": "com-swap",
+              "name": "COM frequency toggle key",
+              "type": "button",
+              "match": [
+                "item:displays:8"
+              ],
+              "text": "Pressing this key swaps the radio frequency in use (active) with the one waiting (standby) for the voice radio.",
+              "context": "The pilot types the next controller's frequency into standby, listens to the active one and swaps when the controller says to call the next station.",
+              "src": "x1",
+              "page": "31"
+            },
+            {
+              "id": "com-dual",
+              "name": "COM dual knob (outer and inner)",
+              "type": "knob",
+              "match": [
+                "item:displays:9"
+              ],
+              "text": "This double knob types in the standby voice radio frequency. The outer ring changes the whole numbers, the inner knob the digits after the dot. Pushing it chooses between COM 1 and COM 2.",
+              "context": "It is how the pilot dials the tower, the ground controller or any other station on the voice radio.",
+              "src": "x1",
+              "page": "31"
+            },
+            {
+              "id": "crs-baro",
+              "name": "CRS/BARO knob",
+              "type": "knob",
+              "match": [
+                "item:displays:10"
+              ],
+              "text": "The outer ring of this knob sets the local air pressure for the altimeter, so the height reading is right. The inner knob sets the course for the navigation needle. Pushing it centres the needle.",
+              "context": "The pilot sets the pressure value after getting it from the weather report or controller, because the altimeter is wrong without it.",
+              "src": "x1",
+              "page": "31"
+            },
+            {
+              "id": "range",
+              "name": "Map range knob / joystick",
+              "type": "knob",
+              "match": [
+                "item:displays:11"
+              ],
+              "text": "Turning this knob zooms the moving map in or out. Pushing it brings up a pointer that the pilot can move across the map with the knob, like a mouse cursor.",
+              "context": "The pilot zooms out to see the whole route and zooms in to see an airport or terrain close by. The pointer is used to look up information about a place on the map.",
+              "src": "x1",
+              "page": "31"
+            },
+            {
+              "id": "fpl-keys",
+              "name": "Direct-to, FPL, CLR, MENU, PROC and ENT keys",
+              "type": "button",
+              "match": [
+                "item:displays:12"
+              ],
+              "count": 6,
+              "text": "This group of keys works the flight plan. Direct-to flies straight to a chosen point, FPL shows the flight plan, MENU opens a menu, PROC lists approaches and departures, CLR cancels and ENT accepts what was typed.",
+              "context": "The pilot uses them to enter and change the route. ENT confirms an entry and CLR backs out of it.",
+              "src": "x1",
+              "page": "31"
+            },
+            {
+              "id": "fms-dual",
+              "name": "FMS dual knob (outer and inner)",
+              "type": "knob",
+              "match": [
+                "item:displays:13"
+              ],
+              "text": "This double knob works the flight management pages. The outer ring picks a group of pages and the inner knob picks the page or types characters. Pushing it turns the cursor on or off.",
+              "context": "It is the main way to move around the data pages and to type a waypoint name or a number into the box on the screen.",
+              "src": "x1",
+              "page": "31"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "center-pedestal",
+      "where": "center-pedestal",
+      "name": "Centre console",
+      "text": "The console between the seats with the keyboard, the autopilot and audio panels, the flap lever and the engine levers.",
+      "panels": [
+        {
+          "id": "console",
+          "name": "Centre console",
+          "db": "console",
+          "src": "x1",
+          "page": "21",
+          "text": "The console holds the keyboard of the flight computer, the autopilot keys, the audio panel, the flap lever, the power and mixture levers, the fuel selector and the parking brake.",
+          "context": "The pilot uses it constantly: the power lever for thrust, the flap lever on the approach and the keys for the route.",
+          "controls": [
+            {
+              "id": "g1000-keyboard",
+              "name": "G1000 control panel (keyboard)",
+              "type": "keypad",
+              "match": [
+                "item:console:1"
+              ],
+              "text": "This is the keyboard of the flight computer. It has the keys to type the route and tune the COM and NAV radios and set the transponder.",
+              "context": "The pilot uses it as a second way to enter data besides the knobs on the screens.",
+              "src": "x1",
+              "page": "21"
+            },
+            {
+              "id": "autopilot",
+              "name": "Autopilot controls",
+              "type": "button",
+              "match": [
+                "item:console:2"
+              ],
+              "count": 10,
+              "text": "These keys switch on the autopilot (AP) and the flight director (FD) and choose modes: heading (HDG), navigation (NAV), approach (APR), altitude (ALT), vertical speed (VS), flight level change (FLC), vertical navigation (VNV) and wings level (LVL).",
+              "context": "The pilot uses them after take-off and on the approach. LVL brings the wings level.",
+              "src": "x1",
+              "page": "21"
+            },
+            {
+              "id": "audio-panel",
+              "name": "Audio panel",
+              "type": "button",
+              "match": [
+                "item:console:3"
+              ],
+              "text": "These keys choose which radio the pilot talks on and listens to: COM1, COM2, the microphone, NAV and the marker beacons.",
+              "context": "The pilot picks the radio before speaking.",
+              "src": "x1",
+              "page": "21"
+            },
+            {
+              "id": "flap-lever-item",
+              "name": "Flap lever",
+              "type": "lever",
+              "match": [
+                "item:console:4"
+              ],
+              "positions": [
+                {
+                  "name": "UP",
+                  "text": "The flaps are in."
+                },
+                {
+                  "name": "50%",
+                  "text": "The flaps are halfway out."
+                },
+                {
+                  "name": "100%",
+                  "text": "The flaps are fully out."
+                }
+              ],
+              "text": "This lever sets the flaps, the parts of the wing that slide out to give more lift at low speed.",
+              "context": "The pilot picks the flap step for take-off and a larger one for landing.",
+              "src": "x1",
+              "page": "21"
+            },
+            {
+              "id": "oxygen",
+              "name": "Supplemental oxygen",
+              "type": "switch",
+              "match": [
+                "item:console:5"
+              ],
+              "text": "This switch turns on the extra breathing oxygen for the pilot and passengers at high altitude.",
+              "context": "The pilot uses it on flights high up where the air is thin.",
+              "src": "x1",
+              "page": "21"
+            },
+            {
+              "id": "throttle-item",
+              "name": "Throttle (power lever)",
+              "type": "lever",
+              "match": [
+                "item:console:6"
+              ],
+              "text": "This lever sets the engine power. The propeller speed follows by itself.",
+              "context": "The pilot pushes it forward for take-off and pulls it back to descend.",
+              "src": "x1",
+              "page": "21"
+            },
+            {
+              "id": "mixture-item",
+              "name": "Mixture lever",
+              "type": "lever",
+              "match": [
+                "item:console:7"
+              ],
+              "text": "This red lever sets how much fuel mixes with the air in the engine. Full forward is rich, and full back cuts off the fuel to stop the engine.",
+              "context": "The pilot makes the mixture leaner at high altitude, where the air is thin.",
+              "src": "x1",
+              "page": "21"
+            },
+            {
+              "id": "fuel-select-item",
+              "name": "Fuel tank selector",
+              "type": "selector",
+              "match": [
+                "item:console:8"
+              ],
+              "positions": [
+                {
+                  "name": "LEFT",
+                  "text": "The left tank feeds the engine."
+                },
+                {
+                  "name": "RIGHT",
+                  "text": "The right tank feeds the engine."
+                },
+                {
+                  "name": "OFF",
+                  "text": "No fuel flows to the engine."
+                }
+              ],
+              "text": "This selector chooses which wing tank feeds the engine, the left or the right, or off.",
+              "context": "The pilot switches tanks to keep the fuel balanced.",
+              "src": "x1",
+              "page": "21"
+            },
+            {
+              "id": "backup",
+              "name": "Backup instruments",
+              "type": "gauge",
+              "match": [
+                "item:console:9"
+              ],
+              "text": "These small instruments are the emergency backup. They show the horizon, speed and height by themselves.",
+              "context": "If the big screens fail, the pilot flies with them.",
+              "src": "x1",
+              "page": "21"
+            },
+            {
+              "id": "parking-brake-item",
+              "name": "Parking brake knob",
+              "type": "knob",
+              "match": [
+                "item:console:10"
+              ],
+              "text": "Pulling this knob holds the wheels still when parked.",
+              "context": "The pilot sets it before starting the engine and when parked.",
+              "src": "x1",
+              "page": "21"
+            },
+            {
+              "id": "alt-air",
+              "name": "Alternate air source",
+              "type": "knob",
+              "match": [
+                "item:console:11"
+              ],
+              "text": "This knob opens a second air path to the engine if the normal air filter gets blocked, for example by ice.",
+              "context": "It is used in an emergency when the engine is losing power because of a blocked air intake.",
+              "src": "x1",
+              "page": "21"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "hotas",
+      "where": "hotas",
+      "name": "Side yoke, levers and pedals",
+      "text": "The controls for the pilot's hands and feet: the side yoke, the levers on the console and the pedals.",
+      "panels": [
+        {
+          "id": "grip-sideyoke",
+          "name": "Side yoke",
+          "text": "Instead of a control wheel, each front seat has a single handle on the side panel. The pilot holds it with the outside hand. Thumb buttons on its top handle trim, autopilot and radio.",
+          "context": "The pilot flies with this handle in one hand while the other hand is free for the throttle.",
+          "controls": [
+            {
+              "id": "yoke-gimbal",
+              "name": "Side yoke",
+              "type": "other",
+              "match": [
+                "control:yoke.gimbal"
+              ],
+              "text": "Pushing the handle forward lowers the nose and pulling it back raises it. Twisting the handle left or right rolls the aircraft.",
+              "context": "It works like a small joystick on the side of the seat."
+            },
+            {
+              "id": "yoke-trim",
+              "name": "Trim hat",
+              "type": "hat",
+              "match": [
+                "control:yoke.hat.trim"
+              ],
+              "text": "This four-way switch on top of the handle trims the aircraft. Up trims the nose down and down trims the nose up. Left and right trim the roll.",
+              "context": "Trim lets the aircraft fly steadily without constant force on the handle."
+            },
+            {
+              "id": "yoke-ap-disc",
+              "name": "Autopilot disconnect switch",
+              "type": "button",
+              "match": [
+                "control:yoke.button.ap_disc"
+              ],
+              "text": "Pressing this button on the handle switches the autopilot off.",
+              "context": "The pilot presses it to take over the flying."
+            },
+            {
+              "id": "yoke-ptt",
+              "name": "Push-to-talk",
+              "type": "button",
+              "match": [
+                "control:yoke.button.ptt"
+              ],
+              "text": "Pressing this button on the handle makes the radio send while it is held.",
+              "context": "The pilot uses it to talk to the controller."
+            }
+          ]
+        },
+        {
+          "id": "grip-quadrant",
+          "name": "Power and mixture levers",
+          "text": "The two levers on the centre console that the pilot's hand reaches: the power lever and the mixture lever.",
+          "context": "The pilot uses them to set the engine in every phase of the flight.",
+          "controls": [
+            {
+              "id": "power",
+              "name": "Power lever",
+              "type": "axis",
+              "match": [
+                "control:quadrant.axis.lever.1"
+              ],
+              "text": "This is the single power lever on the centre console. Pushing it forward gives the engine more power. The propeller speed follows automatically.",
+              "context": "The pilot sets full power for take-off and reduces it in the cruise and descent."
+            },
+            {
+              "id": "mixture",
+              "name": "Mixture lever",
+              "type": "axis",
+              "match": [
+                "control:quadrant.axis.lever.2"
+              ],
+              "text": "This red lever sets the fuel-to-air mixture, from rich at the front to cut-off at the back.",
+              "context": "The pilot leans the mixture at high altitude and pulls it fully back to stop the engine."
+            }
+          ]
+        },
+        {
+          "id": "grip-panel",
+          "name": "Flaps, pedals, brake, fuel selector and CAPS",
+          "text": "The flap switch and the handles on the console and dashboard, plus the pedals on the floor.",
+          "context": "These are used on the ground, for take-off and landing and in an emergency.",
+          "controls": [
+            {
+              "id": "flaps",
+              "name": "Flap control switch",
+              "type": "switch3",
+              "match": [
+                "control:panel.switch.flaps"
+              ],
+              "positions": [
+                {
+                  "name": "up",
+                  "text": "Flaps one step up."
+                },
+                {
+                  "name": "down",
+                  "text": "Flaps one step down."
+                },
+                {
+                  "name": "centre",
+                  "text": "The switch rests in the middle and the flaps stay where they are."
+                }
+              ],
+              "text": "Moving this selector on the console up or down changes the flaps by one step between UP, 50 % and 100 %.",
+              "context": "The pilot sets one step for take-off and the full step for landing."
+            },
+            {
+              "id": "rudder",
+              "name": "Rudder pedals",
+              "type": "pedal",
+              "match": [
+                "control:pedals.axis.rudder"
+              ],
+              "text": "Pushing a pedal turns the rudder, the vertical flap on the tail. The tops of the pedals are the toe brakes. The pedals also steer the nose wheel a few degrees.",
+              "context": "The pilot stays straight with them and brakes with the toes."
+            },
+            {
+              "id": "parking-brake",
+              "name": "Parking brake knob",
+              "type": "lever",
+              "match": [
+                "control:panel.handle.parking_brake"
+              ],
+              "text": "Pulling this knob below the left panel sets the parking brake, with the toe brakes pressed. Pushing it releases the brake.",
+              "context": "The pilot sets it when the aircraft stands still."
+            },
+            {
+              "id": "fuel-selector",
+              "name": "Fuel selector valve",
+              "type": "selector",
+              "match": [
+                "control:panel.selector.fuel"
+              ],
+              "positions": [
+                {
+                  "name": "left",
+                  "text": "The left tank feeds the engine."
+                },
+                {
+                  "name": "right",
+                  "text": "The right tank feeds the engine."
+                },
+                {
+                  "name": "off",
+                  "text": "No fuel flows to the engine."
+                }
+              ],
+              "text": "This valve on the console behind the power lever chooses the left tank, the right tank or no fuel.",
+              "context": "The pilot changes tanks in flight to keep the fuel balanced."
+            },
+            {
+              "id": "caps",
+              "name": "CAPS activation handle",
+              "type": "lever",
+              "match": [
+                "control:panel.handle.caps"
+              ],
+              "text": "Pulling this red T-handle in the ceiling above the pilots fires the parachute of the whole aircraft.",
+              "context": "It is for a real emergency only, when landing safely with the engine is not possible."
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

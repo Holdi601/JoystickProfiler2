@@ -25,6 +25,10 @@ public sealed record CockpitPicturePack(string Id, string Game, string Set, IRea
     // The feed (folder or address) whose manifest listed the pack: its asset lies next to that manifest (the release of
     // a further feed). Empty: the feed the list was read from.
     public string Feed { get; init; } = string.Empty;
+
+    // The set's pictures were rated "low quality" when they were made (pictures.json "quality"): a pack of another game
+    // for the same aircraft is offered first.
+    public bool Low { get; init; }
 }
 
 // manifest.json of a picture pack release ("joypro-cockpit-packs", tools/build_cockpit_packs.ps1).
@@ -47,7 +51,9 @@ public sealed class CockpitPicturePackManifest
     {
         if (variant == null)
             return null;
-        Tuple<string, string>? hit = CockpitPictureSet.Locate(variant, IndexOf, (_, _) => true);
+        // A good set first; a low-quality one only when no game has a better one.
+        Tuple<string, string>? hit = CockpitPictureSet.Locate(variant, IndexOf, (game, set) => Find(game, set) is { Low: false })
+            ?? CockpitPictureSet.Locate(variant, IndexOf, (_, _) => true);
         return hit == null ? null : Find(hit.Item1, hit.Item2);
     }
 
@@ -357,7 +363,10 @@ public sealed class CockpitPicturePacks
                         planes.AddRange(names.EnumerateArray().Where(n => n.ValueKind == JsonValueKind.String).Select(n => n.GetString() ?? string.Empty).Where(n => n.Length > 0));
                     string id = Str(p, "id");
                     packs.Add(new CockpitPicturePack(id.Length > 0 ? id : game + "/" + set, game, set, planes, asset, Long(p, "size"), sha,
-                        Math.Max(1, Int(p, "version", 1)), Str(p, "built"), Str(p, "picturesBuilt")));
+                        Math.Max(1, Int(p, "version", 1)), Str(p, "built"), Str(p, "picturesBuilt"))
+                    {
+                        Low = p.TryGetProperty("low", out JsonElement low) && low.ValueKind == JsonValueKind.True
+                    });
                 }
             }
             // "feeds": tags as text or {"tag": ...}; only safe names.

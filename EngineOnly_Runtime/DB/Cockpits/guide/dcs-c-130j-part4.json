@@ -1,0 +1,341 @@
+{
+  "format": "joypro-cockpit-guide",
+  "version": 1,
+  "partOf": "dcs-c-130j",
+  "areas": [
+    {
+      "id": "hotas",
+      "where": "hotas",
+      "name": "Yokes, power levers and other hand controls",
+      "text": "The controls the pilots hold: the yoke with its buttons, the four power levers, the nosewheel steering wheel and the cursor hand controller.",
+      "panels": [
+        {
+          "id": "yoke",
+          "name": "Yoke (control wheel) and its buttons",
+          "src": "m1",
+          "page": "63",
+          "text": "A yoke is the half steering wheel on a column. Pulling it back raises the nose, pushing it forward lowers the nose, and turning it rolls the plane. Each pilot has one, and the two are linked so they move together.",
+          "context": "Buttons and switches on the front and the side of the yoke let the pilot work the trim, the autopilot, the cursor, the radios and the countermeasures without letting go.",
+          "controls": [
+            {
+              "id": "yoke-gimbal",
+              "name": "Control column and wheel",
+              "type": "other",
+              "match": [
+                "control:yoke.gimbal"
+              ],
+              "text": "Moving the yoke forward and back changes the pitch, which raises or lowers the nose, using the elevators. Turning the wheel left or right rolls the plane, using the ailerons.",
+              "context": "The yokes of both pilots are linked, so when one pilot moves a yoke, the other moves, too. Hydraulic boosters make the controls light.",
+              "src": "m1",
+              "page": "13"
+            },
+            {
+              "id": "yoke-trim",
+              "name": "Elevator trim switches",
+              "type": "rocker",
+              "match": [
+                "control:yoke.rocker.pitch_trim"
+              ],
+              "text": "Two thumb switches on the front of the yoke trim the elevator, which holds the plane's nose up or down without pressure on the yoke. Both must be moved at the same time. Forward trims the nose down, aft trims it up.",
+              "context": "Using the trim switch while the autopilot is on switches the autopilot off. The elevator trim power switch on the trim panel must be on NORM.",
+              "src": "m1",
+              "page": "63"
+            },
+            {
+              "id": "yoke-pfd",
+              "name": "PFD reset switch",
+              "type": "button",
+              "match": [
+                "control:yoke.button.pfd_reset"
+              ],
+              "text": "This switch brings the PFD, the primary flight display, onto the first big screen (HDD 1). Pressing it a second time returns the screen to the page that was shown before.",
+              "context": "It is a quick way back to the main flight screen.",
+              "src": "m1",
+              "page": "63"
+            },
+            {
+              "id": "yoke-apdisc",
+              "name": "Autopilot disconnect switch",
+              "type": "button",
+              "match": [
+                "control:yoke.button.ap_disc"
+              ],
+              "text": "This switch turns the autopilot off and silences its alert tone. Holding it also keeps the stick pusher (a stall protection) from pushing the nose down.",
+              "context": "The autopilot also disconnects by itself in some cases, such as after a strong push on the yoke.",
+              "src": "m1",
+              "page": "63"
+            },
+            {
+              "id": "yoke-cursor",
+              "name": "Cursor control switch (on the yoke)",
+              "type": "other",
+              "match": [
+                "control:yoke.ministick.cursor"
+              ],
+              "text": "This small thumb switch on the front of the yoke moves the common cursor on the map and radar screens left, right, up and down. Pressing it sets the cursor to ground mode.",
+              "context": "The cursor can mark a point on the map to send to the CNI-MU.",
+              "src": "m1",
+              "page": "63"
+            },
+            {
+              "id": "yoke-pitchsync",
+              "name": "Pitch sync switch",
+              "type": "button",
+              "match": [
+                "control:yoke.button.pitch_sync"
+              ],
+              "text": "While this switch is held, the autopilot's up-and-down control is released and the pilot can set a new pitch by hand. When it is released, the autopilot holds the new pitch.",
+              "context": "It also moves the flight director to the plane's present pitch.",
+              "src": "m1",
+              "page": "21"
+            },
+            {
+              "id": "yoke-cm",
+              "name": "Countermeasure dispense switch",
+              "type": "button",
+              "match": [
+                "control:yoke.button.cm_dispense"
+              ],
+              "text": "This switch drops chaff and flares by hand, as the chosen program says. It also gives consent when the message CMDS READY shows.",
+              "context": "The chaff and flares fool enemy missiles. The CMDS mode selector on the defensive panel decides how the switch works.",
+              "src": "m1",
+              "page": "63"
+            },
+            {
+              "id": "yoke-goaround",
+              "name": "Go-around switch",
+              "type": "button",
+              "match": [
+                "control:yoke.button.go_around"
+              ],
+              "text": "This switch starts the go-around mode of the flight director, which helps the pilot abort a landing and climb away.",
+              "context": "Pressing it also switches the autopilot off.",
+              "src": "m1",
+              "page": "63"
+            },
+            {
+              "id": "yoke-declutter",
+              "name": "HUD declutter switch",
+              "type": "button",
+              "match": [
+                "control:yoke.button.hud_declutter"
+              ],
+              "text": "This switch removes marks from the head-up display step by step. The first press gives declutter level 1, the second level 2, and the third brings back the full display.",
+              "context": "Declutter makes the glass screen less crowded.",
+              "src": "m1",
+              "page": "64"
+            },
+            {
+              "id": "yoke-ics",
+              "name": "Interphone / radio switch",
+              "type": "switch3",
+              "match": [
+                "control:yoke.switch.ics_radio"
+              ],
+              "positions": [
+                {
+                  "name": "Forward",
+                  "text": "The voice goes out over the selected radio."
+                },
+                {
+                  "name": "Center",
+                  "text": "The switch rests here and nothing is sent."
+                },
+                {
+                  "name": "Aft",
+                  "text": "The voice goes to the interphone, the crew's phone line."
+                }
+              ],
+              "text": "This thumb switch on the side of the yoke picks where the pilot's voice goes when the pilot talks. Forward is the selected radio, aft is the interphone.",
+              "context": "It does the same as the INT/RADIO switch on the ICS panel.",
+              "src": "m1",
+              "page": "64"
+            },
+            {
+              "id": "yoke-hush",
+              "name": "Hush / stopwatch switch",
+              "type": "rocker",
+              "match": [
+                "control:yoke.rocker.hush"
+              ],
+              "text": "This rocker on the side of the yoke has two jobs. The right side silences the aural alerts that can be silenced (hush). The left side steps the stopwatch to its next mode.",
+              "context": "Hush quiets a repeated alert tone so that the pilot can think.",
+              "src": "m1",
+              "page": "64"
+            }
+          ]
+        },
+        {
+          "id": "power-levers",
+          "name": "Power levers (throttle quadrant)",
+          "src": "m1",
+          "page": "80",
+          "text": "The four power levers set how much power each engine gives, like the gas pedal of a car, one lever per engine. They are in the middle between the pilots, so both can reach them.",
+          "context": "Marks on the quadrant show takeoff power, flight idle, ground idle and maximum reverse. A mechanical stop at flight idle keeps the levers from going into the ground range in the air.",
+          "controls": [
+            {
+              "id": "lever-1-4",
+              "name": "Engine power levers 1-4",
+              "type": "lever",
+              "match": [
+                "control:quadrant.axis.lever.1",
+                "control:quadrant.axis.lever.2",
+                "control:quadrant.axis.lever.3",
+                "control:quadrant.axis.lever.4",
+                "item:throttle-quadrant:1",
+                "item:upper-center-console:7"
+              ],
+              "count": 4,
+              "text": "Each lever sets the power of one engine. Pushed forward, the power rises up to takeoff power. Pulled back, the power drops through flight idle and ground idle, and past the stops to reverse.",
+              "context": "In the game each lever is an axis that can be bound to a joystick or throttle. Lever 1 is the outer left, lever 4 the outer right.",
+              "src": "m1",
+              "page": "80"
+            },
+            {
+              "id": "lever-stop",
+              "name": "Flight idle / ground range stop",
+              "type": "lever",
+              "match": [
+                "control:quadrant.lever.reverse"
+              ],
+              "text": "This stop is a mechanical gate on the power levers. It lets the pilot pull the levers back past flight idle into the ground range only when the plane is on the ground.",
+              "context": "It prevents power lever movements that could be dangerous in flight.",
+              "src": "m1",
+              "page": "80"
+            },
+            {
+              "id": "lever-override",
+              "name": "Power lever override switches",
+              "type": "button",
+              "match": [
+                "control:quadrant.button.override",
+                "PNT_L_ATHROTTLE_DISC_19",
+                "PNT_R_ATHROTTLE_DISC_20",
+                "item:throttle-quadrant:3"
+              ],
+              "count": 2,
+              "text": "Two buttons on the outside of power levers 1 and 4 switch the autothrottle off. Pressed three times quickly they also override the thrust limiter ATCS.",
+              "context": "The autothrottle moves the power levers by itself to hold a speed. These buttons let the pilot take over at once. The game calls them autothrottle disconnect buttons.",
+              "src": "m1",
+              "page": "80"
+            },
+            {
+              "id": "lever-lsgi",
+              "name": "LSGI select switches",
+              "type": "button",
+              "match": [
+                "control:quadrant.switch.lsgi",
+                "PNT_GND_IDL_?_*",
+                "item:throttle-quadrant:2",
+                "item:upper-center-console:10"
+              ],
+              "count": 4,
+              "text": "LSGI means low speed ground idle. A switch behind each power lever lowers the engine's idle speed on the ground. A green LOW light on the switch shows that it is on.",
+              "context": "LSGI saves brakes and makes less propeller wash. It needs the wheels on the ground and the lever in the ground range. The generator does not work in this mode.",
+              "src": "m1",
+              "page": "80"
+            }
+          ]
+        },
+        {
+          "id": "nose-steering",
+          "name": "Nosewheel steering wheel (tiller)",
+          "src": "m1",
+          "page": "39",
+          "text": "This small wheel to the left of the pilot's yoke steers the nose wheel when the plane drives on the ground.",
+          "context": "The pilot uses it for taxiing on the ground, to the runway and back.",
+          "controls": [
+            {
+              "id": "tiller",
+              "name": "Nose gear steering wheel (tiller)",
+              "type": "wheel",
+              "match": [
+                "control:panel.wheel.tiller"
+              ],
+              "text": "Turning this wheel counter-clockwise turns the nose wheel to the left, and clockwise turns it to the right. It can be turned 1.5 turns each way.",
+              "context": "The nose gear can turn up to 60 degrees each side. A white pointer in a window ahead of the wheel shows the angle.",
+              "src": "m1",
+              "page": "39"
+            }
+          ]
+        },
+        {
+          "id": "cursor-hand-controller",
+          "name": "Cursor hand controller",
+          "src": "m1",
+          "page": "176",
+          "text": "The cursor hand controller is a small handle in the lower center console with several switches. It moves the common cursor, which is a mark on the map and radar screens.",
+          "context": "It is for marking points on the map and sending them to the CNI-MU keypad. The cursor control panel next to it picks the screen.",
+          "controls": [
+            {
+              "id": "chc-cursor",
+              "name": "Cursor control switch (hand controller)",
+              "type": "other",
+              "match": [
+                "control:panel.ministick.chc",
+                "item:cursor-hand-controller:4"
+              ],
+              "text": "This small stick slews the cursor around. Pressing it sets the cursor to ground mode.",
+              "context": "It does the same as the thumb switch on the yoke.",
+              "src": "m1",
+              "page": "176"
+            },
+            {
+              "id": "chc-insert",
+              "name": "Insert / update switch",
+              "type": "button",
+              "match": [
+                "control:panel.chc.insert",
+                "item:cursor-hand-controller:1"
+              ],
+              "text": "This switch sends the cursor's position to the CNI-MU scratchpad. Which CNI-MU gets it is picked with the cursor priority switch.",
+              "context": "The position can then be put into a flight plan field.",
+              "src": "m1",
+              "page": "176"
+            },
+            {
+              "id": "chc-trigger",
+              "name": "Computer cursor switch (trigger)",
+              "type": "trigger",
+              "match": [
+                "control:panel.chc.trigger",
+                "item:cursor-hand-controller:2"
+              ],
+              "text": "This two-stage trigger quickly changes the cursor mode. The first stage selects computer cursor, the second stage selects quick cursor.",
+              "context": "The modes decide how the cursor moves.",
+              "src": "m1",
+              "page": "176"
+            },
+            {
+              "id": "chc-oap",
+              "name": "Offset aim point switch (hat)",
+              "type": "hat",
+              "match": [
+                "control:panel.chc.oap",
+                "item:cursor-hand-controller:3"
+              ],
+              "text": "This four-way hat switch does different things in each direction. Forward goes through the offset aim points. Back, left and right choose how the digital map is stabilized: cursor, aircraft or ground.",
+              "context": "OAP stands for offset aim point; the forward direction scrolls through the OAPs listed on the CURSOR TARGET page of the CNI-MU.",
+              "src": "m1",
+              "page": "176"
+            },
+            {
+              "id": "chc-tilt",
+              "name": "Tilt switch",
+              "type": "button",
+              "match": [
+                "control:panel.chc.tilt",
+                "item:cursor-hand-controller:5",
+                "PNT_TILT_483"
+              ],
+              "text": "Pressing this switch puts the cursor in manual mode. The manual says that tilting it does nothing; the game still lists tilt forward and tilt backward commands.",
+              "context": "The manual says the switch has no function except being pressed.",
+              "src": "m1",
+              "page": "176"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

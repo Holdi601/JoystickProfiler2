@@ -1,12 +1,12 @@
 # IL-2 Sturmovik: Cliffs of Dover and Cliffs of Dover Blitz
 
-> **Partly verified (2026-10-12).** Both games are installed on the dev PC. Checked: Blitz 5.050 starts to its main menu
+> **Partly verified (2026-10-12).** Both games are installed on a test PC. Checked: Blitz 5.050 starts to its main menu
 > without any prompt and on its first start creates `Documents\1C SoftClub\il-2 sturmovik cliffs of dover` with copies
 > of the install's `conf.ini`, `confs.ini` and `confUser.ini` (GAME); the install's default `confUser.ini` of both games
 > (file shape of the fixtures); Blitz's device naming, seen in its installed binaries (CODE, see Devices). **Not yet checked in
 > the game:** binds made on Blitz's controls page and the game's rewrite of an export (`tools/e2e/games/IL2CoDBlitz.ps1`
 > is written but has not run: Windows' foreground lock blocked all input that night). The original game (63950) does
-> not start on the dev PC: `Launcher.exe` exits after about 4 s with code 0, no window, no log, no user folder, also
+> not start on a test PC: `Launcher.exe` exits after about 4 s with code 0, no window, no log, no user folder, also
 > when started directly; its integration is checked against the install's default file and a user's own Steam Cloud
 > file from 2015 only.
 
@@ -95,12 +95,12 @@ input, merge-overwrite replaces it, add never removes. Backup before the first w
 ## Live checks still needed
 
 1. Blitz's controls page: a vJoy button, chord, hat and axis bound in the game; the written names should be
-   `vJoy_Device-14B51D1+...` on the dev PC (the hash of vJoy's path `\\?\hid#hidclass#1&2d595ca7&1&0000#{...}`) — run
+   `vJoy_Device-14B51D1+...` on a test PC (the hash of vJoy's path `\\?\hid#hidclass#1&2d595ca7&1&0000#{...}`) — run
    `tools/e2e/games/IL2CoDBlitz.ps1` (calibrate its Options > Controls steps first).
 2. A second hat (`+Pov1`?) and the throttle's five values.
 3. Whether Blitz still reads the old `Joystick`/`Joystick<n>` names its own default `confUser.ini` ships with
    (JoyPro reads them by DirectInput order for both games).
-4. The original game (63950) does not start on the dev PC (see the top of this page).
+4. The original game (63950) does not start on a test PC (see the top of this page).
 
 ## Other findings
 

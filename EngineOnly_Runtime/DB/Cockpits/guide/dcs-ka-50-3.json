@@ -1,0 +1,1921 @@
+{
+  "format": "joypro-cockpit-guide",
+  "version": 1,
+  "id": "dcs-ka-50-3",
+  "title": "Ka-50 III Black Shark 3 (DCS)",
+  "variants": [
+    "ka-50-3"
+  ],
+  "games": [
+    "DCS"
+  ],
+  "sets": [
+    "DCS/Ka-50_3"
+  ],
+  "sources": [
+    {
+      "id": "m1",
+      "title": "DCS Black Shark 3 Flight Manual (EN)",
+      "file": "Mods/aircraft/Ka-50_3/Doc/DCS BS3 Flight Manual EN.pdf"
+    },
+    {
+      "id": "m2",
+      "title": "DCS Black Shark 2 Flight Manual (EN), for the laser warning receiver panel",
+      "file": "Mods/aircraft/Ka-50/Doc/DCS BS2 Flight Manual EN.pdf"
+    }
+  ],
+  "intro": "The Ka-50 is a Russian single-seat attack helicopter. It has two rotors on one shaft that turn in opposite directions, so it needs no tail rotor. The pilot sits in an armoured cockpit with an ejection seat. The round gauges and the weapon controls are in front, the engine start, radio and targeting switches are on the left, and navigation, autopilot and system switches are on the right and on the wall. Many weapon and camera controls sit on the cyclic and the collective, because one pilot does the work of a whole crew.",
+  "areas": [
+    {
+      "id": "hud",
+      "where": "glareshield",
+      "name": "Head-up display (HUD)",
+      "text": "The glass screen in front of the pilot's eyes. It shows flight numbers and aiming marks, so the pilot can look outside while reading them.",
+      "panels": [
+        {
+          "id": "hud",
+          "name": "HUD (head-up display) unit",
+          "src": "m1",
+          "page": "309",
+          "text": "This is the glass screen in front of the pilot's eyes that shows flight numbers and aiming marks (head-up display). Four small controls sit on the unit itself.",
+          "context": "The HUD is the main place for flight and targeting information. Its symbols do not appear at once after a cold start of the helicopter.",
+          "controls": [
+            {
+              "id": "filter",
+              "name": "HUD colour filter lever",
+              "type": "lever",
+              "match": [
+                "PTR_HUD-FILTER"
+              ],
+              "text": "This lever raises or lowers a coloured filter at the HUD glass. The game names the command 'Raise/Lower Colour Filter On HUD'.",
+              "context": "It belongs to the HUD unit itself, so the pilot can change it without looking at any other panel.",
+              "src": "m1",
+              "page": "310"
+            },
+            {
+              "id": "brightness",
+              "name": "HUD brightness knob",
+              "type": "knob",
+              "match": [
+                "PTR_HUD-BRIGHTNESS"
+              ],
+              "text": "Turning this knob makes the HUD symbols brighter or darker.",
+              "context": "The pilot sets it so the symbols can be read against the sky or the ground. It works when the HUD is in its full operating mode.",
+              "src": "m1",
+              "page": "310"
+            },
+            {
+              "id": "test",
+              "name": "HUD self-test button",
+              "type": "button",
+              "match": [
+                "PTR-HUD-TEST"
+              ],
+              "text": "This button makes the HUD test itself. It is a quick check that the display works.",
+              "context": "The pilot can use it during the checks before the flight.",
+              "src": "m1",
+              "page": "310"
+            },
+            {
+              "id": "mode",
+              "name": "HUD mode selector (DAY - NIGHT - GRID)",
+              "type": "selector",
+              "match": [
+                "PTR_HUD-TMB-SETKA02"
+              ],
+              "positions": [
+                {
+                  "name": "DAY",
+                  "text": "Normal operating mode with green symbols."
+                },
+                {
+                  "name": "NIGHT",
+                  "text": "Night mode with amber symbols."
+                },
+                {
+                  "name": "GRID",
+                  "text": "Standby reticle mode: only a simple aiming grid is shown."
+                }
+              ],
+              "text": "This selector chooses how the HUD looks. DAY is the normal mode, NIGHT is the night mode, and GRID shows only a simple aiming grid.",
+              "context": "The grid is a standby aiming mark the pilot can switch on by hand.",
+              "src": "m1",
+              "page": "309"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "left-forward",
+      "where": "front-left",
+      "name": "Left forward panel",
+      "text": "This is the left part of the dashboard under the shield. It holds the round gauges and the warning lamps.",
+      "panels": [
+        {
+          "id": "left-forward",
+          "name": "Left forward panel (flight gauges and warning lamps)",
+          "db": "left-forward-panel",
+          "src": "m1",
+          "page": "90",
+          "text": "This is the panel of round gauges and warning lamps left of the middle of the dashboard. It shows the helicopter's attitude, height, speed and the most important warnings.",
+          "context": "The HUD shows most flight numbers, but these gauges are the backup and show some extra information. The pilot scans them all the time during a flight.",
+          "controls": [
+            {
+              "id": "master-caution",
+              "name": "Master caution push-light",
+              "type": "button",
+              "match": [
+                "CSO-PTR",
+                "item:left-forward-panel:1"
+              ],
+              "text": "This big light comes on whenever any warning or caution lamp lights up. Pressing it switches the light off again.",
+              "context": "It tells the pilot to look at the lamp panel to see what is wrong. A flashing master light also goes with a voice message from the EKRAN system.",
+              "src": "m1",
+              "page": "90"
+            },
+            {
+              "id": "caution-lights",
+              "name": "Caution lights panel",
+              "type": "light",
+              "match": [
+                "item:left-forward-panel:2"
+              ],
+              "text": "This board of labelled lamps shows what is wrong. The lamps are for engine overspeed, engine vibration, too much G force, too much speed, gearbox oil and chips, fires, laser warning and landing gear not down.",
+              "context": "The lamps are shown here and are not clicked. The pilot reads them after the master caution light comes on.",
+              "src": "m1",
+              "page": "118"
+            },
+            {
+              "id": "vvi",
+              "name": "Vertical velocity indicator (VVI)",
+              "type": "gauge",
+              "match": [
+                "item:left-forward-panel:3"
+              ],
+              "text": "This gauge shows how fast the helicopter climbs or sinks, in metres per second. Its largest reading is 30 metres per second.",
+              "context": "The pilot uses it to hold a steady height or to check a gentle descent for landing.",
+              "src": "m1",
+              "page": "100"
+            },
+            {
+              "id": "adi",
+              "name": "ADI (attitude director indicator)",
+              "type": "gauge",
+              "match": [
+                "item:left-forward-panel:4"
+              ],
+              "text": "This gauge shows whether the nose is up or down and whether the helicopter leans left or right. It also has bars that show how to steer to the next route point.",
+              "context": "It needs electricity and a finished alignment of the navigation system. The pilot uses it when the horizon is not visible.",
+              "src": "m1",
+              "page": "93"
+            },
+            {
+              "id": "adi-test",
+              "name": "ADI test cover and button",
+              "type": "button",
+              "match": [
+                "TEST-COVER-IKP-PTR",
+                "TEST-IKP-PTR"
+              ],
+              "text": "The first press of this button opens a small cover. A second press runs a self-test of the ADI.",
+              "context": "The pilot uses it during the checks on the ground to see that the ADI works.",
+              "src": "m1",
+              "page": "94"
+            },
+            {
+              "id": "adi-symbol",
+              "name": "ADI aircraft symbol setting knob",
+              "type": "knob",
+              "match": [
+                "IKP-TANGAGE-PTR"
+              ],
+              "text": "Turning this knob moves the horizon line on the ADI up or down. This removes a small error before the flight.",
+              "context": "It can also be used to centre the horizon for a given speed, which makes steady flight easier.",
+              "src": "m1",
+              "page": "95"
+            },
+            {
+              "id": "altimeter",
+              "name": "Barometric altimeter",
+              "type": "gauge",
+              "match": [
+                "item:left-forward-panel:5"
+              ],
+              "text": "This is the height gauge. The long hand turns once per 100 metres and the short hand once per 1000 metres.",
+              "context": "A small window shows the local air pressure that was set with the knob next to it. A bug shows the wanted altitude.",
+              "src": "m1",
+              "page": "99"
+            },
+            {
+              "id": "altimeter-knob",
+              "name": "Altimeter pressure knob (QFE)",
+              "type": "knob",
+              "match": [
+                "ALTIMETER-BARO-PTR"
+              ],
+              "text": "Turning this knob sets the local air pressure into the altimeter, so it reads right. The pressure is shown in a small window in millimetres of mercury.",
+              "context": "The pilot sets it on the ground before the flight. The red mark on the scale is the normal value of 760.",
+              "src": "m1",
+              "page": "100"
+            },
+            {
+              "id": "hsi",
+              "name": "HSI (horizontal situation indicator)",
+              "type": "gauge",
+              "match": [
+                "item:left-forward-panel:6"
+              ],
+              "text": "This gauge is a compass that also shows where the next route point is. It shows the heading, the wanted heading and course, the distance and the direction to a radio beacon.",
+              "context": "It works with the navigation system. It shows when the helicopter drifts off the planned path.",
+              "src": "m1",
+              "page": "95"
+            },
+            {
+              "id": "hsi-test",
+              "name": "HSI self-test button",
+              "type": "button",
+              "match": [
+                "TEST-PNP-PTR03"
+              ],
+              "text": "This button makes the HSI run a test of itself.",
+              "context": "The pilot uses it during the checks on the ground.",
+              "src": "m1",
+              "page": "97"
+            },
+            {
+              "id": "dh-knob",
+              "name": "HSI desired heading knob",
+              "type": "knob",
+              "match": [
+                "ROTARY-ZK-PTR"
+              ],
+              "text": "Turning this knob sets the wanted heading by hand. It works only when the DH/DTA switch is on MANUAL.",
+              "context": "With the switch on AUTO the navigation system sets the heading by itself.",
+              "src": "m1",
+              "page": "97"
+            },
+            {
+              "id": "dta-knob",
+              "name": "HSI desired track angle knob",
+              "type": "knob",
+              "match": [
+                "ROTARY-ZPU-PTR"
+              ],
+              "text": "Turning this knob sets the wanted track angle by hand. It works only when the DH/DTA switch is on MANUAL.",
+              "context": "The track angle is the direction of the planned path over the ground.",
+              "src": "m1",
+              "page": "98"
+            },
+            {
+              "id": "dh-dta-switch",
+              "name": "DH/DTA source switch (AUTO - MANUAL)",
+              "type": "switch2",
+              "match": [
+                "ZPU-ZK-PTR",
+                "item:left-forward-panel:7"
+              ],
+              "positions": [
+                {
+                  "name": "AUTO",
+                  "text": "Down position, the default: the navigation system sets the pointers by itself."
+                },
+                {
+                  "name": "MANUAL",
+                  "text": "Up position: the pilot sets the pointers with the two HSI knobs."
+                }
+              ],
+              "text": "This switch decides who sets the wanted heading and track on the HSI: the navigation system or the pilot.",
+              "context": "In AUTO the pointers follow the current route point by themselves. In MANUAL the two knobs next to it are used.",
+              "src": "m1",
+              "page": "97"
+            },
+            {
+              "id": "laser-mode",
+              "name": "Laser mode switch (MANUAL - STDBY) with cover",
+              "type": "switch2",
+              "match": [
+                "LD-LDP-COVER-PTR",
+                "LDP-LD-PTR",
+                "item:left-forward-panel:8"
+              ],
+              "positions": [
+                {
+                  "name": "MANUAL",
+                  "text": "The default: the laser works as a range finder."
+                },
+                {
+                  "name": "STDBY",
+                  "text": "The laser can mark targets for laser-guided weapons such as the Kh-25ML or Kh-29L."
+                }
+              ],
+              "text": "This switch under the HSI selects what the laser does. A small cover protects it and must be opened first.",
+              "context": "The laser is a light beam that measures distance and guides bombs. The switch does not change how the Vikhr missile is used.",
+              "src": "m1",
+              "page": "98"
+            },
+            {
+              "id": "laser-reset",
+              "name": "RESET LA button",
+              "type": "button",
+              "match": [
+                "CHOP-LDP-PTR",
+                "item:left-forward-panel:9"
+              ],
+              "text": "This small button stops the laser beam when the pilot wants to end the marking of a target.",
+              "context": "The laser would stop by itself after about 20 seconds.",
+              "src": "m1",
+              "page": "98"
+            },
+            {
+              "id": "rotor-pitch",
+              "name": "Rotor pitch indicator",
+              "type": "gauge",
+              "match": [
+                "item:left-forward-panel:10"
+              ],
+              "text": "This gauge shows how steeply the rotor blades are set. The collective lever changes this angle, up to 15 degrees.",
+              "context": "The more pitch, the more lift the rotors make.",
+              "src": "m1",
+              "page": "99"
+            },
+            {
+              "id": "clock",
+              "name": "Mechanical clock",
+              "type": "gauge",
+              "match": [
+                "item:left-forward-panel:11"
+              ],
+              "text": "This is a clock without electricity. It shows the time of day, the mission time and a stopwatch.",
+              "context": "The mission timer and the stopwatch are started with the two knobs of the clock.",
+              "src": "m1",
+              "page": "103"
+            },
+            {
+              "id": "clock-left",
+              "name": "Clock left knob (mission timer)",
+              "type": "button",
+              "match": [
+                "CLOCK-LEFT-LEVER-PTR"
+              ],
+              "text": "Pressing this knob starts and stops the mission timer on the clock. A pull and a turn set the time. Winding it turns the clock spring.",
+              "context": "A red light glows while the mission timer runs. Pressing again after a stop resets it.",
+              "src": "m1",
+              "page": "104"
+            },
+            {
+              "id": "clock-right",
+              "name": "Clock right knob (stopwatch)",
+              "type": "button",
+              "match": [
+                "CLOCK-RIGHT-LEVER-PTR"
+              ],
+              "text": "Pressing this knob starts and stops the stopwatch on the clock. Turning the crown stops the clock so the time can be set.",
+              "context": "The stopwatch measures short times up to one hour.",
+              "src": "m1",
+              "page": "104"
+            },
+            {
+              "id": "rotor-rpm",
+              "name": "Rotor RPM indicator",
+              "type": "gauge",
+              "match": [
+                "item:left-forward-panel:13"
+              ],
+              "text": "This gauge shows how fast the rotors turn, as a percentage. It needs no electricity.",
+              "context": "The safe range is 83 to 98 percent. Under 83 percent the RT warning light flashes and a voice warns the pilot.",
+              "src": "m1",
+              "page": "100"
+            },
+            {
+              "id": "rotor-rpm-light",
+              "name": "Rotor RPM warning push-light (RT)",
+              "type": "button",
+              "match": [
+                "MAIN-ROTOR-PTR",
+                "item:left-forward-panel:16"
+              ],
+              "text": "This yellow light flashes when the rotors turn too slowly. Pressing it switches the warning off.",
+              "context": "A voice warning sounds in the headphones at the same time.",
+              "src": "m1",
+              "page": "100"
+            },
+            {
+              "id": "radar-alt",
+              "name": "Radar altimeter",
+              "type": "gauge",
+              "match": [
+                "item:left-forward-panel:14"
+              ],
+              "text": "This gauge shows the height above the ground, up to 300 metres, measured by a small radar that looks downward. A yellow bug marks the safe height.",
+              "context": "It turns on with the K-041 targeting and navigation switch. A yellow lamp and a tone warn when the helicopter goes below the set height.",
+              "src": "m1",
+              "page": "102"
+            },
+            {
+              "id": "radar-alt-test",
+              "name": "Radar altimeter TEST button",
+              "type": "button",
+              "match": [
+                "TEST-RADIO-HIGHT-PTR"
+              ],
+              "text": "Pressing this button moves the needle to 15 metres. This shows that the gauge works.",
+              "context": "The pilot uses it during the checks on the ground.",
+              "src": "m1",
+              "page": "102"
+            },
+            {
+              "id": "radar-alt-knob",
+              "name": "Safe altitude knob with warning lamp",
+              "type": "knob",
+              "match": [
+                "ROTARY-DANGEROUS-HIGHT-PTR"
+              ],
+              "text": "Turning this knob moves the yellow safe-height bug on the radar altimeter. A yellow triangle lamp comes on, and a tone sounds, when the helicopter goes lower than the bug.",
+              "context": "The pilot sets it to a minimum height for low flying.",
+              "src": "m1",
+              "page": "103"
+            },
+            {
+              "id": "airspeed",
+              "name": "Indicated airspeed indicator",
+              "type": "gauge",
+              "match": [
+                "item:left-forward-panel:15"
+              ],
+              "text": "This gauge shows the forward speed in kilometres per hour. It cannot measure low speeds or flying backwards.",
+              "context": "Below about 50 to 70 kilometres per hour it is not reliable.",
+              "src": "m1",
+              "page": "101"
+            },
+            {
+              "id": "defense-mode",
+              "name": "Defense system mode select",
+              "type": "selector",
+              "match": [
+                "item:left-forward-panel:17"
+              ],
+              "positions": [
+                {
+                  "name": "ON",
+                  "text": "Combat mode: the system warns and starts the flare program by itself."
+                },
+                {
+                  "name": "STBY",
+                  "text": "Stand-by mode: the system only shows the threat direction and the pilot releases flares."
+                }
+              ],
+              "text": "This selector sets how the onboard defense system works. It looks for laser beams and missile launches.",
+              "context": "In the combat mode the system throws flares by itself. In stand-by it only warns and the pilot decides.",
+              "src": "m1",
+              "page": "34"
+            },
+            {
+              "id": "lamp-test",
+              "name": "Lamp test button",
+              "type": "button",
+              "match": [
+                "CONTROL-ALARM-PTR",
+                "item:left-forward-panel:18"
+              ],
+              "text": "Pressing this button lights all warning, caution and advisory lamps. This shows that no bulb is burnt out.",
+              "context": "The pilot uses it during the checks before the flight.",
+              "src": "m1",
+              "page": "91"
+            },
+            {
+              "id": "g-meter",
+              "name": "Accelerometer (G-meter)",
+              "type": "gauge",
+              "match": [
+                "G--PTR",
+                "item:left-forward-panel:19"
+              ],
+              "text": "This gauge shows how strong the push into the seat is. 1 is normal gravity. Red needles keep the highest and the lowest value. A small button resets them.",
+              "context": "The scale goes from minus 2 to plus 4.",
+              "src": "m1",
+              "page": "101"
+            }
+          ]
+        },
+        {
+          "id": "gear",
+          "name": "Landing gear control panel",
+          "db": "gear-control-panel",
+          "src": "m1",
+          "page": "120",
+          "text": "This small panel is for the landing gear (the wheels). It has the gear lever, lamps that show where the wheels are, and a switch for an emergency.",
+          "context": "The pilot lowers the wheels before landing and raises them after take-off. The lamps confirm what the wheels are doing.",
+          "controls": [
+            {
+              "id": "gear-lamps",
+              "name": "Gear position lamps",
+              "type": "light",
+              "match": [
+                "item:gear-control-panel:1",
+                "item:left-forward-panel:12"
+              ],
+              "text": "These lamps show where the wheels are. Red lamps at the top are on when the wheels are up. Green lamps at the bottom are on when the wheels are down.",
+              "context": "When the wheels are not down for landing, the master light and an extend-gear message warn the pilot.",
+              "src": "m1",
+              "page": "120"
+            },
+            {
+              "id": "gear-lever",
+              "name": "Landing gear lever",
+              "type": "lever",
+              "match": [
+                "GEAR-PTR",
+                "item:gear-control-panel:3"
+              ],
+              "positions": [
+                {
+                  "name": "UP",
+                  "text": "The wheels are raised into the fuselage."
+                },
+                {
+                  "name": "DOWN",
+                  "text": "The wheels are lowered for landing and parking."
+                }
+              ],
+              "text": "Pull this lever and the wheels come up. Push it and the wheels come down. It uses the common hydraulics, oil under high pressure, to move the wheels.",
+              "context": "The pilot lowers the wheels for landing and raises them after take-off.",
+              "src": "m1",
+              "page": "120"
+            },
+            {
+              "id": "gear-emergency",
+              "name": "Emergency gear hydraulics switch with cover",
+              "type": "switch2",
+              "match": [
+                "AVAR-GEAR-COVER-PTR",
+                "AVAR-GEAR-PTR",
+                "item:gear-control-panel:2"
+              ],
+              "positions": [
+                {
+                  "name": "UP (default)",
+                  "text": "The wheels work from the common hydraulic system."
+                },
+                {
+                  "name": "DOWN (emergency)",
+                  "text": "The wheels work from the main hydraulic system, if the common one is damaged."
+                }
+              ],
+              "text": "This switch chooses which oil system moves the wheels. A red cover protects it and must be lifted before the switch can be moved.",
+              "context": "Normally the gear works from the common hydraulics. If that system is damaged, the pilot switches to the main hydraulics.",
+              "src": "m1",
+              "page": "120"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "center-panel",
+      "where": "front-center",
+      "name": "Center panel",
+      "text": "This is the panel in the lower middle of the dashboard. It holds the weapon controls, the display controls for targeting, and the landing light and voice controls.",
+      "panels": [
+        {
+          "id": "weapons",
+          "name": "PUI-800 weapon status and control panel",
+          "db": "weapon-status-control-panel",
+          "src": "m1",
+          "page": "133",
+          "text": "This panel is the control board of the weapons. It tells the pilot which weapon is chosen and how many are left, and it has the main weapons safety switch.",
+          "context": "The pilot sets the cannon belt, burst length and weapon mode here before an attack. The cyclic and collective grips then fire the weapons.",
+          "controls": [
+            {
+              "id": "store-window",
+              "name": "STORE type window",
+              "type": "display",
+              "match": [
+                "item:weapon-status-control-panel:1"
+              ],
+              "text": "This small window shows a two-character sign for the chosen weapon type. The types are rockets, anti-tank missiles, bombs and external fuel tanks.",
+              "context": "The pilot changes the chosen weapon with the hat switch on the collective.",
+              "src": "m1",
+              "page": "133"
+            },
+            {
+              "id": "master-arm",
+              "name": "MASTER ARM switch",
+              "type": "switch2",
+              "match": [
+                "MASTER-ARM-PTR",
+                "item:weapon-status-control-panel:2"
+              ],
+              "positions": [
+                {
+                  "name": "ON",
+                  "text": "Up position: the weapons are armed and can be used."
+                },
+                {
+                  "name": "OFF",
+                  "text": "Down position: all weapons are safe and cannot be used."
+                }
+              ],
+              "text": "This is the main safety switch for the weapons. Nothing fires while it is off.",
+              "context": "The pilot switches it on shortly before an attack and off afterwards. A lamp on the right overhead panel shows MASTER ARM ON.",
+              "src": "m1",
+              "page": "133"
+            },
+            {
+              "id": "jett",
+              "name": "EXT ST - JETT button (emergency jettison)",
+              "type": "button",
+              "match": [
+                "PUI800-AVARCHOP-PTR",
+                "item:weapon-status-control-panel:3"
+              ],
+              "text": "Pressing this button drops all external loads in an emergency. Only the Vikhr missiles stay on.",
+              "context": "This makes the helicopter lighter. Jettison means dropping weapons or tanks in an emergency.",
+              "src": "m1",
+              "page": "133"
+            },
+            {
+              "id": "aa-mis",
+              "name": "EXT ST - AA MIS button",
+              "type": "button",
+              "match": [
+                "PUI800-AVARSTART-PTR",
+                "item:weapon-status-control-panel:4"
+              ],
+              "text": "In DCS this button has no function; the game lists it as not implemented. It is meant for the emergency drop of air-to-air missiles.",
+              "context": "The Black Shark does not use it.",
+              "src": "m1",
+              "page": "133"
+            },
+            {
+              "id": "he-api",
+              "name": "HE-API cannon belt selector",
+              "type": "switch2",
+              "match": [
+                "PUI800-OFBR-PTR",
+                "item:weapon-status-control-panel:5"
+              ],
+              "positions": [
+                {
+                  "name": "HE",
+                  "text": "High-explosive shells, good against soft targets."
+                },
+                {
+                  "name": "API",
+                  "text": "Armour-piercing incendiary shells, good against armoured targets."
+                }
+              ],
+              "text": "This switch chooses which ammunition the 30 mm cannon uses: explosive shells or armour-piercing shells.",
+              "context": "The pilot picks the type that fits the target before an attack.",
+              "src": "m1",
+              "page": "133"
+            },
+            {
+              "id": "burst",
+              "name": "LNG-MED-SHORT burst length switch",
+              "type": "switch3",
+              "match": [
+                "SR-PTR",
+                "item:weapon-status-control-panel:6"
+              ],
+              "positions": [
+                {
+                  "name": "LNG",
+                  "text": "Long burst."
+                },
+                {
+                  "name": "MED",
+                  "text": "Medium burst."
+                },
+                {
+                  "name": "SHORT",
+                  "text": "Short burst."
+                }
+              ],
+              "text": "This switch sets how long one burst of cannon fire lasts. It also sets how many rockets go at once and whether the Vikhr missiles go one at a time or in pairs.",
+              "context": "A short burst saves ammunition and a long burst puts more shells on the target.",
+              "src": "m1",
+              "page": "133"
+            },
+            {
+              "id": "man-auto",
+              "name": "MAN-AUTO weapon control switch",
+              "type": "switch2",
+              "match": [
+                "PUI800-AUTO-PTR",
+                "item:weapon-status-control-panel:7"
+              ],
+              "positions": [
+                {
+                  "name": "MAN",
+                  "text": "Up: manual weapon and sensor control, without computed launch permission and automatic gate size."
+                },
+                {
+                  "name": "AUTO",
+                  "text": "Down: automatic control, the normal mode."
+                }
+              ],
+              "text": "This switch chooses between manual and automatic control of the weapons and sensors. In automatic mode the computer helps with aiming.",
+              "context": "The manual says to use manual mode only when the automatic mode does not work.",
+              "src": "m1",
+              "page": "134"
+            },
+            {
+              "id": "ready-lamps",
+              "name": "Weapon readiness and presence lamps",
+              "type": "light",
+              "match": [
+                "item:weapon-status-control-panel:8",
+                "item:weapon-status-control-panel:9"
+              ],
+              "text": "There are four green lamps and four yellow lamps, one pair per hardpoint (weapon station under the wing). A yellow lamp means a weapon is loaded there. A green lamp means it is ready to fire.",
+              "context": "The pilot checks them before an attack to see which stations are armed.",
+              "src": "m1",
+              "page": "134"
+            },
+            {
+              "id": "remaining",
+              "name": "Weapons and cannon rounds remaining",
+              "type": "display",
+              "match": [
+                "item:weapon-status-control-panel:10",
+                "item:weapon-status-control-panel:11"
+              ],
+              "text": "The first two-digit display shows how many of the chosen rockets or Vikhr missiles are left. The second shows the cannon rounds left, in tens.",
+              "context": "The cannon figure follows the chosen ammunition type.",
+              "src": "m1",
+              "page": "134"
+            },
+            {
+              "id": "atgm-jett",
+              "name": "ATGM JETT switch",
+              "type": "switch",
+              "match": [
+                "MASTER-UNLOAD-PTR",
+                "item:weapon-status-control-panel:12"
+              ],
+              "text": "While this switch is held down, all Vikhr missiles fly off their launchers fast without guidance. The Vikhr is the laser-guided anti-tank missile.",
+              "context": "It is an emergency way to get rid of the missiles. The switch springs back when released.",
+              "src": "m1",
+              "page": "134"
+            },
+            {
+              "id": "weap-arm",
+              "name": "WEAP ARM switch (jettison armed or safe)",
+              "type": "switch2",
+              "match": [
+                "MASTER-EXPLODE-PTR",
+                "item:weapon-status-control-panel:13"
+              ],
+              "positions": [
+                {
+                  "name": "ARM",
+                  "text": "The weapons are armed when they are dropped."
+                },
+                {
+                  "name": "OFF",
+                  "text": "The weapons are not armed when they are dropped."
+                }
+              ],
+              "text": "This switch decides if dropped weapons are armed or safe when they are jettisoned.",
+              "context": "It matters only when the pilot uses the emergency jettison.",
+              "src": "m1",
+              "page": "134"
+            },
+            {
+              "id": "rate",
+              "name": "LOW-HIGH cannon rate of fire switch",
+              "type": "switch2",
+              "match": [
+                "MT-PTR",
+                "item:weapon-status-control-panel:14"
+              ],
+              "positions": [
+                {
+                  "name": "LOW",
+                  "text": "Slow rate of fire."
+                },
+                {
+                  "name": "HIGH",
+                  "text": "Fast rate of fire."
+                }
+              ],
+              "text": "This switch sets how fast the 30 mm cannon fires.",
+              "context": "A low rate saves ammunition. A high rate puts more shells on the target quickly.",
+              "src": "m1",
+              "page": "134"
+            }
+          ]
+        },
+        {
+          "id": "targeting-display",
+          "name": "Targeting display control panel",
+          "db": "targeting-display-control-panel",
+          "src": "m1",
+          "page": "135",
+          "text": "This panel is under the weapon panel. It sets how the helmet sight, the Shkval screen and the HUD look, and which laser code is used.",
+          "context": "The Shkval is the TV targeting camera in the nose. The pilot adjusts these controls to see the picture and the symbols clearly.",
+          "controls": [
+            {
+              "id": "hms-brt",
+              "name": "HMS BRT knob (helmet sight brightness)",
+              "type": "knob",
+              "match": [
+                "PUR-LIGHTNVU-PTR",
+                "item:targeting-display-control-panel:1"
+              ],
+              "text": "Turning this knob makes the aiming mark of the helmet sight and the night vision goggles brighter or darker.",
+              "context": "The helmet sight is a small display on the pilot's helmet that shows marks where the pilot looks. It must be switched on at the left panel first.",
+              "src": "m1",
+              "page": "135"
+            },
+            {
+              "id": "shk-polarity",
+              "name": "SHK picture polarity switch (WHITE - BLACK)",
+              "type": "switch2",
+              "match": [
+                "PUR-BACKGROUND-PTR",
+                "item:targeting-display-control-panel:2"
+              ],
+              "positions": [
+                {
+                  "name": "WHITE",
+                  "text": "The picture is shown with white indications."
+                },
+                {
+                  "name": "BLACK",
+                  "text": "The picture is shown with black indications."
+                }
+              ],
+              "text": "This switch chooses whether the symbols and marks on the Shkval screen are drawn in white or in black.",
+              "context": "The pilot picks the one that can be read better on the picture.",
+              "src": "m1",
+              "page": "135"
+            },
+            {
+              "id": "hud-dec",
+              "name": "HUD DEC - NORM declutter switch",
+              "type": "switch2",
+              "match": [
+                "PUR-OGR-INF-PTR",
+                "item:targeting-display-control-panel:3"
+              ],
+              "positions": [
+                {
+                  "name": "DEC",
+                  "text": "Declutter: only the targeting information is shown."
+                },
+                {
+                  "name": "NORM",
+                  "text": "Normal: all information is shown."
+                }
+              ],
+              "text": "This switch removes less important symbols from the HUD, so the screen is less crowded.",
+              "context": "With the clutter removed, only the targeting information stays on the HUD.",
+              "src": "m1",
+              "page": "135"
+            },
+            {
+              "id": "laser-code",
+              "name": "Laser code selector",
+              "type": "selector",
+              "match": [
+                "PUR-LIT-PTR",
+                "item:targeting-display-control-panel:4"
+              ],
+              "text": "This three-position dial chooses the laser code the Shkval uses when it lights up a target.",
+              "context": "The pilot sets it before marking a target with the laser.",
+              "src": "m1",
+              "page": "135"
+            },
+            {
+              "id": "tv-brt",
+              "name": "TV BRT knob (Shkval screen brightness)",
+              "type": "knob",
+              "match": [
+                "PUR-LIGHTIT-PTR",
+                "item:targeting-display-control-panel:5"
+              ],
+              "text": "Turning this knob makes the Shkval TV screen brighter or darker.",
+              "context": "The pilot sets it to see the picture clearly in the light of the day.",
+              "src": "m1",
+              "page": "135"
+            },
+            {
+              "id": "tv-cont",
+              "name": "TV CONT knob (Shkval screen contrast)",
+              "type": "knob",
+              "match": [
+                "PUR-CONTRAST-PTR",
+                "item:targeting-display-control-panel:6"
+              ],
+              "text": "Turning this knob changes the contrast of the Shkval TV screen. A higher contrast makes the difference between light and dark bigger.",
+              "context": "It is used together with the brightness knob.",
+              "src": "m1",
+              "page": "135"
+            },
+            {
+              "id": "tr-off",
+              "name": "TR - OFF switch",
+              "type": "switch",
+              "match": [
+                "PUR-TR-PTR",
+                "item:targeting-display-control-panel:7"
+              ],
+              "text": "In DCS this switch has no function. It is labelled for a tracer, a light trail.",
+              "context": "The Black Shark does not use it.",
+              "src": "m1",
+              "page": "135"
+            },
+            {
+              "id": "filters",
+              "name": "Colour optic filters dial",
+              "type": "knob",
+              "match": [
+                "PUR-SF-PTR"
+              ],
+              "text": "This dial is meant to adjust the Shkval optics for different weather. In DCS it has no function.",
+              "context": "The Black Shark does not use it.",
+              "src": "m1",
+              "page": "136"
+            }
+          ]
+        },
+        {
+          "id": "landing-voice",
+          "name": "Landing lights and voice warning (Betty) control panel",
+          "db": "landing-lights-voice-panel",
+          "src": "m1",
+          "page": "136",
+          "text": "This panel is in the lower part of the centre panel. It controls the landing light, the radio beacon choice and the voice that speaks warnings.",
+          "context": "The landing light lights the spot where the helicopter lands. The voice, called Betty, speaks the warnings that the EKRAN system finds.",
+          "controls": [
+            {
+              "id": "main-backup",
+              "name": "MAIN - BACKUP landing light switch",
+              "type": "switch2",
+              "match": [
+                "LANDING?LIGHTS-BASE-RESERV-PTR",
+                "item:landing-lights-voice-panel:1"
+              ],
+              "positions": [
+                {
+                  "name": "MAIN",
+                  "text": "The main landing light is chosen."
+                },
+                {
+                  "name": "BACKUP",
+                  "text": "The backup landing light is chosen."
+                }
+              ],
+              "text": "This switch chooses which of the two landing lights is used, the main one or the spare one.",
+              "context": "The pilot can also use the landing light hat on the collective, whatever this switch says.",
+              "src": "m1",
+              "page": "136"
+            },
+            {
+              "id": "ldg-light",
+              "name": "LDG LIGHT - RETRACT switch",
+              "type": "switch3",
+              "match": [
+                "LANDING?LIGHTS-DIR-LIGHT-PTR",
+                "item:landing-lights-voice-panel:2"
+              ],
+              "positions": [
+                {
+                  "name": "ON",
+                  "text": "The light extends and turns on."
+                },
+                {
+                  "name": "OFF",
+                  "text": "The light is off."
+                },
+                {
+                  "name": "RETRACT",
+                  "text": "The light turns off and folds back into the fuselage."
+                }
+              ],
+              "text": "This switch switches the main landing light on and moves it in or out. The light sits under the fuselage and can be moved to point where the pilot wants.",
+              "context": "The light can be turned with the hat on the collective. The pilot folds it away after landing.",
+              "src": "m1",
+              "page": "136"
+            },
+            {
+              "id": "ndb-mode",
+              "name": "NDB INNER - AUT - OUTER switch",
+              "type": "switch3",
+              "match": [
+                "IANDING?LIGHTS-DIR-LIGHT-PTR01",
+                "item:landing-lights-voice-panel:3"
+              ],
+              "positions": [
+                {
+                  "name": "INNER",
+                  "text": "The direction finder uses the inner beacon of the airfield."
+                },
+                {
+                  "name": "AUT",
+                  "text": "Not implemented in this helicopter."
+                },
+                {
+                  "name": "OUTER",
+                  "text": "The direction finder uses the outer beacon of the airfield."
+                }
+              ],
+              "text": "This switch chooses which of the two radio beacons at an airfield the direction finder follows: the outer one or the inner one.",
+              "context": "The beacons are used for a landing approach with the ADF. The AUT position is not used in the helicopter.",
+              "src": "m1",
+              "page": "136"
+            },
+            {
+              "id": "voice-off",
+              "name": "VOICE WARN OFF button",
+              "type": "button",
+              "match": [
+                "SPEECH-INFO-OFF-PTR01",
+                "item:landing-lights-voice-panel:4"
+              ],
+              "text": "Pressing this button stops the voice message that is being spoken.",
+              "context": "The pilot uses it when the message is already understood.",
+              "src": "m1",
+              "page": "137"
+            },
+            {
+              "id": "voice-repeat",
+              "name": "VOICE WARN REPEAT button",
+              "type": "button",
+              "match": [
+                "SPEECH-INFO-RETRY-PTR",
+                "item:landing-lights-voice-panel:5"
+              ],
+              "text": "Pressing this button plays the active warning messages again.",
+              "context": "The pilot uses it when a message was missed.",
+              "src": "m1",
+              "page": "137"
+            },
+            {
+              "id": "voice-mode",
+              "name": "VOICE WARN ON - EMERG switch",
+              "type": "switch2",
+              "match": [
+                "SPEECH-INFO-AVAR-PTR",
+                "item:landing-lights-voice-panel:6"
+              ],
+              "positions": [
+                {
+                  "name": "ON",
+                  "text": "Normal mode."
+                },
+                {
+                  "name": "EMERG",
+                  "text": "Emergency mode: all EKRAN messages are doubled by the voice."
+                }
+              ],
+              "text": "This switch chooses how much the voice speaks. In the emergency mode every EKRAN message is also spoken.",
+              "context": "The EKRAN is the text warning display on the right forward panel.",
+              "src": "m1",
+              "page": "137"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "right-forward",
+      "where": "front-right",
+      "name": "Right forward panel",
+      "text": "This is the right part of the dashboard. It holds the map screen, the engine and fuel gauges and the text warning display.",
+      "panels": [
+        {
+          "id": "right-forward",
+          "name": "Right forward panel (ABRIS and engine gauges)",
+          "db": "right-forward-panel",
+          "src": "m1",
+          "page": "92",
+          "text": "This is the panel on the right of the dashboard. The big moving-map screen is the ABRIS. Around it are the engine and fuel gauges, the standby horizon and the text warning display.",
+          "context": "The pilot looks at the engine gauges during start-up and flight. The ABRIS shows the map and the route.",
+          "controls": [
+            {
+              "id": "cockpit-lamps",
+              "name": "Cockpit light and night light",
+              "type": "other",
+              "match": [
+                "item:right-forward-panel:1",
+                "item:right-forward-panel:5"
+              ],
+              "text": "These are two lamps for the cockpit. The manual lists them on this panel but does not describe how they are used.",
+              "context": "They are part of the right forward panel.",
+              "src": "m1",
+              "page": "92"
+            },
+            {
+              "id": "ekran",
+              "name": "EKRAN warning display",
+              "type": "display",
+              "match": [
+                "item:right-forward-panel:2"
+              ],
+              "text": "This small screen shows text warnings about the helicopter's systems. It has three lights: FAIL, MEMORY and TURN.",
+              "context": "The EKRAN needs the EKRAN HYD TRANS PWR switch on the rear panel. It tests the systems before the flight and reports failures during it.",
+              "src": "m1",
+              "page": "104"
+            },
+            {
+              "id": "sai",
+              "name": "Standby attitude indicator (SAI)",
+              "type": "gauge",
+              "match": [
+                "item:right-forward-panel:3",
+                "RES-AGD-PTR"
+              ],
+              "text": "This is the backup artificial horizon. It shows if the nose is up or down and if the helicopter leans. A handle on it cages the gyro, pushes to test, and turns to set the pitch scale.",
+              "context": "It is powered by the STANDBY SAI switch on the wall panel. The gyro should be uncaged about 60 seconds after power on.",
+              "src": "m1",
+              "page": "114"
+            },
+            {
+              "id": "vent",
+              "name": "Cockpit air conditioner vent",
+              "type": "other",
+              "match": [
+                "item:right-forward-panel:4"
+              ],
+              "text": "This is an air vent of the cockpit. The manual lists it but gives no further description.",
+              "context": "It is part of the right forward panel.",
+              "src": "m1",
+              "page": "92"
+            },
+            {
+              "id": "egt-test-run",
+              "name": "Engine EGT TEST RUN button",
+              "type": "button",
+              "match": [
+                "CONTROL-TEMP-WORK-PTR",
+                "item:right-forward-panel:6"
+              ],
+              "text": "Pressing this button tests the exhaust temperature gauge while the engines run. The gauge should then show no more than 150 degrees Celsius.",
+              "context": "The pilot uses it during the checks.",
+              "src": "m1",
+              "page": "116"
+            },
+            {
+              "id": "egt-test-stop",
+              "name": "Engine EGT TEST STOP button",
+              "type": "button",
+              "match": [
+                "CONTROL-TEMP-NOTWORK-PTR"
+              ],
+              "text": "Pressing this button tests the exhaust temperature gauge while the engines are stopped. The gauge should then show no more than 800 degrees Celsius.",
+              "context": "The pilot uses it during the checks.",
+              "src": "m1",
+              "page": "116"
+            },
+            {
+              "id": "egt",
+              "name": "Exhaust gas temperature indicator (EGT)",
+              "type": "gauge",
+              "match": [
+                "item:right-forward-panel:7"
+              ],
+              "text": "This gauge shows the temperature of the hot gas leaving each engine. The large scale reads hundreds of degrees Celsius and the small scale reads tens.",
+              "context": "The pilot watches it during engine start to make sure the engine does not get too hot.",
+              "src": "m1",
+              "page": "115"
+            },
+            {
+              "id": "engine-rpm",
+              "name": "Dual engine RPM indicator",
+              "type": "gauge",
+              "match": [
+                "item:right-forward-panel:8"
+              ],
+              "text": "This gauge has two needles, one for each engine. It shows how fast the engine turbines turn as a percentage. It needs no electricity.",
+              "context": "Idle is about 72 to 78 percent and normal flight about 95 percent.",
+              "src": "m1",
+              "page": "116"
+            },
+            {
+              "id": "fuel-qty",
+              "name": "Fuel quantity indicator",
+              "type": "gauge",
+              "match": [
+                "item:right-forward-panel:9"
+              ],
+              "text": "This gauge shows how much fuel is left in the front tank and in the rear tank, in kilograms. It has two needles and two small lamps marked F and A.",
+              "context": "When either tank falls to 110 kilograms, the master light flashes and the EKRAN shows a message.",
+              "src": "m1",
+              "page": "117"
+            },
+            {
+              "id": "fuel-test",
+              "name": "FUEL TEST button",
+              "type": "button",
+              "match": [
+                "CONTROL-OIL-PTR"
+              ],
+              "text": "Pressing this button tests the fuel gauge. The needles move to the values worked out from the fuel that is left, and both tank lamps light.",
+              "context": "The pilot uses it during the checks. The game places the button with the fuel system controls.",
+              "src": "m1",
+              "page": "117"
+            },
+            {
+              "id": "abris",
+              "name": "ABRIS display",
+              "type": "screen",
+              "match": [
+                "item:right-forward-panel:14"
+              ],
+              "text": "This is the colour screen with a moving map. It shows the helicopter's position, the route and the situation around it.",
+              "context": "The ABRIS works with the PVI-800 navigation panel. It uses satellite navigation.",
+              "src": "m1",
+              "page": "188"
+            },
+            {
+              "id": "abris-power",
+              "name": "ABRIS ON/OFF switch",
+              "type": "switch2",
+              "match": [
+                "ABRIS-POWER_PTR",
+                "item:right-forward-panel:13"
+              ],
+              "positions": [
+                {
+                  "name": "ON",
+                  "text": "The ABRIS has power."
+                },
+                {
+                  "name": "OFF",
+                  "text": "The ABRIS is off."
+                }
+              ],
+              "text": "This switch turns the ABRIS display on and off.",
+              "context": "The pilot switches it on early in the start-up.",
+              "src": "m1",
+              "page": "93"
+            },
+            {
+              "id": "abris-bright",
+              "name": "ABRIS brightness knob",
+              "type": "knob",
+              "match": [
+                "ABRIS_BRIGHTNESS_PTR",
+                "item:right-forward-panel:12"
+              ],
+              "text": "Turning this knob makes the ABRIS screen brighter or darker.",
+              "context": "It sits at the left of the five buttons below the screen.",
+              "src": "m1",
+              "page": "189"
+            },
+            {
+              "id": "abris-buttons",
+              "name": "ABRIS function buttons 1-5",
+              "type": "button",
+              "match": [
+                "PTR_BTN-ABRIS-0?",
+                "item:right-forward-panel:11"
+              ],
+              "count": 5,
+              "text": "These five buttons sit below the screen. Each one picks the word printed above it on the screen, so the same button does different things on different pages.",
+              "context": "The pilot uses them to change the map page, the scale and the route.",
+              "src": "m1",
+              "page": "188"
+            },
+            {
+              "id": "abris-cursor",
+              "name": "ABRIS cursor knob",
+              "type": "knob",
+              "match": [
+                "ABRIS_SHUNT_PTR",
+                "item:right-forward-panel:10"
+              ],
+              "text": "Turning this knob moves the cursor on the map screen. Pressing it switches between moving left and right and moving up and down.",
+              "context": "It is also used to type letters and numbers and to pick menu items.",
+              "src": "m1",
+              "page": "189"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "overhead",
+      "where": "overhead",
+      "name": "Overhead panel",
+      "text": "This is the panel above the pilot's head. It holds the exterior lights, the de-icing switches, the data link panel and the flare dispenser panel.",
+      "panels": [
+        {
+          "id": "overhead-left",
+          "name": "Overhead panel, left side (lights, wiper and heating)",
+          "db": "overhead-panel-left",
+          "src": "m1",
+          "page": "121",
+          "text": "This panel is above the pilot's head on the left. It has the switches for the outside lights, the windshield wiper and the heating of sensors. The windshield is the glass in front.",
+          "context": "The pilot uses it for night flying and in cold or wet weather. Ice on sensors can give wrong speed readings.",
+          "controls": [
+            {
+              "id": "nav-lights",
+              "name": "Navigation lights brightness switch",
+              "type": "switch",
+              "match": [
+                "ANO-PTR",
+                "item:overhead-panel-left:1"
+              ],
+              "positions": [
+                {
+                  "name": "OFF",
+                  "text": "The lights are off."
+                },
+                {
+                  "name": "10%",
+                  "text": "Dim light, ten percent."
+                },
+                {
+                  "name": "30%",
+                  "text": "Medium light, thirty percent."
+                },
+                {
+                  "name": "100%",
+                  "text": "Full brightness."
+                }
+              ],
+              "text": "This switch sets how bright the red, green and white lights on the wing tips and tail are. Each click on the switch goes one step further.",
+              "context": "A right click holds the NAV LIGHTS position, which can send light signals like Morse code when the radio does not work.",
+              "src": "m1",
+              "page": "121"
+            },
+            {
+              "id": "wiper",
+              "name": "Windshield wiper switch",
+              "type": "switch",
+              "match": [
+                "WINDSCREEN-WIPER-PTR",
+                "item:overhead-panel-left:2"
+              ],
+              "positions": [
+                {
+                  "name": "OFF",
+                  "text": "The wiper is off."
+                },
+                {
+                  "name": "Speed 1",
+                  "text": "First wiper speed."
+                },
+                {
+                  "name": "Speed 2",
+                  "text": "Second wiper speed."
+                },
+                {
+                  "name": "Speed 3",
+                  "text": "Third wiper speed."
+                }
+              ],
+              "text": "This switch runs the wiper that cleans the windshield. It has off and three speeds. A right click returns the wiper to its rest place.",
+              "context": "The pilot uses it in rain or snow.",
+              "src": "m1",
+              "page": "121"
+            },
+            {
+              "id": "washer",
+              "name": "Windshield washer switch",
+              "type": "switch",
+              "match": [
+                "FEEDING-OZH-PTR",
+                "item:overhead-panel-left:3"
+              ],
+              "text": "In DCS this switch has no function. It is the switch for the washer liquid of the windshield.",
+              "context": "The Black Shark does not use it.",
+              "src": "m1",
+              "page": "121"
+            },
+            {
+              "id": "ohl-brightness",
+              "name": "Brightness knob",
+              "type": "knob",
+              "match": [
+                "BRIGHTNESS-PTR",
+                "item:overhead-panel-left:4"
+              ],
+              "text": "The game names this knob Warning Lights Brightness. According to the manual it has no function in DCS.",
+              "context": "The Black Shark does not use it.",
+              "src": "m1",
+              "page": "121"
+            },
+            {
+              "id": "pitot-static",
+              "name": "Pitot static port and AoA sensor heat switch",
+              "type": "switch2",
+              "match": [
+                "PPD-DUAS-PTR",
+                "item:overhead-panel-left:5"
+              ],
+              "positions": [
+                {
+                  "name": "ON",
+                  "text": "Up: the sensors are heated."
+                },
+                {
+                  "name": "OFF",
+                  "text": "Down: no heating."
+                }
+              ],
+              "text": "This switch heats the air-pressure ports and the angle-of-attack and side-slip sensors outside, so ice cannot form on them.",
+              "context": "Ice on these parts can make the speed reading wrong. The pilot switches it on in cold weather.",
+              "src": "m1",
+              "page": "121"
+            },
+            {
+              "id": "pitot-ram",
+              "name": "Pitot ram air and clock heat switch",
+              "type": "switch2",
+              "match": [
+                "PVD-CLOCK-PTR",
+                "item:overhead-panel-left:6"
+              ],
+              "positions": [
+                {
+                  "name": "ON",
+                  "text": "Up: the pitot tube and the clock are heated."
+                },
+                {
+                  "name": "OFF",
+                  "text": "Down: no heating."
+                }
+              ],
+              "text": "This switch heats the pitot tube, the small tube that measures speed, and the on-board clock.",
+              "context": "Without heat the clock may drift. The pilot switches it on in cold weather.",
+              "src": "m1",
+              "page": "121"
+            },
+            {
+              "id": "windshield-heater",
+              "name": "Windshield heater switch",
+              "type": "switch2",
+              "match": [
+                "item:overhead-panel-left:7"
+              ],
+              "positions": [
+                {
+                  "name": "ON",
+                  "text": "The windshield is heated."
+                },
+                {
+                  "name": "OFF",
+                  "text": "No heating."
+                }
+              ],
+              "text": "This switch heats the windshield. A lamp on the right overhead panel shows that the heater is on.",
+              "context": "The pilot uses it in cold weather.",
+              "src": "m1",
+              "page": "122"
+            },
+            {
+              "id": "compass",
+              "name": "Magnetic compass",
+              "type": "gauge",
+              "match": [
+                "item:overhead-panel-left:8"
+              ],
+              "text": "This is a liquid-filled compass that needs no electricity. It is the backup for the other navigation instruments.",
+              "context": "It does not show the true heading because of magnetic variation and the helicopter's own magnetism.",
+              "src": "m1",
+              "page": "122"
+            },
+            {
+              "id": "ohl-lamps",
+              "name": "Left overhead warning and advisory lamps",
+              "type": "light",
+              "match": [],
+              "text": "Lamps on this panel show which autopilot modes are on and which route steps are active. They also show that weapons are armed, fuel is shared between tanks and the turbo gear is connected.",
+              "context": "These lamps are read, not clicked. They tell the pilot the state of the autopilot and the route.",
+              "src": "m1",
+              "page": "122"
+            }
+          ]
+        },
+        {
+          "id": "overhead-right",
+          "name": "Overhead panel, right side (de-icing and message lamps)",
+          "db": "overhead-panel-right",
+          "src": "m1",
+          "page": "123",
+          "text": "This panel is above the pilot's head on the right. It has the switches that keep the rotors and engines free of ice, and a field of message lamps.",
+          "context": "The pilot uses the switches in cold air. The lamps tell about weapons, the computers, the engines and the fuel pumps.",
+          "controls": [
+            {
+              "id": "rotor-deice",
+              "name": "Rotor de-icing switch",
+              "type": "switch2",
+              "match": [
+                "POS-ROTORS-PTR",
+                "item:overhead-panel-right:1"
+              ],
+              "positions": [
+                {
+                  "name": "ON",
+                  "text": "Up: the rotor blades are heated."
+                },
+                {
+                  "name": "OFF",
+                  "text": "Down: no heating."
+                }
+              ],
+              "text": "This switch warms the rotor blades so they do not ice up.",
+              "context": "Ice on the blades takes away much of the lift, so the pilot turns it on when operating in cold air.",
+              "src": "m1",
+              "page": "123"
+            },
+            {
+              "id": "engine-deice",
+              "name": "Engine de-icing and dust protection switch",
+              "type": "switch",
+              "match": [
+                "POS-ENGINE-PZU-PTR",
+                "item:overhead-panel-right:2"
+              ],
+              "text": "This switch protects the engine air intakes. It can warm them so they do not ice up, and it also switches on a dust protection.",
+              "context": "Ice or dust that blocks the intakes would starve the engines of air. Lamps on this panel show which protection is on.",
+              "src": "m1",
+              "page": "123"
+            },
+            {
+              "id": "pitot-lamps",
+              "name": "Pitot heat lamps",
+              "type": "light",
+              "match": [
+                "item:overhead-panel-right:3"
+              ],
+              "text": "Two lamps show that the left and the right pitot tube heating work.",
+              "context": "They light when the pitot heat is on and works, or when the test button is pressed.",
+              "src": "m1",
+              "page": "123"
+            },
+            {
+              "id": "pitot-test",
+              "name": "Pitot heat test button",
+              "type": "button",
+              "match": [
+                "KONTR-PVD-PTR",
+                "item:overhead-panel-right:4"
+              ],
+              "text": "Pressing this button lights the two pitot heat lamps, if the pitot heating is on.",
+              "context": "It checks that the lamps and the heating work.",
+              "src": "m1",
+              "page": "123"
+            },
+            {
+              "id": "fan",
+              "name": "Ventilation fan switch",
+              "type": "switch",
+              "match": [
+                "item:overhead-panel-right:5"
+              ],
+              "text": "In DCS this switch has no function. It is the switch of the cockpit fan.",
+              "context": "The Black Shark does not use it.",
+              "src": "m1",
+              "page": "123"
+            },
+            {
+              "id": "ohr-lamps",
+              "name": "Right overhead message lamps",
+              "type": "light",
+              "match": [],
+              "text": "This field of lamps shows messages: master arm is on, training mode, HMS or HUD fault, the computers, the inverter, the de-icing and dust protection, the engine power limit, the heater and the fuel pumps and valves.",
+              "context": "These lamps are read, not clicked. They give a quick view of the state of the weapons, the engines and the fuel.",
+              "src": "m1",
+              "page": "124"
+            }
+          ]
+        },
+        {
+          "id": "datalink",
+          "name": "PRTz data link control panel",
+          "db": "data-link-control-panel",
+          "src": "m1",
+          "page": "126",
+          "text": "This panel sends and receives target information between the helicopters of one flight. The pilot picks the kind of target and who gets it, then sends it.",
+          "context": "A datalink shares positions of friends and targets between aircraft by radio. This panel works together with the weapon control system and the PVTz-800 mode panel on the right.",
+          "controls": [
+            {
+              "id": "dl-t1",
+              "name": "Target #1 button (vehicle)",
+              "type": "button",
+              "match": [
+                "PRC-TARGET-1-PTR",
+                "item:data-link-control-panel:1"
+              ],
+              "text": "This button says that the target to send or receive is a vehicle.",
+              "context": "The pilot presses it before sending a target to a wingman.",
+              "src": "m1",
+              "page": "126"
+            },
+            {
+              "id": "dl-t2",
+              "name": "Target #2 button (SAM / AAA)",
+              "type": "button",
+              "match": [
+                "PRC-TARGET-2-PTR",
+                "item:data-link-control-panel:2"
+              ],
+              "text": "This button says that the target is an air-defence weapon, a missile or gun that shoots at aircraft.",
+              "context": "The pilot presses it before sending such a target.",
+              "src": "m1",
+              "page": "126"
+            },
+            {
+              "id": "dl-t3",
+              "name": "Target #3 button (other)",
+              "type": "button",
+              "match": [
+                "PRC-TARGET-3-PTR",
+                "item:data-link-control-panel:7"
+              ],
+              "text": "This button says that the target is neither a vehicle nor an air-defence weapon.",
+              "context": "The pilot presses it before sending such a target.",
+              "src": "m1",
+              "page": "126"
+            },
+            {
+              "id": "dl-ip",
+              "name": "Initial point button",
+              "type": "button",
+              "match": [
+                "PRC-TARGET-POINT-PTR",
+                "item:data-link-control-panel:8"
+              ],
+              "text": "This button sends or receives an initial point, a place where an attack starts, for example an ambush position.",
+              "context": "It works like the target buttons, but sends a point instead of a target.",
+              "src": "m1",
+              "page": "126"
+            },
+            {
+              "id": "dl-wingman",
+              "name": "To wingman 1-4 buttons",
+              "type": "button",
+              "match": [
+                "PRC-WINGMAN-?-PTR",
+                "item:data-link-control-panel:3",
+                "item:data-link-control-panel:4",
+                "item:data-link-control-panel:5",
+                "item:data-link-control-panel:9"
+              ],
+              "count": 4,
+              "text": "These four buttons choose which wingman gets the data. Each button is one wingman, number 1 to 4.",
+              "context": "A data link group has at most four helicopters. The pilot chooses the receiver and then presses SEND.",
+              "src": "m1",
+              "page": "126"
+            },
+            {
+              "id": "dl-all",
+              "name": "DL TO ALL button",
+              "type": "button",
+              "match": [
+                "PRC-WINGMAN-ALL-PTR",
+                "item:data-link-control-panel:10"
+              ],
+              "text": "This button sends the data to the whole flight, not to one wingman.",
+              "context": "The pilot chooses the data type and then presses SEND.",
+              "src": "m1",
+              "page": "127"
+            },
+            {
+              "id": "dl-clear",
+              "name": "CLEAR button",
+              "type": "button",
+              "match": [
+                "PRC-ERASE-PTR",
+                "item:data-link-control-panel:6"
+              ],
+              "text": "Pressing this button wipes the chosen target type and receiver, so the pilot can start again.",
+              "context": "It is used after a wrong choice. The game calls this button ERASE in its list of controls.",
+              "src": "m1",
+              "page": "126"
+            },
+            {
+              "id": "dl-send",
+              "name": "SEND/MEM button",
+              "type": "button",
+              "match": [
+                "PRC-SEND-PTR",
+                "item:data-link-control-panel:12"
+              ],
+              "text": "This button sends the chosen data. When data comes in from another helicopter, pressing it accepts the data.",
+              "context": "It is the last button of the sequence: type, receiver, send.",
+              "src": "m1",
+              "page": "127"
+            },
+            {
+              "id": "dl-ingress",
+              "name": "DL INGRESS button",
+              "type": "button",
+              "match": [
+                "PRC-ESCAPE-PTR",
+                "item:data-link-control-panel:11"
+              ],
+              "text": "This button turns the helicopter towards a target that came in over the data link. The button lights up while the mode is on.",
+              "context": "Pressing it again turns the mode off.",
+              "src": "m1",
+              "page": "127"
+            },
+            {
+              "id": "dl-clean",
+              "name": "CLEAN button (game name)",
+              "type": "button",
+              "match": [
+                "PRC-CLEAN-PTR"
+              ],
+              "text": "The game has one more button on this panel, named CLEAN in its control list without any description. The manual does not describe it.",
+              "context": "It belongs to the data link target handling.",
+              "src": "m1",
+              "page": "126"
+            }
+          ]
+        },
+        {
+          "id": "lwr",
+          "name": "LWR panel (laser warning receiver)",
+          "src": "m2",
+          "page": "123",
+          "text": "This small panel warns the pilot when a laser beam hits the helicopter. Lamps show the direction the beam comes from, and a button clears the lamps.",
+          "context": "Ground vehicles often use a laser to measure the distance before they shoot, so a lit lamp means somebody may be aiming at the helicopter. The panel needs the L-140 power switch on the rear panel.",
+          "controls": [
+            {
+              "id": "lwr-lamps",
+              "name": "Laser bearing, hemisphere, range-finding and guidance lamps",
+              "type": "light",
+              "match": [],
+              "text": "Four red lamps show from which side the laser comes: front, back, left or right. Two more lamps show whether the source is above or below. One lamp shows range-finding and one shows guidance of a weapon.",
+              "context": "A lamp stays lit until the reset button is pressed, even after the laser stops.",
+              "src": "m2",
+              "page": "123"
+            },
+            {
+              "id": "lwr-reset",
+              "name": "Reset LWR button",
+              "type": "button",
+              "match": [
+                "L-140-RESET-PTR"
+              ],
+              "text": "Pressing this button switches off all the lit lamps of the laser warning panel.",
+              "context": "The pilot presses it after an alert to be ready for the next one.",
+              "src": "m2",
+              "page": "123"
+            }
+          ]
+        },
+        {
+          "id": "uv26",
+          "name": "UV-26 countermeasures control panel",
+          "db": "uv-26-panel",
+          "src": "m1",
+          "page": "128",
+          "text": "This panel sets and starts the flare dispensers on the wing tips. Flares are hot burning decoys that fool heat-seeking missiles.",
+          "context": "The pilot sets the program on the ground and starts it when a missile is coming. The system needs the UV-26 power switch on the rear panel first.",
+          "controls": [
+            {
+              "id": "uv-display",
+              "name": "Program display and side lamps",
+              "type": "display",
+              "match": [
+                "item:uv-26-panel:1",
+                "item:uv-26-panel:2",
+                "item:uv-26-panel:7"
+              ],
+              "text": "This display shows the program or the flares left. The lamps at its sides show from which dispenser the flares go, left, right or both.",
+              "context": "The QUANT-NUM switch decides what the numbers mean.",
+              "src": "m1",
+              "page": "128"
+            },
+            {
+              "id": "uv-side",
+              "name": "SIDE switch (LEFT - BOTH - RIGHT)",
+              "type": "switch3",
+              "match": [
+                "UV26-BOARD-PTR",
+                "item:uv-26-panel:3"
+              ],
+              "positions": [
+                {
+                  "name": "LEFT",
+                  "text": "Flares from the left dispenser only."
+                },
+                {
+                  "name": "BOTH",
+                  "text": "Flares from both dispensers."
+                },
+                {
+                  "name": "RIGHT",
+                  "text": "Flares from the right dispenser only."
+                }
+              ],
+              "text": "This switch chooses which wing dispenser throws the flares.",
+              "context": "The matching side lamp lights.",
+              "src": "m1",
+              "page": "128"
+            },
+            {
+              "id": "uv-numseq",
+              "name": "NUM SEQ button",
+              "type": "button",
+              "match": [
+                "UV26-SERIES-PTR",
+                "item:uv-26-panel:4"
+              ],
+              "text": "Each press chooses another number of repeats of the program. Zero means the flares keep coming until stopped.",
+              "context": "It sets the first digit of the program code.",
+              "src": "m1",
+              "page": "128"
+            },
+            {
+              "id": "uv-salvo",
+              "name": "SALVO button",
+              "type": "button",
+              "match": [
+                "UV26-BURST-PTR",
+                "item:uv-26-panel:5"
+              ],
+              "text": "Each press chooses another number of flares thrown in one round, from 1 to 8.",
+              "context": "It sets the second digit of the program code.",
+              "src": "m1",
+              "page": "129"
+            },
+            {
+              "id": "uv-interval",
+              "name": "INTERVAL button",
+              "type": "button",
+              "match": [
+                "UV26-INTERVAL-PTR",
+                "item:uv-26-panel:9"
+              ],
+              "text": "Each press chooses another wait time between two rounds of flares.",
+              "context": "It sets the third digit of the program code.",
+              "src": "m1",
+              "page": "129"
+            },
+            {
+              "id": "uv-stop",
+              "name": "STOP button",
+              "type": "button",
+              "match": [
+                "UV26-STOP-PTR",
+                "item:uv-26-panel:6"
+              ],
+              "text": "Pressing this button stops the flare program that is running.",
+              "context": "The pilot uses it when no more flares are needed.",
+              "src": "m1",
+              "page": "129"
+            },
+            {
+              "id": "uv-quant",
+              "name": "QUANT-NUM switch",
+              "type": "switch2",
+              "match": [
+                "UV26-PROGR-PTR",
+                "item:uv-26-panel:8"
+              ],
+              "positions": [
+                {
+                  "name": "QUANT",
+                  "text": "The display shows how many flares are left."
+                },
+                {
+                  "name": "NUM",
+                  "text": "The display shows the program code."
+                }
+              ],
+              "text": "This switch picks what the display shows: the flares left or the program code.",
+              "context": "The helicopter carries at most 128 flares.",
+              "src": "m1",
+              "page": "129"
+            },
+            {
+              "id": "uv-reset",
+              "name": "RESET PROG button",
+              "type": "button",
+              "match": [
+                "UV26-CANCELPRG-PTR",
+                "item:uv-26-panel:10"
+              ],
+              "text": "Pressing this button sets the program back to the default, 110. That is one round of one flare.",
+              "context": "It is a quick way back to the simple program.",
+              "src": "m1",
+              "page": "129"
+            },
+            {
+              "id": "uv-start",
+              "name": "START button",
+              "type": "button",
+              "match": [
+                "UV26-START-PTR",
+                "item:uv-26-panel:11"
+              ],
+              "text": "Pressing this button starts the flare program that is set.",
+              "context": "The pilot presses it when an infrared missile is coming. Flares do not fool radar or optical missiles.",
+              "src": "m1",
+              "page": "129"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

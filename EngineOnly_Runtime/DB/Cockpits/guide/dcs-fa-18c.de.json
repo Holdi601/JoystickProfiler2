@@ -1,0 +1,1817 @@
+{
+  "format": "joypro-cockpit-guide-text",
+  "version": 1,
+  "guide": "dcs-fa-18c",
+  "language": "de",
+  "title": "F/A-18C Hornet (DCS)",
+  "intro": "Die F/A-18C Hornet ist ein einsitziges Düsenkampfflugzeug, das von Flugplätzen und von Flugzeugträgern aus startet. Vor dem Piloten befinden sich eine Glasscheibe namens HUD, ein Tastenfeld (das UFC), zwei große Farbbildschirme (die DDIs) und ein farbiger Kartenbildschirm (das AMPCD). Die linke und die rechte Konsole tragen die Schalter für Triebwerksstart, Strom, Luft und Licht. Der Steuerknüppel steht in der Mitte, die beiden Schubhebel links; beide tragen viele Tasten für Waffen und Sensoren.",
+  "areas": {
+    "left-instrument-panel": {
+      "name": "Linke Instrumententafel",
+      "text": "Der obere linke Teil der Haupttafel vor dem Piloten. Hier sind der linke Bildschirm, die Triebwerks- und Kraftstoffanzeige, die Waffen-Hauptschalter sowie die Feuer- und Warnleuchten."
+    },
+    "left-vertical": {
+      "name": "Linke senkrechte Tafel",
+      "text": "Die hohe Tafel unten links an der Haupt-Instrumententafel, mit den Hebeln für Räder, Landeklappen und Bremsen."
+    },
+    "center-instrument-panel": {
+      "name": "Mittlere Instrumententafel",
+      "text": "Die Mitte der Haupttafel: oben das HUD, darunter das UFC-Tastenfeld, das HUD-Bedienfeld, der Farbbildschirm und die Abwehrschalter."
+    },
+    "right-instrument-panel": {
+      "name": "Rechte Instrumententafel",
+      "text": "Der obere rechte Teil der Haupttafel. Hier sind der rechte Bildschirm, die Reserveinstrumente, die Radarwarnanzeige, die Feuerleuchten für APU und rechtes Triebwerk sowie der Knopf der Helmanzeige."
+    },
+    "right-vertical": {
+      "name": "Rechte senkrechte Tafel",
+      "text": "Die hohe Tafel unten rechts an der Haupt-Instrumententafel."
+    },
+    "left-console": {
+      "name": "Linke Konsole",
+      "text": "Das seitliche Fach links vom Piloten. Hier sind die Lichter, die Bedienung für den Triebwerksstart, das Kraftstofffeld, die Bodenstromversorgung, Funkgeräte und Lautstärken, Sauerstoff und das Flugsteuerungsfeld."
+    },
+    "right-console": {
+      "name": "Rechte Konsole",
+      "text": "Das seitliche Fach rechts vom Piloten. Hier sind die Stromschalter, das Luftsystem, die Cockpitbeleuchtung, die Stromversorgung der Sensoren und die Sicherungsautomaten."
+    },
+    "seat": {
+      "name": "Kabinendach, Schleudersitz und Cockpit-Anpassungen",
+      "text": "Das gläserne Dach, der Schleudersitz und die Bedienelemente, die das Cockpit an den Piloten anpassen."
+    },
+    "rear-wall": {
+      "name": "Cockpit-Rückseite",
+      "text": "Einige Bedienelemente hinter und neben dem Piloten."
+    },
+    "hotas": {
+      "name": "Steuerknüppel und Schubhebel",
+      "text": "Die Griffe des Steuerknüppels und der Schubhebel, mit den Tasten und Schaltern, die der Pilot bedienen kann, ohne loszulassen."
+    }
+  },
+  "panels": {
+    "warning-lights": {
+      "name": "Master-Caution-, Feuer- und Warnleuchten",
+      "text": "Diese Leuchten und Tasten melden dem Piloten, dass etwas nicht stimmt. Eine rote FIRE-Taste bedeutet Feuer, eine gelbe Leuchte bedeutet: bald nachsehen.",
+      "context": "Der Pilot schaut ständig in diese Ecke. Wenn eine Leuchte angeht, liest der Pilot den Text auf den Bildschirmen, um den Fehler zu finden."
+    },
+    "master-arm": {
+      "name": "Master-Arm- und Master-Mode-Feld",
+      "text": "Dieses Feld entscheidet, ob die Waffen benutzt werden dürfen. Es enthält den Master-Arm-Schalter, die Tasten A/A und A/G sowie die Notabwurf-Taste.",
+      "context": "Vor einem Kampf wählt der Pilot den Modus und schärft das Flugzeug. Nach dem Kampf stellt der Pilot den Schalter zurück auf SAFE."
+    },
+    "jettison-select": {
+      "name": "Stationswahl-Tasten für den Abwurf und Fahrwerks-/Klappenleuchten",
+      "text": "Ein kleines Feld mit fünf Tasten für die Waffenstationen und drei grünen Leuchten für die Räder. Darunter zeigen zwei weitere Leuchten die Landeklappen.",
+      "context": "Die Tasten wählen, welche Waffenstationen etwas abwerfen, wenn der Pilot den Drehschalter für den gezielten Abwurf benutzt. Die Leuchten sagen dem Piloten, ob die Räder unten und verriegelt sind."
+    },
+    "left-ddi": {
+      "name": "Linkes DDI (linker Anzeigebildschirm)",
+      "text": "Der linke der beiden großen Farbbildschirme. Er zeigt Seiten für Waffen, Radar, Triebwerksdaten, Checklisten und mehr. Zwanzig Tasten am Rand wählen, was angezeigt wird.",
+      "context": "Der größte Teil der Arbeit des Piloten mit dem Flugzeug findet auf diesem und dem rechten Bildschirm statt. Die Tasten am Rand ändern ihre Bedeutung mit der angezeigten Seite."
+    },
+    "ifei": {
+      "name": "IFEI (integrierte Kraftstoff-/Triebwerksanzeige)",
+      "text": "Ein kleiner Bildschirm mit Zahlen für beide Triebwerke, den Kraftstoff in den Tanks und die Uhr. Fünf Tasten und ein Knopf daneben ändern, was er zeigt.",
+      "context": "Der Pilot beobachtet ihn beim Triebwerksstart, um zu sehen, wie die Triebwerke aufwachen, und im Flug, um zu wissen, wie viel Kraftstoff noch da ist."
+    },
+    "display-selectors": {
+      "name": "Anzeige-Wahlschalter",
+      "text": "Drei Schalter auf der linken Instrumententafel mit beschrifteten Stellungen: HMD/LDDI/RDDI, HUD/LDDI/RDDI und MAN/OFF/AUTO. Das Handbuch beschreibt sie nicht.",
+      "context": "Sie gehören zur Anzeige- und Videotechnik des Cockpits. Das Spiel lässt den Piloten sie anklicken, aber das Handbuch nennt keine Einzelheiten."
+    },
+    "left-vertical-panel": {
+      "name": "Linke senkrechte Tafel (Fahrwerk, Landeklappen, Bremsen)",
+      "text": "Der Streifen unten links an der Haupttafel. Er trägt den Fahrwerkshebel, den Klappenschalter, den Bremsgriff, die Fanghaken-Überbrückung und den Abwurfknopf.",
+      "context": "Der Pilot nutzt ihn für Start und Landung: Räder unten, Klappen gesetzt, Bremsen bereit. Hier können auch im Notfall Waffen abgeworfen werden."
+    },
+    "hud-aoa": {
+      "name": "Head-up-Display und Anstellwinkel-Anzeige",
+      "text": "Oben, in der Blickrichtung des Piloten, liegt die Glasscheibe namens HUD (Head-up-Display). Die Leuchten an ihrer linken Seite sind die AOA-Anzeige.",
+      "context": "Der Pilot schaut durch das HUD auf die Welt und liest gleichzeitig Geschwindigkeit, Höhe und Zielmarken ab. Die Anzeige hilft bei der Landung."
+    },
+    "ufc": {
+      "name": "UFC (Up-Front-Controller)",
+      "text": "Das Tastenfeld und die kleinen Textfenster unter dem HUD. Hier tippt der Pilot Zahlen ein, zum Beispiel Funkkanäle, und wählt Systeme wie Autopilot, TACAN und ILS.",
+      "context": "Es arbeitet mit den beiden großen Bildschirmen und dem Farbbildschirm darunter zusammen. Ein Druck auf eine Funktionstaste zeigt deren Auswahl in den fünf Optionsfenstern."
+    },
+    "hud-control-panel": {
+      "name": "HUD-Bedienfeld",
+      "text": "Eine Reihe von Knöpfen und Schaltern unter dem UFC, die einstellen, wie das HUD aussieht und woher seine Höhenzahlen kommen.",
+      "context": "Der Pilot stellt die Helligkeit für das Licht draußen ein und wählt die Quellen für Fluglage und Höhe."
+    },
+    "ampcd": {
+      "name": "AMPCD (mittlerer Farbbildschirm)",
+      "text": "Der Farbbildschirm in der Mitte der Tafel, auch MPCD genannt. Er zeigt die bewegte Karte und andere Seiten. Die Wippschalter ringsum stellen sein Aussehen ein.",
+      "context": "Er zeigt die Karte und die Position des Flugzeugs. Der Pilot wählt Seiten mit den Tasten am Rand."
+    },
+    "alr67": {
+      "name": "ALR-67-Bedienfeld für den Radarwarner",
+      "text": "Ein Feld mit leuchtenden Tasten und Knöpfen unter dem Farbbildschirm. Es steuert den Radarwarnempfänger, das Gerät, das dem Piloten sagt, wenn ein feindliches Radar das Flugzeug anschaut.",
+      "context": "Der Pilot schaltet es beim Start ein. Die Azimutanzeige auf der rechten Instrumententafel zeigt das Ergebnis."
+    },
+    "icmcp": {
+      "name": "Täuschkörper- und Störsender-Bedienung",
+      "text": "Schalter für die Täuschkörper (Düppel und Leuchtkörper) und für den Störsender, der feindliche Radare verwirrt. Sie sitzen unten in der Mitte der Tafel.",
+      "context": "Der Pilot schaltet sie ein, bevor er ein Kampfgebiet erreicht. Im Kampf werden die Täuschkörper mit dem Ausstoßschalter am Schubhebel abgeworfen."
+    },
+    "fire-lights-right": {
+      "name": "Feuerleuchten für APU und rechtes Triebwerk, Bedrohungsleuchten",
+      "text": "Rote Feuertasten für die APU und das rechte Triebwerk und darüber die grünen Bedrohungsleuchten, die sagen, welche Art von feindlichem Radar das Flugzeug anschaut.",
+      "context": "Wie links bedeutet ein rotes Licht Feuer. Die Bedrohungsleuchten gehören zum Radarwarnsystem."
+    },
+    "right-ddi": {
+      "name": "Rechtes DDI (rechter Anzeigebildschirm)",
+      "text": "Der rechte der beiden großen Farbbildschirme. Er arbeitet wie der linke. Zwanzig Tasten am Rand wählen, was angezeigt wird.",
+      "context": "Piloten lassen auf diesem Bildschirm oft das Radar oder die Zielkamera laufen und auf dem linken die Waffenseite."
+    },
+    "standby-instruments": {
+      "name": "Reserveinstrumente",
+      "text": "Einfache Ersatzanzeigen: ein Horizont, ein Höhenmesser, ein Fahrtmesser und eine Steiganzeige. Sie arbeiten für sich allein, falls die Bildschirme ausfallen.",
+      "context": "Im normalen Flug gibt das HUD dieselben Informationen. Der Pilot prüft die Reserveinstrumente vor dem Start und nutzt sie, wenn etwas ausfällt."
+    },
+    "rwr-display": {
+      "name": "Radarwarnanzeige (Azimutanzeige)",
+      "text": "Ein runder Bildschirm, der als Symbole rund um einen Kreis zeigt, wo feindliche Radare sind. Oben auf der Anzeige liegt die Nase des Flugzeugs.",
+      "context": "Ein Symbol nahe der Mitte ist gefährlicher als eines am Rand. Neue Symbole kommen mit einem Ton."
+    },
+    "misc-front-right": {
+      "name": "Weitere Bedienelemente der rechten Instrumententafel",
+      "text": "Mehrere einzelne Bedienelemente: der Raketenkühlungsschalter, der Knopf der Helmanzeige, der Schalter zur Trudelbeendigung und die Luftdüsen.",
+      "context": "Die meisten werden einmal vor dem Flug eingestellt und dann in Ruhe gelassen."
+    },
+    "right-vertical-panel": {
+      "name": "Rechte senkrechte Tafel (Fanghaken, Flügel, Radarhöhenmesser)",
+      "text": "Der hohe Streifen unten rechts an der Haupttafel. Er trägt den Fanghakengriff, den Flügelfaltgriff, die Anzeige für die Höhe über dem Boden und die Hydraulikanzeige.",
+      "context": "Der Pilot nutzt den Haken für Trägerlandungen und den Flügelfaltgriff am Boden, meist auf dem Trägerdeck."
+    },
+    "exterior-lights": {
+      "name": "Außenlichter-Feld",
+      "text": "Drei Bedienelemente für die Lichter außen am Flugzeug: die Positionslichter, die Formationslichter und die Blitzlichter.",
+      "context": "Sie arbeiten nur, wenn der Hauptschalter für die Außenlichter am linken Schubhebel an ist."
+    },
+    "fuel-control": {
+      "name": "Kraftstoff-Bedienfeld",
+      "text": "Schalter für das Kraftstoffsystem: die Betankungssonde, die Tanks außerhalb der Flügel und des Rumpfes und das Ablassen von Kraftstoff.",
+      "context": "Der Pilot nutzt es für die Luftbetankung und wenn die Tanks nicht auf normale Weise speisen."
+    },
+    "apu-crank": {
+      "name": "APU- und Triebwerksanlass-Feld",
+      "text": "Bedienung für den ersten Triebwerksstart. Die APU ist ein kleines Hilfstriebwerk, das Luft erzeugt; diese Luft dreht das große Triebwerk durch, damit es starten kann.",
+      "context": "Der Pilot startet zuerst die APU, wartet auf die grüne READY-Leuchte, dreht dann das rechte Triebwerk durch und später das linke."
+    },
+    "ground-power": {
+      "name": "Bodenstrom-Feld",
+      "text": "Schalter für Strom von einem Bodenstromwagen, der am Flugzeug angeschlossen ist. Das schont die Batterie, bevor die Triebwerke laufen.",
+      "context": "Der Pilot ruft die Bodencrew, um Strom anzustecken. Bei laufenden Triebwerken werden diese Schalter nicht gebraucht."
+    },
+    "fire-test": {
+      "name": "Feuer- und Zapfluft-Testschalter",
+      "text": "Ein Schalter, der die Alarme für Feuer und Heißluft-Lecks testet. Er ist federbelastet und geht beim Loslassen in die Mitte zurück.",
+      "context": "Der Pilot macht diesen Test einmal beim Start, damit die Tonwarnungen abgespielt werden."
+    },
+    "elec-misc": {
+      "name": "Generator-Kupplung, Missionsrechner und Hydraulikschalter",
+      "text": "Einige Schalter für die elektrischen und die Computersysteme, die normalerweise in Ruhe gelassen werden: die Generator-Kupplung, die Missionsrechner und die Hydraulik-Trennung.",
+      "context": "Sie sind für Ausfälle und Tests. In normalen Flügen bleiben sie in ihren normalen Stellungen."
+    },
+    "antenna-sel": {
+      "name": "Antennenwahlschalter",
+      "text": "Zwei Schalter, die wählen, welche Funkantenne benutzt wird: die oben auf dem Rumpf oder die darunter.",
+      "context": "Normalerweise bleiben sie, wie sie sind. Der Pilot kann sie ändern, wenn eine Antenne verdeckt ist oder schlecht arbeitet."
+    },
+    "oxygen": {
+      "name": "Sauerstoffsystem-Feld",
+      "text": "Bedienung für die Atemluft des Piloten. Die Hornet macht ihren Sauerstoff selbst aus Triebwerksluft (OBOGS).",
+      "context": "Der Pilot schaltet es beim Start ein, nachdem die Triebwerke laufen."
+    },
+    "iff-panel": {
+      "name": "IFF-Feld (Mode 4)",
+      "text": "Bedienung für die geheime Erkennung des Flugzeugs. Der IFF-Transponder beantwortet 'Wer bist du'-Fragen anderer Flugzeuge mit einer verschlüsselten Antwort.",
+      "context": "Der Pilot lässt es in den normalen Stellungen. Falsche Einstellungen können dazu führen, dass Freunde das Flugzeug als unbekannt sehen."
+    },
+    "comm-panel": {
+      "name": "Kommunikations-Bedienfeld",
+      "text": "Schalter für Funk und ILS: der Sendewähler, der Relais-Schalter und die ILS-Wähler.",
+      "context": "Der Pilot lässt die meisten davon, wie sie sind; die Funkgeräte werden normalerweise am UFC eingestellt."
+    },
+    "volume-panel": {
+      "name": "Lautstärke-Feld",
+      "text": "Eine Reihe von Knöpfen, je einer für jeden Ton im Kopfhörer: Funkfeuer-Kennung, Waffentöne, Radarwarnung, gesicherte Funkgeräte und die Bordsprechanlage.",
+      "context": "Der Pilot stellt die Pegel einmal ein, um alles gut zu hören."
+    },
+    "fcs-panel": {
+      "name": "Flugsteuerungs-Feld (FCS)",
+      "text": "Bedienung für die Flugsteuerrechner, die zwischen dem Steuerknüppel und den Steuerflächen sitzen: Trimmung, Rücksetzen und Verstärkung.",
+      "context": "Der Pilot nutzt die Tasten zum Rücksetzen und für die Starttrimmung beim Start. Der Gain-Schalter ist für Ausfälle."
+    },
+    "dispense-button": {
+      "name": "Täuschkörper-Ausstoßtaste",
+      "text": "Eine große rote Taste an der linken Cockpitwand.",
+      "context": "Der Pilot nutzt normalerweise den Ausstoßschalter am Schubhebel; diese Taste ist die Reserve."
+    },
+    "cb-left": {
+      "name": "Linkes Sicherungsfeld",
+      "text": "Sicherungsautomaten an der linken Wand. Ein Sicherungsautomat ist ein Sicherheitsschalter, der den Strom abschaltet, wenn etwas zu viel zieht.",
+      "context": "Sie bleiben normalerweise an. Das Spiel lässt den Piloten sie schalten, um Ausfälle nachzustellen."
+    },
+    "throttle-friction": {
+      "name": "Reibungshebel der Schubhebel",
+      "text": "Ein Hebel auf der linken Seite neben den Schubhebeln.",
+      "context": "Piloten stellen ihn so ein, dass sich die Schubhebel nicht von selbst bewegen."
+    },
+    "electrical": {
+      "name": "Strom-Feld",
+      "text": "Schalter für den Strom des Flugzeugs: die beiden Generatoren und der Batterieschalter, mit einer Anzeige für die Batteriespannung.",
+      "context": "Der Pilot stellt diese beim Starten des Flugzeugs zuerst ein, weil die meisten anderen Systeme Strom brauchen."
+    },
+    "ecs": {
+      "name": "ECS-Feld (Klimaanlage: Luft, Wärme, Eis)",
+      "text": "Schalter und Knöpfe für die Luft im Cockpit und dafür, Eis fernzuhalten: die Luft von den Triebwerken, die Heizung, die Scheibenenteisung und die beheizten Sensorsonden.",
+      "context": "Der Pilot stellt das Luftsystem beim Start ein. Die Eisschalter werden bei kaltem, nassem Wetter gebraucht."
+    },
+    "interior-lights": {
+      "name": "Innenbeleuchtungs-Feld",
+      "text": "Knöpfe für die Lichter im Cockpit und ein Schalter zum Testen der Warnleuchten.",
+      "context": "Der Pilot stellt die Lichter für Tag oder Nacht ein. Nachts mit Nachtsichtbrille wird der MODE-Schalter auf NVG gestellt."
+    },
+    "ky58": {
+      "name": "KY-58-Feld für gesicherten Sprechfunk",
+      "text": "Das Bedienfeld einer Verschlüsselungsbox für geheimen Funkverkehr. Es verwürfelt die Stimme, so dass nur Funkgeräte mit demselben Code sie verstehen.",
+      "context": "Das Handbuch beschreibt dieses Feld nicht. Die Beschriftungen sind die darauf gedruckten."
+    },
+    "sensors": {
+      "name": "Sensorfeld",
+      "text": "Schalter, die die Sensoren des Flugzeugs mit Strom versorgen: die Trägheitsnavigation, das Radar, die Zielkamera und den Laser.",
+      "context": "Der Pilot schaltet sie beim Start ein. Sie brauchen Zeit zum Aufwärmen und Ausrichten vor dem Flug."
+    },
+    "cb-right": {
+      "name": "Rechtes Sicherungsfeld",
+      "text": "Sicherungsautomaten an der rechten Wand und der FCS-BIT-Schalter. Ein Sicherungsautomat ist ein Sicherheitsschalter, der den Strom abschaltet, wenn etwas zu viel zieht.",
+      "context": "Wie das linke Feld sind sie normalerweise an. Der FCS-BIT-Schalter wird bei den Prüfungen beim Start benutzt."
+    },
+    "canopy": {
+      "name": "Kabinendach-Bedienung",
+      "text": "Das Kabinendach ist das klare gläserne Dach über dem Cockpit. Diese Bedienelemente öffnen und schließen es oder werfen es im Notfall ab.",
+      "context": "Der Pilot schließt das Kabinendach, bevor er zur Piste rollt."
+    },
+    "ejection-seat": {
+      "name": "Schleudersitz",
+      "text": "Der Schleudersitz schießt den Piloten im Notfall aus dem Flugzeug. Diese Griffe machen ihn scharf und lösen ihn aus.",
+      "context": "Der Pilot macht den Sitz vor dem Start scharf. Die CK-SEAT-Warnung zeigt, wenn der Sitz nicht scharf gemacht wurde."
+    },
+    "cockpit-fittings": {
+      "name": "Einstellungen für Sitz, Pedale und Steuerknüppel",
+      "text": "Bedienelemente, die das Cockpit an den Piloten anpassen: Sitzhöhe, Schultergurt und Position der Seitenruderpedale sowie das Zeigen oder Verstecken des Steuerknüppels.",
+      "context": "Sie werden einmal nach dem Einsteigen eingestellt, bevor die Triebwerke starten."
+    },
+    "rear-controls": {
+      "name": "Tasten im hinteren Cockpit",
+      "text": "Drei kleine Bedienelemente hinter dem Piloten: zwei Testtasten für die Videosensoren und ein Schalter für Atomwaffen.",
+      "context": "Keines davon wird zum Fliegen gebraucht. Das Spiel lässt den Piloten sie anklicken."
+    },
+    "stick": {
+      "name": "Steuerknüppel (Griff)",
+      "text": "Der Steuerknüppel zwischen den Knien des Piloten steuert das Flugzeug. Die Tasten und Schalter am Griff können bedient werden, ohne loszulassen.",
+      "context": "Im Kampf fliegt der Pilot und bedient Waffen und Sensoren allein mit den Griffen."
+    },
+    "throttle": {
+      "name": "Schubhebel (zwei Triebwerkshebel)",
+      "text": "Die zwei Schubhebel links, einer für jedes Triebwerk. Die Schalter an den Griffen werden bedient, ohne die Schubhebel zu verlassen.",
+      "context": "Der Pilot fliegt mit der rechten Hand am Steuerknüppel und der linken an den Schubhebeln."
+    }
+  },
+  "controls": {
+    "warning-lights/master-caution": {
+      "name": "MASTER-CAUTION-Leuchte mit Rückstelltaste",
+      "text": "Eine gelbe Leuchte, die zusammen mit einem Warnton angeht, sobald irgendeine Warnleuchte oder Warnmeldung angeht. Ein Druck löscht die Leuchte und schaltet den Ton ab.",
+      "context": "Der Pilot drückt sie, nachdem er das Problem auf dem Bildschirm gelesen hat. Die Taste schaltet auch die Liste der Warnmeldungen weiter, damit die nächste gelesen werden kann."
+    },
+    "warning-lights/fire-left": {
+      "name": "LEFT-ENG/AMAD-FIRE-Leuchttaste mit Schutzbügel",
+      "text": "Eine rote Taste, die aufleuchtet, wenn die Sensoren ein Feuer im linken Triebwerk oder in seinem Getrieberaum finden. Ein Bügel schützt die Taste vor versehentlichem Drücken.",
+      "context": "Der Pilot hebt den Bügel an und drückt die Taste. Das sperrt den Kraftstoff zu diesem Triebwerk und macht die Löschflasche bereit. Ein weiterer Druck öffnet den Kraftstoff wieder."
+    },
+    "warning-lights/fire-ext": {
+      "name": "Feuerlöscher-Taste (READY / DISCH)",
+      "text": "Diese Taste leert die Löschflasche in den brennenden Triebwerksraum. Sie hat zwei Leuchten: eine gelbe READY-Leuchte und eine grüne DISCH-Leuchte.",
+      "context": "Sie wirkt nur, wenn READY leuchtet, und READY geht an, nachdem eine FIRE-Taste gedrückt wurde. Ist die Flasche leer, geht die DISCH-Leuchte an."
+    },
+    "warning-lights/left-advisory": {
+      "name": "Linke Hinweis- und Warnleuchten",
+      "text": "Ein Block kleiner Leuchten neben dem linken Bildschirm: L BLEED, R BLEED, SPD BRK, STBY, L BAR, REC, XMIT, GO und NO GO. Jede hat ihre eigene Bedeutung, zum Beispiel heißt SPD BRK, dass die Bremsklappe nicht ganz geschlossen ist.",
+      "context": "Der Pilot liest sie nur; es gibt nichts zu drücken. REC und XMIT gehören zum Störsender, L BAR zum Katapult-Startbügel und die beiden BLEED-Leuchten zu Heißluft-Lecks."
+    },
+    "master-arm/master-mode": {
+      "name": "Master-Mode-Tasten A/A und A/G",
+      "text": "Zwei Tasten, die dem Flugzeug sagen, was der Pilot vorhat. A/A heißt Luft-Luft, also gegen andere Flugzeuge kämpfen. A/G heißt Luft-Boden, also Ziele am Boden treffen.",
+      "context": "Ohne eine der beiden Tasten ist das Flugzeug im NAV-Modus, dem normalen Flugmodus. Alles auf den Bildschirmen und im HUD passt sich dem gewählten Modus an. Erneutes Drücken der leuchtenden Taste führt zurück zu NAV."
+    },
+    "master-arm/master-arm-sw": {
+      "name": "MASTER-ARM-Schalter",
+      "text": "Das ist der Hauptsicherheitsschalter für die Waffen. In SAFE kann nichts abgefeuert oder abgeworfen werden. In ARM sind die Waffen bereit.",
+      "context": "Der Pilot stellt ihn nur auf ARM, wenn die Waffen gleich benutzt werden. Derselbe Schalter entscheidet auch, ob Außenlasten abgeworfen werden dürfen (Notabwurf).",
+      "positions": {
+        "ARM": "Die Waffen können abgefeuert oder abgeworfen werden.",
+        "SAFE": "Nichts kann abgefeuert werden; die sichere Stellung für Rollen, Start und Landung."
+      }
+    },
+    "master-arm/emerg-jett": {
+      "name": "EMERG-JETT-Taste (Notabwurf)",
+      "text": "Diese Taste wirft die schweren Lasten unter Tragflächen und Rumpf auf einmal ab, ohne zu zielen. Sie dient im Notfall dazu, das Flugzeug leichter und besser steuerbar zu machen.",
+      "context": "Sie wirkt auf die Stationen 2, 3, 5, 7 und 8. Laut Handbuch muss die Taste etwa 0,4 Sekunden gehalten werden, bevor sie wirkt."
+    },
+    "master-arm/aux-release": {
+      "name": "AUX-REL-Schalter (Hilfsauslösung)",
+      "text": "Ein Schalter mit den Stellungen ENABLE und NORM. NORM ist die normale Stellung. Das Handbuch beschreibt diesen Schalter nicht; das Spiel nennt ihn 'Auxiliary Release Switch'.",
+      "context": "Er gehört zum Waffenauslösesystem auf der linken Instrumententafel. Der Pilot lässt ihn im normalen Flug auf NORM.",
+      "positions": {
+        "ENABLE": "Die Hilfsauslösung ist eingeschaltet; das Handbuch nennt keine Einzelheiten.",
+        "NORM": "Die normale Stellung."
+      }
+    },
+    "jettison-select/stn-select": {
+      "name": "Stationswahl-Tasten für den Abwurf CTR, LI, RI, LO, RO",
+      "text": "Fünf Tasten, eine für jede Waffenstation: Mitte, links innen, rechts innen, links außen, rechts außen. Ein Druck lässt die Taste leuchten und wählt diese Station.",
+      "context": "Nach der Wahl der Stationen stellt der Pilot den Drehschalter für den gezielten Abwurf ein und drückt JETT. Dieselben Tasten wählen in den Reserve-Luft-Boden-Modi auch Waffen aus."
+    },
+    "jettison-select/gear-flap-lights": {
+      "name": "Fahrwerks- und Klappen-Stellungsleuchten",
+      "text": "Drei grüne Leuchten NOSE, LEFT und RIGHT zeigen, dass jedes Rad unten und verriegelt ist. Die Klappenleuchten zeigen, ob die Landeklappen der Schalterstellung folgen.",
+      "context": "Eine grüne Klappenleuchte bedeutet, dass die Geschwindigkeit niedrig genug ist, damit der Flugrechner die Klappen so bewegt, wie es der FLAP-Schalter verlangt. FLAPS zeigt, dass er das nicht kann, zum Beispiel über 250 Knoten."
+    },
+    "left-ddi/ldd-bright-sel": {
+      "name": "Helligkeitswähler des linken DDI (OFF / NIGHT / DAY)",
+      "text": "Dieser Drehschalter schaltet den linken Bildschirm ein und wählt, wie hell er werden darf. OFF schaltet den Bildschirm aus.",
+      "context": "Der Pilot dreht ihn beim Starten des Flugzeugs aus OFF heraus. NIGHT gibt einen dunkleren Bereich für dunkle Cockpits, DAY einen helleren.",
+      "positions": {
+        "OFF": "Der Bildschirm ist aus.",
+        "NIGHT": "Der Bildschirm ist an, mit einem dunkleren Helligkeitsbereich.",
+        "DAY": "Der Bildschirm ist an, mit einem helleren Helligkeitsbereich."
+      }
+    },
+    "left-ddi/ldd-bright": {
+      "name": "BRT-Knopf (Helligkeit) des linken DDI",
+      "text": "Dreht man diesen Knopf im Uhrzeigersinn, werden Symbole und Text auf dem linken Bildschirm heller. Zurückdrehen macht sie dunkler.",
+      "context": "Der Pilot stellt ihn auf das Licht im Cockpit ein: hell bei Sonne, niedrig bei Nacht."
+    },
+    "left-ddi/ldd-contrast": {
+      "name": "CONT-Knopf (Kontrast) des linken DDI",
+      "text": "Dieser Knopf soll ändern, wie stark sich die Symbole vom dunklen Hintergrund des linken Bildschirms abheben.",
+      "context": "Laut Handbuch ist dieser Knopf nicht umgesetzt, daher hat er in DCS keine Wirkung."
+    },
+    "left-ddi/ldd-pb": {
+      "name": "Tasten 1-20 des linken DDI",
+      "text": "Diese 20 Tasten sitzen rund um den Rand des linken Bildschirms. Jede wählt das Wort, das auf dem Bildschirm neben ihr steht, daher tut dieselbe Taste auf verschiedenen Seiten Verschiedenes.",
+      "context": "Taste 1 ist die unterste auf der linken Seite; die Nummerierung läuft im Uhrzeigersinn. Der Pilot wechselt damit die Seiten: Waffen, Radar, Zielkamera, Kraftstoff und mehr."
+    },
+    "ifei/ifei-display": {
+      "name": "IFEI-Triebwerksanzeigen (RPM, TEMP, FF, NOZ, OIL)",
+      "text": "Zwei Zahlenspalten, eine pro Triebwerk. RPM ist die Drehzahl des Triebwerks in Prozent. TEMP ist die Abgashitze. FF ist der Kraftstoffverbrauch, NOZ zeigt, wie weit die Düse hinten geöffnet ist, und OIL ist der Öldruck.",
+      "context": "Beim Start vergleicht der Pilot diese Zahlen mit den Werten der Checkliste, bevor das zweite Triebwerk gestartet wird. Der Nachbrenner wird weder in RPM noch in FF angezeigt."
+    },
+    "ifei/ifei-fuel": {
+      "name": "IFEI-Kraftstoffzähler (T, I und BINGO)",
+      "text": "Drei Zahlenzähler für Kraftstoff. Der obere, T, ist der gesamte Kraftstoff einschließlich der Außentanks, der mittlere, I, der Kraftstoff im Flugzeug. Der unterste ist der BINGO-Wert, die Kraftstoffmenge, bei der der Pilot den Heimflug antreten muss.",
+      "context": "Der Pilot stellt BINGO mit den Pfeiltasten ein. Fällt der Kraftstoff auf diesen Wert, gibt das Flugzeug eine Warnmeldung und eine Sprachwarnung aus."
+    },
+    "ifei/ifei-clock": {
+      "name": "IFEI-Uhr und abgelaufene Zeit",
+      "text": "Eine Uhr, die Ortszeit oder Zulu-Zeit (die weltweite Einheitszeit) zeigt, und eine Stoppuhr namens ET (abgelaufene Zeit).",
+      "context": "Die ZONE-Taste schaltet die Uhr zwischen den beiden Zeiten um. Die ET-Taste startet, stoppt und setzt die Stoppuhr zurück."
+    },
+    "ifei/ifei-mode": {
+      "name": "IFEI-MODE-Taste",
+      "text": "Diese Taste ändert, was das IFEI gerade tut. Zwei Drücke öffnen die Seite zum Einstellen von Datum und Uhrzeit.",
+      "context": "Beim Einstellen der Zeit springt die QTY-Taste zwischen Stunden, Minuten, Zeitversatz und Jahr, und die Pfeiltasten ändern den Wert."
+    },
+    "ifei/ifei-qty": {
+      "name": "IFEI-QTY-Taste (Menge)",
+      "text": "Jeder Druck zeigt den Kraftstoff weiterer Tanks: zuerst alles, dann nacheinander Tankpaare bis zum Mitteltank.",
+      "context": "Der Pilot sieht damit, wie viel Kraftstoff in einem bestimmten Tank ist. Ein Buchstabe neben der Zahl sagt, welcher Tank gezeigt wird."
+    },
+    "ifei/ifei-arrows": {
+      "name": "IFEI-Pfeiltasten auf und ab",
+      "text": "Zwei Tasten mit einem Pfeil nach oben und einem nach unten. Sie erhöhen oder senken den Wert, der gerade eingestellt wird, zum Beispiel die BINGO-Kraftstoffzahl.",
+      "context": "BINGO lässt sich nur ändern, solange die normale Kraftstoffanzeige (T und I) gezeigt wird."
+    },
+    "ifei/ifei-zone": {
+      "name": "IFEI-ZONE-Taste",
+      "text": "Mit einem Druck auf diese Taste wechselt die Uhr zwischen Ortszeit und Zulu-Zeit. Die Zulu-Zeit ist auf der ganzen Welt gleich.",
+      "context": "Der Pilot nutzt die Zulu-Zeit, wenn der Einsatzplan in Zulu geschrieben ist."
+    },
+    "ifei/ifei-et": {
+      "name": "IFEI-ET-Taste (abgelaufene Zeit)",
+      "text": "Diese Taste arbeitet wie eine Stoppuhr. Der erste Druck startet sie, der zweite hält sie an, der dritte setzt sie fort. Gedrückt halten setzt die Stoppuhr auf null zurück.",
+      "context": "Der Pilot kann damit einen Flugabschnitt oder eine Kurve stoppen."
+    },
+    "ifei/ifei-bright": {
+      "name": "IFEI-BRT-Knopf (Helligkeit)",
+      "text": "Dieser Knopf stellt ein, wie hell das IFEI ist, aber nur, wenn der Beleuchtungs-MODE-Schalter auf NITE oder NVG steht.",
+      "context": "In der Stellung DAY des MODE-Schalters hat der Knopf keine Wirkung."
+    },
+    "display-selectors/sel-hmd": {
+      "name": "Wahlschalter HMD / LDDI / RDDI",
+      "text": "Ein Dreistellungsschalter mit den Beschriftungen HMD, LDDI und RDDI. Das Handbuch beschreibt ihn nicht; das Spiel nennt ihn 'Selector Switch, HMD/LDDI/RDDI'.",
+      "context": "Er sitzt auf der linken Instrumententafel neben den Anzeigereglern. Der Pilot braucht ihn im normalen Flug nicht.",
+      "positions": {
+        "HMD": "Beschriftet mit HMD (Helmanzeige); das Handbuch nennt keine Einzelheiten.",
+        "LDDI": "Beschriftet mit LDDI (linker Bildschirm); das Handbuch nennt keine Einzelheiten.",
+        "RDDI": "Beschriftet mit RDDI (rechter Bildschirm); das Handbuch nennt keine Einzelheiten."
+      }
+    },
+    "display-selectors/sel-hud": {
+      "name": "Wahlschalter HUD / LDDI / RDDI",
+      "text": "Ein Dreistellungsschalter mit den Beschriftungen HUD, LDDI und RDDI. Das Handbuch beschreibt ihn nicht; das Spiel nennt ihn 'Selector Switch, HUD/LDIR/RDDI'.",
+      "context": "Er sitzt neben dem ersten Wahlschalter. Der Pilot braucht ihn im normalen Flug nicht.",
+      "positions": {
+        "HUD": "Beschriftet mit HUD; das Handbuch nennt keine Einzelheiten.",
+        "LDDI": "Beschriftet mit LDDI (linker Bildschirm); das Handbuch nennt keine Einzelheiten.",
+        "RDDI": "Beschriftet mit RDDI (rechter Bildschirm); das Handbuch nennt keine Einzelheiten."
+      }
+    },
+    "display-selectors/sel-mode": {
+      "name": "Modus-Wahlschalter MAN / OFF / AUTO",
+      "text": "Ein Dreistellungsschalter mit den Beschriftungen MAN, OFF und AUTO. Das Handbuch beschreibt ihn nicht; das Spiel nennt ihn 'Mode Selector Switch'.",
+      "context": "Er sitzt auf der linken Instrumententafel. Der Pilot braucht ihn im normalen Flug nicht.",
+      "positions": {
+        "MAN": "Beschriftet mit MAN (manuell); das Handbuch nennt keine Einzelheiten.",
+        "OFF": "Beschriftet mit OFF; das Handbuch nennt keine Einzelheiten.",
+        "AUTO": "Beschriftet mit AUTO (automatisch); das Handbuch nennt keine Einzelheiten."
+      }
+    },
+    "left-vertical-panel/gear-handle": {
+      "name": "Fahrwerkshebel (radförmig)",
+      "text": "Zieht man diesen Hebel nach oben, klappen die Räder weg. Drückt man ihn nach unten, kommen die Räder heraus. Ein rotes Licht im Hebel zeigt an, solange sich die Räder bewegen.",
+      "context": "Die Räder können nur hoch, wenn das Flugzeug vom Boden abgehoben hat und der Startbügel eingefahren ist. Den Hebel um 90 Grad drehen und ziehen bringt die Räder im Notfall herunter (im Spiel mit dem Mausrad).",
+      "positions": {
+        "UP": "Die Räder klappen ins Flugzeug.",
+        "DN": "Die Räder werden ausgefahren und unten verriegelt."
+      }
+    },
+    "left-vertical-panel/downlock": {
+      "name": "Taste für die Fahrwerksverriegelung (Override)",
+      "text": "Eine Taste, die den Fahrwerkshebel entsperrt, damit er nach oben bewegt werden kann, auch wenn die Sicherung ihn unten hält.",
+      "context": "Der Pilot würde sie benutzen, wenn die Sicherung den Hebel hält, obwohl das Flugzeug fliegt."
+    },
+    "left-vertical-panel/tone-silence": {
+      "name": "Taste zum Abschalten des Warntons",
+      "text": "Ein Druck auf diese Taste stoppt den Warnton, zum Beispiel den Ton, der erklingt, wenn die Räder nicht unten sind.",
+      "context": "Der Pilot nutzt sie, wenn die Warnung schon verstanden ist und der Ton stört."
+    },
+    "left-vertical-panel/launch-bar": {
+      "name": "Startbügel-Schalter (EXTEND / RETRACT)",
+      "text": "Auf einem Flugzeugträger wird das Flugzeug von einem Katapult in die Luft geschossen. Dieser Schalter senkt den Startbügel unter der Nase ab, der das Flugzeug am Katapult einhakt.",
+      "context": "Der Pilot fährt ihn vor dem Katapultstart aus. Die grüne L-BAR-Leuchte zeigt, dass er unten ist. Mit ausgefahrenem Bügel kann das Bugrad nicht eingefahren werden.",
+      "positions": {
+        "EXTEND": "Der Startbügel geht nach unten, damit er sich am Katapult einhaken kann.",
+        "RETRACT": "Der Startbügel geht wieder hoch und wird verriegelt."
+      }
+    },
+    "left-vertical-panel/flap-sw": {
+      "name": "FLAP-Schalter (AUTO / HALF / FULL)",
+      "text": "Dieser Schalter sagt dem Flugrechner, wie viel von den Landeklappen des Flügels genutzt wird. Die Klappen sind Teile des Flügels, die bei niedriger Geschwindigkeit mehr Auftrieb geben.",
+      "context": "AUTO ist für normalen Flug. HALF und FULL sind für Start und Landung, unter 250 Knoten. Über dieser Geschwindigkeit fährt der Rechner die Klappen wieder ein und eine FLAPS-Leuchte erscheint.",
+      "positions": {
+        "AUTO": "Der Flugrechner stellt die Klappen selbst ein, abhängig von Geschwindigkeit und Anstellwinkel.",
+        "HALF": "Start- und Landestellung mit mittleren Klappen unter 250 Knoten.",
+        "FULL": "Start- und Landestellung mit den größten Klappen unter 250 Knoten."
+      }
+    },
+    "left-vertical-panel/sel-jett-knob": {
+      "name": "Drehschalter für den gezielten Abwurf",
+      "text": "Ein Drehschalter, der wählt, was abgeworfen wird, wenn die JETT-Taste in seiner Mitte gedrückt wird. SAFE sperrt den Abwurf. Die anderen Stellungen wählen eine Rumpfrakete oder die Lasten beziehungsweise die Träger der zuvor gewählten Stationen.",
+      "context": "Er wirkt nur, wenn das Fahrwerk oben und verriegelt ist und der MASTER-ARM-Schalter auf ARM steht.",
+      "positions": {
+        "L FUS MSL": "Die Rakete am linken Rumpf wird abgeworfen.",
+        "SAFE": "Mit diesem Drehschalter kann nichts abgeworfen werden.",
+        "R FUS MSL": "Die Rakete am rechten Rumpf wird abgeworfen.",
+        "RACK/LCHR": "Die Träger und Starter der gewählten Stationen werden samt Ladung abgeworfen.",
+        "STORES": "Nur die Lasten (Waffen und Tanks) der gewählten Stationen werden abgeworfen."
+      }
+    },
+    "left-vertical-panel/sel-jett-btn": {
+      "name": "JETT-Taste (gezielter Abwurf)",
+      "text": "Die Taste in der Mitte des Drehschalters für den gezielten Abwurf. Ein Druck wirft ab, was der Drehschalter und die Stationstasten gewählt haben.",
+      "context": "Sie tut nichts, solange der Master-Arm-Schalter nicht auf ARM steht und die Räder nicht oben und verriegelt sind."
+    },
+    "left-vertical-panel/ldg-taxi": {
+      "name": "LDG/TAXI-LIGHT-Schalter",
+      "text": "Dieser Schalter schaltet das große weiße Licht am Bugrad ein oder aus. Es beleuchtet die Piste voraus.",
+      "context": "Das Licht geht nur an, wenn der Fahrwerkshebel unten ist und die Räder unten sind.",
+      "positions": {
+        "ON": "Das Licht ist an, wenn die Räder unten sind.",
+        "OFF": "Das Licht ist aus."
+      }
+    },
+    "left-vertical-panel/anti-skid": {
+      "name": "ANTI-SKID-Schalter",
+      "text": "Das Antiblockiersystem verhindert, dass die Räder beim Bremsen blockieren, wie das ABS eines Autos. Dieser Schalter schaltet es ein oder aus.",
+      "context": "Es wird für Landungen auf Flugplätzen genutzt. Auf einem Flugzeugträger ist es ausgeschaltet.",
+      "positions": {
+        "ON": "Das Antiblockiersystem arbeitet.",
+        "OFF": "Das Antiblockiersystem ist aus; für den Trägerbetrieb."
+      }
+    },
+    "left-vertical-panel/hook-bypass": {
+      "name": "HOOK-BYPASS-Schalter (FIELD / CARRIER)",
+      "text": "Dieser Schalter ändert, wie sich die Anstellwinkel-Leuchten neben dem HUD verhalten, wenn der Fanghaken oben ist. Auf einem Träger muss der Haken unten sein, daher warnen die Leuchten durch Blinken.",
+      "context": "Wird der Haken abgesenkt, springt der Schalter von selbst auf CARRIER. Der Pilot stellt FIELD für die Landung auf einem normalen Flugplatz ein.",
+      "positions": {
+        "FIELD": "Die Anstellwinkel-Leuchten bleiben ruhig, auch wenn der Haken oben ist.",
+        "CARRIER": "Die Anstellwinkel-Leuchten blinken, wenn der Haken oben ist."
+      }
+    },
+    "left-vertical-panel/park-brake": {
+      "name": "Not- und Feststellbremsgriff",
+      "text": "Ein T-förmiger Griff. Eine Vierteldrehung und Herausziehen hält die Radbremsen beim Parken angezogen. Er ist auch die Notbremse, falls die normalen Bremsen ausfallen.",
+      "context": "Am Boden löst der Pilot ihn vor dem Rollen. Ist er gesetzt und laufen die Triebwerke hoch, erscheint eine PARK-BRK-Warnmeldung."
+    },
+    "left-vertical-panel/brake-gauge": {
+      "name": "Anzeige für den Bremsspeicherdruck",
+      "text": "Eine runde Anzeige für den Reservedruck der Bremsen. 3.000 psi sind normal. Der rote Bereich unter 2.000 psi bedeutet, dass die Bremsreserve niedrig ist.",
+      "context": "Die Reserve nutzen die Not- und die Feststellbremse. Der Pilot prüft sie am Boden."
+    },
+    "hud-aoa/hud": {
+      "name": "HUD (Head-up-Display)",
+      "text": "Eine klare Glasplatte vor den Augen des Piloten. Grüne Zahlen und Marken werden darauf projiziert, so dass der Pilot Geschwindigkeit, Höhe, Kurs und Zielpunkt liest, ohne nach unten zu schauen.",
+      "context": "Es ist das wichtigste Fluginstrument und zeigt auch Waffen- und Navigationsdaten. Es kann nicht angeklickt werden; seine Helligkeit wird am HUD-Bedienfeld eingestellt."
+    },
+    "hud-aoa/aoa-indexer": {
+      "name": "AOA-Anzeigeleuchten",
+      "text": "Drei leuchtende Symbole links vom HUD, die zeigen, ob das Flugzeug für die Landung zu langsam, richtig oder zu schnell fliegt. 'AOA' ist der Winkel, in dem der Flügel auf die Luft trifft.",
+      "context": "Sie arbeiten nur mit ausgefahrenen Rädern und das Flugzeug in der Luft. Der Pilot nutzt sie im Endanflug, um die richtige Geschwindigkeit zu halten."
+    },
+    "ufc/ufc-scratch": {
+      "name": "Notizzeile und Optionsfenster",
+      "text": "Die Notizzeile (Scratchpad) ist eine Textzeile, die zeigt, was der Pilot auf dem Tastenfeld tippt. Die fünf Optionsfenster daneben zeigen Auswahlmöglichkeiten mit je vier Buchstaben.",
+      "context": "Der Pilot tippt eine Zahl, prüft sie in der Notizzeile und sendet sie mit ENT. Ist die Eingabe ungültig, blinkt ERROR."
+    },
+    "ufc/ufc-adf": {
+      "name": "ADF-Funktionswahlschalter (1 / OFF / 2)",
+      "text": "Schaltet den Funkpeiler ein. ADF zeigt zu einem Funksender am Boden. Er nutzt entweder das COMM-1- oder das COMM-2-Funkgerät.",
+      "context": "Die mittlere Stellung schaltet ADF aus.",
+      "positions": {
+        "1": "ADF nutzt das COMM-1-Funkgerät.",
+        "OFF": "ADF ist aus.",
+        "2": "ADF nutzt das COMM-2-Funkgerät."
+      }
+    },
+    "ufc/ufc-comm1-vol": {
+      "name": "COMM-1-Lautstärkeknopf",
+      "text": "Dreht man diesen Knopf aus OFF heraus, schaltet er das COMM-1-Funkgerät ein und stellt die Lautstärke ein. Ganz zurückgedreht ist das Funkgerät aus.",
+      "context": "COMM 1 und COMM 2 sind die beiden Funkgeräte, um mit dem Tower und anderen Flugzeugen zu sprechen."
+    },
+    "ufc/ufc-comm1-chan": {
+      "name": "COMM-1-Kanalwahlknopf mit Anzeige",
+      "text": "Dreht man diesen Knopf, wählt er einen gespeicherten Funkkanal von 1 bis 20 oder die Sonderkanäle M, G und C. Das kleine Fenster darüber zeigt den Kanal. Zieht man den Knopf, kann der Pilot die Frequenz auf dem Tastenfeld ändern.",
+      "context": "Ein Kanal ist wie eine Sendertaste am Autoradio. Der Pilot wählt den Kanal, den der Einsatzplan vorgibt."
+    },
+    "ufc/ufc-comm2-vol": {
+      "name": "COMM-2-Lautstärkeknopf",
+      "text": "Dreht man diesen Knopf aus OFF heraus, schaltet er das COMM-2-Funkgerät ein und stellt dessen Lautstärke ein.",
+      "context": "COMM 2 ist das zweite Funkgerät. Viele Piloten nutzen es für einen zweiten Kontakt, zum Beispiel den Tower, während COMM 1 auf einer anderen Frequenz ist."
+    },
+    "ufc/ufc-comm2-chan": {
+      "name": "COMM-2-Kanalwahlknopf mit Anzeige",
+      "text": "Wählt einen gespeicherten Kanal für das COMM-2-Funkgerät von 1 bis 20 oder die Sonderkanäle M, G und C. Das Fenster daneben zeigt die Wahl. Zieht man den Knopf, wird die Frequenz zum Eintippen geöffnet.",
+      "context": "Er arbeitet genau wie der COMM-1-Knopf, nur für das zweite Funkgerät."
+    },
+    "ufc/ufc-emcon": {
+      "name": "EMCON-Taste",
+      "text": "EMCON bedeutet 'Emissionskontrolle'. Die Taste soll verhindern, dass das Flugzeug Funk- und Radarsignale aussendet, damit Feinde es nicht finden.",
+      "context": "Laut Handbuch hat sie in DCS derzeit keine Funktion."
+    },
+    "ufc/ufc-bright": {
+      "name": "UFC-Helligkeitsknopf (DIM / BRT)",
+      "text": "Dreht man diesen Knopf im Uhrzeigersinn, werden die Optionsfenster und die Notizzeile heller.",
+      "context": "Der Pilot stellt ihn so ein, dass alles bei Sonne lesbar und nachts nicht zu hell ist."
+    },
+    "ufc/ufc-options": {
+      "name": "Optionswahltasten 1-5",
+      "text": "Fünf Tasten, je eine neben einem Optionsfenster. Ein Druck wählt die in ihrem Fenster stehende Auswahl an oder ab.",
+      "context": "Eine gewählte Option bekommt einen Doppelpunkt davor. Beim Autopilot wird so ein Modus wie Kurshalten eingeschaltet."
+    },
+    "ufc/ufc-digits": {
+      "name": "Tastaturtasten 0-9",
+      "text": "Zehn Tasten mit Ziffern; einige zeigen auch Buchstaben. Ein Druck auf eine Taste setzt diese Zahl in die Notizzeile.",
+      "context": "Der Pilot nutzt sie für Funkfrequenzen, TACAN-Kanäle, ILS-Kanäle und Wegpunkte. Nullen am Ende müssen mit eingetippt werden."
+    },
+    "ufc/ufc-clr": {
+      "name": "CLR-Taste (löschen)",
+      "text": "Löscht, was getippt wurde. Ein Druck leert die Notizzeile. Ein zweiter Druck leert die Optionsfenster.",
+      "context": "Sie wird benutzt, wenn eine Zahl falsch getippt wurde oder nach einem ERROR."
+    },
+    "ufc/ufc-ent": {
+      "name": "ENT-Taste (Eingabe)",
+      "text": "Sendet die Zahl aus der Notizzeile an das System, zu dem sie gehört. Wird sie angenommen, blinkt die Notizzeile einmal.",
+      "context": "Die letzte Taste jeder Eingabe: tippen, prüfen, dann ENT drücken."
+    },
+    "ufc/ufc-ip": {
+      "name": "UFC-I/P-Taste",
+      "text": "Eine Taste am UFC mit der Beschriftung I/P. Das Handbuch beschreibt sie nicht; das Spiel nennt sie 'UFC I/P Pushbutton'.",
+      "context": "Sie gehört zum Tastenfeld, neben den Optionswahltasten."
+    },
+    "ufc/ufc-ap": {
+      "name": "A/P-Funktionstaste (Autopilot)",
+      "text": "Zeigt die Autopilot-Auswahl in den Optionsfenstern, zum Beispiel ATTH (Lage halten), HSEL (Kurs halten), BALT und RALT (Höhe halten). Ein Druck auf A/P selbst schaltet den Autopiloten nicht ein.",
+      "context": "Der Autopilot wird eingeschaltet, indem man mit einer Optionstaste einen Modus wählt. Der Paddle-Schalter am Steuerknüppel schaltet ihn aus."
+    },
+    "ufc/ufc-tcn": {
+      "name": "TCN-Funktionstaste (TACAN)",
+      "text": "Zeigt die TACAN-Einstellungen. TACAN ist ein Funkfeuer am Boden oder auf einem Schiff, das dem Flugzeug Richtung und Entfernung zu ihm angibt.",
+      "context": "Mit TCN tippt der Pilot den TACAN-Kanal ein und wählt den Modus, dann schaltet er es mit ON/OFF ein. Das nutzt man oft, um den Flugzeugträger zu finden."
+    },
+    "ufc/ufc-ils": {
+      "name": "ILS-Funktionstaste",
+      "text": "Zeigt die ILS-Einstellungen. ILS besteht aus zwei Funkstrahlen an einer Piste oder einem Träger, die das Flugzeug zur Landung herunterführen.",
+      "context": "Der Pilot tippt den Kanal (1 bis 20) ein und schaltet ILS mit der ON/OFF-Taste ein. Das ILS muss auch auf der HSI-Seite eingerahmt werden, damit es im HUD erscheint."
+    },
+    "ufc/ufc-others": {
+      "name": "Funktionstasten IFF, D/L und BCN",
+      "text": "Drei weitere Funktionstasten. IFF ist der Transponder, der 'Freund oder Feind'-Fragen beantwortet. D/L ist die Datenverbindung, die Daten mit anderen Flugzeugen teilt. BCN ist das Funkfeuer.",
+      "context": "Jede zeigt die Einstellungen ihres Systems in den Optionsfenstern. Das Handbuch behandelt sie in späteren Kapiteln."
+    },
+    "ufc/ufc-onoff": {
+      "name": "ON/OFF-Funktionstaste",
+      "text": "Schaltet das System ein oder aus, das mit einer Funktionstaste gewählt wurde, zum Beispiel TACAN oder ILS.",
+      "context": "Ist das System an, erscheint das Wort ON in der Notizzeile."
+    },
+    "hud-control-panel/hud-reject": {
+      "name": "HUD-Symbol-Reduzierschalter (NORM / REJ 1 / REJ 2)",
+      "text": "Dieser Schalter nimmt Marken aus dem HUD, wenn es zu voll ist. NORM zeigt alles, REJ 1 entfernt eine erste Gruppe, REJ 2 entfernt mehr.",
+      "context": "REJ 1 entfernt z. B. Machzahl, g und Querneigung; REJ 2 entfernt zusätzlich die Kursskala. Der Pilot nutzt ihn für eine übersichtlichere Sicht.",
+      "positions": {
+        "NORM": "Alle normalen Marken werden gezeigt.",
+        "REJ 1": "Einige Marken, wie Machzahl, g und die Kästen für Geschwindigkeit und Höhe, werden entfernt.",
+        "REJ 2": "Alle Marken von REJ 1 plus die Kursskala und mehr werden entfernt."
+      }
+    },
+    "hud-control-panel/hud-bright": {
+      "name": "Helligkeitsknopf der HUD-Symbole",
+      "text": "Mit diesem Knopf werden die grünen HUD-Marken heller oder dunkler.",
+      "context": "Er arbeitet zusammen mit dem DAY/NIGHT-Schalter, der den Helligkeitsbereich festlegt."
+    },
+    "hud-control-panel/hud-dn": {
+      "name": "Helligkeitswähler der HUD-Symbole (DAY / NIGHT)",
+      "text": "Wählt den Helligkeitsbereich für die HUD-Marken. DAY erlaubt die hellsten Marken, NIGHT hält sie dunkler.",
+      "context": "Der Pilot nutzt NIGHT im Dunkeln, damit die Marken nicht blenden.",
+      "positions": {
+        "DAY": "Die höchste Symbolhelligkeit ist verfügbar.",
+        "NIGHT": "Die Symbole bleiben bei verringerter Helligkeit."
+      }
+    },
+    "hud-control-panel/hud-black": {
+      "name": "HUD-Schwarzwert-Knopf",
+      "text": "Ein Knopf mit der Beschriftung 'Black Level' am HUD-Bedienfeld. Das Handbuch beschreibt ihn nicht; das Spiel nennt ihn 'Black Level Control Knob'.",
+      "context": "Er gehört zu den Einstellungen des HUD-Videobilds neben dem Balance-Knopf."
+    },
+    "hud-control-panel/hud-video": {
+      "name": "HUD-Videoschalter (W/B / VID / OFF)",
+      "text": "Ein Dreistellungsschalter für das Videobild im HUD. Das Handbuch beschreibt ihn nicht; das Spiel nennt ihn 'HUD Video Control Switch'.",
+      "context": "Er sitzt am HUD-Bedienfeld bei den Knöpfen für Schwarzwert und Balance.",
+      "positions": {
+        "W/B": "Beschriftet mit W/B; das Handbuch nennt keine Einzelheiten.",
+        "VID": "Beschriftet mit VID (Video); das Handbuch nennt keine Einzelheiten.",
+        "OFF": "Die Videoeinstellung ist aus."
+      }
+    },
+    "hud-control-panel/hud-balance": {
+      "name": "HUD-Balance-Knopf",
+      "text": "Ein Knopf mit der Beschriftung 'Balance' am HUD-Bedienfeld. Das Handbuch beschreibt ihn nicht; das Spiel nennt ihn 'Balance Control Knob'.",
+      "context": "Er gehört zu den Einstellungen des HUD-Videobilds neben dem Schwarzwert-Knopf."
+    },
+    "hud-control-panel/hud-aoa-knob": {
+      "name": "Regelknopf der AOA-Anzeige",
+      "text": "Dieser Knopf soll die AOA-Anzeigeleuchten neben dem HUD dimmen.",
+      "context": "Laut Handbuch hat er derzeit keine Funktion."
+    },
+    "hud-control-panel/hud-att": {
+      "name": "Lagewahlschalter (INS / AUTO / STBY)",
+      "text": "Wählt, woher das HUD die Fluglage des Flugzeugs bekommt (Nase oben oder unten, Flügel waagerecht oder geneigt): vom Trägheitsnavigationssystem, vom Reserveinstrument oder automatisch.",
+      "context": "Die Start-Checkliste stellt ihn auf AUTO. STBY erzwingt die Nutzung des Reserveinstruments.",
+      "positions": {
+        "INS": "Die Fluglage kommt vom Trägheitsnavigationssystem.",
+        "AUTO": "Das Flugzeug wählt die Quelle selbst; die normale Stellung.",
+        "STBY": "Das Reserve-Fluglageinstrument wird genutzt."
+      }
+    },
+    "hud-control-panel/hud-alt": {
+      "name": "Höhenschalter (BARO / RDR)",
+      "text": "Wählt, wie das HUD die Höhe misst: BARO nutzt den Luftdruck und RDR den Radarhöhenmesser, der die Höhe über dem Boden misst.",
+      "context": "Ist RDR gewählt, zeigt das HUD ein R neben der Höhe. Über 5.000 Fuß arbeitet der Radarhöhenmesser nicht und das HUD geht mit einem blinkenden B zurück auf BARO.",
+      "positions": {
+        "BARO": "Die Höhe kommt vom Luftdruck (barometrisch).",
+        "RDR": "Die Höhe über dem Boden kommt vom Radarhöhenmesser."
+      }
+    },
+    "ampcd/ampcd-screen": {
+      "name": "AMPCD-Bildschirm",
+      "text": "Ein Farbbildschirm in der Mitte der Tafel. Er zeigt das HSI (eine kartenähnliche Seite mit der Route), Lageseiten und andere Menüs.",
+      "context": "Die HSI-Seite kommt vom Kartenrechner, die anderen Seiten kommen vom linken DDI."
+    },
+    "ampcd/ampcd-off-bright": {
+      "name": "AMPCD-OFF/BRT-Knopf",
+      "text": "Dreht man diesen Knopf aus OFF heraus, schaltet sich der Farbbildschirm ein. Weiterdrehen macht das Bild heller.",
+      "context": "Er stellt die Helligkeit nur ein, wenn der Tag/Nacht-Wippschalter auf DAY steht. Bei NGT stellt der Bildschirm seine Helligkeit selbst ein."
+    },
+    "ampcd/ampcd-daynight": {
+      "name": "AMPCD-Tag/Nacht-Wippschalter (DAY / NGT)",
+      "text": "Ein Wippschalter mit zwei Seiten. DAY: Der Knopf stellt die Helligkeit ein. NGT: Der Bildschirm stellt seine Helligkeit selbst ein.",
+      "context": "Bei gezeigter HSI-Seite ist die Helligkeit immer automatisch.",
+      "positions": {
+        "DAY": "Der Pilot stellt die Helligkeit mit dem Knopf ein.",
+        "NGT": "Die Helligkeit ist automatisch."
+      }
+    },
+    "ampcd/ampcd-sym": {
+      "name": "AMPCD-Symbol-Wippschalter",
+      "text": "Drückt man die obere Hälfte, werden Linien und Buchstaben dünner, schärfer und dunkler. Die untere Hälfte macht sie breiter und heller.",
+      "context": "Jeder Druck macht einen kleinen Schritt.",
+      "positions": {
+        "UP": "Schmalere, schärfere, dunklere Symbole.",
+        "DOWN": "Breitere, hellere, weniger scharfe Symbole."
+      }
+    },
+    "ampcd/ampcd-gain": {
+      "name": "AMPCD-Gain-Wippschalter",
+      "text": "Drückt man die obere Hälfte, wird das Hintergrundbild des Bildschirms heller. Die untere Hälfte macht es dunkler.",
+      "context": "Das ist wichtig, wenn der Bildschirm ein Videobild zeigt, etwa die Karte hinter den Symbolen.",
+      "positions": {
+        "UP": "Das Hintergrundvideo wird heller.",
+        "DOWN": "Das Hintergrundvideo wird dunkler."
+      }
+    },
+    "ampcd/ampcd-contrast": {
+      "name": "AMPCD-Kontrast-Wippschalter",
+      "text": "Drückt man die obere Hälfte, steigt der Kontrast, also der Unterschied zwischen Hell und Dunkel. Die untere Hälfte senkt ihn.",
+      "context": "Der Pilot stellt ihn in kleinen Schritten ein, bis die Seite gut lesbar ist.",
+      "positions": {
+        "UP": "Mehr Kontrast.",
+        "DOWN": "Weniger Kontrast."
+      }
+    },
+    "ampcd/ampcd-pb": {
+      "name": "AMPCD-Tasten 1-20",
+      "text": "Diese 20 Tasten sitzen rund um den Rand des Farbbildschirms. Jede wählt das Wort, das auf dem Bildschirm neben ihr steht, daher tut dieselbe Taste auf verschiedenen Seiten Verschiedenes.",
+      "context": "Taste 1 ist die unterste links; die Nummerierung läuft im Uhrzeigersinn. Der Pilot wechselt damit die Seiten und arbeitet in der Karte."
+    },
+    "ampcd/hdg-set": {
+      "name": "HDG-Einstellschalter (Kurs)",
+      "text": "Nach oben gehalten dreht er die Kursmarke auf der HSI-Kartenseite zu größeren Zahlen, nach unten gehalten zu kleineren. Die Marke zeigt die Richtung, in die der Pilot fliegen will.",
+      "context": "Der Autopilot-Modus Kurswahl (HSEL) nutzt diese Marke. Der Schalter federt in die Mitte zurück.",
+      "positions": {
+        "UP": "Die Kurszahl steigt, solange der Schalter gehalten wird.",
+        "DOWN": "Die Kurszahl sinkt, solange der Schalter gehalten wird."
+      }
+    },
+    "ampcd/crs-set": {
+      "name": "CRS-Einstellschalter (Kurslinie)",
+      "text": "Nach oben gehalten dreht er die Kurslinie auf der HSI-Seite zu größeren Zahlen, nach unten gehalten zu kleineren. Die Kurslinie ist der Weg, dem der Pilot zu einem Punkt folgen will.",
+      "context": "Er federt in die Mitte zurück. Das Spiel setzt ihn rechts vom Farbbildschirm; er ist das Gegenstück zum HDG-Einstellschalter.",
+      "positions": {
+        "UP": "Die Kurslinienzahl steigt, solange der Schalter gehalten wird.",
+        "DOWN": "Die Kurslinienzahl sinkt, solange der Schalter gehalten wird."
+      }
+    },
+    "alr67/alr-power": {
+      "name": "ALR-67-POWER-Taste",
+      "text": "Schaltet den Radarwarnempfänger ein oder aus. Wenn er angeht, leuchten auch die Lichter in den anderen Tasten.",
+      "context": "Der Pilot schaltet ihn vor dem Einsatz ein und lässt ihn an."
+    },
+    "alr67/alr-display": {
+      "name": "ALR-67-DISPLAY-Taste",
+      "text": "Beschränkt beim Drücken die Anzeige auf die sechs wichtigsten Bedrohungen. Erneutes Drücken führt zur vollen Anzeige zurück.",
+      "context": "Das Handbuch nennt diese Funktion LIMIT. Ein L erscheint auf der Radarwarnanzeige, solange die Beschränkung an ist."
+    },
+    "alr67/alr-offset": {
+      "name": "ALR-67-OFFSET-Taste",
+      "text": "Wenn Symbole auf der Anzeige übereinander liegen, schiebt diese Taste sie auseinander, damit sie lesbar sind.",
+      "context": "Eine ENABLE-Leuchte in der Taste zeigt, dass die Option an ist. Erneutes Drücken schaltet sie aus."
+    },
+    "alr67/alr-special": {
+      "name": "ALR-67-SPECIAL-Taste",
+      "text": "Eine Taste mit der Beschriftung SPECIAL. Das Handbuch beschreibt sie nicht; das Spiel nennt sie 'ALR-67 SPECIAL Pushbutton'.",
+      "context": "Sie leuchtet zusammen mit den anderen Tasten, wenn der Empfänger an ist."
+    },
+    "alr67/alr-bit": {
+      "name": "ALR-67-BIT-Taste",
+      "text": "BIT bedeutet eingebauter Selbsttest. Die Taste lässt den Empfänger seinen eigenen Teststatus auf der Anzeige zeigen. Eine FAIL-Leuchte geht an, wenn der Test einen Fehler findet.",
+      "context": "Der Pilot kann den Empfänger so prüfen. Erneutes Drücken schaltet die Testanzeige aus."
+    },
+    "alr67/alr-dis-type": {
+      "name": "ALR-67-DIS-TYPE-Schalter (N / I / A / U / F)",
+      "text": "Wählt, welche Radararten die Anzeige am deutlichsten zeigt. Der gewählte Buchstabe erscheint in der Mitte der Anzeige.",
+      "context": "Das Handbuch nennt die Buchstaben N, I, A, U und F als Prioritätseinstellung, aber ohne Einzelheiten zu jedem.",
+      "positions": {
+        "N": "Prioritätseinstellung N.",
+        "I": "Prioritätseinstellung I.",
+        "A": "Prioritätseinstellung A.",
+        "U": "Prioritätseinstellung U.",
+        "F": "Prioritätseinstellung F."
+      }
+    },
+    "alr67/alr-dmr": {
+      "name": "ALR-67-DMR-Knopf",
+      "text": "Ein Knopf auf dem Feld. Das Handbuch nennt einen Dimmerknopf für die Lampen dieses Feldes; das Spiel nennt diesen hier 'DMR Control Knob'.",
+      "context": "Zum Dimmer sagt das Handbuch: im Uhrzeigersinn heller, gegen den Uhrzeigersinn dunkler."
+    },
+    "alr67/alr-audio": {
+      "name": "ALR-67-AUDIO-Knopf",
+      "text": "Ein Lautstärkeknopf für die Radarwarntöne. Das Spiel sagt, dass er keine Funktion hat.",
+      "context": "Die Lautstärke wird stattdessen am Audio-Feld der linken Konsole eingestellt (RWR-Lautstärke)."
+    },
+    "icmcp/disp-sw": {
+      "name": "DISPENSER-Schalter (BYPASS / ON / OFF)",
+      "text": "Der Hauptschalter des Täuschkörpersystems. Düppel sind Wolken aus winzigen Metallstreifen gegen Radarraketen. Leuchtkörper (Flares) sind heiß brennende Lichter gegen wärmesuchende Raketen.",
+      "context": "In ON arbeiten die Programme. In BYPASS wirft der Ausstoßschalter am Schubhebel immer Düppel (vorwärts) oder Leuchtkörper (rückwärts) ab. Die ECM-JETT-Taste wirkt auch in OFF.",
+      "positions": {
+        "BYPASS": "Überspringt die Programme: vorwärts wirft zwei Düppel ab, rückwärts zwei Leuchtkörper.",
+        "ON": "Das Täuschkörpersystem arbeitet mit seinen Programmen; ein Test läuft etwa fünf Sekunden.",
+        "OFF": "Das Täuschkörpersystem ist aus."
+      }
+    },
+    "icmcp/ecm-jett": {
+      "name": "ECM-JETT-Taste (Täuschkörper-Notabwurf)",
+      "text": "Ein Druck auf diese Taste wirft alle Düppel und Leuchtkörper auf einmal ab. Sie wirkt nur, wenn das Flugzeug in der Luft ist.",
+      "context": "Sie ist eine Notfalltaste. Die Taste leuchtet, wenn sie gedrückt wurde."
+    },
+    "icmcp/ecm-mode": {
+      "name": "ECM-Modusschalter (XMIT / REC / BIT / STBY / OFF)",
+      "text": "Steuert den ALQ-165-Störsender. Ein Störsender sendet falsche Echos aus, um feindliche Radare zu täuschen, so dass sie das Flugzeug wieder verlieren.",
+      "context": "STBY wärmt ihn zuerst auf (etwa fünf Minuten). REC lässt ihn nach Radaren lauschen. XMIT lässt ihn stören. Im Nahkampf lässt der Pilot ihn aus, weil Raketen auf das Stören zielen können.",
+      "positions": {
+        "XMIT": "Der Störsender darf stören, wenn ein Radar aufschaltet.",
+        "REC": "Der Störsender lauscht nach Radaraufschaltungen und warnt.",
+        "BIT": "Die Teststellung; laut Handbuch nicht umgesetzt.",
+        "STBY": "Der Störsender wärmt sich auf, sendet aber nicht.",
+        "OFF": "Der Störsender ist aus."
+      }
+    },
+    "icmcp/cabin-gauge": {
+      "name": "Kabinendruckanzeige",
+      "text": "Eine Anzeige in der unteren Instrumentengruppe, die den Luftdruck in der Kabine zeigt.",
+      "context": "Laut Handbuch geht es im Rest dieser Gruppe um die Abwehrsysteme."
+    },
+    "fire-lights-right/apu-fire": {
+      "name": "APU-FIRE-Leuchttaste",
+      "text": "Eine rote Taste, die aufleuchtet, wenn im Raum der APU, des kleinen Hilfstriebwerks, ein Feuer gefunden wird. Eine Stimme sagt 'APU fire'.",
+      "context": "Die APU wird für den Triebwerksstart benutzt. Das Handbuch beschreibt das Drücken der Triebwerks-Feuertasten, diese aber nicht im Einzelnen."
+    },
+    "fire-lights-right/fire-right": {
+      "name": "RIGHT-ENG/AMAD-FIRE-Leuchttaste mit Schutzbügel",
+      "text": "Eine rote Taste, die aufleuchtet, wenn die Sensoren ein Feuer im rechten Triebwerk oder in seinem Getrieberaum finden. Ein Bügel schützt die Taste.",
+      "context": "Wie links hebt der Pilot den Bügel an, drückt die Taste, um den Kraftstoff zu diesem Triebwerk zu sperren, und nutzt dann die Feuerlöscher-Taste."
+    },
+    "fire-lights-right/threat-lights": {
+      "name": "Rechte Hinweis- und Warnleuchten (DISP, SAM, AI, AAA, CW)",
+      "text": "Leuchten oben auf der rechten Tafel, die sagen, welche Art von Radar das Flugzeug sieht: SAM für Bodenraketen-Radar, AI für Jagdflugzeug-Radar, AAA für Flak-Radar und CW für ein Radar, das eine Rakete lenkt. DISP bedeutet, dass ein Täuschkörperprogramm bereit ist.",
+      "context": "Sie arbeiten mit der Radarwarnanzeige und einem Warnton zusammen. Der Pilot reagiert mit Kurven und mit Täuschkörpern."
+    },
+    "right-ddi/rdd-bright-sel": {
+      "name": "Helligkeitswähler des rechten DDI (OFF / NIGHT / DAY)",
+      "text": "Dieser Drehschalter schaltet den rechten Bildschirm ein und wählt, wie hell er werden darf. OFF schaltet den Bildschirm aus.",
+      "context": "Er arbeitet wie der für den linken Bildschirm. Der Pilot schaltet beim Starten des Flugzeugs beide ein.",
+      "positions": {
+        "OFF": "Der Bildschirm ist aus.",
+        "NIGHT": "Der Bildschirm ist an, mit einem dunkleren Helligkeitsbereich.",
+        "DAY": "Der Bildschirm ist an, mit einem helleren Helligkeitsbereich."
+      }
+    },
+    "right-ddi/rdd-bright": {
+      "name": "BRT-Knopf (Helligkeit) des rechten DDI",
+      "text": "Dreht man diesen Knopf im Uhrzeigersinn, werden Symbole und Text auf dem rechten Bildschirm heller.",
+      "context": "Er ist derselbe wie der Knopf am linken Bildschirm. Der Pilot stellt ihn auf das Licht im Cockpit ein."
+    },
+    "right-ddi/rdd-contrast": {
+      "name": "CONT-Knopf (Kontrast) des rechten DDI",
+      "text": "Dieser Knopf soll ändern, wie stark sich die Symbole vom dunklen Hintergrund des rechten Bildschirms abheben.",
+      "context": "Wie beim linken Bildschirm ist er laut Handbuch nicht umgesetzt und hat in DCS keine Wirkung."
+    },
+    "right-ddi/rdd-pb": {
+      "name": "Tasten 1-20 des rechten DDI",
+      "text": "Diese 20 Tasten sitzen rund um den Rand des rechten Bildschirms. Jede wählt das Wort, das auf dem Bildschirm neben ihr steht, daher tut dieselbe Taste auf verschiedenen Seiten Verschiedenes.",
+      "context": "Taste 1 ist die unterste auf der linken Seite; die Nummerierung läuft im Uhrzeigersinn, genau wie am linken Bildschirm."
+    },
+    "standby-instruments/sai": {
+      "name": "Reserve-Fluglageanzeiger (SARI) mit Käfigknopf",
+      "text": "Eine kleine Anzeige, die zeigt, ob die Nase oben oder unten ist und ob die Flügel waagerecht sind. Eine Nadel und eine Kugel unten zeigen Kurven. Zieht man den Knopf, wird sie festgesetzt (gekäfigt); dreht man ihn, bewegt sich das kleine Flugzeug.",
+      "context": "Der Pilot löst sie beim Start. Nach scharfen Manövern kann sie falsche Werte zeigen und muss im Geradeausflug neu gekäfigt werden."
+    },
+    "standby-instruments/sai-test": {
+      "name": "SAI-Testtaste",
+      "text": "Ein Druck auf diese Taste startet den Test des Reserve-Fluglageanzeigers.",
+      "context": "Sie wird bei den Prüfungen vor dem Flug benutzt."
+    },
+    "standby-instruments/alt-knob": {
+      "name": "Reserve-Höhenmesser und Knopf für die Luftdruckeinstellung",
+      "text": "Der Höhenmesser ist die Höhenanzeige. Dieser Knopf stellt den örtlichen Luftdruck ein, damit die Anzeige die richtige Höhe zeigt.",
+      "context": "Die Checkliste sagt, ihn vor dem Start auf die Höhe des Flugplatzes zu stellen. Dieselbe Einstellung nutzt auch der Luftdatenrechner."
+    },
+    "standby-instruments/sai-speed": {
+      "name": "Reserve-Fahrtmesser",
+      "text": "Eine runde Anzeige, die die Geschwindigkeit durch die Luft in Knoten zeigt, von 60 bis 850.",
+      "context": "Er ist die Reserve für die Geschwindigkeit im HUD."
+    },
+    "standby-instruments/sai-vvi": {
+      "name": "Reserve-Steig-/Sinkanzeige",
+      "text": "Eine Anzeige, die zeigt, ob das Flugzeug steigt oder sinkt und wie schnell.",
+      "context": "Sie ist die Reserve für die Steig- und Sinkrate im HUD."
+    },
+    "rwr-display/rwr-azimuth": {
+      "name": "Azimutanzeige (Radarwarnanzeige)",
+      "text": "Eine runde Anzeige mit einem Symbol für jedes Radar, das das Flugzeug sieht. Das Symbol zeigt die Radarart, und seine Lage auf dem Kreis zeigt die Richtung.",
+      "context": "Sie ist der Radarwarnempfänger. Seine Bedienelemente sitzen am ALR-67-Feld unter dem Farbbildschirm. Die Anzeige kann nicht angeklickt werden."
+    },
+    "rwr-display/rwr-int": {
+      "name": "RWR-Intensitätsknopf",
+      "text": "Dreht man diesen Knopf, ändert sich die Helligkeit der Radarwarnanzeige.",
+      "context": "Der Pilot stellt ihn so ein, dass sie im Licht des Cockpits lesbar ist."
+    },
+    "misc-front-right/ir-cool": {
+      "name": "IR-COOL-Schalter (ORIDE / NORM / OFF)",
+      "text": "Ein Schalter für die Kühlung der Suchköpfe der wärmesuchenden AIM-9-Raketen. Der Suchkopf muss sehr kalt sein, um Wärme gut zu sehen.",
+      "context": "NORM ist die normale Stellung. Für die Benutzung verweist das Handbuch auf den AIM-9-Abschnitt.",
+      "positions": {
+        "ORIDE": "Übersteuerung (Override): Das Kühlmittel wird von Hand zugeführt.",
+        "NORM": "Die normale, automatische Stellung.",
+        "OFF": "Das Kühlmittel ist aus."
+      }
+    },
+    "misc-front-right/hmd-knob": {
+      "name": "HMD-OFF/BRT-Knopf (Helmanzeige)",
+      "text": "Dreht man diesen Knopf, schaltet er die Anzeige am Helm des Piloten ein und stellt ihre Helligkeit ein.",
+      "context": "Die Helmanzeige zeigt Marken dort, wohin der Pilot schaut. Sie muss vor dem Flug eingeschaltet und ausgerichtet werden."
+    },
+    "misc-front-right/spin-sw": {
+      "name": "SPIN-RECOVERY-Schalter (NORM / RCVY)",
+      "text": "Ein Schalter für den Trudel-Beendigungsmodus der Flugsteuerung. Das Handbuch sagt, er sei alt, überholt und in den echten Handbüchern verboten.",
+      "context": "Er sollte auf NORM bleiben. Der Schalter ist durch einen Bügel abgedeckt.",
+      "positions": {
+        "NORM": "Die normale Stellung; der Modus schaltet sich nur unter bestimmten Bedingungen selbst ein.",
+        "RCVY": "Der Trudelmodus schaltet bei niedriger Geschwindigkeit ein; das Handbuch sagt, ihn nicht zu benutzen."
+      }
+    },
+    "misc-front-right/spin-cover": {
+      "name": "Abdeckung des SPIN-RECOVERY-Schalters",
+      "text": "Eine Klappe über dem Trudel-Schalter. Sie muss geöffnet werden, bevor der Schalter bewegt werden kann.",
+      "context": "Sie schützt davor, den Schalter versehentlich zu bewegen."
+    },
+    "misc-front-right/louvers": {
+      "name": "Linke und rechte Luftdüsen",
+      "text": "Zwei verstellbare Luftdüsen auf der Tafel. Dreht man eine, ändert sich der Luftstrom zum Piloten.",
+      "context": "Das Handbuch beschreibt sie nicht; das Spiel nennt sie 'Left Louver' und 'Right Louver'."
+    },
+    "misc-front-right/hud-vid-bit": {
+      "name": "HUD-Video-BIT-Starttaste",
+      "text": "Ein Druck auf diese Taste startet einen eingebauten Test (BIT) des HUD-Videos.",
+      "context": "Das Spiel nennt sie 'HUD Video BIT Initiate Pushbutton'. Das Handbuch beschreibt sie nicht."
+    },
+    "right-vertical-panel/hook-handle": {
+      "name": "Fanghakengriff",
+      "text": "Senkt oder hebt den Fanghaken am Heck. Auf einem Flugzeugträger fängt der Haken ein Seil auf dem Deck und stoppt das Flugzeug. Die HOOK-Leuchte zeigt an, solange sich der Haken bewegt oder nicht zum Griff passt.",
+      "context": "Der Pilot senkt ihn vor einer Trägerlandung. Das Absenken des Hakens bewegt auch den HOOK-BYPASS-Schalter auf CARRIER.",
+      "positions": {
+        "UP": "Der Haken ist hochgeklappt.",
+        "DOWN": "Der Haken ist abgesenkt."
+      }
+    },
+    "right-vertical-panel/wing-fold": {
+      "name": "Flügelfaltgriff (FOLD / HOLD / SPREAD)",
+      "text": "Die Flügel können an den Spitzen nach oben klappen, um auf einem Träger Platz zu sparen. Der Griff wird herausgezogen und gedreht, um sie zu falten oder auszubreiten. Hineindrücken des Griffs verriegelt die Flügel.",
+      "context": "HOLD hält die Flügel an jeder Stelle dazwischen an. MASTER CAUTION leuchtet beim Falten. Der Pilot muss die Flügel vor dem Flug ausgebreitet verriegeln.",
+      "positions": {
+        "FOLD": "Die Flügel klappen hoch.",
+        "HOLD": "Die Flügel bleiben, wo sie sind.",
+        "SPREAD": "Die Flügel breiten sich aus; den Griff zum Verriegeln hineindrücken."
+      }
+    },
+    "right-vertical-panel/radalt": {
+      "name": "Radarhöhenmesser mit Testknopf zum Drücken",
+      "text": "Eine Anzeige, die die Höhe über Boden oder Wasser zeigt, von 0 bis 5.000 Fuß. Der Knopf startet beim Drücken einen Test und stellt beim Drehen die Marke für niedrige Höhe ein.",
+      "context": "Der Pilot stellt die Marke ein, zum Beispiel 200 Fuß für einen Start von einem Flugplatz. Eine Warnung ertönt, wenn das Flugzeug niedriger als die Marke fliegt."
+    },
+    "right-vertical-panel/hyd-gauge": {
+      "name": "Hydraulikdruckanzeige",
+      "text": "Eine Anzeige für den Öldruck der beiden Hydrauliksysteme HYD 1 und HYD 2. Sie bewegen die Flugsteuerung und andere schwere Teile.",
+      "context": "System 1 bewegt nur die wichtigsten Flugsteuerflächen. System 2 tut das ebenfalls und bewegt auch die Bremsklappe und andere Teile."
+    },
+    "right-vertical-panel/av-cool": {
+      "name": "AV-COOL-Schalter (NORM / EMERG)",
+      "text": "Ein Schalter für die Kühlluft der Avionik, der elektronischen Ausrüstung. EMERG wählt die Notkühlung.",
+      "context": "Das Handbuch sagt, EMERG zu wählen, wenn die FCS-HOT-Warnleuchte zeigt, dass die Flugrechner zu heiß sind.",
+      "positions": {
+        "NORM": "Die normale Kühlung.",
+        "EMERG": "Notkühlung für heiße Flugrechner."
+      }
+    },
+    "exterior-lights/pos-lights": {
+      "name": "POSITION-Lichter-Knopf",
+      "text": "Stellt ein, wie hell die Navigationslichter sind: rot am linken Flügel, grün am rechten Flügel und weiß am Heck.",
+      "context": "Andere Flugzeuge erkennen nachts an diesen Lichtern, in welche Richtung das Flugzeug fliegt."
+    },
+    "exterior-lights/form-lights": {
+      "name": "FORMATION-Lichter-Knopf",
+      "text": "Stellt ein, wie hell die acht leuchtenden Streifen an Flügelspitzen, Leitwerken und Rumpf sind.",
+      "context": "Sie helfen Piloten, die nachts dicht beieinander fliegen. Der Knopf geht von OFF bis BRT."
+    },
+    "exterior-lights/strobe-sw": {
+      "name": "STROBE-Lichter-Schalter (BRT / OFF / DIM)",
+      "text": "Steuert die zwei roten Blitzlichter an den Leitwerken, die das Flugzeug gut sichtbar machen.",
+      "context": "Es sind Antikollisionslichter. Sie arbeiten nur, wenn der Hauptschalter für die Außenlichter an ist.",
+      "positions": {
+        "BRT": "Die Blitzlichter blitzen mit voller Stärke.",
+        "OFF": "Die Blitzlichter sind aus.",
+        "DIM": "Die Blitzlichter blitzen mit geringerer Stärke."
+      }
+    },
+    "fuel-control/probe-sw": {
+      "name": "Betankungs-PROBE-Schalter (EXTEND / RETRACT / EMERG EXTD)",
+      "text": "Bewegt das Rohr an der Seite der Nase, das sich im Flug zum Betanken mit einem Tankflugzeug verbindet. EMERG EXTD schiebt es im Notfall heraus.",
+      "context": "Der Pilot fährt es hinter einem Tankflugzeug aus und danach wieder ein. Die Start-Checkliste fährt es im 'Four-down'-Test einmal durch.",
+      "positions": {
+        "EXTEND": "Die Betankungssonde fährt aus.",
+        "RETRACT": "Die Sonde wird eingezogen.",
+        "EMERG EXTD": "Die Sonde wird vom Notsystem herausgeschoben."
+      }
+    },
+    "fuel-control/ext-wing": {
+      "name": "EXT-WING-TKS-Schalter (STOP / NORM / ORIDE)",
+      "text": "Ein Schalter für die Zusatztanks unter den Flügeln. Das sind zusätzliche Kraftstofftanks, die abgeworfen werden können.",
+      "context": "NORM ist die normale Stellung. Das Handbuch beschreibt die anderen Stellungen nicht im Einzelnen.",
+      "positions": {
+        "STOP": "Beschriftet mit STOP: Der Kraftstoff aus dem Tank wird gestoppt.",
+        "NORM": "Die normale, automatische Stellung.",
+        "ORIDE": "Beschriftet mit ORIDE (Übersteuerung): eine manuelle Stellung."
+      }
+    },
+    "fuel-control/ext-ctr": {
+      "name": "EXT-CTR-TK-Schalter (STOP / NORM / ORIDE)",
+      "text": "Ein Schalter für den Zusatztank unter dem Rumpf, in der Mitte.",
+      "context": "Er arbeitet wie der Schalter für die Flügeltanks. NORM ist die normale Stellung.",
+      "positions": {
+        "STOP": "Beschriftet mit STOP: Der Kraftstoff aus dem Tank wird gestoppt.",
+        "NORM": "Die normale, automatische Stellung.",
+        "ORIDE": "Beschriftet mit ORIDE (Übersteuerung): eine manuelle Stellung."
+      }
+    },
+    "fuel-control/int-wing": {
+      "name": "Kraftstoffschalter der inneren Flügeltanks (INHIBIT / NORM)",
+      "text": "Ein Schalter für die Tanks im Inneren der Flügel. INHIBIT sperrt ihren Kraftstoff, NORM ist die normale Stellung.",
+      "context": "Das Handbuch beschreibt diesen Schalter nicht im Einzelnen. Das Spiel setzt ihn auf das Außenlichter-Feld.",
+      "positions": {
+        "INHIBIT": "Der Kraftstoff der inneren Flügeltanks ist gesperrt.",
+        "NORM": "Die normale Stellung."
+      }
+    },
+    "fuel-control/fuel-dump": {
+      "name": "Kraftstoff-DUMP-Schalter (ON / OFF)",
+      "text": "Ablassen heißt, Kraftstoff aus dem Flugzeug in die Luft zu lassen, um es leichter zu machen.",
+      "context": "Er wird in Notfällen benutzt, zum Beispiel um mit weniger Gewicht zu landen.",
+      "positions": {
+        "ON": "Kraftstoff wird nach außen abgelassen.",
+        "OFF": "Das Ablassen von Kraftstoff ist aus."
+      }
+    },
+    "apu-crank/apu-sw": {
+      "name": "APU-Schalter (ON / OFF)",
+      "text": "Startet das kleine Hilfstriebwerk, die APU. Er wird elektrisch in ON gehalten und fällt etwa eine Minute nach dem Anlaufen des zweiten Generators von selbst auf OFF zurück.",
+      "context": "Er kommt als Erstes beim Triebwerksstart. Wenn die grüne READY-Leuchte angeht, kann der Pilot ein Triebwerk durchdrehen.",
+      "positions": {
+        "ON": "Die APU startet und läuft.",
+        "OFF": "Die APU wird abgeschaltet."
+      }
+    },
+    "apu-crank/apu-ready": {
+      "name": "APU-READY-Leuchte",
+      "text": "Eine grüne Leuchte, die angeht, wenn das Hilfstriebwerk bereit ist, ein großes Triebwerk zu drehen.",
+      "context": "Der Pilot wartet darauf, bevor er den Anlassschalter bewegt."
+    },
+    "apu-crank/eng-crank": {
+      "name": "Triebwerks-CRANK-Schalter (L / OFF / R)",
+      "text": "Öffnet die Luftleitung von der APU zu einem Triebwerk, das sich dann dreht, wie ein Auto, das vom Anlasser gedreht wird. L ist das linke Triebwerk, R das rechte.",
+      "context": "Das Handbuch startet zuerst das rechte Triebwerk. Der Schalter springt von selbst auf OFF zurück, wenn der Generator dieses Triebwerks online geht.",
+      "positions": {
+        "L": "Luft dreht das linke Triebwerk.",
+        "OFF": "Kein Triebwerk wird durchgedreht.",
+        "R": "Luft dreht das rechte Triebwerk."
+      }
+    },
+    "ground-power/ext-pwr": {
+      "name": "EXT-PWR-Schalter (RESET / NORM / OFF)",
+      "text": "Verbindet das Flugzeug mit dem Bodenstromwagen oder trennt es davon. RESET ist die Stellung zum Verbinden.",
+      "context": "Das Handbuch sagt, zuerst RESET einzustellen und dann die GND-PWR-Schalter zu setzen.",
+      "positions": {
+        "RESET": "Verbindet oder setzt den Fremdstrom zurück.",
+        "NORM": "Die normale Stellung.",
+        "OFF": "Fremdstrom wird nicht genutzt."
+      }
+    },
+    "ground-power/gnd-pwr": {
+      "name": "GND-PWR-Schalter 1-4 (A ON / AUTO / B ON)",
+      "text": "Vier Schalter für die vier Gruppen elektrischer Geräte, die der Bodenstrom versorgen kann. Jeder kann auf A ON, AUTO oder B ON gestellt werden.",
+      "context": "Für den Start mit Bodenstrom sagt das Handbuch, die Schalter 1, 2 und 4 auf B ON zu stellen und 3 Sekunden zu halten."
+    },
+    "fire-test/fire-test-sw": {
+      "name": "Feuer- und Zapfluft-Testschalter (TEST A / NORM / TEST B)",
+      "text": "Hält man ihn, gehen die Feuerleuchten, die BLEED-Leuchten und die Sprachwarnungen an, um zu zeigen, dass das Alarmsystem arbeitet. TEST A prüft die Schleife A der Sensoren, TEST B die Schleife B.",
+      "context": "Die Start-Checkliste führt TEST A aus, wartet auf die Stimmen und dann TEST B."
+    },
+    "elec-misc/gen-tie": {
+      "name": "GEN-TIE-Schalter (NORM / RESET)",
+      "text": "Steuert die Verbindung zwischen den Stromleitungen der beiden Generatoren. RESET bittet das System, nach einem Fehler wieder zu verbinden. Der Schalter hat eine Abdeckung.",
+      "context": "Steht er auf RESET, zeigt die GEN-TIE-Leuchte auf dem Warnfeld. Die normale Stellung ist NORM.",
+      "positions": {
+        "NORM": "Die normale Stellung.",
+        "RESET": "Setzt die Verbindung nach einem Fehler zurück."
+      }
+    },
+    "elec-misc/gen-tie-cover": {
+      "name": "Abdeckung des GEN-TIE-Schalters",
+      "text": "Eine Klappe über dem GEN-TIE-Schalter, die geöffnet werden muss, bevor der Schalter bewegt wird.",
+      "context": "Sie schützt davor, den Schalter versehentlich zu berühren."
+    },
+    "elec-misc/mc-sw": {
+      "name": "MC-Schalter (1 OFF / NORM / 2 OFF)",
+      "text": "MC steht für Missionsrechner, die Hauptcomputer des Flugzeugs. Der Schalter kann Rechner 1 oder Rechner 2 ausschalten.",
+      "context": "NORM hält beide an. Er wird benutzt, um zu testen, was passiert, wenn ein Rechner ausfällt."
+    },
+    "elec-misc/hyd-iso": {
+      "name": "Hydraulik-Trennung, Übersteuerungsschalter (NORM / ORIDE)",
+      "text": "Ein Schalter für die Hydrauliksysteme, die Öl unter Druck nutzen, um schwere Teile zu bewegen. Das Handbuch beschreibt ihn nicht; das Spiel nennt ihn 'Hydraulic Isolate Override Switch'.",
+      "context": "NORM ist die normale Stellung. Der Pilot bewegt ihn in normalen Flügen nicht.",
+      "positions": {
+        "NORM": "Die normale Stellung.",
+        "ORIDE": "Übersteuerung (Override); das Handbuch nennt keine Einzelheiten."
+      }
+    },
+    "antenna-sel/iff-ant": {
+      "name": "IFF-Antennenwähler (UPPER / BOTH / LOWER)",
+      "text": "Wählt die obere oder die untere Antenne für den IFF-Transponder, oder beide.",
+      "context": "Das Handbuch beschreibt diesen Schalter nicht. BOTH ist die mittlere Stellung.",
+      "positions": {
+        "UPPER": "Die obere Antenne wird benutzt.",
+        "BOTH": "Beide Antennen werden benutzt.",
+        "LOWER": "Die untere Antenne wird benutzt."
+      }
+    },
+    "antenna-sel/comm1-ant": {
+      "name": "COMM-1-Antennenwähler (UPPER / AUTO / LOWER)",
+      "text": "Wählt die obere oder die untere Antenne für das COMM-1-Funkgerät. AUTO lässt das Flugzeug wählen.",
+      "context": "Das Handbuch beschreibt diesen Schalter nicht. AUTO ist die mittlere Stellung.",
+      "positions": {
+        "UPPER": "Die obere Antenne wird benutzt.",
+        "AUTO": "Das Flugzeug wählt die Antenne.",
+        "LOWER": "Die untere Antenne wird benutzt."
+      }
+    },
+    "oxygen/obogs-sw": {
+      "name": "OBOGS-Steuerschalter (ON / OFF)",
+      "text": "Schaltet die Maschine ein, die Atemsauerstoff aus Triebwerksluft herstellt.",
+      "context": "Die Start-Checkliste schaltet den OBOGS-Schalter und den Flussknopf nach dem Triebwerksstart ein.",
+      "positions": {
+        "ON": "Der Sauerstofferzeuger arbeitet.",
+        "OFF": "Der Sauerstofferzeuger ist aus."
+      }
+    },
+    "oxygen/oxy-flow": {
+      "name": "OXY-Flussknopf",
+      "text": "Stellt den Sauerstofffluss zur Maske ein. Die Checkliste will ihn in der Stellung ON.",
+      "context": "Er sitzt auf demselben Feld wie der OBOGS-Schalter. Das Handbuch nennt ihn den Flusswähler."
+    },
+    "iff-panel/crypto": {
+      "name": "CRYPTO-Schalter (HOLD / NORM / ZERO)",
+      "text": "Steuert, was mit den geheimen Codeschlüsseln geschieht. NORM behält sie bis zum Abschalten. HOLD behält sie für den nächsten Start. ZERO löscht sie sofort.",
+      "context": "ZERO lässt den IFF-Transponder ausfallen. Das Handbuch sagt, der Schalter soll auf NORM bleiben, weil HOLD oder ZERO auch die gesicherten Funkeinstellungen löschen.",
+      "positions": {
+        "HOLD": "Die Schlüssel bleiben nach dem Abschalten; wirkt nur mit ausgefahrenen Rädern.",
+        "NORM": "Die Schlüssel werden gespeichert und beim Abschalten gelöscht.",
+        "ZERO": "Die Schlüssel werden sofort gelöscht."
+      }
+    },
+    "iff-panel/m4-sw": {
+      "name": "MODE-4-Schalter (DIS/AUD / DIS / OFF)",
+      "text": "Wählt, wie das Flugzeug anzeigt, dass nach einer Mode-4-Erkennung gefragt wurde. 'DIS' ist eine Anzeigemeldung, 'AUD' eine Sprachwarnung.",
+      "context": "Eine gültige Frage zeigt 'M4 OK'. Eine nicht erkannte Frage gibt bei DIS/AUD eine IFF-Sprachwarnung.",
+      "positions": {
+        "DIS/AUD": "Eine Anzeigemeldung und eine Sprachwarnung.",
+        "DIS": "Nur eine Anzeigemeldung.",
+        "OFF": "Keine Anzeige."
+      }
+    },
+    "iff-panel/iff-master": {
+      "name": "IFF-MASTER-Schalter (EMER / NORM)",
+      "text": "In EMER beantwortet der Transponder alle Fragen mit dem Notfallcode, so dass die Lotsen wissen, dass der Pilot einen Notfall hat.",
+      "context": "NORM ist die normale Stellung. Der Pilot nutzt EMER nur in einem echten Notfall.",
+      "positions": {
+        "EMER": "Der Notfallcode wird gesendet.",
+        "NORM": "Die normale Stellung."
+      }
+    },
+    "comm-panel/comm-g-xmt": {
+      "name": "COMM-G-XMT-Schalter (COMM 1 / OFF / COMM 2)",
+      "text": "Wählt, welches Funkgerät auf der Guard-Frequenz sendet, dem Notfallkanal. Das Handbuch beschreibt ihn nicht.",
+      "context": "OFF ist die mittlere Stellung dieses Schalters auf dem Kommunikations-Bedienfeld.",
+      "positions": {
+        "COMM 1": "Das COMM-1-Funkgerät wird benutzt.",
+        "OFF": "Keines der Funkgeräte wird benutzt.",
+        "COMM 2": "Das COMM-2-Funkgerät wird benutzt."
+      }
+    },
+    "comm-panel/comm-relay": {
+      "name": "COMM-RELAY-Schalter (CIPHER / OFF / PLAIN)",
+      "text": "Ein Schalter zum Weiterleiten von Funkmeldungen, in verschlüsselter (cipher) oder normaler (plain) Form. Das Handbuch beschreibt ihn nicht.",
+      "context": "CIPHER und PLAIN sind die beiden Weiterleitungsformen; die mittlere Stellung ist OFF. Der Pilot braucht ihn im normalen Flug nicht.",
+      "positions": {
+        "CIPHER": "Weiterleitung in verschlüsselter Form.",
+        "OFF": "Keine Weiterleitung.",
+        "PLAIN": "Weiterleitung in normaler Form."
+      }
+    },
+    "comm-panel/ils-ufc": {
+      "name": "ILS-UFC/MAN-Schalter",
+      "text": "Wählt, woher der ILS-Kanal kommt: vom UFC-Tastenfeld oder vom Wähler daneben.",
+      "context": "ILS ist der Funkstrahl, der das Flugzeug zur Piste herunterführt.",
+      "positions": {
+        "UFC": "Der ILS-Kanal wird am UFC eingestellt.",
+        "MAN": "Der ILS-Kanal wird am ILS-Kanalwähler eingestellt."
+      }
+    },
+    "comm-panel/ils-chan": {
+      "name": "ILS-Kanalwähler",
+      "text": "Ein Wähler für den ILS-Kanal bei der manuellen Einstellung. Das Handbuch beschreibt ihn nicht.",
+      "context": "Er wird benutzt, wenn der ILS-UFC/MAN-Schalter auf MAN steht."
+    },
+    "volume-panel/vol-tcn": {
+      "name": "TACAN-Lautstärkeknopf",
+      "text": "Stellt ein, wie laut die Kennung des TACAN-Funkfeuers im Kopfhörer ist.",
+      "context": "Das TACAN-Funkfeuer sendet einen kurzen Morsecode, den der Pilot hören kann."
+    },
+    "volume-panel/vol-rwr": {
+      "name": "RWR-Lautstärkeknopf",
+      "text": "Stellt ein, wie laut die Radarwarntöne sind.",
+      "context": "Die Töne melden neue Radare, Aufschaltungen und Raketenstarts."
+    },
+    "volume-panel/vol-wpn": {
+      "name": "WPN-Lautstärkeknopf",
+      "text": "Stellt ein, wie laut die Waffentöne sind, zum Beispiel das Knurren eines AIM-9-Raketensuchkopfs.",
+      "context": "Das Knurren wird höher, wenn die Rakete ein Ziel sieht."
+    },
+    "volume-panel/vol-mids": {
+      "name": "MIDS-A- und MIDS-B-Lautstärkeknöpfe",
+      "text": "Stellen die Lautstärke der beiden gesicherten Funkgeräte MIDS A und MIDS B ein.",
+      "context": "Zusammen mit COMM 1 und COMM 2 sind das die vier Funkgeräte, auf denen der COMM-Schalter am Schubhebel senden kann."
+    },
+    "volume-panel/vol-other": {
+      "name": "ICS-, VOX- und AUX-Lautstärkeknöpfe",
+      "text": "Drei weitere Lautstärkeknöpfe: ICS für die Bordsprechanlage zwischen der Besatzung, VOX für die sprachgesteuerte Bordsprechanlage und AUX für einen Zusatzton.",
+      "context": "Das Handbuch beschreibt sie nicht. Die Hornet hat einen Sitz, daher ist die Bordsprechanlage kaum wichtig."
+    },
+    "fcs-panel/rud-trim": {
+      "name": "RUD-TRIM-Knopf",
+      "text": "Dreht man diesen Knopf, wird das Seitenruder getrimmt. Trimmung sind kleine Einstellungen, damit das Flugzeug geradeaus fliegt, ohne dass der Pilot die Pedale drückt.",
+      "context": "Die Pedale bewegen sich nicht; der Knopf ändert die Befehle der Flugrechner."
+    },
+    "fcs-panel/to-trim": {
+      "name": "T/O-TRIM-Taste",
+      "text": "Gedrückt gehalten am Boden stellt sie die Steuerung auf Starttrimmung: Seiten- und Querruder-Trimmung auf neutral und die Höhenflosse 12 Grad nasenhoch.",
+      "context": "Die Start-Checkliste enthält sie. Die TRIM-Meldung erscheint auf dem Bildschirm, solange sie gedrückt wird."
+    },
+    "fcs-panel/fcs-reset": {
+      "name": "FCS-RESET-Taste",
+      "text": "Ein Druck löscht die Fehler der Flugsteuerrechner, damit sie es erneut versuchen.",
+      "context": "Die Checkliste drückt sie nach dem Triebwerksstart und beobachtet die FCS-Seite auf dem Bildschirm."
+    },
+    "fcs-panel/gain-cover": {
+      "name": "Abdeckung des GAIN-Schalters",
+      "text": "Eine Klappe über dem GAIN-Schalter, die geöffnet werden muss, bevor der Schalter bewegt werden kann.",
+      "context": "Sie schützt davor, den Schalter versehentlich zu bewegen."
+    },
+    "fcs-panel/gain-sw": {
+      "name": "GAIN-Schalter (NORM / ORIDE)",
+      "text": "Ein Schalter für die Verstärkung der Flugsteuerung. ORIDE (Übersteuerung) ist für Ausfälle.",
+      "context": "In ORIDE zeigt die FLAPS-Leuchte und die automatische Schubregelung schaltet sich ab.",
+      "positions": {
+        "NORM": "Die normale Stellung.",
+        "ORIDE": "Übersteuerung; die FLAPS-Leuchte zeigt und die automatische Schubregelung schaltet sich ab."
+      }
+    },
+    "dispense-button/dispense-btn": {
+      "name": "Ausstoßtaste (rot, linke Wand)",
+      "text": "Ein Druck auf die große rote Taste stößt die Täuschkörper aus, Düppel und Leuchtkörper, die feindliche Raketen täuschen.",
+      "context": "Die Taste ist auf das Programm eingestellt, das auf der EW-Seite gewählt ist."
+    },
+    "cb-left/cb-fcs1": {
+      "name": "CB-FCS-CHAN-1- und CHAN-2-Sicherungen",
+      "text": "Sicherungsautomaten für Kanal 1 und Kanal 2 der Flugsteuerrechner. Zieht man einen, wird der Strom für diesen Kanal abgeschaltet.",
+      "context": "Die Flugsteuerung hat vier Kanäle. Die Kanäle 3 und 4 sind an der rechten Wand.",
+      "positions": {
+        "ON": "Der Kanal hat Strom.",
+        "OFF": "Der Sicherungsautomat ist herausgesprungen; der Kanal hat keinen Strom."
+      }
+    },
+    "cb-left/cb-spd": {
+      "name": "CB-SPD-BRK-Sicherung",
+      "text": "Der Sicherungsautomat der Bremsklappe. Die Bremsklappe ist eine Klappe, die sich in den Wind öffnet, um das Flugzeug zu bremsen.",
+      "context": "Ist er heraus, arbeitet die Bremsklappe nicht.",
+      "positions": {
+        "ON": "Die Bremsklappe hat Strom.",
+        "OFF": "Der Sicherungsautomat ist herausgesprungen."
+      }
+    },
+    "cb-left/cb-lbar": {
+      "name": "CB-LAUNCH-BAR-Sicherung",
+      "text": "Der Sicherungsautomat des Startbügels. Zieht man ihn, wird der Strom für das Startbügelsystem abgeschaltet.",
+      "context": "Der Startbügel wird auf Flugzeugträgern für Katapultstarts benutzt.",
+      "positions": {
+        "ON": "Der Startbügel hat Strom.",
+        "OFF": "Der Sicherungsautomat ist herausgesprungen."
+      }
+    },
+    "throttle-friction/thr-friction": {
+      "name": "Reibungs-Einstellhebel der Schubhebel",
+      "text": "Bewegt man diesen Hebel, lassen sich die Schubhebel schwerer oder leichter bewegen.",
+      "context": "Das Handbuch beschreibt ihn nicht; das Spiel nennt ihn 'Throttles Friction Adjusting Lever'."
+    },
+    "electrical/bat-sw": {
+      "name": "BATTERY-Schalter (ON / OFF / ORIDE)",
+      "text": "Verbindet die beiden Batterien des Flugzeugs. Eine Batterie speichert Strom für die Zeit, in der die Triebwerke nicht laufen.",
+      "context": "Der erste Schritt des Kaltstarts ist, ihn auf ON zu stellen. ORIDE erzwingt die Nutzung der Notbatterie.",
+      "positions": {
+        "OFF": "Die Batterien sind nicht mit den Stromleitungen des Flugzeugs verbunden.",
+        "ON": "Die Batterien sind verbunden und übernehmen, wenn der Strom knapp ist.",
+        "ORIDE": "Erzwingt die Notbatterie, auch wenn die Hauptbatterie nicht schwach ist."
+      }
+    },
+    "electrical/gen-l": {
+      "name": "L-GEN-Schalter (NORM / OFF)",
+      "text": "Schaltet den linken Generator ein oder aus. Ein Generator erzeugt Strom, solange das Triebwerk läuft.",
+      "context": "Der Pilot lässt ihn auf NORM. Eine L-GEN-Warnleuchte zeigt, wenn er aus ist oder ausgefallen ist.",
+      "positions": {
+        "NORM": "Der linke Generator arbeitet normal.",
+        "OFF": "Der linke Generator ist abgeschaltet."
+      }
+    },
+    "electrical/gen-r": {
+      "name": "R-GEN-Schalter (NORM / OFF)",
+      "text": "Schaltet den rechten Generator ein oder aus. Der Generator erzeugt Strom, solange das rechte Triebwerk läuft.",
+      "context": "Er ist das Gegenstück zum Schalter des linken Generators. Eine R-GEN-Warnung zeigt, wenn er aus ist oder ausgefallen ist.",
+      "positions": {
+        "NORM": "Der rechte Generator arbeitet normal.",
+        "OFF": "Der rechte Generator ist abgeschaltet."
+      }
+    },
+    "electrical/bat-volt": {
+      "name": "Batterie-Voltmeter",
+      "text": "Eine Anzeige mit zwei Nadeln für die Spannung der Betriebsbatterie (U) und der Notbatterie (E).",
+      "context": "Bei Batterieschalter OFF zeigen die Nadeln 16 Volt und arbeiten nicht. Bei ON arbeiten beide."
+    },
+    "ecs/bleed-air": {
+      "name": "BLEED-AIR-Knopf (R OFF / NORM / L OFF / OFF)",
+      "text": "Wählt, welches Triebwerk heiße Luft für das Luftsystem liefert. Zapfluft ist heiße Luft, die dem Triebwerk für Heizung und Druck entnommen wird.",
+      "context": "NORM nutzt beide Triebwerke. Die Start-Checkliste dreht den Knopf einen vollen Kreis von NORM nach NORM, nachdem das rechte Triebwerk über 60 % ist.",
+      "positions": {
+        "R OFF": "Die Luft des rechten Triebwerks ist aus; das linke Triebwerk liefert Luft.",
+        "NORM": "Beide Triebwerke liefern Luft.",
+        "L OFF": "Die Luft des linken Triebwerks ist aus; das rechte Triebwerk liefert Luft.",
+        "OFF": "Alle Triebwerksluft ist aus; stattdessen wird Staudruckluft benutzt."
+      }
+    },
+    "ecs/bleed-aug": {
+      "name": "BLEED-AIR-Knopf ziehen (AUG)",
+      "text": "Zieht man den Knopf, wählt man AUG. Die APU gibt dann zusätzliche Luft für die Kabine, wenn das Flugzeug am Boden ist und die Triebwerke wenig Leistung haben.",
+      "context": "Er ist Teil desselben Knopfes wie der Zapfluft-Wähler."
+    },
+    "ecs/anti-ice": {
+      "name": "ENG-ANTI-ICE-Schalter (ON / OFF / TEST)",
+      "text": "Heizt die Lufteinlässe der Triebwerke mit heißer Luft, um sie eisfrei zu halten.",
+      "context": "TEST löst die Eis-Warnmeldung aus.",
+      "positions": {
+        "ON": "Heiße Luft strömt durch die Triebwerkseinlässe.",
+        "OFF": "Die Enteisung ist aus.",
+        "TEST": "Löst zum Testen die Eis-Warnmeldung aus."
+      }
+    },
+    "ecs/pitot-heat": {
+      "name": "PITOT-HEAT-Schalter (ON / AUTO)",
+      "text": "Heizt die kleinen Rohre an der Nase, die die Geschwindigkeit messen, damit sie nicht einfrieren.",
+      "context": "Die Checkliste testet ihn im 'Four-down'-Test.",
+      "positions": {
+        "ON": "Die Heizungen sind an, sobald Wechselstrom verfügbar ist.",
+        "AUTO": "Die Heizungen sind an, solange das Flugzeug in der Luft ist."
+      }
+    },
+    "ecs/ecs-mode": {
+      "name": "ECS-MODE-Schalter (AUTO / MAN / OFF / RAM)",
+      "text": "Wählt, wie das Luftsystem für Heizen und Kühlen gesteuert wird: automatisch oder von Hand. OFF/RAM nutzt Außenluft.",
+      "context": "Das Handbuch beschreibt diesen Schalter nicht im Einzelnen.",
+      "positions": {
+        "AUTO": "Das Luftsystem steuert sich selbst.",
+        "MAN": "Der Pilot steuert es von Hand.",
+        "OFF/RAM": "Staudruckluft von außen wird benutzt."
+      }
+    },
+    "ecs/cabin-press": {
+      "name": "CABIN-PRESS-Schalter (NORM / DUMP / RAM/DUMP)",
+      "text": "Ein Schalter für den Luftdruck in der Kabine. DUMP lässt den Druck ab. NORM ist die normale Stellung.",
+      "context": "Das Handbuch beschreibt diesen Schalter nicht im Einzelnen.",
+      "positions": {
+        "NORM": "Die normale Stellung.",
+        "DUMP": "Der Kabinendruck wird abgelassen.",
+        "RAM/DUMP": "Außenluft wird benutzt und der Druck abgelassen."
+      }
+    },
+    "ecs/cabin-temp": {
+      "name": "CABIN-TEMP-Knopf",
+      "text": "Mit diesem Knopf wird die Kabine wärmer oder kühler.",
+      "context": "Das Handbuch beschreibt diesen Knopf nicht; das Spiel nennt ihn 'Cabin Temperature Knob'."
+    },
+    "ecs/suit-temp": {
+      "name": "SUIT-TEMP-Knopf",
+      "text": "Mit diesem Knopf wird die Luft für den Anzug des Piloten wärmer oder kühler.",
+      "context": "Das Handbuch beschreibt diesen Knopf nicht; das Spiel nennt ihn 'Suit Temperature Knob'."
+    },
+    "ecs/defog": {
+      "name": "DEFOG-Griff",
+      "text": "Ein Griff, der warme Luft auf das Kabinendach bläst, um Beschlag vom Glas zu entfernen.",
+      "context": "Das Handbuch beschreibt ihn nicht; das Spiel nennt ihn 'Defog Handle'."
+    },
+    "ecs/wshld": {
+      "name": "Windschutzscheiben-Schalter ANTI ICE / RAIN",
+      "text": "Hält die Windschutzscheibe frei von Eis oder Regen. ANTI ICE heizt sie, RAIN beseitigt Wasser.",
+      "context": "Das Handbuch beschreibt diesen Schalter nicht.",
+      "positions": {
+        "ANTI ICE": "Enteisung der Windschutzscheibe.",
+        "OFF": "Beide Funktionen sind aus.",
+        "RAIN": "Regenentfernung."
+      }
+    },
+    "interior-lights/cons-light": {
+      "name": "CONSOLES-Lichter-Knopf",
+      "text": "Stellt das Licht für die linke und die rechte Konsole und die Sicherungsfelder ein, von OFF bis BRT.",
+      "context": "Steht der MODE-Schalter auf NVG, stellt der Knopf die NVG-Flutlichter für die Konsolen ein."
+    },
+    "interior-lights/inst-light": {
+      "name": "INST-PNL-Lichter-Knopf",
+      "text": "Stellt das Licht für die Instrumententafel, das UFC und die senkrechten Tafeln ein, von OFF bis BRT.",
+      "context": "Er wirkt in den Einstellungen DAY, NITE und NVG."
+    },
+    "interior-lights/flood-light": {
+      "name": "FLOOD-Lichter-Knopf",
+      "text": "Stellt die acht weißen Flutlichter ein, die das Cockpit allgemein beleuchten.",
+      "context": "Die Flutlichter arbeiten nicht, wenn der MODE-Schalter auf NVG steht."
+    },
+    "interior-lights/chart-light": {
+      "name": "CHART-Licht-Knopf",
+      "text": "Stellt das kleine Licht am Kabinendachbogen ein, mit dem man Karten liest.",
+      "context": "Es arbeitet unabhängig vom MODE-Schalter."
+    },
+    "interior-lights/warn-caut-knob": {
+      "name": "WARN/CAUT-Lichter-Knopf",
+      "text": "Stellt die Helligkeit der Warn-, Hinweis- und Meldeleuchten ein. Drückt man ihn kurz auf RESET, wählt er den niedrigeren Helligkeitsbereich.",
+      "context": "Piloten dimmen diese Leuchten nachts, damit sie nicht blenden."
+    },
+    "interior-lights/lt-test": {
+      "name": "LT-TEST-Schalter (TEST / OFF)",
+      "text": "Lässt alle Warn-, Hinweis- und Meldeleuchten, die AOA-Anzeige und das IFEI-Display aufleuchten, damit der Pilot sieht, dass keine kaputt ist.",
+      "context": "Die Start-Checkliste macht diese Prüfung, nachdem das erste Triebwerk läuft."
+    },
+    "interior-lights/light-mode": {
+      "name": "MODE-Schalter (NVG / NITE / DAY)",
+      "text": "Wählt die Cockpitbeleuchtung passend zur Tageszeit. NVG ist für Nachtsichtbrillen.",
+      "context": "Der IFEI-Helligkeitsknopf arbeitet nur in NITE und NVG.",
+      "positions": {
+        "NVG": "Verringerte Helligkeit der Warnleuchten; Konsolenlichter aus und NVG-Flutlichter an.",
+        "NITE": "Verringerte Helligkeit der Warnleuchten, normale Tafelbeleuchtung.",
+        "DAY": "Die Warnleuchten und die Beleuchtung haben den vollen Helligkeitsbereich."
+      }
+    },
+    "ky58/ky-mode": {
+      "name": "KY-58-MODE-Knopf (P / C / LD / RV)",
+      "text": "Der Modusknopf der Sprachverschlüsselungsbox. Das Handbuch beschreibt ihn nicht; das Spiel nennt ihn 'KY-58 Mode Select Knob'.",
+      "context": "Er sitzt auf der rechten Konsole, neben dem Sensorfeld und den Sicherungsautomaten.",
+      "positions": {
+        "P": "Beschriftet mit P.",
+        "C": "Beschriftet mit C.",
+        "LD": "Beschriftet mit LD.",
+        "RV": "Beschriftet mit RV."
+      }
+    },
+    "ky58/ky-fill": {
+      "name": "KY-58-FILL-Wahlknopf (Z 1-5 / 1 - 6 / Z ALL)",
+      "text": "Wählt den Speicherplatz für den geheimen Code. Das Handbuch beschreibt ihn nicht.",
+      "context": "Die Beschriftungen sind Z 1-5, die Stellungen 1 bis 6 und Z ALL.",
+      "positions": {
+        "1": "Speicherplatz 1 füllen.",
+        "2": "Speicherplatz 2 füllen.",
+        "3": "Speicherplatz 3 füllen.",
+        "4": "Speicherplatz 4 füllen.",
+        "5": "Speicherplatz 5 füllen.",
+        "6": "Speicherplatz 6 füllen."
+      }
+    },
+    "ky58/ky-vol": {
+      "name": "KY-58-VOLUME-Knopf",
+      "text": "Stellt die Lautstärke des Funkgeräts ein, das die Verschlüsselungsbox nutzt.",
+      "context": "Das Handbuch beschreibt ihn nicht; das Spiel nennt ihn 'KY-58 Volume Control Knob'."
+    },
+    "ky58/ky-power": {
+      "name": "KY-58-Stromknopf (OFF / ON / TD)",
+      "text": "Schaltet die Verschlüsselungsbox ein und aus. Das Handbuch beschreibt die Stellung TD nicht.",
+      "context": "Er ist der Stromschalter des KY-58.",
+      "positions": {
+        "OFF": "Die Box ist abgeschaltet.",
+        "ON": "Die Box ist eingeschaltet.",
+        "TD": "Beschriftet mit TD; das Handbuch nennt keine Einzelheiten."
+      }
+    },
+    "sensors/ins-knob": {
+      "name": "INS-Knopf (OFF / CV / GND / NAV / IFA / GYRO / GB / TEST)",
+      "text": "Das INS ist das System, das immer weiß, wo das Flugzeug ist. Dieser Knopf schaltet es ein und wählt, wie es sich ausrichtet.",
+      "context": "GND ist für die Ausrichtung am Boden und CV für die Ausrichtung auf einem Träger. Beim Start wird eine davon eingestellt, dann NAV für den Flug.",
+      "positions": {
+        "OFF": "Kein Strom für das INS.",
+        "CV": "Ausrichtung auf einem Träger.",
+        "GND": "Ausrichtung am Boden.",
+        "NAV": "Der Navigationsmodus für den Flug.",
+        "IFA": "Ausrichtung im Flug.",
+        "GYRO": "Kreiselmodus; das Handbuch nennt keine Einzelheiten.",
+        "GB": "Beschriftet mit GB; das Handbuch nennt keine Einzelheiten.",
+        "TEST": "Die Teststellung."
+      }
+    },
+    "sensors/radar-knob": {
+      "name": "RADAR-Knopf (OFF / STBY / OPR / EMERG)",
+      "text": "Schaltet das Radar ein. Das Radar sendet Funkwellen aus und lauscht auf Echos, um andere Flugzeuge und den Boden zu finden.",
+      "context": "STBY lässt das Radar warmlaufen. OPR lässt es senden. Beim Start wird es auf OPR gestellt.",
+      "positions": {
+        "OFF": "Das Radar hat keinen Strom.",
+        "STBY": "Das Radar wärmt sich auf, sendet aber nicht.",
+        "OPR": "Das Radar arbeitet voll.",
+        "EMERG": "Beschriftet mit EMERG (zum Wählen ziehen); das Handbuch nennt keine Einzelheiten."
+      }
+    },
+    "sensors/flir-sw": {
+      "name": "FLIR-Schalter (ON / STBY / OFF)",
+      "text": "Versorgt den Zielkamerabehälter unter dem Flugzeug mit Strom. Er sieht Wärme und zeigt Bilder auf einem Bildschirm.",
+      "context": "STBY kühlt die Kamera herunter, damit sie bereit ist.",
+      "positions": {
+        "ON": "Die Kamera arbeitet und zeigt Video.",
+        "STBY": "Bereitschaftsstrom; der Detektor kühlt ab.",
+        "OFF": "Kein Strom für den Behälter."
+      }
+    },
+    "sensors/ltdr-sw": {
+      "name": "LTD/R-Schalter (ARM / SAFE)",
+      "text": "Der Sicherheitsschalter des Lasers. Der Laser misst Entfernungen und lenkt Bomben. Er muss angehoben werden, bevor er bewegt werden kann.",
+      "context": "ARM erlaubt es, den Laser scharf zu machen, wenn alle anderen Bedingungen erfüllt sind.",
+      "positions": {
+        "ARM": "Der Laser kann scharf gemacht werden.",
+        "SAFE": "Der Laser kann nicht scharf gemacht werden."
+      }
+    },
+    "sensors/lst-sw": {
+      "name": "LST/NFLR-Schalter (ON / OFF)",
+      "text": "Stromschalter für den Laserpunkt-Verfolger und das Navigations-FLIR.",
+      "context": "Der Laserpunkt-Verfolger sucht den Punkt eines Lasers von einem anderen Flugzeug oder von Bodentruppen.",
+      "positions": {
+        "ON": "Der Strom ist an.",
+        "OFF": "Der Strom ist aus."
+      }
+    },
+    "cb-right/cb-fcs34": {
+      "name": "CB-FCS-CHAN-3- und CHAN-4-Sicherungen",
+      "text": "Sicherungsautomaten für Kanal 3 und Kanal 4 der Flugsteuerrechner.",
+      "context": "Zusammen mit den Kanälen 1 und 2 an der linken Wand ergeben sie vier Kanäle.",
+      "positions": {
+        "ON": "Der Kanal hat Strom.",
+        "OFF": "Der Sicherungsautomat ist herausgesprungen."
+      }
+    },
+    "cb-right/cb-hook": {
+      "name": "CB-HOOK-Sicherung",
+      "text": "Der Sicherungsautomat des Fanghakens.",
+      "context": "Ist er heraus, hat der Fanghakengriff keine Wirkung.",
+      "positions": {
+        "ON": "Der Haken hat Strom.",
+        "OFF": "Der Sicherungsautomat ist herausgesprungen."
+      }
+    },
+    "cb-right/cb-lg": {
+      "name": "CB-LG-Sicherung",
+      "text": "Der Sicherungsautomat des Fahrwerks (LG).",
+      "context": "Ist er heraus, arbeitet das Fahrwerk nicht über das normale System.",
+      "positions": {
+        "ON": "Das Fahrwerk hat Strom.",
+        "OFF": "Der Sicherungsautomat ist herausgesprungen."
+      }
+    },
+    "cb-right/fcs-bit": {
+      "name": "FCS-BIT-Schalter",
+      "text": "Ein Schalter für den Test des Flugsteuerungssystems. Er wird nach oben gehalten, während die FCS-Taste auf der BIT-Seite des Bildschirms gedrückt wird.",
+      "context": "Die Start-Checkliste macht diesen Test."
+    },
+    "canopy/canopy-sw": {
+      "name": "Kabinendach-Schalter (OPEN / HOLD / CLOSE)",
+      "text": "Öffnet und schließt das Kabinendach. HOLD hält es an jeder Stelle an.",
+      "context": "Am Boden hält sich OPEN selbst, bis das Kabinendach ganz oben ist. In der Luft muss der Schalter zum Öffnen gehalten werden.",
+      "positions": {
+        "OPEN": "Das Kabinendach geht nach oben.",
+        "HOLD": "Das Kabinendach bleibt, wo es ist.",
+        "CLOSE": "Das Kabinendach geht nach unten und verriegelt dann."
+      }
+    },
+    "canopy/canopy-unlock": {
+      "name": "Entriegelungstaste des Kabinendach-Abwurfgriffs",
+      "text": "Ein Druck auf die Taste entriegelt den Abwurfgriff des Kabinendachs, damit der Griff gezogen werden kann.",
+      "context": "Sie verhindert, dass der Griff versehentlich gezogen wird."
+    },
+    "canopy/canopy-jett": {
+      "name": "Kabinendach-Abwurfgriff",
+      "text": "Ein schwarz-gelb gestreifter Griff. Zieht man ihn zurück, wird das Kabinendach vom Flugzeug abgeworfen.",
+      "context": "Er wird in Notfällen benutzt, wenn der Pilot das Flugzeug verlassen muss."
+    },
+    "ejection-seat/seat-armed": {
+      "name": "SAFE/ARMED-Griff des Schleudersitzes",
+      "text": "Ein Griff, der den Sitz scharf macht oder sichert. In ARMED kann der Sitz ausgelöst werden. In SAFE nicht.",
+      "context": "Die Checkliste macht ihn scharf, bevor zur Piste gerollt wird.",
+      "positions": {
+        "SAFE": "Der Sitz kann nicht ausgelöst werden.",
+        "ARMED": "Der Sitz kann ausgelöst werden."
+      }
+    },
+    "ejection-seat/eject-handle": {
+      "name": "Auslösegriff des Schleudersitzes",
+      "text": "Zieht man diesen Griff, wird der Sitz ausgelöst und schießt den Piloten aus dem Flugzeug.",
+      "context": "Im Spiel braucht es dafür drei Tastendrücke."
+    },
+    "ejection-seat/seat-manual": {
+      "name": "Manueller Übersteuerungsgriff des Schleudersitzes",
+      "text": "Ein Griff am Sitz. Das Handbuch beschreibt ihn nicht; das Spiel nennt ihn 'Ejection Seat Manual Override Handle'.",
+      "context": "Er gehört zur Notausrüstung des Sitzes.",
+      "positions": {
+        "PULL": "Der Griff ist gezogen.",
+        "PUSH": "Der Griff ist zurückgeschoben."
+      }
+    },
+    "cockpit-fittings/seat-height": {
+      "name": "Sitzhöhen-Schalter (UP / DOWN)",
+      "text": "Bewegt den Sitz nach oben oder unten, so dass der Pilot in der richtigen Höhe sitzt.",
+      "context": "Er wird einmal am Anfang benutzt. Das Handbuch beschreibt ihn nicht."
+    },
+    "cockpit-fittings/harness": {
+      "name": "Schultergurt-Steuergriff (LOCK / UNLOCK)",
+      "text": "Verriegelt oder entriegelt die Schultergurte. Verriegelt hält er den Piloten im Sitz zurück; entriegelt kann sich der Pilot nach vorn beugen.",
+      "context": "Das Handbuch beschreibt ihn nicht; das Spiel nennt ihn 'Shoulder Harness Control Handle'.",
+      "positions": {
+        "LOCK": "Die Schultergurte sind verriegelt.",
+        "UNLOCK": "Die Gurte sind frei."
+      }
+    },
+    "cockpit-fittings/pedal-adjust": {
+      "name": "Verstellhebel der Seitenruderpedale",
+      "text": "Bewegt die Seitenruderpedale näher heran oder weiter weg, damit die Füße des Piloten sie gut erreichen.",
+      "context": "Die Pedale steuern das Seitenruder am Heck und das Bugrad. Das Handbuch beschreibt den Hebel nicht."
+    },
+    "cockpit-fittings/hide-stick": {
+      "name": "Steuerknüppel-verstecken-Umschalter",
+      "text": "Im Spiel versteckt oder zeigt er den Steuerknüppel, damit die Sicht auf die Tafel frei ist.",
+      "context": "Er ist eine Spielhilfe und hat kein echtes Gegenstück.",
+      "positions": {
+        "HIDE": "Der Steuerknüppel ist versteckt.",
+        "SHOW": "Der Steuerknüppel wird gezeigt."
+      }
+    },
+    "cockpit-fittings/mirrors": {
+      "name": "Spiegel (Umschalter)",
+      "text": "Drei Spiegel oben im Cockpit zeigen, was hinter dem Flugzeug ist. Ein Klick schaltet sie um.",
+      "context": "Das Handbuch sagt, dass das Ausschalten der Spiegel die Spielleistung verbessern kann."
+    },
+    "rear-controls/vid-bit": {
+      "name": "BIT-Tasten für den linken und rechten Videosensor",
+      "text": "Ein Druck auf eine dieser Tasten startet einen eingebauten Test (BIT) des Videosensors auf dieser Seite.",
+      "context": "Das Handbuch beschreibt sie nicht; das Spiel nennt sie 'Left Video Sensor BIT Initiate Pushbutton' und die rechte entsprechend."
+    },
+    "rear-controls/nuc-wpn": {
+      "name": "NUC-WPN-Schalter (ENABLE / DISABLE)",
+      "text": "Ein Schalter für Atomwaffen. Das Spiel sagt, dass er keine Funktion hat.",
+      "context": "Das Spiel kennzeichnet den Schalter als ohne Funktion, daher passiert nichts, wenn er bewegt wird.",
+      "positions": {
+        "ENABLE": "In DCS passiert nichts.",
+        "DISABLE": "In DCS passiert nichts."
+      }
+    },
+    "stick/stick-gimbal": {
+      "name": "Steuerknüppel (Nicken und Rollen)",
+      "text": "Drückt man den Knüppel nach vorn, zeigt die Nase nach unten, zieht man ihn zurück, zeigt sie nach oben, und seitlich bewegt rollt er das Flugzeug.",
+      "context": "Der Knüppel gibt Befehle an die Flugrechner, die dann die Steuerflächen bewegen."
+    },
+    "stick/stick-trigger": {
+      "name": "Abzugsschalter",
+      "text": "Der Abzug feuert die Bordkanone und startet Luft-Luft-Raketen.",
+      "context": "Der Master-Arm-Schalter muss auf ARM stehen, damit Waffen feuern."
+    },
+    "stick/stick-pickle": {
+      "name": "Waffenauslösetaste (Pickle)",
+      "text": "Die rote Taste wirft Bomben ab, feuert Raketen und startet Luft-Boden-Raketen, solange sie gehalten wird.",
+      "context": "Sie wirkt im A/G-Modus mit dem Master-Arm-Schalter auf ARM."
+    },
+    "stick/stick-nws": {
+      "name": "Zielaufhebe-/Bugradlenkungs-Taste",
+      "text": "Am Boden schaltet sie die Bugradlenkung ein; gehalten gibt sie engere Kurven. In der Luft hebt sie das gewählte Ziel auf.",
+      "context": "Mit Last auf den Rädern lenkt sie; ohne Last hebt sie das Ziel auf."
+    },
+    "stick/stick-scs": {
+      "name": "Sensorsteuerschalter",
+      "text": "Ein Vierwegeschalter, der die Cursorsteuerung auf eine der Anzeigen legt: HUD, Farbbildschirm, linker oder rechter Bildschirm.",
+      "context": "Im A/A-Modus startet er auch Radarfunktionen. Die Richtungen tun in jedem Master-Modus Unterschiedliches."
+    },
+    "stick/stick-trim": {
+      "name": "Nick- und Roll-Trimmschalter",
+      "text": "Ein Vierwegeschalter für die Trimmung: kleine Korrekturen, damit das Flugzeug geradeaus fliegt, ohne dass Druck auf dem Knüppel ist.",
+      "context": "Der Knüppel bewegt sich beim Trimmen nicht; stattdessen werden die Flugrechner verstellt."
+    },
+    "stick/stick-recce": {
+      "name": "RECCE-Ereignismarken-Taste",
+      "text": "Eine kleine Taste am Griffkopf. In der Early-Access-Version blendet sie die Helmanzeige aus.",
+      "context": "Die Taste soll ein Ereignis für Aufklärungskameras markieren."
+    },
+    "stick/stick-weapon": {
+      "name": "Waffenwahlschalter",
+      "text": "Ein Vierwegeschalter, der eine Luft-Luft-Waffe wählt: vorn die AIM-7, gedrückt die AIM-9, hinten die Bordkanone, rechts die AIM-120.",
+      "context": "Die Wahl einer Waffe stellt auch das Radar für diese Waffe ein."
+    },
+    "stick/stick-paddle": {
+      "name": "Abschalt-Paddle für Autopilot / Bugradlenkung",
+      "text": "Ein Paddle unter dem Griff. Ein Druck schaltet die Bugradlenkung oder den Autopiloten ab.",
+      "context": "Mit dem Knüppel nahe ganz hinten gedrückt erhöht es die g-Grenze um 33 Prozent."
+    },
+    "throttle/thr-left": {
+      "name": "Linker Schubhebel (Triebwerksleistung)",
+      "text": "Bewegt man den linken Hebel nach vorn, bekommt das linke Triebwerk mehr Leistung. OFF, IDLE, MIL und Nachbrenner sind die Anschläge.",
+      "context": "Von OFF auf IDLE startet das linke Triebwerk, sobald seine Drehzahl über 25 Prozent liegt."
+    },
+    "throttle/thr-right": {
+      "name": "Rechter Schubhebel (Triebwerksleistung)",
+      "text": "Bewegt man den rechten Hebel nach vorn, bekommt das rechte Triebwerk mehr Leistung.",
+      "context": "Von OFF auf IDLE startet das rechte Triebwerk, sobald seine Drehzahl über 25 Prozent liegt."
+    },
+    "throttle/thr-dispense": {
+      "name": "Ausstoßschalter (AFT / OFF / FWD)",
+      "text": "Ein Schalter am linken Schubhebel, der Täuschkörper ausstößt: Düppel und Leuchtkörper.",
+      "context": "Er federt in die Mitte zurück. In BYPASS wirft vorwärts einen Düppel und rückwärts einen Leuchtkörper ab.",
+      "positions": {
+        "FWD": "Löst das Täuschkörperprogramm 5 aus.",
+        "OFF": "Nichts.",
+        "AFT": "Löst das auf der EW-Seite gewählte Programm aus."
+      }
+    },
+    "throttle/thr-comm": {
+      "name": "COMM-Schalter",
+      "text": "Ein Vierwegeschalter zum Sprechen auf einem Funkgerät: vorn COMM 1, hinten COMM 2, unten MIDS A, oben MIDS B.",
+      "context": "Er arbeitet wie die Sprechtaste eines Funkgeräts."
+    },
+    "throttle/thr-speedbrake": {
+      "name": "Bremsklappenschalter (EXTEND / OFF / RETRACT)",
+      "text": "Öffnet oder schließt die Bremsklappe, eine Klappe, die sich in den Wind öffnet, um das Flugzeug zu bremsen.",
+      "context": "Hinten gehalten fährt sie aus, vorn schließt sie.",
+      "positions": {
+        "EXTEND": "Öffnet die Bremsklappe, solange er hinten gehalten wird.",
+        "OFF": "Die Mitte; die Bremsklappe schließt sich über 400 Knoten langsam.",
+        "RETRACT": "Schließt die Bremsklappe."
+      }
+    },
+    "throttle/thr-cage": {
+      "name": "CAGE-/UNCAGE-Taste",
+      "text": "Eine Taste am rechten Schubhebel mit mehreren Aufgaben. In NAV sperrt oder gibt sie den Geschwindigkeitsvektor (die Marke, die zeigt, wohin das Flugzeug fliegt) im HUD frei.",
+      "context": "Bei einer AIM-9 sperrt sie den Suchkopf, bei einer Maverick sperrt sie die Rakete."
+    },
+    "throttle/thr-tdc": {
+      "name": "Schubhebel-Zielsteuerung (TDC)",
+      "text": "Ein kleines druckempfindliches Bedienelement am rechten Schubhebel, das einen Cursor auf einem Bildschirm oder im HUD bewegt. Ein Druck legt ein Ziel fest.",
+      "context": "Welche Anzeige es bewegt, wird mit dem Sensorsteuerschalter am Steuerknüppel gewählt."
+    },
+    "throttle/thr-antenna": {
+      "name": "Antennenneigung",
+      "text": "Ein Daumenrad, das die Radarantenne nach oben und unten neigt, um höher oder tiefer zu suchen.",
+      "context": "Die Neigung der Radarantenne ändert, wohin das Radar schaut."
+    },
+    "throttle/thr-raid": {
+      "name": "RAID-/FLIR-FOV-Wahltaste",
+      "text": "Eine Taste, deren Aufgabe vom Sensor abhängt: RAID-Modus für das Radar, Sichtfeld für die Zielkamera oder die Maverick.",
+      "context": "Bei der HARM-Rakete schaltet sie durch die Ziele."
+    },
+    "throttle/thr-atc": {
+      "name": "ATC-Ein-/Ausschalttaste",
+      "text": "Die automatische Schubregelung: Mit ausgefahrenen Klappen hält sie den richtigen Landewinkel, bei Klappen in AUTO hält sie die Geschwindigkeit.",
+      "context": "Erneutes Drücken oder Bewegen eines Schubhebelschalters schaltet sie ab."
+    },
+    "throttle/thr-ext-lights": {
+      "name": "Hauptschalter der Außenlichter",
+      "text": "Ein Hauptschalter für die Lichter außen: Positions-, Formations- und Blitzlichter und das Licht der Betankungssonde.",
+      "context": "Die Knöpfe am Außenlichter-Feld arbeiten nur, wenn er an ist.",
+      "positions": {
+        "ON": "Strom für die Außenlichter.",
+        "OFF": "Die Außenlichter sind abgeschaltet."
+      }
+    }
+  }
+}

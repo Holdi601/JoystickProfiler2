@@ -1,0 +1,787 @@
+{
+  "format": "joypro-cockpit-guide",
+  "version": 1,
+  "id": "xp12-common",
+  "title": "X-Plane 12: all default aircraft (shared guide)",
+  "common": true,
+  "games": [
+    "XPlane12",
+    "XPlane11"
+  ],
+  "sets": [],
+  "sources": [
+    {
+      "id": "g1",
+      "title": "X-Plane 12: the cockpit objects' manipulator tooltips and the sim's commands and datarefs",
+      "kind": "game-files"
+    }
+  ],
+  "intro": "These texts serve the default aircraft of X-Plane 12, from the Cessna 172 and the Baron to the King Air, the jets, the airliners, the gliders and the helicopters. A control appears only in the aircraft that have it. X-Plane gives every clickable control a tooltip and ties it to a command or a dataref, such as sim/electrical/battery_1_on; the same command means the same thing in every aircraft. The texts describe the function in general. The exact switch, its place and its extra positions differ from aircraft to aircraft.",
+  "areas": [
+    {
+      "id": "electrical",
+      "where": "other",
+      "name": "Electrical system",
+      "text": "These controls decide where the aircraft's electricity comes from and which equipment gets it. X-Plane names the switches by commands such as battery_1 or generator_1, so each aircraft shows only the ones it has.",
+      "panels": [
+        {
+          "id": "battery-generators",
+          "name": "Battery, generators and alternators",
+          "text": "These switches connect the battery and the engine-driven electricity makers to the aircraft. The battery stores power for when the engines are off. A generator or alternator makes power while its engine runs.",
+          "context": "The pilot switches the battery on first when getting in. After the engine runs, the generator or alternator is switched on; it then powers the equipment and refills the battery.",
+          "src": "g1",
+          "controls": [
+            {
+              "id": "battery-1",
+              "name": "Battery switch (battery 1)",
+              "type": "switch",
+              "match": [
+                "cmd:sim/electrical/battery_1_*",
+                "cmd:sim/electrical/batteries_toggle",
+                "cmd:battery_1_on/off",
+                "cmd:laminar/CitX/electrical/cmd_battery_left_toggle"
+              ],
+              "text": "This switch connects the aircraft's main battery to the rest of the aircraft. A battery stores electricity, like the battery of a car. With the switch off, most of the cockpit stays dark.",
+              "context": "It is one of the first things the pilot switches on in a cold aircraft, and one of the last to switch off. In aircraft with two batteries this is the first one, or the one the tooltip calls left."
+            },
+            {
+              "id": "battery-2",
+              "name": "Battery 2 / standby battery switch",
+              "type": "switch",
+              "match": [
+                "cmd:sim/electrical/battery_2_*",
+                "cmd:battery_2_on/off",
+                "cmd:laminar/CitX/electrical/cmd_battery_right_toggle"
+              ],
+              "text": "This switch controls a second battery. In many aircraft the second battery is a standby or emergency battery that keeps the most important instruments alive if the main power fails.",
+              "context": "Aircraft with two batteries have two switches; read the tooltip to see which battery this one is. The pilot normally switches both on before starting the engines."
+            },
+            {
+              "id": "master-switch",
+              "name": "Master switch (small aircraft)",
+              "type": "switch",
+              "match": [
+                "cmd:laminar/aerolite/switch/master_*"
+              ],
+              "text": "This is the master switch of a very simple aircraft. It connects the aircraft's electricity to the battery and its charging system in one move.",
+              "context": "It is the first switch the pilot turns on and the last one turned off. The engine's starter and the lights of the cockpit need it."
+            },
+            {
+              "id": "generator-1",
+              "name": "Generator / alternator 1 switch",
+              "type": "switch",
+              "match": [
+                "cmd:sim/electrical/generator_1_*",
+                "cmd:generator_1_on/off",
+                "cmd:laminar/c90/electrical/switch/generator1_*",
+                "cmd:laminar/CitX/electrical/cmd_generator_left_*",
+                "cmd:laminar/B738/switch/gen1_*"
+              ],
+              "text": "This switch connects the first engine's electricity maker to the aircraft. The maker is called a generator or an alternator. It only gives power while its engine turns fast enough. On some aircraft the switch also has a RESET position that wakes the generator up again after a fault.",
+              "context": "The pilot switches it on after the engine is running. From then on the generator feeds the equipment and charges the battery, so the battery is not used up."
+            },
+            {
+              "id": "generator-2",
+              "name": "Generator / alternator 2 switch",
+              "type": "switch",
+              "match": [
+                "cmd:sim/electrical/generator_2_*",
+                "cmd:generator_2_on/off",
+                "cmd:laminar/c90/electrical/switch/generator2_*",
+                "cmd:laminar/CitX/electrical/cmd_generator_right_*",
+                "cmd:laminar/B738/switch/gen2_*"
+              ],
+              "text": "This switch connects the second engine's electricity maker, a generator or alternator, to the aircraft. It gives power only while that engine runs. On some aircraft it also has a RESET position.",
+              "context": "Aircraft with two engines have one electricity maker per engine, so power stays on if one engine stops. The pilot switches this one on after the second engine is running."
+            }
+          ]
+        },
+        {
+          "id": "external-apu-power",
+          "name": "External power, APU and distribution",
+          "text": "These controls bring electricity in from outside the aircraft or from a small extra engine, and decide how the electric lines are connected to each other.",
+          "context": "On the ground the pilot can use a ground power cart or the APU instead of the main engines. In flight the connections between the lines let one source feed everything if another fails.",
+          "src": "g1",
+          "controls": [
+            {
+              "id": "gpu",
+              "name": "Ground power (GPU) switch",
+              "type": "switch",
+              "match": [
+                "cmd:sim/electrical/GPU_*",
+                "cmd:laminar/B738/toggle_switch/gpu_pos_*",
+                "cmd:laminar/md82cmd/electrical/cross_tie_GPU_*",
+                "cmd:laminar/A333/buttons/external_power?_toggle",
+                "cmd:laminar/CitX/electrical/cmd_ext_pwr_toggle"
+              ],
+              "text": "This control connects the aircraft to a ground power cart (GPU, a mobile generator) standing next to it. The cart supplies the electricity while the engines are off.",
+              "context": "It is used at the gate or the ramp, so the battery is not drained before the engines start. The pilot disconnects it before taxiing."
+            },
+            {
+              "id": "apu-start",
+              "name": "APU start / master switch",
+              "type": "switch",
+              "match": [
+                "cmd:sim/electrical/APU_start",
+                "cmd:sim/electrical/APU_off",
+                "cmd:laminar/A333/buttons/APU_master",
+                "cmd:laminar/A333/buttons/APU_start",
+                "cmd:laminar/CitX/APU/master_switch_toggle",
+                "cmd:laminar/CitX/APU/starter_switch_*",
+                "cmd:laminar/B738/spring_toggle_switch/APU_start_pos_*"
+              ],
+              "text": "These controls start and stop the APU, a small extra engine in the tail. The APU makes electricity and air while the big engines are still off. Many aircraft have a master switch that wakes the APU and a separate start switch that spins it up.",
+              "context": "The pilot starts the APU on the ground so the cabin has power and cool or warm air, and the main engines can be started with its help. The APU is usually switched off again after take-off."
+            },
+            {
+              "id": "apu-generator",
+              "name": "APU generator switch",
+              "type": "switch",
+              "match": [
+                "cmd:sim/electrical/APU_generator_*",
+                "cmd:laminar/A333/buttons/APU_gen_toggle",
+                "cmd:laminar/CitX/APU/gen_switch_*",
+                "cmd:laminar/B738/switch/apuL_*",
+                "cmd:laminar/B738/switch/apuR_*",
+                "cmd:laminar/md82cmd/electrical/cross_tie_APU_*"
+              ],
+              "text": "This switch connects the electricity made by the running APU to the aircraft's electric lines. Without it the APU runs but gives no electricity to the aircraft.",
+              "context": "The pilot switches it on once the APU has reached its normal speed. Some airliners have a left and a right switch, one per side of the electric system."
+            },
+            {
+              "id": "apu-bleed",
+              "name": "APU bleed air switch",
+              "type": "switch",
+              "match": [
+                "cmd:sim/bleed_air/apu_*",
+                "cmd:laminar/CitX/APU/bleed_switch_*",
+                "cmd:laminar/md82cmd/bleedair/APU_*"
+              ],
+              "text": "This switch lets the hot air made by the APU flow into the aircraft's air system. That air is used for starting the engines, for heating and cooling and for the pressurised cabin.",
+              "context": "The pilot opens it on the ground for air conditioning and for engine starts. See the engine bleed air controls for the same job done by the main engines."
+            },
+            {
+              "id": "cross-tie",
+              "name": "Bus cross-tie / transfer switch",
+              "type": "switch",
+              "match": [
+                "cmd:sim/electrical/cross_tie_*",
+                "cmd:laminar/md82cmd/electrical/cross_tie_AC",
+                "cmd:laminar/md82cmd/electrical/cross_tie_DC"
+              ],
+              "text": "This switch joins two electric lines (buses) so that one side can feed the other side. A bus is a group of electric lines that feeds a set of equipment.",
+              "context": "With the tie closed, one working generator or battery can power both sides. The pilot uses it when one side has failed."
+            },
+            {
+              "id": "inverter",
+              "name": "Inverter switch",
+              "type": "switch",
+              "match": [
+                "cmd:sim/electrical/inverters_*",
+                "cmd:laminar/c90/electrical/switch/inverter_selector_*"
+              ],
+              "text": "This switch turns on an inverter, a box that changes the battery's type of electricity into the type some instruments need. The tooltip says whether it selects one of several inverters.",
+              "context": "Instruments that need the other kind of electricity stop working if the inverter is off, so the pilot checks it early."
+            },
+            {
+              "id": "avionics-master",
+              "name": "Avionics master switch",
+              "type": "switch",
+              "match": [
+                "cmd:sim/systems/avionics_*",
+                "cmd:laminar/CitX/electrical/cmd_avionics_toggle"
+              ],
+              "text": "This switch gives power to the avionics, the electronic equipment such as radios, navigation screens and autopilot. Without it these devices stay dark even when the battery is on.",
+              "context": "The pilot switches it on after the engine is started and off before shutting the engine down. This protects the electronics from power spikes while the engine starts and stops. Some aircraft have one switch per electric line."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "engine",
+      "where": "other",
+      "name": "Engine controls",
+      "text": "These controls start the engines and set how much power they give. Piston aircraft have levers for throttle, propeller and mixture; jets have throttle levers and start switches.",
+      "panels": [
+        {
+          "id": "power-levers",
+          "name": "Throttle and power levers",
+          "text": "These levers set how much power the engine gives. Pushing a lever forward gives more power, pulling it back gives less.",
+          "context": "The throttle is the most used engine control: the pilot moves it for take-off, climb, cruise, descent and landing. Aircraft with several engines have one lever per engine, often side by side.",
+          "src": "g1",
+          "controls": [
+            {
+              "id": "throttle",
+              "name": "Throttle lever(s)",
+              "type": "lever",
+              "match": [
+                "cmd:sim/cockpit2/engine/actuators/throttle_ratio*",
+                "cmd:sim/cockpit2/engine/actuators/throttle_beta_rev_ratio*",
+                "cmd:sim/cockpit2/engine/actuators/throttle_jet_rev_ratio*",
+                "cmd:laminar/c90/engine/throttle_detent*",
+                "cmd:laminar/CitX/throttle/ratio_*",
+                "cmd:laminar/CitX/throttle/reverse_ratio_*",
+                "cmd:laminar/CitX/throttle/mixture_detent_*",
+                "cmd:laminar/s76/controls/throttle_*",
+                "cmd:laminar/md82/engine/*",
+                "cmd:laminar/f14/engn/*",
+                "cmd:laminar/n844x/throttle_lift"
+              ],
+              "text": "This lever sets the engine's power, like the gas pedal of a car. Forward gives more power, back gives less. A lever labelled for one engine moves only that engine, a lever for all engines moves all together. Many propeller and jet aircraft can pull the lever past idle to reverse thrust, which pushes the aircraft backwards to slow it down.",
+              "context": "The pilot works the throttle on every phase of the flight. After landing, reverse thrust helps to slow down on the runway."
+            },
+            {
+              "id": "prop-lever",
+              "name": "Propeller speed lever",
+              "type": "lever",
+              "match": [
+                "cmd:sim/cockpit2/engine/actuators/prop_rotation_speed_rad_sec*"
+              ],
+              "text": "This lever sets how fast the propeller turns. The propeller is the spinning blade at the front. Forward makes it turn faster and bite the air sharply, back makes it turn slower and gentler.",
+              "context": "Aircraft with a variable propeller have this lever next to the throttle. The pilot sets it high for take-off and climb and lower for cruise."
+            },
+            {
+              "id": "mixture",
+              "name": "Mixture lever",
+              "type": "lever",
+              "match": [
+                "cmd:sim/cockpit2/engine/actuators/mixture_ratio*"
+              ],
+              "text": "This lever sets how much fuel is mixed into the air the engine breathes. Forward gives a rich mixture with a lot of fuel, back makes it lean with less fuel. All the way back cuts the fuel and stops the engine. Turboprop aircraft use the same kind of lever as a condition lever with fuel on and off positions.",
+              "context": "The pilot leans the mixture in higher air, where the air is thin, and moves it to full rich for landing. Pulling it to cut-off is also the normal way to stop a piston engine."
+            },
+            {
+              "id": "carb-heat",
+              "name": "Carburetor heat",
+              "type": "knob",
+              "match": [
+                "cmd:sim/cockpit2/engine/actuators/carb_heat_ratio*"
+              ],
+              "text": "This knob sends warmed air into the engine's carburetor, the part that mixes fuel and air. Warm air melts ice that can form inside it and choke the engine.",
+              "context": "The pilot pulls it when the engine runs rough in damp, cool air, and before reducing power for a landing. Engines with fuel injection have no carburetor heat."
+            },
+            {
+              "id": "alternate-air",
+              "name": "Alternate air handle",
+              "type": "handle",
+              "match": [
+                "cmd:sim/altair/*",
+                "cmd:laminar/sr22/alt_air_pull",
+                "cmd:laminar/rv10/handles/alt_air_pull"
+              ],
+              "text": "This handle opens a second air path to the engine. If the normal air inlet is blocked by ice or dirt, the engine can still breathe through this path.",
+              "context": "It is used in an emergency, when the engine loses power because its air filter is blocked. In some turbine helicopters the tooltip calls it the particle separator."
+            },
+            {
+              "id": "primer",
+              "name": "Engine primer",
+              "type": "knob",
+              "match": [
+                "cmd:sim/cockpit2/engine/actuators/primer_ratio*"
+              ],
+              "text": "This control pumps a little fuel straight into the engine to help a cold engine start. Pushing it in and out works like a small hand pump.",
+              "context": "The pilot uses it before starting a cold piston engine. A warm engine usually needs no priming."
+            },
+            {
+              "id": "cowl-flaps",
+              "name": "Cowl flap control",
+              "type": "lever",
+              "match": [
+                "cmd:sim/cockpit2/engine/actuators/cowl_flap_ratio*"
+              ],
+              "text": "This control opens or closes the flaps at the back of the engine cover, the cowling. Open flaps let more cooling air flow through the engine, closed flaps keep it warmer and cut drag.",
+              "context": "The pilot opens them when the engine runs hot, for example on the ground or in a climb, and closes them in cruise."
+            },
+            {
+              "id": "s76-fuel-lever",
+              "name": "Engine fuel lever (helicopter)",
+              "type": "lever",
+              "match": [
+                "cmd:laminar/s76/controls/fuel_*"
+              ],
+              "text": "This lever turns the fuel to one engine on or off. Moving it to the on position lets the engine run, moving it back stops the fuel and shuts the engine down.",
+              "context": "It has detents, notches that hold the lever in place. The pilot sets it as part of starting and stopping each engine."
+            }
+          ]
+        },
+        {
+          "id": "start-ignition",
+          "name": "Starting and ignition",
+          "text": "These controls start the engine and make its sparks. A starter is a motor that spins the engine until it can run alone. Ignition makes the spark or flame that lights the fuel.",
+          "context": "Starting is done on the ground before every flight. Piston engines use a key switch; jets and turboprops use a starter switch and an ignition switch.",
+          "src": "g1",
+          "controls": [
+            {
+              "id": "ignition-key",
+              "name": "Ignition key / magnetos switch",
+              "type": "selector",
+              "match": [
+                "cmd:sim/ignition/ignition_*",
+                "cmd:sim/magnetos/magnetos_down_*",
+                "cmd:sim/magnetos/magnetos_up_*",
+                "cmd:laminar/c172/ignition_*",
+                "cmd:laminar/aerolite/switch/magneto*"
+              ],
+              "text": "This key switch controls the sparks of a piston engine and starts it. Turned to OFF there are no sparks. L, R and BOTH choose one of the two spark systems or both. Turned past BOTH and held, it spins the starter; released it springs back to BOTH. The tooltip says whether this is the key or a single magneto switch.",
+              "context": "The pilot turns it to START to start the engine, releases it to BOTH when the engine runs, and turns it to OFF to stop. Before take-off the pilot briefly tests each spark system alone."
+            },
+            {
+              "id": "magnetos-master",
+              "name": "Magnetos: both / off",
+              "type": "switch",
+              "match": [
+                "cmd:sim/magnetos/magnetos_both",
+                "cmd:sim/magnetos/magnetos_off"
+              ],
+              "text": "These commands put the magnetos, the small machines that make the engine's sparks, to both on or both off. In the aircraft that uses them, the game says it does not simulate a master start switch.",
+              "context": "They are a quick way to switch both spark systems at once instead of turning the key."
+            },
+            {
+              "id": "starter",
+              "name": "Engine starter",
+              "type": "switch",
+              "match": [
+                "cmd:sim/starters/engage_starter_*",
+                "cmd:laminar/CitX/engine/cmd_starter_*",
+                "cmd:laminar/f14/engine/switch/starter_*",
+                "cmd:laminar/B738/knob/starter*"
+              ],
+              "text": "This control spins the engine with an electric motor or air starter until the engine runs by itself. On many aircraft it springs back after being pushed; on airliners it is a switch or knob that stays in position.",
+              "context": "The pilot uses it after the battery is on and the fuel is open. When the engine runs on its own power, the starter is released or switched off."
+            },
+            {
+              "id": "start-stop-jet",
+              "name": "Engine start / run switch (jet)",
+              "type": "switch",
+              "match": [
+                "cmd:laminar/SF50/eng_start_stop_toggle",
+                "cmd:laminar/SF50/ignition_*",
+                "cmd:laminar/A333/switches/engine1_start_*",
+                "cmd:laminar/A333/switches/engine2_start_*"
+              ],
+              "text": "These switches start the jet engine and set it to run or to stop. The start button begins the start cycle, which the engine computer then manages. The run or off position lets fuel flow to the engine or cuts it.",
+              "context": "The pilot uses them for the engine start, and the off position when shutting the engine down."
+            },
+            {
+              "id": "igniters",
+              "name": "Igniter / ignition switches",
+              "type": "switch",
+              "match": [
+                "cmd:sim/igniters/*",
+                "cmd:laminar/CitX/engine/cmd_ignition_switch_*",
+                "cmd:laminar/c90/powerplant/switch/ign_start_*",
+                "cmd:laminar/c90/electrical/switch/auto_ignition_*",
+                "cmd:laminar/f14/engine/switch/backup_igniter",
+                "cmd:laminar/md82cmd/ignition_sys_*"
+              ],
+              "text": "These switches control the igniters, the spark plugs inside a turbine engine that light the fuel. On some aircraft one switch is used to start the engine, another to keep the igniters on as a safety net, or to arm them to come on by themselves.",
+              "context": "Igniters are on while the engine starts. They can also be kept on in rain or turbulence in case the flame goes out. One tooltip says the game does not simulate the ignition system."
+            },
+            {
+              "id": "engine-shutoff",
+              "name": "Engine fuel shut-off (stop)",
+              "type": "button",
+              "match": [
+                "cmd:sim/starters/shut_down"
+              ],
+              "text": "This control stops the engine by cutting its fuel. The tooltip warns about it in capitals.",
+              "context": "The pilot uses it to shut the engine down after landing or in an emergency."
+            },
+            {
+              "id": "fadec",
+              "name": "FADEC / engine computer switch",
+              "type": "switch",
+              "match": [
+                "cmd:sim/cockpit2/engine/actuators/fadec_on*",
+                "cmd:laminar/CitX/engine/cmd_fadec*"
+              ],
+              "text": "This switch turns on the engine computer (FADEC or EEC), which manages fuel flow and keeps the engine safe by itself.",
+              "context": "The computer lets the pilot just move the throttle while it handles the details. It is switched on before the engine start."
+            }
+          ]
+        },
+        {
+          "id": "engine-extras",
+          "name": "Other engine controls",
+          "text": "These controls cover the extra jobs around an engine: synchronising propellers, governor and clutch for helicopters, fire extinguishers and similar systems.",
+          "context": "The pilot uses most of them only for special situations; the fire controls are for an emergency.",
+          "src": "g1",
+          "controls": [
+            {
+              "id": "prop-sync",
+              "name": "Propeller sync switch",
+              "type": "switch",
+              "match": [
+                "cmd:sim/systems/prop_sync_toggle",
+                "cmd:laminar/c90/powerplant/switch/prop_gov"
+              ],
+              "text": "On a twin-engine aircraft this switch makes the two propellers turn at exactly the same speed. This removes the humming sound of two slightly different speeds. On the King Air panel the tooltip speaks of a propeller governor test instead.",
+              "context": "The pilot switches it on in cruise for a smoother, quieter flight."
+            },
+            {
+              "id": "helicopter-engine",
+              "name": "Governor and clutch switches (helicopter)",
+              "type": "switch",
+              "match": [
+                "cmd:sim/engines/governor_toggle",
+                "cmd:sim/engines/clutch_toggle"
+              ],
+              "text": "The governor switch lets a small computer keep the rotor speed steady by itself. The clutch switch connects the engine to the rotor or disconnects it.",
+              "context": "The pilot engages the clutch during the start so the rotor spins up slowly, then turns the governor on. The tooltip can also name a safety cover over the switch."
+            },
+            {
+              "id": "fire-extinguisher",
+              "name": "Engine fire extinguisher and fire handles",
+              "type": "handle",
+              "match": [
+                "cmd:sim/cockpit2/engine/actuators/fire_extinguisher_on*",
+                "cmd:sim/engines/fire_ext_*",
+                "cmd:laminar/CitX/engine_fire/*",
+                "cmd:laminar/f14/fire/*",
+                "cmd:laminar/B738/fire/*"
+              ],
+              "text": "These controls fight an engine fire. A fire handle or button shuts the engine's fuel and arms an extinguisher bottle. The extinguisher button then releases the fire-killing agent. Guards or covers protect them from being pressed by accident. Airliners also have test buttons for the fire alarms.",
+              "context": "The pilot uses them only when the fire warning is on. The tooltip names the engine, APU or cargo hold the control belongs to."
+            },
+            {
+              "id": "fire-test",
+              "name": "Fire warning test",
+              "type": "button",
+              "match": [
+                "cmd:sim/annunciator/test_fire_*",
+                "cmd:test_fire_1/2_annun",
+                "cmd:laminar/B738/toggle_switch/fire_test_*",
+                "cmd:laminar/B738/toggle_switch/exting_test_*",
+                "cmd:laminar/B738/push_button/cargo_fire_test_push",
+                "cmd:laminar/B738/push_button/fire_bell_light*"
+              ],
+              "text": "These buttons and switches test the fire warning system. When pressed, the warning lights come on to show they work. Some also test the extinguisher circuit or the cargo hold alarm, and a cutout button silences the fire bell.",
+              "context": "The pilot presses it during the checks before flight, to be sure a real fire would be reported."
+            },
+            {
+              "id": "autofeather-boost",
+              "name": "Autofeather, rudder boost and engine auxiliaries (King Air)",
+              "type": "switch",
+              "match": [
+                "cmd:laminar/c90/powerplant/switch/autofeather_switch_*",
+                "cmd:laminar/c90/fltctrl/switch/rudder_boost"
+              ],
+              "text": "The autofeather switch lets the aircraft turn a propeller's blades edge-on to the wind by itself when an engine fails. The rudder boost switch helps the rudder to hold the aircraft straight when one engine is weaker than the other.",
+              "context": "The pilot arms them before take-off, so the aircraft helps by itself if an engine fails."
+            },
+            {
+              "id": "egt-knob",
+              "name": "EGT reference knob",
+              "type": "knob",
+              "match": [
+                "cmd:laminar/c172/knob_EGT"
+              ],
+              "text": "This knob moves a marker on the exhaust gas temperature gauge. The gauge shows how hot the exhaust is, and the marker is a reference the pilot can compare against.",
+              "context": "The pilot uses it when leaning the mixture to find the best setting."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "fuel",
+      "where": "other",
+      "name": "Fuel system",
+      "text": "These controls decide which tank feeds the engine, switch the fuel pumps and open or close the fuel lines.",
+      "panels": [
+        {
+          "id": "fuel-tanks-pumps",
+          "name": "Fuel selector, pumps and valves",
+          "text": "These controls move the fuel from the tanks to the engines. A selector chooses the tank, pumps push the fuel and valves open or close the lines.",
+          "context": "The pilot sets the fuel system before the start and keeps an eye on the tanks during the flight. A wrong setting can starve the engine, so these controls are part of every checklist.",
+          "src": "g1",
+          "controls": [
+            {
+              "id": "fuel-selector",
+              "name": "Fuel selector (tank selector)",
+              "type": "selector",
+              "match": [
+                "cmd:laminar/c172/fuel_selector_*",
+                "cmd:laminar/b58/fuel_selector_*",
+                "cmd:laminar/L5/fuel_selector_*",
+                "cmd:laminar/pa18/fuel_selector_*",
+                "cmd:laminar/SF50/fuel_selector_*",
+                "cmd:laminar/sr22/fuel_sel_*",
+                "cmd:laminar/rv10/tank_sel_*",
+                "cmd:sim/fuel/fuel_tank_selector_*"
+              ],
+              "text": "This handle chooses which fuel tank feeds the engine. Typical positions are left tank, right tank, both and off. The tooltip shows when an aircraft has one selector per engine.",
+              "context": "The pilot picks both or one tank for take-off and landing, and may switch tanks in flight to keep the aircraft balanced. OFF stops the fuel, it is used only on the ground or in an emergency."
+            },
+            {
+              "id": "fuel-shutoff-valve",
+              "name": "Fuel shut-off valve",
+              "type": "handle",
+              "match": [
+                "cmd:laminar/r22/cmd_fuel_selector_toggle"
+              ],
+              "text": "This valve opens or closes the fuel line from the tank to the engine. Closed means no fuel reaches the engine.",
+              "context": "It is open in flight. The pilot closes it when parking or to stop the fuel in an emergency."
+            },
+            {
+              "id": "fuel-pumps",
+              "name": "Fuel pump / boost pump switches",
+              "type": "switch",
+              "match": [
+                "cmd:sim/fuel/fuel_pump_*",
+                "cmd:sim/fuel/fuel_pumps_*",
+                "cmd:sim/fuel/fuel_tank_pump_*",
+                "cmd:sim/cockpit2/fuel/fuel_tank_pump_on*",
+                "cmd:laminar/sr22/switch/boost_pump_*",
+                "cmd:laminar/CitX/fuel/cmd_boost_*",
+                "cmd:laminar/A333/switches/*pump_toggle"
+              ],
+              "text": "These switches turn on electric fuel pumps. The pump pushes fuel from the tank to the engine. The tooltip says which pump or tank the switch belongs to.",
+              "context": "The pilot turns the boost pump on for the start, for take-off and landing and when the engine's own pump has a problem. It is a backup that keeps the fuel flowing."
+            },
+            {
+              "id": "fuel-firewall",
+              "name": "Fuel firewall valve (shut-off)",
+              "type": "switch",
+              "match": [
+                "cmd:sim/fuel/fuel_firewall_valve_*",
+                "cmd:laminar/c90/fuel/firewall_switch_guard_toggle_*"
+              ],
+              "text": "This valve cuts the fuel at the firewall, the wall between the engine and the rest of the aircraft. Some aircraft have a safety guard over it that must be lifted first.",
+              "context": "The pilot closes it in an engine fire, so no more fuel can feed the flames."
+            },
+            {
+              "id": "fuel-crossfeed",
+              "name": "Fuel crossfeed",
+              "type": "switch",
+              "match": [
+                "cmd:sim/fuel/auto_crossfeed_*",
+                "cmd:laminar/B738/toggle_switch/crossfeed_valve_*",
+                "cmd:laminar/CitX/fuel/cmd_crossfeed_*",
+                "cmd:laminar/A333/switches/wing_x_feed_toggle"
+              ],
+              "text": "This control lets fuel from one side's tank feed the engine on the other side. A valve joins the two fuel systems.",
+              "context": "The pilot opens it when one side has less fuel than the other, or when one engine has stopped, so the fuel can still be used."
+            },
+            {
+              "id": "fuel-transfer",
+              "name": "Fuel transfer switches",
+              "type": "switch",
+              "match": [
+                "cmd:sim/fuel/left_xfer_*",
+                "cmd:sim/fuel/right_xfer_*",
+                "cmd:laminar/CitX/fuel/cmd_transfer_*",
+                "cmd:laminar/CitX/fuel/cmd_gravity_flow_toggle",
+                "cmd:laminar/A333/switches/center_xfr_toggle",
+                "cmd:laminar/A333/switches/outer_tank_xfr_toggle",
+                "cmd:laminar/A333/switches/trim_xfr_toggle"
+              ],
+              "text": "These switches move fuel from one tank to another, for example from the centre tank into a wing tank. Some have an AUTO position, an override and a test position.",
+              "context": "The pilot uses them to keep the wing tanks fed or the aircraft balanced. The tooltip names which tanks are connected."
+            },
+            {
+              "id": "fuel-indicator-selector",
+              "name": "Fuel quantity indicator selector",
+              "type": "selector",
+              "match": [
+                "cmd:sim/fuel/indicate_*",
+                "cmd:laminar/f14/fuel/switch/qty_sel_*"
+              ],
+              "text": "This selector chooses which tank's quantity the fuel gauge shows, or whether it shows a total.",
+              "context": "The pilot turns it to check each tank in turn."
+            },
+            {
+              "id": "fuel-dump",
+              "name": "Fuel dump switch",
+              "type": "switch",
+              "match": [
+                "cmd:sim/flight_controls/dump_fuel_toggle"
+              ],
+              "text": "This switch lets the aircraft release fuel from its tanks into the air. This makes it lighter.",
+              "context": "It is used in an emergency, when the aircraft must land soon after take-off and is too heavy."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "lights",
+      "where": "other",
+      "name": "Lights",
+      "text": "These controls switch the lights on the outside of the aircraft, the lights in the cabin and the cockpit, and set how bright the instruments are.",
+      "panels": [
+        {
+          "id": "exterior-lights",
+          "name": "Exterior lights",
+          "text": "These switches turn on the lights on the outside of the aircraft. They help the pilot see and help others see the aircraft.",
+          "context": "The pilot uses the lights by a routine: beacon when the engines start, navigation lights and strobes for flight, landing and taxi lights for runway use.",
+          "src": "g1",
+          "controls": [
+            {
+              "id": "beacon",
+              "name": "Beacon light switch",
+              "type": "switch",
+              "match": [
+                "cmd:sim/lights/beacon_lights_*",
+                "cmd:laminar/CitX/lights/cmd_gnd_rec_anti_coll_*",
+                "cmd:laminar/f14/ltng/anti_collision_light_switch"
+              ],
+              "text": "This switch turns on the beacon, a red light that flashes or turns on top of or below the aircraft. It warns people around the aircraft that the engines are running or about to start.",
+              "context": "The pilot switches it on before starting the engines and off after shutting them down."
+            },
+            {
+              "id": "nav-lights",
+              "name": "Navigation lights switch",
+              "type": "switch",
+              "match": [
+                "cmd:sim/lights/nav_lights_*",
+                "cmd:laminar/CitX/lights/cmd_navigation_toggle",
+                "cmd:laminar/A333/toggle_switch/nav_light_pos_*",
+                "cmd:laminar/B738/toggle_switch/position_light_*",
+                "cmd:laminar/md82cmd/switches/navstrobe_*"
+              ],
+              "text": "This switch turns on the navigation (position) lights: a red light on the left wing tip, a green light on the right wing tip and a white light at the tail. They show other pilots which way the aircraft is heading.",
+              "context": "They are on at night and are often kept on in the daytime too."
+            },
+            {
+              "id": "strobe-lights",
+              "name": "Strobe lights switch",
+              "type": "switch",
+              "match": [
+                "cmd:sim/lights/strobe_lights_*",
+                "cmd:laminar/A333/toggle_switch/strobe_pos_*"
+              ],
+              "text": "This switch turns on the strobes, very bright white flashes on the wing tips and tail. They make the aircraft easy to see from far away.",
+              "context": "The pilot switches them on when entering the runway and keeps them on in flight. They are off when parked, so they do not blind people on the ground."
+            },
+            {
+              "id": "landing-lights",
+              "name": "Landing lights switch(es)",
+              "type": "switch",
+              "match": [
+                "cmd:sim/lights/landing_*",
+                "cmd:sim/cockpit2/switches/landing_lights_switch*",
+                "cmd:laminar/F4/toggle_switch/landing_taxi_lights_*",
+                "cmd:laminar/md82cmd/switches/landing_lights_*",
+                "cmd:laminar/CitX/lights/cmd_landing_*",
+                "cmd:laminar/B738/spring_switch/landing_lights_all"
+              ],
+              "text": "These switches turn on the powerful lamps that light the runway ahead. Some aircraft have several lamps, in the wing roots, the belly or the nose, each with its own switch, so the tooltip names which one it is.",
+              "context": "The pilot uses them for landing and take-off and often when flying low, so the aircraft is seen by others."
+            },
+            {
+              "id": "taxi-lights",
+              "name": "Taxi light switch",
+              "type": "switch",
+              "match": [
+                "cmd:sim/lights/taxi_lights_*",
+                "cmd:laminar/CitX/lights/cmd_taxi_toggle",
+                "cmd:laminar/B738/toggle_switch/taxi_light_*",
+                "cmd:laminar/A333/switch/lighting/taxi_light_*",
+                "cmd:laminar/f14/ltng/taxi_light_switch"
+              ],
+              "text": "This switch turns on the taxi light, a lamp that lights the ground in front of the aircraft while it rolls slowly on taxiways.",
+              "context": "The pilot uses it at night while taxiing. It is turned off before the aircraft is lined up with the runway, where the landing lights take over."
+            },
+            {
+              "id": "f14-light-switches",
+              "name": "F-14 light switches (master, position, storm)",
+              "type": "switch",
+              "match": [
+                "cmd:laminar/f14/ltng/*switch*"
+              ],
+              "text": "These switches belong to the F-14. One is the master switch for the lights. The position light flasher switch chooses steady or flashing. The wing and tail position light switches have DIM, OFF and BRT (bright) positions, and the storm light switch has the same three.",
+              "context": "The pilot sets them for the time of day and for flying in formation or close to other aircraft."
+            },
+            {
+              "id": "recognition-tail",
+              "name": "Recognition, logo and emergency lights (Citation)",
+              "type": "switch",
+              "match": [
+                "cmd:laminar/CitX/lights/cmd_recognition_toggle",
+                "cmd:laminar/CitX/lights/cmd_tail_flood_toggle",
+                "cmd:laminar/CitX/lights/emerg_light_switch_*",
+                "cmd:laminar/B738/toggle_switch/emer_exit_lights_*",
+                "cmd:laminar/A333/toggle_switch/emer_exit_lt_*"
+              ],
+              "text": "The recognition switch turns on dimmed landing lights, which make the aircraft easy to see in flight. The tail flood switch lights the logo on the tail fin. Emergency or exit light switches arm the lights that show the exits if the power fails.",
+              "context": "The pilot sets them in the pre-flight checks. The emergency lights are armed for every flight."
+            },
+            {
+              "id": "generic-lights",
+              "name": "Other exterior and cabin lights",
+              "type": "switch",
+              "match": [
+                "cmd:sim/lights/generic_*_light_tog",
+                "cmd:sim/cockpit2/switches/generic_lights_switch*"
+              ],
+              "text": "X-Plane gives every aircraft a set of numbered general-purpose light switches. Each aircraft decides what they do, such as wing inspection lights, runway turn-off lights, logo lights, cabin lights or map lights. A few are small switches that are not lights at all, such as a galley power switch. The tooltip tells what it is.",
+              "context": "Wing inspection lights, for example, let the pilot check the wings for ice at night."
+            }
+          ]
+        },
+        {
+          "id": "cockpit-lights",
+          "name": "Cockpit lighting and brightness",
+          "text": "These controls make the cockpit lights, the panel lights and the instrument screens brighter or darker.",
+          "context": "The pilot lowers the brightness at night, so the instruments are readable without dazzling the eyes, and raises it again in daylight. Each aircraft has its own set of dimmers; the tooltip says which part of the cockpit it dims.",
+          "src": "g1",
+          "controls": [
+            {
+              "id": "instrument-brightness",
+              "name": "Instrument and screen brightness knobs",
+              "type": "knob",
+              "match": [
+                "cmd:sim/cockpit2/switches/instrument_brightness_ratio*",
+                "cmd:sim/instruments/instrument_bright_*",
+                "cmd:laminar/b58/lighting/*rheo*",
+                "cmd:laminar/CitX/primus/cmd_*dim*",
+                "cmd:laminar/f14/ltng/*thumbwheel*",
+                "cmd:laminar/f14/ltng/*rheo*",
+                "cmd:laminar/a333/rheostats/*",
+                "cmd:laminar/B738/rheos/*",
+                "cmd:laminar/CitX/lights/*knob*",
+                "cmd:laminar/A333/buttons/*brightness*",
+                "cmd:laminar/B738/toggle_switch/compass_brightness*",
+                "cmd:laminar/A333/switch/lighting/*console*",
+                "cmd:laminar/c90/avionics/switch/annun_brt"
+              ],
+              "text": "These knobs set the brightness of the instruments, the screens or the backlighting of the panel. Turning the knob towards bright makes the lights stronger. Each knob dims one group, for example the flight instruments, the engine instruments or one screen.",
+              "context": "The pilot dims them at night and brightens them by day. The name on the tooltip says which group the knob belongs to."
+            },
+            {
+              "id": "panel-brightness",
+              "name": "Panel and flood light knobs",
+              "type": "knob",
+              "match": [
+                "cmd:sim/cockpit2/switches/panel_brightness_ratio*",
+                "cmd:sim/instruments/panel_bright_*",
+                "cmd:panel_bright_down/up",
+                "cmd:laminar/b58/lighting/flood_light_switch",
+                "cmd:laminar/b58/lighting/panel_light_switch",
+                "cmd:laminar/L5/panel_light_*"
+              ],
+              "text": "These controls set the brightness of the flood lights and panel lights. Flood lights shine on the panel from above, panel lights come from behind the labels. Some aircraft use the same control for the cabin lights.",
+              "context": "The pilot turns them up in the dark to read the panel and labels. The tooltip names the lamp or area."
+            },
+            {
+              "id": "dome-lights",
+              "name": "Dome, map and reading lights",
+              "type": "switch",
+              "match": [
+                "cmd:laminar/n844x/dome_light*",
+                "cmd:laminar/rv10/dome_lights/*",
+                "cmd:laminar/b58/lighting/roof_*",
+                "cmd:laminar/pa18/panel_light_*",
+                "cmd:laminar/r22/panel_light_rotation_*"
+              ],
+              "text": "These controls work the small lamps in the cockpit roof or the panel. One part switches the lamp on and off, another sets its colour or brightness, and a third turns the lamp to point where the pilot wants.",
+              "context": "The pilot uses them to read charts and the checklist at night. A red light keeps the eyes used to the dark."
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

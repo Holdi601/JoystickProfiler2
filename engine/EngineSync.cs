@@ -1108,10 +1108,7 @@ namespace JoyPro.Engine
             Directory.CreateDirectory(Path.GetDirectoryName(path) ?? string.Empty);
             string temp = path + ".tmp";
             File.WriteAllText(temp, EngineSerialization.ToJson(document), new UTF8Encoding(false));
-            if (File.Exists(path))
-                File.Replace(temp, path, null);
-            else
-                File.Move(temp, path);
+            SafeFileIo.ReplaceFile(temp, path);
         }
 
         // ---- Reading binds: the profile and the game's file ---------------------------------------------------------

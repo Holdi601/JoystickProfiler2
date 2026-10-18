@@ -63,7 +63,15 @@ public partial class MainWindow : Window
         // Follow input must not jump the bind list while the user types in a box.
         AddHandler(GotFocusEvent, (_, _) => UpdateTextInputFocus(), RoutingStrategies.Bubble, handledEventsToo: true);
         AddHandler(LostFocusEvent, (_, _) => Dispatcher.UIThread.Post(UpdateTextInputFocus), RoutingStrategies.Bubble, handledEventsToo: true);
+        tooltipHold = new TooltipHold(this);
     }
+
+    // Follow input moved the list under a resting mouse: no tooltip pops up until the mouse moves.
+    private readonly TooltipHold tooltipHold;
+
+    internal TooltipHold TooltipHold => tooltipHold;
+
+    private void OnFollowInputJumped(object? sender, EventArgs e) => tooltipHold.Hold();
 
     private void UpdateTextInputFocus()
     {
@@ -522,6 +530,7 @@ public partial class MainWindow : Window
             observedViewModel.AssistantFocusRequested -= OnAssistantFocusRequested;
             observedViewModel.SettingsSectionFocusRequested -= OnSettingsSectionFocusRequested;
             observedViewModel.AssistantMessages.CollectionChanged -= OnAssistantMessagesChanged;
+            observedViewModel.FollowInputJumped -= OnFollowInputJumped;
             observedViewModel.ConfirmHandler = null;
         }
 
@@ -541,6 +550,7 @@ public partial class MainWindow : Window
             observedViewModel.AssistantFocusRequested += OnAssistantFocusRequested;
             observedViewModel.SettingsSectionFocusRequested += OnSettingsSectionFocusRequested;
             observedViewModel.AssistantMessages.CollectionChanged += OnAssistantMessagesChanged;
+            observedViewModel.FollowInputJumped += OnFollowInputJumped;
             observedViewModel.ConfirmHandler = AskConfirmationAsync;
             // The output panel's place follows the view model (hidden when closed) from the first layout on.
             Dispatcher.UIThread.Post(UpdateEngineOutputCompactLayout);

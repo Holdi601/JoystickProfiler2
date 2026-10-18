@@ -26,7 +26,7 @@ namespace JoyPro.Engine
 
             try
             {
-                File.Copy(fullPath, fullPath + BackupExtension, true);
+                SafeFileIo.CopyFile(fullPath, fullPath + BackupExtension, true, ownTarget: true);
             }
             catch (Exception ex)
             {

@@ -1,0 +1,889 @@
+{
+  "format": "joypro-cockpit-guide",
+  "version": 1,
+  "id": "dcs-fc3-a-10a",
+  "title": "A-10A Thunderbolt II (DCS Flaming Cliffs)",
+  "variants": [
+    "a-10a"
+  ],
+  "games": [
+    "DCS"
+  ],
+  "sets": [],
+  "sources": [
+    {
+      "id": "m1",
+      "title": "DCS A-10A Flight Manual (EN, Flaming Cliffs)",
+      "file": "Mods/aircraft/A-10A/Doc/A-10A Flight Manual EN.pdf"
+    }
+  ],
+  "intro": "The A-10A is the original version of the American A-10, a tough plane built to help troops on the ground. The cockpit has round gauges, a head-up display and a small TV monitor for the Maverick missile instead of multi-function screens. The stick comes from the F-4 Phantom and the throttle levers sit on the left console. In the Flaming Cliffs version most switches work with keys or controller buttons.",
+  "areas": [
+    {
+      "id": "hud-area",
+      "where": "glareshield",
+      "name": "HUD area and canopy frame",
+      "text": "The HUD sits in front of the pilot's eyes on top of the instrument panel. The accelerometer, the AoA indexer and the standby compass are on the canopy frame.",
+      "panels": [
+        {
+          "id": "a10a-hud-area",
+          "name": "HUD Area",
+          "db": "a10a-hud-area",
+          "src": "m1",
+          "page": "37",
+          "text": "The HUD and the small instruments on the canopy frame around it.",
+          "context": "The pilot looks through the HUD to see where the plane flies and where the weapons will go.",
+          "controls": [
+            {
+              "id": "accelerometer",
+              "name": "Accelerometer",
+              "type": "gauge",
+              "match": [
+                "item:a10a-hud-area:1"
+              ],
+              "text": "A gauge on the frame of the canopy that shows the G-load, the push into the seat in turns. Markers keep the largest positive and negative values.",
+              "context": "Its readings are independent of the HUD and less exact than the HUD numbers.",
+              "src": "m1",
+              "page": "37"
+            },
+            {
+              "id": "aoa-indexer-overview",
+              "name": "AoA indexer",
+              "type": "light",
+              "match": [
+                "item:a10a-hud-area:2"
+              ],
+              "text": "Three lamps next to the HUD that show if the plane has the right angle of attack (how steeply the wing meets the air) for landing. The next panel explains each symbol.",
+              "context": "The pilot uses it during the approach to land at the right speed.",
+              "src": "m1",
+              "page": "37"
+            },
+            {
+              "id": "hud",
+              "name": "HUD (head-up display)",
+              "type": "display",
+              "match": [
+                "item:a10a-hud-area:3"
+              ],
+              "text": "The glass screen in front of the pilot's eyes that shows flight numbers and aiming marks (head-up display).",
+              "context": "The pilot can read speed, height, heading and weapon marks without looking down.",
+              "src": "m1",
+              "page": "46"
+            },
+            {
+              "id": "compass",
+              "name": "Magnetic compass",
+              "type": "gauge",
+              "match": [
+                "item:a10a-hud-area:4"
+              ],
+              "text": "The standby compass on the canopy frame. It shows the direction the plane is heading by the earth's magnetic field.",
+              "context": "It works without any electricity or computer.",
+              "src": "m1",
+              "page": "37"
+            }
+          ]
+        },
+        {
+          "id": "a10a-aoa-indexer",
+          "name": "AoA Indexer",
+          "db": "a10a-aoa-indexer",
+          "src": "m1",
+          "page": "39",
+          "text": "Three symbols left of the HUD that show if the plane has the right angle of attack for landing.",
+          "context": "The pilot uses it on the approach to land at the right speed.",
+          "controls": [
+            {
+              "id": "aoa-high",
+              "name": "Upper symbol (AoA too high)",
+              "type": "light",
+              "match": [
+                "item:a10a-aoa-indexer:1"
+              ],
+              "text": "When the upper symbol shines, the angle of attack is too large and the speed is too low for the landing.",
+              "context": "The pilot adds speed or lowers the nose until only the centre symbol shines.",
+              "src": "m1",
+              "page": "39"
+            },
+            {
+              "id": "aoa-low",
+              "name": "Lower symbol (AoA too low)",
+              "type": "light",
+              "match": [
+                "item:a10a-aoa-indexer:2"
+              ],
+              "text": "When the lower symbol shines, the angle of attack is too small and the speed is too high for the landing.",
+              "context": "The pilot reduces speed until only the centre symbol shines.",
+              "src": "m1",
+              "page": "39"
+            },
+            {
+              "id": "aoa-ok",
+              "name": "Centre symbol (on-speed)",
+              "type": "light",
+              "match": [
+                "item:a10a-aoa-indexer:3"
+              ],
+              "text": "When the centre symbol shines alone, the angle of attack is the right one for landing. If it shines together with another symbol, the angle is only slightly off.",
+              "context": "It is the target during the final approach.",
+              "src": "m1",
+              "page": "39"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "instrument-panel",
+      "where": "front-center",
+      "name": "Instrument panel",
+      "text": "In Flaming Cliffs aircraft most switches in the cockpit cannot be clicked with the mouse; the pilot uses key commands or controller buttons for them. The A-10A has no screens besides a small TV monitor; most of the panel is round gauges.",
+      "panels": [
+        {
+          "id": "instrument-panel",
+          "name": "Instrument Panel (overview)",
+          "db": "instrument-panel",
+          "src": "m1",
+          "page": "36",
+          "text": "The front panel with the flight, engine and fuel gauges, the gear handle, the armament panel and the TV monitor.",
+          "context": "The pilot scans these gauges all the time; the following panels explain the more complicated ones.",
+          "controls": [
+            {
+              "id": "clock",
+              "name": "Clock",
+              "type": "gauge",
+              "match": [
+                "item:instrument-panel:1"
+              ],
+              "text": "The cockpit clock. It shows the time of day in hours and minutes.",
+              "context": "The pilot uses it for timing legs of the flight.",
+              "src": "m1",
+              "page": "36"
+            },
+            {
+              "id": "aoa",
+              "name": "Angle of attack (AoA) indicator",
+              "type": "gauge",
+              "match": [
+                "item:instrument-panel:2"
+              ],
+              "text": "A gauge that shows how steeply the wing meets the air. The scale is in units from 0 to 30, which are not degrees. The band from 15 to 21 units is marked for landing.",
+              "context": "The pilot keeps the needle in the landing band during the approach.",
+              "src": "m1",
+              "page": "39"
+            },
+            {
+              "id": "airspeed-overview",
+              "name": "Airspeed indicator",
+              "type": "gauge",
+              "match": [
+                "item:instrument-panel:3"
+              ],
+              "text": "A round gauge that shows the speed of the plane through the air in knots, from 50 to 500. A dashed pointer shows the speed limit.",
+              "context": "It can differ slightly from the number on the HUD.",
+              "src": "m1",
+              "page": "38"
+            },
+            {
+              "id": "rwr",
+              "name": "RWR display",
+              "type": "display",
+              "match": [
+                "item:instrument-panel:4"
+              ],
+              "text": "The radar warning receiver (RWR) screen at the upper left. It shows symbols for radars that look at the plane, with their kind and direction.",
+              "context": "The pilot uses it to see who threatens the plane.",
+              "src": "m1",
+              "page": "38"
+            },
+            {
+              "id": "adi-overview",
+              "name": "Attitude Director Indicator (ADI)",
+              "type": "gauge",
+              "match": [
+                "item:instrument-panel:5"
+              ],
+              "text": "The artificial horizon: a ball that shows whether the nose is up or down and how far the wings are tilted. The next panel explains its parts.",
+              "context": "It is the main instrument when the real horizon cannot be seen.",
+              "src": "m1",
+              "page": "40"
+            },
+            {
+              "id": "rwr-control",
+              "name": "RWR control panel",
+              "type": "other",
+              "match": [
+                "item:instrument-panel:6"
+              ],
+              "text": "A panel under the HUD for the radar warning system. It filters the threats on the RWR screen by their operating mode.",
+              "context": "The pilot uses it to remove clutter from the screen. In Flaming Cliffs aircraft most switches in the cockpit cannot be clicked with the mouse; the pilot uses key commands or controller buttons for them.",
+              "src": "m1",
+              "page": "38"
+            },
+            {
+              "id": "altimeter-overview",
+              "name": "Altimeter",
+              "type": "gauge",
+              "match": [
+                "item:instrument-panel:7"
+              ],
+              "text": "The height gauge that works with the air pressure. It shows the height above sea level. The next panel explains the two readouts.",
+              "context": "The pilot uses it for the cruise height.",
+              "src": "m1",
+              "page": "40"
+            },
+            {
+              "id": "vvi",
+              "name": "Vertical Velocity Indicator (VVI)",
+              "type": "gauge",
+              "match": [
+                "item:instrument-panel:8"
+              ],
+              "text": "A gauge that shows how fast the plane climbs or sinks, in feet per minute. The needle moves clockwise when the plane climbs and counter-clockwise when it sinks.",
+              "context": "The pilot keeps a steady climb or descent with it.",
+              "src": "m1",
+              "page": "41"
+            },
+            {
+              "id": "itt",
+              "name": "ITT indicators (left and right)",
+              "type": "gauge",
+              "match": [
+                "item:instrument-panel:9"
+              ],
+              "text": "Two gauges that show how hot the exhaust gas of the left and right engine is, in degrees Celsius (interstage turbine temperature).",
+              "context": "A too hot engine is damaged; the pilot watches the needles at engine start and at high power.",
+              "src": "m1",
+              "page": "42"
+            },
+            {
+              "id": "fan-speed",
+              "name": "Fan speed indicators (left and right)",
+              "type": "gauge",
+              "match": [
+                "item:instrument-panel:10"
+              ],
+              "text": "Two gauges that show how fast the big fan at the front of each engine turns, in percent. The manual says this is the indicator of the thrust of the TF34 engines.",
+              "context": "The pilot reads engine power from these gauges.",
+              "src": "m1",
+              "page": "43"
+            },
+            {
+              "id": "tvm",
+              "name": "TV monitor (TVM)",
+              "type": "display",
+              "match": [
+                "item:instrument-panel:11"
+              ],
+              "text": "A small television screen at the upper right. It shows the picture from the camera in the nose of the selected AGM-65 Maverick missile. It is not a multi-function screen.",
+              "context": "The pilot looks at it to find a target and lock the missile onto it.",
+              "src": "m1",
+              "page": "38"
+            },
+            {
+              "id": "fuel",
+              "name": "Fuel quantity indicator",
+              "type": "gauge",
+              "match": [
+                "item:instrument-panel:12"
+              ],
+              "text": "A gauge that shows the fuel left. A counter gives the total in pounds and two arrows show the left and right tank.",
+              "context": "The pilot watches it to plan the way home.",
+              "src": "m1",
+              "page": "44"
+            },
+            {
+              "id": "flap-pos",
+              "name": "Flap position indicator",
+              "type": "gauge",
+              "match": [
+                "item:instrument-panel:13"
+              ],
+              "text": "A gauge that shows the angle of the flaps in degrees. Flaps are parts of the wing that slide out to give more lift at low speed.",
+              "context": "The pilot checks it for take-off and landing.",
+              "src": "m1",
+              "page": "43"
+            },
+            {
+              "id": "gear-handle",
+              "name": "Landing gear handle",
+              "type": "handle",
+              "match": [
+                "item:instrument-panel:14"
+              ],
+              "positions": [
+                {
+                  "name": "UP",
+                  "text": "The wheels are folded away for flight."
+                },
+                {
+                  "name": "DOWN",
+                  "text": "The wheels are out for take-off, landing and taxiing."
+                }
+              ],
+              "text": "Moving this handle raises or lowers the landing gear, the wheels and their legs.",
+              "context": "The pilot lowers the gear for landing and raises it after take-off. The position lights next to it show the result.",
+              "src": "m1",
+              "page": "37"
+            },
+            {
+              "id": "gear-pos",
+              "name": "Landing gear position display",
+              "type": "light",
+              "match": [
+                "item:instrument-panel:15"
+              ],
+              "text": "Lamps that show the position of each part of the landing gear.",
+              "context": "The pilot checks them after moving the gear handle.",
+              "src": "m1",
+              "page": "37"
+            },
+            {
+              "id": "acp-overview",
+              "name": "Armament Control Panel (ACP)",
+              "type": "other",
+              "match": [
+                "item:instrument-panel:16"
+              ],
+              "text": "The panel at the lower left where the weapons are chosen and prepared. The panel named Armament Control Panel explains each part.",
+              "context": "The pilot uses it before an attack. In Flaming Cliffs aircraft most switches in the cockpit cannot be clicked with the mouse; the pilot uses key commands or controller buttons for them.",
+              "src": "m1",
+              "page": "44"
+            },
+            {
+              "id": "hsi-overview",
+              "name": "Horizontal Situation Indicator (HSI)",
+              "type": "gauge",
+              "match": [
+                "item:instrument-panel:17"
+              ],
+              "text": "The compass display with arrows for the course and the direction to the next point. The next panel explains its parts.",
+              "context": "The pilot reads the heading and the direction to the route point here.",
+              "src": "m1",
+              "page": "40"
+            },
+            {
+              "id": "oil-pressure",
+              "name": "Engine oil pressure indicators (left and right)",
+              "type": "gauge",
+              "match": [
+                "item:instrument-panel:18"
+              ],
+              "text": "Two gauges for the oil pressure of the engines. Oil keeps the moving parts of the engines running smoothly.",
+              "context": "If the pressure falls below 27.5, the warning lamp on the caution panel comes on.",
+              "src": "m1",
+              "page": "42"
+            },
+            {
+              "id": "core-speed",
+              "name": "Engine core speed indicators (left and right)",
+              "type": "gauge",
+              "match": [
+                "item:instrument-panel:19"
+              ],
+              "text": "Two gauges that show how fast the core of each engine (the compressor and its turbine) turns, in percent of the maximum.",
+              "context": "The pilot watches them at engine start.",
+              "src": "m1",
+              "page": "42"
+            },
+            {
+              "id": "fuel-flow",
+              "name": "Fuel flow indicators",
+              "type": "gauge",
+              "match": [
+                "item:instrument-panel:20"
+              ],
+              "text": "Two gauges that show how much fuel each engine burns, in pounds per hour.",
+              "context": "The pilot can judge from them how long the fuel will last.",
+              "src": "m1",
+              "page": "43"
+            }
+          ]
+        },
+        {
+          "id": "a10a-airspeed",
+          "name": "Airspeed Indicator",
+          "db": "a10a-airspeed",
+          "src": "m1",
+          "page": "38",
+          "text": "The speed gauge in knots with a pointer for the speed limit.",
+          "context": "The pilot watches it on take-off, in the approach and in the fight.",
+          "controls": [
+            {
+              "id": "max-speed",
+              "name": "Maximum airspeed pointer",
+              "type": "indicator",
+              "match": [
+                "item:a10a-airspeed:1"
+              ],
+              "text": "A dashed pointer that shows the speed that must not be exceeded for flight safety.",
+              "context": "The pilot keeps the main pointer below it.",
+              "src": "m1",
+              "page": "39"
+            },
+            {
+              "id": "speed-pointer",
+              "name": "Airspeed pointer",
+              "type": "gauge",
+              "match": [
+                "item:a10a-airspeed:2"
+              ],
+              "text": "The main pointer. It shows the current calibrated airspeed (the speed the air presses on the plane, corrected for instrument errors).",
+              "context": "The pilot uses it for take-off, approach and landing.",
+              "src": "m1",
+              "page": "39"
+            }
+          ]
+        },
+        {
+          "id": "a10a-adi",
+          "name": "Attitude Director Indicator (ADI)",
+          "db": "a10a-adi",
+          "src": "m1",
+          "page": "40",
+          "text": "The artificial horizon with course and height bars.",
+          "context": "It is the main instrument for flying without sight of the real horizon and for instrument landings.",
+          "controls": [
+            {
+              "id": "bars",
+              "name": "Horizontal and vertical bars",
+              "type": "indicator",
+              "match": [
+                "item:a10a-adi:1"
+              ],
+              "text": "Two bars on the attitude ball. They show how far the plane is left or right of the planned course and above or below the planned height. During an instrument landing they form a plus sign when the plane is on the beam.",
+              "context": "The pilot keeps the deviation small, so that the two bars cross in the middle.",
+              "src": "m1",
+              "page": "40"
+            },
+            {
+              "id": "sideslip",
+              "name": "Sideslip indicator",
+              "type": "indicator",
+              "match": [
+                "item:a10a-adi:2"
+              ],
+              "text": "A needle at the bottom of the display. It shows if the plane slides sideways. The pilot centres it with the rudder pedals.",
+              "context": "A centred needle means the plane flies cleanly through the air.",
+              "src": "m1",
+              "page": "40"
+            },
+            {
+              "id": "pitch-scale",
+              "name": "Pitch scale",
+              "type": "gauge",
+              "match": [
+                "item:a10a-adi:3"
+              ],
+              "text": "The scale on the attitude ball with marks every 5 degrees. It shows whether the nose is up or down.",
+              "context": "The pilot reads the climb or dive angle from it.",
+              "src": "m1",
+              "page": "40"
+            },
+            {
+              "id": "datum",
+              "name": "Aircraft datum",
+              "type": "indicator",
+              "match": [
+                "item:a10a-adi:4"
+              ],
+              "text": "A fixed mark in the shape of a W in the middle of the display. It stands for the plane itself.",
+              "context": "The ball moves behind it, so the pilot sees the plane's attitude.",
+              "src": "m1",
+              "page": "40"
+            },
+            {
+              "id": "bank",
+              "name": "Bank indicator",
+              "type": "gauge",
+              "match": [
+                "item:a10a-adi:5"
+              ],
+              "text": "A scale with marks every 10 degrees that shows how far the wings are tilted.",
+              "context": "The pilot reads it when turning the plane.",
+              "src": "m1",
+              "page": "40"
+            }
+          ]
+        },
+        {
+          "id": "a10a-hsi",
+          "name": "Horizontal Situation Indicator (HSI)",
+          "db": "a10a-hsi",
+          "src": "m1",
+          "page": "40",
+          "text": "The compass display with arrows for the course and the route point.",
+          "context": "The pilot reads heading, course and distance here. It works with radio beacons and the inertial navigation (INS).",
+          "controls": [
+            {
+              "id": "range",
+              "name": "Range window",
+              "type": "display",
+              "match": [
+                "item:a10a-hsi:1"
+              ],
+              "text": "A number window in the upper left that shows the distance to the current waypoint in nautical miles.",
+              "context": "The pilot sees how far the next point of the route is.",
+              "src": "m1",
+              "page": "40"
+            },
+            {
+              "id": "heading",
+              "name": "Current heading",
+              "type": "gauge",
+              "match": [
+                "item:a10a-hsi:2"
+              ],
+              "text": "A rotating compass card. The current heading stands under the fixed mark at the top.",
+              "context": "It is the main compass of the cockpit.",
+              "src": "m1",
+              "page": "40"
+            },
+            {
+              "id": "cdi-dots",
+              "name": "Course deviation dots",
+              "type": "gauge",
+              "match": [
+                "item:a10a-hsi:3"
+              ],
+              "text": "A row of dots that is the scale for the course deviation bar in the middle.",
+              "context": "The further the bar is from the middle, the further the plane is off the chosen course.",
+              "src": "m1",
+              "page": "40"
+            },
+            {
+              "id": "course-window",
+              "name": "Course window",
+              "type": "display",
+              "match": [
+                "item:a10a-hsi:4"
+              ],
+              "text": "A number window in the upper right that shows the course that has been set.",
+              "context": "The pilot compares it with the heading.",
+              "src": "m1",
+              "page": "40"
+            },
+            {
+              "id": "bearing",
+              "name": "Bearing pointer",
+              "type": "indicator",
+              "match": [
+                "item:a10a-hsi:5"
+              ],
+              "text": "A pointer that shows the direction to the waypoint or to the chosen airbase.",
+              "context": "If it points straight up, the plane flies directly towards the point.",
+              "src": "m1",
+              "page": "40"
+            },
+            {
+              "id": "cdi",
+              "name": "Course deviation indicator",
+              "type": "indicator",
+              "match": [
+                "item:a10a-hsi:6"
+              ],
+              "text": "A bar in the middle that moves left and right. It shows how far the plane is off the chosen course. On a landing approach it shows the position against the runway beam (the localizer).",
+              "context": "On an instrument landing it does the same as the vertical bar on the ADI.",
+              "src": "m1",
+              "page": "40"
+            }
+          ]
+        },
+        {
+          "id": "a10a-altimeter",
+          "name": "Altimeter",
+          "db": "a10a-altimeter",
+          "src": "m1",
+          "page": "40",
+          "text": "The height gauge with a pointer and a number counter.",
+          "context": "It shows the height above sea level in feet.",
+          "controls": [
+            {
+              "id": "alt-pointer",
+              "name": "100 ft pointer",
+              "type": "gauge",
+              "match": [
+                "item:a10a-altimeter:1"
+              ],
+              "text": "A pointer that goes round once for every 1,000 feet. It shows the hundreds of feet.",
+              "context": "The scale is divided in steps of 20 feet.",
+              "src": "m1",
+              "page": "41"
+            },
+            {
+              "id": "alt-drum",
+              "name": "Drum counter",
+              "type": "display",
+              "match": [
+                "item:a10a-altimeter:2"
+              ],
+              "text": "A number counter that shows the height as digits.",
+              "context": "It gives the exact height above sea level.",
+              "src": "m1",
+              "page": "41"
+            }
+          ]
+        },
+        {
+          "id": "a10a-acp",
+          "name": "Armament Control Panel (ACP)",
+          "db": "a10a-acp",
+          "src": "m1",
+          "page": "44",
+          "text": "The panel at the lower left of the instrument panel for the weapon stations, bomb release options and the gun.",
+          "context": "The pilot sets it before an attack and reads the weapon state from its lamps.",
+          "controls": [
+            {
+              "id": "master-arm",
+              "name": "Master arm switch",
+              "type": "switch",
+              "match": [
+                "item:a10a-acp:1"
+              ],
+              "text": "The main safety switch for the weapons: nothing is fired or released while it is off. The manual lists the switch at the top of the panel.",
+              "context": "The pilot switches it on only when ready to attack.",
+              "src": "m1",
+              "page": "44"
+            },
+            {
+              "id": "weapon-lights",
+              "name": "Weapon state indicators",
+              "type": "light",
+              "match": [
+                "item:a10a-acp:2"
+              ],
+              "text": "Lamps for each weapon station. Two green lamps show two or more weapons on the station, one green lamp shows one weapon. A red lamp shows an empty station. A lit lamp at the lower left marks the selected station.",
+              "context": "The pilot sees at a glance what is left and what is selected.",
+              "src": "m1",
+              "page": "45"
+            },
+            {
+              "id": "ripple-qty",
+              "name": "Ripple quantity display",
+              "type": "display",
+              "match": [
+                "item:a10a-acp:3"
+              ],
+              "text": "A number display on the left of the panel. It shows how many bombs fall with one press of the release button in the ripple modes.",
+              "context": "A key command changes the number.",
+              "src": "m1",
+              "page": "44"
+            },
+            {
+              "id": "release-mode",
+              "name": "Release mode selector",
+              "type": "selector",
+              "match": [
+                "item:a10a-acp:4"
+              ],
+              "positions": [
+                {
+                  "name": "SGL",
+                  "text": "One bomb is dropped with each release pulse."
+                },
+                {
+                  "name": "PRS",
+                  "text": "Two bombs (a pair) are dropped with each release pulse."
+                },
+                {
+                  "name": "RIP SGL",
+                  "text": "Several bombs are dropped one after another during the release pulse."
+                },
+                {
+                  "name": "RIP PRS",
+                  "text": "Several pairs of bombs are dropped during the release pulse."
+                }
+              ],
+              "text": "A knob that chooses how unguided bombs are dropped. It has four settings.",
+              "context": "The pilot sets it before a bomb run.",
+              "src": "m1",
+              "page": "44"
+            },
+            {
+              "id": "gun-rate",
+              "name": "Gun rate switch",
+              "type": "switch",
+              "match": [
+                "item:a10a-acp:5"
+              ],
+              "text": "A switch in the upper right of the panel that sets the firing rate of the gun.",
+              "context": "The pilot sets it before using the GAU-8 cannon.",
+              "src": "m1",
+              "page": "44"
+            },
+            {
+              "id": "rounds",
+              "name": "Remaining rounds counter",
+              "type": "display",
+              "match": [
+                "item:a10a-acp:6"
+              ],
+              "text": "A number display that shows the rounds left for the gun.",
+              "context": "It sits next to the gun rate switch.",
+              "src": "m1",
+              "page": "44"
+            },
+            {
+              "id": "ripple-interval",
+              "name": "Ripple interval display",
+              "type": "display",
+              "match": [
+                "item:a10a-acp:7"
+              ],
+              "text": "A number display at the lower right that shows the time between two bomb drops in the ripple modes.",
+              "context": "The time decides how far apart the bombs land. Key commands lengthen or shorten it.",
+              "src": "m1",
+              "page": "44"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "hotas",
+      "where": "hotas",
+      "name": "Stick and throttles",
+      "text": "The pilot flies with the stick in the middle. The two throttle levers are on the left console and carry the speed brake, zoom and slew controls.",
+      "panels": [
+        {
+          "id": "stick",
+          "name": "Control stick",
+          "src": "m1",
+          "text": "The stick with the trigger and the buttons for trim, weapon release and nosewheel steering.",
+          "context": "The right hand flies the plane and fires from here.",
+          "controls": [
+            {
+              "id": "trim",
+              "name": "Trim switch",
+              "type": "hat",
+              "match": [
+                "control:stick.hat.trim"
+              ],
+              "text": "A four-way switch on top of the grip. Pushing it makes small adjustments (trim) so that the plane flies straight without force on the stick. Forward trims the nose down, back trims it up; left and right trim the roll.",
+              "context": "The pilot trims after every change of speed.",
+              "src": "m1"
+            },
+            {
+              "id": "weapon-release",
+              "name": "Weapon release button",
+              "type": "button",
+              "match": [
+                "control:stick.weapon_release"
+              ],
+              "text": "A button on top of the grip. Pressing it releases bombs and rockets or launches the Maverick missile.",
+              "context": "The pilot first chooses the weapon on the armament panel, then presses this button.",
+              "src": "m1"
+            },
+            {
+              "id": "trigger",
+              "name": "Trigger",
+              "type": "trigger",
+              "match": [
+                "control:stick.trigger"
+              ],
+              "text": "The trigger at the front of the grip. Pressing it fires the GAU-8 cannon.",
+              "context": "The cannon is used against targets on the ground.",
+              "src": "m1"
+            },
+            {
+              "id": "nws",
+              "name": "NWS / A/R disconnect button",
+              "type": "button",
+              "match": [
+                "control:stick.button.index_lower"
+              ],
+              "text": "A button under the trigger. On the ground it turns on the nosewheel steering, so the pilot steers the nose wheel like the steering of a car.",
+              "context": "The label also names the A/R disconnect (air refuelling); the catalog lists only the nosewheel steering function.",
+              "src": "m1"
+            },
+            {
+              "id": "gimbal",
+              "name": "Control stick (centre)",
+              "type": "axis",
+              "match": [
+                "control:stick.gimbal"
+              ],
+              "text": "The stick in the middle. Pushing it forward lowers the nose, pulling back raises it. Moving it left or right rolls the plane.",
+              "context": "It is the main flight control of the plane.",
+              "src": "m1"
+            }
+          ]
+        },
+        {
+          "id": "throttles",
+          "name": "Throttles",
+          "src": "m1",
+          "text": "Two throttle levers with the switches for the speed brake, zoom and target slew.",
+          "context": "The left hand sets the engine power and presses these switches.",
+          "controls": [
+            {
+              "id": "speedbrake",
+              "name": "Speed brake switch",
+              "type": "switch",
+              "match": [
+                "control:throttle.speedbrake"
+              ],
+              "text": "A slide switch on the left throttle grip. Pushed forward it retracts the speed brakes, pulled back it extends them. Speed brakes are panels that open into the wind to slow the plane down. The catalog lists it as a three-position switch.",
+              "context": "The pilot uses it to slow the plane down.",
+              "src": "m1"
+            },
+            {
+              "id": "china-hat",
+              "name": "China hat",
+              "type": "rocker",
+              "match": [
+                "control:throttle.china"
+              ],
+              "positions": [
+                {
+                  "name": "FWD",
+                  "text": "The sensor view gets narrower (zoom in)."
+                },
+                {
+                  "name": "AFT",
+                  "text": "The sensor view gets wider (zoom out)."
+                }
+              ],
+              "text": "A two-way switch on the front of the left throttle grip, worked by the index finger. In DCS Flaming Cliffs it narrows the sensor view (zoom in) when pushed forward and widens it (zoom out) when pulled back.",
+              "context": "The pilot uses it to zoom the Maverick picture on the TV monitor.",
+              "src": "m1"
+            },
+            {
+              "id": "slew",
+              "name": "Slew control",
+              "type": "other",
+              "match": [
+                "control:throttle.ministick"
+              ],
+              "text": "A small thumb control on the right throttle grip. It moves the target designator or the seeker of the missile left, right, up and down.",
+              "context": "The pilot uses it to put the aiming mark on the target.",
+              "src": "m1"
+            },
+            {
+              "id": "throttle-left",
+              "name": "Left throttle",
+              "type": "axis",
+              "match": [
+                "control:throttle.axis.left"
+              ],
+              "text": "The left lever on the left console. Pushing it forward gives more power to the left engine. Behind the hump of the travel it is OFF: moving it from OFF to IDLE starts the engine, moving it back to OFF stops it.",
+              "context": "The pilot normally moves both levers together.",
+              "src": "m1"
+            },
+            {
+              "id": "throttle-right",
+              "name": "Right throttle",
+              "type": "axis",
+              "match": [
+                "control:throttle.axis.right"
+              ],
+              "text": "The right lever on the left console. Pushing it forward gives more power to the right engine. Behind the hump of the travel it is OFF: moving it from OFF to IDLE starts the engine, moving it back to OFF stops it.",
+              "context": "The pilot normally moves both levers together.",
+              "src": "m1"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

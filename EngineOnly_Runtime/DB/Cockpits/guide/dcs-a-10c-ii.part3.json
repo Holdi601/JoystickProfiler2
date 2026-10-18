@@ -1,0 +1,1722 @@
+{
+  "format": "joypro-cockpit-guide",
+  "version": 1,
+  "id": "dcs-a-10c-ii-part3",
+  "partOf": "dcs-a-10c-ii",
+  "areas": [
+    {
+      "id": "right-console",
+      "where": "right-console",
+      "name": "Right console",
+      "text": "The side panel to the pilot's right: canopy and ladder, electrical power, air and oxygen, lights, self-defence panel, caution board, the navigation computer with its power panel, TACAN, ILS, HARS and the helmet sight power.",
+      "panels": [
+        {
+          "id": "canopy",
+          "name": "Canopy switch and jettison handle",
+          "db": "canopy-switch-and-ejection-handle",
+          "src": "m1",
+          "page": "186",
+          "text": "These controls open and close the canopy, the clear glass roof over the cockpit, lower the boarding ladder and, in an emergency, blow the canopy off.",
+          "context": "The pilot opens the canopy to climb in or out and closes it before the start. The jettison handle is for an emergency exit and also for letting the pilot eject.",
+          "controls": [
+            {
+              "id": "canopy-switch",
+              "name": "CANOPY switch (OPEN / HOLD / CLOSE)",
+              "type": "switch3",
+              "match": [
+                "PTR-CANOPY-OPEN",
+                "item:canopy-switch-and-ejection-handle:1",
+                "item:right-console:1"
+              ],
+              "positions": [
+                {
+                  "name": "OPEN",
+                  "text": "While held, the canopy goes up."
+                },
+                {
+                  "name": "HOLD",
+                  "text": "The canopy stays where it is."
+                },
+                {
+                  "name": "CLOSE",
+                  "text": "While held, the canopy comes down."
+                }
+              ],
+              "text": "This switch moves the canopy up or down. The pilot holds it at OPEN or CLOSE while the canopy moves, and HOLD stops it where it is.",
+              "context": "While the canopy is not fully shut, the CANOPY UNLOCKED light on the dash stays on.",
+              "src": "m1",
+              "page": "187"
+            },
+            {
+              "id": "ladder-cover",
+              "name": "Boarding ladder button cover",
+              "type": "cover",
+              "match": [
+                "BOARD-LADDER-COVER-PTR"
+              ],
+              "text": "A small cover protects the red ladder button so it is not pressed by accident.",
+              "context": "The cover is its own clickable part in the game: it is lifted first, then the button below is pressed.",
+              "src": "m1",
+              "page": "187"
+            },
+            {
+              "id": "ladder-button",
+              "name": "Boarding ladder button",
+              "type": "button",
+              "match": [
+                "BOARD-LADDER-BUTTON-PTR",
+                "item:canopy-switch-and-ejection-handle:2"
+              ],
+              "text": "Pressing this red button, once the cover is raised, lowers the boarding ladder, the ladder used to climb in.",
+              "context": "To raise the ladder again, the pilot must ask the ground crew over the intercom.",
+              "src": "m1",
+              "page": "187"
+            },
+            {
+              "id": "canopy-actuator",
+              "name": "Canopy actuator disengage lever",
+              "type": "lever",
+              "match": [
+                "CANOPY-DISENGAGE-LEVER-PTR"
+              ],
+              "text": "The game names this lever 'Internal canopy actuator disengage lever'. The actuator is the motor that moves the canopy.",
+              "context": "The manual does not describe this lever.",
+              "src": "m1",
+              "page": "187"
+            },
+            {
+              "id": "jett-unlock",
+              "name": "Canopy jettison lever unlock button",
+              "type": "button",
+              "match": [
+                "PTR-CNP-JETT-BTN"
+              ],
+              "text": "This button unlocks the canopy jettison handle so it can be pulled. It prevents pulling the handle by accident.",
+              "context": "The game names it 'Canopy Jettison Lever Unlock Button'.",
+              "src": "m1",
+              "page": "187"
+            },
+            {
+              "id": "jett-handle",
+              "name": "Canopy jettison handle",
+              "type": "handle",
+              "match": [
+                "PTR-CNP-JETTARM",
+                "item:canopy-switch-and-ejection-handle:3"
+              ],
+              "text": "This black and yellow striped handle blows the canopy off the plane with a small explosion.",
+              "context": "It is only for an emergency. Pulling it takes away the roof of the cockpit.",
+              "src": "m1",
+              "page": "187"
+            }
+          ]
+        },
+        {
+          "id": "elec",
+          "name": "Electrical power panel",
+          "db": "electrical-power-panel",
+          "src": "m1",
+          "page": "188",
+          "text": "This panel decides where the electricity of the plane comes from: the battery, the APU or the two engine generators. It also has the emergency floodlight switch.",
+          "context": "Electricity is the first thing the pilot turns on in a cold start. The battery comes first, then the APU, and when both engines run their generators take over.",
+          "controls": [
+            {
+              "id": "battery",
+              "name": "BATTERY switch",
+              "type": "switch2",
+              "match": [
+                "PTR-EPP-BATTERY-PWR",
+                "item:electrical-power-panel:1"
+              ],
+              "positions": [
+                {
+                  "name": "PWR",
+                  "text": "The battery gives power to the plane."
+                },
+                {
+                  "name": "OFF",
+                  "text": "The battery is disconnected; the plane is dead."
+                }
+              ],
+              "text": "This switch connects the plane's 24-volt battery. It is the first step of starting the plane.",
+              "context": "The battery alone gives power for the APU start and for the basic engine gauges.",
+              "src": "m1",
+              "page": "188"
+            },
+            {
+              "id": "inverter",
+              "name": "INVERTER switch",
+              "type": "switch",
+              "match": [
+                "PTR-EPP-INVERTER",
+                "item:electrical-power-panel:2"
+              ],
+              "text": "This switch turns on the inverter, a box that turns the battery's electricity into the type some instruments need.",
+              "context": "With the battery on, STBY supplies the engine gauges that need this type of power.",
+              "src": "m1",
+              "page": "188"
+            },
+            {
+              "id": "apu-gen",
+              "name": "APU GEN switch",
+              "type": "switch2",
+              "match": [
+                "PTR-EPP-APU-GEN-PWR",
+                "item:electrical-power-panel:3"
+              ],
+              "positions": [
+                {
+                  "name": "PWR",
+                  "text": "The APU generator powers the plane."
+                },
+                {
+                  "name": "OFF/RESET",
+                  "text": "The APU generator is not connected; also used to reset it."
+                }
+              ],
+              "text": "After the APU has started, this switch lets its generator take over the electric load from the battery.",
+              "context": "When both engines run and their generators work, the APU can be switched off.",
+              "src": "m1",
+              "page": "188"
+            },
+            {
+              "id": "ac-gen",
+              "name": "AC GEN switches (L and R)",
+              "type": "switch",
+              "match": [
+                "PTR-EPP-AC-GEN-PWR-*",
+                "item:electrical-power-panel:4"
+              ],
+              "count": 2,
+              "text": "These two switches connect the generators of the left and right engine to the electric buses (the groups of power lines).",
+              "context": "The pilot sets both to PWR once the engines run.",
+              "src": "m1",
+              "page": "188"
+            },
+            {
+              "id": "emer-flood",
+              "name": "EMER FLOOD switch",
+              "type": "switch2",
+              "match": [
+                "PTR-EPP-EMER-FLOOD",
+                "item:electrical-power-panel:5"
+              ],
+              "positions": [
+                {
+                  "name": "EMER FLOOD",
+                  "text": "Both floodlights are on at full brightness."
+                },
+                {
+                  "name": "OFF",
+                  "text": "The floodlights follow their normal dial."
+                }
+              ],
+              "text": "This switch turns both cockpit floodlights to full brightness.",
+              "context": "It lights the cockpit when other lights fail or when the pilot needs to see everything at night.",
+              "src": "m1",
+              "page": "188"
+            }
+          ]
+        },
+        {
+          "id": "env",
+          "name": "Environment system panel",
+          "db": "environment-system-panel",
+          "src": "m1",
+          "page": "189",
+          "text": "This panel has two halves. The top half is the oxygen regulator that gives the pilot air to breathe. The bottom half controls cockpit air, heat, pressure, defogging and the heated sensor tube.",
+          "context": "The pilot turns the oxygen on before flying high. Above 18,000 feet, running out of oxygen makes the pilot lose consciousness.",
+          "controls": [
+            {
+              "id": "oxy-supply",
+              "name": "Oxygen supply lever (ON / OFF)",
+              "type": "lever",
+              "match": [
+                "PTR-OXYGENCP-SUPPLY",
+                "item:environment-system-panel:1"
+              ],
+              "positions": [
+                {
+                  "name": "ON",
+                  "text": "Oxygen flows to the pilot."
+                },
+                {
+                  "name": "OFF",
+                  "text": "No oxygen flows."
+                }
+              ],
+              "text": "This green lever opens or closes the flow of oxygen to the pilot's mask.",
+              "context": "Oxygen (the breathing gas for high altitude) is needed at height.",
+              "src": "m1",
+              "page": "189"
+            },
+            {
+              "id": "oxy-dilute",
+              "name": "Oxygen dilution lever (NORMAL / 100%)",
+              "type": "lever",
+              "match": [
+                "PTR-OXYGENCP-OXYGEN-DILUTER",
+                "item:environment-system-panel:2"
+              ],
+              "positions": [
+                {
+                  "name": "100% OXYGEN",
+                  "text": "Pure oxygen."
+                },
+                {
+                  "name": "NORMAL OXYGEN",
+                  "text": "Oxygen mixed with air to make the supply last longer."
+                }
+              ],
+              "text": "This lever picks pure oxygen or oxygen mixed with air. The mixed kind lasts longer.",
+              "context": "The pilot normally uses the mixed oxygen to make the supply last.",
+              "src": "m1",
+              "page": "189"
+            },
+            {
+              "id": "oxy-emergency",
+              "name": "Oxygen emergency lever (EMERGENCY / NORMAL / TEST MASK)",
+              "type": "lever",
+              "match": [
+                "PTR-OXYGENCP-EMERGENCY",
+                "item:environment-system-panel:3"
+              ],
+              "positions": [
+                {
+                  "name": "EMERGENCY",
+                  "text": "Not simulated in the game."
+                },
+                {
+                  "name": "NORMAL",
+                  "text": "The normal position, the only one the game models."
+                },
+                {
+                  "name": "TEST MASK",
+                  "text": "Not simulated in the game."
+                }
+              ],
+              "text": "This red lever has places for normal use, for testing the mask and for an emergency. The manual says only the normal position is simulated.",
+              "context": "The game labels it 'Oxygen Flow Emergency/Normal/Test Mask'.",
+              "src": "m1",
+              "page": "190"
+            },
+            {
+              "id": "oxy-flow",
+              "name": "Oxygen flow indicator",
+              "type": "indicator",
+              "match": [
+                "item:environment-system-panel:4"
+              ],
+              "text": "A small window that flashes black and white with every breath of the pilot.",
+              "context": "If it flashes, oxygen is flowing.",
+              "src": "m1",
+              "page": "190"
+            },
+            {
+              "id": "oxy-pressure",
+              "name": "Oxygen supply pressure gauge",
+              "type": "gauge",
+              "match": [
+                "item:environment-system-panel:5"
+              ],
+              "text": "This half-round gauge shows the pressure of the oxygen regulator in psi.",
+              "context": "It tells whether the oxygen system is working.",
+              "src": "m1",
+              "page": "190"
+            },
+            {
+              "id": "oxy-qty",
+              "name": "Liquid oxygen quantity gauge",
+              "type": "gauge",
+              "match": [
+                "item:environment-system-panel:6"
+              ],
+              "text": "This gauge shows how much liquid oxygen is left, between 0 and 5 liters.",
+              "context": "A caution light comes on when the quantity falls to half a liter or less.",
+              "src": "m1",
+              "page": "190"
+            },
+            {
+              "id": "oxy-test",
+              "name": "Oxygen indicator test button",
+              "type": "button",
+              "match": [
+                "PTR-ENVCP-OXY-TEST",
+                "item:environment-system-panel:7"
+              ],
+              "text": "While this button is held, the needle of the quantity gauge spins and tests the low-oxygen caution.",
+              "context": "The pilot uses it to check that the oxygen warning works.",
+              "src": "m1",
+              "page": "190"
+            },
+            {
+              "id": "defog",
+              "name": "WINDSHIELD DEFOG/DEICE switch",
+              "type": "switch",
+              "match": [
+                "PTR-ENVCP-WINDSHIELD-DEFOG",
+                "item:environment-system-panel:8"
+              ],
+              "text": "This switch heats the windshield so it does not fog up or ice over.",
+              "context": "It matters in cold and wet air.",
+              "src": "m1",
+              "page": "190"
+            },
+            {
+              "id": "pitot",
+              "name": "PITOT HEAT switch",
+              "type": "switch2",
+              "match": [
+                "PTR-ENVCP-PITOT-HEAT",
+                "item:environment-system-panel:9"
+              ],
+              "positions": [
+                {
+                  "name": "PITOT HEAT",
+                  "text": "The tube is heated."
+                },
+                {
+                  "name": "OFF",
+                  "text": "The tube is not heated."
+                }
+              ],
+              "text": "This switch heats the small tube outside that measures speed (the pitot), so it does not freeze.",
+              "context": "The manual says to turn it on shortly before take-off. A blocked tube can lead to a CADC (air data computer) failure message.",
+              "src": "m1",
+              "page": "190"
+            },
+            {
+              "id": "rain",
+              "name": "WINDSHIELD RAIN REMOVAL/WASH switch",
+              "type": "switch3",
+              "match": [
+                "PTR-ENVCP-WINDSHIELD-RREMOVE-WASH",
+                "item:environment-system-panel:10"
+              ],
+              "positions": [
+                {
+                  "name": "RAIN REMOVAL",
+                  "text": "Up: blows hot air over the glass. No function in the game."
+                },
+                {
+                  "name": "OFF",
+                  "text": "Middle: off."
+                },
+                {
+                  "name": "WASH",
+                  "text": "Down: washes the glass. No function in the game."
+                }
+              ],
+              "text": "Down, this switch would wash the windshield; up, it would blow the rain away with air. The manual says it has no function.",
+              "context": "Clicking it changes nothing in the game.",
+              "src": "m1",
+              "page": "190"
+            },
+            {
+              "id": "bleed",
+              "name": "BLEED AIR switch",
+              "type": "switch",
+              "match": [
+                "PTR-ENVCP-BLEED-AIR",
+                "item:environment-system-panel:11"
+              ],
+              "text": "Up, this switch lets hot air from the engines and the APU flow to the cockpit air systems (bleed air).",
+              "context": "Bleed air is also used for heating and pressurization.",
+              "src": "m1",
+              "page": "190"
+            },
+            {
+              "id": "canopy-defog",
+              "name": "CANOPY DEFOG dial",
+              "type": "knob",
+              "match": [
+                "PTR-ENVCP-CANOPY-DEFOG",
+                "item:environment-system-panel:12"
+              ],
+              "text": "This dial sets how much warm air blows from the base of the canopy to clear it.",
+              "context": "It turns between OFF and MAX; more air clears fog and ice on the glass faster.",
+              "src": "m1",
+              "page": "190"
+            },
+            {
+              "id": "temp-press",
+              "name": "TEMP/PRESS control switch (NORM / DUMP / RAM)",
+              "type": "switch3",
+              "match": [
+                "PTR-ENVCP-TEMP-PRESS",
+                "item:environment-system-panel:13"
+              ],
+              "positions": [
+                {
+                  "name": "NORM",
+                  "text": "The normal air conditioning."
+                },
+                {
+                  "name": "DUMP",
+                  "text": "The cabin pressure is released."
+                },
+                {
+                  "name": "RAM",
+                  "text": "Fresh outside air flows in."
+                }
+              ],
+              "text": "This switch chooses where the cockpit air temperature and pressure come from.",
+              "context": "DUMP lets the cabin pressure out, RAM uses fresh outside air.",
+              "src": "m1",
+              "page": "190"
+            },
+            {
+              "id": "flow-level",
+              "name": "FLOW LEVEL dial",
+              "type": "knob",
+              "match": [
+                "PTR-ENVCP-FLOW-LEVEL",
+                "item:environment-system-panel:14"
+              ],
+              "text": "This dial sets how much conditioned air flows into the cockpit.",
+              "context": "A higher setting gives more air.",
+              "src": "m1",
+              "page": "190"
+            },
+            {
+              "id": "main-air",
+              "name": "MAIN AIR SUPPLY switch",
+              "type": "switch",
+              "match": [
+                "PTR-ENVCP-MAIN-AIR-SUPPLY",
+                "item:environment-system-panel:15"
+              ],
+              "text": "This switch closes the valve that gives engine bleed air to the air-conditioning system. Outside air still flows in.",
+              "context": "It is used to shut the hot air off, for example after a leak.",
+              "src": "m1",
+              "page": "190"
+            },
+            {
+              "id": "temp-level",
+              "name": "TEMP LEVEL dial",
+              "type": "knob",
+              "match": [
+                "PTR-ENVCP-TEM-LEVEL",
+                "item:environment-system-panel:16"
+              ],
+              "text": "This dial would set the cockpit temperature. The manual says it has no function.",
+              "context": "Turning it changes nothing in this version; the cockpit temperature follows other controls.",
+              "src": "m1",
+              "page": "191"
+            },
+            {
+              "id": "ac-control",
+              "name": "Air conditioner control switch (MAN / AUTO)",
+              "type": "switch",
+              "match": [
+                "PTR-ENVCP-CABIN-AIR-COND-OPER",
+                "item:environment-system-panel:17"
+              ],
+              "text": "This switch picks automatic or manual control of the air conditioning.",
+              "context": "In manual mode the HOT and COLD buttons next to it are used.",
+              "src": "m1",
+              "page": "191"
+            },
+            {
+              "id": "ac-buttons",
+              "name": "Air conditioner COLD and HOT buttons",
+              "type": "button",
+              "match": [
+                "PTR-ENVCP-CABIN-AIR-COND-OPER-COLD",
+                "PTR-ENVCP-CABIN-AIR-COND-OPER-HOT"
+              ],
+              "count": 2,
+              "text": "These two buttons make the air from the air conditioning colder or hotter when the control is on manual.",
+              "context": "The game names them 'Air Conditioner to COLD' and 'Air Conditioner to HOT'."
+            },
+            {
+              "id": "cabin-alt",
+              "name": "Cabin pressure altitude gauge",
+              "type": "gauge",
+              "match": [
+                "item:environment-system-panel:18"
+              ],
+              "text": "This gauge shows the air pressure inside the cockpit, expressed as a height.",
+              "context": "It shows whether the cockpit pressure is comfortable.",
+              "src": "m1",
+              "page": "191"
+            }
+          ]
+        },
+        {
+          "id": "lights",
+          "name": "Light control panel",
+          "db": "light-control-panel",
+          "src": "m1",
+          "page": "191",
+          "text": "This panel controls the lights outside the plane (the top part) and the lights inside the cockpit (the bottom part).",
+          "context": "A pinky switch on the left throttle can override the outside lights, so the pilot can turn them all off quickly in a fight.",
+          "controls": [
+            {
+              "id": "position",
+              "name": "POSITION lights switch (FLASH / OFF / STEADY)",
+              "type": "switch3",
+              "match": [
+                "PTR-LGHTCP-POSITION",
+                "item:light-control-panel:1"
+              ],
+              "positions": [
+                {
+                  "name": "FLASH",
+                  "text": "The position lights blink."
+                },
+                {
+                  "name": "OFF",
+                  "text": "The position lights are off."
+                },
+                {
+                  "name": "STEADY",
+                  "text": "The position lights stay on."
+                }
+              ],
+              "text": "This switch controls the coloured lights on the wingtips and the tail: red on the left wing, green on the right wing and white on the tail.",
+              "context": "The lights tell other pilots which way the plane is heading, mostly at night.",
+              "src": "m1",
+              "page": "192"
+            },
+            {
+              "id": "anticoll",
+              "name": "ANTI-COLLISION lights switch",
+              "type": "switch2",
+              "match": [
+                "PTR-LGHTCP-ANTICOLLISION",
+                "item:light-control-panel:2"
+              ],
+              "positions": [
+                {
+                  "name": "ANTI-COLLISION",
+                  "text": "The flashing lights are on."
+                },
+                {
+                  "name": "OFF",
+                  "text": "The flashing lights are off."
+                }
+              ],
+              "text": "This switch turns on the bright flashing lights on the wingtips and on the tail.",
+              "context": "They make the plane easier to see for others.",
+              "src": "m1",
+              "page": "192"
+            },
+            {
+              "id": "formation",
+              "name": "FORMATION lights dial",
+              "type": "knob",
+              "match": [
+                "PTR-LGHTCP-FORMATION",
+                "item:light-control-panel:3"
+              ],
+              "text": "This dial sets the brightness of the glowing strips on the tail, the body and the wingtips that help other pilots to fly close to this plane at night.",
+              "context": "The strips cannot be seen from far away.",
+              "src": "m1",
+              "page": "193"
+            },
+            {
+              "id": "nose-illum",
+              "name": "NOSE ILLUM switch",
+              "type": "switch",
+              "match": [
+                "PTR-LGHTCP-NOSE-ILLUM",
+                "item:light-control-panel:4"
+              ],
+              "text": "This switch turns on the floodlights on the wings that light the front of the plane, apart from the formation strips.",
+              "context": "They help in formation flying and with refuelling in the air.",
+              "src": "m1",
+              "page": "193"
+            },
+            {
+              "id": "eng-inst-lt",
+              "name": "ENGINE INSTR lights dial",
+              "type": "knob",
+              "match": [
+                "PTR-LGHTCP-ENG-INST",
+                "item:light-control-panel:5"
+              ],
+              "text": "This dial sets the brightness of the lights on the engine and APU gauges.",
+              "context": "It turns from OFF to BRT and lights engine and APU gauges; at night it should be dim but readable.",
+              "src": "m1",
+              "page": "193"
+            },
+            {
+              "id": "flt-inst-lt",
+              "name": "FLIGHT INSTR lights dial",
+              "type": "knob",
+              "match": [
+                "PTR-LGHTCP-FLIGHT-INST",
+                "item:light-control-panel:6"
+              ],
+              "text": "This dial sets the lighting of the flight gauges, such as the attitude indicator, compass gauge, airspeed indicator and altimeter.",
+              "context": "It turns from OFF to BRT and lights flight gauges; at night it should be dim but readable.",
+              "src": "m1",
+              "page": "193"
+            },
+            {
+              "id": "aux-inst-lt",
+              "name": "AUX INSTR lights dial",
+              "type": "knob",
+              "match": [
+                "PTR-LGHTCP-AUX-INST",
+                "item:light-control-panel:7"
+              ],
+              "text": "This dial sets the lighting of the other gauges: hydraulics, fuel, flaps, compass, backup attitude gauge, G-meter and the landing gear panel.",
+              "context": "It turns from OFF to BRT and lights the other gauges; at night it should be dim but readable.",
+              "src": "m1",
+              "page": "193"
+            },
+            {
+              "id": "signal-lts",
+              "name": "SIGNAL LTS switch (BRT / DIM)",
+              "type": "switch2",
+              "match": [
+                "PTR-LGHTCP-SIGNAL-LTS",
+                "item:light-control-panel:8"
+              ],
+              "positions": [
+                {
+                  "name": "BRT",
+                  "text": "The warning lights are at full brightness."
+                },
+                {
+                  "name": "DIM",
+                  "text": "The warning lights are dimmer."
+                }
+              ],
+              "text": "This switch sets how bright the warning and caution lights are.",
+              "context": "At night the DIM position keeps the lights from dazzling the pilot.",
+              "src": "m1",
+              "page": "194"
+            },
+            {
+              "id": "accel-comp",
+              "name": "ACCEL & COMP lights switch",
+              "type": "switch2",
+              "match": [
+                "PTR-LGHTCP-ACCEL-COMP",
+                "item:light-control-panel:9"
+              ],
+              "positions": [
+                {
+                  "name": "ON",
+                  "text": "Up: the two gauges are lit."
+                },
+                {
+                  "name": "OFF",
+                  "text": "Down: the two gauges are not lit."
+                }
+              ],
+              "text": "This switch lights the G-meter and the standby compass on the canopy frame.",
+              "context": "Up turns the lights on, which is useful at night when reading the compass.",
+              "src": "m1",
+              "page": "194"
+            },
+            {
+              "id": "flood",
+              "name": "FLOOD dial",
+              "type": "knob",
+              "match": [
+                "PTR-LGHTCP-FLOOD",
+                "item:light-control-panel:10"
+              ],
+              "text": "This dial sets the brightness of the two floodlights on either side of the cockpit. Beyond BRT is a TSTORM setting.",
+              "context": "TSTORM is the thunderstorm setting; the manual says it shades all floodlights.",
+              "src": "m1",
+              "page": "194"
+            },
+            {
+              "id": "console-lt",
+              "name": "CONSOLE lights dial",
+              "type": "knob",
+              "match": [
+                "PTR-LGHTCP-CONSOLE",
+                "item:light-control-panel:11"
+              ],
+              "text": "This dial sets the lighting of the panels on the consoles beside the pilot, such as throttle, fuel, radios and the CDU.",
+              "context": "It turns from OFF to BRT; at night the pilot wants the console labels readable.",
+              "src": "m1",
+              "page": "194"
+            }
+          ]
+        },
+        {
+          "id": "cmsp",
+          "name": "Countermeasure Signal Processor (CMSP)",
+          "db": "cmsp",
+          "src": "m1",
+          "page": "491",
+          "text": "This panel programs and switches on the self-defence systems: the chaff and flare dispensers, the radar warning receiver (RWR), the jammer and the missile warning system.",
+          "context": "Chaff are clouds of metal strips that confuse radar missiles, and flares are hot burning decoys that confuse heat-seeking missiles. The status board of the same system is above the attitude indicator.",
+          "controls": [
+            {
+              "id": "cmsp-mode",
+              "name": "Mode select dial (OFF / STBY / MAN / SEMI / AUTO)",
+              "type": "selector",
+              "match": [
+                "PNT-LEV-CMSP-MODE",
+                "item:cmsp:1"
+              ],
+              "positions": [
+                {
+                  "name": "OFF",
+                  "text": "No power; the displays are blank."
+                },
+                {
+                  "name": "STBY",
+                  "text": "Powered and adjustable, but nothing is released."
+                },
+                {
+                  "name": "MAN",
+                  "text": "The pilot runs the chaff and flare program by hand."
+                },
+                {
+                  "name": "SEMI",
+                  "text": "The system chooses the program, the pilot releases."
+                },
+                {
+                  "name": "AUTO",
+                  "text": "The system chooses and releases by itself."
+                }
+              ],
+              "text": "This dial sets how much the defence system does by itself. OFF is dead, STBY is powered but does not release anything, and the three others range from manual to fully automatic.",
+              "context": "In MAN the pilot starts the program with the stick. In SEMI the system picks the program and the pilot starts it. In AUTO the system does everything.",
+              "src": "m1",
+              "page": "491"
+            },
+            {
+              "id": "cmsp-disp",
+              "name": "DISP switch (dispenser)",
+              "type": "switch3",
+              "match": [
+                "PNT-TMB-CMSP-DISP",
+                "item:cmsp:2"
+              ],
+              "positions": [
+                {
+                  "name": "MENU",
+                  "text": "The release programs can be edited."
+                },
+                {
+                  "name": "ON",
+                  "text": "The dispensers are on."
+                },
+                {
+                  "name": "OFF",
+                  "text": "The dispensers are off."
+                }
+              ],
+              "text": "This switch turns on the chaff and flare dispensers. Moving it to MENU opens the programming mode for the release programs.",
+              "context": "In the game, a left click sets it to OFF and a right click sets it to ON or MENU.",
+              "src": "m1",
+              "page": "492"
+            },
+            {
+              "id": "cmsp-rwr",
+              "name": "RWR switch (radar warning receiver)",
+              "type": "switch3",
+              "match": [
+                "PNT-TMB-CMSP-RWR"
+              ],
+              "positions": [
+                {
+                  "name": "MENU",
+                  "text": "The RWR runs its test."
+                },
+                {
+                  "name": "ON",
+                  "text": "The RWR is on."
+                },
+                {
+                  "name": "OFF",
+                  "text": "The RWR is off."
+                }
+              ],
+              "text": "This switch turns on the radar warning receiver. In the MENU position the RWR does a self-test.",
+              "context": "The game uses the left mouse button for OFF and the right button for ON and MENU. The RWR scope is on the left dash.",
+              "src": "m1",
+              "page": "494"
+            },
+            {
+              "id": "cmsp-jmr",
+              "name": "JMR switch (jammer)",
+              "type": "switch3",
+              "match": [
+                "PNT-TMB-CMSP-JMR"
+              ],
+              "positions": [
+                {
+                  "name": "MENU",
+                  "text": "No function."
+                },
+                {
+                  "name": "ON",
+                  "text": "The jammer is on."
+                },
+                {
+                  "name": "OFF",
+                  "text": "The jammer is off."
+                }
+              ],
+              "text": "This switch turns on the jammer, a radio transmitter that blinds enemy radars. The MENU position has no function.",
+              "context": "In the game, a left click sets it to OFF and a right click sets it to ON.",
+              "src": "m1",
+              "page": "494"
+            },
+            {
+              "id": "cmsp-mws",
+              "name": "MWS switch (missile warning system)",
+              "type": "switch3",
+              "match": [
+                "PNT-TMB-CMSP-MWS"
+              ],
+              "positions": [
+                {
+                  "name": "MENU",
+                  "text": "No function."
+                },
+                {
+                  "name": "ON",
+                  "text": "The missile warning system is on."
+                },
+                {
+                  "name": "OFF",
+                  "text": "The missile warning system is off."
+                }
+              ],
+              "text": "This switch turns on the missile warning system, the sensors that notice a missile launch. The MENU position has no function.",
+              "context": "The game uses the left mouse button for OFF and the right button for ON. Its window is on the status board above the attitude indicator.",
+              "src": "m1",
+              "page": "495"
+            },
+            {
+              "id": "cmsp-display",
+              "name": "CMSP display window",
+              "type": "display",
+              "match": [
+                "item:cmsp:3"
+              ],
+              "text": "This small text window shows the state of the four systems and, for the dispensers, how many chaff and flares are left and which program is chosen.",
+              "context": "The pilot reads it when changing or editing a program.",
+              "src": "m1",
+              "page": "495"
+            },
+            {
+              "id": "cmsp-set",
+              "name": "SET buttons (four)",
+              "type": "button",
+              "match": [
+                "PNT-BTN-CMSP-ARW?",
+                "item:cmsp:4"
+              ],
+              "count": 4,
+              "text": "These four buttons sit under the display window. Each one selects the field above it, so that its value can be changed.",
+              "context": "A selected value flashes; the NXT rocker then changes it.",
+              "src": "m1",
+              "page": "495"
+            },
+            {
+              "id": "cmsp-nxt",
+              "name": "NXT rocker (next)",
+              "type": "rocker",
+              "match": [
+                "PNT-BTN-CMSP-BRT-UP",
+                "PNT-BTN-CMSP-BRT-DN",
+                "item:cmsp:5"
+              ],
+              "text": "This rocker changes the selected value or goes to the next or previous program.",
+              "context": "Pushing it up past the last program creates a new program as a copy of the previous one.",
+              "src": "m1",
+              "page": "495"
+            },
+            {
+              "id": "cmsp-rtn",
+              "name": "RTN button (return)",
+              "type": "button",
+              "match": [
+                "PNT-BTN-CMSP-RTN",
+                "item:cmsp:6"
+              ],
+              "text": "This button saves an edited program. A second press returns to the status screen.",
+              "context": "The pilot presses it when done editing.",
+              "src": "m1",
+              "page": "495"
+            },
+            {
+              "id": "cmsp-jtsn",
+              "name": "JTSN switch (jettison)",
+              "type": "switch2",
+              "match": [
+                "PNT-TMB-CMSP-JTSN",
+                "item:cmsp:7"
+              ],
+              "positions": [
+                {
+                  "name": "JTSN",
+                  "text": "Up: all chaff and flares are jettisoned."
+                },
+                {
+                  "name": "OFF",
+                  "text": "Down: the normal position."
+                }
+              ],
+              "text": "This switch dumps all chaff and flares out of the plane at once.",
+              "context": "It is the way to get rid of the load before landing or in a hurry.",
+              "src": "m1",
+              "page": "495"
+            },
+            {
+              "id": "cmsp-brt",
+              "name": "BRT knob (panel brightness)",
+              "type": "knob",
+              "match": [
+                "PNT-LEV-CMSP-BRT",
+                "item:cmsp:8"
+              ],
+              "text": "This knob changes how brightly the printed labels of the CMSP panel are lit.",
+              "context": "The pilot sets it for the light of the cockpit.",
+              "src": "m1",
+              "page": "495"
+            }
+          ]
+        },
+        {
+          "id": "caution",
+          "name": "Caution light panel",
+          "db": "caution-light-panel",
+          "src": "m1",
+          "page": "195",
+          "text": "This is a board of labelled lights. Each light says what is wrong, for example a hydraulic pressure drop, a generator failure or low oxygen.",
+          "context": "Whenever a light comes on, the MASTER CAUTION light on the UFC also comes on. A caution light stays on until the cause is fixed.",
+          "controls": [
+            {
+              "id": "caution-lights",
+              "name": "Caution lights (48 legends)",
+              "type": "light",
+              "match": [
+                "item:caution-light-panel:1",
+                "item:right-console:6"
+              ],
+              "text": "Forty-eight small windows light up with short messages, such as L-HYD PRESS, R-GEN or OXY LOW. The pilot reads them to see what has failed.",
+              "context": "Some of the listed lights have no function in this game, and the manual marks those. The emergency procedures chapter tells what to do for each one.",
+              "src": "m1",
+              "page": "195"
+            }
+          ]
+        },
+        {
+          "id": "cdu",
+          "name": "Control Display Unit (CDU)",
+          "db": "control-display-unit-cdu",
+          "src": "m1",
+          "page": "205",
+          "text": "The CDU is a small computer screen with a keyboard. The pilot types waypoints, flight plans and marks into it, and the navigation system (EGI) uses them to know where to fly.",
+          "context": "The pilot switches it on early with the CDU switch on the AAP, because the navigation system needs time to align. The CDU keys that the UFC repeats can also be used under the HUD.",
+          "controls": [
+            {
+              "id": "cdu-display",
+              "name": "CDU display",
+              "type": "display",
+              "match": [
+                "item:control-display-unit-cdu:1",
+                "item:right-console:7"
+              ],
+              "text": "The screen shows 10 lines of 24 characters. The top line shows the page name, the bottom line is the scratchpad where typed characters appear first.",
+              "context": "Lines 3 to 9 hold the data that the line select keys beside them can pick.",
+              "src": "m1",
+              "page": "206"
+            },
+            {
+              "id": "cdu-lsk",
+              "name": "Line select keys LSK (4 on each side)",
+              "type": "button",
+              "match": [
+                "PNT-BTN-CDU-ARW-L1",
+                "PNT-BTN-CDU-ARW-L2",
+                "PNT-BTN-CDU-ARW-L3",
+                "PNT-BTN-CDU-ARW-L4",
+                "PNT-BTN-CDU-ARW-R1",
+                "PNT-BTN-CDU-ARW-R2",
+                "PNT-BTN-CDU-ARW-R3",
+                "PNT-BTN-CDU-ARW-R4",
+                "item:control-display-unit-cdu:2"
+              ],
+              "count": 8,
+              "text": "Eight keys sit beside the screen, four on each side. Each one acts on the line of text next to it: it can open a page, accept a typed value or change a setting.",
+              "context": "A small symbol beside a key tells what it does: branch to another page, enter data, cycle values or start an action.",
+              "src": "m1",
+              "page": "206"
+            },
+            {
+              "id": "cdu-fsk",
+              "name": "Function select keys SYS, NAV, WP, OSET, FPM, PREV",
+              "type": "button",
+              "match": [
+                "PNT-BTN-CDU-SYS",
+                "PNT-BTN-CDU-NAV",
+                "PNT-BTN-CDU-WP",
+                "PNT-BTN-CDU-OSET",
+                "PNT-BTN-CDU-FPM",
+                "PNT-BTN-CDU-PREV",
+                "item:control-display-unit-cdu:13"
+              ],
+              "count": 6,
+              "text": "These six keys open the main CDU pages: system (SYS), navigation (NAV), waypoint menu (WP), offset (OSET) and flight plan menu (FPM). PREV goes back to the last page.",
+              "context": "They only work when the PAGE dial on the AAP is set to OTHER.",
+              "src": "m1",
+              "page": "208"
+            },
+            {
+              "id": "cdu-digits",
+              "name": "Number keys 0-9",
+              "type": "keypad",
+              "match": [
+                "PNT-BTN-CDU-0",
+                "PNT-BTN-CDU-1",
+                "PNT-BTN-CDU-2",
+                "PNT-BTN-CDU-3",
+                "PNT-BTN-CDU-4",
+                "PNT-BTN-CDU-5",
+                "PNT-BTN-CDU-6",
+                "PNT-BTN-CDU-7",
+                "PNT-BTN-CDU-8",
+                "PNT-BTN-CDU-9",
+                "item:control-display-unit-cdu:4"
+              ],
+              "count": 10,
+              "text": "These ten keys type the digits 0 to 9 into the scratchpad at the bottom of the screen.",
+              "context": "The pilot uses them for coordinates, heights and waypoint numbers.",
+              "src": "m1",
+              "page": "207"
+            },
+            {
+              "id": "cdu-letters",
+              "name": "Letter keys A-Z",
+              "type": "keypad",
+              "match": [
+                "PNT-BTN-CDU-A",
+                "PNT-BTN-CDU-B",
+                "PNT-BTN-CDU-C",
+                "PNT-BTN-CDU-D",
+                "PNT-BTN-CDU-E",
+                "PNT-BTN-CDU-F",
+                "PNT-BTN-CDU-G",
+                "PNT-BTN-CDU-H",
+                "PNT-BTN-CDU-I",
+                "PNT-BTN-CDU-J",
+                "PNT-BTN-CDU-K",
+                "PNT-BTN-CDU-L",
+                "PNT-BTN-CDU-M",
+                "PNT-BTN-CDU-N",
+                "PNT-BTN-CDU-O",
+                "PNT-BTN-CDU-P",
+                "PNT-BTN-CDU-Q",
+                "PNT-BTN-CDU-R",
+                "PNT-BTN-CDU-S",
+                "PNT-BTN-CDU-T",
+                "PNT-BTN-CDU-U",
+                "PNT-BTN-CDU-V",
+                "PNT-BTN-CDU-W",
+                "PNT-BTN-CDU-X",
+                "PNT-BTN-CDU-Y",
+                "PNT-BTN-CDU-Z"
+              ],
+              "count": 26,
+              "text": "These 26 keys type the letters A to Z into the scratchpad.",
+              "context": "The pilot uses them to name waypoints and to pick markpoints, which are labelled with letters.",
+              "src": "m1",
+              "page": "207"
+            },
+            {
+              "id": "cdu-misc-keys",
+              "name": "Slash and point keys",
+              "type": "button",
+              "match": [
+                "PNT-BTN-CDU-SLASH",
+                "PNT-BTN-CDU-PNT"
+              ],
+              "count": 2,
+              "text": "These two keys type a slash and a decimal point into the scratchpad.",
+              "context": "The pilot needs them for times and for numbers with decimals.",
+              "src": "m1",
+              "page": "207"
+            },
+            {
+              "id": "cdu-unused",
+              "name": "V1 and V2 keys (no function)",
+              "type": "button",
+              "match": [
+                "PNT-BTN-CDU-V1",
+                "PNT-BTN-CDU-V2"
+              ],
+              "count": 2,
+              "text": "The game labels these two keys 'No function'.",
+              "context": "They do nothing in this version."
+            },
+            {
+              "id": "cdu-spc",
+              "name": "SPC key",
+              "type": "button",
+              "match": [
+                "PNT-BTN-CDU-SPC",
+                "item:control-display-unit-cdu:8"
+              ],
+              "text": "This key puts an empty space into the scratchpad.",
+              "context": "It is used between words or groups of characters.",
+              "src": "m1",
+              "page": "207"
+            },
+            {
+              "id": "cdu-bck",
+              "name": "BCK key",
+              "type": "button",
+              "match": [
+                "PNT-BTN-CDU-BCK",
+                "item:control-display-unit-cdu:10"
+              ],
+              "text": "This key erases the last character of the scratchpad. Holding it erases more and more characters.",
+              "context": "It is the backspace of the CDU.",
+              "src": "m1",
+              "page": "207"
+            },
+            {
+              "id": "cdu-clr",
+              "name": "CLR key",
+              "type": "button",
+              "match": [
+                "PNT-BTN-CDU-CLR",
+                "item:control-display-unit-cdu:7"
+              ],
+              "text": "This key erases the whole scratchpad. It also removes an error message.",
+              "context": "The pilot presses it after a wrong entry.",
+              "src": "m1",
+              "page": "207"
+            },
+            {
+              "id": "cdu-fa",
+              "name": "FA key (fault acknowledge)",
+              "type": "button",
+              "match": [
+                "PNT-BTN-CDU-FA",
+                "item:control-display-unit-cdu:6"
+              ],
+              "text": "This key makes some fault and status messages disappear and tells the system that the pilot has seen them.",
+              "context": "Such messages show on the second line of the screen.",
+              "src": "m1",
+              "page": "207"
+            },
+            {
+              "id": "cdu-plusminus",
+              "name": "+/- rocker",
+              "type": "rocker",
+              "match": [
+                "PNT-BTN-CDU-PLUS",
+                "PNT-BTN-CDU-MINUS",
+                "item:control-display-unit-cdu:5"
+              ],
+              "text": "This rocker steps a value up or down when a plus-minus symbol is shown beside a line select key.",
+              "context": "It can step through waypoints, markpoints or other data.",
+              "src": "m1",
+              "page": "207"
+            },
+            {
+              "id": "cdu-blank",
+              "name": "Blank rocker (waypoint name search)",
+              "type": "rocker",
+              "match": [
+                "PNT-BTN-CDU-BLANC-L",
+                "PNT-BTN-CDU-BLANC-R",
+                "item:control-display-unit-cdu:9"
+              ],
+              "text": "This rocker steps through the names of waypoints in the scratchpad when the pilot searches for one.",
+              "context": "The pilot types the first two characters, then uses this rocker to move through the matching names.",
+              "src": "m1",
+              "page": "207"
+            },
+            {
+              "id": "cdu-pg",
+              "name": "PG rocker (page up / down)",
+              "type": "rocker",
+              "match": [
+                "PNT-BTN-CDU-PG-UP",
+                "PNT-BTN-CDU-PG-DN",
+                "item:control-display-unit-cdu:12"
+              ],
+              "text": "Some pages have more than one part, such as page 1 of 2. This rocker goes to the next or the previous part.",
+              "context": "It only works when a page has more parts.",
+              "src": "m1",
+              "page": "207"
+            },
+            {
+              "id": "cdu-mk",
+              "name": "MK key (mark point)",
+              "type": "button",
+              "match": [
+                "PNT-BTN-CDU-MK",
+                "item:control-display-unit-cdu:11"
+              ],
+              "text": "This key saves the position of the plane as a new mark point. The CDU then jumps to the page that shows it.",
+              "context": "Marks are given letters from A to Y. The UFC has a repeater key.",
+              "src": "m1",
+              "page": "207"
+            },
+            {
+              "id": "cdu-dimbrt",
+              "name": "DIM/BRT rocker",
+              "type": "rocker",
+              "match": [
+                "PNT-BTN-CDU-DIMBRT-L",
+                "PNT-BTN-CDU-DIMBRT-R",
+                "item:control-display-unit-cdu:3"
+              ],
+              "text": "This rocker makes the CDU screen darker or brighter.",
+              "context": "The pilot sets it to the light in the cockpit.",
+              "src": "m1",
+              "page": "207"
+            }
+          ]
+        },
+        {
+          "id": "aap",
+          "name": "Auxiliary Avionics Panel (AAP)",
+          "db": "auxiliary-avionics-panel-aap",
+          "src": "m1",
+          "page": "203",
+          "text": "This panel is below the CDU. It gives power to the CDU and the EGI, and it has two dials and a switch that choose which CDU page and which waypoint is used.",
+          "context": "The pilot switches on the CDU and the EGI soon after the engine start, because the navigation system needs a lot of time to align.",
+          "controls": [
+            {
+              "id": "aap-cdu",
+              "name": "CDU power switch",
+              "type": "switch2",
+              "match": [
+                "PTR-TMB-CDU-SWITCH",
+                "item:auxiliary-avionics-panel-aap:1"
+              ],
+              "positions": [
+                {
+                  "name": "ON",
+                  "text": "The CDU has power."
+                },
+                {
+                  "name": "OFF",
+                  "text": "The CDU has no power."
+                }
+              ],
+              "text": "This switch gives power to the CDU, the computer with the keyboard and screen.",
+              "context": "The pilot turns it on early, because the navigation system needs time to line up.",
+              "src": "m1",
+              "page": "204"
+            },
+            {
+              "id": "aap-egi",
+              "name": "EGI power switch",
+              "type": "switch2",
+              "match": [
+                "PTR-TMB-EGI-SWITCH",
+                "item:auxiliary-avionics-panel-aap:2"
+              ],
+              "positions": [
+                {
+                  "name": "ON",
+                  "text": "The EGI has power and starts aligning."
+                },
+                {
+                  "name": "OFF",
+                  "text": "The EGI has no power."
+                }
+              ],
+              "text": "This switch gives power to the EGI, the system that always knows where the plane is.",
+              "context": "It needs time to align, so the pilot turns it on early.",
+              "src": "m1",
+              "page": "204"
+            },
+            {
+              "id": "aap-page",
+              "name": "PAGE dial (OTHER / POSITION / STEER / WAYPT)",
+              "type": "selector",
+              "match": [
+                "PNT-LEV-PAGE-SEL-SWITCH",
+                "item:auxiliary-avionics-panel-aap:3"
+              ],
+              "positions": [
+                {
+                  "name": "OTHER",
+                  "text": "The function select keys of the CDU work."
+                },
+                {
+                  "name": "POSITION",
+                  "text": "The CDU shows the present position."
+                },
+                {
+                  "name": "STEER",
+                  "text": "The CDU shows data of the steerpoint."
+                },
+                {
+                  "name": "WAYPT",
+                  "text": "The CDU shows data of the waypoint, steerpoint and anchor point."
+                }
+              ],
+              "text": "This dial picks what kind of page the CDU shows. Only OTHER lets the pilot change data with the function select keys.",
+              "context": "The other positions show read-only pages.",
+              "src": "m1",
+              "page": "204"
+            },
+            {
+              "id": "aap-steerpt",
+              "name": "STEER PT dial (FLT PLAN / MARK / MISSION)",
+              "type": "selector",
+              "match": [
+                "PNT-LVR-STEER-PT-SEL-SWITCH",
+                "item:auxiliary-avionics-panel-aap:4"
+              ],
+              "positions": [
+                {
+                  "name": "FLT PLAN",
+                  "text": "The waypoints of the active flight plan."
+                },
+                {
+                  "name": "MARK",
+                  "text": "Only the markpoints the pilot made."
+                },
+                {
+                  "name": "MISSION",
+                  "text": "All waypoints of the mission."
+                }
+              ],
+              "text": "This dial picks which group of waypoints the steerpoint switch cycles through.",
+              "context": "A steerpoint is a point on the planned route the plane steers to.",
+              "src": "m1",
+              "page": "204"
+            },
+            {
+              "id": "aap-steer",
+              "name": "STEER toggle switch",
+              "type": "switch3",
+              "match": [
+                "PNT-TMB-STEER-SPRING-LD-SWITCH",
+                "item:auxiliary-avionics-panel-aap:5"
+              ],
+              "positions": [
+                {
+                  "name": "Up",
+                  "text": "Moves to the next waypoint."
+                },
+                {
+                  "name": "Center",
+                  "text": "The resting position."
+                },
+                {
+                  "name": "Down",
+                  "text": "Moves to the previous waypoint."
+                }
+              ],
+              "text": "This switch springs back to the middle. Pushing it up or down moves to the next or previous waypoint, which then becomes the steerpoint.",
+              "context": "The UFC has a rocker that does the same job.",
+              "src": "m1",
+              "page": "205"
+            }
+          ]
+        },
+        {
+          "id": "tacan",
+          "name": "TACAN control panel",
+          "db": "tacan-control-panel",
+          "src": "m1",
+          "page": "198",
+          "text": "This panel tunes the TACAN receiver. TACAN gives the direction and distance to a beacon on the ground or on a ship.",
+          "context": "The result shows on the compass gauge (HSI) when the navigation mode panel is set to TCN. The panel sits behind the CDU and AAP.",
+          "controls": [
+            {
+              "id": "tacan-mode",
+              "name": "Mode dial (OFF / REC / T/R / A/A REC / A/A T/R)",
+              "type": "selector",
+              "match": [
+                "PTR-TACAN-MODE",
+                "item:tacan-control-panel:1"
+              ],
+              "positions": [
+                {
+                  "name": "OFF",
+                  "text": "TACAN is off."
+                },
+                {
+                  "name": "REC",
+                  "text": "Receive only: direction and station name, no distance."
+                },
+                {
+                  "name": "T/R",
+                  "text": "Transmit and receive: direction and distance."
+                },
+                {
+                  "name": "A/A REC",
+                  "text": "Receives air-to-air direction, used to find tankers."
+                },
+                {
+                  "name": "A/A T/R",
+                  "text": "Two-way air-to-air data between two planes."
+                }
+              ],
+              "text": "This dial switches TACAN on and picks the mode: only receiving, receiving and giving distance, or the two air-to-air modes used to find a tanker or another plane.",
+              "context": "T/R is the usual setting to get both direction and distance.",
+              "src": "m1",
+              "page": "198"
+            },
+            {
+              "id": "tacan-channel",
+              "name": "Channel selector knobs (tens and ones, X/Y)",
+              "type": "knob",
+              "match": [
+                "PTR-TACAN-CHANNEL-SELECTOR-1",
+                "PTR-TACAN-CHANNEL-SELECTOR-2",
+                "item:tacan-control-panel:2",
+                "item:tacan-control-panel:3"
+              ],
+              "count": 2,
+              "text": "Two knobs set the channel number, one for the tens and one for the ones. A right click on the ones knob picks X or Y, and the mouse wheel changes the value.",
+              "context": "The chosen channel shows in the window above the knobs.",
+              "src": "m1",
+              "page": "199"
+            },
+            {
+              "id": "tacan-test",
+              "name": "TEST button",
+              "type": "button",
+              "match": [
+                "PTR-TACAN-TEST",
+                "item:tacan-control-panel:4"
+              ],
+              "text": "Pressing this button tests the TACAN system. The result is shown on the compass gauge (HSI).",
+              "context": "The pilot uses it to check that TACAN works.",
+              "src": "m1",
+              "page": "199"
+            },
+            {
+              "id": "tacan-vol",
+              "name": "VOL knob",
+              "type": "knob",
+              "match": [
+                "PTR-TACAN-VOL",
+                "item:tacan-control-panel:5"
+              ],
+              "text": "Turning this knob makes the TACAN sound louder or quieter.",
+              "context": "The sound is the station's name in Morse code.",
+              "src": "m1",
+              "page": "199"
+            }
+          ]
+        },
+        {
+          "id": "ils",
+          "name": "ILS control panel",
+          "db": "ils-control-panel",
+          "src": "m1",
+          "page": "199",
+          "text": "This panel switches on the ILS receiver and sets the frequency of the airfield's landing beam. ILS guides the plane down to the runway in bad weather.",
+          "context": "The localizer shows on the compass gauge and the glide slope on the attitude indicator. To hear the beam tones, the ILS switch on the intercom panel must be in.",
+          "controls": [
+            {
+              "id": "ils-power",
+              "name": "ILS power / MHz knob",
+              "type": "knob",
+              "match": [
+                "PTR-ILSCP-PWR",
+                "item:ils-control-panel:1",
+                "item:ils-control-panel:3"
+              ],
+              "positions": [
+                {
+                  "name": "PWR",
+                  "text": "The ILS receiver is on."
+                },
+                {
+                  "name": "OFF",
+                  "text": "The ILS receiver is off."
+                }
+              ],
+              "text": "The outer part of this knob turns the ILS on or off. Turning the base changes the whole-number part of the frequency, in MHz.",
+              "context": "The window above shows the frequency. The airfield's ILS frequencies are on the CDU DIVERT page.",
+              "src": "m1",
+              "page": "199"
+            },
+            {
+              "id": "ils-vol",
+              "name": "ILS volume / kHz knob",
+              "type": "knob",
+              "match": [
+                "PTR-ILSCP-VOL",
+                "item:ils-control-panel:2"
+              ],
+              "text": "The outer part sets the volume of the landing beam tone and the marker tone. Turning the base changes the decimals of the frequency in steps of 0.05.",
+              "context": "The frequency window shows the result.",
+              "src": "m1",
+              "page": "200"
+            }
+          ]
+        },
+        {
+          "id": "hars",
+          "name": "HARS control panel",
+          "db": "hars-control-panel",
+          "src": "m1",
+          "page": "200",
+          "text": "HARS is the backup system that gives heading and attitude. This panel sets it up: mode, latitude, hemisphere, magnetic variation and a sync button.",
+          "context": "Under normal conditions the pilot has little use for HARS, because the EGI does the job. The panel sits at the back of the right console.",
+          "controls": [
+            {
+              "id": "hars-synind",
+              "name": "SYN-IND meter",
+              "type": "indicator",
+              "match": [
+                "item:hars-control-panel:1"
+              ],
+              "text": "This small meter shows how well HARS agrees with the remote compass when it is in SLAVE mode. The needle should rest in the middle.",
+              "context": "A centred needle means the heading is correct.",
+              "src": "m1",
+              "page": "200"
+            },
+            {
+              "id": "hars-mode",
+              "name": "Mode switch (SLAVE / DG)",
+              "type": "switch2",
+              "match": [
+                "PTR-HARS-CP-SLAVE",
+                "item:hars-control-panel:2"
+              ],
+              "positions": [
+                {
+                  "name": "SLAVE",
+                  "text": "HARS follows the remote compass, like a compass with a gyro."
+                },
+                {
+                  "name": "DG",
+                  "text": "HARS is a free directional gyro and can be adjusted by hand."
+                }
+              ],
+              "text": "This switch sets whether HARS follows the compass signal or works as a free gyro.",
+              "context": "SLAVE is the normal mode. In DG the heading can be adjusted by hand.",
+              "src": "m1",
+              "page": "200"
+            },
+            {
+              "id": "hars-lat",
+              "name": "LAT dial (latitude)",
+              "type": "knob",
+              "match": [
+                "PTR-HARS-CP-LATITUDE",
+                "item:hars-control-panel:3"
+              ],
+              "text": "This dial is set to the latitude where the plane is, to correct the drifting of the gyro.",
+              "context": "The pilot sets it before flight.",
+              "src": "m1",
+              "page": "200"
+            },
+            {
+              "id": "hars-ns",
+              "name": "N/S hemisphere switch",
+              "type": "switch2",
+              "match": [
+                "PTR-HARS-CP-N-S",
+                "item:hars-control-panel:4"
+              ],
+              "positions": [
+                {
+                  "name": "N",
+                  "text": "The plane is in the northern hemisphere."
+                },
+                {
+                  "name": "S",
+                  "text": "The plane is in the southern hemisphere."
+                }
+              ],
+              "text": "This switch tells HARS if the plane is in the north or the south half of the Earth.",
+              "context": "It is part of the correction for the rotation of the Earth.",
+              "src": "m1",
+              "page": "201"
+            },
+            {
+              "id": "hars-magvar",
+              "name": "MAG VAR switch (+15 / 0 / -15)",
+              "type": "switch3",
+              "match": [
+                "PTR-HARS-CP-MAG-VAR",
+                "item:hars-control-panel:5"
+              ],
+              "positions": [
+                {
+                  "name": "+15",
+                  "text": "Magnetic variation of +15 degrees."
+                },
+                {
+                  "name": "0",
+                  "text": "No magnetic variation."
+                },
+                {
+                  "name": "-15",
+                  "text": "Magnetic variation of -15 degrees."
+                }
+              ],
+              "text": "This switch sets the local magnetic variation, the difference between the compass north and the real north.",
+              "context": "The pilot picks the setting that fits the area best.",
+              "src": "m1",
+              "page": "201"
+            },
+            {
+              "id": "hars-sync",
+              "name": "Sync button and heading knob",
+              "type": "button",
+              "match": [
+                "PTR-HARS-CP-PUSH-TO-SYNC",
+                "item:hars-control-panel:6"
+              ],
+              "text": "Pushing this knob aligns the HARS gyro quickly. Turning it changes the heading shown on the compass gauge.",
+              "context": "It sits at the lower left of the panel.",
+              "src": "m1",
+              "page": "201"
+            }
+          ]
+        },
+        {
+          "id": "hmcs",
+          "name": "HMCS control panel",
+          "db": "hmcs-control-panel",
+          "src": "m1",
+          "page": "201",
+          "text": "This panel gives power to the Scorpion helmet sight, a small display on the pilot's helmet that shows marks where the pilot looks.",
+          "context": "It sits at the back of the right console. It has a single switch.",
+          "controls": [
+            {
+              "id": "hmcs-power",
+              "name": "HMCS power switch (ON / OFF / BAT)",
+              "type": "switch3",
+              "match": [
+                "HVI_switch_point",
+                "item:hmcs-control-panel:1",
+                "item:right-console:11"
+              ],
+              "positions": [
+                {
+                  "name": "ON",
+                  "text": "The plane's electricity powers the helmet sight."
+                },
+                {
+                  "name": "OFF",
+                  "text": "No power to the helmet sight."
+                },
+                {
+                  "name": "BAT",
+                  "text": "The panel battery powers it, for tests without plane power."
+                }
+              ],
+              "text": "This switch powers the helmet sight. ON uses the plane's power, OFF cuts it, and BAT uses a battery in the panel so it can be tested without plane power.",
+              "context": "The game has commands for each position, plus two commands made for joysticks.",
+              "src": "m1",
+              "page": "201"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

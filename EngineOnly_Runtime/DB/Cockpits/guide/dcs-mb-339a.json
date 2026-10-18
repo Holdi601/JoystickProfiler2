@@ -1,0 +1,2070 @@
+{
+  "format": "joypro-cockpit-guide",
+  "version": 1,
+  "id": "dcs-mb-339a",
+  "title": "MB-339A Macchi trainer (DCS)",
+  "variants": [
+    "mb-339a",
+    "mb-339apan"
+  ],
+  "games": [
+    "DCS"
+  ],
+  "sets": [
+    "DCS/MB-339A"
+  ],
+  "sources": [
+    {
+      "id": "m1",
+      "title": "DCS MB-339 Flight Manual (EN, IndiaFoxtEcho)",
+      "file": "Mods/aircraft/MB-339/Docs/DCS MB-339 - Flight Manual - EN - IndiaFoxtEcho.pdf"
+    }
+  ],
+  "intro": "The MB-339A is an Italian two-seat jet trainer with analogue round dials. The student sits in front and the instructor sits behind, higher up, so he can see over the student's head. The front cockpit has the engine start switches, the weapon panels and the gunsight. The rear cockpit has copies of most dials and radio controls. The PAN version, flown by the Frecce Tricolori, adds a smoke system with a panel on the left console.",
+  "areas": [
+    {
+      "id": "instrument-panel",
+      "where": "front-center",
+      "name": "Front instrument panel",
+      "seat": 1,
+      "text": "The big panel in front of the pilot with the flight dials, the engine gauges, the warning lights, the armament and gunsight panels and the flight director.",
+      "panels": [
+        {
+          "id": "flight-instruments",
+          "name": "Flight instruments",
+          "db": "front-instrument-panel",
+          "src": "m1",
+          "page": "131",
+          "text": "These are the round dials that tell the pilot how fast the plane flies, how high it is, which way it points and whether the wings are level.",
+          "context": "The pilot looks at these dials all the time. The rear cockpit has its own copy of most of them, so the instructor sees the same picture.",
+          "controls": [
+            {
+              "id": "adi",
+              "name": "ADI (attitude director indicator)",
+              "type": "gauge",
+              "match": [
+                "item:front-instrument-panel:9"
+              ],
+              "text": "The ADI is a ball that shows whether the nose is up or down and whether the wings are level. It also has a turn indicator and a glide path pointer, and two steering bars that show the pilot how to steer.",
+              "context": "The manual says it is powered from the 115 volt AC primary bus through the AHRS circuit breaker. A red OFF flag shows when it does not work.",
+              "src": "m1",
+              "page": "139"
+            },
+            {
+              "id": "adi-pitch",
+              "name": "Pitch adjustment knob (ADI)",
+              "type": "knob",
+              "match": [
+                "PNT_33"
+              ],
+              "text": "Turning this knob moves the little aircraft symbol of the ADI up or down against the horizon line. This corrects the picture for changes in nose angle at different loads and speeds.",
+              "context": "The manual calls it the horizon line adjusting knob of the ADI.",
+              "src": "m1",
+              "page": "141"
+            },
+            {
+              "id": "hsi",
+              "name": "HSI (horizontal situation indicator)",
+              "type": "gauge",
+              "match": [
+                "item:front-instrument-panel:26"
+              ],
+              "text": "The HSI is a compass dial with a course arrow. It shows which way the plane points, which course the pilot has chosen, and whether the plane is left or right of that course. It also shows the distance to the station.",
+              "context": "The pilot sets the heading marker and the course arrow with the two knobs at the lower corners. The push-buttons below choose which radio the HSI follows.",
+              "src": "m1",
+              "page": "141"
+            },
+            {
+              "id": "heading-set",
+              "name": "HEADING SET knob (HSI)",
+              "type": "knob",
+              "match": [
+                "PNT_34"
+              ],
+              "text": "Turning this knob moves the double heading marker on the compass card. This marks the heading the pilot wants to fly.",
+              "context": "The flight director's HDG button steers toward this marker.",
+              "src": "m1",
+              "page": "142"
+            },
+            {
+              "id": "course-set",
+              "name": "COURSE SET knob (HSI)",
+              "type": "knob",
+              "match": [
+                "PNT_35"
+              ],
+              "text": "Turning this knob moves the course arrow on the HSI to the course the pilot wants to fly. The number shows in the COURSE window.",
+              "context": "A drift of the deviation bar to the left or right shows which way the plane is off that course.",
+              "src": "m1",
+              "page": "142"
+            },
+            {
+              "id": "altimeter",
+              "name": "Encoder altimeter",
+              "type": "gauge",
+              "match": [
+                "item:front-instrument-panel:12"
+              ],
+              "text": "The altimeter shows how high the plane is, with a three-digit counter and a pointer. It also passes the height on to the IFF transponder.",
+              "context": "The manual says it reads from minus 1000 up to 50000 feet. A CODE OFF flag shows when the height coding has no power.",
+              "src": "m1",
+              "page": "137"
+            },
+            {
+              "id": "baro",
+              "name": "Pressure setting knob (altimeter)",
+              "type": "knob",
+              "match": [
+                "PNT_36"
+              ],
+              "text": "Turning this knob sets the air pressure number in the altimeter. Without the right number the altimeter reads too high or too low.",
+              "context": "The manual says the knob is in the lower left corner and works when the ground pressure is between 950 and 1050 millibar.",
+              "src": "m1",
+              "page": "137"
+            },
+            {
+              "id": "airspeed",
+              "name": "Mach-airspeed indicator",
+              "type": "gauge",
+              "match": [
+                "item:front-instrument-panel:5"
+              ],
+              "text": "This dial shows how fast the plane flies through the air, in knots, and its Mach number, the speed compared with the speed of sound. A red and black striped pointer shows the speed limit.",
+              "context": "The manual says the scale runs from 40 to 650 knots.",
+              "src": "m1",
+              "page": "137"
+            },
+            {
+              "id": "airspeed-index",
+              "name": "Set index knob (airspeed)",
+              "type": "knob",
+              "match": [
+                "PNT_148"
+              ],
+              "text": "Turning this knob moves a small triangle around the rim of the airspeed dial. The pilot puts it on a speed to remember.",
+              "context": "The manual says the knob is in the lower right corner of the instrument.",
+              "src": "m1",
+              "page": "137"
+            },
+            {
+              "id": "vvi",
+              "name": "Vertical velocity indicator",
+              "type": "gauge",
+              "match": [
+                "item:front-instrument-panel:25"
+              ],
+              "text": "This dial shows how fast the plane climbs or sinks. The needle sits on the middle line when the plane flies level.",
+              "context": "The manual says it reads up to 6000 feet per minute.",
+              "src": "m1",
+              "page": "137"
+            },
+            {
+              "id": "standby-horizon",
+              "name": "Standby attitude indicator (AG-5)",
+              "type": "gauge",
+              "match": [
+                "item:front-instrument-panel:27"
+              ],
+              "text": "This is a small spare horizon with its own gyroscope. It shows nose up or down and wings level if the ADI fails.",
+              "context": "The manual says it gets power from the essential DC bus and gives usable information for about 4 minutes even after a power failure.",
+              "src": "m1",
+              "page": "139"
+            },
+            {
+              "id": "standby-cage",
+              "name": "Cage knob of the standby horizon",
+              "type": "knob",
+              "match": [
+                "PNT_151"
+              ],
+              "text": "Pulling this knob locks (cages) the gyroscope of the spare horizon. Turning it without pulling moves the little aircraft symbol up or down.",
+              "context": "The manual says the pilot pulls it after aerobatics to bring the ball back to the horizon, and not before about 60 seconds after power on.",
+              "src": "m1",
+              "page": "139"
+            },
+            {
+              "id": "accelerometer",
+              "name": "Accelerometer (G meter)",
+              "type": "gauge",
+              "match": [
+                "item:front-instrument-panel:33"
+              ],
+              "text": "This dial shows how hard the pilot is pushed into the seat. Besides the pointer for the present value it has two pointers that remember the highest and lowest values.",
+              "context": "The load is measured in G, where 1 G is normal weight.",
+              "src": "m1",
+              "page": "141"
+            },
+            {
+              "id": "g-reset",
+              "name": "Reset min/max G button",
+              "type": "button",
+              "match": [
+                "PNT_021"
+              ],
+              "text": "Pressing this button sets the two memory pointers of the G meter back to 1 G.",
+              "context": "The manual says the button is in the lower left corner of the instrument.",
+              "src": "m1",
+              "page": "141"
+            },
+            {
+              "id": "clock",
+              "name": "Clock",
+              "type": "gauge",
+              "match": [
+                "item:front-instrument-panel:1"
+              ],
+              "text": "The clock shows the time and also has a stopwatch with a minute hand and a second hand.",
+              "context": "Pilots use the stopwatch to time parts of a flight.",
+              "src": "m1",
+              "page": "152"
+            },
+            {
+              "id": "clock-wind",
+              "name": "Clock winding and setting knob",
+              "type": "knob",
+              "match": [
+                "PNT_30"
+              ],
+              "text": "Turning this knob winds the clock. Pulling it out lets the pilot set the clock hands.",
+              "context": "The manual says the knob is in the lower left corner of the clock.",
+              "src": "m1",
+              "page": "152"
+            },
+            {
+              "id": "clock-chrono",
+              "name": "Stopwatch start/stop/reset knob",
+              "type": "button",
+              "match": [
+                "PNT_31"
+              ],
+              "text": "Pressing this knob on the clock starts the stopwatch, stops it, and sets it back to zero.",
+              "context": "The manual says the knob is in the upper right corner of the clock.",
+              "src": "m1",
+              "page": "152"
+            },
+            {
+              "id": "trim-indicator",
+              "name": "Longitudinal trim indicator",
+              "type": "gauge",
+              "match": [
+                "item:front-instrument-panel:2"
+              ],
+              "text": "A small picture of an aircraft shows where the elevator trim tab is set. Trim is a small steady push on the controls, so the pilot does not need to hold the stick.",
+              "context": "The pilot checks it before take-off. The manual says the setting should be neutral then.",
+              "src": "m1",
+              "page": "157"
+            },
+            {
+              "id": "aoa",
+              "name": "Angle-of-attack indicator",
+              "type": "gauge",
+              "match": [
+                "item:front-instrument-panel:3"
+              ],
+              "text": "This dial shows how steeply the wing meets the air, which tells the pilot how close the plane is to losing lift. The value 1 is the maximum lift with flaps down, and 0 is a vertical dive.",
+              "context": "The manual says fixed marks on the dial show the best angles for different flight conditions. OFF shows when the instrument has no power.",
+              "src": "m1",
+              "page": "152"
+            },
+            {
+              "id": "rdu",
+              "name": "Remote display unit (RDU)",
+              "type": "display",
+              "match": [
+                "item:front-instrument-panel:11"
+              ],
+              "text": "This small two-line display shows the name of the point the plane is steering to, the state of the AHRS/GPS navigation system, the time to reach the point and the ground speed.",
+              "context": "The manual says it has two lines of 10 characters each and runs a self-test when switched on.",
+              "src": "m1",
+              "page": "77"
+            },
+            {
+              "id": "radio-freq",
+              "name": "Radio frequency indicator (COMM1 and COMM2)",
+              "type": "display",
+              "match": [
+                "item:front-instrument-panel:6"
+              ],
+              "text": "This display repeats the frequencies of the two radios, COMM1 on the upper line and COMM2 on the lower line. For a preset channel it also shows the channel number.",
+              "context": "It lets the pilot read the radio frequencies without looking at the control boxes on the left console.",
+              "src": "m1",
+              "page": "116"
+            }
+          ]
+        },
+        {
+          "id": "engine-gauges",
+          "name": "Engine, fuel and system gauges",
+          "db": "front-instrument-panel",
+          "src": "m1",
+          "page": "131",
+          "text": "These dials show how the engine and the plane's systems are doing: engine speed, exhaust temperature, oil pressure, fuel, oxygen and cabin height.",
+          "context": "The pilot checks them after engine start and keeps looking at them in flight. A reading outside the normal range is the first sign of a problem.",
+          "controls": [
+            {
+              "id": "tach",
+              "name": "Tachometer (PERCENT RPM)",
+              "type": "gauge",
+              "match": [
+                "item:front-instrument-panel:15"
+              ],
+              "text": "This dial shows how fast the engine turns, in percent of its maximum speed.",
+              "context": "The manual says the engine idles at about 40 percent and that the pilot moves the throttle to IDLE when the engine reaches 10 percent during start.",
+              "src": "m1",
+              "page": "165"
+            },
+            {
+              "id": "jpt",
+              "name": "Jet pipe temperature indicator (EXH TEMP)",
+              "type": "gauge",
+              "match": [
+                "item:front-instrument-panel:16"
+              ],
+              "text": "This dial shows the temperature of the exhaust gas in degrees Celsius.",
+              "context": "The manual says the jet pipe temperature limiter keeps it below 756 degrees Celsius when its switch is on.",
+              "src": "m1",
+              "page": "165"
+            },
+            {
+              "id": "oil-pressure",
+              "name": "Engine oil pressure gauge",
+              "type": "gauge",
+              "match": [
+                "item:front-instrument-panel:22"
+              ],
+              "text": "This dial shows the pressure of the engine oil, in bar. The oil keeps the moving parts of the engine smooth.",
+              "context": "A caution light, OIL PRESS, comes on when the pressure falls below 0.4 bar.",
+              "src": "m1",
+              "page": "165"
+            },
+            {
+              "id": "flowmeter",
+              "name": "Flowmeter (fuel flow)",
+              "type": "gauge",
+              "match": [
+                "item:front-instrument-panel:21"
+              ],
+              "text": "This dial shows how much fuel the engine burns, in kilograms per minute.",
+              "context": "The manual says the engine burns about 5 kg per minute at 40 percent speed and 29 kg per minute at full speed.",
+              "src": "m1",
+              "page": "167"
+            },
+            {
+              "id": "fuel-qty",
+              "name": "Fuel quantity indicator",
+              "type": "gauge",
+              "match": [
+                "item:front-instrument-panel:19"
+              ],
+              "text": "A single dial shows the fuel left. A selector chooses what it shows: the fuselage tank, the left or right tip tank, or the total.",
+              "context": "In the PAN version the selector can also show the left or right underwing fuel and smoke tank.",
+              "src": "m1",
+              "page": "44"
+            },
+            {
+              "id": "tank-selector",
+              "name": "Tank selector (fuel quantity indicator)",
+              "type": "switch",
+              "match": [
+                "PNT_040"
+              ],
+              "text": "This switch chooses which tank the fuel quantity indicator reads.",
+              "context": "The manual names the positions PYL L and PYL R for the PAN version and describes a total quantity (TOT QTY) reading.",
+              "src": "m1",
+              "page": "44"
+            },
+            {
+              "id": "test-fuel",
+              "name": "Test button (next to the tank selector)",
+              "type": "button",
+              "match": [
+                "PNT_041"
+              ],
+              "text": "The game names this control 'Test'. The manual does not say what it tests.",
+              "context": "It is one of the clickable parts of the instrument panel in the game.",
+              "src": "m1"
+            },
+            {
+              "id": "oxy-pressure",
+              "name": "Oxygen pressure gauge",
+              "type": "gauge",
+              "match": [
+                "item:front-instrument-panel:17"
+              ],
+              "text": "This dial shows how much pressure is left in the oxygen bottles.",
+              "context": "The manual says the oxygen system starts at a pressure of 400 psi, and an OXY LOW warning light shows when the pressure is low.",
+              "src": "m1",
+              "page": "69"
+            },
+            {
+              "id": "oxy-flow",
+              "name": "Oxygen flow indicator",
+              "type": "indicator",
+              "match": [
+                "item:front-instrument-panel:13"
+              ],
+              "text": "This small indicator, a blinker, shows that oxygen flows when the pilot breathes.",
+              "context": "The take-off checks in the manual ask the pilot to check that the oxygen flow blinker works.",
+              "src": "m1",
+              "page": "168"
+            },
+            {
+              "id": "anti-ice-ind",
+              "name": "Anti-ice indicators",
+              "type": "indicator",
+              "match": [
+                "item:front-instrument-panel:18"
+              ],
+              "text": "These indicators show whether the heaters work: the engine anti-ice, the pitot tube heater and the angle-of-attack probe heater. ON, OFF or stripes show the state.",
+              "context": "Stripes mean that power is not supplied to the indicator, or that only part of the system works.",
+              "src": "m1",
+              "page": "64"
+            },
+            {
+              "id": "cabin-alt",
+              "name": "Cabin altimeter",
+              "type": "gauge",
+              "match": [
+                "item:front-instrument-panel:20"
+              ],
+              "text": "This gauge shows the height that the air pressure inside the cockpit corresponds to. The pilot can compare it with the real height.",
+              "context": "The manual says each cockpit has one. The cabin pressure is kept at the equivalent of 8000 feet until 18000 feet.",
+              "src": "m1",
+              "page": "59"
+            },
+            {
+              "id": "flap-ind",
+              "name": "Flap position indicator",
+              "type": "indicator",
+              "match": [
+                "item:front-instrument-panel:31"
+              ],
+              "text": "This indicator shows where the flaps are: UP, take-off or DOWN.",
+              "context": "The manual says the flaps are up at 0 degrees, take-off at 28 degrees and landing at 64 degrees.",
+              "src": "m1",
+              "page": "161"
+            },
+            {
+              "id": "brake-ind",
+              "name": "Speed brake position indicator",
+              "type": "indicator",
+              "match": [
+                "item:front-instrument-panel:32"
+              ],
+              "text": "This indicator shows whether the speed brake under the belly is in or out.",
+              "context": "The manual says the speed brake opens up to 57 degrees, and that it goes to a partly closed position when the landing gear is extended.",
+              "src": "m1",
+              "page": "161"
+            }
+          ]
+        },
+        {
+          "id": "warning-lights",
+          "name": "Warning lights",
+          "db": "front-instrument-panel",
+          "src": "m1",
+          "page": "131",
+          "text": "These lamps tell the pilot when something is wrong: a fire, an overheating engine, an open canopy or any other fault.",
+          "context": "The red FIRE light means danger now. The amber lights mean something needs attention. The master caution light sums up the amber lights.",
+          "controls": [
+            {
+              "id": "canopy-light",
+              "name": "CANOPY warning light",
+              "type": "light",
+              "match": [
+                "item:front-instrument-panel:4"
+              ],
+              "text": "This light comes on when the canopy, the glass roof, is not locked. It flashes if the throttle is moved forward to more than 90 percent engine speed.",
+              "context": "The manual says the light is connected to the canopy locking mechanism. Take-off with an unlocked canopy is not allowed.",
+              "src": "m1",
+              "page": "65"
+            },
+            {
+              "id": "master-caution",
+              "name": "MASTER CAUTION light and reset button",
+              "type": "button",
+              "match": [
+                "PNT_079",
+                "item:front-instrument-panel:7"
+              ],
+              "text": "This light comes on when a caution light of the caution panel lights up. Pressing it puts the light out, ready for the next fault.",
+              "context": "The caution panel on the right side shows what the fault is.",
+              "src": "m1",
+              "page": "53"
+            },
+            {
+              "id": "fire-light",
+              "name": "FIRE warning light",
+              "type": "light",
+              "match": [
+                "item:front-instrument-panel:10"
+              ],
+              "text": "This red light comes on when the front part of the engine compartment overheats or is on fire.",
+              "context": "The manual says it is fed by a sensor wire in the front part of the engine compartment. The pilot reduces power and checks the engine instruments.",
+              "src": "m1",
+              "page": "43"
+            },
+            {
+              "id": "overheat-light",
+              "name": "OVERHEAT caution light",
+              "type": "light",
+              "match": [
+                "item:front-instrument-panel:14"
+              ],
+              "text": "This yellow light comes on when the rear part of the engine compartment is too hot.",
+              "context": "The manual says a second sensor wire in the rear area of the engine compartment drives this light.",
+              "src": "m1",
+              "page": "43"
+            }
+          ]
+        },
+        {
+          "id": "armament",
+          "name": "Armament control panel",
+          "db": "front-instrument-panel",
+          "src": "m1",
+          "page": "247",
+          "text": "This panel at the lower left of the instrument panel chooses and arms the weapons carried on the six wing stations: bombs, rockets or gun pods.",
+          "context": "The six stations are the racks under the wings, numbered 1 to 6. The manual says weapons only work when the plane is in the air, because a switch on the left wheel leg cuts the power on the ground.",
+          "controls": [
+            {
+              "id": "armament-overview",
+              "name": "Armament control panel (whole panel)",
+              "type": "other",
+              "match": [
+                "item:front-instrument-panel:30"
+              ],
+              "text": "This is the whole armament control panel of the front cockpit. Its switches and buttons are explained one by one below.",
+              "context": "The rear cockpit has a repeater panel that shows the choices made in the front, and a lock-out switch for the instructor.",
+              "src": "m1",
+              "page": "247"
+            },
+            {
+              "id": "master-arm",
+              "name": "MASTER ARMT switch",
+              "type": "switch2",
+              "match": [
+                "PNT_011"
+              ],
+              "positions": [
+                {
+                  "name": "OFF",
+                  "text": "All armament circuits are off, except those of the salvo and selective jettison buttons."
+                },
+                {
+                  "name": "ON",
+                  "text": "The armament circuits have power when the plane is airborne with the landing gear up."
+                }
+              ],
+              "text": "This is the main safety switch for the weapons. In the up position (ON) the armament circuits have power, if the landing gear lever is up. In the down position (OFF) all circuits are dead except the jettison buttons.",
+              "context": "The manual says that if it was turned on while still on the ground, it must be switched off and on again after take-off before anything can fire.",
+              "src": "m1",
+              "page": "248"
+            },
+            {
+              "id": "stations",
+              "name": "Station selector buttons 1 to 6",
+              "type": "button",
+              "match": [
+                "PNT_135",
+                "PNT_136",
+                "PNT_137",
+                "PNT_138",
+                "PNT_139",
+                "PNT_140"
+              ],
+              "count": 6,
+              "text": "These six buttons choose which wing stations will fire or release their load. A chosen station lights up, and the display shows what the station carries.",
+              "context": "The manual shows an indicator window above each station that tells whether it carries a rocket launcher, a bomb, a gun pod, a dispenser, an empty rack or a fuel tank.",
+              "src": "m1",
+              "page": "248"
+            },
+            {
+              "id": "bomb-fuze",
+              "name": "BOMB FUZE switch",
+              "type": "switch3",
+              "match": [
+                "PNT_132"
+              ],
+              "positions": [
+                {
+                  "name": "SAFE",
+                  "text": "Nose and tail fuzes are not armed."
+                },
+                {
+                  "name": "NOSE TAIL",
+                  "text": "Both nose and tail fuzes are armed."
+                },
+                {
+                  "name": "TAIL ONLY",
+                  "text": "Only the tail fuzes are armed."
+                }
+              ],
+              "text": "This switch chooses which fuzes (the triggers inside the bombs) are armed. SAFE arms none, NOSE TAIL arms both, and TAIL ONLY arms the tail fuze.",
+              "context": "The game names the switch 'Bomb fuze'. The manual shows the three positions SAFE, NOSE TAIL and TAIL ONLY.",
+              "src": "m1",
+              "page": "227"
+            },
+            {
+              "id": "sequence",
+              "name": "SEQUENCE switch (ripple or single)",
+              "type": "switch2",
+              "match": [
+                "PNT_133"
+              ],
+              "positions": [
+                {
+                  "name": "RPL",
+                  "text": "All rockets are fired in the automatic order of the launcher."
+                },
+                {
+                  "name": "SGL",
+                  "text": "A single rocket is fired from each chosen launcher."
+                }
+              ],
+              "text": "This switch chooses how rockets are fired. In RPL they all go in the order set by the launcher. In SGL one rocket is fired from each chosen launcher.",
+              "context": "The game names the switch 'Sequence ripple/single'.",
+              "src": "m1",
+              "page": "228"
+            },
+            {
+              "id": "sel-jett",
+              "name": "SEL JETT (selective jettison) button",
+              "type": "button",
+              "match": [
+                "PNT_123"
+              ],
+              "text": "Pressing this button drops the loads of the stations that were chosen, safely, which means unarmed. It works only in the air.",
+              "context": "The manual says it is only in the front cockpit. The emergency procedures say to hold it for at least 2 seconds.",
+              "src": "m1",
+              "page": "227"
+            },
+            {
+              "id": "salvo-jett",
+              "name": "SALVO JETTISON button",
+              "type": "button",
+              "match": [
+                "PNT_22",
+                "item:front-instrument-panel:29"
+              ],
+              "text": "Pressing this button drops all external loads under the pylons at once, safely. It works only in the air.",
+              "context": "The manual says that in this game version the button also drops the tip tanks, because the game counts them as droppable.",
+              "src": "m1",
+              "page": "228"
+            }
+          ]
+        },
+        {
+          "id": "gunsight",
+          "name": "Gunsight control panel (RGS2)",
+          "db": "front-instrument-panel",
+          "src": "m1",
+          "page": "250",
+          "text": "The gunsight is the aiming device on top of the instrument panel. It shows an aiming mark (a reticle) in front of the pilot's eyes. This control panel switches the sight on, sets its brightness and tilts the mark.",
+          "context": "The manual calls it the Aeritalia-SAAB RGS2 gyro sight. It works out by itself how far to lead a moving target. The rear cockpit has a repeater sight with brightness control.",
+          "controls": [
+            {
+              "id": "sight-overview",
+              "name": "Gunsight control panel (whole panel)",
+              "type": "other",
+              "match": [
+                "item:front-instrument-panel:8"
+              ],
+              "text": "This is the gunsight control panel below the front gunsight. It has the power switch, brightness, a test button and three depression wheels.",
+              "context": "The manual says the panel switches the gyro computer on, selects one of two lamps and sets the downward tilt of the reticle.",
+              "src": "m1",
+              "page": "250"
+            },
+            {
+              "id": "sight-power",
+              "name": "PWR switch (gunsight)",
+              "type": "switch",
+              "match": [
+                "PNT_125"
+              ],
+              "text": "This switch turns the gunsight on and picks which of its two lamps lights the reticle. OFF switches it off. L1 and L2 turn the sight on with the first or the second lamp.",
+              "context": "The manual says L2 is the standby lamp.",
+              "src": "m1",
+              "page": "255"
+            },
+            {
+              "id": "sight-brightness",
+              "name": "Reticle brightness knob",
+              "type": "knob",
+              "match": [
+                "PNT_126"
+              ],
+              "text": "Turning this knob makes the aiming mark brighter or dimmer.",
+              "context": "The manual says the rear cockpit can control the reticle brightness of its own sight.",
+              "src": "m1",
+              "page": "255"
+            },
+            {
+              "id": "sight-test",
+              "name": "TEST button (gunsight)",
+              "type": "button",
+              "match": [
+                "PNT_127"
+              ],
+              "text": "Pressing this button tests the gunsight. The reticle moves diagonally from the centre down to the right.",
+              "context": "The manual lists the test push-button as number 9 of the gunsight controls.",
+              "src": "m1",
+              "page": "255"
+            },
+            {
+              "id": "depression",
+              "name": "DEPRESSION MILS thumb wheels (x100, x10, x1)",
+              "type": "selector",
+              "match": [
+                "PNT_128",
+                "PNT_129",
+                "PNT_130"
+              ],
+              "count": 3,
+              "text": "These three thumb wheels set how far down the aiming mark is tilted, in milliradians (a small angle unit): one wheel for hundreds, one for tens and one for ones.",
+              "context": "The pilot uses the tilt to aim bombs and rockets in a dive. The manual includes tables of tilt values for different weapons.",
+              "src": "m1",
+              "page": "255"
+            }
+          ]
+        },
+        {
+          "id": "fd-hsi",
+          "name": "Flight director and HSI control panels",
+          "db": "front-instrument-panel",
+          "src": "m1",
+          "page": "106",
+          "text": "These push-buttons choose what the flight director and the HSI show. The flight director moves two steering bars on the ADI, and the pilot follows the bars by hand.",
+          "context": "The manual says the flight director cannot be used with modes that do not fit together, for example altitude hold with glide slope. The rear cockpit has the same buttons.",
+          "controls": [
+            {
+              "id": "fd-overview",
+              "name": "Flight director control panel (FLT DIR, whole panel)",
+              "type": "other",
+              "match": [
+                "item:front-instrument-panel:28"
+              ],
+              "text": "This is the group of six push-buttons of the flight director. A button lights up green when its mode is on.",
+              "context": "The manual says the panel contains the computer that works out the steering commands. The buttons are explained below.",
+              "src": "m1",
+              "page": "106"
+            },
+            {
+              "id": "fd-stby",
+              "name": "F/D STBY button",
+              "type": "button",
+              "match": [
+                "PNT_025"
+              ],
+              "text": "Pressing this button puts the flight director in standby. The steering bars move out of the pilot's view.",
+              "context": "In standby the computer is ready to work. The HSI and ADI keep showing their normal information.",
+              "src": "m1",
+              "page": "109"
+            },
+            {
+              "id": "fd-hdg",
+              "name": "F/D HDG button (heading)",
+              "type": "button",
+              "match": [
+                "PNT_023"
+              ],
+              "text": "This button makes the vertical steering bar show how to turn to the heading set with the HEADING SET knob of the HSI, and how to stay on it.",
+              "context": "HDG means heading. The HSI shows the marker that this mode steers toward.",
+              "src": "m1",
+              "page": "109"
+            },
+            {
+              "id": "fd-radio-nav",
+              "name": "F/D RADIO NAV button",
+              "type": "button",
+              "match": [
+                "PNT_026"
+              ],
+              "text": "This button makes the vertical steering bar show how to reach and follow a radio line: a VOR or TACAN radial, or the line leading to a runway (the localizer).",
+              "context": "The pilot sets the radial with the COURSE SET knob of the HSI and tunes the VOR or TACAN radio.",
+              "src": "m1",
+              "page": "109"
+            },
+            {
+              "id": "fd-gs-arm",
+              "name": "F/D GS ARM button",
+              "type": "button",
+              "match": [
+                "PNT_024"
+              ],
+              "text": "This button gets the flight director ready for the glide path. It waits for the plane to meet the glide path of the runway, and then switches to the GS mode by itself.",
+              "context": "The glide path is the invisible slope to the runway sent by the ILS radio beams. GS ARM means glide slope armed.",
+              "src": "m1",
+              "page": "109"
+            },
+            {
+              "id": "fd-gs",
+              "name": "F/D GS button (glide slope)",
+              "type": "button",
+              "match": [
+                "PNT_027"
+              ],
+              "text": "This button makes the horizontal steering bar guide the plane down the glide path to the runway. It works only when an ILS frequency is tuned.",
+              "context": "The manual says the GS ARM mode starts it automatically when the glide path is met.",
+              "src": "m1",
+              "page": "109"
+            },
+            {
+              "id": "fd-alt",
+              "name": "F/D ALT HOLD button",
+              "type": "button",
+              "match": [
+                "PNT_028"
+              ],
+              "text": "This button makes the horizontal steering bar show the pitch needed to stay at the height at which the button was pressed.",
+              "context": "The manual says the computer memorizes the flight altitude and switches the glide slope mode off.",
+              "src": "m1",
+              "page": "109"
+            },
+            {
+              "id": "hsi-overview",
+              "name": "HSI control panel (TACAN, VOR, RNAV buttons)",
+              "type": "other",
+              "match": [
+                "item:front-instrument-panel:23"
+              ],
+              "text": "These three push-buttons below the HSI choose which source the HSI and the ADI steering bar follow: the TACAN radio, the VOR/ILS radio or the AHRS/GPS navigation (RNAV).",
+              "context": "The manual says the pressed button lights up. In RNAV mode the distance on the HSI is the horizontal distance to the point and not the slant distance.",
+              "src": "m1",
+              "page": "142"
+            },
+            {
+              "id": "hsi-tacan",
+              "name": "HSI source button TACAN",
+              "type": "button",
+              "match": [
+                "PNT_094"
+              ],
+              "text": "Pressing this button makes the HSI show the bearing, distance and deviation from the TACAN station.",
+              "context": "TACAN is a radio beacon system of military aircraft and ships.",
+              "src": "m1",
+              "page": "146"
+            },
+            {
+              "id": "hsi-vor",
+              "name": "HSI source button VOR",
+              "type": "button",
+              "match": [
+                "PNT_095"
+              ],
+              "text": "Pressing this button makes the HSI show the bearing and deviation from the VOR or ILS station.",
+              "context": "A VOR is a ground radio beacon. The ILS is the radio beam system at a runway.",
+              "src": "m1",
+              "page": "146"
+            },
+            {
+              "id": "hsi-rnav",
+              "name": "HSI source button RNAV",
+              "type": "button",
+              "match": [
+                "PNT_096"
+              ],
+              "text": "Pressing this button makes the HSI show the information of the AHRS/GPS navigation system, the point the plane is steering to.",
+              "context": "RNAV means area navigation, flying to any point and not only along beacons.",
+              "src": "m1",
+              "page": "146"
+            },
+            {
+              "id": "marker-panel",
+              "name": "Marker beacon control panel",
+              "type": "switch3",
+              "match": [
+                "item:front-instrument-panel:24"
+              ],
+              "positions": [
+                {
+                  "name": "HI",
+                  "text": "High sensitivity."
+                },
+                {
+                  "name": "LOW",
+                  "text": "Low sensitivity."
+                },
+                {
+                  "name": "TEST",
+                  "text": "Self-test of the marker beacon receiver."
+                }
+              ],
+              "text": "This switch sets how sensitive the marker beacon receiver is. HI is high, LOW is low, and TEST runs a self-test. A lamp flashes when the plane flies over a marker beacon.",
+              "context": "A marker beacon is a small radio transmitter near a runway. The manual says the signals are tuned at 75 MHz. The game offers no click for this switch.",
+              "src": "m1",
+              "page": "101"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "centre-stand",
+      "where": "center-pedestal",
+      "name": "Lateral panels and centre stand",
+      "seat": 1,
+      "text": "The lower left and right panels and the centre stand under the instrument panel: landing gear, brakes, electricity, canopy and ejection seat.",
+      "panels": [
+        {
+          "id": "gear-lights",
+          "name": "Landing gear, brakes and lights (left lateral panel)",
+          "db": "lateral-panels-centerstand",
+          "src": "m1",
+          "page": "132",
+          "text": "The panel at the lower left of the instrument panel holds the landing gear lever, the brake handle, the lights switch and a few indicators.",
+          "context": "The pilot uses it on every take-off and landing: gear up after take-off, gear down before landing.",
+          "controls": [
+            {
+              "id": "gear-lever",
+              "name": "Landing gear lever",
+              "type": "lever",
+              "match": [
+                "PNT_043",
+                "item:lateral-panels-centerstand:5"
+              ],
+              "positions": [
+                {
+                  "name": "LG UP",
+                  "text": "The wheels are raised."
+                },
+                {
+                  "name": "LG DOWN",
+                  "text": "The wheels are lowered and locked."
+                }
+              ],
+              "text": "Moving this lever up raises the wheels into the plane, and moving it down lets them come down. Three lights show whether each leg is down and locked. A red light in the handle shows when the gear and the lever do not agree.",
+              "context": "The manual says the gear may stay down up to 175 knots. A lock stops the lever from going up while the plane's weight is on the wheels.",
+              "src": "m1",
+              "page": "46"
+            },
+            {
+              "id": "gear-silence",
+              "name": "WARNING SILENCE button",
+              "type": "button",
+              "match": [
+                "PNT_085"
+              ],
+              "text": "Pressing this button silences the landing gear warning tone in the headset. The tone sounds when the throttle is at idle and the wheels are not down.",
+              "context": "It lets the pilot throttle back to idle without lowering the gear.",
+              "src": "m1",
+              "page": "46"
+            },
+            {
+              "id": "downlock-override",
+              "name": "DOWNLOCK OVERRIDE button",
+              "type": "button",
+              "match": [
+                "PNT_086"
+              ],
+              "text": "Pressing this button frees the landing gear lever so that the wheels can be raised even on the ground.",
+              "context": "Normally a lock holds the lever in DOWN while the plane's weight is on the wheels.",
+              "src": "m1",
+              "page": "46"
+            },
+            {
+              "id": "taxi-landing-light",
+              "name": "Taxi/landing light switch (LDG LT/TAXI LT)",
+              "type": "switch3",
+              "match": [
+                "PNT_054",
+                "item:lateral-panels-centerstand:1"
+              ],
+              "positions": [
+                {
+                  "name": "LDG LT",
+                  "text": "The landing light is extended and on."
+                },
+                {
+                  "name": "OFF",
+                  "text": "The lights are off and the landing light is retracted."
+                },
+                {
+                  "name": "TAXI LT",
+                  "text": "The taxi light is on."
+                }
+              ],
+              "text": "This switch controls the landing light under the left wing and the taxi light on the nose wheel. LDG LT extends and lights the landing light. TAXI LT lights the taxi light. OFF turns both off.",
+              "context": "The manual says the landing light needs the landing gear down and both lights go out by themselves when the gear is raised.",
+              "src": "m1",
+              "page": "75"
+            },
+            {
+              "id": "park-brake",
+              "name": "PARK & EMER BK handle",
+              "type": "handle",
+              "match": [
+                "PNT_218",
+                "item:lateral-panels-centerstand:2"
+              ],
+              "text": "Pulling this handle applies the wheel brakes with the emergency hydraulic supply. It works as the parking brake and as the emergency brake.",
+              "context": "The manual warns that pulling it suddenly can lock the wheels and burst a tire, and that the anti-skid system does not work when it is used.",
+              "src": "m1",
+              "page": "47"
+            },
+            {
+              "id": "park-brake-lock",
+              "name": "Parking brake lock",
+              "type": "switch",
+              "match": [
+                "PNT_078"
+              ],
+              "text": "The game names this control 'Parking brake lock'. The manual does not describe it.",
+              "context": "The manual describes only the PARK & EMER BK handle.",
+              "src": "m1"
+            },
+            {
+              "id": "steer-light",
+              "name": "STEER/A.SKID indication light",
+              "type": "light",
+              "match": [
+                "item:lateral-panels-centerstand:3"
+              ],
+              "text": "This lamp shows the state of the nose wheel steering and of the anti-skid system. STEER lights when the steering is engaged.",
+              "context": "The manual says the pilot checks that the STEER light is out before the take-off run.",
+              "src": "m1",
+              "page": "50"
+            },
+            {
+              "id": "compass",
+              "name": "Standby magnetic compass",
+              "type": "gauge",
+              "match": [
+                "item:lateral-panels-centerstand:4"
+              ],
+              "text": "This is a plain magnetic compass on the right side of the instrument panel. It works without electricity.",
+              "context": "The pilot uses it as a spare and to check the other heading instruments.",
+              "src": "m1",
+              "page": "143"
+            },
+            {
+              "id": "trim-neutral",
+              "name": "Take-off trim neutral indicators (AIL, RUD)",
+              "type": "light",
+              "match": [
+                "item:lateral-panels-centerstand:6"
+              ],
+              "text": "These two lights show that the aileron trim and the rudder trim are in the neutral position. They light only while the plane stands on its wheels.",
+              "context": "The pilot checks that both lights are on before take-off.",
+              "src": "m1",
+              "page": "159"
+            },
+            {
+              "id": "tip-dump",
+              "name": "FUEL DUMP switch",
+              "type": "switch2",
+              "match": [
+                "PNT_185",
+                "item:lateral-panels-centerstand:7"
+              ],
+              "positions": [
+                {
+                  "name": "Closed",
+                  "text": "The dump valve is closed."
+                },
+                {
+                  "name": "Activated",
+                  "text": "The switch is turned a quarter turn clockwise; the dump valve is open and fuel is let out."
+                }
+              ],
+              "text": "Turning this switch a quarter turn opens the dump valve, and the fuel is let out of the tanks into the air. Turning it back closes the valve.",
+              "context": "The manual says fuel dumping can be controlled in each cockpit alone, and the valve must be shut before landing. It is used in emergencies, to make the plane lighter.",
+              "src": "m1",
+              "page": "206"
+            },
+            {
+              "id": "hyd-gauges",
+              "name": "Hydraulic system pressure gauges (MAIN, EMER)",
+              "type": "gauge",
+              "match": [
+                "item:lateral-panels-centerstand:8"
+              ],
+              "text": "Two gauges show the pressure of the hydraulic oil in the main system and in the emergency system. The oil under pressure works the landing gear, flaps, brakes and ailerons.",
+              "context": "The manual says both read the same when the engine runs on the ground. The emergency pressure may drop in a fast climb because of the cold.",
+              "src": "m1",
+              "page": "57"
+            },
+            {
+              "id": "flight-controls-lock",
+              "name": "Flight controls lock/unlock lever (gust lock)",
+              "type": "lever",
+              "match": [
+                "PNT_070"
+              ],
+              "text": "This lever, under the front instrument panel, locks the control stick and the rudder pedals on the ground so that wind cannot bang them around.",
+              "context": "The manual says the lever engages a pin on the control stick base and locks the elevator and the rudder pedals together.",
+              "src": "m1",
+              "page": "160"
+            }
+          ]
+        },
+        {
+          "id": "electrics",
+          "name": "Electrical supply and warning panel (right lateral panel)",
+          "db": "lateral-panels-centerstand",
+          "src": "m1",
+          "page": "132",
+          "text": "The panel at the lower right holds the electrical switches, the generator load gauges, the warning lights test and the caution lights panel.",
+          "context": "The pilot switches it on first when climbing in. The plane has two batteries, two generators and two inverters (they make alternating current).",
+          "controls": [
+            {
+              "id": "electrical-overview",
+              "name": "Electrical supply control panel (whole panel)",
+              "type": "other",
+              "match": [
+                "item:lateral-panels-centerstand:11"
+              ],
+              "text": "This is the whole electrical supply control panel. It holds the BATT, GEN 1, GEN 2 and AC POWER switches.",
+              "context": "The manual says three switches called BATT, GEN1 and GEN2 control the direct current, and the AC POWER switch controls the alternating current.",
+              "src": "m1",
+              "page": "53"
+            },
+            {
+              "id": "battery",
+              "name": "BATT switch",
+              "type": "switch2",
+              "match": [
+                "PNT_050"
+              ],
+              "positions": [
+                {
+                  "name": "OFF",
+                  "text": "The batteries are not connected."
+                },
+                {
+                  "name": "ON",
+                  "text": "The batteries are connected."
+                }
+              ],
+              "text": "This switch connects the two batteries to the plane's electricity. The batteries are linked in series for the engine start, to give more voltage.",
+              "context": "It is the first switch the pilot moves when climbing in, and the last one when leaving.",
+              "src": "m1",
+              "page": "53"
+            },
+            {
+              "id": "gen1",
+              "name": "GEN 1 switch (generator 1)",
+              "type": "switch2",
+              "match": [
+                "PNT_051"
+              ],
+              "positions": [
+                {
+                  "name": "OFF",
+                  "text": "The generator is disconnected."
+                },
+                {
+                  "name": "ON",
+                  "text": "The generator is connected."
+                }
+              ],
+              "text": "This switch connects generator 1, one of the two engine generators, to the electrical system.",
+              "context": "A yellow NO. 1 DC GEN light on the caution panel shows when generator 1 has failed. The manual says that without generator 1 the air intake anti-ice, the armament and the photo-reconnaissance equipment do not work.",
+              "src": "m1",
+              "page": "53"
+            },
+            {
+              "id": "gen2",
+              "name": "GEN 2 switch (generator 2)",
+              "type": "switch2",
+              "match": [
+                "PNT_052"
+              ],
+              "positions": [
+                {
+                  "name": "OFF",
+                  "text": "The generator is disconnected."
+                },
+                {
+                  "name": "ON",
+                  "text": "The generator is connected."
+                }
+              ],
+              "text": "This switch connects generator 2, the second engine generator, to the electrical system.",
+              "context": "A yellow NO. 2 DC GEN light on the caution panel shows when generator 2 has failed. The manual says the pilot can reset a generator as often as needed.",
+              "src": "m1",
+              "page": "53"
+            },
+            {
+              "id": "ac-power",
+              "name": "AC POWER switch",
+              "type": "switch2",
+              "match": [
+                "PNT_053"
+              ],
+              "positions": [
+                {
+                  "name": "NORM",
+                  "text": "Both the main and the standby inverter work."
+                },
+                {
+                  "name": "EMERG",
+                  "text": "The standby inverter is connected to the primary and essential AC lines."
+                }
+              ],
+              "text": "This switch decides which inverter makes the alternating current. NORM uses both inverters. EMERG connects the standby inverter if the main one fails.",
+              "context": "An inverter turns direct current into the alternating current some instruments need.",
+              "src": "m1",
+              "page": "55"
+            },
+            {
+              "id": "bus-reset",
+              "name": "BUS RESET switch with guard",
+              "type": "switch2",
+              "match": [
+                "PNT_057",
+                "PNT_061",
+                "item:right-console:10"
+              ],
+              "positions": [
+                {
+                  "name": "OFF",
+                  "text": "The bus reset is not active."
+                },
+                {
+                  "name": "ON",
+                  "text": "Power is restored to the secondary bus and the armament."
+                }
+              ],
+              "text": "This guarded switch restores power to the secondary bus and the armament if generator 2 has failed. The guard must be lifted first.",
+              "context": "The manual says it is used in the case of a failure of generator 2.",
+              "src": "m1",
+              "page": "206"
+            },
+            {
+              "id": "warn-test",
+              "name": "WARN LT TEST button",
+              "type": "button",
+              "match": [
+                "PNT_055",
+                "item:lateral-panels-centerstand:9"
+              ],
+              "text": "Pressing this button lights all warning and caution lights, so the pilot can see that none of the bulbs is broken. It also lights the two green smoke system lights of the PAN version.",
+              "context": "The manual says the pilot makes frequent checks with it, for example when the FIRE light is suspected.",
+              "src": "m1",
+              "page": "205"
+            },
+            {
+              "id": "loadmeters",
+              "name": "Loadmeters (LOAD GEN 1, GEN 2)",
+              "type": "gauge",
+              "match": [
+                "item:lateral-panels-centerstand:10"
+              ],
+              "text": "These two gauges show how much electricity each generator delivers. The pilot checks that the numbers are low and equal-looking when the engine runs.",
+              "context": "The manual says the two show the same only above 60 percent engine speed.",
+              "src": "m1",
+              "page": "166"
+            },
+            {
+              "id": "caution-panel",
+              "name": "Caution lights panel",
+              "type": "light",
+              "match": [
+                "item:lateral-panels-centerstand:12"
+              ],
+              "text": "This board of labelled lights tells the pilot what is wrong, for example FUEL PRESS, OIL PRESS, NO 1 DC GEN, ANTI SKID or BATT HOT. The lights cannot be clicked.",
+              "context": "The manual lists lights such as FUEL TRANS, TIP TK UNBAL, AC SEC BUS, JPT LMTR and AIL SERVO.",
+              "src": "m1",
+              "page": "205"
+            },
+            {
+              "id": "ground-utilities",
+              "name": "Ground utilities control panel",
+              "type": "other",
+              "match": [
+                "item:lateral-panels-centerstand:13"
+              ],
+              "text": "A panel with switches for ground use. The manual does not describe it and the game has no click for it.",
+              "context": "The manual does not mention it in the cockpit descriptions.",
+              "src": "m1"
+            },
+            {
+              "id": "elt-ground",
+              "name": "ELT ground disabling panel",
+              "type": "other",
+              "match": [
+                "item:lateral-panels-centerstand:14"
+              ],
+              "text": "The name says this panel is for disabling the emergency locator transmitter on the ground. The manual does not describe it and the game has no click for it.",
+              "context": "The ELT itself is described in the manual together with its ELT switch on the right console.",
+              "src": "m1",
+              "page": "126"
+            },
+            {
+              "id": "control-shift",
+              "name": "CONTROL SHIFT buttons (COMM1, COMM2, ADF, VOR-ILS, TACAN, NAV)",
+              "type": "button",
+              "match": [
+                "PNT_044",
+                "PNT_045",
+                "PNT_046",
+                "PNT_048",
+                "PNT_049",
+                "PNT_097",
+                "item:lateral-panels-centerstand:15"
+              ],
+              "count": 6,
+              "text": "These six push-buttons hand control of a radio over to this cockpit. A lit button shows that this cockpit controls that equipment. The other pilot must press his own button to take control back.",
+              "context": "Two pilots share one set of radios, so only one cockpit controls each at a time. The manual states that the control cannot be handed back by pressing the same button again.",
+              "src": "m1",
+              "page": "100"
+            },
+            {
+              "id": "pedal-adjust",
+              "name": "PEDAL ADJ control",
+              "type": "knob",
+              "match": [
+                "item:lateral-panels-centerstand:16"
+              ],
+              "text": "Turning this wheel under the instrument panel moves the rudder pedals closer to the pilot or further away, to suit the length of the legs.",
+              "context": "The manual describes a protruding wheel in the central rack under the instrument panel. The game has no click for it.",
+              "src": "m1",
+              "page": "157"
+            }
+          ]
+        },
+        {
+          "id": "canopy-seat",
+          "name": "Canopy, ejection seat and cockpit equipment",
+          "src": "m1",
+          "page": "65",
+          "text": "These are the parts for getting in and out and for the safety of the crew: the canopy handles, the ejection seat handle and its safety pins, the mirrors and the glove compartment.",
+          "context": "The manual says the canopy opens to the right. The seat is a Martin-Baker Mk IT-10F ejection seat that works from zero speed and zero height.",
+          "controls": [
+            {
+              "id": "canopy-handle",
+              "name": "Canopy handle",
+              "type": "handle",
+              "match": [
+                "PNT_162"
+              ],
+              "text": "This handle on the left inside of the canopy works the eight latches that lock the canopy shut. Moving it locks or unlocks the canopy.",
+              "context": "A CANOPY warning light on the instrument panel shows when the canopy is not locked.",
+              "src": "m1",
+              "page": "65"
+            },
+            {
+              "id": "canopy-lock",
+              "name": "Canopy lock/unlock",
+              "type": "button",
+              "match": [
+                "PNT_069"
+              ],
+              "text": "The game names this control 'Canopy lock/unlock'. The manual does not describe it separately from the canopy handle.",
+              "context": "The manual says the canopy may be closed or partially open and locked in an intermediate position during taxi.",
+              "src": "m1",
+              "page": "65"
+            },
+            {
+              "id": "canopy-unlock-lever",
+              "name": "Canopy unlock levers (fwd, aft)",
+              "type": "button",
+              "match": [
+                "PNT_160",
+                "PNT_383"
+              ],
+              "count": 2,
+              "text": "The game names these two controls 'Canopy unlock lever fwd' and 'Canopy unlock lever aft'. The manual does not describe them.",
+              "context": "They belong to the canopy opening gear of the front and the rear cockpit.",
+              "src": "m1",
+              "page": "65"
+            },
+            {
+              "id": "canopy-hook",
+              "name": "Partial opening hook",
+              "type": "button",
+              "match": [
+                "PNT_092"
+              ],
+              "text": "The game names this control 'Partial opening hook'. The manual does not describe it, but says the canopy may be partly open and locked in an intermediate position during taxi.",
+              "context": "Taxiing with the canopy fully open is not allowed, says the manual.",
+              "src": "m1",
+              "page": "166"
+            },
+            {
+              "id": "canopy-severance",
+              "name": "Canopy severance handles with safety pins (fwd, aft)",
+              "type": "handle",
+              "match": [
+                "PNT_176",
+                "PNT_177"
+              ],
+              "count": 2,
+              "text": "Pulling this handle sets off an explosive cord around the edge of the canopy glass and shatters it. A safety pin keeps the handle from being pulled by accident.",
+              "context": "The manual says this device can be used by the crew or by ground helpers to get out.",
+              "src": "m1",
+              "page": "65"
+            },
+            {
+              "id": "eject-handle",
+              "name": "Seat firing handle",
+              "type": "handle",
+              "match": [
+                "PNT_080"
+              ],
+              "text": "Pulling this handle fires the ejection seat. The seat and pilot leave the plane. The parachute opens by itself.",
+              "context": "It is the last resort. The manual says to hold the stick with one hand while pulling the handle with the other.",
+              "src": "m1",
+              "page": "67"
+            },
+            {
+              "id": "eject-pins",
+              "name": "Ejection safety pins (canopy, seat)",
+              "type": "other",
+              "match": [
+                "PNT_088",
+                "PNT_087"
+              ],
+              "count": 2,
+              "text": "These two pins make the ejection system safe on the ground. One pin is on the canopy and one on the seat. They must be removed before flight.",
+              "context": "The manual says the seat safety pin is put in its holder on the canopy when it is removed.",
+              "src": "m1",
+              "page": "168"
+            },
+            {
+              "id": "seat-adjust",
+              "name": "Seat height switch",
+              "type": "switch",
+              "match": [
+                "PNT_SEAT_ADJ",
+                "item:right-console:6"
+              ],
+              "text": "This switch moves the seat up or down with an electric motor, to suit the pilot's height.",
+              "context": "The seat height is set before engine start.",
+              "src": "m1",
+              "page": "67"
+            },
+            {
+              "id": "mirrors",
+              "name": "Mirrors open/close",
+              "type": "button",
+              "match": [
+                "PNT_071",
+                "PNT_072",
+                "PNT_073"
+              ],
+              "count": 3,
+              "text": "Clicking this control opens or folds away one of the rear-view mirrors of the cockpit. They help the pilot see behind the plane.",
+              "context": "The manual says the cockpit has mirrors that meet an American military standard.",
+              "src": "m1",
+              "page": "129"
+            },
+            {
+              "id": "glove",
+              "name": "Glove compartment",
+              "type": "button",
+              "match": [
+                "PNT_298"
+              ],
+              "text": "Clicking this control opens a storage compartment in the cockpit, where maps and papers can be kept.",
+              "context": "The manual says there are four compartments in the cockpit for maps and documents.",
+              "src": "m1",
+              "page": "129"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "hotas",
+      "where": "hotas",
+      "name": "Stick and throttle",
+      "seat": 1,
+      "text": "The control stick and the throttle, the two controls the pilot's hands hold most of the time, with the buttons and switches on their grips.",
+      "panels": [
+        {
+          "id": "stick",
+          "name": "Control stick grip",
+          "src": "m1",
+          "page": "135",
+          "text": "The control stick is the lever between the pilot's knees. Tilting it left and right rolls the plane, and moving it forward and back pitches the nose down and up. The buttons on the grip are used without taking a hand off it.",
+          "context": "Each cockpit has its own stick. The manual lists on the stick the trim switch, the rocket and bomb release button, the trigger, the gun camera and nose wheel steering button, and the radio transmit button.",
+          "controls": [
+            {
+              "id": "stick-axis",
+              "name": "Control stick (pitch and roll)",
+              "type": "axis",
+              "match": [
+                "control:stick.gimbal"
+              ],
+              "text": "Moving the stick forward or back makes the nose go down or up. Moving it left or right rolls the plane.",
+              "context": "The elevators are moved by rods from the stick. The ailerons have hydraulic help, which can be switched off with the AIL SERVO switch.",
+              "src": "m1",
+              "page": "135"
+            },
+            {
+              "id": "stick-trim",
+              "name": "Trim switch (4-way hat)",
+              "type": "hat",
+              "match": [
+                "trim",
+                "control:stick.hat.trim"
+              ],
+              "text": "This small four-way switch on top of the grip sets the trim. Trim is a steady push on the controls, so the pilot does not need to hold the stick. Forward and back move the elevator trim, left and right move the aileron trim.",
+              "context": "The manual says the trim switch moves the trim tabs of the ailerons and elevators and that the trim indicator shows the elevator trim. It springs back to the middle.",
+              "src": "m1",
+              "page": "135"
+            },
+            {
+              "id": "stick-trigger",
+              "name": "Trigger (two detents)",
+              "type": "trigger",
+              "match": [
+                "control:stick.trigger"
+              ],
+              "text": "The trigger has two steps. The first step starts the gun camera. The second step also fires the guns or machine guns that were chosen on the armament panel.",
+              "context": "The manual says the second step also marks the film with an event dot.",
+              "src": "m1",
+              "page": "248"
+            },
+            {
+              "id": "stick-release",
+              "name": "Rocket / bomb release button",
+              "type": "button",
+              "match": [
+                "control:stick.weapon_release"
+              ],
+              "text": "Pressing this button fires the rockets or releases the bombs that were chosen and armed on the armament panel. On the PAN version it works the white smoke when the smoke switches are on.",
+              "context": "It also starts the gun camera and marks the film.",
+              "src": "m1",
+              "page": "248"
+            },
+            {
+              "id": "stick-nws",
+              "name": "Nose wheel steering / gun camera button",
+              "type": "button",
+              "match": [
+                "control:stick.button.nws"
+              ],
+              "text": "On the ground this button switches the nose wheel steering on, and the pilot then steers with the rudder pedals. Pressing it again switches it off. In the air the same button works the gun camera.",
+              "context": "The manual says the steering can be used only on the ground, and that the pilot should not re-engage it during the take-off run.",
+              "src": "m1",
+              "page": "50"
+            },
+            {
+              "id": "stick-ptt",
+              "name": "Radio transmission button (PTT)",
+              "type": "button",
+              "match": [
+                "control:stick.button.ptt"
+              ],
+              "text": "Pressing this button sends the pilot's voice on the radio chosen on the audio panel (push to talk).",
+              "context": "The manual says the stick button and the throttle switch both transmit.",
+              "src": "m1",
+              "page": "125"
+            },
+            {
+              "id": "stick-camera",
+              "name": "Gun camera button",
+              "type": "button",
+              "match": [
+                "control:stick.button.camera"
+              ],
+              "text": "Pressing this button runs the gun camera.",
+              "context": "The manual says the camera also starts with the first step of the trigger.",
+              "src": "m1",
+              "page": "254"
+            }
+          ]
+        },
+        {
+          "id": "throttle",
+          "name": "Throttle grip",
+          "src": "m1",
+          "page": "162",
+          "text": "The throttle is the engine control on the left console. Pushing it forward gives more engine power and pulling it back gives less, like the gas pedal of a car. The switches on the grip are used with the thumb.",
+          "context": "Each cockpit has a throttle. The two are joined by a mechanical link. The manual says the throttle also works as the high pressure fuel cock.",
+          "controls": [
+            {
+              "id": "throttle-axis",
+              "name": "Throttle (engine thrust)",
+              "type": "axis",
+              "match": [
+                "control:throttle.axis.main",
+                "item:left-console:2"
+              ],
+              "text": "Moving this lever forward gives the engine more power. Pulling it back gives less. The lever goes from STOP through IDLE to FULL, with no afterburner.",
+              "context": "The manual says the engine idles at about 40 percent speed. A finger lift must be raised to pass from IDLE to STOP.",
+              "src": "m1",
+              "page": "165"
+            },
+            {
+              "id": "throttle-stop",
+              "name": "Throttle STOP position",
+              "type": "other",
+              "match": [
+                "control:throttle.detent.cutoff"
+              ],
+              "text": "At the far back end of the throttle travel is the STOP position. Moving the throttle there closes the fuel valve of the engine and stops it.",
+              "context": "The manual says the pilot lifts the finger lift to pass the throttle from IDLE to STOP, so the engine is not stopped by mistake.",
+              "src": "m1",
+              "page": "165"
+            },
+            {
+              "id": "throttle-airbrake",
+              "name": "Airbrake switch",
+              "type": "switch3",
+              "match": [
+                "control:throttle.speedbrake"
+              ],
+              "positions": [
+                {
+                  "name": "OUT",
+                  "text": "The airbrake opens."
+                },
+                {
+                  "name": "Centre",
+                  "text": "No command; the airbrake stays where it is."
+                },
+                {
+                  "name": "IN",
+                  "text": "The airbrake closes."
+                }
+              ],
+              "text": "Moving this thumb switch to OUT opens the airbrake under the belly to slow the plane down. Moving it to IN closes it. It rests in the middle.",
+              "context": "The manual says the airbrake can open up to 57 degrees and has no speed limit. It goes to a partly closed position when the landing gear is extended.",
+              "src": "m1",
+              "page": "161"
+            },
+            {
+              "id": "throttle-ptt",
+              "name": "Push-to-talk switch (COMM1/COMM2)",
+              "type": "switch3",
+              "match": [
+                "control:throttle.switch.ptt"
+              ],
+              "positions": [
+                {
+                  "name": "Forward",
+                  "text": "Transmit through the UHF radio COMM1."
+                },
+                {
+                  "name": "Centre",
+                  "text": "The transmitters are not working."
+                },
+                {
+                  "name": "Backward",
+                  "text": "Transmit through the V/UHF radio COMM2."
+                }
+              ],
+              "text": "Pushing this thumb switch forward transmits on the COMM1 radio. Pushing it backward transmits on the COMM2 radio. In the middle it is at rest.",
+              "context": "The manual describes it as the PTT switch on the engine throttle grip.",
+              "src": "m1",
+              "page": "125"
+            },
+            {
+              "id": "throttle-relight",
+              "name": "RELIGHT button",
+              "type": "button",
+              "match": [
+                "control:throttle.button.relight"
+              ],
+              "text": "Holding this button lights the engine again in flight if it has gone out. It opens the starting fuel valve and switches on the sparks while it is held.",
+              "context": "The manual says the throttle must be at IDLE and the engine must still be windmilling. The button is released at 40 percent speed or after 30 seconds.",
+              "src": "m1",
+              "page": "143"
+            },
+            {
+              "id": "throttle-sight-mode",
+              "name": "Gunsight mode selector (ring on the grip)",
+              "type": "knob",
+              "match": [
+                "control:throttle.knob.sight_mode"
+              ],
+              "positions": [
+                {
+                  "name": "MODE 1",
+                  "text": "Air-to-ground firing without roll control."
+                },
+                {
+                  "name": "MODE 2",
+                  "text": "Air-to-ground firing with roll control."
+                },
+                {
+                  "name": "MODE 3",
+                  "text": "Air-to-air firing at 500 metres."
+                },
+                {
+                  "name": "MODE 4",
+                  "text": "Air-to-air firing at 300 metres."
+                }
+              ],
+              "text": "This ring on the front throttle grip chooses the gunsight mode. MODE 1 and 2 are for shooting at the ground, without or with roll control. MODE 3 and 4 are for shooting at other aircraft at 500 or 300 metres.",
+              "context": "The manual says the mode is set with a rotary ring on the engine throttle in the front cockpit.",
+              "src": "m1",
+              "page": "250"
+            },
+            {
+              "id": "throttle-smoke",
+              "name": "Smoke push-button (PAN)",
+              "type": "button",
+              "match": [
+                "control:throttle.button.smoke"
+              ],
+              "text": "On the MB-339A/PAN, pressing this button on the throttle switches the coloured smoke on and off, if the smoke switches are on. On the other version it sends the landing-gear-down signal.",
+              "context": "The manual says the same button normally sends a two-tone signal to the ground that tells the landing gear is down and locked.",
+              "src": "m1",
+              "page": "262"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "rear-instrument-panel",
+      "where": "front-center",
+      "name": "Rear cockpit: instrument panel",
+      "seat": 2,
+      "text": "The instrument panel of the rear cockpit, where the instructor sits. It has the same dials as the front, plus the lock-out switch for the weapons.",
+      "panels": [
+        {
+          "id": "r-flight-instruments",
+          "name": "Flight instruments (rear cockpit)",
+          "src": "m1",
+          "page": "131",
+          "text": "These are the round dials that tell the pilot how fast the plane flies, how high it is, which way it points and whether the wings are level.",
+          "context": "The pilot looks at these dials all the time. The rear cockpit has its own copy of most of them, so the instructor sees the same picture. This is the copy in the rear (instructor) cockpit.",
+          "controls": [
+            {
+              "id": "adi-pitch",
+              "name": "Pitch adjustment knob (ADI)",
+              "type": "knob",
+              "match": [
+                "PNT_150"
+              ],
+              "text": "Turning this knob moves the little aircraft symbol of the ADI up or down against the horizon line. This corrects the picture for changes in nose angle at different loads and speeds.",
+              "context": "The manual calls it the horizon line adjusting knob of the ADI. This is the copy in the rear (instructor) cockpit.",
+              "src": "m1",
+              "page": "141"
+            },
+            {
+              "id": "heading-set",
+              "name": "HEADING SET knob (HSI)",
+              "type": "knob",
+              "match": [
+                "PNT_173"
+              ],
+              "text": "Turning this knob moves the double heading marker on the compass card. This marks the heading the pilot wants to fly.",
+              "context": "The flight director's HDG button steers toward this marker. This is the copy in the rear (instructor) cockpit.",
+              "src": "m1",
+              "page": "142"
+            },
+            {
+              "id": "course-set",
+              "name": "COURSE SET knob (HSI)",
+              "type": "knob",
+              "match": [
+                "PNT_172"
+              ],
+              "text": "Turning this knob moves the course arrow on the HSI to the course the pilot wants to fly. The number shows in the COURSE window.",
+              "context": "A drift of the deviation bar to the left or right shows which way the plane is off that course. This is the copy in the rear (instructor) cockpit.",
+              "src": "m1",
+              "page": "142"
+            },
+            {
+              "id": "baro",
+              "name": "Pressure setting knob (altimeter)",
+              "type": "knob",
+              "match": [
+                "PNT_171"
+              ],
+              "text": "Turning this knob sets the air pressure number in the altimeter. Without the right number the altimeter reads too high or too low.",
+              "context": "The manual says the knob is in the lower left corner and works when the ground pressure is between 950 and 1050 millibar. This is the copy in the rear (instructor) cockpit.",
+              "src": "m1",
+              "page": "137"
+            },
+            {
+              "id": "standby-cage",
+              "name": "Cage knob of the standby horizon",
+              "type": "knob",
+              "match": [
+                "PNT_152"
+              ],
+              "text": "Pulling this knob locks (cages) the gyroscope of the spare horizon. Turning it without pulling moves the little aircraft symbol up or down.",
+              "context": "The manual says the pilot pulls it after aerobatics to bring the ball back to the horizon, and not before about 60 seconds after power on. This is the copy in the rear (instructor) cockpit.",
+              "src": "m1",
+              "page": "139"
+            },
+            {
+              "id": "g-reset",
+              "name": "Reset min/max G button",
+              "type": "button",
+              "match": [
+                "PNT_244"
+              ],
+              "text": "Pressing this button sets the two memory pointers of the G meter back to 1 G.",
+              "context": "The manual says the button is in the lower left corner of the instrument. This is the copy in the rear (instructor) cockpit.",
+              "src": "m1",
+              "page": "141"
+            },
+            {
+              "id": "clock-wind",
+              "name": "Clock winding and setting knob",
+              "type": "knob",
+              "match": [
+                "PNT_251"
+              ],
+              "text": "Turning this knob winds the clock. Pulling it out lets the pilot set the clock hands.",
+              "context": "The manual says the knob is in the lower left corner of the clock. This is the copy in the rear (instructor) cockpit.",
+              "src": "m1",
+              "page": "152"
+            },
+            {
+              "id": "clock-chrono",
+              "name": "Stopwatch start/stop/reset knob",
+              "type": "button",
+              "match": [
+                "PNT_250"
+              ],
+              "text": "Pressing this knob on the clock starts the stopwatch, stops it, and sets it back to zero.",
+              "context": "The manual says the knob is in the upper right corner of the clock. This is the copy in the rear (instructor) cockpit.",
+              "src": "m1",
+              "page": "152"
+            }
+          ]
+        },
+        {
+          "id": "r-engine-gauges",
+          "name": "Engine, fuel and system gauges (rear cockpit)",
+          "src": "m1",
+          "page": "131",
+          "text": "These dials show how the engine and the plane's systems are doing: engine speed, exhaust temperature, oil pressure, fuel, oxygen and cabin height.",
+          "context": "The pilot checks them after engine start and keeps looking at them in flight. A reading outside the normal range is the first sign of a problem. This is the copy in the rear (instructor) cockpit.",
+          "controls": [
+            {
+              "id": "tank-selector",
+              "name": "Tank selector (fuel quantity indicator)",
+              "type": "switch",
+              "match": [
+                "PNT_253"
+              ],
+              "text": "This switch chooses which tank the fuel quantity indicator reads.",
+              "context": "The manual names the positions PYL L and PYL R for the PAN version and describes a total quantity (TOT QTY) reading. This is the copy in the rear (instructor) cockpit.",
+              "src": "m1",
+              "page": "44"
+            },
+            {
+              "id": "test-fuel",
+              "name": "Test button (next to the tank selector)",
+              "type": "button",
+              "match": [
+                "PNT_252"
+              ],
+              "text": "The game names this control 'Test'. The manual does not say what it tests.",
+              "context": "It is one of the clickable parts of the instrument panel in the game. This is the copy in the rear (instructor) cockpit.",
+              "src": "m1"
+            }
+          ]
+        },
+        {
+          "id": "r-warning-lights",
+          "name": "Warning lights (rear cockpit)",
+          "src": "m1",
+          "page": "131",
+          "text": "These lamps tell the pilot when something is wrong: a fire, an overheating engine, an open canopy or any other fault.",
+          "context": "The red FIRE light means danger now. The amber lights mean something needs attention. The master caution light sums up the amber lights. This is the copy in the rear (instructor) cockpit.",
+          "controls": [
+            {
+              "id": "master-caution",
+              "name": "MASTER CAUTION light and reset button",
+              "type": "button",
+              "match": [
+                "PNT_184"
+              ],
+              "text": "This light comes on when a caution light of the caution panel lights up. Pressing it puts the light out, ready for the next fault.",
+              "context": "The caution panel on the right side shows what the fault is. This is the copy in the rear (instructor) cockpit.",
+              "src": "m1",
+              "page": "53"
+            }
+          ]
+        },
+        {
+          "id": "r-armament",
+          "name": "Armament control panel (rear cockpit)",
+          "src": "m1",
+          "page": "247",
+          "text": "This panel at the lower left of the instrument panel chooses and arms the weapons carried on the six wing stations: bombs, rockets or gun pods.",
+          "context": "The six stations are the racks under the wings, numbered 1 to 6. The manual says weapons only work when the plane is in the air, because a switch on the left wheel leg cuts the power on the ground. This is the copy in the rear (instructor) cockpit.",
+          "controls": [
+            {
+              "id": "arm-inhibit",
+              "name": "MASTER ARM INHIBIT switch with guard",
+              "type": "switch2",
+              "match": [
+                "PNT_343",
+                "PNT_344"
+              ],
+              "positions": [
+                {
+                  "name": "ON",
+                  "text": "The front pilot may use the armament controls."
+                },
+                {
+                  "name": "OFF",
+                  "text": "The armament controls of the front cockpit are blocked."
+                }
+              ],
+              "text": "This switch in the rear cockpit lets the instructor stop the student's weapon use at any moment. With the guard down and the switch on, the front pilot may use the armament controls. With the guard and the switch up, they are blocked.",
+              "context": "The manual calls it the armament lock-out switch. The salvo and selective jettison buttons are not blocked. This is the copy in the rear (instructor) cockpit.",
+              "src": "m1",
+              "page": "249"
+            }
+          ]
+        },
+        {
+          "id": "r-gunsight",
+          "name": "Gunsight control panel (RGS2) (rear cockpit)",
+          "src": "m1",
+          "page": "250",
+          "text": "The gunsight is the aiming device on top of the instrument panel. It shows an aiming mark (a reticle) in front of the pilot's eyes. This control panel switches the sight on, sets its brightness and tilts the mark.",
+          "context": "The manual calls it the Aeritalia-SAAB RGS2 gyro sight. It works out by itself how far to lead a moving target. The rear cockpit has a repeater sight with brightness control. This is the copy in the rear (instructor) cockpit.",
+          "controls": [
+            {
+              "id": "sight-power",
+              "name": "PWR switch (gunsight)",
+              "type": "switch",
+              "match": [
+                "PNT_385"
+              ],
+              "text": "This switch turns the gunsight on and picks which of its two lamps lights the reticle. OFF switches it off. L1 and L2 turn the sight on with the first or the second lamp.",
+              "context": "The manual says L2 is the standby lamp. This is the copy in the rear (instructor) cockpit.",
+              "src": "m1",
+              "page": "255"
+            },
+            {
+              "id": "sight-brightness",
+              "name": "Reticle brightness knob",
+              "type": "knob",
+              "match": [
+                "PNT_386"
+              ],
+              "text": "Turning this knob makes the aiming mark brighter or dimmer.",
+              "context": "The manual says the rear cockpit can control the reticle brightness of its own sight. This is the copy in the rear (instructor) cockpit.",
+              "src": "m1",
+              "page": "255"
+            }
+          ]
+        },
+        {
+          "id": "r-fd-hsi",
+          "name": "Flight director and HSI control panels (rear cockpit)",
+          "src": "m1",
+          "page": "106",
+          "text": "These push-buttons choose what the flight director and the HSI show. The flight director moves two steering bars on the ADI, and the pilot follows the bars by hand.",
+          "context": "The manual says the flight director cannot be used with modes that do not fit together, for example altitude hold with glide slope. The rear cockpit has the same buttons. This is the copy in the rear (instructor) cockpit.",
+          "controls": [
+            {
+              "id": "fd-stby",
+              "name": "F/D STBY button",
+              "type": "button",
+              "match": [
+                "PNT_268"
+              ],
+              "text": "Pressing this button puts the flight director in standby. The steering bars move out of the pilot's view.",
+              "context": "In standby the computer is ready to work. The HSI and ADI keep showing their normal information. This is the copy in the rear (instructor) cockpit.",
+              "src": "m1",
+              "page": "109"
+            },
+            {
+              "id": "fd-hdg",
+              "name": "F/D HDG button (heading)",
+              "type": "button",
+              "match": [
+                "PNT_266"
+              ],
+              "text": "This button makes the vertical steering bar show how to turn to the heading set with the HEADING SET knob of the HSI, and how to stay on it.",
+              "context": "HDG means heading. The HSI shows the marker that this mode steers toward. This is the copy in the rear (instructor) cockpit.",
+              "src": "m1",
+              "page": "109"
+            },
+            {
+              "id": "fd-radio-nav",
+              "name": "F/D RADIO NAV button",
+              "type": "button",
+              "match": [
+                "PNT_269"
+              ],
+              "text": "This button makes the vertical steering bar show how to reach and follow a radio line: a VOR or TACAN radial, or the line leading to a runway (the localizer).",
+              "context": "The pilot sets the radial with the COURSE SET knob of the HSI and tunes the VOR or TACAN radio. This is the copy in the rear (instructor) cockpit.",
+              "src": "m1",
+              "page": "109"
+            },
+            {
+              "id": "fd-gs-arm",
+              "name": "F/D GS ARM button",
+              "type": "button",
+              "match": [
+                "PNT_267"
+              ],
+              "text": "This button gets the flight director ready for the glide path. It waits for the plane to meet the glide path of the runway, and then switches to the GS mode by itself.",
+              "context": "The glide path is the invisible slope to the runway sent by the ILS radio beams. GS ARM means glide slope armed. This is the copy in the rear (instructor) cockpit.",
+              "src": "m1",
+              "page": "109"
+            },
+            {
+              "id": "fd-gs",
+              "name": "F/D GS button (glide slope)",
+              "type": "button",
+              "match": [
+                "PNT_270"
+              ],
+              "text": "This button makes the horizontal steering bar guide the plane down the glide path to the runway. It works only when an ILS frequency is tuned.",
+              "context": "The manual says the GS ARM mode starts it automatically when the glide path is met. This is the copy in the rear (instructor) cockpit.",
+              "src": "m1",
+              "page": "109"
+            },
+            {
+              "id": "fd-alt",
+              "name": "F/D ALT HOLD button",
+              "type": "button",
+              "match": [
+                "PNT_271"
+              ],
+              "text": "This button makes the horizontal steering bar show the pitch needed to stay at the height at which the button was pressed.",
+              "context": "The manual says the computer memorizes the flight altitude and switches the glide slope mode off. This is the copy in the rear (instructor) cockpit.",
+              "src": "m1",
+              "page": "109"
+            },
+            {
+              "id": "hsi-tacan",
+              "name": "HSI source button TACAN",
+              "type": "button",
+              "match": [
+                "PNT_246"
+              ],
+              "text": "Pressing this button makes the HSI show the bearing, distance and deviation from the TACAN station.",
+              "context": "TACAN is a radio beacon system of military aircraft and ships. This is the copy in the rear (instructor) cockpit.",
+              "src": "m1",
+              "page": "146"
+            },
+            {
+              "id": "hsi-vor",
+              "name": "HSI source button VOR",
+              "type": "button",
+              "match": [
+                "PNT_247"
+              ],
+              "text": "Pressing this button makes the HSI show the bearing and deviation from the VOR or ILS station.",
+              "context": "A VOR is a ground radio beacon. The ILS is the radio beam system at a runway. This is the copy in the rear (instructor) cockpit.",
+              "src": "m1",
+              "page": "146"
+            },
+            {
+              "id": "hsi-rnav",
+              "name": "HSI source button RNAV",
+              "type": "button",
+              "match": [
+                "PNT_248"
+              ],
+              "text": "Pressing this button makes the HSI show the information of the AHRS/GPS navigation system, the point the plane is steering to.",
+              "context": "RNAV means area navigation, flying to any point and not only along beacons. This is the copy in the rear (instructor) cockpit.",
+              "src": "m1",
+              "page": "146"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

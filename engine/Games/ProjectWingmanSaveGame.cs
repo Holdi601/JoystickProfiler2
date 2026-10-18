@@ -100,7 +100,7 @@ namespace JoyPro.Engine.Games
             {
                 string temp = path + ".joypro-tmp";
                 File.WriteAllBytes(temp, updated);
-                File.Replace(temp, path, null);
+                SafeFileIo.ReplaceFile(temp, path);
             }
             catch (Exception ex)
             {

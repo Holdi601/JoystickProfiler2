@@ -1,0 +1,2324 @@
+{
+  "format": "joypro-cockpit-guide",
+  "version": 1,
+  "partOf": "dcs-mi-24p",
+  "areas": [
+    {
+      "id": "pilot-center-pedestal",
+      "where": "center-pedestal",
+      "name": "Centre pedestal",
+      "seat": 1,
+      "text": "The panel between the pilot's legs and on the middle of the console. It has the autopilot, the DISS-15 buttons, the R-863 radio and the SPUU-52.",
+      "panels": [
+        {
+          "id": "autopilot",
+          "name": "Autopilot panel",
+          "src": "m1",
+          "text": "The autopilot is the system that helps keep the helicopter steady. This panel has a pair of ON and OFF lamp-buttons for each channel and knobs for small corrections. The game names the channels H, K, T and B, and there are modes for altitude, speed, hover and route.",
+          "context": "The manual's start-up list switches on the roll, pitch and direction (yaw) channels with the ON buttons. If the collective blocks the buttons, Backspace hides it. The OFF button on the cyclic switches the autopilot off.",
+          "controls": [
+            {
+              "id": "sau-h",
+              "name": "Channel H buttons (ON / OFF)",
+              "type": "button",
+              "match": [
+                "SAU-H-ON-PTR",
+                "SAU-H-OFF-PTR"
+              ],
+              "count": 2,
+              "text": "These two buttons switch the autopilot channel named H on and off. The game names them 'Autopilot H Channel ON' and 'OFF'.",
+              "context": "The manual does not say which letter stands for which channel; it lists the roll, pitch and direction channels together.",
+              "src": "m1",
+              "page": "23"
+            },
+            {
+              "id": "sau-k",
+              "name": "Channel K buttons (ON / OFF)",
+              "type": "button",
+              "match": [
+                "SAU-K-ON-PTR",
+                "SAU-K-OFF-PTR"
+              ],
+              "count": 2,
+              "text": "These two buttons switch the autopilot channel named K on and off.",
+              "context": "The manual's start-up list switches the three flight channels on one after the other.",
+              "src": "m1",
+              "page": "23"
+            },
+            {
+              "id": "sau-t",
+              "name": "Channel T buttons (ON / OFF)",
+              "type": "button",
+              "match": [
+                "SAU-T-ON-PTR",
+                "SAU-T-OFF-PTR"
+              ],
+              "count": 2,
+              "text": "These two buttons switch the autopilot channel named T on and off.",
+              "context": "Like the other channel buttons they have a lamp that shows the state.",
+              "src": "m1",
+              "page": "23"
+            },
+            {
+              "id": "sau-b",
+              "name": "Channel B buttons (ON / OFF)",
+              "type": "button",
+              "match": [
+                "SAU-B-ON-PTR",
+                "SAU-B-OFF-PTR"
+              ],
+              "count": 2,
+              "text": "These two buttons switch the autopilot channel named B on and off.",
+              "context": "The game names them 'Autopilot B Channel ON' and 'OFF'. The manual does not say what B controls.",
+              "src": "m1"
+            },
+            {
+              "id": "sau-knobs",
+              "name": "Delta correction knobs (H, K, T)",
+              "type": "knob",
+              "match": [
+                "SAU-H-KNOB-PTR",
+                "SAU-K-KNOB-PTR",
+                "SAU-T-KNOB-PTR"
+              ],
+              "count": 3,
+              "text": "These three knobs make small corrections to what the autopilot channels hold. The game names them 'Autopilot H/K/T Channel Delta Correction'.",
+              "context": "A delta is a small change. The pilot turns the knob to nudge the setting a little.",
+              "src": "m1"
+            },
+            {
+              "id": "sau-altitude-control",
+              "name": "Altitude control button",
+              "type": "button",
+              "match": [
+                "SAU-B-SWITCH-PTR"
+              ],
+              "text": "This button controls the altitude function of the autopilot. The game names it 'Autopilot Altitude Control'.",
+              "context": "The manual does not describe it.",
+              "src": "m1"
+            },
+            {
+              "id": "sau-route-azimuth",
+              "name": "Route azimuth knob",
+              "type": "knob",
+              "match": [
+                "SAU-AZ-PTR"
+              ],
+              "text": "This knob sets the direction of the route for the autopilot's route mode. The game names it 'Autopilot Route Azimuth'.",
+              "context": "The manual does not describe it.",
+              "src": "m1"
+            },
+            {
+              "id": "sau-lighting",
+              "name": "Buttons lighting switch (BRIGHT / DIM)",
+              "type": "switch2",
+              "match": [
+                "SAU-BRIGHT-DIM-PTR"
+              ],
+              "positions": [
+                {
+                  "name": "BRIGHT",
+                  "text": "The button lamps are bright."
+                },
+                {
+                  "name": "DIM",
+                  "text": "The button lamps are dim."
+                }
+              ],
+              "text": "This switch sets the lamps in the autopilot buttons to bright or dim.",
+              "context": "At night the pilot sets them to dim so they do not dazzle.",
+              "src": "m1"
+            },
+            {
+              "id": "sau-speed",
+              "name": "Speed stabilization buttons (ON / OFF)",
+              "type": "button",
+              "match": [
+                "SAU-SPEED-ON-PTR",
+                "SAU-SPEED-OFF-PTR"
+              ],
+              "count": 2,
+              "text": "These two buttons switch on and off the speed stabilization of the autopilot, a function that helps hold the speed.",
+              "context": "The game names them 'Autopilot Speed Stabilization ON' and 'OFF'.",
+              "src": "m1"
+            },
+            {
+              "id": "sau-hover",
+              "name": "Hover mode button (ON)",
+              "type": "button",
+              "match": [
+                "SAU-HOVER-ON-PTR"
+              ],
+              "text": "Pressing this button switches on the hover mode of the autopilot, which helps the helicopter stay at one place.",
+              "context": "The button to leave the mode is the route and hover OFF button.",
+              "src": "m1"
+            },
+            {
+              "id": "sau-route",
+              "name": "Route mode button (ON)",
+              "type": "button",
+              "match": [
+                "SAU-ROUTE-ON-PTR"
+              ],
+              "text": "Pressing this button switches on the route mode of the autopilot.",
+              "context": "The route and hover OFF button switches this mode off.",
+              "src": "m1"
+            },
+            {
+              "id": "sau-hover-route-off",
+              "name": "Route and hover OFF button",
+              "type": "button",
+              "match": [
+                "SAU-HOVER-ROUTE-OFF-PTR"
+              ],
+              "text": "Pressing this button switches off both the route mode and the hover mode.",
+              "context": "It is the only OFF button for these two modes.",
+              "src": "m1"
+            },
+            {
+              "id": "sau-height",
+              "name": "Altitude mode buttons (ON / OFF)",
+              "type": "button",
+              "match": [
+                "SAU-HEIGHT-ON-PTR",
+                "SAU-HEIGHT-OFF-PTR"
+              ],
+              "count": 2,
+              "text": "These two buttons switch the altitude mode of the autopilot on and off. It helps to hold the height.",
+              "context": "The game names them 'Autopilot Altitude Mode ON' and 'OFF'.",
+              "src": "m1"
+            }
+          ]
+        },
+        {
+          "id": "hide-stick",
+          "name": "Hide cockpit elements",
+          "src": "m1",
+          "text": "A spot in the middle of the floor that hides or shows the cyclic, the collective, the seat and the door arm, so they do not hide the panels behind them.",
+          "context": "The manual says that Backspace or a click on the floor behind the cyclic does the same. It is useful for the autopilot buttons.",
+          "controls": [
+            {
+              "id": "hide-stick-toggle",
+              "name": "Hide stick toggle (SHOW / HIDE)",
+              "type": "switch2",
+              "match": [
+                "PTR-STICK-HIDE-974"
+              ],
+              "positions": [
+                {
+                  "name": "SHOW",
+                  "text": "The hidden parts are shown again."
+                },
+                {
+                  "name": "HIDE",
+                  "text": "The parts that block the view are hidden."
+                }
+              ],
+              "text": "This switch hides or shows the cyclic, the collective and other parts that block the view of panels. The game names it 'Hide Stick toggle'.",
+              "context": "The controls are not removed from the helicopter. They are only hidden from view.",
+              "src": "m1",
+              "page": "19"
+            }
+          ]
+        },
+        {
+          "id": "ext-cargo",
+          "name": "External cargo release switches",
+          "src": "m1",
+          "text": "Two switches for a load that hangs under the helicopter. External cargo is such a load, carried on a hook.",
+          "context": "The release buttons are on the collective. These switches set how the hook behaves.",
+          "controls": [
+            {
+              "id": "cargo-retr",
+              "name": "External cargo remove release switch",
+              "type": "switch2",
+              "match": [
+                "EXTCARGO-EXT-RETR-PTR"
+              ],
+              "positions": [
+                {
+                  "name": "ON",
+                  "text": "The remove-release function is on."
+                },
+                {
+                  "name": "OFF",
+                  "text": "The remove-release function is off."
+                }
+              ],
+              "text": "This switch is the one the game calls 'External Cargo Remove Release'. It works the release of the cargo hook.",
+              "context": "The manual does not describe it.",
+              "src": "m1"
+            },
+            {
+              "id": "cargo-auto",
+              "name": "External cargo automatic dropping switch",
+              "type": "switch2",
+              "match": [
+                "EXTCARGO-AUTOLOCK-PTR"
+              ],
+              "positions": [
+                {
+                  "name": "ON",
+                  "text": "Automatic dropping is on."
+                },
+                {
+                  "name": "OFF",
+                  "text": "Automatic dropping is off."
+                }
+              ],
+              "text": "This switch turns on the automatic dropping of the external cargo.",
+              "context": "The game names it 'External Cargo Automatic Dropping'.",
+              "src": "m1"
+            }
+          ]
+        },
+        {
+          "id": "diss-buttons",
+          "name": "DISS-15 control buttons",
+          "src": "m1",
+          "text": "A group of buttons that move the numbers of the DISS-15: the deviation, the path and the angle of the map, and the switch for the coordinates.",
+          "context": "The DISS-15 measures the movement over the ground. The pilot uses the buttons to set the start values for the moving map.",
+          "controls": [
+            {
+              "id": "diss-deviation",
+              "name": "DISS deviation buttons (decrease / increase)",
+              "type": "button",
+              "match": [
+                "PTR-DISS-BTN-TOLE",
+                "PTR-DISS-BTN-TORI"
+              ],
+              "count": 2,
+              "text": "These two buttons make the deviation setting of the DISS-15 smaller or bigger. The deviation is the sideways distance from the planned track.",
+              "context": "The game names them 'DISS decrease deviation' and 'DISS increase deviation'.",
+              "src": "m1"
+            },
+            {
+              "id": "diss-path",
+              "name": "DISS path buttons (decrease / increase)",
+              "type": "button",
+              "match": [
+                "PTR-DISS-BTN-N",
+                "PTR-DISS-BTN-V"
+              ],
+              "count": 2,
+              "text": "These two buttons make the path setting of the DISS-15 smaller or bigger.",
+              "context": "The game names them 'DISS decrease path' and 'DISS increase path'.",
+              "src": "m1"
+            },
+            {
+              "id": "diss-angle",
+              "name": "DISS map angle buttons (minus / plus)",
+              "type": "button",
+              "match": [
+                "PTR-DISS-BTN-MINUS",
+                "PTR-DISS-BTN-PLUS"
+              ],
+              "count": 2,
+              "text": "These two buttons turn the angle of the moving map to one side or the other.",
+              "context": "The game names them 'DISS decrease map angle' and 'DISS increase map angle'.",
+              "src": "m1"
+            },
+            {
+              "id": "diss-coordinates",
+              "name": "DISS coordinates buttons (OFF / ON)",
+              "type": "button",
+              "match": [
+                "PTR-DISS-BTN-OFF",
+                "PTR-DISS-BTN-ON"
+              ],
+              "count": 2,
+              "text": "These two buttons switch the coordinates function of the DISS-15 on and off.",
+              "context": "The game names them 'DISS coordinates ON' and 'OFF'.",
+              "src": "m1"
+            }
+          ]
+        },
+        {
+          "id": "red-lights-left",
+          "name": "Red light dimmers (left group)",
+          "src": "m1",
+          "text": "Two rotary switches and one switch for the red lights of the pilot's side. Red light is used at night.",
+          "context": "The red lights show the dials and the panels without blinding the pilot's eyes. The switches choose the voltage that the lights get.",
+          "controls": [
+            {
+              "id": "red-ltg-4",
+              "name": "Red lights transformer 1, left pilot panel (OFF to 20V)",
+              "type": "selector",
+              "match": [
+                "RED-LTG4-PTR"
+              ],
+              "positions": [
+                {
+                  "name": "OFF",
+                  "text": "The red lights of this group are off."
+                },
+                {
+                  "name": "8V",
+                  "text": "The lights of this group get 8 volts."
+                },
+                {
+                  "name": "9V",
+                  "text": "The lights of this group get 9 volts."
+                },
+                {
+                  "name": "10V",
+                  "text": "The lights of this group get 10 volts."
+                },
+                {
+                  "name": "11V",
+                  "text": "The lights of this group get 11 volts."
+                },
+                {
+                  "name": "12V",
+                  "text": "The lights of this group get 12 volts."
+                },
+                {
+                  "name": "13V",
+                  "text": "The lights of this group get 13 volts."
+                },
+                {
+                  "name": "14V",
+                  "text": "The lights of this group get 14 volts."
+                },
+                {
+                  "name": "16V",
+                  "text": "The lights of this group get 16 volts."
+                },
+                {
+                  "name": "18V",
+                  "text": "The lights of this group get 18 volts."
+                },
+                {
+                  "name": "20V",
+                  "text": "The lights of this group get 20 volts."
+                }
+              ],
+              "text": "This rotary switch sets the brightness of the first group of red lights on the left pilot panel. It is a step switch from OFF to 20 volts.",
+              "context": "The first group is separate from the second one. The game names it 'Transformer 1 Group Of Red Lights Left Pilot Panel'.",
+              "src": "m1"
+            },
+            {
+              "id": "red-ltg-5",
+              "name": "Red lights transformer 2, left pilot panel (OFF to 20V)",
+              "type": "selector",
+              "match": [
+                "RED-LTG5-PTR"
+              ],
+              "positions": [
+                {
+                  "name": "OFF",
+                  "text": "The red lights of this group are off."
+                },
+                {
+                  "name": "8V",
+                  "text": "The lights of this group get 8 volts."
+                },
+                {
+                  "name": "9V",
+                  "text": "The lights of this group get 9 volts."
+                },
+                {
+                  "name": "10V",
+                  "text": "The lights of this group get 10 volts."
+                },
+                {
+                  "name": "11V",
+                  "text": "The lights of this group get 11 volts."
+                },
+                {
+                  "name": "12V",
+                  "text": "The lights of this group get 12 volts."
+                },
+                {
+                  "name": "13V",
+                  "text": "The lights of this group get 13 volts."
+                },
+                {
+                  "name": "14V",
+                  "text": "The lights of this group get 14 volts."
+                },
+                {
+                  "name": "16V",
+                  "text": "The lights of this group get 16 volts."
+                },
+                {
+                  "name": "18V",
+                  "text": "The lights of this group get 18 volts."
+                },
+                {
+                  "name": "20V",
+                  "text": "The lights of this group get 20 volts."
+                }
+              ],
+              "text": "This rotary switch sets the brightness of the second group of red lights on the left pilot panel. It is a step switch from OFF to 20 volts.",
+              "context": "Having two groups lets the pilot set different parts of the panel to different brightness.",
+              "src": "m1"
+            },
+            {
+              "id": "aux-ltg",
+              "name": "Armament panel red lights switch",
+              "type": "switch2",
+              "match": [
+                "AUX-LTG-PTR"
+              ],
+              "positions": [
+                {
+                  "name": "ON",
+                  "text": "The armament panel red lights are on."
+                },
+                {
+                  "name": "OFF",
+                  "text": "The armament panel red lights are off."
+                }
+              ],
+              "text": "This switch turns on the red lights of the armament panel.",
+              "context": "The manual's weapons steps turn on the aux stores lights to enable the arm and pylon lights.",
+              "src": "m1",
+              "page": "43"
+            }
+          ]
+        },
+        {
+          "id": "r863-panel",
+          "name": "R-863 radio panel",
+          "src": "m1",
+          "text": "The R-863 is the helicopter's main voice radio. This panel has its volume, band, squelch and the extra switches around it.",
+          "context": "The power switch is on the left wall, the channel selector on the left console. The pilot talks on the radio with the trigger on the cyclic.",
+          "controls": [
+            {
+              "id": "r863-channel",
+              "name": "R-863 channel selector",
+              "type": "selector",
+              "match": [
+                "R863-CHANNEL-PTR"
+              ],
+              "text": "This rotary selector picks the stored channel of the R-863. A channel is a stored frequency, like a station button on a car radio.",
+              "context": "The game names it 'R-863 Channel Select'. It sits on the left console, in the Engines view.",
+              "src": "m1"
+            },
+            {
+              "id": "r863-volume",
+              "name": "R-863 volume knob",
+              "type": "knob",
+              "match": [
+                "R863-VOLUME-KNOB-PTR"
+              ],
+              "text": "Turning this knob makes the R-863 radio louder or quieter, like the volume knob of a car radio.",
+              "context": "The intercom knobs on the left set the level in the headset.",
+              "src": "m1"
+            },
+            {
+              "id": "r863-band",
+              "name": "R-863 band switch (FM / AM)",
+              "type": "switch2",
+              "match": [
+                "R863-MODULATION-PTR"
+              ],
+              "positions": [
+                {
+                  "name": "FM",
+                  "text": "Frequency modulation."
+                },
+                {
+                  "name": "AM",
+                  "text": "Amplitude modulation."
+                }
+              ],
+              "text": "This switch picks the type of radio signal of the R-863: FM or AM.",
+              "context": "The other station must use the same type to be understood.",
+              "src": "m1"
+            },
+            {
+              "id": "r863-squelch",
+              "name": "R-863 squelch switch",
+              "type": "switch2",
+              "match": [
+                "R863-PSH-PTR"
+              ],
+              "positions": [
+                {
+                  "name": "ON",
+                  "text": "The hiss between messages is cut."
+                },
+                {
+                  "name": "OFF",
+                  "text": "The squelch is off; the hiss is heard."
+                }
+              ],
+              "text": "This switch turns the squelch of the R-863 on or off. Squelch cuts the hiss of a radio when nobody talks.",
+              "context": "Off, the hiss between messages is heard.",
+              "src": "m1"
+            },
+            {
+              "id": "r863-emergency",
+              "name": "R-863 emergency receiver switch",
+              "type": "switch2",
+              "match": [
+                "R863-AP-PTR"
+              ],
+              "positions": [
+                {
+                  "name": "ON",
+                  "text": "The emergency receiver is on."
+                },
+                {
+                  "name": "OFF",
+                  "text": "The emergency receiver is off."
+                }
+              ],
+              "text": "This switch turns on the emergency receiver of the R-863.",
+              "context": "It is in the game with the positions ON and OFF; the manual does not describe it.",
+              "src": "m1"
+            },
+            {
+              "id": "r863-arc",
+              "name": "R-863 ARC-UD switch",
+              "type": "switch2",
+              "match": [
+                "R863-RK-PTR"
+              ],
+              "positions": [
+                {
+                  "name": "ON",
+                  "text": "The switch is on."
+                },
+                {
+                  "name": "OFF",
+                  "text": "The switch is off."
+                }
+              ],
+              "text": "This switch is named 'R-863 ARC-UD ON/OFF' by the game.",
+              "context": "The manual does not describe this switch.",
+              "src": "m1"
+            }
+          ]
+        },
+        {
+          "id": "gear-hydraulic",
+          "name": "Landing gear hydraulics and indication lights",
+          "src": "m1",
+          "text": "Two covered switches. One chooses the main or the reserve hydraulic power for the landing gear. The other turns on the gear indication lights.",
+          "context": "The reserve is for the case that the main system cannot lower the gear. The game names the covers separately.",
+          "controls": [
+            {
+              "id": "gear-hyd-switch",
+              "name": "Main/reserve gear hydraulic switch with cover",
+              "type": "switch2",
+              "match": [
+                "LANDING-GEAR-MAIN-BACKUP-COVER-PTR",
+                "LANDING-GEAR-MAIN-BACKUP-PTR"
+              ],
+              "positions": [
+                {
+                  "name": "RESERVE",
+                  "text": "The reserve hydraulic system works the gear."
+                },
+                {
+                  "name": "MAIN",
+                  "text": "The main hydraulic system works the gear."
+                }
+              ],
+              "text": "This switch picks the main or the reserve hydraulic system for the landing gear. A cover protects it.",
+              "context": "The pilot lifts the cover first. The manual does not describe the switch.",
+              "src": "m1"
+            },
+            {
+              "id": "gear-lights",
+              "name": "Gear indication lights switch with cover",
+              "type": "switch2",
+              "match": [
+                "LANDING-GEAR-LIGHTS-COVER-PTR",
+                "LANDING-GEAR-LIGHTS-PTR"
+              ],
+              "positions": [
+                {
+                  "name": "ON",
+                  "text": "The gear indication lights are on."
+                },
+                {
+                  "name": "OFF",
+                  "text": "The gear indication lights are off."
+                }
+              ],
+              "text": "This switch turns on the lights that show the position of the landing gear. A cover protects it.",
+              "context": "The lights tell the pilot whether the wheels are up or down.",
+              "src": "m1"
+            }
+          ]
+        },
+        {
+          "id": "spuu-52",
+          "name": "SPUU-52 mechanical stop panel",
+          "src": "m1",
+          "text": "The SPUU-52 limits how far the pedals can be pushed, with mechanical stops. This panel has its power switch, the OFF button and a knob.",
+          "context": "The manual's start-up list switches it on and tests it. The panel has an indicator for the stops.",
+          "controls": [
+            {
+              "id": "spuu-power",
+              "name": "SPUU power switch",
+              "type": "switch2",
+              "match": [
+                "SPUU-ON-OFF-PTR"
+              ],
+              "positions": [
+                {
+                  "name": "ON",
+                  "text": "The SPUU-52 has power."
+                },
+                {
+                  "name": "OFF",
+                  "text": "The SPUU-52 is off."
+                }
+              ],
+              "text": "This switch gives power to the SPUU-52 system.",
+              "context": "The manual's start-up list sets it to On and then presses the SPUU OFF button to test.",
+              "src": "m1",
+              "page": "23"
+            },
+            {
+              "id": "spuu-off",
+              "name": "SPUU OFF button",
+              "type": "switch2",
+              "match": [
+                "SPUU-OFF-PTR"
+              ],
+              "positions": [
+                {
+                  "name": "PRESSED",
+                  "text": "The button is pressed."
+                },
+                {
+                  "name": "RELEASED",
+                  "text": "The button is released."
+                }
+              ],
+              "text": "This is a button that acts like a switch. Pressing it switches the SPUU-52 off; its light goes out.",
+              "context": "The manual's test presses it and checks the indicator on the stops panel.",
+              "src": "m1",
+              "page": "23"
+            },
+            {
+              "id": "spuu-control",
+              "name": "SPUU control switch (P / NONE / T)",
+              "type": "selector",
+              "match": [
+                "SPUU-CONTROL-PTR"
+              ],
+              "positions": [
+                {
+                  "name": "P",
+                  "text": "Named P by the game."
+                },
+                {
+                  "name": "NONE",
+                  "text": "The middle position."
+                },
+                {
+                  "name": "T",
+                  "text": "Named T by the game."
+                }
+              ],
+              "text": "This switch has the positions P, the middle one and T. The game names it 'SPUU Control Switch'.",
+              "context": "The manual does not describe the positions.",
+              "src": "m1"
+            },
+            {
+              "id": "spuu-knob",
+              "name": "SPUU adjustment knob",
+              "type": "knob",
+              "match": [
+                "SPUU-KNOB-PTR"
+              ],
+              "text": "This knob adjusts the SPUU-52. The manual does not describe this knob; the game names it 'SPUU Adjustment Knob'.",
+              "context": "The indicator on the adjustable stops panel shows where the stops are.",
+              "src": "m1"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "pilot-right-console",
+      "where": "right-console",
+      "name": "Right console and right wall",
+      "seat": 1,
+      "text": "The right wall and the right console of the pilot-commander. The electrical panels, the circuit breakers, the anti-ice panel, the air conditioning, the door handle and the rotor brake are here.",
+      "panels": [
+        {
+          "id": "ac-ground-check",
+          "name": "AC ground check and voltmeter",
+          "src": "m1",
+          "text": "A covered switch for the check of ground power on the AC system, and the knob that picks what the AC voltmeter shows.",
+          "context": "AC means alternating current, the kind the generators make. The pilot reads the voltmeter after switching on the generators.",
+          "controls": [
+            {
+              "id": "ac-ground-check",
+              "name": "AC ground check switch with cover",
+              "type": "switch2",
+              "match": [
+                "GROUND-RECT-COVER-PTR",
+                "GROUND-RECT-PTR"
+              ],
+              "positions": [
+                {
+                  "name": "ON",
+                  "text": "The ground check is on."
+                },
+                {
+                  "name": "OFF",
+                  "text": "The ground check is off."
+                }
+              ],
+              "text": "This switch is the one the game calls 'AC Ground Check'. A cover protects it.",
+              "context": "The manual does not describe it.",
+              "src": "m1"
+            },
+            {
+              "id": "ac-voltmeter",
+              "name": "AC voltmeter knob",
+              "type": "selector",
+              "match": [
+                "VOLT-AC-KNOB-PTR"
+              ],
+              "text": "This rotary knob picks which AC source the AC voltmeter shows.",
+              "context": "The pilot checks the generator voltage here after switching on the generators.",
+              "src": "m1"
+            }
+          ]
+        },
+        {
+          "id": "ac-panel",
+          "name": "AC electrical panel",
+          "src": "m1",
+          "text": "The panel for the alternating current: the two generators, the two inverters, the transformers and the ground power.",
+          "context": "The manual's start-up list switches on the generators when the rotor reaches about 95 percent, then switches the inverter off, sets the transformers to MAIN.",
+          "controls": [
+            {
+              "id": "gen-left",
+              "name": "Left generator switch",
+              "type": "switch2",
+              "match": [
+                "GEN-LEFT-PTR"
+              ],
+              "positions": [
+                {
+                  "name": "ON",
+                  "text": "The left generator feeds the electrical system."
+                },
+                {
+                  "name": "OFF",
+                  "text": "The left generator is disconnected."
+                }
+              ],
+              "text": "This switch connects the left generator to the electrical system. A generator makes electricity while the engine runs.",
+              "context": "The manual says to switch both generators on at about 95 percent rotor speed.",
+              "src": "m1",
+              "page": "22"
+            },
+            {
+              "id": "gen-right",
+              "name": "Right generator switch",
+              "type": "switch2",
+              "match": [
+                "GEN-RIGHT-PTR"
+              ],
+              "positions": [
+                {
+                  "name": "ON",
+                  "text": "The right generator feeds the electrical system."
+                },
+                {
+                  "name": "OFF",
+                  "text": "The right generator is disconnected."
+                }
+              ],
+              "text": "This switch connects the right generator to the electrical system.",
+              "context": "With both on, the generator off lights go out and the parallel operation light comes on.",
+              "src": "m1",
+              "page": "22"
+            },
+            {
+              "id": "inv-36",
+              "name": "Inverter PT-125Ts switch with cover",
+              "type": "switch2",
+              "match": [
+                "INV36-PTR",
+                "INV36-COVER-PTR"
+              ],
+              "positions": [
+                {
+                  "name": "ON",
+                  "text": "The PT-125Ts inverter runs."
+                },
+                {
+                  "name": "OFF",
+                  "text": "The PT-125Ts inverter is off."
+                }
+              ],
+              "text": "This switch turns on the PT-125Ts inverter. An inverter makes alternating current from battery power. A cover protects it.",
+              "context": "It supplies the 36 volt instruments.",
+              "src": "m1"
+            },
+            {
+              "id": "inv-115",
+              "name": "Inverter PO-750A switch with cover",
+              "type": "switch2",
+              "match": [
+                "INV115-PTR",
+                "INV115-COVER-PTR"
+              ],
+              "positions": [
+                {
+                  "name": "ON",
+                  "text": "The PO-750A inverter runs."
+                },
+                {
+                  "name": "OFF",
+                  "text": "The PO-750A inverter is off."
+                }
+              ],
+              "text": "This switch turns on the PO-750A inverter, which makes alternating current from battery power. A cover protects it.",
+              "context": "The manual turns it on before the engine start and off again once the generators run. A light above the switch shows that it is on.",
+              "src": "m1",
+              "page": "19"
+            },
+            {
+              "id": "trans-115",
+              "name": "AC transformer 115 V switch (MAIN / AUTO / BACKUP)",
+              "type": "switch3",
+              "match": [
+                "TRANS115-PTR"
+              ],
+              "positions": [
+                {
+                  "name": "MAIN",
+                  "text": "The main transformer is used."
+                },
+                {
+                  "name": "AUTO",
+                  "text": "The neutral middle position; the game calls it Neutral."
+                },
+                {
+                  "name": "BACKUP",
+                  "text": "The backup transformer is used."
+                }
+              ],
+              "text": "This switch picks the transformer that makes the 115 volt alternating current: the main, the backup or automatic.",
+              "context": "The manual's start-up list sets the 115 volt and 36 volt transformers to MAIN after the generators are on.",
+              "src": "m1",
+              "page": "22"
+            },
+            {
+              "id": "trans-36",
+              "name": "AC transformer 36 V switch (MAIN / AUTO / BACKUP)",
+              "type": "switch3",
+              "match": [
+                "TRANS36-PTR"
+              ],
+              "positions": [
+                {
+                  "name": "MAIN",
+                  "text": "The main transformer is used."
+                },
+                {
+                  "name": "AUTO",
+                  "text": "The neutral middle position."
+                },
+                {
+                  "name": "BACKUP",
+                  "text": "The backup transformer is used."
+                }
+              ],
+              "text": "This switch picks the transformer that makes the 36 volt alternating current.",
+              "context": "Like the 115 volt switch it is set to MAIN in the start-up list.",
+              "src": "m1",
+              "page": "22"
+            },
+            {
+              "id": "ac-ground-power",
+              "name": "AC ground power switch",
+              "type": "switch2",
+              "match": [
+                "GROUND-AC-PTR"
+              ],
+              "positions": [
+                {
+                  "name": "ON",
+                  "text": "AC ground power feeds the helicopter."
+                },
+                {
+                  "name": "OFF",
+                  "text": "AC ground power is disconnected."
+                }
+              ],
+              "text": "This switch connects alternating current from a ground power cart.",
+              "context": "A ground power cart is a plug-in power source on the ground.",
+              "src": "m1"
+            }
+          ]
+        },
+        {
+          "id": "anti-ice",
+          "name": "Anti-ice panel",
+          "src": "m1",
+          "text": "The panel that switches on the heating against ice for the rotor, the engines and the windscreen.",
+          "context": "The pilot uses it in cold and wet weather. The anti-ice warning and control breakers are on the right wall panel.",
+          "controls": [
+            {
+              "id": "rotor-deice-mode",
+              "name": "Rotor anti-ice mode switch (AUTO / MANUAL)",
+              "type": "switch2",
+              "match": [
+                "ROTOR-DEICER-AUTO-MAN-PTR"
+              ],
+              "positions": [
+                {
+                  "name": "AUTO",
+                  "text": "The system starts the heating by itself."
+                },
+                {
+                  "name": "MANUAL",
+                  "text": "The pilot controls the heating by hand."
+                }
+              ],
+              "text": "This switch picks the mode of the anti-ice system: automatic or manual.",
+              "context": "The game names it 'AntiIce AUTO/MANUAL'; the manual does not describe it.",
+              "src": "m1"
+            },
+            {
+              "id": "anti-ice-off",
+              "name": "Anti-ice OFF button",
+              "type": "button",
+              "match": [
+                "ROTOR-DEICER-OFF-PTR"
+              ],
+              "text": "Pressing this button switches off the anti-ice system.",
+              "context": "The game names it 'AntiIce OFF'.",
+              "src": "m1"
+            },
+            {
+              "id": "eng-heat-right",
+              "name": "Right engine anti-ice switch",
+              "type": "switch2",
+              "match": [
+                "RIGHT-ENG-HEATING-PTR"
+              ],
+              "positions": [
+                {
+                  "name": "ON",
+                  "text": "The right engine heating is on."
+                },
+                {
+                  "name": "OFF",
+                  "text": "The right engine heating is off."
+                }
+              ],
+              "text": "This switch turns on the anti-ice heating of the right engine.",
+              "context": "Ice in the engine air intake can damage an engine.",
+              "src": "m1"
+            },
+            {
+              "id": "eng-heat-left",
+              "name": "Left engine anti-ice switch",
+              "type": "switch2",
+              "match": [
+                "LEFT-ENG-HEATING-PTR"
+              ],
+              "positions": [
+                {
+                  "name": "ON",
+                  "text": "The left engine heating is on."
+                },
+                {
+                  "name": "OFF",
+                  "text": "The left engine heating is off."
+                }
+              ],
+              "text": "This switch turns on the anti-ice heating of the left engine.",
+              "context": "The left engine has its own switch.",
+              "src": "m1"
+            },
+            {
+              "id": "windshield-deice",
+              "name": "Windshield anti-ice switch (LOW / OFF / HIGH)",
+              "type": "switch3",
+              "match": [
+                "WINDSHIELD-DEICER-PTR"
+              ],
+              "positions": [
+                {
+                  "name": "LOW",
+                  "text": "The windscreen is heated at low power."
+                },
+                {
+                  "name": "OFF",
+                  "text": "The windscreen heating is off."
+                },
+                {
+                  "name": "HIGH",
+                  "text": "The windscreen is heated at high power."
+                }
+              ],
+              "text": "This switch heats the windscreen to keep it free of ice, at low or at high power.",
+              "context": "The heating is used in icing weather.",
+              "src": "m1"
+            },
+            {
+              "id": "deicer-knob",
+              "name": "Anti-ice rotary knob (labelled AC voltmeter knob)",
+              "type": "selector",
+              "match": [
+                "DEICER-KNOB-PTR"
+              ],
+              "text": "The game labels this knob 'AC Voltmeter knob' but it belongs to the anti-ice device. The manual does not describe it.",
+              "context": "Only the label and the device name are known; the manual does not describe the knob.",
+              "src": "m1"
+            }
+          ]
+        },
+        {
+          "id": "pilot-door",
+          "name": "Pilot door and canopy handle",
+          "src": "m1",
+          "text": "The handle and safety lock of the pilot's door. The door is the entry to the rear cockpit.",
+          "context": "The manual's start-up list closes the cab door by clicking on its handle, or with LCtrl + C.",
+          "controls": [
+            {
+              "id": "door-safety",
+              "name": "Pilot door safety lock button",
+              "type": "button",
+              "match": [
+                "CANOPY-HANDLE-SAFETY-PTR"
+              ],
+              "text": "Pressing this button releases the safety lock of the door handle, so the handle can be moved.",
+              "context": "The lock stops the door from opening by accident.",
+              "src": "m1"
+            },
+            {
+              "id": "door-handle",
+              "name": "Pilot door handle (OPEN / CLOSE)",
+              "type": "handle",
+              "match": [
+                "CANOPY-HANDLE-PTR"
+              ],
+              "positions": [
+                {
+                  "name": "OPEN",
+                  "text": "The door is open."
+                },
+                {
+                  "name": "CLOSE",
+                  "text": "The door is closed."
+                }
+              ],
+              "text": "This handle opens and closes the pilot's door. The game names it 'Pilot Door Safety Lock'.",
+              "context": "The manual closes the door before the cabin is sealed.",
+              "src": "m1",
+              "page": "19"
+            }
+          ]
+        },
+        {
+          "id": "dc-panel",
+          "name": "DC electrical panel",
+          "src": "m1",
+          "text": "The panel for the direct current: the two batteries, the rectifiers, the ground power, the battery heating and the APU generator. Direct current is the kind a battery gives.",
+          "context": "The manual's start-up list turns on both batteries first, lifts the cover of the battery power switch, and sets the DC voltmeter knob to battery. The rectifiers come after the generators.",
+          "controls": [
+            {
+              "id": "batt-left",
+              "name": "Left battery switch",
+              "type": "switch2",
+              "match": [
+                "BATT-LEFT-PTR"
+              ],
+              "positions": [
+                {
+                  "name": "ON",
+                  "text": "The left battery is connected."
+                },
+                {
+                  "name": "OFF",
+                  "text": "The left battery is disconnected."
+                }
+              ],
+              "text": "This switch connects the left battery to the electrical system. A battery stores electricity for when the engines are off.",
+              "context": "The manual turns on the left and the right battery first.",
+              "src": "m1",
+              "page": "19"
+            },
+            {
+              "id": "batt-right",
+              "name": "Right battery switch",
+              "type": "switch2",
+              "match": [
+                "BATT-RIGHT-PTR"
+              ],
+              "positions": [
+                {
+                  "name": "ON",
+                  "text": "The right battery is connected."
+                },
+                {
+                  "name": "OFF",
+                  "text": "The right battery is disconnected."
+                }
+              ],
+              "text": "This switch connects the right battery to the electrical system.",
+              "context": "The helicopter has two batteries that share the load.",
+              "src": "m1",
+              "page": "19"
+            },
+            {
+              "id": "batt-heating",
+              "name": "Battery heating switch",
+              "type": "switch2",
+              "match": [
+                "BATT-HEATING-PTR"
+              ],
+              "positions": [
+                {
+                  "name": "ON",
+                  "text": "The battery heater is on."
+                },
+                {
+                  "name": "OFF",
+                  "text": "The battery heater is off."
+                }
+              ],
+              "text": "This switch heats the batteries in cold weather.",
+              "context": "The game names it 'Battery Heating'. The manual does not describe it.",
+              "src": "m1"
+            },
+            {
+              "id": "rect-left",
+              "name": "Left rectifier switch",
+              "type": "switch2",
+              "match": [
+                "RECT-LEFT-PTR"
+              ],
+              "positions": [
+                {
+                  "name": "ON",
+                  "text": "The left rectifier works."
+                },
+                {
+                  "name": "OFF",
+                  "text": "The left rectifier is off."
+                }
+              ],
+              "text": "This switch connects the left rectifier. A rectifier turns the generator's alternating current into direct current.",
+              "context": "The manual turns the rectifiers on after the generators.",
+              "src": "m1",
+              "page": "22"
+            },
+            {
+              "id": "rect-right",
+              "name": "Right rectifier switch",
+              "type": "switch2",
+              "match": [
+                "RECT-RIGHT-PTR"
+              ],
+              "positions": [
+                {
+                  "name": "ON",
+                  "text": "The right rectifier works."
+                },
+                {
+                  "name": "OFF",
+                  "text": "The right rectifier is off."
+                }
+              ],
+              "text": "This switch connects the right rectifier, which turns alternating current into direct current.",
+              "context": "It is set after the generators are running.",
+              "src": "m1",
+              "page": "22"
+            },
+            {
+              "id": "dc-ground",
+              "name": "DC ground power switch",
+              "type": "switch2",
+              "match": [
+                "GROUND-DC-PTR"
+              ],
+              "positions": [
+                {
+                  "name": "ON",
+                  "text": "DC ground power feeds the helicopter."
+                },
+                {
+                  "name": "OFF",
+                  "text": "DC ground power is disconnected."
+                }
+              ],
+              "text": "This switch connects direct current from a ground power cart.",
+              "context": "The ground power cart is used on the ground only, before the engines run.",
+              "src": "m1"
+            },
+            {
+              "id": "net-to-batt",
+              "name": "Network to batteries switch with cover",
+              "type": "switch2",
+              "match": [
+                "NET-TO-BATT-COVER-PTR",
+                "NET-TO-BATT-PTR"
+              ],
+              "positions": [
+                {
+                  "name": "ON",
+                  "text": "The network is powered from the batteries."
+                },
+                {
+                  "name": "OFF",
+                  "text": "The network is not connected to the batteries."
+                }
+              ],
+              "text": "This switch connects the electrical network to the batteries, so the batteries power the helicopter. A cover protects it.",
+              "context": "The manual lifts the cover and turns the switch On after the batteries, as the 'Battery Power' switch.",
+              "src": "m1",
+              "page": "19"
+            },
+            {
+              "id": "apu-gen",
+              "name": "APU generator switch (starter-generator)",
+              "type": "switch2",
+              "match": [
+                "STARTER-GEN-PTR"
+              ],
+              "positions": [
+                {
+                  "name": "ON",
+                  "text": "The APU starter-generator is connected."
+                },
+                {
+                  "name": "OFF",
+                  "text": "The APU starter-generator is disconnected."
+                }
+              ],
+              "text": "This switch connects the starter-generator of the APU. The game names it 'APU Generator switch'.",
+              "context": "The APU can then power the helicopter.",
+              "src": "m1"
+            },
+            {
+              "id": "dc-voltmeter",
+              "name": "DC voltmeter knob",
+              "type": "selector",
+              "match": [
+                "VOLT-DC-KNOB-PTR"
+              ],
+              "text": "This rotary knob picks which DC source the DC voltmeter shows.",
+              "context": "The manual sets it to the battery position at the start.",
+              "src": "m1",
+              "page": "19"
+            }
+          ]
+        },
+        {
+          "id": "air-conditioning",
+          "name": "Air conditioning panel",
+          "src": "m1",
+          "text": "The panel for the cabin's heating, cooling and fresh air. It sits under the pilot's right elbow.",
+          "context": "The manual's start-up list turns on the cabin air supply with the three-position switch set to Condition.",
+          "controls": [
+            {
+              "id": "ac-mode",
+              "name": "Air conditioning mode switch (CONDITIONING / OFF / BLOWDOWN)",
+              "type": "switch3",
+              "match": [
+                "AC-MODE-PTR"
+              ],
+              "positions": [
+                {
+                  "name": "CONDITIONING",
+                  "text": "The position the manual's start-up list uses to turn on the cabin air supply."
+                },
+                {
+                  "name": "OFF",
+                  "text": "The air supply is off."
+                },
+                {
+                  "name": "BLOWDOWN",
+                  "text": "The BLOWDOWN position; the manual does not describe it."
+                }
+              ],
+              "text": "This switch picks how the cabin air is made: conditioned, off or blown through.",
+              "context": "The manual sets it to the Condition position.",
+              "src": "m1",
+              "page": "23"
+            },
+            {
+              "id": "cabin-unseal",
+              "name": "Cabin unseal switch",
+              "type": "switch2",
+              "match": [
+                "CABIN-DEPRESS-PTR"
+              ],
+              "positions": [
+                {
+                  "name": "ON",
+                  "text": "The cabin is unsealed."
+                },
+                {
+                  "name": "OFF",
+                  "text": "The cabin stays sealed."
+                }
+              ],
+              "text": "This switch unseals the cabin, the opposite of the sealing wheel on the left wall. The game names it 'Cabin Unseal Switch'.",
+              "context": "The sealing wheel on the left seals the cabin.",
+              "src": "m1"
+            },
+            {
+              "id": "ac-filter",
+              "name": "Filter switch",
+              "type": "switch2",
+              "match": [
+                "AC-FILTER-PTR"
+              ],
+              "positions": [
+                {
+                  "name": "ON",
+                  "text": "The filter is on."
+                },
+                {
+                  "name": "OFF",
+                  "text": "The filter is off."
+                }
+              ],
+              "text": "This switch turns on the filter of the air supply.",
+              "context": "The game names it 'Filter Switch'.",
+              "src": "m1"
+            },
+            {
+              "id": "ac-heater1",
+              "name": "Heating switch (HOT / NORMAL)",
+              "type": "switch2",
+              "match": [
+                "AC-HEATER1-MODE-PTR"
+              ],
+              "positions": [
+                {
+                  "name": "HOT",
+                  "text": "The HOT position of the heating."
+                },
+                {
+                  "name": "NORMAL",
+                  "text": "The NORMAL position of the heating."
+                }
+              ],
+              "text": "This switch picks hot or normal heating.",
+              "context": "It works with the temperature selector.",
+              "src": "m1"
+            },
+            {
+              "id": "ac-heater2",
+              "name": "Automatic hot-cold switch (OFF / COLD / HOT / AUTO)",
+              "type": "selector",
+              "match": [
+                "AC-HEATER2-MODE-PTR"
+              ],
+              "positions": [
+                {
+                  "name": "OFF",
+                  "text": "Heating and cooling are off."
+                },
+                {
+                  "name": "COLD",
+                  "text": "The COLD setting of the switch."
+                },
+                {
+                  "name": "HOT",
+                  "text": "The HOT setting of the switch."
+                },
+                {
+                  "name": "AUTO",
+                  "text": "The AUTO setting of the switch."
+                }
+              ],
+              "text": "This selector picks the heating or cooling: off, cold, hot or automatic.",
+              "context": "The temperature selector next to it carries the wanted value.",
+              "src": "m1"
+            },
+            {
+              "id": "ac-temp",
+              "name": "Temperature selector (5 to 50)",
+              "type": "selector",
+              "match": [
+                "AC-TEMP-KNOB-PTR"
+              ],
+              "positions": [
+                {
+                  "name": "5",
+                  "text": "The wanted temperature value is 5."
+                },
+                {
+                  "name": "10",
+                  "text": "The wanted temperature value is 10."
+                },
+                {
+                  "name": "15",
+                  "text": "The wanted temperature value is 15."
+                },
+                {
+                  "name": "18",
+                  "text": "The wanted temperature value is 18."
+                },
+                {
+                  "name": "20",
+                  "text": "The wanted temperature value is 20."
+                },
+                {
+                  "name": "22",
+                  "text": "The wanted temperature value is 22."
+                },
+                {
+                  "name": "24",
+                  "text": "The wanted temperature value is 24."
+                },
+                {
+                  "name": "30",
+                  "text": "The wanted temperature value is 30."
+                },
+                {
+                  "name": "35",
+                  "text": "The wanted temperature value is 35."
+                },
+                {
+                  "name": "40",
+                  "text": "The wanted temperature value is 40."
+                },
+                {
+                  "name": "50",
+                  "text": "The wanted temperature value is 50."
+                }
+              ],
+              "text": "This rotary selector sets the wanted temperature of the cabin air.",
+              "context": "The game gives the values 5, 10, 15, 18, 20, 22, 24, 30, 35, 40 and 50.",
+              "src": "m1"
+            }
+          ]
+        },
+        {
+          "id": "right-cb",
+          "name": "Right circuit breaker panel",
+          "src": "m1",
+          "text": "A wall panel behind the pilot's right shoulder with rows of circuit breakers. A circuit breaker is a safety switch that cuts the power of one circuit when too much current flows. Each one is named for the system it protects.",
+          "context": "The manual says to turn on all circuit breakers on the left and right panels at the start. A lever lifts the frame and moves all switches together.",
+          "controls": [
+            {
+              "id": "cb-right-all",
+              "name": "All Right CBs ON (frame lever)",
+              "type": "button",
+              "match": [
+                "CB-FRAME-RIGHT-1-PTR"
+              ],
+              "text": "This lever switches on all the breakers of the right panel at once. The game names it 'All Right CBs ON'.",
+              "context": "The keyboard can do the same with RCtrl + RShift + 2.",
+              "src": "m1",
+              "page": "19"
+            },
+            {
+              "id": "cb-right-flight",
+              "name": "Flight control breakers (force gradient, collective lock, governor temperature, rotor RPM)",
+              "type": "switch2",
+              "match": [
+                "CB-RIGHT-CONTROL-FORCE-MECHANISM-PTR",
+                "CB-RIGHT-CONTROL-CLUTCH-PTR",
+                "CB-RIGHT-ENGINE-TEMP-ADJUST-LEFT-PTR",
+                "CB-RIGHT-ENGINE-TEMP-ADJUST-RIGHT-PTR",
+                "CB-RIGHT-ROTOR-RPM-ADJUST-PTR"
+              ],
+              "positions": [
+                {
+                  "name": "ON",
+                  "text": "The breaker is closed and the circuit has power."
+                },
+                {
+                  "name": "OFF",
+                  "text": "The breaker is open and the circuit is cut off."
+                }
+              ],
+              "count": 5,
+              "text": "These five breakers power parts of the flight and engine controls: the control force mechanism, the collective lever lock, the temperature control of the two governors and the rotor speed adjustment.",
+              "context": "The names are the game's. The manual does not list these breakers one by one.",
+              "src": "m1",
+              "page": "19"
+            },
+            {
+              "id": "cb-right-armament",
+              "name": "Armament breakers (signal, camera, control, cannon, pilot sight)",
+              "type": "switch2",
+              "match": [
+                "CB-RIGHT-ARMAMENT-SIGNAL-PTR",
+                "CB-RIGHT-ARMAMENT-CAMERA-SHUTTER-PTR",
+                "CB-RIGHT-ARMAMENT-CONTROL-PTR",
+                "CB-RIGHT-ARMAMENT-CANNON-PTR",
+                "CB-RIGHT-PILOT-AIM-PTR"
+              ],
+              "positions": [
+                {
+                  "name": "ON",
+                  "text": "The breaker is closed and the circuit has power."
+                },
+                {
+                  "name": "OFF",
+                  "text": "The breaker is open and the circuit is cut off."
+                }
+              ],
+              "count": 5,
+              "text": "These five breakers give power to parts of the weapon system: the signal, the camera, the armament control, the cannon and the pilot's sight.",
+              "context": "The manual says to turn on all weapons circuit breakers before using the weapons.",
+              "src": "m1",
+              "page": "19"
+            },
+            {
+              "id": "cb-right-stores",
+              "name": "External stores and jettison breakers",
+              "type": "switch2",
+              "match": [
+                "CB-RIGHT-EXT-STORES-TACTICAL-DROP-PTR",
+                "CB-RIGHT-EXT-STORES-LOCK-RELEASE-PTR",
+                "CB-RIGHT-LAUNCHER-DETACH-PTR",
+                "CB-RIGHT-BOMB-COMBAT-DROP-PTR",
+                "CB-RIGHT-CONNECTION-DISTRIBUTION-DEVICE-PTR"
+              ],
+              "positions": [
+                {
+                  "name": "ON",
+                  "text": "The breaker is closed and the circuit has power."
+                },
+                {
+                  "name": "OFF",
+                  "text": "The breaker is open and the circuit is cut off."
+                }
+              ],
+              "count": 5,
+              "text": "These five breakers power the release of things carried outside: the tactical release, the release lock, the jettison of the missile rails, the bomb release and the connection distribution device.",
+              "context": "The release buttons on the collective and the weapons panel need them.",
+              "src": "m1",
+              "page": "19"
+            },
+            {
+              "id": "cb-right-fire2",
+              "name": "Fire protection breakers, second squib (auto, manual)",
+              "type": "switch2",
+              "match": [
+                "CB-RIGHT-FIRE-2-AUTO-PTR",
+                "CB-RIGHT-FIRE-2-MANUAL-PTR"
+              ],
+              "positions": [
+                {
+                  "name": "ON",
+                  "text": "The breaker is closed and the circuit has power."
+                },
+                {
+                  "name": "OFF",
+                  "text": "The breaker is open and the circuit is cut off."
+                }
+              ],
+              "count": 2,
+              "text": "These two breakers power the second set of extinguisher charges (squibs), for automatic and manual firing.",
+              "context": "The first set has its breakers on the left panel.",
+              "src": "m1",
+              "page": "19"
+            },
+            {
+              "id": "cb-right-doors",
+              "name": "Door jettison breakers (pilot, gunner)",
+              "type": "switch2",
+              "match": [
+                "CB-RIGHT-EMERGENCY-DOOR-DETACH-PILOT-PTR",
+                "CB-RIGHT-EMERGENCY-DOOR-DETACH-OP-PTR"
+              ],
+              "positions": [
+                {
+                  "name": "ON",
+                  "text": "The breaker is closed and the circuit has power."
+                },
+                {
+                  "name": "OFF",
+                  "text": "The breaker is open and the circuit is cut off."
+                }
+              ],
+              "count": 2,
+              "text": "These two breakers power the emergency jettison of the pilot's door and of the gunner's door.",
+              "context": "In an emergency the doors can be thrown off so the crew can leave.",
+              "src": "m1",
+              "page": "19"
+            },
+            {
+              "id": "cb-right-fuel",
+              "name": "Fuel breakers (quantity, tank 2 valves, pumps 2 and 4)",
+              "type": "switch2",
+              "match": [
+                "CB-RIGHT-FUEL-METER-PTR",
+                "CB-RIGHT-VALVE-TANK-2-PTR",
+                "CB-RIGHT-VALVE-FIRE-RIGHT-PTR",
+                "CB-RIGHT-PUMP-TANK-2-PTR",
+                "CB-RIGHT-PUMP-TANK-4-PTR"
+              ],
+              "positions": [
+                {
+                  "name": "ON",
+                  "text": "The breaker is closed and the circuit has power."
+                },
+                {
+                  "name": "OFF",
+                  "text": "The breaker is open and the circuit is cut off."
+                }
+              ],
+              "count": 5,
+              "text": "These five breakers power the fuel quantity indication, the valves of tank 2 and the pumps of tanks 2 and 4.",
+              "context": "The matching switches are on the fuel control panel.",
+              "src": "m1",
+              "page": "19"
+            },
+            {
+              "id": "cb-right-antiice",
+              "name": "Anti-ice breakers (warning, control)",
+              "type": "switch2",
+              "match": [
+                "CB-RIGHT-ANTIICE-ALARM-PTR",
+                "CB-RIGHT-ANTIICE-CONTROL-PTR"
+              ],
+              "positions": [
+                {
+                  "name": "ON",
+                  "text": "The breaker is closed and the circuit has power."
+                },
+                {
+                  "name": "OFF",
+                  "text": "The breaker is open and the circuit is cut off."
+                }
+              ],
+              "count": 2,
+              "text": "These two breakers power the warning and the control of the anti-ice system.",
+              "context": "The anti-ice panel needs them.",
+              "src": "m1",
+              "page": "19"
+            },
+            {
+              "id": "cb-right-gear-valve",
+              "name": "Landing gear valve breaker",
+              "type": "switch2",
+              "match": [
+                "CB-RIGHT-GEAR-EXTENT-HANDLE-BACKUP-PTR"
+              ],
+              "positions": [
+                {
+                  "name": "ON",
+                  "text": "The breaker is closed and the circuit has power."
+                },
+                {
+                  "name": "OFF",
+                  "text": "The breaker is open and the circuit is cut off."
+                }
+              ],
+              "text": "This breaker powers the landing gear valve of the backup system.",
+              "context": "The game names it 'CB Landing Gear Valve'.",
+              "src": "m1",
+              "page": "19"
+            },
+            {
+              "id": "cb-right-duas",
+              "name": "Air data computer heating breaker",
+              "type": "switch2",
+              "match": [
+                "CB-RIGHT-DUAS-V-HEATING-PTR"
+              ],
+              "positions": [
+                {
+                  "name": "ON",
+                  "text": "The breaker is closed and the circuit has power."
+                },
+                {
+                  "name": "OFF",
+                  "text": "The breaker is open and the circuit is cut off."
+                }
+              ],
+              "text": "This breaker powers the heating of the air data computer's sensor.",
+              "context": "The game names it 'CB Air Data Computer Heating'.",
+              "src": "m1",
+              "page": "19"
+            },
+            {
+              "id": "cb-right-aircon",
+              "name": "Air conditioning breaker",
+              "type": "switch2",
+              "match": [
+                "CB-RIGHT-CONDITIONER-CONTROL-PTR"
+              ],
+              "positions": [
+                {
+                  "name": "ON",
+                  "text": "The breaker is closed and the circuit has power."
+                },
+                {
+                  "name": "OFF",
+                  "text": "The breaker is open and the circuit is cut off."
+                }
+              ],
+              "text": "This breaker powers the air conditioning.",
+              "context": "The air conditioning panel needs it.",
+              "src": "m1",
+              "page": "19"
+            },
+            {
+              "id": "cb-right-seat",
+              "name": "Pilot seat adjustment breaker",
+              "type": "switch2",
+              "match": [
+                "CB-RIGHT-PILOT-SEAT-MECHANISM-PTR"
+              ],
+              "positions": [
+                {
+                  "name": "ON",
+                  "text": "The breaker is closed and the circuit has power."
+                },
+                {
+                  "name": "OFF",
+                  "text": "The breaker is open and the circuit is cut off."
+                }
+              ],
+              "text": "This breaker powers the electric motor that moves the pilot's seat.",
+              "context": "The game names it 'CB Pilot Seat Adjustment'.",
+              "src": "m1",
+              "page": "19"
+            }
+          ]
+        },
+        {
+          "id": "rotor-brake",
+          "name": "Rotor brake lever",
+          "src": "m1",
+          "text": "The lever that works the brake of the big main rotor. It sits between the right side of the pilot's seat and the electrical panel.",
+          "context": "The manual's start-up list lowers it to release the rotor before the start.",
+          "controls": [
+            {
+              "id": "rotor-brake-lever",
+              "name": "Rotor brake lever (UP / DOWN)",
+              "type": "handle",
+              "match": [
+                "ROTOR-BRAKE-PTR",
+                "item:pilot-commander-cockpit-controls:1"
+              ],
+              "positions": [
+                {
+                  "name": "UP",
+                  "text": "The rotor brake holds the main rotor."
+                },
+                {
+                  "name": "DOWN",
+                  "text": "The rotor brake is released."
+                }
+              ],
+              "text": "Moving this lever down lets the main rotor turn. Moving it up holds the rotor still.",
+              "context": "The manual lowers the lever into its well at the start; the lever stays down in flight.",
+              "src": "m1",
+              "page": "20"
+            }
+          ]
+        },
+        {
+          "id": "rounds-counter",
+          "name": "Rounds counter",
+          "src": "m1",
+          "text": "Five small knobs for the counter of the remaining rounds of ammunition.",
+          "context": "The cockpit list of the manual names a rounds counter panel. The game names the knobs 'Counter Adjustment 1 to 5'.",
+          "controls": [
+            {
+              "id": "rounds-knobs",
+              "name": "Counter adjustment knobs 1-5",
+              "type": "knob",
+              "match": [
+                "ROUNDS-KNOB-1",
+                "ROUNDS-KNOB-2",
+                "ROUNDS-KNOB-3",
+                "ROUNDS-KNOB-4",
+                "ROUNDS-KNOB-5",
+                "item:pilot-commander-cockpit-controls:5"
+              ],
+              "count": 5,
+              "text": "These five knobs set the numbers of the counter. Each knob sets one digit of the ammunition count.",
+              "context": "The counter shows how many rounds are left. The manual lists the panel but does not describe the knobs.",
+              "src": "m1",
+              "page": "16"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "pilot-rear",
+      "where": "rear",
+      "name": "Rear wall",
+      "seat": 1,
+      "text": "The wall behind the pilot with the interior red light switches.",
+      "panels": [
+        {
+          "id": "int-lights",
+          "name": "Interior red lights transformers",
+          "src": "m1",
+          "text": "Three rotary switches for the red lights in the cockpit. Red light is used at night.",
+          "context": "They set the voltage that the red lights get, and so how bright they are.",
+          "controls": [
+            {
+              "id": "red-ltg-3",
+              "name": "Built-in red lights transformer (OFF to 6V)",
+              "type": "selector",
+              "match": [
+                "RED-LTG3-PTR"
+              ],
+              "positions": [
+                {
+                  "name": "OFF",
+                  "text": "The red lights of this group are off."
+                },
+                {
+                  "name": "0.6V",
+                  "text": "The lights of this group get 0.6 volts."
+                },
+                {
+                  "name": "1.2V",
+                  "text": "The lights of this group get 1.2 volts."
+                },
+                {
+                  "name": "1.8V",
+                  "text": "The lights of this group get 1.8 volts."
+                },
+                {
+                  "name": "2.4V",
+                  "text": "The lights of this group get 2.4 volts."
+                },
+                {
+                  "name": "3V",
+                  "text": "The lights of this group get 3 volts."
+                },
+                {
+                  "name": "3.6V",
+                  "text": "The lights of this group get 3.6 volts."
+                },
+                {
+                  "name": "4.2V",
+                  "text": "The lights of this group get 4.2 volts."
+                },
+                {
+                  "name": "4.8V",
+                  "text": "The lights of this group get 4.8 volts."
+                },
+                {
+                  "name": "5.4V",
+                  "text": "The lights of this group get 5.4 volts."
+                },
+                {
+                  "name": "6V",
+                  "text": "The lights of this group get 6 volts."
+                }
+              ],
+              "text": "This rotary switch sets the brightness of the red lights built into the panels. It is a step switch from OFF to 6 volts.",
+              "context": "The game names it 'Builtin Red Lights Transformer'.",
+              "src": "m1"
+            },
+            {
+              "id": "red-ltg-1",
+              "name": "Red lights transformer 1, right and pilot panel (OFF to 20V)",
+              "type": "selector",
+              "match": [
+                "RED-LTG1-PTR"
+              ],
+              "positions": [
+                {
+                  "name": "OFF",
+                  "text": "The red lights of this group are off."
+                },
+                {
+                  "name": "8V",
+                  "text": "The lights of this group get 8 volts."
+                },
+                {
+                  "name": "9V",
+                  "text": "The lights of this group get 9 volts."
+                },
+                {
+                  "name": "10V",
+                  "text": "The lights of this group get 10 volts."
+                },
+                {
+                  "name": "11V",
+                  "text": "The lights of this group get 11 volts."
+                },
+                {
+                  "name": "12V",
+                  "text": "The lights of this group get 12 volts."
+                },
+                {
+                  "name": "13V",
+                  "text": "The lights of this group get 13 volts."
+                },
+                {
+                  "name": "14V",
+                  "text": "The lights of this group get 14 volts."
+                },
+                {
+                  "name": "16V",
+                  "text": "The lights of this group get 16 volts."
+                },
+                {
+                  "name": "18V",
+                  "text": "The lights of this group get 18 volts."
+                },
+                {
+                  "name": "20V",
+                  "text": "The lights of this group get 20 volts."
+                }
+              ],
+              "text": "This rotary switch sets the brightness of the first group of red lights on the right side and the pilot panel.",
+              "context": "A step switch from OFF to 20 volts.",
+              "src": "m1"
+            },
+            {
+              "id": "red-ltg-2",
+              "name": "Red lights transformer 2, right and pilot panel (OFF to 20V)",
+              "type": "selector",
+              "match": [
+                "RED-LTG2-PTR"
+              ],
+              "positions": [
+                {
+                  "name": "OFF",
+                  "text": "The red lights of this group are off."
+                },
+                {
+                  "name": "8V",
+                  "text": "The lights of this group get 8 volts."
+                },
+                {
+                  "name": "9V",
+                  "text": "The lights of this group get 9 volts."
+                },
+                {
+                  "name": "10V",
+                  "text": "The lights of this group get 10 volts."
+                },
+                {
+                  "name": "11V",
+                  "text": "The lights of this group get 11 volts."
+                },
+                {
+                  "name": "12V",
+                  "text": "The lights of this group get 12 volts."
+                },
+                {
+                  "name": "13V",
+                  "text": "The lights of this group get 13 volts."
+                },
+                {
+                  "name": "14V",
+                  "text": "The lights of this group get 14 volts."
+                },
+                {
+                  "name": "16V",
+                  "text": "The lights of this group get 16 volts."
+                },
+                {
+                  "name": "18V",
+                  "text": "The lights of this group get 18 volts."
+                },
+                {
+                  "name": "20V",
+                  "text": "The lights of this group get 20 volts."
+                }
+              ],
+              "text": "This rotary switch sets the brightness of the second group of red lights on the right side and the pilot panel.",
+              "context": "A step switch from OFF to 20 volts.",
+              "src": "m1"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "pilot-hotas",
+      "where": "hotas",
+      "name": "Stick and throttle",
+      "seat": 1,
+      "text": "The controls the pilot holds: the cyclic stick, the collective lever and the pedals.",
+      "panels": [
+        {
+          "id": "pilot-cyclic",
+          "name": "Pilot cyclic stick (rear seat)",
+          "src": "m1",
+          "text": "The cyclic is the helicopter's stick between the pilot's knees. Tilting it tilts the rotor, so the helicopter flies forward, back or sideways. Buttons on the grip work the radio, the weapons and the trim.",
+          "context": "The pilot holds it with the right hand. The manual lists its parts on page 11. Many of these parts are keyboard keys too.",
+          "controls": [
+            {
+              "id": "stick",
+              "name": "Cyclic stick",
+              "type": "axis",
+              "match": [
+                "control:stick.gimbal"
+              ],
+              "text": "Moving this stick forward makes the helicopter lean forward and fly ahead. Back slows it down. Sideways makes it roll and turn.",
+              "context": "The manual says the cyclic is the equivalent of a joystick.",
+              "src": "m1",
+              "page": "9"
+            },
+            {
+              "id": "wheel-brake",
+              "name": "Wheel brake lever and parking brake",
+              "type": "lever",
+              "match": [
+                "STICK-BRAKE-PTR",
+                "STICK-BRAKE-FIX-PTR",
+                "control:stick.lever.wheel_brake"
+              ],
+              "text": "This lever on the front of the grip brakes the wheels. A latch holds it in the pressed position, which is the parking brake.",
+              "context": "The manual says to release the parking brake before taxiing, with LShift + W, and uses the W key for the wheel brakes.",
+              "src": "m1",
+              "page": "11"
+            },
+            {
+              "id": "ptt",
+              "name": "SPU radio trigger",
+              "type": "trigger",
+              "match": [
+                "STICK-PTT-PTR",
+                "control:stick.switch.ics_radio"
+              ],
+              "text": "This two-step trigger on the front of the grip is the talk button. The first step speaks on the intercom and the second step on the radio.",
+              "context": "The game gives left mouse for the radio and right mouse for the intercom.",
+              "src": "m1",
+              "page": "11"
+            },
+            {
+              "id": "trim-hat",
+              "name": "Trimmer hat",
+              "type": "hat",
+              "match": [
+                "control:stick.hat.trim"
+              ],
+              "text": "This four-way hat on the top of the grip nudges the trim up, down, left and right.",
+              "context": "Trim moves the point where the stick is balanced, so the pilot can let go of the stick.",
+              "src": "m1",
+              "page": "11"
+            },
+            {
+              "id": "weapon-release",
+              "name": "Weapons release button with cover",
+              "type": "button",
+              "match": [
+                "STICK-RS-PTR",
+                "STICK-RS-COVER-PTR",
+                "control:stick.weapon_release",
+                "control:stick.guard.weapon"
+              ],
+              "text": "Pressing this button on top of the grip fires the weapon that is chosen on the weapons panel. A flip cover protects it.",
+              "context": "The manual's weapon steps end with this button. With the weapons selector at OFF/MSL it only commands the AI copilot to fire.",
+              "src": "m1",
+              "page": "46"
+            },
+            {
+              "id": "trim-button",
+              "name": "Trimmer button",
+              "type": "button",
+              "match": [
+                "STICK-TRIMMER-PTR",
+                "control:stick.button.trim"
+              ],
+              "text": "Pressing and releasing this button holds the stick and the pedals at their present position as the new neutral.",
+              "context": "The manual says to press the T key, then return the stick and pedals to neutral. LCtrl + T resets the trim.",
+              "src": "m1",
+              "page": "29"
+            },
+            {
+              "id": "ap-disconnect",
+              "name": "AP disconnect button",
+              "type": "button",
+              "match": [
+                "control:stick.button.ap_off"
+              ],
+              "text": "This button on the left of the grip would switch the autopilot off.",
+              "context": "The manual says it is not modelled in the Early Access version.",
+              "src": "m1",
+              "page": "11"
+            }
+          ]
+        },
+        {
+          "id": "pilot-collective",
+          "name": "Pilot collective lever and throttle",
+          "src": "m1",
+          "text": "The collective is a lever at the left of the pilot's seat. Raising it makes the rotor blades bite more air and the helicopter climbs. The twist grip on the end is the throttle.",
+          "context": "The pilot holds it with the left hand. The manual lists its parts on page 12.",
+          "controls": [
+            {
+              "id": "collective-lever",
+              "name": "Collective lever",
+              "type": "axis",
+              "match": [
+                "control:collective.axis.main"
+              ],
+              "text": "Raising this lever makes the helicopter climb and lowering it makes the helicopter sink.",
+              "context": "The manual says it controls the amount of lift made by the main rotor.",
+              "src": "m1",
+              "page": "9"
+            },
+            {
+              "id": "correction-twist",
+              "name": "Throttle correction twist grip",
+              "type": "axis",
+              "match": [
+                "COLLECTIVE-CORR-PTR",
+                "control:collective.axis.throttle_twist"
+              ],
+              "text": "Turning this twist grip changes the power of both engines together. In the game the left mouse button moves the collective and the right mouse button the throttle.",
+              "context": "The manual says to turn the correction grip to the right for full throttle after the dust protection is on.",
+              "src": "m1",
+              "page": "22"
+            },
+            {
+              "id": "n2-trim",
+              "name": "Readjust free turbine RPM switch",
+              "type": "switch3",
+              "match": [
+                "COLLECTIVE-GOV-PTR",
+                "control:collective.switch.n2_trim"
+              ],
+              "positions": [
+                {
+                  "name": "UP",
+                  "text": "Free turbine speed goes up while held."
+                },
+                {
+                  "name": "MIDDLE",
+                  "text": "No change."
+                },
+                {
+                  "name": "DOWN",
+                  "text": "Free turbine speed goes down while held."
+                }
+              ],
+              "text": "This three-position switch raises or lowers the speed of the free turbine a little. The free turbine drives the rotor.",
+              "context": "It springs back to the middle. The game calls it 'Readjust Free Turbine RPM'.",
+              "src": "m1",
+              "page": "12"
+            },
+            {
+              "id": "emergency-cargo",
+              "name": "Emergency cargo release button with cover",
+              "type": "button",
+              "match": [
+                "COLLECTIVE-CARGO-EMER-PTR",
+                "COLLECTIVE-CARGO-EMER-COVER-PTR",
+                "control:collective.button.emergency_release"
+              ],
+              "text": "Pressing this button opens the hook that holds a load under the helicopter, so the load falls. A cover must be opened first.",
+              "context": "It is for emergencies. The cargo emergency jettison breaker must be on.",
+              "src": "m1",
+              "page": "12"
+            },
+            {
+              "id": "searchlight",
+              "name": "Landing-searchlight control switch",
+              "type": "switch3",
+              "match": [
+                "control:collective.switch.searchlight"
+              ],
+              "positions": [
+                {
+                  "name": "UP",
+                  "text": "The light is on and extends."
+                },
+                {
+                  "name": "MIDDLE",
+                  "text": "No change."
+                },
+                {
+                  "name": "DOWN",
+                  "text": "The light is off and retracts."
+                }
+              ],
+              "text": "This switch on the collective head controls the landing searchlight: up for light on and out, down for off and in.",
+              "context": "The manual lists it on page 12.",
+              "src": "m1",
+              "page": "12"
+            },
+            {
+              "id": "tactical-cargo",
+              "name": "Tactical cargo release button with cover",
+              "type": "button",
+              "match": [
+                "COLLECTIVE-CARGO-TACT-PTR",
+                "COLLECTIVE-CARGO-TACT-COVER-PTR",
+                "control:collective.button.tactical_release"
+              ],
+              "text": "Pressing this button releases the cargo or the stores in the normal, tactical way. A cover protects it.",
+              "context": "The breaker for the external stores tactical release must be on.",
+              "src": "m1",
+              "page": "12"
+            },
+            {
+              "id": "friction-clutch",
+              "name": "Collective friction clutch",
+              "type": "button",
+              "match": [
+                "COLLECTIVE-FRICT-PTR",
+                "control:collective.button.clutch"
+              ],
+              "text": "Holding this button frees the collective lever so that it moves easily.",
+              "context": "The manual lists the collective friction clutch on page 12.",
+              "src": "m1",
+              "page": "12"
+            },
+            {
+              "id": "ecl-left",
+              "name": "Left individual throttle lever",
+              "type": "lever",
+              "match": [
+                "RRUD-LEFT-PTR",
+                "control:collective.lever.ecl_left"
+              ],
+              "text": "This lever beside the collective sets the power of the left engine alone.",
+              "context": "The manual says not to move the individual throttle levers during an engine start.",
+              "src": "m1",
+              "page": "21"
+            },
+            {
+              "id": "ecl-right",
+              "name": "Right individual throttle lever",
+              "type": "lever",
+              "match": [
+                "RRUD-RIGHT-PTR",
+                "control:collective.lever.ecl_right"
+              ],
+              "text": "This lever beside the collective sets the power of the right engine alone.",
+              "context": "The manual only says that they must stay where they are during the engine start.",
+              "src": "m1",
+              "page": "21"
+            }
+          ]
+        },
+        {
+          "id": "pilot-pedals",
+          "name": "Anti-torque pedals",
+          "src": "m1",
+          "text": "The two pedals under the pilot's feet turn the helicopter's nose to the left or right, by changing the pitch of the tail rotor.",
+          "context": "In a hover the pedals turn the helicopter on the spot. The manual keys Z and X move them.",
+          "controls": [
+            {
+              "id": "pedals",
+              "name": "Anti-torque pedals",
+              "type": "pedal",
+              "match": [
+                "control:pedals.axis.rudder"
+              ],
+              "text": "Pushing the left pedal turns the nose to the left, the right pedal to the right.",
+              "context": "When the pilot raises the collective the nose wants to turn left, so more right pedal is needed.",
+              "src": "m1",
+              "page": "28"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

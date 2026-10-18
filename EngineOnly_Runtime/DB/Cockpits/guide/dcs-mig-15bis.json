@@ -1,0 +1,798 @@
+{
+  "format": "joypro-cockpit-guide",
+  "version": 1,
+  "id": "dcs-mig-15bis",
+  "title": "MiG-15bis (DCS)",
+  "variants": [
+    "mig-15bis"
+  ],
+  "games": [
+    "DCS"
+  ],
+  "sets": [
+    "DCS/MiG-15bis"
+  ],
+  "sources": [
+    {
+      "id": "m1",
+      "title": "DCS MiG-15bis Flight Manual (EN)",
+      "file": "Mods/aircraft/MiG-15bis/Doc/DCS MiG-15bis Flight Manual EN.pdf"
+    }
+  ],
+  "intro": "The MiG-15bis is an early Soviet jet fighter from the 1950s with swept wings, one jet engine and a bubble canopy. It has no computers, so the pilot sets everything with plain switches, handles and valves. The instrument panel is in front, the throttle console and the engine switches are on the left wall, and the electrical switches and the radio compass are on the right wall. The cannons are fired with buttons on the stick, and the gunsight on top of the panel uses a spinning gyro to help aim.",
+  "areas": [
+    {
+      "id": "glareshield",
+      "where": "glareshield",
+      "name": "Gunsight",
+      "text": "The gunsight sits on top of the instrument panel, right in front of the pilot's eyes. A magnetic compass is fitted next to it as a backup.",
+      "panels": [
+        {
+          "id": "asp-3n",
+          "name": "ASP-3N gyro gunsight",
+          "db": "asp-3n-gunsight",
+          "src": "m1",
+          "page": "142",
+          "text": "The ASP-3N is the aiming device for the guns. It projects a ring of dots onto a glass plate in front of the pilot, and the pilot lays the ring over the enemy plane.",
+          "context": "A gyro inside the sight measures how fast the pilot turns and moves the aiming mark so that the shells are aimed ahead of the target. The pilot sets the target's size and twists the throttle grip to frame the target with the ring.",
+          "controls": [
+            {
+              "id": "sight-reflector",
+              "name": "Reflector (glass plate)",
+              "type": "display",
+              "match": [
+                "item:asp-3n-gunsight:1"
+              ],
+              "text": "This is the clear glass plate in front of the pilot's eyes. The aiming marks are shown on it.",
+              "context": "It shows a fixed circle with a centre dot and a second ring of eight diamonds that opens and closes. It is not clickable in the game.",
+              "src": "m1",
+              "page": "142"
+            },
+            {
+              "id": "sight-filter",
+              "name": "Sight dimmer (dark filter)",
+              "type": "switch2",
+              "match": [
+                "pnt_105",
+                "item:asp-3n-gunsight:2"
+              ],
+              "positions": [
+                {
+                  "name": "ON",
+                  "text": "The filter is in the sight's field of view."
+                },
+                {
+                  "name": "OFF",
+                  "text": "The filter is out of the way."
+                }
+              ],
+              "text": "This switch puts a dark filter in front of the sight, to help the pilot see the marks when the sun shines into the sight.",
+              "context": "The game names it 'ASP-3N Gunsight Color Filter'. The manual says it can be toggled by mouse click.",
+              "src": "m1",
+              "page": "142"
+            },
+            {
+              "id": "sight-backup-lever",
+              "name": "Fixed reticle mask lever",
+              "type": "switch2",
+              "match": [
+                "pnt_106"
+              ],
+              "positions": [
+                {
+                  "name": "SET UP",
+                  "text": "Named SET UP by the game; the manual does not describe the effect."
+                },
+                {
+                  "name": "REMOVE",
+                  "text": "Named REMOVE by the game; the manual does not describe the effect."
+                }
+              ],
+              "text": "The game names this lever 'Fixed Reticle Mask Lever' with the positions SET UP and REMOVE. The manual does not describe a lever of this name.",
+              "context": "The manual does describe a mechanical backup gunsight that is used if the main sight fails.",
+              "src": "m1",
+              "page": "143"
+            },
+            {
+              "id": "sight-backup",
+              "name": "Mechanical backup gunsight",
+              "type": "other",
+              "match": [
+                "item:asp-3n-gunsight:3"
+              ],
+              "text": "This is a simple ring sight that works without electricity or lamps. The pilot uses it if the main sight fails or is damaged.",
+              "context": "The manual says it is switched on with a mouse click.",
+              "src": "m1",
+              "page": "143"
+            },
+            {
+              "id": "sight-wingspan",
+              "name": "Target wingspan knob",
+              "type": "knob",
+              "match": [
+                "pnt_103",
+                "item:asp-3n-gunsight:4"
+              ],
+              "text": "This dial tells the sight how wide the target is, from 7 to 45 metres. The sight uses it to work out the distance.",
+              "context": "Example from the manual: an F-86 is about 12 metres wide. The pilot sets the width first and then frames the target with the ring of diamonds.",
+              "src": "m1",
+              "page": "143"
+            },
+            {
+              "id": "sight-brightness",
+              "name": "Brightness knob",
+              "type": "knob",
+              "match": [
+                "pnt_102",
+                "item:asp-3n-gunsight:5"
+              ],
+              "text": "Turning this knob makes the aiming marks brighter or dimmer. A bright mark suits daylight, a dim one suits the night.",
+              "context": "Turning the knob down makes the marks brighter, as the label BRIGHT shows.",
+              "src": "m1",
+              "page": "143"
+            },
+            {
+              "id": "sight-gyro-cage",
+              "name": "Gunsight gyro cage lever",
+              "type": "switch2",
+              "match": [
+                "pnt_101",
+                "item:asp-3n-gunsight:6"
+              ],
+              "positions": [
+                {
+                  "name": "GYRO",
+                  "text": "The gyro is free and the sight works out the lead angle."
+                },
+                {
+                  "name": "FIXED",
+                  "text": "The gyro is locked and only the fixed circle is used."
+                }
+              ],
+              "text": "This lever locks the spinning gyro of the sight (caging it) or sets it free. In the GYRO position the sight calculates the lead; in FIXED the marks stay still.",
+              "context": "The pilot cages the gyro for take-off, landing, hard turns and targets closer than 200 metres, where the fixed circle is easier to use.",
+              "src": "m1",
+              "page": "143"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "front-center",
+      "where": "front-center",
+      "name": "Instrument panel",
+      "text": "The panel in front of the pilot holds the flying instruments, the engine gauges and the warning lamps. Under it sits the armament control panel with its lamps and switches.",
+      "panels": [
+        {
+          "id": "flight-instruments",
+          "name": "Flight instruments",
+          "db": "instrument-panel",
+          "src": "m1",
+          "page": "51",
+          "text": "These gauges show how the plane flies: how high, how fast, which way it points and how it is tilted.",
+          "context": "The pilot scans them all the time. In cloud, the attitude indicator and the compass replace the view out of the window.",
+          "controls": [
+            {
+              "id": "altimeter",
+              "name": "VD-17 altimeter with QFE knob",
+              "type": "gauge",
+              "match": [
+                "pnt_030",
+                "item:instrument-panel:2"
+              ],
+              "text": "This is the height gauge, reading in metres up to 17,000. The knob at its side sets the air pressure at the airfield, so the gauge reads correctly.",
+              "context": "A long arrow shows hundreds of metres and a short arrow shows kilometres. With the airfield pressure (QFE) set, it reads 0 on the runway.",
+              "src": "m1",
+              "page": "52"
+            },
+            {
+              "id": "asi",
+              "name": "KUS-1200 airspeed indicator",
+              "type": "gauge",
+              "match": [
+                "item:instrument-panel:3"
+              ],
+              "text": "This gauge shows how fast the plane moves through the air, in kilometres per hour. A narrow needle shows the true speed.",
+              "context": "The wide needle shows the indicated speed, from 100 to 1200 km/h.",
+              "src": "m1",
+              "page": "53"
+            },
+            {
+              "id": "clock",
+              "name": "AChS-1 cockpit chronograph (clock)",
+              "type": "gauge",
+              "match": [
+                "pnt_023",
+                "pnt_025",
+                "item:instrument-panel:6"
+              ],
+              "text": "This is the cockpit clock with a flight timer and a stopwatch. Two crown buttons start and stop the timers.",
+              "context": "The left red button runs the flight time; the right button runs the stopwatch. The clock is wound by hand and then runs for eight days.",
+              "src": "m1",
+              "page": "55"
+            },
+            {
+              "id": "attitude",
+              "name": "AGK-47B attitude indicator with knobs",
+              "type": "gauge",
+              "match": [
+                "pnt_013",
+                "pnt_012",
+                "item:instrument-panel:7"
+              ],
+              "text": "This is the artificial horizon, combined with a turn indicator and a slip ball. One knob moves the horizon line, another handle cages the gyro.",
+              "context": "The pilot pulls the cage handle (PULL TO CAGE) to bring the gyro quickly upright. A red flag shows when it is caged.",
+              "src": "m1",
+              "page": "57"
+            },
+            {
+              "id": "vvi",
+              "name": "VAR-75 vertical velocity indicator",
+              "type": "gauge",
+              "match": [
+                "item:instrument-panel:9"
+              ],
+              "text": "This gauge shows how fast the plane climbs or sinks, in metres per second, up to 75.",
+              "context": "The pilot uses it to choose a good climb and to hold height in turns.",
+              "src": "m1",
+              "page": "61"
+            },
+            {
+              "id": "adf-needle",
+              "name": "ARK-5 SUP-7 direction finder indicator",
+              "type": "gauge",
+              "match": [
+                "item:instrument-panel:13"
+              ],
+              "text": "This dial has a needle that points toward the radio beacon tuned on the ARK-5 radio compass.",
+              "context": "In compass mode the needle shows the direction to the beacon. In loop mode it shows how far the antenna is turned by hand.",
+              "src": "m1",
+              "page": "64"
+            },
+            {
+              "id": "dgmk",
+              "name": "DGMK-3 gyromagnetic compass with course knob",
+              "type": "gauge",
+              "match": [
+                "pnt_034",
+                "item:instrument-panel:14"
+              ],
+              "text": "This is the heading instrument. It shows the direction the plane flies. The knob sets a wanted heading under a fixed mark.",
+              "context": "To turn to a new heading the pilot sets it with the knob and then turns the plane until the arrow matches.",
+              "src": "m1",
+              "page": "64"
+            },
+            {
+              "id": "fast-slave",
+              "name": "Fast compass slave button",
+              "type": "button",
+              "match": [
+                "pnt_061",
+                "item:instrument-panel:20"
+              ],
+              "text": "Pushing this button makes the heading instrument catch up quickly with the magnetic sensor after manoeuvres.",
+              "context": "The manual says the button must also be used after the engine start.",
+              "src": "m1",
+              "page": "73"
+            },
+            {
+              "id": "mach",
+              "name": "Mach number indicator",
+              "type": "gauge",
+              "match": [
+                "item:instrument-panel:25"
+              ],
+              "text": "This gauge shows the speed as a fraction of the speed of sound, called the Mach number, from 0.3 to 0.95.",
+              "context": "The pilot uses it in fast flight to see how close the plane is to the speed of sound, which a plain speed in km/h cannot show.",
+              "src": "m1",
+              "page": "77"
+            },
+            {
+              "id": "radio-altimeter",
+              "name": "PRV-46 radio altimeter with range knob",
+              "type": "gauge",
+              "match": [
+                "pnt_036",
+                "item:instrument-panel:26"
+              ],
+              "text": "This gauge shows the height above the ground, measured by radio waves. A knob switches between two ranges: 0 to 120 metres and 100 to 1200 metres.",
+              "context": "It is useful in low flying and landing. The power knob next to it must be turned on first.",
+              "src": "m1",
+              "page": "78"
+            },
+            {
+              "id": "radio-altimeter-power",
+              "name": "PRV-46 radio altimeter power switch",
+              "type": "switch2",
+              "match": [
+                "pnt_037"
+              ],
+              "positions": [
+                {
+                  "name": "ON",
+                  "text": "The radio altimeter gauge is switched on."
+                },
+                {
+                  "name": "OFF",
+                  "text": "The radio altimeter gauge is switched off."
+                }
+              ],
+              "text": "This knob switches the radio altimeter gauge on and off.",
+              "context": "The RV-2 breaker on the right electrical panel must be on as well.",
+              "src": "m1",
+              "page": "188"
+            }
+          ]
+        },
+        {
+          "id": "engine-instruments",
+          "name": "Engine, fuel and electrical gauges",
+          "src": "m1",
+          "page": "68",
+          "text": "These gauges show how the engine, the fuel and the electricity are doing.",
+          "context": "The pilot checks them during the engine start and glances at them in flight. The manual names limits for each in the start and run-up checks.",
+          "controls": [
+            {
+              "id": "tach",
+              "name": "TE-15 tachometer",
+              "type": "gauge",
+              "match": [
+                "item:instrument-panel:15"
+              ],
+              "text": "This gauge shows how fast the engine turns, in revolutions per minute. An inner scale reads up to 5,000 and an outer scale reads from 5,000 to 15,000.",
+              "context": "At idle the engine should turn at about 2,400 to 2,600 revolutions per minute.",
+              "src": "m1",
+              "page": "68"
+            },
+            {
+              "id": "egt",
+              "name": "TGZ-47 exhaust gas temperature gauge",
+              "type": "gauge",
+              "match": [
+                "item:instrument-panel:16"
+              ],
+              "text": "This gauge shows how hot the gases behind the turbine are, up to 900 degrees Celsius.",
+              "context": "During the engine start it should not go above 650 degrees. At idle it should stay below 510 degrees.",
+              "src": "m1",
+              "page": "69"
+            },
+            {
+              "id": "voltmeter",
+              "name": "VA-340 volt-/ammeter with voltage button",
+              "type": "gauge",
+              "match": [
+                "pnt_084",
+                "item:instrument-panel:17"
+              ],
+              "text": "This gauge normally shows the current in amperes. While the button under it is pressed, it shows the voltage instead.",
+              "context": "A label on top shows the three power sources: generator, ground power and the onboard battery.",
+              "src": "m1",
+              "page": "70"
+            },
+            {
+              "id": "cabin-alt",
+              "name": "UVPD-3 cabin altitude and pressure indicator",
+              "type": "gauge",
+              "match": [
+                "item:instrument-panel:18"
+              ],
+              "text": "This gauge shows the height that the air pressure in the cockpit corresponds to, and the pressure difference to the outside air.",
+              "context": "It tells the pilot that the cockpit pressurization works.",
+              "src": "m1",
+              "page": "71"
+            },
+            {
+              "id": "fuel-pressure",
+              "name": "EM-10 fuel pressure gauge",
+              "type": "gauge",
+              "match": [
+                "item:instrument-panel:19"
+              ],
+              "text": "This gauge shows the fuel pressure in a fine scale, so that small values can be read at high altitude.",
+              "context": "It works together with the three-pointer indicator that shows large fuel pressure values.",
+              "src": "m1",
+              "page": "72"
+            },
+            {
+              "id": "emi",
+              "name": "EMI-3R three-pointer indicator",
+              "type": "gauge",
+              "match": [
+                "item:instrument-panel:21"
+              ],
+              "text": "This one housing holds three gauges: fuel pressure, oil pressure and oil temperature.",
+              "context": "The three gauges work independently, so one failing does not affect the others. The manual says this fuel gauge is for large pressures.",
+              "src": "m1",
+              "page": "74"
+            },
+            {
+              "id": "fuel-meter",
+              "name": "KES-857 fuel meter",
+              "type": "gauge",
+              "match": [
+                "item:instrument-panel:24"
+              ],
+              "text": "This gauge shows how much fuel is in the tanks, in litres. One mark is 100 litres.",
+              "context": "The fuel gauge shows 1,050 litres right after the engine instruments are switched on, according to the start-up checklist.",
+              "src": "m1",
+              "page": "76"
+            },
+            {
+              "id": "oxygen-gauge",
+              "name": "MK-12 oxygen pressure gauge",
+              "type": "gauge",
+              "match": [
+                "item:instrument-panel:29"
+              ],
+              "text": "This gauge shows how much oxygen is left in the bottles, as pressure in kilograms per square centimetre.",
+              "context": "Oxygen is the breathing gas for high altitude.",
+              "src": "m1",
+              "page": "80"
+            },
+            {
+              "id": "oxygen-flow",
+              "name": "IK-14 oxygen indicator (blinker)",
+              "type": "indicator",
+              "match": [
+                "item:instrument-panel:31"
+              ],
+              "text": "This little window shows with moving segments how oxygen flows to the mask. The segments open and close with each breath.",
+              "context": "Above about 2,000 metres cockpit altitude, when oxygen is added to the air, the segments move with the pilot's breathing.",
+              "src": "m1",
+              "page": "81"
+            },
+            {
+              "id": "landing-light",
+              "name": "Landing light switch (NOSE LIGHT)",
+              "type": "switch2",
+              "match": [
+                "pnt_080",
+                "item:instrument-panel:30"
+              ],
+              "positions": [
+                {
+                  "name": "ON",
+                  "text": "The landing light is on."
+                },
+                {
+                  "name": "OFF",
+                  "text": "The landing light is off."
+                }
+              ],
+              "text": "This switch turns on the headlight in the nose, the landing light.",
+              "context": "The light beam points a little to the left so that the pilot sees the ground while looking to the side during the landing flare. The headlight breaker on the right panel must be on.",
+              "src": "m1",
+              "page": "162"
+            }
+          ]
+        },
+        {
+          "id": "warning-lamps",
+          "name": "Warning and signal lamps",
+          "src": "m1",
+          "page": "51",
+          "text": "These lamps on the instrument panel tell the pilot about problems and states. A lit red lamp after the start is a reason to stop and check.",
+          "context": "Some lamps belong to the fuel and engine start system. The generator lamp must go out once the engine has started.",
+          "controls": [
+            {
+              "id": "flaps-lamp",
+              "name": "55 degrees flaps signal lamp",
+              "type": "light",
+              "match": [
+                "item:instrument-panel:1"
+              ],
+              "text": "This green lamp lights up when the flaps are fully out at 55 degrees.",
+              "context": "Flaps are parts of the wing that slide out for more lift at low speed. The lamp confirms the landing setting.",
+              "src": "m1",
+              "page": "51"
+            },
+            {
+              "id": "marker-lamp",
+              "name": "Radio marker beacon fly-over lamp",
+              "type": "light",
+              "match": [
+                "item:instrument-panel:4"
+              ],
+              "text": "This lamp lights up when the plane flies over a radio marker beacon. A buzzer sounds at the same time.",
+              "context": "Marker beacons are small transmitters on the approach to a runway that tell the pilot how far from it the plane is.",
+              "src": "m1",
+              "page": "54"
+            },
+            {
+              "id": "gear-warning-lamp",
+              "name": "Extend landing gear warning lamp",
+              "type": "light",
+              "match": [
+                "item:instrument-panel:5"
+              ],
+              "text": "This lamp lights up when the flaps are extended but the landing gear is not down.",
+              "context": "It reminds the pilot to lower the wheels before landing.",
+              "src": "m1",
+              "page": "54"
+            },
+            {
+              "id": "gen-lamp",
+              "name": "Generator off warning lamp",
+              "type": "light",
+              "match": [
+                "item:instrument-panel:8"
+              ],
+              "text": "This red lamp is lit when the generator does not give the right voltage. It is labelled GENERATOR OFF.",
+              "context": "The generator makes electricity while the engine runs. The lamp goes out after the engine start once the engine speed is high enough, above about 4,000.",
+              "src": "m1",
+              "page": "60"
+            },
+            {
+              "id": "camera-lamp",
+              "name": "S-13 gun camera recording light",
+              "type": "light",
+              "match": [
+                "item:instrument-panel:10"
+              ],
+              "text": "This lamp lights up while the gun camera is recording. It is labelled F.K.P.",
+              "context": "The camera records while either gun trigger is pressed.",
+              "src": "m1",
+              "page": "62"
+            },
+            {
+              "id": "lamp-300l",
+              "name": "300 litres warning lamp",
+              "type": "light",
+              "match": [
+                "item:instrument-panel:11"
+              ],
+              "text": "This red lamp comes on when 300 litres or less are left in the main fuel tank.",
+              "context": "It tells the pilot to plan the landing.",
+              "src": "m1",
+              "page": "63"
+            },
+            {
+              "id": "restart-lamp",
+              "name": "Air restart ignition off memo light",
+              "type": "light",
+              "match": [
+                "item:instrument-panel:12"
+              ],
+              "text": "This red lamp reminds the pilot to switch off the ignition after restarting the engine in the air.",
+              "context": "If the ignition stays on, the spark plugs can burn out and the engine cannot be restarted again.",
+              "src": "m1",
+              "page": "63"
+            },
+            {
+              "id": "second-tank-lamp",
+              "name": "Second fuel tank empty warning lamp",
+              "type": "light",
+              "match": [
+                "item:instrument-panel:22"
+              ],
+              "text": "This lamp comes on when the second fuel tank is empty. It is labelled with the number 2.",
+              "context": "The pilot then switches off the fuel transfer pump with its switch to save the pump.",
+              "src": "m1",
+              "page": "75"
+            },
+            {
+              "id": "start-prohibited-lamp",
+              "name": "Engine start prohibited lamp",
+              "type": "light",
+              "match": [
+                "item:instrument-panel:23"
+              ],
+              "text": "This red lamp is labelled DO NOT START ENGINE IF LIGHT IS ON. It goes out when the starting fuel pump has built up enough pressure.",
+              "context": "The pilot switches on the booster pump and start panel breaker and waits for this lamp to go out before starting the engine.",
+              "src": "m1",
+              "page": "76"
+            }
+          ]
+        },
+        {
+          "id": "gear-controls",
+          "name": "Landing gear controls",
+          "src": "m1",
+          "page": "79",
+          "text": "The lever and the lamps on the left of the instrument panel move the wheels up and down and show where they are. The wheels are called the landing gear.",
+          "context": "The pilot lowers the gear before landing and raises it after take-off. The handle lock stops the lever from moving by mistake.",
+          "controls": [
+            {
+              "id": "gear-lever",
+              "name": "Landing gear hydraulic lever",
+              "type": "switch3",
+              "match": [
+                "pnt_071",
+                "item:instrument-panel:27"
+              ],
+              "positions": [
+                {
+                  "name": "UP",
+                  "text": "The hydraulic system folds the wheels up."
+                },
+                {
+                  "name": "NEUTRAL",
+                  "text": "The lever rests and no gear movement is commanded."
+                },
+                {
+                  "name": "DOWN",
+                  "text": "The hydraulic system lowers the wheels."
+                }
+              ],
+              "text": "This lever raises or lowers the wheels. In the middle, NEUTRAL, it leaves the gear alone.",
+              "context": "The pilot sets it to NEUTRAL again after the gear has moved. The three lamps next to it show the position of each wheel.",
+              "src": "m1",
+              "page": "79"
+            },
+            {
+              "id": "gear-lock",
+              "name": "Landing gear handle lock",
+              "type": "switch2",
+              "match": [
+                "pnt_085"
+              ],
+              "positions": [
+                {
+                  "name": "Lock",
+                  "text": "The lever is locked."
+                },
+                {
+                  "name": "Unlock",
+                  "text": "The lever can be moved."
+                }
+              ],
+              "text": "This lock holds the gear lever in place so that it cannot be moved by accident.",
+              "context": "The pilot unlocks it before moving the lever.",
+              "src": "m1",
+              "page": "79"
+            },
+            {
+              "id": "gear-panel",
+              "name": "Landing gear control panel (position lamps and test button)",
+              "type": "indicator",
+              "match": [
+                "pnt_072",
+                "item:instrument-panel:28"
+              ],
+              "text": "This panel has three lamps, one each for the nose wheel and the two main wheels. Green means the wheel is down and locked. The test button checks the lamps.",
+              "context": "The pilot can also see the ground power on these lamps: they light green when ground power is connected.",
+              "src": "m1",
+              "page": "79"
+            }
+          ]
+        },
+        {
+          "id": "armament-control-panel",
+          "name": "Armament control panel",
+          "db": "armament-control-panel",
+          "src": "m1",
+          "page": "90",
+          "text": "This panel under the instrument panel shows which guns are ready, which loads hang under the wings and lets the pilot arm or drop them.",
+          "context": "The pilot uses the lamps to know that the guns are loaded and the switches to arm the bombs. The emergency button drops bombs and tanks in a hurry.",
+          "controls": [
+            {
+              "id": "empty-tank-light",
+              "name": "Empty drop tank indication light",
+              "type": "light",
+              "match": [
+                "item:armament-control-panel:1"
+              ],
+              "text": "This green light comes on when the drop tanks under the wings are empty. It also comes on when the engine turns slowly.",
+              "context": "A drop tank is an extra fuel tank hung under the wing. When it is empty the pilot may let it go.",
+              "src": "m1",
+              "page": "90"
+            },
+            {
+              "id": "gun-ready-lights",
+              "name": "Gun ready lights",
+              "type": "light",
+              "match": [
+                "item:armament-control-panel:2",
+                "item:armament-control-panel:3",
+                "item:armament-control-panel:4"
+              ],
+              "text": "Three red lights show that the guns are loaded and ready to fire. From left to right they belong to the front NR-23, the rear NR-23 and the N-37D cannon.",
+              "context": "A gun is ready once a round has been pushed into the barrel. Three buttons on the left wall reload the guns with air.",
+              "count": 3,
+              "src": "m1",
+              "page": "91"
+            },
+            {
+              "id": "empty-tank-switch",
+              "name": "Empty drop tank indication switch",
+              "type": "switch2",
+              "match": [
+                "pnt_082",
+                "item:armament-control-panel:5"
+              ],
+              "positions": [
+                {
+                  "name": "ON",
+                  "text": "The empty-tank light can come on."
+                },
+                {
+                  "name": "OFF",
+                  "text": "The empty-tank light stays off."
+                }
+              ],
+              "text": "This switch switches the empty-tank light on and off. The game names it 'Drop Tank Signal Switch'.",
+              "context": "With the switch off, the light stays off.",
+              "src": "m1",
+              "page": "91"
+            },
+            {
+              "id": "emergency-cover",
+              "name": "Emergency release button cover",
+              "type": "guard",
+              "match": [
+                "pnt_104"
+              ],
+              "text": "This cap protects the emergency release button from being pressed by mistake. It is flipped open first.",
+              "context": "The button underneath drops bombs or tanks in an emergency.",
+              "src": "m1",
+              "page": "91"
+            },
+            {
+              "id": "emergency-release",
+              "name": "Emergency release button",
+              "type": "button",
+              "match": [
+                "pnt_097",
+                "item:armament-control-panel:6"
+              ],
+              "text": "Pressing this button drops the bombs or drop tanks at once through the emergency circuit.",
+              "context": "It is labelled EMERGENCY BOMB RELEASE. The bombs fall armed or unarmed depending on the bomb arming switch.",
+              "src": "m1",
+              "page": "91"
+            },
+            {
+              "id": "pylon-lamps",
+              "name": "Load presence lamps (right and left pylon)",
+              "type": "light",
+              "match": [
+                "item:armament-control-panel:7",
+                "item:armament-control-panel:8"
+              ],
+              "text": "Two green lamps show that a bomb or drop tank hangs on the right and on the left pylon. A lamp goes out when its load is released.",
+              "context": "A pylon is the fitting under the wing that holds the load.",
+              "count": 2,
+              "src": "m1",
+              "page": "91"
+            },
+            {
+              "id": "tactical-release",
+              "name": "Bombs arming circuit switch (tactical release)",
+              "type": "switch2",
+              "match": [
+                "pnt_096",
+                "item:armament-control-panel:9"
+              ],
+              "positions": [
+                {
+                  "name": "ON",
+                  "text": "The bomb fuses are active and the bombs explode on impact."
+                },
+                {
+                  "name": "OFF",
+                  "text": "The fuses are deactivated and the bombs do not explode."
+                }
+              ],
+              "text": "This switch decides whether the bombs are armed when they are dropped. Armed bombs explode on impact, unarmed ones do not.",
+              "context": "The game names it 'Tactical Release Switch'. It applies to the normal and the emergency release.",
+              "src": "m1",
+              "page": "91"
+            },
+            {
+              "id": "bombs-armed-lamp",
+              "name": "Bombs armed lamp",
+              "type": "light",
+              "match": [
+                "item:armament-control-panel:10"
+              ],
+              "text": "This red lamp lights up when the bombs are armed and would explode on impact.",
+              "context": "It is on whenever the bombs arming circuit switch is on.",
+              "src": "m1",
+              "page": "92"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

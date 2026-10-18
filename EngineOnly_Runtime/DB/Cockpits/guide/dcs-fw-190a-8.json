@@ -1,0 +1,2172 @@
+{
+  "format": "joypro-cockpit-guide",
+  "version": 1,
+  "id": "dcs-fw-190a-8",
+  "title": "Fw 190 A-8 (DCS)",
+  "variants": [
+    "fw-190a-8"
+  ],
+  "games": [
+    "DCS"
+  ],
+  "sets": [
+    "DCS/FW-190A8"
+  ],
+  "sources": [
+    {
+      "id": "m1",
+      "title": "DCS Fw 190 A-8 Flight Manual (EN)",
+      "file": "Mods/aircraft/FW-190A8/Doc/DCS Fw 190 A-8 Flight Manual EN.pdf"
+    }
+  ],
+  "intro": "The Fw 190 A-8 is a German single-seat fighter of World War II with a round radial engine. The cockpit is built so that the pilot reaches the important things by hand: engine, radio, flaps and landing gear on the left, the circuit breakers on the right and the instruments in front. A mechanical engine computer, the Kommandogerät, sets most engine details, so the pilot mainly moves the throttle.",
+  "areas": [
+    {
+      "id": "gunsight",
+      "where": "glareshield",
+      "name": "Gunsight and weapons",
+      "text": "Straight in front of the pilot's eyes sits the Revi 16B gunsight, with the SZKK 4 ammunition counters under it. The switches for bombs and rockets are on the lower front panel.",
+      "panels": [
+        {
+          "id": "revi",
+          "name": "Revi 16B gunsight (Reflexvisier)",
+          "db": "revi-16b-components",
+          "src": "m1",
+          "page": "42",
+          "text": "The Revi 16B is the sight the pilot looks through to aim the guns. A glass plate shows a ring and a cross in the pilot's view, as if painted far away in the air.",
+          "context": "The Revi is a plain reflector sight. The pilot must work out the lead and the distance himself. It has a brightness control and a night filter.",
+          "controls": [
+            {
+              "id": "crosshairs",
+              "name": "Gunsight crosshairs",
+              "type": "indicator",
+              "match": [
+                "item:revi-16b-components:1",
+                "item:upper-front-dash:1"
+              ],
+              "text": "This is the aiming mark on the glass. The pilot moves the plane until the enemy sits on the mark, then fires. The mark always shows the direction the guns point.",
+              "context": "It does not move by itself, so the pilot has to aim ahead of a moving enemy.",
+              "src": "m1",
+              "page": "35"
+            },
+            {
+              "id": "revi-filter",
+              "name": "Light filter (tint)",
+              "type": "lever",
+              "match": [
+                "pntr_134",
+                "item:revi-16b-components:4"
+              ],
+              "text": "This lever swings a tinted filter in front of the sight glass. The game names it 'gun sight tint' and gives it an on and an off command.",
+              "context": "The manual lists a night filter on the Revi 16B, which the pilot uses to dim the mark in the dark.",
+              "src": "m1",
+              "page": "42"
+            },
+            {
+              "id": "revi-bright",
+              "name": "Brightness adjustment",
+              "type": "knob",
+              "match": [
+                "item:revi-16b-components:5"
+              ],
+              "text": "This knob sets how bright the aiming mark is. The manual lists it as a brightness adjustment of the sight.",
+              "context": "A brighter mark helps in bright light, a dimmer one is easier on the eyes at night.",
+              "src": "m1",
+              "page": "42"
+            },
+            {
+              "id": "pilot-sight-knob",
+              "name": "Pilot sight knob (cb_p112)",
+              "type": "knob",
+              "match": [
+                "pntr_133"
+              ],
+              "text": "The game names this knob 'cb_p112' on the Pilot Sight panel. The manual does not describe it.",
+              "context": "Do not expect a clear function from this control.",
+              "src": "m1",
+              "page": "42"
+            },
+            {
+              "id": "front-sight",
+              "name": "Blade-type front sight",
+              "type": "other",
+              "match": [
+                "item:revi-16b-components:2"
+              ],
+              "text": "The manual lists a blade-type front sight as part of the Revi 16B. It is half of the simple iron sight that the manual shows as the back-up aiming aid.",
+              "context": "It is used together with the post-type rear sight.",
+              "src": "m1",
+              "page": "42"
+            },
+            {
+              "id": "rear-sight",
+              "name": "Post-type rear sight",
+              "type": "other",
+              "match": [
+                "item:revi-16b-components:3"
+              ],
+              "text": "The manual lists a post-type rear sight as part of the Revi 16B. It is the second half of the iron sight, together with the front blade.",
+              "context": "The manual shows the pilot lining up both sights when aiming with the back-up iron sights.",
+              "src": "m1",
+              "page": "42"
+            }
+          ]
+        },
+        {
+          "id": "szkk",
+          "name": "SZKK 4 ammunition counter and gun switches",
+          "db": "szkk-4",
+          "src": "m1",
+          "page": "43",
+          "text": "This box shows how much ammunition is left for each of the four MG 151 cannons and whether the guns are working. Two switches arm the guns.",
+          "context": "German pilots could see their ammunition in the cockpit. The counters are not linked to the real ammunition. They are set to full on the ground and drop one notch with every shot.",
+          "controls": [
+            {
+              "id": "szkk-counter",
+              "name": "SZKK 4 ammunition counters",
+              "type": "indicator",
+              "match": [
+                "item:upper-front-dash:2",
+                "item:szkk-4:5"
+              ],
+              "text": "Four vertical bars show the ammunition of the four MG 151 cannons, from left to right: outer left, inner left, inner right, outer right. The white part of a bar is ammunition left, the black part is used up.",
+              "context": "Notches at the side of each bar show the number of rounds left.",
+              "src": "m1",
+              "page": "43"
+            },
+            {
+              "id": "szkk-set",
+              "name": "Gun 1-4 ammunition count knobs",
+              "type": "knob",
+              "match": [
+                "pntr_051",
+                "pntr_054",
+                "pntr_057",
+                "pntr_060"
+              ],
+              "count": 4,
+              "text": "These four knobs set the ammunition counter of one gun each. The game names them 'Set Gun 1 to 4 Ammunition Count'.",
+              "context": "The manual says the counters are set to full when the guns are loaded on the ground. It does not describe these knobs in detail.",
+              "src": "m1",
+              "page": "43"
+            },
+            {
+              "id": "szkk-lamps",
+              "name": "Breechblock signal lights",
+              "type": "light",
+              "match": [
+                "item:szkk-4:1",
+                "item:szkk-4:4",
+                "item:szkk-4:6",
+                "item:upper-front-dash:3"
+              ],
+              "text": "The signal lights above the counters show whether each gun's breechblock (the part that closes the gun) is closed or open. Black means closed, lit means open. The lights at the left belong to the MG 131 machine guns, the lights above the counters to the MG 151 cannons.",
+              "context": "They flicker while the guns fire. A light that stays black or lit after the trigger is pressed shows that a gun has a fault.",
+              "src": "m1",
+              "page": "43"
+            },
+            {
+              "id": "weapon-switches",
+              "name": "Weapons master switch and secondary switch",
+              "type": "switch2",
+              "match": [
+                "pntr_048",
+                "pntr_049",
+                "item:szkk-4:2",
+                "item:szkk-4:3"
+              ],
+              "positions": [
+                {
+                  "name": "OFF",
+                  "text": "The guns of this switch are safe."
+                },
+                {
+                  "name": "ON",
+                  "text": "The guns of this switch are armed and the trigger fires them."
+                }
+              ],
+              "text": "These two switches arm the guns. The master armament switch is for the MG 131 machine guns and the MG 151 cannons in the wing roots. The second switch is for the MG 151 cannons in the outer wings. The game names them 'Master Arm' and 'Outer Wing Guns Arm'.",
+              "context": "The manual says to wait at least 3 seconds between flipping the first and the second switch, because the system can load only four weapons at the same time.",
+              "src": "m1",
+              "page": "121"
+            }
+          ]
+        },
+        {
+          "id": "weapons-console",
+          "name": "Weapons console (rockets and bombs)",
+          "src": "m1",
+          "page": "67",
+          "text": "This console on the lower front panel has the rocket switches, the bomb fusing dial and the emergency load handle. It is used for bombs and rockets, not for the guns.",
+          "context": "The pilot sets the bomb dial before a bombing run. Bombs and rockets are fired later with the B2 button on the stick.",
+          "controls": [
+            {
+              "id": "rocket-unit",
+              "name": "21 cm rocket control unit",
+              "type": "other",
+              "match": [
+                "item:lower-front-dash:16"
+              ],
+              "text": "This unit holds two switches for the 21 cm rockets under the wings: a main switch and an emergency release switch.",
+              "context": "The two switches are explained one by one below.",
+              "src": "m1",
+              "page": "124"
+            },
+            {
+              "id": "rocket-main",
+              "name": "Main rocket switch",
+              "type": "switch2",
+              "match": [
+                "pntr_135"
+              ],
+              "positions": [
+                {
+                  "name": "OFF",
+                  "text": "Aus: the rockets are safe."
+                },
+                {
+                  "name": "ON",
+                  "text": "Ein: the rockets are armed."
+                }
+              ],
+              "text": "This switch arms or disarms the underwing rockets. With the switch at Aus, pressing the B2 button on the stick launches nothing.",
+              "context": "The pilot turns it on only when about to fire rockets. The rockets are then launched with the B2 button.",
+              "src": "m1",
+              "page": "124"
+            },
+            {
+              "id": "rocket-jet",
+              "name": "Rocket emergency release switch",
+              "type": "switch2",
+              "match": [
+                "pntr_136"
+              ],
+              "positions": [
+                {
+                  "name": "OFF",
+                  "text": "Aus: safe, nothing is jettisoned."
+                },
+                {
+                  "name": "ON",
+                  "text": "Ein: the explosive bolts detach the rocket launchers from the wings."
+                }
+              ],
+              "text": "This switch blasts the rocket launchers off the wings so that the plane flies clean again. A safety plate that must be bent aside first protects it.",
+              "context": "It is an emergency measure, for example if the rockets get in the way. At Aus the switch is safe.",
+              "src": "m1",
+              "page": "124"
+            },
+            {
+              "id": "bomb-fuse",
+              "name": "Bomb fusing selector (ZSK 244)",
+              "type": "selector",
+              "match": [
+                "pntr_109",
+                "item:lower-front-dash:17"
+              ],
+              "positions": [
+                {
+                  "name": "OFF",
+                  "text": "Aus: the bomb release is disarmed."
+                },
+                {
+                  "name": "Sturz MV",
+                  "text": "Dive bombing, with delay: the bomb explodes a short moment after impact."
+                },
+                {
+                  "name": "Sturz OV",
+                  "text": "Dive bombing, without delay: the bomb explodes on impact."
+                },
+                {
+                  "name": "Wagerecht MV",
+                  "text": "Level bombing, with delay: the bomb explodes a short moment after impact."
+                },
+                {
+                  "name": "Wagerecht OV",
+                  "text": "Level bombing, without delay: the bomb explodes on impact."
+                }
+              ],
+              "text": "This dial decides how a bomb's fuse is armed and when it goes off. At Aus (off) the bomb release is disarmed. Sturz is for dive bombing, Wagerecht for level bombing. OV means the bomb goes off at once on impact, MV after a short delay.",
+              "context": "The pilot sets it before the bombing run, because it must match the attack. The bombs are dropped later with the B2 button on the stick.",
+              "src": "m1",
+              "page": "67"
+            },
+            {
+              "id": "load-release",
+              "name": "Emergency load release handle (Bomben)",
+              "type": "handle",
+              "match": [
+                "pntr_092",
+                "item:lower-front-dash:1"
+              ],
+              "text": "Pulling this handle drops the load that hangs under the fuselage, such as a bomb or the drop tank (extra fuel tank). The word on the plate is Rumpflast or Bomben. The game names it 'Jettison Fuselage Stores'.",
+              "context": "It is an emergency tool, for example to get rid of bombs or the drop tank quickly.",
+              "src": "m1",
+              "page": "58"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "front-panel",
+      "where": "front-center",
+      "name": "Main instrument panel (front dash)",
+      "text": "Flight instruments are in the middle and engine gauges below and to the right. The lower part holds the fuel, cooling and emergency handles.",
+      "panels": [
+        {
+          "id": "flight-instruments",
+          "name": "Flight instruments",
+          "db": "upper-front-dash",
+          "src": "m1",
+          "page": "40",
+          "text": "These dials tell the pilot how fast the plane flies, how high, whether it climbs or sinks and which way it points.",
+          "context": "The pilot scans them all the time in flight. In bad weather they are the only way to know the plane's position in the air.",
+          "controls": [
+            {
+              "id": "airspeed",
+              "name": "Airspeed indicator (km/h)",
+              "type": "gauge",
+              "match": [
+                "item:upper-front-dash:5"
+              ],
+              "text": "This dial shows how fast the plane moves through the air, in kilometres per hour. A needle points to the number. The numbers overlap at the bottom of the dial, so the pilot uses common sense to tell a slow speed from a very fast one.",
+              "context": "The pilot watches it all the time: for take-off, for landing and to keep out of speeds that could damage the plane.",
+              "src": "m1",
+              "page": "46"
+            },
+            {
+              "id": "altimeter",
+              "name": "Altitude indicator (altimeter)",
+              "type": "gauge",
+              "match": [
+                "item:upper-front-dash:6"
+              ],
+              "text": "This dial shows the height of the plane. A needle shows tens of metres within one kilometre. A small window shows whole kilometres and another window the air pressure in millibar.",
+              "context": "The pilot adds the kilometre disk and the needle: disk 3 and needle at 0.4 means 3400 metres.",
+              "src": "m1",
+              "page": "45"
+            },
+            {
+              "id": "alt-set",
+              "name": "Altimeter pressure setting knob",
+              "type": "knob",
+              "match": [
+                "pntr_034"
+              ],
+              "text": "This knob sets the air pressure that the height gauge uses as its starting point. Turning it moves the pressure number in the small window. The game names it 'Altimeter Pressure Set'.",
+              "context": "Before take-off the pilot sets it so that the gauge reads the right height for the airfield.",
+              "src": "m1",
+              "page": "45"
+            },
+            {
+              "id": "vsi",
+              "name": "Vertical speed indicator (variometer)",
+              "type": "gauge",
+              "match": [
+                "item:upper-front-dash:9"
+              ],
+              "text": "This dial shows whether the plane is climbing or sinking and how quickly, in metres per second. The needle points up for climbing and down for sinking.",
+              "context": "The pilot uses it to hold the height steadily in a turn or to climb or descend at a calm, steady rate.",
+              "src": "m1",
+              "page": "48"
+            }
+          ]
+        },
+        {
+          "id": "horizon",
+          "name": "Artificial horizon / turn and bank indicator",
+          "db": "artificial-horizon",
+          "src": "m1",
+          "page": "47",
+          "text": "This one instrument holds a horizon, a turn needle and a slip ball. It shows the pilot the plane's tilt when the real horizon cannot be seen.",
+          "context": "The pilot uses it for flying by instruments. The outer ring locks and frees the gyroscope inside.",
+          "controls": [
+            {
+              "id": "horizon",
+              "name": "Artificial horizon / turn and bank indicator",
+              "type": "gauge",
+              "match": [
+                "item:upper-front-dash:4",
+                "item:artificial-horizon:1",
+                "item:artificial-horizon:2",
+                "item:artificial-horizon:4",
+                "item:artificial-horizon:6"
+              ],
+              "text": "This instrument shows the pilot how the plane sits in the air when clouds or darkness hide the real horizon. A bar shows nose-up or nose-down and the tilt of the wings. A needle shows how fast the plane turns, and a ball in a curved tube shows whether the turn is clean.",
+              "context": "The pilot uses it for flying by instruments. The manual notes that its horizon bar is locked during aerobatics.",
+              "src": "m1",
+              "page": "47"
+            },
+            {
+              "id": "horizon-cage",
+              "name": "Horizon cage ring (Fest / Los)",
+              "type": "knob",
+              "match": [
+                "pntr_039",
+                "item:artificial-horizon:3",
+                "item:artificial-horizon:5"
+              ],
+              "text": "This ring on the artificial horizon locks or frees its inner gyroscope (a spinning wheel that keeps the horizon steady). The word Fest on the dial means locked (caged). The word Los means free (uncaged).",
+              "context": "The pilot sets it to Los (free) for normal flying so that the horizon works.",
+              "src": "m1",
+              "page": "47"
+            }
+          ]
+        },
+        {
+          "id": "compass",
+          "name": "Repeater compass",
+          "db": "repeater-compass",
+          "src": "m1",
+          "page": "49",
+          "text": "This dial shows the plane's heading, the direction it flies. The compass rose can be turned to mark the wanted heading.",
+          "context": "The pilot flies a planned route by holding the pointer on the wanted heading.",
+          "controls": [
+            {
+              "id": "compass",
+              "name": "Repeater compass",
+              "type": "gauge",
+              "match": [
+                "item:upper-front-dash:10",
+                "item:repeater-compass:1",
+                "item:repeater-compass:2",
+                "item:repeater-compass:3"
+              ],
+              "text": "This compass shows the direction the plane is heading. A small plane symbol with a pointer turns as the plane changes direction. A marked stripe on the dial can be set to the heading the pilot wants to fly.",
+              "context": "The pilot keeps the pointer on the wanted heading to fly a planned route.",
+              "src": "m1",
+              "page": "49"
+            },
+            {
+              "id": "compass-set",
+              "name": "Compass bezel (desired heading)",
+              "type": "knob",
+              "match": [
+                "pntr_043"
+              ],
+              "text": "This turnable ring around the compass moves the compass rose. The pilot turns it until the reference stripe sits on the heading he wants to fly. The game names this control 'Course Set'.",
+              "context": "After setting the stripe, the pilot only has to keep the pointer on it to hold the course.",
+              "src": "m1",
+              "page": "49"
+            }
+          ]
+        },
+        {
+          "id": "afn2",
+          "name": "AFN-2 homing indicator",
+          "src": "m1",
+          "page": "44",
+          "text": "This small dial points the pilot to a radio beacon on the ground and shows how far it is.",
+          "context": "It belongs to the FuG 16ZY radio.",
+          "controls": [
+            {
+              "id": "afn2",
+              "name": "AFN-2 homing indicator",
+              "type": "gauge",
+              "match": [
+                "item:upper-front-dash:8"
+              ],
+              "text": "This small dial points the way to a radio beacon on the ground. A vertical bar shows whether the beacon lies left or right of the nose. A horizontal bar shows how far away it is. A lamp in the middle lights when the plane flies over the beacon's marker.",
+              "context": "It is part of the FuG 16ZY radio set. The pilot follows it to find an airfield when the ground is hidden.",
+              "src": "m1",
+              "page": "44"
+            }
+          ]
+        },
+        {
+          "id": "iff",
+          "name": "FuG 25a IFF transponder",
+          "db": "fug-25a-iff-transponder",
+          "src": "m1",
+          "page": "53",
+          "text": "IFF stands for identification friend or foe. The FuG 25a answers a ground radar so that the radar knows the plane is friendly.",
+          "context": "The unit receives pulses from radar stations such as Freya and Würzburg. When it is on and set to the day's code, it answers with a coded signal.",
+          "controls": [
+            {
+              "id": "iff-unit",
+              "name": "FuG 25a IFF control unit",
+              "type": "other",
+              "match": [
+                "item:lower-front-dash:4"
+              ],
+              "text": "This is the control box of the identification system. It has a code selector and a test button.",
+              "context": "The two controls are explained next.",
+              "src": "m1",
+              "page": "53"
+            },
+            {
+              "id": "iff-code",
+              "name": "FuG 25a transponder code selector",
+              "type": "switch",
+              "match": [
+                "pntr_086",
+                "item:fug-25a-iff-transponder:1"
+              ],
+              "text": "This switch picks the code the transponder answers with. The ground station can then tell the plane is friendly. The game names it 'IFF Channel Selector'.",
+              "context": "The manual says the unit must be set with the day's codeword.",
+              "src": "m1",
+              "page": "53"
+            },
+            {
+              "id": "iff-test",
+              "name": "FuG 25a test button",
+              "type": "button",
+              "match": [
+                "pntr_088",
+                "item:fug-25a-iff-transponder:2"
+              ],
+              "text": "This button tests the transponder. The game names it 'IFF Check'.",
+              "context": "The manual lists it with the code selector and does not say more.",
+              "src": "m1",
+              "page": "53"
+            }
+          ]
+        },
+        {
+          "id": "engine-gauges",
+          "name": "Engine gauges",
+          "db": "lower-front-dash",
+          "src": "m1",
+          "page": "59",
+          "text": "These dials show how the engine is doing: how hard the supercharger pushes, how fast the engine turns, the pressures and temperatures of fuel and oil, and the position of the propeller blades.",
+          "context": "The pilot checks them after the engine start and in flight. A needle outside its marked strip means trouble.",
+          "controls": [
+            {
+              "id": "ata",
+              "name": "Supercharger pressure gauge (ATA)",
+              "type": "gauge",
+              "match": [
+                "item:upper-front-dash:11"
+              ],
+              "text": "This gauge shows how hard the supercharger (a pump that pushes extra air into the engine) is pressing. The unit is ATA, an old measure of air pressure. The more pressure, the more power the engine gives.",
+              "context": "In this plane the throttle lever is moved until this gauge shows the wanted pressure. It is one of the most important engine gauges.",
+              "src": "m1",
+              "page": "50"
+            },
+            {
+              "id": "tacho",
+              "name": "Tachometer (RPM x 100)",
+              "type": "gauge",
+              "match": [
+                "item:upper-front-dash:12"
+              ],
+              "text": "This dial shows how fast the engine turns, in hundreds of revolutions per minute (RPM). A reading of 24 means 2400 turns every minute.",
+              "context": "The engine control unit sets the engine speed by itself from the throttle position, so the pilot mostly watches this dial to check that everything runs as it should.",
+              "src": "m1",
+              "page": "51"
+            },
+            {
+              "id": "fuel-oil-press",
+              "name": "Fuel and oil pressure gauge",
+              "type": "gauge",
+              "match": [
+                "item:lower-front-dash:7"
+              ],
+              "text": "This double gauge shows two things. The left needle shows the pressure of the fuel, the right needle the pressure of the engine oil. Marked strips show the normal range.",
+              "context": "The pilot checks it after the engine starts and from time to time in flight. A needle outside its strip points to engine trouble.",
+              "src": "m1",
+              "page": "59"
+            },
+            {
+              "id": "oil-temp",
+              "name": "Oil temperature gauge",
+              "type": "gauge",
+              "match": [
+                "item:lower-front-dash:8"
+              ],
+              "text": "This dial shows how hot the engine oil is, in degrees Celsius. Marked strips show the normal range.",
+              "context": "The pilot lets the oil warm up before demanding full power and watches that it does not get too hot.",
+              "src": "m1",
+              "page": "60"
+            },
+            {
+              "id": "prop-pitch-ind",
+              "name": "Propeller pitch indicator",
+              "type": "gauge",
+              "match": [
+                "item:lower-front-dash:10"
+              ],
+              "text": "This dial shows the angle of the propeller blades, like the hands of a clock. The 6:00 position means 100 % (fine pitch). The 12:30 position means 0 % (coarse pitch).",
+              "context": "The Kommandogerät adjusts the blade angle by itself in flight. This dial lets the pilot see what the propeller is doing.",
+              "src": "m1",
+              "page": "62"
+            },
+            {
+              "id": "vent-ind",
+              "name": "Engine ventilation flap position indicator",
+              "type": "indicator",
+              "match": [
+                "item:upper-front-dash:16"
+              ],
+              "text": "This small indicator on the cooling flap lever shows how far the engine cooling flaps are open.",
+              "context": "It sits on the lever between the artificial horizon and the vertical speed indicator.",
+              "src": "m1",
+              "page": "52"
+            }
+          ]
+        },
+        {
+          "id": "fuel-gauges",
+          "name": "Fuel contents gauge and warning lights",
+          "db": "fuel-warning-and-selector",
+          "src": "m1",
+          "page": "61",
+          "text": "These parts show how much fuel is in the two main tanks and warn when a tank is nearly empty.",
+          "context": "There is one gauge for two tanks. A switch chooses which tank the gauge reports.",
+          "controls": [
+            {
+              "id": "fuel-contents",
+              "name": "Fuel contents gauge",
+              "type": "gauge",
+              "match": [
+                "item:lower-front-dash:9"
+              ],
+              "text": "This gauge shows how much fuel is in one of the two main tanks. The selector switch next to it chooses the tank. The upper scale is for the rear tank, the lower scale for the front tank.",
+              "context": "The gauge does not show a drop tank or an extra fuselage tank. While those are feeding the rear tank, the rear tank reads full.",
+              "src": "m1",
+              "page": "60"
+            },
+            {
+              "id": "fuel-gauge-sel",
+              "name": "Fuel gauge selector switch",
+              "type": "switch3",
+              "match": [
+                "pntr_099",
+                "item:lower-front-dash:11",
+                "item:fuel-warning-and-selector:3"
+              ],
+              "positions": [
+                {
+                  "name": "Vorn",
+                  "text": "The fuel contents gauge shows the front tank."
+                },
+                {
+                  "name": "OFF",
+                  "text": "The game offers this third position; the manual does not describe it."
+                },
+                {
+                  "name": "Hinten",
+                  "text": "The fuel contents gauge shows the rear tank."
+                }
+              ],
+              "text": "This switch chooses which fuel tank the fuel contents gauge reports: the front tank (Vorn) or the rear tank (Hinten). In the game it also has an OFF position.",
+              "context": "The pilot checks both tanks before starting. With a drop tank fitted, the manual says to set it to Hinten.",
+              "src": "m1",
+              "page": "61"
+            },
+            {
+              "id": "fuel-lights",
+              "name": "Fuel warning lights (vorn / hinten)",
+              "type": "light",
+              "match": [
+                "item:fuel-warning-and-selector:1",
+                "item:fuel-warning-and-selector:2"
+              ],
+              "text": "Two lamps warn of low fuel. The red lamp marked vorn lights when the front tank is down to 80 litres. The white lamp marked hinten lights when the rear tank is down to 10 litres.",
+              "context": "The white lamp is also called the rear tank switch-over light.",
+              "src": "m1",
+              "page": "61"
+            }
+          ]
+        },
+        {
+          "id": "lower-dash",
+          "name": "Lower front dash: fuel, cooling and emergency handles",
+          "db": "lower-front-dash",
+          "src": "m1",
+          "page": "41",
+          "text": "Below the instruments are the levers for the fuel and the cooling flaps and the emergency handles.",
+          "context": "Most are used on the ground or only in an emergency.",
+          "controls": [
+            {
+              "id": "fuel-selector",
+              "name": "Fuel tank selector lever",
+              "type": "selector",
+              "match": [
+                "pntr_090",
+                "item:lower-front-dash:2"
+              ],
+              "positions": [
+                {
+                  "name": "Auf",
+                  "text": "Both lines are open. The engine can take fuel from the front and the rear tank."
+                },
+                {
+                  "name": "Vorderer Behälter zu",
+                  "text": "The front tank line is closed. The engine takes fuel from the rear tank only."
+                },
+                {
+                  "name": "Hinterer Behälter zu",
+                  "text": "The rear tank line is closed. The engine takes fuel from the front tank only."
+                },
+                {
+                  "name": "Zu",
+                  "text": "Both lines are closed. No fuel reaches the engine."
+                }
+              ],
+              "text": "This lever opens or closes the fuel lines from the two main tanks to the engine. Up (Auf) lets the engine drink from both. The other settings close the front line, the rear line, or both.",
+              "context": "The lever normally stays on Auf. The plane then empties its tanks in a sensible order by itself, so the pilot does not juggle tanks.",
+              "src": "m1",
+              "page": "56"
+            },
+            {
+              "id": "cooling-flaps",
+              "name": "Cooling flaps lever (Zu / Auf)",
+              "type": "lever",
+              "match": [
+                "pntr_159"
+              ],
+              "text": "This lever opens or closes the cooling flaps of the engine, doors that let cooling air through. At Auf they open, at Zu they close. The game names it 'Cooling Flaps Control'.",
+              "context": "A small indicator on the lever shows the position. The manual calls it the engine ventilation flap manual control lever.",
+              "src": "m1",
+              "page": "52"
+            },
+            {
+              "id": "shutoff",
+              "name": "Fuel shut-off valve (stop cock lever)",
+              "type": "lever",
+              "match": [
+                "item:lower-front-dash:5"
+              ],
+              "text": "This lever opens or shuts the fuel line. For normal operation it is set to Auf. It is held at Zu to test the pumps and springs back to open.",
+              "context": "The game has no click part under this name. The manual's parachuting steps say to close the fuel shut-off valve.",
+              "src": "m1",
+              "page": "53"
+            },
+            {
+              "id": "crossfeed",
+              "name": "Fuel cross-feed valve",
+              "type": "button",
+              "match": [
+                "pntr_091"
+              ],
+              "text": "The game names this button 'Fuel cross-feed valve'. The manual does not describe it under that name.",
+              "context": "Do not expect a clear function from this control.",
+              "src": "m1",
+              "page": "53"
+            },
+            {
+              "id": "gear-emerg",
+              "name": "Landing gear manual release handle",
+              "type": "handle",
+              "match": [
+                "pntr_089",
+                "item:lower-front-dash:3"
+              ],
+              "text": "Pulling this handle unlocks the landing gear by hand so that the wheels drop down under their own weight. The game has a command for pulling it and one for pushing it back.",
+              "context": "It is the back-up when the normal gear buttons fail. The plane should fly wings level so the wheels can fall into place.",
+              "src": "m1",
+              "page": "56"
+            },
+            {
+              "id": "brushes",
+              "name": "Engine starter brushes withdrawal handle",
+              "type": "handle",
+              "match": [
+                "pntr_093",
+                "item:lower-front-dash:6"
+              ],
+              "text": "This handle pulls back the brushes of the electric starter. It is used when the engine is started by hand without the electric starter.",
+              "context": "The manual says it is used during manual startup without the electric starter. The game names it 'Retract starter brushes'.",
+              "src": "m1",
+              "page": "55"
+            },
+            {
+              "id": "flare",
+              "name": "Flare pistol holder",
+              "type": "other",
+              "match": [
+                "item:lower-front-dash:12"
+              ],
+              "text": "This is a holder for a flare pistol, a signal gun. The manual does not describe it, and the game has no click part for it.",
+              "context": "It is only a holder in the lower front panel.",
+              "src": "m1",
+              "page": "41"
+            },
+            {
+              "id": "ebox",
+              "name": "Switch 'cb_e103'",
+              "type": "switch",
+              "match": [
+                "pntr_111"
+              ],
+              "text": "The game names this switch 'cb_e103' on the Engine Controls panel. The manual does not describe it.",
+              "context": "Do not expect a clear function from this control.",
+              "src": "m1",
+              "page": "41"
+            },
+            {
+              "id": "throttle-lock",
+              "name": "Throttle lock",
+              "type": "switch",
+              "match": [
+                "pntr_200"
+              ],
+              "text": "The game names this control 'Throttle Lock' in the Engine System group. The manual does not describe it.",
+              "context": "It is not part of the manual's list of left side controls.",
+              "src": "m1",
+              "page": "69"
+            }
+          ]
+        },
+        {
+          "id": "oxygen",
+          "name": "Oxygen controls",
+          "src": "m1",
+          "page": "63",
+          "text": "The oxygen system gives the pilot air to breathe high up. It has a valve, a flow indicator and a pressure gauge on the right of the front panel.",
+          "context": "The valve is turned on early in the cockpit routine. A separate emergency knob is explained in the rear area.",
+          "controls": [
+            {
+              "id": "oxy-valve",
+              "name": "Oxygen flow valve",
+              "type": "knob",
+              "match": [
+                "pntr_110",
+                "item:upper-front-dash:15",
+                "item:lower-front-dash:13"
+              ],
+              "text": "This knob opens the oxygen for the pilot's mask. Turned on, the oxygen runs to a regulator that mixes it with the outside air. Turned off, no oxygen flows.",
+              "context": "Oxygen is needed high up where the air is thin. The manual lists turning this valve on among the first things to do in the cockpit.",
+              "src": "m1",
+              "page": "65"
+            },
+            {
+              "id": "oxy-flow",
+              "name": "Oxygen flow indicator",
+              "type": "indicator",
+              "match": [
+                "item:upper-front-dash:14",
+                "item:lower-front-dash:15"
+              ],
+              "text": "This small window shows that oxygen is flowing. When the pilot breathes in, the flaps (blinkers) inside open. When the pilot breathes out, they close.",
+              "context": "If the blinkers stay still while the valve is open, the pilot knows something is wrong with the oxygen supply.",
+              "src": "m1",
+              "page": "63"
+            },
+            {
+              "id": "oxy-press",
+              "name": "Oxygen pressure gauge",
+              "type": "gauge",
+              "match": [
+                "item:upper-front-dash:13",
+                "item:lower-front-dash:14"
+              ],
+              "text": "This gauge shows how much oxygen is left in the bottles, as a pressure. A full system reads about 150 kg per square centimetre.",
+              "context": "A fast drop while flying level or descending is not normal and can mean a leak. The reading also changes a little with the cold of high altitude.",
+              "src": "m1",
+              "page": "64"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "left-console",
+      "where": "left-console",
+      "name": "Left console",
+      "text": "The left side holds the engine and radio controls: ignition, primer, radio panel and the electric kill-switch. The throttle, the flap and gear buttons and the trim switch are in the Stick and throttle section.",
+      "panels": [
+        {
+          "id": "engine-left",
+          "name": "Engine and system controls (left side)",
+          "db": "left-side",
+          "src": "m1",
+          "page": "68",
+          "text": "These controls on the left side start and protect the engine and the electrics.",
+          "context": "The ignition switch and primer are used during start-up.",
+          "controls": [
+            {
+              "id": "ignition",
+              "name": "Ignition (magneto) selector switch",
+              "type": "selector",
+              "match": [
+                "pntr_075",
+                "item:left-side:16"
+              ],
+              "positions": [
+                {
+                  "name": "0",
+                  "text": "Both magnetos are off. No sparks, the engine cannot run."
+                },
+                {
+                  "name": "M1",
+                  "text": "Only the right magneto is used."
+                },
+                {
+                  "name": "M2",
+                  "text": "Only the left magneto is used."
+                },
+                {
+                  "name": "M1+2",
+                  "text": "Both magnetos are used. This is the normal setting."
+                }
+              ],
+              "text": "This switch chooses which magnetos (small generators that make the sparks for the engine) are in use. There are two for safety. The normal setting is both.",
+              "context": "The pilot sets it to M1+2 for the engine start and back to 0 to stop the engine.",
+              "src": "m1",
+              "page": "70"
+            },
+            {
+              "id": "primer",
+              "name": "Primer pump handle",
+              "type": "handle",
+              "match": [
+                "pntr_162",
+                "item:left-side:1"
+              ],
+              "text": "This handle is a small hand pump. Each stroke squirts a little fuel into the engine to help it start.",
+              "context": "The pilot uses it for the engine start with short, strong strokes, 1 to 15 times depending on the outside temperature. It can be used again if the engine runs roughly.",
+              "src": "m1",
+              "page": "68"
+            },
+            {
+              "id": "instr-light",
+              "name": "Instrument lighting control",
+              "type": "knob",
+              "match": [
+                "pntr_078",
+                "item:left-side:18"
+              ],
+              "text": "This knob makes the lighting of the instrument panel brighter or dimmer. The game offers an increase and a decrease command for it.",
+              "context": "It is used in the dark, so the dials can be read without glare.",
+              "src": "m1",
+              "page": "69"
+            },
+            {
+              "id": "kill",
+              "name": "Electric kill-switch",
+              "type": "button",
+              "match": [
+                "pntr_079",
+                "item:left-side:17"
+              ],
+              "text": "This switch shuts down the plane's whole electrical system in an emergency. In the game the command is called 'Electric Emergency Disconnect'.",
+              "context": "It is for emergencies only. After it is used the electric devices no longer get power.",
+              "src": "m1",
+              "page": "78"
+            },
+            {
+              "id": "friction",
+              "name": "Throttle friction knob",
+              "type": "knob",
+              "match": [
+                "item:left-side:15"
+              ],
+              "text": "This knob sits under the throttle lever near the cockpit floor. Turning it makes the lever stiffer so it stays where the pilot put it.",
+              "context": "The pilot tightens it once the wanted engine setting is found, so the lever does not creep.",
+              "src": "m1",
+              "page": "70"
+            },
+            {
+              "id": "headset-cord",
+              "name": "Headset cord attachment point",
+              "type": "other",
+              "match": [
+                "item:left-side:2"
+              ],
+              "text": "This is the plug where the cord of the pilot's headset is attached.",
+              "context": "The headset carries the radio sound to the pilot.",
+              "src": "m1",
+              "page": "68"
+            }
+          ]
+        },
+        {
+          "id": "fug16",
+          "name": "FuG 16ZY radio controls",
+          "db": "fug-16zy-controls",
+          "src": "m1",
+          "page": "76",
+          "text": "The FuG 16ZY is the plane's radio. These controls tune it, set the volume and switch between talking and homing.",
+          "context": "The microphone push-to-talk button is on the throttle. The AFN-2 dial on the front panel belongs to the same radio.",
+          "controls": [
+            {
+              "id": "fug-channel",
+              "name": "FuG 16ZY frequency selector",
+              "type": "selector",
+              "match": [
+                "pntr_081",
+                "item:left-side:12",
+                "item:fug-16zy-controls:3"
+              ],
+              "positions": [
+                {
+                  "name": "I",
+                  "text": "Flight (management) frequency. The manual says it is not used in this simulation."
+                },
+                {
+                  "name": "II",
+                  "text": "Group order frequency, for talking between several flights in a raid."
+                },
+                {
+                  "name": "III",
+                  "text": "Airfield (air traffic control) frequency, for talking to the tower."
+                },
+                {
+                  "name": "IV",
+                  "text": "Reich fighter defence frequency, for coordinating the national air defence."
+                }
+              ],
+              "text": "This switch picks one of four stored radio frequencies, like the station buttons of a car radio. The four frequencies are fixed before the flight in the mission editor. The pilot cannot type in new ones.",
+              "context": "Position I is for the pilot's own flight and is not used in this simulation. The next positions are for the group, the airfield tower and the national air defence.",
+              "src": "m1",
+              "page": "76"
+            },
+            {
+              "id": "fug-fine",
+              "name": "FuG 16ZY fine tuning knob",
+              "type": "knob",
+              "match": [
+                "pntr_082",
+                "item:left-side:3",
+                "item:fug-16zy-controls:2"
+              ],
+              "text": "This knob changes the radio's frequency in small steps around the chosen preset. The game calls it 'Radio Tuning (+/-30 kHz)'. The frequency is the 'station number' the radio talks on.",
+              "context": "It is a fine adjustment inside the frequency preset that the selector has picked.",
+              "src": "m1",
+              "page": "78"
+            },
+            {
+              "id": "fug-volume",
+              "name": "Headphone volume control",
+              "type": "knob",
+              "match": [
+                "pntr_083",
+                "item:left-side:11",
+                "item:fug-16zy-controls:4"
+              ],
+              "text": "This knob sets how loud the radio sounds in the pilot's headphones. Clockwise is louder, counter-clockwise is quieter.",
+              "context": "The pilot sets it once at the start so that radio calls can be heard over the engine.",
+              "src": "m1",
+              "page": "77"
+            },
+            {
+              "id": "fug-mode",
+              "name": "FuG 16ZY communications / homing switch (FT / ABST)",
+              "type": "switch2",
+              "match": [
+                "pntr_084",
+                "item:left-side:10",
+                "item:fug-16zy-controls:5"
+              ],
+              "positions": [
+                {
+                  "name": "Ft",
+                  "text": "Radio telephony: normal talking and listening."
+                },
+                {
+                  "name": "Abst",
+                  "text": "Tuning for homing: the radio is used together with a ground station to find the direction."
+                }
+              ],
+              "text": "This switch sets what the radio does. In position Ft the radio is a normal telephone for talking. In position Abst it tunes to a ground station for direction finding (homing).",
+              "context": "For normal talking the manual says to use it on Ft together with the frequency positions II, III or IV.",
+              "src": "m1",
+              "page": "77"
+            },
+            {
+              "id": "fug-range",
+              "name": "Frequency range / homing range selector",
+              "type": "selector",
+              "match": [
+                "item:left-side:4",
+                "item:fug-16zy-controls:1"
+              ],
+              "text": "The manual lists a frequency range selector and a homing range switch on the radio and marks the selectors as not working.",
+              "context": "The pilot uses the frequency selector, the fine tuning and the volume knob instead.",
+              "src": "m1",
+              "page": "76"
+            },
+            {
+              "id": "radio-wip",
+              "name": "Radio 'WIP' switch",
+              "type": "switch",
+              "match": [
+                "pntr_080"
+              ],
+              "text": "The game names this switch 'Radio WIP'. WIP usually means work in progress. The manual does not describe it.",
+              "context": "Do not expect a function from this control.",
+              "src": "m1",
+              "page": "76"
+            }
+          ]
+        },
+        {
+          "id": "gear-lamps",
+          "name": "Landing gear indicator",
+          "db": "landing-gear-indicator",
+          "src": "m1",
+          "page": "72",
+          "text": "Two lamps show where the two main wheels are. Red means the gear is up, green means it is down.",
+          "context": "The pilot checks them after every gear command. Mechanical indicators in the wings back them up.",
+          "controls": [
+            {
+              "id": "gear-lights",
+              "name": "Landing gear status lights (left and right)",
+              "type": "light",
+              "match": [
+                "item:landing-gear-indicator:1",
+                "item:landing-gear-indicator:2",
+                "item:left-side:6"
+              ],
+              "text": "These two lamps show the state of the main wheels. Red means the gear is retracted. Green means it is deployed.",
+              "context": "Both green means the gear is down and locked, ready for landing.",
+              "src": "m1",
+              "page": "72"
+            }
+          ]
+        },
+        {
+          "id": "wing-indicators",
+          "name": "Mechanical gear and flap indicators (in the wings)",
+          "db": "landing-gear-and-flaps-mechanical-indicators",
+          "src": "m1",
+          "page": "72",
+          "text": "Small mechanical indicators in the wings show the real state of the gear and flaps. The pilot can see them through holes in the wing.",
+          "context": "They back up the lamps in the cockpit.",
+          "controls": [
+            {
+              "id": "flap-gauge",
+              "name": "Flaps position gauge",
+              "type": "indicator",
+              "match": [
+                "item:landing-gear-and-flaps-mechanical-indicators:1"
+              ],
+              "text": "A small gauge seen through a hole in the wing shows the real angle of the flap in degrees.",
+              "context": "It shows the actual angle while the flaps move.",
+              "src": "m1",
+              "page": "72"
+            },
+            {
+              "id": "gear-rod",
+              "name": "Landing gear position rod",
+              "type": "indicator",
+              "match": [
+                "item:landing-gear-and-flaps-mechanical-indicators:2"
+              ],
+              "text": "A red pin sticks up out of the wing when the gear leg below it is down, and sinks when the gear is up.",
+              "context": "The pilot looks at the pin to check the gear is down.",
+              "src": "m1",
+              "page": "72"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "right-console",
+      "where": "right-console",
+      "name": "Right console",
+      "text": "The right side holds the canopy controls, the starter, the flight clock and four panels of circuit breakers.",
+      "panels": [
+        {
+          "id": "canopy",
+          "name": "Canopy controls",
+          "src": "m1",
+          "page": "80",
+          "text": "These two controls open and close the canopy, and throw it away in an emergency.",
+          "context": "The pilot closes the canopy before the engine start.",
+          "controls": [
+            {
+              "id": "canopy-crank",
+              "name": "Canopy crank",
+              "type": "knob",
+              "match": [
+                "pntr_114",
+                "item:right-side:2"
+              ],
+              "text": "This hand crank opens and closes the canopy (the glass roof over the pilot). Turned clockwise it opens the canopy. Turned counter-clockwise it closes it.",
+              "context": "The pilot uses it on the ground and before flight. In the game, pulling out the crank handle to move the canopy by hand is not simulated.",
+              "src": "m1",
+              "page": "80"
+            },
+            {
+              "id": "canopy-jettison",
+              "name": "Canopy jettison lever",
+              "type": "lever",
+              "match": [
+                "pntr_115",
+                "item:right-side:3"
+              ],
+              "text": "This lever throws the canopy off the plane with a small explosive charge. It is for emergencies, when the pilot must leave the plane.",
+              "context": "It is part of the bail-out procedure in the manual's emergency section.",
+              "src": "m1",
+              "page": "80"
+            }
+          ]
+        },
+        {
+          "id": "starter",
+          "name": "Starter switch",
+          "db": "starter-switch",
+          "src": "m1",
+          "page": "80",
+          "text": "This switch starts the engine. It sits under a small cover.",
+          "context": "The manual allows the electric starter only with external power connected. The on-board battery is for emergencies.",
+          "controls": [
+            {
+              "id": "starter-cover",
+              "name": "Starter switch cover",
+              "type": "cover",
+              "match": [
+                "pntr_104",
+                "item:starter-switch:1"
+              ],
+              "text": "This cover sits over the starter switch so that it cannot be hit by accident. The pilot lifts it before using the switch.",
+              "context": "It protects the starter switch while the plane flies.",
+              "src": "m1",
+              "page": "80"
+            },
+            {
+              "id": "starter",
+              "name": "Starter switch (Anlasser)",
+              "type": "button",
+              "match": [
+                "pntr_105",
+                "item:right-side:1",
+                "item:starter-switch:2"
+              ],
+              "text": "This switch starts the engine in two steps. Holding it down spins up a heavy flywheel (a spinning wheel that stores energy). Then the pilot pulls it up and the flywheel is joined to the engine, which turns it to start. The game splits it into a starter power command and a clutch command.",
+              "context": "The manual says to hold it down about 10 seconds (20 in cold weather) until the flywheel runs, and then pull it up for the engine start.",
+              "src": "m1",
+              "page": "80"
+            }
+          ]
+        },
+        {
+          "id": "clock",
+          "name": "Flight clock",
+          "src": "m1",
+          "page": "81",
+          "text": "The flight clock shows the time and has a stopwatch. A compass correction card is mounted near it.",
+          "context": "The pilot can time parts of the flight with it.",
+          "controls": [
+            {
+              "id": "clock-stop",
+              "name": "Flight clock start-stop button",
+              "type": "switch",
+              "match": [
+                "CLK_SET"
+              ],
+              "text": "This button stops and restarts the whole clockwork of the flight clock. It is pushed in while the pilot sets the time and pulled back afterwards.",
+              "context": "It is used only to set the clock to the right time.",
+              "src": "m1",
+              "page": "81"
+            },
+            {
+              "id": "clock-sw",
+              "name": "Flight clock stopwatch button",
+              "type": "button",
+              "match": [
+                "CLK_SW"
+              ],
+              "text": "This button runs the stopwatch of the clock. The first press starts it, the second press stops it, the third press sets it back to zero. A small dial counts up to 15 minutes.",
+              "context": "The pilot can time a leg of the flight or a turn with it.",
+              "src": "m1",
+              "page": "81"
+            },
+            {
+              "id": "clock-knobs",
+              "name": "Flight clock wind/set knob and bezel",
+              "type": "knob",
+              "match": [
+                "CLK_SCALE",
+                "CLK_PINION",
+                "item:right-side:4"
+              ],
+              "text": "The clock has a round wind/set knob under its face and a turnable bezel (outer ring). The wind/set knob sets the time while the start-stop button is pushed in. The game names two knobs 'clock_scale' and 'clock_pinion', and the manual does not say which is which.",
+              "context": "The pilot sets the time before the flight so that the clock matches the mission time.",
+              "src": "m1",
+              "page": "81"
+            },
+            {
+              "id": "deviation-card",
+              "name": "Compass deviation card",
+              "type": "other",
+              "match": [
+                "item:right-side:5"
+              ],
+              "text": "This card is a small table. It tells the pilot how much the magnetic compass is wrong on different headings.",
+              "context": "It is a paper aid in the cockpit.",
+              "src": "m1",
+              "page": "79"
+            }
+          ]
+        },
+        {
+          "id": "cb-main",
+          "name": "Instrument panel circuit breakers (main panel)",
+          "db": "instrument-panel-circuit-breaker",
+          "src": "m1",
+          "page": "82",
+          "text": "This panel of eleven circuit breakers, behind a flap lid, switches the main electrical equipment on and off and protects it.",
+          "context": "The manual says that most electrical devices of the Fw 190 are switched with such breakers.",
+          "controls": [
+            {
+              "id": "cb-covers",
+              "name": "Circuit breaker covers",
+              "type": "cover",
+              "match": [
+                "pntr_138",
+                "pntr_139"
+              ],
+              "count": 2,
+              "text": "These flap lids cover the main and the rear circuit breaker panels. The pilot opens a lid to reach the breakers.",
+              "context": "They keep the breakers from being pressed by accident.",
+              "src": "m1",
+              "page": "82"
+            },
+            {
+              "id": "cb-panels",
+              "name": "Circuit breaker panels",
+              "type": "other",
+              "match": [
+                "item:right-side:6",
+                "item:right-side:7",
+                "item:right-side:8"
+              ],
+              "text": "The right console has four panels of circuit breakers: the main panel and the rear panel with eleven each, the fuel pump panel with five and the armament panel with three.",
+              "context": "The breakers are explained one by one in the panels below.",
+              "src": "m1",
+              "page": "82"
+            },
+            {
+              "id": "cb-drop",
+              "name": "Drop ordnance and optional armament breaker",
+              "type": "button",
+              "match": [
+                "pntr_141",
+                "pntr_142",
+                "item:instrument-panel-circuit-breaker:1"
+              ],
+              "text": "A circuit breaker is a switch that also works as an automatic fuse: if too much current flows, it pops out by itself. It has two buttons, a black one that closes the circuit and switches the device on, and a red one that opens it and switches it off. This one is for the release of bombs and other loads and for optional armament.",
+              "context": "It belongs to the circuits for dropping loads and for optional armament.",
+              "src": "m1",
+              "page": "83"
+            },
+            {
+              "id": "cb-sight",
+              "name": "Gunsight and gun camera breaker",
+              "type": "button",
+              "match": [
+                "pntr_143",
+                "pntr_144",
+                "item:instrument-panel-circuit-breaker:2"
+              ],
+              "text": "A circuit breaker is a switch that also works as an automatic fuse: if too much current flows, it pops out by itself. It has two buttons, a black one that closes the circuit and switches the device on, and a red one that opens it and switches it off. This one is for the gunsight and the gun camera.",
+              "context": "Without it the sight and the camera get no power.",
+              "src": "m1",
+              "page": "83"
+            },
+            {
+              "id": "cb-instr",
+              "name": "Instruments breaker",
+              "type": "button",
+              "match": [
+                "pntr_145",
+                "pntr_146",
+                "item:instrument-panel-circuit-breaker:3"
+              ],
+              "text": "A circuit breaker is a switch that also works as an automatic fuse: if too much current flows, it pops out by itself. It has two buttons, a black one that closes the circuit and switches the device on, and a red one that opens it and switches it off. This one is for the instruments.",
+              "context": "Without it the electric instruments get no power.",
+              "src": "m1",
+              "page": "83"
+            },
+            {
+              "id": "cb-nav",
+              "name": "Navigation lights breaker",
+              "type": "button",
+              "match": [
+                "pntr_147",
+                "pntr_148",
+                "item:instrument-panel-circuit-breaker:4"
+              ],
+              "text": "A circuit breaker is a switch that also works as an automatic fuse: if too much current flows, it pops out by itself. It has two buttons, a black one that closes the circuit and switches the device on, and a red one that opens it and switches it off. This one is for the navigation lights, the coloured lamps on the wing tips.",
+              "context": "They are lit when the plane flies at night.",
+              "src": "m1",
+              "page": "83"
+            },
+            {
+              "id": "cb-cabin",
+              "name": "Cabin illumination breaker",
+              "type": "button",
+              "match": [
+                "pntr_149",
+                "pntr_150",
+                "item:instrument-panel-circuit-breaker:5"
+              ],
+              "text": "A circuit breaker is a switch that also works as an automatic fuse: if too much current flows, it pops out by itself. It has two buttons, a black one that closes the circuit and switches the device on, and a red one that opens it and switches it off. This one is for the lighting of the cabin.",
+              "context": "The pilot uses it when the cabin must be lit, for example in the dark.",
+              "src": "m1",
+              "page": "83"
+            },
+            {
+              "id": "cb-clothes",
+              "name": "Clothes heating breaker",
+              "type": "button",
+              "match": [
+                "pntr_151",
+                "pntr_152",
+                "item:instrument-panel-circuit-breaker:6"
+              ],
+              "text": "A circuit breaker is a switch that also works as an automatic fuse: if too much current flows, it pops out by itself. It has two buttons, a black one that closes the circuit and switches the device on, and a red one that opens it and switches it off. This one is for the electric heating of the pilot's clothes.",
+              "context": "The manual lists the breaker and does not say more.",
+              "src": "m1",
+              "page": "83"
+            },
+            {
+              "id": "cb-pitot",
+              "name": "Pitot heating breaker",
+              "type": "button",
+              "match": [
+                "pntr_153",
+                "pntr_154",
+                "item:instrument-panel-circuit-breaker:7"
+              ],
+              "text": "A circuit breaker is a switch that also works as an automatic fuse: if too much current flows, it pops out by itself. It has two buttons, a black one that closes the circuit and switches the device on, and a red one that opens it and switches it off. This one is for the pitot heating, which warms the small tube outside that measures airspeed so that it does not freeze.",
+              "context": "The manual says to switch on the heating in damp air or below freezing.",
+              "src": "m1",
+              "page": "83"
+            },
+            {
+              "id": "cb-ignition",
+              "name": "Ignition breaker",
+              "type": "button",
+              "match": [
+                "pntr_155",
+                "pntr_156",
+                "item:instrument-panel-circuit-breaker:8"
+              ],
+              "text": "A circuit breaker is a switch that also works as an automatic fuse: if too much current flows, it pops out by itself. It has two buttons, a black one that closes the circuit and switches the device on, and a red one that opens it and switches it off. This one is for the ignition.",
+              "context": "The manual's engine start lists it among the breakers to switch on.",
+              "src": "m1",
+              "page": "83"
+            },
+            {
+              "id": "cb-iff",
+              "name": "FuG 25a IFF breaker",
+              "type": "button",
+              "match": [
+                "pntr_157",
+                "pntr_158",
+                "item:instrument-panel-circuit-breaker:9"
+              ],
+              "text": "A circuit breaker is a switch that also works as an automatic fuse: if too much current flows, it pops out by itself. It has two buttons, a black one that closes the circuit and switches the device on, and a red one that opens it and switches it off. This one is for the FuG 25a identification unit.",
+              "context": "Without it the transponder gets no power.",
+              "src": "m1",
+              "page": "83"
+            },
+            {
+              "id": "cb-gen",
+              "name": "Generator breaker",
+              "type": "button",
+              "match": [
+                "pntr_170",
+                "pntr_171",
+                "item:instrument-panel-circuit-breaker:10"
+              ],
+              "text": "A circuit breaker is a switch that also works as an automatic fuse: if too much current flows, it pops out by itself. It has two buttons, a black one that closes the circuit and switches the device on, and a red one that opens it and switches it off. This one is for the generator, which makes electricity while the engine runs.",
+              "context": "The generator takes over from external power or the battery once the engine runs. The manual's engine start lists it.",
+              "src": "m1",
+              "page": "83"
+            },
+            {
+              "id": "cb-battery",
+              "name": "Battery breaker",
+              "type": "button",
+              "match": [
+                "pntr_172",
+                "pntr_173",
+                "item:instrument-panel-circuit-breaker:11"
+              ],
+              "text": "A circuit breaker is a switch that also works as an automatic fuse: if too much current flows, it pops out by itself. It has two buttons, a black one that closes the circuit and switches the device on, and a red one that opens it and switches it off. This one is for the battery, which stores electricity for when the engine is off.",
+              "context": "The manual says to leave it off for an engine start with external power and to use it only in an emergency.",
+              "src": "m1",
+              "page": "83"
+            }
+          ]
+        },
+        {
+          "id": "cb-fuel",
+          "name": "Fuel pump circuit breakers",
+          "db": "fuel-system-circuit-breaker",
+          "src": "m1",
+          "page": "84",
+          "text": "This small panel of five breakers holds the external power connection and the fuel pumps.",
+          "context": "The manual says to check each pump on this panel before the engine start.",
+          "controls": [
+            {
+              "id": "cb-c1",
+              "name": "C1 external connection breaker (airfield power)",
+              "type": "button",
+              "match": [
+                "pntr_120",
+                "pntr_121",
+                "item:fuel-system-circuit-breaker:3"
+              ],
+              "text": "A circuit breaker is a switch that also works as an automatic fuse: if too much current flows, it pops out by itself. It has two buttons, a black one that closes the circuit and switches the device on, and a red one that opens it and switches it off. This one is for the connection for external power from an airfield power source. The game names it 'External Power'.",
+              "context": "The electric starter is allowed only with external power connected.",
+              "src": "m1",
+              "page": "84"
+            },
+            {
+              "id": "cb-e14",
+              "name": "E14 forward tank fuel pump breaker",
+              "type": "button",
+              "match": [
+                "pntr_122",
+                "pntr_123",
+                "item:fuel-system-circuit-breaker:1"
+              ],
+              "text": "A circuit breaker is a switch that also works as an automatic fuse: if too much current flows, it pops out by itself. It has two buttons, a black one that closes the circuit and switches the device on, and a red one that opens it and switches it off. This one is for the electric pump in the forward fuel tank.",
+              "context": "The manual lists it with the other pumps in the start-up.",
+              "src": "m1",
+              "page": "84"
+            },
+            {
+              "id": "cb-e13",
+              "name": "E13 rear tank fuel pump breaker",
+              "type": "button",
+              "match": [
+                "pntr_124",
+                "pntr_125",
+                "item:fuel-system-circuit-breaker:2"
+              ],
+              "text": "A circuit breaker is a switch that also works as an automatic fuse: if too much current flows, it pops out by itself. It has two buttons, a black one that closes the circuit and switches the device on, and a red one that opens it and switches it off. This one is for the electric pump in the rear fuel tank.",
+              "context": "The manual lists it with the other pumps in the start-up.",
+              "src": "m1",
+              "page": "84"
+            },
+            {
+              "id": "cb-e16",
+              "name": "E16 external tank fuel pump breaker",
+              "type": "button",
+              "match": [
+                "pntr_126",
+                "pntr_127",
+                "item:fuel-system-circuit-breaker:4"
+              ],
+              "text": "A circuit breaker is a switch that also works as an automatic fuse: if too much current flows, it pops out by itself. It has two buttons, a black one that closes the circuit and switches the device on, and a red one that opens it and switches it off. This one is for the pump of the drop tank, an extra tank under the fuselage.",
+              "context": "It is only needed when a drop tank is fitted.",
+              "src": "m1",
+              "page": "84"
+            },
+            {
+              "id": "cb-e96",
+              "name": "E96 extra tank fuel pump breaker",
+              "type": "button",
+              "match": [
+                "pntr_128",
+                "pntr_129",
+                "item:fuel-system-circuit-breaker:5"
+              ],
+              "text": "A circuit breaker is a switch that also works as an automatic fuse: if too much current flows, it pops out by itself. It has two buttons, a black one that closes the circuit and switches the device on, and a red one that opens it and switches it off. This one is for the pump of the auxiliary tank, an extra tank in the fuselage.",
+              "context": "It is only needed if that tank is used.",
+              "src": "m1",
+              "page": "84"
+            }
+          ]
+        },
+        {
+          "id": "cb-armament",
+          "name": "Weapon system circuit breakers",
+          "db": "weapon-system-circuit-breaker",
+          "src": "m1",
+          "page": "84",
+          "text": "This small panel of three breakers switches on the electric circuits of the three groups of guns.",
+          "context": "The guns work only when their breaker is on.",
+          "controls": [
+            {
+              "id": "cb-outer",
+              "name": "Outer wing armaments breaker",
+              "type": "button",
+              "match": [
+                "pntr_214",
+                "pntr_215",
+                "item:weapon-system-circuit-breaker:1"
+              ],
+              "text": "A circuit breaker is a switch that also works as an automatic fuse: if too much current flows, it pops out by itself. It has two buttons, a black one that closes the circuit and switches the device on, and a red one that opens it and switches it off. This one is for the MG 151 cannons in the outer wings. The game names it 'Outer Wing Guns'.",
+              "context": "The outer wing guns also have their own arming switch.",
+              "src": "m1",
+              "page": "84"
+            },
+            {
+              "id": "cb-cowl",
+              "name": "Engine-mounted armaments breaker",
+              "type": "button",
+              "match": [
+                "pntr_212",
+                "pntr_213",
+                "item:weapon-system-circuit-breaker:2"
+              ],
+              "text": "A circuit breaker is a switch that also works as an automatic fuse: if too much current flows, it pops out by itself. It has two buttons, a black one that closes the circuit and switches the device on, and a red one that opens it and switches it off. This one is for the MG 131 machine guns above the engine. The game names it 'Cowling Guns'.",
+              "context": "These guns are armed with the master armament switch.",
+              "src": "m1",
+              "page": "84"
+            },
+            {
+              "id": "cb-root",
+              "name": "Wing-root armaments breaker",
+              "type": "button",
+              "match": [
+                "pntr_203",
+                "pntr_211",
+                "item:weapon-system-circuit-breaker:3"
+              ],
+              "text": "A circuit breaker is a switch that also works as an automatic fuse: if too much current flows, it pops out by itself. It has two buttons, a black one that closes the circuit and switches the device on, and a red one that opens it and switches it off. This one is for the MG 151 cannons in the wing roots. The game names it 'Inner Wing Guns'.",
+              "context": "These guns are armed with the master armament switch.",
+              "src": "m1",
+              "page": "84"
+            }
+          ]
+        },
+        {
+          "id": "cb-rear",
+          "name": "Rear panel circuit breakers",
+          "db": "rear-panel-circuit-breaker",
+          "src": "m1",
+          "page": "85",
+          "text": "This panel of eleven breakers, behind a flap lid, holds the radio, the motors for gear, flaps and trim, and some instruments.",
+          "context": "Several of them have to be on for the gear and flap buttons to work.",
+          "controls": [
+            {
+              "id": "cb-radio",
+              "name": "FuG 16 ZY radio breaker",
+              "type": "button",
+              "match": [
+                "pntr_174",
+                "pntr_175",
+                "item:rear-panel-circuit-breaker:1"
+              ],
+              "text": "A circuit breaker is a switch that also works as an automatic fuse: if too much current flows, it pops out by itself. It has two buttons, a black one that closes the circuit and switches the device on, and a red one that opens it and switches it off. This one is for the FuG 16ZY radio.",
+              "context": "Without it the radio gets no power.",
+              "src": "m1",
+              "page": "85"
+            },
+            {
+              "id": "cb-gear-motor",
+              "name": "Undercarriage drive motor breaker",
+              "type": "button",
+              "match": [
+                "pntr_176",
+                "pntr_177",
+                "item:rear-panel-circuit-breaker:2"
+              ],
+              "text": "A circuit breaker is a switch that also works as an automatic fuse: if too much current flows, it pops out by itself. It has two buttons, a black one that closes the circuit and switches the device on, and a red one that opens it and switches it off. This one is for the electric motor that moves the landing gear.",
+              "context": "Without it the gear does not move.",
+              "src": "m1",
+              "page": "85"
+            },
+            {
+              "id": "cb-flaps",
+              "name": "Flaps breaker",
+              "type": "button",
+              "match": [
+                "pntr_178",
+                "pntr_179",
+                "item:rear-panel-circuit-breaker:3"
+              ],
+              "text": "A circuit breaker is a switch that also works as an automatic fuse: if too much current flows, it pops out by itself. It has two buttons, a black one that closes the circuit and switches the device on, and a red one that opens it and switches it off. This one is for the motor of the landing flaps. The game names it 'Landing Flaps'.",
+              "context": "Without it the flaps do not move.",
+              "src": "m1",
+              "page": "85"
+            },
+            {
+              "id": "cb-pitch",
+              "name": "Propeller pitch breakers (two)",
+              "type": "button",
+              "match": [
+                "pntr_180",
+                "pntr_181",
+                "pntr_182",
+                "pntr_183",
+                "item:rear-panel-circuit-breaker:4",
+                "item:rear-panel-circuit-breaker:5"
+              ],
+              "count": 2,
+              "text": "There are two circuit breakers for the propeller pitch. The manual names them propeller pitch adjustment switch and propeller pitch control. The game names them 'Prop. Pitch Drive' and 'Prop. Pitch Controls'. Each has an on and an off button.",
+              "context": "The manual says to turn the propeller pitch control unit on for the engine warm-up. It does not say which breaker is which.",
+              "src": "m1",
+              "page": "85"
+            },
+            {
+              "id": "cb-trim",
+              "name": "Stabilizer trim breaker",
+              "type": "button",
+              "match": [
+                "pntr_184",
+                "pntr_185",
+                "item:rear-panel-circuit-breaker:6"
+              ],
+              "text": "A circuit breaker is a switch that also works as an automatic fuse: if too much current flows, it pops out by itself. It has two buttons, a black one that closes the circuit and switches the device on, and a red one that opens it and switches it off. This one is for the motor that tilts the tail's stabilizer for trimming.",
+              "context": "Without it the trim switch does nothing.",
+              "src": "m1",
+              "page": "85"
+            },
+            {
+              "id": "cb-horizon",
+              "name": "Artificial horizon breaker",
+              "type": "button",
+              "match": [
+                "pntr_186",
+                "pntr_187",
+                "item:rear-panel-circuit-breaker:7"
+              ],
+              "text": "A circuit breaker is a switch that also works as an automatic fuse: if too much current flows, it pops out by itself. It has two buttons, a black one that closes the circuit and switches the device on, and a red one that opens it and switches it off. This one is for the artificial horizon.",
+              "context": "Without it the horizon gets no power.",
+              "src": "m1",
+              "page": "85"
+            },
+            {
+              "id": "cb-motorgen",
+              "name": "Generator motor breaker",
+              "type": "button",
+              "match": [
+                "pntr_188",
+                "pntr_189",
+                "item:rear-panel-circuit-breaker:8"
+              ],
+              "text": "A circuit breaker is a switch that also works as an automatic fuse: if too much current flows, it pops out by itself. It has two buttons, a black one that closes the circuit and switches the device on, and a red one that opens it and switches it off. This one is for the generator motor. The game names it 'Motor-Generator'.",
+              "context": "The manual does not say more about it.",
+              "src": "m1",
+              "page": "85"
+            },
+            {
+              "id": "cb-compass",
+              "name": "Repeater compass breaker",
+              "type": "button",
+              "match": [
+                "pntr_191",
+                "pntr_192",
+                "item:rear-panel-circuit-breaker:9"
+              ],
+              "text": "A circuit breaker is a switch that also works as an automatic fuse: if too much current flows, it pops out by itself. It has two buttons, a black one that closes the circuit and switches the device on, and a red one that opens it and switches it off. This one is for the repeater compass.",
+              "context": "Without it the compass gets no power.",
+              "src": "m1",
+              "page": "85"
+            },
+            {
+              "id": "cb-gear-ctrl",
+              "name": "Landing gear controls breaker",
+              "type": "button",
+              "match": [
+                "pntr_196",
+                "pntr_197",
+                "item:rear-panel-circuit-breaker:10"
+              ],
+              "text": "A circuit breaker is a switch that also works as an automatic fuse: if too much current flows, it pops out by itself. It has two buttons, a black one that closes the circuit and switches the device on, and a red one that opens it and switches it off. This one is for the landing gear controls. The game names it 'Undercarriage Controls'.",
+              "context": "Without it the gear buttons do nothing.",
+              "src": "m1",
+              "page": "85"
+            },
+            {
+              "id": "cb-iff-destruct",
+              "name": "FuG 25a IFF self-destruct breaker",
+              "type": "button",
+              "match": [
+                "pntr_201",
+                "pntr_202",
+                "item:rear-panel-circuit-breaker:11"
+              ],
+              "text": "A circuit breaker is a switch that also works as an automatic fuse: if too much current flows, it pops out by itself. It has two buttons, a black one that closes the circuit and switches the device on, and a red one that opens it and switches it off. This one is for the self-destruct mechanism of the FuG 25a identification unit.",
+              "context": "It appears on the manual's electrical diagram.",
+              "src": "m1",
+              "page": "85"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "rear",
+      "where": "rear",
+      "name": "Behind the pilot",
+      "text": "The oxygen emergency knob is at the pilot's right elbow.",
+      "panels": [
+        {
+          "id": "oxygen-emerg",
+          "name": "Oxygen emergency knob",
+          "src": "m1",
+          "page": "66",
+          "text": "A knob that gives the pilot extra oxygen when breathing becomes hard.",
+          "context": "It is pressed with the right elbow, as the manual describes.",
+          "controls": [
+            {
+              "id": "oxy-emerg",
+              "name": "Oxygen emergency knob",
+              "type": "button",
+              "match": [
+                "pntr_190"
+              ],
+              "text": "This knob gives extra oxygen when breathing becomes hard. The pilot presses it several times for short moments with the right elbow. The game offers an ON and an OFF command for it.",
+              "context": "The manual advises using it at the first sign of breathing trouble in thin air.",
+              "src": "m1",
+              "page": "66"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "hotas",
+      "where": "hotas",
+      "name": "Stick and throttle",
+      "text": "The control column is in the right hand and holds the triggers and the bomb release. The throttle is in the left hand, with the flap and gear buttons, the trim switch and the radio button next to it.",
+      "panels": [
+        {
+          "id": "stick",
+          "name": "Control column (KG 13 grip)",
+          "src": "m1",
+          "page": "86",
+          "text": "The control column steers the plane forward, back, left and right. Its grip holds the triggers for the guns, the gun camera and the bomb release.",
+          "context": "A folding guard over the trigger keeps the guns safe until it is opened.",
+          "controls": [
+            {
+              "id": "stick-gimbal",
+              "name": "Control column (stick)",
+              "type": "axis",
+              "match": [
+                "control:stick.gimbal",
+                "item:upper-front-dash:7"
+              ],
+              "text": "Moving the stick back lifts the plane's nose, moving it forward lowers it. Moving it left or right rolls the plane to that side.",
+              "context": "The manual warns that sudden stick movements can have catastrophic consequences.",
+              "src": "m1",
+              "page": "86"
+            },
+            {
+              "id": "stick-trigger",
+              "name": "Trigger (fuselage and wing-root guns)",
+              "type": "trigger",
+              "match": [
+                "control:stick.trigger"
+              ],
+              "text": "The trigger on the front of the grip fires the MG 131 machine guns above the engine and the MG 151 cannons in the wing roots.",
+              "context": "The guns fire only when the trigger guard is open and the master armament switch is on.",
+              "src": "m1",
+              "page": "86"
+            },
+            {
+              "id": "stick-b1",
+              "name": "Button B1 (outer wing cannons)",
+              "type": "button",
+              "match": [
+                "control:stick.button.thumb.1",
+                "pntr_009"
+              ],
+              "text": "This button on the top front of the grip fires the MG 151 cannons in the outer wings. It is exposed only when the trigger guard is open.",
+              "context": "The game names it 'trigger_b1'. These cannons are armed with their own switch.",
+              "src": "m1",
+              "page": "86"
+            },
+            {
+              "id": "stick-guard",
+              "name": "Trigger guard",
+              "type": "guard",
+              "match": [
+                "control:stick.guard.safety",
+                "pntr_010"
+              ],
+              "text": "This folding guard sits over the trigger. Closed, it keeps the guns from firing. Opened to the combat position, it frees the wing-root guns and exposes the B1 button.",
+              "context": "The game names this part 'safety'. It is the first thing to open before firing.",
+              "src": "m1",
+              "page": "86"
+            },
+            {
+              "id": "stick-b2",
+              "name": "Button B2 (bomb release and rocket launch)",
+              "type": "button",
+              "match": [
+                "control:stick.weapon_release",
+                "pntr_011"
+              ],
+              "text": "This button drops the bombs or launches the rockets. The game names it 'trigger_b2'.",
+              "context": "The pilot first sets the bomb fusing dial or the main rocket switch. Each press launches one WR 21 rocket.",
+              "src": "m1",
+              "page": "122"
+            },
+            {
+              "id": "stick-camera",
+              "name": "Gun camera button",
+              "type": "button",
+              "match": [
+                "control:stick.button.camera"
+              ],
+              "text": "This button runs the BSK 16 gun camera, which films through the front of the left wing. The manual says the camera also runs when the trigger is pulled and when a button on the throttle is pressed.",
+              "context": "It allows filming without firing the guns.",
+              "src": "m1",
+              "page": "36"
+            },
+            {
+              "id": "stick-a",
+              "name": "Grip button 'trigger_a'",
+              "type": "button",
+              "match": [
+                "BUTTON_A"
+              ],
+              "text": "The game names this part of the grip 'trigger_a'. The manual does not describe it.",
+              "context": "Do not expect a clear function from this control.",
+              "src": "m1",
+              "page": "86"
+            },
+            {
+              "id": "stick-t",
+              "name": "Grip button 'trigger_t'",
+              "type": "button",
+              "match": [
+                "BUTTON_T"
+              ],
+              "text": "The game names this part of the grip 'trigger_t'. The manual does not describe it.",
+              "context": "Do not expect a clear function from this control.",
+              "src": "m1",
+              "page": "86"
+            }
+          ]
+        },
+        {
+          "id": "throttle",
+          "name": "Throttle and left-hand controls",
+          "src": "m1",
+          "page": "69",
+          "text": "These controls are under the pilot's left hand: the throttle lever with its thumb crank, the switches for the flaps, the landing gear and the stabilizer trim, and the radio button.",
+          "context": "Everything the pilot needs in a fight can be reached without letting go of the stick.",
+          "controls": [
+            {
+              "id": "throttle-lever",
+              "name": "Throttle lever (Kommandogerät system)",
+              "type": "lever",
+              "match": [
+                "control:throttle.axis.main",
+                "item:left-side:9",
+                "item:throttle-lever:3",
+                "item:throttle-lever:1"
+              ],
+              "positions": [
+                {
+                  "name": "Aus",
+                  "text": "Engine off."
+                },
+                {
+                  "name": "Anlassen",
+                  "text": "Engine start and idle."
+                },
+                {
+                  "name": "Steigen",
+                  "text": "Climb power."
+                },
+                {
+                  "name": "Start",
+                  "text": "Take-off power."
+                }
+              ],
+              "text": "Pushing the lever forward gives the engine more power, pulling it back gives less. Other old planes also had levers for the propeller angle, the fuel mixture and the supercharger. Here a mechanical computer, the Kommandogerät (command device), does that. The pilot only picks the boost on the ATA gauge and the Kommandogerät sets the rest. It works like an automatic gearbox in a car.",
+              "context": "The lever's marks are Aus (off), Anlassen (start), Steigen (climb) and Start (take-off). The manual says the Kommandogerät sets magneto timing, propeller pitch, mixture and engine speed from the throttle and the air pressure.",
+              "src": "m1",
+              "page": "69"
+            },
+            {
+              "id": "throttle-cutoff",
+              "name": "Aus / Anlassen positions",
+              "type": "other",
+              "match": [
+                "control:throttle.detent.cutoff"
+              ],
+              "text": "At the rear end of the lever's travel are two marks: Aus (off) and Anlassen (start / idle).",
+              "context": "The lever is set to Anlassen for the engine start.",
+              "src": "m1",
+              "page": "69"
+            },
+            {
+              "id": "throttle-full",
+              "name": "Full power (emergency boost)",
+              "type": "other",
+              "match": [
+                "control:throttle.detent.afterburner"
+              ],
+              "text": "At the front end of the travel the lever gives the strongest power setting, called emergency boost (Erhöhte Notleistung) in JoyPro's grip list. The manual does not describe it separately.",
+              "context": "It is meant for short bursts only.",
+              "src": "m1",
+              "page": "69"
+            },
+            {
+              "id": "throttle-prop",
+              "name": "Propeller pitch crank",
+              "type": "rocker",
+              "match": [
+                "control:throttle.rocker.prop",
+                "item:throttle-lever:4",
+                "pntr_003_1",
+                "pntr_003_2"
+              ],
+              "text": "This crank on the flat end of the throttle lever sets the propeller pitch by thumb in manual mode. Größer makes the pitch coarser, Kleiner makes it finer. The game's commands for its two halves are named Engine RPM Increase and Engine RPM Decrease, the second also Prop Feathering.",
+              "context": "The manual says to set the crank to the 12:00 position for the engine start. In automatic mode the Kommandogerät sets the pitch itself.",
+              "src": "m1",
+              "page": "70"
+            },
+            {
+              "id": "throttle-auto",
+              "name": "Kommandogerät auto / manual switch",
+              "type": "switch2",
+              "match": [
+                "control:throttle.switch.prop_auto",
+                "item:left-side:7"
+              ],
+              "positions": [
+                {
+                  "name": "Auto",
+                  "text": "The Kommandogerät sets the propeller pitch by itself."
+                },
+                {
+                  "name": "Manual",
+                  "text": "The pilot sets the propeller pitch with the crank on the throttle."
+                }
+              ],
+              "text": "This switch tells the Kommandogerät to run in automatic or manual mode. In manual mode the pilot sets the propeller pitch with the thumb crank.",
+              "context": "The manual puts automatic on the upper position and manual on the lower, JoyPro's controller list shows it the other way round, so check the position in the cockpit.",
+              "src": "m1",
+              "page": "71"
+            },
+            {
+              "id": "throttle-ptt",
+              "name": "Push-to-talk button",
+              "type": "button",
+              "match": [
+                "control:throttle.hat.mic",
+                "item:left-side:8",
+                "item:throttle-lever:2"
+              ],
+              "text": "This unmarked round button at the base of the throttle turns the radio's transmitter on while it is held. The pilot talks while holding it.",
+              "context": "It belongs to the FuG 16ZY radio.",
+              "src": "m1",
+              "page": "70"
+            },
+            {
+              "id": "trim-switch",
+              "name": "Horizontal stabilizer trim switch",
+              "type": "switch3",
+              "match": [
+                "control:throttle.switch.trim",
+                "pntr_077",
+                "item:left-side:13"
+              ],
+              "positions": [
+                {
+                  "name": "Kopflastig",
+                  "text": "Up: nose-heavy. The motor runs as long as the switch is pressed."
+                },
+                {
+                  "name": "Middle",
+                  "text": "The switch springs back here and the trim stays as it is."
+                },
+                {
+                  "name": "Schwanzlastig",
+                  "text": "Down: tail-heavy. The motor runs as long as the switch is pressed."
+                }
+              ],
+              "text": "This switch tilts the horizontal stabilizer (the small wing at the tail) to trim the plane so it flies straight without constant pressure on the stick. It springs back to the middle.",
+              "context": "The motor runs as long as the switch is pressed, until the end is reached.",
+              "src": "m1",
+              "page": "73"
+            },
+            {
+              "id": "trim-ind",
+              "name": "Horizontal stabilizer trim indicator",
+              "type": "indicator",
+              "match": [
+                "item:left-side:14"
+              ],
+              "text": "This small gauge shows how the tail's stabilizer (the fixed part in front of the elevator) is tilted. The mark 0 is the normal position. The scale runs from -5 to +5 degrees, but the plane only uses a part of it.",
+              "context": "The pilot looks at it after engine start and before take-off to be sure the trim is at 0.",
+              "src": "m1",
+              "page": "74"
+            },
+            {
+              "id": "flap-buttons",
+              "name": "Flap buttons (Landeklappen)",
+              "type": "selector",
+              "match": [
+                "control:throttle.button.flaps",
+                "pntr_062",
+                "pntr_063",
+                "pntr_064",
+                "item:landing-gear-and-flaps-controls:1",
+                "item:landing-gear-and-flaps-controls:2",
+                "item:landing-gear-and-flaps-controls:3"
+              ],
+              "positions": [
+                {
+                  "name": "Ein",
+                  "text": "Flaps up, retracted."
+                },
+                {
+                  "name": "Start",
+                  "text": "Take-off position, extended 10 degrees."
+                },
+                {
+                  "name": "Aus",
+                  "text": "Landing position, extended 60 degrees."
+                }
+              ],
+              "text": "These three push-buttons set the flaps, the parts of the wing that fold down for take-off and landing. The pressed button stays down while the flaps move.",
+              "context": "The take-off setting is 10 degrees and the landing setting is 60 degrees. There are no settings in between.",
+              "src": "m1",
+              "page": "75"
+            },
+            {
+              "id": "gear-buttons",
+              "name": "Landing gear buttons (Rollwerk)",
+              "type": "switch2",
+              "match": [
+                "control:throttle.button.gear",
+                "pntr_065",
+                "pntr_067",
+                "item:landing-gear-and-flaps-controls:4",
+                "item:landing-gear-and-flaps-controls:5"
+              ],
+              "positions": [
+                {
+                  "name": "Ein",
+                  "text": "Raise the gear. Needs the safety switch to be retracted."
+                },
+                {
+                  "name": "Aus",
+                  "text": "Lower the gear."
+                }
+              ],
+              "text": "These two push-buttons raise and lower the landing gear. The Ein button raises it and is under a safety switch that has to be retracted first. The Aus button lowers it.",
+              "context": "The manual says the green Rollwerk Aus button must be pressed when entering the cockpit, or the gear retracts when power comes on.",
+              "src": "m1",
+              "page": "75"
+            },
+            {
+              "id": "gear-cover",
+              "name": "Landing gear safety cover",
+              "type": "cover",
+              "match": [
+                "pntr_066"
+              ],
+              "text": "This small cover sits over the gear-up button so that the gear cannot be raised by accident, for example on the ground.",
+              "context": "The game gives it a cover up and a cover down command.",
+              "src": "m1",
+              "page": "75"
+            },
+            {
+              "id": "gear-group",
+              "name": "Landing gear and flaps buttons (group)",
+              "type": "other",
+              "match": [
+                "item:left-side:5"
+              ],
+              "text": "The five push-buttons on the left console are the flap buttons on the left and the landing gear buttons on the right.",
+              "context": "The buttons are explained one by one next to this entry.",
+              "src": "m1",
+              "page": "75"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

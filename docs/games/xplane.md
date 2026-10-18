@@ -8,7 +8,7 @@ versions" below.
 ## Files
 - Install roots: X-Plane's installer writes every install folder of a version to `%LOCALAPPDATA%\x-plane_install_<version>.txt`
   (one path per line, slashes mixed: `D:\SteamLibrary/steamapps/common/X-Plane 12/` [OBS, X-Plane 12.4.3 on Steam]).
-  A version installed by Steam and never started has no such file [OBS: X-Plane 11 on the dev PC]; its Steam folder
+  A version installed by Steam and never started has no such file [OBS: X-Plane 11 on a test PC]; its Steam folder
   (`steamapps\common\X-Plane 11` / `X-Plane 12`, app 269950 / 2014780) is the install then.
 - Preferences inside the install: `Output\preferences\` (created on the first start):
   - `X-Plane Joystick Settings.prf`, `X-Plane Keys.prf`: current/global.
@@ -16,7 +16,7 @@ versions" below.
   - Not user preferences: `Resources\joystick configs\<VID>-<PID> <OS> <name>.joy` (679 files in X-Plane 12) are
     Laminar's default device configurations (one per known device, with pictures), which X-Plane applies to a new
     device. X-Plane 12.4.3 keeps the user's assignments of all devices in the single `X-Plane Joystick Settings.prf`
-    (8562 lines on the dev PC, 6 device slots) [OBS], the same file and keys as X-Plane 11 [SRC: the strings
+    (8562 lines on a test PC, 6 device slots) [OBS], the same file and keys as X-Plane 11 [SRC: the strings
     `Joystick Settings.prf`, `- Joysticks.prf`, `_joy_AXIS_use`, `_joy_BUTN_use`, `_joy_unique_id`, `_joy_damp`,
     `axis_response_curve` in both X-Plane.exe].
   - `Miscellaneous.prf`: aircraft → profile (`P acf_profile Boeing___737-800X B738`, spaces become `___`).

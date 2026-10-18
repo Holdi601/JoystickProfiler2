@@ -143,7 +143,7 @@ finally {
 
 # DB refresh straight from the game's archives: a game folder with gui.vromfs.bin (scripts/controls/shortcutslist/
 # shortcutsgroup*.nut) and lang.vromfs.bin (lang/controls.csv). The fixtures are built here as stored 'VRFs' archives
-# (the game's are zstd + obfuscated; the same reader handles both). Runs in a temporary JoyPro folder so the shipped
+# (the game's are zstd with masked bytes; the same reader handles both). Runs in a temporary JoyPro folder so the shipped
 # catalog stays untouched.
 function New-WtsVromfs([string]$Path, [hashtable]$Files) {
     $names = @($Files.Keys | Sort-Object)

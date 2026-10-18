@@ -22,3 +22,8 @@ One or two sentences about the version.
 ```
 
 Discord shows about 3,800 characters; longer notes end there with a pointer to the release page.
+
+Only facts: what is new, what was fixed, what changed for the user. No reasons that involve encryption, obfuscation,
+copy protection, anti-cheat, licenses or copyright, no internal notes (work folders, test-run logs, plans, how the
+work was done). "IL-2 Korea: cockpit pictures are not available" is a fact; why is not part of the notes.
+`tools\export_public.ps1` fails on such text in any public file.

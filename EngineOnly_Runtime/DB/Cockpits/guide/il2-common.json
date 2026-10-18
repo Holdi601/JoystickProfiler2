@@ -1,0 +1,931 @@
+{
+  "format": "joypro-cockpit-guide",
+  "version": 1,
+  "id": "il2-common",
+  "title": "IL-2 Sturmovik Great Battles: all aircraft (shared guide)",
+  "common": true,
+  "games": [
+    "IL2Game"
+  ],
+  "sets": [],
+  "sources": [
+    {
+      "id": "g1",
+      "title": "IL-2 Sturmovik Great Battles: the game's input actions and cockpit argument names",
+      "kind": "game-files"
+    }
+  ],
+  "intro": "These texts serve every aircraft of IL-2 Sturmovik Great Battles, from the First World War biplanes to the twin-engined bombers of the Second World War. A control appears only on planes that have it. The cockpits are simple: levers, switches and gauges, with only a few panels.",
+  "areas": [
+    {
+      "id": "engine-controls",
+      "where": "left-console",
+      "name": "Engine controls",
+      "text": "This part holds the levers and switches that start, tune and cool the engine. Which of them exist depends on the plane; the guide shows only the ones the plane has.",
+      "panels": [
+        {
+          "id": "prop-mixture",
+          "name": "Propeller and mixture",
+          "text": "These levers decide how the propeller bites the air and how much fuel is mixed into the engine's air.",
+          "context": "The pilot sets them for take-off, climb and cruise. On many planes of the Second World War they sit on the left side of the cockpit next to the throttle.",
+          "controls": [
+            {
+              "id": "prop-pitch",
+              "name": "Propeller RPM lever (propeller pitch)",
+              "type": "lever",
+              "match": [
+                "cmd:rpc_all_engines_props_pitch",
+                "cmd:rpc_engine_*_prop_pitch"
+              ],
+              "text": "This lever sets the propeller pitch, which means how sharply the propeller blades bite the air. The pilot moves it to change how fast the propeller turns. Planes with several engines can have one lever per engine, or one lever for all.",
+              "context": "Together with the throttle it sets the engine's power. The pilot moves it forward for take-off and pulls it back a little for cruising."
+            },
+            {
+              "id": "prop-mode",
+              "name": "Propeller pitch mode switch (manual or auto)",
+              "type": "lever",
+              "match": [
+                "cmd:all_engines_props_pitch_control_mode",
+                "cmd:engine_*_prop_pitch_control_mode"
+              ],
+              "text": "This control changes who sets the propeller pitch. In the manual position the pilot moves the propeller RPM lever by hand. In the auto position the plane adjusts the pitch by itself.",
+              "context": "On planes that have it, the pilot picks the automatic mode to have one less lever to watch. The manual mode is for full control."
+            },
+            {
+              "id": "mixture",
+              "name": "Mixture lever",
+              "type": "lever",
+              "match": [
+                "cmd:rpc_all_engines_mixtures",
+                "cmd:rpc_engine_*_mixture"
+              ],
+              "text": "This lever sets how much fuel goes into the engine's air, the mixture. Moving it one way gives a richer mixture with more fuel, the other way a leaner one with less fuel. Planes with several engines can have one lever per engine, or one for all.",
+              "context": "The pilot adjusts it when the plane climbs, because the air gets thinner higher up and needs less fuel. Some planes set the mixture by themselves and have no such lever."
+            }
+          ]
+        },
+        {
+          "id": "cooling",
+          "name": "Radiators and cooling",
+          "text": "The engine gets hot, so it needs cooling air. These controls open and close doors (shutters) that let air through the radiators or around the engine.",
+          "context": "Open doors cool better but slow the plane down, closed doors do the opposite. Some planes set the radiator by themselves and have no such lever.",
+          "controls": [
+            {
+              "id": "water-rad",
+              "name": "Water radiator shutters (coolant radiator)",
+              "type": "lever",
+              "match": [
+                "cmd:rpc_all_engines_water_radiators_shutters",
+                "cmd:rpc_engine_*_water_radiator_shutter"
+              ],
+              "text": "This lever opens and closes the doors of the water radiator. The radiator cools the liquid that carries heat away from the engine. More open means more cooling air flows through. Planes with several engines can have one lever for each.",
+              "context": "The pilot watches the engine's water temperature and moves the lever to keep it in a good range."
+            },
+            {
+              "id": "oil-rad",
+              "name": "Oil radiator shutters (oil cooler)",
+              "type": "lever",
+              "match": [
+                "cmd:rpc_all_engines_oil_radiators_shutters",
+                "cmd:rpc_engine_*_oil_radiator_shutter"
+              ],
+              "text": "This lever opens and closes the doors of the oil radiator. The radiator cools the engine oil. More open means more cooling air flows through. Planes with several engines can have one lever for each.",
+              "context": "The pilot watches the oil temperature gauge and opens the doors when the oil gets too warm."
+            },
+            {
+              "id": "cowl-flaps",
+              "name": "Cowl flaps",
+              "type": "lever",
+              "match": [
+                "label:Cowl flaps"
+              ],
+              "text": "Cowl flaps are doors around the engine cover. This lever opens or closes them. Open flaps let more cooling air pass through the engine space.",
+              "context": "They are used on planes with an air-cooled engine. The pilot opens them when the engine is hot and closes them for more speed."
+            },
+            {
+              "id": "engine-shutters",
+              "name": "Engine shutters",
+              "type": "lever",
+              "match": [
+                "label:Engine shutters"
+              ],
+              "text": "The game names this lever 'Engine shutters'. It opens and closes shutters of the engine. The game gives no more detail about it.",
+              "context": "It appears on a single plane of the game."
+            },
+            {
+              "id": "carb-heat",
+              "name": "Carburetor heat",
+              "type": "lever",
+              "match": [
+                "label:Carburetor heat"
+              ],
+              "text": "This lever sends warm air to the carburetor, the part that mixes fuel and air. Warm air stops ice from forming in the carburetor.",
+              "context": "It appears on a single plane of the game. Ice in the air intake can choke the engine, so the pilot uses the heat when it is cold and damp."
+            }
+          ]
+        },
+        {
+          "id": "supercharger",
+          "name": "Supercharger",
+          "text": "The supercharger is a pump that pushes more air into the engine at high altitude. These controls choose its working mode.",
+          "context": "Thin air high up would make the engine weak. The supercharger makes up for it, and the pilot picks the mode that fits the altitude.",
+          "controls": [
+            {
+              "id": "supercharger-mode",
+              "name": "Supercharger mode switch",
+              "type": "lever",
+              "match": [
+                "cmd:all_engines_superchargers",
+                "cmd:engine_*_supercharger"
+              ],
+              "text": "This control changes the working mode of the supercharger. The modes differ from plane to plane. Planes with several engines can have a control for each.",
+              "context": "The pilot switches the mode when climbing or descending through the height where another mode works better."
+            }
+          ]
+        },
+        {
+          "id": "start",
+          "name": "Engine start",
+          "text": "These controls bring a stopped engine to life: they send sparks, add fuel or give a start push. Each plane uses only some of them.",
+          "context": "Starting is done on the ground before taxiing. Which controls are needed depends on the plane; the order is not the same everywhere.",
+          "controls": [
+            {
+              "id": "magneto",
+              "name": "Magneto switch",
+              "type": "switch",
+              "match": [
+                "label:Magneto",
+                "label:Magneto E1",
+                "label:Magneto E2",
+                "label:Magneto E3"
+              ],
+              "text": "A magneto is a small generator that makes the sparks in a piston engine. This switch turns the magnetos on and off. Planes with several engines have a switch for each engine (E1, E2, E3).",
+              "context": "The pilot turns it on to start the engine. The settings it offers differ from plane to plane."
+            },
+            {
+              "id": "start-button",
+              "name": "Start button",
+              "type": "button",
+              "match": [
+                "label:Start button"
+              ],
+              "text": "Pressing this button starts the engine, like the key of a car turned to start.",
+              "context": "It is part of the start-up of some Soviet fighters of the game."
+            },
+            {
+              "id": "fuel-primer",
+              "name": "Fuel primer",
+              "type": "button",
+              "match": [
+                "label:Fuel primer"
+              ],
+              "text": "The primer pumps a little fuel into the engine to help it start. Pressing this button does that.",
+              "context": "The pilot uses it before the start, mostly when the engine is cold."
+            },
+            {
+              "id": "primer-selector",
+              "name": "Fuel primer selector",
+              "type": "switch",
+              "match": [
+                "label:Fuel primer selector"
+              ],
+              "text": "The game names this switch 'Fuel primer selector'. It belongs to the primer, the pump that gives the engine some extra fuel for starting.",
+              "context": "The pilot sets it before using the primer. The game files give no further detail."
+            },
+            {
+              "id": "pneumo-start",
+              "name": "Pneumatic engine start lever",
+              "type": "lever",
+              "match": [
+                "label:Pneumo start engine"
+              ],
+              "text": "This lever starts the engine with compressed air. The game names it 'Pneumo start engine'. Air from a pressure bottle spins the engine until it runs on its own.",
+              "context": "It is used on some Soviet planes of the game, in place of an electric starter."
+            },
+            {
+              "id": "oil-dilution",
+              "name": "Oil dilution lever",
+              "type": "lever",
+              "match": [
+                "label:Oil delution"
+              ],
+              "text": "The game spells this 'Oil delution'. The name means oil dilution: fuel is mixed into the engine oil to make it thinner.",
+              "context": "It appears on a few planes and has to do with starting or stopping the engine in the cold. The game files give no further detail."
+            },
+            {
+              "id": "oil-injector",
+              "name": "Oil injector",
+              "type": "lever",
+              "match": [
+                "label:Oil injector"
+              ],
+              "text": "The game names this lever 'Oil injector'. It is part of the engine's oil system. The game files give no more detail about it.",
+              "context": "It appears on a few Soviet fighters of the game."
+            },
+            {
+              "id": "prop-breaker",
+              "name": "Propeller circuit breaker",
+              "type": "lever",
+              "match": [
+                "label:Propeller circuit breaker"
+              ],
+              "text": "A circuit breaker is a safety switch that cuts power when something goes wrong. This one belongs to the propeller's electric controls.",
+              "context": "It appears on a few planes. When it is off, the propeller control has no power."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "fuel-electrics",
+      "where": "front-left",
+      "name": "Fuel, electrics and lights",
+      "text": "These controls handle the fuel taps, the battery, the heaters, the lights and the radio. Some are on the instrument panel and some on the side consoles.",
+      "panels": [
+        {
+          "id": "fuel",
+          "name": "Fuel controls",
+          "text": "These controls choose where the engine's fuel comes from, shut it off in an emergency and help to feed the engine.",
+          "context": "The pilot checks them during start-up and uses them if an engine burns or a tank runs dry.",
+          "controls": [
+            {
+              "id": "fuel-tank",
+              "name": "Fuel tank selector",
+              "type": "switch",
+              "match": [
+                "label:Fuel tank selector"
+              ],
+              "text": "This switch chooses which fuel tank feeds the engine.",
+              "context": "On planes with several tanks the pilot switches tanks when one runs low."
+            },
+            {
+              "id": "fuel-selector-cmd",
+              "name": "Fuel selector (turn the chosen selector)",
+              "type": "switch",
+              "match": [
+                "cmd:select_fuel_selector",
+                "cmd:turn_fuel_selector"
+              ],
+              "text": "On planes with several fuel selectors, the game lets the player pick one selector and then turn it. One command moves to the next selector, another turns the one that is chosen.",
+              "context": "A fuel selector chooses which tank feeds the engine. The two commands help to operate small selectors with a keyboard or a joystick."
+            },
+            {
+              "id": "fuel-fire-lock",
+              "name": "Fuel fire lock",
+              "type": "button",
+              "match": [
+                "label:Fuel fire lock",
+                "label:Fuel fire lock E1",
+                "label:Fuel fire lock E2",
+                "label:Fuel fire lock E3"
+              ],
+              "text": "By its name this is a fire-safety fuel lock. It is a button that belongs to the fuel line of the engine. Planes with several engines have one for each engine (E1, E2, E3).",
+              "context": "The pilot uses it in a fire emergency, so that no more fuel feeds the flames. The game files give no more detail."
+            },
+            {
+              "id": "emergency-fuel-pump",
+              "name": "Emergency fuel pump",
+              "type": "button",
+              "match": [
+                "label:Emergency fuel pump"
+              ],
+              "text": "This button turns on an extra fuel pump. A fuel pump moves fuel from the tanks to the engine.",
+              "context": "It appears on a few planes and is a back-up for the normal fuel supply."
+            },
+            {
+              "id": "fuel-gauge-light",
+              "name": "Fuel gauges light switch",
+              "type": "switch",
+              "match": [
+                "label:Fuel gauges light switch"
+              ],
+              "text": "This switch turns on a small lamp that lights up the fuel gauges. Then the pilot can read them in the dark.",
+              "context": "It is used at night. The fuel gauges tell the pilot how much fuel is left."
+            }
+          ]
+        },
+        {
+          "id": "electrics",
+          "name": "Battery, heater and lights",
+          "text": "These switches control the plane's electricity, the heater of the speed probe and the lights.",
+          "context": "The pilot uses the battery switch early and the lights when it is dark.",
+          "controls": [
+            {
+              "id": "battery",
+              "name": "Battery switch",
+              "type": "switch",
+              "match": [
+                "label:Battery switch"
+              ],
+              "text": "This switch connects the battery to the plane's electrical system. The battery stores electricity for when the engines are off.",
+              "context": "On many planes it is one of the first switches to use in the cockpit, because the instruments and lamps need electricity."
+            },
+            {
+              "id": "pitot-heat",
+              "name": "Pitot heater switch",
+              "type": "switch",
+              "match": [
+                "label:Pitot heater switch"
+              ],
+              "text": "This switch turns on the heater of the pitot tube. That is the small tube outside that measures speed. The heat keeps it from freezing.",
+              "context": "The pilot turns it on before flying in cold air or clouds, so that the speed reading stays right."
+            },
+            {
+              "id": "nav-lights",
+              "name": "Navigation lights switch",
+              "type": "switch",
+              "match": [
+                "cmd:navigation_lights"
+              ],
+              "text": "This switch turns the navigation lights on and off. They are small lights on the outside of the plane that show other pilots where the plane is.",
+              "context": "The pilot uses them when flying in the dark."
+            },
+            {
+              "id": "landing-lights",
+              "name": "Landing lights switch",
+              "type": "switch",
+              "match": [
+                "cmd:landing_lights"
+              ],
+              "text": "This switch turns the landing lights on and off. They are strong lamps that light up the ground ahead.",
+              "context": "The pilot uses them for night take-offs and landings."
+            },
+            {
+              "id": "cockpit-light",
+              "name": "Cockpit light switch",
+              "type": "switch",
+              "match": [
+                "cmd:cockpit_lights"
+              ],
+              "text": "This switch turns the lamp in the cockpit on and off, so that the pilot can read the instruments in the dark.",
+              "context": "The pilot uses it when flying at night."
+            },
+            {
+              "id": "cockpit-light-tuning",
+              "name": "Cockpit light tuning",
+              "type": "switch",
+              "match": [
+                "label:Cockpit light tuning"
+              ],
+              "text": "This control tunes the cockpit lighting. The game names it 'Cockpit light tuning'.",
+              "context": "It is used together with the cockpit light switch. The game files give no more detail."
+            },
+            {
+              "id": "fluorescent",
+              "name": "Fluorescent light switch",
+              "type": "switch",
+              "match": [
+                "label:Fluorescent light switch"
+              ],
+              "text": "This switch turns on the fluorescent light in the cockpit. The game names it 'Fluorescent light switch'.",
+              "context": "It is a lighting control for the dark and appears on planes that have it."
+            }
+          ]
+        },
+        {
+          "id": "radio",
+          "name": "Radio",
+          "text": "These controls belong to the plane's radio, which the pilot uses to talk to the tower and other aircraft.",
+          "context": "The pilot switches the radio on after the start-up.",
+          "controls": [
+            {
+              "id": "radio-switch",
+              "name": "Radio switch",
+              "type": "switch",
+              "match": [
+                "label:Radio switch"
+              ],
+              "text": "This switch turns the radio on and off, like the power switch of a home radio.",
+              "context": "It is used on planes that have a radio. The radio needs the plane's electricity."
+            },
+            {
+              "id": "radio-txrx",
+              "name": "Radio transmit-receive switch",
+              "type": "switch",
+              "match": [
+                "label:Radio transmit-receive switch"
+              ],
+              "text": "This switch changes the radio between sending (transmit) and listening (receive).",
+              "context": "It is part of the radio and used after switching it on. The game files give no more detail."
+            },
+            {
+              "id": "radio-tuner",
+              "name": "Radio tuner",
+              "type": "lever",
+              "match": [
+                "label:Radio tuner"
+              ],
+              "text": "This lever tunes the radio. Moving it chooses the frequency, the station number the radio talks on.",
+              "context": "It sits on the right of the instrument panel on planes that have it."
+            },
+            {
+              "id": "radio-volume",
+              "name": "Radio output volume",
+              "type": "knob",
+              "match": [
+                "label:Radio output volume"
+              ],
+              "text": "Turning this knob makes the radio sound louder or quieter, like the volume knob of a radio.",
+              "context": "It is part of the radio and used after switching it on."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "flight-trim",
+      "where": "left-console",
+      "name": "Flight controls and trim",
+      "text": "The stick and the pedals steer the plane. Trim controls make small settings so that the plane flies straight without being held.",
+      "panels": [
+        {
+          "id": "rudder",
+          "name": "Rudder pedals",
+          "text": "The pedals steer the plane's nose left and right.",
+          "context": "The pilot uses the pedals together with the stick to turn and to steer on the ground.",
+          "controls": [
+            {
+              "id": "yaw",
+              "name": "Plane control: yaw (rudder)",
+              "type": "lever",
+              "match": [
+                "cmd:rpc_yaw"
+              ],
+              "text": "This is the control for yaw, which means turning the nose to the left or right. It is moved by the rudder pedals.",
+              "context": "The pilot uses it to keep the plane straight in take-off and to help in turns. The stick makes the plane dive, climb and roll."
+            }
+          ]
+        },
+        {
+          "id": "trim",
+          "name": "Trim controls",
+          "text": "Trim means small settings so that the plane flies straight without the pilot holding the stick. These controls set it for the elevator, the ailerons and the rudder.",
+          "context": "The pilot trims the plane after take-off and when the speed changes, so that the hands are free from constant pressure on the stick.",
+          "controls": [
+            {
+              "id": "pitch-trim",
+              "name": "Elevator trim",
+              "type": "switch",
+              "match": [
+                "cmd:pitch_trim_switch_dn",
+                "cmd:pitch_trim_switch_up",
+                "cmd:rpc_pitch_trim"
+              ],
+              "text": "This control adjusts the trim of the elevator, which moves the nose up and down. The game offers it as a switch pushed up or down and as an axis.",
+              "context": "The pilot uses it to remove the pull or push on the stick."
+            },
+            {
+              "id": "roll-trim",
+              "name": "Aileron trim",
+              "type": "switch",
+              "match": [
+                "cmd:roll_trim_switch_left",
+                "cmd:roll_trim_switch_right",
+                "cmd:rpc_roll_trim"
+              ],
+              "text": "This control adjusts the trim of the ailerons, the parts of the wings that tilt the plane left and right.",
+              "context": "The pilot uses it when the plane keeps leaning to one side by itself. It is found on larger planes."
+            },
+            {
+              "id": "yaw-trim",
+              "name": "Rudder trim",
+              "type": "switch",
+              "match": [
+                "cmd:rpc_yaw_trim",
+                "cmd:yaw_trim_switch_left",
+                "cmd:yaw_trim_switch_right"
+              ],
+              "text": "This control adjusts the trim of the rudder, which turns the nose left and right.",
+              "context": "The pilot uses it to hold the plane straight without pushing a pedal all the time."
+            },
+            {
+              "id": "adj-stabilizer",
+              "name": "Adjustable stabilizer",
+              "type": "lever",
+              "match": [
+                "cmd:adjustable_stabilizer_dn",
+                "cmd:adjustable_stabilizer_up",
+                "cmd:rpc_adjustable_stabilizer"
+              ],
+              "text": "This control tilts the horizontal part of the tail, the stabilizer, up or down. It acts as the pitch trim on the planes that have it.",
+              "context": "On such planes the pilot uses it to remove the pull or push on the stick."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "gear-flaps-brakes",
+      "where": "left-console",
+      "name": "Landing gear, flaps and brakes",
+      "text": "These controls handle the wheels, the wing flaps and the brakes. The pilot needs them mostly for take-off, landing and on the ground.",
+      "panels": [
+        {
+          "id": "gear-flaps",
+          "name": "Landing gear and flaps",
+          "text": "The landing gear is the wheels and their legs. The flaps are parts of the wing that slide out to give more lift at low speed.",
+          "context": "The pilot lowers both for landing and raises them after take-off.",
+          "controls": [
+            {
+              "id": "gear",
+              "name": "Landing gear lever",
+              "type": "lever",
+              "match": [
+                "cmd:gear",
+                "cmd:gear_dn",
+                "cmd:gear_up"
+              ],
+              "text": "Moving this lever brings the wheels down or folds them up. The game has one command that switches between up and down, and a separate command for each.",
+              "context": "The pilot lowers the gear before landing and raises it after take-off to fly faster."
+            },
+            {
+              "id": "flaps",
+              "name": "Flaps lever",
+              "type": "lever",
+              "match": [
+                "cmd:flaps_dn",
+                "cmd:flaps_up"
+              ],
+              "text": "This lever moves the flaps down or up. Flaps down give more lift, so the plane can fly slower.",
+              "context": "The pilot puts them down for take-off and landing and raises them for speed."
+            },
+            {
+              "id": "airbrakes",
+              "name": "Air brakes",
+              "type": "lever",
+              "match": [
+                "cmd:airbrakes",
+                "cmd:airbrakes_off",
+                "cmd:airbrakes_on"
+              ],
+              "text": "This lever opens or closes the air brakes, panels that open into the wind to slow the plane down.",
+              "context": "It is used on some bombers and dive bombers."
+            }
+          ]
+        },
+        {
+          "id": "brakes",
+          "name": "Wheel brakes",
+          "text": "The brakes slow the plane's wheels on the ground. Pressing them on one side turns the plane that way.",
+          "context": "The pilot uses them while taxiing and after landing.",
+          "controls": [
+            {
+              "id": "brake-left",
+              "name": "Left wheel brake",
+              "type": "knob",
+              "match": [
+                "cmd:rpc_wheel_brakes_left"
+              ],
+              "text": "This control brakes the left wheel only.",
+              "context": "Braking one side helps to steer the plane on the ground."
+            },
+            {
+              "id": "brake-right",
+              "name": "Right wheel brake",
+              "type": "knob",
+              "match": [
+                "cmd:rpc_wheel_brakes_right"
+              ],
+              "text": "This control brakes the right wheel only.",
+              "context": "Braking one side helps to steer the plane on the ground."
+            },
+            {
+              "id": "parking",
+              "name": "Parking brake",
+              "type": "lever",
+              "match": [
+                "cmd:parking_brakes",
+                "cmd:parking_brakes_off",
+                "cmd:parking_brakes_on"
+              ],
+              "text": "The parking brake holds the wheels still while the plane is parked. This lever sets it on or off.",
+              "context": "The pilot sets it so that the plane does not roll away, and releases it before taxiing."
+            },
+            {
+              "id": "tailwheel",
+              "name": "Tail wheel lock",
+              "type": "knob",
+              "match": [
+                "cmd:tailwheel_lock",
+                "cmd:tailwheel_lock_off",
+                "cmd:tailwheel_lock_on"
+              ],
+              "text": "This control locks the small wheel at the back so that it points straight, or unlocks it so that it can swivel.",
+              "context": "It exists on planes with a tail wheel. Locked, the plane runs straight; unlocked, it turns more easily on the ground."
+            }
+          ]
+        },
+        {
+          "id": "pneumatics",
+          "name": "Compressed air and hydraulics",
+          "text": "Many planes use compressed air (pneumatics) or oil under pressure (hydraulics) to move heavy parts. These controls are about those systems.",
+          "context": "They matter mostly if the normal system fails, for example when the wheels will not come down.",
+          "controls": [
+            {
+              "id": "pneumo-balloon",
+              "name": "Pneumo balloon",
+              "type": "lever",
+              "match": [
+                "label:Pneumo balloon"
+              ],
+              "text": "The game names this lever 'Pneumo balloon'. It belongs to the plane's compressed-air system, named for the air bottle ('balloon') that stores the air.",
+              "context": "The game files do not say which function it serves on each plane."
+            },
+            {
+              "id": "pneumo-emergency",
+              "name": "Emergency pneumo balloon",
+              "type": "lever",
+              "match": [
+                "label:Emergency pneumo balloon"
+              ],
+              "text": "The game names this lever 'Emergency pneumo balloon'. It belongs to the compressed-air system and is the emergency version of it.",
+              "context": "By its name it is meant for emergencies. The game files give no more detail."
+            },
+            {
+              "id": "gear-pneumo",
+              "name": "Emergency gear pneumo",
+              "type": "lever",
+              "match": [
+                "label:Emergency gear pneumo"
+              ],
+              "text": "By its name this lever lets compressed air lower the landing gear in an emergency.",
+              "context": "The pilot uses it when the normal gear system does not work."
+            },
+            {
+              "id": "gear-unlock",
+              "name": "Emergency gear unlock",
+              "type": "lever",
+              "match": [
+                "label:Emergency gear unlock"
+              ],
+              "text": "By its name this lever frees the landing gear in an emergency, so that the gear can come down.",
+              "context": "The pilot uses it when the normal system does not lower the gear."
+            },
+            {
+              "id": "hydro-manual",
+              "name": "Manual hydropump",
+              "type": "button",
+              "match": [
+                "label:Manual hydropump"
+              ],
+              "text": "This control works the hydraulic pump by hand. A hydraulic pump builds up the pressure of the oil that moves heavy parts.",
+              "context": "It appears on a few planes. The game files give no more detail."
+            },
+            {
+              "id": "hydro-electric",
+              "name": "Electro hydropump",
+              "type": "button",
+              "match": [
+                "label:Electro hydropump"
+              ],
+              "text": "This button belongs to the electric hydraulic pump. A hydraulic pump builds up the pressure of the oil that moves heavy parts.",
+              "context": "It appears on two planes of the game. The game files give no more detail."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "weapons-sight",
+      "where": "front-center",
+      "name": "Weapons and gun sight",
+      "text": "These controls arm the guns, bombs and rockets, choose what is fired and switch the gun sight. Firing itself is on the stick.",
+      "panels": [
+        {
+          "id": "arming",
+          "name": "Arming and selecting",
+          "text": "The weapon switches decide which weapons are ready and how they are used.",
+          "context": "The pilot sets them before an attack. Which switches exist depends on the plane.",
+          "controls": [
+            {
+              "id": "weapons-master",
+              "name": "Weapons master switch",
+              "type": "lever",
+              "match": [
+                "label:Weapons master sw"
+              ],
+              "text": "This is the main safety switch of the weapons, the master arm. The game names it 'Weapons master sw'.",
+              "context": "The pilot sets it before an attack. Weapons need it to be on."
+            },
+            {
+              "id": "guns-switches",
+              "name": "Guns switches",
+              "type": "switch",
+              "match": [
+                "label:Guns switches"
+              ],
+              "text": "These switches belong to the plane's guns. The game names them 'Guns switches'.",
+              "context": "They appear on some Fw 190 versions. The game files give no more detail."
+            },
+            {
+              "id": "weapon-switch",
+              "name": "Weapon switch",
+              "type": "switch",
+              "match": [
+                "label:Weapon switch"
+              ],
+              "text": "The game names this switch 'Weapon switch'. It belongs to the weapons.",
+              "context": "It appears on a few Soviet fighters. The game files give no further detail."
+            },
+            {
+              "id": "reload",
+              "name": "Reload all guns",
+              "type": "lever",
+              "match": [
+                "cmd:all_guns_reload"
+              ],
+              "text": "This lever reloads all the guns at once. The game also offers it as a command.",
+              "context": "The pilot uses it to get the guns ready to fire."
+            },
+            {
+              "id": "gun-reserve",
+              "name": "Gun reserve recharge",
+              "type": "lever",
+              "match": [
+                "label:Gun reserve recharge"
+              ],
+              "text": "The game names this lever 'Gun reserve recharge'. It belongs to the guns' loading system.",
+              "context": "It appears on some planes. The game files give no more detail."
+            },
+            {
+              "id": "bomb-selector",
+              "name": "Bomb selector",
+              "type": "switch",
+              "match": [
+                "label:Bomb selector"
+              ],
+              "text": "This switch chooses which bombs are used.",
+              "context": "It appears on planes that carry bombs."
+            },
+            {
+              "id": "bomb-safety",
+              "name": "Bombs safety switch",
+              "type": "lever",
+              "match": [
+                "cmd:bombsafety_off",
+                "cmd:bombsafety_on",
+                "cmd:bombsafety_toggle"
+              ],
+              "text": "This switch locks the bombs against dropping by mistake. The game has commands to set it on, off or to switch it.",
+              "context": "The pilot takes the safety off before the bombing run."
+            },
+            {
+              "id": "rocket-select",
+              "name": "Rocket select",
+              "type": "lever",
+              "match": [
+                "label:Rocket select"
+              ],
+              "text": "This lever chooses the rockets. The game names it 'Rocket select'.",
+              "context": "It appears on rocket-carrying planes. The pilot sets it before the attack."
+            },
+            {
+              "id": "rocket-fuse",
+              "name": "Rocket fuse",
+              "type": "lever",
+              "match": [
+                "label:Rocket fuse"
+              ],
+              "text": "This lever sets the fuse of the rockets, the part that sets them off.",
+              "context": "It appears on rocket-carrying planes and is set before the rockets are launched."
+            }
+          ]
+        },
+        {
+          "id": "gunsight",
+          "name": "Gun sight",
+          "text": "The gun sight is the glass with an aiming mark that shows where the guns will hit.",
+          "context": "The pilot looks through it when aiming.",
+          "controls": [
+            {
+              "id": "sight-switch",
+              "name": "Gun sight switch",
+              "type": "switch",
+              "match": [
+                "label:Gunsight switch",
+                "label:Gun sight switch"
+              ],
+              "text": "This switch turns the gun sight on and off.",
+              "context": "The pilot turns it on so that the aiming mark can be seen."
+            },
+            {
+              "id": "sight-light",
+              "name": "Gunsight light",
+              "type": "switch",
+              "match": [
+                "label:Gunsight light"
+              ],
+              "text": "This switch controls the light of the gun sight. The game names it 'Gunsight light'.",
+              "context": "It is used together with the gun sight switch."
+            },
+            {
+              "id": "sight-filter",
+              "name": "Gun sight filter",
+              "type": "lever",
+              "match": [
+                "label:Gun sight filter"
+              ],
+              "text": "This lever moves a filter, a tinted glass, in front of the gun sight. The filter cuts the glare when the pilot looks towards the sun.",
+              "context": "The pilot uses it when the light is bright."
+            },
+            {
+              "id": "camera",
+              "name": "Camera switch",
+              "type": "switch",
+              "match": [
+                "label:Camera switch"
+              ],
+              "text": "This switch belongs to the camera in the plane. The game names it 'Camera switch'.",
+              "context": "The camera appears on some planes. The game files give no more detail."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "hotas",
+      "where": "hotas",
+      "name": "Stick and throttle",
+      "text": "The stick and the throttle are the two main controls the pilot holds. The throttle lever sets the engine power, the stick steers and fires.",
+      "panels": [
+        {
+          "id": "throttle",
+          "name": "Throttle",
+          "text": "The throttle sets the engine's power, like a car's gas pedal.",
+          "context": "The pilot pushes it forward for more power, back for less.",
+          "controls": [
+            {
+              "id": "throttle",
+              "name": "Throttle lever(s)",
+              "type": "lever",
+              "match": [
+                "cmd:rpc_engine_*_throttle",
+                "cmd:rpc_all_engines_throttles"
+              ],
+              "text": "This lever makes the engine stronger or weaker. Planes with several engines have a lever for each engine and one that moves all the engines together.",
+              "context": "The pilot uses it in every phase of flight: full power for take-off, less in cruise."
+            }
+          ]
+        },
+        {
+          "id": "stick",
+          "name": "Stick",
+          "text": "The stick is the handle in front of the pilot. Moving it steers the plane; the buttons on it fire the weapons.",
+          "context": "The pilot flies and fights with one hand on the stick.",
+          "controls": [
+            {
+              "id": "fire1",
+              "name": "Fire weapon group 1",
+              "type": "trigger",
+              "match": [
+                "cmd:weapon_group_1_fire"
+              ],
+              "text": "This is the trigger for the first group of weapons, usually the main guns.",
+              "context": "The pilot presses it when aiming at a target."
+            },
+            {
+              "id": "fire2",
+              "name": "Fire weapon group 2",
+              "type": "trigger",
+              "match": [
+                "cmd:weapon_group_2_fire"
+              ],
+              "text": "This is the trigger for the second group of weapons. Which weapons it fires depends on the plane.",
+              "context": "The pilot presses it when aiming at a target."
+            },
+            {
+              "id": "stick-brakes",
+              "name": "Wheel brakes (on the stick)",
+              "type": "trigger",
+              "match": [
+                "cmd:rpc_wheel_brakes"
+              ],
+              "text": "This control brakes both wheels at once.",
+              "context": "It is used after landing and in taxiing."
+            },
+            {
+              "id": "bombs",
+              "name": "Drop bombs, containers, paratroopers, smoke",
+              "type": "button",
+              "match": [
+                "cmd:throw_bombs_command"
+              ],
+              "text": "This button releases what hangs under the plane: bombs, containers or paratroopers. The game also uses it to emit smoke.",
+              "context": "The pilot presses it over the target or the drop zone."
+            },
+            {
+              "id": "rockets",
+              "name": "Launch rockets",
+              "type": "button",
+              "match": [
+                "cmd:launch_rockets_command"
+              ],
+              "text": "This button fires the rockets carried under the plane.",
+              "context": "It exists on planes that carry rockets."
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

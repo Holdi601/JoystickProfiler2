@@ -21,8 +21,9 @@ public sealed partial class MainWindowViewModel
 
     public bool HasGameCards => GameCards.Count > 0;
 
-    // 1 = pick a game, 2 = how to import, 3 = done.
+    // 1 = pick a game, 2 = how to import, 3 = done (the result over the game cards).
     [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(ShowGameCardList))]
     [NotifyPropertyChangedFor(nameof(IsImportWizardPickStep))]
     [NotifyPropertyChangedFor(nameof(IsImportWizardOptionsStep))]
     [NotifyPropertyChangedFor(nameof(IsImportWizardDoneStep))]
@@ -33,6 +34,10 @@ public sealed partial class MainWindowViewModel
     public bool IsImportWizardOptionsStep => ImportWizardStep == 2;
 
     public bool IsImportWizardDoneStep => ImportWizardStep == 3;
+
+    // The game cards (and with them update, export, undo and watch per game) are on the Start page except while the
+    // user chooses how to import: an import's result shows over them, so the page never loses them after an import.
+    public bool ShowGameCardList => ImportWizardStep != 2;
 
     [ObservableProperty]
     [NotifyPropertyChangedFor(nameof(ImportWizardTitle))]
@@ -223,34 +228,53 @@ public sealed partial class MainWindowViewModel
         ApplyImportWizardChoices(game);
         UiStage stageBefore = CurrentStage;
         LastExitCode = "n/a";
-        switch (game.Kind)
+        string? crash = null;
+        try
         {
-            case "dcs":
-                await ImportDcsAsync();
-                break;
-            case "il2":
-                await ImportIl2Async();
-                break;
-            case "starcitizen":
-                await ImportStarCitizenAsync();
-                break;
-            default:
-                if (await SelectRegistryGameAsync(game))
-                    await ImportRegistryGameAsync();
-                break;
+            switch (game.Kind)
+            {
+                case "dcs":
+                    await ImportDcsAsync();
+                    break;
+                case "il2":
+                    await ImportIl2Async();
+                    break;
+                case "starcitizen":
+                    await ImportStarCitizenAsync();
+                    break;
+                default:
+                    if (await SelectRegistryGameAsync(game))
+                        await ImportRegistryGameAsync();
+                    break;
+            }
+        }
+        catch (Exception ex) when (ex is not OutOfMemoryException)
+        {
+            // Whatever went wrong, the wizard ends on its result and the Start page keeps its games.
+            JoyPro.Logging.JoyProLog.Warn("ImportWizard", "Import of " + game.GameId + " failed", ex);
+            crash = ex.Message;
+            LastExitCode = "n/a";
         }
 
-        bool ok = LastExitCode == "0";
+        bool ok = LastExitCode == "0" && crash == null;
         ImportWizardFailed = !ok;
         ImportWizardResult = ok
             ? Plural("Done: your profile {1} now has {0} relation ({2} bound).", "Done: your profile {1} now has {0} relations ({2} bound).", Relations.Count, Relations.Count, ProfileDisplayName, Binds.Count(b => !string.IsNullOrWhiteSpace(b.Input)))
-            : T("The import did not work: {0}", lastEngineFailureReason.Length > 0 && LastExitCode != "n/a" ? Translate(lastEngineFailureReason) : StatusText);
+            : T("The import did not work: {0}", crash ?? (lastEngineFailureReason.Length > 0 && LastExitCode != "n/a" ? Translate(lastEngineFailureReason) : StatusText));
         game.ResultFailed = !ok;
         game.Result = ok ? T("Imported {0}", DateTime.Now.ToString("HH:mm", CultureInfo.CurrentCulture)) : T("Import failed");
         ImportWizardStep = 3;
         // The import opens the Relations page; the wizard stays on its result.
         if (CurrentStage != stageBefore)
             CurrentStage = stageBefore;
+    }
+
+    // Leaving the Start page closes an import's result (the card keeps "Imported 14:02"): coming back shows the
+    // games as always.
+    private void OnStartPageLeft()
+    {
+        if (ImportWizardStep == 3)
+            RestartImportWizard();
     }
 
     [RelayCommand]

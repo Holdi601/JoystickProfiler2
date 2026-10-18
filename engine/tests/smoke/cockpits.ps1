@@ -72,3 +72,27 @@ $cpPhotos = Run-Engine @("cockpits", "photos", "--coverage", "--text")
 Assert-Match $cpPhotos.Output "(?m)^Cockpit photos: \d+" "cockpits photos --coverage printed no count."
 $cpCoverage = Run-Engine @("cockpits", "coverage", "--text")
 Assert-Match $cpCoverage.Output "(?m)^Cockpit coverage: \d+ aircraft" "cockpits coverage printed no numbers."
+
+# pictures check: the quality gate on a set already there (a flat grey picture and a detailed one; docs/cockpits.md
+# "Picture quality"). --write keeps the ratings in pictures.json, --drop leaves out the panel picture below the gate.
+$cpPicRoot = Join-Path $cpDir "pictures"
+$cpSet = Join-Path $cpPicRoot "MSFS2024\test_set"
+New-Item -Path $cpSet -ItemType Directory -Force | Out-Null
+Add-Type -AssemblyName System.Drawing
+$cpFlat = New-Object System.Drawing.Bitmap 320, 200
+$cpG = [System.Drawing.Graphics]::FromImage($cpFlat); $cpG.Clear([System.Drawing.Color]::FromArgb(128, 128, 128)); $cpG.Dispose()
+$cpFlat.Save((Join-Path $cpSet "flat.png"), [System.Drawing.Imaging.ImageFormat]::Png); $cpFlat.Dispose()
+$cpBusy = New-Object System.Drawing.Bitmap 320, 200
+$cpG = [System.Drawing.Graphics]::FromImage($cpBusy); $cpG.Clear([System.Drawing.Color]::FromArgb(60, 64, 70))
+for ($i = 0; $i -lt 40; $i++) { $cpG.FillRectangle([System.Drawing.Brushes]::WhiteSmoke, ($i % 8) * 40 + 4, [math]::Floor($i / 8) * 40 + 6, 26, 6); $cpG.FillEllipse([System.Drawing.Brushes]::Black, ($i % 8) * 40 + 10, [math]::Floor($i / 8) * 40 + 18, 14, 14) }
+$cpG.Dispose(); $cpBusy.Save((Join-Path $cpSet "busy.png"), [System.Drawing.Imaging.ImageFormat]::Png); $cpBusy.Dispose()
+$cpManifest = '{"format":"joypro-cockpit-pictures","version":1,"generator":1,"game":"MSFS2024","plane":"Test","planes":["Test"],"source":"screenshot","built":"2026-10-18T00:00:00Z","views":[' +
+    '{"id":"overview","kind":"overview","title":"Cockpit overview","image":"busy.png","drawing":"","width":320,"height":200,"callouts":[]},' +
+    '{"id":"panel:flat","kind":"panel","title":"Flat","image":"flat.png","drawing":"","width":320,"height":200,"callouts":[]}]}'
+[IO.File]::WriteAllText((Join-Path $cpSet "pictures.json"), $cpManifest, (New-Object System.Text.UTF8Encoding($false)))
+$cpQuality = Run-Engine @("cockpits", "pictures", "check", "--out", $cpPicRoot, "--write", "--drop", "--text")
+Assert-True ($cpQuality.ExitCode -eq 0) "cockpits pictures check failed: $($cpQuality.Output)"
+Assert-Match $cpQuality.Output "MSFS2024/test_set: overview \d+" "cockpits pictures check printed no rating."
+Assert-Match $cpQuality.Output "panel:flat \d+ \(left out\)" "cockpits pictures check --drop did not leave out the flat picture: $($cpQuality.Output)"
+$cpChecked = Get-Content (Join-Path $cpSet "pictures.json") -Raw | ConvertFrom-Json
+Assert-True (@($cpChecked.views).Count -eq 1 -and $cpChecked.views[0].quality -ge 60 -and $cpChecked.quality.dropped -eq 1) "pictures.json lacks the ratings: $(Get-Content (Join-Path $cpSet 'pictures.json') -Raw)"

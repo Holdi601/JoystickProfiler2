@@ -153,8 +153,28 @@ public sealed partial class CockpitPhotoItem : ObservableObject
 
     public bool HasPage => !string.IsNullOrWhiteSpace(Page);
 
+    // A photo file to open (not only a page about it).
+    public bool HasPhoto => !string.IsNullOrWhiteSpace(Url);
+
+    // The photo could not be loaded: "Try again" is offered.
+    [ObservableProperty] private bool failed;
+
+    // Loads the photo again (set by the page; null = nothing to do).
+    public Func<CockpitPhotoItem, Task>? Reload { get; set; }
+
     [RelayCommand]
     private void OpenPage() => CockpitsViewModel.OpenUrl(string.IsNullOrWhiteSpace(Page) ? Url : Page);
+
+    // The photo itself in the browser (full size, to save it from there).
+    [RelayCommand]
+    private void OpenPhoto() => CockpitsViewModel.OpenUrl(HasPhoto ? Url : Page);
+
+    [RelayCommand]
+    private async Task TryAgain()
+    {
+        if (Reload != null)
+            await Reload(this);
+    }
 }
 
 // The Cockpits page (docs/cockpits.md): the cockpit database as a reference. Pick an aircraft (search and filters),
@@ -421,6 +441,7 @@ public sealed partial class CockpitsViewModel : ObservableObject
     partial void OnSelectedVariantChanged(CockpitVariantItem? value)
     {
         compared.Clear();
+        comparedCommands.Clear();
         CompareStatus = string.Empty;
         showing = true;
         Seats.Clear();
@@ -463,7 +484,7 @@ public sealed partial class CockpitsViewModel : ObservableObject
             foreach (CockpitLink l in v.Aircraft?.Links ?? [])
                 Sources.Add(new CockpitLinkItem { Title = l.Title, Url = l.Url, Detail = T("Link") });
             Plan = v.Panels.Count > 0 ? CockpitSchematic.Plan(v) : null;
-            _ = LoadPhotosAsync();
+            PhotoLoad = LoadPhotosAsync();
         }
         else
         {
@@ -552,6 +573,9 @@ public sealed partial class CockpitsViewModel : ObservableObject
 
     // ------------------------------------------------------------------ photos
 
+    // The photo loading under way (tests and the journey wait for it).
+    public Task PhotoLoad { get; private set; } = Task.CompletedTask;
+
     private async Task LoadPhotosAsync()
     {
         CockpitAircraft? aircraft = Aircraft;
@@ -585,22 +609,56 @@ public sealed partial class CockpitsViewModel : ObservableObject
         int loadedCount = 0;
         foreach (CockpitPhotoItem item in Photos.ToList())
         {
-            if (string.IsNullOrWhiteSpace(item.Url) || aircraft != Aircraft)
+            if (aircraft != Aircraft)
+                break;
+            if (!item.HasPhoto)
+            {
+                item.Status = T("Only a page about it (open the page).");
                 continue;
+            }
             // Checked again before every download: the answer may have changed meanwhile.
             if (!CockpitPhotoConsent.Allows(aircraft.Id))
                 break;
-            // Wikimedia asks programs for its thumbnails rather than the original files (often tens of MB).
-            string? thumb = CommonsThumbnail(item.Url, 960);
-            Bitmap? bitmap = thumb == null ? null : await DeviceImageCache.LoadAsync(thumb, 640);
-            bitmap ??= await DeviceImageCache.LoadAsync(item.Url, 640);
-            item.Image = bitmap;
-            item.Status = bitmap == null ? T("Could not load the photo (open the page instead).") : string.Empty;
-            if (bitmap != null)
+            item.Reload = ReloadPhotoAsync;
+            if (await LoadPhotoAsync(item))
                 loadedCount++;
         }
         if (aircraft == Aircraft)
-            PhotoStatus = T("{0} of {1} photos shown (stored only on this PC).", loadedCount, Photos.Count);
+            PhotoStatus = PhotoCountText(loadedCount);
+    }
+
+    private string PhotoCountText(int loaded)
+    {
+        int photoCount = Photos.Count(p => p.HasPhoto);
+        return photoCount == Photos.Count
+            ? T("{0} of {1} photos shown (stored only on this PC).", loaded, photoCount)
+            : T("{0} of {1} photos shown (stored only on this PC); {2} only link to a page.", loaded, photoCount, Photos.Count - photoCount);
+    }
+
+    // One photo: Wikimedia's thumbnail (what Wikimedia asks programs to use), else the file itself; one download at a
+    // time and again after "too many requests" (DeviceImageCache).
+    private async Task<bool> LoadPhotoAsync(CockpitPhotoItem item)
+    {
+        item.Failed = false;
+        item.Status = string.Empty;
+        string? thumb = CommonsThumbnail(item.Url, 960);
+        Bitmap? bitmap = thumb == null ? null : await DeviceImageCache.LoadAsync(thumb, 640);
+        bitmap ??= await DeviceImageCache.LoadAsync(item.Url, 640);
+        item.Image = bitmap;
+        item.Failed = bitmap == null;
+        item.Status = bitmap == null ? T("Could not load the photo. Try again, or open the photo or its page in your browser.") : string.Empty;
+        return bitmap != null;
+    }
+
+    private async Task ReloadPhotoAsync(CockpitPhotoItem item)
+    {
+        CockpitAircraft? aircraft = Aircraft;
+        if (aircraft == null || !CockpitPhotoConsent.Allows(aircraft.Id) || !DeviceImageCache.InternetPicturesEnabled || DeviceImageCache.InternetPicturesBlocked)
+            return;
+        item.Status = T("Loading the photos...");
+        await LoadPhotoAsync(item);
+        if (aircraft == Aircraft)
+            PhotoStatus = PhotoCountText(Photos.Count(p => p.Image != null));
     }
 
     // https://upload.wikimedia.org/wikipedia/commons/a/ab/Name.jpg -> .../commons/thumb/a/ab/Name.jpg/960px-Name.jpg
@@ -628,7 +686,7 @@ public sealed partial class CockpitsViewModel : ObservableObject
         OnPropertyChanged(nameof(AskPhotos));
         OnPropertyChanged(nameof(PhotosDenied));
         Photos.Clear();
-        _ = LoadPhotosAsync();
+        PhotoLoad = LoadPhotosAsync();
     }
 
     // ------------------------------------------------------------------ compare and use
@@ -698,6 +756,7 @@ public sealed partial class CockpitsViewModel : ObservableObject
             }
         }
         CompareStatus = T("Your profile has relations for {0} of the {1} functions with a JoyPro function id (✓ in the tables).", matched, total);
+        ApplyCompareCommands(root);
         BuildSheets();
         BuildPages();
     }
@@ -706,6 +765,7 @@ public sealed partial class CockpitsViewModel : ObservableObject
     private void ClearCompare()
     {
         compared.Clear();
+        ClearCompareCommands();
         CompareStatus = string.Empty;
         BuildSheets();
         BuildPages();

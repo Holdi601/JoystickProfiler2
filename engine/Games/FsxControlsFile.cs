@@ -203,8 +203,7 @@ namespace JoyPro.Engine.Games
                 stream.Write(preamble, 0, preamble.Length);
                 stream.Write(body, 0, body.Length);
             }
-            File.Copy(temp, path, true);
-            File.Delete(temp);
+            SafeFileIo.CopyOverAndDelete(temp, path);
         }
     }
 

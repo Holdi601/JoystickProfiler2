@@ -1,0 +1,1076 @@
+{
+  "format": "joypro-cockpit-guide",
+  "version": 1,
+  "id": "xp12-common-part2",
+  "partOf": "xp12-common",
+  "areas": [
+    {
+      "id": "radios",
+      "where": "other",
+      "name": "Radios and transponder",
+      "text": "These controls tune the radios for talking to other aircraft and the tower, tune the navigation radios, set the audio panel and the transponder code. Many small aircraft use a GPS unit as a combined radio and navigator.",
+      "panels": [
+        {
+          "id": "com-nav-tuning",
+          "name": "COM and NAV radio tuning",
+          "text": "These knobs and buttons set the radio frequencies. A frequency is the station number a radio talks or listens on. COM radios are for voice, NAV radios listen to navigation beacons.",
+          "context": "The pilot tunes COM to the tower or another controller and NAV to the beacon to fly to. Most radios have an active frequency in use and a standby frequency being prepared, with a flip button between the two.",
+          "src": "g1",
+          "controls": [
+            {
+              "id": "com-freq-knobs",
+              "name": "COM frequency knobs (coarse and fine)",
+              "type": "knob",
+              "match": [
+                "cmd:sim/radios/stby_com?_*",
+                "cmd:sim/radios/actv_com?_*",
+                "cmd:laminar/md82cmd/radios/*com*",
+                "cmd:laminar/CitX/standby/radio_knob_*",
+                "cmd:laminar/f14/comm/switch/v_uhf*"
+              ],
+              "text": "These knobs change the frequency of a COM (voice) radio. The big knob changes the whole megahertz numbers, the small knob changes the digits after the dot. Turning the knob right makes the number higher, turning it left makes it lower.",
+              "context": "The pilot dials the frequency the controller gives. Some aircraft change the standby number and then swap it, some change the active number directly."
+            },
+            {
+              "id": "nav-freq-knobs",
+              "name": "NAV frequency knobs (coarse and fine)",
+              "type": "knob",
+              "match": [
+                "cmd:sim/radios/stby_nav?_*",
+                "cmd:sim/radios/actv_nav?_*",
+                "cmd:laminar/md82cmd/radios/*nav*"
+              ],
+              "text": "These knobs change the frequency of a NAV radio, which listens to navigation beacons on the ground. The big knob changes the whole megahertz numbers and the small knob the digits after the dot.",
+              "context": "The pilot dials the frequency of the beacon to fly to or to use for an approach to the runway."
+            },
+            {
+              "id": "freq-flip",
+              "name": "Frequency flip-flop button",
+              "type": "button",
+              "match": [
+                "cmd:sim/radios/com?_standy_flip",
+                "cmd:sim/radios/nav?_standy_flip",
+                "cmd:sim/radios/adf?_standy_flip",
+                "cmd:com/nav",
+                "cmd:laminar/c90/avionics/ctl*/xfr_mem_*",
+                "cmd:laminar/b58/*flip*",
+                "cmd:laminar/B738/push_button/switch_freq_nav*"
+              ],
+              "text": "This button swaps the active and standby frequencies of a radio. What was waiting in standby becomes the one in use, and the old one moves to standby.",
+              "context": "The pilot enters the next frequency in standby first and then flips, so the radio never jumps to a half-typed number. On some radios the same button chooses between transfer and memory."
+            },
+            {
+              "id": "radio-power",
+              "name": "Radio power / mode switch",
+              "type": "switch",
+              "match": [
+                "cmd:sim/radios/power_com?_*",
+                "cmd:sim/radios/power_nav?_*",
+                "cmd:sim/radios/adf1_power_mode_*",
+                "cmd:sim/cockpit2/radios/actuators/adf?_power",
+                "cmd:laminar/c90/avionics/ctl62_adf/mode_*"
+              ],
+              "text": "This switch turns a radio on or off. The tooltip says which radio it is. A radio that is off has a dark display and gives no sound.",
+              "context": "The pilot switches the radios on after the avionics master, before the first call. A radio that is not needed can be left off."
+            },
+            {
+              "id": "adf-tuning",
+              "name": "ADF frequency knobs",
+              "type": "knob",
+              "match": [
+                "cmd:sim/radios/stby_adf?_*",
+                "cmd:laminar/md82cmd/radios/*adf*",
+                "cmd:sim/radios/adf?_card_*",
+                "cmd:sim/cockpit2/radios/actuators/adf?_right_is_selected"
+              ],
+              "text": "These knobs tune the ADF, a radio that points to a ground station with a needle. One knob sets the hundreds and thousands, the other the ones and tens. The card knob turns the compass card of the ADF display.",
+              "context": "ADF uses old-style beacons (NDB) or radio stations. The needle shows the direction to the station, so the pilot can fly towards it."
+            },
+            {
+              "id": "tacan-tuning",
+              "name": "TACAN channel selectors",
+              "type": "knob",
+              "match": [
+                "cmd:sim/radios/actv_tac?_*"
+              ],
+              "text": "These knobs choose the TACAN channel, a military navigation beacon with direction and distance. The X and Y setting chooses between two sets of channels.",
+              "context": "The pilot sets the channel of the ground station or tanker to find its direction and distance."
+            },
+            {
+              "id": "rmi-source",
+              "name": "RMI / bearing pointer source switch",
+              "type": "switch",
+              "match": [
+                "cmd:sim/radios/RMI_*",
+                "cmd:sim/radios/copilot_RMI_*",
+                "cmd:laminar/c90/avionics/switch/brg_ptr*",
+                "cmd:laminar/CitX/primus/*bearing*",
+                "cmd:laminar/CitX/primus/*source*",
+                "cmd:sim/instruments/EFIS_?_*sel_*"
+              ],
+              "text": "This switch chooses which radio a pointer needle follows, for example an ADF or a VOR. A VOR is a navigation beacon that gives direction. The needle then shows the direction to that station.",
+              "context": "The pilot can use it to watch two stations at once, for example one for the route and one for a cross-check."
+            },
+            {
+              "id": "dme-radio",
+              "name": "DME controls",
+              "type": "knob",
+              "match": [
+                "cmd:laminar/b58/dme_mode_*",
+                "cmd:laminar/c90/avionics/switch/dme_channel_selector",
+                "cmd:laminar/c90/avionics/dial/dme_vol"
+              ],
+              "text": "These controls belong to a DME, the box that measures the distance to a ground station. A mode switch sets how the box works, a channel selector tunes it, and a volume knob sets the sound of its identity code.",
+              "context": "The pilot uses the DME to know how far the aircraft is from the beacon it flies to."
+            }
+          ]
+        },
+        {
+          "id": "audio-panel",
+          "name": "Audio panel and volume",
+          "text": "The audio panel chooses which radios the pilot hears in the headset and which one the microphone talks on. The knobs set the volume of each source.",
+          "context": "The pilot listens to several radios at once, for example the tower and a beacon's ident tone, and picks one radio to answer.",
+          "src": "g1",
+          "controls": [
+            {
+              "id": "audio-monitor",
+              "name": "Audio monitor (listen) buttons",
+              "type": "button",
+              "match": [
+                "cmd:sim/audio_panel/monitor_audio_*",
+                "cmd:sim/audio_panel_copilot/monitor_audio_*",
+                "cmd:sim/annunciator/marker_beacon_mute*",
+                "cmd:laminar/c90/avionics/switch/*_audio_*",
+                "cmd:laminar/c90/avionics/switch/mkr_bkn*",
+                "cmd:laminar/c90/avionics/switch/adf1_audio_copilot"
+              ],
+              "text": "These buttons choose which sources the pilot hears: COM 1, COM 2, NAV 1, NAV 2, ADF, DME or the marker beacon. A lit button means the source plays in the headset or the speaker.",
+              "context": "The pilot switches on every source needed in the flight, so radio calls are not missed. The tooltip names the source."
+            },
+            {
+              "id": "audio-transmit",
+              "name": "Audio transmit (talk) buttons",
+              "type": "button",
+              "match": [
+                "cmd:sim/audio_panel/transmit_audio_*",
+                "cmd:sim/audio_panel/monitor_audio_com_auto",
+                "cmd:laminar/f14/comm/button/*"
+              ],
+              "text": "These buttons choose which radio the microphone talks on, such as COM 1 or COM 2. Only one can be chosen at a time. The automatic setting lets the transmit radio follow the choice made for listening.",
+              "context": "The pilot picks the radio that is tuned to the controller to talk to. Choosing the wrong one means nobody hears the call."
+            },
+            {
+              "id": "audio-volume",
+              "name": "Volume knobs of the radios",
+              "type": "knob",
+              "match": [
+                "cmd:sim/cockpit2/radios/actuators/audio_volume_*",
+                "cmd:sim/GPS/g430n?_cvol",
+                "cmd:sim/GPS/g430n?_cvol_*",
+                "cmd:sim/GPS/g430n?_vvol",
+                "cmd:sim/GPS/g430n?_vvol_*",
+                "cmd:laminar/c90/avionics/dial/*vol*",
+                "cmd:laminar/c90/avionics/dial/master_vol*",
+                "cmd:sim/operation/sound/radio_volume_ratio"
+              ],
+              "text": "These knobs set how loud a radio source plays: a COM radio, a NAV radio, the marker beacon, the intercom or the master volume. Some GPS units have a push on the same knob to switch the station's identity tone on and off.",
+              "context": "The pilot turns them up so calls are easy to understand and turns beacon tones down once the beacon is confirmed. The tooltip names the source."
+            },
+            {
+              "id": "audio-misc",
+              "name": "Audio switches: speaker, microphone, interphone",
+              "type": "switch",
+              "match": [
+                "cmd:laminar/c90/avionics/switch/*spkr*",
+                "cmd:laminar/c90/avionics/switch/mic_sel*",
+                "cmd:laminar/c90/avionics/dial/mic_sel*",
+                "cmd:laminar/c90/avionics/switch/hot_intph",
+                "cmd:laminar/c90/avionics/switch/audio_emer_norm_switch",
+                "cmd:laminar/c90/avionics/switch/voice_range*",
+                "cmd:laminar/c90/avionics/switch/grd_pwr_comm",
+                "cmd:laminar/c90/avionics/switch/auto_comm*"
+              ],
+              "text": "These switches set how the crew's sound works: speaker on or off, which microphone is used, the interphone between crew members, a normal or emergency audio mode and the voice or range selector of the navigation audio.",
+              "context": "They are part of the audio system of the King Air. The pilot sets them once in the checks and rarely changes them in flight."
+            },
+            {
+              "id": "marker-beacon",
+              "name": "Marker beacon controls",
+              "type": "switch",
+              "match": [
+                "cmd:sim/annunciator/marker_beacon_sens_toggle",
+                "cmd:sim/annunciator/marker_beacon_mute_or_off"
+              ],
+              "text": "The marker beacon receiver listens for signals sent upwards from beacons at certain places on the approach to a runway. This control sets the receiver's sensitivity or mutes its sound.",
+              "context": "The pilot hears or sees the beacon when flying over it on an instrument approach."
+            }
+          ]
+        },
+        {
+          "id": "transponder",
+          "name": "Transponder",
+          "text": "The transponder is a radio box that answers questions from air traffic radar with a four-digit code and the height of the aircraft.",
+          "context": "Air traffic control gives the pilot a code to dial and then sees the aircraft on the radar. The pilot uses the IDENT button when asked.",
+          "src": "g1",
+          "controls": [
+            {
+              "id": "xpdr-mode",
+              "name": "Transponder mode switch",
+              "type": "selector",
+              "match": [
+                "cmd:sim/transponder/transponder_off",
+                "cmd:sim/transponder/transponder_standby",
+                "cmd:sim/transponder/transponder_on",
+                "cmd:sim/transponder/transponder_alt",
+                "cmd:sim/transponder/transponder_up",
+                "cmd:sim/transponder/transponder_dn",
+                "cmd:laminar/c90/avionics/ctl92_xpdr/mode_*",
+                "cmd:laminar/f14/comm/*rnspdr*",
+                "cmd:laminar/f14/comm/*ransp*",
+                "cmd:laminar/B738/knob/*ransponder*"
+              ],
+              "text": "This selector sets what the transponder does. OFF is off. STBY (standby) keeps it warm but silent. ON answers with the code. ALT also reports the height of the aircraft. TEST checks the box.",
+              "context": "The pilot sets it to standby on the ground and to ALT for flight. Controllers can only see the height when it is in ALT."
+            },
+            {
+              "id": "xpdr-code",
+              "name": "Transponder code digits",
+              "type": "keypad",
+              "match": [
+                "cmd:sim/transponder/transponder_digit_?",
+                "cmd:sim/transponder/transponder_CLR",
+                "cmd:sim/transponder/transponder_*_up",
+                "cmd:sim/transponder/transponder_*_down",
+                "cmd:sim/transponder/transponder_12_*",
+                "cmd:sim/transponder/transponder_34_*"
+              ],
+              "text": "These keys or knobs set the four-digit code, called the squawk code. Each digit is from 0 to 7. A keypad has number keys and a CLR key that erases a digit. Knob versions turn one digit up or down, or two digits at once.",
+              "context": "Air traffic control tells the pilot which code to use. Code 7000 is common for visual flights in Europe and 1200 in the United States."
+            },
+            {
+              "id": "xpdr-ident",
+              "name": "Transponder IDENT button",
+              "type": "button",
+              "match": [
+                "cmd:sim/transponder/transponder_ident",
+                "cmd:laminar/B738/push_button/transponder_ident*"
+              ],
+              "text": "This button makes the aircraft's blip flash on the controller's radar screen for a short time. It tells the controller which dot on the screen is this aircraft.",
+              "context": "The pilot presses it only when the controller asks for it."
+            },
+            {
+              "id": "xpdr-test",
+              "name": "Transponder test button",
+              "type": "button",
+              "match": [
+                "cmd:sim/transponder/transponder_test"
+              ],
+              "text": "This button tests the transponder. While it is pressed, the lamp or display shows that the box works.",
+              "context": "The pilot can use it in the checks before flight."
+            }
+          ]
+        },
+        {
+          "id": "gps-units",
+          "name": "GPS and navigator units (Garmin G430, G530, G1000)",
+          "text": "These are the buttons and knobs of the Garmin GPS units. A GPS finds the aircraft's place by satellites and also holds the radios and the flight plan. The G430 and G530 are small box units, the G1000 is a big screen system with a pilot screen and a map screen.",
+          "context": "The pilot types the route, shows the map, tunes the radios and uses the autopilot keys from this one unit. The box units have a left and a right knob, the G1000 has softkeys under the screen.",
+          "src": "g1",
+          "controls": [
+            {
+              "id": "gps-freq-knobs",
+              "name": "GPS frequency knobs (outer, inner, coarse, fine)",
+              "type": "knob",
+              "match": [
+                "cmd:sim/GPS/g430n?_coarse_*",
+                "cmd:sim/GPS/g430n?_fine_*",
+                "cmd:sim/GPS/g1000n?_com_inner_*",
+                "cmd:sim/GPS/g1000n?_com_outer_*",
+                "cmd:sim/GPS/g1000n?_nav_inner_*",
+                "cmd:sim/GPS/g1000n?_nav_outer_*"
+              ],
+              "text": "These double knobs change the radio frequency in the GPS unit. The outer ring changes the big numbers, the inner ring the small numbers. The COM knob works on the voice radio, the NAV knob on the navigation radio.",
+              "context": "The pilot sets the standby frequency here and flips it to become active. The tooltip says whether it is the COM or NAV knob."
+            },
+            {
+              "id": "gps-flipflop",
+              "name": "GPS COM / NAV flip buttons",
+              "type": "button",
+              "match": [
+                "cmd:sim/GPS/g430n?_com_ff",
+                "cmd:sim/GPS/g430n?_nav_ff",
+                "cmd:sim/GPS/g430n?_nav_com_tog",
+                "cmd:sim/GPS/g1000n?_com_ff",
+                "cmd:sim/GPS/g1000n?_nav_ff",
+                "cmd:sim/GPS/g1000n?_com12",
+                "cmd:sim/GPS/g1000n?_nav12",
+                "cmd:sim/GPS/gcu478/ff"
+              ],
+              "text": "These buttons swap the active and standby frequencies of the radio in the GPS unit. Another one switches the tuning knob between COM and NAV or between radio 1 and radio 2.",
+              "context": "The pilot uses them after dialling a new frequency, so the radio changes to it."
+            },
+            {
+              "id": "gps-fms-knob",
+              "name": "GPS FMS / page / chapter knob",
+              "type": "knob",
+              "match": [
+                "cmd:sim/GPS/g430n?_page_*",
+                "cmd:sim/GPS/g430n?_chapter_*",
+                "cmd:sim/GPS/g1000n?_fms_inner_*",
+                "cmd:sim/GPS/g1000n?_fms_outer_*",
+                "cmd:sim/GPS/g430n?_cursor",
+                "cmd:sim/GPS/g1000n?_cursor",
+                "cmd:sim/GPS/gcu478/outer_*",
+                "cmd:sim/GPS/gcu478/inner_*"
+              ],
+              "text": "This knob moves through the pages and the entries of the GPS unit. The outer ring changes the page group, the inner ring changes the page, and pushing it shows a cursor to change entries.",
+              "context": "The pilot uses it to move between the map, the flight plan and other pages and to type in names."
+            },
+            {
+              "id": "gps-buttons",
+              "name": "GPS function keys (DIRECT, FPL, PROC, MENU, ENT, CLR ...)",
+              "type": "button",
+              "match": [
+                "cmd:sim/GPS/g430n?_direct",
+                "cmd:sim/GPS/g430n?_fpl",
+                "cmd:sim/GPS/g430n?_proc",
+                "cmd:sim/GPS/g430n?_menu",
+                "cmd:sim/GPS/g430n?_ent",
+                "cmd:sim/GPS/g430n?_clr",
+                "cmd:sim/GPS/g430n?_msg",
+                "cmd:sim/GPS/g430n?_obs",
+                "cmd:sim/GPS/g430n?_cdi",
+                "cmd:sim/GPS/g430n?_vnav",
+                "cmd:sim/GPS/g1000n?_direct",
+                "cmd:sim/GPS/g1000n?_fpl",
+                "cmd:sim/GPS/g1000n?_proc",
+                "cmd:sim/GPS/g1000n?_menu",
+                "cmd:sim/GPS/g1000n?_ent",
+                "cmd:sim/GPS/g1000n?_clr",
+                "cmd:sim/GPS/gcu478/direct",
+                "cmd:sim/GPS/gcu478/fpl",
+                "cmd:sim/GPS/gcu478/proc",
+                "cmd:sim/GPS/gcu478/menu",
+                "cmd:sim/GPS/gcu478/ent",
+                "cmd:sim/GPS/gcu478/clr"
+              ],
+              "text": "These are the fixed keys of the GPS unit. DIRECT flies straight to a chosen point. FPL shows the flight plan. PROC picks an approach or a departure. MENU shows options. ENT accepts an entry and CLR erases it or goes back. MSG shows messages, OBS sets the course, CDI switches the course needle between GPS and radio.",
+              "context": "The pilot enters the route and the approach with these keys, in the order the screen asks for."
+            },
+            {
+              "id": "gps-range",
+              "name": "GPS map range and zoom",
+              "type": "knob",
+              "match": [
+                "cmd:sim/GPS/g430n?_zoom_*",
+                "cmd:sim/GPS/g1000n?_range_*",
+                "cmd:sim/GPS/g1000n?_pan_*",
+                "cmd:sim/GPS/gcu478/range_*",
+                "cmd:sim/GPS/gcu478/pan_*"
+              ],
+              "text": "These controls zoom the GPS map in and out and move it around. On the G1000, the RANGE knob zooms and the PAN joystick moves the map.",
+              "context": "The pilot zooms out to see the route and zooms in on the airport for the approach."
+            },
+            {
+              "id": "gps-softkeys",
+              "name": "G1000 softkeys",
+              "type": "button",
+              "match": [
+                "cmd:sim/GPS/g1000n?_softkey*"
+              ],
+              "text": "These 12 buttons sit under the G1000 screen. Each one does what the word on the screen above it says, so the same button does different things on different pages.",
+              "context": "The pilot uses them to switch screen pages and to turn map layers on and off."
+            },
+            {
+              "id": "g1000-baro-crs-hdg",
+              "name": "G1000 baro, course, heading and altitude knobs",
+              "type": "knob",
+              "match": [
+                "cmd:sim/GPS/g1000n?_baro_*",
+                "cmd:sim/GPS/g1000n?_crs_*",
+                "cmd:sim/GPS/g1000n?_hdg_*",
+                "cmd:sim/GPS/g1000n?_alt_inner_*",
+                "cmd:sim/GPS/g1000n?_alt_outer_*",
+                "cmd:sim/GPS/gcu478/hdg_*",
+                "cmd:sim/GPS/gcu478/alt_*",
+                "cmd:sim/GPS/gcu479/crs"
+              ],
+              "text": "These knobs set the barometer pressure, the course, the heading bug and the altitude for the autopilot. A bug is a marker the autopilot steers to or holds. Pushing the heading or course knob sets the bug to the current value.",
+              "context": "The pilot sets the altitude the controller assigned and the heading to fly, then lets the autopilot follow them."
+            },
+            {
+              "id": "g1000-ap-keys",
+              "name": "G1000 autopilot keys",
+              "type": "button",
+              "match": [
+                "cmd:sim/GPS/g1000n?_ap",
+                "cmd:sim/GPS/g1000n?_fd",
+                "cmd:sim/GPS/g1000n?_alt",
+                "cmd:sim/GPS/g1000n?_hdg",
+                "cmd:sim/GPS/g1000n?_nav",
+                "cmd:sim/GPS/g1000n?_apr",
+                "cmd:sim/GPS/g1000n?_bc",
+                "cmd:sim/GPS/g1000n?_vnv",
+                "cmd:sim/GPS/g1000n?_flc",
+                "cmd:sim/GPS/g1000n?_vs",
+                "cmd:sim/GPS/g1000n?_nose_*"
+              ],
+              "text": "These keys control the autopilot built into the G1000: AP engages the autopilot, FD turns on the flight director that shows the path, and the others choose its modes, such as holding altitude (ALT), heading (HDG) or climb rate (VS). The two arrow keys change the climb rate or speed.",
+              "context": "The pilot sets the mode, then watches the screen to see which mode is active."
+            },
+            {
+              "id": "g1000-misc",
+              "name": "G1000 reversion, popup, pan and key push",
+              "type": "button",
+              "match": [
+                "cmd:sim/GPS/G1000_display_reversion",
+                "cmd:sim/GPS/g1000n?_popup",
+                "cmd:sim/GPS/g430n?_popup",
+                "cmd:sim/GPS/g430n?_popout",
+                "cmd:sim/GPS/g1000n?_pan_push",
+                "cmd:sim/GPS/g1000n?_cvol",
+                "cmd:sim/GPS/g1000n?_cvol_*",
+                "cmd:sim/GPS/g1000n?_nvol",
+                "cmd:sim/GPS/g1000n?_nvol_*"
+              ],
+              "text": "The red display reversion button moves the flight data of a broken screen onto the working one. The pop-up button opens the unit's screen in a floating window. The volume knobs set the radio sound, and the pan push centres the map.",
+              "context": "The reversion button is for an emergency when one of the screens fails."
+            },
+            {
+              "id": "gcu-keys",
+              "name": "GCU keypad (letters, numbers, edit keys)",
+              "type": "keypad",
+              "match": [
+                "cmd:sim/GPS/gcu478/?",
+                "cmd:sim/GPS/gcu478/*",
+                "cmd:sim/GPS/gcu479/*"
+              ],
+              "text": "The GCU is a separate control unit with a keypad for the G1000. These are its letter and number keys and its edit keys (backspace, space, dot, minus), the COM, NAV and XPDR (transponder) keys, and a few more keys for the cursor and the home page.",
+              "context": "The pilot types names, frequencies and codes on it, so the screens do not need to be reached."
+            }
+          ]
+        },
+        {
+          "id": "fms-cdu",
+          "name": "FMS / CDU keypad (flight computer)",
+          "text": "This keypad belongs to the flight management computer (FMS), a computer that knows the flight plan and flies the aircraft along it. It has letter and number keys, line select keys beside a small text screen, and page keys.",
+          "context": "The pilot or the crew types the route, the speeds and the weights before flight, and checks the screen pages in flight. The line select keys pick the entry on the line next to them.",
+          "src": "g1",
+          "controls": [
+            {
+              "id": "fms-alphanumeric",
+              "name": "FMS letter and number keys",
+              "type": "keypad",
+              "match": [
+                "cmd:sim/FMS*/key_?",
+                "cmd:sim/CDU3/key_?",
+                "cmd:laminar/CitX/FMS?/*"
+              ],
+              "text": "These are the letter keys A to Z and the number keys 0 to 9 of the FMS keypad. They type letters and numbers into the small text screen.",
+              "context": "The pilot types airport names, route points and numbers with them."
+            },
+            {
+              "id": "fms-special-keys",
+              "name": "FMS special keys (CLR, DEL, +/-, period, slash, space)",
+              "type": "keypad",
+              "match": [
+                "cmd:sim/FMS*/key_clear",
+                "cmd:sim/FMS*/key_delete",
+                "cmd:sim/FMS*/key_minus",
+                "cmd:sim/FMS*/key_period",
+                "cmd:sim/FMS*/key_slash",
+                "cmd:sim/FMS*/key_space",
+                "cmd:sim/FMS*/key_overfly",
+                "cmd:sim/CDU3/key_*"
+              ],
+              "text": "These keys type or erase special characters: the plus and minus sign, a period, a slash and a space. The CLR or DEL key erases the last character or the whole line. OVERFLY marks a route point that the aircraft must fly right over.",
+              "context": "They finish the typing: they correct mistakes and put the signs where the computer expects them."
+            },
+            {
+              "id": "fms-line-keys",
+              "name": "FMS line select keys",
+              "type": "button",
+              "match": [
+                "cmd:sim/FMS*/ls_*",
+                "cmd:sim/CDU3/ls_*"
+              ],
+              "text": "These buttons sit left and right beside the small text screen. Each one picks the entry on the screen line next to it, or moves the typed text into that line.",
+              "context": "The pilot uses them to confirm every entry. The number and the letter L or R say which line and which side."
+            },
+            {
+              "id": "fms-page-keys",
+              "name": "FMS page and function keys",
+              "type": "button",
+              "match": [
+                "cmd:sim/FMS*/*",
+                "cmd:sim/CDU3/*"
+              ],
+              "text": "These keys choose which page the FMS shows, such as the flight plan, legs, performance, progress or the initial setup. Others move up, down, left or right through the pages. EXEC makes a change real, so the computer then uses it.",
+              "context": "The pilot visits the pages one after the other to prepare the flight. Nothing changes the route until EXEC is pressed."
+            },
+            {
+              "id": "fms-popup",
+              "name": "Screen pop-up buttons",
+              "type": "button",
+              "match": [
+                "cmd:sim/instruments/EFIS_*popup",
+                "cmd:sim/instruments/PFD_*popup",
+                "cmd:sim/radios/rmu?/popup"
+              ],
+              "text": "This button opens the screen in a floating window of its own, so it can be bigger or put on another monitor. It does nothing to the aircraft.",
+              "context": "It helps when the real screen is hard to read in the 3D cockpit."
+            },
+            {
+              "id": "rmu",
+              "name": "Radio management unit (RMU) keys",
+              "type": "button",
+              "match": [
+                "cmd:sim/radios/rmu?/*"
+              ],
+              "text": "The RMU is a small screen with line keys, a tuning knob and a few buttons for the radios. The line keys pick a radio, the knob sets its frequency. The buttons test it or show DME and identity.",
+              "context": "The pilot tunes all radios from this one unit. There is often one RMU for each pilot."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "navigation",
+      "where": "other",
+      "name": "Navigation and autopilot",
+      "text": "These controls set the course, the heading and the altitude, and switch the autopilot and flight director on and off.",
+      "panels": [
+        {
+          "id": "autopilot-modes",
+          "name": "Autopilot and flight director",
+          "text": "The autopilot flies the aircraft by itself. The pilot picks what it should hold: a heading, an altitude, a climb rate or the path to a runway. The flight director shows the same path on the screen, so the pilot can follow it by hand.",
+          "context": "The pilot sets the targets first, then presses a mode button, and watches the mode lights or the screen to see what the autopilot is doing. The AP DISCONNECT button turns it off quickly.",
+          "src": "g1",
+          "controls": [
+            {
+              "id": "ap-engage",
+              "name": "Autopilot engage / servos switch",
+              "type": "switch",
+              "match": [
+                "cmd:sim/autopilot/servos_toggle",
+                "cmd:sim/autopilot/servos_on",
+                "cmd:sim/autopilot/servos_fdir_off",
+                "cmd:sim/autopilot/servos2_toggle",
+                "cmd:sim/autopilot/electric_master_*"
+              ],
+              "text": "This switch turns the autopilot's servos on or off. The servos are the little motors that move the control surfaces for the autopilot. The tooltip also calls this the autopilot power on some aircraft.",
+              "context": "The pilot engages the autopilot after take-off, once the aircraft is climbing and stable. With it off, the pilot flies by hand."
+            },
+            {
+              "id": "ap-disconnect",
+              "name": "Autopilot disconnect",
+              "type": "button",
+              "match": [
+                "cmd:sim/autopilot/servos_off_any",
+                "cmd:sim/autopilot/servos_yawd_trim_off_any",
+                "cmd:sim/autopilot/control_wheel_steer"
+              ],
+              "text": "This button turns the autopilot off at once. It sits on the yoke or stick, so the pilot can take back control right away. The control wheel steer button (CWS) lets the pilot steer by hand and have the autopilot follow.",
+              "context": "The pilot presses it before a manual landing or when the autopilot does something unexpected."
+            },
+            {
+              "id": "flight-director",
+              "name": "Flight director switch",
+              "type": "switch",
+              "match": [
+                "cmd:sim/autopilot/fdir_toggle",
+                "cmd:sim/autopilot/fdir2_toggle",
+                "cmd:sim/autopilot/fdir_command_bars_toggle",
+                "cmd:sim/autopilot/fdir2_command_bars_toggle",
+                "cmd:laminar/c90/avionics/switch/fd"
+              ],
+              "text": "This switch turns on the flight director. It draws bars on the artificial horizon (the instrument that shows the nose up or down and the wings level) that show where the pilot should steer.",
+              "context": "The pilot follows the bars by hand, or has the autopilot follow them. The copilot has a second switch on some aircraft."
+            },
+            {
+              "id": "ap-heading",
+              "name": "Heading mode and heading bug",
+              "type": "knob",
+              "match": [
+                "cmd:sim/autopilot/heading",
+                "cmd:sim/autopilot/heading_up",
+                "cmd:sim/autopilot/heading_down",
+                "cmd:sim/autopilot/heading_copilot_*",
+                "cmd:sim/autopilot/heading_sync*",
+                "cmd:sim/autopilot/heading_hold",
+                "cmd:sim/autopilot/hdg_nav",
+                "cmd:sim/autopilot/track",
+                "cmd:sim/autopilot/trkfpa",
+                "cmd:autopilot/heading"
+              ],
+              "text": "The heading knob moves the heading bug, a marker on the compass. In heading mode the autopilot turns the aircraft until it points where the bug is. A button turns the mode on, and some units have a SYNC button that sets the bug to the current heading.",
+              "context": "The pilot turns the bug to the direction air traffic control gives and the autopilot turns there. Heading means the direction the nose points."
+            },
+            {
+              "id": "ap-altitude",
+              "name": "Altitude hold and altitude selector",
+              "type": "knob",
+              "match": [
+                "cmd:sim/autopilot/altitude_hold",
+                "cmd:sim/autopilot/altitude_up",
+                "cmd:sim/autopilot/altitude_down",
+                "cmd:sim/autopilot/altitude_arm",
+                "cmd:sim/autopilot/altitude_sync",
+                "cmd:sim/autopilot/alt_vs",
+                "cmd:sim/autopilot/pitch_sync",
+                "cmd:sim/autopilot/baro_alt*",
+                "cmd:sim/instruments/baro_alt_alert_cancel",
+                "cmd:laminar/c90/autopilot/switch/altSel100"
+              ],
+              "text": "The altitude knob sets the height the autopilot should climb or descend to. The altitude hold button keeps the aircraft at its present height. Altitude arm makes the autopilot level off at the chosen height.",
+              "context": "The pilot sets the height the controller gave, and the autopilot climbs there and stays. Altitude is the height above sea level."
+            },
+            {
+              "id": "ap-vertical-speed",
+              "name": "Vertical speed and pitch knobs",
+              "type": "knob",
+              "match": [
+                "cmd:sim/autopilot/vertical_speed",
+                "cmd:sim/autopilot/vertical_speed_up",
+                "cmd:sim/autopilot/vertical_speed_down",
+                "cmd:sim/autopilot/nose_up",
+                "cmd:sim/autopilot/nose_down",
+                "cmd:sim/autopilot/nose_up_pitch_mode",
+                "cmd:sim/autopilot/nose_down_pitch_mode",
+                "cmd:sim/autopilot/climb",
+                "cmd:sim/autopilot/descend"
+              ],
+              "text": "These controls set how fast the autopilot should climb or sink. In vertical speed mode the pilot chooses a climb rate, shown in feet per minute. The nose up and nose down keys or the wheel change it step by step.",
+              "context": "The pilot uses it for a steady climb or descent. The wheel or the keys change the value; it does not set a target height."
+            },
+            {
+              "id": "ap-speed",
+              "name": "Speed, level change and autothrottle",
+              "type": "button",
+              "match": [
+                "cmd:sim/autopilot/level_change",
+                "cmd:sim/autopilot/airspeed_up",
+                "cmd:sim/autopilot/airspeed_down",
+                "cmd:sim/autopilot/knots_mach_toggle",
+                "cmd:sim/autopilot/autothrottle_*",
+                "cmd:sim/autopilot/spd_intv",
+                "cmd:sim/autopilot/take_off_go_around"
+              ],
+              "text": "Level change makes the aircraft climb or descend to the set altitude while holding a set speed. The speed knob sets that speed, and the knots or Mach button changes its unit. The autothrottle is a system that moves the throttles by itself to hold the speed. TOGA means take-off and go-around power, one button for both.",
+              "context": "Airliners and jets use these every flight. The pilot lets the autothrottle handle the speed and takes manual control only for the landing."
+            },
+            {
+              "id": "ap-nav-approach",
+              "name": "NAV, approach, back course and GPS steering",
+              "type": "button",
+              "match": [
+                "cmd:sim/autopilot/NAV",
+                "cmd:sim/autopilot/approach",
+                "cmd:sim/autopilot/back_course",
+                "cmd:sim/autopilot/glide_slope",
+                "cmd:sim/autopilot/gpss",
+                "cmd:sim/autopilot/vnav"
+              ],
+              "text": "In NAV mode the autopilot follows a radio beam or the GPS route. In approach mode it follows the radio beams of an instrument landing system (ILS), which guides the aircraft along the runway line and down the glide path. Back course follows the beam from behind. GPSS steers by the GPS flight plan.",
+              "context": "The pilot arms these modes when approaching the airport in bad weather, and the autopilot flies the final approach. "
+            },
+            {
+              "id": "ap-extras",
+              "name": "Autopilot extras (wing leveler, bank limit, soft ride, override)",
+              "type": "button",
+              "match": [
+                "cmd:sim/autopilot/wing_leveler",
+                "cmd:sim/autopilot/return_to_level",
+                "cmd:sim/autopilot/bank_limit_*",
+                "cmd:sim/autopilot/soft_ride_toggle",
+                "cmd:sim/autopilot/override_*",
+                "cmd:sim/autopilot/priority_pb_*"
+              ],
+              "text": "These controls fine-tune the autopilot. The wing leveler just keeps the wings level and does not steer. The bank limit sets how steeply the autopilot may tilt the aircraft in turns. Soft ride makes it more gentle in turbulence. The override or priority buttons give control to one pilot's sidestick.",
+              "context": "The pilot uses them when the plain modes are not enough, for example in rough air."
+            },
+            {
+              "id": "yaw-damper",
+              "name": "Yaw damper switch",
+              "type": "switch",
+              "match": [
+                "cmd:sim/systems/yaw_damper_*",
+                "cmd:sim/systems/pitch_augmentation_toggle",
+                "cmd:sim/systems/roll_augmentation_toggle"
+              ],
+              "text": "This switch turns on the yaw damper, a helper that moves the rudder by itself to stop the nose from swaying left and right. On some military aircraft similar switches add steadiness around the other axes.",
+              "context": "Jets and larger aircraft tend to sway, so the pilot switches it on early. It makes the flight smoother for people on board."
+            }
+          ]
+        },
+        {
+          "id": "course-selection",
+          "name": "Course, bearing and navigation source",
+          "text": "These controls select the course to fly, which radio or GPS drives the course needle, and what the navigation display shows.",
+          "context": "The pilot sets the course of the beacon or runway line to fly, and the course needle then shows whether the aircraft is left or right of it.",
+          "src": "g1",
+          "controls": [
+            {
+              "id": "obs",
+              "name": "OBS course knob (omni bearing selector)",
+              "type": "knob",
+              "match": [
+                "cmd:sim/radios/obs?_*",
+                "cmd:sim/radios/obs_HSI_*",
+                "cmd:sim/radios/copilot_obs*",
+                "cmd:laminar/c90/avionics/switch/crs_*"
+              ],
+              "text": "This knob sets the course, the direction to or from a navigation beacon that the pilot wants to follow. The needle of the course instrument then shows if the aircraft is left or right of that line.",
+              "context": "On an approach the pilot sets the knob to the runway's course. The knob has a copilot version with a second HSI (the heading and course instrument) on airliners."
+            },
+            {
+              "id": "hsi-source",
+              "name": "HSI source and display selectors",
+              "type": "selector",
+              "match": [
+                "cmd:sim/autopilot/hsi_select*",
+                "cmd:sim/autopilot/hsi_toggle*",
+                "cmd:sim/autopilot/hsi_select_copilot*",
+                "cmd:laminar/c90/avionics/dial/crs_sensor_sel_*",
+                "cmd:laminar/c90/avionics/dial/nav_data_sel_*"
+              ],
+              "text": "This selector chooses the source for the course needle of the HSI: NAV 1, NAV 2 or the GPS. Related buttons switch the map to show GPS routes, radio stations or a preview.",
+              "context": "The pilot switches it to GPS when flying the GPS route and to NAV when flying a radio beam. The autopilot follows the chosen source."
+            },
+            {
+              "id": "dg-sync",
+              "name": "Directional gyro drift adjust",
+              "type": "knob",
+              "match": [
+                "cmd:sim/instruments/DG_sync_*",
+                "cmd:sim/instruments/free_gyro*",
+                "cmd:sim/instruments/slave_gyro",
+                "cmd:laminar/c90/fltInst/ccu65/switch/slave_mode",
+                "cmd:laminar/CitX/ahrs/*"
+              ],
+              "text": "This knob turns the compass card of the directional gyro, an instrument that holds a heading without a magnet. Over time it drifts, so the knob puts it back in line with the magnetic compass. Related switches choose slaved mode, where the system corrects itself, or free mode.",
+              "context": "The pilot checks it against the compass every now and then in flight and corrects it."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "flight-controls",
+      "where": "other",
+      "name": "Flight controls and trim",
+      "text": "These controls steer the aircraft: the yoke or stick, the pedals, the flaps and the trim wheels. In a helicopter, the cyclic, the collective and the pedals take their place.",
+      "panels": [
+        {
+          "id": "stick-yoke-pedals",
+          "name": "Yoke, stick, pedals and helicopter controls",
+          "text": "The yoke or stick tilts the aircraft up, down and sideways. The pedals turn the nose left and right. A helicopter has a cyclic stick and a collective lever instead.",
+          "context": "The pilot flies with these controls all the time. The game shows them as parts of the 3D cockpit that move, and usually also lets a joystick drive them.",
+          "src": "g1",
+          "controls": [
+            {
+              "id": "yoke-stick",
+              "name": "Yoke / stick (pitch and roll)",
+              "type": "axis",
+              "match": [
+                "cmd:sim/cockpit2/controls/yoke_pitch_ratio*",
+                "cmd:sim/cockpit2/controls/yoke_roll_ratio*"
+              ],
+              "text": "Pulling the yoke or stick back lifts the nose, pushing it forward lowers the nose. Moving it left or right tilts the wings that way, so the aircraft turns. Some aircraft have a second set for the copilot.",
+              "context": "The pilot moves the stick gently all through the flight. A sidestick sits at the side and works the same way."
+            },
+            {
+              "id": "helicopter-collective",
+              "name": "Collective (helicopter)",
+              "type": "lever",
+              "match": [
+                "cmd:sim/cockpit2/engine/actuators/prop_ratio*"
+              ],
+              "text": "The collective is the lever at the left of a helicopter pilot. Pulling it up tilts all rotor blades together, so the helicopter climbs. Lowering it makes the helicopter sink.",
+              "context": "The pilot uses it with the throttle and the pedals: more lift needs more power, and more power turns the nose, which the pedals correct."
+            },
+            {
+              "id": "cyclic-settings",
+              "name": "Cyclic friction and trim (helicopter)",
+              "type": "knob",
+              "match": [
+                "cmd:laminar/r22/cyclic_friction_ratio",
+                "cmd:laminar/r22/cyclic_trim_ratio"
+              ],
+              "text": "The friction knob makes the cyclic stiffer or looser, so it holds its place. The trim control keeps the stick where it is, so the pilot can let go for a moment.",
+              "context": "The pilot sets the friction so the cyclic does not drift. Trim lowers the effort in a steady flight."
+            },
+            {
+              "id": "rotor-brake",
+              "name": "Rotor brake",
+              "type": "handle",
+              "match": [
+                "cmd:sim/cockpit2/switches/rotor_brake_ratio",
+                "cmd:sim/flight_controls/rotor_brake_toggle"
+              ],
+              "text": "This control pulls the brake on the main rotor, the big spinning blade of the helicopter. It makes the rotor stop faster after the engine is off and holds it still when parked.",
+              "context": "The pilot uses it only on the ground after shutting down."
+            },
+            {
+              "id": "wing-sweep",
+              "name": "Wing sweep controls (swing wing)",
+              "type": "lever",
+              "match": [
+                "cmd:laminar/f14/fltc/*sweep*",
+                "cmd:laminar/f14/fltc/*Sweep*"
+              ],
+              "text": "The F-14 can swing its wings back for high speed and forward for slow flight. These controls choose how the wing sweep is controlled and give an emergency way to move the wings.",
+              "context": "The mode switch has the positions AUTO, FWD (forward), AFT and BOMB. In AUTO the computer picks the sweep for the speed. The emergency handle takes over when the computer fails."
+            },
+            {
+              "id": "parachute-release",
+              "name": "Parachute and cable release",
+              "type": "handle",
+              "match": [
+                "cmd:sim/flight_controls/deploy_parachute",
+                "cmd:laminar/F4/parachute_deploy_handle",
+                "cmd:sim/flight_controls/glider_all_release"
+              ],
+              "text": "These handles release something. In the Cirrus aircraft the handle opens a rescue parachute for the whole aircraft. The F-4 has a handle with the tooltip Parachute Deploy. In a glider, the cable release handle lets go of the tow rope.",
+              "context": "A glider pilot pulls the release handle after the tow plane has brought the glider up. The Cirrus rescue parachute is for emergencies only, for example after a total loss of control or engine failure far from any airfield."
+            },
+            {
+              "id": "control-split",
+              "name": "Pilot / copilot control swap and latches",
+              "type": "switch",
+              "match": [
+                "cmd:laminar/r22/cmd_yoke_pilot_copilot_toggle",
+                "cmd:laminar/CitX/controls/*"
+              ],
+              "text": "These controls change how the flight controls of the two seats work together. One switches the control between the pilot and the copilot side, another latches the ailerons or splits the pilot and copilot controls apart.",
+              "context": "They matter only in rare cases, such as a jammed control. The tooltip names the exact function."
+            }
+          ]
+        },
+        {
+          "id": "trim-controls",
+          "name": "Trim",
+          "text": "Trim is a set of small adjustments so the aircraft flies straight without the pilot holding the stick. There is a trim for pitch (nose up and down), for roll and for yaw.",
+          "context": "The pilot trims the aircraft after each change of speed or power, until the stick feels light. Many pilots reach it by thumb buttons on the yoke or a wheel next to the seat.",
+          "src": "g1",
+          "controls": [
+            {
+              "id": "elevator-trim",
+              "name": "Elevator (pitch) trim wheel / switch",
+              "type": "wheel",
+              "match": [
+                "cmd:sim/cockpit2/controls/elevator_trim",
+                "cmd:sim/flight_controls/pitch_trim_*",
+                "cmd:laminar/c90/fltctrl/switch/elev_trim_control",
+                "cmd:laminar/md82/controls/elevator_trim_handle"
+              ],
+              "text": "This wheel or switch tilts the tail so the nose stays up or down by itself. Rolling the wheel forward trims the nose down, backward trims it up. On the King Air the tooltip speaks of a switch that turns the trim on or off.",
+              "context": "The pilot trims after each change of speed. A well-trimmed aircraft flies straight with a light hand."
+            },
+            {
+              "id": "aileron-trim",
+              "name": "Aileron (roll) trim",
+              "type": "switch",
+              "match": [
+                "cmd:sim/flight_controls/aileron_trim_*"
+              ],
+              "text": "This control gently tilts the wings left or right, so the aircraft does not roll to one side by itself. It has a centre position that resets it.",
+              "context": "The pilot uses it if the aircraft always wants to turn, for example when fuel is heavier on one side."
+            },
+            {
+              "id": "rudder-trim",
+              "name": "Rudder (yaw) trim",
+              "type": "switch",
+              "match": [
+                "cmd:sim/flight_controls/rudder_trim_*",
+                "cmd:sim/cockpit2/controls/rudder_trim"
+              ],
+              "text": "This control pushes the rudder a little to one side and holds it there. It stops the nose from swinging left or right without foot pressure. It can be reset to the centre.",
+              "context": "The pilot uses it if one engine is stronger than the other or in a long steady climb."
+            }
+          ]
+        },
+        {
+          "id": "flaps-speedbrakes",
+          "name": "Flaps and speed brakes",
+          "text": "Flaps are the parts of the wing that slide out to give more lift at low speed. Speed brakes (or spoilers) are panels that open into the wind to slow the aircraft down.",
+          "context": "The pilot sets flaps by steps for take-off and landing. Speed brakes help descend faster and stop on the runway.",
+          "src": "g1",
+          "controls": [
+            {
+              "id": "flaps",
+              "name": "Flap handle / switch",
+              "type": "lever",
+              "match": [
+                "cmd:sim/flight_controls/flaps_*",
+                "cmd:sim/cockpit2/controls/flap_ratio",
+                "cmd:sim/cockpit2/controls/flap_handle_request_ratio",
+                "cmd:laminar/L5/flap_handle",
+                "cmd:laminar/CitX/flaps_slats/*",
+                "cmd:laminar/A333/controls/*",
+                "cmd:laminar/B738/handles/*",
+                "cmd:laminar/md82/controls/flap_detents"
+              ],
+              "text": "This lever or switch sets the flaps. Moving it down extends the flaps in steps, moving it up pulls them back in. More flaps give more lift and more drag, which allows slow flying. Jets also have slats on the front of the wing.",
+              "context": "Flaps are partly extended for take-off, fully for landing and fully retracted in cruise."
+            },
+            {
+              "id": "speedbrakes",
+              "name": "Speed brake / spoiler handle",
+              "type": "lever",
+              "match": [
+                "cmd:sim/cockpit2/controls/speedbrake_ratio",
+                "cmd:laminar/B738/flt_ctrls/*",
+                "cmd:laminar/F4/speedbrakes_sw_*",
+                "cmd:laminar/f14/fltc/speed_brake*",
+                "cmd:laminar/md82/controls/speedbrake_detents"
+              ],
+              "text": "This handle or switch opens or closes the speed brakes, panels on the wings or the body. They add drag to slow the aircraft down. Pulled back they open. On airliners an ARM position makes the spoilers pop up by themselves at touchdown.",
+              "context": "The pilot uses them in descent, and they also help stop the aircraft after landing."
+            }
+          ]
+        },
+        {
+          "id": "hydraulics-panel",
+          "name": "Hydraulic pumps",
+          "text": "Hydraulic oil under high pressure moves the heavy parts of an aircraft: the landing gear, the flaps and the control surfaces. These switches run the pumps that make the pressure.",
+          "context": "Small aircraft have no hydraulics or only a small system. Larger aircraft have several systems, so one failure does not take out everything.",
+          "src": "g1",
+          "controls": [
+            {
+              "id": "hydraulics",
+              "name": "Hydraulic pumps",
+              "type": "switch",
+              "match": [
+                "cmd:sim/flight_controls/hydraulic_*",
+                "cmd:sim/cockpit2/switches/electric_hydraulic_pump_on",
+                "cmd:laminar/A330/buttons/hyd/*",
+                "cmd:laminar/CitX/hydraulics/*"
+              ],
+              "text": "These switches turn on the pumps that push hydraulic oil, an oil under high pressure that moves heavy parts such as the gear, the flaps and the control surfaces. Engines drive some pumps, electric motors drive the others. Airliners show colours for separate systems, such as green, blue and yellow.",
+              "context": "The pilot switches on the electric pumps for the start-up or when a system loses pressure. A stand-by pump or the RAT (a small propeller that drops out in an emergency) can deliver emergency pressure."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "gear-brakes",
+      "where": "other",
+      "name": "Landing gear and brakes",
+      "text": "These controls raise and lower the wheels, steer the nose wheel on the ground and work the brakes.",
+      "panels": [
+        {
+          "id": "landing-gear",
+          "name": "Landing gear",
+          "text": "The landing gear is the wheels and their legs. They fold away in flight and are lowered for landing.",
+          "context": "The pilot lowers the gear on the approach and checks three green lights or a gauge that tell the wheels are down and locked. Aircraft with fixed wheels have no handle.",
+          "src": "g1",
+          "controls": [
+            {
+              "id": "gear-handle",
+              "name": "Landing gear handle",
+              "type": "handle",
+              "match": [
+                "cmd:sim/cockpit2/controls/gear_handle_animation",
+                "cmd:sim/flight_controls/landing_gear_up",
+                "cmd:sim/flight_controls/landing_gear_down",
+                "cmd:laminar/b58/gear/*",
+                "cmd:laminar/c90/gear/*",
+                "cmd:laminar/F4/gear_handle",
+                "cmd:laminar/s76/controls/landing_gear_*",
+                "cmd:laminar/sf50/controls/landing_gear_detents",
+                "cmd:laminar/CitX/landing_gear/*",
+                "cmd:laminar/md82/controls/landing_gear_handle"
+              ],
+              "text": "This handle raises and lowers the landing gear. Up pulls the wheels into the aircraft, down puts them out. Many handles have a notch (detent) that holds them in place.",
+              "context": "The pilot raises the gear after take-off and lowers it before landing. A warning horn sounds if the throttle is pulled back with the gear still up."
+            },
+            {
+              "id": "gear-override",
+              "name": "Gear emergency and override",
+              "type": "handle",
+              "match": [
+                "cmd:sim/flight_controls/landing_gear_downlock_release",
+                "cmd:sim/flight_controls/landing_gear_emer_on",
+                "cmd:sim/flight_controls/pump_gear",
+                "cmd:laminar/f14/gear/*",
+                "cmd:laminar/n844x/*gear_lock*",
+                "cmd:laminar/A333/switches/gear/*"
+              ],
+              "text": "These controls help when the gear does not move normally. An emergency handle or pump lowers the gear by another way, for example by hand. The downlock override lets the pilot raise the gear on the ground. The locks hold the wheel legs.",
+              "context": "They are for failures only. The pilot follows the emergency checklist."
+            },
+            {
+              "id": "tailhook",
+              "name": "Arresting hook (tailhook) handle",
+              "type": "handle",
+              "match": [
+                "cmd:laminar/F4/tailhook_deploy_handle",
+                "cmd:laminar/f14/mnp/*",
+                "cmd:laminar/f14/acft/*"
+              ],
+              "text": "This handle lowers the arresting hook, a hook at the tail of a navy jet that catches a cable on an aircraft carrier. The F-14 also has a bypass switch for the hook.",
+              "context": "The pilot lowers it before landing on a carrier. On a land runway it is rarely used."
+            }
+          ]
+        },
+        {
+          "id": "wheel-brakes",
+          "name": "Brakes and nosewheel steering",
+          "text": "These controls hold the aircraft in place and slow it on the ground. The nose wheel can steer the aircraft on the ground, like the steering wheel of a car.",
+          "context": "The pilot uses the parking brake when parked and the toe brakes at the top of the pedals when taxiing and landing.",
+          "src": "g1",
+          "controls": [
+            {
+              "id": "parking-brake",
+              "name": "Parking brake",
+              "type": "handle",
+              "match": [
+                "cmd:sim/cockpit2/controls/parking_brake_ratio",
+                "cmd:sim/flight_controls/brakes_toggle_max",
+                "cmd:sim/flight_controls/park_brake_valve_*",
+                "cmd:laminar/CitX/brakes/park_handle",
+                "cmd:laminar/A333/switch/parking_brake_*"
+              ],
+              "text": "This handle or switch holds the brakes on so the aircraft cannot roll. Pulling it on locks the wheels; releasing it frees them. Some tooltips name a brake valve, which is the part the handle opens.",
+              "context": "The pilot sets it when parked and releases it before taxiing. A forgotten parking brake can cause trouble at take-off."
+            },
+            {
+              "id": "wheel-brake",
+              "name": "Wheel brakes",
+              "type": "pedal",
+              "match": [
+                "cmd:sim/cockpit2/controls/wheel_brake_ratio"
+              ],
+              "text": "This control presses the brakes on the wheels. It is normally worked with the top of the rudder pedals. Pressing harder brakes harder.",
+              "context": "The pilot brakes to slow down after landing and to turn on the spot when taxiing."
+            },
+            {
+              "id": "autobrake",
+              "name": "Autobrake selector",
+              "type": "selector",
+              "match": [
+                "cmd:sim/flight_controls/brakes_*_auto",
+                "cmd:sim/cockpit2/switches/auto_brake_level"
+              ],
+              "text": "This selector sets how hard the brakes will work by themselves after landing, or during an aborted take-off. Levels run from low to maximum, and RTO means rejected take-off.",
+              "context": "The pilot arms it before take-off and before landing so the brakes act the moment the wheels touch down."
+            },
+            {
+              "id": "nosewheel-steering",
+              "name": "Nosewheel steering",
+              "type": "switch",
+              "match": [
+                "cmd:sim/flight_controls/nwheel_steer_*",
+                "cmd:sim/flightmodel2/gear/tire_steer_actual_deg*"
+              ],
+              "text": "This switch or button turns the nose wheel steering on or off. When it is on, the pedals or a tiller steer the front wheel on the ground. The second one shows the angle of the front wheel.",
+              "context": "The pilot uses it for taxiing. It is turned off for a tow with a vehicle."
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
