@@ -183,6 +183,95 @@ public sealed class RelationBuilderTests : IAsyncLifetime
         Assert.DoesNotContain(vm.BuilderSuggestions, s => s.Id == "d3033");
     }
 
+    // Opening another relation: the last one's suggestions, "Looks wrong" entries, dismissed actions and function chip go
+    // at once (the engine run for the new one takes a while), and a row left over from it never acts on the new one
+    // (the user saw 'UFC 3 Key' buttons offered under 'Pitch' while its suggestions were still loading).
+    [Fact]
+    public async Task SwitchingRelations_NeverShowsOrAppliesTheLastRelationsSuggestions()
+    {
+        BuilderFakeEngine fake = new();
+        MainWindowViewModel vm = await CreateVmAsync(fake);
+        await OpenAsync(vm, "Flare");
+        BuilderSuggestionItem stale = vm.BuilderSuggestions.First(s => s.Game == "FalconBMS");
+        RelationMisfitItem staleMisfit = Assert.Single(vm.RelationMisfits);
+        Assert.NotEmpty(vm.BuilderFunctionText);
+
+        fake.GateRelation = "Chaff";
+        fake.SuggestGate = new TaskCompletionSource(TaskCreationOptions.RunContinuationsAsynchronously);
+        vm.SelectedRelation = vm.Relations.Single(r => r.Name == "Chaff");
+        await WaitForAsync(() => vm.IsBuilderSuggestLoading && vm.BuilderRelationName == "Chaff");
+        Assert.Empty(vm.BuilderSuggestions);
+        Assert.Empty(vm.RelationMisfits);
+        Assert.Empty(vm.BuilderDismissed);
+        Assert.Equal(string.Empty, vm.BuilderFunctionText);
+        Assert.Equal("Suggested for this relation", vm.BuilderSuggestedTabLabel);
+        Assert.Equal(0, vm.BuilderMissingCount);
+
+        fake.SuggestGate.SetResult();
+        await WaitForAsync(() => !vm.IsBuilderSuggestLoading && !vm.IsBusy);
+        fake.Calls.Clear();
+        await vm.AddBuilderSuggestionCommand.ExecuteAsync(stale);
+        await vm.DismissBuilderSuggestionCommand.ExecuteAsync(stale);
+        await vm.MoveMisfitCommand.ExecuteAsync(staleMisfit);
+        Assert.DoesNotContain(fake.Calls, c => AxisTuningTests.Seq(c, "relations", "suggest", "apply"));
+    }
+
+    // One recommended action per game, ticked; its alternatives collapsed under it, each with how it differs, never
+    // ticked (not even by the section's tick while collapsed); MSFS shown by the sim's menu name with the event id small.
+    [Fact]
+    public async Task Suggestions_RecommendedFirstAlternativesCollapsedUnderIt()
+    {
+        BuilderFakeEngine fake = new();
+        fake.AddPitchRelation();
+        MainWindowViewModel vm = await CreateVmAsync(fake);
+        await OpenAsync(vm, "Pitch");
+        SuggestionSectionItem games = vm.BuilderSuggestionSections.Single(s => s.Title == "Games not in this relation yet");
+        List<string> order = games.Items.Select(i => i.Id).ToList();
+        BuilderSuggestionItem raw = games.Items.Single(i => i.Id == "PitchAxisRaw");
+        BuilderSuggestionItem alternate = games.Items.Single(i => i.Id == "PitchAxisAlternate");
+        BuilderSuggestionItem landing = games.Items.Single(i => i.Id == "PitchAxis_Landing");
+        Assert.True(raw.IsRecommended && raw.IsChecked);
+        Assert.Equal(order.IndexOf("PitchAxisRaw") + 1, Math.Min(order.IndexOf("PitchAxisAlternate"), order.IndexOf("PitchAxis_Landing")));
+        Assert.Equal(2, raw.AlternativeItems.Count);
+        Assert.Equal("+2 other actions in this game", raw.AlternativesLabel);
+        Assert.All(new[] { alternate, landing }, a => Assert.True(a.IsAlternative && !a.IsShown && !a.IsChecked && a.HasVariant));
+        Assert.Equal("Differs: used in the game's landing mode", landing.VariantText);
+
+        BuilderSuggestionItem elevator = games.Items.Single(i => i.Id == "KEY_AXIS_ELEVATOR_SET");
+        Assert.Equal("Elevator Axis", elevator.DisplayTitle);
+        Assert.Equal("Pitch axis · KEY_AXIS_ELEVATOR_SET", elevator.FunctionAndId);
+        Assert.Equal("Recommended for planes", elevator.RecommendedLabel);
+        Assert.Equal("Control the elevator axis.", elevator.Explanation);
+        BuilderSuggestionItem cyclic = games.Items.Single(i => i.Id == "KEY_AXIS_CYCLIC_LONGITUDINAL_SET");
+        Assert.True(cyclic.IsRecommended && cyclic.IsChecked && !cyclic.IsAlternative);
+        Assert.Equal("Recommended for helicopters", cyclic.RecommendedLabel);
+
+        // The section's tick takes what is shown; the collapsed alternatives stay unticked.
+        games.IsChecked = false;
+        games.IsChecked = true;
+        Assert.False(alternate.IsChecked);
+        Assert.True(raw.IsChecked);
+        raw.ToggleAlternativesCommand.Execute(null);
+        Assert.True(alternate.IsShown && landing.IsShown);
+        Assert.Equal("Hide the other actions", raw.AlternativesLabel);
+        Assert.Equal(3, vm.BuilderTickedCount);
+    }
+
+    // A relation opened while a tool covers the panel (Auto Group): nothing of the last relation stays in the panel.
+    [Fact]
+    public async Task OpeningARelationUnderATool_ClearsTheLastRelationsSuggestions()
+    {
+        BuilderFakeEngine fake = new();
+        MainWindowViewModel vm = await CreateVmAsync(fake);
+        await OpenAsync(vm, "Flare");
+        Assert.NotEmpty(vm.BuilderSuggestions);
+        vm.CurrentStage = UiStage.Binds;
+        vm.SelectedRelation = vm.Relations.Single(r => r.Name == "Chaff");
+        Assert.Empty(vm.BuilderSuggestions);
+        Assert.Empty(vm.RelationMisfits);
+        Assert.Equal(string.Empty, vm.BuilderFunctionText);
+    }
+
     [Fact]
     public async Task Suggestions_MisfitMovesToTheRelationOfItsFunction()
     {
@@ -545,6 +634,27 @@ internal sealed class BuilderFakeEngine : IEngineCliClient
     // A second high suggestion (several DCS aircraft) for "Add all".
     public bool ExtraHigh { get; set; }
 
+    // An axis relation "Pitch" whose suggestions carry the recommended action per game (relations suggest Recommended,
+    // Variant, Group, Readable, Explanation).
+    public void AddPitchRelation() => relations.Add(("Pitch", true, string.Empty, [("EliteDangerous", "RollAxisRaw", "EliteDangerous")]));
+
+    private static string Choice(string game, string id, string title, string readable, bool recommended, string recommendedFor, string variant, string group, int alternatives, string explanation) =>
+        "{\"Game\":\"" + game + "\",\"Id\":\"" + id + "\",\"Title\":\"" + title + "\",\"IsAxis\":true,\"Planes\":[\"" + game + "\"],\"Confidence\":\"high\",\"Score\":90," +
+        "\"Source\":\"function map\",\"Why\":\"Same function: Pitch axis\",\"Reasons\":[],\"InOtherRelations\":[],\"Missing\":\"game\",\"NewGame\":true,\"NewPlanes\":[\"" + game + "\"]," +
+        "\"Recommended\":" + (recommended ? "true" : "false") + ",\"RecommendedFor\":\"" + recommendedFor + "\",\"Variant\":\"" + variant + "\",\"Group\":\"" + group + "\"," +
+        "\"Alternatives\":" + alternatives + ",\"Readable\":\"" + readable + "\",\"FunctionName\":\"Pitch axis\",\"Explanation\":\"" + explanation + "\",\"ExplanationSource\":\"game\"}";
+
+    private static string PitchSuggestions() =>
+        "{\"Relation\":\"Pitch\",\"Slot\":\"pitch\",\"SlotName\":\"Pitch\",\"IsAxis\":true,\"Functions\":[{\"Slot\":\"pitch\",\"Name\":\"Pitch\",\"Weight\":1,\"Reference\":\"\"}],\"Suggestions\":[" +
+        string.Join(",",
+            Choice("EliteDangerous", "PitchAxisAlternate", "Pitch Axis (Alternate)", "Pitch Axis (Alternate)", false, "", "the game's alternate set of this control", "EliteDangerous:PitchAxisRaw:EliteDangerous", 0, ""),
+            Choice("EliteDangerous", "PitchAxisRaw", "Pitch Axis", "Pitch Axis", true, "", "", "EliteDangerous:PitchAxisRaw:EliteDangerous", 2, ""),
+            Choice("EliteDangerous", "PitchAxis_Landing", "Pitch Axis (Landing)", "Pitch Axis (Landing)", false, "", "used in the game's landing mode", "EliteDangerous:PitchAxisRaw:EliteDangerous", 0, ""),
+            Choice("MSFS2024", "KEY_AXIS_ELEVATOR_SET", "AXIS ELEVATOR SET", "Elevator Axis", true, "for planes", "", "MSFS2024:KEY_AXIS_ELEVATOR_SET:MSFS2024", 1, "Control the elevator axis."),
+            Choice("MSFS2024", "KEY_ELEVATOR_SET", "Elevator Set", "Elevator Set", false, "", "another action for the same thing; the game does not say how it differs", "MSFS2024:KEY_AXIS_ELEVATOR_SET:MSFS2024", 0, ""),
+            Choice("MSFS2024", "KEY_AXIS_CYCLIC_LONGITUDINAL_SET", "Set Cyclic Longitudinal Axis", "Set Cyclic Longitudinal Axis", true, "for helicopters", "", "MSFS2024:KEY_AXIS_CYCLIC_LONGITUDINAL_SET:MSFS2024", 0, "")) +
+        "],\"Misfits\":[],\"Dismissed\":[],\"Relations\":[],\"Warnings\":[],\"Errors\":[]}";
+
     private readonly HashSet<string> added = new(StringComparer.OrdinalIgnoreCase);
     private readonly HashSet<string> dismissed = new(StringComparer.OrdinalIgnoreCase) { "Arma3:LaunchCM:Arma3" };
     private readonly List<(string Name, bool Axis, string Bind, List<(string Game, string Id, string Planes)> Nodes)> relations =
@@ -555,18 +665,25 @@ internal sealed class BuilderFakeEngine : IEngineCliClient
         ("Empty one", false, string.Empty, []),
     ];
 
-    public Task<EngineCommandResult> RunAsync(string engineExePath, IReadOnlyList<string> arguments, CancellationToken cancellationToken = default)
+    // "relations suggest <GateRelation>" waits for this (an engine run that takes a while).
+    public string GateRelation { get; set; } = string.Empty;
+
+    public TaskCompletionSource? SuggestGate { get; set; }
+
+    public async Task<EngineCommandResult> RunAsync(string engineExePath, IReadOnlyList<string> arguments, CancellationToken cancellationToken = default)
     {
         lock (Calls)
             Calls.Add(arguments.ToArray());
-        return Task.FromResult(new EngineCommandResult
+        if (SuggestGate != null && AxisTuningTests.Seq(arguments, "relations", "suggest", GateRelation))
+            await SuggestGate.Task;
+        return new EngineCommandResult
         {
             ExitCode = 0,
             Duration = TimeSpan.FromMilliseconds(1),
             StandardOutput = Output(arguments),
             StandardError = string.Empty,
             Arguments = arguments.ToArray()
-        });
+        };
     }
 
     private static string After(IReadOnlyList<string> args, string word) => args[args.ToList().IndexOf(word) + 1];
@@ -628,6 +745,8 @@ internal sealed class BuilderFakeEngine : IEngineCliClient
         if (AxisTuningTests.Seq(args, "relations", "suggest"))
         {
             string name = After(args, "suggest");
+            if (name == "Pitch")
+                return PitchSuggestions();
             if (name != "Flare" && name != "Flares")
                 return "{\"Relation\":\"" + name + "\",\"Slot\":\"\",\"SlotName\":\"\",\"Functions\":[],\"Suggestions\":[],\"Misfits\":[],\"Dismissed\":[],\"Relations\":[],\"Warnings\":[],\"Errors\":[]}";
             List<string> rows =

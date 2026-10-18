@@ -376,11 +376,11 @@ pictures, seats, a shared guide and German, the pages, the page's selection and 
 ## Pictures from your games
 
 **Build pictures from my games** on the Cockpits page (or `engine cockpits pictures build`) draws the cockpits of the
-games installed on this PC from the games' own files (only files stored in plain or openly documented formats; nothing
-encrypted or obfuscated is decrypted). They are kept with the game data (`<data>\GameData\CockpitPictures\<game>\<aircraft>`)
-and are never part of the repository; the maintainer's sets are offered as picture packs (see "Picture packs"). Games whose
-models are encrypted get screenshots taken in the game instead (MSFS 2024, see below). Wherever a variant's game has
-pictures, the manual pages show them in place of JoyPro's drawings:
+games installed on this PC from the games' own files (the files listed per game below, read only). They are kept with
+the game data (`<data>\GameData\CockpitPictures\<game>\<aircraft>`) and are never part of the repository; the sets made
+for JoyPro's releases are offered as picture packs (see "Picture packs"). For MSFS 2024 the pictures are screenshots
+taken in the sim (see below). Wherever a variant's game has pictures, the manual pages show them in place of JoyPro's
+drawings:
 
 - **Cockpit overview**: the whole cockpit from behind the pilot's head. Its numbered callouts lead to the panels and
   the grips.
@@ -404,15 +404,15 @@ yoke and throttle datarefs (X-Plane).
 
 | Game | What is read | State (2026-10-17) |
 |---|---|---|
-| DCS World | `Mods\aircraft\*`: entry.lua (aircraft, cockpit folder), mainpanel_init.lua (model, grip arguments), clickabledata.lua, Views.lua (seats, eye points), the cockpit EDM and its textures (DDS in zip archives) | 48 cockpits on the maintainer's PC (about 1,900 pictures, 15,000 callouts). Not complete: F-14BU (no clickable data yet) and SA342 (no cockpit model in the files); some C-130J, OH-58D and F-14 textures are not found (flat colour) |
-| X-Plane 12 | `Aircraft\**\*.acf` (objects, pilot's eye) and the OBJ8 objects with their textures (DDS and PNG both top row first) | 24 aircraft (every one in Aircraft). The displays are drawn by the sim at run time (black in the pictures) |
-| MSFS 2020 | the packages of `InstalledPackagesPath` (UserCfg.opt) that are not encrypted (no `.fsarchive`): `model*\model.cfg` `interior=` -> the interior xml (its first LOD's glTF, its behaviours) -> the glTF (Asobo's optimised format: interleaved vertices, half-float texture coordinates, primitives sharing one index buffer by `ASOBO_primitive` StartIndex / BaseVertexIndex, `MSFT_texture_dds`), the textures (texture.cfg fallbacks), cameras.cfg + flight_model.cfg (eye = reference datum + eyepoint + the pilot camera's offset) | 57 interiors (all open ones of the maintainer's packages; about 730 pictures, 7,300 callouts). Callouts on the parts named by function (`ELECTRICAL_Switch_Battery_Master`, older models `DEICESYSTEM_SWITCH_AIRFRAME`), with the behaviour template and its events where the xml names the node; the yoke (`HANDLING_Yoke_1`, `YOKE_LEFT`) and throttle are grips. Encrypted packages and the sim itself (not installed on the maintainer's PC) are skipped |
-| MSFS 2024 | models are in encrypted packages (`.fsc`, `.fsarchive`): not read. Screenshots in the sim instead: `tools\e2e\games\Msfs2024CockpitShots.ps1` (unattended; SimConnect through the sim's own client library `SimConnect_internal.dll`: EnumerateSimObjectsAndLiveries, FlightSave/FlightLoad to swap the aircraft at Innsbruck, CAMERA VIEW TYPE AND INDEX for the pilot's view and every instrument view, EnumerateInputEvents) | screenshots of every aircraft family (overview + instrument views, the HUD cropped away); the list on the overview is the aircraft's own input events (`ELECTRICAL_Battery_1`), without places (they cannot be derived honestly from a screenshot). Only via picture packs or the e2e script, not from the Cockpits page |
+| DCS World | `Mods\aircraft\*`: entry.lua (aircraft, cockpit folder), `Entry\Views.lua` where a module keeps it there, mainpanel_init.lua (model, grip arguments), clickabledata.lua, Views.lua (seats, eye points), the cockpit EDM and its textures (DDS in zip archives, also under `CoreMods\aircraft\<module>`) | 48 cockpits on the test PC (about 1,900 pictures, 15,000 callouts). Not complete: F-14BU (no clickable data yet) and SA342 (no cockpit model in the files); the textures of the C-130J, F-14 and OH-58D are in `CoreMods\aircraft\<module>` |
+| X-Plane 12 | `Aircraft\**\*.acf` (objects, pilot's eye) and the OBJ8 objects with their textures (DDS and PNG both top row first; the figures (pilot, crew and passenger objects, also in `crew\`/`pilot\` folders) left out, the pilot's panels kept) | 23 aircraft (every one in Aircraft; an AI-only `_AI` copy is left out). The displays are drawn by the sim at run time (black in the pictures) |
+| MSFS 2020 | the packages of `InstalledPackagesPath` (UserCfg.opt) without `.fsarchive` files: `model*\model.cfg` `interior=` -> the interior xml (its first LOD's glTF, its behaviours) -> the glTF (Asobo's optimised format: interleaved vertices, half-float texture coordinates, primitives sharing one index buffer by `ASOBO_primitive` StartIndex / BaseVertexIndex, `MSFT_texture_dds`), the textures (texture.cfg fallbacks), cameras.cfg + flight_model.cfg (eye = reference datum + eyepoint + the pilot camera's offset) | 57 interiors (every readable one of the test PC's packages; about 730 pictures, 7,300 callouts). Callouts on the parts named by function (`ELECTRICAL_Switch_Battery_Master`, older models `DEICESYSTEM_SWITCH_AIRFRAME`), with the behaviour template and its events where the xml names the node; the yoke (`HANDLING_Yoke_1`, `YOKE_LEFT`) and throttle are grips. Packages with `.fsarchive` files are not read; the sim itself is not installed on the test PC |
+| MSFS 2024 | the models are not read (the aircraft packages hold `.fsc` / `.fsarchive` files). Screenshots in the sim instead: `tools\e2e\games\Msfs2024CockpitShots.ps1` (unattended; SimConnect through the sim's own client library `SimConnect_internal.dll`: EnumerateSimObjectsAndLiveries, FlightSave/FlightLoad to swap the aircraft at Innsbruck, CAMERA VIEW TYPE AND INDEX for the pilot's view and every instrument view, EnumerateInputEvents) | screenshots of every aircraft family (overview + instrument views, the HUD cropped away); the list on the overview is the aircraft's own input events (`ELECTRICAL_Battery_1`), without places (they cannot be derived honestly from a screenshot). Only via picture packs or the e2e script, not from the Cockpits page |
 | Nuclear Option | `NuclearOption_Data\resources.assets` (plain Unity 2022.3 data, JoyPro's own read-only reader): the aircraft prefabs' cockpit objects (interior, stick, throttle or collective, screens), the pilot's helmet camera as the eye, the textures from `resources.assets.resS`, the unit names of the aircraft definitions and the game's Rewired action list | 13 aircraft (every flyable one; 46 pictures, about a minute). The cockpits have no separate switches (painted on), so the callouts name the grips and the screens only; each grip page lists the game's "Flight Controls" actions (they bind to any button) |
 | IL-2 Great Battles | `data\*.gtp` (plain stored archives, read only): the plane scripts (`luascripts/worldobjects/planes/*.txt`: name, cockpit model, pilot seat as the eye), the cockpit `-c.mgm` models (JoyPro's own reader: node tree, geometry, skinned parts, the animations that tie the argument numbers to the parts), `-c.arg` argument names, DDS textures, the input actions and their English names (`swf/il2`) | 117 aircraft with a pilot's cockpit (about 1,070 pictures, 2,200 callouts; the 66 catalog variants find their set). Callouts: the parts the control arguments move, named by the game's input action where the argument is plainly that control (gear, flaps, throttle, mixture ...), else by the argument's own name. Not complete: CG-4A and Pe-2 ser.87 overviews are wrong (frames the reader does not follow), a few WWI/transport sticks are not found, linkage rods the game places at run time are left out |
-| IL-2 Korea | not read: the archive directories are obfuscated and `Scripts.gtp`, `Graphics2.gtp`, `Interface.gtp` (`S16E!`) are encrypted; the plain archives (`S16R!`) hold no cockpit model (searched for the cockpit node and texture names, nothing decoded). Readable on disk: `data\input\general.actions` (JSON) and the mission files | skipped; in-game screenshots (Quick Mission) would be the way, only while the PC is idle |
+| IL-2 Korea | not read: JoyPro reads none of its archives with cockpit models (the archives it can read, `S16R!`, hold no cockpit model; searched for the cockpit node and texture names). Readable on disk: `data\input\general.actions` (JSON) and the mission files | skipped; in-game screenshots (Quick Mission) would be the way, only while the PC is idle |
 | Star Citizen | the game's data files, read only and never while the game runs: ship entities, seats, dashboards and grips, their interaction points (named with the game's own texts) and the flight actions of the default profile | 149 cockpits; big ships show the dashboard, seat and grips; some ships have no stick or throttle picture yet |
-| War Thunder | `content.hq\pkg_cockpits\res`, read only and without de-obfuscation: the GRP2 packs (`*.grp`: the 1,197 `<plane>_cockpit` DynModels with their `_skeleton` node trees; DagorEngine's format: vertex declarations, packed positions with the model's unpack constants, meshoptimizer-packed indices, LOD 0's rigid meshes), `dynModelDesc.bin` (zstd, binary BLK: each model's materials and texture names) and the DxP2 texture packs (DDSx; the best of `$hq` / base / `$tq`). The vertex data and most textures are Oodle Leviathan packed: unpacked by the War Thunder Oodle helper `tools\wt-oodle` (a separate GPL-3 program, a C# port of parts of ooz with fixes; the engine starts it as a process, `JOYPRO_WT_OODLE` names it; without it War Thunder is skipped with a note). The eye is the pilot figure's head bone (`Bip01 Head01`); the grips are the model's `stick*` / `throttle*` nodes; the callouts are the model's own control and instrument node names (`gears`, `flaps`, `airbrake_lever`, `mixture`, `speed`, `altitude_hour` ...; instruments carry the node name). Obfuscated (not read): `aces.vromfs.bin` (flight models, cockpit instruments, HUD, the factory HOTAS presets), `char`/`game`/`gui`/`lang`/`mis`/`webUi`/`wwdata` vromfs and every `grp_hdr.vromfs.bin` | 1,197 cockpits on the maintainer's PC (9,274 pictures, about 25,000 callouts; about 4 hours at low priority). Environment cubemaps and some shared textures are not in the cockpit packs (flat colour); 42 cockpits have a texture in a format JoyPro does not decode (flat colour). 52 models have no pilot figure (mostly bomber cockpits made of their instruments): the eye is placed above and behind the stick (7) or behind the middle of the instruments (45). Users get the pictures as picture packs (the helper is not part of the release) |
+| War Thunder | `content.hq\pkg_cockpits\res`, read only: the GRP2 packs (`*.grp`: the 1,197 `<plane>_cockpit` DynModels with their `_skeleton` node trees; DagorEngine's format: vertex declarations, packed positions with the model's unpack constants, meshoptimizer-packed indices, LOD 0's rigid meshes), `dynModelDesc.bin` (zstd, binary BLK: each model's materials and texture names) and the DxP2 texture packs (DDSx; the best of `$hq` / base / `$tq`). The vertex data and most textures are Oodle Leviathan packed: unpacked by the War Thunder Oodle helper `tools\wt-oodle` (a separate GPL-3 program, a C# port of parts of ooz with fixes; the engine starts it as a process, `JOYPRO_WT_OODLE` names it; without it War Thunder is skipped with a note). The eye is the pilot figure's head bone (`Bip01 Head01`); the grips are the model's `stick*` / `throttle*` nodes; the callouts are the model's own control and instrument node names (`gears`, `flaps`, `airbrake_lever`, `mixture`, `speed`, `altitude_hour` ...; instruments carry the node name). Not read: `aces.vromfs.bin` (flight models, cockpit instruments, HUD, the factory HOTAS presets), `char`/`game`/`gui`/`lang`/`mis`/`webUi`/`wwdata` vromfs and every `grp_hdr.vromfs.bin` | 1,197 cockpits on the test PC (9,274 pictures, about 25,000 callouts; about 4 hours at low priority). Environment cubemaps and some shared textures are not in the cockpit packs (flat colour); 42 cockpits have a texture in a format JoyPro does not decode (flat colour). 52 models have no pilot figure (mostly bomber cockpits made of their instruments): the eye is placed above and behind the stick (7) or behind the middle of the instruments (45). Users get the pictures as picture packs (the helper is not part of the release) |
 
 The Lua files are read with DCS's own interpreter (`bin\luae.exe`) and small harness scripts that only print; nothing in
 a game folder is written. A build skips an aircraft whose pictures are newer than its model and were made for the same
@@ -450,6 +450,37 @@ A score of 0 to 100 (60 and more: good) and the problems (`little detail`, `one 
   the panel pictures below the gate.
 - The build report names a set's verdict ("low quality (overview 31/100); 4 unusable pictures left out; 2 duplicate
   pictures merged"). `JOYPRO_PICTURE_KEEP_ALL=1` keeps every picture (to look at what the gate leaves out).
+
+### Grip parts
+
+The named parts of a game's grips are checked against the aircraft's manual figures (`engine/CockpitPictures/GripParts.cs`):
+
+- Fixes per model where the model's part names are wrong or say nothing: the DCS A-10C / A-10C II stick names its
+  countermeasures switch `STICK-BTN-TMS` and its TMS `STICK-BTN-TARG` (Flight Manual, Figure 69): JoyPro calls them
+  CMS and TMS; the MMCB, the NWS button, and the throttle's left throttle button, slew, coolie, mic, speed brake, boat
+  switch and china hat get the manual's names (Figure 70).
+- Left out: panel controls under a grip's node (`TUMB-PANTRTL-...`, the F-5E's `LVR-PANUHF-VOL`) and the modelling
+  tool's names (`Helix004`, `NGon058`, `Details036`, `RUS08`).
+- A part that does not sit on the grip's surface in the picture (a part known only by its node's pivot) is listed
+  without a place ("Not shown on the drawing") instead of being drawn beside the grip.
+- The grip picture is taken from the side that shows most of its parts: besides the view from behind and the thumb's
+  side, the front with the thumb's side (the trigger and the buttons on the front face, the A-10C's NWS button below the
+  trigger), the profile and the other side are tried.
+- The page places a catalog control on a game part only when the part shares a word of what the control is (its id,
+  the first words of its name; general words such as "weapon" count less): the 172's "A/P DISC / TRIM INT switch" is no
+  longer put on the elevator trim buttons.
+- `CockpitPictureQualityTests.OptIn_GripAudit` (`JOYPRO_CHECK_PICTURE_SETS=<pictures root>`) writes every grip control
+  of every catalog variant with the game part it is placed on to `%TEMP%\joypro-grip-audit.tsv` for a review.
+
+### Which set a variant gets
+
+The game's aircraft names first (`DB/Cockpits` `games[].plane`), then the variant's id, aliases and name; a fuzzy match
+of names only when the variant names no aircraft of that game: a type number (two or more digits) and a word (the maker,
+the type's name) or a type designation (`c172`) must be shared, the avionics' numbers (`G1000`) do not count as the
+aircraft's, and the aircraft family's own names (`C172`) come last. No picture rather than a wrong one: the A350 no longer
+gets the King Air 350, the CRJ and the E195 no 172 G1000, the PA-28 no 172 seaplane (`Locate_NoNumberAloneMatchesAcrossFamilies`).
+A name several sets of a game share (X-Plane's 172, 172 G1000 and seaplane are all "Cessna 172 SP") leads to the set
+without a special-version word (floats, skis, seaplane, AI).
 
 ### Animated controls
 
@@ -516,8 +547,7 @@ encyclopedia pages.
   traced from photos and do not copy a manual's figure. The line drawings (`line-drawings/`) are JoyPro's own drawings
   of the cockpits, panels and grips. No manual page, figure or photo is in the repository or the release.
 - Fictional craft (films, series, games): **no drawing of their design**. They get the generic stick and throttle with
-  their function list only, plus links. A drawing of a franchise's cockpit would be a derivative of a copyrighted
-  design ([licensing-audit.md](licensing-audit.md), P7).
+  their function list only, plus links ([licensing-audit.md](licensing-audit.md), P7).
 - Names of aircraft, franchises and makers are used to say what is described (nominative use); no logos.
 - Text is JoyPro's own wording. Facts come from the listed sources; no source text is copied beyond short control
   labels.
@@ -563,7 +593,7 @@ grips with their HOTAS tables and numbered panels; `cockpits check` reports no p
 
 | Game | Variants | HOTAS rows | Variants with mode columns / columns | Panels | Numbered items | JoyPro's drawings |
 |---|---|---|---|---|---|---|
-| DCS (every module on the maintainer's PC, all versions and seats) | 81 | 2654 | 30 / 104 | 1223 | 9981 | 505 |
+| DCS (every module on the test PC, all versions and seats) | 81 | 2654 | 30 / 104 | 1223 | 9981 | 505 |
 | Falcon BMS (F-16 blocks, Hornets, A-10) | 17 | 993 | 16 / 50 | 413 | 2413 | 211 |
 | IL-2 Great Battles / IL-2 Korea | 66 / 2 | 974 / 44 | – | 364 / 32 | 2968 / 287 | 149 / 26 |
 | War Thunder (type level) | 155 | 4309 | 43 / 125 | 1532 | 12507 | 539 |
@@ -663,7 +693,7 @@ repository or of JoyPro's release package. The rights stay with the games' owner
   one; a game and set comes from the first feed that has it; each asset is downloaded from its own release
   (`.../download/<tag>/<asset>`). A tag resolves next to the feed: on the web the release `<tag>` next to it; in a
   local folder the folder `<tag>` in it or next to it, else the folder next to it whose `manifest.json` has that
-  `"tag"` (so `E:\JoyProWork\release\cockpit-packs` finds `cockpit-packs-wt`). A further feed that cannot be read is
+  `"tag"` (so `%JOYPRO_RELEASE_DIR%\cockpit-packs` finds `cockpit-packs-wt`). A further feed that cannot be read is
   left out ("1 part of the picture packs could not be read ..." under the expander) and read again two minutes later;
   only the main feed's failure fails the list.
 - **Pictures**: JPEG (quality 90, at most 1600 px on the long side). A picture with transparent parts gets
@@ -673,23 +703,24 @@ repository or of JoyPro's release package. The rights stay with the games' owner
   with JoyPro (picture pack version N)".
 - **Building a release**: `powershell -File tools\build_cockpit_packs.ps1 [-Source <pictures root>] [-Out <folder>]
   [-Game DCS,XPlane12] [-Quality 90] [-MaxSide 1600] [-Tag cockpit-pictures-v1] [-Feeds <tag>,...] [-MaxAssets 1000]
-  [-ManifestOnly] [-Force]` (default source `<data>\GameData\CockpitPictures`, outside the repository). The main
-  release (default tag, output `E:\JoyProWork\release\cockpit-packs`) has every game except War Thunder and names
+  [-ManifestOnly] [-Force] [-Only <game>/<set>,...]` (default source `<data>\GameData\CockpitPictures`, outside the repository). The main
+  release (default tag, output `%JOYPRO_RELEASE_DIR%\cockpit-packs`, or `-Out`) has every game except War Thunder and names
   `cockpit-pictures-wt-v1` in `"feeds"` (`-Feeds` gives others); `-Tag cockpit-pictures-wt-v1` builds War Thunder
-  into `E:\JoyProWork\release\cockpit-packs-wt`. It writes one zip per set (asset names of letters, digits, `-`, `_`,
+  into `%JOYPRO_RELEASE_DIR%\cockpit-packs-wt`. It writes one zip per set (asset names of letters, digits, `-`, `_`,
   `.`; each below 2 GB) and `manifest.json`: `format` `joypro-cockpit-packs`, `packVersion` 1, `tag`, `feeds`,
   `packs[]` with `id` (`<game>/<set>`), `game`, `set`, `planes`, `asset`, `size`, `sha256`, `version`, `built`,
   `picturesBuilt`, `sourceHash`. More than `MaxAssets - 1` packs (999 with the manifest) are split: the rest goes to
   `<Out>\<Tag>-part2` (its own `manifest.json`, tag `<Tag>-part2`), named in the first part's `"feeds"`; a pack keeps
   its part while that part has room. A set whose files did not change keeps its zip and version; a changed one gets
   the next version. `-ManifestOnly` writes the manifests again from the zips that are there (new feeds, a new split)
-  without reading the pictures. The script prints each release's asset count and size and uploads nothing: create the
+  without reading the pictures. `-Only DCS/Ka-50,XPlane12/*` builds only these sets again (a named set that is not in
+  the source any more is left out); every other pack of the manifests stays as it is (zip, version, part). The script prints each release's asset count and size and uploads nothing: create the
   releases and attach each folder's zips and `manifest.json` by hand (`gh release upload <tag> <folder>\*.zip
   <folder>\manifest.json --clobber`). Before uploading, `set JOYPRO_CHECK_PICTURE_FEED=<main folder>` and the opt-in
   test `OptIn_LocalRelease_EveryFeedAndEveryAssetIsThere` reads every feed and checks every zip.
 - Tests (`CockpitPicturePackTests`): the manifest (unsafe packs left out, a newer pack format refused), the feed
   addresses, several feeds (local folders and a localhost web feed, a loop, a missing feed, the page's list), the
-  build tool's split into parts and `-ManifestOnly`, a checksum mismatch, where a pack goes with `pack.json` and the index, a zip with paths or other file
+  build tool's split into parts, `-ManifestOnly` and `-Only`, a checksum mismatch, where a pack goes with `pack.json` and the index, a zip with paths or other file
   types, the version rule, the setting, the page against a localhost feed (offer, download, Not now, Always, Never,
   all my aircraft, one game), the bytes and Cancel, and the build tool on a synthetic set (JPEG and mask, installed and
   drawn with its transparency). The journey (`UserJourneyTests`) shows the offer and the downloaded F-16 pictures

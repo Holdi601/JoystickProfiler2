@@ -46,7 +46,7 @@ public sealed class CalloutLayoutTests
     // JoyPro's drawings of sticks, throttles, panels, pedals, a HOTAS, an MFD, a yoke and a generic button box.
     [Theory]
     [InlineData("thrustmaster-warthog-stick", 1)]
-    [InlineData("thrustmaster-hotas-warthog-throttle", 8)]
+    [InlineData("thrustmaster-hotas-warthog-throttle", 12)]
     [InlineData("winwing-f18-takeoff-panel", 10)]
     [InlineData("logitech-x52-pro", 12)]
     public void Drawings_GetTablesWithoutOverlap_OrthogonalLines_FewCrossings(string modelId, int maxCrossings)

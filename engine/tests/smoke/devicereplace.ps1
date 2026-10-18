@@ -85,7 +85,7 @@ try {
     $drMap = @{}
     foreach ($m in $drPlan.Mappings) { $drMap[$m.OldInput] = $m }
     Assert-True ($drMap["JOY_BTN1"].NewInput -eq "JOY_BTN1" -and $drMap["JOY_BTN1"].Method -eq "same part") "trigger stage 1 should go to the VKB trigger stage 1."
-    Assert-True ($drMap["JOY_BTN2"].NewInput -eq "JOY_BTN3") ("the weapon release should go to the VKB red button: " + ($drMap["JOY_BTN2"] | ConvertTo-Json))
+    Assert-True ($drMap["JOY_BTN2"].NewInput -eq "JOY_BTN24") ("the weapon release should go to the VKB red button: " + ($drMap["JOY_BTN2"] | ConvertTo-Json))
     Assert-True ($drMap["JOY_BTN7"].NewInput -eq "JOY_BTN14" -and @($drMap["JOY_BTN7"].TargetRelations) -contains "VKB Own") ("TMS up should go to the VKB TMS up and show the bind already there: " + ($drMap["JOY_BTN7"] | ConvertTo-Json))
     Assert-True ($drMap["JOY_X"].NewInput -eq "JOY_X") "roll should stay roll."
     Assert-True (-not $drMap["JOY_BTN200"].NewInput) "an input the new device does not have must stay unmapped."

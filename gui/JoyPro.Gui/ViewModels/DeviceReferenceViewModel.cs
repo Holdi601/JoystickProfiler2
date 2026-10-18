@@ -568,6 +568,7 @@ public sealed partial class DeviceReferenceViewModel : ObservableObject
         if (Model == null || Schematic == null || loadedPicture == null)
         {
             KnownMarkerCount = 0;
+            UpdateMissingMarkers();
             RebuildCanvasMarkers();
             PictureChanged?.Invoke(this, EventArgs.Empty);
             return;
@@ -631,6 +632,7 @@ public sealed partial class DeviceReferenceViewModel : ObservableObject
         }
         loadedPicture.KnownCount = Markers.Count(m => m.IsShown);
         KnownMarkerCount = loadedPicture.KnownCount;
+        UpdateMissingMarkers();
         Status = PictureStatus(loadedPicture, source);
         RebuildCanvasMarkers();
         SelectedMarker = selectedId == null ? null : Markers.FirstOrDefault(m => m.Id == selectedId);
@@ -693,6 +695,7 @@ public sealed partial class DeviceReferenceViewModel : ObservableObject
             KnownMarkerCount = Markers.Count(m => m.IsShown);
             if (loadedPicture != null)
                 loadedPicture.KnownCount = KnownMarkerCount;
+            UpdateMissingMarkers();
             RebuildCanvasMarkers();
             OnPropertyChanged(nameof(HasNoKnownPositions));
         }
@@ -809,12 +812,12 @@ public sealed partial class DeviceReferenceViewModel : ObservableObject
     {
         if (loadedPicture == null)
             return;
-        Dictionary<string, double[]> placed = Markers.Where(m => m.IsPlaced).ToDictionary(m => m.Id, m => new[] { m.X, m.Y }, StringComparer.OrdinalIgnoreCase);
+        Dictionary<string, double[]> placed = Markers.Where(m => m.IsPlaced && m.X >= 0).ToDictionary(m => m.Id, m => new[] { m.X, m.Y }, StringComparer.OrdinalIgnoreCase);
         if (loadedPicture.HasPhotoFrame)
         {
             if (loadedPicture.Key.Length == 0)
                 return;
-            DeviceReferenceService.SaveUserLayout(new DeviceLayoutSet
+            DeviceLayoutSet own = new()
             {
                 Model = modelId,
                 PhotoKind = loadedPicture.Kind,
@@ -822,7 +825,11 @@ public sealed partial class DeviceReferenceViewModel : ObservableObject
                 PhotoSha256 = loadedPicture.Key,
                 View = loadedPicture.View,
                 Markers = placed
-            });
+            };
+            // Parts the user took off the picture: JoyPro's position of them is not shown any more.
+            foreach (ReferenceMarker removed in Markers.Where(m => m.IsPlaced && m.X < 0))
+                own.Unplaced[removed.Id] = DeviceReferenceService.RemovedByUser;
+            DeviceReferenceService.SaveUserLayout(own);
         }
         else
         {
@@ -1071,6 +1078,22 @@ public sealed partial class DeviceReferenceViewModel : ObservableObject
         return true;
     }
 
+    // Draws the device again after its controls changed (the marker assistant added one), keeping the placed parts.
+    public void RedrawControls() => RedrawKeepingPlaced();
+
+    // Takes a part off the shown picture: not shown, and saved as removed for this picture (a user position outside
+    // the picture overrides JoyPro's position).
+    public void RemoveFromPicture(ReferenceMarker marker)
+    {
+        marker.IsPlaced = true;
+        marker.X = -1;
+        marker.Y = -1;
+        marker.IsShown = false;
+        HasUnsavedChanges = true;
+        UpdateMissingMarkers();
+        PictureChanged?.Invoke(this, EventArgs.Empty);
+    }
+
     private void RedrawKeepingPlaced()
     {
         if (Model == null)
@@ -1107,6 +1130,7 @@ public sealed partial class DeviceReferenceViewModel : ObservableObject
     {
         OnPropertyChanged(nameof(HasAssistant));
         OnPropertyChanged(nameof(HasNoKnownPositions));
+        OnPropertyChanged(nameof(HasMissingMarkers));
     }
 
     [RelayCommand]

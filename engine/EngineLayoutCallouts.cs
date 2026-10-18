@@ -33,7 +33,7 @@ namespace JoyPro.Engine
                 return null;
             IEnumerable<DeviceLayoutSet> sets = DeviceLayoutSet.LoadFolder(DevicePhotoDb.LayoutFolderOf(catalogFolder), null)
                 .Where(s => string.Equals(s.Model, modelId, StringComparison.OrdinalIgnoreCase) && s.PhotoSha256.Length > 0)
-                .OrderBy(s => DeviceLineArtDb.ViewRank(s.View)).ThenByDescending(s => s.Markers.Count);
+                .OrderBy(s => s.PhotoKind == "lineart" ? 0 : 1).ThenBy(s => DeviceLineArtDb.ViewRank(s.View)).ThenByDescending(s => s.Markers.Count);
             foreach (DeviceLayoutSet curated in sets)
             {
                 DeviceLineArt art = DeviceLineArtDb.OfPhoto(arts, modelId, curated.PhotoSha256);
@@ -153,6 +153,16 @@ namespace JoyPro.Engine
                         {
                             pw = probe.Width;
                             ph = probe.Height;
+                        }
+                    }
+                    else if (set.PhotoKind == "lineart")
+                    {
+                        // A set on JoyPro's drawing: the drawing's own frame.
+                        DeviceLineArt art = DeviceLineArtDb.OfPhoto(DeviceLineArtDb.Cached(DeviceLineArtDb.FolderOf(DeviceCatalog.CatalogFolder(MainStructure.PROGPATH))), set.Model, set.PhotoSha256);
+                        if (art != null)
+                        {
+                            pw = art.Width;
+                            ph = art.Height;
                         }
                     }
                     sheet = CalloutLayouter.Arrange(schematic, set.Markers, pw, ph, set.Callouts);

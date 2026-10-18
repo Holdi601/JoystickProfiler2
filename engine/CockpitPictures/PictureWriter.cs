@@ -512,8 +512,29 @@ namespace JoyPro.CockpitPictures
                     }
                 }
             }
+            // A grip with parts: the side that shows most of them (front-side buttons were hidden from the thumb's side).
+            bool grip = v.Kind == "device" && v.Callouts.Count > 0;
+            string altDump = Environment.GetEnvironmentVariable("JOYPRO_PICTURE_DEBUG_ALTS");
+            int altNo = 0;
             foreach (RenderCamera alt in v.Alternatives)
             {
+                if (grip && r != null)
+                {
+                    RenderBuffers bg;
+                    ViewResult rg = RenderOnce(scene, v, alt, out bg);
+                    // JOYPRO_PICTURE_DEBUG_ALTS=<folder>: every side of a grip as its own picture (for checking parts).
+                    if (!string.IsNullOrEmpty(altDump) && rg != null)
+                    {
+                        Directory.CreateDirectory(altDump);
+                        PngWriter.Write(Path.Combine(altDump, FileName(v.Id) + "-alt" + (++altNo).ToString(CultureInfo.InvariantCulture) + ".png"), rg.Rgba, rg.Width, rg.Height, 4);
+                    }
+                    if (rg != null && rg.Metrics.Score >= PictureQuality.Keep && (rg.Metrics.Visible > r.Metrics.Visible + 0.01 || (rg.Metrics.Visible >= r.Metrics.Visible - 0.01 && rg.Metrics.Score > r.Metrics.Score + 10)))
+                    {
+                        r = rg;
+                        best = bg;
+                    }
+                    continue;
+                }
                 if (r != null && r.Metrics.Score >= PictureQuality.Good)
                     break;
                 RenderBuffers b2;
@@ -522,6 +543,20 @@ namespace JoyPro.CockpitPictures
                 {
                     r = r2;
                     best = b2;
+                }
+            }
+            if (r != null && grip && r.Metrics.Fill < 0.3 && r.Camera != v.Camera)
+            {
+                RenderCamera zoom = Refit(r.Camera, best);
+                if (zoom != null)
+                {
+                    RenderBuffers b2;
+                    ViewResult r2 = RenderOnce(scene, v, zoom, out b2);
+                    if (r2 != null && r2.Metrics.Score >= r.Metrics.Score && r2.Metrics.Visible >= r.Metrics.Visible - 0.01)
+                    {
+                        r = r2;
+                        best = b2;
+                    }
                 }
             }
             if (r == null)
@@ -595,6 +630,13 @@ namespace JoyPro.CockpitPictures
                         float d = b.Depth[py * b.Width + px];
                         hidden = b.Covered[py * b.Width + px] && d < depth - Math.Max(0.03, depth * 0.04);
                     }
+                }
+                // On a grip picture a part must sit on the grip's surface (a model's part whose place is only its node's
+                // pivot can float beside the grip): else it is listed without a place, not drawn at a wrong one.
+                if (ok && inside && v.Kind == "device" && !OnSurface(b, sx * 2, sy * 2, depth))
+                {
+                    at.Add(new[] { -1.0, -1.0, 1 });
+                    continue;
                 }
                 if (inside && !hidden)
                     visible++;
@@ -681,6 +723,24 @@ namespace JoyPro.CockpitPictures
             if (v.Kind == "overview")
                 return new SoftwareRenderer.Light { Ambient = 0.42, Diffuse = 0.58, Headlight = 0.28 };
             return new SoftwareRenderer.Light { Ambient = 0.42, Diffuse = 0.36, Headlight = 0.42 };
+        }
+
+        // Whether the render drew a surface within a few pixels of a point at about its depth (in front of it or up to a
+        // few centimetres behind: the part's own face).
+        internal static bool OnSurface(RenderBuffers b, double px, double py, double depth)
+        {
+            int r = Math.Max(4, b.Width / 160);
+            int cx = (int)px, cy = (int)py;
+            for (int y = Math.Max(0, cy - r); y <= Math.Min(b.Height - 1, cy + r); y++)
+            {
+                for (int x = Math.Max(0, cx - r); x <= Math.Min(b.Width - 1, cx + r); x++)
+                {
+                    int i = y * b.Width + x;
+                    if (b.Covered[i] && b.Depth[i] < depth + Math.Max(0.03, depth * 0.05))
+                        return true;
+                }
+            }
+            return false;
         }
 
         // A perspective (or orthographic) camera turned and narrowed to the box around what the render drew.

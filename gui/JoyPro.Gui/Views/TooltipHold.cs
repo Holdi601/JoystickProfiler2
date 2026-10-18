@@ -1,79 +1,172 @@
 using System;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Input;
 using Avalonia.Interactivity;
+using Avalonia.LogicalTree;
+using Avalonia.Threading;
 using Avalonia.VisualTree;
 
 namespace JoyPro.Gui.Views;
 
-// Holds a window's tooltips back after the content moved under a mouse that did not move (follow input selected and
-// scrolled to another relation): the card that slid under the resting pointer must not pop its tooltip. Tooltips come
-// back as soon as the mouse really moves (more than MoveThreshold pixels), is pressed or leaves the window.
+// Keeps a window's tooltips back after follow input moved the content under the mouse (a device button or axis
+// selected and scrolled to another relation): the card that slid under the resting pointer must not pop its tooltip.
+// Every follow-input event arms the hold again (Hold) and closes an open tooltip. Only a real, noticeable mouse
+// movement releases it: the pointer's path on the SCREEN since the hold must be at least ReleasePath long and it must
+// have got at least ReleaseDistance away from where it was. Pointer events the layout raises under a still mouse
+// (same screen position) and jitter within JitterRadius do not count; clicks, the wheel and keyboard focus do not either. After the
+// release the normal tooltip delay applies (the pointer must rest on the item).
+//
+// An inactive window (another program in front, e.g. the game) never shows a tooltip, and coming back to the window
+// arms the hold again, so a mouse resting where it was does not pop one either.
 internal sealed class TooltipHold
 {
-    public const double MoveThreshold = 3;
+    public const double ReleasePath = 60;
+    public const double ReleaseDistance = 16;
+    // Movement within this radius (device-independent pixels) is jitter or the same position (synthetic events).
+    public const double JitterRadius = 4;
+
+    private static readonly ConditionalWeakTable<TopLevel, TooltipHold> Holds = new();
+    private static bool tipGuardInstalled;
 
     private readonly Control root;
-    private Point? lastPointer;
+    private Point? lastScreen;
     private Point? anchor;
+    private Point? stepFrom;
+    private double path;
+    private double farthest;
+    private bool inactive;
 
     public TooltipHold(Control root)
     {
         this.root = root;
         root.AddHandler(InputElement.PointerMovedEvent, OnPointerMoved, RoutingStrategies.Tunnel, handledEventsToo: true);
-        root.AddHandler(InputElement.PointerPressedEvent, (_, _) => Release(), RoutingStrategies.Tunnel, handledEventsToo: true);
-        root.AddHandler(InputElement.PointerWheelChangedEvent, (_, _) => Release(), RoutingStrategies.Tunnel, handledEventsToo: true);
-        root.AddHandler(InputElement.PointerExitedEvent, (_, e) =>
+        if (root is TopLevel topLevel)
+            Holds.AddOrUpdate(topLevel, this);
+        if (root is Window window)
         {
-            if (ReferenceEquals(e.Source, root))
-                Release();
-        }, RoutingStrategies.Direct, handledEventsToo: true);
+            window.Activated += (_, _) => SetActive(true);
+            window.Deactivated += (_, _) => SetActive(false);
+        }
+        InstallTipGuard();
     }
 
+    // Follow input moved the content: no tooltip until the mouse really moves.
     public bool IsHolding { get; private set; }
 
-    // The content moved under the mouse: no tooltip until the mouse moves; an open one closes.
+    public bool IsSuppressed => IsHolding || inactive;
+
+    // Arms the hold (again): the movement counts from here; an open tooltip closes.
     public void Hold()
     {
         IsHolding = true;
-        anchor = lastPointer;
-        ToolTip.SetServiceEnabled(root, false);
+        anchor = lastScreen;
+        stepFrom = lastScreen;
+        path = 0;
+        farthest = 0;
+        Apply();
         CloseOpenTooltips();
     }
 
-    public void Release()
+    internal void SetActive(bool active)
     {
-        if (!IsHolding)
+        if (inactive == !active)
             return;
-        IsHolding = false;
-        anchor = null;
-        root.ClearValue(ToolTip.ServiceEnabledProperty);
+        inactive = !active;
+        if (active)
+        {
+            // Back in front: the mouse may rest on an item; it has to move first.
+            Hold();
+            return;
+        }
+        Apply();
+        CloseOpenTooltips();
     }
 
-    // The pointer's position in the window (tests and the handler).
-    internal void PointerAt(Point position)
+    // The pointer's screen position in device-independent pixels (tests and the handler).
+    internal void PointerAtScreen(Point screen)
     {
-        lastPointer = position;
+        lastScreen = screen;
         if (!IsHolding)
             return;
         if (anchor is not { } start)
         {
             // Held before the mouse was ever seen: the first position is where it rests.
-            anchor = position;
+            anchor = screen;
+            stepFrom = screen;
             return;
         }
-        Vector moved = position - start;
-        if (Math.Abs(moved.X) > MoveThreshold || Math.Abs(moved.Y) > MoveThreshold)
+        // The path counts in steps of at least JitterRadius: a resting hand's jitter (and the same place again)
+        // never adds up, however long it goes on.
+        Point from = stepFrom ?? start;
+        double step = Length(screen - from);
+        if (step >= JitterRadius)
+        {
+            path += step;
+            stepFrom = screen;
+        }
+        farthest = Math.Max(farthest, Length(screen - start));
+        if (path >= ReleasePath && farthest >= ReleaseDistance)
             Release();
     }
 
-    private void OnPointerMoved(object? sender, PointerEventArgs e) => PointerAt(e.GetPosition(root));
+    private void Release()
+    {
+        IsHolding = false;
+        anchor = null;
+        Apply();
+    }
+
+    private void Apply()
+    {
+        if (IsSuppressed)
+            ToolTip.SetServiceEnabled(root, false);
+        else
+            root.ClearValue(ToolTip.ServiceEnabledProperty);
+    }
+
+    private void OnPointerMoved(object? sender, PointerEventArgs e)
+    {
+        Point local = e.GetPosition(root);
+        TopLevel? top = TopLevel.GetTopLevel(root);
+        if (top == null)
+            return;
+        PixelPoint pixels = root.PointToScreen(local);
+        double scale = top.RenderScaling > 0 ? top.RenderScaling : 1;
+        PointerAtScreen(new Point(pixels.X / scale, pixels.Y / scale));
+    }
 
     private void CloseOpenTooltips()
     {
         foreach (Control control in root.GetVisualDescendants().OfType<Control>().Where(ToolTip.GetIsOpen).ToList())
             ToolTip.SetIsOpen(control, false);
     }
+
+    private static double Length(Vector v) => Math.Sqrt(v.X * v.X + v.Y * v.Y);
+
+    // A show timer that started before the hold (or a tooltip opened in code) would still open it: such a tooltip
+    // closes again at once while its window holds tooltips back.
+    private static void InstallTipGuard()
+    {
+        if (tipGuardInstalled)
+            return;
+        tipGuardInstalled = true;
+        ToolTip.IsOpenProperty.Changed.AddClassHandler<Control>((control, e) =>
+        {
+            if (e.NewValue is not true || !KeepsBack(control))
+                return;
+            Dispatcher.UIThread.Post(() =>
+            {
+                if (KeepsBack(control) && ToolTip.GetIsOpen(control))
+                    ToolTip.SetIsOpen(control, false);
+            }, DispatcherPriority.Send);
+        });
+    }
+
+    // The control's window holds tooltips back right now (the guard; tests).
+    internal static bool KeepsBack(Control control) =>
+        (TopLevel.GetTopLevel(control) ?? control.FindLogicalAncestorOfType<TopLevel>()) is { } top &&
+        Holds.TryGetValue(top, out TooltipHold? hold) && hold.IsSuppressed;
 }

@@ -190,6 +190,7 @@ public sealed partial class MainWindowViewModel
         OnPropertyChanged(nameof(IsLayoutViewMode));
         OnPropertyChanged(nameof(IsLayoutEditMode));
         OnPropertyChanged(nameof(IsLayoutBindMode));
+        OnPropertyChanged(nameof(ShowWorkspace3D));
         if (value != DeviceCanvasMode.EditMarkers)
         {
             LayoutPlaceMarkerMode = false;

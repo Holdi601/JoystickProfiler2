@@ -988,6 +988,12 @@
                                             </ItemsControl>
                                             <TextBlock Classes="caption" TextWrapping="Wrap" IsVisible="{Binding HasOtherDevices}"
                                                        Text="{l:T 'Also connected (keyboards, mice and other devices JoyPro does not use): {0}', Arg0={Binding OtherDevicesText}}" />
+                                            <!-- 3D views of the connected devices from JoyPro's releases (the Layout page has the same offer) -->
+                                            <WrapPanel ItemSpacing="6" LineSpacing="6" IsVisible="{Binding HasDevice3DOffer}">
+                                                <TextBlock Classes="caption" Text="{Binding Device3DOfferText}" TextWrapping="Wrap" MaxWidth="520" VerticalAlignment="Center" />
+                                                <Button Classes="small accent" Content="{l:T 'Download'}" Command="{Binding AcceptDevice3DCommand}" />
+                                                <Button Classes="small" Content="{l:T 'Not now'}" Command="{Binding DismissDevice3DCommand}" />
+                                            </WrapPanel>
                                         </StackPanel>
                                     </Border>
 
@@ -1844,7 +1850,17 @@
                                                                         </Border>
                                                                         <TextBlock Grid.Column="2" Classes="caption" Text="{Binding KindLabel}" VerticalAlignment="Center" />
                                                                     </Grid>
+                                                                    <TextBlock Classes="caption" FontSize="10.5" Opacity="0.75" Text="{Binding IdText}" IsVisible="{Binding HasIdText}" TextTrimming="CharacterEllipsis"
+                                                                               ToolTip.Tip="{l:T 'The game\'s own id of the action'}" />
+                                                                    <WrapPanel ItemSpacing="6" IsVisible="{Binding IsRecommended}">
+                                                                        <Border Classes="chip recommended" ToolTip.Tip="{l:T 'The one action to take in this game (or aircraft): the function\'s main control, not a variant'}">
+                                                                            <TextBlock Text="{Binding RecommendedLabel}" />
+                                                                        </Border>
+                                                                    </WrapPanel>
+                                                                    <TextBlock Classes="warnText" FontSize="11" Text="{Binding VariantText}" IsVisible="{Binding HasVariant}" TextWrapping="Wrap" />
                                                                     <TextBlock Classes="caption" FontSize="11" TextTrimming="CharacterEllipsis" Text="{Binding WhyText}" IsVisible="{Binding HasWhy}" Opacity="0.85" />
+                                                                    <TextBlock Classes="caption" FontSize="11" Text="{Binding Explanation}" IsVisible="{Binding HasExplanation}" TextWrapping="Wrap" MaxLines="2"
+                                                                               TextTrimming="CharacterEllipsis" ToolTip.Tip="{Binding ExplanationTip}" />
                                                                     <TextBlock Classes="warnText" FontSize="11" TextTrimming="CharacterEllipsis" Text="{Binding InOtherRelationsText}" IsVisible="{Binding HasNote}" />
                                                                 </StackPanel>
                                                             </CheckBox>
@@ -1960,7 +1976,10 @@
                                                             <ItemsControl ItemsSource="{Binding Items}">
                                                                 <ItemsControl.ItemTemplate>
                                                         <DataTemplate x:DataType="models:BuilderSuggestionItem">
-                                                          <Border Classes="raised" Padding="8,6" Margin="0,0,0,4">
+                                                          <Grid ColumnDefinitions="Auto,*" IsVisible="{Binding IsShown}">
+                                                          <!-- An alternative sits indented under the recommended action of its game -->
+                                                          <Border Width="24" IsVisible="{Binding IsAlternative}" />
+                                                          <Border Grid.Column="1" Classes="raised" Padding="8,6" Margin="0,0,0,4">
                                                             <Grid ColumnDefinitions="Auto,Auto,*,Auto" ColumnSpacing="8" ToolTip.Tip="{Binding Reasons}">
                                                                 <CheckBox IsChecked="{Binding IsChecked}" IsVisible="{Binding !HasConflict}" VerticalAlignment="Center"
                                                                           ToolTip.Tip="{l:T 'Tick it for Add ticked'}" />
@@ -1969,21 +1988,33 @@
                                                                     <Image Source="{Binding Picture}" Stretch="UniformToFill" IsVisible="{Binding Picture, Converter={x:Static ObjectConverters.IsNotNull}}" />
                                                                 </Panel>
                                                                 <StackPanel Grid.Column="2" Spacing="2" VerticalAlignment="Center">
-                                                                    <TextBlock Text="{Binding Title}" FontWeight="SemiBold" TextTrimming="CharacterEllipsis" />
-                                                                    <Grid ColumnDefinitions="Auto,*" ColumnSpacing="6">
-                                                                        <Panel>
+                                                                    <TextBlock Text="{Binding DisplayTitle}" FontWeight="SemiBold" TextTrimming="CharacterEllipsis" />
+                                                                    <TextBlock Classes="caption" FontSize="10.5" Opacity="0.8" Text="{Binding FunctionAndId}" IsVisible="{Binding HasFunctionAndId}" TextTrimming="CharacterEllipsis"
+                                                                               ToolTip.Tip="{l:T 'The function JoyPro reads it as, and the game\'s own id of the action'}" />
+                                                                    <Grid ColumnDefinitions="Auto,Auto,*" ColumnSpacing="6">
+                                                                        <Border Classes="chip recommended" IsVisible="{Binding IsRecommended}"
+                                                                                ToolTip.Tip="{l:T 'The one action to take in this game (or aircraft): the function\'s main control, not a variant'}">
+                                                                            <TextBlock Text="{Binding RecommendedLabel}" />
+                                                                        </Border>
+                                                                        <Panel Grid.Column="1">
                                                                             <Border Classes="chip ok" IsVisible="{Binding IsHigh}"><TextBlock Text="{l:T 'High {0}', Arg0={Binding ScoreText}}" /></Border>
                                                                             <Border Classes="chip warn" IsVisible="{Binding IsMedium}"><TextBlock Text="{l:T 'Medium {0}', Arg0={Binding ScoreText}}" /></Border>
                                                                             <Border Classes="chip" IsVisible="{Binding IsLow}"><TextBlock Text="{l:T 'Weak {0}', Arg0={Binding ScoreText}}" /></Border>
                                                                         </Panel>
-                                                                        <TextBlock Grid.Column="1" Classes="caption" VerticalAlignment="Center" Text="{Binding Where}" TextTrimming="CharacterEllipsis" />
+                                                                        <TextBlock Grid.Column="2" Classes="caption" VerticalAlignment="Center" Text="{Binding Where}" TextTrimming="CharacterEllipsis" />
                                                                     </Grid>
+                                                                    <TextBlock Classes="warnText" FontSize="11.5" Text="{Binding VariantText}" IsVisible="{Binding HasVariant}" TextWrapping="Wrap" />
+                                                                    <TextBlock Classes="caption" FontSize="11" Text="{Binding Explanation}" IsVisible="{Binding HasExplanation}" TextWrapping="Wrap" MaxLines="2"
+                                                                               TextTrimming="CharacterEllipsis" ToolTip.Tip="{Binding ExplanationTip}" />
                                                                     <TextBlock Classes="caption" FontSize="11.5" Text="{Binding MissingText}" IsVisible="{Binding IsMissing}" TextTrimming="CharacterEllipsis"
                                                                                Foreground="{DynamicResource JP.AccentTextBrush}" />
                                                                     <TextBlock Classes="caption" Text="{Binding Why}" TextTrimming="CharacterEllipsis" />
                                                                     <TextBlock Classes="warnText" Text="{Binding ConflictText}" IsVisible="{Binding HasConflict}" FontSize="11.5" TextTrimming="CharacterEllipsis" />
                                                                     <TextBlock Classes="caption" FontSize="11" Text="{Binding MeaningNote}" IsVisible="{Binding HasMeaningNote}" TextTrimming="CharacterEllipsis"
                                                                                ToolTip.Tip="{l:T 'Aircraft where the same id means something else are not in this suggestion'}" />
+                                                                    <Button Classes="small ghost" HorizontalAlignment="Left" Padding="4,0" IsVisible="{Binding HasAlternatives}"
+                                                                            Content="{Binding AlternativesLabel}" Command="{Binding ToggleAlternativesCommand}"
+                                                                            ToolTip.Tip="{l:T 'The other actions of this game for the same thing, each with how it differs'}" />
                                                                 </StackPanel>
                                                                 <StackPanel Grid.Column="3" Orientation="Horizontal" Spacing="4" VerticalAlignment="Center">
                                                                     <Button Classes="icon small accent" Tag="{StaticResource Icon.Plus}" Content="{l:T 'Add'}" IsVisible="{Binding !HasConflict}"
@@ -1998,6 +2029,7 @@
                                                                 </StackPanel>
                                                             </Grid>
                                                           </Border>
+                                                          </Grid>
                                                         </DataTemplate>
                                                                 </ItemsControl.ItemTemplate>
                                                             </ItemsControl>
@@ -2166,7 +2198,8 @@
                                              MinHeight="160">
                                         <ListBox.ItemTemplate>
                                             <DataTemplate x:DataType="models:BindListItem">
-                                                <Grid ColumnDefinitions="Auto,*,Auto" ColumnSpacing="10" ToolTip.Tip="{Binding BindTooltip}">
+                                                <Grid ColumnDefinitions="Auto,*,Auto" ColumnSpacing="10" ToolTip.Tip="{Binding BindTooltip}" Background="Transparent"
+                                                      PointerPressed="BindRowPointerPressed" PointerMoved="CalloutRelationPointerMoved">
                                                     <Panel VerticalAlignment="Center">
                                                         <Ellipse Width="8" Height="8" Fill="{DynamicResource StatusOkBrush}" IsVisible="{Binding HasBind}" ToolTip.Tip="{l:T 'Bound'}" />
                                                         <Ellipse Width="8" Height="8" Fill="{DynamicResource StatusWarnBrush}" IsVisible="{Binding IsUnbound}" ToolTip.Tip="{l:T 'Not bound yet'}" />
@@ -2421,8 +2454,20 @@
                                                                                  Zoom="{Binding VisualAssignZoom}"
                                                                                  FlashMarker="{Binding WorkspaceFlashMarker}"
                                                                                  LiveInput="{Binding WorkspaceLiveInput}"
+                                                                                 RelationDroppedCommand="{Binding BindSelectedLayoutMarkerCommand}"
                                                                                  CanvasClickedCommand="{Binding LayoutCanvasClickedCommand}" />
                                                 </Border>
+                                                <Border Classes="canvasHost" IsVisible="{Binding ShowWorkspace3D}">
+                                                    <controls:TurntableView x:Name="VisualAssignTurntable"
+                                                                            Turntable="{Binding WorkspaceTurntable}"
+                                                                            Parts="{Binding DeviceReference.Markers}"
+                                                                            SelectedPart="{Binding DeviceReference.SelectedMarker}"
+                                                                            LiveInput="{Binding WorkspaceLiveInput}"
+                                                                            RelationDroppedCommand="{Binding BindSelectedLayoutMarkerCommand}" />
+                                                </Border>
+                                                <ToggleButton Classes="small" Content="{l:T '3D view'}" IsChecked="{Binding WorkspaceShows3D}" IsVisible="{Binding HasWorkspaceTurntable}"
+                                                              HorizontalAlignment="Right" VerticalAlignment="Top" Margin="10"
+                                                              ToolTip.Tip="{l:T 'Turn the device around (drag; wheel zooms; double click resets); drop a relation on a part to bind it'}" />
                                                 <Border Classes="emptyState" IsVisible="{Binding HasNoLayoutWorkspacePicture}" HorizontalAlignment="Center" VerticalAlignment="Center" MaxWidth="420" Margin="24">
                                                     <StackPanel Spacing="10">
                                                         <PathIcon Classes="emptyIcon" Data="{StaticResource Icon.Image}" />
@@ -2511,7 +2556,9 @@
                                                             <ListBox Classes="cards compact" ItemsSource="{Binding LayoutBindCandidates}" SelectedItem="{Binding SelectedLayoutBindCandidate}" MaxHeight="120">
                                                                 <ListBox.ItemTemplate>
                                                                     <DataTemplate x:DataType="x:String">
-                                                                        <TextBlock Text="{Binding}" TextTrimming="CharacterEllipsis" />
+                                                                        <TextBlock Text="{Binding}" TextTrimming="CharacterEllipsis" Background="Transparent"
+                                                                                   PointerPressed="CalloutRelationPointerPressed" PointerMoved="CalloutRelationPointerMoved"
+                                                                                   ToolTip.Tip="{l:T 'Drag onto an input on the picture to bind it there'}" />
                                                                     </DataTemplate>
                                                                 </ListBox.ItemTemplate>
                                                             </ListBox>
@@ -3403,6 +3450,8 @@
                                                               IsVisible="{Binding CanShowLayoutCallouts}"
                                                               ToolTip.Tip="{l:T 'Tables: tables around the picture with lines to the parts (JoyPro 1\'s cheat sheets); off: labels at the markers'}" />
                                                 <!-- Drawing style of JoyPro's drawings: Lines | Cel-shaded (Settings > Drawings has the colours) -->
+                                                <ToggleButton Classes="small" Content="{l:T '3D view'}" IsChecked="{Binding WorkspaceShows3D}" IsVisible="{Binding HasWorkspaceTurntable}"
+                                                              ToolTip.Tip="{l:T 'Turn the device around (drag; wheel zooms; double click resets): JoyPro\'s render of a 3D model of the device. Off: the flat drawing, which is what the cheat sheets print and what Edit mode works on.'}" />
                                                 <ComboBox ItemsSource="{Binding ScreenDrawing.ModeChoices}" SelectedItem="{Binding ScreenDrawing.Mode}" MinWidth="110"
                                                           IsVisible="{Binding WorkspaceShowsLineArt}"
                                                           ToolTip.Tip="{l:T 'Drawing style of JoyPro\'s drawing: lines, or flat colours under bold outlines (colours: Settings &gt; Drawings)'}" />
@@ -3423,6 +3472,7 @@
                                              MainWindowViewModel.LayoutCallouts.cs, CalloutSheetCanvas. -->
                                         <Border Classes="canvasHost" IsVisible="{Binding LayoutShowsCallouts}">
                                             <controls:CalloutSheetCanvas x:Name="LayoutCalloutCanvas"
+                                                                         TopInset="104"
                                                                          Callouts="{Binding LayoutCallouts}"
                                                                          Source="{Binding WorkspaceImage}"
                                                                          Schematic="{Binding WorkspaceSchematic}"
@@ -3554,6 +3604,15 @@
                                                 </controls:DeviceMarkerCanvas.Overlay>
                                             </controls:DeviceMarkerCanvas>
                                         </Border>
+                                        <!-- The rotatable 3D view (devices with a game model): over the flat picture while switched on -->
+                                        <Border Classes="canvasHost" IsVisible="{Binding ShowWorkspace3D}">
+                                            <controls:TurntableView x:Name="LayoutTurntable"
+                                                                    Turntable="{Binding WorkspaceTurntable}"
+                                                                    Parts="{Binding DeviceReference.Markers}"
+                                                                    SelectedPart="{Binding DeviceReference.SelectedMarker}"
+                                                                    LiveInput="{Binding WorkspaceLiveInput}"
+                                                                    RelationDroppedCommand="{Binding BindSelectedLayoutMarkerCommand}" />
+                                        </Border>
 
                                         <!-- The device, the picture choice and the grip on a base -->
                                         <Border Classes="floatingLabel" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="12" IsVisible="{Binding ShowWorkspaceLabel}">
@@ -3663,6 +3722,55 @@
                                                     <Button Classes="icon small" Tag="{StaticResource Icon.Check}" Content="{l:T 'Finish'}" Command="{Binding FinishCommand}" ToolTip.Tip="{l:T 'Save the markers (and your device definition)'}" />
                                                     <Button Classes="small ghost" Content="{l:T 'Close'}" Command="{Binding #RootWindow.DataContext.CloseReferenceAssistantCommand}" />
                                                     <TextBlock Classes="caption" Text="{Binding PlacedCount, StringFormat='{}{0} placed'}" VerticalAlignment="Center" />
+                                                </WrapPanel>
+                                                <!-- Add a control JoyPro does not know (a hat the device reports as buttons ...) by its kind -->
+                                                <WrapPanel ItemSpacing="6" LineSpacing="6">
+                                                    <ComboBox ItemsSource="{Binding ControlKindOptions}" SelectedItem="{Binding ControlKind}" MinWidth="170"
+                                                              ToolTip.Tip="{l:T 'The kind of the control to add: JoyPro asks for each of its inputs in turn'}">
+                                                        <ComboBox.ItemTemplate>
+                                                            <DataTemplate x:DataType="x:String">
+                                                                <TextBlock Text="{Binding Converter={x:Static l:TConverter.Instance}}" />
+                                                            </DataTemplate>
+                                                        </ComboBox.ItemTemplate>
+                                                    </ComboBox>
+                                                    <TextBox Text="{Binding ControlName}" Watermark="{l:T 'Name (optional)'}" MinWidth="140" />
+                                                    <Button Classes="icon small" Tag="{StaticResource Icon.Plus}" Content="{l:T 'Add control'}" Command="{Binding AddControlCommand}"
+                                                            ToolTip.Tip="{l:T 'Press (or move) each input of the control on your device, then click its spot on the picture'}" />
+                                                    <Button Classes="small" Content="{l:T 'Remove from picture'}" Command="{Binding RemoveSelectedCommand}"
+                                                            ToolTip.Tip="{l:T 'Take the picked part off the picture (JoyPro put it on the wrong spot)'}" />
+                                                </WrapPanel>
+                                            </StackPanel>
+                                        </Border>
+
+                                        <!-- A connected device has a 3D view in JoyPro's releases (not shipped): download it? -->
+                                        <Border Classes="floatingLabel" HorizontalAlignment="Right" VerticalAlignment="Bottom" Margin="12" MaxWidth="420"
+                                                IsVisible="{Binding HasDevice3DOffer}">
+                                            <StackPanel Spacing="8">
+                                                <TextBlock Text="{Binding Device3DOfferText}" TextWrapping="Wrap" MaxWidth="390" />
+                                                <WrapPanel ItemSpacing="6" LineSpacing="6">
+                                                    <Button Classes="small accent" Content="{l:T 'Download'}" Command="{Binding AcceptDevice3DCommand}" />
+                                                    <Button Classes="small" Content="{l:T 'Not now'}" Command="{Binding DismissDevice3DCommand}" />
+                                                    <Button Classes="small ghost" Content="{l:T 'Always download'}" Command="{Binding AlwaysDevice3DCommand}"
+                                                            ToolTip.Tip="{l:T 'Download the 3D views and cockpit pictures from JoyPro\'s releases without asking (Settings &gt; Privacy)'}" />
+                                                    <Button Classes="small ghost" Content="{l:T 'Never'}" Command="{Binding NeverDevice3DCommand}"
+                                                            ToolTip.Tip="{l:T 'Do not look for 3D views and cockpit pictures in JoyPro\'s releases (Settings &gt; Privacy); the flat drawing stays'}" />
+                                                </WrapPanel>
+                                            </StackPanel>
+                                        </Border>
+
+                                        <!-- Some inputs have no place: press them to place them; send the correction to JoyPro -->
+                                        <Border Classes="floatingLabel" HorizontalAlignment="Right" VerticalAlignment="Top" Margin="12" MaxWidth="400"
+                                                IsVisible="{Binding ShowMissingMarkersHint}">
+                                            <StackPanel Spacing="8">
+                                                <StackPanel Orientation="Horizontal" Spacing="8">
+                                                    <Border Classes="iconBadge"><PathIcon Data="{StaticResource Icon.MapMarker}" /></Border>
+                                                    <TextBlock Text="{Binding DeviceReference.MissingMarkersText}" FontWeight="SemiBold" VerticalAlignment="Center" TextWrapping="Wrap" MaxWidth="330" />
+                                                </StackPanel>
+                                                <TextBlock Classes="caption" TextWrapping="Wrap" Text="{Binding DeviceReference.MissingMarkersList}" />
+                                                <WrapPanel ItemSpacing="6" LineSpacing="6">
+                                                    <Button Classes="icon small accent" Tag="{StaticResource Icon.Wand}" Content="{l:T 'Place them'}" Command="{Binding PlaceMissingMarkersCommand}" />
+                                                    <Button Classes="icon small" Tag="{StaticResource Icon.Export}" Content="{l:T 'Send correction to JoyPro...'}" Command="{Binding DeviceReference.SendCorrectionCommand}"
+                                                            ToolTip.Tip="{l:T 'Saves your positions and controls as a small file and opens a prefilled issue form on JoyPro\'s GitHub page; you decide there whether to send it'}" />
                                                 </WrapPanel>
                                             </StackPanel>
                                         </Border>
@@ -4037,6 +4145,8 @@
                                                         ToolTip.Tip="{l:T 'Save the marker positions of the shown picture to share (the maker\'s photo goes by its address only; your own photo goes inside)'}" />
                                                 <Button Classes="icon small" Tag="{StaticResource Icon.Import}" Content="{l:T 'Import layout...'}" Click="ReferenceLayoutImportClicked"
                                                         ToolTip.Tip="{l:T 'Add marker positions someone shared (joypro-device-layout .json)'}" />
+                                                <Button Classes="icon small" Tag="{StaticResource Icon.Export}" Content="{l:T 'Send correction to JoyPro...'}" Command="{Binding DeviceReference.SendCorrectionCommand}"
+                                                        ToolTip.Tip="{l:T 'Saves your positions and controls as a small file and opens a prefilled issue form on JoyPro\'s GitHub page; you decide there whether to send it'}" />
                                             </WrapPanel>
                                         </StackPanel>
                                     </Border>
@@ -5486,9 +5596,9 @@
                                                 ToolTip.Tip="{l:T 'Forget the yes / no you gave per device; JoyPro asks again before it shows a maker\'s photo'}" />
                                     </WrapPanel>
                                     <Grid ColumnDefinitions="Auto,*" ColumnSpacing="10">
-                                        <TextBlock Text="{l:T 'Cockpit pictures from JoyPro\'s releases'}" VerticalAlignment="Center" />
+                                        <TextBlock Text="{l:T 'Pictures from JoyPro\'s releases (cockpits, 3D device views)'}" VerticalAlignment="Center" />
                                         <ComboBox Grid.Column="1" ItemsSource="{Binding CockpitPictureDownloadModes}" SelectedItem="{Binding CockpitPictureDownloadMode}" MinWidth="220"
-                                                  ToolTip.Tip="{l:T 'When you open an aircraft on the Cockpits page that has no pictures from your games, JoyPro looks whether its releases have a picture pack for it (GitHub) and asks before it downloads it. Always: download without asking. Never: JoyPro does not look; the buttons on the Cockpits page still work.'}">
+                                                  ToolTip.Tip="{l:T 'When you open an aircraft on the Cockpits page that has no pictures from your games, or connect a device with a 3D view, JoyPro looks whether its releases have a pack for it (GitHub) and asks before it downloads it. Always: download without asking. Never: JoyPro does not look; the buttons on the Cockpits page still work and the Layout page shows the flat drawing.'}">
                                             <ComboBox.ItemTemplate>
                                                 <DataTemplate x:DataType="x:String">
                                                     <TextBlock Text="{Binding Converter={x:Static l:TConverter.Instance}}" />
@@ -5497,7 +5607,7 @@
                                         </ComboBox>
                                     </Grid>
                                     <TextBlock TextWrapping="Wrap" Opacity="0.75" FontSize="12"
-                                               Text="{l:T 'The cockpit picture packs come from JoyPro\'s releases on GitHub (pictures JoyPro rendered from the games); GitHub sees your IP address. Kept with your game data.'}" />
+                                               Text="{l:T 'The cockpit picture packs and the 3D device views come from JoyPro\'s releases on GitHub (pictures JoyPro rendered from the games and from 3D models of the devices); GitHub sees your IP address. Kept with your game data and device pictures.'}" />
                                     <CheckBox Content="{l:T 'Game covers from the internet'}" IsChecked="{Binding GameCoverDownloads}"
                                               ToolTip.Tip="{l:T 'Covers of games Steam has no picture of on this PC are downloaded once from Steam\'s store or the publisher\'s site (engine media sources). Off: JoyPro\'s badges and the pictures already on this PC. Takes effect at the next start.'}" />
                                 </StackPanel>

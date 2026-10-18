@@ -28,6 +28,10 @@ internal sealed class FollowInputTracker
     private readonly Dictionary<string, double[]> anchors = new(StringComparer.OrdinalIgnoreCase);
     private readonly Dictionary<string, long> lastAxisStep = new(StringComparer.OrdinalIgnoreCase);
 
+    // The last OnAxes call saw an axis a large part of its travel away from its anchor, also when it did not step
+    // (too soon after the last step): the user is moving it, so the window keeps tooltips back.
+    public bool AxisMovedFar { get; private set; }
+
     public FollowInputTracker(Func<long>? clock = null)
     {
         Stopwatch watch = Stopwatch.StartNew();
@@ -65,6 +69,7 @@ internal sealed class FollowInputTracker
     // The axis to follow ("JOY_X"), or null. axes: the device's 8 axes, 0..1.
     public string? OnAxes(string device, IReadOnlyList<double> axes, bool firstReport)
     {
+        AxisMovedFar = false;
         if (string.IsNullOrWhiteSpace(device) || axes == null)
             return null;
         string name = device.Trim();
@@ -88,6 +93,7 @@ internal sealed class FollowInputTracker
         }
         if (best < 0)
             return null;
+        AxisMovedFar = true;
         string key = name + "|" + AxisNames[best];
         if (lastAxisStep.TryGetValue(key, out long last) && now - last < AxisStepGapMs)
             return null;

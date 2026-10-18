@@ -290,7 +290,26 @@ namespace JoyPro.DeviceReference
                     best = Math.Min(best, DistanceToSegment(px, py, a, b));
                 }
             }
-            return inside || best <= reach;
+            if (inside || best <= reach)
+                return true;
+            // A drawing with colour regions: a part on any region (a lever in front of the body, whose outline the
+            // body's silhouette does not enclose) is on the device too.
+            foreach (LineArtFill fill in Fills)
+            {
+                foreach (List<double[]> line in Flatten(ParsePath(fill.D), 8))
+                {
+                    bool own = false;
+                    for (int i = 0, j = line.Count - 1; i < line.Count; j = i++)
+                    {
+                        double[] a = line[i], b = line[j];
+                        if ((a[1] > py) != (b[1] > py) && px < (b[0] - a[0]) * (py - a[1]) / (b[1] - a[1]) + a[0])
+                            own = !own;
+                    }
+                    if (own)
+                        return true;
+                }
+            }
+            return false;
         }
 
         private static double DistanceToSegment(double px, double py, double[] a, double[] b)
@@ -437,25 +456,34 @@ namespace JoyPro.DeviceReference
                                   string.Equals(a.Device, device, StringComparison.OrdinalIgnoreCase)).ToList();
         }
 
-        // The drawing made from exactly this photo (its SHA-256), or null.
-        public static DeviceLineArt OfPhoto(IEnumerable<DeviceLineArt> all, string model, string photoSha256)
+        // Whether a drawing belongs to a picture key: the photo's SHA-256 it was made on (by its opaque key), or the
+        // drawing's own key (a drawing JoyPro authored in its own frame: its positions are kept under its key).
+        public static bool Matches(DeviceLineArt art, string pictureKey)
         {
-            string key = DeviceLineArt.OpaqueKey(photoSha256);
-            if (key.Length == 0)
-                return null;
-            return all.FirstOrDefault(a => string.Equals(a.Model, model, StringComparison.OrdinalIgnoreCase) && string.Equals(a.Key, key, StringComparison.OrdinalIgnoreCase));
+            if (art == null || string.IsNullOrWhiteSpace(pictureKey) || art.Key.Length == 0)
+                return false;
+            return string.Equals(art.Key, pictureKey.Trim(), StringComparison.OrdinalIgnoreCase) ||
+                   string.Equals(DeviceLineArt.OpaqueKey(pictureKey), art.Key, StringComparison.OrdinalIgnoreCase);
         }
 
-        // The photo a drawing was made from, among the given content hashes (curated sets, photo references); empty
-        // when none of them matches.
+        // The drawing made from exactly this photo (its SHA-256), or the drawing with this own key, or null.
+        public static DeviceLineArt OfPhoto(IEnumerable<DeviceLineArt> all, string model, string photoSha256)
+        {
+            if (string.IsNullOrWhiteSpace(photoSha256))
+                return null;
+            return all.FirstOrDefault(a => string.Equals(a.Model, model, StringComparison.OrdinalIgnoreCase) && Matches(a, photoSha256));
+        }
+
+        // The photo a drawing was made from, among the given content hashes (curated sets, photo references; a set on
+        // a drawing in JoyPro's own frame names the drawing's key instead); empty when none of them matches.
         public static string PhotoHashOf(DeviceLineArt art, IEnumerable<string> hashes)
         {
             if (art == null || art.Key.Length == 0)
                 return string.Empty;
             foreach (string hash in hashes)
             {
-                if (!string.IsNullOrWhiteSpace(hash) && string.Equals(DeviceLineArt.OpaqueKey(hash), art.Key, StringComparison.OrdinalIgnoreCase))
-                    return hash.ToLowerInvariant();
+                if (Matches(art, hash))
+                    return hash.Trim().ToLowerInvariant();
             }
             return string.Empty;
         }

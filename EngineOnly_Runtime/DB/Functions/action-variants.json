@@ -1,0 +1,52 @@
+{
+  "format": "joypro-action-variants",
+  "version": 1,
+  "note": "Generic rules that tell the variants of one function in a game apart (EngineActionChoice, docs/relation-builder.md 'Recommended action'). A rule fits when one of its word sequences is in the action's title or the game's category for it (words compared like the function map: lower case, plural s dropped), or its pattern matches the title; a rule whose words belong to the function itself (trim for 'Pitch trim') does not count. demote: the action is a variant, never the recommended one while a plain action exists. family: actions of another vehicle class are recommended on their own ('for helicopters'). keepsFunction: the variant still is the function (another set or mode of the same control), so the function's general explanation fits it. text: the one-line difference shown under the variant.",
+  "rules": [
+    { "id": "trim", "words": [ "trim", "trimmer" ], "demote": true, "text": "trim: sets where the control rests, not the control itself" },
+    { "id": "alternate", "keepsFunction": true, "words": [ "alternate", "alternative", "alt", "secondary", "2nd" ], "demote": true, "text": "the game's alternate set of this control" },
+    { "id": "landing", "keepsFunction": true, "words": [ "landing" ], "demote": true, "text": "used in the game's landing mode" },
+    { "id": "mouse", "keepsFunction": true, "words": [ "mouse" ], "demote": true, "text": "for mouse control" },
+    { "id": "combined", "keepsFunction": true, "pattern": "(?i)\\b(ailerons?|elevators?|rudders?|pitch|roll|yaw|throttles?|brakes?)\\s*/\\s*(ailerons?|elevators?|rudders?|pitch|roll|yaw|throttles?|brakes?)\\b", "demote": true, "text": "two controls on one axis (combined)" },
+    { "id": "gyro", "words": [ "gyro", "gyroscope" ], "demote": true, "text": "the gyroscope's input, not the main control" },
+    { "id": "seat", "words": [ "copilot", "co pilot", "gunner", "instructor", "rear seat", "back seat", "operator" ], "demote": true, "text": "for another seat (copilot, gunner or rear seat)" },
+    { "id": "view", "words": [ "camera", "cam", "view", "look", "head", "headlook", "pan" ], "demote": true, "text": "moves the view, not the aircraft" },
+    { "id": "weapon", "words": [ "weapon", "gun", "gunsight", "sight", "aim", "aiming", "turret" ], "demote": true, "text": "for aiming a weapon" },
+    { "id": "propeller", "words": [ "propeller", "prop" ], "demote": true, "text": "the propeller's blade angle, not the aircraft's attitude" },
+    { "id": "reset", "keepsFunction": true, "words": [ "reset" ], "demote": true, "text": "moves the control back to its neutral position" },
+    { "id": "free", "words": [ "free" ], "demote": true, "text": "variant marked 'free' by the game; the game does not say what it means" },
+    { "id": "helicopter", "words": [ "helicopter", "heli", "cyclic", "rotor" ], "family": "helicopter", "text": "for helicopters" },
+    { "id": "plane", "words": [ "plane", "airplane", "aeroplane" ], "family": "plane", "text": "for planes" },
+    { "id": "ground", "words": [ "vehicle driver", "ground vehicle", "driver", "tank" ], "family": "ground", "text": "for ground vehicles" }
+  ],
+  "functionTemplates_note": "The general explanation (DB/Cockpits/guide/_templates.json) of a function where its name alone picks a wrong one ('Pitch' is no propeller pitch); an empty value: none. Other functions take the template whose words are in the function's name.",
+  "functionTemplates": {
+    "pitch": "stick",
+    "roll": "stick",
+    "trim_pitch": "trim",
+    "trim_yaw": "trim",
+    "tailwheel_lock": "",
+    "rotor_brake": "",
+    "rwr": "",
+    "missile_warning": "",
+    "dms": "",
+    "uncage": "",
+    "weapon_select": "",
+    "lights_nav": "lights",
+    "ap_heading": "autopilot",
+    "view_padlock": "view",
+    "view_free": "view",
+    "space_brake": "",
+    "speed_control": "",
+    "hardpoints": "",
+    "altimeter_set": ""
+  },
+  "spaceGames": [ "StarCitizen", "EliteDangerous", "X4" ],
+  "families": {
+    "": "for planes",
+    "plane": "for planes",
+    "helicopter": "for helicopters",
+    "ground": "for ground vehicles",
+    "space": "for ships"
+  }
+}

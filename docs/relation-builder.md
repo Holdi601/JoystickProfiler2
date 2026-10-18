@@ -196,9 +196,47 @@ Confidence: high from 85, medium from 55, else weak. Weak matches are hidden unt
   on the left lists them, `Restore` (`--remove`) takes one out).
 - **Already in another relation**: such a row says `Already in 'Flare'` and offers `Move here` (`--take`).
 - **Looks wrong**: entries an old auto-fill put into the relation, with `Move to` / `Remove`
-  ([Suggest additions](suggest-additions.md#what-looks-wrong)).
+  ([Suggest additions](suggest-additions.md#what-looks-wrong)). Also a button in an axis relation (or an axis in a
+  button relation: "'UFC 3 Key' is a button in A-10C II; 'Pitch' is an axis relation"), with `Move to` the button
+  relation of its function.
+- **Outliers seed nothing**: an action of the other kind, or one the catalog files under a function no other action of
+  the relation shares (the relation has a function of its own), says nothing about what the relation is: no suggestion
+  comes from it, it only shows under `Looks wrong`. `check-aircraft` ("Same id, different meaning") leaves actions of the
+  other kind out of its count (`OtherKindNodes`).
 - The relation's meaning is the union of its actions' functions, weighted (a function counts fully when the relation is
   named after it or when at least half of its actions are it). The header shows it.
+- The panel belongs to the open relation only: opening another one clears the suggestions, `Looks wrong`, the
+  dismissed list and the function chip at once (the engine run takes a while), and a row left over from the relation
+  before never acts on the new one.
+
+### Recommended action
+
+Games often have two to four actions for one function (Elite "Pitch Axis" / "(Alternate)" / "(Landing)", MSFS "Elevator
+Axis" / "Elevator Set" / "Aileron / Elevator", Arma 3 plane and helicopter pitch, IL-2 Korea "Pitch (Elevator)" / "Mc
+pitch" / "Rb pitch"). Per game (DCS: per aircraft) one is **Recommended** (ranked first, ticked for `Add ticked`); the
+others sit collapsed under it (`+2 other actions in this game`), never ticked, each with one line `Differs: ...`.
+`EngineActionChoice` with the generic rules of `DB/Functions/action-variants.json` (nothing written per action):
+
+- the recommended action: no variant rule fits, no word of its own the function does not explain, the function's
+  canonical control (`PrimaryRank`), the higher score, the shorter title;
+- variant rules (title or the game's category): trim, alternate set, landing mode, mouse, combined axis (`Aileron /
+  Elevator`), gyroscope, another seat, view / camera, weapon aiming, propeller, reset, "free"; a rule whose words are the
+  function's own (trim for `Pitch trim`) does not count;
+- a word the game gives no meaning for: `variant ('Mc') - meaning not documented by the game` (never guessed); no
+  rule and no such word: `the game does not say how it differs`;
+- families: a helicopter (or ground vehicle) action next to a plane action of the same game is recommended too, `for
+  helicopters` / `for planes` (space games: `for ships`);
+- a game or aircraft the relation has an action for already gets no recommendation.
+
+Every row shows the game's readable name (`EngineActionInfo.Readable`: MSFS / FSX / P3D events whose list has no menu
+name get one from the event name, `KEY_AXIS_ELEVATOR_SET` -> `Elevator Axis`; an id shown as its title gets its words),
+the function and the id small underneath, and what it does: the cockpit guide's "What does it do?" text of the control it
+is (through the cockpit pictures' commands), else the sim's own description (MSFS `en-US.locPak` `..._DESC`), else the
+general explanation of its function (`_templates.json`, by the function, `functionTemplates` in action-variants.json where
+the name alone would pick a wrong one), else nothing. The index is kept in `<data>\Cache\action-info.tsv`. The same marks
+and texts are in `relations search` (Add actions), `relations browse` (catalog) and the relation's nodes (tooltip).
+`engine relations action-info --coverage [--game g]` counts per game: readable names, explanations by source, functions
+with a recommended action that is no variant.
 - `More` → `Next relation with suggestions` (`suggest --all --min medium`) opens the next relation that can grow.
 
 ### Suggest missing

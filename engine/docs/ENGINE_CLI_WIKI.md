@@ -446,6 +446,7 @@ engine profile save "C:\profiles\my_setup.pr0file"
   engine relations aircraft set <relation> --node game:id [--on p1|p2] [--off p3|p4]
   engine relations check-aircraft [--relation <name>] [--apply] [--include-same-function]
   engine relations meanings [--game g] [--top N]
+  engine relations action-info --coverage [--game g]
   engine relations auto-group [--preset all|wing|era|purist] [--no-substitutes] [--planes p1|p2|Game] [--replace] [--dry-run] [--no-map]
   engine relations from-text "<request>" [--games g1|g2] [--planes p1|p2] [--llm off|auto|on] [--substitutes] [--select <relation>]... [--skip-node game:id:plane1|plane2]... [--name <name>] [--min-confidence 0..1] [--dry-run]
   engine relations from-text --check   (tests the vocabulary in DB/Functions/language.json against the catalog)
@@ -465,7 +466,7 @@ engine profile save "C:\profiles\my_setup.pr0file"
   engine setup render --plan <plan.json> --out-dir <folder> [--aircraft <name>] [--light] [--width <px>]   (a callout sheet per device)
   engine relations auto-assign [--grip <device|VID:PID>=<grip id>]... [--add-device <catalog id>]... [--ignore-device <device>]... [--relation <name>]... [--max-modifiers 0|1|2] [--overwrite [--include-missing]] [--no-style] [--explain <relation>]... [--dry-run]
   engine devices kb [list [query] | show <id> | identify [--grip <device>=<grip id>]... [--add-device <id>]...]   (device catalog for Auto Assign)
-  engine devices reference [list [query] | identify --vidpid <VID:PID> --name <HID name> [--instance <name>] [--buttons <n>] [--hats <n>] [--axes X,Y,RZ] | show <id> [--base <id>] [--svg <file>] [--light] [--no-badges] | check [query] | photos [query] [--coverage] | photo-add --model <id> --url <https photo on the maker's host> --view <front|side|back|top|base|three-quarter|sheet> [--page <url>] [--confidence <c>] [--shows a,b] [--sha256 <hex>] | layout-check | drawings [query] [--check] [--model <id> [--view <v>] --svg <file> | --png <file>] [--light] [--drawing-style lines|cel] [--drawing-preset <p>]]   (device reference pictures: catalog, identification and the question to ask, JoyPro's schematic with markers, photo references, curated marker positions, JoyPro's own drawings of the devices)
+  engine devices reference [list [query] | identify --vidpid <VID:PID> --name <HID name> [--instance <name>] [--buttons <n>] [--hats <n>] [--axes X,Y,RZ] | show <id> [--base <id>] [--svg <file>] [--light] [--no-badges] | check [query] | photos [query] [--coverage] | photo-add --model <id> --url <https photo on the maker's host> --view <front|side|back|top|base|three-quarter|sheet> [--page <url>] [--confidence <c>] [--shows a,b] [--sha256 <hex>] | layout-check | drawings [query] [--check] [--model <id> [--view <v>] --svg <file> | --png <file>] [--light] [--drawing-style lines|cel] [--drawing-preset <p>] | completeness [query] [--missing] [--list <file>] | mesh-render --aircraft <plane> --grip stick|throttle [--view <yaw>,<pitch>] [--size <px>] [--skip <regex>] --folder <dir>]   (device reference pictures: catalog, identification and the question to ask, JoyPro's schematic with markers, photo references, curated marker positions, JoyPro's own drawings of the devices, whether every input has a position, a game's grip rendered for a drawing)
   engine cockpits [list [query] [--game G] [--era E] [--role R] [--nation N] [--category fixed-wing|helicopter|space|fiction|real] | search <text> [--limit n] | get <aircraft> [<variant>] [--json] | check | render <aircraft> [<variant>] --png <file> [--device <d>] [--style dark|light] [--print-width <px>] [--drawing-only] | compare <aircraft> [<variant>] [--game G] | photos [query] [--coverage] | coverage | drawings | pictures build [--game DCS|XPlane12|MSFS2020|IL2Game|NuclearOption|all] [--aircraft <name>,...] [--force] [--out <folder>] | pictures status | pictures check [--game G] [--aircraft <name>,...] [--write] [--drop]]
   engine binds list [filter]
   engine binds show <bind-or-relation>
@@ -5585,6 +5586,18 @@ Examples:
 engine --help
 ```
 
+### `engine relations action-info --coverage [--game g]`
+What it does: Runs this command operation.
+
+Arguments and example values:
+- `--coverage`: Command argument. See examples for typical values.
+- `--game`: Game filter value. Example: DCS or IL2Game.
+
+Examples:
+```powershell
+engine --help
+```
+
 ### `engine relations auto-group [--preset all|wing|era|purist] [--no-substitutes] [--planes p1|p2|Game] [--replace] [--dry-run] [--no-map]`
 What it does: Runs this command operation.
 
@@ -5884,7 +5897,7 @@ Examples:
 engine --help
 ```
 
-### `engine devices reference [list [query] | identify --vidpid <VID:PID> --name <HID name> [--instance <name>] [--buttons <n>] [--hats <n>] [--axes X,Y,RZ] | show <id> [--base <id>] [--svg <file>] [--light] [--no-badges] | check [query] | photos [query] [--coverage] | photo-add --model <id> --url <https photo on the maker's host> --view <front|side|back|top|base|three-quarter|sheet> [--page <url>] [--confidence <c>] [--shows a,b] [--sha256 <hex>] | layout-check | drawings [query] [--check] [--model <id> [--view <v>] --svg <file> | --png <file>] [--light] [--drawing-style lines|cel] [--drawing-preset <p>]]   (device reference pictures: catalog, identification and the question to ask, JoyPro's schematic with markers, photo references, curated marker positions, JoyPro's own drawings of the devices)`
+### `engine devices reference [list [query] | identify --vidpid <VID:PID> --name <HID name> [--instance <name>] [--buttons <n>] [--hats <n>] [--axes X,Y,RZ] | show <id> [--base <id>] [--svg <file>] [--light] [--no-badges] | check [query] | photos [query] [--coverage] | photo-add --model <id> --url <https photo on the maker's host> --view <front|side|back|top|base|three-quarter|sheet> [--page <url>] [--confidence <c>] [--shows a,b] [--sha256 <hex>] | layout-check | drawings [query] [--check] [--model <id> [--view <v>] --svg <file> | --png <file>] [--light] [--drawing-style lines|cel] [--drawing-preset <p>] | completeness [query] [--missing] [--list <file>] | mesh-render --aircraft <plane> --grip stick|throttle [--view <yaw>,<pitch>] [--size <px>] [--skip <regex>] --folder <dir>]   (device reference pictures: catalog, identification and the question to ask, JoyPro's schematic with markers, photo references, curated marker positions, JoyPro's own drawings of the devices, whether every input has a position, a game's grip rendered for a drawing)`
 What it does: Runs this command operation.
 
 Arguments and example values:
@@ -5923,6 +5936,19 @@ Arguments and example values:
 - `--drawing-style`: Command argument. See examples for typical values.
 - `--drawing-preset`: Command argument. See examples for typical values.
 - `<p>`: Command argument. See examples for typical values.
+- `--missing`: For db list, show only missing entries.
+- `--list`: Command argument. See examples for typical values.
+- `--aircraft`: MSFS export only: also write the relations limited to this aircraft (key from DB\\MSFS\\aircraft.tsv); the sim's presets apply to every aircraft.
+- `<plane>`: Command argument. See examples for typical values.
+- `--grip`: Command argument. See examples for typical values.
+- `<yaw>`: Command argument. See examples for typical values.
+- `<pitch>`: Command argument. See examples for typical values.
+- `--size`: Command argument. See examples for typical values.
+- `<px>`: Command argument. See examples for typical values.
+- `--skip`: Command argument. See examples for typical values.
+- `<regex>`: Command argument. See examples for typical values.
+- `--folder`: Command argument. See examples for typical values.
+- `<dir>`: Command argument. See examples for typical values.
 
 Examples:
 ```powershell

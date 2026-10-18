@@ -94,7 +94,9 @@ namespace JoyPro.Engine
             double headerH = header ? HeaderHeight(sheet) : 0;
             double sheetW = Math.Max(1, sheet.Width), sheetH = Math.Max(1, sheet.Height + headerH);
             float scale = options.PrintWidth > 0 ? (float)Math.Max(0.25, Math.Min(4.0, options.PrintWidth / sheetW)) : 1f;
-            int w = Math.Max(1, (int)Math.Ceiling(sheetW * scale)), h = Math.Max(1, (int)Math.Ceiling(sheetH * scale));
+            // Exactly the print width when the sheet is scaled to it (float rounding gave 3509 for 3508).
+            bool exact = options.PrintWidth > 0 && Math.Abs(scale - options.PrintWidth / sheetW) < 1e-4;
+            int w = exact ? options.PrintWidth : Math.Max(1, (int)Math.Ceiling(sheetW * scale - 1e-3)), h = Math.Max(1, (int)Math.Ceiling(sheetH * scale - 1e-3));
             Bitmap output = new Bitmap(w, h, PixelFormat.Format32bppArgb);
             output.SetResolution(300, 300);
             using (Graphics g = Graphics.FromImage(output))

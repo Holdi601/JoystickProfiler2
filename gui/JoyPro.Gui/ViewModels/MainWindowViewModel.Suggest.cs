@@ -46,7 +46,9 @@ public sealed partial class MainWindowViewModel
 
     private async Task ApplyMisfitAsync(RelationMisfitItem item, List<string> option, string done)
     {
-        RelationMisfits.Remove(item);
+        // An entry of the relation the box was filled for (never one left over from the relation opened before).
+        if (!RelationMisfits.Remove(item))
+            return;
         OnPropertyChanged(nameof(HasRelationMisfits));
         await ApplyToBuilderRelationAsync(option, T("Fixing '{0}'...", item.Title), "'" + item.Title + "' " + done);
     }

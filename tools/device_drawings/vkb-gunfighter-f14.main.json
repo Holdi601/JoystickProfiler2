@@ -1,0 +1,40 @@
+{
+ "model": "vkb-gunfighter-f14",
+ "view": "main",
+ "class": "stick",
+ "width": 980,
+ "height": 910,
+ "source": "JoyPro drawing of the F-14 grip the device replicates, made from DCS World's F-14B cockpit model (seen from the front left and from the left)",
+ "mappingSource": "VKB Gunfighter F-14 Combat Edition grip (VKB product page and profile template): red weapon release button, trim hat, two-stage trigger, weapon selector with push, side button, autopilot paddle, pinky switch",
+ "confidence": "medium",
+ "turntableKeepTop": 1,
+ "include": [
+  {
+   "file": "dcs-f14-stick-back.json",
+   "dx": 30,
+   "dy": 30,
+   "scale": 1.0,
+   "map": {
+    "Hatswitch": {"part": "stick.hat.trim", "glyph": "hat4", "size": 15, "press": true},
+    "c03": "stick.weapon_release",
+    "Joystick_Wep_Head": {"part": "stick.button.thumb.1", "glyph": "button", "size": 12},
+    "c07": "stick.button.thumb.2",
+    "c06": "stick.pinky.lever"
+   }
+  },
+  {
+   "file": "dcs-f14-stick-side.json",
+   "dx": 520,
+   "dy": 30,
+   "scale": 1.0,
+   "map": {
+    "Trigger": "stick.trigger",
+    "c06": "stick.pinky.button"
+   }
+  }
+ ],
+ "shapes": [],
+ "controls": [
+  {"part": "stick.gimbal", "glyph": "gimbal", "at": [760, 872], "size": 34}
+ ]
+}

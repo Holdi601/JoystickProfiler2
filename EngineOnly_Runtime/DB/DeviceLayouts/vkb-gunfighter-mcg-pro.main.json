@@ -4,232 +4,67 @@
   "model": "vkb-gunfighter-mcg-pro",
   "photo": {"kind": "vendor", "url": "https://vkbsimcontrollers.com/cdn/shop/files/MCG-Pro-EN_for_GF_1200_02_7809c025-f9a5-4bf3-921d-37249a7e134a.webp", "sha256": "2299ab376e963764f1a0fcbd677676cb279076c828e4a511c84f4f276d665de8", "view": "main"},
   "markers": {
-    "stick.axis.brake_lever": [0.385, 0.58],
-    "stick.axis.twist": [0.62, 0.62],
-    "stick.button.index.1": [0.41, 0.645],
-    "stick.gimbal": [0.565, 0.895],
-    "stick.trigger": [0.42, 0.41],
-    "stick.weapon_release": [0.417, 0.1]
+    "stick.axis.brake_lever": [0.3933, 0.62],
+    "stick.axis.twist": [0.5867, 0.7533],
+    "stick.brake_lever": [0.3967, 0.625],
+    "stick.button.thumb.1": [0.575, 0.1033],
+    "stick.button.thumb.2": [0.5933, 0.1883],
+    "stick.button.thumb.3": [0.5367, 0.5217],
+    "stick.gimbal": [0.565, 0.8917],
+    "stick.hat.cms": [0.5183, 0.3867],
+    "stick.hat.tms": [0.5517, 0.2183],
+    "stick.ministick": [0.4983, 0.0917],
+    "stick.ministick2": [0.4433, 0.2067],
+    "stick.trigger": [0.4617, 0.3733],
+    "stick.trigger.flip": [0.4217, 0.4133],
+    "stick.weapon_release": [0.4167, 0.0967]
   },
-  "parts": {
-    "stick.weapon_release": {
-      "type": "release",
-      "name": "Red button (weapon release)",
-      "inputs": [
-        {"input": "JOY_BTN3", "control": "stick.weapon_release"}
-      ],
-      "mapping": "medium",
-      "confidence": "high",
-      "note": "red button (only red control)"
-    },
-    "stick.hat.tms": {
-      "type": "hat",
-      "name": "TMS hat",
-      "inputs": [
-        {"input": "JOY_BTN14", "control": "stick.hat.tms.up"},
-        {"input": "JOY_BTN15", "control": "stick.hat.tms.right"},
-        {"input": "JOY_BTN16", "control": "stick.hat.tms.down"},
-        {"input": "JOY_BTN17", "control": "stick.hat.tms.left"},
-        {"input": "JOY_BTN18", "control": "stick.hat.tms.press"}
-      ],
-      "mapping": "low"
-    },
-    "stick.hat.dms": {
-      "type": "hat",
-      "name": "DMS hat",
-      "inputs": [
-        {"input": "JOY_BTN19", "control": "stick.hat.dms.left"},
-        {"input": "JOY_BTN20", "control": "stick.hat.dms.up"},
-        {"input": "JOY_BTN21", "control": "stick.hat.dms.right"},
-        {"input": "JOY_BTN22", "control": "stick.hat.dms.down"},
-        {"input": "JOY_BTN23", "control": "stick.hat.dms.press"}
-      ],
-      "mapping": "medium"
-    },
-    "stick.hat.cms": {
-      "type": "hat",
-      "name": "CMS hat",
-      "inputs": [
-        {"input": "JOY_BTN9", "control": "stick.hat.cms.press"},
-        {"input": "JOY_BTN10", "control": "stick.hat.cms.up"},
-        {"input": "JOY_BTN11", "control": "stick.hat.cms.right"},
-        {"input": "JOY_BTN12", "control": "stick.hat.cms.down"},
-        {"input": "JOY_BTN13", "control": "stick.hat.cms.left"}
-      ],
-      "mapping": "medium"
-    },
-    "stick.ministick": {
-      "type": "ministick",
-      "name": "Thumb stick",
-      "inputs": [
-        {"input": "JOY_RX", "control": "stick.axis.ministick.x"},
-        {"input": "JOY_RY", "control": "stick.axis.ministick.y"},
-        {"input": "JOY_BTN_POV1_U", "control": "stick.ministick.up"},
-        {"input": "JOY_BTN_POV1_UR", "control": "stick.ministick.upright"},
-        {"input": "JOY_BTN_POV1_R", "control": "stick.ministick.right"},
-        {"input": "JOY_BTN_POV1_DR", "control": "stick.ministick.downright"},
-        {"input": "JOY_BTN_POV1_D", "control": "stick.ministick.down"},
-        {"input": "JOY_BTN_POV1_DL", "control": "stick.ministick.downleft"},
-        {"input": "JOY_BTN_POV1_L", "control": "stick.ministick.left"},
-        {"input": "JOY_BTN_POV1_UL", "control": "stick.ministick.upleft"}
-      ],
-      "mapping": "medium"
-    },
-    "stick.trigger": {
-      "type": "trigger",
-      "name": "Trigger",
-      "inputs": [
-        {"input": "JOY_BTN1", "control": "stick.trigger.stage1"},
-        {"input": "JOY_BTN2", "control": "stick.trigger.stage2"}
-      ],
-      "mapping": "medium",
-      "confidence": "medium",
-      "note": "trigger assembly: the dual-stage trigger sits behind the metal folding trigger, marker on the folding trigger face"
-    },
-    "stick.pinky.button": {
-      "type": "button",
-      "name": "Button 6 (DCS: master mode / paddle switch)",
-      "inputs": [
-        {"input": "JOY_BTN6", "control": "stick.pinky.button"}
-      ],
-      "mapping": "medium"
-    },
-    "stick.axis.twist": {
-      "type": "twist",
-      "name": "Twist",
-      "inputs": [
-        {"input": "JOY_Z", "control": "stick.axis.twist"}
-      ],
-      "mapping": "medium",
-      "confidence": "medium",
-      "note": "twist: on the handle"
-    },
-    "stick.gimbal": {
-      "type": "gimbal",
-      "name": "Stick (roll / pitch)",
-      "inputs": [
-        {"input": "JOY_X", "control": "stick.axis.roll"},
-        {"input": "JOY_Y", "control": "stick.axis.pitch"}
-      ],
-      "mapping": "medium",
-      "confidence": "medium",
-      "note": "grip connector; add-on grip, base not on the photo"
-    },
-    "stick.axis.brake_lever": {
-      "type": "brake",
-      "name": "Brake lever (DCS: wheel brake)",
-      "inputs": [
-        {"input": "JOY_SLIDER2", "control": "stick.axis.brake_lever"}
-      ],
-      "mapping": "medium",
-      "confidence": "high",
-      "note": "brake lever (JOY_SLIDER2)"
-    },
-    "stick.ministick2": {
-      "type": "ministick",
-      "name": "Microstick B",
-      "inputs": [
-        {"input": "JOY_RZ", "control": "stick.axis.ministick2.y"},
-        {"input": "JOY_SLIDER1", "control": "stick.axis.ministick2.x"}
-      ],
-      "mapping": "medium"
-    },
-    "stick.button.thumb.1": {
-      "type": "button",
-      "name": "Button 4 (DCS: NWS / missile step, display mode A-A)",
-      "inputs": [
-        {"input": "JOY_BTN4", "control": "stick.button.thumb.1"}
-      ],
-      "mapping": "medium"
-    },
-    "stick.button.thumb.2": {
-      "type": "button",
-      "name": "Button 5 (DCS: uncage / cage)",
-      "inputs": [
-        {"input": "JOY_BTN5", "control": "stick.button.thumb.2"}
-      ],
-      "mapping": "medium"
-    },
-    "stick.button.thumb.3": {
-      "type": "button",
-      "name": "Button 7 (DCS: nosewheel steering / expand-FOV)",
-      "inputs": [
-        {"input": "JOY_BTN7", "control": "stick.button.thumb.3"}
-      ],
-      "mapping": "medium"
-    },
-    "stick.button.thumb.4": {
-      "type": "button",
-      "name": "Button 8 (DCS: radar acquire / enter)",
-      "inputs": [
-        {"input": "JOY_BTN8", "control": "stick.button.thumb.4"}
-      ],
-      "mapping": "medium"
-    },
-    "stick.button.index.1": {
-      "type": "button",
-      "name": "Brake lever fully squeezed (forum)",
-      "inputs": [
-        {"input": "JOY_BTN29", "control": "stick.button.index.1"}
-      ],
-      "mapping": "medium",
-      "confidence": "medium",
-      "note": "brake lever fully squeezed (BTN29, forum): same lever as the brake axis"
-    }
-  },
-  "unplaced": {
-    "stick.hat.tms": "catalog labels TMS 'top middle', but the top-middle control may be the second (trimmer) mini stick: on the MCG Ultimate body it is a mini stick, and the product page lists 2 mini sticks",
-    "stick.hat.dms": "one of the MANVR / DC / RESET hats; which one is undocumented",
-    "stick.hat.cms": "one of the MANVR / DC / RESET hats; which one is undocumented",
-    "stick.ministick": "Microstick A (RX/RY + POV): one of the two mini sticks (GATE CONT or top middle); which one is undocumented",
-    "stick.pinky.button": "BTN6 role 'master mode / paddle switch' only; physical control unknown (possibly the folding-trigger up/down sensor)",
-    "stick.ministick2": "Microstick B (slew): one of the two mini sticks; which one is undocumented",
-    "stick.button.thumb.1": "BTN4: role-named only (NWS / missile step), physical button unknown",
-    "stick.button.thumb.2": "BTN5: role-named only (uncage), physical button unknown",
-    "stick.button.thumb.3": "BTN7: role-named only (NWS / expand FOV), physical button unknown",
-    "stick.button.thumb.4": "BTN8: role-named only (radar acquire / enter), physical button unknown"
-  },
-  "candidates": {
-    "stick.hat.tms": [0.51, 0.1]
-  },
-  "source": "JoyPro curated on the maker's product photo (2026-10-11), grip seen from the left (thumb side), front to the left (same body and angle as VKB's MCGU template photo)",
-  "mappingSource": "catalog vkb.json (231D:0125 numbering from the user's own Elite Dangerous binds + DCS role names + forum, catalog confidence low); no VKB template/manual exists for the MCG Pro (vkbsimcontrollers.com/pages/downloads lists only the MCG Ultimate); product page https://vkbsimcontrollers.com/products/mcg-pro-add-on-grip-for-gunfighter-mk-iv-us",
+  "source": "JoyPro curated on the maker's photo (2026-10-18), seen from the left",
+  "mappingSource": "a real MCG Pro's configuration (231D:0125) matched to VKB's printed control names (GATE CONT, PC, MANVR, LVLNG, RESET); no VKB button map is published for the MCG Pro",
   "confidence": "medium",
   "note": "Full pass over the existing 3-marker set. Placed only parts whose input is unambiguous (red button, trigger, brake lever, gimbal, twist). The head carries the same layout as the MCG Ultimate (top-middle control, GATE CONT mini stick, MANVR hat, 2 white buttons, DC hat on the outer side, RESET thumb hat, ring finger button), but which catalog hat/ministick/button number sits on which of them is not documented. The product page lists 2 mini sticks (slew + trimmer), a dual-stage trigger and a metal folding trigger with a 2-position sensor; the catalog's 3 x 5-way hats, 4 thumb buttons and the 'paddle switch' BTN6 cannot be tied to the physical controls without a device test. left/right/back views add no further certain parts.",
+  "unplaced": {
+    "stick.hat.dms": "on the right side of the head, hidden on this photo"
+  },
   "callouts": {
     "version": 1,
     "width": 1280,
     "height": 1118,
-    "picture": [340, 74, 600, 600],
+    "picture": [340, 274, 600, 600],
     "rowHeight": 20,
     "mainWidth": 170,
     "modWidth": 110,
-    "otherY": 768,
+    "otherY": 968,
     "tables": [
-      {"id": "stick.weapon_release", "title": "Red button (weapon release)", "parts": ["stick.weapon_release"], "side": "top", "x": 440.2, "y": 16, "width": 300, "modifier": true, "spot": [0.417, 0.1], "rows": [{"input": "JOY_BTN3", "label": "Press", "icon": "button", "part": "stick.weapon_release"}]},
-      {"id": "stick.hat.tms", "title": "TMS hat", "parts": ["stick.hat.tms"], "side": "other", "x": 16, "y": 788, "width": 300, "modifier": true, "rows": [{"input": "JOY_BTN18", "label": "Press", "icon": "button", "part": "stick.hat.tms"}, {"input": "JOY_BTN14", "label": "Up", "icon": "up", "part": "stick.hat.tms"}, {"input": "JOY_BTN15", "label": "Right", "icon": "right", "part": "stick.hat.tms"}, {"input": "JOY_BTN17", "label": "Left", "icon": "left", "part": "stick.hat.tms"}, {"input": "JOY_BTN16", "label": "Down", "icon": "down", "part": "stick.hat.tms"}]},
-      {"id": "stick.hat.dms", "title": "DMS hat", "parts": ["stick.hat.dms"], "side": "other", "x": 322, "y": 788, "width": 300, "modifier": true, "rows": [{"input": "JOY_BTN23", "label": "Press", "icon": "button", "part": "stick.hat.dms"}, {"input": "JOY_BTN20", "label": "Up", "icon": "up", "part": "stick.hat.dms"}, {"input": "JOY_BTN21", "label": "Right", "icon": "right", "part": "stick.hat.dms"}, {"input": "JOY_BTN19", "label": "Left", "icon": "left", "part": "stick.hat.dms"}, {"input": "JOY_BTN22", "label": "Down", "icon": "down", "part": "stick.hat.dms"}]},
-      {"id": "stick.hat.cms", "title": "CMS hat", "parts": ["stick.hat.cms"], "side": "other", "x": 628, "y": 788, "width": 300, "modifier": true, "rows": [{"input": "JOY_BTN9", "label": "Press", "icon": "button", "part": "stick.hat.cms"}, {"input": "JOY_BTN10", "label": "Up", "icon": "up", "part": "stick.hat.cms"}, {"input": "JOY_BTN11", "label": "Right", "icon": "right", "part": "stick.hat.cms"}, {"input": "JOY_BTN13", "label": "Left", "icon": "left", "part": "stick.hat.cms"}, {"input": "JOY_BTN12", "label": "Down", "icon": "down", "part": "stick.hat.cms"}]},
-      {"id": "stick.ministick", "title": "Thumb stick", "parts": ["stick.ministick"], "side": "other", "x": 934, "y": 788, "width": 300, "modifier": true, "rows": [{"input": "JOY_BTN_POV1_U", "label": "Up", "icon": "up", "part": "stick.ministick"}, {"input": "JOY_RX", "label": "X (RX)", "icon": "axis", "part": "stick.ministick"}, {"input": "JOY_BTN_POV1_R", "label": "Right", "icon": "right", "part": "stick.ministick"}, {"input": "JOY_RY", "label": "Y (RY)", "icon": "axis", "part": "stick.ministick"}, {"input": "JOY_BTN_POV1_L", "label": "Left", "icon": "left", "part": "stick.ministick"}, {"input": "JOY_BTN_POV1_D", "label": "Down", "icon": "down", "part": "stick.ministick"}, {"input": "JOY_BTN_POV1_UR", "label": "Up-right", "icon": "upright", "part": "stick.ministick"}, {"input": "JOY_BTN_POV1_UL", "label": "Up-left", "icon": "upleft", "part": "stick.ministick"}, {"input": "JOY_BTN_POV1_DR", "label": "Down-right", "icon": "downright", "part": "stick.ministick"}, {"input": "JOY_BTN_POV1_DL", "label": "Down-left", "icon": "downleft", "part": "stick.ministick"}]},
-      {"id": "stick.trigger", "title": "Trigger", "parts": ["stick.trigger"], "side": "left", "x": 16, "y": 296, "width": 300, "modifier": true, "spot": [0.42, 0.41], "rows": [{"input": "JOY_BTN1", "label": "First stage", "icon": "button", "part": "stick.trigger"}, {"input": "JOY_BTN2", "label": "Second stage", "icon": "button", "part": "stick.trigger"}]},
-      {"id": "stick.pinky.button", "title": "Button 6 (DCS: master mode / paddle switch)", "parts": ["stick.pinky.button"], "side": "other", "x": 16, "y": 1008, "width": 300, "modifier": true, "rows": [{"input": "JOY_BTN6", "label": "Press", "icon": "button", "part": "stick.pinky.button"}]},
-      {"id": "stick.axis.twist", "title": "Twist", "parts": ["stick.axis.twist"], "side": "right", "x": 964, "y": 422, "width": 300, "modifier": true, "spot": [0.62, 0.62], "rows": [{"input": "JOY_Z", "label": "Z", "icon": "axis", "part": "stick.axis.twist"}]},
-      {"id": "stick.gimbal", "title": "Stick (roll / pitch)", "parts": ["stick.gimbal"], "side": "bottom", "x": 529, "y": 698, "width": 300, "modifier": true, "spot": [0.565, 0.895], "rows": [{"input": "JOY_X", "label": "roll (X)", "icon": "axis", "part": "stick.gimbal"}, {"input": "JOY_Y", "label": "pitch (Y)", "icon": "axis", "part": "stick.gimbal"}]},
-      {"id": "stick.axis.brake_lever", "title": "Brake lever (DCS: wheel brake)", "parts": ["stick.axis.brake_lever"], "side": "left", "x": 16, "y": 397.5, "width": 300, "modifier": true, "spot": [0.385, 0.58], "rows": [{"input": "JOY_SLIDER2", "label": "SLIDER2", "icon": "axis", "part": "stick.axis.brake_lever"}]},
-      {"id": "stick.ministick2", "title": "Microstick B", "parts": ["stick.ministick2"], "side": "other", "x": 322, "y": 1008, "width": 300, "modifier": true, "rows": [{"input": "JOY_SLIDER1", "label": "X (SLIDER1)", "icon": "axis", "part": "stick.ministick2"}, {"input": "JOY_RZ", "label": "Y (RZ)", "icon": "axis", "part": "stick.ministick2"}]},
-      {"id": "stick.button.thumb.1", "title": "Button 4 (DCS: NWS / missile step, display mode A-A)", "parts": ["stick.button.thumb.1"], "side": "other", "x": 628, "y": 1008, "width": 300, "modifier": true, "rows": [{"input": "JOY_BTN4", "label": "Press", "icon": "button", "part": "stick.button.thumb.1"}]},
-      {"id": "stick.button.thumb.2", "title": "Button 5 (DCS: uncage / cage)", "parts": ["stick.button.thumb.2"], "side": "other", "x": 934, "y": 1008, "width": 300, "modifier": true, "rows": [{"input": "JOY_BTN5", "label": "Press", "icon": "button", "part": "stick.button.thumb.2"}]},
-      {"id": "stick.button.thumb.3", "title": "Button 7 (DCS: nosewheel steering / expand-FOV)", "parts": ["stick.button.thumb.3"], "side": "other", "x": 16, "y": 1068, "width": 300, "modifier": true, "rows": [{"input": "JOY_BTN7", "label": "Press", "icon": "button", "part": "stick.button.thumb.3"}]},
-      {"id": "stick.button.thumb.4", "title": "Button 8 (DCS: radar acquire / enter)", "parts": ["stick.button.thumb.4"], "side": "other", "x": 322, "y": 1068, "width": 300, "modifier": true, "rows": [{"input": "JOY_BTN8", "label": "Press", "icon": "button", "part": "stick.button.thumb.4"}]},
-      {"id": "stick.button.index.1", "title": "Brake lever fully squeezed (forum)", "parts": ["stick.button.index.1"], "side": "left", "x": 16, "y": 437.5, "width": 300, "modifier": true, "spot": [0.41, 0.645], "rows": [{"input": "JOY_BTN29", "label": "Press", "icon": "button", "part": "stick.button.index.1"}]}
+      {"id": "stack:stick.axis.brake_lever", "title": "Brake lever / Brake lever detents", "parts": ["stick.axis.brake_lever", "stick.brake_lever"], "side": "left", "x": 16, "y": 627.5, "width": 300, "modifier": true, "spot": [0.395, 0.6225], "rows": [{"input": "JOY_SLIDER2", "label": "Brake lever SLIDER2", "icon": "axis", "part": "stick.axis.brake_lever"}, {"input": "JOY_BTN28", "label": "Brake lever detents First stage", "icon": "button", "part": "stick.brake_lever"}, {"input": "JOY_BTN3", "label": "Brake lever detents Second stage", "icon": "button", "part": "stick.brake_lever"}]},
+      {"id": "stick.weapon_release", "title": "Red button", "parts": ["stick.weapon_release"], "side": "left", "x": 16, "y": 287.5, "width": 300, "modifier": true, "spot": [0.4167, 0.0967], "rows": [{"input": "JOY_BTN4", "label": "Press", "icon": "button", "part": "stick.weapon_release"}]},
+      {"id": "stick.trigger.flip", "title": "Metal trigger", "parts": ["stick.trigger.flip"], "side": "left", "x": 16, "y": 547.5, "width": 300, "modifier": true, "spot": [0.4217, 0.4133], "rows": [{"input": "JOY_BTN24", "label": "Press", "icon": "button", "part": "stick.trigger.flip"}, {"input": "JOY_BTN40", "label": "Up", "icon": "up", "part": "stick.trigger.flip"}, {"input": "JOY_BTN43", "label": "Mid", "icon": "mid", "part": "stick.trigger.flip"}]},
+      {"id": "stick.hat.tms", "title": "PC hat (centre)", "parts": ["stick.hat.tms"], "side": "right", "x": 964, "y": 372.2, "width": 300, "modifier": true, "spot": [0.5517, 0.2183], "rows": [{"input": "JOY_BTN18", "label": "Press", "icon": "button", "part": "stick.hat.tms"}, {"input": "JOY_BTN14", "label": "Up", "icon": "up", "part": "stick.hat.tms"}, {"input": "JOY_BTN15", "label": "Right", "icon": "right", "part": "stick.hat.tms"}, {"input": "JOY_BTN17", "label": "Left", "icon": "left", "part": "stick.hat.tms"}, {"input": "JOY_BTN16", "label": "Down", "icon": "down", "part": "stick.hat.tms"}]},
+      {"id": "stick.hat.dms", "title": "Side hat (right side of the head)", "parts": ["stick.hat.dms"], "side": "other", "x": 16, "y": 988, "width": 300, "modifier": true, "rows": [{"input": "JOY_BTN30", "label": "Press", "icon": "button", "part": "stick.hat.dms"}, {"input": "JOY_BTN19", "label": "Up", "icon": "up", "part": "stick.hat.dms"}, {"input": "JOY_BTN20", "label": "Right", "icon": "right", "part": "stick.hat.dms"}, {"input": "JOY_BTN31", "label": "Left", "icon": "left", "part": "stick.hat.dms"}, {"input": "JOY_BTN21", "label": "Down", "icon": "down", "part": "stick.hat.dms"}]},
+      {"id": "stick.hat.cms", "title": "RESET hat (left side)", "parts": ["stick.hat.cms"], "side": "right", "x": 964, "y": 492.2, "width": 300, "modifier": true, "spot": [0.5183, 0.3867], "rows": [{"input": "JOY_BTN9", "label": "Press", "icon": "button", "part": "stick.hat.cms"}, {"input": "JOY_BTN10", "label": "Up", "icon": "up", "part": "stick.hat.cms"}, {"input": "JOY_BTN11", "label": "Right", "icon": "right", "part": "stick.hat.cms"}, {"input": "JOY_BTN13", "label": "Left", "icon": "left", "part": "stick.hat.cms"}, {"input": "JOY_BTN12", "label": "Down", "icon": "down", "part": "stick.hat.cms"}]},
+      {"id": "stick.ministick", "title": "Master mode ministick (top)", "parts": ["stick.ministick"], "side": "top", "x": 489, "y": 16, "width": 300, "modifier": true, "spot": [0.4983, 0.0917], "rows": [{"input": "JOY_BTN23", "label": "Press", "icon": "button", "part": "stick.ministick"}, {"input": "JOY_BTN_POV1_U", "label": "Up", "icon": "up", "part": "stick.ministick"}, {"input": "JOY_RX", "label": "X (RX)", "icon": "axis", "part": "stick.ministick"}, {"input": "JOY_BTN_POV1_R", "label": "Right", "icon": "right", "part": "stick.ministick"}, {"input": "JOY_RY", "label": "Y (RY)", "icon": "axis", "part": "stick.ministick"}, {"input": "JOY_BTN_POV1_L", "label": "Left", "icon": "left", "part": "stick.ministick"}, {"input": "JOY_BTN_POV1_D", "label": "Down", "icon": "down", "part": "stick.ministick"}, {"input": "JOY_BTN_POV1_UR", "label": "Up-right", "icon": "upright", "part": "stick.ministick"}, {"input": "JOY_BTN_POV1_UL", "label": "Up-left", "icon": "upleft", "part": "stick.ministick"}, {"input": "JOY_BTN_POV1_DR", "label": "Down-right", "icon": "downright", "part": "stick.ministick"}, {"input": "JOY_BTN_POV1_DL", "label": "Down-left", "icon": "downleft", "part": "stick.ministick"}]},
+      {"id": "stick.trigger", "title": "Dual-stage trigger", "parts": ["stick.trigger"], "side": "left", "x": 16, "y": 487.5, "width": 300, "modifier": true, "spot": [0.4617, 0.3733], "rows": [{"input": "JOY_BTN1", "label": "First stage", "icon": "button", "part": "stick.trigger"}, {"input": "JOY_BTN2", "label": "Second stage", "icon": "button", "part": "stick.trigger"}]},
+      {"id": "stick.axis.twist", "title": "Twist", "parts": ["stick.axis.twist"], "side": "right", "x": 964, "y": 702, "width": 300, "modifier": true, "spot": [0.5867, 0.7533], "rows": [{"input": "JOY_Z", "label": "Z", "icon": "axis", "part": "stick.axis.twist"}]},
+      {"id": "stick.gimbal", "title": "Stick (roll / pitch)", "parts": ["stick.gimbal"], "side": "bottom", "x": 529, "y": 898, "width": 300, "modifier": true, "spot": [0.565, 0.8917], "rows": [{"input": "JOY_X", "label": "roll (X)", "icon": "axis", "part": "stick.gimbal"}, {"input": "JOY_Y", "label": "pitch (Y)", "icon": "axis", "part": "stick.gimbal"}]},
+      {"id": "stick.ministick2", "title": "GATE CONT ministick (thumb)", "parts": ["stick.ministick2"], "side": "left", "x": 16, "y": 327.5, "width": 300, "modifier": true, "spot": [0.4433, 0.2067], "rows": [{"input": "JOY_BTN22", "label": "Press", "icon": "button", "part": "stick.ministick2"}, {"input": "JOY_BTN_POV2_U", "label": "Up", "icon": "up", "part": "stick.ministick2"}, {"input": "JOY_SLIDER1", "label": "X (SLIDER1)", "icon": "axis", "part": "stick.ministick2"}, {"input": "JOY_BTN_POV2_R", "label": "Right", "icon": "right", "part": "stick.ministick2"}, {"input": "JOY_RZ", "label": "Y (RZ)", "icon": "axis", "part": "stick.ministick2"}, {"input": "JOY_BTN_POV2_L", "label": "Left", "icon": "left", "part": "stick.ministick2"}, {"input": "JOY_BTN_POV2_D", "label": "Down", "icon": "down", "part": "stick.ministick2"}]},
+      {"id": "stick.button.thumb.1", "title": "LVLNG button (top right)", "parts": ["stick.button.thumb.1"], "side": "right", "x": 964, "y": 292.2, "width": 300, "modifier": true, "spot": [0.575, 0.1033], "rows": [{"input": "JOY_BTN5", "label": "Press", "icon": "button", "part": "stick.button.thumb.1"}]},
+      {"id": "stick.button.thumb.2", "title": "MANVR button (lower right)", "parts": ["stick.button.thumb.2"], "side": "right", "x": 964, "y": 332.2, "width": 300, "modifier": true, "spot": [0.5933, 0.1883], "rows": [{"input": "JOY_BTN6", "label": "Press", "icon": "button", "part": "stick.button.thumb.2"}]},
+      {"id": "stick.button.thumb.3", "title": "Side button (left, mid grip)", "parts": ["stick.button.thumb.3"], "side": "right", "x": 964, "y": 612.2, "width": 300, "modifier": true, "spot": [0.5367, 0.5217], "rows": [{"input": "JOY_BTN7", "label": "Press", "icon": "button", "part": "stick.button.thumb.3"}]}
     ],
     "lines": [
-      {"table": "stick.trigger", "points": [[592, 320], [316, 320]]},
-      {"table": "stick.axis.brake_lever", "points": [[571, 422], [328, 422], [328, 421.5], [316, 421.5]]},
-      {"table": "stick.button.index.1", "points": [[586, 461], [328, 461], [328, 461.5], [316, 461.5]]},
-      {"table": "stick.axis.twist", "points": [[712, 446], [964, 446]]},
-      {"table": "stick.weapon_release", "points": [[590.2, 134], [590.2, 50]]},
-      {"table": "stick.gimbal", "points": [[679, 611], [679, 698]]}
+      {"table": "stick.weapon_release", "points": [[590, 332], [328, 332], [328, 311.5], [316, 311.5]]},
+      {"table": "stick.ministick2", "points": [[606, 398], [328, 398], [328, 351.5], [316, 351.5]]},
+      {"table": "stick.trigger", "points": [[617, 498], [328, 498], [328, 511.5], [316, 511.5]]},
+      {"table": "stick.trigger.flip", "points": [[593, 522], [328, 522], [328, 571.5], [316, 571.5]]},
+      {"table": "stack:stick.axis.brake_lever", "points": [[577, 647.5], [328, 647.5], [328, 651.5], [316, 651.5]]},
+      {"table": "stick.button.thumb.1", "points": [[685, 336], [952, 336], [952, 316.2], [964, 316.2]]},
+      {"table": "stick.button.thumb.2", "points": [[696, 387], [952, 387], [952, 356.2], [964, 356.2]]},
+      {"table": "stick.hat.tms", "points": [[671, 405], [952, 405], [952, 396.2], [964, 396.2]]},
+      {"table": "stick.hat.cms", "points": [[651, 506], [952, 506], [952, 516.2], [964, 516.2]]},
+      {"table": "stick.button.thumb.3", "points": [[662, 587], [952, 587], [952, 636.2], [964, 636.2]]},
+      {"table": "stick.axis.twist", "points": [[692, 726], [964, 726]]},
+      {"table": "stick.ministick", "points": [[639, 329], [639, 250]]},
+      {"table": "stick.gimbal", "points": [[679, 809], [679, 898]]}
     ]
   }
 }

@@ -623,7 +623,11 @@ namespace JoyPro.Engine
                 bool on = aircraft.Count == 0 || aircraft.Values.Any(v => v);
                 report.Available = 1;
                 report.Active = on ? 1 : 0;
-                report.Title = only != null ? only.Title : node.ID;
+                // The sim's menu name, never the event name ("Elevator Axis" for KEY_AXIS_ELEVATOR_SET).
+                EngineActionInfo.Info info = EngineActionInfo.Describe(game, game, node.ID, only != null ? only.Title : node.ID, string.Empty, string.Empty, false);
+                report.Title = info.Readable;
+                report.Explanation = info.Explanation;
+                report.ExplanationSource = info.Source;
                 report.Category = only != null ? only.Category : string.Empty;
                 report.Aircraft.Add(new EngineNodeAircraftEntry { Plane = game, Title = report.Title, Category = report.Category, State = on ? "on" : "off", Match = "same" });
                 return report;
@@ -702,6 +706,14 @@ namespace JoyPro.Engine
                     result.Nodes++;
                     if (EngineRelationSuggest.GameKey(node.Game ?? string.Empty) != "DCS")
                         continue;
+                    // An action of the other kind (a button in an axis relation) does not belong in the relation at all:
+                    // "Looks wrong" there offers to move it; its aircraft are no "same id, different meaning" question.
+                    List<EngineRelationSuggest.Command> known = Commands("DCS", node.ID);
+                    if (known.Count > 0 && known.All(c => c.IsAxis != relation.ISAXIS))
+                    {
+                        result.OtherKindNodes++;
+                        continue;
+                    }
                     EngineNodeAircraft report = NodeReport(relation, node);
                     List<EngineNodeAircraftEntry> bad = report.Aircraft.Where(a => a.State == "on" && a.Match == "differs").ToList();
                     if (bad.Count == 0)
@@ -913,10 +925,13 @@ namespace JoyPro.Engine
         // "82 of 84 aircraft"
         public string Badge { get; set; }
         public List<EngineNodeAircraftEntry> Aircraft { get; set; }
+        // What the action does (EngineActionInfo: the cockpit guide or the game's own description) and its source.
+        public string Explanation { get; set; }
+        public string ExplanationSource { get; set; }
 
         public EngineNodeAircraft()
         {
-            Relation = Game = Id = Title = Category = Badge = string.Empty;
+            Relation = Game = Id = Title = Category = Badge = Explanation = ExplanationSource = string.Empty;
             Aircraft = new List<EngineNodeAircraftEntry>();
         }
     }
@@ -969,6 +984,8 @@ namespace JoyPro.Engine
         public int AffectedRelations { get; set; }
         public int AircraftToDrop { get; set; }
         public int AircraftSameFunction { get; set; }
+        // Nodes of the other kind than their relation, left out of the count (they show under "Looks wrong").
+        public int OtherKindNodes { get; set; }
         public bool Applied { get; set; }
         public int Dropped { get; set; }
         public List<EngineAircraftCheckNode> Found { get; set; }

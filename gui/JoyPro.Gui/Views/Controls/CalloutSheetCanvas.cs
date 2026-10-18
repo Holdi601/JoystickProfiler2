@@ -198,14 +198,20 @@ public sealed class CalloutSheetCanvas : Control
 
     private double SheetHeight => (Sheet?.Height ?? 0) + HeaderHeight;
 
+    public static readonly StyledProperty<double> TopInsetProperty = AvaloniaProperty.Register<CalloutSheetCanvas, double>(nameof(TopInset));
+
+    public double TopInset { get => GetValue(TopInsetProperty); set => SetValue(TopInsetProperty, value); }
+
     public void Fit()
     {
         CalloutSheet? sheet = Sheet;
         if (sheet == null || Bounds.Width <= 0 || Bounds.Height <= 0 || sheet.Width <= 0)
             return;
-        double z = Math.Min((Bounds.Width - 24) / sheet.Width, (Bounds.Height - 24) / SheetHeight);
+        // The space at the top that floating cards cover (the device card of the Layout page): the sheet fits below.
+        double top = Math.Min(TopInset, Bounds.Height * 0.25);
+        double z = Math.Min((Bounds.Width - 24) / sheet.Width, (Bounds.Height - 24 - top) / SheetHeight);
         zoom = Math.Clamp(z, 0.03, 4);
-        pan = new Vector((Bounds.Width - sheet.Width * zoom) / 2, (Bounds.Height - SheetHeight * zoom) / 2);
+        pan = new Vector((Bounds.Width - sheet.Width * zoom) / 2, top + (Bounds.Height - top - SheetHeight * zoom) / 2);
         fittedWidth = sheet.Width;
         fittedHeight = SheetHeight;
         userAdjusted = false;

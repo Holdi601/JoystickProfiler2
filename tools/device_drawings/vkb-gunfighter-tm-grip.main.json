@@ -1,0 +1,184 @@
+{
+ "model": "vkb-gunfighter-tm-grip",
+ "view": "main",
+ "class": "stick",
+ "width": 1240,
+ "height": 1000,
+ "source": "JoyPro drawing of the A-10C grip the Warthog replicates, made from DCS World's A-10C cockpit model (seen from behind and from the left); the base drawn after Thrustmaster's photos",
+ "mappingSource": "The Thrustmaster Warthog grip on the VKB Gunfighter base (VKB TM grip adapter; VKB names the controls H1-H4, S1-S4 as Thrustmaster does): Thrustmaster HOTAS Warthog manual (H1 trim, H2 TMS, H3 DMS, H4 CMS, S1-S4, TG1/TG2), the grip's controls as the DCS model names them",
+ "confidence": "high",
+ "include": [
+  {
+   "file": "dcs-a10c-stick-back.json",
+   "dx": 150,
+   "dy": 60,
+   "scale": 1.0,
+   "map": {
+    "STICK-BTN-TRIM": "stick.hat.trim",
+    "STICK-BTN-WEAPON": "stick.weapon_release",
+    "STICK-BTN-TARG": {
+     "part": "stick.hat.tms",
+     "glyph": "hat4",
+     "size": 19,
+     "press": false
+    },
+    "STICK-BTN-DMS": {
+     "part": "stick.hat.dms",
+     "glyph": "hat4",
+     "size": 19,
+     "press": false
+    },
+    "STICK-BTN-TMS": "stick.hat.cms",
+    "STICK-BTN-MMC": {
+     "part": "stick.button.index.1",
+     "glyph": "button",
+     "size": 8,
+     "offset": [
+      22,
+      -22
+     ],
+     "fill": "grey"
+    }
+   }
+  },
+  {
+   "file": "dcs-a10c-stick-side.json",
+   "dx": 640,
+   "dy": 60,
+   "scale": 1.0,
+   "map": {
+    "STICK-BTN-TRIGGER": "stick.trigger",
+    "STICK-BTN-NWS": {
+     "part": "stick.pinky.button",
+     "glyph": "button",
+     "size": 11,
+     "fill": "grey"
+    }
+   }
+  }
+ ],
+ "replaces": [],
+ "shapes": [
+  {
+   "type": "rrect",
+   "c": [
+    311,
+    830
+   ],
+   "w": 300,
+   "h": 120,
+   "r": 26,
+   "fill": "bezel",
+   "role": "outline"
+  },
+  {
+   "type": "rrect",
+   "c": [
+    311,
+    790
+   ],
+   "w": 160,
+   "h": 40,
+   "r": 10,
+   "fill": "mid",
+   "role": "detail"
+  },
+  {
+   "type": "rrect",
+   "c": [
+    880,
+    830
+   ],
+   "w": 360,
+   "h": 120,
+   "r": 26,
+   "fill": "bezel",
+   "role": "outline"
+  },
+  {
+   "type": "rrect",
+   "c": [
+    880,
+    790
+   ],
+   "w": 160,
+   "h": 40,
+   "r": 10,
+   "fill": "mid",
+   "role": "detail"
+  },
+  {
+   "type": "path",
+   "closed": true,
+   "fill": "grey",
+   "role": "outline",
+   "note": "paddle",
+   "pts": [
+    [
+     818,
+     575,
+     "c"
+    ],
+    [
+     806,
+     600
+    ],
+    [
+     798,
+     640
+    ],
+    [
+     802,
+     690
+    ],
+    [
+     822,
+     735,
+     "c"
+    ],
+    [
+     834,
+     732,
+     "c"
+    ],
+    [
+     816,
+     690
+    ],
+    [
+     812,
+     640
+    ],
+    [
+     818,
+     602
+    ],
+    [
+     828,
+     578,
+     "c"
+    ]
+   ]
+  }
+ ],
+ "controls": [
+  {
+   "part": "stick.gimbal",
+   "glyph": "gimbal",
+   "at": [
+    880,
+    905
+   ],
+   "size": 70
+  },
+  {
+   "part": "stick.pinky.lever",
+   "glyph": "none",
+   "at": [
+    808,
+    650
+   ]
+  }
+ ],
+ "turntableKeepTop": 0.37
+}

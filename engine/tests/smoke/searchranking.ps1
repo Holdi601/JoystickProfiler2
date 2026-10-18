@@ -1,7 +1,7 @@
 # Search ranking on the real game lists (docs/relation-builder.md "How the search finds things"): a query that names a
 # flight function ("pitch", "roll", "yaw", "throttle", "brakes") lists each game's main control first (Primary), asked
 # like the Relations page does (--limit 200 --per-game 12, with and without --axis): MSFS 2020 / 2024 "AXIS ELEVATOR
-# SET" (shown as "AXIS ELEVATOR SET - Pitch axis (elevator)"), X-Plane "axis/pitch", DCS "Pitch", FSX / P3D, IL-2, War
+# SET" (shown by its menu name: "Elevator Axis - Pitch axis (elevator)"), X-Plane "axis/pitch", DCS "Pitch", FSX / P3D, IL-2, War
 # Thunder, Falcon BMS. In every game the function's rows come before the plain word matches (the balloon's "BURNER
 # PITCH INC", "AP PITCH LEVELER").
 # Dot-sourced by engine_smoke_test.ps1 (Run-Engine, Assert-*, $tempDir); needs the development game lists.
@@ -63,7 +63,9 @@ try {
     $srPitch = Invoke-SrJson @("relations", "search", "pitch", "--limit", "200", "--per-game", "12")
     foreach ($game in @("MSFS2020", "MSFS2024")) {
         $elevator = @($srPitch.Results | Where-Object { $_.Game -eq $game -and $_.Id -eq "KEY_AXIS_ELEVATOR_SET" })[0]
-        Assert-True ($null -ne $elevator -and $elevator.Display -match "^AXIS ELEVATOR SET .+Pitch axis \(elevator\)$") ($game + " AXIS ELEVATOR SET is not shown as the pitch axis (" + $elevator.Display + ").")
+        # The event name is shown as the sim's menu calls it ("Elevator Axis"), never as "AXIS ELEVATOR SET".
+        Assert-True ($null -ne $elevator -and $elevator.Display -match "^Elevator Axis .+Pitch axis \(elevator\)$") ($game + " AXIS ELEVATOR SET is not shown as the pitch axis (" + $elevator.Display + ").")
+        Assert-True ($elevator.Recommended -eq $true) ($game + " AXIS ELEVATOR SET is not the recommended pitch axis.")
         Assert-True ($elevator.FunctionLabel -eq "Pitch axis (elevator)") ($game + " AXIS ELEVATOR SET has the function label '" + $elevator.FunctionLabel + "'.")
     }
     $srDcs = @($srPitch.Results | Where-Object { $_.Game -eq "DCS" })[0]
@@ -76,7 +78,7 @@ try {
         Assert-True ([Array]::IndexOf($srDcsRows, $gun) -gt [Array]::IndexOf($srDcsRows, @($srDcsRows | Where-Object { $_.Title -eq "Flight Control Cyclic Pitch" })[0])) "DCS 'Gun Up/Down' comes before the helicopters' cyclic pitch."
     }
     $srBurner = @($srPitch.Results | Where-Object { $_.Game -eq "MSFS2024" -and $_.Id -eq "KEY_BURNER_PITCH_INC" })[0]
-    Assert-True ($null -eq $srBurner -or ($srBurner.Match -eq "words" -and -not $srBurner.Primary -and $srBurner.Display -eq $srBurner.Title)) "MSFS 2024 BURNER PITCH INC is read as the pitch function."
+    Assert-True ($null -eq $srBurner -or ($srBurner.Match -eq "words" -and -not $srBurner.Primary -and ($srBurner.Display -eq $srBurner.Title -or $srBurner.Display -eq $srBurner.Readable))) "MSFS 2024 BURNER PITCH INC is read as the pitch function."
 }
 finally {
     $env:JOYPRO_DATA_DIR = $srPreviousData

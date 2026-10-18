@@ -87,7 +87,7 @@ public sealed class DeviceCardsTests : IDisposable
         // The Virpil devices with the reference's model and kind; the throttle's 60 parts would not make a
         // recognizable drawing, so the card shows the throttle outline (no made-up layout of parts).
         DeviceCardItem throttle = connected.Single(c => c.Device == Throttle);
-        Assert.Equal("virpil-mongoost-50cm2-throttle", throttle.ModelId);
+        Assert.Equal("virpil-mongoost-50cm-throttle", throttle.ModelId);
         Assert.Contains("MongoosT-50CM", throttle.Title, StringComparison.Ordinal);
         Assert.Equal("LEFT VPC Throttle MT-50 CM", throttle.DeviceName);
         Assert.Equal("Throttle", throttle.KindLabel);
@@ -195,7 +195,7 @@ public sealed class DeviceCardsTests : IDisposable
         Assert.Equal(UiStage.Layout, vm.CurrentStage);
         Assert.False(vm.IsCheatSheetsSection);
         Assert.Equal(Throttle, vm.DeviceReference.DeviceName);
-        Assert.Equal("virpil-mongoost-50cm2-throttle", vm.DeviceReference.Model?.Id);
+        Assert.Equal("virpil-mongoost-50cm-throttle", vm.DeviceReference.Model?.Id);
         Assert.Equal(throttle.Title, vm.DeviceReference.Title);
     }
 
@@ -266,7 +266,7 @@ public sealed class DeviceCardsTests : IDisposable
                         ? Device(Rhino, "Rhino FFB Joystick", "FFFF:2055", "Virpil WarBRD / WarBRD-D Grip on Rhino", rhinoGrip, "stick", 64, 4, ["JOY_X", "JOY_Y"])
                         : Device(Rhino, "Rhino FFB Joystick", "FFFF:2055", "", "", "stick", 64, 4, ["JOY_X", "JOY_Y", "JOY_Z", "JOY_RX", "JOY_RY", "JOY_RZ", "JOY_SLIDER1"],
                             "\"GripChoices\":[{\"Id\":\"vpforce-rhino-tm-warthog-grip\",\"Name\":\"Thrustmaster Warthog Grip on Rhino\",\"Image\":\"\"},{\"Id\":\"vpforce-rhino-virpil-warbrd\",\"Name\":\"Virpil WarBRD / WarBRD-D Grip on Rhino\",\"Image\":\"\"}]"),
-                    Device(Throttle, "LEFT VPC Throttle MT-50 CM", "03EB:2054", "Virpil VPC MongoosT-50CM2 Throttle (MT-50CM2 / MT-50 CM)", "virpil-mongoost-50cm2-throttle", "throttle", 94, 0, ["JOY_X", "JOY_Y", "JOY_Z", "JOY_RX", "JOY_RY", "JOY_RZ", "JOY_SLIDER1", "JOY_SLIDER2"]),
+                    Device(Throttle, "LEFT VPC Throttle MT-50 CM", "03EB:2054", "Virpil VPC MongoosT-50CM Throttle (first CM, MT-50 CM)", "virpil-mongoost-50cm-throttle", "throttle", 94, 0, ["JOY_X", "JOY_Y", "JOY_Z", "JOY_RX", "JOY_RY", "JOY_RZ", "JOY_SLIDER1", "JOY_SLIDER2"]),
                     Device(WarBrd, "L-VPC Stick WarBRD", "3344:80CB", "Virpil VPC Constellation ALPHA-L (Configurator 2.0 layout)", "virpil-alpha-l-v2", "stick", 31, 0, ["JOY_X", "JOY_Y", "JOY_Z", "JOY_RX", "JOY_RY", "JOY_RZ"]),
                     Device("vJoy Device", "vJoy Device", "", "", "", "stick", 0, 0, []),
                     Device("HID-compliant game controller", "HID-compliant game controller", "", "", "", "other", 0, 0, [])

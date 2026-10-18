@@ -287,11 +287,16 @@ namespace JoyPro.DeviceReference
                 names.Add(v.Id);
                 names.AddRange(v.Aliases);
                 names.Add(v.Name);
+                // The family's names ("Cessna 172 Skyhawk", "C172") last: for a version without the game's aircraft
+                // names they come after the version's own match (the G1000 version found the plain 172 by "C172").
+                List<string> family = new List<string>();
                 if (v.Aircraft != null)
                 {
-                    names.Add(v.Aircraft.Name);
-                    names.AddRange(v.Aircraft.Aliases);
+                    family.Add(v.Aircraft.Name);
+                    family.AddRange(v.Aircraft.Aliases);
                 }
+                if (planeNames)
+                    names.AddRange(family);
                 foreach (string folderGame in FoldersOf(game))
                 {
                     Dictionary<string, string> index = indexOf(folderGame) ?? new Dictionary<string, string>();
@@ -315,9 +320,15 @@ namespace JoyPro.DeviceReference
                         }
                         continue;
                     }
-                    string fuzzy = Fuzzy(index, names);
+                    string fuzzy = Fuzzy(index, names.Concat(family));
                     if (fuzzy != null && usable(folderGame, fuzzy))
                         return Tuple.Create(folderGame, fuzzy);
+                    foreach (string name in family)
+                    {
+                        string folder;
+                        if (index.TryGetValue(Norm(name), out folder) && usable(folderGame, folder))
+                            return Tuple.Create(folderGame, folder);
+                    }
                 }
             }
             return null;
@@ -334,6 +345,19 @@ namespace JoyPro.DeviceReference
                     map[key] = pair.Value;
             }
             return map;
+        }
+
+        private static readonly HashSet<string> Avionics = new HashSet<string>(StringComparer.Ordinal) { "1000", "3000", "5000", "950", "430", "530" };
+
+        // Type designations of a name: letters with the number right after them ("A-10C" -> a10, "asobo_c172sp" -> c172).
+        private static IEnumerable<string> Designations(string s)
+        {
+            foreach (Match m in Regex.Matches((s ?? string.Empty).ToLowerInvariant(), "([a-z]+)[-_ ]?([0-9]+)"))
+            {
+                string d = m.Groups[1].Value + m.Groups[2].Value;
+                if (m.Groups[1].Value != "asobo" && d.Length >= 3 && !Avionics.Contains(m.Groups[2].Value))
+                    yield return d;
+            }
         }
 
         // Words and numbers of a name: "cessna172sp" -> cessna, 172, sp.
@@ -355,22 +379,31 @@ namespace JoyPro.DeviceReference
             "the", "and", "asobo", "aircraft", "airplane", "airplanes", "microsoft", "laminar", "research", "classic", "default", "series", "type", "model", "version", "block", "mk"
         };
 
-        // The folder whose names share the most with the variant's: a type number of three or more digits (or two and a
-        // word) must be shared; a number the variant does not have ("1000" of a G1000 version) counts against it.
+        // The folder whose names share the most with the variant's: a type number of three or more digits (or two) and a
+        // word (the maker or the type's name: "Cessna 172" and "Cessna_172SP") must be shared, so a number alone never
+        // matches across families (the A350 and the King Air 350, the CRJ-1000 and a 172's G1000, the PA-28's "Cherokee
+        // 180" and the 172's "180HP"): no picture is better than a wrong one. A number the variant does not have ("1000" of
+        // a G1000 version) counts against a set.
         public static string Fuzzy(Dictionary<string, string> index, IEnumerable<string> variantNames)
         {
-            HashSet<string> vt = new HashSet<string>(variantNames.Select(Norm).SelectMany(Tokens).Where(t => !Common.Contains(t)), StringComparer.Ordinal);
+            List<string> vn = variantNames.Where(n => !string.IsNullOrEmpty(n)).ToList();
+            HashSet<string> vt = new HashSet<string>(vn.Select(Norm).SelectMany(Tokens).Concat(vn.SelectMany(Tokens)).Where(t => !Common.Contains(t)), StringComparer.Ordinal);
+            HashSet<string> vd = new HashSet<string>(vn.SelectMany(Designations), StringComparer.Ordinal);
             string best = null;
             int bestScore = 0;
             foreach (IGrouping<string, string> folder in index.GroupBy(kv => kv.Value, kv => kv.Key).OrderBy(g => g.Key.Length).ThenBy(g => g.Key, StringComparer.Ordinal))
             {
-                HashSet<string> ft = new HashSet<string>(folder.SelectMany(Tokens).Where(t => !Common.Contains(t)), StringComparer.Ordinal);
-                List<string> numbers = ft.Where(t => char.IsDigit(t[0]) && vt.Contains(t)).ToList();
-                int words = ft.Count(t => char.IsLetter(t[0]) && t.Length >= 3 && vt.Contains(t));
-                if (!numbers.Any(n => n.Length >= 3) && !(numbers.Any(n => n.Length == 2) && words > 0))
+                HashSet<string> ft = new HashSet<string>(folder.SelectMany(Tokens).Concat(Tokens(folder.Key)).Where(t => !Common.Contains(t)), StringComparer.Ordinal);
+                // (The avionics' numbers, G1000 / G3000 ..., say nothing about the aircraft.)
+                List<string> numbers = ft.Where(t => char.IsDigit(t[0]) && vt.Contains(t) && !Avionics.Contains(t)).ToList();
+                int words = ft.Count(t => char.IsLetter(t[0]) && t.Length >= 3 && !Versions.Contains(t) && vt.Contains(t));
+                // A type designation both have counts as a shared word ("c172" of "c172-g1000" and "asobo_c172sp_g1000").
+                words += folder.Concat(new[] { folder.Key }).SelectMany(Designations).Distinct().Count(d => vd.Contains(d));
+                if (words == 0 || !numbers.Any(n => n.Length >= 2))
                     continue;
                 int extra = ft.Count(t => char.IsDigit(t[0]) && t.Length >= 3 && !vt.Contains(t)) + ft.Count(t => Versions.Contains(t) && !vt.Contains(t));
-                int score = numbers.Count * 10 + words * 2 - extra * 3;
+                int avionics = ft.Count(t => Avionics.Contains(t) && vt.Contains(t));
+                int score = numbers.Count * 10 + words * 2 + avionics * 8 - extra * 3;
                 if (score > bestScore)
                 {
                     bestScore = score;
@@ -480,10 +513,16 @@ namespace JoyPro.DeviceReference
             foreach (CockpitControl c in controls)
             {
                 HashSet<string> cw = Words(c.Id + " " + c.Name + " " + c.Part);
+                // What the control is: its id's words and the first words of its name ("A/P DISC" of "A/P DISC / TRIM INT
+                // switch"). A part must share one of them: a word further on ("trim") alone does not place it.
+                HashSet<string> core = Words(c.Id + " " + string.Join(" ", Regex.Split(c.Name ?? string.Empty, "[^A-Za-z0-9]+").Where(x => x.Length > 0).Take(2)) + " " + c.Part);
                 foreach (CockpitPictureCallout p in grip.Callouts.Where(x => x.X >= 0))
                 {
                     HashSet<string> pw = Words(p.Id + " " + p.Label);
-                    int score = cw.Count(w => pw.Contains(w));
+                    if (!core.Any(pw.Contains))
+                        continue;
+                    // A general word ("weapon", "fire") counts less than one that names the control ("trigger", "tms").
+                    int score = cw.Where(w => pw.Contains(w)).Sum(w => General.Contains(w) ? 1 : 2);
                     if (score > 0)
                         pairs.Add(Tuple.Create(c, p, score));
                 }
@@ -498,8 +537,14 @@ namespace JoyPro.DeviceReference
             return match;
         }
 
+        private static readonly HashSet<string> General = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
+        {
+            "weapon", "group", "select", "selector", "mode", "master", "control", "system", "engine", "release"
+        };
+
         private static readonly Dictionary<string, string> Synonyms = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase)
         {
+            { "fire", "trigger" }, { "wpr", "weapon" }, { "rls", "release" }, { "steer", "nosewheel" }, { "steering", "nosewheel" }, { "nw", "nosewheel" },
             { "trig", "trigger" }, { "trg", "trigger" }, { "pickle", "release" }, { "wpn", "weapon" }, { "weap", "weapon" }, { "bomb", "release" },
             { "spdbrk", "speedbrake" }, { "speedbrk", "speedbrake" }, { "sb", "speedbrake" }, { "brakes", "speedbrake" }, { "airbrake", "speedbrake" },
             { "cur", "cursor" }, { "jstck", "cursor" }, { "slew", "cursor" }, { "ministick", "cursor" }, { "tdc", "cursor" },

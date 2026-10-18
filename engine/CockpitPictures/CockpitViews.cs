@@ -627,6 +627,8 @@ namespace JoyPro.CockpitPictures
                 Vec3 margin = new Vec3(0.08, 0.08, 0.08);
                 g = new CockpitGrip { Device = g.Device, Animation = g.Animation, Meshes = kept, Pivot = (a + b) * 0.5, Parts = g.Parts.Where(p => p.Position.X >= a.X - margin.X && p.Position.X <= b.X + margin.X && p.Position.Y >= a.Y - margin.Y && p.Position.Y <= b.Y + margin.Y && p.Position.Z >= a.Z - margin.Z && p.Position.Z <= b.Z + margin.Z).ToList() };
             }
+            // Parts whose names say nothing (a modelling tool's names) or that are no grip control: left out (any game).
+            GripParts.Apply(null, null, g);
             Vec3 mn, mx;
             scene.Bounds(g.Meshes, out mn, out mx);
             Vec3 c = (mn + mx) * 0.5;
@@ -636,6 +638,26 @@ namespace JoyPro.CockpitPictures
             // From behind, above and the thumb's side: a right-hand grip from its left, a left-hand grip from its right.
             bool leftHand = g.Device == "throttle" || g.Device == "collective" || g.Device == "quadrant" || g.Device == "thc" || (c.Z < head.Z - 0.12 && g.Device != "stick" && g.Device != "cyclic");
             Vec3 dir = (leftHand ? new Vec3(-0.55, 0.55, 0.65) : new Vec3(-0.75, 0.62, -0.55)).Normalized;
+            RenderCamera cam = GripCamera(c, dir, size, mn, mx, width);
+            CockpitViewPlan v = new CockpitViewPlan { Id = "device:" + g.Device, Kind = "device", Device = g.Device, Title = Title(g.Device), Camera = cam, Meshes = g.Meshes };
+            // The grip from other sides: the front with the thumb's side (the trigger and a button below it, the A-10C's
+            // NWS), the thumb's side in profile, the other side (a button on the outer face). The writer takes the one
+            // that shows most of the grip's parts.
+            double side = leftHand ? 1 : -1;
+            foreach (Vec3 other in new[] { new Vec3(0.55, 0.5, 0.7 * side), new Vec3(0.0, 0.3, 1.0 * side), new Vec3(-0.75, 0.62, -0.55 * side) })
+                v.Alternatives.Add(GripCamera(c, other.Normalized, size, mn, mx, width));
+            v.GripControl = new CockpitCallout { Id = "grip:" + g.Device, Label = Title(g.Device), Position = g.Pivot, Kind = "grip", Device = g.Device, Animation = g.Animation };
+            int n = 1;
+            foreach (CockpitCallout p in g.Parts)
+            {
+                p.N = n++;
+                v.Callouts.Add(p);
+            }
+            return v;
+        }
+
+        private static RenderCamera GripCamera(Vec3 c, Vec3 dir, double size, Vec3 mn, Vec3 mx, int width)
+        {
             double fov = 30;
             double distance = size * 0.5 / Math.Tan(fov * Math.PI / 360) * 1.25;
             int height = (int)Math.Round(width * 1.0);
@@ -653,15 +675,7 @@ namespace JoyPro.CockpitPictures
             cam.Height = (int)Math.Round(width / aspect);
             cam.FovY = 2 * Math.Atan(Math.Max(halfY, halfX / aspect) * 1.08) * 180 / Math.PI;
             cam.Near = 0.02;
-            CockpitViewPlan v = new CockpitViewPlan { Id = "device:" + g.Device, Kind = "device", Device = g.Device, Title = Title(g.Device), Camera = cam, Meshes = g.Meshes };
-            v.GripControl = new CockpitCallout { Id = "grip:" + g.Device, Label = Title(g.Device), Position = g.Pivot, Kind = "grip", Device = g.Device, Animation = g.Animation };
-            int n = 1;
-            foreach (CockpitCallout p in g.Parts)
-            {
-                p.N = n++;
-                v.Callouts.Add(p);
-            }
-            return v;
+            return cam;
         }
 
         private static IEnumerable<Vec3> Corners(Vec3 a, Vec3 b)

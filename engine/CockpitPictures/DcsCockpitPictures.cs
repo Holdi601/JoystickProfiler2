@@ -405,6 +405,9 @@ namespace JoyPro.CockpitPictures
                 if (heads.Count == 0 && scene.Points.TryGetValue("head_cpt", out headPoint))
                     heads.Add(headPoint.Position);
                 List<CockpitGrip> grips = Grips(edm, scene, c.Gauges);
+                // The parts checked against the module's manual (GripParts: names fixed, non-parts left out).
+                foreach (CockpitGrip g in grips)
+                    GripParts.Apply("DCS", c.Module, g);
                 // Without Views.lua the game's camera sits at the model's origin (plus DCS's usual eye offset).
                 Vec3 origin = new Vec3(0.05, 0.1, 0);
                 if (heads.Count == 0 && callouts.Count > 0 && (CockpitViews.Median(callouts.Select(x => x.Position).ToList()) - origin).Length < 1.2)
@@ -697,7 +700,7 @@ namespace JoyPro.CockpitPictures
         private static readonly Regex ThrottleNodeRx = new Regex("^(pilot_)?(throttle|trottle|trtl|collective|power_?lever)([-_ ]?(l|r|left|right|\\d+|dummy\\d*|normal|handle|axis|lever|root|base|assembly|quadrant))?$", RegexOptions.IgnoreCase | RegexOptions.Compiled);
         private static readonly Regex NotGripNodeRx = new Regex("ghost|missile|hide|visib|dimmer|helper|cover|emerg|friction|rubber|finger|bone|wire", RegexOptions.IgnoreCase | RegexOptions.Compiled);
 
-        private static List<CockpitGrip> Grips(EdmFile edm, CockpitScene scene, List<DcsLua.Gauge> gauges)
+        internal static List<CockpitGrip> Grips(EdmFile edm, CockpitScene scene, List<DcsLua.Gauge> gauges)
         {
             // Animation arguments per grip kind.
             Dictionary<int, string> argKind = new Dictionary<int, string>();
@@ -826,6 +829,31 @@ namespace JoyPro.CockpitPictures
                 Vec3 a, b;
                 scene.Bounds(near.Meshes, out a, out b);
                 near.Pivot = (a + b) * 0.5;
+                // JOYPRO_PICTURE_DEBUG_GRIPS=<folder>: every node under the grip (name, meshes, place) for checking the parts.
+                string dump = Environment.GetEnvironmentVariable("JOYPRO_PICTURE_DEBUG_GRIPS");
+                if (!string.IsNullOrEmpty(dump))
+                {
+                    try
+                    {
+                        Directory.CreateDirectory(dump);
+                        List<string> lines = new List<string>();
+                        foreach (int child in Descendants(edm, root))
+                        {
+                            List<int> cm2;
+                            Vec3 q0 = new Vec3(0, 0, 0), q1 = new Vec3(0, 0, 0);
+                            bool has = scene.NodeMeshes.TryGetValue(child, out cm2) && cm2.Count > 0;
+                            if (has)
+                                scene.Bounds(cm2, out q0, out q1);
+                            ScenePoint sp;
+                            string pt = scene.Points.TryGetValue(edm.Nodes[child].Name, out sp) ? sp.Position.ToString() : "";
+                            lines.Add(child + "	" + edm.Nodes[child].Name + "	" + edm.Nodes[child].Kind + "	parent " + edm.Nodes[child].Parent + "	" + (has ? cm2.Count + " meshes " + ((q0 + q1) * 0.5) + " size " + (q1 - q0).Length.ToString("0.000", CultureInfo.InvariantCulture) : "no mesh") + "	" + pt);
+                        }
+                        File.WriteAllLines(Path.Combine(dump, kind + "-" + edm.Nodes[root].Name.Replace('/', '_') + ".tsv"), lines);
+                    }
+                    catch (Exception)
+                    {
+                    }
+                }
                 // Named parts on the grip (buttons, hats, levers): nodes under it with a name of their own.
                 foreach (int child in Descendants(edm, root))
                 {

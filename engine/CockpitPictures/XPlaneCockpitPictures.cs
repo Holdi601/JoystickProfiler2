@@ -200,11 +200,22 @@ namespace JoyPro.CockpitPictures
             return all.Any(o => !string.Equals(o, acf, StringComparison.OrdinalIgnoreCase) && string.Equals(Path.GetDirectoryName(o), dir, StringComparison.OrdinalIgnoreCase));
         }
 
-        private static readonly Regex SkipObject = new Regex("glass|broken|lights?\\.obj|_lit\\.|(^|[_\\-])(pilots?|copilots?|helmets?|passengers?|people|crew|figures?|persons?)\\.obj$|^(pilots?|helmets?|passengers?)[_\\-]|prop(_|\\.|disc)|bobble|shadow|reflect|wheel_?chock|tie_?down|cover", RegexOptions.IgnoreCase | RegexOptions.Compiled);
+        private static readonly Regex SkipObject = new Regex("glass|broken|lights?\\.obj|_lit\\.|prop(_|\\.|disc)|bobble|shadow|reflect|wheel_?chock|tie_?down|cover", RegexOptions.IgnoreCase | RegexOptions.Compiled);
+        // The figures: "pilot.obj", "n844x_pilotstill.obj", "Vans RV-10_piottrans.obj" (sic), "cockpit_pilots.obj",
+        // "copilot_liner.obj", anything in a "crew" or "pilot" folder.
+        private static readonly Regex FigureObject = new Regex("(^|[_\\- ])(co)?(pilots?|piots?|helmets?|passengers?|people|crew|figures?|persons?)(still|trans|static)?\\.obj$|^(co)?(pilots?|helmets?|passengers?)[_\\-]", RegexOptions.IgnoreCase | RegexOptions.Compiled);
+        private static readonly Regex FigureFolder = new Regex("^(crew|pilots?|copilots?|people|passengers?|figures?)$", RegexOptions.IgnoreCase | RegexOptions.Compiled);
 
         internal static bool Skipped(string objectFile)
         {
-            return SkipObject.IsMatch(Path.GetFileName(objectFile ?? string.Empty));
+            string file = (objectFile ?? string.Empty).Replace('/', '\\');
+            string name = Path.GetFileName(file);
+            if (SkipObject.IsMatch(name))
+                return true;
+            // The pilot's panels and instruments stay ("F-14D_panels_pilot.obj").
+            if (Regex.IsMatch(name, "panel|instrument", RegexOptions.IgnoreCase))
+                return false;
+            return FigureObject.IsMatch(name) || FigureFolder.IsMatch(Path.GetFileName(Path.GetDirectoryName(file) ?? string.Empty));
         }
 
         private static void BuildOne(Job job, string acf, Dictionary<string, string> p, string folder, string version, SetResult r)

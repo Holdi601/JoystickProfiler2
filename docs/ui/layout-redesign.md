@@ -109,6 +109,10 @@ The same picture of the same device (the Layout page follows), in Bind mode.
   (`WorkspaceFlashMarker` -> canvas `FlashMarker`).
 - In Bind mode the canvas colors the inputs: a bound part's dot is green (its label has a green border), a free one is a
   hollow grey dashed dot; a layout file's bound badges are green.
+- **Drag and drop**: a relation dragged from the bind list (left) or from "Or pick another relation" onto an input of
+  the picture is bound there (the marker under the pointer, or the nearest within 28 px, gets an accent ring while
+  dragging; the drop selects it and runs Bind here with the dragged relation: `DeviceMarkerCanvas.RelationDroppedCommand`,
+  `DropRelationAt`). The marker and its table update as after Bind here.
 - A device that is not listed is looked up with `layout suggest --device`.
 - (Before: Bind here passed no relation and used only the side list's pick, which is empty unless the input was bound,
   so it did nothing; the message went to a status the panel did not show.)

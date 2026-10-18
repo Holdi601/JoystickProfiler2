@@ -171,6 +171,17 @@ public sealed partial class MainWindowViewModel
     // The shown reference picture knows no part's position: the marker assistant is offered over it.
     public bool ShowPlaceMarkersHint => LayoutShowsReference && deviceReference?.HasNoKnownPositions == true && !ShowReferenceQuestion;
 
+    // Some inputs of the shown device have no place on the picture (JoyPro forgot them or the photo hides them).
+    public bool ShowMissingMarkersHint => LayoutShowsReference && deviceReference?.HasMissingMarkers == true && !ShowReferenceQuestion && !ShowPlaceMarkersHint;
+
+    // "Press them to place them": the marker assistant, waiting for the first press.
+    [RelayCommand]
+    private void PlaceMissingMarkers()
+    {
+        OpenReferenceAssistant();
+        deviceReference?.Assistant?.StartCommand.Execute(null);
+    }
+
     // A layout file is the user's own (his layout, a JoyPro 1 layout, a picture he chose) unless the engine picked a
     // shipped template, its drawing or a placeholder: those are shown as the reference picture instead.
     public static bool IsOwnLayout(LayoutSuggestionItem item) => item.IsOwnLayout;
@@ -276,6 +287,7 @@ public sealed partial class MainWindowViewModel
                 break;
             case nameof(DeviceReferenceViewModel.Assistant):
             case nameof(DeviceReferenceViewModel.HasAssistant):
+                OnPropertyChanged(nameof(ShowMissingMarkersHint));
                 OnPropertyChanged(nameof(HasReferenceAssistant));
                 OnPropertyChanged(nameof(ShowWorkspaceLabel));
                 OnPropertyChanged(nameof(ShowPlaceMarkersHint));
@@ -284,7 +296,10 @@ public sealed partial class MainWindowViewModel
                 break;
             case nameof(DeviceReferenceViewModel.KnownMarkerCount):
             case nameof(DeviceReferenceViewModel.HasNoKnownPositions):
+            case nameof(DeviceReferenceViewModel.HasMissingMarkers):
+            case nameof(DeviceReferenceViewModel.MissingMarkerCount):
             case nameof(DeviceReferenceViewModel.Question):
+                OnPropertyChanged(nameof(ShowMissingMarkersHint));
                 OnPropertyChanged(nameof(ShowPlaceMarkersHint));
                 OnPropertyChanged(nameof(ShowReferenceQuestion));
                 NotifyCallouts();
@@ -292,8 +307,26 @@ public sealed partial class MainWindowViewModel
         }
     }
 
+    // The rotatable 3D view of the shown device (pre-rendered from the game's 3D model it replicates), or null.
+    public DeviceTurntable? WorkspaceTurntable => LayoutShowsReference && deviceReference?.Model != null
+        ? DeviceTurntable.Of(deviceReference.Model.Id)
+        : null;
+
+    public bool HasWorkspaceTurntable => WorkspaceTurntable != null;
+
+    // The 3D view is shown instead of the flat picture when the device has one (downloaded pack): the default; the
+    // toggle switches to the flat drawing, which is also what prints and what Edit mode works on.
+    [ObservableProperty] private bool workspaceShows3D = true;
+
+    public bool ShowWorkspace3D => WorkspaceShows3D && HasWorkspaceTurntable && !IsLayoutEditMode;
+
+    partial void OnWorkspaceShows3DChanged(bool value) => OnPropertyChanged(nameof(ShowWorkspace3D));
+
     private void NotifyWorkspacePicture()
     {
+        OnPropertyChanged(nameof(WorkspaceTurntable));
+        OnPropertyChanged(nameof(HasWorkspaceTurntable));
+        OnPropertyChanged(nameof(ShowWorkspace3D));
         OnPropertyChanged(nameof(WorkspaceImage));
         OnPropertyChanged(nameof(WorkspaceSchematic));
         OnPropertyChanged(nameof(WorkspaceShowsLineArt));

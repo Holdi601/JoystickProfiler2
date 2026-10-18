@@ -137,6 +137,28 @@ public sealed class CockpitPictureQualityTests
         Assert.True(XPlaneCockpitPictures.FlipDds);
     }
 
+    // The figures of Laminar's aircraft are left out (the RV-10's static pilot hid its stick); the pilot's panels stay.
+    [Theory]
+    [InlineData("Vans RV-10_pilot.obj", true)]
+    [InlineData("Vans RV-10_pilotstill.obj", true)]
+    [InlineData("Vans RV-10_piottrans.obj", true)]
+    [InlineData("n844x_pilottrans.obj", true)]
+    [InlineData("crew/pilot_liner.obj", true)]
+    [InlineData("crew/copilot_liner.obj", true)]
+    [InlineData("pilot/pilot.obj", true)]
+    [InlineData("cockpit_pilots.obj", true)]
+    [InlineData("Pilot.obj", true)]
+    [InlineData("Vans RV-10_glass_int.obj", true)]
+    [InlineData("F-14D_panels_pilot.obj", false)]
+    [InlineData("instruments/autopilot_s-tec/autopilot_s-tec.obj", false)]
+    [InlineData("instruments/xPad/xPad_arm.obj", false)]
+    [InlineData("../Vans RV-10_cockpit.obj", false)]
+    [InlineData("Vans RV-10_interior1.obj", false)]
+    public void XPlane_FiguresAreLeftOut_ThePilotsPanelsStay(string objectFile, bool skipped)
+    {
+        Assert.Equal(skipped, XPlaneCockpitPictures.Skipped(objectFile));
+    }
+
     [Fact]
     public void Writer_LeavesOutAPoorPanelPicture_NumbersSameIds_AndRatesTheSet()
     {
@@ -227,6 +249,94 @@ public sealed class CockpitPictureQualityTests
             ]
         };
         Assert.Equal("MSFS2024", manifest.For(v)!.Game);
+    }
+
+    // The set indexes of the test PC's games, as their index.json name them (a part).
+    private static Dictionary<string, string> RealIndex(params (string Name, string Folder)[] names) =>
+        CockpitPictureSet.IndexOf(names.Select(n => new KeyValuePair<string, string>(n.Name, n.Folder)));
+
+    private static readonly Dictionary<string, Dictionary<string, string>> Indexes = new()
+    {
+        ["XPlane12"] = RealIndex(("b738", "b738"), ("Boeing 737-800", "b738"), ("C172", "Cessna_172SP"), ("Cessna 172 SP", "Cessna_172SP"),
+            ("Cessna 172 SP Skyhawk - 180HP", "Cessna_172SP_seaplane"), ("Cessna Skyhawk (Floats)", "Cessna_172SP_seaplane"), ("Cessna_172SP_seaplane", "Cessna_172SP_seaplane"),
+            ("Cessna 172 SP Skyhawk - 180HP - G1000", "Cessna_172SP_G1000"), ("Cessna_172SP_G1000", "Cessna_172SP_G1000"), ("Cessna_172SP", "Cessna_172SP"),
+            ("A330", "A330"), ("Airbus A330-300", "A330"), ("MD80", "MD80"), ("McDonnell Douglas MD-82", "MD80"), ("Baron_58", "Baron_58"), ("Beechcraft Baron 58", "Baron_58"),
+            ("C90B", "C90B"), ("Beechcraft King Air C90B", "C90B"), ("PA-18-150", "PA-18-150"), ("Piper PA-18 Super Cub", "PA-18-150")),
+        ["MSFS2020"] = RealIndex(("Asobo_KingAir350", "Asobo_KingAir350"), ("Beechcraft King Air 350i Asobo", "Asobo_KingAir350"),
+            ("Asobo_C172sp_AS1000", "Asobo_C172sp_AS1000"), ("Cessna Skyhawk G1000 Asobo", "Asobo_C172sp_AS1000"), ("Asobo_C172sp_AS1000_Floaters", "Asobo_C172sp_AS1000_Floaters"),
+            ("Asobo_A320_NEO", "Asobo_A320_NEO"), ("Airbus A320 Neo Asobo", "Asobo_A320_NEO"), ("Asobo_B747_8i", "Asobo_B747_8i"), ("Boeing 747-8i Asobo", "Asobo_B747_8i"),
+            ("Asobo_C152", "Asobo_C152"), ("Cessna 152 Asobo", "Asobo_C152")),
+        ["MSFS2024"] = RealIndex(("asobo_kingair350", "asobo_kingair350"), ("Beechcraft King Air", "asobo_kingair350"), ("asobo_c172sp_g1000", "asobo_c172sp_g1000"),
+            ("C172SP G1000", "asobo_c172sp_g1000"), ("737 Max 8", "asobo_b737max"), ("asobo_b737max", "asobo_b737max"), ("microsoft-a320neo", "microsoft-a320neo"), ("A320neo V2", "microsoft-a320neo"))
+    };
+
+    private static string? SetOf(CockpitVariant v) =>
+        CockpitPictureSet.Locate(v, g => Indexes.TryGetValue(g, out Dictionary<string, string>? i) ? i : new Dictionary<string, string>(), (_, _) => true)?.Item2;
+
+    [Fact]
+    public void Locate_NoNumberAloneMatchesAcrossFamilies()
+    {
+        CockpitCatalog catalog = CockpitCatalog.Load(CockpitDatabaseTests.ShippedCockpits);
+        CockpitVariant V(string id) => catalog.Resolve(catalog.Variant(id)!);
+        // The A350 is no King Air 350, a CRJ-1000 or an E195 ("Lineage 1000") no 172 G1000, a PA-28 ("Cherokee 180") no
+        // 172 "180HP": no picture rather than a wrong one.
+        Assert.Null(SetOf(V("a350-900")));
+        Assert.Null(SetOf(V("crj-900")));
+        Assert.Null(SetOf(V("crj-700")));
+        Assert.Null(SetOf(V("e195")));
+        Assert.Null(SetOf(V("e175")));
+        Assert.Null(SetOf(V("pa-28-archer")));
+        // The right ones still are found.
+        Assert.Equal("b738", SetOf(V("b737-800")));
+        Assert.Equal("Cessna_172SP", SetOf(V("c172-classic")));
+        string? g1000 = SetOf(V("c172-g1000"));
+        Assert.True(g1000 is "Cessna_172SP_G1000" or "Asobo_C172sp_AS1000" or "asobo_c172sp_g1000", "c172-g1000 -> " + g1000 + " (" + string.Join(", ", V("c172-g1000").Aliases.Append(V("c172-g1000").Name)) + ")");
+        // Every variant of the catalog: a set it finds shares a word (maker, type name) or a type designation with it.
+        foreach (CockpitVariant v in catalog.Aircraft.SelectMany(a => a.Variants).Select(catalog.Resolve))
+        {
+            string? set = SetOf(v);
+            if (set == null)
+                continue;
+            HashSet<string> vw = WordsOf(new[] { v.Id, v.Name, v.Aircraft?.Name ?? "" }.Concat(v.Aliases).Concat(v.Aircraft?.Aliases ?? []).Concat(v.Games.Select(g => g.Plane)));
+            HashSet<string> sw = WordsOf(Indexes.Values.SelectMany(i => i.Where(kv => kv.Value == set).Select(kv => kv.Key)).Append(set));
+            Assert.True(vw.Overlaps(sw), v.Id + " -> " + set);
+        }
+    }
+
+    private static HashSet<string> WordsOf(IEnumerable<string> names)
+    {
+        HashSet<string> w = [];
+        foreach (string n in names.Where(x => !string.IsNullOrEmpty(x)))
+        {
+            string l = n.ToLowerInvariant();
+            foreach (System.Text.RegularExpressions.Match m in System.Text.RegularExpressions.Regex.Matches(l, "[a-z]{3,}"))
+                if (m.Value is not ("asobo" or "microsoft" or "aircraft" or "the" or "and" or "series" or "classic"))
+                    w.Add(m.Value);
+            foreach (System.Text.RegularExpressions.Match m in System.Text.RegularExpressions.Regex.Matches(l, "([a-z]+)[-_ ]?([0-9]+)"))
+                w.Add(m.Groups[1].Value + m.Groups[2].Value);
+            w.Add(CockpitPictureSet.Norm(n));
+        }
+        return w;
+    }
+
+    // Opt-in: which set every catalog variant gets from a pictures root (JOYPRO_CHECK_PICTURE_SETS), printed for a review.
+    [Fact]
+    public void OptIn_TheSetOfEveryCatalogVariant()
+    {
+        string? root = Environment.GetEnvironmentVariable("JOYPRO_CHECK_PICTURE_SETS");
+        if (string.IsNullOrWhiteSpace(root) || !Directory.Exists(root))
+            return;
+        CockpitCatalog catalog = CockpitCatalog.Load(CockpitDatabaseTests.ShippedCockpits);
+        List<string> lines = [];
+        foreach (CockpitVariant v in catalog.Aircraft.SelectMany(a => a.Variants).Select(catalog.Resolve))
+        {
+            CockpitPictureSet? set = CockpitPictureSet.For(v, root);
+            if (set != null)
+                lines.Add(v.Id + " (" + v.Name + ") -> " + set.Game + "/" + Path.GetFileName(set.Folder) + (set.LowQuality ? " LOW" : ""));
+        }
+        File.WriteAllLines(Path.Combine(Path.GetTempPath(), "joypro-variant-sets.txt"), lines);
+        Console.WriteLine(string.Join("\n", lines));
+        Assert.NotEmpty(lines);
     }
 
     [Fact]
@@ -320,6 +430,126 @@ public sealed class CockpitPictureQualityTests
         Assert.Equal([0.0, 1.0], toggle.Animation().Positions);
         Assert.Equal("switch-2", ControlKinds.Of(new CockpitCallout { Kind = "switch", GameKind = "toggle", Animation = toggle.Animation() }));
         Assert.Equal("button", ControlKinds.Of(new CockpitCallout { Kind = "button", GameKind = "command" }));
+    }
+
+    // ------------------------------------------------------------------ the grips' parts
+
+    [Fact]
+    public void GripParts_TheA10CStickNamesFollowTheManual_AndNamesThatSayNothingAreLeftOut()
+    {
+        // DCS A-10C Flight Manual, Figure 69: the model's "STICK-BTN-TMS" is the CMS, its "STICK-BTN-TARG" the TMS.
+        CockpitGrip stick = new()
+        {
+            Device = "stick",
+            Parts =
+            [
+                new CockpitCallout { Id = "STICK-BTN-TMS", Label = "BTN TMS" },
+                new CockpitCallout { Id = "STICK-BTN-TARG", Label = "BTN TARG" },
+                new CockpitCallout { Id = "STICK-BTN-NWS", Label = "BTN NWS" },
+                new CockpitCallout { Id = "Helix004", Label = "Helix" },
+                new CockpitCallout { Id = "TUMB-PANTRTL-ENGFUELFLV-L01", Label = "TUMB PANTRTL ENGFUELFLV L" }
+            ]
+        };
+        GripParts.Apply("DCS", "A-10C_2", stick);
+        Assert.Equal(["STICK-BTN-CMS", "STICK-BTN-TMS", "STICK-BTN-NWS"], stick.Parts.Select(p => p.Id));
+        Assert.Equal("STICK-BTN-TMS", stick.Parts[0].Animation!.Name);
+        // The catalog's TMS now points at the ribbed hat, the CMS at the mushroom below it, the NWS at its button.
+        CockpitPictureView view = new()
+        {
+            Kind = "device",
+            Device = "stick",
+            Callouts = stick.Parts.Select((p, i) => new CockpitPictureCallout { Id = p.Id, Label = p.Label, X = 0.1 * (i + 1), Y = 0.5 }).ToList()
+        };
+        CockpitCatalog catalog = CockpitCatalog.Load(CockpitDatabaseTests.ShippedCockpits);
+        CockpitVariant v = catalog.Resolve(catalog.Variant("a-10c-ii")!);
+        List<CockpitControl> controls = v.Controls.Where(c => c.Id.StartsWith("stick.", StringComparison.Ordinal)).ToList();
+        Dictionary<string, CockpitPictureCallout> m = CockpitPictureSet.MatchGrip(view, controls);
+        Assert.Equal("STICK-BTN-TMS", m["stick.hat.tms"].Id);
+        Assert.Equal("STICK-BTN-CMS", m["stick.hat.cms"].Id);
+        Assert.Equal("STICK-BTN-NWS", m["stick.button.index_lower"].Id);
+        // Another module with the same node names keeps them.
+        CockpitGrip other = new() { Device = "stick", Parts = [new CockpitCallout { Id = "STICK-BTN-TMS", Label = "BTN TMS" }] };
+        GripParts.Apply("DCS", "F-16C_50", other);
+        Assert.Equal("STICK-BTN-TMS", other.Parts.Single().Id);
+    }
+
+    [Fact]
+    public void GripView_TakesTheSideThatShowsTheGripsParts()
+    {
+        // A stick with a button on its front face only (the A-10C's NWS below the trigger): hidden from behind, the
+        // thumb's side. The picture is taken from the front side.
+        CockpitScene scene = new();
+        scene.Materials.Add(new SceneMaterial { Name = "grip", Color = [60, 60, 60], Albedo = CockpitPictureTests.PanelTexture(60, 60, 60) });
+        Box(scene, 0, new Vec3(0.30, -0.6, -0.03), new Vec3(0.36, -0.25, 0.03));        // the grip
+        Box(scene, 0, new Vec3(0.36, -0.36, -0.012), new Vec3(0.375, -0.34, 0.012));   // the front button
+        CockpitGrip g = new() { Device = "stick", Meshes = [0, 1], Pivot = new Vec3(0.33, -0.42, 0) };
+        g.Parts.Add(new CockpitCallout { Id = "front_button", Label = "Front button", Position = new Vec3(0.375, -0.35, 0), Kind = "part" });
+        List<CockpitViewPlan> views = CockpitViews.Plan(scene, new Vec3(0, 0.1, 0), [], [g], 400);
+        CockpitViewPlan grip = views.Single(x => x.Kind == "device");
+        Assert.NotEmpty(grip.Alternatives);
+        string folder = Path.Combine(Temp("gripside"), "DCS", "GRIP");
+        PictureWriter.Write(scene, views, folder, new PictureWriter.SetInfo { Game = "DCS", Plane = "GRIP", Planes = ["GRIP"] }, null);
+        CockpitPictureView written = CockpitPictureSet.Load(folder)!.Views.Single(x => x.Kind == "device");
+        CockpitPictureCallout button = written.Callouts.Single();
+        Assert.False(button.Hidden, "the front button is hidden on the grip picture");
+        Assert.InRange(button.X, 0, 1);
+    }
+
+    // Opt-in audit (JOYPRO_CHECK_PICTURE_SETS=<pictures root>): for every catalog variant with a set, each grip control
+    // of the variant and the game part it is placed on (or "-"), with the part's place on the picture; written to
+    // %TEMP%\joypro-grip-audit.tsv for a review against the manuals' figures.
+    [Fact]
+    public void OptIn_GripAudit()
+    {
+        string? root = Environment.GetEnvironmentVariable("JOYPRO_CHECK_PICTURE_SETS");
+        if (string.IsNullOrWhiteSpace(root) || !Directory.Exists(root))
+            return;
+        CockpitCatalog catalog = CockpitCatalog.Load(CockpitDatabaseTests.ShippedCockpits);
+        List<string> lines = ["variant\tgame/set\tdevice\tcontrol\tcontrol name\tpart\tpart label\tx\ty\thidden"];
+        foreach (CockpitVariant v in catalog.Aircraft.SelectMany(a => a.Variants).Select(catalog.Resolve))
+        {
+            CockpitPictureSet? set = CockpitPictureSet.For(v, root);
+            if (set == null)
+                continue;
+            foreach (string device in CockpitCatalog.DevicesOf(v))
+            {
+                CockpitPictureView? grip = set.Grip(set.SeatOf(v), device);
+                if (grip == null)
+                    continue;
+                List<CockpitControl> controls = v.Controls.Where(c => string.Equals(c.Device, device, StringComparison.OrdinalIgnoreCase) || c.Id.StartsWith(device + ".", StringComparison.OrdinalIgnoreCase)).ToList();
+                Dictionary<string, CockpitPictureCallout> m = CockpitPictureSet.MatchGrip(grip, controls);
+                foreach (CockpitControl c in controls)
+                {
+                    m.TryGetValue(c.Id, out CockpitPictureCallout? p);
+                    lines.Add(string.Join("\t", v.Id, set.Game + "/" + Path.GetFileName(set.Folder), device, c.Id, c.Name, p?.Id ?? "-", p?.Label ?? "", p == null ? "" : p.X.ToString("0.00"), p == null ? "" : p.Y.ToString("0.00"), p?.Hidden == true ? "hidden" : ""));
+                }
+                foreach (CockpitPictureCallout unused in grip.Callouts.Where(x => !m.Values.Contains(x)))
+                    lines.Add(string.Join("\t", v.Id, set.Game + "/" + Path.GetFileName(set.Folder), device, "-", "(no control)", unused.Id, unused.Label, unused.X.ToString("0.00"), unused.Y.ToString("0.00"), unused.Hidden ? "hidden" : ""));
+            }
+        }
+        File.WriteAllLines(Path.Combine(Path.GetTempPath(), "joypro-grip-audit.tsv"), lines);
+        Assert.True(lines.Count > 1);
+    }
+
+    private static void Box(CockpitScene scene, int material, Vec3 a, Vec3 b)
+    {
+        Vec3 Corner(int i) => new((i & 1) == 0 ? a.X : b.X, (i & 2) == 0 ? a.Y : b.Y, (i & 4) == 0 ? a.Z : b.Z);
+        int[][] faces = [[0, 2, 6, 4], [1, 5, 7, 3], [0, 4, 5, 1], [2, 3, 7, 6], [0, 1, 3, 2], [4, 6, 7, 5]];
+        List<float> p = [];
+        List<float> uv = [];
+        List<int> idx = [];
+        foreach (int[] f in faces)
+        {
+            int start = p.Count / 3;
+            foreach (int c in f)
+            {
+                Vec3 v = Corner(c);
+                p.AddRange([(float)v.X, (float)v.Y, (float)v.Z]);
+                uv.AddRange([(float)(v.X * 10 + v.Z * 10), (float)(v.Y * 10)]);
+            }
+            idx.AddRange([start, start + 1, start + 2, start, start + 2, start + 3]);
+        }
+        scene.Meshes.Add(new SceneMesh { Name = "box" + scene.Meshes.Count, Material = material, Part = scene.Meshes.Count, Positions = p.ToArray(), Uvs = uv.ToArray(), Indices = idx.ToArray() });
     }
 
     // ------------------------------------------------------------------ every picture of a set opens

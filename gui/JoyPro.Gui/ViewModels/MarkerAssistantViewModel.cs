@@ -195,8 +195,195 @@ public sealed partial class MarkerAssistantViewModel : ObservableObject
         undo.Push((Current, Current.X, Current.Y, Current.IsPlaced));
         reference.MoveMarker(Current, x, y);
         PlacedCount++;
+        if (addingControl)
+        {
+            // A control added by its kind: done; the next one is added the same way or by pressing.
+            addingControl = false;
+            SetCurrent(null);
+            Step = "Idle";
+            IsRunning = false;
+            Prompt = T("Placed. Add the next control, press Start for the others, or Finish to save.");
+            return true;
+        }
         _ = NextAsync(axis: false);
         return true;
+    }
+
+    // ------------------------------------------------------------------ "Add control": a part by its kind
+
+    // The kinds of control the user can add (a hat whose directions the device reports as buttons, a switch ...): each
+    // with the inputs to press or move in turn.
+    public static readonly string[] ControlKinds =
+    [
+        N("Button"), N("2-way switch"), N("3-way switch"), N("Hat 4-way"), N("Hat 4-way + press"), N("Hat 8-way"),
+        N("Mini-stick + press"), N("Encoder"), N("Axis / slider"), N("Wheel (up / down)")
+    ];
+
+    public IReadOnlyList<string> ControlKindOptions => ControlKinds;
+
+    [ObservableProperty] private string controlKind = ControlKinds[4];
+    [ObservableProperty] private string controlName = string.Empty;
+    private bool addingControl;
+
+    // The inputs of a kind, in the order they are asked for ("axis:" = move an axis).
+    public static IReadOnlyList<string> SlotsOf(string kind) => kind switch
+    {
+        "2-way switch" => ["up", "down"],
+        "3-way switch" => ["up", "center", "down"],
+        "Hat 4-way" => ["up", "right", "down", "left"],
+        "Hat 4-way + press" => ["up", "right", "down", "left", "press"],
+        "Hat 8-way" => ["up", "upright", "right", "downright", "down", "downleft", "left", "upleft"],
+        "Mini-stick + press" => ["axis:x", "axis:y", "press"],
+        "Encoder" => ["cw", "ccw", "press"],
+        "Axis / slider" => ["axis:"],
+        "Wheel (up / down)" => ["up", "down"],
+        _ => [""]
+    };
+
+    // The part id of a new control of a kind on the shown model: a free number of the kind's family.
+    public string NewPartId(string kind)
+    {
+        string family = DeviceGeneric.Family(reference.Model?.Kind ?? "panel");
+        HashSet<string> used = new(reference.Markers.Select(m => m.Id), StringComparer.OrdinalIgnoreCase);
+        if (kind == "Mini-stick + press")
+            return used.Contains(family + ".ministick") ? family + ".ministick2" : family + ".ministick";
+        string stem = kind switch
+        {
+            "2-way switch" => family == "panel" ? "panel.toggle." : family + ".base.toggle.",
+            "3-way switch" => family == "panel" ? "panel.toggle3." : family + ".base.toggle.",
+            "Hat 4-way" or "Hat 4-way + press" or "Hat 8-way" => family + ".hat.",
+            "Encoder" => family == "panel" ? "panel.encoder." : family + ".base.encoder.",
+            "Wheel (up / down)" => family + ".rocker.",
+            "Axis / slider" => family + ".axis.slider.",
+            _ => family + ".button."
+        };
+        int n = kind == "Button" ? 101 : 1;
+        while (used.Contains(stem + n))
+            n++;
+        return stem + n;
+    }
+
+    // The control id of one input of a new part (a hat's direction, a mini-stick's axis).
+    public static string ControlOf(string part, string kind, string slot)
+    {
+        bool axis = slot.StartsWith("axis:", StringComparison.Ordinal);
+        string direction = axis ? slot[5..] : slot;
+        if (kind == "Mini-stick + press")
+        {
+            int dot = part.IndexOf('.');
+            return axis ? part[..dot] + ".axis." + part[(dot + 1)..] + "." + direction : part + "." + direction;
+        }
+        return direction.Length == 0 ? part : part + "." + direction;
+    }
+
+    // Adds one control of the chosen kind: press (or move) each of its inputs in turn, then click its spot.
+    [RelayCommand]
+    private async Task AddControlAsync()
+    {
+        if (reference.Model == null)
+        {
+            Prompt = T("Pick or connect a device first.");
+            return;
+        }
+        cancel?.Cancel();
+        CancellationTokenSource source = new();
+        cancel = source;
+        IsRunning = true;
+        Step = "Input";
+        SetCurrent(null);
+        string kind = ControlKind;
+        string part = NewPartId(kind);
+        string name = ControlName.Trim().Length > 0 ? ControlName.Trim() : T(kind);
+        List<RefControl> controls = [];
+        IReadOnlyList<string> slots = SlotsOf(kind);
+        for (int k = 0; k < slots.Count; k++)
+        {
+            string slot = slots[k];
+            bool axis = slot.StartsWith("axis:", StringComparison.Ordinal);
+            string direction = axis ? slot[5..] : slot;
+            Prompt = axis ? T("\"{0}\": move its axis {1} all the way.", name, direction)
+                : direction.Length == 0 ? T("Press \"{0}\" on {1}.", name, DeviceLabel()) : T("\"{0}\": press {1}.", name, T(direction));
+            JoystickCaptureService.CaptureResult? result;
+            try
+            {
+                result = await capture.CaptureNextAsync(new JoystickCaptureService.CaptureOptions
+                {
+                    AxisMode = axis,
+                    IncludeKeyboard = false,
+                    PreferredDevice = reference.DeviceName,
+                    TimeoutMs = TimeoutMs
+                }, source.Token);
+            }
+            catch (OperationCanceledException)
+            {
+                return;
+            }
+            if (source.IsCancellationRequested || cancel != source)
+                return;
+            if (result == null || string.IsNullOrWhiteSpace(result.Input))
+            {
+                Step = "Idle";
+                IsRunning = false;
+                Prompt = T("Nothing was pressed. \"{0}\" is not added.", name);
+                return;
+            }
+            string input = result.Input.Trim().ToUpperInvariant();
+            if (controls.Any(c => c.Input == input))
+            {
+                // The same input twice (the hat was let go too late): ask for this direction again.
+                k--;
+                continue;
+            }
+            controls.Add(new RefControl { Input = input, Control = ControlOf(part, kind, slot), Label = name, Type = axis ? "analog" : kind.Contains("switch") ? "latched" : "momentary" });
+        }
+        foreach (RefControl c in controls)
+        {
+            // An input the model has already moves to the new control (the user knows his device).
+            RefControl? old = reference.Model.AllControls.FirstOrDefault(x => string.Equals(x.Input, c.Input, StringComparison.OrdinalIgnoreCase));
+            if (old != null)
+            {
+                old.Control = c.Control;
+                old.Label = c.Label;
+            }
+            else if (c.Type == "analog")
+            {
+                reference.Model.Axes.Add(c);
+            }
+            else
+            {
+                reference.Model.Controls.Add(c);
+            }
+        }
+        reference.RedrawControls();
+        ReferenceMarker? marker = reference.Markers.FirstOrDefault(m => string.Equals(m.Id, part, StringComparison.OrdinalIgnoreCase)) ?? reference.MarkerOf(controls[0].Input);
+        definitionChanged = true;
+        if (marker == null)
+        {
+            Prompt = T("{0} could not be added.", name);
+            Step = "Idle";
+            IsRunning = false;
+            return;
+        }
+        addingControl = true;
+        reference.SelectedMarker = marker;
+        SetCurrent(marker);
+        Step = "Place";
+        Prompt = T("Click where \"{0}\" is on the picture.", name);
+    }
+
+    // Takes the selected part off the picture (JoyPro placed it wrong and the user does not know where it is).
+    [RelayCommand]
+    private void RemoveSelected()
+    {
+        ReferenceMarker? marker = reference.SelectedMarker;
+        if (marker == null)
+        {
+            Prompt = T("Pick a part in the legend or on the picture first.");
+            return;
+        }
+        undo.Push((marker, marker.X, marker.Y, marker.IsPlaced));
+        reference.RemoveFromPicture(marker);
+        Prompt = T("\"{0}\" is off the picture now; place it again with Start or a click after picking it.", marker.Name);
     }
 
     [RelayCommand]

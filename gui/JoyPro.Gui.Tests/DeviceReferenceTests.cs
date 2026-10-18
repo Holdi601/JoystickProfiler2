@@ -515,7 +515,8 @@ public sealed class DeviceReferenceTests : IDisposable
             AvaloniaRenderThread.Wait(Done(third.ShowModelAsync("thrustmaster-warthog-stick")));
             Assert.Equal("user", third.PictureKind);
             AvaloniaRenderThread.Wait(Done(third.RemoveUserPhotoCommand.ExecuteAsync(null)));
-            Assert.Equal("schematic", third.PictureKind);
+            // Without the user's photo: JoyPro's drawing of the model with its positions.
+            Assert.Equal("lineart", third.PictureKind);
         });
     }
 
@@ -754,6 +755,176 @@ public sealed class DeviceReferenceTests : IDisposable
         });
     }
 
+    // "Add control": a 4-way hat with press that the device reports as five buttons; the assistant asks for each
+    // direction in turn, then for the spot; the new part has all five inputs, and Finish keeps it as the user's own
+    // definition of the model.
+    [Fact]
+    public void Assistant_AddControl_HatWithPress_CapturesEachDirectionThenThePlace()
+    {
+        AvaloniaRenderThread.Run(() =>
+        {
+            const string device = "VKB-Sim Gunfighter Modern Combat Pro Twist {00000000-0000-0000-0000-000000000010}";
+            FakeCapture capture = new();
+            DeviceReferenceViewModel vm = new() { VendorPhotosEnabled = false, CaptureService = capture };
+            AvaloniaRenderThread.Wait(Done(vm.ShowModelAsync("vkb-gunfighter-mcg-pro", device)));
+            vm.OpenAssistantCommand.Execute(null);
+            MarkerAssistantViewModel assistant = vm.Assistant!;
+            assistant.ControlKind = "Hat 4-way + press";
+            assistant.ControlName = "Thumb hat B";
+            string[] inputs = ["JOY_BTN50", "JOY_BTN51", "JOY_BTN52", "JOY_BTN53", "JOY_BTN54"];
+            // The first direction pressed twice (let go too late): asked again, not taken twice.
+            capture.Next.Enqueue(new JoystickCaptureService.CaptureResult { Device = device, Input = inputs[0] });
+            capture.Next.Enqueue(new JoystickCaptureService.CaptureResult { Device = device, Input = inputs[0] });
+            foreach (string input in inputs.Skip(1))
+                capture.Next.Enqueue(new JoystickCaptureService.CaptureResult { Device = device, Input = input });
+            AvaloniaRenderThread.Wait(Done(assistant.AddControlCommand.ExecuteAsync(null)));
+            Assert.Equal("Place", assistant.Step);
+            ReferenceMarker hat = Assert.IsType<ReferenceMarker>(assistant.Current);
+            Assert.Equal("stick.hat.1", hat.Id);
+            Assert.Equal(inputs.OrderBy(i => i), hat.Inputs.Select(i => i.Input).OrderBy(i => i));
+            Assert.Equal("stick.hat.1.press", vm.Model!.AllControls.Single(c => c.Input == "JOY_BTN54").Control);
+            Assert.Equal("stick.hat.1.up", vm.Model!.AllControls.Single(c => c.Input == "JOY_BTN50").Control);
+            Assert.True(assistant.PlaceAt(0.3, 0.2));
+            Assert.Equal("Idle", assistant.Step);
+            Assert.True(hat.IsShown);
+            assistant.FinishCommand.Execute(null);
+            Assert.True(File.Exists(Path.Combine(DeviceCatalog.UserFolder(), "vkb-gunfighter-mcg-pro.json")));
+            // The user's definition wins over the catalog from now on (Layout, Visual Assign, cheat sheets, HUD).
+            DeviceReferenceService.Reload();
+            Assert.Contains(DeviceReferenceService.Catalog.Find("vkb-gunfighter-mcg-pro")!.AllControls, c => c.Input == "JOY_BTN54" && c.Control == "stick.hat.1.press");
+        });
+    }
+
+    // The banner: a part with inputs that has no place on the shown picture counts as missing; placing it or taking a
+    // wrong part off the picture is kept per picture (the user's layer over JoyPro's positions).
+    [Fact]
+    public void MissingMarkers_CountedAndRemovedPartsStayRemoved()
+    {
+        AvaloniaRenderThread.Run(() =>
+        {
+            DeviceReferenceViewModel vm = new() { VendorPhotosEnabled = false };
+            AvaloniaRenderThread.Wait(Done(vm.ShowModelAsync("thrustmaster-hotas-warthog-throttle")));
+            Assert.Equal("lineart", vm.PictureKind);
+            Assert.Equal(0, vm.MissingMarkerCount);
+            Assert.False(vm.HasMissingMarkers);
+            ReferenceMarker mic = vm.Markers.Single(m => m.Id == "throttle.hat.mic");
+            vm.RemoveFromPicture(mic);
+            Assert.Equal(1, vm.MissingMarkerCount);
+            Assert.True(vm.HasMissingMarkers);
+            Assert.Contains("1 input", vm.MissingMarkersText, StringComparison.Ordinal);
+            vm.SaveMarkersCommand.Execute(null);
+
+            DeviceReferenceViewModel again = new() { VendorPhotosEnabled = false };
+            AvaloniaRenderThread.Wait(Done(again.ShowModelAsync("thrustmaster-hotas-warthog-throttle")));
+            Assert.False(again.Markers.Single(m => m.Id == "throttle.hat.mic").IsShown);
+            Assert.Equal(1, again.MissingMarkerCount);
+            again.MoveMarker(again.Markers.Single(m => m.Id == "throttle.hat.mic"), 0.81, 0.62);
+            Assert.Equal(0, again.MissingMarkerCount);
+        });
+    }
+
+    // "Send correction to JoyPro": the moved part and an added control go into the correction file and the issue
+    // form's address; nothing else (no device instance name, no path) is in it; the file reads back.
+    [Fact]
+    public void SendCorrection_WritesTheFileAndOpensThePrefilledIssueForm()
+    {
+        AvaloniaRenderThread.Run(() =>
+        {
+            const string device = "Joystick - HOTAS Warthog {00000000-0000-0000-0000-000000000011}";
+            DeviceReferenceViewModel vm = new() { VendorPhotosEnabled = false, Now = () => new DateTime(2026, 10, 18, 12, 0, 0) };
+            List<string> opened = [];
+            vm.OpenUrl = opened.Add;
+            AvaloniaRenderThread.Wait(Done(vm.ShowDeviceAsync(new DeviceProbe { VidPid = "044F:0402", ProductName = "Joystick - HOTAS Warthog" }, device)));
+            vm.SendCorrectionCommand.Execute(null);
+            Assert.Empty(opened);
+            Assert.Contains("Nothing to send", vm.Status, StringComparison.Ordinal);
+
+            ReferenceMarker cms = vm.Markers.Single(m => m.Id == "stick.hat.cms");
+            vm.MoveMarker(cms, 0.21, 0.44);
+            vm.AddControl(new RefControl { Input = "JOY_BTN40", Control = "stick.button.thumb.9", Label = "Extra button" });
+            vm.SendCorrectionCommand.Execute(null);
+            string url = Assert.Single(opened);
+            Assert.StartsWith(DeviceCorrection.IssueBase + "?template=device-layout-correction.yml", url, StringComparison.Ordinal);
+            Assert.True(File.Exists(vm.LastCorrectionFile));
+            System.Text.Json.Nodes.JsonObject corr = DeviceCorrection.Read(vm.LastCorrectionFile);
+            Assert.Equal("thrustmaster-warthog-stick", (string?)corr["model"]);
+            Assert.Equal("044F:0402", (string?)corr["vidPid"]);
+            Assert.Equal(0.21, (double)corr["positions"]!["stick.hat.cms"]![0]!, 3);
+            Assert.Single(corr["positions"]!.AsObject());
+            Assert.Contains(corr["controls"]!.AsArray(), c => (string?)c!["input"] == "JOY_BTN40" && (string?)c["change"] == "added");
+            string text = File.ReadAllText(vm.LastCorrectionFile);
+            Assert.DoesNotContain("00000000-0000-0000-0000-000000000011", text, StringComparison.Ordinal);
+            Assert.DoesNotContain(Environment.UserName, Uri.UnescapeDataString(url), StringComparison.OrdinalIgnoreCase);
+            Assert.Contains("stick.hat.cms", Uri.UnescapeDataString(url), StringComparison.Ordinal);
+        });
+    }
+
+    // The rotatable 3D view of a replica device: every frame exists, the parts are on the frame, turning moves them,
+    // a part facing away is hollow and not picked first, a click picks a part, a dropped relation binds it.
+    [Fact]
+    public void Turntable_WarthogStick_PartsFollowTheRotation_AndDropBinds()
+    {
+        // The 3D views are downloaded packs (not shipped): a made-up turntable of the six parts, hats on the back.
+        string root = Path.Combine(Path.GetTempPath(), "JoyPro-turntable-" + Guid.NewGuid().ToString("N")[..8]);
+        TurntableFixture.Write(root, "thrustmaster-warthog-stick", ["stick.hat.tms", "stick.hat.dms", "stick.hat.cms", "stick.hat.trim", "stick.weapon_release", "stick.trigger"], steps: 24,
+            source: "Rendered from DCS World's A-10C cockpit model (stick grip) by JoyPro");
+        DeviceTurntable tt = Assert.IsType<DeviceTurntable>(DeviceTurntable.Load(Path.Combine(root, "thrustmaster-warthog-stick"), "thrustmaster-warthog-stick"));
+        Assert.Equal(tt.YawSteps * tt.Pitches.Count, tt.Frames.Count);
+        Assert.All(tt.Frames, f => Assert.True(File.Exists(tt.PathOf(f)), f.File));
+        Assert.Contains("DCS World", tt.Source, StringComparison.Ordinal);
+        DeviceTurntable.Frame back = tt.FrameAt(1, 0)!;
+        foreach (string part in new[] { "stick.hat.tms", "stick.hat.dms", "stick.hat.cms", "stick.hat.trim", "stick.weapon_release", "stick.trigger" })
+            Assert.True(back.Points.ContainsKey(part), part);
+        Assert.True(back.Points["stick.hat.tms"].Seen);
+        // From the front (yaw 180) the hats face away.
+        Assert.False(tt.FrameAt(1, tt.YawSteps / 2)!.Points["stick.hat.tms"].Seen);
+        AvaloniaRenderThread.Run(() =>
+        {
+            DeviceReferenceViewModel vm = new() { VendorPhotosEnabled = false };
+            AvaloniaRenderThread.Wait(Done(vm.ShowModelAsync("thrustmaster-warthog-stick")));
+            List<string> dropped = [];
+            TurntableView view = new()
+            {
+                Turntable = tt,
+                Parts = vm.Markers,
+                RelationDroppedCommand = new CommunityToolkit.Mvvm.Input.RelayCommand<string>(r => dropped.Add(r!))
+            };
+            view.Measure(new Size(600, 600));
+            view.Arrange(new Rect(0, 0, 600, 600));
+            Point tms = view.PointOf("stick.hat.tms")!.Value.At;
+            Assert.Equal("stick.hat.tms", view.PartAt(tms)?.Id);
+            Assert.True(view.DropRelationAt(tms, "Gear"));
+            Assert.Equal("stick.hat.tms", view.SelectedPart?.Id);
+            Assert.Equal(["Gear"], dropped);
+            if (Environment.GetEnvironmentVariable("JOYPRO_DEVICE_REFERENCE_PREVIEW") is { Length: > 0 } preview)
+            {
+                vm.SetBindings(new Dictionary<string, string> { ["JOY_BTN7"] = "TMS Up", ["JOY_BTN2"] = "Weapon Release", ["JOY_BTN1"] = "Gun Trigger" });
+                Border frame = new() { Background = new SolidColorBrush(Color.FromRgb(0x1E, 0x24, 0x30)), Child = view };
+                ThemeVariantScope host = new() { Width = 600, Height = 600, RequestedThemeVariant = ThemeVariant.Dark, Child = frame };
+                Directory.CreateDirectory(preview);
+                foreach (int turn in new[] { 0, 3, 3 })
+                {
+                    view.Rotate(turn, 0);
+                    host.Measure(new Size(600, 600));
+                    host.Arrange(new Rect(0, 0, 600, 600));
+                    using RenderTargetBitmap bitmap = new(new PixelSize(600, 600));
+                    bitmap.Render(host);
+                    bitmap.Save(Path.Combine(preview, "turntable-warthog-yaw" + view.YawIndex + ".png"));
+                }
+                frame.Child = null;
+                view.Rotate(-6, 0);
+            }
+            view.Rotate(3, 0);
+            Point turned = view.PointOf("stick.hat.tms")!.Value.At;
+            Assert.True(Math.Abs(turned.X - tms.X) > 5);
+            // The view model offers the 3D view for this model only.
+            Assert.NotNull(DeviceTurntable.Of(root, "thrustmaster-warthog-stick"));
+            Assert.Null(DeviceTurntable.Of(root, "vkb-gunfighter-mcg-pro"));
+            // Nothing is shipped: without a download there is no 3D view.
+            Assert.False(Directory.Exists(Path.Combine(Path.GetDirectoryName(ShippedCatalog.TrimEnd('\\', '/'))!, "DeviceTurntables")));
+        });
+    }
+
     // ------------------------------------------------------------------ the whole catalog: classes, photos, positions
 
     // Up to three models of every device class render sensibly: a picture with ink (JoyPro's drawing or the class
@@ -850,11 +1021,20 @@ public sealed class DeviceReferenceTests : IDisposable
                 problems.Add(set.File + ": unknown model");
                 continue;
             }
-            DevicePhoto? photo = model.Photos.FirstOrDefault(p => string.Equals(p.Url, set.PhotoUrl, StringComparison.OrdinalIgnoreCase));
-            if (photo == null)
-                problems.Add(set.File + ": the photo is not referenced by " + model.Id);
-            if (set.PhotoSha256.Length != 64 || (photo != null && photo.Sha256.Length > 0 && photo.Sha256 != set.PhotoSha256))
-                problems.Add(set.File + ": photo hash missing or different");
+            if (set.PhotoKind == "lineart")
+            {
+                // Positions on JoyPro's own drawing: the set names the drawing's key (DeviceLineArtTests checks it).
+                if (set.PhotoUrl.Length > 0 || set.PhotoSha256.Length != 16)
+                    problems.Add(set.File + ": a set on JoyPro's drawing names the drawing's key and no photo");
+            }
+            else
+            {
+                DevicePhoto? photo = model.Photos.FirstOrDefault(p => string.Equals(p.Url, set.PhotoUrl, StringComparison.OrdinalIgnoreCase));
+                if (photo == null)
+                    problems.Add(set.File + ": the photo is not referenced by " + model.Id);
+                if (set.PhotoSha256.Length != 64 || (photo != null && photo.Sha256.Length > 0 && photo.Sha256 != set.PhotoSha256))
+                    problems.Add(set.File + ": photo hash missing or different");
+            }
             HashSet<string> parts = new(SchematicBuilder.Build(model, catalog.BaseOf(model)).Markers.Select(m => m.Id), StringComparer.OrdinalIgnoreCase);
             problems.AddRange(set.Markers.Keys.Where(k => !parts.Contains(k)).Select(k => set.File + ": no part " + k));
         }

@@ -793,7 +793,11 @@ def load_sets():
         for name in sorted(os.listdir(LAYOUTS)):
             if name.endswith(".json"):
                 with open(os.path.join(LAYOUTS, name), encoding="utf-8-sig") as handle:
-                    sets.append((name, json.load(handle)))
+                    data = json.load(handle)
+                # Sets on JoyPro's own drawings (tools/device_drawings.py) have no photo; that tool keeps them.
+                if (data.get("photo") or {}).get("kind") == "lineart":
+                    continue
+                sets.append((name, data))
     return sets
 
 

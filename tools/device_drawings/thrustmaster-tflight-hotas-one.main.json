@@ -1,0 +1,100 @@
+{
+ "model": "thrustmaster-tflight-hotas-one",
+ "view": "main",
+ "class": "hotas",
+ "width": 2130.0,
+ "height": 1060.0,
+ "source": "JoyPro template drawing of the maker's photos (main, main~): smoothed silhouettes, JoyPro's control symbols at the curated spots",
+ "mappingSource": "Thrustmaster T.Flight Hotas manuals (figure: trigger on the front of the grip; rudder rocker 8 on the throttle handle's inner face below the action buttons): both drawn on the far-side outline",
+ "confidence": "medium",
+ "compose": {
+  "views": [
+   "main",
+   "main~"
+  ],
+  "place": [
+   {
+    "part": "stick.trigger",
+    "view": "main~",
+    "uv": [
+     0.71,
+     0.22
+    ]
+   },
+   {
+    "part": "throttle.axis.wheel.1",
+    "view": "main~",
+    "uv": [
+     0.15,
+     0.43
+    ]
+   }
+  ],
+  "mappingSource": "Thrustmaster T.Flight Hotas manuals (figure: trigger on the front of the grip; rudder rocker 8 on the throttle handle's inner face below the action buttons): both drawn on the far-side outline"
+ },
+ "include": [
+  {
+   "file": "thrustmaster-tflight-hotas-one-main.json",
+   "dx": 30.0,
+   "dy": 30.0,
+   "scale": 1.25,
+   "mirror": false,
+   "map": {
+    "stick.axis.twist": "stick.axis.twist",
+    "stick.gimbal": "stick.gimbal",
+    "stick.hat.trim": "stick.hat.trim",
+    "throttle.axis.main": "throttle.axis.main"
+   }
+  },
+  {
+   "file": "thrustmaster-tflight-hotas-one-main.json",
+   "dx": 2100.0,
+   "dy": 30.0,
+   "scale": 1.25,
+   "mirror": true,
+   "map": {},
+   "only": true
+  }
+ ],
+ "shapes": [],
+ "controls": [
+  {
+   "type": "group",
+   "dx": 2100.0,
+   "dy": 30.0,
+   "scale": 1.25,
+   "mirror": true,
+   "items": [
+    {
+     "part": "stick.trigger",
+     "glyph": "button",
+     "at": [
+      568.0,
+      176.0
+     ],
+     "size": 40.0
+    }
+   ]
+  },
+  {
+   "type": "group",
+   "dx": 2100.0,
+   "dy": 30.0,
+   "scale": 1.25,
+   "mirror": true,
+   "items": [
+    {
+     "part": "throttle.axis.wheel.1",
+     "glyph": "wheel",
+     "at": [
+      120.0,
+      344.0
+     ],
+     "size": 40.0,
+     "w": 34.0,
+     "h": 78.0
+    }
+   ]
+  }
+ ]
+}

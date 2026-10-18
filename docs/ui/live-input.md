@@ -32,9 +32,13 @@ Logic: `Services/FollowInputTracker.cs` (debounce 120 ms; a press in a device's 
 within 1.5 s), `MainWindowViewModel.LiveInput.cs`.
 
 A jump moves the list under a mouse that did not move; the card that slides under the pointer must not pop its tooltip.
-The VM raises `FollowInputJumped`; the window (`Views/TooltipHold.cs`) switches tooltips off (`ToolTip.ServiceEnabled`,
-inherited), closes an open one and switches them on again once the mouse moves more than 3 px, is pressed, scrolls or
-leaves the window.
+The VM raises `FollowInputActivity` for every input follow input reacts to (each press, each axis step, also a large
+axis move too soon for a step), besides `FollowInputJumped` for real jumps. The window (`Views/TooltipHold.cs`) then
+arms its hold again: tooltips off (`ToolTip.ServiceEnabled`, inherited), an open one closed, and a guard closes any
+tooltip that still opens (a show timer started before the hold). Only real mouse movement releases it: a screen-space
+path of at least 60 px (device-independent, counted in steps of 4 px so jitter and synthetic moves at the same place
+never add up) that got at least 16 px away. Clicks, the wheel and keyboard focus do not release it. After the release
+the normal show delay applies. An inactive window never shows tooltips; becoming active arms the hold again.
 
 ## Live highlight (Visual Assign, Layout page)
 

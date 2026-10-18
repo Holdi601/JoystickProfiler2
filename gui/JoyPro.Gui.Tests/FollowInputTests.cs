@@ -218,9 +218,10 @@ public sealed class FollowInputTests
         Assert.Equal("Fire", vm.SelectedRelation?.Name);
     }
 
-    // A jump moves the list under a mouse that did not move: the window holds tooltips back until the mouse moves.
+    // A jump moves the list under a mouse that did not move: the window holds tooltips back until the mouse really
+    // moves (screen path >= ReleasePath); synthetic moves at the same place, jitter, clicks and the wheel do not count.
     [Fact]
-    public void Follow_Jump_HoldsTooltipsBack_UntilTheMouseMoves()
+    public void Follow_Jump_HoldsTooltipsBack_UntilTheMouseReallyMoves()
     {
         AvaloniaRenderThread.Run(() =>
         {
@@ -229,22 +230,109 @@ public sealed class FollowInputTests
             Views.MainWindow main = new() { DataContext = vm, Width = 1280, Height = 800 };
             Avalonia.Controls.Control inner = Avalonia.LogicalTree.LogicalExtensions.GetLogicalDescendants(main)
                 .OfType<Avalonia.Controls.ListBox>().First(l => l.Name == "RelationsListBox");
-            main.TooltipHold.PointerAt(new Avalonia.Point(200, 300));
+            Views.TooltipHold hold = main.TooltipHold;
+            Avalonia.Input.Pointer pointer = new(Avalonia.Input.Pointer.GetNextFreeId(), Avalonia.Input.PointerType.Mouse, true);
+            // Through the real handler (window position to screen position).
+            void Move(Avalonia.Point at) => RaiseMove(main, main, pointer, at);
+            Move(new Avalonia.Point(400, 300));
             Assert.True(Avalonia.Controls.ToolTip.GetServiceEnabled(inner));
+            Assert.False(Views.TooltipHold.KeepsBack(inner));
 
             vm.OnLiveInput(new JoystickInputEvent(Stick, "JOY_BTN8", true));
             Assert.Equal("Gear", vm.SelectedRelation?.Name);
-            Assert.True(main.TooltipHold.IsHolding);
+            Assert.True(hold.IsHolding);
             Assert.False(Avalonia.Controls.ToolTip.GetServiceEnabled(inner));
+            Assert.True(Views.TooltipHold.KeepsBack(inner));
 
-            // The layout moving under the pointer (same place) keeps them back; a real move brings them back.
-            main.TooltipHold.PointerAt(new Avalonia.Point(201, 301));
-            Assert.True(main.TooltipHold.IsHolding);
-            main.TooltipHold.PointerAt(new Avalonia.Point(220, 300));
-            Assert.False(main.TooltipHold.IsHolding);
+            // The layout raising pointer moves under the still mouse (the real handler, same screen place).
+            for (int i = 0; i < 50; i++)
+                Move(new Avalonia.Point(400, 300));
+            Assert.True(hold.IsHolding);
+            // Clicks and the wheel are no reason for a tooltip.
+            inner.RaiseEvent(new Avalonia.Input.PointerPressedEventArgs(inner, pointer, main, new Avalonia.Point(400, 300), 0,
+                new Avalonia.Input.PointerPointProperties(Avalonia.Input.RawInputModifiers.LeftMouseButton, Avalonia.Input.PointerUpdateKind.LeftButtonPressed),
+                Avalonia.Input.KeyModifiers.None));
+            inner.RaiseEvent(new Avalonia.Input.PointerWheelEventArgs(inner, pointer, main, new Avalonia.Point(400, 300), 0,
+                Avalonia.Input.PointerPointProperties.None, Avalonia.Input.KeyModifiers.None, new Avalonia.Vector(0, -1)));
+            Assert.True(hold.IsHolding);
+
+            // Jitter: a resting hand moves the mouse a pixel or two to and fro for a long time.
+            for (int i = 0; i < 200; i++)
+                Move(new Avalonia.Point(400 + (i % 2) * 2, 300 + (i % 3)));
+            Assert.True(hold.IsHolding);
+            // A small move is not enough either.
+            Move(new Avalonia.Point(430, 300));
+            Assert.True(hold.IsHolding);
+
+            // A noticeable move (60+ px on the screen): tooltips come back, with their normal show delay.
+            for (int x = 430; x <= 500; x += 5)
+                Move(new Avalonia.Point(x, 300));
+            Assert.False(hold.IsHolding);
             Assert.True(Avalonia.Controls.ToolTip.GetServiceEnabled(inner));
+            Assert.False(Views.TooltipHold.KeepsBack(inner));
+
+            // Every new press arms it again, also one that does not move the selection.
+            vm.OnLiveInput(new JoystickInputEvent(Stick, "JOY_BTN8", false));
+            System.Threading.Thread.Sleep((int)FollowInputTracker.ButtonDebounceMs + 30);
+            vm.OnLiveInput(new JoystickInputEvent(Stick, "JOY_BTN1", true));
+            Assert.True(hold.IsHolding);
+            for (int x = 500; x <= 580; x += 5)
+                Move(new Avalonia.Point(x, 300));
+            Assert.False(hold.IsHolding);
+            Assert.Equal("Fire", vm.SelectedRelation?.Name);
+            vm.OnLiveInput(new JoystickInputEvent(Stick, "JOY_BTN1", false));
+            System.Threading.Thread.Sleep((int)FollowInputTracker.ButtonDebounceMs + 30);
+            vm.OnLiveInput(new JoystickInputEvent(Stick, "JOY_BTN1", true));
+            Assert.Equal("Fire", vm.SelectedRelation?.Name);
+            Assert.True(hold.IsHolding);
+            for (int x = 580; x >= 500; x -= 5)
+                Move(new Avalonia.Point(x, 300));
+            Assert.False(hold.IsHolding);
+
+            // Each axis jump arms it again, also a large move too soon after the last step (no jump).
+            vm.OnLiveAxes(new JoystickAxisSnapshot(Throttle, [0.5, 0.5, 0, 0, 0, 0, 0, 0]));
+            vm.OnLiveAxes(new JoystickAxisSnapshot(Throttle, [0.5, 0.5, 0.9, 0, 0, 0, 0, 0]));
+            Assert.True(hold.IsHolding);
+            for (int x = 580; x <= 660; x += 5)
+                Move(new Avalonia.Point(x, 300));
+            Assert.False(hold.IsHolding);
+            vm.OnLiveAxes(new JoystickAxisSnapshot(Throttle, [0.5, 0.5, 0.2, 0, 0, 0, 0, 0]));
+            Assert.True(hold.IsHolding);
         });
     }
+
+    // An inactive window (the game in front) never shows a tooltip; back in front, the mouse has to move first.
+    [Fact]
+    public void Tooltips_NeverInAnInactiveWindow()
+    {
+        AvaloniaRenderThread.Run(() =>
+        {
+            (MainWindowViewModel vm, _) = AvaloniaRenderThread.Wait(CreateBindsPageAsync());
+            vm.FollowInputOnBinds = false;
+            Views.MainWindow main = new() { DataContext = vm, Width = 1280, Height = 800 };
+            Views.TooltipHold hold = main.TooltipHold;
+            hold.PointerAtScreen(new Avalonia.Point(200, 300));
+            Assert.True(Avalonia.Controls.ToolTip.GetServiceEnabled(main));
+
+            hold.SetActive(false);
+            Assert.True(hold.IsSuppressed);
+            Assert.False(Avalonia.Controls.ToolTip.GetServiceEnabled(main));
+            for (int x = 200; x <= 400; x += 5)
+                hold.PointerAtScreen(new Avalonia.Point(x, 300));
+            Assert.True(hold.IsSuppressed);
+
+            hold.SetActive(true);
+            Assert.True(hold.IsSuppressed);
+            for (int x = 400; x <= 480; x += 5)
+                hold.PointerAtScreen(new Avalonia.Point(x, 300));
+            Assert.False(hold.IsSuppressed);
+            Assert.True(Avalonia.Controls.ToolTip.GetServiceEnabled(main));
+        });
+    }
+
+    private static void RaiseMove(Avalonia.Controls.Window main, Avalonia.Controls.Control source, Avalonia.Input.IPointer pointer, Avalonia.Point at) =>
+        source.RaiseEvent(new Avalonia.Input.PointerEventArgs(Avalonia.Input.InputElement.PointerMovedEvent, source, pointer, main, at, 0,
+            Avalonia.Input.PointerPointProperties.None, Avalonia.Input.KeyModifiers.None));
 
     [Fact]
     public async Task Follow_ARestingButtonOfTheFirstReport_DoesNotJump()

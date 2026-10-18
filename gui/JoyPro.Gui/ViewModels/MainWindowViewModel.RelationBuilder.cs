@@ -104,6 +104,10 @@ public sealed partial class MainWindowViewModel
             MarkBuilderRowsInRelation();
             return;
         }
+        // What the panel shows belongs to the relation it was asked for, never to the one opened now (a stale list would
+        // offer the last relation's actions under this one's name: 'UFC 3 Key' under 'Pitch').
+        if (!string.Equals(builderSuggestionsRelation, value.Name, StringComparison.Ordinal))
+            ClearBuilderSuggestions();
         if (suppressRelationAutoLoad || !IsRelationsStage || IsAnyRelationToolOpen)
             return;
         ShowNewRelationForm = false;
@@ -178,6 +182,12 @@ public sealed partial class MainWindowViewModel
 
     private readonly List<BuilderSuggestionItem> allBuilderSuggestions = [];
     private int builderSuggestVersion;
+    // The relation the shown suggestions, dismissed actions and "Looks wrong" entries were asked for.
+    private string builderSuggestionsRelation = string.Empty;
+
+    // The suggestion panel's actions act on the relation they were made for, and only while it is the open one.
+    internal bool BuilderSuggestionsMatchOpenRelation =>
+        SelectedRelation != null && string.Equals(builderSuggestionsRelation, SelectedRelation.Name, StringComparison.Ordinal);
     private bool builderLlmStatusRequested;
 
     public ObservableCollection<BuilderSuggestionItem> BuilderSuggestions { get; } = [];
@@ -267,6 +277,9 @@ public sealed partial class MainWindowViewModel
 
     private void ClearBuilderSuggestions()
     {
+        builderSuggestionsRelation = string.Empty;
+        foreach (BuilderSuggestionItem item in BuilderSuggestions)
+            item.PropertyChanged -= OnBuilderSuggestionTicked;
         allBuilderSuggestions.Clear();
         BuilderSuggestions.Clear();
         BuilderSuggestionGames.Clear();
@@ -282,6 +295,9 @@ public sealed partial class MainWindowViewModel
     {
         int version = ++builderSuggestVersion;
         BuilderRelationName = relation;
+        // Another relation's list goes at once (the engine takes a while; meanwhile nothing of the old one shows).
+        if (!string.Equals(builderSuggestionsRelation, relation, StringComparison.Ordinal))
+            ClearBuilderSuggestions();
         IsBuilderSuggestLoading = true;
         try
         {
@@ -301,6 +317,7 @@ public sealed partial class MainWindowViewModel
                 return;
             }
             ParseBuilderSuggestions(result.StandardOutput);
+            builderSuggestionsRelation = relation;
         }
         finally
         {
@@ -346,8 +363,21 @@ public sealed partial class MainWindowViewModel
                     {
                         MeaningNote = ReadJsonString(item, "MeaningNote"),
                         Missing = ReadJsonString(item, "Missing"),
-                        NewPlanes = ReadStringArray(item, "NewPlanes")
+                        NewPlanes = ReadStringArray(item, "NewPlanes"),
+                        IsRecommended = item.TryGetProperty("Recommended", out JsonElement rec) && rec.ValueKind == JsonValueKind.True,
+                        RecommendedFor = ReadJsonString(item, "RecommendedFor"),
+                        Variant = ReadJsonString(item, "Variant"),
+                        Group = ReadJsonString(item, "Group"),
+                        Readable = ReadJsonString(item, "Readable"),
+                        FunctionName = ReadJsonString(item, "FunctionName"),
+                        Explanation = ReadJsonString(item, "Explanation"),
+                        ExplanationSource = ReadJsonString(item, "ExplanationSource")
                     });
+                    // The recommended action of a game or aircraft the relation lacks comes ticked for "Add ticked";
+                    // its alternatives never do.
+                    BuilderSuggestionItem added = allBuilderSuggestions[^1];
+                    if (added.IsRecommended && added.IsMissing && !added.HasConflict)
+                        added.IsChecked = true;
                 }
             }
             if (root.TryGetProperty("Dismissed", out JsonElement dismissed) && dismissed.ValueKind == JsonValueKind.Array)
@@ -443,7 +473,7 @@ public sealed partial class MainWindowViewModel
     [RelayCommand]
     private async Task AddBuilderSuggestionAsync(BuilderSuggestionItem? item)
     {
-        if (item == null)
+        if (item == null || !allBuilderSuggestions.Contains(item))
             return;
         RemoveBuilderSuggestionRow(item);
         await ApplyToBuilderRelationAsync(["--add", item.NodeSpec], T("Adding '{0}'...", item.Title), T("'{0}' ({1}) added.", item.Title, item.Where));
@@ -453,7 +483,7 @@ public sealed partial class MainWindowViewModel
     [RelayCommand]
     private async Task MoveBuilderSuggestionHereAsync(BuilderSuggestionItem? item)
     {
-        if (item == null)
+        if (item == null || !allBuilderSuggestions.Contains(item))
             return;
         RemoveBuilderSuggestionRow(item);
         await ApplyToBuilderRelationAsync(["--take", item.NodeSpec], T("Moving '{0}' here...", item.Title),
@@ -464,7 +494,7 @@ public sealed partial class MainWindowViewModel
     [RelayCommand]
     private async Task DismissBuilderSuggestionAsync(BuilderSuggestionItem? item)
     {
-        if (item == null)
+        if (item == null || !allBuilderSuggestions.Contains(item))
             return;
         RemoveBuilderSuggestionRow(item);
         await ApplyToBuilderRelationAsync(["--never", item.NodeSpec], T("Dismissing '{0}'...", item.Title), T("'{0}' dismissed for this relation.", item.Title));
@@ -490,7 +520,7 @@ public sealed partial class MainWindowViewModel
     [RelayCommand]
     private async Task RestoreBuilderDismissedAsync(BuilderDismissedItem? item)
     {
-        if (item == null)
+        if (item == null || !BuilderDismissed.Contains(item))
             return;
         await ApplyToBuilderRelationAsync(["--remove", item.Spec], T("Restoring '{0}'...", item.Title), T("'{0}' can be suggested again.", item.Title));
     }
@@ -505,11 +535,17 @@ public sealed partial class MainWindowViewModel
     }
 
     // engine relations suggest apply <open relation> <options>, then the relation and its suggestions are reloaded.
-    private async Task<bool> ApplyToBuilderRelationAsync(List<string> options, string busyLabel, string done)
+    private async Task<bool> ApplyToBuilderRelationAsync(List<string> options, string busyLabel, string done, bool fromSuggestions = true)
     {
         string relation = SelectedRelation?.Name ?? BuilderRelationName;
         if (relation.Length == 0)
             return false;
+        if (fromSuggestions && !BuilderSuggestionsMatchOpenRelation)
+        {
+            BuilderSuggestStatus = T("These suggestions were for another relation; they are loaded again for '{0}'.", relation);
+            await LoadBuilderSuggestionsAsync(relation);
+            return false;
+        }
         List<string> args = ["relations", "suggest", "apply", relation];
         args.AddRange(options);
         EngineCommandResult? result = await RunEngineAsync(args, includeProfile: true, mutatesProfile: true, busyLabel: busyLabel);
@@ -1099,7 +1135,7 @@ public sealed partial class MainWindowViewModel
             }
             string relation = SelectedRelation.Name;
             if (await ApplyToBuilderRelationAsync(options, T("Adding {0} actions to '{1}'...", chosen.Count.ToString(CultureInfo.InvariantCulture), relation),
-                    T("{0}{1} added to '{2}' ({3}).", chosen.Count.ToString(CultureInfo.InvariantCulture), (chosen.Count == 1 ? " action" : " actions"), relation, GameCountsText(chosen))))
+                    T("{0}{1} added to '{2}' ({3}).", chosen.Count.ToString(CultureInfo.InvariantCulture), (chosen.Count == 1 ? " action" : " actions"), relation, GameCountsText(chosen)), fromSuggestions: false))
             {
                 foreach (BuilderSearchResultItem item in chosen)
                     item.IsChecked = false;

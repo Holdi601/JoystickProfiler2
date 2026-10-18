@@ -142,6 +142,38 @@ namespace JoyPro.Engine
                     return RunDeviceLayoutCheck(catalog, rest, outPath);
                 case "drawings":
                     return RunDeviceLineArt(catalog, rest, outPath, textOutput);
+                case "mesh-render":
+                    return RunDeviceMeshRender(rest, outPath);
+                case "completeness":
+                {
+                    // Per model: does the best shipped picture place every input? (docs/device-reference.md)
+                    bool onlyMissing = PopFlag(rest, "--missing");
+                    string listFile = PopOptionValue(rest, "--list");
+                    string q = string.Join(" ", rest).Trim();
+                    HashSet<string> only = listFile != null && File.Exists(listFile)
+                        ? new HashSet<string>(File.ReadAllLines(listFile).Select(l => l.Trim()).Where(l => l.Length > 0 && !l.StartsWith("#", StringComparison.Ordinal)), StringComparer.OrdinalIgnoreCase)
+                        : null;
+                    List<DeviceLayoutSet> all = DeviceLayoutSet.LoadFolder(DevicePhotoDb.LayoutFolderOf(DeviceCatalog.CatalogFolder(MainStructure.PROGPATH)), null);
+                    List<DeviceCompleteness> rows = catalog.Devices
+                        .Where(d => (only == null || only.Contains(d.Id)) && (q.Length == 0 || d.Id.IndexOf(q, StringComparison.OrdinalIgnoreCase) >= 0))
+                        .Select(d => DeviceCompleteness.Of(d, catalog.BaseOf(d), all))
+                        .Where(c => c.Parts > 0).ToList();
+                    if (textOutput)
+                    {
+                        StringBuilder sb = new StringBuilder();
+                        foreach (DeviceCompleteness c in rows.Where(c => !onlyMissing || !c.Complete))
+                            sb.AppendLine((c.Complete ? "complete " : "missing  ") + c.Model + " | " + c.Placed + "/" + c.Parts + " placed" +
+                                          (c.Virtual.Count > 0 ? ", " + c.Virtual.Count + " not physical" : string.Empty) + (c.Picture.Length > 0 ? " | " + c.Picture : " | no positions") +
+                                          (c.Missing.Count > 0 ? " | missing: " + string.Join(", ", c.Missing) : string.Empty));
+                        sb.AppendLine("Complete: " + rows.Count(c => c.Complete) + " of " + rows.Count + " models with inputs");
+                        EmitPayload(sb.ToString(), outPath);
+                    }
+                    else
+                    {
+                        EmitPayload(EngineSerialization.ToJson(new { Complete = rows.Count(c => c.Complete), Models = rows.Count, Rows = rows.Select(c => new { c.Model, c.Complete, c.Parts, c.Placed, c.Picture, c.Missing, c.Virtual }) }), outPath);
+                    }
+                    return 0;
+                }
                 case "show":
                 {
                     string svg = PopOptionValue(rest, "--svg");
@@ -332,6 +364,7 @@ namespace JoyPro.Engine
         {
             List<string> warnings = new List<string>();
             List<DeviceLayoutSet> sets = DeviceLayoutSet.LoadFolder(DevicePhotoDb.LayoutFolderOf(DeviceCatalog.CatalogFolder(MainStructure.PROGPATH)), warnings);
+            List<DeviceLineArt> lineArts = DeviceLineArtDb.Cached(DeviceLineArtDb.FolderOf(DeviceCatalog.CatalogFolder(MainStructure.PROGPATH)));
             List<string> problems = new List<string>(warnings);
             foreach (DeviceLayoutSet set in sets)
             {
@@ -342,15 +375,27 @@ namespace JoyPro.Engine
                     problems.Add(name + ": model '" + set.Model + "' is not in the catalog");
                     continue;
                 }
-                if (set.PhotoKind != "vendor")
-                    problems.Add(name + ": curated sets are for the makers' photos (kind vendor)");
-                DevicePhoto photo = model.Photos.FirstOrDefault(p => string.Equals(p.Url, set.PhotoUrl, StringComparison.OrdinalIgnoreCase));
-                if (photo == null)
-                    problems.Add(name + ": the photo is not a referenced photo of " + model.Id + ": " + set.PhotoUrl);
-                if (set.PhotoSha256.Length != 64)
-                    problems.Add(name + ": no SHA-256 of the photo content");
-                else if (photo != null && photo.Sha256.Length > 0 && !string.Equals(photo.Sha256, set.PhotoSha256, StringComparison.OrdinalIgnoreCase))
-                    problems.Add(name + ": the photo reference has another hash than the position set");
+                if (set.PhotoKind == "lineart")
+                {
+                    // Positions on a drawing JoyPro authored in its own frame (tools/device_drawings.py): the set names
+                    // the drawing's key, and that drawing ships.
+                    if (set.PhotoUrl.Length > 0 || set.PhotoFileBase64.Length > 0)
+                        problems.Add(name + ": a set on JoyPro's drawing names no photo");
+                    if (!lineArts.Any(a => string.Equals(a.Model, model.Id, StringComparison.OrdinalIgnoreCase) && string.Equals(a.Key, set.PhotoSha256, StringComparison.OrdinalIgnoreCase)))
+                        problems.Add(name + ": no shipped drawing of " + model.Id + " has the key " + set.PhotoSha256);
+                }
+                else
+                {
+                    if (set.PhotoKind != "vendor")
+                        problems.Add(name + ": curated sets are for the makers' photos (kind vendor) or JoyPro's drawings (kind lineart)");
+                    DevicePhoto photo = model.Photos.FirstOrDefault(p => string.Equals(p.Url, set.PhotoUrl, StringComparison.OrdinalIgnoreCase));
+                    if (photo == null)
+                        problems.Add(name + ": the photo is not a referenced photo of " + model.Id + ": " + set.PhotoUrl);
+                    if (set.PhotoSha256.Length != 64)
+                        problems.Add(name + ": no SHA-256 of the photo content");
+                    else if (photo != null && photo.Sha256.Length > 0 && !string.Equals(photo.Sha256, set.PhotoSha256, StringComparison.OrdinalIgnoreCase))
+                        problems.Add(name + ": the photo reference has another hash than the position set");
+                }
                 Dictionary<string, SchematicMarker> parts = SchematicBuilder.Build(model, catalog.BaseOf(model)).Markers
                     .GroupBy(m => m.Id, StringComparer.OrdinalIgnoreCase).ToDictionary(g => g.Key, g => g.First(), StringComparer.OrdinalIgnoreCase);
                 foreach (string part in set.Markers.Keys.Concat(set.Candidates.Keys).Concat(set.Unplaced.Keys).Where(k => !parts.ContainsKey(k)))
@@ -435,8 +480,7 @@ namespace JoyPro.Engine
                 if (model == null)
                     problems.Add(name + ": model '" + art.Model + "' is not in the catalog");
                 models.Add(art.Model);
-                DeviceLayoutSet set = sets.FirstOrDefault(s => string.Equals(s.Model, art.Model, StringComparison.OrdinalIgnoreCase) &&
-                                                               string.Equals(DeviceLineArt.OpaqueKey(s.PhotoSha256), art.Key, StringComparison.OrdinalIgnoreCase));
+                DeviceLayoutSet set = sets.FirstOrDefault(s => string.Equals(s.Model, art.Model, StringComparison.OrdinalIgnoreCase) && DeviceLineArtDb.Matches(art, s.PhotoSha256));
                 int covered = 0, markers = set == null ? 0 : set.Markers.Count;
                 if (set != null)
                 {

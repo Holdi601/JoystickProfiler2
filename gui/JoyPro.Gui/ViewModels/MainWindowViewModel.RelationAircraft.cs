@@ -37,7 +37,13 @@ public sealed partial class MainWindowViewModel
             FunctionName = builderFunctionGroups.FirstOrDefault(g => string.Equals(g.Id, function, StringComparison.OrdinalIgnoreCase)).Name ?? string.Empty,
             MeaningNote = ReadJsonString(item, "MeaningNote"),
             SameIdDifferent = ReadJsonInt(item, "SameIdDifferent"),
-            NearCount = ReadJsonInt(item, "Near")
+            NearCount = ReadJsonInt(item, "Near"),
+            Readable = ReadJsonString(item, "Readable"),
+            IsRecommended = ReadJsonBool(item, "Recommended"),
+            RecommendedFor = ReadJsonString(item, "RecommendedFor"),
+            Variant = ReadJsonString(item, "Variant"),
+            Explanation = ReadJsonString(item, "Explanation"),
+            ExplanationSource = ReadJsonString(item, "ExplanationSource")
         };
         row.Aircraft = ParseAircraftVariants(item, row.Title);
         return row;
@@ -233,7 +239,7 @@ public sealed partial class MainWindowViewModel
                     continue;
                 if (!game.Equals("DCS", StringComparison.OrdinalIgnoreCase))
                 {
-                    item.UseTitle(ReadJsonString(node, "Title"));
+                    item.UseTitle(ReadJsonString(node, "Title"), ReadJsonString(node, "Explanation"));
                     continue;
                 }
                 List<AircraftChoiceItem> choices = [];

@@ -469,6 +469,24 @@ public sealed partial class UserJourneyTests
             Note("layout suggestions: " + string.Join(" | ", vm.LayoutSuggestions.Select(l => l.DisplayName)));
             foreach (LayoutSuggestionItem item in vm.LayoutSuggestions.Skip(1).Take(2).ToList())
                 Step("layout: show " + item.DisplayName, async () => await vm!.ShowWorkspaceDeviceAsync(item.Device));
+            // The 3D views are packs of JoyPro's releases: from the local release folder (tools\build_device_3d_packs.ps1),
+            // offered for the connected devices plus a Warthog stick, downloaded, shown as the default view.
+            string feed3d = Path.Combine(Environment.GetEnvironmentVariable("JOYPRO_RELEASE_DIR") ?? string.Empty, "device-3d");
+            if (File.Exists(Path.Combine(feed3d, "manifest.json")))
+            {
+                vm!.Device3DPacksFactory = () => new DeviceTurntablePacks(feed3d);
+                vm.Device3DMode = () => CockpitPicturePacks.Ask;
+                Step("layout: 3D view offered", async () =>
+                    await vm.CheckDevice3DAsync(vm.DeviceCards.Where(c => c.Connected).Select(c => c.ModelId).Append("thrustmaster-warthog-stick").ToList()));
+                Note("3D offer: " + vm.Device3DOfferText);
+                Step("layout: 3D view downloaded and shown", async () =>
+                {
+                    await vm.AcceptDevice3DCommand.ExecuteAsync(null);
+                    await vm.ShowDeviceReferenceModelAsync("thrustmaster-warthog-stick");
+                });
+                Note("3D: " + vm.Device3DStatus + "; shows 3D " + vm.ShowWorkspace3D + "; model " + vm.DeviceReference.Model?.Id + "; reference " + vm.LayoutShowsReference +
+                     "; installed " + Directory.Exists(Path.Combine(DeviceTurntablePacks.InstalledRoot(), "thrustmaster-warthog-stick")) + "; turntable " + vm.HasWorkspaceTurntable);
+            }
             Step("hud page", () => { vm!.CurrentStage = UiStage.Hud; return Task.CompletedTask; });
 
             // Export: DCS and IL-2 into temp folders, the others as a dry run.
@@ -1057,6 +1075,17 @@ public sealed partial class UserJourneyTests
             string profile = Path.Combine(folder, "profiles", "big.pr0file");
             Directory.CreateDirectory(Path.GetDirectoryName(profile)!);
             File.Copy(source, profile, overwrite: true);
+            // JOYPRO_JOURNEY_GAMEDATA: a copy of a PC's GameData (DB with the game lists built there, CockpitPictures
+            // json files) so the lists look as on that PC (MSFS menu names, the installed games' catalogs).
+            if (Environment.GetEnvironmentVariable("JOYPRO_JOURNEY_GAMEDATA") is { Length: > 0 } gameData && Directory.Exists(gameData))
+            {
+                foreach (string file in Directory.GetFiles(gameData, "*", SearchOption.AllDirectories))
+                {
+                    string target = Path.Combine(data, "GameData", Path.GetRelativePath(gameData, file));
+                    Directory.CreateDirectory(Path.GetDirectoryName(target)!);
+                    File.Copy(file, target, overwrite: true);
+                }
+            }
             vm = CreateVm();
             Step("open the big profile (as the last profile at start)", async () =>
             {
@@ -1128,6 +1157,30 @@ public sealed partial class UserJourneyTests
                 Note("sections: " + string.Join(" | ", vm.BuilderSuggestionSections.Select(s => s.Header + ": " + string.Join(", ", s.Items.Take(4).Select(i => i.GameLabel + " '" + i.Title + "' " + i.MissingText)))));
                 Note("status: " + vm.StatusText);
             }, extraRender: slug => RenderTall(slug, 2400));
+            // "Pitch": Suggest missing lists the pitch axes of the games it lacks, one recommended per game (ticked), the
+            // variants collapsed under it with how they differ; MSFS by its menu name.
+            RelationListItem? pitch = vm.Relations.FirstOrDefault(r => r.Name == "Pitch");
+            if (pitch != null)
+            {
+                Step("relations: open Pitch and Suggest missing", async () =>
+                {
+                    vm!.SelectedRelation = pitch;
+                    await WaitForAsync(() => vm.RelationNodes.Count > 0 && !vm.IsBuilderSuggestLoading, 60000);
+                    await vm.SuggestMissingCommand.ExecuteAsync(null);
+                    Note("Pitch function: " + vm.BuilderFunctionText + "; looks wrong: " + vm.RelationMisfits.Count + "; ticked " + vm.BuilderTickedCount);
+                    Note("Pitch sections: " + string.Join(" | ", vm.BuilderSuggestionSections.Select(s => s.Header + ": " + string.Join(", ", s.Items.Take(14).Select(i =>
+                        i.GameLabel + " '" + i.DisplayTitle + "'" + (i.IsRecommended ? " [recommended" + (i.RecommendedFor.Length > 0 ? " " + i.RecommendedFor : string.Empty) + "]" : i.HasVariant ? " (" + i.Variant + ")" : string.Empty))))));
+                    // The other relation's list must never show here (the user saw 'UFC 3 Key' buttons under Pitch).
+                    if (vm.BuilderSuggestions.Any(s => s.Why.Contains("UFC 3", StringComparison.OrdinalIgnoreCase)) || vm.BuilderFunctionText.Contains("UFC", StringComparison.OrdinalIgnoreCase))
+                        Failures.Add("Pitch shows another relation's suggestions");
+                }, extraRender: slug => RenderTall(slug, 2400));
+                Step("relations: Pitch, show the other Elite and MSFS actions", () =>
+                {
+                    foreach (BuilderSuggestionItem item in vm!.BuilderSuggestions.Where(i => i.HasAlternatives && (i.Game == "EliteDangerous" || i.Game == "MSFS2024" || i.Game == "IL2Korea")))
+                        item.IsExpanded = true;
+                    return Task.CompletedTask;
+                }, extraRender: slug => RenderTall(slug, 2400));
+            }
             Step("relations: Open catalog", async () =>
             {
                 await vm!.OpenCatalogCommand.ExecuteAsync(null);

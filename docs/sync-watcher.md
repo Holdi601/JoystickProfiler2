@@ -167,7 +167,12 @@ Only binds and axis tuning JoyPro manages:
   0.21 as 0.20999999, DCS writing 0.2 as 0.20000000298023, War Thunder reordering keys or writing machine.blk as a diff
   against its preset, other whitespace or element spelling are no change;
 - the baseline makes the diff report what the *game* changed: a bind JoyPro could not write (or one you added in
-  JoyPro since the export) is not reported as removed, and a bind the file already had is not reported as new.
+  JoyPro since the export) is not reported as removed, and a bind the file already had is not reported as new;
+- DCS: what counts is the device's defaults plus its diff.lua, not the diff alone. DCS saves the diff against the
+  defaults of the device type (e.g. the T-Pendular-Rudder has its rudder on JOY_Z by default) and drops a bind equal to
+  such a default; JoyPro's .jp copy keeps it, and it stays active unless the diff has a "removed" entry for it. The
+  defaults are the ones of the DCS list refresh: `CleanProfile\DCS\<plane>\<device type>.cf` for a type with defaults
+  of its own, else the plane's generic `<plane>.cf` (smoke: `engine\tests\smoke\sync_dcsdefaults.ps1`).
 
 | Kind | Meaning | Choices |
 |---|---|---|

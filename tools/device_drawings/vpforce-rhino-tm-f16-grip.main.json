@@ -1,0 +1,57 @@
+{
+ "model": "vpforce-rhino-tm-f16-grip",
+ "view": "main",
+ "class": "stick",
+ "width": 1060,
+ "height": 860,
+ "source": "JoyPro drawing of the F-16C sidestick grip the device replicates, made from DCS World's F-16C cockpit model (seen from behind and from the left)",
+ "mappingSource": "Thrustmaster Viper Grip user manual and AVA manual p.27 (1/6 trigger, 2 red button, 3 button above the paddle, 4 paddle, 5 button on the right front of the head, 7-10 ribbed hat, 11-14 cross hat, 15-19 thumb lever, POV trim)",
+ "confidence": "high",
+ "include": [
+  {
+   "file": "dcs-f16c-stick-back.json",
+   "dx": 120,
+   "dy": 30,
+   "scale": 1.05,
+   "map": {
+    "c01": "stick.weapon_release",
+    "c02": "stick.hat.trim",
+    "c03": {
+     "part": "stick.hat.tms",
+     "glyph": "hat4",
+     "size": 15,
+     "press": false
+    },
+    "c04": {
+     "part": "stick.hat.dms",
+     "glyph": "hat4",
+     "size": 15,
+     "press": false
+    },
+    "c06": "stick.hat.cms"
+   }
+  },
+  {
+   "file": "dcs-f16c-stick-side.json",
+   "dx": 480,
+   "dy": 30,
+   "scale": 1.05,
+   "map": {
+    "c04": "stick.trigger",
+    "c06": "stick.pinky.lever"
+   }
+  }
+ ],
+ "shapes": [],
+ "controls": [
+  {
+   "part": "stick.gimbal",
+   "glyph": "gimbal",
+   "at": [
+    740,
+    800
+   ],
+   "size": 55
+  }
+ ]
+}

@@ -309,6 +309,18 @@ namespace JoyPro.Engine.Games
         // Action id -> menu name (en-US, readable), from the first fs-base\en-US.locPak found; empty when there is none.
         public static Dictionary<string, string> Titles(List<string> roots, List<string> warnings)
         {
+            return LocStrings(roots, warnings, false);
+        }
+
+        // Action id -> the sim's own description ("INPUT.KEY_AXIS_ELEVATOR_SET_DESC": "Control the elevator axis."), the
+        // blank ones left out; empty when there is no locPak.
+        public static Dictionary<string, string> Descriptions(List<string> roots, List<string> warnings)
+        {
+            return LocStrings(roots, warnings, true);
+        }
+
+        private static Dictionary<string, string> LocStrings(List<string> roots, List<string> warnings, bool descriptions)
+        {
             Dictionary<string, string> titles = new Dictionary<string, string>(StringComparer.Ordinal);
             foreach (string root in roots)
             {
@@ -326,8 +338,14 @@ namespace JoyPro.Engine.Games
                             continue;
                         foreach (KeyValuePair<string, object> entry in (Dictionary<string, object>)strings)
                         {
-                            if (entry.Key.StartsWith("INPUT.KEY_", StringComparison.Ordinal) && !entry.Key.EndsWith("_DESC", StringComparison.Ordinal) && entry.Value is string && ((string)entry.Value).Trim().Length > 0)
-                                titles[entry.Key.Substring("INPUT.".Length)] = Readable((string)entry.Value);
+                            if (!entry.Key.StartsWith("INPUT.KEY_", StringComparison.Ordinal) || entry.Key.EndsWith("_DESC", StringComparison.Ordinal) != descriptions ||
+                                !(entry.Value is string) || ((string)entry.Value).Trim().Length == 0)
+                                continue;
+                            string key = entry.Key.Substring("INPUT.".Length);
+                            if (descriptions)
+                                titles[key.Substring(0, key.Length - "_DESC".Length)] = ((string)entry.Value).Trim();
+                            else
+                                titles[key] = Readable((string)entry.Value);
                         }
                         return titles;
                     }

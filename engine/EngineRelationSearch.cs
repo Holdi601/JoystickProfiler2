@@ -231,6 +231,9 @@ namespace JoyPro.Engine
             result.Total = rows.Count;
             watch.Stop();
             result.ElapsedMilliseconds = watch.ElapsedMilliseconds;
+            // After the search's own time: the explanations come from an index read once per run.
+            if (!wholeList)
+                Choose(map, result.Results, false);
             return result;
         }
 
@@ -329,6 +332,7 @@ namespace JoyPro.Engine
                         result.Results.Add(hit);
                     }
                     result.Results.Sort((a, b) => string.Compare(a.Title, b.Title, StringComparison.OrdinalIgnoreCase));
+                    Choose(map, result.Results, true);
                     foreach (KeyValuePair<string, int> category in categories.OrderBy(c => c.Key == NoCategory ? 1 : 0).ThenBy(c => c.Key, StringComparer.OrdinalIgnoreCase))
                     {
                         int n;
@@ -345,6 +349,69 @@ namespace JoyPro.Engine
             watch.Stop();
             result.ElapsedMilliseconds = watch.ElapsedMilliseconds;
             return result;
+        }
+
+        // The recommended action per game (DCS: aircraft) and function among the rows, the others explained, and what
+        // each action is in words (EngineActionChoice, EngineActionInfo). A row found as a function is grouped by it;
+        // ownFunction (the catalog browser): every row by the function the map reads it as surely (weight 0.9+).
+        private static void Choose(EngineFunctionMap.Map map, List<EngineRelationSearchHit> hits, bool ownFunction)
+        {
+            List<EngineActionChoice.Item> items = new List<EngineActionChoice.Item>();
+            List<EngineRelationSearchHit> grouped = new List<EngineRelationSearchHit>();
+            Dictionary<string, HashSet<string>> words = new Dictionary<string, HashSet<string>>(StringComparer.OrdinalIgnoreCase);
+            foreach (EngineRelationSearchHit hit in hits)
+            {
+                EngineFunctionMap.Entry entry = null;
+                if (map != null)
+                    map.ByKey.TryGetValue(hit.Game + "|" + hit.Id + "|" + (hit.Game == "DCS" ? hit.Planes.FirstOrDefault() : hit.Game), out entry);
+                EngineFunctionMap.Function f = null;
+                if (map != null && hit.Function.Length > 0)
+                    map.ById.TryGetValue(hit.Function, out f);
+                if (f == null && ownFunction && entry != null)
+                {
+                    EngineFunctionMap.Assignment top = entry.Functions.Where(a => a.Weight >= 0.9).OrderByDescending(a => a.Weight).FirstOrDefault();
+                    f = top == null ? null : top.Function;
+                }
+                string readable = EngineActionInfo.Readable(hit.Game, hit.Id, hit.Title);
+                hit.Readable = readable;
+                // "Elevator Axis — Pitch axis (elevator)", not the event name.
+                if (hit.Display.Length == 0 || hit.Display == hit.Title)
+                    hit.Display = readable;
+                else if (hit.Display.StartsWith(hit.Title, StringComparison.Ordinal))
+                    hit.Display = readable + hit.Display.Substring(hit.Title.Length);
+                hit.FunctionName = f != null ? EngineFunctionMap.Describe(f, string.Empty, hit.IsAxis) : string.Empty;
+                if (f == null)
+                {
+                    EngineActionInfo.Info plain = EngineActionInfo.Describe(hit.Game, hit.Game == "DCS" ? hit.Planes.FirstOrDefault() : hit.Game, hit.Id, hit.Title, string.Empty, string.Empty);
+                    hit.Explanation = plain.Explanation;
+                    hit.ExplanationSource = plain.Source;
+                    continue;
+                }
+                HashSet<string> known;
+                if (!words.TryGetValue(f.Id, out known))
+                    words[f.Id] = known = EngineActionChoice.WordsOf(f);
+                items.Add(new EngineActionChoice.Item
+                {
+                    Game = hit.Game, Id = hit.Id, Title = readable, Category = hit.Category, Planes = hit.Planes.ToList(), Function = f.Id + "|" + (hit.IsAxis ? "a" : "b"),
+                    Known = known, Score = hit.Score, PrimaryRank = entry != null ? EngineFunctionMap.PrimaryRank(entry, f) : (hit.Primary ? 0 : -1)
+                });
+                grouped.Add(hit);
+            }
+            EngineActionChoice.Mark(items);
+            for (int i = 0; i < grouped.Count; i++)
+            {
+                EngineRelationSearchHit hit = grouped[i];
+                EngineActionChoice.Item item = items[i];
+                hit.Recommended = item.Recommended;
+                hit.RecommendedFor = item.RecommendedFor;
+                hit.Variant = item.Variant;
+                hit.Group = item.Group;
+                hit.Alternatives = item.Alternatives;
+                string functionId = item.Function.Substring(0, item.Function.IndexOf('|'));
+                EngineActionInfo.Info info = EngineActionInfo.Describe(hit.Game, hit.Game == "DCS" ? hit.Planes.FirstOrDefault() : hit.Game, hit.Id, hit.Title, functionId, hit.FunctionName, item.FitsFunction);
+                hit.Explanation = info.Explanation;
+                hit.ExplanationSource = info.Source;
+            }
         }
 
         internal const string NoCategory = "Other";
@@ -736,7 +803,8 @@ namespace JoyPro.Engine
                 {
                     sb.AppendLine("  - [" + hit.Score.ToString(CultureInfo.InvariantCulture) + " " + hit.Match + (hit.Primary ? " main" : string.Empty) + "] " + hit.Game + ":" + hit.Id + ":" + string.Join("|", hit.Planes) + " | " + (hit.Display.Length > 0 ? hit.Display : hit.Title) +
                                   (hit.IsAxis ? " | axis" : string.Empty) + (hit.InRelations.Count > 0 ? " | in " + string.Join(", ", hit.InRelations) : string.Empty) +
-                                  (hit.Why.Length > 0 ? " | " + hit.Why : string.Empty) + (hit.MeaningNote.Length > 0 ? " | " + hit.MeaningNote : string.Empty));
+                                  (hit.Why.Length > 0 ? " | " + hit.Why : string.Empty) + (hit.MeaningNote.Length > 0 ? " | " + hit.MeaningNote : string.Empty) +
+                                  (hit.Recommended ? " | recommended" + (hit.RecommendedFor.Length > 0 ? " " + hit.RecommendedFor : string.Empty) : hit.Variant.Length > 0 ? " | variant: " + hit.Variant : string.Empty));
                 }
             }
             foreach (string warning in result.Warnings.Distinct().Where(w => !w.Contains("action catalog not found")).Take(10))
@@ -785,10 +853,22 @@ namespace JoyPro.Engine
         // Aircraft with the same id and another meaning (left out of the row).
         public int SameIdDifferent { get; set; }
         public string MeaningNote { get; set; }
+        // EngineActionChoice / EngineActionInfo, as on EngineRelationSuggestion (docs/relation-builder.md "Recommended
+        // action"): grouped per game (DCS: aircraft) and function.
+        public bool Recommended { get; set; }
+        public string RecommendedFor { get; set; }
+        public string Variant { get; set; }
+        public string Group { get; set; }
+        public int Alternatives { get; set; }
+        public string Readable { get; set; }
+        public string FunctionName { get; set; }
+        public string Explanation { get; set; }
+        public string ExplanationSource { get; set; }
 
         public EngineRelationSearchHit()
         {
             Game = Id = Title = Category = Why = Match = Function = Dir = Term = MeaningNote = FunctionLabel = Display = string.Empty;
+            RecommendedFor = Variant = Group = Readable = FunctionName = Explanation = ExplanationSource = string.Empty;
             Functions = new List<string>();
             Planes = new List<string>();
             InRelations = new List<string>();

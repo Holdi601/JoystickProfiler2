@@ -74,13 +74,14 @@ public sealed partial class RelationNodeItem : ObservableObject
     public bool HasExcluded => Excluded > 0;
 
     // The game's own title of the action (engine relations aircraft), for the games whose node id is no title
-    // ("KEY_AXIS_ELEVATOR_SET" -> "AXIS ELEVATOR SET", "elevator" -> "Pitch axis").
-    public void UseTitle(string title)
+    // ("KEY_AXIS_ELEVATOR_SET" -> "Elevator Axis", "elevator" -> "Pitch axis"); explanation: what it does (the cockpit
+    // guide or the game's own description), in the tooltip.
+    public void UseTitle(string title, string explanation = "")
     {
         if (string.IsNullOrWhiteSpace(title) || Game.Equals("DCS", System.StringComparison.OrdinalIgnoreCase))
             return;
         TitlesSummary = title.Trim();
-        TitlesDisplay = title.Trim() + " (" + Id + ")";
+        TitlesDisplay = title.Trim() + " (" + Id + ")" + (string.IsNullOrWhiteSpace(explanation) ? string.Empty : System.Environment.NewLine + explanation.Trim());
         OnPropertyChanged(nameof(TitlesSummary));
         OnPropertyChanged(nameof(TitlesDisplay));
     }

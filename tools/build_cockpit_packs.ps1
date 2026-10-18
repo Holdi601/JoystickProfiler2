@@ -1,4 +1,4 @@
-# Builds the cockpit picture packs of a release (docs/cockpits.md "Picture packs"): one small zip per aircraft set of
+﻿# Builds the cockpit picture packs of a release (docs/cockpits.md "Picture packs"): one small zip per aircraft set of
 # a pictures folder as "engine cockpits pictures build" makes it (<Source>\<game>\<set>\pictures.json with its PNGs and
 # *.drawing.json, <Source>\<game>\index.json), plus manifest.json. The packs are release assets (GitHub releases
 # "cockpit-pictures-v1" and the further feeds it names), never part of the repository; this script only writes the
@@ -7,13 +7,16 @@
 #   powershell -File tools\build_cockpit_packs.ps1 [-Source <pictures root>] [-Out <folder>] [-Game DCS,XPlane12]
 #                                                  [-Quality 90] [-MaxSide 1600] [-Tag cockpit-pictures-v1]
 #                                                  [-Feeds <tag>,...] [-MaxAssets 1000] [-ManifestOnly] [-Force]
+#                                                  [-Only <game>/<set>,...]
 #
 # Feeds (a GitHub release takes at most 1000 assets): the main release cockpit-pictures-v1 has every game except those
 # with a release of their own (War Thunder: -Tag cockpit-pictures-wt-v1, default output ...\cockpit-packs-wt); its
 # manifest names them in "feeds" (-Feeds, default: the known further tags). A release with more than MaxAssets - 1 packs
 # is split: the rest goes to <Out>\<Tag>-part2 (tag <Tag>-part2, ...), named in the first part's "feeds". A pack keeps
 # its part while that part has room. -ManifestOnly writes the manifests again from the zips that are there (new feeds,
-# a new split) without reading the pictures.
+# a new split) without reading the pictures. -Only <game>/<set>,... (wildcards: XPlane12/*) reads only these sets of the
+# source (a named set that is not there any more is left out); every other pack of the previous manifests stays as it
+# is (zip, version, part), also one whose set is not in the source.
 #
 # Per pack: the pictures as JPEG (quality 90, at most 1600 px on the long side; a picture with transparent parts gets
 # <name>.mask.png, an 8-bit grey mask of its transparency; PNG only when a picture cannot be converted), pictures.json
@@ -33,7 +36,8 @@ param(
     [string[]]$Feeds = $null,
     [int]$MaxAssets = 1000,
     [switch]$ManifestOnly,
-    [switch]$Force
+    [switch]$Force,
+    [string[]]$Only = @()
 )
 $ErrorActionPreference = "Stop"
 
@@ -51,6 +55,7 @@ if ($PSVersionTable.PSEdition -eq "Core") {
     if ($PSBoundParameters.ContainsKey("Feeds")) { $argsList += @("-Feeds", (@($Feeds) -join ",")) }
     if ($ManifestOnly) { $argsList += "-ManifestOnly" }
     if ($Force) { $argsList += "-Force" }
+    if ($Only.Count -gt 0) { $argsList += @("-Only", ($Only -join ",")) }
     & powershell.exe @argsList
     exit $LASTEXITCODE
 }
@@ -62,6 +67,8 @@ if ($Out -eq "") {
     $Out = Join-Path $env:JOYPRO_RELEASE_DIR $feedOut[$Tag]
 }
 $Game = @($Game | ForEach-Object { $_ -split "," } | Where-Object { $_ -ne "" })
+$Only = @($Only | ForEach-Object { $_ -split "," } | ForEach-Object { $_.Trim() } | Where-Object { $_ -ne "" })
+if ($ManifestOnly -and $Only.Count -gt 0) { throw "-Only and -ManifestOnly do not go together." }
 # Games of the release: -Game, else the tag's games; the main release leaves out the games of the further releases.
 $skipGames = @()
 if ($Game.Count -eq 0) {
@@ -389,6 +396,7 @@ foreach ($gameDir in $(if ($ManifestOnly) { @() } else { Get-ChildItem $Source -
         if (-not (Test-Path $picturesFile)) { continue }
         $set = $setDir.Name
         $id = "$gameId/$set"
+        if ($Only.Count -gt 0 -and -not ($Only | Where-Object { $id -like $_ })) { continue }
         $json = [IO.File]::ReadAllText($picturesFile, [Text.Encoding]::UTF8)
         $planes = New-Object System.Collections.Generic.List[string]
         foreach ($n in @([JoyProCockpitPacks]::Planes($json)) + @([JoyProCockpitPacks]::Field($json, "plane")) + @($names[$set])) {
@@ -445,6 +453,27 @@ foreach ($gameDir in $(if ($ManifestOnly) { @() } else { Get-ChildItem $Source -
     }
 }
 if (Test-Path $stageRoot) { Remove-Item -Recurse -Force $stageRoot }
+
+# -Only: every other pack of the previous manifests, as it is.
+if ($Only.Count -gt 0) {
+    $have = @{}
+    foreach ($p in $packs) { $have[$p.id] = $true }
+    foreach ($p in @($previous.Values | Sort-Object game, set)) {
+        if ($have.ContainsKey($p.id)) { continue }
+        # A named set that is not in the source any more is gone.
+        if ($Only | Where-Object { $p.id -like $_ }) { Write-Host "$($p.id): not in the source any more, left out."; continue }
+        $k = $previousPart[$p.id]
+        $zip = Join-Path (Part-Folder $k) $p.asset
+        if (-not (Test-Path $zip)) { Write-Warning "$($p.id): $($p.asset) is missing, left out."; continue }
+        if (-not $usedAssets.Add($p.asset)) { Write-Warning "$($p.id): $($p.asset) twice, left out."; continue }
+        [void]$packs.Add([pscustomobject][ordered]@{
+            id = $p.id; game = $p.game; set = $p.set; planes = @($p.planes); asset = $p.asset; size = (Get-Item $zip).Length
+            sha256 = [JoyProCockpitPacks]::Sha256($zip); version = [int]$p.version; built = $p.built; picturesBuilt = $p.picturesBuilt; sourceHash = $p.sourceHash
+            low = [bool]$p.low; path = $zip; part = $k
+        })
+        $reused++
+    }
+}
 
 # The parts: at most MaxAssets - 1 packs each (plus manifest.json). A pack keeps its part while it has room, the
 # others go to the first part with room; a zip whose part changed moves to that part's folder.

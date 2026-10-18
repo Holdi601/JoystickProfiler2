@@ -1119,6 +1119,25 @@ Assert-Match $newProfileSummary.Output "(?m)^Relations:\s+0\s*$" "engine profile
     $mfPitch = Run-Engine @("--profile", $mfProfile, "relations", "show", "Pitch", "--text")
     Assert-NotMatch $mfPitch.Output "a2002cdnil" "the misfit is still in the Pitch relation."
 
+    # A stray button in an axis relation (A-10C II 'UFC 3 Key' in Pitch) seeds no suggestion, shows under "Looks
+    # wrong" with a move to the button relation of its function, and does not count as "same id, different meaning".
+    $stProfile = Join-Path $tempDir "suggest\\stray.pr0file"
+    Run-Engine @("--profile", $stProfile, "relations", "add", "Pitch", "--axis", "--node", "DCS:a2001cdnil:F-16C_50|FA-18C_hornet", "--text") | Out-Null
+    Run-Engine @("--profile", $stProfile, "relations", "add", "UFC__3", "--button", "--node", "DCS:d1297pnilu1297cdnilvdnilvpnilvunil:A-10C", "--text") | Out-Null
+    Run-Engine @("--profile", $stProfile, "relations", "item", "add", "Pitch", "--node", "DCS:d1297pnilu1297cdnilvdnilvpnilvunil:A-10C II", "--text") | Out-Null
+    $stList = Run-Engine @("--profile", $stProfile, "relations", "suggest", "Pitch", "--min", "low", "--text")
+    Assert-True ($stList.ExitCode -eq 0) "relations suggest with a stray button failed. Output: $($stList.Output)"
+    Assert-Match $stList.Output "(?m)^Function: Pitch \(pitch\)" "a stray button changed the relation's function."
+    Assert-Match $stList.Output "(?m)^  ! DCS:d1297pnilu1297cdnilvdnilvpnilvunil:A-10C II \| 'UFC 3 Key' is a button in A-10C II; 'Pitch' is an axis relation\. Move to 'UFC__3'\." "the stray button is not flagged with a move to its button relation."
+    Assert-NotMatch $stList.Output "UFC 3 Key'?\r?$|Same function as A-10C II 'UFC" "a stray button seeded suggestions."
+    Assert-Match $stList.Output "(?m)^  - \[high\] DCS:a2001cdnil:" "a stray button pushed out the pitch axes."
+    $stCheck = Run-Engine @("--profile", $stProfile, "relations", "check-aircraft", "--relation", "Pitch")
+    Assert-Match $stCheck.Output '"OtherKindNodes":1' "check-aircraft counted the stray button's aircraft."
+    $stMove = Run-Engine @("--profile", $stProfile, "relations", "suggest", "apply", "Pitch", "--move", "DCS:d1297pnilu1297cdnilvdnilvpnilvunil:A-10C II=>UFC__3", "--text")
+    Assert-Match $stMove.Output "(?m)^Moved: 1\r?$" "the stray button could not move to its button relation."
+    $stUfc = Run-Engine @("--profile", $stProfile, "relations", "show", "UFC__3", "--text")
+    Assert-Match $stUfc.Output "id=d1297pnilu1297cdnilvdnilvpnilvunil, aircraft=A-10C, A-10C II" "the stray button did not land in its button relation."
+
     # Export tiles: the games (DCS: aircraft) of the profile, and a DCS export of the ticked aircraft only.
     $tileProfile = Join-Path $tempDir "export_tiles\\tiles.pr0file"
     $tileStick = "Tile Stick {00000000-0000-0000-0000-0000000000C1}"

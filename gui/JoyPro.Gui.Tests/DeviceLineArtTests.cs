@@ -110,7 +110,7 @@ public sealed class DeviceLineArtTests
         int checkedSets = 0;
         foreach (DeviceLineArt art in arts)
         {
-            DeviceLayoutSet? set = sets.FirstOrDefault(s => s.Model == art.Model && DeviceLineArt.OpaqueKey(s.PhotoSha256) == art.Key);
+            DeviceLayoutSet? set = sets.FirstOrDefault(s => s.Model == art.Model && DeviceLineArtDb.Matches(art, s.PhotoSha256));
             if (set == null)
                 continue;
             checkedSets++;

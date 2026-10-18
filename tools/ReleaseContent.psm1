@@ -7,10 +7,14 @@
 # the makers' photos (JoyPro fetches them on the user's PC), DeviceLayouts only JoyPro's marker positions, DeviceDrawings
 # JoyPro's own line drawings of the devices (vector path data), Cockpits JoyPro's cockpit database (drawings as vector
 # data, photos only as addresses): no photo.
-$script:ShippedDbFolders = @("Functions", "Devices", "Llm", "DevicePhotos", "DeviceLayouts", "DeviceDrawings", "Cockpits", "Detents")
+$script:ShippedDbFolders = @("Functions", "Devices", "Llm", "DevicePhotos", "DeviceLayouts", "DeviceDrawings", "Cockpits", "Detents", "DeviceTurntables")
 
 # Pictures never ship in DB (a maker's photo or a user's picture that slipped into the catalog folders).
 $script:PictureExtensions = @(".png", ".jpg", ".jpeg", ".webp", ".gif", ".bmp", ".img", ".tif", ".tiff")
+
+# The one exception: DeviceTurntables holds JoyPro's own renders of the games' grip models for the rotatable 3D view
+# (tools/device_drawings.py turntable; the author decided they ship, credited per device). Nothing else.
+$script:PictureDbFolders = @("DeviceTurntables")
 
 # TOOLS\Conversions ships: JoyPro's own tables (keyboard conversions, X4/Elite key tables, the measured Battlefield
 # joystick numbering <GameId>JoystickMap.tsv). Never put such JoyPro data into a game DB folder: those are removed.
@@ -37,7 +41,7 @@ function Remove-JoyProGameData {
         if (-not ($folder.PSIsContainer -and $ShippedDbFolders -contains $folder.Name)) {
             $doomed.Add($folder)
         }
-        elseif ($folder.PSIsContainer) {
+        elseif ($folder.PSIsContainer -and $PictureDbFolders -notcontains $folder.Name) {
             foreach ($picture in @(Get-ChildItem -Path $folder.FullName -Recurse -File -Force -ErrorAction SilentlyContinue | Where-Object { $PictureExtensions -contains $_.Extension.ToLowerInvariant() })) {
                 $doomed.Add($picture)
             }
@@ -64,7 +68,7 @@ function Assert-NoGameData {
     }
     foreach ($folder in @(Get-ChildItem -Path (Join-Path $EngineDir "DB") -Directory -Force -ErrorAction SilentlyContinue)) {
         if ($ShippedDbFolders -notcontains $folder.Name) { $left += "DB\" + $folder.Name }
-        else {
+        elseif ($PictureDbFolders -notcontains $folder.Name) {
             foreach ($picture in @(Get-ChildItem -Path $folder.FullName -Recurse -File -Force -ErrorAction SilentlyContinue | Where-Object { $PictureExtensions -contains $_.Extension.ToLowerInvariant() })) {
                 $left += "DB\" + $folder.Name + "\" + $picture.Name
             }

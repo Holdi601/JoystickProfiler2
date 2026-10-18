@@ -88,6 +88,11 @@ public sealed class DeviceMarkerCanvas : Control
     public static readonly StyledProperty<ICommand?> CanvasClickedCommandProperty =
         AvaloniaProperty.Register<DeviceMarkerCanvas, ICommand?>(nameof(CanvasClickedCommand));
 
+    // A relation dragged onto a marker (text "joypro-relation:<name>", CalloutSheetCanvas.RelationDragFormat): the
+    // marker is selected, then the command runs with the relation name (Bind on the picture: binds it to that input).
+    public static readonly StyledProperty<ICommand?> RelationDroppedCommandProperty =
+        AvaloniaProperty.Register<DeviceMarkerCanvas, ICommand?>(nameof(RelationDroppedCommand));
+
     // JoyPro's vector drawing of the device (device reference), drawn when there is no Source picture.
     public static readonly StyledProperty<DeviceSchematic?> SchematicProperty =
         AvaloniaProperty.Register<DeviceMarkerCanvas, DeviceSchematic?>(nameof(Schematic));
@@ -352,6 +357,11 @@ public sealed class DeviceMarkerCanvas : Control
     public ICommand? MarkerMovedCommand { get => GetValue(MarkerMovedCommandProperty); set => SetValue(MarkerMovedCommandProperty, value); }
 
     public ICommand? CanvasClickedCommand { get => GetValue(CanvasClickedCommandProperty); set => SetValue(CanvasClickedCommandProperty, value); }
+
+    public ICommand? RelationDroppedCommand { get => GetValue(RelationDroppedCommandProperty); set => SetValue(RelationDroppedCommandProperty, value); }
+
+    // The marker a relation is dragged over (drawn with a ring); null when none.
+    private IDeviceMarker? dropHover;
 
     public DeviceSchematic? Schematic { get => GetValue(SchematicProperty); set => SetValue(SchematicProperty, value); }
 
@@ -994,13 +1004,74 @@ public sealed class DeviceMarkerCanvas : Control
 
     private void OnDragOver(object? sender, DragEventArgs e)
     {
+        if (RelationDroppedCommand != null && CalloutSheetCanvas.RelationOf(e) != null)
+        {
+            IDeviceMarker? hit = HitTest(e.GetPosition(this)) ?? NearestMarker(e.GetPosition(this), 28);
+            if (!ReferenceEquals(hit, dropHover))
+            {
+                dropHover = hit;
+                markerLayer.InvalidateVisual();
+                InvalidateVisual();
+            }
+            e.DragEffects = hit != null ? DragDropEffects.Link : DragDropEffects.None;
+            return;
+        }
 #pragma warning disable CS0618 // DataFormats.Files / GetFiles: the Avalonia 11 drag data API
         e.DragEffects = e.Data.Contains(DataFormats.Files) && (PictureFileDropped != null || PictureFileDroppedCommand != null) ? DragDropEffects.Copy : DragDropEffects.None;
 #pragma warning restore CS0618
     }
 
+    // The marker nearest to a point of the view within reach (view pixels), for drops next to a small marker.
+    private IDeviceMarker? NearestMarker(Point viewPoint, double reach)
+    {
+        Badge? best = null;
+        double bestDistance = reach;
+        foreach (Badge badge in GetBadges())
+        {
+            Point c = badge.IsPart ? badge.PartCenter : badge.Rect.Center;
+            double d = Math.Sqrt((c.X - viewPoint.X) * (c.X - viewPoint.X) + (c.Y - viewPoint.Y) * (c.Y - viewPoint.Y));
+            if (d < bestDistance)
+            {
+                bestDistance = d;
+                best = badge;
+            }
+        }
+        return best?.Marker;
+    }
+
+    // Drops a relation onto the marker at a view point (what a drag and drop does): selects the marker, then runs
+    // RelationDroppedCommand with the relation. False when no marker is there.
+    public bool DropRelationAt(Point viewPoint, string relation)
+    {
+        IDeviceMarker? hit = HitTest(viewPoint) ?? NearestMarker(viewPoint, 28);
+        dropHover = null;
+        markerLayer.InvalidateVisual();
+        if (hit == null || string.IsNullOrWhiteSpace(relation))
+            return false;
+        Select(hit);
+        MarkerClicked?.Invoke(this, hit);
+        if (MarkerClickedCommand?.CanExecute(hit) == true)
+            MarkerClickedCommand.Execute(hit);
+        if (RelationDroppedCommand?.CanExecute(relation) == true)
+            RelationDroppedCommand.Execute(relation);
+        return true;
+    }
+
+    // The view point of a marker (for tests and the drop): its part centre or its badge centre.
+    public Point? ViewPointOf(IDeviceMarker marker)
+    {
+        Badge? badge = GetBadges().FirstOrDefault(b => ReferenceEquals(b.Marker, marker));
+        return badge == null ? null : badge.IsPart ? badge.PartCenter : badge.Rect.Center;
+    }
+
     private void OnDrop(object? sender, DragEventArgs e)
     {
+        string? relation = CalloutSheetCanvas.RelationOf(e);
+        if (relation != null && RelationDroppedCommand != null)
+        {
+            DropRelationAt(e.GetPosition(this), relation);
+            return;
+        }
 #pragma warning disable CS0618
         string? file = e.Data.GetFiles()?.Select(f => f.TryGetLocalPath()).FirstOrDefault(p => p != null && IsPicture(p));
 #pragma warning restore CS0618
@@ -1039,6 +1110,13 @@ public sealed class DeviceMarkerCanvas : Control
         {
             if (IsFlashed(badge.Marker))
                 DrawFlash(context, badge.IsPart ? badge.PartCenter : badge.Rect.Center, badge.IsPart ? Math.Max(badge.PartRadius, 6) : Math.Max(badge.Rect.Width, badge.Rect.Height) / 2);
+            // The drop target of a dragged relation: a bold accent ring.
+            if (dropHover != null && ReferenceEquals(badge.Marker, dropHover))
+            {
+                Point c = badge.IsPart ? badge.PartCenter : badge.Rect.Center;
+                double r = (badge.IsPart ? Math.Max(badge.PartRadius, 8) : Math.Max(badge.Rect.Width, badge.Rect.Height) / 2) + 6;
+                context.DrawEllipse(null, new Pen(new SolidColorBrush(Color.FromRgb(0x3D, 0x8B, 0xFF)), 3), c, r, r);
+            }
         }
 
         // The inputs in use right now, pulsing on top.

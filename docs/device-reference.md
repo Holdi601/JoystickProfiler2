@@ -112,6 +112,125 @@ panels as vector paths, plus (optionally) flat colour regions for the cel-shaded
 - Cockpit grips: `DB/Cockpits/line-drawings`, with `aircraft` and `device` instead of `model` and an optional `parts`
   object (part id → [x, y], 0..1) for the Cockpits page's tables.
 
+### How the drawings are made
+
+Nothing is traced from a photo any more where a better source exists. Three ways, best first:
+
+1. **The game's own grip** for devices that replicate a real aircraft's grip (Thrustmaster Warthog = A-10C, the F-16C
+   and F/A-18C grips): `engine devices reference mesh-render --aircraft <plane> --grip stick|throttle --view <yaw>,<pitch>
+   --folder <dir> [--skip <regex>]` renders the grip of the game's cockpit model (DCS World, read like the cockpit
+   pictures: plain files only, nothing written) without textures, with the part of every pixel and the model's named
+   parts (`STICK-BTN-TMS` ...). `python tools/device_drawings.py mesh <dir> <part name> [--crop ...] [--components n]`
+   makes a drawing part of it: the silhouette, the outline of every separate piece, flat colour regions, and the named
+   parts (or, for a model without names, every separate piece as `c01`, `c02` ... with a labeled preview) as keys. The
+   device's spec maps the keys to its parts by the maker's button map and adds what the device has and the aircraft
+   has not (its base, a paddle, extra buttons). The source line credits the game.
+2. **A vector spec** (`tools/device_drawings/<model>.<view>.json`, `python tools/device_drawings.py build <model>`):
+   the silhouette and body parts as smooth paths, every control as a glyph of the shared library (button, hat 4/8-way
+   with its direction arrows and press, mini-stick, toggle, rocker, wheel, encoder, knob, slider, lever, gimbal, twist,
+   pedal: `device_drawings.py glyphs` shows them) at its spot, positions from the maker's button map. Shared parts
+   (`tools/device_drawings/parts`, e.g. the Virpil MT-50 handle) are included and mapped per model. A drawing in its own
+   frame gets a position set `DB/DeviceLayouts/<model>.drawing-<view>.json` with photo kind `lineart` and the drawing's
+   key; the engine arranges its callout sheet. A group can also carry `photoSet`: its parts are then written into that
+   maker's photo set too.
+3. **A template drawing** for the rest (`python tools/device_drawings.py auto <model> ...`): the traced drawing's
+   silhouette smoothed into one clean outline, the big inner contours kept, every curated part drawn as the glyph of its
+   type at its curated spot (no traced inner lines, screw heads or texture). It keeps the traced drawing's frame and key.
+
+4. **Composed views** (`python tools/device_drawings.py compose <model> [--views main,side,main~] [--grid <folder>]`):
+   several curated photo views of the model side by side, each as its template drawing (`parts/<model>-<view>.json`),
+   `<view>~` a mirrored copy of a view's outline for the far side, and the controls no photo shows placed by hand
+   from the maker's button map. The recipe is the spec's `compose` block (`views`, `place`: part, view, `uv` 0..1 of
+   that view, optional glyph and size; `notPhysical`, `unplaced`, `mappingSource`); `--grid` writes a preview with a
+   0..1 grid per view for placing by eye. The result is the model's drawing `main` with its own position set, like a
+   vector spec.
+
+A spec's own control can be placed in 3D too: `"anchor3d": <index of the game-model include>` places it through that
+include's view (a button the replica adds to the aircraft's grip).
+
+A single-photo-to-3D model (TripoSR, tested on the VKB MCG Pro) melts the controls into blobs: not used.
+
+### 3D view
+
+Devices with a 3D model (a game's grip model, or a downloadable CAD / 3D file of the device) get a rotatable view:
+**3D view** on the Layout page's toolbar and on the Bind page's picture (shown only for such devices). Drag turns it
+(sideways around the vertical, up and down between the pitches), the wheel zooms, a double click (or Home) resets it,
+the arrow keys step. Every part of the device sits at its spot on every frame (a part facing away is a hollow dashed
+ring), the picked part is ringed and its bound command shown, held inputs light up, a click picks the part (the same
+selection as the flat picture), a relation dropped on a part is bound there. The 3D view is the default where a device
+has one; the toggle switches to the flat drawing, which is what the cheat sheets print and what Edit mode works on.
+
+**Not shipped, downloaded per device.** The 3D views are release assets, not part of JoyPro's package:
+
+- Release `device-3d-v1` (published with `--latest=false`): one zip per device model (`<model>.zip`: `turntable.json`,
+  `frames/*.png`, `CREDITS.txt` with the model's source and licence) and `manifest.json` (`joypro-device-3d-packs`,
+  `packVersion` 1; per pack `model`, `asset`, `size`, `sha256`, `version`, `built`, `source`).
+- When the device cards find a connected device whose model has a pack, JoyPro follows Settings > Privacy *Pictures
+  from JoyPro's releases (cockpits, 3D device views)* (the setting of the cockpit picture packs): **Ask** shows "A 3D
+  view of ... is available (x MB). Download it?" on the Layout page and the Start page (*Download*, *Not now* for this
+  session, *Always download*, *Never*); **Always** downloads it at once; **Never** does not look.
+- The zip is checked against the manifest's SHA-256 and holds only `turntable.json`, `CREDITS.txt` and PNGs in
+  `frames/`; it is unpacked to a temporary folder and moved to `<data>\DeviceReference\Turntables\<model>` (`pack.json`
+  keeps the version; a newer version in the manifest replaces it).
+- Offline, without a pack or with *Never*: the flat drawing (nothing else changes).
+- Code: `Services/DeviceTurntablePacks.cs`, `MainWindowViewModel.Device3D.cs`; `JOYPRO_DEVICE_3D_FEED` points JoyPro at
+  another feed (a folder or address; tests, checking packs before they are published).
+- Build: `powershell -File tools\build_device_3d_packs.ps1 [-Source <turntables>] [-Out <folder>] [-Model <id>,...]`
+  (defaults: `JOYPRO_DEVICE_3D_DIR`, `<JOYPRO_RELEASE_DIR>\device-3d`; both outside the repository). An unchanged model
+  keeps its zip and version, a changed one gets the next version. The script uploads nothing.
+
+- Made by `python tools/device_drawings.py turntable <model> [--steps 24] [--pitches 5,25,45] [--size 420] [--out
+  <folder>]` (default folder `JOYPRO_DEVICE_3D_DIR`, outside the repository): it calls
+  `engine devices reference mesh-render ... --turntable <steps> --pitches ... --keep-top <f> --anchors <files>`, which
+  renders the grip without textures in a cel style (flat colours in two tones, light outlines between the model's
+  parts, transparent background) from every direction, places the drawing's points in 3D through the depth of the view
+  they were picked on, and records where each lands per frame and whether it faces the camera. The spec's
+  `turntableKeepTop` frames the upper part of a long stick.
+- From a 3D model file instead (.glb / .gltf / .stl / .obj, e.g. a maker's AR model or a community scan): a recipe
+  `tools/device_drawings/mesh/<model>.json` (the file name and where it came from, which meshes belong to the device,
+  the front view's yaw, `source` and `licence` for the pack's CREDITS.txt, and the parts picked on a few views) and the
+  file itself in `<JOYPRO_DEVICE_3D_DIR>\.models\` (never in the repository). `turntable <recipe> --views <folder>`
+  draws the pick views with a pixel grid; `turntable <recipe>` renders the same cel-shaded frames in Python
+  (`tools/device_mesh_turntable.py`, needs numpy and trimesh).
+- `<model>/turntable.json` (`frames`: pitch, yaw, file, `points` part -> [x, y, seen]; `source`, optional `licence`)
+  and `frames/*.png` (24 x 3 frames, about 1.5 MB per device), credited on the view ("Rendered from DCS World's A-10C
+  cockpit model").
+- Code: `Services/DeviceTurntable.cs`, `Views/Controls/TurntableView.cs`, `MainWindowViewModel.WorkspaceTurntable`.
+- Devices with a 3D view (2026-10-18, 14 packs): Thrustmaster Warthog stick and MKII stick, Warthog throttle (the
+  grips), the F-16C Viper and F/A-18C Hornet grips (Warthog/AVA bases and the VPforce Rhino), the WinWing NavyAce and
+  CarrierAce F/A-18 grips, the VKB Gunfighter F-14 grip and the Warthog grip on the Gunfighter, the Logitech X56 stick
+  (Logitech's own 3D model).
+
+### Complete devices
+
+`engine devices reference completeness [query] [--missing] [--list <file>]`: per model whether the best shipped
+picture (JoyPro's drawing first) places every part with an input: every button, each hat with its directions and press,
+every axis, mini-stick, slider, encoder, toe brake. A part a set lists as `not physical: ...` (VKB / Virpil logical
+buttons, a lever position such as the Warthog's idle detent) counts as done. `DeviceCompletenessTests` keeps the drawn
+devices complete input by input. Numbers on 2026-10-18: 132 of 310 models with inputs complete (120 after the first batch) (107 before the first
+batch of composed views).
+
+### Correcting JoyPro
+
+When JoyPro forgot an input or put it on the wrong spot, the user fixes it on the Layout page and can send the fix:
+
+- A card over the picture says how many inputs have no place ("3 inputs have no place on the picture: press them on
+  your device to place them") with **Place them** (the marker assistant, waiting for the first press).
+- The marker assistant has **Add control**: the kind (button, 2/3-way switch, hat 4-way, hat 4-way + press, hat 8-way,
+  mini-stick + press, encoder, axis / slider, wheel) and an optional name; it asks for each input in turn (each hat
+  direction, then the press; a mini-stick's axes by moving them), then for the spot. **Remove from picture** takes a
+  wrongly placed part off. Moving (drag), renaming (the legend) work as before.
+- Everything is kept locally as the user's layer over JoyPro's data: positions per picture
+  (`<data>\DeviceReference\Layouts`, parts taken off as `removed by the user`), new or changed controls as the user's
+  definition of the model (`<data>\Devices`), used by the Layout page, Visual Assign, the cheat sheets and the HUD.
+- **Send correction to JoyPro...** writes `<data>\DeviceReference\Corrections\<model>-<time>.json`
+  (`joypro-device-correction`: model, VID:PID, the picture's kind and key, the changed positions, removed parts, added or
+  changed controls; nothing personal) and opens the prefilled GitHub issue form "Device layout correction"
+  (`.github/ISSUE_TEMPLATE/device-layout-correction.yml`) in the browser; the user decides there. A correction too long
+  for the address is attached by hand.
+- The maintainer: `python tools/device_corrections.py show|merge <file> [--controls]` (into the drawing's spec
+  `positions` / `unplaced`, or the photo's curated set; controls into the catalog with `--controls`).
+
 ### Drawing style
 
 How the drawings are painted is the user's choice, the same in every renderer (the Layout page, the callout sheets, the

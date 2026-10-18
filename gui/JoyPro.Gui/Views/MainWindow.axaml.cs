@@ -66,12 +66,13 @@ public partial class MainWindow : Window
         tooltipHold = new TooltipHold(this);
     }
 
-    // Follow input moved the list under a resting mouse: no tooltip pops up until the mouse moves.
+    // Follow input moved the list under a resting mouse (or the window was in the background): no tooltip pops up
+    // until the mouse really moves.
     private readonly TooltipHold tooltipHold;
 
     internal TooltipHold TooltipHold => tooltipHold;
 
-    private void OnFollowInputJumped(object? sender, EventArgs e) => tooltipHold.Hold();
+    private void OnFollowInputActivity(object? sender, EventArgs e) => tooltipHold.Hold();
 
     private void UpdateTextInputFocus()
     {
@@ -530,7 +531,7 @@ public partial class MainWindow : Window
             observedViewModel.AssistantFocusRequested -= OnAssistantFocusRequested;
             observedViewModel.SettingsSectionFocusRequested -= OnSettingsSectionFocusRequested;
             observedViewModel.AssistantMessages.CollectionChanged -= OnAssistantMessagesChanged;
-            observedViewModel.FollowInputJumped -= OnFollowInputJumped;
+            observedViewModel.FollowInputActivity -= OnFollowInputActivity;
             observedViewModel.ConfirmHandler = null;
         }
 
@@ -550,7 +551,7 @@ public partial class MainWindow : Window
             observedViewModel.AssistantFocusRequested += OnAssistantFocusRequested;
             observedViewModel.SettingsSectionFocusRequested += OnSettingsSectionFocusRequested;
             observedViewModel.AssistantMessages.CollectionChanged += OnAssistantMessagesChanged;
-            observedViewModel.FollowInputJumped += OnFollowInputJumped;
+            observedViewModel.FollowInputActivity += OnFollowInputActivity;
             observedViewModel.ConfirmHandler = AskConfirmationAsync;
             // The output panel's place follows the view model (hidden when closed) from the first layout on.
             Dispatcher.UIThread.Post(UpdateEngineOutputCompactLayout);
@@ -758,6 +759,14 @@ public partial class MainWindow : Window
     private void CalloutRelationPointerPressed(object? sender, PointerPressedEventArgs e)
     {
         calloutDragRelation = (sender as Control)?.DataContext as string;
+        calloutDragStart = e.GetPosition(this);
+    }
+
+    // A row of the bind list: its relation can be dragged onto an input of the picture (Bind on the picture) or onto a
+    // row of the Layout page's tables.
+    private void BindRowPointerPressed(object? sender, PointerPressedEventArgs e)
+    {
+        calloutDragRelation = ((sender as Control)?.DataContext as BindListItem)?.RelationName;
         calloutDragStart = e.GetPosition(this);
     }
 

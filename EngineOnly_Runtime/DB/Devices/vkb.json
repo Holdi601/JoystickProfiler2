@@ -3430,7 +3430,7 @@
           "VKB-Sim Gunfighter Modern Combat Pro Twist",
           "VKB-Sim Gunfighter Modern Combat Pro"
         ],
-        "note": "231D:0125 confirmed on the user's device (ED binds). Hat roles TMS/DMS/CMS follow the A-10C HOTAS names; numbering cross-checked with the user's own Elite Dangerous binds for 231D:0125. Buttons 24-28 and 30-41 are not placed; BTN30-37 are probably the Master Mode ministick as 8-way buttons (forum), BTN29 brake lever full squeeze (forum), BTN41 exists (used by the user as SecondaryFire) but its physical control is unknown. Roles of BTN4-8 and the 2nd POV are role based, finger unknown. Button numbering not confirmed by public documentation (originally derived from a local game configuration file); verify on a real device."
+        "note": "231D:0125 confirmed on a real device (128 buttons, 2 POV hats, 8 axes reported). Input numbers read from a real MCG Pro's configuration (DCS, Star Citizen and IL-2 binds of one profile: button 24 = weapon release, 40/43 = gun safe/arm on the metal trigger, 28/3 = the two lasing detents of the brake lever) and matched to the controls with VKB's control names printed on the grip (GATE CONT, PC, MANVR, LVLNG, RESET) and the product sheet (two contactless ministicks with push, three 4-way hats with push, metal trigger with contactless sensor, dual-stage trigger, metal brake lever analog/digital). Not confirmed by a published VKB button map; VKBDevCfg can renumber everything. Button 8 is reported but its control is not known."
       },
       "image": "https://vkbsimcontrollers.com/cdn/shop/files/MCG-Pro-EN_for_GF_1200_02_7809c025-f9a5-4bf3-921d-37249a7e134a.webp",
       "productUrl": "https://vkbsimcontrollers.com/products/mcg-pro-add-on-grip-for-gunfighter-mk-iv-us",
@@ -3438,7 +3438,7 @@
         "https://vkbsimcontrollers.com/products/mcg-pro-add-on-grip-for-gunfighter-mk-iv-us",
         "https://www.vkbcontrollers.com/pages/downloads"
       ],
-      "confidence": "low",
+      "confidence": "medium",
       "axes": [
         {
           "input": "JOY_X",
@@ -3450,252 +3450,313 @@
         },
         {
           "input": "JOY_Z",
-          "control": "stick.axis.twist"
+          "control": "stick.axis.twist",
+          "label": "Twist"
         },
         {
           "input": "JOY_RX",
           "control": "stick.axis.ministick.x",
-          "label": "Microstick A (DCS: absolute camera V)"
+          "label": "Master mode ministick (top)"
         },
         {
           "input": "JOY_RY",
           "control": "stick.axis.ministick.y",
-          "label": "Microstick A (DCS: absolute camera H)"
+          "label": "Master mode ministick (top)"
         },
         {
           "input": "JOY_RZ",
           "control": "stick.axis.ministick2.y",
-          "label": "Microstick B Y (DCS: slew/TDC vertical)"
+          "label": "GATE CONT ministick (thumb)"
         },
         {
           "input": "JOY_SLIDER1",
           "control": "stick.axis.ministick2.x",
-          "label": "Microstick B X (DCS: slew/TDC horizontal)"
+          "label": "GATE CONT ministick (thumb)"
         },
         {
           "input": "JOY_SLIDER2",
           "control": "stick.axis.brake_lever",
-          "label": "Brake lever (DCS: wheel brake)"
+          "label": "Brake lever"
         }
       ],
       "controls": [
         {
           "input": "JOY_BTN1",
           "control": "stick.trigger.stage1",
-          "label": "Trigger first detent",
+          "label": "Dual-stage trigger",
           "finger": "index",
           "type": "momentary"
         },
         {
           "input": "JOY_BTN2",
           "control": "stick.trigger.stage2",
-          "label": "Trigger second detent",
+          "label": "Dual-stage trigger",
           "finger": "index",
           "type": "momentary"
         },
         {
-          "input": "JOY_BTN3",
+          "input": "JOY_BTN40",
+          "control": "stick.trigger.flip.up",
+          "label": "Metal trigger",
+          "finger": "index",
+          "type": "momentary"
+        },
+        {
+          "input": "JOY_BTN43",
+          "control": "stick.trigger.flip.mid",
+          "label": "Metal trigger",
+          "finger": "index",
+          "type": "momentary"
+        },
+        {
+          "input": "JOY_BTN24",
           "control": "stick.weapon_release",
-          "label": "Red button (weapon release)",
+          "label": "Red button",
           "finger": "thumb",
           "type": "momentary"
         },
         {
           "input": "JOY_BTN4",
-          "control": "stick.button.thumb.1",
-          "label": "Button 4 (DCS: NWS / missile step, display mode A-A)",
+          "control": "stick.button.thumb.4",
+          "label": "Button 4 (reported; VKB does not document which control it is)",
+          "finger": "thumb",
           "type": "momentary"
         },
         {
           "input": "JOY_BTN5",
-          "control": "stick.button.thumb.2",
-          "label": "Button 5 (DCS: uncage / cage)",
+          "control": "stick.button.thumb.1",
+          "label": "LVLNG button (top right)",
+          "finger": "thumb",
           "type": "momentary"
         },
         {
           "input": "JOY_BTN6",
-          "control": "stick.pinky.button",
-          "label": "Button 6 (DCS: master mode / paddle switch)",
+          "control": "stick.button.thumb.2",
+          "label": "MANVR button (lower right)",
+          "finger": "thumb",
           "type": "momentary"
         },
         {
           "input": "JOY_BTN7",
           "control": "stick.button.thumb.3",
-          "label": "Button 7 (DCS: nosewheel steering / expand-FOV)",
-          "type": "momentary"
-        },
-        {
-          "input": "JOY_BTN8",
-          "control": "stick.button.thumb.4",
-          "label": "Button 8 (DCS: radar acquire / enter)",
+          "label": "Side button (left, mid grip)",
           "type": "momentary"
         },
         {
           "input": "JOY_BTN9",
           "control": "stick.hat.cms.press",
-          "label": "CMS hat press",
+          "label": "RESET hat (left side)",
           "finger": "thumb",
           "type": "momentary"
         },
         {
           "input": "JOY_BTN10",
           "control": "stick.hat.cms.up",
-          "label": "CMS hat",
+          "label": "RESET hat (left side)",
           "finger": "thumb",
           "type": "momentary"
         },
         {
           "input": "JOY_BTN11",
           "control": "stick.hat.cms.right",
-          "label": "CMS hat",
+          "label": "RESET hat (left side)",
           "finger": "thumb",
           "type": "momentary"
         },
         {
           "input": "JOY_BTN12",
           "control": "stick.hat.cms.down",
-          "label": "CMS hat",
+          "label": "RESET hat (left side)",
           "finger": "thumb",
           "type": "momentary"
         },
         {
           "input": "JOY_BTN13",
           "control": "stick.hat.cms.left",
-          "label": "CMS hat",
+          "label": "RESET hat (left side)",
           "finger": "thumb",
           "type": "momentary"
         },
         {
           "input": "JOY_BTN14",
           "control": "stick.hat.tms.up",
-          "label": "TMS hat (top middle)",
+          "label": "PC hat (centre)",
           "finger": "thumb",
           "type": "momentary"
         },
         {
           "input": "JOY_BTN15",
           "control": "stick.hat.tms.right",
-          "label": "TMS hat (top middle)",
+          "label": "PC hat (centre)",
           "finger": "thumb",
           "type": "momentary"
         },
         {
           "input": "JOY_BTN16",
           "control": "stick.hat.tms.down",
-          "label": "TMS hat (top middle)",
+          "label": "PC hat (centre)",
           "finger": "thumb",
           "type": "momentary"
         },
         {
           "input": "JOY_BTN17",
           "control": "stick.hat.tms.left",
-          "label": "TMS hat (top middle)",
+          "label": "PC hat (centre)",
           "finger": "thumb",
           "type": "momentary"
         },
         {
           "input": "JOY_BTN18",
           "control": "stick.hat.tms.press",
-          "label": "TMS hat press",
+          "label": "PC hat (centre)",
           "finger": "thumb",
           "type": "momentary"
         },
         {
           "input": "JOY_BTN19",
-          "control": "stick.hat.dms.left",
-          "label": "DMS hat",
-          "finger": "thumb",
+          "control": "stick.hat.dms.up",
+          "label": "Side hat (right side of the head)",
+          "finger": "index",
           "type": "momentary"
         },
         {
           "input": "JOY_BTN20",
-          "control": "stick.hat.dms.up",
-          "label": "DMS hat",
-          "finger": "thumb",
+          "control": "stick.hat.dms.right",
+          "label": "Side hat (right side of the head)",
+          "finger": "index",
           "type": "momentary"
         },
         {
           "input": "JOY_BTN21",
-          "control": "stick.hat.dms.right",
-          "label": "DMS hat",
-          "finger": "thumb",
+          "control": "stick.hat.dms.down",
+          "label": "Side hat (right side of the head)",
+          "finger": "index",
+          "type": "momentary"
+        },
+        {
+          "input": "JOY_BTN31",
+          "control": "stick.hat.dms.left",
+          "label": "Side hat (right side of the head)",
+          "finger": "index",
+          "type": "momentary"
+        },
+        {
+          "input": "JOY_BTN30",
+          "control": "stick.hat.dms.press",
+          "label": "Side hat (right side of the head)",
+          "finger": "index",
           "type": "momentary"
         },
         {
           "input": "JOY_BTN22",
-          "control": "stick.hat.dms.down",
-          "label": "DMS hat",
+          "control": "stick.ministick2.press",
+          "label": "GATE CONT ministick (thumb)",
+          "finger": "thumb",
+          "type": "momentary"
+        },
+        {
+          "input": "JOY_BTN_POV2_U",
+          "control": "stick.ministick2.up",
+          "label": "GATE CONT ministick (thumb)",
+          "finger": "thumb",
+          "type": "momentary"
+        },
+        {
+          "input": "JOY_BTN_POV2_R",
+          "control": "stick.ministick2.right",
+          "label": "GATE CONT ministick (thumb)",
+          "finger": "thumb",
+          "type": "momentary"
+        },
+        {
+          "input": "JOY_BTN_POV2_D",
+          "control": "stick.ministick2.down",
+          "label": "GATE CONT ministick (thumb)",
+          "finger": "thumb",
+          "type": "momentary"
+        },
+        {
+          "input": "JOY_BTN_POV2_L",
+          "control": "stick.ministick2.left",
+          "label": "GATE CONT ministick (thumb)",
           "finger": "thumb",
           "type": "momentary"
         },
         {
           "input": "JOY_BTN23",
-          "control": "stick.hat.dms.press",
-          "label": "DMS hat press",
+          "control": "stick.ministick.press",
+          "label": "Master mode ministick (top)",
           "finger": "thumb",
-          "type": "momentary"
-        },
-        {
-          "input": "JOY_BTN29",
-          "control": "stick.button.index.1",
-          "label": "Brake lever fully squeezed (forum)",
-          "finger": "middle",
           "type": "momentary"
         },
         {
           "input": "JOY_BTN_POV1_U",
           "control": "stick.ministick.up",
-          "label": "Master Mode ministick (POV1)",
+          "label": "Master mode ministick (top)",
           "finger": "thumb",
           "type": "momentary"
         },
         {
           "input": "JOY_BTN_POV1_UR",
           "control": "stick.ministick.upright",
-          "label": "Master Mode ministick (POV1)",
+          "label": "Master mode ministick (top)",
           "finger": "thumb",
           "type": "momentary"
         },
         {
           "input": "JOY_BTN_POV1_R",
           "control": "stick.ministick.right",
-          "label": "Master Mode ministick (POV1)",
+          "label": "Master mode ministick (top)",
           "finger": "thumb",
           "type": "momentary"
         },
         {
           "input": "JOY_BTN_POV1_DR",
           "control": "stick.ministick.downright",
-          "label": "Master Mode ministick (POV1)",
+          "label": "Master mode ministick (top)",
           "finger": "thumb",
           "type": "momentary"
         },
         {
           "input": "JOY_BTN_POV1_D",
           "control": "stick.ministick.down",
-          "label": "Master Mode ministick (POV1)",
+          "label": "Master mode ministick (top)",
           "finger": "thumb",
           "type": "momentary"
         },
         {
           "input": "JOY_BTN_POV1_DL",
           "control": "stick.ministick.downleft",
-          "label": "Master Mode ministick (POV1)",
+          "label": "Master mode ministick (top)",
           "finger": "thumb",
           "type": "momentary"
         },
         {
           "input": "JOY_BTN_POV1_L",
           "control": "stick.ministick.left",
-          "label": "Master Mode ministick (POV1)",
+          "label": "Master mode ministick (top)",
           "finger": "thumb",
           "type": "momentary"
         },
         {
           "input": "JOY_BTN_POV1_UL",
           "control": "stick.ministick.upleft",
-          "label": "Master Mode ministick (POV1)",
+          "label": "Master mode ministick (top)",
           "finger": "thumb",
+          "type": "momentary"
+        },
+        {
+          "input": "JOY_BTN28",
+          "control": "stick.brake_lever.stage1",
+          "label": "Brake lever detents",
+          "finger": "middle",
+          "type": "momentary"
+        },
+        {
+          "input": "JOY_BTN3",
+          "control": "stick.brake_lever.stage2",
+          "label": "Brake lever detents",
+          "finger": "middle",
           "type": "momentary"
         }
       ]

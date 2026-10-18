@@ -76,10 +76,14 @@
                                                       ToolTip.Tip="{Binding Row.PlanesTooltip}">
                                                 <StackPanel Spacing="1">
                                                     <Grid ColumnDefinitions="*,Auto" ColumnSpacing="6">
-                                                        <TextBlock Text="{Binding Row.Title}" FontWeight="SemiBold" TextTrimming="CharacterEllipsis" />
+                                                        <TextBlock Text="{Binding Row.DisplayTitle}" FontWeight="SemiBold" TextTrimming="CharacterEllipsis" />
                                                         <TextBlock Grid.Column="1" Classes="caption" Text="{Binding Row.KindLabel}" VerticalAlignment="Center" />
                                                     </Grid>
                                                     <WrapPanel ItemSpacing="4" LineSpacing="2">
+                                                        <Border Classes="chip recommended" IsVisible="{Binding Row.IsRecommended}"
+                                                                ToolTip.Tip="{l:T 'The one action to take in this game (or aircraft): the function\'s main control, not a variant'}">
+                                                            <TextBlock Text="{Binding Row.RecommendedLabel}" />
+                                                        </Border>
                                                         <Border Classes="chip ok" IsVisible="{Binding Row.IsInOpenRelation}"><TextBlock Text="{l:T 'in this relation'}" /></Border>
                                                         <Border Classes="chip" IsVisible="{Binding IsUsed}" ToolTip.Tip="{l:T 'The relations that use it already'}">
                                                             <TextBlock Text="{Binding UsedText}" MaxWidth="260" TextTrimming="CharacterEllipsis" />
@@ -89,6 +93,9 @@
                                                         </Border>
                                                         <TextBlock Classes="caption" FontSize="11" Text="{Binding Row.Id}" VerticalAlignment="Center" TextTrimming="CharacterEllipsis" MaxWidth="220" Opacity="0.7" />
                                                     </WrapPanel>
+                                                    <TextBlock Classes="warnText" FontSize="11" Text="{Binding Row.VariantText}" IsVisible="{Binding Row.HasVariant}" TextWrapping="Wrap" />
+                                                    <TextBlock Classes="caption" FontSize="11" Text="{Binding Row.Explanation}" IsVisible="{Binding Row.HasExplanation}" TextWrapping="Wrap" MaxLines="2"
+                                                               TextTrimming="CharacterEllipsis" ToolTip.Tip="{Binding Row.ExplanationTip}" />
                                                 </StackPanel>
                                             </CheckBox>
                                             <!-- DCS: the browsed aircraft is ticked; tick more aircraft with the same meaning -->

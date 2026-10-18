@@ -1,0 +1,96 @@
+{
+ "model": "thrustmaster-airbus-add-on-grip",
+ "view": "main",
+ "class": "stick",
+ "width": 2130.0,
+ "height": 1060.0,
+ "source": "JoyPro template drawing of the maker's photos (main, main~): smoothed silhouettes, JoyPro's control symbols at the curated spots",
+ "mappingSource": "Thrustmaster TCA Sidestick Airbus add-on grip manual (trigger on the front of the grip, the base's stick axes): the trigger drawn on the far-side outline",
+ "confidence": "medium",
+ "compose": {
+  "views": [
+   "main",
+   "main~"
+  ],
+  "place": [
+   {
+    "part": "stick.trigger",
+    "view": "main~",
+    "uv": [
+     0.5,
+     0.3
+    ]
+   },
+   {
+    "part": "stick.gimbal",
+    "view": "main",
+    "uv": [
+     0.5,
+     0.68
+    ]
+   }
+  ],
+  "mappingSource": "Thrustmaster TCA Sidestick Airbus add-on grip manual (trigger on the front of the grip, the base's stick axes): the trigger drawn on the far-side outline"
+ },
+ "include": [
+  {
+   "file": "thrustmaster-airbus-add-on-grip-main.json",
+   "dx": 30.0,
+   "dy": 30.0,
+   "scale": 1.25,
+   "mirror": false,
+   "map": {
+    "stick.axis.twist": "stick.axis.twist",
+    "stick.hat.trim": "stick.hat.trim"
+   }
+  },
+  {
+   "file": "thrustmaster-airbus-add-on-grip-main.json",
+   "dx": 2100.0,
+   "dy": 30.0,
+   "scale": 1.25,
+   "mirror": true,
+   "map": {},
+   "only": true
+  }
+ ],
+ "shapes": [],
+ "controls": [
+  {
+   "type": "group",
+   "dx": 2100.0,
+   "dy": 30.0,
+   "scale": 1.25,
+   "mirror": true,
+   "items": [
+    {
+     "part": "stick.trigger",
+     "glyph": "button",
+     "at": [
+      400.0,
+      240.0
+     ],
+     "size": 40.0
+    }
+   ]
+  },
+  {
+   "type": "group",
+   "dx": 30.0,
+   "dy": 30.0,
+   "scale": 1.25,
+   "mirror": false,
+   "items": [
+    {
+     "part": "stick.gimbal",
+     "glyph": "gimbal",
+     "at": [
+      400.0,
+      544.0
+     ],
+     "size": 40.0
+    }
+   ]
+  }
+ ]
+}

@@ -106,6 +106,86 @@ public sealed partial class BuilderSuggestionItem : ObservableObject
     // Ticked for "Add ticked".
     [ObservableProperty]
     private bool isChecked;
+
+    // ---- Recommended action (relations suggest Recommended / Variant / Group; docs/relation-builder.md) ----
+
+    // The one action to take in its game (DCS: aircraft); "for helicopters" when the game has one of each.
+    public bool IsRecommended { get; init; }
+
+    public string RecommendedFor { get; init; } = string.Empty;
+
+    public string RecommendedLabel => RecommendedFor.Length > 0 ? T("Recommended {0}", Translate(RecommendedFor)) : T("Recommended");
+
+    // An alternative: how it differs from the recommended action ("the game's alternate set of this control").
+    public string Variant { get; init; } = string.Empty;
+
+    public bool HasVariant => !IsRecommended && Variant.Length > 0;
+
+    public string VariantText => T("Differs: {0}", Translate(Variant));
+
+    // The recommended row's NodeSpec this one falls under (its own for a recommended row).
+    public string Group { get; init; } = string.Empty;
+
+    public string Readable { get; init; } = string.Empty;
+
+    // The game's own name (or one made readable from an event id), never the raw "AXIS ELEVATOR SET".
+    public string DisplayTitle => Readable.Length > 0 ? Readable : Title;
+
+    public string FunctionName { get; init; } = string.Empty;
+
+    // "Pitch axis · KEY_AXIS_ELEVATOR_SET" under the title (DCS ids are codes: the function only).
+    public string FunctionAndId => IsDcs ? FunctionName : FunctionName.Length > 0 ? FunctionName + " · " + Id : Id;
+
+    public bool HasFunctionAndId => FunctionAndId.Length > 0;
+
+    public string Explanation { get; init; } = string.Empty;
+
+    public string ExplanationSource { get; init; } = string.Empty;
+
+    public bool HasExplanation => Explanation.Length > 0;
+
+    public string ExplanationTip => ExplanationSource switch
+    {
+        "guide" => T("From the cockpit guide (What does it do?)"),
+        "game" => T("The game's own description"),
+        "template" => T("A general explanation of this function"),
+        _ => string.Empty
+    };
+
+    // The alternatives shown under this recommended row (collapsed at first).
+    public List<BuilderSuggestionItem> AlternativeItems { get; } = [];
+
+    public bool HasAlternatives => AlternativeItems.Count > 0;
+
+    // "+3 other pitch actions in this game"
+    public string AlternativesLabel => IsExpanded
+        ? T("Hide the other actions")
+        : Plural("+{0} other action in this game", "+{0} other actions in this game", AlternativeItems.Count);
+
+    [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(AlternativesLabel))]
+    private bool isExpanded;
+
+    // An alternative under a collapsed recommended row is hidden.
+    [ObservableProperty]
+    private bool isShown = true;
+
+    public bool IsAlternative { get; set; }
+
+    public void RefreshAlternatives()
+    {
+        OnPropertyChanged(nameof(HasAlternatives));
+        OnPropertyChanged(nameof(AlternativesLabel));
+    }
+
+    partial void OnIsExpandedChanged(bool value)
+    {
+        foreach (BuilderSuggestionItem item in AlternativeItems)
+            item.IsShown = value;
+    }
+
+    [CommunityToolkit.Mvvm.Input.RelayCommand]
+    private void ToggleAlternatives() => IsExpanded = !IsExpanded;
 }
 
 // A section of the suggestions in "Suggest missing" ("Games not in it yet (12)").
@@ -150,7 +230,8 @@ public sealed partial class SuggestionSectionItem : ObservableObject
             updating = true;
             try
             {
-                foreach (BuilderSuggestionItem item in Items)
+                // A collapsed alternative stays as it is: ticking the section takes what is shown.
+                foreach (BuilderSuggestionItem item in Items.Where(i => i.IsShown || value != true))
                     item.IsChecked = value == true;
             }
             finally
@@ -217,7 +298,42 @@ public sealed partial class BuilderSearchResultItem : ObservableObject
     // (relations search "Display").
     public string Display { get; init; } = string.Empty;
 
-    public string DisplayTitle => Display.Length > 0 ? Display : Title;
+    public string DisplayTitle => Display.Length > 0 ? Display : Readable.Length > 0 ? Readable : Title;
+
+    // ---- Recommended action (relations search / browse; docs/relation-builder.md "Recommended action") ----
+
+    public string Readable { get; init; } = string.Empty;
+
+    public bool IsRecommended { get; init; }
+
+    public string RecommendedFor { get; init; } = string.Empty;
+
+    public string RecommendedLabel => RecommendedFor.Length > 0 ? T("Recommended {0}", Translate(RecommendedFor)) : T("Recommended");
+
+    public string Variant { get; init; } = string.Empty;
+
+    public bool HasVariant => !IsRecommended && Variant.Length > 0;
+
+    public string VariantText => T("Differs: {0}", Translate(Variant));
+
+    public string Explanation { get; init; } = string.Empty;
+
+    public string ExplanationSource { get; init; } = string.Empty;
+
+    public bool HasExplanation => Explanation.Length > 0;
+
+    public string ExplanationTip => ExplanationSource switch
+    {
+        "guide" => T("From the cockpit guide (What does it do?)"),
+        "game" => T("The game's own description"),
+        "template" => T("A general explanation of this function"),
+        _ => string.Empty
+    };
+
+    // The game's own id, small under the title (DCS ids are codes: not shown).
+    public string IdText => Game == "DCS" ? string.Empty : Id;
+
+    public bool HasIdText => IdText.Length > 0;
 
     public string MatchLabel => Primary ? "main control" : Match switch
     {

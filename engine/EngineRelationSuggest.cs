@@ -194,7 +194,65 @@ namespace JoyPro.Engine
                 });
                 MarkMissing(result.Suggestions[result.Suggestions.Count - 1], coverage);
             }
+            Choose(result.Suggestions, context, relation);
             return result;
+        }
+
+        // The recommended action per game (DCS: aircraft) among the suggestions, the others explained, and what each
+        // action is in words (EngineActionChoice, EngineActionInfo). All of them stand for the relation's function.
+        private static void Choose(List<EngineRelationSuggestion> suggestions, Context context, Relation relation)
+        {
+            if (suggestions.Count == 0)
+                return;
+            List<MapMeaning> meanings = context.LastMapMeanings ?? new List<MapMeaning>();
+            EngineFunctionMap.Function main = meanings.Where(m => m.Weight >= 1).Select(m => m.Function).FirstOrDefault() ?? meanings.Select(m => m.Function).FirstOrDefault();
+            HashSet<string> known = new HashSet<string>(StringComparer.Ordinal);
+            foreach (MapMeaning m in meanings)
+                known.UnionWith(EngineActionChoice.WordsOf(m.Function));
+            known.UnionWith(EngineFunctionMap.Tokenize(Regex.Replace(relation.NAME ?? string.Empty, @"\s*\[[^\]]*\]$", string.Empty)));
+            if (context.LastSlot != null)
+                known.UnionWith(EngineFunctionMap.Tokenize(context.LastSlot.Name));
+            string functionName = main != null ? EngineFunctionMap.Describe(main, string.Empty, relation.ISAXIS) : context.LastSlot != null ? context.LastSlot.Name : string.Empty;
+            Coverage coverage = Coverage.Of(relation);
+            HashSet<string> covered = new HashSet<string>(coverage.Planes.Select(p => p.Substring(p.IndexOf('|') + 1)), StringComparer.OrdinalIgnoreCase);
+            List<EngineActionChoice.Item> items = new List<EngineActionChoice.Item>();
+            List<EngineFunctionMap.Function> own = new List<EngineFunctionMap.Function>();
+            foreach (EngineRelationSuggestion s in suggestions)
+            {
+                EngineActionChoice.Item item = new EngineActionChoice.Item
+                {
+                    Game = s.Game, Id = s.Id, Title = EngineActionInfo.Readable(s.Game, s.Id, s.Title), Category = s.Category, Planes = s.Planes.ToList(), Known = known, Score = s.Score, Covered = covered
+                };
+                EngineFunctionMap.Entry entry;
+                EngineFunctionMap.Function function = main;
+                if (context.Map != null && context.Map.ByKey.TryGetValue(s.Game + "|" + s.Id + "|" + (s.Game == "DCS" ? s.Planes.FirstOrDefault() : s.Game), out entry))
+                {
+                    if (main != null)
+                        item.PrimaryRank = EngineFunctionMap.PrimaryRank(entry, main);
+                    EngineFunctionMap.Assignment top = entry.Functions.Where(a => a.Weight >= 0.5).OrderByDescending(a => a.Weight).FirstOrDefault();
+                    if (top != null && (main == null || entry.Of(main.Id) == null))
+                        function = top.Function;
+                }
+                own.Add(function);
+                items.Add(item);
+            }
+            EngineActionChoice.Mark(items);
+            for (int i = 0; i < suggestions.Count; i++)
+            {
+                EngineRelationSuggestion s = suggestions[i];
+                EngineActionChoice.Item item = items[i];
+                s.Recommended = item.Recommended;
+                s.RecommendedFor = item.RecommendedFor;
+                s.Variant = item.Variant;
+                s.Group = item.Group;
+                s.Alternatives = item.Alternatives;
+                string name = own[i] != null ? EngineFunctionMap.Describe(own[i], string.Empty, s.IsAxis) : functionName;
+                EngineActionInfo.Info info = EngineActionInfo.Describe(s.Game, s.Game == "DCS" ? s.Planes.FirstOrDefault() : s.Game, s.Id, s.Title, own[i] != null ? own[i].Id : string.Empty, name, item.FitsFunction);
+                s.Readable = info.Readable;
+                s.Explanation = info.Explanation;
+                s.ExplanationSource = info.Source;
+                s.FunctionName = name;
+            }
         }
 
         // What the relation covers: the games and the (game, aircraft) its switched-on actions are for ("DCS|A-10C",
@@ -286,6 +344,7 @@ namespace JoyPro.Engine
                 }
                 if (free.Count == 0 && elsewhere == 0)
                     continue;
+                Choose(free, context, relation);
                 List<EngineRelationSuggestion> ordered = free.OrderByDescending(s => s.NewGame).ThenByDescending(s => s.Score).ThenByDescending(s => s.NewPlanes.Count)
                     .ThenBy(s => s.Game, StringComparer.Ordinal).ThenBy(s => s.Title, StringComparer.OrdinalIgnoreCase).ToList();
                 result.Relations.Add(new EngineRelationSuggestSummary
@@ -423,7 +482,12 @@ namespace JoyPro.Engine
                         continue;
                     }
                     node = spec.Substring(0, arrow);
-                    if (target.ISAXIS != relation.ISAXIS)
+                    string moveGame;
+                    string moveId;
+                    List<string> movePlanes;
+                    bool? nodeAxis = TryParseNode(node, out moveGame, out moveId, out movePlanes) ? Program.TryInferNodeAxis(moveGame, moveId) : null;
+                    // An action of the other kind (a button in an axis relation) goes to a relation of its own kind.
+                    if (target.ISAXIS != relation.ISAXIS && !(nodeAxis.HasValue && nodeAxis.Value == target.ISAXIS))
                     {
                         result.Errors.Add("'" + target.NAME + "' is " + (target.ISAXIS ? "an axis" : "a button") + " relation; " + node + " stays.");
                         continue;
@@ -504,8 +568,51 @@ namespace JoyPro.Engine
             return result;
         }
 
-        // Entries that look wrong: the function catalog files the command under another function (in that aircraft), or
-        // its title is the opposite direction of the relation (an old auto-fill swapped "+" and "-", "Up" and "Down").
+        // The relation's switched-on commands that do not belong to what it is:
+        //   kind     - a button in an axis relation or an axis in a button relation (the relation's kind decides);
+        //   function - the catalog files it under another function that no other node of the relation shares, while
+        //              the relation has a function of its own (its name, or most of its actions).
+        // A function several nodes share (two functions on purpose, the user's style) is no outlier.
+        private static HashSet<Command> Outliers(Relation relation, Context context, EngineAutoGroup.Slot slot, List<Command> mine)
+        {
+            HashSet<Command> outliers = new HashSet<Command>();
+            Dictionary<string, HashSet<string>> nodesBySlot = new Dictionary<string, HashSet<string>>(StringComparer.OrdinalIgnoreCase);
+            HashSet<string> nodes = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+            foreach (Command command in mine)
+            {
+                string node = command.Game + "|" + command.Id;
+                nodes.Add(node);
+                foreach (string s in context.SlotsOfCommand(command.Game, command.Id, command.Plane))
+                {
+                    HashSet<string> set;
+                    if (!nodesBySlot.TryGetValue(s, out set))
+                        nodesBySlot[s] = set = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+                    set.Add(node);
+                }
+            }
+            int support = Math.Max(2, (int)Math.Ceiling(nodes.Count * 0.25));
+            foreach (Command command in mine)
+            {
+                if (command.IsAxis != relation.ISAXIS)
+                {
+                    outliers.Add(command);
+                    continue;
+                }
+                if (slot == null)
+                    continue;
+                List<string> slots = context.SlotsOfCommand(command.Game, command.Id, command.Plane);
+                if (slots.Count == 0 || slots.Contains(slot.Id, StringComparer.OrdinalIgnoreCase) || context.IsSubstitute(slot.Id, command.Game, command.Id, command.Plane))
+                    continue;
+                if (slots.Any(s => nodesBySlot.ContainsKey(s) && nodesBySlot[s].Count >= support))
+                    continue;
+                outliers.Add(command);
+            }
+            return outliers;
+        }
+
+        // Entries that look wrong: a button in an axis relation (or an axis in a button relation), the function catalog
+        // files the command under another function (in that aircraft), or its title is the opposite direction of the
+        // relation (an old auto-fill swapped "+" and "-", "Up" and "Down").
         private static List<EngineRelationMisfit> Misfits(Relation relation, Context context, EngineAutoGroup.Slot slot)
         {
             Dictionary<string, EngineRelationMisfit> misfits = new Dictionary<string, EngineRelationMisfit>(StringComparer.OrdinalIgnoreCase);
@@ -525,7 +632,15 @@ namespace JoyPro.Engine
                     List<string> other = context.SlotsOfCommand(game, node.ID, plane);
                     // A catalog substitute for this function (the user's style: a free slot filled on purpose) is fine.
                     bool knownHere = slot != null && (other.Contains(slot.Id, StringComparer.OrdinalIgnoreCase) || context.IsSubstitute(slot.Id, game, node.ID, plane));
-                    if (slot != null && other.Count > 0 && !knownHere)
+                    bool otherKind = command != null && command.IsAxis != relation.ISAXIS;
+                    if (otherKind)
+                    {
+                        EngineAutoGroup.Slot real;
+                        belongs = other.Count > 0 ? (context.Slots.TryGetValue(other[0], out real) ? real.Name : other[0]) : string.Empty;
+                        reason = "'" + title + "' is " + (command.IsAxis ? "an axis" : "a button") + (game == "DCS" ? " in " + plane : string.Empty) + "; '" + relationText + "' is " +
+                                 (relation.ISAXIS ? "an axis" : "a button") + " relation.";
+                    }
+                    else if (slot != null && other.Count > 0 && !knownHere)
                     {
                         EngineAutoGroup.Slot real;
                         belongs = context.Slots.TryGetValue(other[0], out real) ? real.Name : other[0];
@@ -537,12 +652,12 @@ namespace JoyPro.Engine
                     }
                     if (reason.Length == 0)
                         continue;
-                    string key = game + "|" + node.ID + "|" + belongs;
+                    string key = game + "|" + node.ID + "|" + belongs + (otherKind ? "|kind" : string.Empty);
                     EngineRelationMisfit misfit;
                     if (!misfits.TryGetValue(key, out misfit))
                     {
-                        misfit = new EngineRelationMisfit { Game = game, Id = node.ID, Title = title, Reason = reason, BelongsTo = belongs };
-                        misfit.MoveTo = belongs.Length > 0 ? context.RelationForFunction(belongs, relation.ISAXIS, relation.NAME) : string.Empty;
+                        misfit = new EngineRelationMisfit { Game = game, Id = node.ID, Title = title, Reason = reason, BelongsTo = belongs, OtherKind = otherKind };
+                        misfit.MoveTo = belongs.Length > 0 ? context.RelationForFunction(belongs, otherKind ? command.IsAxis : relation.ISAXIS, relation.NAME) : string.Empty;
                         misfits[key] = misfit;
                     }
                     if (!misfit.Planes.Contains(plane))
@@ -550,7 +665,12 @@ namespace JoyPro.Engine
                 }
             }
             foreach (EngineRelationMisfit misfit in misfits.Values.Where(m => m.Planes.Count > 1 && m.Game == "DCS"))
-                misfit.Reason = Regex.Replace(misfit.Reason, @" in [^,]+, not '", " in " + string.Join(", ", misfit.Planes.Take(4)) + (misfit.Planes.Count > 4 ? " ..." : string.Empty) + ", not '");
+            {
+                string planes = " in " + string.Join(", ", misfit.Planes.Take(4)) + (misfit.Planes.Count > 4 ? " ..." : string.Empty);
+                misfit.Reason = misfit.OtherKind
+                    ? Regex.Replace(misfit.Reason, @" in [^;]+; '", planes + "; '")
+                    : Regex.Replace(misfit.Reason, @" in [^,]+, not '", planes + ", not '");
+            }
             return misfits.Values.ToList();
         }
 
@@ -600,6 +720,11 @@ namespace JoyPro.Engine
 
             EngineAutoGroup.Slot slot = context.SlotOf(relation);
             context.LastSlot = slot;
+            // Outliers (a button in an axis relation, a lone action of another function) say nothing about what the
+            // relation is: they seed no suggestion and show under "Looks wrong" instead (Misfits).
+            HashSet<Command> outliers = Outliers(relation, context, slot, mine);
+            if (outliers.Count > 0 && outliers.Count < mine.Count)
+                mine = mine.Where(c => !outliers.Contains(c)).ToList();
             List<Meaning> meanings = context.MeaningsOf(relation, slot, mine);
             context.LastMeanings = meanings;
             Func<string, string, bool> allowed = context.PlaneFilter(relation, slot, mine);
@@ -1387,7 +1512,12 @@ namespace JoyPro.Engine
                 {
                     sb.AppendLine("  - [" + s.Confidence + "] " + s.Game + ":" + s.Id + ":" + string.Join("|", s.Planes) + " | " + s.Title +
                                   (s.InOtherRelations.Count > 0 ? " | in " + string.Join(", ", s.InOtherRelations) : string.Empty) +
-                                  (s.MeaningNote.Length > 0 ? " | " + s.MeaningNote : string.Empty));
+                                  (s.MeaningNote.Length > 0 ? " | " + s.MeaningNote : string.Empty) +
+                                  (s.Recommended ? " | recommended" + (s.RecommendedFor.Length > 0 ? " " + s.RecommendedFor : string.Empty) +
+                                                   (s.Alternatives > 0 ? " (+" + s.Alternatives.ToString(CultureInfo.InvariantCulture) + " other)" : string.Empty)
+                                      : s.Variant.Length > 0 ? " | variant: " + s.Variant : string.Empty));
+                    if (s.Explanation.Length > 0)
+                        sb.AppendLine("      What it does (" + s.ExplanationSource + "): " + s.Explanation);
                     foreach (string reason in s.Reasons.Take(3))
                         sb.AppendLine("      " + reason);
                 }
@@ -1427,10 +1557,24 @@ namespace JoyPro.Engine
         public string Missing { get; set; }
         public bool NewGame { get; set; }
         public List<string> NewPlanes { get; set; }
+        // EngineActionChoice / EngineActionInfo (docs/relation-builder.md "Recommended action"): the one action to take
+        // in its game (DCS: aircraft) and family, "for helicopters" when a game has one of each, an alternative's one-line
+        // difference, the key of the recommended row it falls under ("game:id:planes"), how many alternatives a
+        // recommended row has; the readable name, the function in words and what the action does (with its source).
+        public bool Recommended { get; set; }
+        public string RecommendedFor { get; set; }
+        public string Variant { get; set; }
+        public string Group { get; set; }
+        public int Alternatives { get; set; }
+        public string Readable { get; set; }
+        public string FunctionName { get; set; }
+        public string Explanation { get; set; }
+        public string ExplanationSource { get; set; }
 
         public EngineRelationSuggestion()
         {
             Game = Id = Title = Category = Confidence = Source = Why = Function = MeaningNote = Missing = string.Empty;
+            RecommendedFor = Variant = Group = Readable = FunctionName = Explanation = ExplanationSource = string.Empty;
             Planes = new List<string>();
             NewPlanes = new List<string>();
             Reasons = new List<string>();
@@ -1508,6 +1652,8 @@ namespace JoyPro.Engine
         public string Reason { get; set; }
         public string BelongsTo { get; set; }
         public string MoveTo { get; set; }
+        // A button in an axis relation (or the other way round): MoveTo is a relation of the action's own kind.
+        public bool OtherKind { get; set; }
 
         public EngineRelationMisfit()
         {

@@ -341,7 +341,7 @@ namespace JoyPro.CockpitPictures
                 if (enc.Count > 0 && job.Only.Count == 0)
                 {
                     Directory.CreateDirectory(job.OutRoot);
-                    File.WriteAllLines(Path.Combine(job.OutRoot, "encrypted-entries.txt"), new[] { "Encrypted entries of Data.p4k the cockpit pictures would have used (not read):" }.Concat(enc));
+                    File.WriteAllLines(Path.Combine(job.OutRoot, "unread-entries.txt"), new[] { "Entries of Data.p4k the cockpit pictures would have used but did not read (stored encrypted):" }.Concat(enc));
                 }
             }
             catch (Exception)

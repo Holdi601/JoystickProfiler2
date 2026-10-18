@@ -1,0 +1,83 @@
+{
+ "model": "winwing-navyace-joystick-grip",
+ "view": "main",
+ "class": "stick",
+ "width": 1100,
+ "height": 860,
+ "source": "JoyPro drawing of the F/A-18C grip the device replicates, made from DCS World's F/A-18C cockpit model (seen from behind and from the left)",
+ "mappingSource": "WinWing J2-ORION joystick base manual section 2.2 grip drawing (p.2): 1 trim hat, 7 weapon release, 2-6 castle, 8/18-21 hat right of the castle, 11-15 weapon select hat, 9/10 trigger, 16 side button (right side, low), 17 paddle; JOY_Z from the optional Z-axis kit",
+ "confidence": "high",
+ "include": [
+  {
+   "file": "dcs-fa18c-stick-back.json",
+   "dx": 100,
+   "dy": 30,
+   "scale": 1.0,
+   "map": {
+    "c02": "stick.hat.trim",
+    "c03": {
+     "part": "stick.hat.cms",
+     "glyph": "hat4",
+     "size": 13,
+     "press": true
+    },
+    "c04": "stick.weapon_release",
+    "c06": {
+     "part": "stick.hat.1",
+     "glyph": "hat4",
+     "size": 11,
+     "press": true
+    },
+    "c08": {
+     "part": "stick.hat.dms",
+     "glyph": "hat4",
+     "size": 14,
+     "press": true
+    }
+   }
+  },
+  {
+   "file": "dcs-fa18c-stick-side.json",
+   "dx": 560,
+   "dy": 30,
+   "scale": 1.0,
+   "map": {
+    "c04": "stick.trigger",
+    "c06": "stick.pinky.lever"
+   }
+  }
+ ],
+ "shapes": [],
+ "controls": [
+  {
+   "part": "stick.pinky.button",
+   "glyph": "button",
+   "at": [
+    372,
+    520
+   ],
+   "size": 13,
+   "anchor3d": 0
+  },
+  {
+   "part": "stick.axis.twist",
+   "glyph": "twist",
+   "at": [
+    290,
+    690
+   ],
+   "size": 30,
+   "anchor3d": 0
+  },
+  {
+   "part": "stick.gimbal",
+   "glyph": "gimbal",
+   "at": [
+    800,
+    790
+   ],
+   "size": 40
+  }
+ ],
+ "turntableKeepTop": 0.3
+}

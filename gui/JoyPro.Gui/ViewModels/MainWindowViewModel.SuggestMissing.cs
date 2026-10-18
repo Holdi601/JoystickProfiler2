@@ -36,9 +36,40 @@ public sealed partial class MainWindowViewModel
     private void RebuildBuilderSuggestionSections()
     {
         BuilderSuggestionSections.Clear();
-        static IEnumerable<BuilderSuggestionItem> Ordered(IEnumerable<BuilderSuggestionItem> items) =>
-            items.OrderByDescending(s => s.IsHigh ? 2 : s.IsMedium ? 1 : 0).ThenByDescending(s => s.Score).ThenBy(s => s.GameLabel, StringComparer.OrdinalIgnoreCase)
-                .ThenBy(s => s.Title, StringComparer.OrdinalIgnoreCase);
+        // The recommended action of each game first; its alternatives right under it (collapsed: "+2 other actions").
+        static IEnumerable<BuilderSuggestionItem> Ordered(IEnumerable<BuilderSuggestionItem> source)
+        {
+            List<BuilderSuggestionItem> items = source.ToList();
+            Dictionary<string, BuilderSuggestionItem> heads = items.Where(s => s.IsRecommended).GroupBy(s => s.NodeSpec, StringComparer.Ordinal)
+                .ToDictionary(g => g.Key, g => g.First(), StringComparer.Ordinal);
+            foreach (BuilderSuggestionItem item in items)
+            {
+                item.AlternativeItems.Clear();
+                item.IsAlternative = false;
+            }
+            foreach (BuilderSuggestionItem item in items.Where(s => !s.IsRecommended && s.Group.Length > 0))
+            {
+                if (heads.TryGetValue(item.Group, out BuilderSuggestionItem? head) && head != item)
+                {
+                    head.AlternativeItems.Add(item);
+                    item.IsAlternative = true;
+                }
+            }
+            foreach (BuilderSuggestionItem item in items)
+            {
+                item.IsShown = !item.IsAlternative || heads[item.Group].IsExpanded;
+                item.RefreshAlternatives();
+            }
+            static IOrderedEnumerable<BuilderSuggestionItem> Rank(IEnumerable<BuilderSuggestionItem> list) =>
+                list.OrderByDescending(s => s.IsRecommended).ThenByDescending(s => s.IsHigh ? 2 : s.IsMedium ? 1 : 0).ThenByDescending(s => s.Score)
+                    .ThenBy(s => s.GameLabel, StringComparer.OrdinalIgnoreCase).ThenBy(s => s.DisplayTitle, StringComparer.OrdinalIgnoreCase);
+            foreach (BuilderSuggestionItem item in Rank(items.Where(s => !s.IsAlternative)))
+            {
+                yield return item;
+                foreach (BuilderSuggestionItem alternative in Rank(item.AlternativeItems))
+                    yield return alternative;
+            }
+        }
         List<BuilderSuggestionItem> newGames = Ordered(BuilderSuggestions.Where(s => s.IsNewGame && !s.HasConflict)).ToList();
         List<BuilderSuggestionItem> newAircraft = Ordered(BuilderSuggestions.Where(s => s.IsNewAircraft && !s.HasConflict)).ToList();
         List<BuilderSuggestionItem> elsewhere = Ordered(BuilderSuggestions.Where(s => s.HasConflict)).ToList();

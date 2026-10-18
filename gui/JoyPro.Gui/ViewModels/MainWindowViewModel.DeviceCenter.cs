@@ -157,6 +157,8 @@ public sealed partial class MainWindowViewModel
         RebuildDashboard();
         // The Binds page's hand pick lists the device cards.
         RebuildBindPickOptions();
+        // The 3D views of the connected devices (downloaded packs, not shipped): in the background.
+        _ = CheckDevice3DAsync(DeviceCards.Where(c => c.Connected).Select(c => c.ModelId).ToList());
         await LoadDeviceCardPicturesAsync(set.Pictures);
     }
 

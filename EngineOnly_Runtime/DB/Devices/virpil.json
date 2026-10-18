@@ -1262,7 +1262,11 @@
       "kind": "stick",
       "hand": "left",
       "base": "virpil-warbrd-base",
-      "fitsBases": ["virpil-warbrd-d-base", "virpil-mongoost-50cm3-base", "virpil-mongoost-50cm2-base"],
+      "fitsBases": [
+        "virpil-warbrd-d-base",
+        "virpil-mongoost-50cm3-base",
+        "virpil-mongoost-50cm2-base"
+      ],
       "identify": {
         "vidPids": [
           "3344:80CB",
@@ -1285,12 +1289,12 @@
         {
           "input": "JOY_RX",
           "control": "stick.axis.ministick.x",
-          "label": "Mini-stick X"
+          "label": "Mini-stick"
         },
         {
           "input": "JOY_RY",
           "control": "stick.axis.ministick.y",
-          "label": "Mini-stick Y"
+          "label": "Mini-stick"
         },
         {
           "input": "JOY_Z",
@@ -1336,19 +1340,22 @@
           "input": "JOY_BTN5",
           "control": "stick.ministick.press",
           "finger": "thumb",
-          "type": "momentary"
+          "type": "momentary",
+          "label": "Mini-stick"
         },
         {
           "input": "JOY_BTN6",
           "control": "stick.button.thumb.1",
           "finger": "thumb",
-          "type": "momentary"
+          "type": "momentary",
+          "label": "Red button"
         },
         {
           "input": "JOY_BTN17",
           "control": "stick.button.thumb.2",
           "finger": "thumb",
-          "type": "momentary"
+          "type": "momentary",
+          "label": "Face button (lower left)"
         },
         {
           "input": "JOY_BTN7",
@@ -4963,27 +4970,494 @@
     },
     {
       "id": "virpil-mongoost-50cm2-throttle",
-      "name": "Virpil VPC MongoosT-50CM2 Throttle (MT-50CM2 / MT-50 CM)",
+      "name": "Virpil VPC MongoosT-50CM2 Throttle (MT-50CM2)",
       "kind": "throttle",
       "hand": "left",
       "identify": {
         "vidPids": [
-          "3344:8195",
-          "03EB:2054"
+          "3344:8195"
         ],
         "names": [
           "LEFT VPC Throttle MT-50CM2",
-          "LEFT VPC Throttle MT-50 CM",
           "VPC Throttle MT-50CM2"
         ],
-        "note": "3344:8195 = VPC-MongoosT-50CM2-Throttle (EDRefCard). The user's LEFT VPC Throttle MT-50 CM reports old Atmel VID 03EB:2054 (assumed same layout family as the CM2 sheet, unverified). The official sheet defines buttons 1-64 (60-64 = MODE selector positions, 42-47 = B1-B6 keypad, plus shift layers) but the small photo sheet could not be reliably matched to physical controls, so generic numbers are given."
+        "note": "3344:8195 = VPC-MongoosT-50CM2-Throttle (EDRefCard). Inputs from Virpil's official button mapping template 'VPC MongoosT-50 CM2 Throttle' (support.virpil.com article 47001285237, Configurator 2.0 factory layout): buttons 1-64 (60-64 = MODE positions); 65-83 only in the 5-way shift mode. The first MT-50 CM throttle (Atmel 03EB:2054) is its own model (virpil-mongoost-50cm-throttle)."
       },
       "productUrl": "https://support.virpil.com/en/support/solutions/articles/47001285237-vpc-mongoost-50-cm2-throttle",
       "sources": [
         "https://support.virpil.com/en/support/solutions/articles/47001285237-vpc-mongoost-50-cm2-throttle",
         "https://www.edrefcard.info/devices"
       ],
-      "confidence": "low",
+      "confidence": "high",
+      "axes": [
+        {
+          "input": "JOY_X",
+          "control": "throttle.axis.left",
+          "label": "Left throttle lever"
+        },
+        {
+          "input": "JOY_Y",
+          "control": "throttle.axis.right",
+          "label": "Right throttle lever"
+        },
+        {
+          "input": "JOY_Z",
+          "control": "throttle.axis.flaps",
+          "label": "FLAPS lever (base)"
+        },
+        {
+          "input": "JOY_RX",
+          "control": "throttle.axis.ministick.x",
+          "label": "Mini-stick"
+        },
+        {
+          "input": "JOY_RY",
+          "control": "throttle.axis.ministick.y",
+          "label": "Mini-stick"
+        },
+        {
+          "input": "JOY_RZ",
+          "control": "throttle.axis.slider.1",
+          "label": "Slider (front of the handle)"
+        }
+      ],
+      "controls": [
+        {
+          "input": "JOY_BTN1",
+          "control": "throttle.encoder.1.press",
+          "label": "Left-end knob",
+          "type": "momentary"
+        },
+        {
+          "input": "JOY_BTN3",
+          "control": "throttle.encoder.1.cw",
+          "label": "Left-end knob",
+          "type": "momentary"
+        },
+        {
+          "input": "JOY_BTN2",
+          "control": "throttle.encoder.1.ccw",
+          "label": "Left-end knob",
+          "type": "momentary"
+        },
+        {
+          "input": "JOY_BTN4",
+          "control": "throttle.button.1",
+          "label": "Front button (next to the wheel)",
+          "finger": "index",
+          "type": "momentary"
+        },
+        {
+          "input": "JOY_BTN6",
+          "control": "throttle.hat.5.up",
+          "label": "Front wheel",
+          "finger": "index",
+          "type": "momentary"
+        },
+        {
+          "input": "JOY_BTN5",
+          "control": "throttle.hat.5.press",
+          "label": "Front wheel",
+          "finger": "index",
+          "type": "momentary"
+        },
+        {
+          "input": "JOY_BTN7",
+          "control": "throttle.hat.5.down",
+          "label": "Front wheel",
+          "finger": "index",
+          "type": "momentary"
+        },
+        {
+          "input": "JOY_BTN8",
+          "control": "throttle.hat.4.press",
+          "label": "Front hat",
+          "finger": "index",
+          "type": "momentary"
+        },
+        {
+          "input": "JOY_BTN9",
+          "control": "throttle.hat.4.up",
+          "label": "Front hat",
+          "finger": "index",
+          "type": "momentary"
+        },
+        {
+          "input": "JOY_BTN10",
+          "control": "throttle.hat.4.right",
+          "label": "Front hat",
+          "finger": "index",
+          "type": "momentary"
+        },
+        {
+          "input": "JOY_BTN11",
+          "control": "throttle.hat.4.down",
+          "label": "Front hat",
+          "finger": "index",
+          "type": "momentary"
+        },
+        {
+          "input": "JOY_BTN12",
+          "control": "throttle.hat.4.left",
+          "label": "Front hat",
+          "finger": "index",
+          "type": "momentary"
+        },
+        {
+          "input": "JOY_BTN13",
+          "control": "throttle.ministick.press",
+          "label": "Mini-stick",
+          "finger": "index",
+          "type": "momentary"
+        },
+        {
+          "input": "JOY_BTN15",
+          "control": "throttle.encoder.2.cw",
+          "label": "Right-end knob, turn",
+          "finger": "thumb",
+          "type": "momentary"
+        },
+        {
+          "input": "JOY_BTN14",
+          "control": "throttle.encoder.2.ccw",
+          "label": "Right-end knob, turn",
+          "finger": "thumb",
+          "type": "momentary"
+        },
+        {
+          "input": "JOY_BTN16",
+          "control": "throttle.hat.1.press",
+          "label": "Right-end knob, hat",
+          "finger": "thumb",
+          "type": "momentary"
+        },
+        {
+          "input": "JOY_BTN17",
+          "control": "throttle.hat.1.up",
+          "label": "Right-end knob, hat",
+          "finger": "thumb",
+          "type": "momentary"
+        },
+        {
+          "input": "JOY_BTN18",
+          "control": "throttle.hat.1.right",
+          "label": "Right-end knob, hat",
+          "finger": "thumb",
+          "type": "momentary"
+        },
+        {
+          "input": "JOY_BTN19",
+          "control": "throttle.hat.1.down",
+          "label": "Right-end knob, hat",
+          "finger": "thumb",
+          "type": "momentary"
+        },
+        {
+          "input": "JOY_BTN20",
+          "control": "throttle.hat.1.left",
+          "label": "Right-end knob, hat",
+          "finger": "thumb",
+          "type": "momentary"
+        },
+        {
+          "input": "JOY_BTN21",
+          "control": "throttle.button.2",
+          "label": "End button (right end, lower)",
+          "finger": "thumb",
+          "type": "momentary"
+        },
+        {
+          "input": "JOY_BTN22",
+          "control": "throttle.hat.2.press",
+          "label": "Upper thumb hat",
+          "finger": "thumb",
+          "type": "momentary"
+        },
+        {
+          "input": "JOY_BTN23",
+          "control": "throttle.hat.2.up",
+          "label": "Upper thumb hat",
+          "finger": "thumb",
+          "type": "momentary"
+        },
+        {
+          "input": "JOY_BTN24",
+          "control": "throttle.hat.2.right",
+          "label": "Upper thumb hat",
+          "finger": "thumb",
+          "type": "momentary"
+        },
+        {
+          "input": "JOY_BTN25",
+          "control": "throttle.hat.2.down",
+          "label": "Upper thumb hat",
+          "finger": "thumb",
+          "type": "momentary"
+        },
+        {
+          "input": "JOY_BTN26",
+          "control": "throttle.hat.2.left",
+          "label": "Upper thumb hat",
+          "finger": "thumb",
+          "type": "momentary"
+        },
+        {
+          "input": "JOY_BTN27",
+          "control": "throttle.hat.3.press",
+          "label": "Lower thumb hat",
+          "finger": "thumb",
+          "type": "momentary"
+        },
+        {
+          "input": "JOY_BTN28",
+          "control": "throttle.hat.3.up",
+          "label": "Lower thumb hat",
+          "finger": "thumb",
+          "type": "momentary"
+        },
+        {
+          "input": "JOY_BTN29",
+          "control": "throttle.hat.3.right",
+          "label": "Lower thumb hat",
+          "finger": "thumb",
+          "type": "momentary"
+        },
+        {
+          "input": "JOY_BTN30",
+          "control": "throttle.hat.3.down",
+          "label": "Lower thumb hat",
+          "finger": "thumb",
+          "type": "momentary"
+        },
+        {
+          "input": "JOY_BTN31",
+          "control": "throttle.hat.3.left",
+          "label": "Lower thumb hat",
+          "finger": "thumb",
+          "type": "momentary"
+        },
+        {
+          "input": "JOY_BTN32",
+          "control": "throttle.button.3",
+          "label": "Thumb button (left of the hats)",
+          "finger": "thumb",
+          "type": "momentary"
+        },
+        {
+          "input": "JOY_BTN33",
+          "control": "throttle.pinky.button",
+          "label": "Button under the handle",
+          "type": "momentary"
+        },
+        {
+          "input": "JOY_BTN34",
+          "control": "throttle.base.toggle.1.up",
+          "label": "T1",
+          "type": "momentary"
+        },
+        {
+          "input": "JOY_BTN35",
+          "control": "throttle.base.toggle.1.down",
+          "label": "T1",
+          "type": "momentary"
+        },
+        {
+          "input": "JOY_BTN36",
+          "control": "throttle.base.toggle.2.up",
+          "label": "T2",
+          "type": "momentary"
+        },
+        {
+          "input": "JOY_BTN37",
+          "control": "throttle.base.toggle.2.down",
+          "label": "T2",
+          "type": "momentary"
+        },
+        {
+          "input": "JOY_BTN38",
+          "control": "throttle.base.toggle.3.up",
+          "label": "T3",
+          "type": "momentary"
+        },
+        {
+          "input": "JOY_BTN39",
+          "control": "throttle.base.toggle.3.down",
+          "label": "T3",
+          "type": "momentary"
+        },
+        {
+          "input": "JOY_BTN40",
+          "control": "throttle.base.toggle.4.up",
+          "label": "T4",
+          "type": "momentary"
+        },
+        {
+          "input": "JOY_BTN41",
+          "control": "throttle.base.toggle.4.down",
+          "label": "T4",
+          "type": "momentary"
+        },
+        {
+          "input": "JOY_BTN42",
+          "control": "throttle.base.button.1",
+          "label": "B1",
+          "type": "momentary"
+        },
+        {
+          "input": "JOY_BTN43",
+          "control": "throttle.base.button.2",
+          "label": "B2",
+          "type": "momentary"
+        },
+        {
+          "input": "JOY_BTN44",
+          "control": "throttle.base.button.3",
+          "label": "B3",
+          "type": "momentary"
+        },
+        {
+          "input": "JOY_BTN45",
+          "control": "throttle.base.button.4",
+          "label": "B4",
+          "type": "momentary"
+        },
+        {
+          "input": "JOY_BTN46",
+          "control": "throttle.base.button.5",
+          "label": "B5",
+          "type": "momentary"
+        },
+        {
+          "input": "JOY_BTN47",
+          "control": "throttle.base.button.6",
+          "label": "B6",
+          "type": "momentary"
+        },
+        {
+          "input": "JOY_BTN48",
+          "control": "throttle.base.toggle.5.up",
+          "label": "T5",
+          "type": "latched"
+        },
+        {
+          "input": "JOY_BTN49",
+          "control": "throttle.base.toggle.5.down",
+          "label": "T5",
+          "type": "latched"
+        },
+        {
+          "input": "JOY_BTN50",
+          "control": "throttle.base.toggle.6.up",
+          "label": "T6",
+          "type": "latched"
+        },
+        {
+          "input": "JOY_BTN51",
+          "control": "throttle.base.toggle.6.down",
+          "label": "T6",
+          "type": "latched"
+        },
+        {
+          "input": "JOY_BTN52",
+          "control": "throttle.base.toggle.7.up",
+          "label": "T7",
+          "type": "latched"
+        },
+        {
+          "input": "JOY_BTN53",
+          "control": "throttle.base.toggle.7.down",
+          "label": "T7",
+          "type": "latched"
+        },
+        {
+          "input": "JOY_BTN54",
+          "control": "throttle.base.encoder.1.press",
+          "label": "E1",
+          "type": "momentary"
+        },
+        {
+          "input": "JOY_BTN56",
+          "control": "throttle.base.encoder.1.cw",
+          "label": "E1",
+          "type": "momentary"
+        },
+        {
+          "input": "JOY_BTN55",
+          "control": "throttle.base.encoder.1.ccw",
+          "label": "E1",
+          "type": "momentary"
+        },
+        {
+          "input": "JOY_BTN57",
+          "control": "throttle.base.encoder.2.press",
+          "label": "E2",
+          "type": "momentary"
+        },
+        {
+          "input": "JOY_BTN59",
+          "control": "throttle.base.encoder.2.cw",
+          "label": "E2",
+          "type": "momentary"
+        },
+        {
+          "input": "JOY_BTN58",
+          "control": "throttle.base.encoder.2.ccw",
+          "label": "E2",
+          "type": "momentary"
+        },
+        {
+          "input": "JOY_BTN60",
+          "control": "throttle.base.selector.1.pos.1",
+          "label": "MODE 1",
+          "type": "latched"
+        },
+        {
+          "input": "JOY_BTN61",
+          "control": "throttle.base.selector.1.pos.2",
+          "label": "MODE 2",
+          "type": "latched"
+        },
+        {
+          "input": "JOY_BTN62",
+          "control": "throttle.base.selector.1.pos.3",
+          "label": "MODE 3",
+          "type": "latched"
+        },
+        {
+          "input": "JOY_BTN63",
+          "control": "throttle.base.selector.1.pos.4",
+          "label": "MODE 4",
+          "type": "latched"
+        },
+        {
+          "input": "JOY_BTN64",
+          "control": "throttle.base.selector.1.pos.5",
+          "label": "MODE 5",
+          "type": "latched"
+        }
+      ],
+      "note": "Handle buttons 1-33, base 34-64 as on the official template; the first MT-50 CM (03EB:2054) has another base and numbering (virpil-mongoost-50cm-throttle)."
+    },
+    {
+      "id": "virpil-mongoost-50cm-throttle",
+      "name": "Virpil VPC MongoosT-50CM Throttle (first CM, MT-50 CM)",
+      "kind": "throttle",
+      "hand": "left",
+      "identify": {
+        "vidPids": [
+          "03EB:2054"
+        ],
+        "names": [
+          "LEFT VPC Throttle MT-50 CM",
+          "VPC Throttle MT-50 CM"
+        ],
+        "note": "03EB:2054 (Atmel VID of Virpil's first firmware) read from a real MT-50 CM throttle: 94 buttons, 8 axes. The handle is the MT-50 handle of the CM2/CM3; the base is the first CM base (B1-B8 keypad, three toggles, two rotary knobs, E1-E3 encoders, MODE switch, the guarded switch, T1-T3, the yellow-red button, FLAPS lever). Input numbers read from that throttle's VPC Configurator layout with the owner's own button sheet; no Virpil template of the first CM layout is published any more. Buttons 62-77 of that profile are axis zones and lever detents set up in the configurator (not listed)."
+      },
+      "productUrl": "https://virpil-controls.eu/",
+      "sources": [
+        "a real MT-50 CM throttle (03EB:2054) and its owner's button sheet"
+      ],
+      "confidence": "medium",
       "axes": [
         {
           "input": "JOY_RX",
@@ -4998,348 +5472,467 @@
         {
           "input": "JOY_X",
           "control": "throttle.axis.ministick.x",
-          "label": "Thumb stick X"
+          "label": "Mini-stick"
         },
         {
           "input": "JOY_Y",
           "control": "throttle.axis.ministick.y",
-          "label": "Thumb stick Y"
+          "label": "Mini-stick"
         },
         {
           "input": "JOY_Z",
           "control": "throttle.axis.slider.1",
-          "label": "Slider / rotary"
+          "label": "Slider (front of the handle)"
         },
         {
           "input": "JOY_RZ",
+          "control": "throttle.axis.flaps",
+          "label": "FLAPS lever (base)"
+        },
+        {
+          "input": "JOY_SLIDER2",
           "control": "throttle.axis.rotary.1",
-          "label": "Rotary"
+          "label": "Left rotary knob (base)"
+        },
+        {
+          "input": "JOY_SLIDER1",
+          "control": "throttle.axis.rotary.2",
+          "label": "Right rotary knob (base)"
         }
       ],
       "controls": [
         {
-          "input": "JOY_BTN13",
-          "control": "throttle.ministick.press",
-          "finger": "thumb",
-          "type": "momentary"
-        },
-        {
           "input": "JOY_BTN1",
-          "control": "throttle.button.1",
+          "control": "throttle.ministick.press",
+          "label": "Mini-stick",
+          "finger": "index",
           "type": "momentary"
         },
         {
           "input": "JOY_BTN2",
-          "control": "throttle.button.2",
-          "type": "momentary"
-        },
-        {
-          "input": "JOY_BTN3",
-          "control": "throttle.button.3",
+          "control": "throttle.button.1",
+          "label": "Front button (next to the wheel)",
+          "finger": "index",
           "type": "momentary"
         },
         {
           "input": "JOY_BTN4",
-          "control": "throttle.button.4",
+          "control": "throttle.hat.5.up",
+          "label": "Front wheel",
+          "finger": "index",
+          "type": "momentary"
+        },
+        {
+          "input": "JOY_BTN3",
+          "control": "throttle.hat.5.press",
+          "label": "Front wheel",
+          "finger": "index",
           "type": "momentary"
         },
         {
           "input": "JOY_BTN5",
-          "control": "throttle.button.5",
+          "control": "throttle.hat.5.down",
+          "label": "Front wheel",
+          "finger": "index",
           "type": "momentary"
         },
         {
           "input": "JOY_BTN6",
-          "control": "throttle.button.6",
+          "control": "throttle.hat.4.press",
+          "label": "Front hat",
+          "finger": "index",
           "type": "momentary"
         },
         {
           "input": "JOY_BTN7",
-          "control": "throttle.button.7",
-          "type": "momentary"
-        },
-        {
-          "input": "JOY_BTN8",
-          "control": "throttle.button.8",
-          "type": "momentary"
-        },
-        {
-          "input": "JOY_BTN9",
-          "control": "throttle.button.9",
+          "control": "throttle.hat.4.up",
+          "label": "Front hat",
+          "finger": "index",
           "type": "momentary"
         },
         {
           "input": "JOY_BTN10",
-          "control": "throttle.button.10",
+          "control": "throttle.hat.4.right",
+          "label": "Front hat",
+          "finger": "index",
           "type": "momentary"
         },
         {
-          "input": "JOY_BTN11",
-          "control": "throttle.button.11",
+          "input": "JOY_BTN9",
+          "control": "throttle.hat.4.down",
+          "label": "Front hat",
+          "finger": "index",
           "type": "momentary"
         },
         {
-          "input": "JOY_BTN12",
-          "control": "throttle.button.12",
+          "input": "JOY_BTN8",
+          "control": "throttle.hat.4.left",
+          "label": "Front hat",
+          "finger": "index",
           "type": "momentary"
         },
         {
-          "input": "JOY_BTN14",
-          "control": "throttle.base.button.14",
-          "type": "momentary"
-        },
-        {
-          "input": "JOY_BTN15",
-          "control": "throttle.base.button.15",
+          "input": "JOY_BTN13",
+          "control": "throttle.hat.1.press",
+          "label": "Right-end knob, hat",
+          "finger": "thumb",
           "type": "momentary"
         },
         {
           "input": "JOY_BTN16",
-          "control": "throttle.base.button.16",
+          "control": "throttle.hat.1.up",
+          "label": "Right-end knob, hat",
+          "finger": "thumb",
           "type": "momentary"
         },
         {
           "input": "JOY_BTN17",
-          "control": "throttle.base.button.17",
+          "control": "throttle.hat.1.right",
+          "label": "Right-end knob, hat",
+          "finger": "thumb",
           "type": "momentary"
         },
         {
-          "input": "JOY_BTN18",
-          "control": "throttle.base.button.18",
+          "input": "JOY_BTN14",
+          "control": "throttle.hat.1.down",
+          "label": "Right-end knob, hat",
+          "finger": "thumb",
           "type": "momentary"
         },
         {
-          "input": "JOY_BTN19",
-          "control": "throttle.base.button.19",
-          "type": "momentary"
-        },
-        {
-          "input": "JOY_BTN20",
-          "control": "throttle.base.button.20",
-          "type": "momentary"
-        },
-        {
-          "input": "JOY_BTN21",
-          "control": "throttle.base.button.21",
-          "type": "momentary"
-        },
-        {
-          "input": "JOY_BTN22",
-          "control": "throttle.base.button.22",
-          "type": "momentary"
-        },
-        {
-          "input": "JOY_BTN23",
-          "control": "throttle.base.button.23",
-          "type": "momentary"
-        },
-        {
-          "input": "JOY_BTN24",
-          "control": "throttle.base.button.24",
-          "type": "momentary"
-        },
-        {
-          "input": "JOY_BTN25",
-          "control": "throttle.base.button.25",
-          "type": "momentary"
-        },
-        {
-          "input": "JOY_BTN26",
-          "control": "throttle.base.button.26",
-          "type": "momentary"
-        },
-        {
-          "input": "JOY_BTN27",
-          "control": "throttle.base.button.27",
-          "type": "momentary"
-        },
-        {
-          "input": "JOY_BTN28",
-          "control": "throttle.base.button.28",
-          "type": "momentary"
-        },
-        {
-          "input": "JOY_BTN29",
-          "control": "throttle.base.button.29",
-          "type": "momentary"
-        },
-        {
-          "input": "JOY_BTN30",
-          "control": "throttle.base.button.30",
-          "type": "momentary"
-        },
-        {
-          "input": "JOY_BTN31",
-          "control": "throttle.base.button.31",
-          "type": "momentary"
-        },
-        {
-          "input": "JOY_BTN32",
-          "control": "throttle.base.button.32",
-          "type": "momentary"
-        },
-        {
-          "input": "JOY_BTN33",
-          "control": "throttle.base.button.33",
-          "type": "momentary"
-        },
-        {
-          "input": "JOY_BTN34",
-          "control": "throttle.base.button.34",
-          "type": "momentary"
-        },
-        {
-          "input": "JOY_BTN35",
-          "control": "throttle.base.button.35",
-          "type": "momentary"
-        },
-        {
-          "input": "JOY_BTN36",
-          "control": "throttle.base.button.36",
-          "type": "momentary"
-        },
-        {
-          "input": "JOY_BTN37",
-          "control": "throttle.base.button.37",
-          "type": "momentary"
-        },
-        {
-          "input": "JOY_BTN38",
-          "control": "throttle.base.button.38",
-          "type": "momentary"
-        },
-        {
-          "input": "JOY_BTN39",
-          "control": "throttle.base.button.39",
-          "type": "momentary"
-        },
-        {
-          "input": "JOY_BTN40",
-          "control": "throttle.base.button.40",
-          "type": "momentary"
-        },
-        {
-          "input": "JOY_BTN41",
-          "control": "throttle.base.button.41",
-          "type": "momentary"
-        },
-        {
-          "input": "JOY_BTN42",
-          "control": "throttle.base.button.42",
-          "type": "momentary"
-        },
-        {
-          "input": "JOY_BTN43",
-          "control": "throttle.base.button.43",
-          "type": "momentary"
-        },
-        {
-          "input": "JOY_BTN44",
-          "control": "throttle.base.button.44",
-          "type": "momentary"
-        },
-        {
-          "input": "JOY_BTN45",
-          "control": "throttle.base.button.45",
-          "type": "momentary"
-        },
-        {
-          "input": "JOY_BTN46",
-          "control": "throttle.base.button.46",
-          "type": "momentary"
-        },
-        {
-          "input": "JOY_BTN47",
-          "control": "throttle.base.button.47",
-          "type": "momentary"
-        },
-        {
-          "input": "JOY_BTN48",
-          "control": "throttle.base.button.48",
-          "type": "momentary"
-        },
-        {
-          "input": "JOY_BTN49",
-          "control": "throttle.base.button.49",
-          "type": "momentary"
-        },
-        {
-          "input": "JOY_BTN50",
-          "control": "throttle.base.button.50",
+          "input": "JOY_BTN15",
+          "control": "throttle.hat.1.left",
+          "label": "Right-end knob, hat",
+          "finger": "thumb",
           "type": "momentary"
         },
         {
           "input": "JOY_BTN51",
-          "control": "throttle.base.button.51",
+          "control": "throttle.encoder.2.cw",
+          "label": "Right-end knob, turn",
+          "finger": "thumb",
           "type": "momentary"
         },
         {
           "input": "JOY_BTN52",
-          "control": "throttle.base.button.52",
+          "control": "throttle.encoder.2.ccw",
+          "label": "Right-end knob, turn",
+          "finger": "thumb",
+          "type": "momentary"
+        },
+        {
+          "input": "JOY_BTN18",
+          "control": "throttle.hat.2.press",
+          "label": "Upper thumb hat",
+          "finger": "thumb",
+          "type": "momentary"
+        },
+        {
+          "input": "JOY_BTN19",
+          "control": "throttle.hat.2.up",
+          "label": "Upper thumb hat",
+          "finger": "thumb",
+          "type": "momentary"
+        },
+        {
+          "input": "JOY_BTN20",
+          "control": "throttle.hat.2.right",
+          "label": "Upper thumb hat",
+          "finger": "thumb",
+          "type": "momentary"
+        },
+        {
+          "input": "JOY_BTN21",
+          "control": "throttle.hat.2.down",
+          "label": "Upper thumb hat",
+          "finger": "thumb",
+          "type": "momentary"
+        },
+        {
+          "input": "JOY_BTN22",
+          "control": "throttle.hat.2.left",
+          "label": "Upper thumb hat",
+          "finger": "thumb",
+          "type": "momentary"
+        },
+        {
+          "input": "JOY_BTN23",
+          "control": "throttle.hat.3.press",
+          "label": "Lower thumb hat",
+          "finger": "thumb",
+          "type": "momentary"
+        },
+        {
+          "input": "JOY_BTN24",
+          "control": "throttle.hat.3.up",
+          "label": "Lower thumb hat",
+          "finger": "thumb",
+          "type": "momentary"
+        },
+        {
+          "input": "JOY_BTN25",
+          "control": "throttle.hat.3.right",
+          "label": "Lower thumb hat",
+          "finger": "thumb",
+          "type": "momentary"
+        },
+        {
+          "input": "JOY_BTN26",
+          "control": "throttle.hat.3.down",
+          "label": "Lower thumb hat",
+          "finger": "thumb",
+          "type": "momentary"
+        },
+        {
+          "input": "JOY_BTN27",
+          "control": "throttle.hat.3.left",
+          "label": "Lower thumb hat",
+          "finger": "thumb",
+          "type": "momentary"
+        },
+        {
+          "input": "JOY_BTN28",
+          "control": "throttle.button.2",
+          "label": "End button (right end, lower)",
+          "finger": "thumb",
+          "type": "momentary"
+        },
+        {
+          "input": "JOY_BTN29",
+          "control": "throttle.button.3",
+          "label": "Thumb button (left of the hats)",
+          "finger": "thumb",
+          "type": "momentary"
+        },
+        {
+          "input": "JOY_BTN84",
+          "control": "throttle.pinky.button",
+          "label": "Button under the handle",
+          "type": "momentary"
+        },
+        {
+          "input": "JOY_BTN83",
+          "control": "throttle.encoder.1.cw",
+          "label": "Left-end knob",
+          "type": "momentary"
+        },
+        {
+          "input": "JOY_BTN82",
+          "control": "throttle.encoder.1.ccw",
+          "label": "Left-end knob",
+          "type": "momentary"
+        },
+        {
+          "input": "JOY_BTN35",
+          "control": "throttle.base.toggle.1.up",
+          "label": "Guarded switch (under the red cover)",
+          "type": "latched"
+        },
+        {
+          "input": "JOY_BTN34",
+          "control": "throttle.base.toggle.1.down",
+          "label": "Guarded switch (under the red cover)",
+          "type": "latched"
+        },
+        {
+          "input": "JOY_BTN31",
+          "control": "throttle.base.toggle.2.up",
+          "label": "T2",
+          "type": "latched"
+        },
+        {
+          "input": "JOY_BTN30",
+          "control": "throttle.base.toggle.2.down",
+          "label": "T2",
+          "type": "latched"
+        },
+        {
+          "input": "JOY_BTN33",
+          "control": "throttle.base.toggle.3.up",
+          "label": "T3",
+          "type": "latched"
+        },
+        {
+          "input": "JOY_BTN32",
+          "control": "throttle.base.toggle.3.down",
+          "label": "T3",
+          "type": "latched"
+        },
+        {
+          "input": "JOY_BTN36",
+          "control": "throttle.base.toggle.4.up",
+          "label": "Left toggle 1",
+          "type": "latched"
+        },
+        {
+          "input": "JOY_BTN37",
+          "control": "throttle.base.toggle.4.down",
+          "label": "Left toggle 1",
+          "type": "latched"
+        },
+        {
+          "input": "JOY_BTN38",
+          "control": "throttle.base.toggle.5.up",
+          "label": "Left toggle 2",
+          "type": "latched"
+        },
+        {
+          "input": "JOY_BTN39",
+          "control": "throttle.base.toggle.5.down",
+          "label": "Left toggle 2",
+          "type": "latched"
+        },
+        {
+          "input": "JOY_BTN40",
+          "control": "throttle.base.toggle.6.up",
+          "label": "Left toggle 3",
+          "type": "latched"
+        },
+        {
+          "input": "JOY_BTN41",
+          "control": "throttle.base.toggle.6.down",
+          "label": "Left toggle 3",
+          "type": "latched"
+        },
+        {
+          "input": "JOY_BTN42",
+          "control": "throttle.base.encoder.1.press",
+          "label": "E1",
+          "type": "momentary"
+        },
+        {
+          "input": "JOY_BTN44",
+          "control": "throttle.base.encoder.1.cw",
+          "label": "E1",
+          "type": "momentary"
+        },
+        {
+          "input": "JOY_BTN43",
+          "control": "throttle.base.encoder.1.ccw",
+          "label": "E1",
+          "type": "momentary"
+        },
+        {
+          "input": "JOY_BTN45",
+          "control": "throttle.base.encoder.2.press",
+          "label": "E2",
+          "type": "momentary"
+        },
+        {
+          "input": "JOY_BTN47",
+          "control": "throttle.base.encoder.2.cw",
+          "label": "E2",
+          "type": "momentary"
+        },
+        {
+          "input": "JOY_BTN46",
+          "control": "throttle.base.encoder.2.ccw",
+          "label": "E2",
+          "type": "momentary"
+        },
+        {
+          "input": "JOY_BTN48",
+          "control": "throttle.base.encoder.3.press",
+          "label": "E3",
+          "type": "momentary"
+        },
+        {
+          "input": "JOY_BTN49",
+          "control": "throttle.base.encoder.3.cw",
+          "label": "E3",
+          "type": "momentary"
+        },
+        {
+          "input": "JOY_BTN50",
+          "control": "throttle.base.encoder.3.ccw",
+          "label": "E3",
           "type": "momentary"
         },
         {
           "input": "JOY_BTN53",
-          "control": "throttle.base.button.53",
+          "control": "throttle.base.button.1",
+          "label": "B1",
           "type": "momentary"
         },
         {
           "input": "JOY_BTN54",
-          "control": "throttle.base.button.54",
+          "control": "throttle.base.button.2",
+          "label": "B2",
           "type": "momentary"
         },
         {
           "input": "JOY_BTN55",
-          "control": "throttle.base.button.55",
+          "control": "throttle.base.button.3",
+          "label": "B3",
           "type": "momentary"
         },
         {
           "input": "JOY_BTN56",
-          "control": "throttle.base.button.56",
+          "control": "throttle.base.button.4",
+          "label": "B4",
           "type": "momentary"
         },
         {
           "input": "JOY_BTN57",
-          "control": "throttle.base.button.57",
+          "control": "throttle.base.button.5",
+          "label": "B5",
           "type": "momentary"
         },
         {
           "input": "JOY_BTN58",
-          "control": "throttle.base.button.58",
+          "control": "throttle.base.button.6",
+          "label": "B6",
           "type": "momentary"
         },
         {
           "input": "JOY_BTN59",
-          "control": "throttle.base.button.59",
+          "control": "throttle.base.button.7",
+          "label": "B7",
           "type": "momentary"
         },
         {
           "input": "JOY_BTN60",
-          "control": "throttle.base.button.60",
+          "control": "throttle.base.button.8",
+          "label": "B8",
           "type": "momentary"
         },
         {
           "input": "JOY_BTN61",
-          "control": "throttle.base.button.61",
+          "control": "throttle.base.button.9",
+          "label": "Yellow-red button",
           "type": "momentary"
         },
         {
-          "input": "JOY_BTN62",
-          "control": "throttle.base.button.62",
-          "type": "momentary"
+          "input": "JOY_BTN85",
+          "control": "throttle.base.selector.1.pos.1",
+          "label": "MODE 1",
+          "type": "latched"
         },
         {
-          "input": "JOY_BTN63",
-          "control": "throttle.base.button.63",
-          "type": "momentary"
+          "input": "JOY_BTN86",
+          "control": "throttle.base.selector.1.pos.2",
+          "label": "MODE 2",
+          "type": "latched"
         },
         {
-          "input": "JOY_BTN64",
-          "control": "throttle.base.button.64",
-          "type": "momentary"
+          "input": "JOY_BTN87",
+          "control": "throttle.base.selector.1.pos.3",
+          "label": "MODE 3",
+          "type": "latched"
+        },
+        {
+          "input": "JOY_BTN88",
+          "control": "throttle.base.selector.1.pos.4",
+          "label": "MODE 4",
+          "type": "latched"
+        },
+        {
+          "input": "JOY_BTN89",
+          "control": "throttle.base.selector.1.pos.5",
+          "label": "MODE 5",
+          "type": "latched"
         }
-      ],
-      "note": "Buttons 14+ are given as base buttons (keypad, mode selector, switches on the base); 1-12 as handle buttons. Axes from a real MT-50 CM (03EB:2054) profile: throttle levers on RX/RY, thumb stick on X/Y (TDC), Z/RZ rotaries."
+      ]
     },
     {
       "id": "virpil-mongoost-50cm4-throttle",

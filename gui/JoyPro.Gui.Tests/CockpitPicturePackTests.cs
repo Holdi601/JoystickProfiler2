@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
@@ -707,6 +707,40 @@ public sealed class CockpitPicturePackTests
         Assert.Equal(["other-pictures-v1"], all.FailedFeeds);
         Assert.Equal(Path.Combine(partDir, b.Asset), packs.AssetUrl(all.Packs[1]));
         Assert.True(await packs.DownloadAsync(all.Packs[1]));
+    }
+
+    // -Only: only the named sets are built again (next version), a named set gone from the source is left out; every
+    // other pack stays as it is, also one whose set is changed or not in the source any more.
+    [Fact]
+    public async Task BuildTool_Only_BuildsTheNamedSets_AndKeepsEveryOtherPack()
+    {
+        string source = Temp("packs-only-src");
+        CockpitPictureTests.WriteSyntheticSet(source);
+        FakePictureFeed.CopySet(source, "DCS", "F-16C_50", "DCS", "F-16C_50b");
+        FakePictureFeed.CopySet(source, "DCS", "F-16C_50", "XPlane12", "f16");
+        FakePictureFeed.CopySet(source, "DCS", "F-16C_50", "XPlane12", "f16_ai");
+        string outDir = Temp("packs-only-out");
+        string args = "-Source \"" + source + "\" -Out \"" + outDir + "\" -Tag test-pictures-v1 -Feeds other-pictures-v1";
+        Assert.Contains("4 packs (4 built, 0 unchanged)", await RunBuildTool(args));
+        Dictionary<string, CockpitPicturePack> before = CockpitPicturePacks.ParseManifest(File.ReadAllText(Path.Combine(outDir, "manifest.json"))).Packs.ToDictionary(p => p.Id);
+
+        // Every set changed, one set gone from the source; only DCS/F-16C_50 and XPlane12/* are named.
+        foreach (string set in new[] { Path.Combine(source, "DCS", "F-16C_50"), Path.Combine(source, "XPlane12", "f16") })
+            File.AppendAllText(Path.Combine(set, "pictures.json"), " ");
+        Directory.Delete(Path.Combine(source, "DCS", "F-16C_50b"), true);
+        Directory.Delete(Path.Combine(source, "XPlane12", "f16_ai"), true);
+        string output = await RunBuildTool(args + " -Only \"DCS/F-16C_50,XPlane12/*\"");
+        Assert.Contains("3 packs (2 built, 1 unchanged)", output);
+        Assert.Contains("XPlane12/f16_ai: not in the source any more, left out.", output);
+        Dictionary<string, CockpitPicturePack> after = CockpitPicturePacks.ParseManifest(File.ReadAllText(Path.Combine(outDir, "manifest.json"))).Packs.ToDictionary(p => p.Id);
+        Assert.Equal(2, after["DCS/F-16C_50"].Version);
+        Assert.Equal(2, after["XPlane12/f16"].Version);
+        CockpitPicturePack kept = after["DCS/F-16C_50b"];
+        Assert.Equal((1, before["DCS/F-16C_50b"].Sha256, before["DCS/F-16C_50b"].Asset), (kept.Version, kept.Sha256, kept.Asset));
+        Assert.True(File.Exists(Path.Combine(outDir, kept.Asset)));
+        Assert.False(after.ContainsKey("XPlane12/f16_ai"));
+        // Its zip stays on disk, named as not to be uploaded.
+        Assert.Contains("Not in the manifest (left over from an earlier build, do not upload)", output);
     }
 
     private static string RepoRoot()

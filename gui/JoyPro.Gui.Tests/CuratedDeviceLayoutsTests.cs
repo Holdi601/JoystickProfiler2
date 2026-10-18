@@ -22,6 +22,7 @@ public sealed class CuratedDeviceLayoutsTests
         DeviceCatalog catalog = DeviceCatalog.Load(DeviceReferenceTests.ShippedCatalog);
         List<string> problems = [];
         List<DeviceLayoutSet> sets = DeviceLayoutSet.LoadFolder(DevicePhotoDb.LayoutFolderOf(DeviceReferenceTests.ShippedCatalog), problems);
+        List<DeviceLineArt> arts = DeviceLineArtDb.LoadFolder(DeviceLineArtDb.FolderOf(DeviceReferenceTests.ShippedCatalog), null);
         foreach (DeviceLayoutSet set in sets)
         {
             string name = Path.GetFileName(set.File);
@@ -31,14 +32,25 @@ public sealed class CuratedDeviceLayoutsTests
                 problems.Add(name + ": unknown model " + set.Model);
                 continue;
             }
-            // The photo: one of the model's official photos, its content hash on record in DB\DevicePhotos.
-            DevicePhoto? photo = DevicePhotoDb.OfficialPhotos(model).FirstOrDefault(p => string.Equals(p.Url, set.PhotoUrl, StringComparison.OrdinalIgnoreCase));
-            if (photo == null)
-                problems.Add(name + ": the photo is not an official photo of " + model.Id);
-            else if (photo.Sha256.Length != 64 || photo.Sha256 != set.PhotoSha256)
-                problems.Add(name + ": the photo hash is not on record (or another one) in DB\\DevicePhotos");
-            if (set.PhotoKind != "vendor" || set.PhotoFileBase64.Length > 0)
-                problems.Add(name + ": a curated set holds a maker's photo by address only");
+            if (set.PhotoKind == "lineart")
+            {
+                // Positions on JoyPro's own drawing (tools/device_drawings.py): the set names the drawing's key, no photo.
+                if (!arts.Any(a => a.Model == model.Id && a.Key == set.PhotoSha256))
+                    problems.Add(name + ": no shipped drawing of " + model.Id + " with the key " + set.PhotoSha256);
+                if (set.PhotoUrl.Length > 0 || set.PhotoFileBase64.Length > 0)
+                    problems.Add(name + ": a set on JoyPro's drawing names no photo");
+            }
+            else
+            {
+                // The photo: one of the model's official photos, its content hash on record in DB\DevicePhotos.
+                DevicePhoto? photo = DevicePhotoDb.OfficialPhotos(model).FirstOrDefault(p => string.Equals(p.Url, set.PhotoUrl, StringComparison.OrdinalIgnoreCase));
+                if (photo == null)
+                    problems.Add(name + ": the photo is not an official photo of " + model.Id);
+                else if (photo.Sha256.Length != 64 || photo.Sha256 != set.PhotoSha256)
+                    problems.Add(name + ": the photo hash is not on record (or another one) in DB\\DevicePhotos");
+                if (set.PhotoKind != "vendor" || set.PhotoFileBase64.Length > 0)
+                    problems.Add(name + ": a curated set holds a maker's photo by address only");
+            }
 
             Dictionary<string, SchematicMarker> parts = SchematicBuilder.Build(model, catalog.BaseOf(model)).Markers
                 .GroupBy(m => m.Id, StringComparer.OrdinalIgnoreCase).ToDictionary(g => g.Key, g => g.First(), StringComparer.OrdinalIgnoreCase);

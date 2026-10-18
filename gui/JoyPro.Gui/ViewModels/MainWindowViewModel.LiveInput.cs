@@ -57,6 +57,10 @@ public sealed partial class MainWindowViewModel
     // mouse really moves, so none pops up over the card that slid under a resting pointer.
     public event EventHandler? FollowInputJumped;
 
+    // Every input follow input reacts to (a press, every large axis move, also one that does not jump): the window
+    // arms its tooltip hold again, so the user has to move the mouse once more before a tooltip can show.
+    public event EventHandler? FollowInputActivity;
+
     partial void OnFollowInputToastChanged(string value) => OnPropertyChanged(nameof(HasFollowInputToast));
 
     partial void OnFollowInputOnBindsChanged(bool value)
@@ -146,8 +150,10 @@ public sealed partial class MainWindowViewModel
         if (!CanFollowInput())
             return;
         string? follow = followTracker.OnButton(input.Device, input.Input, input.Down, input.FirstReport);
-        if (follow != null)
-            FollowInput(input.Device, follow);
+        if (follow == null)
+            return;
+        FollowInputActivity?.Invoke(this, EventArgs.Empty);
+        FollowInput(input.Device, follow);
     }
 
     internal void OnLiveAxes(JoystickAxisSnapshot snapshot)
@@ -168,6 +174,8 @@ public sealed partial class MainWindowViewModel
             return;
         }
         string? follow = followTracker.OnAxes(snapshot.Device, snapshot.Axes, snapshot.FirstReport);
+        if (follow != null || followTracker.AxisMovedFar)
+            FollowInputActivity?.Invoke(this, EventArgs.Empty);
         if (follow != null)
             FollowInput(snapshot.Device, follow);
     }

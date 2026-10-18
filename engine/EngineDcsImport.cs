@@ -1081,8 +1081,9 @@ namespace JoyPro.Engine
         }
 
         // The .jp is JoyPro's copy of what it last wrote; the .diff.lua is what DCS uses. When both exist, a .jp bind
-        // counts only if the diff has it (the .jp adds relation names and groups) or if it is a plane default the diff
-        // does not remove (DCS drops binds equal to a default when it saves). Other .jp binds were removed in DCS.
+        // counts only if the diff has it (the .jp adds relation names and groups) or if it is a default of the device
+        // the diff does not remove (DCS drops binds equal to a default when it saves: what counts is default + diff, not
+        // the diff alone). Other .jp binds were removed in DCS.
         // Returns null when there is no diff: then the .jp is all there is.
         private static HashSet<string> BuildBackupAllowedBinds(string backupPath, string plane)
         {
@@ -1109,7 +1110,7 @@ namespace JoyPro.Engine
             CollectBackupBindKeys(diffText, allowed, removed);
 
             bool keyboard = string.Equals(new DirectoryInfo(Path.GetDirectoryName(backupPath) ?? string.Empty).Name, "keyboard", StringComparison.OrdinalIgnoreCase);
-            string cleanPath = Path.Combine(GameDataPaths.CleanProfileFolder("DCS", keyboard), plane + ".cf");
+            string cleanPath = DefaultsProfilePath(backupPath, plane, keyboard);
             if (File.Exists(cleanPath))
             {
                 HashSet<string> defaults = new HashSet<string>(StringComparer.Ordinal);
@@ -1128,6 +1129,50 @@ namespace JoyPro.Engine
                 }
             }
             return allowed;
+        }
+
+        // The defaults DCS applies to the device of an input file, as the DCS list refresh stored them: a device type
+        // with defaults of its own (a "<type>.lua" of the plane, or an entry of DefaultAssignments.lua such as the
+        // T-Pendular-Rudder's rudder on JOY_Z) has CleanProfile\DCS\<plane>\<type>.cf; every other device uses the
+        // plane's generic <plane>.cf (default.lua). DCS keeps the spaces at the ends of a device name, the type is
+        // matched without them.
+        internal static string DefaultsProfilePath(string inputFile, string plane, bool keyboard)
+        {
+            string root = GameDataPaths.CleanProfileFolder("DCS", keyboard);
+            string generic = Path.Combine(root, plane + ".cf");
+            if (keyboard)
+                return generic;
+            string name = Path.GetFileName(inputFile ?? string.Empty);
+            if (name.EndsWith(".diff.lua", StringComparison.OrdinalIgnoreCase))
+                name = name.Substring(0, name.Length - ".diff.lua".Length);
+            else if (name.EndsWith(".jp", StringComparison.OrdinalIgnoreCase))
+                name = name.Substring(0, name.Length - ".jp".Length);
+            string template = DcsDeviceNames.TemplateName(name).Trim();
+            if (template.Length == 0)
+                return generic;
+            try
+            {
+                string folder = Path.Combine(root, plane);
+                if (!Directory.Exists(folder))
+                    return generic;
+                foreach (string file in Directory.GetFiles(folder, "*.cf"))
+                {
+                    string type = Path.GetFileName(file);
+                    type = type.Substring(0, type.Length - ".cf".Length);
+                    if (string.Equals(type.Trim(), template, StringComparison.Ordinal))
+                        return file;
+                }
+            }
+            catch (IOException)
+            {
+            }
+            catch (UnauthorizedAccessException)
+            {
+            }
+            catch (ArgumentException)
+            {
+            }
+            return generic;
         }
 
         // Adds every added bind of a diff text to added and every removed bind to removed (removed without reformers).

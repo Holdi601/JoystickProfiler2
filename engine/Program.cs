@@ -482,6 +482,19 @@ namespace JoyPro.Engine
                         EmitPayload(textOutput ? EngineIdMeanings.ToText(stats) : EngineSerialization.ToJson(stats), outPath);
                         return 0;
                     }
+                case "action-info":
+                    {
+                        // relations action-info --coverage [--game g]: per game readable names, explanations and
+                        // recommended actions (EngineActionInfo, EngineActionChoice).
+                        List<string> args = command.Skip(1).ToList();
+                        bool coverage = PopFlag(args, "--coverage");
+                        string game = PopOptionValue(args, "--game");
+                        if (!coverage || args.Count > 0)
+                            return Fail("relations action-info --coverage [--game g]");
+                        EngineActionCoverage result = EngineActionInfo.Coverage(game);
+                        EmitPayload(textOutput ? EngineActionInfo.ToText(result) : EngineSerialization.ToJson(result), outPath);
+                        return 0;
+                    }
                 default:
                     return Fail("Unknown relations action: " + action);
             }
@@ -14304,6 +14317,8 @@ namespace JoyPro.Engine
             Console.WriteLine("      \"Collective\" in a helicopter); --apply switches those aircraft off (they stay listed, one tick brings one back).");
             Console.WriteLine("  engine relations meanings [--game g] [--top N]");
             Console.WriteLine("      per game: ids shared by several aircraft lists and how many of them mean something else in some aircraft.");
+            Console.WriteLine("  engine relations action-info --coverage [--game g]");
+            Console.WriteLine("      per game: actions with a readable name, with an explanation (cockpit guide / the game's own / general) and functions with a recommended action.");
             Console.WriteLine("  engine relations auto-group [--preset all|wing|era|purist] [--no-substitutes] [--planes p1|p2|Game] [--replace] [--dry-run] [--no-map]");
             Console.WriteLine("      groups the same function of all DCS aircraft and the other games into relations from DB/Functions (manual-verified catalog);");
             Console.WriteLine("      all = one relation per function, wing = split fixed/rotary wing, era = split by wing type and era,");
@@ -14355,7 +14370,7 @@ namespace JoyPro.Engine
             Console.WriteLine("      per hand role (a second right-hand stick is left out); with --overwrite the controls used before win unless --no-style;");
             Console.WriteLine("      --explain lists the best candidates of a relation and what occupies them.");
             Console.WriteLine("  engine devices kb [list [query] | show <id> | identify [--grip <device>=<grip id>]... [--add-device <id>]...]   (device catalog for Auto Assign)");
-            Console.WriteLine("  engine devices reference [list [query] | identify --vidpid <VID:PID> --name <HID name> [--instance <name>] [--buttons <n>] [--hats <n>] [--axes X,Y,RZ] | show <id> [--base <id>] [--svg <file>] [--light] [--no-badges] | check [query] | photos [query] [--coverage] | photo-add --model <id> --url <https photo on the maker's host> --view <front|side|back|top|base|three-quarter|sheet> [--page <url>] [--confidence <c>] [--shows a,b] [--sha256 <hex>] | layout-check | drawings [query] [--check] [--model <id> [--view <v>] --svg <file> | --png <file>] [--light] [--drawing-style lines|cel] [--drawing-preset <p>]]   (device reference pictures: catalog, identification and the question to ask, JoyPro's schematic with markers, photo references, curated marker positions, JoyPro's own drawings of the devices)");
+            Console.WriteLine("  engine devices reference [list [query] | identify --vidpid <VID:PID> --name <HID name> [--instance <name>] [--buttons <n>] [--hats <n>] [--axes X,Y,RZ] | show <id> [--base <id>] [--svg <file>] [--light] [--no-badges] | check [query] | photos [query] [--coverage] | photo-add --model <id> --url <https photo on the maker's host> --view <front|side|back|top|base|three-quarter|sheet> [--page <url>] [--confidence <c>] [--shows a,b] [--sha256 <hex>] | layout-check | drawings [query] [--check] [--model <id> [--view <v>] --svg <file> | --png <file>] [--light] [--drawing-style lines|cel] [--drawing-preset <p>] | completeness [query] [--missing] [--list <file>] | mesh-render --aircraft <plane> --grip stick|throttle [--view <yaw>,<pitch>] [--size <px>] [--skip <regex>] --folder <dir>]   (device reference pictures: catalog, identification and the question to ask, JoyPro's schematic with markers, photo references, curated marker positions, JoyPro's own drawings of the devices, whether every input has a position, a game's grip rendered for a drawing)");
             Console.WriteLine("  engine cockpits [list [query] [--game G] [--era E] [--role R] [--nation N] [--category fixed-wing|helicopter|space|fiction|real] | search <text> [--limit n] | get <aircraft> [<variant>] [--json] | check | render <aircraft> [<variant>] --png <file> [--device <d>] [--style dark|light] [--print-width <px>] [--drawing-only] | compare <aircraft> [<variant>] [--game G] | photos [query] [--coverage] | coverage | drawings | pictures build [--game DCS|XPlane12|MSFS2020|IL2Game|NuclearOption|all] [--aircraft <name>,...] [--force] [--out <folder>] | pictures status | pictures check [--game G] [--aircraft <name>,...] [--write] [--drop]]");
             Console.WriteLine("      the cockpit database (DB/Cockpits, docs/cockpits.md): stick and throttle of real and fictional aircraft per variant with");
             Console.WriteLine("      their functions and JoyPro function ids, JoyPro's drawings, panels, sources and photo links; get = the layout the setup");

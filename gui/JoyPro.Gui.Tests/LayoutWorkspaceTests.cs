@@ -684,6 +684,58 @@ public sealed class LayoutWorkspaceTests
         Assert.Contains("Pitch is an axis relation", vm.VisualAssignStatus, StringComparison.Ordinal);
     }
 
+    // A relation dragged from the bind list onto a marker of the picture: the canvas selects that marker and hands the
+    // relation to its command; a drop next to a small marker still finds it, a drop on empty picture does nothing.
+    [Fact]
+    public void Canvas_RelationDroppedOnAMarker_SelectsItAndRunsTheCommand()
+    {
+        AvaloniaRenderThread.Run(() =>
+        {
+            LayoutEditorMarkerItem a = new() { Token = "JOY_BTN1", X = 100, Y = 200 };
+            LayoutEditorMarkerItem b = new() { Token = "JOY_BTN2", X = 400, Y = 400 };
+            List<string> dropped = [];
+            DeviceMarkerCanvas canvas = new()
+            {
+                Markers = new ObservableCollection<LayoutEditorMarkerItem> { a, b },
+                SourceWidth = 600,
+                SourceHeight = 600,
+                Zoom = 1,
+                Mode = DeviceCanvasMode.Bind,
+                RelationDroppedCommand = new CommunityToolkit.Mvvm.Input.RelayCommand<string>(r => dropped.Add(r!))
+            };
+            canvas.Measure(new Size(600, 600));
+            canvas.Arrange(new Rect(0, 0, 600, 600));
+            Point at = Assert.IsType<Point>(canvas.ViewPointOf(b));
+            Assert.True(canvas.DropRelationAt(at, "Gear"));
+            Assert.Same(b, canvas.SelectedMarker);
+            Assert.Equal(["Gear"], dropped);
+            Assert.True(canvas.DropRelationAt(new Point(at.X + 12, at.Y + 6), "Canopy"));
+            Assert.Equal(["Gear", "Canopy"], dropped);
+            Assert.False(canvas.DropRelationAt(new Point(580, 20), "Pitch"));
+            Assert.Equal(2, dropped.Count);
+        });
+    }
+
+    // What the drop does on the Bind page: the dropped marker's input gets the dragged relation (the command of "Bind
+    // here" with the relation as its parameter), and the input flashes on the picture.
+    [Fact]
+    public async Task VisualAssign_DroppedRelation_BindsItToTheMarkersInput()
+    {
+        (MainWindowViewModel vm, LayoutRedesignRenderTests.LayoutFakeEngine fake, _) = await CreateLoadedAsync(layoutFile: false);
+        vm.SetLayoutCanvasModeCommand.Execute("bind");
+        vm.SelectedBind = vm.Binds.Single(b => b.RelationName == "Pitch");
+        IDeviceMarker target = vm.WorkspaceMarkers.Cast<IDeviceMarker>().First(m => m.Input == "JOY_BTN3");
+        vm.WorkspaceSelectedMarker = target;
+        Assert.Equal("JOY_BTN3", vm.SelectedReferenceRow?.Input);
+        fake.Calls.Clear();
+        await vm.BindSelectedLayoutMarkerCommand.ExecuteAsync("Canopy");
+        IReadOnlyList<string> set = Assert.Single(fake.Calls, c => AxisTuningTests.Seq(c, "binds", "set"));
+        Assert.True(AxisTuningTests.Seq(set, "Canopy", "--device", Stick));
+        Assert.True(AxisTuningTests.Seq(set, "--input", "JOY_BTN3"));
+        Assert.StartsWith("Bound Canopy to ", vm.VisualAssignStatus, StringComparison.Ordinal);
+        Assert.NotNull(vm.WorkspaceFlashMarker);
+    }
+
     // With modifiers the side panel lists every combination of the input (none, Pinky, Shift, Pinky + Shift) with what
     // is bound there; the picked one is bound with exactly those modifiers.
     [Fact]

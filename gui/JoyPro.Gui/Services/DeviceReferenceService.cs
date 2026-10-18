@@ -317,6 +317,9 @@ public static class DeviceReferenceService
         }
     }
 
+    // The reason a user layout gives a part the user took off the picture.
+    public const string RemovedByUser = "removed by the user";
+
     public static string SaveUserLayout(DeviceLayoutSet set)
     {
         string file = UserLayoutFile(set.Model, set.PictureKey);
@@ -329,6 +332,7 @@ public static class DeviceReferenceService
             PhotoSha256 = set.PhotoSha256,
             View = set.View,
             Markers = new Dictionary<string, double[]>(set.Markers, StringComparer.OrdinalIgnoreCase),
+            Unplaced = new Dictionary<string, string>(set.Unplaced.Where(p => p.Value == RemovedByUser).ToDictionary(p => p.Key, p => p.Value), StringComparer.OrdinalIgnoreCase),
             Source = set.Source.Length > 0 ? set.Source : T("placed by the user"),
             Confidence = set.Confidence,
             Note = set.Note
@@ -362,10 +366,12 @@ public static class DeviceReferenceService
             source = "JoyPro's positions for this photo";
         }
         DeviceLayoutSet? user = UserLayout(modelId, pictureKey);
-        if (user != null && user.Markers.Count > 0)
+        if (user != null && (user.Markers.Count > 0 || user.Unplaced.Count > 0))
         {
             foreach (KeyValuePair<string, double[]> pair in user.Markers)
                 positions[pair.Key] = pair.Value;
+            foreach (string removed in user.Unplaced.Where(p => p.Value == RemovedByUser).Select(p => p.Key))
+                positions.Remove(removed);
             source = curatedSet != null ? "JoyPro's positions and yours" : "your positions";
         }
         return positions;
