@@ -32,7 +32,7 @@ public sealed class MsfsProfileImportTests : IDisposable
         while (dir != null && !File.Exists(Path.Combine(dir.FullName, "JoyPro.sln")))
             dir = dir.Parent;
         Assert.NotNull(dir);
-        engine = Path.Combine(dir!.FullName, "engine", "bin", "x64", "Debug", "engine.exe");
+        engine = Path.Combine(dir!.FullName, "engine", "bin", "x64", TestEngine.Configuration, "engine.exe");
         fixtures = Path.Combine(dir.FullName, "engine", "tests", "fixtures", "msfs", "user-profiles");
         // Short: the engine (.NET Framework) reads no path over 260 characters, and a blob path is long.
         root = Path.Combine(Path.GetTempPath(), "jpm" + Guid.NewGuid().ToString("N")[..8]);
@@ -184,6 +184,87 @@ public sealed class MsfsProfileImportTests : IDisposable
         (int againCode, string again) = Engine(home, "--profile", profile, "msfs2024", "export", community, "--text");
         Assert.True(againCode == 0, again);
         Assert.Contains("The MSFS profiles already match.", again);
+    }
+
+    // The 2.2.3 report (MSFS 2024): a T-Pendular-Rudder the user never changed runs on the preset the sim ships (brakes
+    // and rudder in Controls), but the sim saves no profile for it, so the import missed it. Now import and scan take
+    // the shipped default of every connected device and category without an own profile (product ID as the sim
+    // matches it, the Primary preset; not the alternatives, not helicopters, not gamepad presets); the user's own
+    // profile wins over the default of its category. The shipped files stay untouched, also by an export.
+    [Fact]
+    public void Steam2024_DevicesOnTheSimsDefaultPreset_AreImported()
+    {
+        string home = Path.Combine(root, "h");
+        string install = Path.Combine(root, "sim");
+        CopyFolder(Path.Combine(Path.GetDirectoryName(fixtures)!, "shipped-presets"), install);
+        Dictionary<string, byte[]> shipped = Directory.GetFiles(install, "*", SearchOption.AllDirectories).ToDictionary(f => f, File.ReadAllBytes);
+        string remote = Path.Combine(home, "Steam", "userdata", "42", "2537590", "remote");
+        Directory.CreateDirectory(remote);
+        string roaming = Path.Combine(home, "Roaming", "Microsoft Flight Simulator 2024");
+        string community = Path.Combine(roaming, "Packages", "Community2024");
+        Directory.CreateDirectory(community);
+        File.WriteAllText(Path.Combine(roaming, "UserCfg.opt"), "InstalledPackagesPath \"" + Path.Combine(roaming, "Packages") + "\"\r\n");
+        connectedDevices = Path.Combine(root, "devices.tsv");
+        File.WriteAllText(connectedDevices,
+            "T-Pendular-Rudder {0000DDDD-0000-4000-8000-000000000401}\t044F\tB68F\tT-Pendular-Rudder\r\n" +
+            "VPC VMAX Prime Throttle {0000CCCC-0000-4000-8000-000000000301}\t3344\t019D\tVPC VMAX Prime Throttle\r\n");
+        Engine(home, "games", "install", "set", "MSFS2024", install);
+        string tpr = "T-Pendular-Rudder {0000DDDD-0000-4000-8000-000000000401}";
+        string vmax = "VPC VMAX Prime Throttle {0000CCCC-0000-4000-8000-000000000301}";
+
+        // Nothing saved yet (a fresh install): the defaults are the scan.
+        (int freshCode, string fresh) = Engine(home, "msfs2024", "scan", "--text");
+        Assert.True(freshCode == 0, fresh);
+        Assert.Contains("No own Microsoft Flight Simulator 2024 profile saved yet", fresh);
+        Assert.Contains("T-Pendular-Rudder: no own MSFS profile, imported the sim's default preset 'T-Pendular-Rudder 2024 Planes' (Airplanes).", fresh);
+        Assert.Contains("VPC VMAX Prime Throttle: no own MSFS profile, imported the sim's default presets 'VMAX Prime Throttle 2024 Planes' (Airplanes), 'VMAX Prime Throttle 2024 Transversal' (General).", fresh);
+        Assert.Contains("KEY_AXIS_SPOILER_SET <- " + vmax + " JOY_X", fresh);
+
+        // The user changed the throttle's airplane binds: that profile wins, the General default still comes along.
+        File.WriteAllBytes(Path.Combine(remote, "inputprofile_0000000301"), Fixture2024("vmax-throttle-airplane.xml"));
+        string profile = Path.Combine(root, "p.pr0file");
+        (int code, string output) = Engine(home, "--profile", profile, "msfs2024", "import", "--text");
+
+        Assert.True(code == 0, output);
+        Assert.Contains("KEY_AXIS_LEFT_BRAKE_SET <- " + tpr + " JOY_Y", output);
+        Assert.Contains("KEY_AXIS_RIGHT_BRAKE_SET <- " + tpr + " JOY_X", output);
+        Assert.Contains("KEY_AXIS_RUDDER_SET <- " + tpr + " JOY_Z", output);
+        Assert.Contains("KEY_THROTTLE1_AXIS_SET_EX1 <- " + vmax + " JOY_RX", output);
+        Assert.Contains("KEY_ACTIVE_PAUSE_TOGGLE <- " + vmax + " JOY_BTN26", output);
+        Assert.Contains("VPC VMAX Prime Throttle: no own MSFS profile, imported the sim's default preset 'VMAX Prime Throttle 2024 Transversal' (General).", output);
+        Assert.Contains("MSFS device profiles read: 1 from Steam, 2 default preset(s) of the sim (devices without an own profile).", output);
+        // Not the throttle's airplane default (its own profile wins), not the rudder's alternative or helicopter
+        // presets, not a gamepad preset or the preset of a device that is not connected.
+        Assert.DoesNotContain("KEY_AXIS_SPOILER_SET", output);
+        Assert.DoesNotContain("KEY_ROTOR_BRAKE_TOGGLE", output);
+        Assert.DoesNotContain("KEY_AXIS_AILERONS_SET", output);
+        Assert.DoesNotContain("KEY_AXIS_ELEVATOR_SET", output);
+        Assert.DoesNotContain("No own Microsoft Flight Simulator 2024 profile saved yet", output);
+
+        // The brakes keep the preset's invert; the preset's <Axes> page (dead zone 6) is not the device's tuning.
+        (_, string relations) = Engine(home, "--profile", profile, "relations", "list", "--text");
+        string brake = relations.Split('\n').Select(l => l.Split('|')[0].Trim()).First(n => n.Contains("Left Brake", StringComparison.OrdinalIgnoreCase));
+        (_, string tuning) = Engine(home, "--profile", profile, "binds", "tuning", "show", brake, "--game", "MSFS2024", "--text");
+        Assert.DoesNotContain("n.axisDeadZone=6", tuning);
+        Assert.Contains("n.axisDeadZone=0", tuning);
+
+        // Export goes to JoyPro's package; the shipped presets stay as they were.
+        (int exportCode, string export) = Engine(home, "--profile", profile, "msfs2024", "export", community, "--text");
+        Assert.True(exportCode == 0, export);
+        Assert.Contains("rudder", string.Join("\n", Directory.GetFiles(Path.Combine(community, "joypro-input-profiles"), "*.xml", SearchOption.AllDirectories)), StringComparison.OrdinalIgnoreCase);
+        foreach (KeyValuePair<string, byte[]> file in shipped)
+            Assert.Equal(file.Value, File.ReadAllBytes(file.Key));
+        Assert.Equal(shipped.Count, Directory.GetFiles(install, "*", SearchOption.AllDirectories).Length);
+    }
+
+    private static void CopyFolder(string from, string to)
+    {
+        foreach (string file in Directory.GetFiles(from, "*", SearchOption.AllDirectories))
+        {
+            string target = Path.Combine(to, Path.GetRelativePath(from, file));
+            Directory.CreateDirectory(Path.GetDirectoryName(target)!);
+            File.Copy(file, target);
+        }
     }
 
     // MSFS 2020 (Steam, profiles edited in place): a General bind the profile lost goes back into its own context.

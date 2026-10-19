@@ -128,6 +128,15 @@ namespace JoyPro.Engine.Games
         // Where the file came from (import reads JoyPro's package and the user's own profiles side by side).
         public MsfsProfileSourceKind Source { get; set; }
 
+        // A default preset the sim ships (read only) taken for a connected device that has no own profile: its binds
+        // count for that device (the file's GUID is the one of Asobo's test machine).
+        public void UseForDevice(Guid instanceGuid)
+        {
+            DeviceGuid = instanceGuid;
+            HasDeviceGuid = instanceGuid != Guid.Empty;
+            Source = MsfsProfileSourceKind.SimDefault;
+        }
+
         public static bool LooksLikeProfile(string path)
         {
             try

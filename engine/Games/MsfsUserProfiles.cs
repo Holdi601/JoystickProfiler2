@@ -22,7 +22,9 @@ namespace JoyPro.Engine.Games
         Given,
         Package,
         Steam,
-        Store
+        Store,
+        // A default preset the sim ships, for a connected device without an own profile (MsfsSimDefaults).
+        SimDefault
     }
 
     internal sealed class MsfsProfileSource

@@ -203,7 +203,8 @@ namespace JoyPro.Engine.Games
         public static Dictionary<Guid, int> SimProductIds()
         {
             Dictionary<Guid, int> ids = new Dictionary<Guid, int>();
-            foreach (string steam in GamePathDiscovery.GetSteamInstallRoots(new List<string>()))
+            // The test home stands in for Steam in tests (the PC's own sim profile never takes part).
+            foreach (string steam in MsfsUserProfiles.SteamRoots(new List<string>()))
             {
                 string userdata = Path.Combine(steam, "userdata");
                 if (!Directory.Exists(userdata))

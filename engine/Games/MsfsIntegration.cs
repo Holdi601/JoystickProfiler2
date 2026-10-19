@@ -279,6 +279,7 @@ namespace JoyPro.Engine.Games
                     case MsfsProfileSourceKind.Package: parts.Add(count + " JoyPro preset(s) (Community2024 package)"); break;
                     case MsfsProfileSourceKind.Steam: parts.Add(count + " from Steam"); break;
                     case MsfsProfileSourceKind.Store: parts.Add(count + " from the Microsoft Store version"); break;
+                    case MsfsProfileSourceKind.SimDefault: parts.Add(count + " default preset(s) of the sim (devices without an own profile)"); break;
                     default: parts.Add(count + " from the given path"); break;
                 }
             }
@@ -309,9 +310,25 @@ namespace JoyPro.Engine.Games
         public GameScanResult Read(string configPath, GameCatalog catalog, GameDeviceDirectory devices)
         {
             GameScanResult result = new GameScanResult();
-            List<MsfsProfileFile> profiles = LoadSelectedProfiles(configPath, result.Errors, result.Warnings, ImportReading, result.Steps);
+            bool simDefaults = UsesSimDefaults(configPath);
+            List<string> loadErrors = simDefaults ? new List<string>() : result.Errors;
+            List<MsfsProfileFile> profiles = LoadSelectedProfiles(configPath, loadErrors, result.Warnings, ImportReading, result.Steps);
             if (ImportReading)
                 profiles = WithoutDisconnectedDevices(profiles, devices, result);
+            if (simDefaults)
+            {
+                List<MsfsProfileFile> defaults = SimDefaultProfiles(profiles, devices, result);
+                if (defaults.Count > 0 && profiles.Count == 0)
+                {
+                    // Nothing saved yet: the defaults are the import, the "no profile found" reason only a log line.
+                    result.Steps.Add("No own " + DisplayName + " profile saved yet (the sim saves one once you change a bind in Controls): the connected devices use the sim's default presets.");
+                    foreach (string error in loadErrors)
+                        JoyPro.Logging.JoyProLog.Info("MSFS", error);
+                }
+                else
+                    result.Errors.AddRange(loadErrors);
+                profiles.AddRange(defaults);
+            }
             if (profiles.Count > 0)
                 result.Steps.Add(DescribeSources(profiles));
             int otherContexts = 0;
@@ -386,6 +403,35 @@ namespace JoyPro.Engine.Games
             if (added.Count > 0 || movedToGeneral.Count > 0)
                 SaveAddedActions(added, movedToGeneral, result);
             return result;
+        }
+
+        // Import and scan of what the sim uses (JoyPro's package, the Steam remote folder, the Store save folder; not a
+        // file or folder given with --path, not with --game-profile): connected devices without an own profile run on
+        // the preset the sim ships for them (MsfsSimDefaults), and their binds come along.
+        private bool UsesSimDefaults(string configPath)
+        {
+            if (!ImportReading || !string.IsNullOrWhiteSpace(SelectedProfile) || string.IsNullOrWhiteSpace(configPath) || File.Exists(configPath))
+                return false;
+            string package;
+            return MsfsCommunityPackage.TryGetPackageFolder(configPath, out package) || MsfsUserProfiles.WgsFolderOf(configPath) != null ||
+                   configPath.IndexOf("\\userdata\\", StringComparison.OrdinalIgnoreCase) >= 0;
+        }
+
+        // The sim's default preset of every connected device and category without an own profile (the user's profile
+        // first, then JoyPro's package preset, then the shipped default).
+        private List<MsfsProfileFile> SimDefaultProfiles(List<MsfsProfileFile> own, GameDeviceDirectory devices, GameScanResult result)
+        {
+            if (devices == null || !devices.Devices.Any(d => d.Connected))
+                return new List<MsfsProfileFile>();
+            List<MsfsSimDefaults.Preset> presets = MsfsSimDefaults.ShippedPresets(sim, new List<string>());
+            if (presets.Count == 0)
+                return new List<MsfsProfileFile>();
+            Dictionary<Guid, int> simIds = sim == 2024 ? MsfsCommunityPackage.SimProductIds() : new Dictionary<Guid, int>();
+            List<MsfsProfileFile> defaults = MsfsSimDefaults.ForConnectedDevices(sim, presets, own, devices.Devices, simIds, result.Steps).Select(a => a.Profile).ToList();
+            if (defaults.Count == 0 && own.Count == 0)
+                result.Steps.Add("None of the connected devices has a default preset of the sim (" + presets.Count.ToString(CultureInfo.InvariantCulture) +
+                                 " shipped presets checked by product ID): the sim shows no binds for them until you bind something in Controls.");
+            return defaults;
         }
 
         // A profile of this sim binds an action of the list in a general context (cameras, views, pause) while the
@@ -526,7 +572,8 @@ namespace JoyPro.Engine.Games
                 if (line != null)
                     tuning.Native[MsfsAxisModel.AxisOverride] = 1;
             }
-            if (line == null)
+            // The sim ignores the <Axes> page of a preset it ships (and of JoyPro's package presets).
+            if (line == null && profile.Source != MsfsProfileSourceKind.SimDefault)
             {
                 string axisName = AxisNameOf(binding.Input);
                 line = axisName == null ? null : profile.DeviceAxisLine(axisName);

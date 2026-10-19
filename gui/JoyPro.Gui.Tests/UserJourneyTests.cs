@@ -83,7 +83,7 @@ public sealed partial class UserJourneyTests
         DirectoryInfo? dir = new(AppContext.BaseDirectory);
         while (dir != null && !File.Exists(Path.Combine(dir.FullName, "JoyPro.sln")))
             dir = dir.Parent;
-        return dir == null ? "engine.exe" : Path.Combine(dir.FullName, "engine", "bin", "x64", "Debug", "engine.exe");
+        return dir == null ? "engine.exe" : Path.Combine(dir.FullName, "engine", "bin", "x64", TestEngine.Configuration, "engine.exe");
     }
 
     private sealed partial class Journey

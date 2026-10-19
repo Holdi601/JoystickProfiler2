@@ -111,7 +111,7 @@ public sealed class SetupWizardRenderTests
         string? outDir = Environment.GetEnvironmentVariable("JOYPRO_SETUP_WIZARD_PREVIEW");
         if (string.IsNullOrWhiteSpace(outDir))
             return;
-        string engine = FindRepoFile(Path.Combine("engine", "bin", "x64", "Debug", "engine.exe")) ?? FindRepoFile(Path.Combine("engine", "bin", "x64", "Release", "engine.exe"))
+        string engine = FindRepoFile(Path.Combine("engine", "bin", "x64", TestEngine.Configuration, "engine.exe"))
                         ?? throw new InvalidOperationException("Build the engine first (engine\\bin\\x64\\Debug\\engine.exe).");
         string devices = FindRepoFile(Path.Combine("engine", "tests", "fixtures", "setupwizard", "devices.tsv")) ?? throw new InvalidOperationException("Fixture missing.");
         Directory.CreateDirectory(outDir);

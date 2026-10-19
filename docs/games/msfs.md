@@ -139,6 +139,29 @@ import|scan`, GUI import wizard) read what the user set up in the sim (`engine\G
   connected at all everything is imported (with a note), so an import on another PC still works. The watcher's
   automatic import uses the default. MSFS only: the other games keep one bind file without a per-device history, so
   they do not have this problem and keep their import as it was.
+- **Devices on the sim's default preset (since 2026-10-19):** MSFS saves a device's profile only once the user changes
+  something; an untouched device runs on the preset the sim ships for it. A 2.2.3 import (MSFS 2024) brought only the
+  four devices the tester had customized, not his T-Pendular-Rudder (brakes L-Axis Y / X, rudder L-Axis Z, sidebar
+  "T-Pendular-Rudder presets config"). Now import and scan (`engine\Games\MsfsSimDefaults.cs`) take, for every
+  connected device and category without an own profile, the default preset the sim uses: the shipped presets
+  (`MsfsGameData.PresetFiles`: 2024 `fs-input-profiles`, `asobo-input-profiles-pc`, `InputProfiles\Categories\<Category>\*.xml`)
+  matched like the sim does, by the hex `ProductID` of `<Device>` (the one the sim noted for the device in profile_00,
+  else the USB PID; the sim's own `InputProfiles\DeviceConfig.xml` also lists devices by `ProductId` only; the
+  `GUID` and `DeviceName` of a shipped preset are Asobo's, not the user's), the preset with `Primary="1"` (`Primary="0"`
+  are the alternatives of the preset selector). Categories: Airplane and Transversal (General). Order: the user's own
+  profile of that category, then JoyPro's package preset, then the shipped default. Presets without a device GUID
+  (keyboard, mouse, gamepad) are left out; when several primary presets share the product ID with different
+  `CompositeID` (VelocityOne Flight: yoke and quadrant) none is taken and a step says so. Each device gets a step
+  ("T-Pendular-Rudder: no own MSFS profile, imported the sim's default preset 'T-Pendular-Rudder 2024 Planes'
+  (Airplanes)"). The preset's `<Axes>` page is not imported as tuning (the sim ignores it); invert flags are. Not with
+  `--path <file>` or `--game-profile`. With no saved profile at all the import no longer fails when defaults were
+  found (otherwise a step adds that none of the connected devices has a default preset). Read only: the shipped presets are never written; export goes to JoyPro's package as before (the defaults
+  are written there like any other bind). Checked 2026-10-19 on the Steam install of a test PC: 100 airplane and 78
+  transversal presets; none of the connected devices there (VKB 231D:0125, Virpil 3344:80CB, WinWing 4098:BE04,
+  MFG, VPforce, vJoy) has one, a TPR (044F:B68F) and a Logitech Extreme 3D (C215, also a Transversal preset) given as
+  test devices got theirs. MSFS 2020: same code over its presets (no categories); its shipped presets were not checked
+  on a real install (none on a test PC), so a 2020 preset must also carry the device's name. Test:
+  `MsfsProfileImportTests.Steam2024_DevicesOnTheSimsDefaultPreset_AreImported` (fixture `engine\tests\fixtures\msfs\shipped-presets`).
 - A tester's case as a test (`MsfsProfileImportTests.Steam2024_GeneralBindsAreImported_...`): VPC VMAX Prime Throttle
   with flaps / throttle 1 / throttle 2 axes (airplanes) and cockpit view zoom axis, reset / toggle cockpit view, toggle
   external view and active pause (General), plus an old MT-50CM3 stick that is not connected.
