@@ -23,6 +23,8 @@ public sealed class MsfsProfileImportTests : IDisposable
     private readonly string root;
     private readonly string engine;
     private readonly string fixtures;
+    // JOYPRO_FAKE_DEVICES of the engine runs (null: no device connected).
+    private string? connectedDevices;
 
     public MsfsProfileImportTests()
     {
@@ -83,7 +85,11 @@ public sealed class MsfsProfileImportTests : IDisposable
         Assert.Contains("KEY_ROTOR_BRAKE_TOGGLE <- Saitek Pro Flight X-56 Rhino Stick {0000BBBB-0000-4000-8000-000000000201} JOY_BTN4", output);
         Assert.Contains("KEY_AXIS_RUDDER_SET <- MFG Crosswind V2 {0000BBBB-0000-4000-8000-000000000202} JOY_RZ", output);
         Assert.DoesNotContain("KEY_FLAPS_UP", output);
-        Assert.Contains("1 bind(s) in camera, menu and other non-flight contexts left out", output);
+        // The camera bind of the profile (General category) is imported too.
+        Assert.Contains("KEY_COCKPIT_QUICKVIEW_LEFT <- Saitek Pro Flight X-56 Rhino Stick {0000BBBB-0000-4000-8000-000000000201} JOY_BTN_POV1_L", output);
+        Assert.DoesNotContain("non-flight contexts left out", output);
+        // No device connected (the test's empty device list): every device's profile is imported.
+        Assert.Contains("No game device is connected: the MSFS profiles of all devices are imported.", output);
         Assert.Contains("1 MSFS keyboard, mouse or gamepad profile(s) not imported", output);
         Assert.DoesNotContain("has no presets yet", output);
 
@@ -99,6 +105,116 @@ public sealed class MsfsProfileImportTests : IDisposable
         (int exportCode, string export) = Engine(home, "--profile", Path.Combine(root, "p.pr0file"), "msfs2024", "export", wgs, "--text");
         Assert.NotEqual(0, exportCode);
         Assert.Contains("read only", export);
+    }
+
+    // The 2.2.1 report (MSFS 2024): a VPC VMAX Prime Throttle with three airplane axes and five General binds (cockpit
+    // view zoom axis, reset / toggle cockpit view, toggle external view, active pause) gave only the three axes, and
+    // devices MSFS no longer lists (an old MT-50CM3 stick) came along. Now the General binds come in with their
+    // contexts, a menu bind stays out, the old device only with --include-disconnected, and the export writes the
+    // General binds into a Transversal preset of JoyPro's package (the airplane binds into the airplane preset).
+    [Fact]
+    public void Steam2024_GeneralBindsAreImported_DisconnectedDevicesSkipped_AndExportedToTheTransversalPreset()
+    {
+        string home = Path.Combine(root, "h");
+        string remote = Path.Combine(home, "Steam", "userdata", "42", "2537590", "remote");
+        Directory.CreateDirectory(remote);
+        File.WriteAllBytes(Path.Combine(remote, "inputprofile_0000000301"), Fixture2024("vmax-throttle-airplane.xml"));
+        File.WriteAllBytes(Path.Combine(remote, "inputprofile_0000000302"), Fixture2024("vmax-throttle-general.xml"));
+        File.WriteAllBytes(Path.Combine(remote, "inputprofile_0000000303"), Fixture2024("old-cm3-stick.xml"));
+        string roaming = Path.Combine(home, "Roaming", "Microsoft Flight Simulator 2024");
+        string community = Path.Combine(roaming, "Packages", "Community2024");
+        Directory.CreateDirectory(community);
+        File.WriteAllText(Path.Combine(roaming, "UserCfg.opt"), "InstalledPackagesPath \"" + Path.Combine(roaming, "Packages") + "\"\r\n");
+        connectedDevices = Path.Combine(root, "devices.tsv");
+        File.WriteAllText(connectedDevices, "VPC VMAX Prime Throttle {0000CCCC-0000-4000-8000-000000000301}\t3344\t019D\tVPC VMAX Prime Throttle\r\n");
+        Engine(home, "games", "install", "set", "MSFS2024", roaming);
+        string vmax = "VPC VMAX Prime Throttle {0000CCCC-0000-4000-8000-000000000301}";
+        string profile = Path.Combine(root, "p.pr0file");
+
+        (int code, string output) = Engine(home, "--profile", profile, "msfs2024", "import", "--text");
+
+        Assert.True(code == 0, output);
+        Assert.Contains("KEY_AXIS_FLAPS_SET <- " + vmax + " JOY_RZ", output);
+        Assert.Contains("KEY_THROTTLE1_AXIS_SET_EX1 <- " + vmax + " JOY_RX", output);
+        Assert.Contains("KEY_THROTTLE2_AXIS_SET_EX1 <- " + vmax + " JOY_RY", output);
+        Assert.Contains("KEY_COCKPIT_CAMERA_ZOOM_AXIS <- " + vmax + " JOY_SLIDER2", output);
+        Assert.Contains("KEY_COCKPIT_RESET <- " + vmax + " JOY_BTN10", output);
+        Assert.Contains("KEY_TOGGLE_COCKPIT_CAMERA <- " + vmax + " JOY_BTN13", output);
+        Assert.Contains("KEY_TOGGLE_EXTERNAL_CAMERA <- " + vmax + " JOY_BTN11", output);
+        Assert.Contains("KEY_ACTIVE_PAUSE_TOGGLE <- " + vmax + " JOY_BTN26", output);
+        Assert.DoesNotContain("KEY_MENU_VALID <-", output);
+        Assert.Contains("1 bind(s) in menu, world map and developer contexts left out", output);
+        Assert.Contains("Profiles of 1 device(s) that are not connected were left out", output);
+        Assert.Contains("VPC Stick MT-50CM3", output);
+        Assert.DoesNotContain("KEY_AXIS_ELEVATOR_SET <-", output);
+
+        // The General actions are in the command list with their contexts and readable titles.
+        string catalog = File.ReadAllText(Path.Combine(root, "data", "GameData", "DB", "MSFS2024", "actions.tsv"));
+        Assert.Matches(@"(?m)^KEY_COCKPIT_CAMERA_ZOOM_AXIS\tCockpit Camera Zoom Axis\taxis\tCOCKPIT_GLOBAL_CAMERA\r?$", catalog);
+        Assert.Matches(@"(?m)^KEY_ACTIVE_PAUSE_TOGGLE\t[^\t]+\tbutton\tINGAME_UI\r?$", catalog);
+
+        // The old device only on request.
+        (int scanCode, string scan) = Engine(home, "msfs2024", "scan", "--include-disconnected", "--text");
+        Assert.True(scanCode == 0, scan);
+        Assert.Contains("KEY_AXIS_ELEVATOR_SET <- VPC Stick MT-50CM3 {0000CCCC-0000-4000-8000-000000000302} JOY_Y", scan);
+
+        // Export: JoyPro's package gets an airplane and a Transversal preset of the throttle.
+        (int exportCode, string export) = Engine(home, "--profile", profile, "msfs2024", "export", community, "--text");
+        Assert.True(exportCode == 0, export);
+        string categories = Path.Combine(community, "joypro-input-profiles", "InputProfiles", "Categories");
+        string general = Assert.Single(Directory.GetFiles(Path.Combine(categories, "Transversal"), "JoyPro_*_2024_Transversal.xml"));
+        string planes = Assert.Single(Directory.GetFiles(Path.Combine(categories, "Airplane"), "JoyPro_*_2024_Planes.xml"));
+        string generalText = File.ReadAllText(general);
+        string planesText = File.ReadAllText(planes);
+        Assert.Contains("ProductID=\"019D\"", generalText);
+        Assert.Matches("(?s)<Context ContextName=\"COCKPIT_GLOBAL_CAMERA\">\\s*<Action ActionName=\"KEY_COCKPIT_CAMERA_ZOOM_AXIS\"[^>]*>.*?>530</KEY>", generalText);
+        Assert.Matches("(?s)<Context ContextName=\"INGAME_UI\">\\s*<Action ActionName=\"KEY_ACTIVE_PAUSE_TOGGLE\"[^>]*>.*?>25</KEY>", generalText);
+        Assert.Matches("(?s)<Context ContextName=\"MODES\">\\s*<Action ActionName=\"KEY_COCKPIT_RESET\"[^>]*>.*?>9</KEY>", generalText);
+        Assert.Matches("(?s)<Context ContextName=\"VIEW_MODE_SWITCHES\">.*KEY_TOGGLE_EXTERNAL_CAMERA", generalText);
+        Assert.DoesNotContain("KEY_THROTTLE1_AXIS_SET_EX1", generalText);
+        Assert.DoesNotContain("KEY_MENU_VALID", generalText);
+        Assert.Contains("KEY_THROTTLE1_AXIS_SET_EX1", planesText);
+        Assert.Contains("KEY_AXIS_FLAPS_SET", planesText);
+        Assert.DoesNotContain("KEY_COCKPIT_CAMERA_ZOOM_AXIS", planesText);
+        Assert.DoesNotContain("KEY_ACTIVE_PAUSE_TOGGLE", planesText);
+        Assert.DoesNotContain("no MSFS profile of the device holds", export);
+        Assert.Contains("transversal/joypro_", File.ReadAllText(Path.Combine(community, "joypro-input-profiles", "layout.json")));
+
+        // Read back from the package: the same binds (no change on a second export).
+        (int againCode, string again) = Engine(home, "--profile", profile, "msfs2024", "export", community, "--text");
+        Assert.True(againCode == 0, again);
+        Assert.Contains("The MSFS profiles already match.", again);
+    }
+
+    // MSFS 2020 (Steam, profiles edited in place): a General bind the profile lost goes back into its own context.
+    [Fact]
+    public void Steam2020_GeneralBind_IsWrittenBackIntoItsContext()
+    {
+        string home = Path.Combine(root, "h");
+        string remote = Path.Combine(home, "Steam", "userdata", "42", "1250410", "remote");
+        Directory.CreateDirectory(remote);
+        string file = Path.Combine(remote, "inputprofile_0000000102");
+        File.Copy(Path.Combine(fixtures, "steam2020", "inputprofile_0000000102"), file);
+        string roaming = Path.Combine(home, "Roaming", "Microsoft Flight Simulator");
+        Directory.CreateDirectory(roaming);
+        Engine(home, "games", "install", "set", "MSFS2020", roaming);
+        string profile = Path.Combine(root, "p.pr0file");
+
+        (int code, string output) = Engine(home, "--profile", profile, "msfs2020", "import", remote, "--text");
+        Assert.True(code == 0, output);
+        Assert.Contains("KEY_COCKPIT_CAMERA_ZOOM_AXIS <- LEFT VPC Throttle MT-50 CM {0000AAAA-0000-4000-8000-000000000102} JOY_Z", output);
+
+        // The camera zoom is gone from the file (cleared in the sim); the export puts it back where it was.
+        string text = File.ReadAllText(file);
+        string without = System.Text.RegularExpressions.Regex.Replace(text, "\\t<Context ContextName=\"COCKPIT_GLOBAL_CAMERA\">.*?</Context>\\r?\\n", string.Empty, System.Text.RegularExpressions.RegexOptions.Singleline);
+        Assert.NotEqual(text, without);
+        File.WriteAllText(file, without);
+
+        (int exportCode, string export) = Engine(home, "--profile", profile, "msfs2020", "export", remote, "--text");
+        Assert.True(exportCode == 0, export);
+        string after = File.ReadAllText(file);
+        Assert.Matches("(?s)<Context ContextName=\"COCKPIT_GLOBAL_CAMERA\">\\s*<Action ActionName=\"KEY_COCKPIT_CAMERA_ZOOM_AXIS\"[^>]*>.*?>1058</KEY>", after);
+        Assert.DoesNotContain("goes into PLANE", export);
     }
 
     [Fact]
@@ -181,7 +297,8 @@ public sealed class MsfsProfileImportTests : IDisposable
 
         Assert.True(code == 0, output);
         Assert.Contains("MSFS device profiles read: 4 from the Microsoft Store version", output);
-        Assert.Contains("Bindings Read: 20", output);
+        Assert.Contains("Bindings Read: 23", output);
+        Assert.Contains("KEY_CHASE_ZOOM_AXIS <- LEFT VPC Throttle MT-50 CM {0000AAAA-0000-4000-8000-000000000102} JOY_Z", output);
         Assert.Contains("KEY_THROTTLE_AXIS_SET_EX1 <- LEFT VPC Throttle MT-50 CM {0000AAAA-0000-4000-8000-000000000102} JOY_RX", output);
         Assert.Contains("KEY_AILERON_TRIM_LEFT <- VKB-Sim Gunfighter Modern Combat Pro Twist {0000AAAA-0000-4000-8000-000000000101} JOY_BTN_POV1_L", output);
     }
@@ -235,6 +352,11 @@ public sealed class MsfsProfileImportTests : IDisposable
         info.Environment["JOYPRO_INSTALL_DETECTION"] = "off";
         info.Environment["JOYPRO_NO_INTERNET_PICTURES"] = "1";
         info.Environment["JOYPRO_LOG_DIR"] = Path.Combine(root, "logs");
+        // The connected devices: none unless a test lists some (the PC's own devices never take part).
+        string devicesFile = connectedDevices ?? Path.Combine(root, "no-devices.tsv");
+        if (connectedDevices == null && !File.Exists(devicesFile))
+            File.WriteAllText(devicesFile, "# no device connected\r\n");
+        info.Environment["JOYPRO_FAKE_DEVICES"] = devicesFile;
         using Process process = Process.Start(info)!;
         System.Threading.Tasks.Task<string> stderr = process.StandardError.ReadToEndAsync();
         string stdout = process.StandardOutput.ReadToEnd();

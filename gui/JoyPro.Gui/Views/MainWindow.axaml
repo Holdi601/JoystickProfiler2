@@ -734,6 +734,9 @@
                                                 </RadioButton>
                                                 <CheckBox IsChecked="{Binding ImportWizardKeyboard}" IsVisible="{Binding ImportWizardOffersKeyboard}"
                                                           Content="{l:T 'Also take the keyboard keys (flight commands only; device binds are always taken)'}" />
+                                                <CheckBox IsChecked="{Binding ImportIncludeDisconnected}" IsVisible="{Binding ImportWizardOffersDisconnected}"
+                                                          Content="{l:T 'Also import devices that are not connected'}"
+                                                          ToolTip.Tip="{l:T 'MSFS keeps the binds of every device it ever saw. Off: only the devices connected now.'}" />
                                                 <StackPanel Spacing="6" IsVisible="{Binding ImportWizardIsDcs}">
                                                     <CheckBox Content="{l:T 'All my DCS aircraft'}" IsChecked="{Binding ImportAllDcsPlanes}" />
                                                     <Border Classes="sunken" Padding="6" IsVisible="{Binding ShowDcsPlaneSelection}">
@@ -918,6 +921,8 @@
                                         <Button Command="{Binding ExportRegistryGameCommand}" Content="{l:T 'Export'}" IsEnabled="{Binding CanRunRegistryGame}" Margin="0,0,8,6" />
                                         <CheckBox Content="{l:T 'Export as dry run (show changes only)'}" IsChecked="{Binding RegistryGameDryRun}" Margin="0,0,8,6" />
                                         <CheckBox Content="{l:T 'Include keyboard binds (flight actions only)'}" IsChecked="{Binding RegistryGameIncludeKeyboard}" Margin="0,0,8,6" />
+                                        <CheckBox Content="{l:T 'Also import devices that are not connected'}" IsChecked="{Binding ImportIncludeDisconnected}" IsVisible="{Binding SelectedRegistryGameKeepsDisconnectedDevices}"
+                                                  ToolTip.Tip="{l:T 'MSFS keeps the binds of every device it ever saw. Off: only the devices connected now.'}" Margin="0,0,8,6" />
                                         <CheckBox Content="{l:T 'Nuke: remove all binds from devices JoyPro does not use'}" IsChecked="{Binding ExportNukeUntouchedDevices}" Margin="0,0,8,6" />
                                     </WrapPanel>
                                     <Grid ColumnDefinitions="Auto,*,Auto" ColumnSpacing="8" IsVisible="{Binding SelectedRegistryGameSupportsRefresh}">

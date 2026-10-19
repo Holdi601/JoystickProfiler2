@@ -218,9 +218,12 @@ namespace JoyPro.Engine.Games
                 }
 
                 string relationBySameInput;
+                // Same input, same relation; an axis the game inverts for one action and not for the other stays a
+                // relation of its own (one relation has one invert: the export would change the other action).
                 if (meta == null && relationBySignature.TryGetValue(bindingSignature, out relationBySameInput) &&
                     relations.ContainsKey(relationBySameInput) &&
-                    relations[relationBySameInput].ISAXIS == isAxis)
+                    relations[relationBySameInput].ISAXIS == isAxis &&
+                    (!isAxis || !binds.ContainsKey(relationBySameInput) || binds[relationBySameInput] == null || binds[relationBySameInput].Inverted == binding.Inverted))
                 {
                     relations[relationBySameInput].AddNode(binding.ActionId, game.GameId, isAxis, game.GameId, false);
                     result.NodesAddedToExisting++;

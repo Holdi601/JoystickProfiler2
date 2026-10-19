@@ -106,6 +106,24 @@ namespace JoyPro.Engine.Games
         // actions, so new actions are added like in 2020 files.
         public bool IsPreset { get; private set; }
         public string Category { get; private set; }
+
+        // The 2024 category of the file: <AircraftInfo CategoryName> of a user profile, else the folder of a preset
+        // (InputProfiles\Categories\<Airplane|...|Transversal>); upper case, empty for 2020 files.
+        public string CategoryKey
+        {
+            get
+            {
+                string category = Category.Length > 0 ? Category : (IsPreset ? MsfsCommunityPackage.PresetCategory(FilePath) : string.Empty);
+                return category.ToUpperInvariant();
+            }
+        }
+
+        // The sim's "General" binds (cameras, views, pause, ...): the Transversal category of MSFS 2024.
+        public bool IsGeneralCategory
+        {
+            get { return CategoryKey == "TRANSVERSAL" || CategoryKey == "GENERAL"; }
+        }
+
         public List<MsfsAction> Actions { get; private set; }
         // Where the file came from (import reads JoyPro's package and the user's own profiles side by side).
         public MsfsProfileSourceKind Source { get; set; }
@@ -142,11 +160,20 @@ namespace JoyPro.Engine.Games
             }
 
             byte[] bytes;
-            using (FileStream stream = new FileStream(path, FileMode.Open, FileAccess.Read, FileShare.ReadWrite | FileShare.Delete))
-            using (MemoryStream copy = new MemoryStream())
+            try
             {
-                stream.CopyTo(copy);
-                bytes = copy.ToArray();
+                using (FileStream stream = new FileStream(path, FileMode.Open, FileAccess.Read, FileShare.ReadWrite | FileShare.Delete))
+                using (MemoryStream copy = new MemoryStream())
+                {
+                    stream.CopyTo(copy);
+                    bytes = copy.ToArray();
+                }
+            }
+            catch (Exception ex) when (ex is IOException || ex is UnauthorizedAccessException)
+            {
+                // A Store install keeps its data encrypted: a file that lost the mark cannot be read (409).
+                errors.Add("Could not read the MSFS input profile " + path + ": " + (SafeFileIo.IsAppxNotEncrypted(ex) ? SafeFileIo.Explain(ex, path).Message : ex.Message));
+                return false;
             }
             bool bom = bytes.Length >= 3 && bytes[0] == 0xEF && bytes[1] == 0xBB && bytes[2] == 0xBF;
             // UTF-8 (the sim's files), or UTF-16 with its byte order mark (read only: Save writes UTF-8).

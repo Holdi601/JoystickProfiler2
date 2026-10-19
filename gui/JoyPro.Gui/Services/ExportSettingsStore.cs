@@ -20,6 +20,9 @@ public sealed class ExportSettings
     public bool StarCitizenPreferLocalOrder { get; set; } = true;
     public bool RegistryDryRun { get; set; }
 
+    // MSFS import: also the devices that are not connected (off: MSFS keeps the binds of every device it ever saw).
+    public bool ImportIncludeDisconnected { get; set; }
+
     // "dcs", "il2", "starCitizen", "starCitizenSource" -> the path the user had.
     public Dictionary<string, string> Paths { get; set; } = new(StringComparer.OrdinalIgnoreCase);
 

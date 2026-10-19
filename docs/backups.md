@@ -31,8 +31,16 @@ break after an export, restore the set from before that export.
   of `File.Copy`/`File.Replace` carrying the file's attributes over. A game file with the EFS "encrypted" mark
   (a Store package folder, a folder from another PC, an encrypted AppData) made `File.Copy` fail with "The specified
   file could not be encrypted." (ERROR_ENCRYPTION_FAILED) where Windows cannot encrypt (FAT/exFAT, network share, EFS
-  off). JoyPro's own temp and backup files lose the mark; a game file that really cannot be written gets a message
-  saying what to do. Tests: `SafeFileIoTests` (the native calls fail with HRESULT 0x80071770;
-  `JOYPRO_TEST_FAULT_ENCRYPTION=copy,replace,move,stream` does the same for an engine run).
+  off). A file JoyPro writes matches the EFS encryption of its folder: in an encrypted game folder (a Microsoft Store app
+  installed on another drive keeps its data EFS-encrypted, and Windows refuses a plain file there with "The APPX file can
+  not be accessed because it is not encrypted as expected", ERROR_APPX_FILE_NOT_ENCRYPTED 409, an EFS refusal) new files take the
+  folder's mark and JoyPro never removes it; the temp next to a game file loses the mark only in a plain folder. Only
+  JoyPro's own backup and temp files in its own folders lose the mark, and only where Windows cannot encrypt. The
+  `<file>.jpbak` next to a game file is a `File.Copy` (keeps the EFS encryption), the bytes only when Windows cannot
+  EFS-encrypt there. A game file that really cannot be written gets a message saying what to do (6000 and 409 each have
+  their own). Tests: `SafeFileIoTests` (the native calls fail with HRESULT 0x80071770 or 0x80070199, EFS state and
+  File.Encrypt simulated; `JOYPRO_TEST_REAL_EFS=1` runs one test with real EFS, which makes an EFS certificate for the
+  Windows user if there is none; `JOYPRO_TEST_FAULT_ENCRYPTION=copy,replace,move,stream` (or `replace:409`, ...) does
+  the same for an engine run).
 - The newest 30 sets per game are kept; older ones are deleted when a new set is made.
 - The single `<file>.jpbak` next to a changed file (copy of the state before the last export) stays as before.

@@ -3,21 +3,30 @@
 #pragma warning disable CA1416
 #endif
 using System;
+using System.Collections.Generic;
 using System.IO;
 
 namespace JoyPro.Engine
 {
     // File copies and replaces of the exports that survive files carrying the EFS "encrypted" attribute.
     // File.Copy, File.Replace and File.Move keep a file's encryption; where the target cannot hold an encrypted file
-    // (a FAT/exFAT drive, a network share, a PC where EFS is off or not available, a Store package folder) Windows
-    // stops with ERROR_ENCRYPTION_FAILED (6000, "The specified file could not be encrypted."): an MSFS 2024 export of
-    // the Store version failed so when backing up its preset. These helpers copy the bytes instead (the new file has
-    // no attributes of the old one), clear the attribute on JoyPro's own temp and backup files, and say plainly what
-    // to do when a game file really cannot be written. Plain C# 7.3; the GUI tests link it (SafeFileIoTests).
+    // (a FAT/exFAT drive, a network share, a PC where EFS is off or not available) Windows stops with
+    // ERROR_ENCRYPTION_FAILED (6000, "The specified file could not be encrypted."): an MSFS 2024 export failed so when
+    // backing up its preset. These helpers copy the bytes instead and say plainly what to do when a game file really
+    // cannot be written.
+    // The rule: a file JoyPro writes matches the encryption of its folder. In an encrypted folder a new file is
+    // encrypted (it takes the folder's mark), and JoyPro never removes the mark there: a Microsoft Store app installed
+    // on another drive keeps its data encrypted, and Windows refuses a plain file there with
+    // ERROR_APPX_FILE_NOT_ENCRYPTED (409, "The APPX file can not be accessed because it is not encrypted as expected",
+    // MSFS 2024 Store report on 2.2.1). Only JoyPro's own folders (backup store, temp) lose the mark, and only when
+    // Windows cannot encrypt there. Plain C# 7.3; the GUI tests link it (SafeFileIoTests).
     internal static class SafeFileIo
     {
         // HRESULT of ERROR_ENCRYPTION_FAILED (Win32 6000).
         public const int EncryptionFailedHResult = unchecked((int)0x80071770);
+
+        // HRESULT of ERROR_APPX_FILE_NOT_ENCRYPTED (Win32 409): a plain file where a Store app keeps encrypted data.
+        public const int AppxNotEncryptedHResult = unchecked((int)0x80070199);
 
         // Tests: "copy", "replace", "move" and "stream" (comma list) fail like an EFS target that cannot encrypt.
         public const string FaultVariable = "JOYPRO_TEST_FAULT_ENCRYPTION";
@@ -25,14 +34,59 @@ namespace JoyPro.Engine
         // Tests in-process: called before each native operation with its name; may throw.
         internal static Action<string> TestFault;
 
+        // Tests in-process: the EFS state of a file or folder (instead of its attribute), File.Encrypt, and each
+        // operation on a path ("encrypt", "decrypt", "read", "delete", "move"; may throw).
+        internal static Func<string, bool> TestIsEncrypted;
+        internal static Action<string> TestEncrypt;
+        internal static Action<string, string> TestFaultPath;
+
+        // Either EFS failure: Windows cannot encrypt the target (6000), or a Store app's data must stay encrypted (409).
         public static bool IsEncryptionFailure(Exception ex)
+        {
+            return HasHResult(ex, EncryptionFailedHResult) || HasHResult(ex, AppxNotEncryptedHResult);
+        }
+
+        public static bool IsAppxNotEncrypted(Exception ex)
+        {
+            return HasHResult(ex, AppxNotEncryptedHResult);
+        }
+
+        private static bool HasHResult(Exception ex, int hresult)
         {
             for (Exception e = ex; e != null; e = e.InnerException)
             {
-                if (e.HResult == EncryptionFailedHResult)
+                if (e.HResult == hresult)
                     return true;
             }
             return false;
+        }
+
+        // The file or folder carries the EFS "encrypted" mark (false when it does not exist or cannot be read).
+        public static bool IsEncrypted(string path)
+        {
+            try
+            {
+                if (string.IsNullOrWhiteSpace(path))
+                    return false;
+                Func<string, bool> probe = TestIsEncrypted;
+                if (probe != null)
+                    return probe(Path.GetFullPath(path).TrimEnd('\\', '/'));
+                if (!File.Exists(path) && !Directory.Exists(path))
+                    return false;
+                return (File.GetAttributes(path) & FileAttributes.Encrypted) != 0;
+            }
+            catch (Exception ex) when (ex is IOException || ex is UnauthorizedAccessException || ex is ArgumentException || ex is NotSupportedException)
+            {
+                return false;
+            }
+        }
+
+        // The folder that holds path is encrypted: a file written there must be encrypted too.
+        public static bool FolderOfIsEncrypted(string path)
+        {
+            if (string.IsNullOrWhiteSpace(path))
+                return false;
+            return IsEncrypted(Path.GetDirectoryName(Path.GetFullPath(path).TrimEnd('\\', '/')));
         }
 
         // A copy of a file's bytes (backups, restores). The target gets no attributes of the source, so an encrypted
@@ -49,7 +103,7 @@ namespace JoyPro.Engine
                 {
                     StreamCopy(source, target);
                 }
-                catch (IOException ex) when (ownTarget && IsEncryptionFailure(ex))
+                catch (IOException ex) when (ownTarget && HasHResult(ex, EncryptionFailedHResult))
                 {
                     // JoyPro's own folder is marked encrypted and Windows cannot encrypt there: plain files instead.
                     ClearEncrypted(Path.GetDirectoryName(Path.GetFullPath(target)));
@@ -66,12 +120,39 @@ namespace JoyPro.Engine
             TrySetLastWriteTime(target, written);
         }
 
+        // A copy of a game file next to it ("<file>.jpbak"): File.Copy first, which keeps the source's encryption (in an
+        // encrypted folder the copy stays encrypted); when Windows cannot encrypt the target, the bytes (a new file takes
+        // its folder's encryption). The game's folder and files keep their mark.
+        public static void CopyBesideGameFile(string source, string target)
+        {
+            DateTime written = File.GetLastWriteTimeUtc(source);
+            try
+            {
+                Fault("copy");
+                File.Copy(source, target, true);
+                return;
+            }
+            catch (IOException ex) when (IsEncryptionFailure(ex))
+            {
+                JoyPro.Logging.JoyProLog.Warn("Files", "Copying '" + source + "' to '" + target + "' hit an EFS error; copying its bytes instead: " + ex.Message);
+            }
+            try
+            {
+                StreamCopy(source, target);
+            }
+            catch (IOException ex) when (IsEncryptionFailure(ex))
+            {
+                throw Explain(ex, target);
+            }
+            TrySetLastWriteTime(target, written);
+        }
+
         // temp (JoyPro's own, next to path) takes the place of path, like File.Replace(temp, path, null) or File.Move
         // when path does not exist yet. When Windows cannot carry the encryption over, the bytes of temp are written
-        // into path (path keeps its own attributes) and temp is deleted.
+        // into path (path keeps its own attributes) and temp is deleted. In an encrypted folder temp keeps its mark.
         public static void ReplaceFile(string temp, string path)
         {
-            ClearEncrypted(temp);
+            ClearEncryptedTempBeside(temp, path);
             try
             {
                 if (File.Exists(path))
@@ -88,7 +169,7 @@ namespace JoyPro.Engine
             }
             catch (IOException ex) when (IsEncryptionFailure(ex))
             {
-                JoyPro.Logging.JoyProLog.Warn("Files", "Replacing '" + path + "' hit ERROR_ENCRYPTION_FAILED; writing its bytes instead: " + ex.Message);
+                JoyPro.Logging.JoyProLog.Warn("Files", "Replacing '" + path + "' hit an EFS error; writing its bytes instead: " + ex.Message);
             }
             OverwriteFromTemp(temp, path);
         }
@@ -96,7 +177,7 @@ namespace JoyPro.Engine
         // temp over path, like File.Copy(temp, path, true) + File.Delete(temp).
         public static void CopyOverAndDelete(string temp, string path)
         {
-            ClearEncrypted(temp);
+            ClearEncryptedTempBeside(temp, path);
             try
             {
                 Fault("copy");
@@ -106,20 +187,30 @@ namespace JoyPro.Engine
             }
             catch (IOException ex) when (IsEncryptionFailure(ex))
             {
-                JoyPro.Logging.JoyProLog.Warn("Files", "Copying over '" + path + "' hit ERROR_ENCRYPTION_FAILED; writing its bytes instead: " + ex.Message);
+                JoyPro.Logging.JoyProLog.Warn("Files", "Copying over '" + path + "' hit an EFS error; writing its bytes instead: " + ex.Message);
             }
             OverwriteFromTemp(temp, path);
         }
 
+        // JoyPro's temp next to a game file loses an encrypted mark only where the game's folder is plain (a temp that
+        // came encrypted into a plain folder); in an encrypted folder it stays encrypted.
+        private static void ClearEncryptedTempBeside(string temp, string path)
+        {
+            if (!FolderOfIsEncrypted(path))
+                ClearEncrypted(temp);
+        }
+
         // The Encrypted attribute off a file or folder of JoyPro's own (best effort; nothing happens on a plain one).
+        // Never for a game's folder or a file in it.
         public static void ClearEncrypted(string path)
         {
             try
             {
                 if (string.IsNullOrWhiteSpace(path) || (!File.Exists(path) && !Directory.Exists(path)))
                     return;
-                if ((File.GetAttributes(path) & FileAttributes.Encrypted) == 0)
+                if (!IsEncrypted(path))
                     return;
+                FaultPath("decrypt", path);
                 File.Decrypt(path);
                 JoyPro.Logging.JoyProLog.Info("Files", "Removed the EFS encryption of JoyPro's own '" + path + "'.");
             }
@@ -129,9 +220,160 @@ namespace JoyPro.Engine
             }
         }
 
+        // Re-encrypts what lost the mark in a folder whose parent is encrypted (JoyPro 2.1.1 to 2.2.1 removed it from
+        // the MSFS package they wrote): the folder, its subfolders and files get File.Encrypt. A file Windows does not
+        // encrypt is read, deleted and written again (a new file takes the folder's encryption); a file that cannot even
+        // be read (409) is moved to quarantineFolder (deleted when that fails) and listed in lost, so the caller can make
+        // it again. Nothing happens when the parent is not encrypted. done lists what was changed (for the log).
+        public static void MatchFolderEncryption(string folder, string quarantineFolder, List<string> done, List<string> lost)
+        {
+            if (string.IsNullOrWhiteSpace(folder) || !Directory.Exists(folder))
+                return;
+            string full = Path.GetFullPath(folder).TrimEnd('\\', '/');
+            if (!FolderOfIsEncrypted(full))
+                return;
+            List<string> folders = new List<string> { full };
+            folders.AddRange(Directory.GetDirectories(full, "*", SearchOption.AllDirectories));
+            foreach (string dir in folders)
+            {
+                if (IsEncrypted(dir))
+                    continue;
+                string error = TryEncrypt(dir);
+                done.Add(error == null ? "encrypted folder " + dir : "could not encrypt folder " + dir + ": " + error);
+            }
+            foreach (string file in Directory.GetFiles(full, "*", SearchOption.AllDirectories))
+            {
+                if (IsEncrypted(file))
+                    continue;
+                string error = TryEncrypt(file);
+                if (error == null)
+                {
+                    done.Add("encrypted " + file);
+                    continue;
+                }
+                byte[] bytes = null;
+                DateTime written = DateTime.MinValue;
+                try
+                {
+                    FaultPath("read", file);
+                    written = File.GetLastWriteTimeUtc(file);
+                    bytes = File.ReadAllBytes(file);
+                }
+                catch (Exception ex) when (ex is IOException || ex is UnauthorizedAccessException)
+                {
+                    error = ex.Message;
+                }
+                if (bytes != null)
+                {
+                    RewriteFile(file, bytes, written, quarantineFolder, done, lost);
+                    continue;
+                }
+                // Not even readable: out of the way, so the caller can make it again.
+                RemoveUnreadable(file, error, quarantineFolder, done, lost);
+            }
+        }
+
+        private static void RewriteFile(string file, byte[] bytes, DateTime written, string quarantineFolder, List<string> done, List<string> lost)
+        {
+            try
+            {
+                DeleteFile(file);
+                File.WriteAllBytes(file, bytes);
+                TrySetLastWriteTime(file, written);
+                done.Add("wrote again (takes the folder's encryption) " + file);
+            }
+            catch (Exception ex) when (ex is IOException || ex is UnauthorizedAccessException)
+            {
+                if (File.Exists(file))
+                {
+                    done.Add("could not write again " + file + ": " + ex.Message);
+                    return;
+                }
+                // Deleted but not written: the bytes go where JoyPro keeps its copies.
+                try
+                {
+                    if (!string.IsNullOrWhiteSpace(quarantineFolder))
+                    {
+                        Directory.CreateDirectory(quarantineFolder);
+                        File.WriteAllBytes(Path.Combine(quarantineFolder, Path.GetFileName(file)), bytes);
+                    }
+                }
+                catch (Exception saveEx) when (saveEx is IOException || saveEx is UnauthorizedAccessException)
+                {
+                }
+                lost.Add(file);
+                done.Add("removed (could not be written again: " + ex.Message + ") " + file);
+            }
+        }
+
+        private static void RemoveUnreadable(string file, string error, string quarantineFolder, List<string> done, List<string> lost)
+        {
+            bool moved = false;
+            if (!string.IsNullOrWhiteSpace(quarantineFolder))
+            {
+                try
+                {
+                    Directory.CreateDirectory(quarantineFolder);
+                    string target = Path.Combine(quarantineFolder, Path.GetFileName(file));
+                    if (File.Exists(target))
+                        File.Delete(target);
+                    FaultPath("move", file);
+                    File.Move(file, target);
+                    moved = true;
+                }
+                catch (Exception ex) when (ex is IOException || ex is UnauthorizedAccessException)
+                {
+                }
+            }
+            try
+            {
+                if (!moved)
+                    DeleteFile(file);
+                lost.Add(file);
+                done.Add((moved ? "moved the unreadable file to " + quarantineFolder + ": " : "deleted the unreadable file ") + file + " (" + error + ")");
+            }
+            catch (Exception ex) when (ex is IOException || ex is UnauthorizedAccessException)
+            {
+                done.Add("could not remove the unreadable file " + file + ": " + ex.Message);
+            }
+        }
+
+        // File.Encrypt; null when it worked, else the reason.
+        private static string TryEncrypt(string path)
+        {
+            try
+            {
+                FaultPath("encrypt", path);
+                Action<string> hook = TestEncrypt;
+                if (hook != null)
+                    hook(Path.GetFullPath(path).TrimEnd('\\', '/'));
+                else
+                    File.Encrypt(path);
+                return null;
+            }
+            catch (Exception ex) when (ex is IOException || ex is UnauthorizedAccessException || ex is NotSupportedException || ex is PlatformNotSupportedException)
+            {
+                return ex.Message;
+            }
+        }
+
+        private static void DeleteFile(string path)
+        {
+            FaultPath("delete", path);
+            File.Delete(path);
+        }
+
         // A plain message for a target Windows cannot write because of EFS.
         public static IOException Explain(Exception ex, string target)
         {
+            if (IsAppxNotEncrypted(ex))
+            {
+                return new EncryptionTargetException(
+                    "Windows could not access '" + target + "': the game keeps its data encrypted on this drive (a Microsoft Store app installed on " +
+                    "another drive), and this file is not encrypted as expected, so JoyPro could not write it. Export again (JoyPro repairs the " +
+                    "encryption of its own files); if it still fails, delete that file (JoyPro makes it again) and export again.",
+                    ex, AppxNotEncryptedHResult);
+            }
             return new EncryptionTargetException(
                 "Windows could not write '" + target + "': the file or its folder is marked as encrypted (EFS), and encrypted files " +
                 "cannot be stored there (a FAT/exFAT drive, a network share, or EFS is not available on this PC). Remove the encryption " +
@@ -187,6 +429,13 @@ namespace JoyPro.Engine
             }
         }
 
+        private static void FaultPath(string operation, string path)
+        {
+            Action<string, string> hook = TestFaultPath;
+            if (hook != null)
+                hook(operation, Path.GetFullPath(path).TrimEnd('\\', '/'));
+        }
+
         private static void Fault(string operation)
         {
             Action<string> hook = TestFault;
@@ -197,21 +446,32 @@ namespace JoyPro.Engine
                 return;
             foreach (string fault in faults.Split(','))
             {
-                if (string.Equals(fault.Trim(), operation, StringComparison.OrdinalIgnoreCase))
+                string name = fault.Trim();
+                if (string.Equals(name, operation, StringComparison.OrdinalIgnoreCase))
                 {
                     throw new IOException("The specified file could not be encrypted. (test fault: " + operation + ")", EncryptionFailedHResult);
+                }
+                // "<operation>:409": the same operation fails like a plain file in a Store app's encrypted data.
+                if (string.Equals(name, operation + ":409", StringComparison.OrdinalIgnoreCase))
+                {
+                    throw new IOException("The APPX file can not be accessed because it is not encrypted as expected. (test fault: " + operation + ")", AppxNotEncryptedHResult);
                 }
             }
         }
     }
 
-    // A target Windows cannot write because of EFS, with what to do (HResult stays ERROR_ENCRYPTION_FAILED).
+    // A target Windows cannot write because of EFS, with what to do (HResult stays the EFS error's).
     internal sealed class EncryptionTargetException : IOException
     {
         public EncryptionTargetException(string message, Exception inner)
+            : this(message, inner, SafeFileIo.EncryptionFailedHResult)
+        {
+        }
+
+        public EncryptionTargetException(string message, Exception inner, int hresult)
             : base(message, inner)
         {
-            HResult = SafeFileIo.EncryptionFailedHResult;
+            HResult = hresult;
         }
     }
 }

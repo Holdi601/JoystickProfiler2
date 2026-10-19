@@ -263,6 +263,13 @@ namespace JoyPro.Engine.Games
         bool ImportReading { get; set; }
     }
 
+    // For games that keep the binds of every device they ever saw (MSFS): import takes only the connected devices
+    // unless this is set (--include-disconnected).
+    internal interface IGameDisconnectedDevices
+    {
+        bool IncludeDisconnectedDevices { get; set; }
+    }
+
     // For games where one action holds a list of inputs: records which inputs JoyPro owns, so an
     // overwrite export can replace JoyPro's own inputs without touching inputs the user added in the game.
     internal interface IGameOwnershipTracking

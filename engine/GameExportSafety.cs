@@ -26,7 +26,9 @@ namespace JoyPro.Engine
 
             try
             {
-                SafeFileIo.CopyFile(fullPath, fullPath + BackupExtension, true, ownTarget: true);
+                // Beside the game's file, in the game's folder: the copy keeps the encryption the folder has (an
+                // encrypted folder of a Store app must stay so), the game's files and folder are never changed.
+                SafeFileIo.CopyBesideGameFile(fullPath, fullPath + BackupExtension);
             }
             catch (Exception ex)
             {

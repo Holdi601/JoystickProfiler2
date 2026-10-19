@@ -43,6 +43,7 @@ public sealed partial class MainWindowViewModel
     [NotifyPropertyChangedFor(nameof(ImportWizardTitle))]
     [NotifyPropertyChangedFor(nameof(ImportWizardIsDcs))]
     [NotifyPropertyChangedFor(nameof(ImportWizardOffersKeyboard))]
+    [NotifyPropertyChangedFor(nameof(ImportWizardOffersDisconnected))]
     private GameCardItem? importWizardGame;
 
     public string ImportWizardTitle => ImportWizardGame == null ? T("Import your binds from a game") : T("Import from {0}", ImportWizardGame.Name);
@@ -51,6 +52,9 @@ public sealed partial class MainWindowViewModel
 
     // IL-2 has no keyboard choice (its import reads the joystick binds).
     public bool ImportWizardOffersKeyboard => ImportWizardGame != null && ImportWizardGame.Kind != "il2";
+
+    // MSFS keeps the binds of every device it ever saw: "Also import devices that are not connected" (default off).
+    public bool ImportWizardOffersDisconnected => ImportWizardGame != null && KeepsDisconnectedDevices(ImportWizardGame.GameId);
 
     // true: add to the open profile (engine --merge); false: the profile's relations are replaced by the game's.
     [ObservableProperty]

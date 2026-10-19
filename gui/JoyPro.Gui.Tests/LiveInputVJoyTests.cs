@@ -123,6 +123,7 @@ public sealed class LiveInputVJoyTests
             };
             AvaloniaRenderThread.Wait(vm.RefreshRelationsCommand.ExecuteAsync(null));
             AvaloniaRenderThread.Wait(vm.RefreshBindsCommand.ExecuteAsync(null));
+            vm.ShowFollowInputNote = true;
             vm.CurrentStage = UiStage.Binds;
             try
             {

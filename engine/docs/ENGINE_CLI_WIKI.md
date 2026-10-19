@@ -248,14 +248,14 @@ engine profile save "C:\profiles\my_setup.pr0file"
   engine xplane11 refresh-db [<source-path>] [--dry-run]   (builds the catalog from the installed game, or adds its new actions; writes it only when it changes)
   engine msfs2024 paths
   engine msfs2024 catalog
-  engine msfs2024 scan [<config-path>] [--path <config-path>] [--game-profile <name>]
-  engine msfs2024 import [<config-path>] [--path <config-path>] [--replace] [--include-keyboard] [--game-profile <name>]
+  engine msfs2024 scan [<config-path>] [--path <config-path>] [--game-profile <name>] [--include-disconnected]
+  engine msfs2024 import [<config-path>] [--path <config-path>] [--replace] [--include-keyboard] [--game-profile <name>] [--include-disconnected]   (devices that are not connected only with --include-disconnected)
   engine msfs2024 export [<config-path>] [--path <config-path>] [--mode clean|add|merge|merge-overwrite] [--dry-run] [--include-keyboard] [--nuke-untouched-devices] [--game-profile <name>] [--aircraft <aircraft-key>]   (flight only: clean takes over the devices it writes, nuke clears unused devices)
   engine msfs2024 refresh-db [<source-path>] [--dry-run]   (builds the catalog from the installed game, or adds its new actions; writes it only when it changes)
   engine msfs2020 paths
   engine msfs2020 catalog
-  engine msfs2020 scan [<config-path>] [--path <config-path>] [--game-profile <name>]
-  engine msfs2020 import [<config-path>] [--path <config-path>] [--replace] [--include-keyboard] [--game-profile <name>]
+  engine msfs2020 scan [<config-path>] [--path <config-path>] [--game-profile <name>] [--include-disconnected]
+  engine msfs2020 import [<config-path>] [--path <config-path>] [--replace] [--include-keyboard] [--game-profile <name>] [--include-disconnected]   (devices that are not connected only with --include-disconnected)
   engine msfs2020 export [<config-path>] [--path <config-path>] [--mode clean|add|merge|merge-overwrite] [--dry-run] [--include-keyboard] [--nuke-untouched-devices] [--game-profile <name>] [--aircraft <aircraft-key>]   (flight only: clean takes over the devices it writes, nuke clears unused devices)
   engine msfs2020 refresh-db [<source-path>] [--dry-run]   (builds the catalog from the installed game, or adds its new actions; writes it only when it changes)
   engine bms paths
@@ -2798,7 +2798,7 @@ Examples:
 engine msfs2024 catalog --text
 ```
 
-### `engine msfs2024 scan [<config-path>] [--path <config-path>] [--game-profile <name>]`
+### `engine msfs2024 scan [<config-path>] [--path <config-path>] [--game-profile <name>] [--include-disconnected]`
 What it does: Reads the game's control file and shows the joystick binds it contains, without changing the profile.
 
 Arguments and example values:
@@ -2806,13 +2806,14 @@ Arguments and example values:
 - `--path`: Optional explicit path override. Use when you prefer option form over positional path.
 - `--game-profile`: Command argument. See examples for typical values.
 - `<name>`: Name value for surrounding option. Example: A-10C_2 or LEFT VPC Throttle.
+- `--include-disconnected`: dcs verify-clean: also check devices that only have files, through a fake stick of their type (true/false).
 
 Examples:
 ```powershell
 engine msfs2024 scan --text
 ```
 
-### `engine msfs2024 import [<config-path>] [--path <config-path>] [--replace] [--include-keyboard] [--game-profile <name>]`
+### `engine msfs2024 import [<config-path>] [--path <config-path>] [--replace] [--include-keyboard] [--game-profile <name>] [--include-disconnected]   (devices that are not connected only with --include-disconnected)`
 What it does: Imports the game's joystick binds into the loaded profile (merged by default; --replace starts from an empty relation list).
 
 Arguments and example values:
@@ -2822,6 +2823,7 @@ Arguments and example values:
 - `--include-keyboard`: Command argument. See examples for typical values.
 - `--game-profile`: Command argument. See examples for typical values.
 - `<name>`: Name value for surrounding option. Example: A-10C_2 or LEFT VPC Throttle.
+- `--include-disconnected`: dcs verify-clean: also check devices that only have files, through a fake stick of their type (true/false).
 
 Examples:
 ```powershell
@@ -2882,7 +2884,7 @@ Examples:
 engine msfs2020 catalog --text
 ```
 
-### `engine msfs2020 scan [<config-path>] [--path <config-path>] [--game-profile <name>]`
+### `engine msfs2020 scan [<config-path>] [--path <config-path>] [--game-profile <name>] [--include-disconnected]`
 What it does: Reads the game's control file and shows the joystick binds it contains, without changing the profile.
 
 Arguments and example values:
@@ -2890,13 +2892,14 @@ Arguments and example values:
 - `--path`: Optional explicit path override. Use when you prefer option form over positional path.
 - `--game-profile`: Command argument. See examples for typical values.
 - `<name>`: Name value for surrounding option. Example: A-10C_2 or LEFT VPC Throttle.
+- `--include-disconnected`: dcs verify-clean: also check devices that only have files, through a fake stick of their type (true/false).
 
 Examples:
 ```powershell
 engine msfs2020 scan --text
 ```
 
-### `engine msfs2020 import [<config-path>] [--path <config-path>] [--replace] [--include-keyboard] [--game-profile <name>]`
+### `engine msfs2020 import [<config-path>] [--path <config-path>] [--replace] [--include-keyboard] [--game-profile <name>] [--include-disconnected]   (devices that are not connected only with --include-disconnected)`
 What it does: Imports the game's joystick binds into the loaded profile (merged by default; --replace starts from an empty relation list).
 
 Arguments and example values:
@@ -2906,6 +2909,7 @@ Arguments and example values:
 - `--include-keyboard`: Command argument. See examples for typical values.
 - `--game-profile`: Command argument. See examples for typical values.
 - `<name>`: Name value for surrounding option. Example: A-10C_2 or LEFT VPC Throttle.
+- `--include-disconnected`: dcs verify-clean: also check devices that only have files, through a fake stick of their type (true/false).
 
 Examples:
 ```powershell

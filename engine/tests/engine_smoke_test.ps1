@@ -3240,21 +3240,21 @@ return diff
     $previousDataDir = $env:JOYPRO_DATA_DIR
     $env:JOYPRO_DATA_DIR = Join-Path $tempDir "joypro-data"
     try {
-        $msAmbiguous = Run-Engine @("msfs2020", "scan", $msRemote, "--text")
+        $msAmbiguous = Run-Engine @("msfs2020", "scan", $msRemote, "--include-disconnected", "--text")
         # Scan and import take the most recently saved profile of a device with several (and say which); an export
         # still needs one picked (--game-profile below).
         Assert-Match $msAmbiguous.Output "Device 'Smoke Stick' has 2 MSFS profiles; imported the most recently saved one, '(Sting|Default)' \(others: '(Sting|Default)'\)\. Pick another with --game-profile" "msfs scan should take the newest of several profiles of a device and name the others."
 
-        $msScan = Run-Engine @("msfs2020", "scan", $msRemote, "--game-profile", "Sting", "--text")
+        $msScan = Run-Engine @("msfs2020", "scan", $msRemote, "--game-profile", "Sting", "--include-disconnected", "--text")
         Assert-True ($msScan.ExitCode -eq 0) "msfs scan failed."
-        Assert-Match $msScan.Output "(?m)^Bindings Read:\s+6\s*$" "msfs scan should read 6 flight bindings of the 'Sting' profiles."
+        Assert-Match $msScan.Output "(?m)^Bindings Read:\s+7\s*$" "msfs scan should read the 6 flight bindings and the camera bind of the 'Sting' profiles."
         Assert-Match $msScan.Output "KEY_FLAPS_INCR <- Smoke Stick \{11111111-2222-3333-4444-555555555555\} JOY_BTN_POV1_U \+ Smoke Stick \{11111111-2222-3333-4444-555555555555\} JOY_BTN1" "msfs scan should decode hat codes and button combinations."
         Assert-Match $msScan.Output "KEY_THROTTLE_AXIS_SET_EX1 <- Smoke Throttle \{66666666-7777-8888-9999-000000000000\} JOY_SLIDER1" "msfs scan should decode slider codes without a connected device."
-        Assert-NotMatch $msScan.Output "KEY_CYCLE_PILOTVIEW_NEXT" "msfs scan must ignore camera contexts."
+        Assert-Match $msScan.Output "KEY_CYCLE_PILOTVIEW_NEXT <- Smoke Stick" "msfs scan should read the camera bind (MODES context: the sim's General binds)."
 
-        $msImport = Run-Engine @("--profile", $msProfile, "msfs2020", "import", $msRemote, "--game-profile", "Sting", "--text")
+        $msImport = Run-Engine @("--profile", $msProfile, "msfs2020", "import", $msRemote, "--game-profile", "Sting", "--include-disconnected", "--text")
         Assert-True ($msImport.ExitCode -eq 0) "msfs import failed."
-        Assert-Match $msImport.Output "(?m)^Relations Imported:\s+6\s*$" "msfs import should create 6 relations (gear on buttons 3 and 12: one relation each)."
+        Assert-Match $msImport.Output "(?m)^Relations Imported:\s+7\s*$" "msfs import should create 7 relations (gear on buttons 3 and 12: one relation each; the camera bind)."
         Assert-True (Test-Path (Join-Path $env:JOYPRO_DATA_DIR "Ownership\\MSFS")) "msfs import should keep ownership data outside the Steam folder."
         Assert-True (@(Get-ChildItem -Path $msRemote -Filter "*.joypro.json").Count -eq 0) "msfs must not write JoyPro files into the Steam folder."
 
@@ -3280,7 +3280,7 @@ return diff
         Assert-True ([System.IO.File]::ReadAllText((Join-Path $msRemote "inputprofile_0000000002")) -eq $msDefaultText) "msfs export must not touch profiles that were not picked."
         Assert-True (@(Get-ChildItem -Path $msRemote -Filter "*.jpbak").Count -eq 0) "msfs backups must not go into the Steam folder."
 
-        $ms2024Import = Run-Engine @("--profile", $ms2024Profile, "msfs2024", "import", $ms2024, "--text")
+        $ms2024Import = Run-Engine @("--profile", $ms2024Profile, "msfs2024", "import", $ms2024, "--include-disconnected", "--text")
         Assert-True ($ms2024Import.ExitCode -eq 0) "msfs 2024 import failed."
         $ms2024RoundTrip = Run-Engine @("--profile", $ms2024Profile, "msfs2024", "export", $ms2024, "--text")
         Assert-True ($ms2024RoundTrip.ExitCode -eq 0) "msfs 2024 export after import failed."

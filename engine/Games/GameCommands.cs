@@ -58,6 +58,8 @@ namespace JoyPro.Engine.Games
             bool replace = PopFlag(args, "--replace");
             bool includeKeyboard = PopSwitch(args, "--include-keyboard");
             bool nuke = PopSwitch(args, "--nuke-untouched-devices");
+            bool includeDisconnectedGiven = args.Any(a => string.Equals(a, "--include-disconnected", StringComparison.OrdinalIgnoreCase));
+            bool includeDisconnected = PopSwitch(args, "--include-disconnected");
             // refresh-db: read the game's packed archives (War Thunder's *.vromfs.bin) unless --no-game-archives (or
             // --read-game-archives false) says otherwise.
             bool readArchivesGiven = args.Any(a => string.Equals(a, "--read-game-archives", StringComparison.OrdinalIgnoreCase));
@@ -99,6 +101,12 @@ namespace JoyPro.Engine.Games
             IGameImportReading importReading = game as IGameImportReading;
             if (importReading != null)
                 importReading.ImportReading = action == "import" || action == "scan";
+            // MSFS keeps the profiles of every device it ever saw: import takes the connected ones unless asked.
+            IGameDisconnectedDevices disconnected = game as IGameDisconnectedDevices;
+            if (disconnected != null)
+                disconnected.IncludeDisconnectedDevices = includeDisconnected;
+            else if (includeDisconnectedGiven && includeDisconnected)
+                return Fail(game.DisplayName + " imports every device it has binds for; --include-disconnected is only for Microsoft Flight Simulator.");
 
             switch (action)
             {

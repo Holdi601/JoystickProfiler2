@@ -11704,7 +11704,7 @@ public sealed partial class MainWindowViewModel : ViewModelBase
             CloseToTray = state.CloseToTray;
             ReadWarThunderArchives = state.ReadWarThunderArchives;
             FollowInputOnBinds = state.FollowInputOnBinds;
-            ShowFollowInputNote = state.ShowFollowInputNote;
+            ShowFollowInputNote = state.ShowFollowJumpNote;
             axisInputOptIns.Clear();
             foreach (string device in state.AxisInputDevices ?? [])
                 if (!string.IsNullOrWhiteSpace(device))
@@ -11767,7 +11767,7 @@ public sealed partial class MainWindowViewModel : ViewModelBase
                 CloseToTray = CloseToTray,
                 ReadWarThunderArchives = ReadWarThunderArchives,
                 FollowInputOnBinds = FollowInputOnBinds,
-                ShowFollowInputNote = ShowFollowInputNote,
+                ShowFollowJumpNote = ShowFollowInputNote,
                 AxisInputDevices = axisInputOptIns.OrderBy(d => d, StringComparer.OrdinalIgnoreCase).ToList(),
                 RecordReleaseOfHeldButtons = RecordReleaseOfHeldButtons,
                 HllvOodleAnswer = HllvOodleAnswer,
@@ -11961,8 +11961,10 @@ public sealed partial class MainWindowViewModel : ViewModelBase
         // Binds page: pressing a button selects its relation (on by default).
         public bool FollowInputOnBinds { get; set; } = true;
 
-        // The note over the list after a follow-input jump (on by default).
-        public bool ShowFollowInputNote { get; set; } = true;
+        // The note over the list after a follow-input jump: off by default since 2.2.2 (users took the note that pops up
+        // at every press for a tooltip). A new key, so the "showFollowInputNote" = true every earlier build saved does
+        // not turn it on again.
+        public bool ShowFollowJumpNote { get; set; }
 
         // Analog keyboards whose axes count for follow input and recording (Settings > Devices; names without GUID).
         public List<string>? AxisInputDevices { get; set; }

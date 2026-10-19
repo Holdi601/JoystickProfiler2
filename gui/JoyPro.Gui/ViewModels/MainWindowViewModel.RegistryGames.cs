@@ -37,6 +37,16 @@ public sealed partial class MainWindowViewModel
     [ObservableProperty]
     private bool registryGameIncludeKeyboard;
 
+    // MSFS keeps the binds of every device it ever saw: import takes the connected devices unless the user asks for
+    // the others too (engine --include-disconnected; remembered with the import/export settings).
+    [ObservableProperty]
+    private bool importIncludeDisconnected;
+
+    internal static bool KeepsDisconnectedDevices(string? gameId) =>
+        string.Equals(gameId, "MSFS2020", StringComparison.OrdinalIgnoreCase) || string.Equals(gameId, "MSFS2024", StringComparison.OrdinalIgnoreCase);
+
+    public bool SelectedRegistryGameKeepsDisconnectedDevices => KeepsDisconnectedDevices(SelectedRegistryGame?.GameId);
+
     public string SelectedRegistryGameNotes => SelectedRegistryGame?.Notes ?? T("Load the game list and pick a game.");
 
     public bool SelectedRegistryGameSupportsProfiles => SelectedRegistryGame?.SupportsGameProfile == true;
@@ -115,6 +125,7 @@ public sealed partial class MainWindowViewModel
     partial void OnSelectedRegistryGameChanged(RegistryGameItem? value)
     {
         OnPropertyChanged(nameof(SelectedRegistryGameNotes));
+        OnPropertyChanged(nameof(SelectedRegistryGameKeepsDisconnectedDevices));
         OnPropertyChanged(nameof(SelectedRegistryGameSupportsProfiles));
         OnPropertyChanged(nameof(SelectedRegistryGameSupportsRefresh));
         OnPropertyChanged(nameof(SelectedRegistryGameSupportsAircraft));
@@ -278,6 +289,7 @@ public sealed partial class MainWindowViewModel
         List<string>? args = BuildRegistryGameArgs("scan");
         if (args == null)
             return;
+        AddDisconnectedDevicesOption(args);
         EngineCommandResult? result = await RunEngineAsync(args, includeProfile: false, mutatesProfile: false, busyLabel: "Scanning " + SelectedRegistryGame!.DisplayName + "...");
         await AfterCommandListBuiltAsync(result);
     }
@@ -309,6 +321,13 @@ public sealed partial class MainWindowViewModel
         return Task.CompletedTask;
     }
 
+    // MSFS import and scan: the profiles of devices that are not connected only when the user ticked it.
+    internal void AddDisconnectedDevicesOption(List<string> args)
+    {
+        if (ImportIncludeDisconnected && SelectedRegistryGameKeepsDisconnectedDevices)
+            args.Add("--include-disconnected");
+    }
+
     internal static bool EngineBuiltCommandList(string? output)
     {
         return !string.IsNullOrEmpty(output) && System.Text.RegularExpressions.Regex.IsMatch(output, @"had no .{1,80} command list yet: built it");
@@ -324,6 +343,7 @@ public sealed partial class MainWindowViewModel
             args.Add("--replace");
         if (RegistryGameIncludeKeyboard)
             args.Add("--include-keyboard");
+        AddDisconnectedDevicesOption(args);
 
         EngineCommandResult? result = await RunEngineAsync(args, includeProfile: true, mutatesProfile: true, busyLabel: "Importing from " + SelectedRegistryGame!.DisplayName + "...");
         await AfterCommandListBuiltAsync(result);

@@ -47,6 +47,25 @@ path). The watcher's records (`<data>\Sync\MSFS.json`) are not carried over; the
     (`AsoboReport-RunningSession.txt`) counts a package there under `communityfolderfs24`, and the same package in
     `Community` under `communityfolderfs20`. The config path for `msfs export|import|scan` is the Community(2024)
     folder or the package folder (`engine msfs2024 paths` lists it).
+  - **General binds (since 2026-10-19):** a device with binds of the general contexts (cameras, views, active pause, ...;
+    the sim's "General" page) also gets `...\Categories\Transversal\JoyPro_<device>_<guid8>_2024_Transversal.xml`,
+    the folder Asobo's own presets use for them (`asobo-input-profiles-pc\InputProfiles\Categories\Transversal\*_2024_Transversal.xml`,
+    no `<AircraftInfo>`, contexts such as `COCKPIT_CAMERA`, `EXTERNAL_CAMERA`, `MODES`, `INGAME_UI`, `VIEW_MODE_SWITCHES`).
+    The exe names the category folders `Airplane`, `Glider`, `Helicopter`, `LighterThanAir`, `Other`, `Transversal`
+    ("... must be either ..."). General actions go only into the Transversal preset, flight actions only into the
+    airplane preset; each keeps its context (the action's catalog category).
+  - **Encryption (since 2026-10-19):** the package matches the EFS encryption of the Community folder it is in. A Microsoft
+    Store install on another drive keeps its data encrypted (EFS), and Windows refuses a plain file there: "The APPX
+    file can not be accessed because it is not encrypted as expected." (409, an EFS refusal; report on 2.2.1, MSFS 2024 Store). JoyPro
+    2.1.1 to 2.2.1 removed the mark from the package before every export (meant for the 6000 case below), which caused
+    it. Now the export never removes the EFS mark of the package; when the Community folder is encrypted it first repairs the package
+    (`MsfsCommunityPackage.MatchFolderEncryption` / `SafeFileIo.MatchFolderEncryption`): `File.Encrypt` (EFS) on every folder
+    and file that lost the mark; a file Windows does not EFS-encrypt is read, deleted and written again (it takes the
+    folder's mark); a file that cannot even be read is moved to `<data>\Backups\MSFS\package-<time>` (deleted when
+    that fails) and the export makes it again (a warning names the device presets that were reset; the binds come from
+    the JoyPro profile; earlier copies are in JoyPro's backups). New preset files are written into the folder and take
+    its mark. Everything done is logged (`MSFS` log area). Not verified on a real Store install on a second drive (no
+    such PC); the simulated EFS states are covered by `SafeFileIoTests`, real EFS by the opt-in `JOYPRO_TEST_REAL_EFS=1`.
   - Product ID: the one the sim noted for the device in profile_00 (read only), else the USB PID. The sim sees vJoy
     as product ID 0 (not 0xBEAD); real sticks match their USB PID (WINWING 0xBE04, VKB 0x0125).
   - Axis settings go into each action as a per-action override (flag 4096 + `<Axis/>`): the sim ignores a preset's
@@ -100,9 +119,29 @@ import|scan`, GUI import wizard) read what the user set up in the sim (`engine\G
 - **JoyPro's package** (`Community2024\joypro-input-profiles`) is read besides; its absence is no error.
 - Per device and category one profile: `--game-profile <name>`, else the most recently saved one (a warning names the
   others). JoyPro's presets and the user's profiles are chosen separately. Keyboard/mouse/gamepad profiles (`GUID="{0}"`)
-  are counted, not imported; binds in non-flight contexts (cameras, menus) are counted and left out; axis tuning (device
-  Sensitivity page, per-action override, invert, no-curve flag) as before.
-- A flight action the user binds that the command list lacks is added to it (`actions.tsv`, title from the event name).
+  are counted, not imported; binds of every managed context are imported, flight and general ones (see "Managed
+  contexts"; only menu, world map and developer binds are counted and left out); axis tuning (device Sensitivity page,
+  per-action override, invert, no-curve flag) as before. Flight actions are read first, so an input bound to a flight
+  and a camera action (throttle axis and cockpit zoom) gives a relation named after the flight action; an axis the
+  file inverts for one of them and not the other becomes two relations (one relation has one invert).
+- An action the user binds that the command list lacks is added to it (`actions.tsv`) with its context as category
+  (also actions without `KEY_`, such as `DRONE_ZOOM_IN`); the title is the sim's menu name (en-US.locPak) when the
+  sim is installed, else one from the event name (`KEY_COCKPIT_CAMERA_ZOOM_AXIS` -> "Cockpit Camera Zoom Axis"). An
+  action the list has in a flight context that a profile of this sim binds in a general one (the shared list has
+  `KEY_ACTIVE_PAUSE_TOGGLE` in PLANE from MSFS 2020; MSFS 2024 binds it in `INGAME_UI`) gets the general context, so the
+  export writes it into the Transversal preset.
+- **Devices that are not connected (since 2026-10-19):** MSFS keeps a profile of every device it ever saw (Store saves,
+  Steam remote files) while the sim lists only the connected ones; a 2.2.1 import brought relations of four devices the
+  tester no longer had. Import and scan now take the profiles of connected devices (the profile's instance GUID among
+  the connected DirectInput devices) and name the others in a step ("Profiles of N device(s) that are not connected were
+  left out ..."). `--include-disconnected` (GUI: "Also import devices that are not connected" on the import wizard and
+  the Other Games form, off by default, remembered with the export settings) imports them too. With no device
+  connected at all everything is imported (with a note), so an import on another PC still works. The watcher's
+  automatic import uses the default. MSFS only: the other games keep one bind file without a per-device history, so
+  they do not have this problem and keep their import as it was.
+- A tester's case as a test (`MsfsProfileImportTests.Steam2024_GeneralBindsAreImported_...`): VPC VMAX Prime Throttle
+  with flaps / throttle 1 / throttle 2 axes (airplanes) and cockpit view zoom axis, reset / toggle cockpit view, toggle
+  external view and active pause (General), plus an old MT-50CM3 stick that is not connected.
 - Nothing found: the error names every folder searched (package, Steam remote folders, the Store save folder with the
   number of saved files that were no input profile) and suggests Controls > cogwheel > Export + import of that file.
 - Export is unchanged: 2024 writes JoyPro's package (the Store version loads it from its own Community2024 folder,
@@ -169,6 +208,24 @@ Scheme [INF]: base 0x100 POV, 0x200 slider, 0x300 R-axis, 0x400 L-axis; +0x10 pe
 ## Flight contexts [SRC Input_Profiles]
 AIRCRAFT, BASIC_CONTROL(_HELICOPTER/_LIGHTER_THAN_AIR), INSTRUMENTS_CONTROL, PLANE, HELICOPTER, GLIDER, LIGHTER_THAN_AIR, RUDDER_AXIS, SURFACES(_HELICOPTER/_LIGHTER_THAN_AIR), THROTTLE; 2024 also AIRCRAFT_PC, SURFACES_GYRO, AIRCRAFT_ACTIVE_INTERACTION, HELICOPTER_ACTIVE_INTERACTION. Everything else (cameras, MENU, MODES, DRONE, SLEW, DEBUG, ATC) is general.
 
+## Managed contexts (since 2026-10-19)
+Until 2.2.1 JoyPro read and wrote only the flight contexts; a tester's cockpit view zoom axis, view toggles and active
+pause (the sim's "General" page) were not imported. Now JoyPro manages every context except the sim's own navigation
+and developer ones (`MsfsIntegration.IsManagedContext`):
+- **Left alone:** `MENU`, `MENU_*` (menu navigation), `WORLDMAP_*` (world map), `DEBUG`, `DEVMODE*`, `EDITOR_*`
+  (developer mode and its editors), `MISSION_FLOW_TOOLS`. They are UI navigation and debug binds, not the user's flight
+  setup; import counts them ("bind(s) in menu, world map and developer contexts left out"), export never changes them
+  (except `clean`/nuke, which take over the whole device as before).
+- **General (managed):** everything else outside the flight contexts, e.g. `ALWAYS`, `ATC`, `COCKPIT_CAMERA`,
+  `COCKPIT_GLOBAL_CAMERA(_TRANSLATE)`, `COCKPIT_INTERACTIONS(_LOCK)`, `CURSOR(_MODE_SWITCHES)`, `DRONE(_GLOBAL)`, `EFB(_CORE)`,
+  `EXTERNAL_CAMERA`, `FIXED_CAMERA`, `HANGAR_CAMERA`, `INGAME_UI`, `INSTRUMENTS_CAMERA`, `MODES`, `MODE_PAUSE`,
+  `PC_MODE_SWITCHES`, `PHOTO_MODE_*`, `PLAYER_CHARACTER_*`, `SIM_SHORTCUT`, `SLEW`, `SMART_CAMERA`, `TOOLBAR`,
+  `USER_CAMERA`, `VIEW_MODE_SWITCHES` (the contexts of Asobo's 2024 Transversal presets, checked 2026-10-19; real 2020
+  profiles bind `KEY_COCKPIT_CAMERA_ZOOM_AXIS` in `COCKPIT_GLOBAL_CAMERA`). A new context of a later sim is managed too.
+- Export writes a general action into its context: 2020 / Steam profiles in place (the context the action has in the
+  folder's profiles, else its catalog category), 2024 package presets into the device's Transversal preset (see above).
+  Ownership, merge rules and backups are the same as for flight actions.
+
 ## Action list
 2024 profiles list every action of their contexts (unbound ones as empty `<Action/>`). 2020 profiles only hold bound actions: seed with the SDK Event IDs (`KEY_` + name).
 
@@ -177,13 +234,13 @@ AIRCRAFT, BASIC_CONTROL(_HELICOPTER/_LIGHTER_THAN_AIR), INSTRUMENTS_CONTROL, PLA
 - 2024 workflow: run `engine msfs2024 export <Community folder>` (GUI: the discovered package path), then start the sim. The old route still works for an exported file: Controls > cogwheel > Export, `engine msfs2024 export <file>`, then Import in the sim. 2020 Steam: edit the `remote` folder with the sim closed.
 - Device = the `GUID` attribute (DirectInput instance GUID), so no connected device is needed; keyboard/mouse profiles (`GUID="{0}"`) are skipped.
 - One profile per device (and 2024 category) is used: the one picked with `--game-profile <FriendlyName>`, or the only one. Devices with several profiles are skipped with a warning listing their names.
-- Written: only actions in flight contexts and in the catalog; only changed `<Action>` elements are re-rendered. Axis binds set flag 4 and 128 (invert) and the axis settings below; a released 2024 action becomes an empty element again, a released 2020 action is removed.
+- Written: only actions in managed contexts (flight and general, see above) and in the catalog; only changed `<Action>` elements are re-rendered. Axis binds set flag 4 and 128 (invert) and the axis settings below; a released 2024 action becomes an empty element again, a released 2020 action is removed.
 - KEY codes: buttons N-1, first hat up/right/down/left 256-259 (no diagonals), full axes X/Y/Z 1026/1042/1058, Rx/Ry/Rz 770/786/802, sliders 514/530. The last KEY of a combination is the main input, other buttons of the same device are modifiers; axes take no modifiers. Half axes are not read.
-- New actions: 2024 files already list all actions of their category (an action outside the category is reported and skipped); in 2020 files the action is added to the context it has in the other profiles of the folder, else PLANE (with a warning).
+- New actions: 2024 files already list all actions of their category (an action no profile of the device holds, e.g. a General bind of a device without a Transversal profile, is reported once and skipped); in 2020 files the action is added to the context it has in the other profiles of the folder, else (general actions) its catalog context, else PLANE (with a warning). JoyPro's 2024 presets: general actions into the Transversal preset, flight actions into the airplane preset.
 - Primary/Secondary: at most two input combinations per action; a third is reported and skipped.
-- Ownership (`merge-overwrite` replaces only JoyPro's combinations) and backups live in `%LOCALAPPDATA%\JoyPro\Ownership\MSFS` and `...\Backups\MSFS`, never in the Steam-synced folder. `clean` only changes profiles of devices that JoyPro binds in the export. The backups copy the bytes (`SafeFileIo`), and JoyPro's package folder loses an EFS "encrypted" mark before the export: a Store-version export failed with "The specified file could not be encrypted." (2.1.0 report) when `File.Copy` tried to keep a preset's encryption ([backups](../backups.md)).
+- Ownership (`merge-overwrite` replaces only JoyPro's combinations) and backups live in `%LOCALAPPDATA%\JoyPro\Ownership\MSFS` and `...\Backups\MSFS`, never in the Steam-synced folder. `clean` only changes profiles of devices that JoyPro binds in the export. The backups copy the bytes (`SafeFileIo`) into JoyPro's own folder: a Store-version export failed with "The specified file could not be encrypted." (2.1.0 report) when `File.Copy` tried to keep a preset's encryption. JoyPro's package keeps the encryption of its Community folder (2.1.1 to 2.2.1 removed it, which broke Store installs on another drive with error 409; see "Encryption" above and [backups](../backups.md)).
 - Catalog: `DB\MSFS2020\actions.tsv` and `DB\MSFS2024\actions.tsv` (each started as the same list: flight-context actions of MSFS 2024 airplane + helicopter exports and MSFS 2020 profiles). Input actions belong to contexts (AIRCRAFT, HELICOPTER, GLIDER, ...), not to an aircraft: a 2024 export lists every action of its contexts whatever aircraft is loaded, so the catalog is not tied to the test aircraft (Cessna 185). Axis actions are recognized by name (`AXIS`, `*_SET` of throttle/mixture/prop/surfaces).
-- Refresh from the game: `engine msfs2020 refresh-db` / `engine msfs2024 refresh-db` (no path; GUI: Games > DB refresh without a source) reads the sims' own data, read only (`engine\Games\MsfsGameData.cs`): the device presets Asobo ships (MSFS 2024 `<install>\Packages\fs-input-profiles` and `asobo-input-profiles-pc`, `InputProfiles\**\*.xml`; MSFS 2020 `<install>\Input`; Store installs under the `InstalledPackagesPath` of UserCfg.opt, `Official*\*`) and adds every flight-context action they bind; new actions get the Controls menu name from `fs-base\en-US.locPak` (`INPUT.KEY_...`), known ones keep their title (import names relations after it) unless it is the raw event name (below). `--path <folder>` reads exported profiles instead.
+- Refresh from the game: `engine msfs2020 refresh-db` / `engine msfs2024 refresh-db` (no path; GUI: Games > DB refresh without a source) reads the sims' own data, read only (`engine\Games\MsfsGameData.cs`): the device presets Asobo ships (MSFS 2024 `<install>\Packages\fs-input-profiles` and `asobo-input-profiles-pc`, `InputProfiles\**\*.xml`; MSFS 2020 `<install>\Input`; Store installs under the `InstalledPackagesPath` of UserCfg.opt, `Official*\*`) and adds every action of a managed context they bind, with its context (since 2026-10-19 also the general ones of the Transversal presets and the user's General profiles: cameras, views, pause, ...; an action the list has in a flight context that this sim binds in a general one moves to it; general events only the locPak names stay out, their context is unknown); new actions get the Controls menu name from `fs-base\en-US.locPak` (`INPUT.KEY_...`), known ones keep their title (import names relations after it) unless it is the raw event name (below). `--path <folder>` reads exported profiles instead.
   **Readable titles (since 2026-10-12):** the locPak writes the menu names in capitals; the catalog takes them in title
   case (`ELEVATOR AXIS` -> `Elevator Axis`, `THROTTLE 1 AXIS (-100 to 100%)` -> `Throttle 1 Axis (-100 to 100%)`; the
   panel abbreviations stay: `AP`, `NAV1`, `ADF`, `VOR`, `TACAN` ...). A known action still titled by its raw event

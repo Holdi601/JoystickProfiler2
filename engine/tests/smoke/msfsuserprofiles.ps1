@@ -103,20 +103,19 @@ try {
         Assert-Match $mupPaths.Output ([regex]::Escape($mupWgs)) "msfs2024 paths should list the Store's save folder."
 
         $mupProfile = Join-Path $mupDir "store.pr0file"
-        $mupImport = Run-Engine @("--profile", $mupProfile, "msfs2024", "import", "--text")
+        $mupImport = Run-Engine @("--profile", $mupProfile, "msfs2024", "import", "--include-disconnected", "--text")
         Assert-True ($mupImport.ExitCode -eq 0) ("msfs2024 import of Store profiles without JoyPro's package failed: " + $mupImport.Output)
         Assert-Match $mupImport.Output "had no Microsoft Flight Simulator 2024 command list yet: built it" "the import should build the missing command list first."
         Assert-True (Test-Path (Join-Path $env:JOYPRO_DATA_DIR "GameData\DB\MSFS2024\actions.tsv")) "the built command list should be saved in the data folder."
         Assert-Match $mupImport.Output "MSFS device profiles read: 3 from the Microsoft Store version" "the import should read the Store's X-56 (airplanes, helicopters) and Crosswind profiles."
         Assert-Match $mupImport.Output "imported the most recently saved one, 'X-56 Stick Custom'" "of two airplane profiles of the X-56 the newer one should be imported."
-        Assert-Match $mupImport.Output "1 bind\(s\) in camera, menu and other non-flight contexts left out" "the camera bind should be reported as left out."
+        Assert-Match $mupImport.Output "KEY_COCKPIT_QUICKVIEW_LEFT <- Saitek Pro Flight X-56 Rhino Stick .* JOY_BTN_POV1_L" "the camera bind (General category) should be imported."
         Assert-Match $mupImport.Output "1 MSFS keyboard, mouse or gamepad profile" "the keyboard profile should be reported."
         foreach ($expected in @("KEY_AXIS_ELEVATOR_SET <- Saitek Pro Flight X-56 Rhino Stick \{0000BBBB-0000-4000-8000-000000000201\} JOY_Y", "KEY_GEAR_TOGGLE <- .* JOY_BTN_POV1_D",
                                  "KEY_ROTOR_BRAKE_TOGGLE <- .* JOY_BTN4", "KEY_AXIS_RUDDER_SET <- MFG Crosswind V2 .* JOY_RZ", "KEY_AXIS_LEFT_BRAKE_SET <- MFG Crosswind V2 .* JOY_X")) {
             Assert-Match $mupImport.Output $expected ("msfs2024 Store import should have read " + $expected)
         }
         Assert-NotMatch $mupImport.Output "KEY_FLAPS_UP" "the older X-56 profile must not be imported."
-        Assert-NotMatch $mupImport.Output "KEY_COCKPIT_QUICKVIEW_LEFT" "camera binds are not imported."
         $mupElevator = (Run-Engine @("--profile", $mupProfile, "relations", "list", "--text")).Output
         Assert-Match $mupElevator "G LIMITER|G Limiter" "the G limiter relation should be there."
         $mupGLimiter = Run-Engine @("--profile", $mupProfile, "binds", "list", "--text")
@@ -144,7 +143,7 @@ try {
 
         # An index of another layout: every blob is checked instead.
         [System.IO.File]::WriteAllBytes((Join-Path (Get-ChildItem -Path $mupWgs -Directory | Select-Object -First 1).FullName "containers.index"), [byte[]](255, 255, 255, 255, 1, 2, 3))
-        $mupScan = Run-Engine @("msfs2024", "scan", $mupWgs, "--text")
+        $mupScan = Run-Engine @("msfs2024", "scan", $mupWgs, "--include-disconnected", "--text")
         Assert-True ($mupScan.ExitCode -eq 0) ("msfs2024 scan with an unreadable save index failed: " + $mupScan.Output)
         Assert-Match $mupScan.Output "every saved file there is checked instead" "an unreadable index should be reported."
         Assert-Match $mupScan.Output "KEY_AXIS_RUDDER_SET <- MFG Crosswind V2" "the blobs should still be read without the index."
@@ -159,7 +158,7 @@ try {
     New-Item -Path (Join-Path $mupEmpty "Steam\userdata\12345\2537590\remote") -ItemType Directory -Force | Out-Null
     New-Item -Path (Join-Path $mupEmpty "Roaming\Microsoft Flight Simulator 2024\Packages\Community2024") -ItemType Directory -Force | Out-Null
     Set-Content -Path (Join-Path $mupEmpty "Roaming\Microsoft Flight Simulator 2024\UserCfg.opt") -Value ('InstalledPackagesPath "' + (Join-Path $mupEmpty "Roaming\Microsoft Flight Simulator 2024\Packages") + '"') -Encoding ASCII
-    $mupNone = Run-Engine @("--profile", (Join-Path $mupDir "none.pr0file"), "msfs2024", "import", "--text")
+    $mupNone = Run-Engine @("--profile", (Join-Path $mupDir "none.pr0file"), "msfs2024", "import", "--include-disconnected", "--text")
     Assert-True ($mupNone.ExitCode -ne 0) "an import without any MSFS 2024 profile should fail."
     Assert-Match $mupNone.Output "No Microsoft Flight Simulator 2024 input profiles found\. Searched:" "the error should say that nothing was found."
     Assert-Match $mupNone.Output ([regex]::Escape((Join-Path $mupEmpty "Steam\userdata\12345\2537590\remote")) + " \(no inputprofile_\* file\)") "the error should name the Steam folder searched."
@@ -178,7 +177,7 @@ try {
     New-Item -Path $mupPreset -ItemType Directory -Force | Out-Null
     Copy-Item -Path (Join-Path $mupFixtures "profiles2024\joypro-preset-vjoy.xml") -Destination (Join-Path $mupPreset "JoyPro_vJoy_Device_0000bbbb_2024_Planes.xml")
     Set-Content -Path (Join-Path $mupSteam "Roaming\Microsoft Flight Simulator 2024\UserCfg.opt") -Value ('InstalledPackagesPath "' + $mupSteamPackages + '"') -Encoding ASCII
-    $mupSteamImport = Run-Engine @("--profile", (Join-Path $mupDir "steam.pr0file"), "msfs2024", "import", "--text")
+    $mupSteamImport = Run-Engine @("--profile", (Join-Path $mupDir "steam.pr0file"), "msfs2024", "import", "--include-disconnected", "--text")
     Assert-True ($mupSteamImport.ExitCode -eq 0) ("msfs2024 import of Steam profiles failed: " + $mupSteamImport.Output)
     Assert-Match $mupSteamImport.Output "MSFS device profiles read: 1 JoyPro preset\(s\) \(Community2024 package\), 2 from Steam" "the Steam profiles and JoyPro's preset should both be read."
     Assert-Match $mupSteamImport.Output "KEY_TOGGLE_NAV_LIGHTS <- vJoy Device" "JoyPro's preset should be imported besides."
@@ -199,10 +198,10 @@ try {
     Run-Engine @("games", "install", "set", "MSFS2020", (Join-Path $mup2020 "Local\Packages\Microsoft.FlightSimulator_8wekyb3d8bbwe"), "--text") | Out-Null
     $mup2020Paths = Run-Engine @("msfs2020", "paths", "--text")
     Assert-Match $mup2020Paths.Output ([regex]::Escape($mup2020Wgs)) "msfs2020 paths should list the Store's save folder."
-    $mup2020Import = Run-Engine @("--profile", (Join-Path $mupDir "store2020.pr0file"), "msfs2020", "import", "--text")
+    $mup2020Import = Run-Engine @("--profile", (Join-Path $mupDir "store2020.pr0file"), "msfs2020", "import", "--include-disconnected", "--text")
     Assert-True ($mup2020Import.ExitCode -eq 0) ("msfs2020 import from the Store failed: " + $mup2020Import.Output)
     Assert-Match $mup2020Import.Output "MSFS device profiles read: 4 from the Microsoft Store version" "the four device profiles (not the gamepad) should be read."
-    Assert-Match $mup2020Import.Output "Bindings Read: 20" "the Store profiles should give the 20 flight binds of the fixtures."
+    Assert-Match $mup2020Import.Output "Bindings Read: 23" "the Store profiles should give the 20 flight binds and 3 camera zoom axes of the fixtures."
     Assert-Match $mup2020Import.Output "KEY_THROTTLE_AXIS_SET_EX1 <- LEFT VPC Throttle MT-50 CM .* JOY_RX" "the throttle axis should be read."
     $mup2020Export = Run-Engine @("--profile", (Join-Path $mupDir "store2020.pr0file"), "msfs2020", "export", $mup2020Wgs, "--text")
     Assert-True ($mup2020Export.ExitCode -ne 0) "an export into MSFS 2020's Store save folder must be refused."

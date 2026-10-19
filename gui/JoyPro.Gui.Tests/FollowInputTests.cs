@@ -573,17 +573,17 @@ public sealed class FollowInputTests
             MainWindowViewModel first = new(new FollowEngine(), new FollowCapture(), loadPersistedUiSettings: true);
             Assert.True(first.FollowInputOnBinds);
             Assert.False(first.RecordReleaseOfHeldButtons);
-            Assert.True(first.ShowFollowInputNote);
+            Assert.False(first.ShowFollowInputNote);
             Assert.False(first.UsesAxesOf(Wooting));
             first.FollowInputOnBinds = false;
             first.RecordReleaseOfHeldButtons = true;
-            first.ShowFollowInputNote = false;
+            first.ShowFollowInputNote = true;
             first.SetDeviceAxesInput(Wooting, true);
 
             MainWindowViewModel second = new(new FollowEngine(), new FollowCapture(), loadPersistedUiSettings: true);
             Assert.False(second.FollowInputOnBinds);
             Assert.True(second.RecordReleaseOfHeldButtons);
-            Assert.False(second.ShowFollowInputNote);
+            Assert.True(second.ShowFollowInputNote);
             Assert.True(second.UsesAxesOf(Wooting));
             Assert.False(second.UsesAxesOf("Keychron Q1 HE"));
         }
@@ -616,7 +616,9 @@ public sealed class FollowInputTests
         MainWindowViewModel vm = new(new FollowEngine(), capture, loadPersistedUiSettings: false)
         {
             EnginePath = typeof(MainWindowViewModel).Assembly.Location,
-            ProfilePath = Path.Combine(Path.GetTempPath(), "JoyPro2.Gui.Tests", "follow.pr0file")
+            ProfilePath = Path.Combine(Path.GetTempPath(), "JoyPro2.Gui.Tests", "follow.pr0file"),
+            // Off by default; these tests check the note's text.
+            ShowFollowInputNote = true
         };
         await vm.RefreshRelationsCommand.ExecuteAsync(null);
         await vm.RefreshBindsCommand.ExecuteAsync(null);

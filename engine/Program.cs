@@ -14217,8 +14217,10 @@ namespace JoyPro.Engine
                 Console.WriteLine("  engine " + gameArea + " paths");
                 Console.WriteLine("  engine " + gameArea + " catalog");
                 string profileOption = registryGame is Games.IGameProfileSelection ? " [--game-profile <name>]" : string.Empty;
-                Console.WriteLine("  engine " + gameArea + " scan [<config-path>] [--path <config-path>]" + profileOption);
-                Console.WriteLine("  engine " + gameArea + " import [<config-path>] [--path <config-path>] [--replace] [--include-keyboard]" + profileOption);
+                string disconnectedOption = registryGame is Games.IGameDisconnectedDevices ? " [--include-disconnected]" : string.Empty;
+                Console.WriteLine("  engine " + gameArea + " scan [<config-path>] [--path <config-path>]" + profileOption + disconnectedOption);
+                Console.WriteLine("  engine " + gameArea + " import [<config-path>] [--path <config-path>] [--replace] [--include-keyboard]" + profileOption + disconnectedOption +
+                                  (registryGame is Games.IGameDisconnectedDevices ? "   (devices that are not connected only with --include-disconnected)" : string.Empty));
                 string aircraftOption = registryGame is Games.IGameAircraftScope ? " [--aircraft <aircraft-key>]" : string.Empty;
                 Console.WriteLine("  engine " + gameArea + " export [<config-path>] [--path <config-path>] [--mode clean|add|merge|merge-overwrite] [--dry-run] [--include-keyboard] [--nuke-untouched-devices]" + profileOption + aircraftOption +
                     (registryGame.ExclusiveFlightSim

@@ -32,7 +32,7 @@ $env:JOYPRO_DATA_DIR = Join-Path $mcDir "data"
 try {
     # Import: the Sensitivity page of the bound axis becomes the relation's MSFS tuning (only values that differ from
     # the defaults), invert from flag 128; the round trip leaves both files byte-identical.
-    $mcImport = Run-Engine @("--profile", $mcProfile, "msfs2020", "import", $mcRemote, "--text")
+    $mcImport = Run-Engine @("--profile", $mcProfile, "msfs2020", "import", $mcRemote, "--include-disconnected", "--text")
     Assert-True ($mcImport.ExitCode -eq 0) ("msfs curves import failed: " + $mcImport.Output)
     $mcShow = Run-Engine @("--profile", $mcProfile, "binds", "tuning", "show", $mcThrottle, "--game", "MSFS2020", "--text")
     Assert-Match $mcShow.Output "MSFS2020 uses \(msfs, from game:MSFS2020\): inv=1;.*n\.reactivity=2000" ("msfs import should read the device axis reactivity (AxisResponseRate) and invert: " + $mcShow.Output)
@@ -54,7 +54,7 @@ try {
     Run-Engine @("--profile", $mcProfile, "binds", "tuning", "set", "MSFS Rudder", "--scope", "game:MSFS2020", "--param", "axisDeadZone=3", "--param", "neutral=-4", "--text") | Out-Null
     $mcExport = Run-Engine @("--profile", $mcProfile, "msfs2020", "export", $mcRemote, "--text")
     Assert-True ($mcExport.ExitCode -eq 0) ("msfs export of axis settings failed: " + $mcExport.Output)
-    Assert-Match $mcExport.Output "also applies to KEY_COCKPIT_CAMERA_ZOOM_AXIS" "msfs export should say when a changed Sensitivity page also applies to an action JoyPro does not manage."
+    Assert-Match $mcExport.Output "also applies to KEY_COCKPIT_CAMERA_ZOOM_AXIS" "msfs export should say when a changed Sensitivity page also applies to another action on that axis (the camera zoom)."
     $mcThrottleAfter = [System.IO.File]::ReadAllText($mcThrottleFile)
     Assert-Match $mcThrottleAfter '<Axis AxisName="rX" AxisSensitivy="-30" AxisSensitivyMinus="0" AxisNeutral="0" AxisDeadZone="10" AxisOutDeadZone="0" AxisResponseRate="2000"/>' "msfs export should write the rX Sensitivity page in place (reactivity kept)."
     $mcBefore = $mcThrottleText -split "`n"
@@ -90,7 +90,7 @@ try {
     Assert-Match ([System.IO.File]::ReadAllText($mcThrottleFile)) 'AxisName="rX" AxisSensitivy="-30" AxisSensitivyMinus="0" AxisNeutral="0" AxisDeadZone="10"' "msfs merge-overwrite should write JoyPro's dead zone again."
 
     # MSFS 2024: per-action override (flag 4096 + <Axis/> before <Primary>) and flag 1024 are read and written.
-    $mc2024Import = Run-Engine @("--profile", $mc2024Profile, "msfs2024", "import", $mc2024, "--text")
+    $mc2024Import = Run-Engine @("--profile", $mc2024Profile, "msfs2024", "import", $mc2024, "--include-disconnected", "--text")
     Assert-True ($mc2024Import.ExitCode -eq 0) "msfs 2024 override import failed."
     $mcAileronShow = Run-Engine @("--profile", $mc2024Profile, "binds", "tuning", "show", $mcAilerons, "--game", "MSFS2024", "--text")
     Assert-Match $mcAileronShow.Output "from game:MSFS2024\): .*n\.axisDeadZone=12;n\.axisOverride=1;n\.sensitivityMinus=-25;n\.sensitivityPlus=-25" ("msfs import should read the per-action override: " + $mcAileronShow.Output)
@@ -158,7 +158,7 @@ try {
         $mpLayout = [System.IO.File]::ReadAllText((Join-Path $mpPackage "layout.json"))
         Assert-Match $mpLayout ('"path": "inputprofiles/categories/airplane/' + [regex]::Escape($mpPresets[0].Name.ToLowerInvariant()) + '"') "layout.json must list the preset."
         Assert-Match ([System.IO.File]::ReadAllText((Join-Path $mpPackage "manifest.json"))) '"package_order_hint": "INPUT"' "manifest.json should mark an input package."
-        $mpImport = Run-Engine @("--profile", (Join-Path $mpDir "import.pr0file"), "msfs2024", "scan", $mpPackage, "--text")
+        $mpImport = Run-Engine @("--profile", (Join-Path $mpDir "import.pr0file"), "msfs2024", "scan", $mpPackage, "--include-disconnected", "--text")
         Assert-True ($mpImport.ExitCode -eq 0) ("msfs scan of the package failed: " + $mpImport.Output)
         Assert-Match $mpImport.Output "KEY_FLAPS_DECR" "msfs scan should read the package presets."
         $mpAgain = Run-Engine @("--profile", $mpProfile, "msfs", "export", $mpCommunity, "--text")
@@ -302,7 +302,7 @@ try {
     Assert-Match $maPickedText '(?s)ActionName="KEY_AP_MASTER" Flag="2">\s*<Primary>\s*<KEY Information="Joystick Button 2">1</KEY>' "msfs export --aircraft should write the relation limited to the picked aircraft."
     Assert-Match $maPickedText 'ActionName="KEY_PARKING_BRAKES"' "msfs export --aircraft must keep the relations for all aircraft."
 
-    $maScanAircraft = Run-Engine @("msfs2024", "scan", $maRemote, "--aircraft", "smoke-aircraft-trainer", "--text")
+    $maScanAircraft = Run-Engine @("msfs2024", "scan", $maRemote, "--aircraft", "smoke-aircraft-trainer", "--include-disconnected", "--text")
     Assert-True ($maScanAircraft.ExitCode -ne 0) "--aircraft should only be accepted by msfs export."
     $maOther = Run-Engine @("xplane", "catalog", "--aircraft", "x", "--text")
     Assert-Match $maOther.Output "has no aircraft list; --aircraft is not supported" "--aircraft should be refused for games without an aircraft list."

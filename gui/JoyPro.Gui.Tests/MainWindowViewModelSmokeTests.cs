@@ -778,6 +778,35 @@ public sealed class MainWindowViewModelSmokeTests
         Assert.Equal(UiStage.Relations, vm.CurrentStage);
     }
 
+    // MSFS keeps the binds of every device it ever saw: import and scan take the connected devices unless the user
+    // ticks "Also import devices that are not connected"; other games never get the option.
+    [Fact]
+    public async Task RegistryGames_MsfsImport_IncludesDisconnectedDevicesOnlyWhenTicked()
+    {
+        FakeEngineCliClient fake = new();
+        MainWindowViewModel vm = CreateVm(fake);
+        await vm.RefreshRegistryGamesCommand.ExecuteAsync(null);
+        vm.SelectedRegistryGame = vm.RegistryGames.Single(g => g.GameId == "MSFS2024");
+        Assert.True(vm.SelectedRegistryGameKeepsDisconnectedDevices);
+        Assert.False(vm.ImportIncludeDisconnected);
+
+        await vm.ImportRegistryGameCommand.ExecuteAsync(null);
+        Assert.DoesNotContain("--include-disconnected", Assert.Single(fake.Calls, c => ContainsSequence(c, "msfs2024", "import")));
+
+        fake.Calls.Clear();
+        vm.ImportIncludeDisconnected = true;
+        await vm.ImportRegistryGameCommand.ExecuteAsync(null);
+        Assert.Contains("--include-disconnected", Assert.Single(fake.Calls, c => ContainsSequence(c, "msfs2024", "import")));
+        await vm.ScanRegistryGameCommand.ExecuteAsync(null);
+        Assert.Contains("--include-disconnected", Assert.Single(fake.Calls, c => ContainsSequence(c, "msfs2024", "scan")));
+
+        fake.Calls.Clear();
+        vm.SelectedRegistryGame = vm.RegistryGames.Single(g => g.GameId == "WarThunder");
+        Assert.False(vm.SelectedRegistryGameKeepsDisconnectedDevices);
+        await vm.ImportRegistryGameCommand.ExecuteAsync(null);
+        Assert.DoesNotContain("--include-disconnected", Assert.Single(fake.Calls, c => ContainsSequence(c, "warthunder", "import")));
+    }
+
     [Fact]
     public async Task RefreshDevices_NoProfile_DoesNotRequireProfileFlag_AndParsesSections()
     {

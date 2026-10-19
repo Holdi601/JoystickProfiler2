@@ -8,6 +8,7 @@ using Avalonia.Interactivity;
 using Avalonia.LogicalTree;
 using Avalonia.Threading;
 using Avalonia.VisualTree;
+using JoyPro.Logging;
 
 namespace JoyPro.Gui.Views;
 
@@ -43,12 +44,15 @@ internal sealed class TooltipHold
     private double path;
     private double farthest;
     private bool inactive;
+    // Diagnostics (log): when the hold was armed and released last.
+    private DateTime heldAtUtc = DateTime.MinValue;
+    private DateTime releasedAtUtc = DateTime.MinValue;
 
     public TooltipHold(Control root)
     {
         this.root = root;
         root.AddHandler(InputElement.PointerMovedEvent, OnPointerMoved, RoutingStrategies.Tunnel, handledEventsToo: true);
-        root.AddHandler(InputElement.KeyDownEvent, (_, _) => Hold(), RoutingStrategies.Tunnel, handledEventsToo: true);
+        root.AddHandler(InputElement.KeyDownEvent, (_, _) => Hold("key"), RoutingStrategies.Tunnel, handledEventsToo: true);
         if (root is TopLevel topLevel)
             Holds.AddOrUpdate(topLevel, this);
         if (root is Window window)
@@ -71,8 +75,11 @@ internal sealed class TooltipHold
     public bool IsSuppressed => IsHolding || inactive;
 
     // Arms the hold (again): the movement counts from here; an open tooltip closes.
-    public void Hold()
+    public void Hold(string reason = "follow input")
     {
+        if (!IsHolding && JoyProLog.ShouldLog("tooltip-hold-" + reason, TimeSpan.FromSeconds(2)))
+            JoyProLog.Info("Tooltip", "Hold armed (" + reason + ") at " + Describe(lastScreen) + ".");
+        heldAtUtc = DateTime.UtcNow;
         IsHolding = true;
         anchor = lastScreen;
         stepFrom = lastScreen;
@@ -90,7 +97,7 @@ internal sealed class TooltipHold
         if (active)
         {
             // Back in front: the mouse may rest on an item; it has to move first.
-            Hold();
+            Hold("window active");
             return;
         }
         Apply();
@@ -126,6 +133,8 @@ internal sealed class TooltipHold
 
     private void Release()
     {
+        JoyProLog.Info("Tooltip", "Hold released after " + Math.Round(path) + " px path, " + Math.Round(farthest) + " px away, at " + Describe(lastScreen) + ".");
+        releasedAtUtc = DateTime.UtcNow;
         IsHolding = false;
         anchor = null;
         Apply();
@@ -156,6 +165,45 @@ internal sealed class TooltipHold
             ToolTip.SetIsOpen(control, false);
     }
 
+    private static string Describe(Point? point) =>
+        point is { } p ? Math.Round(p.X) + "," + Math.Round(p.Y) : "(mouse not seen yet)";
+
+    // One log line per tooltip that opens: which control, what it says and the hold's state (finds the tooltip that
+    // still pops up after a jump).
+    private static void LogOpened(Control control)
+    {
+        try
+        {
+            TopLevel? top = TopLevel.GetTopLevel(control) ?? control.FindLogicalAncestorOfType<TopLevel>();
+            TooltipHold? hold = null;
+            if (top != null)
+                Holds.TryGetValue(top, out hold);
+            object? tip = ToolTip.GetTip(control);
+            string text = tip switch
+            {
+                string s => s,
+                Control c => string.Join(" | ", c.GetLogicalDescendants().OfType<TextBlock>().Select(t => t.Text).Where(t => !string.IsNullOrWhiteSpace(t)).Take(4)),
+                null => "(none)",
+                _ => tip.ToString() ?? string.Empty
+            };
+            if (text.Length > 120)
+                text = text[..120] + "...";
+            string state = hold == null
+                ? "window " + (top?.GetType().Name ?? "none") + " has no hold"
+                : "holding " + hold.IsHolding + ", inactive " + hold.inactive + ", armed " + Ago(hold.heldAtUtc) + ", released " + Ago(hold.releasedAtUtc) +
+                  ", mouse " + Describe(hold.lastScreen);
+            JoyProLog.Info("Tooltip", "Opened on " + control.GetType().Name + (string.IsNullOrEmpty(control.Name) ? string.Empty : " '" + control.Name + "'") +
+                                      " (" + (control.DataContext?.GetType().Name ?? "no data") + "): \"" + text.Replace('\n', ' ') + "\"; " + state + ".");
+        }
+        catch (Exception ex) when (ex is not OutOfMemoryException)
+        {
+            JoyProLog.Debug("Tooltip", "Could not describe an opened tooltip: " + ex.Message);
+        }
+    }
+
+    private static string Ago(DateTime utc) =>
+        utc == DateTime.MinValue ? "never" : Math.Round((DateTime.UtcNow - utc).TotalMilliseconds) + " ms ago";
+
     private static double Length(Vector v) => Math.Sqrt(v.X * v.X + v.Y * v.Y);
 
     // A show timer that started before the hold (or a tooltip opened in code) would still open it: such a tooltip
@@ -172,7 +220,10 @@ internal sealed class TooltipHold
         });
         ToolTip.IsOpenProperty.Changed.AddClassHandler<Control>((control, e) =>
         {
-            if (e.NewValue is not true || !KeepsBack(control))
+            if (e.NewValue is not true)
+                return;
+            LogOpened(control);
+            if (!KeepsBack(control))
                 return;
             Dispatcher.UIThread.Post(() =>
             {

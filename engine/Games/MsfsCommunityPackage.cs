@@ -17,7 +17,6 @@ namespace JoyPro.Engine.Games
     internal static class MsfsCommunityPackage
     {
         public const string PackageName = "joypro-input-profiles";
-        private const string AirplaneFolder = "InputProfiles\\Categories\\Airplane";
         private static readonly Regex InstalledPackagesPath = new Regex("^\\s*InstalledPackagesPath\\s+\"(?<path>[^\"]+)\"", RegexOptions.Multiline | RegexOptions.Compiled);
 
         // UserCfg.opt of MSFS 2024 (Steam, then Microsoft Store).
@@ -77,23 +76,48 @@ namespace JoyPro.Engine.Games
             return false;
         }
 
-        // The EFS "encrypted" mark off JoyPro's package folder, its folders and files (best effort).
-        public static void ClearEncryption(string packageFolder)
+        // JoyPro's package matches the encryption of the Community folder it sits in. A Microsoft Store install on
+        // another drive keeps its data encrypted, and Windows refuses a plain file there (409, "The APPX file can not
+        // be accessed because it is not encrypted as expected"). JoyPro 2.1.1 to 2.2.1 removed the mark from the
+        // package before every export, so an encrypted Community folder gets its package encrypted again
+        // (SafeFileIo.MatchFolderEncryption); a preset that cannot be read any more is moved to quarantineFolder (or
+        // deleted) and made again by EnsureDevicePresets (a warning names the devices). A plain Community folder: nothing
+        // changes. JoyPro never removes the mark here.
+        public static void MatchFolderEncryption(string packageFolder, string quarantineFolder, GameIoResult result)
         {
             if (string.IsNullOrWhiteSpace(packageFolder) || !Directory.Exists(packageFolder))
                 return;
+            List<string> done = new List<string>();
+            List<string> lost = new List<string>();
             try
             {
-                SafeFileIo.ClearEncrypted(packageFolder);
-                foreach (string entry in Directory.GetFileSystemEntries(packageFolder, "*", SearchOption.AllDirectories))
-                    SafeFileIo.ClearEncrypted(entry);
+                SafeFileIo.MatchFolderEncryption(packageFolder, quarantineFolder, done, lost);
             }
-            catch (IOException)
+            catch (Exception ex) when (ex is IOException || ex is UnauthorizedAccessException)
             {
+                result.Warnings.Add("Could not check the encryption of JoyPro's MSFS package " + packageFolder + ": " + ex.Message);
             }
-            catch (UnauthorizedAccessException)
-            {
-            }
+            foreach (string line in done)
+                JoyPro.Logging.JoyProLog.Info("MSFS", "Package encryption: " + line);
+            if (done.Count > 0)
+                result.Steps.Add("JoyPro's package is encrypted again like the Community folder it is in (" + done.Count.ToString(CultureInfo.InvariantCulture) +
+                                 " file(s) or folder(s); MSFS keeps its data encrypted on this drive).");
+            List<string> presets = lost.Where(f => f.EndsWith(".xml", StringComparison.OrdinalIgnoreCase)).ToList();
+            if (presets.Count > 0)
+                result.Warnings.Add("JoyPro's MSFS 2024 preset(s) " + string.Join(", ", presets.Select(f => "'" + PresetDeviceLabel(f) + "'")) +
+                                    " could not be read any more (an earlier JoyPro version had removed their encryption). They were reset and this export writes them again; " +
+                                    "the binds of these devices come from your JoyPro profile. Earlier copies are in JoyPro's backups (" + Path.GetDirectoryName(quarantineFolder) +
+                                    ", and 'engine backups list').");
+            if (lost.Count > presets.Count)
+                result.Steps.Add("Unreadable package file(s) made again by this export: " + string.Join(", ", lost.Where(f => !presets.Contains(f)).Select(Path.GetFileName)));
+        }
+
+        // "JoyPro_VPC_Stick_MT-50CM3_0123abcd_2024_Planes.xml" -> "VPC Stick MT-50CM3 (Planes)".
+        private static string PresetDeviceLabel(string file)
+        {
+            string name = Path.GetFileNameWithoutExtension(file);
+            Match m = Regex.Match(name, "^JoyPro_(?<device>.+)_[0-9a-f]{8}_2024_(?<category>[A-Za-z]+)$");
+            return m.Success ? m.Groups["device"].Value.Replace('_', ' ') + " (" + m.Groups["category"].Value + ")" : name;
         }
 
         public static List<string> PresetFiles(string packageFolder)
@@ -104,22 +128,40 @@ namespace JoyPro.Engine.Games
             return Directory.GetFiles(root, "*.xml", SearchOption.AllDirectories).OrderBy(f => f, StringComparer.OrdinalIgnoreCase).ToList();
         }
 
-        // A preset file for every device that has none in the package yet (airplane category). The sim matches a
-        // preset by the product ID it sees for the device: the one it noted in profile_00 (vJoy: 0), else the USB PID.
-        public static void EnsureDevicePresets(string packageFolder, IEnumerable<GameDevice> devices, GameIoResult result)
+        // The category folder a preset file sits in ("Airplane", "Transversal", ...; empty outside Categories).
+        public static string PresetCategory(string file)
+        {
+            if (string.IsNullOrWhiteSpace(file))
+                return string.Empty;
+            string folder = Path.GetDirectoryName(file);
+            string parent = folder == null ? null : Path.GetDirectoryName(folder);
+            return parent != null && string.Equals(Path.GetFileName(parent), "Categories", StringComparison.OrdinalIgnoreCase) ? Path.GetFileName(folder) : string.Empty;
+        }
+
+        // A preset file for every device that has none in the package yet: the airplane category for every device,
+        // the transversal one (the sim's "General" binds: cameras, views, pause, ...) for the devices in
+        // generalDevices. The sim matches a preset by the product ID it sees for the device: the one it noted in
+        // profile_00 (vJoy: 0), else the USB PID.
+        public static void EnsureDevicePresets(string packageFolder, IEnumerable<GameDevice> devices, ICollection<Guid> generalDevices, GameIoResult result)
         {
             Dictionary<Guid, int> simIds = SimProductIds();
-            HashSet<Guid> present = new HashSet<Guid>();
+            HashSet<string> present = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
             foreach (string file in PresetFiles(packageFolder))
             {
                 MsfsProfileFile profile;
                 if (MsfsProfileFile.TryLoad(file, new List<string>(), out profile) && profile.HasDeviceGuid)
-                    present.Add(profile.DeviceGuid);
+                    present.Add(profile.DeviceGuid.ToString("N") + "|" + (IsTransversal(PresetCategory(file)) ? TransversalCategory : "Airplane"));
             }
 
             foreach (GameDevice device in devices)
             {
-                if (device == null || device.InstanceGuid == Guid.Empty || present.Contains(device.InstanceGuid))
+                if (device == null || device.InstanceGuid == Guid.Empty)
+                    continue;
+                List<string> categories = new List<string> { "Airplane" };
+                if (generalDevices != null && generalDevices.Contains(device.InstanceGuid))
+                    categories.Add(TransversalCategory);
+                categories.RemoveAll(c => present.Contains(device.InstanceGuid.ToString("N") + "|" + c));
+                if (categories.Count == 0)
                     continue;
                 int productId;
                 if (!simIds.TryGetValue(device.InstanceGuid, out productId))
@@ -130,12 +172,24 @@ namespace JoyPro.Engine.Games
                     continue;
                 }
                 string name = string.IsNullOrWhiteSpace(device.InstanceName) ? device.JoyProName : device.InstanceName.Trim();
-                string file = Path.Combine(packageFolder, AirplaneFolder, "JoyPro_" + SafeFileName(name) + "_" + device.InstanceGuid.ToString("N").Substring(0, 8) + "_2024_Planes.xml");
-                Directory.CreateDirectory(Path.GetDirectoryName(file));
-                File.WriteAllText(file, Skeleton(name, device.InstanceGuid, productId), new UTF8Encoding(true));
-                present.Add(device.InstanceGuid);
-                result.Steps.Add("Created the MSFS 2024 preset of '" + device.JoyProName + "': " + file);
+                foreach (string category in categories)
+                {
+                    string file = Path.Combine(packageFolder, "InputProfiles", "Categories", category,
+                        "JoyPro_" + SafeFileName(name) + "_" + device.InstanceGuid.ToString("N").Substring(0, 8) + "_2024_" + (category == TransversalCategory ? "Transversal" : "Planes") + ".xml");
+                    Directory.CreateDirectory(Path.GetDirectoryName(file));
+                    File.WriteAllText(file, Skeleton(name, device.InstanceGuid, productId), new UTF8Encoding(true));
+                    present.Add(device.InstanceGuid.ToString("N") + "|" + category);
+                    result.Steps.Add("Created the MSFS 2024 " + (category == TransversalCategory ? "general (transversal)" : "airplane") + " preset of '" + device.JoyProName + "': " + file);
+                }
             }
+        }
+
+        // The sim's category folder of the binds that apply to every aircraft ("General" in Controls).
+        public const string TransversalCategory = "Transversal";
+
+        public static bool IsTransversal(string category)
+        {
+            return string.Equals(category, TransversalCategory, StringComparison.OrdinalIgnoreCase);
         }
 
         // Read-only: the product IDs MSFS 2024 noted per device instance GUID in profile_00 of every Steam user

@@ -53,9 +53,9 @@ public sealed partial class MainWindowViewModel
     [ObservableProperty]
     private bool isMainWindowActive = true;
 
-    // Settings > Binds: the note over the list ("BTN 8 on WarBRD: Gear (1/3)") after a jump (on by default).
+    // Settings > Binds: the note over the list ("BTN 8 on WarBRD: Gear (1/3)") after a jump (off by default).
     [ObservableProperty]
-    private bool showFollowInputNote = true;
+    private bool showFollowInputNote;
 
     // Analog keyboards whose axes the user wants for follow input and recording (device names without GUID).
     private readonly HashSet<string> axisInputOptIns = new(StringComparer.OrdinalIgnoreCase);
@@ -384,6 +384,7 @@ public sealed partial class MainWindowViewModel
 
     private void ShowFollowToast(string text)
     {
+        JoyProLog.Info("FollowInput", text + (ShowFollowInputNote ? string.Empty : " (note hidden)"));
         if (!ShowFollowInputNote)
             return;
         FollowInputToast = text;
