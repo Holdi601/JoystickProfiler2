@@ -366,6 +366,8 @@ public sealed class CockpitPicturePackTests
     public void Setting_AskAlwaysNever()
     {
         // ask / always / never (Settings > Privacy), kept in <data>\DeviceReference\settings.json (a test data folder).
+        // The test data folder is shared: a view model built by another test may have left another mode there.
+        CockpitPicturePacks.DownloadMode = CockpitPicturePacks.Ask;
         string before = CockpitPicturePacks.DownloadMode;
         try
         {
@@ -378,6 +380,8 @@ public sealed class CockpitPicturePackTests
             vm.CockpitPictureDownloadMode = "Never";
             Assert.Equal(CockpitPicturePacks.Never, CockpitPicturePacks.DownloadMode);
             Assert.Equal("Never", vm.CockpitPictureDownloadMode);
+            // Back to ask in the view model too, so its saved settings do not hand "never" to later tests.
+            vm.CockpitPictureDownloadMode = "Ask";
         }
         finally
         {

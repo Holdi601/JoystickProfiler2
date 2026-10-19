@@ -664,6 +664,17 @@ public sealed partial class MainWindowViewModel
             return;
         }
         StatusText = T("Opening your last profile {0}...", Path.GetFileNameWithoutExtension(candidate));
-        await OpenLastProfileInternalAsync(showMissingStatus: true);
+        openingAtStartup = true;
+        try
+        {
+            await OpenLastProfileInternalAsync(showMissingStatus: true);
+        }
+        finally
+        {
+            openingAtStartup = false;
+        }
     }
+
+    // The last profile is opening at start: the Start page stays in front.
+    private bool openingAtStartup;
 }

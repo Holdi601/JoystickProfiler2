@@ -284,6 +284,9 @@ public sealed class SettingsExportHiddenGamesTests : IDisposable
         first.ExportDcsPath = dcsFolder;
         first.ExportIl2Path = Path.Combine(temp, "no-such-folder");
         first.ImportIncludeDisconnected = true;
+        Assert.False(first.ValidationShowWarnings);
+        first.ValidationShowWarnings = true;
+        first.ValidationShowErrors = false;
         first.ProfilePath = profileA;
         await first.RefreshExportGamesCommand.ExecuteAsync(null);
         Assert.All(first.ExportGames, g => Assert.True(g.IsSelected));
@@ -308,6 +311,8 @@ public sealed class SettingsExportHiddenGamesTests : IDisposable
         Assert.False(second.ExportStarCitizenPreferLocalOrder);
         Assert.True(second.ExportDcsCleanAllAircraft);
         Assert.True(second.ImportIncludeDisconnected);
+        Assert.True(second.ValidationShowWarnings);
+        Assert.False(second.ValidationShowErrors);
         Assert.Equal(dcsFolder, second.ExportDcsPath);
         Assert.NotEqual(Path.Combine(temp, "no-such-folder"), second.ExportIl2Path);
 

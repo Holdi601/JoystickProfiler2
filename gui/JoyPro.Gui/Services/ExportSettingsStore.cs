@@ -23,6 +23,10 @@ public sealed class ExportSettings
     // MSFS import: also the devices that are not connected (off: MSFS keeps the binds of every device it ever saw).
     public bool ImportIncludeDisconnected { get; set; }
 
+    // The check list's filters (Show Errors / Show Warnings).
+    public bool ValidationShowErrors { get; set; } = true;
+    public bool ValidationShowWarnings { get; set; }
+
     // "dcs", "il2", "starCitizen", "starCitizenSource" -> the path the user had.
     public Dictionary<string, string> Paths { get; set; } = new(StringComparer.OrdinalIgnoreCase);
 

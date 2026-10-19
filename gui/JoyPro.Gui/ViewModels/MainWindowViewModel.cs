@@ -2332,7 +2332,9 @@ public sealed partial class MainWindowViewModel : ViewModelBase
             suppressStageAutoRefresh = true;
             try
             {
-                CurrentStage = UiStage.Relations;
+                // The last profile opened at start leaves the Start page in front; opening a profile by hand shows it.
+                if (!openingAtStartup)
+                    CurrentStage = UiStage.Relations;
                 await RefreshRelationsAsync();
                 await RefreshBindsAndModifiersAfterChangeAsync();
                 // Devices that came back with a new ID (new PC, Windows reinstall) get their binds, with a notice.

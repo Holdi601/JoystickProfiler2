@@ -593,6 +593,8 @@ public sealed class ProfileHistoryTests : IDisposable
 
         Assert.Equal(profile, vm.ProfilePath);
         Assert.Contains(fake.Calls, c => NoviceGuiTests.Seq(c, "profile", "load", profile));
+        // The Start page stays in front (opening a profile by hand shows the Relations page).
+        Assert.Equal(UiStage.Start, vm.CurrentStage);
     }
 
     [Fact]

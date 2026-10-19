@@ -18,7 +18,7 @@ public sealed partial class MainWindowViewModel
     {
         nameof(ExportMode), nameof(ExportNukeUntouchedDevices), nameof(ExportKeepKeyboardDefaults), nameof(ExportDcsCleanAllAircraft),
         nameof(ExportStarCitizenKeepKeyboardDefaults), nameof(ExportStarCitizenPreferLocalOrder), nameof(RegistryGameDryRun),
-        nameof(ImportIncludeDisconnected), nameof(ExportDcsPath), nameof(ExportIl2Path), nameof(ExportStarCitizenPath), nameof(StarCitizenSourcePath), nameof(RegistryGamePath),
+        nameof(ImportIncludeDisconnected), nameof(ValidationShowErrors), nameof(ValidationShowWarnings), nameof(ExportDcsPath), nameof(ExportIl2Path), nameof(ExportStarCitizenPath), nameof(StarCitizenSourcePath), nameof(RegistryGamePath),
     };
 
     private ExportSettings exportSettings = new();
@@ -53,6 +53,8 @@ public sealed partial class MainWindowViewModel
         ExportStarCitizenPreferLocalOrder = s.StarCitizenPreferLocalOrder;
         RegistryGameDryRun = s.RegistryDryRun;
         ImportIncludeDisconnected = s.ImportIncludeDisconnected;
+        ValidationShowErrors = s.ValidationShowErrors;
+        ValidationShowWarnings = s.ValidationShowWarnings;
         if (RememberedFolder("dcs") is { } dcs)
             ExportDcsPath = dcs;
         if (RememberedFolder("il2") is { } il2)
@@ -93,6 +95,8 @@ public sealed partial class MainWindowViewModel
         s.StarCitizenPreferLocalOrder = ExportStarCitizenPreferLocalOrder;
         s.RegistryDryRun = RegistryGameDryRun;
         s.ImportIncludeDisconnected = ImportIncludeDisconnected;
+        s.ValidationShowErrors = ValidationShowErrors;
+        s.ValidationShowWarnings = ValidationShowWarnings;
         void Path(string key, string value)
         {
             if (string.IsNullOrWhiteSpace(value))
