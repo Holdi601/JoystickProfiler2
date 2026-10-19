@@ -930,6 +930,15 @@
                                                   ToolTip.Tip="{l:T 'Devices you never changed in MSFS run on a preset the sim ships. JoyPro takes it when the sim records that it uses it. On: also when that is not known (this can add binds the sim does not have).'}" Margin="0,0,8,6" />
                                         <CheckBox Content="{l:T 'Nuke: remove all binds from devices JoyPro does not use'}" IsChecked="{Binding ExportNukeUntouchedDevices}" Margin="0,0,8,6" />
                                     </WrapPanel>
+                                    <Border IsVisible="{Binding HasMsfsImportFiles}" BorderBrush="{DynamicResource JP.AccentBrush}" BorderThickness="1" CornerRadius="4" Padding="10,8">
+                                        <StackPanel Spacing="6">
+                                            <TextBlock Text="{Binding MsfsImportFilesHint}" TextWrapping="Wrap" />
+                                            <WrapPanel>
+                                                <TextBlock Text="{Binding MsfsImportFilesFolder}" TextWrapping="Wrap" Opacity="0.8" VerticalAlignment="Center" Margin="0,0,8,0" />
+                                                <Button Command="{Binding OpenMsfsImportFilesFolderCommand}" Content="{l:T 'Open folder'}" />
+                                            </WrapPanel>
+                                        </StackPanel>
+                                    </Border>
                                     <Grid ColumnDefinitions="Auto,*,Auto" ColumnSpacing="8" IsVisible="{Binding SelectedRegistryGameSupportsRefresh}">
                                         <TextBlock Text="{l:T 'DB Source'}" VerticalAlignment="Center" />
                                         <TextBox Grid.Column="1" Text="{Binding RegistryGameDbSource}" Watermark="{l:T 'Where the action list comes from (see the game notes); empty = the game\'s own file'}" />
@@ -4634,6 +4643,19 @@
                                     <TextBlock Classes="section" Text="{l:T 'Export to games'}" />
                                 </StackPanel>
                                 <TextBlock Text="{Binding ExportGamesStatus}" TextWrapping="Wrap" Opacity="0.8" />
+                                <Border IsVisible="{Binding HasMsfsImportFiles}" BorderBrush="{DynamicResource JP.AccentBrush}" BorderThickness="1" CornerRadius="8" Padding="10,8">
+                                    <Grid ColumnDefinitions="Auto,*" ColumnSpacing="10">
+                                        <PathIcon Data="{StaticResource Icon.Info}" Width="18" Height="18" VerticalAlignment="Top" Margin="0,2,0,0" />
+                                        <StackPanel Grid.Column="1" Spacing="6">
+                                            <TextBlock Text="{l:T 'Microsoft Flight Simulator 2024: import your binds in the sim'}" FontWeight="SemiBold" TextWrapping="Wrap" />
+                                            <TextBlock Text="{Binding MsfsImportFilesHint}" TextWrapping="Wrap" />
+                                            <WrapPanel>
+                                                <TextBlock Text="{Binding MsfsImportFilesFolder}" TextWrapping="Wrap" Opacity="0.8" VerticalAlignment="Center" Margin="0,0,8,0" />
+                                                <Button Command="{Binding OpenMsfsImportFilesFolderCommand}" Content="{l:T 'Open folder'}" />
+                                            </WrapPanel>
+                                        </StackPanel>
+                                    </Grid>
+                                </Border>
                                 <Grid ColumnDefinitions="*,Auto" ColumnSpacing="8" IsVisible="{Binding ExportGamesNotInstalled, Converter={x:Static StringConverters.IsNotNullOrEmpty}}">
                                     <TextBlock Text="{Binding ExportGamesNotInstalled}" TextWrapping="Wrap" Foreground="#D97706" VerticalAlignment="Center" />
                                     <Button Grid.Column="1" Command="{Binding GoSettingsCommand}" Content="{l:T 'Settings &gt; Games'}" />
@@ -4773,6 +4795,15 @@
                                     <CheckBox Grid.Column="3" Content="{l:T 'Dry run'}" IsChecked="{Binding RegistryGameDryRun}" />
                                     <Button Grid.Column="4" Command="{Binding ExportRegistryGameCommand}" Content="{l:T 'Export Game'}" IsEnabled="{Binding CanRunRegistryGame}" />
                                 </Grid>
+                                <Border IsVisible="{Binding HasMsfsImportFiles}" BorderBrush="{DynamicResource JP.AccentBrush}" BorderThickness="1" CornerRadius="4" Padding="10,8">
+                                    <StackPanel Spacing="6">
+                                        <TextBlock Text="{Binding MsfsImportFilesHint}" TextWrapping="Wrap" />
+                                        <WrapPanel>
+                                            <TextBlock Text="{Binding MsfsImportFilesFolder}" TextWrapping="Wrap" Opacity="0.8" VerticalAlignment="Center" Margin="0,0,8,0" />
+                                            <Button Command="{Binding OpenMsfsImportFilesFolderCommand}" Content="{l:T 'Open folder'}" />
+                                        </WrapPanel>
+                                    </StackPanel>
+                                </Border>
 
                                 <WrapPanel>
                                     <CheckBox Content="{l:T 'DCS: keep keyboard defaults'}" IsChecked="{Binding ExportKeepKeyboardDefaults}" Margin="0,0,10,0" />
@@ -5652,6 +5683,10 @@
                                         <Button Command="{Binding CreateProblemReportCommand}" Content="{l:T 'Create Report'}" Classes="icon accent" Tag="{StaticResource Icon.Send}" Margin="0,0,8,0" />
                                         <Button Command="{Binding ShowProblemReportCommand}" Content="{l:T 'Show Report'}" IsEnabled="{Binding HasProblemReport}" Margin="0,0,8,0" />
                                         <Button Command="{Binding OpenProblemIssuePageCommand}" Content="{l:T 'Open GitHub Issue Page'}" IsEnabled="{Binding HasProblemReport}" />
+                                    </WrapPanel>
+                                    <WrapPanel>
+                                        <Button Command="{Binding CreateSupportFileCommand}" Content="{l:T 'Create support file'}" Classes="icon" Tag="{StaticResource Icon.Bug}" Margin="0,0,8,0"
+                                                ToolTip.Tip="{l:T 'One zip with the logs of the last 3 days, the environment of your games (install, folders, drives, devices) and JoyPro\'s copies of the small config files it read or wrote. Shows what is in it first; nothing is sent.'}" />
                                     </WrapPanel>
                                     <TextBlock Text="{Binding ProblemReportStatus}" TextWrapping="Wrap" />
                                     <WrapPanel>

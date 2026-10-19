@@ -231,6 +231,7 @@ function Get-CommandSummaryForDocs {
         "binds edit" { return "Opens binds JSON in an external editor for round-trip editing." }
         "sync status" { return "Per game the config files (or registry values) JoyPro manages, their fingerprint and whether the game changed them since JoyPro's last export, accept or apply (docs/sync-watcher.md)." }
         "sync accept" { return "Marks the game's current config as known without importing anything." }
+        "support bundle" { return "Writes the support file (docs/logging.md ""Support file""): summary with versions, system, the games' environment (install, config folders, drive, file system, attributes such as EFS) and the connected devices; JoyPro's logs and crash reports of the last days; per game the watcher's record and JoyPro's copies of the small config files its newest export changed; for MSFS the profiles JoyPro reads, its package, the import files and the sim's records. Every text is scrubbed (user folder -> %USERPROFILE%); nothing is uploaded. --list only prints the contents." }
         "sync diff" { return "Reads the game's config with its own import into a scratch profile and lists what changed that JoyPro manages (added, removed, changed-tuning, changed-modifiers) with the candidate relations." }
         "sync apply" { return "Applies the user's choice per change (a relation, a new relation or ignore) to the profile; then the config counts as known." }
         "vjoy status" { return "Virtual joystick mode (docs/virtual-joystick.md): vJoy and HidHide installed, the vJoy devices (configuration and DirectInput name), HidHide's state, JoyPro's HidHide session (stale when its owner is gone), the games native/virtual, the mapping table and what vJoy must offer. Read-only." }
@@ -447,6 +448,9 @@ function Get-ArgumentDocLine {
         "--choices" { return "For sync apply: JSON file with the user's choice per change id: {""Choices"":[{""Id"":""c1a2b3c4d5"",""Target"":""Gear Toggle""},{""Id"":""...""," + """Target"":""new"",""Name"":""My Relation""},{""Id"":""..."",""Target"":""ignore""}]}." }
         "<config>" { return "The game's config (file, folder or HKCU registry key) as engine sync status lists it; default: the one the export uses." }
         "<file.json>" { return "Path to a JSON file. Example: C:\JoyPro\sync-choices.json." }
+        "<file.zip>" { return "Path of the zip to write. Example: C:\JoyPro\JoyPro2-support.zip." }
+        "--list" { return "For support bundle: only print what the zip would hold; nothing is written." }
+        "--days" { return "For support bundle: logs and crash reports of the last N days (default 3)." }
         default { return "Command argument. See examples for typical values." }
     }
 }
@@ -729,6 +733,7 @@ function Get-ExampleCommand {
         "binds edit" { return @("engine --editor 'code --wait {file}' binds edit") }
         "sync status" { return @("engine sync status --text", "engine sync status --game DCS") }
         "sync accept" { return @("engine sync accept --game WarThunder") }
+        "support bundle" { return @("engine support bundle --list --text", "engine support bundle --game MSFS2024 --out 'C:\JoyPro\JoyPro2-support.zip'") }
         "sync diff" { return @("engine --profile 'C:\JoyPro\profiles\pilot_main.pr0file' sync diff --game DCS --text") }
         "sync apply" { return @("engine --profile 'C:\JoyPro\profiles\pilot_main.pr0file' sync apply --game DCS --choices 'C:\JoyPro\sync-choices.json'") }
         "vjoy status" { return @("engine --profile 'C:\JoyPro\profiles\pilot_main.pr0file' vjoy status --text") }

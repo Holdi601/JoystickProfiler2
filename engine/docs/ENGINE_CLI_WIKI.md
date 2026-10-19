@@ -180,6 +180,7 @@ engine profile save "C:\profiles\my_setup.pr0file"
   engine sync accept --game <id> [--path <config>]   (the current config counts as known; nothing is imported)
   engine sync diff --game <id> [--path <config>]   (what the game changed that JoyPro manages, compared with the profile: added, removed, changed-tuning, changed-modifiers, with candidate relations)
   engine sync apply --game <id> --choices <file.json> [--path <config>]   (per change id: Target = relation name, "new" (+ Name) or "ignore"; then the config counts as known)
+  engine support bundle [--game <id>] [--days <n>] [--list] --out <file.zip>   (the support file: logs of the last days, the games' environment and devices, JoyPro's copies of their small config files, MSFS profiles read; user folder replaced, nothing uploaded; --list only shows the contents)
   engine vjoy status   (virtual joystick mode: vJoy and HidHide installed, vJoy devices, HidHide state and JoyPro's session, games native/virtual, the mapping table, what vJoy must offer; read-only)
   engine vjoy mode <game> native|virtual|xbox [--dry-run]   (per game: physical devices, the virtual joystick (vJoy, every used input gets a fixed vJoy slot) or the virtual Xbox 360 pad (ViGEmBus, for XInput-only or one-device games: the game's gamepad layout first, then sticks, triggers, buttons, D-pad))
   engine vjoy plan [--reset] [--prune]   (the mapping table and the vJoy configuration it needs; nothing is saved)
@@ -1834,6 +1835,24 @@ Arguments and example values:
 Examples:
 ```powershell
 engine --help
+```
+
+### `engine support bundle [--game <id>] [--days <n>] [--list] --out <file.zip>   (the support file: logs of the last days, the games' environment and devices, JoyPro's copies of their small config files, MSFS profiles read; user folder replaced, nothing uploaded; --list only shows the contents)`
+What it does: Writes the support file (docs/logging.md "Support file"): summary with versions, system, the games' environment (install, config folders, drive, file system, attributes such as EFS) and the connected devices; JoyPro's logs and crash reports of the last days; per game the watcher's record and JoyPro's copies of the small config files its newest export changed; for MSFS the profiles JoyPro reads, its package, the import files and the sim's records. Every text is scrubbed (user folder -> %USERPROFILE%); nothing is uploaded. --list only prints the contents.
+
+Arguments and example values:
+- `--game`: Game filter value. Example: DCS or IL2Game.
+- `<id>`: Command argument. See examples for typical values.
+- `--days`: For support bundle: logs and crash reports of the last N days (default 3).
+- `<n>`: Integer numeric value. Example: 45.
+- `--list`: For support bundle: only print what the zip would hold; nothing is written.
+- `--out`: Global option: write result output to file path instead of terminal.
+- `<file.zip>`: Path of the zip to write. Example: C:\JoyPro\JoyPro2-support.zip.
+
+Examples:
+```powershell
+engine support bundle --list --text
+engine support bundle --game MSFS2024 --out 'C:\JoyPro\JoyPro2-support.zip'
 ```
 
 ### `engine vjoy status   (virtual joystick mode: vJoy and HidHide installed, vJoy devices, HidHide state and JoyPro's session, games native/virtual, the mapping table, what vJoy must offer; read-only)`
@@ -5945,7 +5964,7 @@ Arguments and example values:
 - `--drawing-preset`: Command argument. See examples for typical values.
 - `<p>`: Command argument. See examples for typical values.
 - `--missing`: For db list, show only missing entries.
-- `--list`: Command argument. See examples for typical values.
+- `--list`: For support bundle: only print what the zip would hold; nothing is written.
 - `--aircraft`: MSFS export only: also write the relations limited to this aircraft (key from DB\\MSFS\\aircraft.tsv); the sim's presets apply to every aircraft.
 - `<plane>`: Command argument. See examples for typical values.
 - `--grip`: Command argument. See examples for typical values.

@@ -392,7 +392,41 @@ public sealed partial class MainWindowViewModel
             args.AddRange(["--aircraft", RegistryGameAircraft.Trim()]);
         EngineCommandResult? result = await RunEngineAsync(args, includeProfile: true, mutatesProfile: false, busyLabel: (RegistryGameDryRun ? T("Checking export to ") : T("Exporting to ")) + SelectedRegistryGame!.DisplayName + "...");
         await AfterCommandListBuiltAsync(result);
+        // (an export of the other games of the same run leaves the MSFS hint as it is)
+        if (result?.ExitCode == 0 && string.Equals(SelectedRegistryGame?.GameId, "MSFS2024", StringComparison.OrdinalIgnoreCase))
+            MsfsImportFilesFolder = MsfsImportFilesFolderOf(result.StandardOutput) ?? string.Empty;
         return result;
+    }
+
+    // MSFS 2024: the export also writes the binds as files to import in the sim (the sim keeps its own settings for
+    // the devices and aircraft it has set up, where JoyPro's preset package does not apply; docs/games/msfs.md).
+    [ObservableProperty]
+    private string msfsImportFilesFolder = string.Empty;
+
+    public bool HasMsfsImportFiles => MsfsImportFilesFolder.Length > 0;
+
+    public string MsfsImportFilesHint => T("MSFS 2024 keeps its own settings for every device and aircraft it has already set up, and there JoyPro's preset is not used. JoyPro also wrote your binds as one file per device and category. In MSFS 2024 open Settings > Controls, pick the device and the category (Airplanes or General), click the cogwheel next to the preset name, choose Import and select the file of that device and category.");
+
+    partial void OnMsfsImportFilesFolderChanged(string value) => OnPropertyChanged(nameof(HasMsfsImportFiles));
+
+    [RelayCommand]
+    private void OpenMsfsImportFilesFolder()
+    {
+        if (MsfsImportFilesFolder.Length > 0)
+            OpenExternal(MsfsImportFilesFolder);
+    }
+
+    private static readonly System.Text.RegularExpressions.Regex MsfsImportFilesLine =
+        new(@"MSFS 2024 import files written \(\d+, one per device and category\): (?<folder>[^\r\n""]+)(?<json>"")?", System.Text.RegularExpressions.RegexOptions.CultureInvariant);
+
+    // The folder of the import files an MSFS 2024 export wrote (its step line, text or JSON output), or null.
+    internal static string? MsfsImportFilesFolderOf(string? output)
+    {
+        System.Text.RegularExpressions.Match match = MsfsImportFilesLine.Match(output ?? string.Empty);
+        if (!match.Success)
+            return null;
+        string folder = match.Groups["folder"].Value.Trim();
+        return match.Groups["json"].Success ? folder.Replace(@"\\", @"\") : folder;
     }
 
     [RelayCommand]

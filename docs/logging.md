@@ -69,6 +69,48 @@ count, culture and time zone, the command line and the log settings.
   per aircraft, every status change (waiting / active / faulted, reason, aircraft, frames, endpoint), faults with
   their exception and the retry, game start/exit, GUI commands, STOP ALL at the end, the exit reason and code.
 
+### Game runs (since 2.2.7)
+Finding a game problem needs the exact environment and the files JoyPro worked on, so every game run (scan, import,
+export, refresh, restore, `sync diff`, a changed `sync status`) logs at debug level (`engine\EngineDiagnostics.cs`,
+fed by `GameBackups.Begin` / `GameBackups.Protect` and the game integrations):
+- once per run and game, `[Diagnostics] Environment of <game>`: install kind (Steam, Microsoft Store, standalone),
+  install folder and how it was found, the config folders and files with folder/file, attributes (Encrypted (EFS),
+  ReadOnly, Hidden, Compressed, ReparsePoint, CloudPlaceholder), drive, file system (NTFS, exFAT, network share), drive
+  type and free space, and the connected devices (name, VID:PID, instance GUID);
+- per file JoyPro reads for a game (MSFS profiles) `Read: <path> (<what>) | size, written, attributes, sha <12 hex>`,
+  per file it changes `Before write:` and, after the command, `After write:` with the same stamp;
+- a failed run (exit code not 0) logs the whole snapshot as a warning and prints it to stderr
+  (`Diagnostics (environment and files of this run):`, in the GUI's output panel); an engine crash report carries it.
+- MSFS: the source folders searched and the files they gave, every profile read (device, GUID, category, bound and
+  listed actions), which profile was taken per device and category and why, the sim's records per device and category
+  (slots, votes, shipped presets), every file an export wrote (package preset, profile, import file) with the changed
+  actions.
+- The watcher (`[Sync]`, `[Watcher]`): status per game, a changed config's files (recorded and current stamp), an
+  unchanged one's compared files (every 10 minutes at most), the diff's changes (or why there are none); in the GUI and
+  the tray host every file event of a watched folder (kind, path, time; one line per file and kind every 2 s), the
+  game process seen (pid, start time) and its exit, the wait decision, failed status/diff runs, and whether the user
+  was asked (notice / notification) or the state was accepted without asking.
+
+### Support file
+Settings > Report a problem > **Create support file** (engine: `engine support bundle [--game <id>] [--days N] [--list]
+--out <zip>`, `engine\EngineSupportBundle.cs`). The GUI first lists what the zip will hold (`--list`, nothing is
+written), the user confirms, then it is saved as `Documents\JoyPro2 Problem Reports\JoyPro2-support-<time>.zip` and
+shown in Explorer. Nothing is uploaded. Every text goes through `LogScrubber` (the user folder becomes `%USERPROFILE%`);
+binary files are left out.
+
+| Entry | Content |
+|---|---|
+| `summary.txt` | versions, system, JoyPro's folders, per installed game (or `--game`) the environment as above, the connected devices |
+| `logs/*.log`, `crash-reports/*.txt` | JoyPro's logs of the last 3 days (at most 60 MB) and crash reports |
+| `games/<id>/sync-record.json` | the watcher's record of the game's state |
+| `games/<id>/backup-<set>/` | the newest backup set: JoyPro's own copies of the small text config files (at most 512 KB each) an export changed, and its manifest |
+| `games/MSFS2024/profiles/` | the input profiles JoyPro reads (Steam remote folder, Microsoft Store save; decoded text, a header line with the source path, size and time) |
+| `games/MSFS2024/package/`, `import-files/` | JoyPro's preset package and the import files |
+| `games/MSFS2024/sim-records.txt` | the sim's device records as JoyPro reads them (not the save file) |
+
+**Ask a tester for the support file first** (it answers which install, which folders, which files and what the sim's
+records say), then for the problem report with a description.
+
 Never per frame or per tick: the force loop and the watcher's idle time log nothing. JoyPro.Ffb writes a one-line
 summary once a minute (state, frames, memory, GC, handles, updates); repeated warnings use `JoyProLog.ShouldLog(key,
 interval)`.

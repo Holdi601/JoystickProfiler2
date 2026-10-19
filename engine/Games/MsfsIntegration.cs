@@ -16,7 +16,7 @@ namespace JoyPro.Engine.Games
     // (flight and general ones; menus, world map and developer tools stay the sim's, see IsManagedContext);
     // JoyPro's ownership data and backups live under %LOCALAPPDATA%\JoyPro, never in the synced folder.
     // See docs/games/msfs.md.
-    internal sealed class MsfsIntegration : IGameIntegration, IGameImportReading, IGameDisconnectedDevices, IGameSimDefaults, IGameOwnershipTracking, IGameProfileSelection, IGameAircraftScope, IGameCatalogRefreshFiles
+    internal sealed partial class MsfsIntegration : IGameIntegration, IGameImportReading, IGameDisconnectedDevices, IGameSimDefaults, IGameOwnershipTracking, IGameProfileSelection, IGameAircraftScope, IGameCatalogRefreshFiles
     {
         private readonly int sim;
 
@@ -75,7 +75,7 @@ namespace JoyPro.Engine.Games
             {
                 return sim == 2020
                     ? "Experimental. Close MSFS 2020 first. JoyPro edits the device profiles in the Steam remote folder (inputprofile_*); Steam Cloud can restore older profiles. The Microsoft Store version's profiles are imported, not written. Presets apply to every aircraft: relations limited to MSFS aircraft are only exported for the aircraft picked with --aircraft."
-                    : "Experimental. Close MSFS 2024 first. JoyPro writes its presets as a package into the sim's Community2024 folder (joypro-input-profiles); the sim uses them for every aircraft it has not configured for that device yet. Aircraft configured before keep their settings until Controls > Reset to Defaults (which resets the presets of all devices). Import reads your own profiles (Steam and Microsoft Store) and JoyPro's presets. Presets apply to every aircraft: relations limited to MSFS aircraft are only exported for the aircraft picked with --aircraft.";
+                    : "Experimental. Close MSFS 2024 first. JoyPro writes its presets as a package into the sim's Community2024 folder (joypro-input-profiles); the sim uses them for every aircraft it has not configured for that device yet. Aircraft configured before keep their settings, so each export also writes one file per device and category into Documents\\JoyPro\\MSFS 2024 import files: import it in the sim (Controls > device > category > cogwheel of the preset > Import). Import reads your own profiles (Steam and Microsoft Store) and JoyPro's presets. Presets apply to every aircraft: relations limited to MSFS aircraft are only exported for the aircraft picked with --aircraft.";
             }
         }
         public IReadOnlyList<string> ProcessNames { get { return sim == 2020 ? new[] { "FlightSimulator" } : new[] { "FlightSimulator2024" }; } }
@@ -176,8 +176,13 @@ namespace JoyPro.Engine.Games
                 if (group.Count() == 1)
                 {
                     selected.Add(group.First());
+                    JoyPro.Logging.JoyProLog.Debug("MSFS", "Profile of " + group.First().DeviceName + " (" + (group.First().CategoryKey.Length == 0 ? "no category" : group.First().CategoryKey) + ", " +
+                                                           group.First().Source + "): '" + group.First().FriendlyName + "' (the only one) " + group.First().FilePath);
                     continue;
                 }
+                JoyPro.Logging.JoyProLog.Debug("MSFS", "Profiles of " + group.First().DeviceName + " (" + (group.First().CategoryKey.Length == 0 ? "no category" : group.First().CategoryKey) + "): " +
+                    string.Join("; ", group.OrderByDescending(p => SavedAt(p.FilePath)).Select(p => "'" + p.FriendlyName + "' saved " + SavedAt(p.FilePath).ToString("yyyy-MM-dd HH:mm:ss", CultureInfo.InvariantCulture) + "Z " + p.FilePath)) +
+                    (forImport ? " -> the newest is imported" : " -> skipped for the export (several)"));
                 MsfsProfileFile first = group.First();
                 if (forImport)
                 {
@@ -256,6 +261,14 @@ namespace JoyPro.Engine.Games
                 return new List<MsfsProfileFile>();
             }
 
+            // Where the profiles came from (diagnostics): every source folder and how many files it gave.
+            JoyPro.Logging.JoyProLog.Debug("MSFS", DisplayName + " profiles for " + (forImport ? "import/scan" : "export") + " from " + configPath + ": " + files.Count.ToString(CultureInfo.InvariantCulture) + " file(s)" +
+                (userSources == null ? string.Empty : "; your profiles: " + string.Join("; ", MsfsUserProfiles.SearchedFolders(sim, new List<string>()).Select(folder =>
+                {
+                    MsfsProfileSource found = userSources.FirstOrDefault(s => string.Equals(s.Folder, folder, StringComparison.OrdinalIgnoreCase));
+                    return folder + " (" + (found == null ? (Directory.Exists(folder) ? "no input profile" : "not there") : found.Kind + ", " + found.Files.Count.ToString(CultureInfo.InvariantCulture) + " profile(s)" +
+                        (found.Kind == MsfsProfileSourceKind.Store ? ", " + found.OtherBlobs.ToString(CultureInfo.InvariantCulture) + " other saved file(s)" : string.Empty)) + ")";
+                }))));
             List<MsfsProfileFile> profiles = new List<MsfsProfileFile>();
             int keyboardOrPad = 0;
             foreach (KeyValuePair<string, MsfsProfileSourceKind> file in files)
@@ -277,6 +290,10 @@ namespace JoyPro.Engine.Games
                         continue;
                 }
                 profile.Source = file.Value;
+                EngineDiagnostics.NoteRead(file.Key, DisplayName + " " + file.Value + " profile '" + profile.FriendlyName + "': " + profile.DeviceName +
+                    (profile.HasDeviceGuid ? " {" + profile.DeviceGuid.ToString().ToUpperInvariant() + "}" : " (keyboard/mouse/gamepad)") + ", " +
+                    (profile.CategoryKey.Length == 0 ? "no category" : profile.CategoryKey) + (profile.IsPreset ? ", preset" : string.Empty) + ", " +
+                    profile.Actions.Count(a => a.Combos.Count > 0).ToString(CultureInfo.InvariantCulture) + " bound of " + profile.Actions.Count.ToString(CultureInfo.InvariantCulture) + " listed action(s)");
                 if (profile.HasDeviceGuid)
                     profiles.Add(profile);
                 else
@@ -476,8 +493,17 @@ namespace JoyPro.Engine.Games
             if (unknown.Count > 0)
                 result.Warnings.Add(unknown.Count.ToString(CultureInfo.InvariantCulture) + " bound action(s) are not in JoyPro's " + DisplayName + " command list and were left out (" +
                                     string.Join(", ", unknown.OrderBy(u => u, StringComparer.Ordinal).Take(8)) + (unknown.Count > 8 ? ", ..." : string.Empty) + "). A DB refresh adds them.");
-            if (added.Count > 0 || movedToGeneral.Count > 0)
-                SaveAddedActions(added, movedToGeneral, result);
+            // MSFS 2024 profiles list every action of their contexts, bound or not: the list gets all of them with the
+            // context the sim lists them in, so the relation editor offers what the sim's Controls menu offers (a list
+            // built from the sim's presets alone, or by an older JoyPro, has only the bound ones of the general page).
+            List<GameAction> listedAdded = new List<GameAction>();
+            if (ImportReading)
+            {
+                Dictionary<string, SortedSet<string>> listed = ListedContexts(profiles);
+                AddListedActions(catalog, listed, () => menuTitles ?? (menuTitles = MenuTitles(result.Warnings)), listedAdded, movedToGeneral, ListedFlags(profiles));
+            }
+            if (added.Count > 0 || movedToGeneral.Count > 0 || listedAdded.Count > 0)
+                SaveAddedActions(added, movedToGeneral, result, listedAdded);
             return result;
         }
 
@@ -522,6 +548,100 @@ namespace JoyPro.Engine.Games
         private bool MovesToGeneral(GameAction cataloged, MsfsAction action, MsfsProfileFile profile)
         {
             return profile.Is2024 == (sim == 2024) && IsGeneralContext(action.Context) && FlightContexts.Contains(cataloged.Category ?? string.Empty);
+        }
+
+        // An MSFS 2024 profile the user saved (Steam, Microsoft Store, an exported file; not a preset) lists every action
+        // of its contexts, the unbound ones as empty <Action/>: together they are what the sim's Controls menu offers.
+        internal static bool ListsEveryAction(MsfsProfileFile profile)
+        {
+            return profile != null && profile.Is2024 && !profile.IsPreset && profile.Source != MsfsProfileSourceKind.SimDefault && profile.Source != MsfsProfileSourceKind.Package;
+        }
+
+        // Action id -> the managed contexts the listing profiles put it in.
+        private Dictionary<string, SortedSet<string>> ListedContexts(IEnumerable<MsfsProfileFile> profiles)
+        {
+            Dictionary<string, SortedSet<string>> listed = new Dictionary<string, SortedSet<string>>(StringComparer.Ordinal);
+            if (sim != 2024)
+                return listed;
+            foreach (MsfsProfileFile profile in profiles.Where(ListsEveryAction))
+            {
+                foreach (MsfsAction action in profile.Actions.Where(a => IsManagedContext(a.Context) && EventName.IsMatch(a.Name)))
+                {
+                    SortedSet<string> contexts;
+                    if (!listed.TryGetValue(action.Name, out contexts))
+                        listed[action.Name] = contexts = new SortedSet<string>(StringComparer.Ordinal);
+                    contexts.Add(action.Context);
+                }
+            }
+            return listed;
+        }
+
+        // The context a listed action gets in the list: a flight one when the sim lists it in one, else its general one.
+        private static string ListedContext(SortedSet<string> contexts)
+        {
+            return contexts.FirstOrDefault(c => FlightContexts.Contains(c)) ?? contexts.First();
+        }
+
+        // The sim's listing is its own word on an action's context: an action the list has in a context the sim does not
+        // list it in, while the sim lists it only in general ones, gets the general one (a flight context taken from
+        // the other sim's list, a general one guessed by JoyPro). Flight contexts are never moved (an airplane profile
+        // does not list the helicopter contexts). Null: no change.
+        private static string CorrectedContext(GameAction cataloged, SortedSet<string> contexts)
+        {
+            if (contexts == null || contexts.Count == 0 || contexts.Contains(cataloged.Category ?? string.Empty) || contexts.Any(c => FlightContexts.Contains(c)))
+                return null;
+            return contexts.First();
+        }
+
+        // Adds the listed actions the list lacks (title from the sim's menu names, else from the event name) and gives
+        // known ones the context the sim lists them in. added / moved collect what changed.
+        private void AddListedActions(GameCatalog catalog, Dictionary<string, SortedSet<string>> listed, Func<Dictionary<string, string>> titles, List<GameAction> added, List<GameAction> moved,
+                                      Dictionary<string, int> flags)
+        {
+            foreach (KeyValuePair<string, SortedSet<string>> entry in listed.OrderBy(l => l.Key, StringComparer.Ordinal))
+            {
+                GameAction known = catalog.Find(entry.Key);
+                if (known != null)
+                {
+                    string corrected = CorrectedContext(known, entry.Value);
+                    if (corrected != null)
+                    {
+                        known.Category = corrected;
+                        moved.Add(known);
+                    }
+                    continue;
+                }
+                string context = ListedContext(entry.Value);
+                int flag;
+                flags.TryGetValue(entry.Key, out flag);
+                string title;
+                GameAction action = new GameAction
+                {
+                    Id = entry.Key,
+                    Title = titles().TryGetValue(entry.Key, out title) && title.Length > 0 ? title : MsfsGameData.TitleFromEventName(entry.Key),
+                    IsAxis = AxisAction.IsMatch(entry.Key) || (IsGeneralContext(context) && (flag & FlagAxis) != 0),
+                    Category = context
+                };
+                if (action.Title.Length == 0)
+                    action.Title = MsfsGameData.RawTitle(entry.Key);
+                catalog.Add(action);
+                added.Add(action);
+            }
+        }
+
+        // The flag each listed action has (an unbound axis action keeps its axis flag).
+        private static Dictionary<string, int> ListedFlags(IEnumerable<MsfsProfileFile> profiles)
+        {
+            Dictionary<string, int> flags = new Dictionary<string, int>(StringComparer.Ordinal);
+            foreach (MsfsProfileFile profile in profiles.Where(ListsEveryAction))
+            {
+                foreach (MsfsAction action in profile.Actions)
+                {
+                    int flag;
+                    flags[action.Name] = flags.TryGetValue(action.Name, out flag) ? flag | action.Flag : action.Flag;
+                }
+            }
+            return flags;
         }
 
         // An action name of an input profile (KEY_ events and the sim's own actions such as DRONE_ZOOM_IN).
@@ -576,7 +696,7 @@ namespace JoyPro.Engine.Games
 
         // The actions an import found in the user's profiles go into the stored command list (the import names its
         // relations after it, and an export writes them back).
-        private void SaveAddedActions(List<GameAction> added, List<GameAction> movedToGeneral, GameScanResult result)
+        private void SaveAddedActions(List<GameAction> added, List<GameAction> movedToGeneral, GameScanResult result, List<GameAction> listed = null)
         {
             try
             {
@@ -584,6 +704,10 @@ namespace JoyPro.Engine.Games
                 int before = stored.Actions.Count;
                 foreach (GameAction action in added.Where(a => !stored.Contains(a.Id)))
                     stored.Add(new GameAction { Id = action.Id, Title = action.Title, IsAxis = action.IsAxis, Category = action.Category });
+                int boundAdded = stored.Actions.Count - before;
+                foreach (GameAction action in (listed ?? new List<GameAction>()).Where(a => !stored.Contains(a.Id)))
+                    stored.Add(new GameAction { Id = action.Id, Title = action.Title, IsAxis = action.IsAxis, Category = action.Category });
+                int listedAdded = stored.Actions.Count - before - boundAdded;
                 int moved = 0;
                 foreach (GameAction action in movedToGeneral)
                 {
@@ -596,9 +720,12 @@ namespace JoyPro.Engine.Games
                 if (stored.Actions.Count == before && moved == 0)
                     return;
                 GameCatalogStore.Save(this, stored, DisplayName + " action catalog, actions added from your profiles " + DateTime.Now.ToString("yyyy-MM-dd HH:mm", CultureInfo.InvariantCulture));
-                if (stored.Actions.Count > before)
-                    result.Steps.Add((stored.Actions.Count - before).ToString(CultureInfo.InvariantCulture) + " action(s) of your profiles added to JoyPro's " + DisplayName + " command list (" +
+                if (boundAdded > 0)
+                    result.Steps.Add(boundAdded.ToString(CultureInfo.InvariantCulture) + " action(s) of your profiles added to JoyPro's " + DisplayName + " command list (" +
                                      string.Join(", ", added.Select(a => a.Id).Take(6)) + (added.Count > 6 ? ", ..." : string.Empty) + ").");
+                if (listedAdded > 0)
+                    result.Steps.Add(listedAdded.ToString(CultureInfo.InvariantCulture) + " unbound action(s) your " + DisplayName + " profiles list (the sim's Controls menu) added to JoyPro's command list with their context (" +
+                                     string.Join(", ", listed.Select(a => a.Id).Take(6)) + (listed.Count > 6 ? ", ..." : string.Empty) + ").");
                 if (moved > 0)
                     result.Steps.Add(moved.ToString(CultureInfo.InvariantCulture) + " action(s) of JoyPro's " + DisplayName + " command list now have the general context your profiles use (" +
                                      string.Join(", ", movedToGeneral.Select(a => a.Id + " -> " + a.Category).Distinct().Take(6)) + ").");
@@ -845,7 +972,21 @@ namespace JoyPro.Engine.Games
             }
             List<MsfsProfileFile> profiles = LoadSelectedProfiles(request.ConfigPath, result.Errors, result.Warnings);
             if (result.Errors.Count > 0)
+            {
+                // No preset in the package because none of the exported devices is connected (the sim matches a preset
+                // by the device's product ID): the import files still carry the binds (they start from the user's own
+                // profiles), so the export is no failure when they were written.
+                if (isPackage && !request.DryRun && profiles.Count == 0 && result.Errors.Count == 1 && result.Errors[0].Contains("has no presets yet"))
+                {
+                    List<string> packageErrors = new List<string>(result.Errors);
+                    result.Errors.Clear();
+                    if (WriteSimImportFiles(request, result) > 0)
+                        result.Warnings.Add("JoyPro's MSFS 2024 package got no presets: none of the exported devices is connected (the sim matches a preset by the device's product ID). The import files carry the binds.");
+                    else
+                        result.Errors.AddRange(packageErrors);
+                }
                 return result;
+            }
 
             Dictionary<Guid, Dictionary<string, List<MsfsWanted>>> wantedByDevice = new Dictionary<Guid, Dictionary<string, List<MsfsWanted>>>();
             foreach (GameInputBinding binding in request.Bindings)
@@ -904,6 +1045,10 @@ namespace JoyPro.Engine.Games
                 {
                     BackUp(profile.FilePath, result);
                     profile.Save(profile.FilePath);
+                    JoyPro.Logging.JoyProLog.Debug("MSFS", "Export wrote " + (profile.IsPreset ? "JoyPro package preset" : MsfsUserProfiles.IsStorePath(profile.FilePath) ? "Store profile" : "profile file") + " " + profile.FilePath +
+                        " (" + profile.DeviceName + " {" + profile.DeviceGuid.ToString().ToUpperInvariant() + "}, " + (profile.CategoryKey.Length == 0 ? "no category" : profile.CategoryKey) + "): " +
+                        profile.ChangedActions.ToString(CultureInfo.InvariantCulture) + " action(s) changed (" + string.Join(", ", profile.Actions.Where(a => a.Changed).Select(a => a.Name + "=" + (a.Combos.Count == 0 ? "-" : string.Join("+", a.Combos.Select(c => c.Signature)))).Take(40)) +
+                        "), " + profile.ChangedAxes.ToString(CultureInfo.InvariantCulture) + " device axis setting(s)");
                 }
                 catch (IOException ex) when (SafeFileIo.IsEncryptionFailure(ex))
                 {
@@ -957,6 +1102,10 @@ namespace JoyPro.Engine.Games
                     result.Errors.Add(SafeFileIo.Explain(ex, Path.Combine(package, "layout.json")).Message);
                 }
             }
+            // The package reaches only aircraft the sim has not set up for a device yet: the same binds also go into
+            // files in the sim's own format, to import in Controls (MsfsIntegration.ImportFiles.cs).
+            if (isPackage && !request.DryRun && result.Errors.Count == 0)
+                WriteSimImportFiles(request, result);
             return result;
         }
 
@@ -1393,6 +1542,14 @@ namespace JoyPro.Engine.Games
                     result.Warnings.Add("The sim's own input presets were not found (searched: " + (roots.Count == 0 ? "no install found" : string.Join(", ", roots)) +
                                         "); the list is built from your own profiles and the sim's menu names.");
                 files.AddRange(userFiles);
+                // JoyPro's own presets (Community2024 package): the actions an earlier export wrote.
+                if (sim == 2024 && MsfsGameData.UserProfilesAllowed())
+                {
+                    string community = MsfsCommunityPackage.FindCommunityFolder();
+                    string package = string.IsNullOrEmpty(community) ? null : Path.Combine(community, MsfsCommunityPackage.PackageName);
+                    if (package != null && Directory.Exists(package))
+                        files.AddRange(MsfsCommunityPackage.PresetFiles(package));
+                }
                 profiles = new List<MsfsProfileFile>();
                 int fileIndex = 0;
                 foreach (string file in files)
@@ -1455,6 +1612,35 @@ namespace JoyPro.Engine.Games
             }
             if (titles.Count > 0)
                 result.Steps.Add("Flight events the sim names but no preset binds: " + fromNames.ToString(CultureInfo.InvariantCulture) + " new");
+            // The contexts the user's MSFS 2024 profiles list the actions in (every action of their contexts) are the
+            // sim's word: a context the list has from elsewhere (the other sim, a guess) is corrected.
+            Dictionary<string, SortedSet<string>> listed = ListedContexts(profiles);
+            List<GameAction> corrected = new List<GameAction>();
+            AddListedActions(catalog, listed, () => titles, new List<GameAction>(), corrected, ListedFlags(profiles));
+            if (corrected.Count > 0)
+                result.Steps.Add("Actions moved to the context your profiles list them in: " + corrected.Count.ToString(CultureInfo.InvariantCulture));
+            // General events (cameras, views, UI, ...) only the locPak names: a full General profile of the user lists
+            // every general action the sim offers, so with one read they stay out (the sim's menu does not offer them);
+            // without one they join with the context of the known actions of the same name group, when that is clear
+            // (MsfsGameData.GuessGeneralContext), else they stay out.
+            bool fullGeneralListing = profiles.Any(p => ListsEveryAction(p) && (p.CategoryKey.Length == 0 || p.IsGeneralCategory) &&p.Actions.Any(a => IsGeneralContext(a.Context)));
+            if (sim == 2024 && titles.Count > 0 && !fullGeneralListing)
+            {
+                List<KeyValuePair<string, string>> general = catalog.Actions.Where(a => IsGeneralContext(a.Category)).Select(a => new KeyValuePair<string, string>(a.Id, a.Category)).ToList();
+                int guessed = 0;
+                foreach (KeyValuePair<string, string> named1 in titles.OrderBy(t => t.Key, StringComparer.Ordinal))
+                {
+                    if (catalog.Contains(named1.Key) || MsfsGameData.IsFlightEvent(named1.Key) || !EventName.IsMatch(named1.Key))
+                        continue;
+                    string context = MsfsGameData.GuessGeneralContext(named1.Key, general);
+                    if (context == null || !IsGeneralContext(context))
+                        continue;
+                    catalog.Add(new GameAction { Id = named1.Key, Title = MsfsGameData.RawTitle(named1.Key), IsAxis = AxisAction.IsMatch(named1.Key), Category = context });
+                    guessed++;
+                }
+                result.Steps.Add("General events the sim names but neither a preset nor a profile of yours lists: " + guessed.ToString(CultureInfo.InvariantCulture) +
+                                 " new (context from the actions of the same name group)");
+            }
             int named = 0;
             int fromEvent = 0;
             foreach (GameAction action in catalog.Actions.Where(a => current == null || !current.Contains(a.Id) || a.Title == MsfsGameData.RawTitle(a.Id)))

@@ -89,6 +89,7 @@ namespace JoyPro.Engine.Games
         private int deviceCloseLine = -1;
         private int deviceLine = -1;
         private int aircraftInfoLine = -1;
+        private int friendlyNameLine = -1;
         private int axesOpenLine = -1;
         private int axesCloseLine = -1;
         // Device axis name -> line of its <Axis AxisName=".."/> in <Axes> (the Sensitivity page).
@@ -249,6 +250,7 @@ namespace JoyPro.Engine.Games
                 if (friendly.Success)
                 {
                     FriendlyName = WebUtility.HtmlDecode(friendly.Groups["name"].Value).Trim();
+                    friendlyNameLine = i;
                     continue;
                 }
                 if (line.Contains("<AircraftInfo"))
@@ -498,6 +500,17 @@ namespace JoyPro.Engine.Games
         {
             Match match = Regex.Match(text, "\\b" + name + "=\"(?<value>[^\"]*)\"");
             return match.Success ? match.Groups["value"].Value : string.Empty;
+        }
+
+        // The profile's name (<FriendlyName>, the name the sim shows for the preset); false when the file has none.
+        public bool SetFriendlyName(string name)
+        {
+            if (friendlyNameLine < 0)
+                return false;
+            string encoded = WebUtility.HtmlEncode(name ?? string.Empty).Replace("&#39;", "&apos;");
+            replacedLines[friendlyNameLine] = Regex.Replace(lines[friendlyNameLine], ">[^<]*</FriendlyName>", m => ">" + encoded + "</FriendlyName>");
+            FriendlyName = name ?? string.Empty;
+            return true;
         }
 
         public MsfsAction Find(string name)

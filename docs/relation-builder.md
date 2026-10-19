@@ -359,7 +359,11 @@ simulator), each with:
 Every action of every game list on the PC is mapped at run time: the function catalog where it knows the action (slot
 -> function), the map's rules for everything else (a synonym or game term in the title or the game's readable id, the
 `not` words, axis or button, the aircraft class: helicopter, spaceship), one function where clear, up to three with
-weights where not. New games, aircraft and catalog refreshes are covered by the rules, not by a fixed table. The mapped
+weights where not. A catalog slot shared by several functions keeps a function only when the title has none of that
+function's `not` words: the slot `atc_engage` (F/A-18 "ATC" = auto throttle control) is also linked to the ATC request
+of Star Citizen, and MSFS "Arm Auto Throttle" read as "ATC / docking request" (2.2.6 report); "auto throttle" is one of
+the ATC request's `not` words, and the autothrottle's `not` words now have "request", "docking", "air traffic"
+(regression: `engine\tests\smoke\functionmap.ps1`, search "atc" in MSFS 2024). New games, aircraft and catalog refreshes are covered by the rules, not by a fixed table. The mapped
 index is kept in `<data>\Cache\function-map.bin` and rebuilt when a game list, `DB\Functions` or the engine changes.
 
 **Primary axes.** An axis function (pitch, roll, yaw, throttle, mixture, brakes ...) has a canonical axis per game: an

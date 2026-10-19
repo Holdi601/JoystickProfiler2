@@ -191,6 +191,49 @@ public sealed class GameConfigWatcherTests : IDisposable
         }
     }
 
+    // An MSFS Microsoft Store save (Xbox connected storage): the sim writes a new blob under a new GUID name, a new
+    // container.<n>, removes the old ones and replaces containers.index (written beside it and renamed over it, or
+    // rewritten in place). Each way of saving is reported once, after the burst of writes.
+    [Theory]
+    [InlineData(true)]
+    [InlineData(false)]
+    public void StoreSave_NewBlobNamesAndReplacedIndex_IsReportedOnce(bool replaceByRename)
+    {
+        string wgs = Path.Combine(temp, "wgs");
+        string user = Path.Combine(wgs, "0009000A1B2C3D_69F80140");
+        string container = Path.Combine(user, Guid.NewGuid().ToString("N").ToUpperInvariant());
+        Directory.CreateDirectory(container);
+        string index = Path.Combine(user, "containers.index");
+        File.WriteAllBytes(index, [14, 0, 0, 0, 1]);
+        string oldBlob = Path.Combine(container, Guid.NewGuid().ToString("N").ToUpperInvariant());
+        File.WriteAllText(oldBlob, "<Device/> old");
+        File.WriteAllBytes(Path.Combine(container, "container.1"), [4, 0, 0, 0]);
+        int raised = 0;
+        using GameConfigWatcher watcher = new(TimeSpan.FromMilliseconds(300), TimeSpan.FromMilliseconds(200));
+        watcher.ConfigChanged += _ => Interlocked.Increment(ref raised);
+        watcher.Update([new GameWatchSpec("MSFS2024", [new GameWatchFolder(wgs, ["containers.index"], true)], string.Empty, ["joypro-no-such-game-process"])]);
+
+        File.WriteAllText(Path.Combine(container, Guid.NewGuid().ToString("N").ToUpperInvariant()), "<Device/> new");
+        File.WriteAllBytes(Path.Combine(container, "container.2"), [4, 0, 0, 0, 1]);
+        File.Delete(oldBlob);
+        File.Delete(Path.Combine(container, "container.1"));
+        // Only the blobs changed so far: nothing is reported for them (the index says the save is complete).
+        Thread.Sleep(700);
+        Assert.Equal(0, Volatile.Read(ref raised));
+        if (replaceByRename)
+        {
+            string written = index + ".tmp";
+            File.WriteAllBytes(written, [14, 0, 0, 0, 2]);
+            File.Move(written, index, true);
+        }
+        else
+            File.WriteAllBytes(index, [14, 0, 0, 0, 2]);
+
+        Assert.True(WaitFor(() => Volatile.Read(ref raised) == 1, 5000), "the Store save should be reported.");
+        Thread.Sleep(600);
+        Assert.Equal(1, Volatile.Read(ref raised));
+    }
+
     [Fact]
     public void RegistryChanges_AreReported_AndTheWatchIsReArmed()
     {

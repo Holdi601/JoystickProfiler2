@@ -105,7 +105,15 @@ namespace JoyPro.Engine
                 sb.AppendLine("Log: " + JoyPro.Logging.JoyProLog.Folder + " (session " + JoyPro.Logging.JoyProLog.SessionId + ")");
                 sb.AppendLine();
                 sb.AppendLine(exception == null ? "(no exception object)" : exception.ToString());
-                File.WriteAllText(path, sb.ToString(), new UTF8Encoding(false));
+                // The game, its environment and the files the run read or changed (EngineDiagnostics).
+                string snapshot = EngineDiagnostics.Snapshot();
+                if (snapshot.Length > 0)
+                {
+                    sb.AppendLine();
+                    sb.AppendLine("Environment and files of this run:");
+                    sb.AppendLine(snapshot);
+                }
+                File.WriteAllText(path, JoyPro.Logging.LogScrubber.Scrub(sb.ToString()), new UTF8Encoding(false));
                 return path;
             }
             catch
@@ -258,6 +266,22 @@ namespace JoyPro.Engine
             if (historyCheckpoint != null && !string.IsNullOrWhiteSpace(profilePath) && File.Exists(profilePath))
                 EngineProfileHistory.Checkpoint(profilePath, historyCheckpoint);
             GameBackups.Begin(BackupGame(area), "engine " + area + " " + string.Join(" ", command), command.Any(c => string.Equals(c, "--dry-run", StringComparison.OrdinalIgnoreCase)));
+            // A DCS, IL-2 or Star Citizen run (import, export, scan, restore): its environment once in the log
+            // (EngineDiagnostics; the other games log theirs in GameCommands with the path they were given).
+            Games.IGameIntegration diagnosticsRegistryGame;
+            if (BackupGame(area).Length > 0 && !Games.GameRegistry.TryResolve(area, out diagnosticsRegistryGame) &&
+                command.Any(c => c == "import" || c == "export" || c == "scan" || c == "restore"))
+            {
+                try
+                {
+                    string ignoredName;
+                    EngineDiagnostics.LogEnvironment(BackupGame(area), EngineSync.ConfigPathsOf(BackupGame(area), out ignoredName));
+                }
+                catch (Exception ex) when (ex is IOException || ex is UnauthorizedAccessException || ex is ArgumentException)
+                {
+                    JoyPro.Logging.JoyProLog.Debug("Diagnostics", "No environment of " + BackupGame(area) + ": " + ex.Message);
+                }
+            }
             int exitCode;
             string commandMetricName = BuildCommandMetricName(area, command);
             Status("Executing command: " + commandMetricName);
@@ -332,6 +356,19 @@ namespace JoyPro.Engine
                 case "sync":
                     exitCode = Measure("command.execute", () => RunSync(command, outPath, textOutput));
                     break;
+                // engine support bundle [--game <id>] [--days N] [--list] --out <zip>: the support file (EngineSupportBundle).
+                case "support":
+                    exitCode = Measure("command.execute", () =>
+                    {
+                        string supportPayload;
+                        int supportExit = EngineSupportBundle.Run(command, outPath, textOutput, out supportPayload);
+                        if (supportExit != 0)
+                            Console.Error.WriteLine(supportPayload);
+                        else
+                            Console.WriteLine(supportPayload);
+                        return supportExit;
+                    });
+                    break;
                 case "llm":
                     exitCode = Measure("command.execute", () => RunLlm(command, outPath, textOutput));
                     break;
@@ -373,6 +410,8 @@ namespace JoyPro.Engine
             {
                 vjoyScope.Dispose();
             }
+            // The files the run changed (stamps after writing); a failed run prints its environment and files.
+            EngineDiagnostics.EndRun(exitCode);
             // Detent mode: games that could not express an aircraft's detent curve (the export used their normal curve).
             if (!string.Equals(area, "binds", StringComparison.OrdinalIgnoreCase))
             {
@@ -14193,6 +14232,7 @@ namespace JoyPro.Engine
             Console.WriteLine("  engine sync accept --game <id> [--path <config>]   (the current config counts as known; nothing is imported)");
             Console.WriteLine("  engine sync diff --game <id> [--path <config>]   (what the game changed that JoyPro manages, compared with the profile: added, removed, changed-tuning, changed-modifiers, with candidate relations)");
             Console.WriteLine("  engine sync apply --game <id> --choices <file.json> [--path <config>]   (per change id: Target = relation name, \"new\" (+ Name) or \"ignore\"; then the config counts as known)");
+            Console.WriteLine("  engine support bundle [--game <id>] [--days <n>] [--list] --out <file.zip>   (the support file: logs of the last days, the games' environment and devices, JoyPro's copies of their small config files, MSFS profiles read; user folder replaced, nothing uploaded; --list only shows the contents)");
             Console.WriteLine("  engine vjoy status   (virtual joystick mode: vJoy and HidHide installed, vJoy devices, HidHide state and JoyPro's session, games native/virtual, the mapping table, what vJoy must offer; read-only)");
             Console.WriteLine("  engine vjoy mode <game> native|virtual|xbox [--dry-run]   (per game: physical devices, the virtual joystick (vJoy, every used input gets a fixed vJoy slot) or the virtual Xbox 360 pad (ViGEmBus, for XInput-only or one-device games: the game's gamepad layout first, then sticks, triggers, buttons, D-pad))");
             Console.WriteLine("  engine vjoy plan [--reset] [--prune]   (the mapping table and the vJoy configuration it needs; nothing is saved)");

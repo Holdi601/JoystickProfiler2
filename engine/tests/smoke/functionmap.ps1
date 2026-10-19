@@ -108,6 +108,15 @@ try {
     Assert-True ($fmPitchSecond.Id -eq "KEY_AXIS_CYCLIC_LONGITUDINAL_SET") ("search 'pitch' in MSFS 2024 should list the helicopter cyclic after the elevator (second: " + $fmPitchSecond.Id + ").")
     $fmGyro = Invoke-FmJson @("relations", "search", "yaw", "--game", "MSFS2024", "--limit", "200")
     Assert-True (@($fmGyro.Results | Where-Object { $_.Id -eq "KEY_GYRO_AXIS_RUDDER_SET" -and (@($_.Functions) -contains "yaw") }).Count -eq 0) "the MSFS gyroscope yaw axis must not be the yaw function."
+    # Abbreviations do not cross-match (2.2.6 report): the catalog slot "ATC_Engage" (auto throttle control) is shared
+    # with the ATC request, but "Arm Auto Throttle" has one of the ATC request's "not" words: no ATC request, still the
+    # autothrottle; the sim's ATC actions are the ATC request.
+    $fmAtc = Invoke-FmJson @("relations", "search", "atc", "--game", "MSFS2024", "--limit", "200")
+    Assert-True (@($fmAtc.Results | Where-Object { $_.Id -eq "KEY_AUTO_THROTTLE_ARM" }).Count -eq 0) "search 'atc' in MSFS 2024 listed Arm Auto Throttle (ATC = auto throttle control is no ATC request)."
+    Assert-True (@($fmAtc.Results | Where-Object { $_.Id -eq "KEY_ATC_MENU_0" }).Count -eq 1 -and @($fmAtc.Results | Where-Object { $_.Id -eq "KEY_ATC" }).Count -eq 1) "search 'atc' in MSFS 2024 lost the sim's ATC actions."
+    $fmAutothrottle = Invoke-FmJson @("relations", "search", "autothrottle", "--game", "MSFS2024", "--limit", "200")
+    $fmArm = @($fmAutothrottle.Results | Where-Object { $_.Id -eq "KEY_AUTO_THROTTLE_ARM" })[0]
+    Assert-True ($null -ne $fmArm -and -not (@($fmArm.Functions) | Where-Object { $_ -match '^atc_request' })) "Arm Auto Throttle is no autothrottle hit or still reads as the ATC request."
     $fmResolvePitch = Invoke-FmJson @("relations", "resolve", "pitch", "--game", "MSFS2024")
     Assert-True ($fmResolvePitch.Games[0].Actions[0].Id -eq "KEY_AXIS_ELEVATOR_SET") ("resolve 'pitch' did not list MSFS's elevator axis first (" + $fmResolvePitch.Games[0].Actions[0].Id + ").")
 

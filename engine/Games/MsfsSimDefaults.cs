@@ -158,6 +158,13 @@ namespace JoyPro.Engine.Games
                     List<Preset> recorded = inCategory.Where(p => named.ContainsKey(Path.GetFileName(p.File))).ToList();
                     if (primary.Count > 0 || recorded.Count > 0)
                         withAny.Add(device);
+                    // The sim's records of the device for this category and what they vote (diagnostics).
+                    JoyPro.Logging.JoyProLog.Debug("MSFS", "Sim records of " + DeviceLabel(device) + " {" + device.InstanceGuid.ToString().ToUpperInvariant() + "} (product ID " +
+                        productId.ToString(CultureInfo.InvariantCulture) + ", " + (category.Length == 0 ? "no category" : category) + "): " + records.Count.ToString(CultureInfo.InvariantCulture) + " record(s)" +
+                        (records.Count == 0 ? string.Empty : " [" + string.Join("; ", records.Take(12).Select(r => (r.Aircraft ?? "?") + " " + (r.Category ?? "-") + " G=" + (r.General ?? "-") + " C=" + (r.CategoryPreset ?? "-") + " A=" + (r.AircraftPreset ?? "-"))) + (records.Count > 12 ? "; ..." : string.Empty) + "]") +
+                        "; votes: " + (votes.Count == 0 ? "none" : string.Join(", ", votes.GroupBy(v => v ?? "(none)").Select(g => g.Key + " x" + g.Count().ToString(CultureInfo.InvariantCulture)))) +
+                        "; shipped primary presets: " + (primary.Count == 0 ? "none" : string.Join(", ", primary.Select(p => Path.GetFileName(p.File)))) +
+                        (own.Contains(device.InstanceGuid.ToString("N") + "|" + category) ? "; the user's own profile is used" : string.Empty));
                     if (own.Contains(device.InstanceGuid.ToString("N") + "|" + category))
                         continue;
                     Preset chosen;

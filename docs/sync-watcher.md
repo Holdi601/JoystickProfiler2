@@ -18,7 +18,10 @@ over (Settings > Run in the background): **Start with Windows (in the tray)** an
    registry values) JoyPro manages in `<data>\Sync\<game>.json` (`<data>` = `%LOCALAPPDATA%\JoyPro`, or
    `JOYPRO_DATA_DIR`): size, write time and SHA-256 per file, and a *baseline*, i.e. hashes of every bind (plane, action,
    device, input, modifiers) and axis tuning the file holds, read with the game's own import. JoyPro's own exports
-   therefore never ask anything. Only games JoyPro exported to (or whose state was accepted) are watched, every config
+   therefore never ask anything. A file Windows refuses to read (a Microsoft Store install keeps its data EFS-encrypted
+   and refuses a file without the EFS mark) is stamped by size and write time instead of its hash; it used to
+   break the record, and MSFS 2024 stayed untracked (2.2.6 report). An import of a game that has no record yet records
+   it too, so a game you only imported is watched from then on. Only games JoyPro exported to or imported from (or whose state was accepted) are watched, every config
    it exported to (also one exported to a custom path, and the config location you set with `engine games config set`),
    and never a game you marked as one you do not have (`engine games install disable`) or unticked on the Start page
    ([Which games are watched](#which-games-are-watched)).

@@ -234,7 +234,10 @@ public sealed partial class MainWindowViewModel
     private void QueueGameSyncCheck(string watchKey)
     {
         if (!WatchGameConfigs || string.IsNullOrWhiteSpace(watchKey))
+        {
+            JoyPro.Logging.JoyProLog.Info("Watcher", watchKey + ": change not checked (watching game configs is off)");
             return;
+        }
         if (!pendingGameSyncChecks.Contains(watchKey, StringComparer.OrdinalIgnoreCase) &&
             !(HasGameSyncChanges && string.Equals(gameSyncWatchKey, watchKey, StringComparison.OrdinalIgnoreCase)))
             pendingGameSyncChecks.Add(watchKey);
@@ -294,7 +297,10 @@ public sealed partial class MainWindowViewModel
         EngineCommandResult? status = await RunEngineAsync(["sync", "status", .. SyncPathArgs(watchKey)], includeProfile: false, mutatesProfile: false,
             busyLabel: "Checking " + gameId + " config...", forceText: false, background: true);
         if (status == null || status.ExitCode != 0)
+        {
+            JoyPro.Logging.JoyProLog.Warn("Watcher", gameId + ": not checked: sync status failed (" + (status == null ? "the engine did not run" : "exit code " + status.ExitCode) + ")");
             return;
+        }
         if (!StatusSaysChanged(status.StandardOutput))
         {
             JoyPro.Logging.JoyProLog.Info("Watcher", gameId + ": the config was written, its content is unchanged; nothing to ask");
@@ -304,7 +310,10 @@ public sealed partial class MainWindowViewModel
         EngineCommandResult? diff = await RunEngineAsync(["sync", "diff", .. SyncPathArgs(watchKey)], includeProfile: true, mutatesProfile: false,
             busyLabel: "Reading what " + gameId + " changed...", forceText: false, background: true);
         if (diff == null || diff.ExitCode != 0)
+        {
+            JoyPro.Logging.JoyProLog.Warn("Watcher", gameId + ": changed, not compared: sync diff failed (" + (diff == null ? "the engine did not run" : "exit code " + diff.ExitCode) + "); nothing asked");
             return;
+        }
 
         List<GameSyncChangeItem> items = [];
         string displayName = gameId;
@@ -321,8 +330,9 @@ public sealed partial class MainWindowViewModel
                 }
             }
         }
-        catch (JsonException)
+        catch (JsonException ex)
         {
+            JoyPro.Logging.JoyProLog.Warn("Watcher", gameId + ": the diff could not be read (" + ex.Message + "); nothing asked");
             return;
         }
 
@@ -344,6 +354,7 @@ public sealed partial class MainWindowViewModel
         HasGameSyncChanges = true;
         JoyPro.Logging.JoyProLog.Info("Watcher", gameId + ": offering " + items.Count + " change(s) in the dialog: " +
                                                  string.Join(" | ", items.Select(i => i.Kind + " " + i.Description)));
+        JoyPro.Logging.JoyProLog.Info("Watcher", gameId + ": the user is asked (notice in the window" + (GameChangesOffered == null ? ", no notice handler" : string.Empty) + ")");
         GameChangesOffered?.Invoke(GameChangesNoticeTitle, T("{0} changed controls JoyPro manages. Review them in JoyPro.", displayName));
     }
 

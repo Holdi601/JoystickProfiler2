@@ -268,6 +268,8 @@ public sealed partial class UserJourneyTests
                     if (card == null)
                         throw new InvalidOperationException("no MSFS 2024 card: " + string.Join(", ", vm.GameCards.Select(c => c.GameId)));
                     vm.StartImportWizardCommand.Execute(card);
+                    // The fixture devices are not connected on this PC (since 2.2.2 only connected devices come in).
+                    vm.ImportIncludeDisconnected = true;
                     return Task.CompletedTask;
                 });
                 Step("import: run (Store profiles, no JoyPro package)", async () => await vm!.RunImportWizardCommand.ExecuteAsync(null));
@@ -276,6 +278,21 @@ public sealed partial class UserJourneyTests
                     Failures.Add("MSFS 2024 Store import: " + vm.ImportWizardResult);
                 Step("relations after the import", () => { vm!.CurrentStage = UiStage.Relations; return Task.CompletedTask; });
                 Step("binds after the import", () => { vm!.CurrentStage = UiStage.Binds; return Task.CompletedTask; });
+
+                // Export: the package preset reaches only aircraft the sim has not set up, so the export also writes
+                // import files (one per device and category) and the Export page says how to import them in the sim.
+                Step("export MSFS 2024 (package and import files)", async () =>
+                {
+                    await vm!.RefreshRegistryGamesCommand.ExecuteAsync(null);
+                    vm.SelectedRegistryGame = vm.RegistryGames.First(g => g.GameId == "MSFS2024");
+                    vm.RegistryGameDryRun = false;
+                    await vm.ExportRegistryGameCommand.ExecuteAsync(null);
+                    vm.CurrentStage = UiStage.Export;
+                    await vm.RefreshExportGamesCommand.ExecuteAsync(null);
+                });
+                Note("MSFS 2024 import files: " + (vm.HasMsfsImportFiles ? vm.MsfsImportFilesFolder : "none"));
+                if (!vm.HasMsfsImportFiles || Directory.GetFiles(vm.MsfsImportFilesFolder, "*.xml").Length == 0)
+                    Failures.Add("MSFS 2024 export wrote no import files (or the Export page does not show them).");
 
                 // No profile anywhere: the error says where JoyPro looked.
                 string empty = Path.Combine(folder, "h0");

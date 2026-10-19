@@ -38,6 +38,7 @@ namespace JoyPro.Engine
             currentGame = game ?? string.Empty;
             currentCommand = command ?? string.Empty;
             disabled = dryRun;
+            EngineDiagnostics.BeginRun(currentGame, currentCommand);
             JoyPro.Logging.JoyProLog.Debug("Backups", "Backup scope: game=" + (currentGame.Length == 0 ? "-" : currentGame) + (dryRun ? ", dry run (nothing is written)" : string.Empty) + ", store " + Root());
         }
 
@@ -72,6 +73,7 @@ namespace JoyPro.Engine
                 OpenSet set = Open(string.IsNullOrWhiteSpace(game) ? "Other" : game);
                 if (!set.Paths.Add(fullPath))
                     return;
+                EngineDiagnostics.BeforeWrite(game, fullPath);
                 GameBackupFile entry = new GameBackupFile { Original = fullPath, Existed = File.Exists(fullPath) };
                 if (entry.Existed)
                 {

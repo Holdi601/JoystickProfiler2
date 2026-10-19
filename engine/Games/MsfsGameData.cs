@@ -200,6 +200,39 @@ namespace JoyPro.Engine.Games
             return "AIRCRAFT";
         }
 
+        // The context of a general event (camera, view, UI, ...) that only the locPak names: the context of the known
+        // general actions whose names share the longest prefix with it ("KEY_INSTRUMENT_LOOK_UP" -> the context of
+        // the other "KEY_INSTRUMENT_LOOK_..." actions; at least two words, "KEY_INSTRUMENT_..." alone is too wide), when
+        // at least two thirds of them agree; null when no known action shares such a prefix or they disagree (the event
+        // then stays out). Checked against a full General listing of a user's MSFS 2024 profile (2026-10-19): of the 720
+        // general events only the locPak names, 490 sit in the sim's debug contexts, 170 in managed ones; this rule
+        // places 63 right, 14 wrong (mostly debug ones) and leaves the rest out. known: action id -> its general context.
+        public static string GuessGeneralContext(string id, IEnumerable<KeyValuePair<string, string>> known)
+        {
+            string name = StripKey(id);
+            string[] words = name.Split(new[] { '_' }, StringSplitOptions.RemoveEmptyEntries);
+            List<KeyValuePair<string, string>> pairs = known.Where(k => !string.IsNullOrEmpty(k.Value) && !string.Equals(k.Key, id, StringComparison.Ordinal))
+                .Select(k => new KeyValuePair<string, string>(StripKey(k.Key), k.Value)).ToList();
+            for (int length = words.Length - 1; length >= 2; length--)
+            {
+                string prefix = string.Join("_", words.Take(length)) + "_";
+                if (prefix.Length < 4)
+                    continue;
+                List<string> contexts = pairs.Where(p => p.Key.StartsWith(prefix, StringComparison.Ordinal)).Select(p => p.Value).ToList();
+                if (contexts.Count == 0)
+                    continue;
+                IGrouping<string, string> top = contexts.GroupBy(c => c, StringComparer.Ordinal).OrderByDescending(g => g.Count()).ThenBy(g => g.Key, StringComparer.Ordinal).First();
+                return top.Count() * 3 >= contexts.Count * 2 ? top.Key : null;
+            }
+            return null;
+        }
+
+        private static string StripKey(string id)
+        {
+            string name = id ?? string.Empty;
+            return name.StartsWith("KEY_", StringComparison.Ordinal) ? name.Substring(4) : name;
+        }
+
         // ---- Readable titles ----
         // The locPak writes the menu names in capitals ("ELEVATOR AXIS", "THROTTLE 1 AXIS (-100 to 100%)"); the catalog
         // keeps them readable: "Elevator Axis", abbreviations the sim's panels use stay in capitals ("AP Pitch Ref").

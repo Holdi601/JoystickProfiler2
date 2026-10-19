@@ -532,6 +532,287 @@ public sealed class MsfsProfileImportTests : IDisposable
         Assert.DoesNotContain("goes into PLANE", export);
     }
 
+    // The 2.2.6 report (MSFS 2024 Store): the relation editor found only "ATC Panel Choice 0/1" and "Display ATC" for
+    // "atc", while the sim's Controls menu lists ATC PANEL CHOICE 0 ... 9. His command list was built by an older JoyPro
+    // (flight contexts only), and an import added only the bound actions. MSFS 2024 profiles list every action of their
+    // contexts (unbound ones as empty <Action/>): an import or scan now adds all of them with the context the sim lists
+    // them in, corrects a context the list has from elsewhere (KEY_PUSHBACK_SET: PLANE from MSFS 2020, SIM_SHORTCUT in
+    // 2024), keeps known titles, and leaves the debug and menu contexts out.
+    [Fact]
+    public void Store2024_UnboundActionsTheProfilesList_JoinTheCommandList()
+    {
+        string home = Path.Combine(root, "h");
+        string wgs = StoreWgs(home, 2024);
+        WgsWriter.Write(wgs, "Microsoft.Limitless_8wekyb3d8bbwe", [new("InputProfile_1", [new("data", Zlib(Fixture2024("panel-general-listing.xml")), null)])]);
+        Engine(home, "games", "install", "set", "MSFS2024", Path.Combine(home, "Local", "Packages", "Microsoft.Limitless_8wekyb3d8bbwe"));
+        string db = Path.Combine(root, "data", "GameData", "DB", "MSFS2024");
+        Directory.CreateDirectory(db);
+        File.WriteAllText(Path.Combine(db, "actions.tsv"),
+            "# Microsoft Flight Simulator 2024 action catalog, built by an older JoyPro\r\n" +
+            "KEY_AXIS_ELEVATOR_SET\tElevator Axis\taxis\tSURFACES\r\n" +
+            "KEY_ATC_MENU_0\tMy ATC Choice Zero\tbutton\tATC\r\n" +
+            "KEY_PUSHBACK_SET\tPushback\tbutton\tPLANE\r\n" +
+            "KEY_ACTIVE_PAUSE_TOGGLE\tActive Pause\tbutton\tINGAME_UI\r\n");
+        connectedDevices = Path.Combine(root, "devices.tsv");
+        File.WriteAllText(connectedDevices, "VPC Panel #2 {0000CCCC-0000-4000-8000-000000000401}\t3344\t025B\tVPC Panel #2\r\n");
+
+        (int code, string output) = Engine(home, "msfs2024", "scan", "--text");
+
+        Assert.True(code == 0, output);
+        Assert.Contains("KEY_ACTIVE_PAUSE_TOGGLE <- VPC Panel #2 {0000CCCC-0000-4000-8000-000000000401} JOY_BTN3", output);
+        Assert.Contains("unbound action(s) your Microsoft Flight Simulator 2024 profiles list", output);
+        string catalog = File.ReadAllText(Path.Combine(db, "actions.tsv"));
+        for (int i = 1; i <= 9; i++)
+            Assert.Matches(@"(?m)^KEY_ATC_MENU_" + i + @"\t[^\t]+\tbutton\tATC\r?$", catalog);
+        Assert.Matches(@"(?m)^KEY_ATC_MENU_0\tMy ATC Choice Zero\tbutton\tATC\r?$", catalog);
+        Assert.Matches(@"(?m)^KEY_ATC\t[^\t]+\tbutton\tINGAME_UI\r?$", catalog);
+        Assert.Matches(@"(?m)^KEY_GROUND_SERVICE_ATC_MESSAGE\t[^\t]+\tbutton\tALWAYS\r?$", catalog);
+        Assert.Matches(@"(?m)^KEY_COCKPIT_CAMERA_ZOOM_AXIS\t[^\t]+\taxis\tCOCKPIT_GLOBAL_CAMERA\r?$", catalog);
+        Assert.Matches(@"(?m)^KEY_PUSHBACK_SET\tPushback\tbutton\tSIM_SHORTCUT\r?$", catalog);
+        Assert.DoesNotContain("KEY_ATC_MENU_OPEN", catalog);
+        Assert.DoesNotContain("KEY_MENU_VALID", catalog);
+
+        // The editor's search finds every ATC choice now.
+        (int searchCode, string search) = Engine(home, "relations", "search", "atc", "--plane", "MSFS2024", "--limit", "200", "--per-game", "50", "--text");
+        Assert.True(searchCode == 0, search);
+        for (int i = 0; i <= 9; i++)
+            Assert.Contains("MSFS2024:KEY_ATC_MENU_" + i + ":MSFS2024", search);
+
+        // A second scan adds nothing.
+        (_, string again) = Engine(home, "msfs2024", "scan", "--text");
+        Assert.DoesNotContain("unbound action(s)", again);
+    }
+
+    // The 2.2.6 report (MSFS 2024 Store): relations made in JoyPro never showed up in the sim. The sim applies a preset
+    // of JoyPro's package only to aircraft it has not set up for a device yet, and the tester's devices had records
+    // (and his own profiles) for every aircraft he flies; the Store saves are not written. Now the export also writes,
+    // per device and category, a file in the sim's own format to import in Controls: the user's profile of that device
+    // and category with JoyPro's binds (his other binds and the profile's layout stay), else a profile listing the
+    // command list's actions. The Store save stays untouched.
+    [Fact]
+    public void Store2024_Export_WritesImportFilesPerDeviceAndCategory()
+    {
+        string home = Path.Combine(root, "h");
+        string localCache = Path.Combine(home, "Local", "Packages", "Microsoft.Limitless_8wekyb3d8bbwe", "LocalCache");
+        string community = Path.Combine(localCache, "Packages", "Community2024");
+        Directory.CreateDirectory(community);
+        File.WriteAllText(Path.Combine(localCache, "UserCfg.opt"), "InstalledPackagesPath \"" + Path.Combine(localCache, "Packages") + "\"\r\n");
+        string wgs = StoreWgs(home, 2024);
+        string user = WgsWriter.Write(wgs, "Microsoft.Limitless_8wekyb3d8bbwe",
+        [
+            new("InputProfile_1", [new("data", Fixture2024("vmax-throttle-airplane.xml"), DateTime.Now.AddDays(-1))]),
+            new("InputProfile_2", [new("data", Fixture2024("vmax-throttle-general.xml"), DateTime.Now.AddDays(-1))])
+        ]);
+        Dictionary<string, string> before = Directory.GetFiles(user, "*", SearchOption.AllDirectories).ToDictionary(f => f, f => Convert.ToHexString(System.Security.Cryptography.SHA256.HashData(File.ReadAllBytes(f))));
+        Engine(home, "games", "install", "set", "MSFS2024", Path.Combine(home, "Local", "Packages", "Microsoft.Limitless_8wekyb3d8bbwe"));
+        connectedDevices = Path.Combine(root, "devices.tsv");
+        File.WriteAllText(connectedDevices,
+            "VPC VMAX Prime Throttle {0000CCCC-0000-4000-8000-000000000301}\t3344\t019D\tVPC VMAX Prime Throttle\r\n" +
+            "Test Panel {0000CCCC-0000-4000-8000-000000000501}\t3344\t025B\tTest Panel\r\n");
+        string vmax = "VPC VMAX Prime Throttle {0000CCCC-0000-4000-8000-000000000301}";
+        string panel = "Test Panel {0000CCCC-0000-4000-8000-000000000501}";
+        string profile = Path.Combine(root, "p.pr0file");
+        (int importCode, string import) = Engine(home, "--profile", profile, "msfs2024", "import", "--text");
+        Assert.True(importCode == 0, import);
+        // New relations made in JoyPro: the gear on the throttle (its airplane profile), cockpit zoom (General), and a
+        // panel the sim has no profile of.
+        Assert.Equal(0, Engine(home, "--profile", profile, "relations", "add", "JP Gear", "--node", "MSFS2024:KEY_GEAR_TOGGLE", "--device", vmax, "--input", "JOY_BTN5", "--text").Code);
+        Assert.Equal(0, Engine(home, "--profile", profile, "relations", "add", "JP Zoom", "--node", "MSFS2024:KEY_ZOOM_COCKPIT", "--device", vmax, "--input", "JOY_BTN30", "--text").Code);
+        Assert.Equal(0, Engine(home, "--profile", profile, "relations", "add", "JP Flaps Panel", "--node", "MSFS2024:KEY_GEAR_TOGGLE", "--device", panel, "--input", "JOY_BTN7", "--text").Code);
+
+        (int code, string export) = Engine(home, "--profile", profile, "msfs2024", "export", community, "--text");
+
+        Assert.True(code == 0, export);
+        string folder = Path.Combine(root, "data", "MSFS 2024 import files");
+        Assert.Contains("MSFS 2024 import files written (3, one per device and category): " + folder, export);
+        Assert.Contains("choose Import and select the file JoyPro wrote for that device and category", export);
+        Assert.Equal(folder, MainWindowViewModel.MsfsImportFilesFolderOf(export));
+        string planes = File.ReadAllText(Assert.Single(Directory.GetFiles(folder, "VPC_VMAX_Prime_Throttle_0000cccc_Airplanes.xml")));
+        Assert.Contains("<FriendlyName PlatformAvailability=\"1\" Locked=\"false\">JoyPro VPC VMAX Prime Throttle Airplanes</FriendlyName>", planes);
+        Assert.Contains("GUID=\"{0000CCCC-0000-4000-8000-000000000301}\" ProductID=\"413\"", planes);
+        Assert.Contains("<AircraftInfo CategoryName=\"AIRPLANE\"/>", planes);
+        Assert.Matches("(?s)<Action ActionName=\"KEY_GEAR_TOGGLE\"[^>]*>\\s*<Primary>\\s*<KEY Information=\"Joystick Button 5\">4</KEY>", planes);
+        Assert.Matches("(?s)<Action ActionName=\"KEY_AXIS_FLAPS_SET\"[^>]*>.*?<KEY", planes);
+        string general = File.ReadAllText(Assert.Single(Directory.GetFiles(folder, "VPC_VMAX_Prime_Throttle_0000cccc_General.xml")));
+        Assert.Contains("JoyPro VPC VMAX Prime Throttle General", general);
+        Assert.Matches("(?s)<Action ActionName=\"KEY_ZOOM_COCKPIT\"[^>]*>\\s*<Primary>\\s*<KEY Information=\"Joystick Button 30\">29</KEY>", general);
+        Assert.DoesNotContain("AIRPLANE", general);
+        // The panel has no profile in the sim: a new one in the sim's format, decimal product ID, the command list's
+        // flight actions listed.
+        string panelFile = File.ReadAllText(Assert.Single(Directory.GetFiles(folder, "Test_Panel_0000cccc_Airplanes.xml")));
+        Assert.Contains("<Version Num=\"-1\"/>", panelFile);
+        Assert.Contains("GUID=\"{0000CCCC-0000-4000-8000-000000000501}\" ProductID=\"603\"", panelFile);
+        Assert.Matches("(?s)<Action ActionName=\"KEY_GEAR_TOGGLE\"[^>]*>\\s*<Primary>\\s*<KEY Information=\"Joystick Button 7\">6</KEY>", panelFile);
+        Assert.Contains("<Action ActionName=\"KEY_AXIS_ELEVATOR_SET\" ValueEvent=\"0.000000\" Delay=\"0.000000\" Flag=\"2\"/>", panelFile);
+        Assert.Contains("MSFS 2024 import file of 'Test Panel' (Airplanes, JoyPro's binds)", export);
+        Assert.Contains("MSFS 2024 import file of 'VPC VMAX Prime Throttle' (Airplanes, your profile 'VMAX Planes' with JoyPro's binds)", export);
+
+        // The Store save is never written.
+        foreach (KeyValuePair<string, string> file in before)
+            Assert.Equal(file.Value, Convert.ToHexString(System.Security.Cryptography.SHA256.HashData(File.ReadAllBytes(file.Key))));
+        // A dry run writes no import files.
+        Directory.Delete(folder, true);
+        (int dryCode, string dry) = Engine(home, "--profile", profile, "msfs2024", "export", community, "--dry-run", "--text");
+        Assert.True(dryCode == 0, dry);
+        Assert.False(Directory.Exists(folder));
+    }
+
+    // The 2.2.6 report: "JP does not always detect changes made in-game". The tester's logs show MSFS 2024 "untracked" all
+    // day: the export's record failed on a file Windows refused to read ("not encrypted as expected", EFS), and a game
+    // only imported was never recorded, so the watcher never watched it. Now an unreadable file is stamped by size and
+    // write time, an import of a game without a record records it, and a Store save (new blob and container names, a new
+    // containers.index) makes the state "changed" with the changed bind in the diff.
+    [Fact]
+    public void Store2024_WatcherRecord_SurvivesUnreadableFiles_AndASimSaveIsDetected()
+    {
+        string home = Path.Combine(root, "h");
+        string wgs = StoreWgs(home, 2024);
+        WgsWriter.Write(wgs, "Microsoft.Limitless_8wekyb3d8bbwe", [new("InputProfile_1", [new("data", Fixture2024("vmax-throttle-airplane.xml"), null)])]);
+        Engine(home, "games", "install", "set", "MSFS2024", Path.Combine(home, "Local", "Packages", "Microsoft.Limitless_8wekyb3d8bbwe"));
+        connectedDevices = Path.Combine(root, "devices.tsv");
+        File.WriteAllText(connectedDevices, "VPC VMAX Prime Throttle {0000CCCC-0000-4000-8000-000000000301}\t3344\t019D\tVPC VMAX Prime Throttle\r\n");
+        string profile = Path.Combine(root, "p.pr0file");
+        (_, string untracked) = Engine(home, "sync", "status", "--game", "MSFS2024");
+        Assert.Contains("\"State\":\"untracked\"", untracked);
+
+        // Windows refuses the save index (EFS); the import still records the state.
+        environment["JOYPRO_TEST_FAULT_ENCRYPTION"] = "read:409:containers.index";
+        (int importCode, string import) = Engine(home, "--profile", profile, "msfs2024", "import", "--text");
+        Assert.True(importCode == 0, import);
+        (int statusCode, string status) = Engine(home, "sync", "status", "--game", "MSFS2024");
+        Assert.True(statusCode == 0, status);
+        Assert.Contains("\"State\":\"unchanged\"", status);
+        environment.Remove("JOYPRO_TEST_FAULT_ENCRYPTION");
+
+        // The sim saves a changed profile: gear on button 9 (new blob and container names, a new index).
+        string changed = Encoding.UTF8.GetString(Fixture2024("vmax-throttle-airplane.xml")).Replace(
+            "<Action ActionName=\"KEY_GEAR_TOGGLE\" ValueEvent=\"0.000000\" Delay=\"0.000000\" Flag=\"2\"/>",
+            "<Action ActionName=\"KEY_GEAR_TOGGLE\" ValueEvent=\"0.000000\" Delay=\"0.000000\" Flag=\"2\">\n\t\t\t<Primary>\n\t\t\t\t<KEY Information=\"Joystick Button 9\">8</KEY>\n\t\t\t</Primary>\n\t\t</Action>");
+        // The sim writes one kind of line end.
+        changed = changed.Replace("\r\n", "\n");
+        Assert.Contains("Joystick Button 9", changed);
+        foreach (string folder in Directory.GetDirectories(Directory.GetDirectories(wgs)[0]))
+            Directory.Delete(folder, true);
+        WgsWriter.Write(wgs, "Microsoft.Limitless_8wekyb3d8bbwe", [new("InputProfile_1", [new("data", Zlib(Encoding.UTF8.GetBytes(changed)), null)])]);
+
+        (_, string after) = Engine(home, "sync", "status", "--game", "MSFS2024");
+        Assert.Contains("\"State\":\"changed\"", after);
+        (int diffCode, string diff) = Engine(home, "--profile", profile, "sync", "diff", "--game", "MSFS2024", "--text");
+        Assert.True(diffCode == 0, diff);
+        Assert.True(diff.Contains("JOY_BTN9", StringComparison.Ordinal) && diff.Contains("Gear", StringComparison.OrdinalIgnoreCase), diff);
+    }
+
+    // Diagnostics (docs/logging.md "Game runs", "Support file"): a failed game run prints the environment of the game
+    // (install, config folders with drive, file system and attributes, connected devices); the support bundle shows its
+    // contents first, then holds the summary with that environment, JoyPro's backup copies of the files an export
+    // changed, the MSFS profiles JoyPro reads, its package and import files and the sim's records; the user folder is
+    // replaced by %USERPROFILE%.
+    [Fact]
+    public void Diagnostics_FailedRunPrintsTheEnvironment_SupportBundleHoldsTheGamesFiles()
+    {
+        string home = Path.Combine(root, "h");
+        string localCache = Path.Combine(home, "Local", "Packages", "Microsoft.Limitless_8wekyb3d8bbwe", "LocalCache");
+        string community = Path.Combine(localCache, "Packages", "Community2024");
+        Directory.CreateDirectory(community);
+        File.WriteAllText(Path.Combine(localCache, "UserCfg.opt"), "InstalledPackagesPath \"" + Path.Combine(localCache, "Packages") + "\"\r\n");
+        string wgs = StoreWgs(home, 2024);
+        WgsWriter.Write(wgs, "Microsoft.Limitless_8wekyb3d8bbwe", [new("InputProfile_1", [new("data", Fixture2024("vmax-throttle-airplane.xml"), null)])]);
+        Engine(home, "games", "install", "set", "MSFS2024", Path.Combine(home, "Local", "Packages", "Microsoft.Limitless_8wekyb3d8bbwe"));
+        connectedDevices = Path.Combine(root, "devices.tsv");
+        File.WriteAllText(connectedDevices, "VPC VMAX Prime Throttle {0000CCCC-0000-4000-8000-000000000301}\t3344\t019D\tVPC VMAX Prime Throttle\r\n");
+        string profile = Path.Combine(root, "p.pr0file");
+        Assert.Equal(0, Engine(home, "--profile", profile, "msfs2024", "import", "--text").Code);
+
+        (int refusedCode, string refused) = Engine(home, "--profile", profile, "msfs2024", "export", wgs, "--text");
+        Assert.NotEqual(0, refusedCode);
+        Assert.Contains("Diagnostics (environment and files of this run):", refused);
+        Assert.Contains("Environment of MSFS2024", refused);
+        Assert.Contains("VPC VMAX Prime Throttle 3344:019D {0000CCCC-0000-4000-8000-000000000301}", refused);
+        Assert.Matches(@"path: .*SystemAppData\\wgs \[folder\], attributes [^,]+, drive [A-Z]:\\ ", refused);
+
+        Assert.Equal(0, Engine(home, "--profile", profile, "relations", "add", "JP Gear", "--node", "MSFS2024:KEY_GEAR_TOGGLE", "--device", "VPC VMAX Prime Throttle {0000CCCC-0000-4000-8000-000000000301}", "--input", "JOY_BTN5", "--text").Code);
+        (int exportCode, string export) = Engine(home, "--profile", profile, "msfs2024", "export", community, "--text");
+        Assert.True(exportCode == 0, export);
+        // A second export: the backup set holds JoyPro's copy of the preset it changed.
+        Assert.Equal(0, Engine(home, "--profile", profile, "relations", "add", "JP Gear 2", "--node", "MSFS2024:KEY_GEAR_TOGGLE", "--device", "VPC VMAX Prime Throttle {0000CCCC-0000-4000-8000-000000000301}", "--input", "JOY_BTN6", "--text").Code);
+        Assert.Equal(0, Engine(home, "--profile", profile, "msfs2024", "export", community, "--text").Code);
+
+        (int listCode, string list) = Engine(home, "support", "bundle", "--list", "--text");
+        Assert.True(listCode == 0, list);
+        Assert.Contains("Support file contents (not written)", list);
+        List<string> entries = MainWindowViewModel.SupportFileEntries(list);
+        Assert.Contains(entries, e => e.StartsWith("summary.txt (", StringComparison.Ordinal));
+        Assert.Contains(entries, e => e.StartsWith("games/MSFS2024/profiles/001-store-", StringComparison.Ordinal));
+        Assert.Contains(entries, e => e.StartsWith("games/MSFS2024/package/InputProfiles/Categories/Airplane/JoyPro_VPC_VMAX_Prime_Throttle_0000cccc_2024_Planes.xml", StringComparison.Ordinal));
+        Assert.Contains(entries, e => e.StartsWith("games/MSFS2024/import-files/VPC_VMAX_Prime_Throttle_0000cccc_Airplanes.xml", StringComparison.Ordinal));
+        Assert.Contains(entries, e => e.StartsWith("games/MSFS2024/sim-records.txt", StringComparison.Ordinal));
+        Assert.Contains(entries, e => e.StartsWith("games/MSFS2024/sync-record.json", StringComparison.Ordinal));
+        Assert.Contains(entries, e => System.Text.RegularExpressions.Regex.IsMatch(e, @"^games/MSFS2024/backup-[^/]+/\d{4}_JoyPro_VPC_VMAX_Prime_Throttle_0000cccc_2024_Planes\.xml \(JoyPro's copy of "));
+        Assert.False(File.Exists(Path.Combine(root, "support.zip")));
+
+        string zip = Path.Combine(root, "support.zip");
+        (int bundleCode, string bundle) = Engine(home, "--out", zip, "support", "bundle", "--text");
+        Assert.True(bundleCode == 0, bundle);
+        using ZipArchive archive = ZipFile.OpenRead(zip);
+        Assert.Equal(entries.Count, archive.Entries.Count);
+        string summary = new StreamReader(archive.GetEntry("summary.txt")!.Open()).ReadToEnd();
+        Assert.Contains("Environment of MSFS2024", summary);
+        Assert.Contains("VPC VMAX Prime Throttle 3344:019D", summary);
+        string user = Environment.GetFolderPath(Environment.SpecialFolder.UserProfile);
+        if (root.StartsWith(user, StringComparison.OrdinalIgnoreCase))
+        {
+            Assert.DoesNotContain(user, summary, StringComparison.OrdinalIgnoreCase);
+            Assert.Contains("%USERPROFILE%", summary);
+        }
+        string storeProfile = new StreamReader(archive.Entries.First(e => e.FullName.StartsWith("games/MSFS2024/profiles/001-store-", StringComparison.Ordinal)).Open()).ReadToEnd();
+        Assert.Contains("VMAX Planes", storeProfile);
+    }
+
+    [Fact]
+    public void MsfsImportFilesFolder_IsReadFromTextAndJsonOutput()
+    {
+        Assert.Equal(@"C:\Users\x\Documents\JoyPro\MSFS 2024 import files",
+            MainWindowViewModel.MsfsImportFilesFolderOf("Steps:\r\n  - MSFS 2024 import files written (3, one per device and category): C:\\Users\\x\\Documents\\JoyPro\\MSFS 2024 import files\r\n  - next"));
+        Assert.Equal(@"C:\Users\x\Documents\JoyPro\MSFS 2024 import files",
+            MainWindowViewModel.MsfsImportFilesFolderOf("{\"Steps\":[\"MSFS 2024 import files written (3, one per device and category): C:\\\\Users\\\\x\\\\Documents\\\\JoyPro\\\\MSFS 2024 import files\",\"x\"]}"));
+        Assert.Null(MainWindowViewModel.MsfsImportFilesFolderOf("Steps:\n  - 3 action(s) in 2 profile file(s) changed."));
+    }
+
+    // refresh-db without the user's General profile: a general event only the locPak names joins with the context of
+    // the known actions of the same name group (two words at least), one without such a group stays out.
+    [Fact]
+    public void Refresh2024_LocPakOnlyGeneralEvents_TakeTheContextOfTheirNameGroup()
+    {
+        string home = Path.Combine(root, "h");
+        string install = Path.Combine(root, "MSFS2024");
+        string transversal = Path.Combine(install, "Packages", "fs-input-profiles", "InputProfiles", "Categories", "Transversal");
+        Directory.CreateDirectory(transversal);
+        File.WriteAllText(Path.Combine(transversal, "Test_2024_Transversal.xml"),
+            "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\r\n<DefaulftInput Primary=\"1\" PlatformAvailability=\"PC\">\r\n" +
+            "<Device DeviceName=\"Test\" GUID=\"{00000000-0000-4000-8000-000000000999}\" ProductID=\"C215\" CompositeID=\"0\" HWVer=\"1.0.0.0\">\r\n" +
+            "\t<Context ContextName=\"INSTRUMENTS_CAMERA\">\r\n" +
+            "\t\t<Action ActionName=\"KEY_INSTRUMENT_LOOK_DOWN\" Flag=\"2\">\r\n\t\t\t<Primary>\r\n\t\t\t\t<KEY Information=\"Joystick Button 1\">0</KEY>\r\n\t\t\t</Primary>\r\n\t\t</Action>\r\n" +
+            "\t\t<Action ActionName=\"KEY_INSTRUMENT_LOOK_LEFT\" Flag=\"2\">\r\n\t\t\t<Primary>\r\n\t\t\t\t<KEY Information=\"Joystick Button 2\">1</KEY>\r\n\t\t\t</Primary>\r\n\t\t</Action>\r\n" +
+            "\t</Context>\r\n</Device>\r\n</DefaulftInput>\r\n");
+        Directory.CreateDirectory(Path.Combine(install, "Packages", "fs-base"));
+        File.WriteAllText(Path.Combine(install, "Packages", "fs-base", "en-US.locPak"),
+            "{\"LocalisationPackage\":{\"Language\":\"en-US\",\"Strings\":{" +
+            "\"INPUT.KEY_INSTRUMENT_LOOK_DOWN\":\"INSTRUMENT LOOK DOWN\",\"INPUT.KEY_INSTRUMENT_LOOK_LEFT\":\"INSTRUMENT LOOK LEFT\"," +
+            "\"INPUT.KEY_INSTRUMENT_LOOK_UP\":\"INSTRUMENT LOOK UP\",\"INPUT.KEY_XCLOUD_LAYOUT_00\":\"XCLOUD LAYOUT 0\"," +
+            "\"INPUT.KEY_GEAR_TOGGLE\":\"LANDING GEAR\"}}}");
+        File.WriteAllBytes(Path.Combine(install, "FlightSimulator2024.exe"), [0]);
+        Engine(home, "games", "install", "set", "MSFS2024", install);
+
+        (int code, string output) = Engine(home, "msfs2024", "refresh-db", "--text");
+
+        Assert.True(code == 0, output);
+        Assert.Contains("General events the sim names but neither a preset nor a profile of yours lists: 1 new", output);
+        string catalog = File.ReadAllText(Path.Combine(root, "data", "GameData", "DB", "MSFS2024", "actions.tsv"));
+        Assert.Matches(@"(?m)^KEY_INSTRUMENT_LOOK_UP\tInstrument Look Up\tbutton\tINSTRUMENTS_CAMERA\r?$", catalog);
+        Assert.DoesNotContain("KEY_XCLOUD_LAYOUT_00", catalog);
+        Assert.Matches(@"(?m)^KEY_GEAR_TOGGLE\t[^\t]+\tbutton\tAIRCRAFT\r?$", catalog);
+    }
+
     [Fact]
     public void Store_UnreadableIndex_EveryBlobIsChecked_AndUtf16BlobsAreRead()
     {

@@ -249,9 +249,12 @@ namespace JoyPro.Engine
             }
 
             foreach (StatusResult r in results)
+            {
                 JoyPro.Logging.JoyProLog.Debug("Sync", "Status " + r.Game.Id + ": " + r.State + (string.IsNullOrEmpty(r.Location.ConfigPath) ? string.Empty : " | " + r.Location.ConfigPath) +
                                                        (r.ChangedFiles.Count > 0 ? " | changed: " + string.Join(", ", r.ChangedFiles) : string.Empty) +
                                                        (r.Warnings.Count > 0 ? " | warnings: " + string.Join(" | ", r.Warnings) : string.Empty));
+                LogComparison(r);
+            }
 
             if (textOutput)
             {
@@ -336,6 +339,11 @@ namespace JoyPro.Engine
         private static int RunDiff(SyncGame game, string explicitPath, bool textOutput, out string payload)
         {
             SyncDiff diff = ComputeDiff(game, explicitPath);
+            // The comparison's result: what the watcher's dialog will list (none: the GUI accepts the state silently).
+            JoyPro.Logging.JoyProLog.Debug("Sync", "Diff " + game.Id + ": " + diff.Changes.Count.ToString(CultureInfo.InvariantCulture) + " change(s)" +
+                                                   (diff.Changes.Count == 0 ? " (nothing JoyPro manages changed: only formatting, or binds JoyPro does not manage)" : ": " +
+                                                    string.Join("; ", diff.Changes.Take(30).Select(c => c.Id + " " + c.Kind + ": " + Describe(c)))) +
+                                                   " | baseline: " + (diff.HasBaseline ? "yes" : "no") + (diff.Errors.Count > 0 ? " | errors: " + string.Join(" | ", diff.Errors) : string.Empty));
             payload = textOutput ? DiffText(diff) : EngineSerialization.ToJson(DiffJson(diff));
             if (diff.Errors.Count > 0)
             {
@@ -595,6 +603,53 @@ namespace JoyPro.Engine
                 JoyPro.Logging.JoyProLog.Warn("Sync", "Could not record the exported config of " + gameId, ex);
                 if (warnings != null)
                     warnings.Add("Sync: the fingerprint of the exported config could not be recorded: " + ex.Message);
+            }
+        }
+
+        // The config location of a game as the watcher sees it: the config path and the watched folders (diagnostics, the
+        // support bundle). Empty for an unknown game.
+        public static List<string> ConfigPathsOf(string gameId, out string displayName)
+        {
+            displayName = gameId;
+            List<string> paths = new List<string>();
+            SyncGame game;
+            if (!TryResolveGame(gameId, out game))
+                return paths;
+            displayName = game.DisplayName;
+            SyncLocation location = ResolveLocation(game, null, new List<string>());
+            if (!string.IsNullOrWhiteSpace(location.ConfigPath))
+                paths.Add(location.ConfigPath);
+            paths.AddRange(location.Watch.Select(w => w.Directory).Where(d => !string.IsNullOrWhiteSpace(d)));
+            return paths.Distinct(StringComparer.OrdinalIgnoreCase).ToList();
+        }
+
+        public static List<string> AllGameIds()
+        {
+            return AllGames().Select(g => g.Id).ToList();
+        }
+
+        // After an import: a game JoyPro has no record of yet (never exported, "untracked") gets the imported state as its
+        // record, so the watcher watches it from now on (the profile holds what the game has). A game with a record keeps
+        // it (the next export records it again).
+        public static void RecordAfterImport(string gameId, string configPath, List<string> warnings)
+        {
+            try
+            {
+                SyncGame game;
+                if (!TryResolveGame(gameId, out game))
+                    return;
+                List<string> local = new List<string>();
+                SyncLocation location = ResolveLocation(game, configPath, local);
+                if (!location.Exists || FindRecord(game.Id, location.ConfigPath) != null)
+                    return;
+                Record(game, location, "import", local);
+                JoyPro.Logging.JoyProLog.Info("Sync", "Recorded the imported config of " + game.Id + " (it had no record yet), so the watcher watches it: " + location.ConfigPath);
+            }
+            catch (Exception ex)
+            {
+                JoyPro.Logging.JoyProLog.Warn("Sync", "Could not record the imported config of " + gameId, ex);
+                if (warnings != null)
+                    warnings.Add("Sync: the fingerprint of the imported config could not be recorded: " + ex.Message);
             }
         }
 
@@ -928,11 +983,25 @@ namespace JoyPro.Engine
             }
         }
 
+        // A file Windows does not let JoyPro read (a Microsoft Store install keeps its data encrypted with EFS and refuses a
+        // file that lost the mark: "The APPX file can not be accessed because it is not encrypted as expected.", 2.2.1
+        // report) gets a stamp from its size and write time instead of its hash. It used to throw, so the export's record
+        // failed and MSFS 2024 stayed "untracked": the watcher never watched it and changes made in the sim were not
+        // noticed.
         private static string HashFile(string path)
         {
-            using (SHA256 sha = SHA256.Create())
-            using (FileStream stream = new FileStream(path, FileMode.Open, FileAccess.Read, FileShare.ReadWrite | FileShare.Delete))
-                return Hex(sha.ComputeHash(stream));
+            try
+            {
+                using (SHA256 sha = SHA256.Create())
+                    return Hex(sha.ComputeHash(SafeFileIo.ReadAllBytes(path)));
+            }
+            catch (Exception ex) when (ex is IOException || ex is UnauthorizedAccessException)
+            {
+                FileInfo info = new FileInfo(path);
+                if (JoyPro.Logging.JoyProLog.ShouldLog("sync-unreadable-" + path, TimeSpan.FromHours(1)))
+                    JoyPro.Logging.JoyProLog.Warn("Sync", "Cannot read " + path + " for its fingerprint (size and write time used instead): " + ex.Message);
+                return "unreadable:" + (info.Exists ? info.Length.ToString(CultureInfo.InvariantCulture) + ":" + info.LastWriteTimeUtc.Ticks.ToString(CultureInfo.InvariantCulture) : "missing");
+            }
         }
 
         private static string Hex(byte[] bytes)
@@ -1000,6 +1069,35 @@ namespace JoyPro.Engine
             result.ChangedFiles = ChangedItems(result.Record, result.Current);
             result.State = result.ChangedFiles.Count == 0 ? "unchanged" : "changed";
             return result;
+        }
+
+        // What a status compared (docs/logging.md "Game runs"): a changed config gets the environment and, per changed file,
+        // the recorded and the current stamp; an unchanged one the files compared (at most every 10 minutes per game, the
+        // GUI asks often).
+        private static void LogComparison(StatusResult r)
+        {
+            if (r.Record == null || r.Current == null)
+                return;
+            Dictionary<string, FileStamp> recorded = (r.Record.Items ?? new List<FileStamp>()).Where(i => i != null && !string.IsNullOrEmpty(i.Path))
+                .GroupBy(i => i.Path, StringComparer.OrdinalIgnoreCase).ToDictionary(g => g.Key, g => g.First(), StringComparer.OrdinalIgnoreCase);
+            Func<FileStamp, string> describe = s => s == null ? "none" : s.Size.ToString(CultureInfo.InvariantCulture) + " bytes, " +
+                new DateTime(Math.Max(0, s.MtimeTicks), DateTimeKind.Utc).ToString("yyyy-MM-dd HH:mm:ss", CultureInfo.InvariantCulture) + "Z, " + ((s.Sha256 ?? string.Empty).Length > 12 ? s.Sha256.Substring(0, 12) : s.Sha256);
+            if (r.State == "changed")
+            {
+                EngineDiagnostics.LogEnvironment(r.Game.Id, new[] { r.Location.ConfigPath }.Concat(r.Location.Watch.Select(w => w.Directory)));
+                foreach (string path in r.ChangedFiles.Take(40))
+                {
+                    FileStamp before;
+                    recorded.TryGetValue(path, out before);
+                    FileStamp now = r.Current.FirstOrDefault(c => string.Equals(c.Path, path, StringComparison.OrdinalIgnoreCase));
+                    JoyPro.Logging.JoyProLog.Debug("Sync", r.Game.Id + " changed file " + path + " | recorded (" + (r.Record.Reason ?? "-") + " " + (r.Record.RecordedUtc ?? "-") + "): " + describe(before) + " | now: " + describe(now));
+                }
+                return;
+            }
+            if (r.State == "unchanged" && JoyPro.Logging.JoyProLog.ShouldLog("sync-compared-" + r.Game.Id, TimeSpan.FromMinutes(10)))
+                JoyPro.Logging.JoyProLog.Debug("Sync", r.Game.Id + " unchanged: " + r.Current.Count.ToString(CultureInfo.InvariantCulture) + " file(s) compared with the record (" +
+                                                      (r.Record.Reason ?? "-") + " " + (r.Record.RecordedUtc ?? "-") + "): " +
+                                                      string.Join("; ", r.Current.Take(8).Select(c => c.Path + " " + describe(c))) + (r.Current.Count > 8 ? "; ..." : string.Empty));
         }
 
         private static List<string> ChangedItems(SyncRecord record, List<FileStamp> current)
@@ -1378,6 +1476,7 @@ namespace JoyPro.Engine
         {
             SyncDiff diff = new SyncDiff { Game = game };
             diff.Location = ResolveLocation(game, explicitPath, diff.Warnings);
+            EngineDiagnostics.LogEnvironment(game.Id, new[] { diff.Location.ConfigPath }.Concat(diff.Location.Watch.Select(w => w.Directory)));
             if (!diff.Location.Exists)
             {
                 diff.Errors.Add("No " + game.DisplayName + " config found" + (diff.Location.ConfigPath.Length == 0 ? "." : ": " + diff.Location.ConfigPath));

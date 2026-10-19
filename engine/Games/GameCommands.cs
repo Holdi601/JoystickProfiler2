@@ -116,6 +116,23 @@ namespace JoyPro.Engine.Games
             else if (includeSimDefaultsGiven && includeSimDefaults)
                 return Fail(game.DisplayName + " has no default presets of its own; --include-sim-defaults is only for Microsoft Flight Simulator.");
 
+            // The environment of the run (install, config folders, drives, attributes, devices): once, in the log.
+            if (action == "scan" || action == "import" || action == "export" || action == "refresh-db")
+            {
+                List<string> environmentPaths = new List<string>();
+                if (!string.IsNullOrWhiteSpace(explicitPath))
+                    environmentPaths.Add(explicitPath);
+                try
+                {
+                    environmentPaths.AddRange(GameInstalls.WithConfigOverride(game.GameId, game.DiscoverConfigPaths(new List<string>())));
+                }
+                catch (Exception ex) when (ex is IOException || ex is UnauthorizedAccessException)
+                {
+                    JoyPro.Logging.JoyProLog.Debug("Diagnostics", game.GameId + ": config paths not found: " + ex.Message);
+                }
+                EngineDiagnostics.LogEnvironment(game.GameId, environmentPaths);
+            }
+
             switch (action)
             {
                 case "paths":
@@ -215,6 +232,9 @@ namespace JoyPro.Engine.Games
             IGameOwnershipTracking tracking = game as IGameOwnershipTracking;
             if (tracking != null)
                 tracking.RecordImport(result.ConfigPath, applied, GameDeviceDirectory.Discover(result.Warnings), result);
+            // A game never exported (no watcher record yet) is watched from its import on (engine sync).
+            if (result.Errors.Count == 0 && string.IsNullOrWhiteSpace(explicitPath) && !string.IsNullOrWhiteSpace(result.ConfigPath))
+                EngineSync.RecordAfterImport(game.GameId, result.ConfigPath, result.Warnings);
             payload = Render(result, textOutput, result.Bindings);
             return result.Errors.Count == 0 ? 0 : 1;
         }

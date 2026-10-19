@@ -162,6 +162,66 @@ public sealed partial class MainWindowViewModel
         }
     }
 
+    // "Create support file" (docs/logging.md "Support file"): the engine's support bundle, a zip with the logs of the
+    // last days, the environment of the games and JoyPro's copies of their small config files. The user sees what it
+    // holds before it is saved; nothing is sent.
+    [RelayCommand]
+    private async Task CreateSupportFileAsync()
+    {
+        ProblemReportStatus = T("Collecting what the support file holds...");
+        EngineCommandResult? list = await RunEngineAsync(["support", "bundle", "--list"], includeProfile: false, mutatesProfile: false, busyLabel: T("Checking the support file..."));
+        if (list == null || list.ExitCode != 0)
+        {
+            ProblemReportStatus = T("The support file could not be made: {0}", list == null ? T("the engine did not run") : BuildFailureStatus(list));
+            return;
+        }
+        List<string> entries = SupportFileEntries(list.StandardOutput);
+        string message = T("JoyPro saves one zip on this PC; nothing is sent. Your user folder and user name are replaced (%USERPROFILE%), e-mail addresses and passwords are removed. It holds:") +
+                         "\n" + string.Join("\n", entries.Take(40)) + (entries.Count > 40 ? "\n" + T("... and {0} more", entries.Count - 40) : string.Empty);
+        if (!await ConfirmAsync(T("Create support file?"), message, T("Save support file")))
+        {
+            ProblemReportStatus = string.Empty;
+            return;
+        }
+        string folder = ProblemReporter.FolderOverride ?? ProblemReporter.DefaultFolder;
+        string zip = Path.Combine(folder, "JoyPro2-support-" + DateTime.Now.ToString("yyyyMMdd-HHmmss", System.Globalization.CultureInfo.InvariantCulture) + ".zip");
+        try
+        {
+            Directory.CreateDirectory(folder);
+        }
+        catch (Exception ex) when (ex is IOException or UnauthorizedAccessException)
+        {
+            ProblemReportStatus = T("The support file could not be made: {0}", ex.Message);
+            return;
+        }
+        EngineCommandResult? made = await RunEngineAsync(["--out", zip, "support", "bundle"], includeProfile: false, mutatesProfile: false, busyLabel: T("Saving the support file..."));
+        if (made == null || made.ExitCode != 0 || !File.Exists(zip))
+        {
+            ProblemReportStatus = T("The support file could not be made: {0}", made == null ? T("the engine did not run") : BuildFailureStatus(made));
+            return;
+        }
+        JoyProLog.Info("Report", "Support file saved: " + zip + " (" + entries.Count.ToString(System.Globalization.CultureInfo.InvariantCulture) + " entries)");
+        LastProblemReportPath = zip;
+        ProblemReportStatus = T("Done. The support file is saved as {0} in {1} (Explorer shows it). Nothing was sent. Attach it to a GitHub issue or send it to the developer.", Path.GetFileName(zip), folder);
+        OpenExternal("explorer.exe", "/select,\"" + zip + "\"");
+    }
+
+    // The entries of "engine support bundle --list --text" ("  - logs/engine.log | JoyPro log | 1234 bytes"), as
+    // "logs/engine.log (JoyPro log)".
+    internal static List<string> SupportFileEntries(string? output)
+    {
+        List<string> entries = [];
+        foreach (string line in (output ?? string.Empty).Split('\n'))
+        {
+            string trimmed = line.TrimEnd('\r');
+            if (!trimmed.StartsWith("  - ", StringComparison.Ordinal))
+                continue;
+            string[] parts = trimmed.Substring(4).Split(" | ");
+            entries.Add(parts.Length >= 2 ? parts[0] + " (" + parts[1] + ")" : parts[0]); // nonloc
+        }
+        return entries;
+    }
+
     [RelayCommand]
     private void OpenProblemIssuePage()
     {

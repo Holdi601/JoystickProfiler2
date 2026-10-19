@@ -209,9 +209,26 @@ public sealed class GameConfigWatcher : IGameWatcher
             }
         }
 
-        private void OnFileEvent(object sender, FileSystemEventArgs e) => Schedule(owner.debounce);
+        private void OnFileEvent(object sender, FileSystemEventArgs e)
+        {
+            LogEvent(e.ChangeType.ToString(), e.FullPath);
+            Schedule(owner.debounce);
+        }
 
-        private void OnFileRenamed(object sender, RenamedEventArgs e) => Schedule(owner.debounce);
+        private void OnFileRenamed(object sender, RenamedEventArgs e)
+        {
+            LogEvent("Renamed from " + e.OldName, e.FullPath);
+            Schedule(owner.debounce);
+        }
+
+        // Every file event (diagnostics: what the game wrote and when), at most one line per file and kind every 2 s
+        // (a game rewriting a file a thousand times gives a few lines).
+        private void LogEvent(string kind, string path)
+        {
+            if (JoyPro.Logging.JoyProLog.ShouldLog("watch-event-" + Spec.GameId + "|" + kind + "|" + path, TimeSpan.FromSeconds(2)))
+                JoyPro.Logging.JoyProLog.Debug("Watcher", Spec.GameId + ": " + kind + " " + path + " at " + DateTime.Now.ToString("HH:mm:ss.fff", System.Globalization.CultureInfo.InvariantCulture) +
+                                                           " (check after " + owner.debounce.TotalSeconds.ToString("0.#", System.Globalization.CultureInfo.InvariantCulture) + " s quiet)");
+        }
 
         // A lost event (buffer overflow) may have been a change.
         private void OnWatcherError(object sender, ErrorEventArgs e)
@@ -238,7 +255,16 @@ public sealed class GameConfigWatcher : IGameWatcher
                         running = process;
                         if (!process.HasExited)
                         {
-                            JoyPro.Logging.JoyProLog.Debug("Watcher", Spec.GameId + ": config changed while the game runs (" + process.ProcessName + ", pid " + process.Id + "); waiting for it to close");
+                            string started;
+                            try
+                            {
+                                started = process.StartTime.ToString("yyyy-MM-dd HH:mm:ss", System.Globalization.CultureInfo.InvariantCulture);
+                            }
+                            catch (Exception)
+                            {
+                                started = "unknown";
+                            }
+                            JoyPro.Logging.JoyProLog.Debug("Watcher", Spec.GameId + ": config changed while the game runs (" + process.ProcessName + ", pid " + process.Id + ", started " + started + "); waiting for it to close");
                             return;
                         }
                     }
@@ -249,6 +275,7 @@ public sealed class GameConfigWatcher : IGameWatcher
                     ReleaseProcess();
                 }
             }
+            JoyPro.Logging.JoyProLog.Debug("Watcher", Spec.GameId + ": quiet for the wait and no game process (" + string.Join(", ", Spec.ProcessNames) + ") runs: checking now");
             owner.Raise(Spec.GameId);
         }
 
@@ -258,6 +285,8 @@ public sealed class GameConfigWatcher : IGameWatcher
             {
                 if (disposed)
                     return;
+                JoyPro.Logging.JoyProLog.Debug("Watcher", Spec.GameId + ": the game closed at " + DateTime.Now.ToString("HH:mm:ss.fff", System.Globalization.CultureInfo.InvariantCulture) +
+                                                           "; checking in " + owner.afterExit.TotalSeconds.ToString("0.#", System.Globalization.CultureInfo.InvariantCulture) + " s (a later write starts the wait again)");
                 ReleaseProcess();
                 // Games write their config while closing; the last write starts a new debounce anyway.
                 timer.Change(owner.afterExit, Timeout.InfiniteTimeSpan);

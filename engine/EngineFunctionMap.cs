@@ -1141,6 +1141,10 @@ namespace JoyPro.Engine
                             }
                             else
                                 factor = ruled.Value.Count > 0 ? 0.5 : 1.0;
+                            // A shared slot's function whose own "not" words the title has is not this action: the slot
+                            // "ATC_Engage" (auto throttle control) is also linked to the ATC request of other games, and
+                            // "Arm Auto Throttle" must not read as an ATC request ("auto throttle" is one of its "not" words).
+                            owners = owners.Where(o => said.Contains(o) || !Vetoed(o, ruled.Key, new int[0])).ToList();
                         }
                         foreach (Function f in owners)
                         {

@@ -270,7 +270,10 @@ public sealed class TrayWatcherHost : IDisposable
         List<string> gameArgs = SyncOutput.GameArguments(watchKey);
         EngineRun status = await engine.RunAsync([.. SyncOutput.CommonArguments, "sync", "status", .. gameArgs]);
         if (Paused || status.ExitCode != 0)
+        {
+            JoyPro.Logging.JoyProLog.Info("Watcher", watchKey + ": not checked (" + (Paused ? "the tray host is paused" : "sync status failed, exit code " + status.ExitCode) + ")");
             return;
+        }
         if (!SyncOutput.StatusSaysChanged(status.StandardOutput))
         {
             JoyPro.Logging.JoyProLog.Info("Watcher", watchKey + ": the config was written, its content is unchanged; nothing to ask");
@@ -279,13 +282,22 @@ public sealed class TrayWatcherHost : IDisposable
         // Without a profile there is nothing to take the changes into (as in the GUI): the config stays "changed".
         string profile = settings.LastProfilePath;
         if (string.IsNullOrWhiteSpace(profile) || !fileExists(profile))
+        {
+            JoyPro.Logging.JoyProLog.Info("Watcher", watchKey + ": changed, but no profile to compare with; the change waits");
             return;
+        }
         EngineRun diff = await engine.RunAsync(["--profile", profile, .. SyncOutput.CommonArguments, "sync", "diff", .. gameArgs]);
         if (Paused || diff.ExitCode != 0)
+        {
+            JoyPro.Logging.JoyProLog.Info("Watcher", watchKey + ": changed, not compared (" + (Paused ? "the tray host is paused" : "sync diff failed, exit code " + diff.ExitCode) + ")");
             return;
+        }
         (string DisplayName, int Changes)? summary = SyncOutput.ParseDiffSummary(diff.StandardOutput);
         if (summary == null)
+        {
+            JoyPro.Logging.JoyProLog.Warn("Watcher", watchKey + ": the diff could not be read; nothing asked");
             return;
+        }
         if (summary.Value.Changes == 0)
         {
             // Only changes JoyPro does not manage (or formatting): the state is known now, nothing to ask.
