@@ -32,9 +32,9 @@ try {
     # Import: invert in JoyPro's (DCS) direction = file XOR Elite's stock direction; dead zone, symbol, throttle range.
     $esImport = Run-Engine @("--profile", $esProfile, "elite", "import", "--path", $esBinds, "--replace", "--text")
     Assert-True ($esImport.ExitCode -eq 0) ("elite import failed: " + $esImport.Output)
-    $esPitch = "Elite Dangerous (experimental) Pitch Axis"
-    $esVertical = "Elite Dangerous (experimental) Vertical Thrust Axis"
-    $esThrottle = "Elite Dangerous (experimental) Throttle Axis"
+    $esPitch = "Pitch Axis"
+    $esVertical = "Vertical Thrust Axis"
+    $esThrottle = "Throttle Axis"
     $esPitchShow = Run-Engine @("--profile", $esProfile, "binds", "tuning", "show", $esPitch, "--game", "EliteDangerous", "--text")
     Assert-Match $esPitchShow.Output "base: inv=0;" ("Elite's inverted pitch (stock direction) must import as a relation without invert: " + $esPitchShow.Output)
     Assert-Match $esPitchShow.Output "game:EliteDangerous: inv=0;sl=0;dz=0\.05;" ("elite import should keep the pitch dead zone as the game's tuning: " + $esPitchShow.Output)

@@ -78,7 +78,7 @@ try {
     $a3ImportPro = Join-Path $a3Dir "a3-import.pr0file"
     $a3Import = Run-Engine @("--profile", $a3ImportPro, "arma3", "import", $a3File, "--text")
     Assert-True ($a3Import.ExitCode -eq 0) "arma3 import of the tuned profile failed."
-    $a3Shown = Run-Engine @("--profile", $a3ImportPro, "binds", "tuning", "show", "Arma 3 Helicopter cyclic pitch (HeliCyclicForward / HeliCyclicBack)", "--game", "Arma3", "--text")
+    $a3Shown = Run-Engine @("--profile", $a3ImportPro, "binds", "tuning", "show", "Helicopter cyclic pitch (HeliCyclicForward / HeliCyclicBack)", "--game", "Arma3", "--text")
     Assert-Match $a3Shown.Output "game:Arma3: .*n\.deadZone=0\.05;n\.sensitivityNeg=-0\.25;n\.sensitivityPos=-1;n\.steepness=1\.5" "arma3 import should store the device's axis settings as the bind's Arma 3 tuning."
     Run-Engine @("--profile", $a3ImportPro, "arma3", "export", $a3File, "--text") | Out-Null
     Assert-True ([System.IO.File]::ReadAllText($a3File) -eq $a3Before) "arma3 import/export of the tuned profile must leave it byte-identical."
@@ -133,7 +133,7 @@ try {
     Remove-Item -LiteralPath ($oaFile + ".joypro-meta.json") -Force
     $oaImportPro = Join-Path $a2Dir "oa-import.pr0file"
     Run-Engine @("--profile", $oaImportPro, "arma2oa", "import", $oaFile, "--text") | Out-Null
-    $oaShown = Run-Engine @("--profile", $oaImportPro, "binds", "tuning", "show", "Arma 2: Operation Arrowhead Pitch: nose down / nose up (HeliForward / HeliBack)", "--game", "Arma2OA", "--text")
+    $oaShown = Run-Engine @("--profile", $oaImportPro, "binds", "tuning", "show", "Pitch: nose down / nose up (HeliForward / HeliBack)", "--game", "Arma2OA", "--text")
     if ($oaShown.ExitCode -ne 0) {
         $oaRelations = Run-Engine @("--profile", $oaImportPro, "relations", "list", "--text")
         throw "arma2oa import: pitch relation not found. Relations: $($oaRelations.Output)"
@@ -179,7 +179,7 @@ try {
     Move-Item -LiteralPath ($arPreset + ".meta-aside") -Destination ($arPreset + ".joypro-meta.json") -Force
     $arScan = Run-Engine @("reforger", "scan", $arPreset, "--text")
     Assert-Match $arScan.Output "HelicopterEngineStart <- Smoke Throttle \{66666666-7777-8888-9999-000000000000\} JOY_BTN5" "reforger scan should map joystick3 back to the throttle through the order rule."
-    $arShown = Run-Engine @("--profile", $arImportPro, "binds", "tuning", "show", "Arma Reforger Cyclic pitch (HelicopterCyclicForward / HelicopterCyclicBack)", "--game", "ArmaReforger", "--text")
+    $arShown = Run-Engine @("--profile", $arImportPro, "binds", "tuning", "show", "Cyclic pitch (HelicopterCyclicForward / HelicopterCyclicBack)", "--game", "ArmaReforger", "--text")
     Assert-Match $arShown.Output "game:ArmaReforger: .*n\.multiplier=0\.5;n\.useInvert=1" "reforger import should read the filter back as the bind's tuning."
 
     # A settings file without the known section: no rules, the DirectInput order is used.

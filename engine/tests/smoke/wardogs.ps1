@@ -8,8 +8,8 @@ $wdtIni = Join-Path $wdtDir "GameUserSettings.ini"
 Copy-Item -Path $wdtFixture -Destination $wdtIni -Force
 $wdtOriginal = [System.IO.File]::ReadAllText($wdtIni)
 $wdtProfile = Join-Path $tempDir "wardogs-tuning.pr0file"
-$wdtPitch = "WARDOGS Cyclic pitch (nose up/down)"
-$wdtRoll = "WARDOGS Cyclic roll"
+$wdtPitch = "Cyclic pitch (nose up/down)"
+$wdtRoll = "Cyclic roll"
 
 function Get-WardogsAxisLine([string]$Text, [string]$Axis) {
     $m = [regex]::Match($Text, "(?m)^" + $Axis + "=\(.*\)\r?$")

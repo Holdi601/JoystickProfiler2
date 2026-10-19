@@ -19,13 +19,13 @@ try {
     $wtsImport = Run-Engine @("--profile", $wtsProfile, "warthunder", "import", $wtsBlk, "--text")
     Assert-True ($wtsImport.ExitCode -eq 0) ("warthunder import of the settings fixture failed: " + $wtsImport.Output)
     Assert-NotMatch $wtsImport.Output "is not in JoyPro's table" "the warthog base preset should be in base-presets.tsv."
-    $wtsRoll = Run-Engine @("--profile", $wtsProfile, "binds", "tuning", "show", "War Thunder Roll axis", "--game", "WarThunder", "--text")
+    $wtsRoll = Run-Engine @("--profile", $wtsProfile, "binds", "tuning", "show", "Roll axis", "--game", "WarThunder", "--text")
     Assert-Match $wtsRoll.Output "game:WarThunder: inv=0;sl=0;[^\r\n]*n\.innerDeadzone=0\.02;n\.kAdd=0;n\.keepDisabledValue=0;n\.kMul=1\.1;n\.nonlinearity=1;n\.rangeMax=1;n\.rangeMin=-1;n\.relative=0;n\.relSens=1;n\.relStep=0" ("warthunder import should fill missing attributes from the base preset: " + $wtsRoll.Output)
-    $wtsPitch = Run-Engine @("--profile", $wtsProfile, "binds", "tuning", "show", "War Thunder Pitch axis", "--game", "WarThunder", "--text")
+    $wtsPitch = Run-Engine @("--profile", $wtsProfile, "binds", "tuning", "show", "Pitch axis", "--game", "WarThunder", "--text")
     Assert-Match $wtsPitch.Output "game:WarThunder: inv=1;[^\r\n]*n\.kAdd=0\.28;[^\r\n]*n\.kMul=1\.5;n\.nonlinearity=2;" ("warthunder import should read inverse, kMul, kAdd and nonlinearity: " + $wtsPitch.Output)
-    $wtsYaw = Run-Engine @("--profile", $wtsProfile, "binds", "tuning", "show", "War Thunder Yaw axis", "--game", "WarThunder", "--text")
+    $wtsYaw = Run-Engine @("--profile", $wtsProfile, "binds", "tuning", "show", "Yaw axis", "--game", "WarThunder", "--text")
     Assert-Match $wtsYaw.Output "game:WarThunder: [^\r\n]*n\.innerDeadzone=0\.1;[^\r\n]*n\.keepDisabledValue=1;" ("warthunder import should read keepDisabledValue: " + $wtsYaw.Output)
-    $wtsThrottle = Run-Engine @("--profile", $wtsProfile, "binds", "tuning", "show", "War Thunder Throttle axis", "--game", "WarThunder", "--text")
+    $wtsThrottle = Run-Engine @("--profile", $wtsProfile, "binds", "tuning", "show", "Throttle axis", "--game", "WarThunder", "--text")
     Assert-Match $wtsThrottle.Output "game:WarThunder: inv=1;sl=1;[^\r\n]*n\.innerDeadzone=0;[^\r\n]*n\.rangeMin=0;n\.relative=1;n\.relSens=0\.64;n\.relStep=0\.3" ("warthunder import should read relative control and the one-sided range: " + $wtsThrottle.Output)
     # Game-wide settings become the profile's settings (device *), in the game's units.
     $wtsFfbShow = Run-Engine @("--profile", $wtsProfile, "ffb", "show", "--device", "*", "--game", "WarThunder", "--text")
@@ -39,9 +39,9 @@ try {
 
     # Dead zone 0 is written (it used to be skipped); a value equal to the base preset drops the line (the game's diff
     # style); other values are written, 0 included.
-    Run-Engine @("--profile", $wtsProfile, "binds", "tuning", "set", "War Thunder Roll axis", "--scope", "game:WarThunder", "--param", "innerDeadzone=0", "--param", "nonlinearity=0.5", "--text") | Out-Null
-    Run-Engine @("--profile", $wtsProfile, "binds", "tuning", "set", "War Thunder Pitch axis", "--scope", "game:WarThunder", "--param", "kMul=1.1", "--param", "kAdd=0", "--param", "relative=0", "--text") | Out-Null
-    Run-Engine @("--profile", $wtsProfile, "binds", "tuning", "set", "War Thunder Throttle axis", "--scope", "game:WarThunder", "--inverted", "false", "--param", "relSens=0.25", "--param", "rangeMax=0.8", "--text") | Out-Null
+    Run-Engine @("--profile", $wtsProfile, "binds", "tuning", "set", "Roll axis", "--scope", "game:WarThunder", "--param", "innerDeadzone=0", "--param", "nonlinearity=0.5", "--text") | Out-Null
+    Run-Engine @("--profile", $wtsProfile, "binds", "tuning", "set", "Pitch axis", "--scope", "game:WarThunder", "--param", "kMul=1.1", "--param", "kAdd=0", "--param", "relative=0", "--text") | Out-Null
+    Run-Engine @("--profile", $wtsProfile, "binds", "tuning", "set", "Throttle axis", "--scope", "game:WarThunder", "--inverted", "false", "--param", "relSens=0.25", "--param", "rangeMax=0.8", "--text") | Out-Null
     $wtsExport = Run-Engine @("--profile", $wtsProfile, "warthunder", "export", $wtsBlk, "--text")
     Assert-True ($wtsExport.ExitCode -eq 0) ("warthunder export of the tuning failed: " + $wtsExport.Output)
     $wtsAfter = [System.IO.File]::ReadAllText($wtsBlk)
@@ -56,10 +56,10 @@ try {
 
     # Preview: the game's formula. Pitch now: inverted, nonlinearity 2, kMul 1.1 (base), dead zone 0.02 (base):
     # x = -0.5 -> v = 0.55 -> (0.55 - 0.02) / 0.98 = 0.540816 -> ^3 = 0.158179.
-    $wtsPreview = Run-Engine @("--profile", $wtsProfile, "binds", "tuning", "preview", "War Thunder Pitch axis", "--game", "WarThunder", "--points", "5", "--text")
+    $wtsPreview = Run-Engine @("--profile", $wtsProfile, "binds", "tuning", "preview", "Pitch axis", "--game", "WarThunder", "--points", "5", "--text")
     Assert-Match $wtsPreview.Output "-0\.500 -> \+0\.15817[89]" ("warthunder preview should evaluate the game's curve: " + $wtsPreview.Output)
     # One-sided throttle with range 0..0.8 shows 0.8 at full travel as +0.6 (0..1 drawn as -1..1).
-    $wtsThrottlePreview = Run-Engine @("--profile", $wtsProfile, "binds", "tuning", "preview", "War Thunder Throttle axis", "--game", "WarThunder", "--points", "3", "--text")
+    $wtsThrottlePreview = Run-Engine @("--profile", $wtsProfile, "binds", "tuning", "preview", "Throttle axis", "--game", "WarThunder", "--points", "3", "--text")
     Assert-Match $wtsThrottlePreview.Output "\+1\.000 -> \+0\.6(0000)?" ("warthunder preview should map the one-sided range: " + $wtsThrottlePreview.Output)
 
     # Game-wide settings: only the keys JoyPro sets change, in their blocks.

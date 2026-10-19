@@ -15,7 +15,7 @@ try {
     Copy-Item -Path (Join-Path $vtFixture "byoj-tuning\BYOJ_AH94Front.xml") -Destination $vtSave -Force
     $vtSeat = Join-Path $vtSave "BYOJ_AH94Front.xml"
     $vtProfile = Join-Path $tempDir "vtol-tuning.pr0file"
-    $vtPrefix = "VTOL VR (BYOJoystick mod) "
+    $vtPrefix = ""
 
     $vtModels = Run-Engine @("binds", "tuning", "models", "--text")
     Assert-Match $vtModels.Output "(?m)^byoj - VTOL VR \(BYOJoystick mod\)" "binds tuning models should list the byoj model."
@@ -102,9 +102,9 @@ try {
     $vtNativeImportProfile = Join-Path $tempDir "vtol-native-import.pr0file"
     Run-Engine @("--profile", $vtNativeImportProfile, "vtolvr-native", "import", $vtBindings, "--text") | Out-Null
     Move-Item -LiteralPath ($vtBindings + ".meta-aside") -Destination ($vtBindings + ".joypro-meta.json") -Force
-    $vtBrakeShow = Run-Engine @("--profile", $vtNativeImportProfile, "binds", "tuning", "show", "VTOL VR (native rudder and brakes) Left wheel brake (toe brake)", "--game", "VTOLVRNative", "--text")
+    $vtBrakeShow = Run-Engine @("--profile", $vtNativeImportProfile, "binds", "tuning", "show", "Left wheel brake (toe brake)", "--game", "VTOLVRNative", "--text")
     Assert-Match $vtBrakeShow.Output "game:VTOLVRNative: inv=1;sl=1;.*n\.axisRange=1" "vtolvr-native import should keep the brake's axisRange as tuning."
-    $vtBrakePreview = Run-Engine @("--profile", $vtNativeImportProfile, "binds", "tuning", "preview", "VTOL VR (native rudder and brakes) Left wheel brake (toe brake)", "--game", "VTOLVRNative", "--points", "3", "--text")
+    $vtBrakePreview = Run-Engine @("--profile", $vtNativeImportProfile, "binds", "tuning", "preview", "Left wheel brake (toe brake)", "--game", "VTOLVRNative", "--points", "3", "--text")
     Assert-Match $vtBrakePreview.Output "-1\.000 -> \+1\.000000[\s\S]*\+0\.000 -> \+0\.000000[\s\S]*\+1\.000 -> -1\.000000" "the vtolnative preview should show the whole travel for axisRange 1 + invert."
 
     # Only Wheel Brake R: the game never takes the brakes from the hardware.

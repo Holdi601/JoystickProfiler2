@@ -27,19 +27,19 @@ try {
     # Import: launcher steps, one-sided throttle, User.cfg's exponential curve of roll (the line above the marker).
     $bmsSetImport = Run-Engine @("--profile", $bmsSetProfile, "bms", "import", $bmsSetConfig, "--text")
     Assert-True ($bmsSetImport.ExitCode -eq 0) ("bms import with settings failed: " + $bmsSetImport.Output)
-    $bmsPitchShow = Run-Engine @("--profile", $bmsSetProfile, "binds", "tuning", "show", "Falcon BMS Pitch", "--game", "FalconBMS", "--text")
+    $bmsPitchShow = Run-Engine @("--profile", $bmsSetProfile, "binds", "tuning", "show", "Pitch", "--game", "FalconBMS", "--text")
     Assert-Match $bmsPitchShow.Output "game:FalconBMS: .*n\.deadzoneStep=1;n\.saturationStep=1" ("bms import should store the launcher steps as the relation's BMS tuning: " + $bmsPitchShow.Output)
     Assert-Match $bmsPitchShow.Output "base: inv=0;sl=0;dz=0;sx=1" "bms import must not put BMS's steps into the base tuning (DCS)."
-    $bmsRollShow = Run-Engine @("--profile", $bmsSetProfile, "binds", "tuning", "show", "Falcon BMS Roll", "--game", "FalconBMS", "--text")
+    $bmsRollShow = Run-Engine @("--profile", $bmsSetProfile, "binds", "tuning", "show", "Roll", "--game", "FalconBMS", "--text")
     Assert-Match $bmsRollShow.Output "game:FalconBMS: .*n\.axisExp=20" ("bms import should read g_nAxisExp_AXIS_ROLL from Falcon BMS User.cfg: " + $bmsRollShow.Output)
-    $bmsThrottleShow = Run-Engine @("--profile", $bmsSetProfile, "binds", "tuning", "show", "Falcon BMS Throttle", "--game", "FalconBMS", "--text")
+    $bmsThrottleShow = Run-Engine @("--profile", $bmsSetProfile, "binds", "tuning", "show", "Throttle", "--game", "FalconBMS", "--text")
     Assert-Match $bmsThrottleShow.Output "game:FalconBMS: inv=1;sl=1;.*n\.saturationStep=2" ("bms import should read the throttle as a one-sided, inverted axis with its saturation step: " + $bmsThrottleShow.Output)
 
     # Preview: dead zone/saturation ints of the half travel (DirectInput), exponent as linear-to-cubic blend.
-    $bmsPitchPreview = Run-Engine @("--profile", $bmsSetProfile, "binds", "tuning", "preview", "Falcon BMS Pitch", "--game", "FalconBMS", "--points", "5", "--text")
+    $bmsPitchPreview = Run-Engine @("--profile", $bmsSetProfile, "binds", "tuning", "preview", "Pitch", "--game", "FalconBMS", "--points", "5", "--text")
     Assert-Match $bmsPitchPreview.Output "Model: bms" "the BMS preview should use the bms model."
     Assert-Match $bmsPitchPreview.Output "\+0\.500 -> \+0\.521277" ("bms preview: Small/Small = 0.01 dead zone, full at 0.95: " + $bmsPitchPreview.Output)
-    $bmsRollPreview = Run-Engine @("--profile", $bmsSetProfile, "binds", "tuning", "preview", "Falcon BMS Roll", "--game", "FalconBMS", "--points", "5", "--text")
+    $bmsRollPreview = Run-Engine @("--profile", $bmsSetProfile, "binds", "tuning", "preview", "Roll", "--game", "FalconBMS", "--points", "5", "--text")
     Assert-Match $bmsRollPreview.Output "-0\.500 -> -0\.425000" ("bms preview: exponent 20 = 0.8 x + 0.2 x^3: " + $bmsRollPreview.Output)
 
     # The round trip writes nothing.
@@ -50,14 +50,14 @@ try {
     Assert-True (([System.IO.File]::ReadAllText($bmsSetCfg) -eq $bmsCfgBefore) -and ([System.IO.File]::ReadAllText($bmsSetStick) -eq $bmsStickBefore)) "bms import/export round trip must leave User.cfg and the device files as they were."
 
     # Per-axis values and game settings.
-    $bmsSetPitch = Run-Engine @("--profile", $bmsSetProfile, "binds", "tuning", "set", "Falcon BMS Pitch", "--scope", "game:FalconBMS", "--param", "deadzoneStep=2", "--param", "saturationStep=3", "--param", "axisExp=35", "--param", "axisSat=10", "--text")
+    $bmsSetPitch = Run-Engine @("--profile", $bmsSetProfile, "binds", "tuning", "set", "Pitch", "--scope", "game:FalconBMS", "--param", "deadzoneStep=2", "--param", "saturationStep=3", "--param", "axisExp=35", "--param", "axisSat=10", "--text")
     Assert-True ($bmsSetPitch.ExitCode -eq 0) ("binds tuning set for BMS pitch failed: " + $bmsSetPitch.Output)
-    $bmsPitchPreview2 = Run-Engine @("--profile", $bmsSetProfile, "binds", "tuning", "preview", "Falcon BMS Pitch", "--game", "FalconBMS", "--points", "5", "--text")
+    $bmsPitchPreview2 = Run-Engine @("--profile", $bmsSetProfile, "binds", "tuning", "preview", "Pitch", "--game", "FalconBMS", "--points", "5", "--text")
     # u = 0.5: (0.5 - 0.05) / (0.85 - 0.05) = 0.5625; / 0.9 = 0.625; 0.65 * 0.625 + 0.35 * 0.625^3 = 0.491699
     Assert-Match $bmsPitchPreview2.Output "\+0\.500 -> \+0\.491699" ("bms preview with every pitch setting: " + $bmsPitchPreview2.Output)
-    $bmsYawBase = Run-Engine @("--profile", $bmsSetProfile, "binds", "tuning", "set", "Falcon BMS Yaw", "--scope", "base", "--curvature", "0.3", "--deadzone", "0.05", "--text")
+    $bmsYawBase = Run-Engine @("--profile", $bmsSetProfile, "binds", "tuning", "set", "Yaw", "--scope", "base", "--curvature", "0.3", "--deadzone", "0.05", "--text")
     Assert-True ($bmsYawBase.ExitCode -eq 0) "binds tuning set for the yaw base failed."
-    $bmsYawPreview = Run-Engine @("--profile", $bmsSetProfile, "binds", "tuning", "preview", "Falcon BMS Yaw", "--game", "FalconBMS", "--points", "5", "--text")
+    $bmsYawPreview = Run-Engine @("--profile", $bmsSetProfile, "binds", "tuning", "preview", "Yaw", "--game", "FalconBMS", "--points", "5", "--text")
     Assert-Match $bmsYawPreview.Output "from base \(fitted to the base curve\)" "BMS yaw without its own tuning should be fitted to the base curve."
     # Steps from the base; the base curvature is not turned into g_nAxisExp until its formula is measured in game.
     Assert-Match $bmsYawPreview.Output "n\.deadzoneStep=2;n\.saturationStep=0" ("the fit should take the nearest launcher steps of the base: " + $bmsYawPreview.Output)

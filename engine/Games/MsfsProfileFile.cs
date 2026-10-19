@@ -161,27 +161,32 @@ namespace JoyPro.Engine.Games
 
         public static bool TryLoad(string path, List<string> errors, out MsfsProfileFile file)
         {
+            Exception readError;
+            return TryLoad(path, path, errors, out file, out readError);
+        }
+
+        // readPath: the file read (a backup copy of path), path: the file the profile stands for (its category folder,
+        // the file an export writes). readError: why the file could not be read (null when it could).
+        public static bool TryLoad(string readPath, string path, List<string> errors, out MsfsProfileFile file, out Exception readError)
+        {
             file = null;
-            if (!File.Exists(path))
+            readError = null;
+            if (!File.Exists(readPath))
             {
-                errors.Add("MSFS input profile not found: " + path);
+                errors.Add("MSFS input profile not found: " + readPath);
                 return false;
             }
 
             byte[] bytes;
             try
             {
-                using (FileStream stream = new FileStream(path, FileMode.Open, FileAccess.Read, FileShare.ReadWrite | FileShare.Delete))
-                using (MemoryStream copy = new MemoryStream())
-                {
-                    stream.CopyTo(copy);
-                    bytes = copy.ToArray();
-                }
+                bytes = SafeFileIo.ReadAllBytes(readPath);
             }
             catch (Exception ex) when (ex is IOException || ex is UnauthorizedAccessException)
             {
                 // A Store install keeps its data encrypted: a file that lost the mark cannot be read (409).
-                errors.Add("Could not read the MSFS input profile " + path + ": " + (SafeFileIo.IsAppxNotEncrypted(ex) ? SafeFileIo.Explain(ex, path).Message : ex.Message));
+                readError = ex;
+                errors.Add("Could not read the MSFS input profile " + readPath + ": " + (SafeFileIo.IsAppxNotEncrypted(ex) ? SafeFileIo.ExplainRead(ex, readPath) : ex.Message));
                 return false;
             }
             bool bom = bytes.Length >= 3 && bytes[0] == 0xEF && bytes[1] == 0xBB && bytes[2] == 0xBF;

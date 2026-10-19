@@ -2373,7 +2373,7 @@ return diff
         $wdOriginalText = $wdOriginalText.Replace("ABCD:0001:Smoke Throttle (ARM)", "ABCD:0001:Smoke Throttle")
         Assert-True ([System.IO.File]::ReadAllText($wdIni) -eq $wdOriginalText) "wardogs import/export round trip must leave the file byte-identical apart from the repaired device name."
 
-        $wdSetFire = Run-Engine @("--profile", $wdProfile, "binds", "set", "WARDOGS Fire", "--input", "JOY_BTN3", "--text")
+        $wdSetFire = Run-Engine @("--profile", $wdProfile, "binds", "set", "Fire", "--input", "JOY_BTN3", "--text")
         Assert-True ($wdSetFire.ExitCode -eq 0) "binds set on the imported WARDOGS relation failed."
         $wdDryRun = Run-Engine @("--profile", $wdProfile, "wardogs", "export", $wdIni, "--dry-run", "--text")
         Assert-Match $wdDryRun.Output "1 line\(s\) of the joystick section would change" "wardogs dry run should report one changed line."
@@ -2396,7 +2396,7 @@ return diff
         Assert-Match $wdCleanText "Action=UnknownFutureAction" "wardogs clean export must keep actions JoyPro does not manage."
         Assert-Match $wdCleanText 'Action=Fire,Binding=\(DeviceIdentifier="1234:5678:Smoke Stick"' "wardogs clean export must keep the profile's binds."
         if (-not (Skip-WithoutGameData "WARDOGS nuke on the cataloged helicopter actions (DB\Wardogs)")) {
-        foreach ($wdThrottleRelation in @("WARDOGS Collective / throttle", "WARDOGS Look down (button)", "WARDOGS Look up (button)")) {
+        foreach ($wdThrottleRelation in @("Collective / throttle", "Look down (button)", "Look up (button)")) {
             $wdUnbind = Run-Engine @("--profile", $wdProfile, "binds", "clear", $wdThrottleRelation, "--text")
             Assert-True ($wdUnbind.ExitCode -eq 0) ("binds clear failed for " + $wdThrottleRelation)
         }
@@ -2446,7 +2446,7 @@ return diff
         Assert-True ($a3RoundTrip.ExitCode -eq 0) "arma3 export after import failed."
         Assert-True ([System.IO.File]::ReadAllText($a3Profile) -eq $a3OriginalText) "arma3 import/export round trip must leave the profile byte-identical."
 
-        $a3Set = Run-Engine @("--profile", $a3JoyProProfile, "binds", "set", "Arma 3 Auto hover", "--input", "JOY_BTN3", "--text")
+        $a3Set = Run-Engine @("--profile", $a3JoyProProfile, "binds", "set", "Auto hover", "--input", "JOY_BTN3", "--text")
         Assert-True ($a3Set.ExitCode -eq 0) "binds set on the imported Arma 3 relation failed."
         $a3Export = Run-Engine @("--profile", $a3JoyProProfile, "arma3", "export", $a3Profile, "--text")
         Assert-True ($a3Export.ExitCode -eq 0) "arma3 export after rebind failed."
@@ -2609,7 +2609,7 @@ return diff
         Assert-True ($arRoundTrip.ExitCode -eq 0) "reforger export after import failed."
         Assert-True ([System.IO.File]::ReadAllText($arPreset) -eq $arOriginalText) "reforger import/export round trip must leave the preset byte-identical."
 
-        $arSet = Run-Engine @("--profile", $arProfile, "binds", "set", "Arma Reforger Autohover toggle", "--input", "JOY_BTN4", "--text")
+        $arSet = Run-Engine @("--profile", $arProfile, "binds", "set", "Autohover toggle", "--input", "JOY_BTN4", "--text")
         Assert-True ($arSet.ExitCode -eq 0) "binds set on the imported Reforger relation failed."
         $arExport = Run-Engine @("--profile", $arProfile, "reforger", "export", $arPreset, "--text")
         Assert-Match $arExport.Output "1 action block\(s\) changed" "reforger export should change exactly the rebound action."
@@ -2656,9 +2656,9 @@ return diff
         Assert-True ($wtRoundTrip.ExitCode -eq 0) "warthunder export after import failed."
         Assert-True ([System.IO.File]::ReadAllText($wtBlk) -eq $wtOriginalText) "warthunder import/export round trip must leave machine.blk byte-identical."
 
-        $wtSetGuns = Run-Engine @("--profile", $wtProfile, "binds", "set", "War Thunder Small-calibre guns", "--input", "JOY_BTN3", "--text")
+        $wtSetGuns = Run-Engine @("--profile", $wtProfile, "binds", "set", "Small-calibre guns", "--input", "JOY_BTN3", "--text")
         Assert-True ($wtSetGuns.ExitCode -eq 0) "binds set on the imported War Thunder relation failed."
-        $wtSetThrottle = Run-Engine @("--profile", $wtProfile, "binds", "set", "War Thunder Throttle axis", "--input", "JOY_SLIDER1", "--text")
+        $wtSetThrottle = Run-Engine @("--profile", $wtProfile, "binds", "set", "Throttle axis", "--input", "JOY_SLIDER1", "--text")
         Assert-True ($wtSetThrottle.ExitCode -eq 0) "binds set on the War Thunder throttle failed."
         $wtAddBrake = Run-Engine @("--profile", $wtProfile, "relations", "add", "WT Airbrake", "--button", "--node", "WarThunder:ID_AIR_BRAKE", "--device", $wtStick, "--input", "JOY_BTN5", "--text")
         Assert-True ($wtAddBrake.ExitCode -eq 0) "relations add for War Thunder airbrake failed."
@@ -2683,7 +2683,7 @@ return diff
         Assert-Match $wtAfter "fullScreenMode:b=yes" "warthunder export must keep other sections."
         Assert-True (Test-Path ($wtBlk + ".jpbak")) "warthunder export should back up machine.blk."
 
-        $wtClear = Run-Engine @("--profile", $wtProfile, "binds", "clear", "War Thunder Toggle Gear", "--text")
+        $wtClear = Run-Engine @("--profile", $wtProfile, "binds", "clear", "Toggle Gear", "--text")
         Assert-True ($wtClear.ExitCode -eq 0) "binds clear on the War Thunder gear relation failed."
         $wtClean = Run-Engine @("--profile", $wtProfile, "warthunder", "export", $wtBlk, "--mode", "clean", "--text")
         Assert-True ($wtClean.ExitCode -eq 0) "warthunder clean export failed."
@@ -2724,9 +2724,9 @@ return diff
         Assert-True ($xpRoundTrip.ExitCode -eq 0) "xplane export after import failed."
         Assert-True ([System.IO.File]::ReadAllText($xpPrf) -eq $xpOriginalText) "xplane import/export round trip must leave the preferences byte-identical."
 
-        $xpSetGuns = Run-Engine @("--profile", $xpProfile, "binds", "set", "X-Plane 12 Fire armed guns", "--input", "JOY_BTN3", "--text")
+        $xpSetGuns = Run-Engine @("--profile", $xpProfile, "binds", "set", "Fire armed guns", "--input", "JOY_BTN3", "--text")
         Assert-True ($xpSetGuns.ExitCode -eq 0) "binds set on the imported X-Plane relation failed."
-        $xpSetYaw = Run-Engine @("--profile", $xpProfile, "binds", "set", "X-Plane 12 Yaw", "--device", $xpPedalsA, "--input", "JOY_RZ", "--text")
+        $xpSetYaw = Run-Engine @("--profile", $xpProfile, "binds", "set", "Yaw", "--device", $xpPedalsA, "--input", "JOY_RZ", "--text")
         Assert-True ($xpSetYaw.ExitCode -eq 0) "binds set for X-Plane yaw failed."
         $xpAddFlaps = Run-Engine @("--profile", $xpProfile, "relations", "add", "XP Flaps up", "--button", "--node", "XPlane12:sim/flight_controls/flaps_up", "--device", $xpStick, "--input", "JOY_BTN_POV1_UR", "--text")
         Assert-True ($xpAddFlaps.ExitCode -eq 0) "relations add for X-Plane flaps up failed."
@@ -2751,7 +2751,7 @@ return diff
         Assert-Match $xpAfter "(?m)^_joy_center1 0\.500000\r?$" "xplane export must keep calibration."
         Assert-True (Test-Path ($xpPrf + ".jpbak")) "xplane export should back up the preferences."
 
-        $xpClear = Run-Engine @("--profile", $xpProfile, "binds", "clear", "X-Plane 12 Flaps down a notch", "--text")
+        $xpClear = Run-Engine @("--profile", $xpProfile, "binds", "clear", "Flaps down a notch", "--text")
         Assert-True ($xpClear.ExitCode -eq 0) "binds clear on the X-Plane flaps relation failed."
         $xpClean = Run-Engine @("--profile", $xpProfile, "xplane12", "export", $xpPrf, "--mode", "clean", "--text")
         Assert-True ($xpClean.ExitCode -eq 0) "xplane clean export failed."
@@ -2797,9 +2797,9 @@ return diff
         Assert-True ($bmsRoundTrip.ExitCode -eq 0) "bms export after import failed."
         Assert-True (([System.IO.File]::ReadAllText($bmsStickFile) -eq $bmsStickText) -and ([System.IO.File]::ReadAllText($bmsThrottleFile) -eq $bmsThrottleText)) "bms import/export round trip must leave the device files byte-identical."
 
-        $bmsSetPickle = Run-Engine @("--profile", $bmsProfile, "binds", "set", "Falcon BMS STICK: WEAPON RELEASE (Pickle)", "--input", "JOY_BTN3", "--text")
+        $bmsSetPickle = Run-Engine @("--profile", $bmsProfile, "binds", "set", "STICK: WEAPON RELEASE (Pickle)", "--input", "JOY_BTN3", "--text")
         Assert-True ($bmsSetPickle.ExitCode -eq 0) "binds set on the imported BMS pickle relation failed."
-        $bmsSetRoll = Run-Engine @("--profile", $bmsProfile, "binds", "set", "Falcon BMS Roll", "--device", $bmsThrottle, "--input", "JOY_X", "--text")
+        $bmsSetRoll = Run-Engine @("--profile", $bmsProfile, "binds", "set", "Roll", "--device", $bmsThrottle, "--input", "JOY_X", "--text")
         Assert-True ($bmsSetRoll.ExitCode -eq 0) "binds set for BMS roll failed."
         $bmsAddDms = Run-Engine @("--profile", $bmsProfile, "relations", "add", "BMS DMS Down", "--button", "--node", "FalconBMS:SimDMSDown", "--device", $bmsStick, "--input", "JOY_BTN6", "--modifier", "BMS Shift", "--text")
         Assert-True ($bmsAddDms.ExitCode -eq 0) "relations add for the shifted BMS DMS down failed."
@@ -2836,7 +2836,7 @@ return diff
         Assert-True (Test-Path ($bmsStickFile + ".jpbak")) "bms export should back up the device file."
         Assert-True ([System.IO.File]::ReadAllText($bmsPedalsFile) -eq $bmsPedalsText) "bms export must not touch unchanged device files."
 
-        $bmsClear = Run-Engine @("--profile", $bmsProfile, "binds", "clear", "Falcon BMS STICK: TMS Up", "--text")
+        $bmsClear = Run-Engine @("--profile", $bmsProfile, "binds", "clear", "STICK: TMS Up", "--text")
         Assert-True ($bmsClear.ExitCode -eq 0) "binds clear on the BMS TMS up relation failed."
         $bmsClean = Run-Engine @("--profile", $bmsProfile, "bms", "export", $bmsConfig, "--mode", "clean", "--text")
         Assert-True ($bmsClean.ExitCode -eq 0) "bms clean export failed."
@@ -2921,14 +2921,14 @@ return diff
         $koPitchText = [System.IO.File]::ReadAllText($koPitchFile)
         $koSharedText = [System.IO.File]::ReadAllText($koSharedFile)
         Assert-True (([System.IO.File]::ReadAllText($koPitchFile) -eq $koPitchText) -and ([System.IO.File]::ReadAllText($koSharedFile) -eq $koSharedText)) "il2korea round trip must leave the response files as they were."
-        $koPitchShow = Run-Engine @("--profile", $koProfile, "binds", "tuning", "show", "IL-2 Series: Korea Pitch (Elevator)", "--game", "IL2Korea", "--text")
+        $koPitchShow = Run-Engine @("--profile", $koProfile, "binds", "tuning", "show", "Pitch (Elevator)", "--game", "IL2Korea", "--text")
         Assert-Match $koPitchShow.Output "game:IL2Korea: .*n\.deadZone0=3;.*n\.offset=39;n\.sensitivity=22" "il2korea import should store general.pitch as the relation's IL-2 Korea tuning."
         Assert-Match $koPitchShow.Output "base: inv=1;sl=0;dz=0;sx=1;sy=1;cv=0\s" "il2korea import must not put Korea's response into the base tuning (DCS)."
-        $koPreview = Run-Engine @("--profile", $koProfile, "binds", "tuning", "preview", "IL-2 Series: Korea Pitch (Elevator)", "--game", "IL2Korea", "--points", "11", "--text")
+        $koPreview = Run-Engine @("--profile", $koProfile, "binds", "tuning", "preview", "Pitch (Elevator)", "--game", "IL2Korea", "--points", "11", "--text")
         Assert-Match $koPreview.Output "-0\.200 -> \+0\.477850" "il2korea preview must match the table the game compiled (exponent 22, centre dead zone 3, offset 39; the inverted axis mirrors the input)."
-        $koRollSet = Run-Engine @("--profile", $koProfile, "binds", "tuning", "set", "IL-2 Series: Korea Roll (Ailerons)", "--scope", "game:IL2Korea", "--param", "sensitivity=60", "--param", "deadZone1=4", "--text")
+        $koRollSet = Run-Engine @("--profile", $koProfile, "binds", "tuning", "set", "Roll (Ailerons)", "--scope", "game:IL2Korea", "--param", "sensitivity=60", "--param", "deadZone1=4", "--text")
         Assert-True ($koRollSet.ExitCode -eq 0) "binds tuning set for the Korea roll relation failed."
-        $koYawSet = Run-Engine @("--profile", $koProfile, "binds", "tuning", "set", "IL-2 Series: Korea Yaw (Rudder)", "--scope", "base", "--curvature", "0.3", "--deadzone", "0.05", "--text")
+        $koYawSet = Run-Engine @("--profile", $koProfile, "binds", "tuning", "set", "Yaw (Rudder)", "--scope", "base", "--curvature", "0.3", "--deadzone", "0.05", "--text")
         Assert-True ($koYawSet.ExitCode -eq 0) "binds tuning set for the yaw base failed."
         $koCurveExport = Run-Engine @("--profile", $koProfile, "il2korea", "export", $koActions, "--text")
         Assert-True ($koCurveExport.ExitCode -eq 0) "il2korea export with axis tuning failed."
@@ -2977,7 +2977,7 @@ return diff
         $koRelProfile = Join-Path $tempDir "il2korea-rel.pr0file"
         $koRelImport = Run-Engine @("--profile", $koRelProfile, "il2korea", "import", $koRelActions, "--text")
         Assert-True ($koRelImport.ExitCode -eq 0) ("il2korea import with a relative axis failed: " + $koRelImport.Output)
-        $koRelShow = Run-Engine @("--profile", $koRelProfile, "binds", "tuning", "show", "IL-2 Series: Korea Throttle control", "--game", "IL2Korea", "--text")
+        $koRelShow = Run-Engine @("--profile", $koRelProfile, "binds", "tuning", "show", "Throttle control", "--game", "IL2Korea", "--text")
         Assert-Match $koRelShow.Output "game:IL2Korea: inv=1;sl=1;.*n\.relative=1" ("il2korea import should keep Relative Control, the inversion and the one-sided kind of the throttle: " + $koRelShow.Output)
         Assert-Match $koRelShow.Output "n\.relativeDeadZone=17\b" ("il2korea import should read Relative Control's dead zone (0.17 -> 17 %): " + $koRelShow.Output)
         Assert-Match $koRelShow.Output "n\.relativeSensitivity=11\b" ("il2korea import should read Relative Control's sensitivity (0.11 -> 11): " + $koRelShow.Output)
@@ -2985,11 +2985,11 @@ return diff
         $koRelExport = Run-Engine @("--profile", $koRelProfile, "il2korea", "export", $koRelActions, "--text")
         Assert-True ($koRelExport.ExitCode -eq 0) "il2korea export with a relative axis failed."
         Assert-True ([System.IO.File]::ReadAllText($koRelActions) -eq $koRelBefore) "il2korea export must write a relative inverted axis back as *-dev1_axis_t."
-        Run-Engine @("--profile", $koRelProfile, "binds", "tuning", "set", "IL-2 Series: Korea Throttle control", "--scope", "game:IL2Korea", "--slider", "true", "--inverted", "false", "--param", "deadZone0=10", "--param", "relative=1", "--param", "relativeDeadZone=80", "--param", "relativeSensitivity=20", "--text") | Out-Null
-        $koRelPreview = Run-Engine @("--profile", $koRelProfile, "binds", "tuning", "preview", "IL-2 Series: Korea Throttle control", "--game", "IL2Korea", "--points", "11", "--text")
+        Run-Engine @("--profile", $koRelProfile, "binds", "tuning", "set", "Throttle control", "--scope", "game:IL2Korea", "--slider", "true", "--inverted", "false", "--param", "deadZone0=10", "--param", "relative=1", "--param", "relativeDeadZone=80", "--param", "relativeSensitivity=20", "--text") | Out-Null
+        $koRelPreview = Run-Engine @("--profile", $koRelProfile, "binds", "tuning", "preview", "Throttle control", "--game", "IL2Korea", "--points", "11", "--text")
         Assert-Match $koRelPreview.Output "-0\.800 -> -1\.000000" "a one-sided Korea axis keeps -1 for the low dead zone (10 % of the whole travel)."
         Assert-Match $koRelPreview.Output "\+0\.000 -> -0\.11111" "a one-sided Korea axis runs the curve over the whole travel."
-        Run-Engine @("--profile", $koRelProfile, "binds", "tuning", "set", "IL-2 Series: Korea Pitch (Elevator)", "--scope", "game:IL2Korea", "--param", "harmonization=2", "--param", "normalized=0", "--text") | Out-Null
+        Run-Engine @("--profile", $koRelProfile, "binds", "tuning", "set", "Pitch (Elevator)", "--scope", "game:IL2Korea", "--param", "harmonization=2", "--param", "normalized=0", "--text") | Out-Null
         Run-Engine @("--profile", $koRelProfile, "il2korea", "export", $koRelActions, "--mode", "merge-overwrite", "--text") | Out-Null
         $koRelPitch = ([System.IO.File]::ReadAllText((Join-Path $koRelDir "general.pitch")) | ConvertFrom-Json).curves.rpc_pitch
         Assert-True ($koRelPitch.harmonization -eq 2 -and $koRelPitch.normalized -eq 0) ("il2korea export should write the built-in curve and control surface loading: " + ($koRelPitch | ConvertTo-Json -Compress))
@@ -3021,14 +3021,14 @@ return diff
         Assert-True (Test-Path ($koActions + ".jpbak")) "il2korea export should back up the actions file."
 
         # Clean takes over the devices it writes and keeps the keyboard; nuke also clears devices the profile does not use.
-        $koClearGuns = Run-Engine @("--profile", $koProfile, "binds", "clear", "IL-2 Series: Korea Fire all guns", "--text")
+        $koClearGuns = Run-Engine @("--profile", $koProfile, "binds", "clear", "Fire all guns", "--text")
         Assert-True ($koClearGuns.ExitCode -eq 0) ("binds clear on the imported Korea guns relation failed: " + $koClearGuns.Output)
         $koClean = Run-Engine @("--profile", $koProfile, "il2korea", "export", $koActions, "--mode", "clean", "--text")
         Assert-True ($koClean.ExitCode -eq 0) "il2korea clean export failed."
         $koCleanJson = [System.IO.File]::ReadAllText($koActions) | ConvertFrom-Json
         Assert-True ((@($koCleanJson.actions.all_guns_fire) -join ",") -eq "key_space,mouse_b0") "il2korea clean should release unbound inputs of written devices and keep keyboard and mouse."
         Assert-True ((@($koCleanJson.actions.rpc_yaw) -contains "dev3_axis_t")) "il2korea clean without nuke must keep devices JoyPro does not write."
-        $koNuke = Run-Engine @("--profile", $koProfile, "binds", "clear", "IL-2 Series: Korea Yaw (Rudder)", "--text")
+        $koNuke = Run-Engine @("--profile", $koProfile, "binds", "clear", "Yaw (Rudder)", "--text")
         $koNuke = Run-Engine @("--profile", $koProfile, "il2korea", "export", $koActions, "--mode", "clean", "--nuke-untouched-devices", "--text")
         Assert-True ($koNuke.ExitCode -eq 0) "il2korea nuke export failed."
         $koNukeJson = [System.IO.File]::ReadAllText($koActions) | ConvertFrom-Json
@@ -3262,9 +3262,9 @@ return diff
         Assert-True ($msRoundTrip.ExitCode -eq 0) "msfs export after import failed."
         Assert-True ([System.IO.File]::ReadAllText($msSting) -eq $msStingText) "msfs import/export round trip must leave the profile byte-identical."
 
-        $msSetGear = Run-Engine @("--profile", $msProfile, "binds", "set", "Microsoft Flight Simulator 2020 GEAR TOGGLE", "--input", "JOY_BTN5", "--text")
+        $msSetGear = Run-Engine @("--profile", $msProfile, "binds", "set", "GEAR TOGGLE", "--input", "JOY_BTN5", "--text")
         Assert-True ($msSetGear.ExitCode -eq 0) "binds set on the imported MSFS relation failed."
-        $msSetElevator = Run-Engine @("--profile", $msProfile, "binds", "set", "Microsoft Flight Simulator 2020 AXIS ELEVATOR SET", "--inverted", "false", "--text")
+        $msSetElevator = Run-Engine @("--profile", $msProfile, "binds", "set", "AXIS ELEVATOR SET", "--inverted", "false", "--text")
         Assert-True ($msSetElevator.ExitCode -eq 0) "binds set --inverted on the MSFS elevator failed."
         $msAddAp = Run-Engine @("--profile", $msProfile, "relations", "add", "MSFS AP", "--button", "--node", "MSFS:KEY_AP_MASTER", "--device", $msStick, "--input", "JOY_BTN2", "--text")
         Assert-True ($msAddAp.ExitCode -eq 0) "relations add for MSFS autopilot failed."
@@ -3287,7 +3287,7 @@ return diff
         Assert-True ([System.IO.File]::ReadAllText($ms2024) -eq $ms2024Text) "msfs 2024 import/export round trip must leave the export byte-identical."
         $ms2024Flaps = Run-Engine @("--profile", $ms2024Profile, "relations", "add", "MSFS Flaps axis", "--axis", "--node", "MSFS2024:KEY_AXIS_FLAPS_SET", "--device", $msStick, "--input", "JOY_SLIDER1", "--text")
         Assert-True ($ms2024Flaps.ExitCode -eq 0) "relations add for the MSFS 2024 flaps axis failed."
-        $ms2024Delete = Run-Engine @("--profile", $ms2024Profile, "relations", "mass", "delete", "--relation", "Microsoft Flight Simulator 2024 AP MASTER", "--text")
+        $ms2024Delete = Run-Engine @("--profile", $ms2024Profile, "relations", "mass", "delete", "--relation", "AP MASTER", "--text")
         Assert-True ($ms2024Delete.ExitCode -eq 0) "relations mass delete for the MSFS 2024 autopilot failed."
         $ms2024Export = Run-Engine @("--profile", $ms2024Profile, "msfs2024", "export", $ms2024, "--text")
         Assert-True ($ms2024Export.ExitCode -eq 0) "msfs 2024 export failed."

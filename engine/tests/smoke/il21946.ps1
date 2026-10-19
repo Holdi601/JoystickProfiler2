@@ -56,12 +56,12 @@ try {
     # Import: relations named after the catalog, conf.ini values as game:IL21946 tuning (not the base).
     $i46Import = Run-Engine @("--profile", $i46Profile, "il21946", "import", $i46Settings, "--include-keyboard", "--text")
     Assert-True ($i46Import.ExitCode -eq 0) ("il21946 import failed: " + $i46Import.Output)
-    $i46Elevator = Run-Engine @("--profile", $i46Profile, "binds", "tuning", "show", "IL-2 Sturmovik: 1946 Elevator (pitch)", "--game", "IL21946", "--text")
+    $i46Elevator = Run-Engine @("--profile", $i46Profile, "binds", "tuning", "show", "Elevator (pitch)", "--game", "IL21946", "--text")
     Assert-Match $i46Elevator.Output "game:IL21946: .*n\.c1=90;.*n\.deadBand=20;n\.filter=30" ("import should store conf.ini 1Y as the elevator's IL-2 1946 tuning: " + $i46Elevator.Output)
     Assert-Match $i46Elevator.Output "(?m)^\s*base: inv=0;sl=0;dz=0;" "import must not put the game's dead band into the base."
-    $i46Power = Run-Engine @("--profile", $i46Profile, "binds", "tuning", "show", "IL-2 Sturmovik: 1946 Throttle", "--game", "IL21946", "--text")
+    $i46Power = Run-Engine @("--profile", $i46Profile, "binds", "tuning", "show", "Throttle", "--game", "IL21946", "--text")
     Assert-Match $i46Power.Output "game:IL21946: inv=1;sl=1;.*n\.oneSided=2" ("import should read '-power' with 1Z1 one-sided 2 as an inverted one-sided axis: " + $i46Power.Output)
-    $i46Preview = Run-Engine @("--profile", $i46Profile, "binds", "tuning", "preview", "IL-2 Sturmovik: 1946 Rudder (yaw)", "--game", "IL21946", "--points", "5", "--text")
+    $i46Preview = Run-Engine @("--profile", $i46Profile, "binds", "tuning", "preview", "Rudder (yaw)", "--game", "IL21946", "--points", "5", "--text")
     Assert-Match $i46Preview.Output "Model: il21946" "the IL-2 1946 preview should use the il21946 model."
     # Rudder 1RZ2: point 5 = 90 % of linear at 50 % stick -> 0.45.
     Assert-Match $i46Preview.Output "\+0\.500 -> \+0\.450000" ("the IL-2 1946 curve is percent of linear: " + $i46Preview.Output)
@@ -74,7 +74,7 @@ try {
 
     # Merge: a new bind is added in its section, the game's bind on a used input stays.
     Run-Engine @("--profile", $i46Profile, "relations", "add", "I46 Airbrake", "--button", "--node", "IL21946:pilot.AIRCRAFT_TOGGLE_AIRBRAKE", "--device", $i46Stick, "--input", "JOY_BTN4", "--text") | Out-Null
-    Run-Engine @("--profile", $i46Profile, "relations", "add", "I46 Hook", "--button", "--node", "IL21946:pilot.AIRCRAFT_CARRIERHOOK", "--device", $i46Stick, "--input", "JOY_BTN2", "--text") | Out-Null
+    Run-Engine @("--profile", $i46Profile, "relations", "add", "A46 Hook", "--button", "--node", "IL21946:pilot.AIRCRAFT_CARRIERHOOK", "--device", $i46Stick, "--input", "JOY_BTN2", "--text") | Out-Null
     Run-Engine @("--profile", $i46Profile, "relations", "add", "I46 Mixture", "--axis", "--node", "IL21946:move.mixture", "--device", "Smoke Throttle {66666666-7777-8888-9999-000000000000}", "--input", "JOY_RZ", "--text") | Out-Null
     $i46Dry = Run-Engine @("--profile", $i46Profile, "il21946", "export", $i46Settings, "--mode", "merge", "--dry-run", "--text")
     Assert-Match $i46Dry.Output "Dry run: \d+ line\(s\) of settings\.ini would change" ("il21946 dry run should report the changes: " + $i46Dry.Output)
@@ -97,7 +97,7 @@ try {
     Assert-Match $i46Text "(?m)^G=Gear$" "merge-overwrite must keep the keyboard bind of Gear."
 
     # Axis response: own values go to conf.ini [rts_joystick] 1X (device 0, X).
-    $i46Tune = Run-Engine @("--profile", $i46Profile, "binds", "tuning", "set", "IL-2 Sturmovik: 1946 Ailerons (roll)", "--scope", "game:IL21946", "--param", "deadBand=12", "--param", "c1=50", "--param", "c2=60", "--text")
+    $i46Tune = Run-Engine @("--profile", $i46Profile, "binds", "tuning", "set", "Ailerons (roll)", "--scope", "game:IL21946", "--param", "deadBand=12", "--param", "c1=50", "--param", "c2=60", "--text")
     Assert-True ($i46Tune.ExitCode -eq 0) ("binds tuning set for game:IL21946 failed: " + $i46Tune.Output)
     $i46TuneExport = Run-Engine @("--profile", $i46Profile, "il21946", "export", $i46Settings, "--text")
     Assert-True ($i46TuneExport.ExitCode -eq 0) ("il21946 export with tuning failed: " + $i46TuneExport.Output)
@@ -115,7 +115,7 @@ try {
     Assert-Match $i46Fit.Output "fitted to the base curve\): .*n\.c10=100;.*n\.deadBand=20;" ("the il21946 fit should turn dead zone 0.02 into dead band 20 and end at 100: " + $i46Fit.Output)
 
     # Clean: the written devices keep only the profile's binds; other devices, keys and the missing device stay.
-    $i46Delete = Run-Engine @("--profile", $i46Profile, "relations", "mass", "delete", "--relation", "IL-2 Sturmovik: 1946 Fire guns and cannons", "--text")
+    $i46Delete = Run-Engine @("--profile", $i46Profile, "relations", "mass", "delete", "--relation", "Fire guns and cannons", "--text")
     Assert-True ($i46Delete.ExitCode -eq 0) ("relations mass delete failed: " + $i46Delete.Output)
     $i46Clean = Run-Engine @("--profile", $i46Profile, "il21946", "export", $i46Settings, "--mode", "clean", "--text")
     Assert-True ($i46Clean.ExitCode -eq 0) ("il21946 clean export failed: " + $i46Clean.Output)

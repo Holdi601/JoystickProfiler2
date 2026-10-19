@@ -155,9 +155,14 @@ namespace JoyPro.Engine.Games
         // 2024 category) exactly one profile is used: the one named with --game-profile, or the only one there is.
         // Import (forImport) takes the most recently saved one when there are several and says which; an export skips
         // the device. JoyPro's package presets and the user's own profiles are chosen separately (import reads both).
-        private List<MsfsProfileFile> LoadSelectedProfiles(string configPath, List<string> errors, List<string> warnings, bool forImport = false, List<string> notes = null)
+        // keep: drops profiles before the choice (import: devices that are not connected, so a skipped device gets no
+        // "has N MSFS profiles" warning).
+        private List<MsfsProfileFile> LoadSelectedProfiles(string configPath, List<string> errors, List<string> warnings, bool forImport = false, List<string> notes = null,
+                                                           Func<List<MsfsProfileFile>, List<MsfsProfileFile>> keep = null)
         {
             List<MsfsProfileFile> profiles = LoadProfiles(configPath, errors, warnings, forImport, notes);
+            if (keep != null)
+                profiles = keep(profiles);
             if (!string.IsNullOrWhiteSpace(SelectedProfile))
             {
                 profiles = profiles.Where(p => string.Equals(p.FriendlyName, SelectedProfile, StringComparison.OrdinalIgnoreCase)).ToList();
@@ -256,8 +261,21 @@ namespace JoyPro.Engine.Games
             foreach (KeyValuePair<string, MsfsProfileSourceKind> file in files)
             {
                 MsfsProfileFile profile;
-                if (!MsfsProfileFile.TryLoad(file.Key, File.Exists(configPath) ? errors : warnings, out profile))
-                    continue;
+                List<string> loadErrors = new List<string>();
+                Exception readError;
+                if (!MsfsProfileFile.TryLoad(file.Key, file.Key, loadErrors, out profile, out readError))
+                {
+                    // Import: JoyPro's own preset that lost its EFS encryption (JoyPro 2.1.1 to 2.2.1, Store install) is
+                    // repaired or read from JoyPro's backup copy, so its binds are not dropped (a warning says what to do).
+                    bool ownUnreadable = forImport && file.Value == MsfsProfileSourceKind.Package && readError != null && SafeFileIo.IsEncryptionFailure(readError);
+                    if (!ownUnreadable)
+                    {
+                        (File.Exists(configPath) ? errors : warnings).AddRange(loadErrors);
+                        continue;
+                    }
+                    if (!TryUnreadablePreset(file.Key, notes ?? warnings, warnings, out profile))
+                        continue;
+                }
                 profile.Source = file.Value;
                 if (profile.HasDeviceGuid)
                     profiles.Add(profile);
@@ -269,6 +287,61 @@ namespace JoyPro.Engine.Games
             if (profiles.Count == 0 && errors.Count == 0)
                 errors.Add("No MSFS device profiles (with a joystick GUID) found in " + (userSources != null ? string.Join(", ", files.Select(f => Path.GetDirectoryName(f.Key)).Distinct(StringComparer.OrdinalIgnoreCase)) : configPath) + ".");
             return profiles;
+        }
+
+        // JoyPro's own preset that Windows cannot read: in a Store install's encrypted data a file without the EFS mark
+        // is refused (409; JoyPro 2.1.1 to 2.2.1 removed the mark), by the sim too. The import encrypts it again where
+        // Windows can, else reads JoyPro's newest readable copy of it (the backup an export made before writing it, or
+        // the file an export moved out of the package); without one its binds are left out. Each case says what to do.
+        private static bool TryUnreadablePreset(string path, List<string> notes, List<string> warnings, out MsfsProfileFile profile)
+        {
+            profile = null;
+            Exception error;
+            string label = MsfsCommunityPackage.PresetDeviceLabel(path);
+            if (SafeFileIo.FolderOfIsEncrypted(path) && !SafeFileIo.IsEncrypted(path) && SafeFileIo.TryEncryptPath(path) == null &&
+                MsfsProfileFile.TryLoad(path, path, new List<string>(), out profile, out error))
+            {
+                JoyPro.Logging.JoyProLog.Info("MSFS", "Package encryption: encrypted " + path + " (import).");
+                notes.Add("JoyPro's MSFS 2024 preset '" + label + "' had lost its encryption (EFS) and is encrypted again, so the sim and JoyPro can read it.");
+                return true;
+            }
+            string why = "JoyPro's MSFS 2024 preset '" + label + "' cannot be read: the sim keeps its data encrypted (EFS) on this PC and this file is not " +
+                         "encrypted as expected (JoyPro 2.1.1 to 2.2.1 removed it), so the sim does not use it either (" + path + "). ";
+            foreach (string copy in CopiesOf(path))
+            {
+                if (!MsfsProfileFile.TryLoad(copy, path, new List<string>(), out profile, out error))
+                    continue;
+                warnings.Add(why + "Its binds were imported from JoyPro's copy of " + SavedAt(copy).ToLocalTime().ToString("yyyy-MM-dd HH:mm", CultureInfo.InvariantCulture) +
+                             " (" + copy + "). Export from JoyPro once: it writes the preset again so the sim uses it.");
+                return true;
+            }
+            warnings.Add(why + "JoyPro has no readable copy of it, so its binds were not imported. Import with 'Merge into profile' (not --replace) to keep " +
+                         "the binds of your JoyPro profile, then export from JoyPro once: it writes the preset again.");
+            return false;
+        }
+
+        // JoyPro's copies of a package file, newest first: export backups (<data>\Backups\MSFS\<file>.<time>.jpbak) and
+        // files an export moved out of the package (<data>\Backups\MSFS\package-<time>\<file>).
+        private static List<string> CopiesOf(string path)
+        {
+            List<string> copies = new List<string>();
+            try
+            {
+                string backups = JoyProDataFolder("Backups");
+                string name = Path.GetFileName(path);
+                copies.AddRange(Directory.GetFiles(backups, name + ".*.jpbak"));
+                foreach (string moved in Directory.GetDirectories(backups, "package-*"))
+                {
+                    string file = Path.Combine(moved, name);
+                    if (File.Exists(file))
+                        copies.Add(file);
+                }
+            }
+            catch (Exception ex) when (ex is IOException || ex is UnauthorizedAccessException)
+            {
+                JoyPro.Logging.JoyProLog.Debug("MSFS", "No copies of " + path + ": " + ex.Message);
+            }
+            return copies.OrderByDescending(SavedAt).ToList();
         }
 
         // "Profiles read: 3 from Steam, 2 from the Microsoft Store, 1 JoyPro preset" (a note in the import's output).
@@ -316,9 +389,8 @@ namespace JoyPro.Engine.Games
             GameScanResult result = new GameScanResult();
             bool simDefaults = UsesSimDefaults(configPath);
             List<string> loadErrors = simDefaults ? new List<string>() : result.Errors;
-            List<MsfsProfileFile> profiles = LoadSelectedProfiles(configPath, loadErrors, result.Warnings, ImportReading, result.Steps);
-            if (ImportReading)
-                profiles = WithoutDisconnectedDevices(profiles, devices, result);
+            List<MsfsProfileFile> profiles = LoadSelectedProfiles(configPath, loadErrors, result.Warnings, ImportReading, result.Steps,
+                ImportReading ? (Func<List<MsfsProfileFile>, List<MsfsProfileFile>>)(all => WithoutDisconnectedDevices(all, devices, result)) : null);
             if (simDefaults)
             {
                 List<MsfsProfileFile> defaults = SimDefaultProfiles(profiles, devices, configPath, result);

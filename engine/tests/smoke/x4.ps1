@@ -38,9 +38,9 @@ try {
     # (a missing bidirectionalthrottle is On in the game).
     $xsImport = Run-Engine @("--profile", $xsProfile, "x4", "import", "--path", $xsMap, "--replace", "--text")
     Assert-True ($xsImport.ExitCode -eq 0) ("x4 import failed: " + $xsImport.Output)
-    $xsPitch = "X4: Foundations (experimental) Steer Up-Down"
-    $xsThrottle = "X4: Foundations (experimental) Throttle"
-    $xsYaw = "X4: Foundations (experimental) Primary Steering Axis"
+    $xsPitch = "Steer Up-Down"
+    $xsThrottle = "Throttle"
+    $xsYaw = "Primary Steering Axis"
     $xsPitchShow = Run-Engine @("--profile", $xsProfile, "binds", "tuning", "show", $xsPitch, "--game", "X4", "--text")
     Assert-Match $xsPitchShow.Output "base: inv=0;" ("X4's inverted pitch (its HOTAS default) must import as a relation without invert: " + $xsPitchShow.Output)
     $xsThrottleShow = Run-Engine @("--profile", $xsProfile, "binds", "tuning", "show", $xsThrottle, "--game", "X4", "--text")

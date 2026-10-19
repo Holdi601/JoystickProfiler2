@@ -232,7 +232,7 @@ namespace JoyPro.Engine.Games
                 }
 
                 string title = action != null && !string.IsNullOrWhiteSpace(action.Title) ? action.Title : binding.ActionId;
-                string relationName = UniqueRelationName(meta != null ? meta.RelationName : game.DisplayName + " " + title, relations);
+                string relationName = meta != null ? UniqueRelationName(meta.RelationName, relations) : NewRelationName(title, game, relations);
                 Relation relation = new Relation();
                 relation.NAME = relationName;
                 relation.ISAXIS = isAxis;
@@ -339,6 +339,34 @@ namespace JoyPro.Engine.Games
                    (axis ? "1" : "0") + SignatureSeparator +
                    (input ?? string.Empty).Trim().ToLowerInvariant() + SignatureSeparator +
                    string.Join(SignatureSeparator, normalizedReformers);
+        }
+
+        // The name of a relation an import makes: the action's readable title ("Arm Auto Throttle"); when a relation of
+        // that name exists, the game in brackets ("Arm Auto Throttle (Microsoft Flight Simulator 2024)") if that one
+        // belongs to another game, else a number ("Arm Auto Throttle (2)").
+        public static string NewRelationName(string title, IGameIntegration game, Dictionary<string, Relation> existing)
+        {
+            return NewRelationName(title, game.GameId, game.DisplayName, existing);
+        }
+
+        public static string NewRelationName(string title, string gameId, string gameName, Dictionary<string, Relation> existing)
+        {
+            string root = (title ?? string.Empty).Trim();
+            if (root.Length == 0)
+                root = "Relation";
+            Relation clash;
+            if (existing.TryGetValue(root, out clash) && clash != null &&
+                !(clash.NODES ?? new List<RelationItem>()).Any(n => n != null && string.Equals(n.Game, gameId, StringComparison.OrdinalIgnoreCase)))
+                root = root + " (" + GameLabel(gameName, gameId) + ")";
+            return UniqueRelationName(root, existing);
+        }
+
+        // "Elite Dangerous (experimental)" -> "Elite Dangerous".
+        private static string GameLabel(string gameName, string gameId)
+        {
+            string name = (string.IsNullOrWhiteSpace(gameName) ? gameId ?? string.Empty : gameName).Trim();
+            const string experimental = " (experimental)";
+            return name.EndsWith(experimental, StringComparison.OrdinalIgnoreCase) ? name.Substring(0, name.Length - experimental.Length).Trim() : name;
         }
 
         private static string UniqueRelationName(string baseName, Dictionary<string, Relation> existing)

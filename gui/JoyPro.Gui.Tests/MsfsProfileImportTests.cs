@@ -25,6 +25,8 @@ public sealed class MsfsProfileImportTests : IDisposable
     private readonly string fixtures;
     // JOYPRO_FAKE_DEVICES of the engine runs (null: no device connected).
     private string? connectedDevices;
+    // More environment of the engine runs (test faults).
+    private readonly Dictionary<string, string> environment = new();
 
     public MsfsProfileImportTests()
     {
@@ -303,6 +305,89 @@ public sealed class MsfsProfileImportTests : IDisposable
         Assert.DoesNotContain(mfd + " JOY_BTN", store);
     }
 
+    // The 2.2.5 report (MSFS 2024 Store): the MFD Cougar panels still came in. His profile_00 (minimal form here): the
+    // rudder's category slot names its preset (with its display name) in the record of every aircraft; the MFD's slots
+    // are empty (flag 1, no file) in 3 records and name the preset only in the record of the last aircraft (A320neo,
+    // no display name, aircraft slot "TT:GENERIC.NONE"). Records that disagree: not imported (a step; the opt-in takes
+    // it). Also: a device that is not connected gets no "has 2 MSFS profiles" warning, and JoyPro's own preset that
+    // Windows cannot read (it lost its EFS encryption in a Store install) is read from JoyPro's copy with a warning.
+    [Fact]
+    public void Store2024_PresetsTheSimsRecordsDisagreeOn_AreNotImported_UnreadableOwnPresetFromJoyProsCopy()
+    {
+        (string home, _, string remote, string community) = SimDefaultsSetup();
+        string tpr = "T-Pendular-Rudder {0000DDDD-0000-4000-8000-000000000401}";
+        string mfd = "F16 MFD 1 {0000EEEE-0000-4000-8000-000000000501}";
+        string[] aircraft = ["asobo-aircraft-bonanza-g36", "asobo-aircraft-c172sp-as1000", "asobo-aircraft-208b-grand-caravan-ex", "microsoft-aircraft-a320neo"];
+        SimProfile00.Device rudder = new(Rudder, 0xB68F, null, null,
+            aircraft.Select(a => new SimProfile00.Rec(a, null, "t-pendular-rudder_2024_planes.xml", GeneralName: "TT:GENERIC.NONE", AirplaneName: "T-Pendular-Rudder 2024 Planes")).ToArray());
+        SimProfile00.Device panel = new(Mfd, 0xB351, null, null,
+            aircraft.Select(a => a.Contains("a320neo", StringComparison.Ordinal)
+                ? new SimProfile00.Rec(a, null, "mfd_cougar_left_2024_planes.xml", AircraftName: "TT:GENERIC.NONE")
+                : new SimProfile00.Rec(a, null, null, Flag: 1)).ToArray());
+        SimProfile00.Device throttle = new(Throttle, 0x019D, null, null,
+            aircraft.Select(a => new SimProfile00.Rec(a, "vmax_prime_throttle_2024_transversal.xml", "vmax_prime_throttle_2024_planes.xml")).ToArray());
+        WgsWriter.Write(StoreWgs(home, 2024), "Microsoft.Limitless_8wekyb3d8bbwe",
+            [new("PROFILE", [new("profile_00", SimProfile00.Build(rudder, panel, throttle), null)])]);
+        // An old stick that is not connected, with two profiles.
+        File.WriteAllBytes(Path.Combine(remote, "inputprofile_0000000303"), Fixture2024("old-cm3-stick.xml"));
+        File.WriteAllBytes(Path.Combine(remote, "inputprofile_0000000304"), Fixture2024("old-cm3-stick.xml"));
+        string profile = Path.Combine(root, "p.pr0file");
+
+        (int code, string output) = Engine(home, "--profile", profile, "msfs2024", "import", "--text");
+
+        Assert.True(code == 0, output);
+        Assert.Contains("The sim's device records (profile_00) were read from the Microsoft Store save", output);
+        Assert.Contains("T-Pendular-Rudder: no own MSFS profile, imported the sim's default preset 'T-Pendular-Rudder 2024 Planes' (Airplanes) (the sim's device records name it).", output);
+        Assert.Contains("KEY_AXIS_RUDDER_SET <- " + tpr + " JOY_Z", output);
+        Assert.Contains("F16 MFD 1: the sim's records of this device (one per aircraft) name its default preset 'MFD COUGAR Left 2024 Planes' (Airplanes) in only 1 of 4, so it is not known whether the sim uses it; not imported.", output);
+        Assert.DoesNotContain(mfd + " JOY_BTN", output);
+        Assert.Contains("VPC VMAX Prime Throttle: no own MSFS profile, imported the sim's default presets", output);
+        Assert.Contains("Profiles of 1 device(s) that are not connected were left out", output);
+        Assert.DoesNotContain("MSFS profiles; imported the most recently saved one", output);
+        // The relations are named after the actions, without the game in front.
+        (_, string relations) = Engine(home, "--profile", profile, "relations", "list", "--text");
+        Assert.DoesNotContain("Microsoft Flight Simulator 2024 ", relations.Split('\n').Select(l => l.Split('|')[0]).Aggregate("", (a, b) => a + b + "\n"));
+        string rudderRelation = relations.Split('\n').First(l => l.Contains(tpr + "::JOY_Z", StringComparison.OrdinalIgnoreCase)).Split('|')[0].Trim();
+        // A relation of another game with that name: the game in brackets.
+        string other = Path.Combine(root, "other.pr0file");
+        (int addCode, string add) = Engine(home, "--profile", other, "relations", "add", rudderRelation, "--axis", "--node", "MSFS2020:KEY_AXIS_RUDDER_SET", "--text");
+        Assert.True(addCode == 0, add);
+        Engine(home, "--profile", other, "msfs2024", "import", "--text");
+        (_, string otherRelations) = Engine(home, "--profile", other, "relations", "list", "--text");
+        Assert.Contains(rudderRelation + " (Microsoft Flight Simulator 2024) | type=axis | bind=" + tpr + "::JOY_Z", otherRelations, StringComparison.OrdinalIgnoreCase);
+
+        // On request the preset comes along, and the step says why it is not certain.
+        (_, string forced) = Engine(home, "msfs2024", "scan", "--include-sim-defaults", "--text");
+        Assert.Contains(mfd + " JOY_BTN", forced);
+        Assert.Contains("F16 MFD 1: no own MSFS profile, imported the sim's default preset 'MFD COUGAR Left 2024 Planes' (Airplanes) (--include-sim-defaults: the sim's records name it for 1 of 4 aircraft).", forced);
+
+        // JoyPro's package preset of the rudder (an export), which Windows then cannot read (409, like a file that
+        // lost its EFS encryption in a Store install): its binds come from JoyPro's copy.
+        (int exportCode, string export) = Engine(home, "--profile", profile, "msfs2024", "export", community, "--text");
+        Assert.True(exportCode == 0, export);
+        string preset = Assert.Single(Directory.GetFiles(Path.Combine(community, "joypro-input-profiles"), "JoyPro_T-Pendular-Rudder_*_2024_Planes.xml", SearchOption.AllDirectories));
+        string backups = Path.Combine(root, "data", "Backups", "MSFS");
+        Directory.CreateDirectory(backups);
+        string copy = Path.Combine(backups, Path.GetFileName(preset) + ".20261019-120000.jpbak");
+        File.Copy(preset, copy);
+        environment["JOYPRO_TEST_FAULT_ENCRYPTION"] = "read:409:" + Path.GetFileName(preset);
+        (int readCode, string read) = Engine(home, "msfs2024", "scan", "--text");
+        Assert.True(readCode == 0, read);
+        Assert.Contains("JoyPro's MSFS 2024 preset 'T-Pendular-Rudder (Planes)' cannot be read: the sim keeps its data encrypted (EFS) on this PC", read);
+        Assert.Contains("Its binds were imported from JoyPro's copy of", read);
+        Assert.DoesNotContain("Could not read the MSFS input profile", read);
+        // The copy is the rudder's own preset: no default needed.
+        Assert.DoesNotContain("T-Pendular-Rudder: no own MSFS profile", read);
+        Assert.Contains("KEY_AXIS_RUDDER_SET <- " + tpr + " JOY_Z", read);
+
+        // Without a copy: the warning says what to do, and the device is on the sim's default again.
+        foreach (string backup in Directory.GetFiles(backups, Path.GetFileName(preset) + ".*.jpbak"))
+            File.Delete(backup);
+        (_, string lost) = Engine(home, "msfs2024", "scan", "--text");
+        Assert.Contains("JoyPro has no readable copy of it, so its binds were not imported. Import with 'Merge into profile' (not --replace)", lost);
+        Assert.Contains("KEY_AXIS_RUDDER_SET <- " + tpr + " JOY_Z", lost);
+    }
+
     private static readonly Guid Rudder = new("0000DDDD-0000-4000-8000-000000000401");
     private static readonly Guid Throttle = new("0000CCCC-0000-4000-8000-000000000301");
     private static readonly Guid Mfd = new("0000EEEE-0000-4000-8000-000000000501");
@@ -335,7 +420,12 @@ public sealed class MsfsProfileImportTests : IDisposable
     // the preset file or hold a 0 byte; a short checksum at the end.
     internal static class SimProfile00
     {
-        internal sealed record Device(Guid Guid, int ProductId, string? General, string? Airplane);
+        // One record per aircraft (Records), or one record for the C172 (General / Airplane).
+        internal sealed record Device(Guid Guid, int ProductId, string? General, string? Airplane, Rec[]? Records = null);
+
+        // A record of one aircraft: the file names of its slots, the slot flag (the sim wrote 1 with an empty file for a
+        // tester's MFDs) and the display names the sim noted ("TT:GENERIC.NONE" for an aircraft slot set to none).
+        internal sealed record Rec(string Aircraft, string? General, string? Airplane, int Flag = -1, string? GeneralName = null, string? AirplaneName = null, string? AircraftName = null);
 
         private static byte[] H(string hex) => Convert.FromHexString(hex);
 
@@ -363,15 +453,15 @@ public sealed class MsfsProfileImportTests : IDisposable
 
         private static byte[] Byte0(string hash) => Node(hash, new byte[] { 0 });
 
-        private static byte[][] DeviceFields(Device d, string? preset) =>
+        private static byte[][] DeviceFields(Device d, string? preset, int flag = -1, string? name = null) =>
         [
             Int("c5e29153ab70ce33", 1),
             Int("9c6a107054980963", d.ProductId),
             Int("419c4be1028db14a", 0),
             Text("e494a07827809546", "{" + d.Guid.ToString().ToUpperInvariant() + "}"),
-            Int("00d10becc027d54f", preset == null ? 0 : 1),
+            Int("00d10becc027d54f", flag >= 0 ? flag : preset == null ? 0 : 1),
             preset == null ? Byte0("e5374a443ee0986e") : Text("e5374a443ee0986e", preset),
-            Byte0("877ddf5aa523fd04"),
+            name == null ? Byte0("877ddf5aa523fd04") : Text("877ddf5aa523fd04", name),
             Byte0("6a076b4c6e9f3687")
         ];
 
@@ -381,12 +471,15 @@ public sealed class MsfsProfileImportTests : IDisposable
             List<byte[]> records = new();
             foreach (Device d in devices)
             {
-                List<byte[]> fields = DeviceFields(d, null).ToList();
-                fields.Add(Text("6ef48b11820c125d", "asobo-aircraft-c172sp-as1000"));
-                fields.Add(Container("ae7f5b37a56a781c", DeviceFields(d, d.General)));
-                fields.Add(Container("8b57821791389404", DeviceFields(d, d.Airplane).Append(Text("dd0e07ae6ad0a4fc", "AIRPLANE")).ToArray()));
-                fields.Add(Container("6bc4c835749736a7", DeviceFields(d, null).Append(Text("6ef48b11820c125d", "asobo-aircraft-c172sp-as1000")).ToArray()));
-                records.Add(Container("82547a6384e0e31a", fields.ToArray()));
+                foreach (Rec r in d.Records ?? [new Rec("asobo-aircraft-c172sp-as1000", d.General, d.Airplane)])
+                {
+                    List<byte[]> fields = DeviceFields(d, null).ToList();
+                    fields.Add(Text("6ef48b11820c125d", r.Aircraft));
+                    fields.Add(Container("ae7f5b37a56a781c", DeviceFields(d, r.General, r.Flag, r.GeneralName)));
+                    fields.Add(Container("8b57821791389404", DeviceFields(d, r.Airplane, r.Flag, r.AirplaneName).Append(Text("dd0e07ae6ad0a4fc", "AIRPLANE")).ToArray()));
+                    fields.Add(Container("6bc4c835749736a7", DeviceFields(d, null, 0, r.AircraftName).Append(Text("6ef48b11820c125d", r.Aircraft)).ToArray()));
+                    records.Add(Container("82547a6384e0e31a", fields.ToArray()));
+                }
             }
             byte[] tree = Container("94438d991bb0815f",
                 Int("4794bad805765141", 0),
@@ -579,6 +672,8 @@ public sealed class MsfsProfileImportTests : IDisposable
         if (connectedDevices == null && !File.Exists(devicesFile))
             File.WriteAllText(devicesFile, "# no device connected\r\n");
         info.Environment["JOYPRO_FAKE_DEVICES"] = devicesFile;
+        foreach (KeyValuePair<string, string> variable in environment)
+            info.Environment[variable.Key] = variable.Value;
         using Process process = Process.Start(info)!;
         System.Threading.Tasks.Task<string> stderr = process.StandardError.ReadToEndAsync();
         string stdout = process.StandardOutput.ReadToEnd();

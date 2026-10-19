@@ -44,13 +44,13 @@ try {
     # Import: the curves become the relations' X-Plane tuning; the round trip leaves the file byte-identical.
     $xpcImport = Run-Engine @("--profile", $xpcProfile, "xplane12", "import", $xpcPrf, "--text")
     Assert-True ($xpcImport.ExitCode -eq 0) "xplane import of the curves fixture failed."
-    $xpcRollShow = Run-Engine @("--profile", $xpcProfile, "binds", "tuning", "show", "X-Plane 12 Roll", "--text")
+    $xpcRollShow = Run-Engine @("--profile", $xpcProfile, "binds", "tuning", "show", "Roll", "--text")
     Assert-Match $xpcRollShow.Output "game:XPlane12: .*n\.cpN=3;.*n\.cpx1=0\.403005;.*n\.cpy1=0\.299401;.*n\.interp=1" "xplane import should store the roll curve's stops and CATMULL_ROM as game:XPlane tuning."
-    $xpcTillerShow = Run-Engine @("--profile", $xpcProfile, "binds", "tuning", "show", "X-Plane 12 Nosewheel tiller", "--text")
+    $xpcTillerShow = Run-Engine @("--profile", $xpcProfile, "binds", "tuning", "show", "Nosewheel tiller", "--text")
     Assert-Match $xpcTillerShow.Output "game:XPlane12: .*n\.cpx1=0\.159836;.*n\.interp=2" "xplane import should store the tiller's CUBIC_AVG curve."
-    $xpcPropShow = Run-Engine @("--profile", $xpcProfile, "binds", "tuning", "show", "X-Plane 12 Prop", "--text")
+    $xpcPropShow = Run-Engine @("--profile", $xpcProfile, "binds", "tuning", "show", "Prop", "--text")
     Assert-Match $xpcPropShow.Output "game:XPlane12: inv=0;sl=1;.*n\.rangePt0=5;n\.rangePt1=10;n\.rangePt2=15;n\.rangeType=2" "xplane import should store the prop's feather range (one-sided axis)."
-    $xpcPitchShow = Run-Engine @("--profile", $xpcProfile, "binds", "tuning", "show", "X-Plane 12 Pitch", "--text")
+    $xpcPitchShow = Run-Engine @("--profile", $xpcProfile, "binds", "tuning", "show", "Pitch", "--text")
     Assert-NotMatch $xpcPitchShow.Output "game:XPlane12" "xplane import must not store a tuning for an axis without a curve."
     $xpcRoundTrip = Run-Engine @("--profile", $xpcProfile, "xplane12", "export", $xpcPrf, "--text")
     Assert-True ($xpcRoundTrip.ExitCode -eq 0) "xplane export after the curves import failed."
@@ -60,33 +60,33 @@ try {
     Assert-NotMatch $xpcOwnership '"curve:29"' "xplane import must not take over the curve of a view axis."
 
     # Preview = X-Plane's interpolation: the stops themselves, CATMULL_ROM through them, symmetric on centred axes.
-    $xpcRollPreview = Get-XpcPreview "X-Plane 12 Roll" "XPlane12" 201
+    $xpcRollPreview = Get-XpcPreview "Roll" "XPlane12" 201
     Assert-True ([Math]::Abs($xpcRollPreview[200] - 1.0) -lt 1e-9 -and [Math]::Abs($xpcRollPreview[100]) -lt 1e-9) "xplane roll preview must run from 0 at the centre to 1."
     Assert-True ([Math]::Abs($xpcRollPreview[60] + $xpcRollPreview[140]) -lt 1e-9) "xplane roll preview must be symmetric on a centred axis."
-    $xpcTillerPreview = Get-XpcPreview "X-Plane 12 Nosewheel tiller" "XPlane12" 201
+    $xpcTillerPreview = Get-XpcPreview "Nosewheel tiller" "XPlane12" 201
     Assert-True ([Math]::Abs($xpcTillerPreview[150] - 0.25) -lt 1e-9) "xplane tiller preview must pass through its stop (0.5, 0.25)."
 
     # The spline modes against values measured in X-Plane 12.4 (tools\e2e\games\XPlaneCurves.ps1, 2026-10-05).
-    $null = Run-Engine @("--profile", $xpcProfile, "binds", "tuning", "set", "X-Plane 12 Pitch", "--scope", "game:XPlane12", "--curve-points", "0:0,0.12:0.57,0.4:0.74,0.52:0.79,1:1", "--param", "interp=1", "--text")
-    $xpcCatmull = Get-XpcPreview "X-Plane 12 Pitch" "XPlane12" 21
+    $null = Run-Engine @("--profile", $xpcProfile, "binds", "tuning", "set", "Pitch", "--scope", "game:XPlane12", "--curve-points", "0:0,0.12:0.57,0.4:0.74,0.52:0.79,1:1", "--param", "interp=1", "--text")
+    $xpcCatmull = Get-XpcPreview "Pitch" "XPlane12" 21
     Assert-True ([Math]::Abs($xpcCatmull[11] - 0.491594) -lt 1e-4 -and [Math]::Abs($xpcCatmull[15] - 0.773788) -lt 1e-4) "xplane CATMULL_ROM preview must match X-Plane's measured values."
-    $null = Run-Engine @("--profile", $xpcProfile, "binds", "tuning", "set", "X-Plane 12 Pitch", "--scope", "game:XPlane12", "--curve-points", "0:0,0.33:0.1,0.66:0.29,0.95:0.87,1:1", "--param", "interp=2", "--text")
-    $xpcCubic = Get-XpcPreview "X-Plane 12 Pitch" "XPlane12" 21
+    $null = Run-Engine @("--profile", $xpcProfile, "binds", "tuning", "set", "Pitch", "--scope", "game:XPlane12", "--curve-points", "0:0,0.33:0.1,0.66:0.29,0.95:0.87,1:1", "--param", "interp=2", "--text")
+    $xpcCubic = Get-XpcPreview "Pitch" "XPlane12" 21
     Assert-True ([Math]::Abs($xpcCubic[11] - 0.012705) -lt 1e-4 -and [Math]::Abs($xpcCubic[15] - 0.162185) -lt 1e-4) "xplane CUBIC_AVG preview must match X-Plane's measured values."
 
     # An explicit curve set with --curve-points is written on the axis's index (pitch = stick Y = axis 1), LINEAR exact.
-    $xpcSetPitch = Run-Engine @("--profile", $xpcProfile, "binds", "tuning", "set", "X-Plane 12 Pitch", "--scope", "game:XPlane12", "--curve-points", "0:0,0.5:0.2,1:1", "--param", "interp=0", "--text")
+    $xpcSetPitch = Run-Engine @("--profile", $xpcProfile, "binds", "tuning", "set", "Pitch", "--scope", "game:XPlane12", "--curve-points", "0:0,0.5:0.2,1:1", "--param", "interp=0", "--text")
     Assert-True ($xpcSetPitch.ExitCode -eq 0) "binds tuning set --curve-points for X-Plane pitch failed."
-    $xpcPitchPreview = Get-XpcPreview "X-Plane 12 Pitch" "XPlane12" 5
+    $xpcPitchPreview = Get-XpcPreview "Pitch" "XPlane12" 5
     Assert-True ([Math]::Abs($xpcPitchPreview[3] - 0.2) -lt 1e-9 -and [Math]::Abs($xpcPitchPreview[1] + 0.2) -lt 1e-9) "xplane LINEAR preview must hit the stop 0.5 -> 0.2 on both sides."
     # Roll becomes CUBIC_AVG (the stops stay); prop CATMULL_ROM with its feather range kept.
-    $null = Run-Engine @("--profile", $xpcProfile, "binds", "tuning", "set", "X-Plane 12 Roll", "--scope", "game:XPlane12", "--param", "interp=2", "--text")
-    $null = Run-Engine @("--profile", $xpcProfile, "binds", "tuning", "set", "X-Plane 12 Prop", "--scope", "game:XPlane12", "--param", "interp=1", "--text")
+    $null = Run-Engine @("--profile", $xpcProfile, "binds", "tuning", "set", "Roll", "--scope", "game:XPlane12", "--param", "interp=2", "--text")
+    $null = Run-Engine @("--profile", $xpcProfile, "binds", "tuning", "set", "Prop", "--scope", "game:XPlane12", "--param", "interp=1", "--text")
     # Yaw has no X-Plane tuning: the base (dead zone 0.1, curvature 0.3) is fitted as LINEAR stops.
-    $xpcYawBase = Run-Engine @("--profile", $xpcProfile, "binds", "set", "X-Plane 12 Yaw", "--deadzone", "0.1", "--curvature", "0.3", "--text")
+    $xpcYawBase = Run-Engine @("--profile", $xpcProfile, "binds", "set", "Yaw", "--deadzone", "0.1", "--curvature", "0.3", "--text")
     Assert-True ($xpcYawBase.ExitCode -eq 0) "binds set of the X-Plane yaw base failed."
-    $xpcYawXp = Get-XpcPreview "X-Plane 12 Yaw" "XPlane12" 201
-    $xpcYawDcs = Get-XpcPreview "X-Plane 12 Yaw" "DCS" 201
+    $xpcYawXp = Get-XpcPreview "Yaw" "XPlane12" 201
+    $xpcYawDcs = Get-XpcPreview "Yaw" "DCS" 201
     $xpcYawErr = 0.0
     for ($i = 0; $i -lt 201; $i++) { $xpcYawErr = [Math]::Max($xpcYawErr, [Math]::Abs($xpcYawXp[$i] - $xpcYawDcs[$i])) }
     Assert-True ($xpcYawErr -le 0.0015) ("xplane fit of the base curve must stay within 0.0015 of DCS's curve (max difference " + $xpcYawErr.ToString("0.000000", $xpcInv) + ").")
@@ -94,7 +94,7 @@ try {
     $xpcCopilot = Run-Engine @("--profile", $xpcProfile, "relations", "add", "XP Copilot pitch", "--axis", "--node", "XPlane12:axis/copilot_pitch", "--device", $xpcStick, "--input", "JOY_RZ", "--text")
     Assert-True ($xpcCopilot.ExitCode -eq 0) "relations add for X-Plane copilot pitch failed."
     # A fixed range that does not belong to the axis (mixture cutoff on the throttle) is not written.
-    $null = Run-Engine @("--profile", $xpcProfile, "binds", "tuning", "set", "X-Plane 12 Throttle", "--scope", "game:XPlane12", "--param", "rangeType=3", "--param", "rangePt0=10", "--text")
+    $null = Run-Engine @("--profile", $xpcProfile, "binds", "tuning", "set", "Throttle", "--scope", "game:XPlane12", "--param", "rangeType=3", "--param", "rangePt0=10", "--text")
     # Control settings: control response pitch / copilot roll, control-loaded pedals. Stability augmentation is X-Plane 11 only.
     $xpcFfbStability = Run-Engine @("--profile", $xpcProfile, "ffb", "set", "--device", "*", "--game", "XPlane12", "--param", "pitchStability=0.5", "--text")
     Assert-True ($xpcFfbStability.ExitCode -ne 0) "ffb set must refuse the X-Plane 11 stability augmentation for X-Plane 12."
@@ -131,14 +131,14 @@ try {
     [System.IO.File]::WriteAllText($xpcPrf, ($xpcAfter -replace "(?m)^axis_response_curve0 .*$", ("axis_response_curve0 " + $xpcUserCurve)))
     $xpcMerge = Run-Engine @("--profile", $xpcProfile, "xplane12", "export", $xpcPrf, "--mode", "merge", "--text")
     Assert-True ($xpcMerge.ExitCode -eq 0) "xplane merge export failed."
-    Assert-Match $xpcMerge.Output "X-Plane 12 Roll.*response curve made in X-Plane; merge keeps it" "xplane merge must keep a curve changed in X-Plane."
+    Assert-Match $xpcMerge.Output "Roll.*response curve made in X-Plane; merge keeps it" "xplane merge must keep a curve changed in X-Plane."
     Assert-True ((Get-XpcLine ([System.IO.File]::ReadAllText($xpcPrf)) "axis_response_curve0") -eq $xpcUserCurve) "xplane merge must leave the changed curve as it is."
     $xpcOverwrite = Run-Engine @("--profile", $xpcProfile, "xplane12", "export", $xpcPrf, "--text")
-    Assert-Match $xpcOverwrite.Output "X-Plane 12 Roll.*replaced the response curve made in X-Plane" "xplane merge-overwrite should report the replaced curve."
+    Assert-Match $xpcOverwrite.Output "Roll.*replaced the response curve made in X-Plane" "xplane merge-overwrite should report the replaced curve."
     Assert-Match (Get-XpcLine ([System.IO.File]::ReadAllText($xpcPrf)) "axis_response_curve0") "^INTERP_MODE CUBIC_AVG " "xplane merge-overwrite should write JoyPro's roll curve."
 
     # Linear again: JoyPro's own curve is removed (the pitch curve JoyPro wrote).
-    $xpcLinear = Run-Engine @("--profile", $xpcProfile, "binds", "tuning", "set", "X-Plane 12 Pitch", "--scope", "game:XPlane12", "--curve-points", "none", "--text")
+    $xpcLinear = Run-Engine @("--profile", $xpcProfile, "binds", "tuning", "set", "Pitch", "--scope", "game:XPlane12", "--curve-points", "none", "--text")
     Assert-True ($xpcLinear.ExitCode -eq 0) "binds tuning set --curve-points none failed."
     $xpcLinearExport = Run-Engine @("--profile", $xpcProfile, "xplane12", "export", $xpcPrf, "--text")
     Assert-True ($xpcLinearExport.ExitCode -eq 0) "xplane export with a linear pitch failed."
@@ -147,10 +147,10 @@ try {
     Assert-True ((Get-XpcLine $xpcFinal "axis_response_curve2") -eq (Get-XpcLine $xpcOriginal "axis_response_curve2")) "xplane export must still keep the curve made in X-Plane."
 
     # Editing the dead zone of an imported curve replaces its stops (the GUI's fields define the curve then).
-    $xpcTillerEdit = Run-Engine @("--profile", $xpcProfile, "binds", "tuning", "set", "X-Plane 12 Nosewheel tiller", "--scope", "game:XPlane12", "--deadzone", "0.2", "--text")
+    $xpcTillerEdit = Run-Engine @("--profile", $xpcProfile, "binds", "tuning", "set", "Nosewheel tiller", "--scope", "game:XPlane12", "--deadzone", "0.2", "--text")
     Assert-True ($xpcTillerEdit.ExitCode -eq 0) "binds tuning set --deadzone for the X-Plane tiller failed."
     Assert-NotMatch $xpcTillerEdit.Output "n\.cpN=" "a changed dead zone must replace the imported stops."
-    $xpcTillerAfter = Get-XpcPreview "X-Plane 12 Nosewheel tiller" "XPlane12" 11
+    $xpcTillerAfter = Get-XpcPreview "Nosewheel tiller" "XPlane12" 11
     Assert-True ([Math]::Abs($xpcTillerAfter[6]) -lt 1e-9 -and $xpcTillerAfter[10] -gt 0.99) "the tiller's new curve must start with the 0.2 dead zone."
 }
 finally {
@@ -175,7 +175,7 @@ try {
     Assert-NotMatch $xp11Scan.Output "axis/copilot_pitch" "xplane11 scan must not read an X-Plane 12 axis use (copilot pitch)."
     $xp11Import = Run-Engine @("--profile", $xp11Profile, "xplane11", "import", $xp11Prf, "--text")
     Assert-True ($xp11Import.ExitCode -eq 0) "xplane11 import failed."
-    $xp11Roll = Run-Engine @("--profile", $xp11Profile, "binds", "tuning", "show", "X-Plane 11 Roll", "--text")
+    $xp11Roll = Run-Engine @("--profile", $xp11Profile, "binds", "tuning", "show", "Roll", "--text")
     Assert-Match $xp11Roll.Output "game:XPlane11: .*n\.cpN=3;.*n\.interp=1" "xplane11 import should store the roll curve as game:XPlane11 tuning."
     $xp11Copilot = Run-Engine @("--profile", $xp11Profile, "relations", "add", "XP11 Copilot pitch", "--axis", "--node", "XPlane11:axis/copilot_pitch", "--device", "Smoke Stick {11111111-2222-3333-4444-555555555555}", "--input", "JOY_Y", "--text")
     Assert-True ($xp11Copilot.ExitCode -eq 0) "relations add for an X-Plane 11 copilot pitch node failed."

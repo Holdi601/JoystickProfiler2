@@ -66,6 +66,24 @@ path). The watcher's records (`<data>\Sync\MSFS.json`) are not carried over; the
     the JoyPro profile; earlier copies are in JoyPro's backups). New preset files are written into the folder and take
     its mark. Everything done is logged (`MSFS` log area). Not verified on a real Store install on a second drive (no
     such PC); the simulated EFS states are covered by `SafeFileIoTests`, real EFS by the opt-in `JOYPRO_TEST_REAL_EFS=1`.
+  - **When Windows cannot EFS-encrypt a folder (2.2.5 report, MSFS 2024 Store):** `File.Encrypt` (EFS) failed on every
+    package folder with "The request is not supported.", so each export deleted the unreadable presets and wrote them
+    again into folders without the EFS mark: plain again, unreadable again (409) for the sim and JoyPro (the export
+    then found "no MSFS profile of device ..."). The preset files made while the folders still had the EFS mark stayed
+    readable, so a new file or folder made in an EFS-encrypted folder takes its EFS mark there. Now such a folder is
+    made again (`SafeFileIo.RebuildFolder`): a new folder beside it (checked: it must carry the EFS mark, else nothing
+    changes), EFS-encrypted files moved over (they keep their EFS mark), readable plain ones written into it, unreadable
+    ones moved out of the way as before, then the new folder takes the old name. Files in a folder without the EFS
+    mark are no longer deleted and written again (it would not help). What still fails is a warning that says to delete
+    the package folder with the sim closed and export again (EFS: the folder made then takes the Community folder's mark).
+    The step "encrypted (EFS) again" counts only what worked. Test: `SafeFileIoTests.MatchFolderEncryption_FoldersWindowsCannotEncrypt_AreMadeAgain`.
+  - **Import of an own preset Windows cannot read (EFS, 409):** the import first tries `File.Encrypt` (EFS) on it; else it
+    reads JoyPro's newest readable copy (`<data>\Backups\MSFS\<file>.<time>.jpbak`, made by an export before it writes
+    the file, or `<data>\Backups\MSFS\package-<time>\<file>`) with a warning: the sim does not use the file either (no
+    EFS mark), the binds come from the copy, export once to write it again. Without a copy the warning says that its
+    binds were not imported and to import with "Merge into profile" (not `--replace`), then export. The device is not
+    taken as "no own profile" when the copy was read (no default preset over it). Test fault:
+    `JOYPRO_TEST_FAULT_ENCRYPTION=read:409:<file name>`; test `MsfsProfileImportTests.Store2024_PresetsTheSimsRecordsDisagreeOn_AreNotImported_UnreadableOwnPresetFromJoyProsCopy`.
   - Product ID: the one the sim noted for the device in profile_00 (read only), else the USB PID. The sim sees vJoy
     as product ID 0 (not 0xBEAD); real sticks match their USB PID (WINWING 0xBE04, VKB 0x0125).
   - Axis settings go into each action as a per-action override (flag 4096 + `<Axis/>`): the sim ignores a preset's
@@ -95,6 +113,13 @@ path). The watcher's records (`<data>\Sync\MSFS.json`) are not carried over; the
     composite ID `419c4be1028db14a`, preset file `e5374a443ee0986e`, category `dd0e07ae6ad0a4fc`, aircraft
     `6ef48b11820c125d`; slots `ae7f5b37a56a781c` (general), `8b57821791389404` (category), `6bc4c835749736a7`
     (aircraft) inside a record that carries the device fields itself. The file ends with 5 bytes after the tree.
+  - more fields (a tester's Store profile_00, 2026-10-19): slot flag `00d10becc027d54f` (0 none, 1 shipped preset, 3
+    own profile: the preset field then holds `inputprofile_<n>` and the name field its name), display name
+    `877ddf5aa523fd04` (the preset's name, "TT:GENERIC.NONE" for none; often empty, also for the keyboard on the test
+    PC's Steam copy, so it is not used), aircraft path `a8df1050ac9f14e5`. Under the root container `a532ec6925941962`:
+    `a46c8bf66a7db8ce` (per device a general entry), `4f1fd58aaa70b44e` (per device and category), `7af6b80fdb235d3f`
+    (per device and aircraft) all with empty preset fields on both PCs, and `a9281cff465213e7` (the records, one per
+    device and aircraft configuration). Old device instance GUIDs keep their records.
 - **2024 in-game observations** (Steam, 2026-10-10, menus only):
   - The Steam `remote` folder holds only `profile_00`, `localprofile` and `datausage` (binary), and no `inputprofile_*`, until a preset exists. No XML profiles under `%APPDATA%\Microsoft Flight Simulator 2024`.
   - A device without a preset (vJoy) shows no preset selector and no preset gear. Its device gear only offers Rename / Deactivate / Hardware Settings, so there is nothing to export until one bind creates a preset.
@@ -178,23 +203,45 @@ import|scan`, GUI import wizard) read what the user set up in the sim (`engine\G
   preset the sim applies, in lower case (`keyboard_2024_planes.xml`, `mouse_2024_transversal.xml`), or a 0 byte; a
   flag beside it is 1 when a preset is set. On the test PC's Steam profile_00 the keyboard and mouse slots name their
   presets in 52 airplane / 61 transversal records, the slots of the 13 joysticks (none with a shipped preset) are all
-  empty. Rule (`MsfsSimProfile.cs`, `MsfsSimDefaults.ForConnectedDevices`):
-  - the device has slots in profile_00: the shipped preset whose file name a slot holds is imported (the one most
-    slots name; also an alternative the user picked in the sim); slots that name none: no import, and when the device
-    has a shipped preset a step says so ("F16 MFD 1: the sim has a default preset 'MFD COUGAR Left 2024 Planes'
-    (Airplanes) but does not use it ...");
-  - no slots of the device (no profile_00 found, a format JoyPro cannot read): unknown, not imported, a step names the
+  empty.
+  **2.2.5 report (same tester, Store):** the MFDs still came in, because one record named their presets. His
+  profile_00 (read only, copy): the current T-Pendular-Rudder (044F:B68F) has 4 records (Bonanza G36, C172 cargo,
+  C172 passengers, A320neo), the category slot of every one names `t-pendular-rudder_2024_planes.xml` with the display
+  name "T-Pendular-Rudder 2024 Planes", general slot none ("TT:GENERIC.NONE": no Transversal preset), aircraft slot
+  none. F16 MFD 1 (B351) and MFD 2 (B352) have 4 records each: in 3 the general (MFD 1) and category slots carry flag 1
+  with an empty file (a state seen nowhere else, also not on the test PC), only the A320neo record names
+  `mfd_cougar_left_2024_transversal.xml` / `mfd_cougar_left_2024_planes.xml` (MFD 2: `mfd_cougar_right_2024_planes.xml`)
+  without a display name, its aircraft slot "TT:GENERIC.NONE". The per-device entries outside the records are empty
+  for all three (also for the keyboard on the test PC, which runs on its preset), and "TT:GENERIC.NONE" in an
+  aircraft slot also sits beside the VMAX throttle's own profile that the sim uses, so neither marks "none". The
+  sim does not use the MFD presets (no binds in Controls), so a preset counts only when the records agree.
+  Rule (`MsfsSimProfile.cs` records, `MsfsSimDefaults.ForConnectedDevices` / `Votes`):
+  - per device and category the records vote: General = the general slot of every record; Airplanes = of the records
+    with category AIRPLANE the aircraft slot when it names a file, else the category slot (2020: the first slot that
+    names one);
+  - all name the same shipped preset: imported (also an alternative the user picked in the sim);
+  - none names one: no import, and when the device has a shipped preset a step says so ("F16 MFD 1: the sim has a
+    default preset 'MFD COUGAR Left 2024 Planes' (Airplanes) but does not use it ...");
+  - some do, some do not (or different ones): not known, not imported, a step: "F16 MFD 1: the sim's records of this
+    device (one per aircraft) name its default preset 'MFD COUGAR Left 2024 Planes' (Airplanes) in only 1 of 4, ...";
+    `--include-sim-defaults` takes the one most records name ("(--include-sim-defaults: the sim's records name it
+    for 1 of 4 aircraft)"). On his copy: the rudder's preset is imported, the MFDs get nothing.
+  - no records of the device or none of that category (no profile_00 found, a format JoyPro cannot read): unknown, not imported, a step names the
     preset and the opt-in: `--include-sim-defaults` (GUI: "Also import default presets the sim may not use" beside
     "Also import devices that are not connected", import wizard and Other Games page, remembered in
     `export-settings.json`), which takes the Primary preset of the product ID as before. The opt-in never overrides
-    slots that name no preset.
+    records that all name no preset.
   - profile_00 sources: `<Steam>\userdata\<id>\<app>\remote\profile_00` and every blob of the Store save folder whose
     content (plain or zlib/gzip-compressed) is the same tree (a step says which were read). The Store blob was not
     checked against a real Store install (none on a test PC): the tester's TPR keeps its preset by default only if his
     Store profile_00 is found and names it; otherwise the opt-in brings it back.
   Tests: `MsfsProfileImportTests.Steam2024_DevicesOnTheSimsDefaultPreset_AreImported` (rudder and throttle named,
-  MFD slots empty) and `..._WithoutTheSimsRecords_DefaultPresetsOnlyOnRequest_StoreRecordsAreRead` (profile_00 built
-  like the sim's, also as a compressed Store blob).
+  MFD slots empty), `..._WithoutTheSimsRecords_DefaultPresetsOnlyOnRequest_StoreRecordsAreRead` (profile_00 built
+  like the sim's, also as a compressed Store blob) and `Store2024_PresetsTheSimsRecordsDisagreeOn_AreNotImported_...`
+  (the 2.2.5 records in minimal form: 4 aircraft, rudder named in all, MFD in 1).
+- **Skipped devices:** the profiles of devices that are not connected are left out before JoyPro picks one profile per
+  device, so "Device 'VPC CM3 Throttle' has 2 MSFS profiles; imported the most recently saved one" no longer appears
+  for a device that was not imported (2.2.5 report).
 - A tester's case as a test (`MsfsProfileImportTests.Steam2024_GeneralBindsAreImported_...`): VPC VMAX Prime Throttle
   with flaps / throttle 1 / throttle 2 axes (airplanes) and cockpit view zoom axis, reset / toggle cockpit view, toggle
   external view and active pause (General), plus an old MT-50CM3 stick that is not connected.

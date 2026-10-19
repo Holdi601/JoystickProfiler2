@@ -59,9 +59,9 @@ try {
     # Import and round trip.
     $fsxImport = Run-Engine @("--profile", $fsxProfile, "fsx", "import", $fsxFile, "--include-keyboard", "--text")
     Assert-True ($fsxImport.ExitCode -eq 0) ("fsx import failed: " + $fsxImport.Output)
-    $fsxAileron = Run-Engine @("--profile", $fsxProfile, "binds", "tuning", "show", "Microsoft Flight Simulator X Ailerons (roll) axis", "--game", "FSX", "--text")
+    $fsxAileron = Run-Engine @("--profile", $fsxProfile, "binds", "tuning", "show", "Ailerons (roll) axis", "--game", "FSX", "--text")
     Assert-Match $fsxAileron.Output "game:FSX: inv=0;.*n\.nullZone=36;n\.scale=64" ("import should store AxScale/AxNull as the FSX tuning: " + $fsxAileron.Output)
-    $fsxThrottle = Run-Engine @("--profile", $fsxProfile, "binds", "tuning", "show", "Microsoft Flight Simulator X Throttle axis (all engines)", "--game", "FSX", "--text")
+    $fsxThrottle = Run-Engine @("--profile", $fsxProfile, "binds", "tuning", "show", "Throttle axis (all engines)", "--game", "FSX", "--text")
     Assert-Match $fsxThrottle.Output "game:FSX: inv=1;.*n\.nullZone=1;n\.scale=127" ("a negative AxScale should import as an inverted axis: " + $fsxThrottle.Output)
     $fsxRound = Run-Engine @("--profile", $fsxProfile, "fsx", "export", $fsxFile, "--include-keyboard", "--text")
     Assert-True ($fsxRound.ExitCode -eq 0) ("fsx export after import failed: " + $fsxRound.Output)
@@ -89,7 +89,7 @@ try {
     Assert-True (Test-Path ($fsxFile + ".jpbak")) "the FSX export should back up Standard.XML."
 
     # Merge-overwrite: the profile wins; sensitivity and null zone go into the axis block.
-    $fsxTune = Run-Engine @("--profile", $fsxProfile, "binds", "tuning", "set", "Microsoft Flight Simulator X Ailerons (roll) axis", "--scope", "game:FSX", "--param", "scale=100", "--param", "nullZone=10", "--text")
+    $fsxTune = Run-Engine @("--profile", $fsxProfile, "binds", "tuning", "set", "Ailerons (roll) axis", "--scope", "game:FSX", "--param", "scale=100", "--param", "nullZone=10", "--text")
     Assert-True ($fsxTune.ExitCode -eq 0) ("binds tuning set for game:FSX failed: " + $fsxTune.Output)
     $fsxOver = Run-Engine @("--profile", $fsxProfile, "fsx", "export", $fsxFile, "--mode", "merge-overwrite", "--text")
     Assert-True ($fsxOver.ExitCode -eq 0) ("fsx merge-overwrite export failed: " + $fsxOver.Output)
@@ -99,7 +99,7 @@ try {
     Assert-Match $fsxStickMap "<Down>BRAKES</Down>\n\s*<DownRpt>1</DownRpt>" "untouched blocks keep their <DownRpt>."
 
     # Clean: the written devices keep only the profile's binds; slew, keyboard and unknown devices stay.
-    $fsxDelete = Run-Engine @("--profile", $fsxProfile, "relations", "mass", "delete", "--relation", "Microsoft Flight Simulator X Brakes (both)", "--text")
+    $fsxDelete = Run-Engine @("--profile", $fsxProfile, "relations", "mass", "delete", "--relation", "Brakes (both)", "--text")
     Assert-True ($fsxDelete.ExitCode -eq 0) ("relations mass delete failed: " + $fsxDelete.Output)
     $fsxClean = Run-Engine @("--profile", $fsxProfile, "fsx", "export", $fsxFile, "--mode", "clean", "--text")
     Assert-True ($fsxClean.ExitCode -eq 0) ("fsx clean export failed: " + $fsxClean.Output)

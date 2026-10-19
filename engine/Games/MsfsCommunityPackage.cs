@@ -99,9 +99,15 @@ namespace JoyPro.Engine.Games
             }
             foreach (string line in done)
                 JoyPro.Logging.JoyProLog.Info("MSFS", "Package encryption: " + line);
-            if (done.Count > 0)
-                result.Steps.Add("JoyPro's package is encrypted again like the Community folder it is in (" + done.Count.ToString(CultureInfo.InvariantCulture) +
+            List<string> failed = done.Where(d => d.StartsWith("could not", StringComparison.Ordinal)).ToList();
+            int repaired = done.Count - failed.Count - lost.Count;
+            if (repaired > 0)
+                result.Steps.Add("JoyPro's package is encrypted (EFS) again like the Community folder it is in (" + repaired.ToString(CultureInfo.InvariantCulture) +
                                  " file(s) or folder(s); MSFS keeps its data encrypted on this drive).");
+            if (failed.Count > 0)
+                result.Warnings.Add("JoyPro could not encrypt (EFS) " + failed.Count.ToString(CultureInfo.InvariantCulture) + " file(s) or folder(s) of its MSFS package " + packageFolder +
+                                    " like the Community folder it is in, so the sim cannot read them (" + failed[0] + "). Delete the folder " + packageFolder +
+                                    " (close the sim first) and export again: JoyPro makes it again from your JoyPro profile.");
             List<string> presets = lost.Where(f => f.EndsWith(".xml", StringComparison.OrdinalIgnoreCase)).ToList();
             if (presets.Count > 0)
                 result.Warnings.Add("JoyPro's MSFS 2024 preset(s) " + string.Join(", ", presets.Select(f => "'" + PresetDeviceLabel(f) + "'")) +
@@ -113,7 +119,7 @@ namespace JoyPro.Engine.Games
         }
 
         // "JoyPro_VPC_Stick_MT-50CM3_0123abcd_2024_Planes.xml" -> "VPC Stick MT-50CM3 (Planes)".
-        private static string PresetDeviceLabel(string file)
+        internal static string PresetDeviceLabel(string file)
         {
             string name = Path.GetFileNameWithoutExtension(file);
             Match m = Regex.Match(name, "^JoyPro_(?<device>.+)_[0-9a-f]{8}_2024_(?<category>[A-Za-z]+)$");

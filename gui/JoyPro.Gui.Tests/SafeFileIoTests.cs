@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using JoyPro.Engine;
 using Xunit;
 
@@ -307,6 +308,68 @@ public sealed class SafeFileIoTests : IDisposable
         SafeFileIo.MatchFolderEncryption(package, quarantine, done, lost);
         Assert.Empty(done);
         Assert.Empty(lost);
+    }
+
+    // The 2.2.5 report (MSFS 2024 Store): File.Encrypt failed on every folder of the package ("The request is not
+    // supported."), so the files an export wrote again stayed plain and unreadable (409) for the sim and JoyPro. A folder
+    // made in the encrypted Community folder takes its encryption: the package folders are made again, encrypted files
+    // move over (they keep their encryption), unreadable ones are reported as lost (the export writes them again).
+    [Fact]
+    public void MatchFolderEncryption_FoldersWindowsCannotEncrypt_AreMadeAgain()
+    {
+        string community = Path.Combine(folder, "Community2024");
+        string package = Path.Combine(community, "joypro-input-profiles");
+        string airplane = Path.Combine(package, "InputProfiles", "Categories", "Airplane");
+        Directory.CreateDirectory(airplane);
+        string ok = Path.Combine(airplane, "JoyPro_A_00000001_2024_Planes.xml");
+        string plain = Path.Combine(airplane, "JoyPro_B_00000002_2024_Planes.xml");
+        string layout = Path.Combine(package, "layout.json");
+        File.WriteAllText(ok, "a");
+        File.WriteAllText(plain, "b");
+        File.WriteAllText(layout, "{}");
+        string quarantine = Path.Combine(folder, "JoyProData", "Backups", "MSFS", "package-1");
+        // The state by final path (a folder made again has the name of the old one in the end).
+        static string Final(string path) => path.Replace(".jpnew", string.Empty, StringComparison.OrdinalIgnoreCase);
+        HashSet<string> encrypted = new(StringComparer.OrdinalIgnoreCase) { community, ok };
+        bool inherits = false;
+        SafeFileIo.TestIsEncrypted = path => encrypted.Contains(Final(path));
+        SafeFileIo.TestEncrypt = _ => throw new NotSupportedException("The request is not supported.");
+        SafeFileIo.TestFaultPath = (operation, path) =>
+        {
+            if (operation == "read" && (path == plain || path == layout))
+                throw new IOException("The APPX file can not be accessed because it is not encrypted as expected.", SafeFileIo.AppxNotEncryptedHResult);
+            if ((operation == "mkdir" || operation == "write") && inherits && encrypted.Contains(Final(Path.GetDirectoryName(path)!)))
+                encrypted.Add(Final(path));
+        };
+
+        // A new folder is not encrypted either: nothing changes, the failure is reported.
+        List<string> done = [];
+        List<string> lost = [];
+        SafeFileIo.MatchFolderEncryption(package, quarantine, done, lost);
+        Assert.Contains(done, d => d.StartsWith("could not encrypt folder " + package, StringComparison.Ordinal) && d.Contains("a new folder there is not encrypted either", StringComparison.Ordinal));
+        Assert.True(File.Exists(plain));
+        Assert.False(Directory.Exists(package + ".jpnew"));
+        Assert.Empty(lost);
+
+        // A new folder takes the Community folder's encryption: the package is made again.
+        inherits = true;
+        done.Clear();
+        SafeFileIo.MatchFolderEncryption(package, quarantine, done, lost);
+        Assert.Contains(done, d => d.StartsWith("made the folder again, encrypted", StringComparison.Ordinal) && d.EndsWith(package, StringComparison.Ordinal));
+        Assert.Contains(package, encrypted);
+        Assert.Contains(airplane, encrypted);
+        Assert.Equal("a", File.ReadAllText(ok));
+        Assert.False(File.Exists(plain));
+        Assert.False(File.Exists(layout));
+        Assert.Equal(new[] { layout, plain }.OrderBy(p => p), lost.OrderBy(p => p));
+        Assert.False(Directory.Exists(package + ".jpnew"));
+        Assert.DoesNotContain(done, d => d.StartsWith("could not", StringComparison.Ordinal));
+
+        // A second run finds nothing left to do.
+        done.Clear();
+        lost.Clear();
+        SafeFileIo.MatchFolderEncryption(package, quarantine, done, lost);
+        Assert.Empty(done);
     }
 
     // With real EFS (opt-in, JOYPRO_TEST_REAL_EFS=1: File.Encrypt makes an EFS certificate for the Windows user when

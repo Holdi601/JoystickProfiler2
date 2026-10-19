@@ -185,8 +185,8 @@ try {
     Assert-Match (Run-Engine @("--profile", $syncWtProfile, "relations", "show", "WT Shared Brake", "--text")).Output "id=ID_ROCKETS" "the rockets bind should join WT Shared Brake."
     Assert-NotMatch (Run-Engine @("--profile", $syncWtProfile, "relations", "show", "WT Shared Bombs", "--text")).Output "id=ID_ROCKETS" "the rockets bind must not join the other candidate."
     Assert-Match (Run-Engine @("--profile", $syncWtProfile, "binds", "tuning", "show", "WT Elevator Game", "--game", "WarThunder", "--text")).Output "game:WarThunder: [^\r\n]*n\.innerDeadzone=0\.15" "the new relation should get the game's tuning as its War Thunder tuning."
-    Assert-NotMatch (Run-Engine @("--profile", $syncWtProfile, "relations", "show", "War Thunder Pitch axis", "--text")).Output "id=elevator" "the elevator moved into the new relation must leave the old one."
-    Assert-Match (Run-Engine @("--profile", $syncWtProfile, "relations", "show", "War Thunder Toggle Gear", "--text")).Output "id=ID_GEAR" "an ignored removal must keep the gear relation."
+    Assert-NotMatch (Run-Engine @("--profile", $syncWtProfile, "relations", "show", "Pitch axis", "--text")).Output "id=elevator" "the elevator moved into the new relation must leave the old one."
+    Assert-Match (Run-Engine @("--profile", $syncWtProfile, "relations", "show", "Toggle Gear", "--text")).Output "id=ID_GEAR" "an ignored removal must keep the gear relation."
     Assert-True ((SyncJson (Run-Engine @("sync", "status", "--game", "WarThunder", "--path", $syncBlk)).Output).Games[0].State -eq "unchanged") "after sync apply machine.blk counts as known."
     Assert-True (@((SyncJson (Run-Engine @("--profile", $syncWtProfile, "sync", "diff", "--game", "WarThunder", "--path", $syncBlk)).Output).Changes).Count -eq 0) "after sync apply nothing is offered again."
     # The game drops a controls param set back to its default (seen in War Thunder with Hold throttle for WEP: Yes ->

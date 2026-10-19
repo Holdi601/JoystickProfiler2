@@ -16,6 +16,6 @@ Known inconsistencies (2026-09-30 audit):
 ## Registry games (`engine/Games/`)
 New games implement `IGameIntegration` and register in `GameRegistry`. The engine then provides, without further per-game edits:
 - CLI: `engine <game> paths|scan|import|export|refresh-db`, `engine games integrations`, `engine db nodes --game <id>`.
-- Profile bridge: collecting binds for export and applying imported bindings (merge by node, then by device+input+modifier signature, else create a relation named after the action).
+- Profile bridge: collecting binds for export and applying imported bindings (merge by node, then by device+input+modifier signature, else create a relation named after the action: its readable title, "Arm Auto Throttle"; the game in brackets only when a relation of another game has that name, "Arm Auto Throttle (Microsoft Flight Simulator 2024)", a number when one of the same game has it; until 2.2.5 every name started with the game, also in `engine sync`).
 - Mutating-command detection, path discovery, game-name normalization.
 - Device directory: DirectInput instance/product GUIDs, VID/PID and HID product strings of connected devices.

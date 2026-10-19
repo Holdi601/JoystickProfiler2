@@ -2,6 +2,8 @@
 
 Successor of [JoystickProfiler](https://github.com/Holdi601/JoystickProfiler): the same relation/bind model as JoyPro 1, with a new UI.
 
+**Ideas or problems? Join the Discord:** https://discord.gg/yK4gQA9xgk
+
 - `engine/`: the JoyPro engine as a command-line tool (.NET Framework 4.8). It holds all profile, import/export and database logic. Command reference: `engine/docs/ENGINE_CLI_WIKI.md`.
 - `gui/`: Avalonia desktop app (.NET 9). It runs the engine for every action. Docs are in `gui/docs/`.
 - `EngineOnly_Runtime/`: JoyPro's own data that the build copies next to `engine.exe` (function groups, device catalog, conversion tables). Game command lists are built on your PC from your own game installation.

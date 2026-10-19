@@ -5,6 +5,7 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 
 namespace JoyPro.Engine
 {
@@ -233,13 +234,22 @@ namespace JoyPro.Engine
             if (!FolderOfIsEncrypted(full))
                 return;
             List<string> folders = new List<string> { full };
-            folders.AddRange(Directory.GetDirectories(full, "*", SearchOption.AllDirectories));
+            folders.AddRange(Directory.GetDirectories(full, "*", SearchOption.AllDirectories).OrderBy(d => d.Length));
+            List<string> rebuilt = new List<string>();
             foreach (string dir in folders)
             {
-                if (IsEncrypted(dir))
+                if (rebuilt.Any(r => dir.StartsWith(r + "\\", StringComparison.OrdinalIgnoreCase)) || IsEncrypted(dir))
                     continue;
                 string error = TryEncrypt(dir);
-                done.Add(error == null ? "encrypted folder " + dir : "could not encrypt folder " + dir + ": " + error);
+                if (error == null)
+                {
+                    done.Add("encrypted folder " + dir);
+                    continue;
+                }
+                // Windows cannot encrypt an existing folder here ("The request is not supported": a tester's PC with
+                // the sim installed on another drive), but a folder made in an encrypted folder takes its encryption.
+                if (RebuildFolder(dir, error, quarantineFolder, done, lost))
+                    rebuilt.Add(dir);
             }
             foreach (string file in Directory.GetFiles(full, "*", SearchOption.AllDirectories))
             {
@@ -249,6 +259,12 @@ namespace JoyPro.Engine
                 if (error == null)
                 {
                     done.Add("encrypted " + file);
+                    continue;
+                }
+                // Written again it would take the mark of a folder that has none: it stays as it is.
+                if (!IsEncrypted(Path.GetDirectoryName(file)))
+                {
+                    done.Add("could not encrypt " + file + ": " + error + " (its folder is not encrypted either)");
                     continue;
                 }
                 byte[] bytes = null;
@@ -270,6 +286,119 @@ namespace JoyPro.Engine
                 }
                 // Not even readable: out of the way, so the caller can make it again.
                 RemoveUnreadable(file, error, quarantineFolder, done, lost);
+            }
+        }
+
+        // Makes a folder that cannot be encrypted again: a new folder beside it (it takes the encryption of the
+        // encrypted folder both are in), encrypted files moved into it (they keep their encryption), readable plain
+        // files written into it, unreadable ones out of the way (lost), then the old folder goes and the new one takes
+        // its name. Subfolders are made the same way inside. False (nothing changed) when the new folder is not
+        // encrypted either.
+        private static bool RebuildFolder(string dir, string encryptError, string quarantineFolder, List<string> done, List<string> lost)
+        {
+            string fresh = dir + ".jpnew";
+            try
+            {
+                if (Directory.Exists(fresh))
+                    Directory.Delete(fresh, true);
+                Directory.CreateDirectory(fresh);
+                FaultPath("mkdir", fresh);
+                if (!IsEncrypted(fresh))
+                {
+                    Directory.Delete(fresh, true);
+                    done.Add("could not encrypt folder " + dir + ": " + encryptError + " (a new folder there is not encrypted either)");
+                    return false;
+                }
+                FillFolder(dir, fresh, quarantineFolder, done, lost);
+                FaultPath("deletedir", dir);
+                Directory.Delete(dir, true);
+                FaultPath("movedir", fresh);
+                Directory.Move(fresh, dir);
+                done.Add("made the folder again, encrypted (Windows could not encrypt it: " + encryptError + ") " + dir);
+                return true;
+            }
+            catch (Exception ex) when (ex is IOException || ex is UnauthorizedAccessException)
+            {
+                // What was moved goes back, so nothing is missing where the game looks.
+                if (Directory.Exists(fresh) && Directory.Exists(dir))
+                    MoveBack(fresh, dir);
+                done.Add("could not encrypt folder " + dir + ": " + encryptError + "; making it again failed: " + ex.Message);
+                return false;
+            }
+        }
+
+        private static void MoveBack(string from, string to)
+        {
+            try
+            {
+                foreach (string file in Directory.GetFiles(from))
+                {
+                    string target = Path.Combine(to, Path.GetFileName(file));
+                    if (!File.Exists(target))
+                        File.Move(file, target);
+                }
+                foreach (string sub in Directory.GetDirectories(from))
+                {
+                    string target = Path.Combine(to, Path.GetFileName(sub));
+                    Directory.CreateDirectory(target);
+                    MoveBack(sub, target);
+                }
+                Directory.Delete(from, true);
+            }
+            catch (Exception ex) when (ex is IOException || ex is UnauthorizedAccessException)
+            {
+                JoyPro.Logging.JoyProLog.Info("Files", "Could not move back from '" + from + "': " + ex.Message);
+            }
+        }
+
+        private static void FillFolder(string from, string to, string quarantineFolder, List<string> done, List<string> lost)
+        {
+            foreach (string file in Directory.GetFiles(from))
+            {
+                string target = Path.Combine(to, Path.GetFileName(file));
+                if (IsEncrypted(file))
+                {
+                    try
+                    {
+                        FaultPath("move", file);
+                        File.Move(file, target);
+                        continue;
+                    }
+                    catch (Exception ex) when (ex is IOException || ex is UnauthorizedAccessException)
+                    {
+                        JoyPro.Logging.JoyProLog.Debug("Files", "Could not move '" + file + "': " + ex.Message);
+                    }
+                }
+                byte[] bytes = null;
+                string error = null;
+                DateTime written = DateTime.MinValue;
+                try
+                {
+                    FaultPath("read", file);
+                    written = File.GetLastWriteTimeUtc(file);
+                    bytes = File.ReadAllBytes(file);
+                }
+                catch (Exception ex) when (ex is IOException || ex is UnauthorizedAccessException)
+                {
+                    error = ex.Message;
+                }
+                if (bytes == null)
+                {
+                    RemoveUnreadable(file, error, quarantineFolder, done, lost);
+                    continue;
+                }
+                FaultPath("write", target);
+                File.WriteAllBytes(target, bytes);
+                TrySetLastWriteTime(target, written);
+                DeleteFile(file);
+                done.Add("wrote again (takes the folder's encryption) " + Path.Combine(from, Path.GetFileName(file)));
+            }
+            foreach (string sub in Directory.GetDirectories(from))
+            {
+                string target = Path.Combine(to, Path.GetFileName(sub));
+                Directory.CreateDirectory(target);
+                FaultPath("mkdir", target);
+                FillFolder(sub, target, quarantineFolder, done, lost);
             }
         }
 
@@ -361,6 +490,43 @@ namespace JoyPro.Engine
         {
             FaultPath("delete", path);
             File.Delete(path);
+        }
+
+        // The bytes of a file (shared read). Tests: JOYPRO_TEST_FAULT_ENCRYPTION "read:409:<file name>" makes the read
+        // of that file fail like a plain file in a Store app's encrypted data.
+        public static byte[] ReadAllBytes(string path)
+        {
+            FaultPath("read", path);
+            string faults = Environment.GetEnvironmentVariable(FaultVariable);
+            if (!string.IsNullOrWhiteSpace(faults))
+            {
+                string name = Path.GetFileName(path);
+                foreach (string fault in faults.Split(','))
+                {
+                    string entry = fault.Trim();
+                    if (entry.StartsWith("read:409:", StringComparison.OrdinalIgnoreCase) && string.Equals(entry.Substring(9), name, StringComparison.OrdinalIgnoreCase))
+                        throw new IOException("The APPX file can not be accessed because it is not encrypted as expected. (test fault: read)", AppxNotEncryptedHResult);
+                }
+            }
+            using (FileStream stream = new FileStream(path, FileMode.Open, FileAccess.Read, FileShare.ReadWrite | FileShare.Delete))
+            using (MemoryStream copy = new MemoryStream())
+            {
+                stream.CopyTo(copy);
+                return copy.ToArray();
+            }
+        }
+
+        // File.Encrypt (EFS) of one file or folder; null when it worked, else the reason.
+        public static string TryEncryptPath(string path)
+        {
+            return TryEncrypt(path);
+        }
+
+        // Why a file in a Store app's encrypted data cannot be read (409).
+        public static string ExplainRead(Exception ex, string target)
+        {
+            return "Windows could not read '" + target + "': the game keeps its data encrypted (EFS) on this PC (a Microsoft Store app), and this file " +
+                   "is not encrypted as expected, so neither the game nor JoyPro can read it (" + (ex == null ? "409" : ex.Message.Trim()) + ").";
         }
 
         // A plain message for a target Windows cannot write because of EFS.

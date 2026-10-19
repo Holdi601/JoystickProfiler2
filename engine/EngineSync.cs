@@ -1632,10 +1632,11 @@ namespace JoyPro.Engine
                 // generated "<name>__<device>__<key>__<id>__button" names are not shown).
                 string title = change.ActionTitle.Length > 0 ? change.ActionTitle : change.ActionId;
                 bool generated = new[] { "__button", "__axis", "__single", "__pos", "__neg" }.Any(s => change.NewRelationName.EndsWith(s, StringComparison.Ordinal));
-                string baseName = change.NewRelationName.Length > 0 && !generated && !InternalDataManagement.AllRelations.ContainsKey(change.NewRelationName)
+                // The action's readable title; the game in brackets only when another game's relation has that name.
+                change.NewRelationName = change.NewRelationName.Length > 0 && !generated && !InternalDataManagement.AllRelations.ContainsKey(change.NewRelationName)
                     ? change.NewRelationName
-                    : (game.Kind == "dcs" ? title : game.DisplayName + " " + title);
-                change.NewRelationName = UniqueName(baseName, InternalDataManagement.AllRelations);
+                    : game.Kind == "dcs" ? UniqueName(title, InternalDataManagement.AllRelations)
+                    : GameProfileBridge.NewRelationName(title, game.Id, game.DisplayName, InternalDataManagement.AllRelations);
             }
             if (change.NewGroups.Count == 0)
                 change.NewGroups = new List<string> { "GENERATED", game.DisplayName };

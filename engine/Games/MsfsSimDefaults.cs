@@ -113,15 +113,20 @@ namespace JoyPro.Engine.Games
         // The defaults for every connected device and category that has no own profile (ownProfiles: the user's
         // profiles and JoyPro's package presets already chosen for the import).
         //
-        // Which shipped preset the sim really applies is in its device records (profile_00, MsfsSimProfile): per
-        // device and aircraft the slots name the preset file ("t-pendular-rudder_2024_planes.xml") or none. A tester's
-        // MFD Cougar panels had a shipped Primary preset just like his T-Pendular-Rudder (same DeviceConfig.xml entry
-        // form, same Primary="1"), yet the sim showed no binds for them: only the records tell the two apart. So:
-        //   - the device has slots in the records: the preset they name is taken (also an alternative the user picked),
-        //     no preset when they name none;
-        //   - no records of the device (no profile_00 found, a format JoyPro cannot read): unknown, the device is left
-        //     out with a step, unless includeUnknown (--include-sim-defaults): then the Primary preset of its product
-        //     ID as before.
+        // Which shipped preset the sim really applies is in its device records (profile_00, MsfsSimProfile): one
+        // record per device and aircraft configuration, its slots name a preset file ("t-pendular-rudder_2024_planes.xml")
+        // or none. A tester's MFD Cougar panels had a shipped Primary preset just like his T-Pendular-Rudder (same
+        // DeviceConfig.xml entry form, same Primary="1"), yet the sim showed no binds for them. His records: the rudder's
+        // category slot named its preset in all 4 records, the MFDs' slots were empty in 3 of 4 and named the preset
+        // only in the record of the last aircraft. So a preset is taken only when the records agree:
+        //   - every record of the device for that category names the same shipped preset (General: the general slot of
+        //     every record; a category: the aircraft slot when it names one, else the category slot, of the records of
+        //     that category): taken (also an alternative the user picked);
+        //   - no record names one: none (the device runs without a preset);
+        //   - some do, some do not (or they name different ones): not known which one the sim uses, left out with a
+        //     step; includeUnknown (--include-sim-defaults) takes the one most records name;
+        //   - no records of the device (no profile_00 found, a format JoyPro cannot read) or none of that category:
+        //     unknown, left out with a step, unless includeUnknown: then the Primary preset of its product ID as before.
         // withPresets: the connected devices that have a shipped preset at all (taken or not).
         public static List<Applied> ForConnectedDevices(int sim, List<Preset> presets, IEnumerable<MsfsProfileFile> ownProfiles, IEnumerable<GameDevice> devices,
                                                         MsfsSimProfile simProfile, bool includeUnknown, List<string> notes, out int withPresets)
@@ -130,6 +135,8 @@ namespace JoyPro.Engine.Games
             List<KeyValuePair<GameDevice, Preset>> ambiguous = new List<KeyValuePair<GameDevice, Preset>>();
             List<KeyValuePair<GameDevice, Preset>> unused = new List<KeyValuePair<GameDevice, Preset>>();
             List<KeyValuePair<GameDevice, Preset>> unknown = new List<KeyValuePair<GameDevice, Preset>>();
+            List<KeyValuePair<GameDevice, string>> disagree = new List<KeyValuePair<GameDevice, string>>();
+            Dictionary<Applied, string> forcedNotes = new Dictionary<Applied, string>();
             HashSet<GameDevice> withAny = new HashSet<GameDevice>();
             simProfile = simProfile ?? new MsfsSimProfile();
             HashSet<string> own = new HashSet<string>(ownProfiles.Select(p => p.DeviceGuid.ToString("N") + "|" + p.CategoryKey), StringComparer.OrdinalIgnoreCase);
@@ -139,21 +146,23 @@ namespace JoyPro.Engine.Games
                 int productId;
                 if (!simProfile.ProductIds.TryGetValue(device.InstanceGuid, out productId))
                     productId = device.ProductId;
-                bool known = simProfile.Knows(device.InstanceGuid);
-                Dictionary<string, int> named;
-                if (!simProfile.SlotPresets.TryGetValue(device.InstanceGuid, out named))
-                    named = new Dictionary<string, int>(StringComparer.OrdinalIgnoreCase);
+                List<MsfsSimProfile.Record> records = simProfile.RecordsOf(device.InstanceGuid);
                 foreach (string category in categories)
                 {
                     List<Preset> inCategory = presets.Where(p => string.Equals(p.Category, category, StringComparison.OrdinalIgnoreCase)).ToList();
                     List<Preset> primary = productId < 0 ? new List<Preset>() : inCategory.Where(p => p.Primary && Fits(sim, p, productId, device)).ToList();
+                    // What each record of this category says (null: none).
+                    List<string> votes = Votes(records, category);
+                    Dictionary<string, int> named = votes.Where(v => v != null).GroupBy(v => v, StringComparer.OrdinalIgnoreCase)
+                        .ToDictionary(g => g.Key, g => g.Count(), StringComparer.OrdinalIgnoreCase);
                     List<Preset> recorded = inCategory.Where(p => named.ContainsKey(Path.GetFileName(p.File))).ToList();
                     if (primary.Count > 0 || recorded.Count > 0)
                         withAny.Add(device);
                     if (own.Contains(device.InstanceGuid.ToString("N") + "|" + category))
                         continue;
                     Preset chosen;
-                    if (known)
+                    string forced = null;
+                    if (votes.Count > 0)
                     {
                         if (recorded.Count == 0)
                         {
@@ -163,6 +172,18 @@ namespace JoyPro.Engine.Games
                             continue;
                         }
                         chosen = recorded.OrderByDescending(p => named[Path.GetFileName(p.File)]).ThenBy(p => p.File, StringComparer.OrdinalIgnoreCase).First();
+                        int agree = named[Path.GetFileName(chosen.File)];
+                        if (agree < votes.Count)
+                        {
+                            // The records disagree: some aircraft have the preset, others none (or another one).
+                            string count = agree.ToString(CultureInfo.InvariantCulture) + " of " + votes.Count.ToString(CultureInfo.InvariantCulture);
+                            if (!includeUnknown)
+                            {
+                                disagree.Add(new KeyValuePair<GameDevice, string>(device, "'" + chosen.Name + "'" + CategoryLabel(chosen.Category) + " in only " + count));
+                                continue;
+                            }
+                            forced = "--include-sim-defaults: the sim's records name it for " + count + " aircraft";
+                        }
                     }
                     else
                     {
@@ -181,12 +202,16 @@ namespace JoyPro.Engine.Games
                             unknown.Add(new KeyValuePair<GameDevice, Preset>(device, chosen));
                             continue;
                         }
+                        forced = "--include-sim-defaults: not known whether the sim uses it";
                     }
                     MsfsProfileFile profile;
                     if (!MsfsProfileFile.TryLoad(chosen.File, new List<string>(), out profile))
                         continue;
                     profile.UseForDevice(device.InstanceGuid);
-                    applied.Add(new Applied { Device = device, Profile = profile, Preset = chosen });
+                    Applied item = new Applied { Device = device, Profile = profile, Preset = chosen };
+                    applied.Add(item);
+                    if (forced != null)
+                        forcedNotes[item] = forced;
                 }
             }
             withPresets = withAny.Count;
@@ -195,9 +220,16 @@ namespace JoyPro.Engine.Games
                 foreach (IGrouping<GameDevice, Applied> group in applied.GroupBy(a => a.Device))
                 {
                     List<Applied> items = group.ToList();
+                    List<string> reasons = items.Select(a => forcedNotes.ContainsKey(a) ? forcedNotes[a] : "the sim's device records name it").Distinct().ToList();
                     notes.Add(DeviceLabel(group.Key) + ": no own MSFS profile, imported the sim's default preset" + (items.Count > 1 ? "s " : " ") +
                               string.Join(", ", items.Select(a => "'" + a.Preset.Name + "'" + CategoryLabel(a.Preset.Category))) +
-                              (simProfile.Knows(group.Key.InstanceGuid) ? " (the sim's device records name it)." : " (--include-sim-defaults: not known whether the sim uses it)."));
+                              " (" + string.Join("; ", reasons) + ").");
+                }
+                foreach (IGrouping<GameDevice, KeyValuePair<GameDevice, string>> group in disagree.GroupBy(a => a.Key))
+                {
+                    notes.Add(DeviceLabel(group.Key) + ": the sim's records of this device (one per aircraft) name its default preset " + string.Join(", ", group.Select(a => a.Value)) +
+                              ", so it is not known whether the sim uses " + (group.Count() > 1 ? "them" : "it") +
+                              "; not imported. To import anyway: --include-sim-defaults (GUI: 'Also import default presets the sim may not use').");
                 }
                 foreach (IGrouping<GameDevice, KeyValuePair<GameDevice, Preset>> group in unused.GroupBy(a => a.Key))
                 {
@@ -218,6 +250,18 @@ namespace JoyPro.Engine.Games
                 }
             }
             return applied;
+        }
+
+        // Per record of the category: the file the sim applies to the device there (null: none). General
+        // (TRANSVERSAL): the general slot of every record; a category: the aircraft slot when it names a file, else
+        // the category slot, of the records of that category; MSFS 2020 (no categories): the first slot that names one.
+        internal static List<string> Votes(List<MsfsSimProfile.Record> records, string category)
+        {
+            if (string.IsNullOrEmpty(category))
+                return records.Select(r => r.AircraftPreset ?? r.CategoryPreset ?? r.General).ToList();
+            if (string.Equals(category, "TRANSVERSAL", StringComparison.OrdinalIgnoreCase))
+                return records.Select(r => r.General).ToList();
+            return records.Where(r => string.Equals(r.Category, category, StringComparison.OrdinalIgnoreCase)).Select(r => r.AircraftPreset ?? r.CategoryPreset).ToList();
         }
 
         private static string PresetList(IEnumerable<KeyValuePair<GameDevice, Preset>> items)

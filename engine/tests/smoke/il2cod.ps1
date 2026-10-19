@@ -59,7 +59,7 @@ try {
     # Import and round trip: names, chords, the [Config pilotMove] values (game tuning) come back unchanged.
     $codImport = Run-Engine @("--profile", $codProfile, "il2codblitz", "import", $codBlitz, "--include-keyboard", "--text")
     Assert-True ($codImport.ExitCode -eq 0) ("il2codblitz import failed: " + $codImport.Output)
-    $codRudder = Run-Engine @("--profile", $codProfile, "binds", "tuning", "show", "IL-2 Sturmovik: Cliffs of Dover Blitz Rudder (yaw)", "--game", "IL2CoDBlitz", "--text")
+    $codRudder = Run-Engine @("--profile", $codProfile, "binds", "tuning", "show", "Rudder (yaw)", "--game", "IL2CoDBlitz", "--text")
     Assert-Match $codRudder.Output "game:IL2CoDBlitz: .*n\.deadZoneCentre=0\.25;n\.deadZoneEnd=0;n\.sensitivity=1" ("import should store [Config pilotMove] rudder as the Blitz tuning: " + $codRudder.Output)
     $codModels = Run-Engine @("binds", "tuning", "models", "--text")
     Assert-Match $codModels.Output "(?m)^il2cod - IL-2 Sturmovik: Cliffs of Dover" "binds tuning models should list the il2cod model."
@@ -80,7 +80,7 @@ try {
     Assert-True (Test-Path ($codBlitz + ".jpbak")) "the Cliffs of Dover export should back up confUser.ini."
 
     # Axis settings: own values go to [Config pilotMove] in the line's format.
-    $codTune = Run-Engine @("--profile", $codProfile, "binds", "tuning", "set", "IL-2 Sturmovik: Cliffs of Dover Blitz Ailerons (roll)", "--scope", "game:IL2CoDBlitz", "--param", "sensitivity=0.5", "--text")
+    $codTune = Run-Engine @("--profile", $codProfile, "binds", "tuning", "set", "Ailerons (roll)", "--scope", "game:IL2CoDBlitz", "--param", "sensitivity=0.5", "--text")
     Assert-True ($codTune.ExitCode -eq 0) ("binds tuning set for game:IL2CoDBlitz failed: " + $codTune.Output)
     $codTuneExport = Run-Engine @("--profile", $codProfile, "il2codblitz", "export", $codBlitz, "--text")
     Assert-True ($codTuneExport.ExitCode -eq 0) ("il2codblitz export with tuning failed: " + $codTuneExport.Output)
@@ -90,7 +90,7 @@ try {
     Assert-Match $codText "(?m)^throttle=0\.05 0\.95 0\.02 0\.02 0\.02$" "export must keep the throttle's five values."
 
     # Clean: the written devices keep only the profile's binds; builder, unknown devices and other sections stay.
-    $codDelete = Run-Engine @("--profile", $codProfile, "relations", "mass", "delete", "--relation", "IL-2 Sturmovik: Cliffs of Dover Blitz Fire guns", "--text")
+    $codDelete = Run-Engine @("--profile", $codProfile, "relations", "mass", "delete", "--relation", "Fire guns", "--text")
     Assert-True ($codDelete.ExitCode -eq 0) ("relations mass delete failed: " + $codDelete.Output)
     $codClean = Run-Engine @("--profile", $codProfile, "il2codblitz", "export", $codBlitz, "--mode", "clean", "--text")
     Assert-True ($codClean.ExitCode -eq 0) ("il2codblitz clean export failed: " + $codClean.Output)
