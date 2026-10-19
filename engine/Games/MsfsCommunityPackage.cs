@@ -193,13 +193,8 @@ namespace JoyPro.Engine.Games
         }
 
         // Read-only: the product IDs MSFS 2024 noted per device instance GUID in profile_00 of every Steam user
-        // (binary tree: 8-byte name hash, uint32 size incl. header, payload; a device record holds the instance GUID
-        // string, the type (1 = joystick) and the product ID). JoyPro never writes this file: it carries a checksum,
-        // and a file the sim rejects resets the user's sim profile.
-        private static readonly byte[] HashGuid = { 0xE4, 0x94, 0xA0, 0x78, 0x27, 0x80, 0x95, 0x46 };
-        private static readonly byte[] HashProductId = { 0x9C, 0x6A, 0x10, 0x70, 0x54, 0x98, 0x09, 0x63 };
-        private static readonly byte[] HashType = { 0xC5, 0xE2, 0x91, 0x53, 0xAB, 0x70, 0xCE, 0x33 };
-
+        // (MsfsSimProfile reads the tree). JoyPro never writes this file: it carries a checksum, and a file the sim
+        // rejects resets the user's sim profile.
         public static Dictionary<Guid, int> SimProductIds()
         {
             Dictionary<Guid, int> ids = new Dictionary<Guid, int>();
@@ -230,61 +225,12 @@ namespace JoyPro.Engine.Games
 
         internal static void ReadProductIds(byte[] data, Dictionary<Guid, int> ids)
         {
-            if (data.Length < 16)
+            MsfsSimProfile profile = new MsfsSimProfile();
+            if (!profile.Read(data))
                 return;
-            int rootSize = BitConverter.ToInt32(data, 8);
-            if (rootSize < 16 || rootSize > data.Length)
-                return;
-            Walk(data, 0, rootSize, ids, 0);
-        }
-
-        private static void Walk(byte[] d, int pos, int size, Dictionary<Guid, int> ids, int depth)
-        {
-            if (depth > 32 || size < 16)
-                return;
-            int end = pos + size;
-            int count = BitConverter.ToInt32(d, pos + 12);
-            if (count <= 0 || count > 100000)
-                return;
-            List<KeyValuePair<int, int>> kids = new List<KeyValuePair<int, int>>();
-            int p = pos + 16;
-            for (int i = 0; i < count; i++)
-            {
-                if (p + 12 > end)
-                    return;
-                int s = BitConverter.ToInt32(d, p + 8);
-                if (s < 12 || p + s > end)
-                    return;
-                kids.Add(new KeyValuePair<int, int>(p, s));
-                p += s;
-            }
-            if (p != end)
-                return;
-
-            string guid = null;
-            int productId = -1, type = -1;
-            foreach (KeyValuePair<int, int> kid in kids)
-            {
-                if (SameHash(d, kid.Key, HashGuid) && kid.Value > 12)
-                    guid = Encoding.ASCII.GetString(d, kid.Key + 12, kid.Value - 12).TrimEnd('\0');
-                else if (SameHash(d, kid.Key, HashProductId) && kid.Value == 16)
-                    productId = BitConverter.ToInt32(d, kid.Key + 12);
-                else if (SameHash(d, kid.Key, HashType) && kid.Value == 16)
-                    type = BitConverter.ToInt32(d, kid.Key + 12);
-            }
-            Guid parsed;
-            if (guid != null && type == 1 && productId >= 0 && productId <= 0xFFFF && Guid.TryParse(guid, out parsed) && !ids.ContainsKey(parsed))
-                ids[parsed] = productId;
-            foreach (KeyValuePair<int, int> kid in kids)
-                Walk(d, kid.Key, kid.Value, ids, depth + 1);
-        }
-
-        private static bool SameHash(byte[] d, int pos, byte[] hash)
-        {
-            for (int i = 0; i < 8; i++)
-                if (d[pos + i] != hash[i])
-                    return false;
-            return true;
+            foreach (KeyValuePair<Guid, int> id in profile.ProductIds)
+                if (!ids.ContainsKey(id.Key))
+                    ids[id.Key] = id.Value;
         }
 
         private static string Skeleton(string deviceName, Guid instanceGuid, int productId)

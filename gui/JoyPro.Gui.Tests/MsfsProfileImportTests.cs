@@ -191,34 +191,36 @@ public sealed class MsfsProfileImportTests : IDisposable
     // the shipped default of every connected device and category without an own profile (product ID as the sim
     // matches it, the Primary preset; not the alternatives, not helicopters, not gamepad presets); the user's own
     // profile wins over the default of its category. The shipped files stay untouched, also by an export.
+    // The 2.2.4 report (MSFS 2024 Store): two MFD Cougar panels have a shipped Primary preset just like the rudder, but
+    // the sim shows no binds for them, and JoyPro imported the preset. The sim's device records (profile_00) decide:
+    // a device whose preset slots name the preset gets it, one whose slots are empty gets none.
     [Fact]
     public void Steam2024_DevicesOnTheSimsDefaultPreset_AreImported()
     {
-        string home = Path.Combine(root, "h");
-        string install = Path.Combine(root, "sim");
-        CopyFolder(Path.Combine(Path.GetDirectoryName(fixtures)!, "shipped-presets"), install);
+        (string home, string install, string remote, string community) = SimDefaultsSetup();
         Dictionary<string, byte[]> shipped = Directory.GetFiles(install, "*", SearchOption.AllDirectories).ToDictionary(f => f, File.ReadAllBytes);
-        string remote = Path.Combine(home, "Steam", "userdata", "42", "2537590", "remote");
-        Directory.CreateDirectory(remote);
-        string roaming = Path.Combine(home, "Roaming", "Microsoft Flight Simulator 2024");
-        string community = Path.Combine(roaming, "Packages", "Community2024");
-        Directory.CreateDirectory(community);
-        File.WriteAllText(Path.Combine(roaming, "UserCfg.opt"), "InstalledPackagesPath \"" + Path.Combine(roaming, "Packages") + "\"\r\n");
-        connectedDevices = Path.Combine(root, "devices.tsv");
-        File.WriteAllText(connectedDevices,
-            "T-Pendular-Rudder {0000DDDD-0000-4000-8000-000000000401}\t044F\tB68F\tT-Pendular-Rudder\r\n" +
-            "VPC VMAX Prime Throttle {0000CCCC-0000-4000-8000-000000000301}\t3344\t019D\tVPC VMAX Prime Throttle\r\n");
-        Engine(home, "games", "install", "set", "MSFS2024", install);
         string tpr = "T-Pendular-Rudder {0000DDDD-0000-4000-8000-000000000401}";
         string vmax = "VPC VMAX Prime Throttle {0000CCCC-0000-4000-8000-000000000301}";
+        string mfd = "F16 MFD 1 {0000EEEE-0000-4000-8000-000000000501}";
+        // What the sim recorded: the rudder and the throttle on their presets, the MFD on none.
+        File.WriteAllBytes(Path.Combine(remote, "profile_00"), SimProfile00.Build(
+            new SimProfile00.Device(Rudder, 0xB68F, null, "t-pendular-rudder_2024_planes.xml"),
+            new SimProfile00.Device(Throttle, 0x019D, "vmax_prime_throttle_2024_transversal.xml", "vmax_prime_throttle_2024_planes.xml"),
+            new SimProfile00.Device(Mfd, 0xB351, null, null)));
 
         // Nothing saved yet (a fresh install): the defaults are the scan.
         (int freshCode, string fresh) = Engine(home, "msfs2024", "scan", "--text");
         Assert.True(freshCode == 0, fresh);
         Assert.Contains("No own Microsoft Flight Simulator 2024 profile saved yet", fresh);
-        Assert.Contains("T-Pendular-Rudder: no own MSFS profile, imported the sim's default preset 'T-Pendular-Rudder 2024 Planes' (Airplanes).", fresh);
-        Assert.Contains("VPC VMAX Prime Throttle: no own MSFS profile, imported the sim's default presets 'VMAX Prime Throttle 2024 Planes' (Airplanes), 'VMAX Prime Throttle 2024 Transversal' (General).", fresh);
+        Assert.Contains("The sim's device records (profile_00) were read from Steam", fresh);
+        Assert.Contains("T-Pendular-Rudder: no own MSFS profile, imported the sim's default preset 'T-Pendular-Rudder 2024 Planes' (Airplanes) (the sim's device records name it).", fresh);
+        Assert.Contains("VPC VMAX Prime Throttle: no own MSFS profile, imported the sim's default presets 'VMAX Prime Throttle 2024 Planes' (Airplanes), 'VMAX Prime Throttle 2024 Transversal' (General) (the sim's device records name it).", fresh);
         Assert.Contains("KEY_AXIS_SPOILER_SET <- " + vmax + " JOY_X", fresh);
+        Assert.Contains("F16 MFD 1: the sim has a default preset 'MFD COUGAR Left 2024 Planes' (Airplanes) but does not use it", fresh);
+        Assert.DoesNotContain(mfd + " JOY_BTN", fresh);
+        // --include-sim-defaults does not override what the records say.
+        (_, string forced) = Engine(home, "msfs2024", "scan", "--include-sim-defaults", "--text");
+        Assert.DoesNotContain(mfd + " JOY_BTN", forced);
 
         // The user changed the throttle's airplane binds: that profile wins, the General default still comes along.
         File.WriteAllBytes(Path.Combine(remote, "inputprofile_0000000301"), Fixture2024("vmax-throttle-airplane.xml"));
@@ -231,7 +233,8 @@ public sealed class MsfsProfileImportTests : IDisposable
         Assert.Contains("KEY_AXIS_RUDDER_SET <- " + tpr + " JOY_Z", output);
         Assert.Contains("KEY_THROTTLE1_AXIS_SET_EX1 <- " + vmax + " JOY_RX", output);
         Assert.Contains("KEY_ACTIVE_PAUSE_TOGGLE <- " + vmax + " JOY_BTN26", output);
-        Assert.Contains("VPC VMAX Prime Throttle: no own MSFS profile, imported the sim's default preset 'VMAX Prime Throttle 2024 Transversal' (General).", output);
+        Assert.Contains("VPC VMAX Prime Throttle: no own MSFS profile, imported the sim's default preset 'VMAX Prime Throttle 2024 Transversal' (General) (the sim's device records name it).", output);
+        Assert.DoesNotContain(mfd + " JOY_BTN", output);
         Assert.Contains("MSFS device profiles read: 1 from Steam, 2 default preset(s) of the sim (devices without an own profile).", output);
         // Not the throttle's airplane default (its own profile wins), not the rudder's alternative or helicopter
         // presets, not a gamepad preset or the preset of a device that is not connected.
@@ -255,6 +258,144 @@ public sealed class MsfsProfileImportTests : IDisposable
         foreach (KeyValuePair<string, byte[]> file in shipped)
             Assert.Equal(file.Value, File.ReadAllBytes(file.Key));
         Assert.Equal(shipped.Count, Directory.GetFiles(install, "*", SearchOption.AllDirectories).Length);
+    }
+
+    // Without the sim's device records (no profile_00, or a format JoyPro cannot read) it is not known whether the sim
+    // uses a shipped preset: the device is left out with a step, and --include-sim-defaults (GUI checkbox) takes the
+    // Primary preset of its product ID as before. The Microsoft Store keeps profile_00 as a save blob (here
+    // compressed): read like the Steam file.
+    [Fact]
+    public void Steam2024_WithoutTheSimsRecords_DefaultPresetsOnlyOnRequest_StoreRecordsAreRead()
+    {
+        (string home, _, _, _) = SimDefaultsSetup();
+        string tpr = "T-Pendular-Rudder {0000DDDD-0000-4000-8000-000000000401}";
+        string mfd = "F16 MFD 1 {0000EEEE-0000-4000-8000-000000000501}";
+
+        (_, string unknown) = Engine(home, "msfs2024", "scan", "--text");
+        Assert.Contains("T-Pendular-Rudder: the sim has a default preset 'T-Pendular-Rudder 2024 Planes' (Airplanes) but it is not known whether the sim uses it", unknown);
+        Assert.Contains("F16 MFD 1: the sim has a default preset 'MFD COUGAR Left 2024 Planes' (Airplanes) but it is not known whether the sim uses it", unknown);
+        Assert.Contains("--include-sim-defaults (GUI: 'Also import default presets the sim may not use')", unknown);
+        Assert.DoesNotContain(tpr + " JOY_", unknown);
+        Assert.DoesNotContain(mfd + " JOY_BTN", unknown);
+        Assert.DoesNotContain("None of the connected devices has a default preset", unknown);
+
+        (int optCode, string optIn) = Engine(home, "msfs2024", "scan", "--include-sim-defaults", "--text");
+        Assert.True(optCode == 0, optIn);
+        Assert.Contains("T-Pendular-Rudder: no own MSFS profile, imported the sim's default preset 'T-Pendular-Rudder 2024 Planes' (Airplanes) (--include-sim-defaults: not known whether the sim uses it).", optIn);
+        Assert.Contains("KEY_AXIS_RUDDER_SET <- " + tpr + " JOY_Z", optIn);
+        Assert.Contains(mfd + " JOY_BTN", optIn);
+
+        // Store: the records are a blob of the save containers.
+        WgsWriter.Write(StoreWgs(home, 2024), "Microsoft.Limitless_8wekyb3d8bbwe", new[]
+        {
+            new WgsContainer("PROFILE", new[]
+            {
+                new WgsBlobData("profile_00", Zlib(SimProfile00.Build(
+                    new SimProfile00.Device(Rudder, 0xB68F, null, "t-pendular-rudder_2024_planes.xml"),
+                    new SimProfile00.Device(Mfd, 0xB351, null, null))), null)
+            })
+        });
+        (int storeCode, string store) = Engine(home, "msfs2024", "scan", "--text");
+        Assert.True(storeCode == 0, store);
+        Assert.Contains("The sim's device records (profile_00) were read from the Microsoft Store save", store);
+        Assert.Contains("KEY_AXIS_RUDDER_SET <- " + tpr + " JOY_Z", store);
+        Assert.Contains("F16 MFD 1: the sim has a default preset 'MFD COUGAR Left 2024 Planes' (Airplanes) but does not use it", store);
+        Assert.DoesNotContain(mfd + " JOY_BTN", store);
+    }
+
+    private static readonly Guid Rudder = new("0000DDDD-0000-4000-8000-000000000401");
+    private static readonly Guid Throttle = new("0000CCCC-0000-4000-8000-000000000301");
+    private static readonly Guid Mfd = new("0000EEEE-0000-4000-8000-000000000501");
+
+    // A stand-in MSFS 2024 install with the shipped-presets fixture, a Steam remote folder without profiles and three
+    // connected devices that have shipped presets: a rudder, a throttle and an MFD panel.
+    private (string Home, string Install, string Remote, string Community) SimDefaultsSetup()
+    {
+        string home = Path.Combine(root, "h");
+        string install = Path.Combine(root, "sim");
+        CopyFolder(Path.Combine(Path.GetDirectoryName(fixtures)!, "shipped-presets"), install);
+        string remote = Path.Combine(home, "Steam", "userdata", "42", "2537590", "remote");
+        Directory.CreateDirectory(remote);
+        string roaming = Path.Combine(home, "Roaming", "Microsoft Flight Simulator 2024");
+        string community = Path.Combine(roaming, "Packages", "Community2024");
+        Directory.CreateDirectory(community);
+        File.WriteAllText(Path.Combine(roaming, "UserCfg.opt"), "InstalledPackagesPath \"" + Path.Combine(roaming, "Packages") + "\"\r\n");
+        connectedDevices = Path.Combine(root, "devices.tsv");
+        File.WriteAllText(connectedDevices,
+            "T-Pendular-Rudder {" + Rudder.ToString().ToUpperInvariant() + "}\t044F\tB68F\tT-Pendular-Rudder\r\n" +
+            "VPC VMAX Prime Throttle {" + Throttle.ToString().ToUpperInvariant() + "}\t3344\t019D\tVPC VMAX Prime Throttle\r\n" +
+            "F16 MFD 1 {" + Mfd.ToString().ToUpperInvariant() + "}\t044F\tB351\tF16 MFD 1\r\n");
+        Engine(home, "games", "install", "set", "MSFS2024", install);
+        return (home, install, remote, community);
+    }
+
+    // profile_00 as MSFS 2024 writes it (engine\Games\MsfsSimProfile.cs; field hashes of a real Steam file): nodes of
+    // an 8-byte name hash, a uint32 size (header included) and a payload (container: uint32 count + nodes). A device
+    // table, then per device and aircraft a record with three preset slots (general, category, aircraft) that name
+    // the preset file or hold a 0 byte; a short checksum at the end.
+    internal static class SimProfile00
+    {
+        internal sealed record Device(Guid Guid, int ProductId, string? General, string? Airplane);
+
+        private static byte[] H(string hex) => Convert.FromHexString(hex);
+
+        private static byte[] Node(string hash, byte[] payload)
+        {
+            using MemoryStream m = new();
+            m.Write(H(hash));
+            m.Write(BitConverter.GetBytes(12 + payload.Length));
+            m.Write(payload);
+            return m.ToArray();
+        }
+
+        private static byte[] Container(string hash, params byte[][] children)
+        {
+            using MemoryStream m = new();
+            m.Write(BitConverter.GetBytes(children.Length));
+            foreach (byte[] child in children)
+                m.Write(child);
+            return Node(hash, m.ToArray());
+        }
+
+        private static byte[] Text(string hash, string text) => Node(hash, Encoding.ASCII.GetBytes(text + "\0"));
+
+        private static byte[] Int(string hash, int value) => Node(hash, BitConverter.GetBytes(value));
+
+        private static byte[] Byte0(string hash) => Node(hash, new byte[] { 0 });
+
+        private static byte[][] DeviceFields(Device d, string? preset) =>
+        [
+            Int("c5e29153ab70ce33", 1),
+            Int("9c6a107054980963", d.ProductId),
+            Int("419c4be1028db14a", 0),
+            Text("e494a07827809546", "{" + d.Guid.ToString().ToUpperInvariant() + "}"),
+            Int("00d10becc027d54f", preset == null ? 0 : 1),
+            preset == null ? Byte0("e5374a443ee0986e") : Text("e5374a443ee0986e", preset),
+            Byte0("877ddf5aa523fd04"),
+            Byte0("6a076b4c6e9f3687")
+        ];
+
+        public static byte[] Build(params Device[] devices)
+        {
+            List<byte[]> table = devices.Select((d, i) => Container("a90d92863d6d85d" + i.ToString("x"), DeviceFields(d, null))).ToList();
+            List<byte[]> records = new();
+            foreach (Device d in devices)
+            {
+                List<byte[]> fields = DeviceFields(d, null).ToList();
+                fields.Add(Text("6ef48b11820c125d", "asobo-aircraft-c172sp-as1000"));
+                fields.Add(Container("ae7f5b37a56a781c", DeviceFields(d, d.General)));
+                fields.Add(Container("8b57821791389404", DeviceFields(d, d.Airplane).Append(Text("dd0e07ae6ad0a4fc", "AIRPLANE")).ToArray()));
+                fields.Add(Container("6bc4c835749736a7", DeviceFields(d, null).Append(Text("6ef48b11820c125d", "asobo-aircraft-c172sp-as1000")).ToArray()));
+                records.Add(Container("82547a6384e0e31a", fields.ToArray()));
+            }
+            byte[] tree = Container("94438d991bb0815f",
+                Int("4794bad805765141", 0),
+                Container("a532ec6925941962",
+                    Node("7c5253cf6543b1e1", new byte[] { 1 }),
+                    Container("a46c8bf66a7db8ce", table.ToArray()),
+                    Container("a9281cff465213e7", records.ToArray())));
+            return tree.Concat(new byte[] { 0x11, 0x22, 0x33, 0x44, 0x55 }).ToArray();
+        }
     }
 
     private static void CopyFolder(string from, string to)

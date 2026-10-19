@@ -12,7 +12,8 @@ namespace JoyPro.Engine.Games
     // MSFS saves a device's profile only once the user changes a bind; until then the device runs on the preset the
     // sim ships for it (MSFS 2024: packages fs-input-profiles / asobo-input-profiles-pc,
     // InputProfiles\Categories\<Category>\*.xml; MSFS 2020: <install>\Input and its Official packages). Import and scan
-    // take that preset for every connected device without an own profile of a category, as the sim does: by the
+    // take that preset for every connected device without an own profile of a category when the sim's device records
+    // (profile_00) name it for the device; without such records only on request (--include-sim-defaults), then by the
     // product ID of <Device ProductID="hex"> (the one the sim noted in profile_00, else the USB PID; the sim's
     // DeviceConfig.xml lists devices by product ID only), the preset marked Primary="1". Read only: the shipped
     // presets are never written. See docs/games/msfs.md "Devices on the sim's default preset".
@@ -111,38 +112,76 @@ namespace JoyPro.Engine.Games
 
         // The defaults for every connected device and category that has no own profile (ownProfiles: the user's
         // profiles and JoyPro's package presets already chosen for the import).
+        //
+        // Which shipped preset the sim really applies is in its device records (profile_00, MsfsSimProfile): per
+        // device and aircraft the slots name the preset file ("t-pendular-rudder_2024_planes.xml") or none. A tester's
+        // MFD Cougar panels had a shipped Primary preset just like his T-Pendular-Rudder (same DeviceConfig.xml entry
+        // form, same Primary="1"), yet the sim showed no binds for them: only the records tell the two apart. So:
+        //   - the device has slots in the records: the preset they name is taken (also an alternative the user picked),
+        //     no preset when they name none;
+        //   - no records of the device (no profile_00 found, a format JoyPro cannot read): unknown, the device is left
+        //     out with a step, unless includeUnknown (--include-sim-defaults): then the Primary preset of its product
+        //     ID as before.
+        // withPresets: the connected devices that have a shipped preset at all (taken or not).
         public static List<Applied> ForConnectedDevices(int sim, List<Preset> presets, IEnumerable<MsfsProfileFile> ownProfiles, IEnumerable<GameDevice> devices,
-                                                        IDictionary<Guid, int> simProductIds, List<string> notes)
+                                                        MsfsSimProfile simProfile, bool includeUnknown, List<string> notes, out int withPresets)
         {
             List<Applied> applied = new List<Applied>();
             List<KeyValuePair<GameDevice, Preset>> ambiguous = new List<KeyValuePair<GameDevice, Preset>>();
+            List<KeyValuePair<GameDevice, Preset>> unused = new List<KeyValuePair<GameDevice, Preset>>();
+            List<KeyValuePair<GameDevice, Preset>> unknown = new List<KeyValuePair<GameDevice, Preset>>();
+            HashSet<GameDevice> withAny = new HashSet<GameDevice>();
+            simProfile = simProfile ?? new MsfsSimProfile();
             HashSet<string> own = new HashSet<string>(ownProfiles.Select(p => p.DeviceGuid.ToString("N") + "|" + p.CategoryKey), StringComparer.OrdinalIgnoreCase);
             string[] categories = sim == 2024 ? Categories2024 : new[] { string.Empty };
             foreach (GameDevice device in devices.Where(d => d != null && d.Connected && d.InstanceGuid != Guid.Empty))
             {
                 int productId;
-                if (simProductIds == null || !simProductIds.TryGetValue(device.InstanceGuid, out productId))
+                if (!simProfile.ProductIds.TryGetValue(device.InstanceGuid, out productId))
                     productId = device.ProductId;
-                if (productId < 0)
-                    continue;
+                bool known = simProfile.Knows(device.InstanceGuid);
+                Dictionary<string, int> named;
+                if (!simProfile.SlotPresets.TryGetValue(device.InstanceGuid, out named))
+                    named = new Dictionary<string, int>(StringComparer.OrdinalIgnoreCase);
                 foreach (string category in categories)
                 {
+                    List<Preset> inCategory = presets.Where(p => string.Equals(p.Category, category, StringComparison.OrdinalIgnoreCase)).ToList();
+                    List<Preset> primary = productId < 0 ? new List<Preset>() : inCategory.Where(p => p.Primary && Fits(sim, p, productId, device)).ToList();
+                    List<Preset> recorded = inCategory.Where(p => named.ContainsKey(Path.GetFileName(p.File))).ToList();
+                    if (primary.Count > 0 || recorded.Count > 0)
+                        withAny.Add(device);
                     if (own.Contains(device.InstanceGuid.ToString("N") + "|" + category))
                         continue;
-                    List<Preset> fitting = presets.Where(p => string.Equals(p.Category, category, StringComparison.OrdinalIgnoreCase) && Fits(sim, p, productId, device)).ToList();
-                    if (fitting.Count == 0)
-                        continue;
-                    List<Preset> primary = fitting.Where(p => p.Primary).ToList();
-                    if (primary.Count == 0)
-                        continue;
-                    // Several parts of one device (VelocityOne Flight: yoke CompositeID 0, quadrant 1) share a product
-                    // ID; JoyPro cannot tell which part this DirectInput device is, so it takes none.
-                    if (primary.Select(p => p.CompositeId).Distinct().Count() > 1)
+                    Preset chosen;
+                    if (known)
                     {
-                        ambiguous.AddRange(primary.Select(p => new KeyValuePair<GameDevice, Preset>(device, p)));
-                        continue;
+                        if (recorded.Count == 0)
+                        {
+                            // The sim's records name no preset of this category for the device: it runs without one.
+                            if (primary.Count > 0)
+                                unused.Add(new KeyValuePair<GameDevice, Preset>(device, primary.OrderBy(p => p.File, StringComparer.OrdinalIgnoreCase).First()));
+                            continue;
+                        }
+                        chosen = recorded.OrderByDescending(p => named[Path.GetFileName(p.File)]).ThenBy(p => p.File, StringComparer.OrdinalIgnoreCase).First();
                     }
-                    Preset chosen = primary.OrderBy(p => p.File, StringComparer.OrdinalIgnoreCase).First();
+                    else
+                    {
+                        if (primary.Count == 0)
+                            continue;
+                        // Several parts of one device (VelocityOne Flight: yoke CompositeID 0, quadrant 1) share a
+                        // product ID; JoyPro cannot tell which part this DirectInput device is, so it takes none.
+                        if (primary.Select(p => p.CompositeId).Distinct().Count() > 1)
+                        {
+                            ambiguous.AddRange(primary.Select(p => new KeyValuePair<GameDevice, Preset>(device, p)));
+                            continue;
+                        }
+                        chosen = primary.OrderBy(p => p.File, StringComparer.OrdinalIgnoreCase).First();
+                        if (!includeUnknown)
+                        {
+                            unknown.Add(new KeyValuePair<GameDevice, Preset>(device, chosen));
+                            continue;
+                        }
+                    }
                     MsfsProfileFile profile;
                     if (!MsfsProfileFile.TryLoad(chosen.File, new List<string>(), out profile))
                         continue;
@@ -150,13 +189,26 @@ namespace JoyPro.Engine.Games
                     applied.Add(new Applied { Device = device, Profile = profile, Preset = chosen });
                 }
             }
+            withPresets = withAny.Count;
             if (notes != null)
             {
                 foreach (IGrouping<GameDevice, Applied> group in applied.GroupBy(a => a.Device))
                 {
                     List<Applied> items = group.ToList();
                     notes.Add(DeviceLabel(group.Key) + ": no own MSFS profile, imported the sim's default preset" + (items.Count > 1 ? "s " : " ") +
-                              string.Join(", ", items.Select(a => "'" + a.Preset.Name + "'" + CategoryLabel(a.Preset.Category))) + ".");
+                              string.Join(", ", items.Select(a => "'" + a.Preset.Name + "'" + CategoryLabel(a.Preset.Category))) +
+                              (simProfile.Knows(group.Key.InstanceGuid) ? " (the sim's device records name it)." : " (--include-sim-defaults: not known whether the sim uses it)."));
+                }
+                foreach (IGrouping<GameDevice, KeyValuePair<GameDevice, Preset>> group in unused.GroupBy(a => a.Key))
+                {
+                    notes.Add(DeviceLabel(group.Key) + ": the sim has a default preset " + PresetList(group) +
+                              " but does not use it (its device records name no preset for this device), so no binds were imported for it.");
+                }
+                foreach (IGrouping<GameDevice, KeyValuePair<GameDevice, Preset>> group in unknown.GroupBy(a => a.Key))
+                {
+                    notes.Add(DeviceLabel(group.Key) + ": the sim has a default preset " + PresetList(group) +
+                              " but it is not known whether the sim uses it (no device record of the sim for it); not imported. " +
+                              "To import it anyway: --include-sim-defaults (GUI: 'Also import default presets the sim may not use').");
                 }
                 foreach (IGrouping<GameDevice, KeyValuePair<GameDevice, Preset>> group in ambiguous.GroupBy(a => a.Key))
                 {
@@ -166,6 +218,11 @@ namespace JoyPro.Engine.Games
                 }
             }
             return applied;
+        }
+
+        private static string PresetList(IEnumerable<KeyValuePair<GameDevice, Preset>> items)
+        {
+            return string.Join(", ", items.Select(a => "'" + a.Value.Name + "'" + CategoryLabel(a.Value.Category)));
         }
 
         // MSFS 2024 matches by the hex product ID only. MSFS 2020's shipped presets were not checked on a real

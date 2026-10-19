@@ -90,6 +90,11 @@ path). The watcher's records (`<data>\Sync\MSFS.json`) are not carried over; the
   - per device, the category scope (AIRPLANE) and the aircraft scope (`asobo-aircraft-c172sp-as1000`);
   - per device and aircraft, three preset slots (general = transversal, category, aircraft), each with the preset
     file name (`keyboard_2024_planes.xml`; empty = none). [OBS 2026-10-10]
+  - field hashes (2026-10-19, `engine\Games\MsfsSimProfile.cs`): instance GUID `e494a07827809546` (string; keyboard
+    and mouse a number), type `c5e29153ab70ce33` (1 joystick, 15 keyboard/mouse), product ID `9c6a107054980963`,
+    composite ID `419c4be1028db14a`, preset file `e5374a443ee0986e`, category `dd0e07ae6ad0a4fc`, aircraft
+    `6ef48b11820c125d`; slots `ae7f5b37a56a781c` (general), `8b57821791389404` (category), `6bc4c835749736a7`
+    (aircraft) inside a record that carries the device fields itself. The file ends with 5 bytes after the tree.
 - **2024 in-game observations** (Steam, 2026-10-10, menus only):
   - The Steam `remote` folder holds only `profile_00`, `localprofile` and `datausage` (binary), and no `inputprofile_*`, until a preset exists. No XML profiles under `%APPDATA%\Microsoft Flight Simulator 2024`.
   - A device without a preset (vJoy) shows no preset selector and no preset gear. Its device gear only offers Rename / Deactivate / Hardware Settings, so there is nothing to export until one bind creates a preset.
@@ -162,6 +167,34 @@ import|scan`, GUI import wizard) read what the user set up in the sim (`engine\G
   test devices got theirs. MSFS 2020: same code over its presets (no categories); its shipped presets were not checked
   on a real install (none on a test PC), so a 2020 preset must also carry the device's name. Test:
   `MsfsProfileImportTests.Steam2024_DevicesOnTheSimsDefaultPreset_AreImported` (fixture `engine\tests\fixtures\msfs\shipped-presets`).
+- **Only presets the sim really uses (since 2026-10-19, after 2.2.4):** a 2.2.4 import (MSFS 2024 Microsoft Store) gave a tester relations
+  for his two Thrustmaster MFD Cougar panels from their shipped presets, while the sim shows no binds for them.
+  Evidence (MSFS 2024 install, read only): the MFD presets look like the TPR's: `MFD_COUGAR_Left_2024_Planes.xml`
+  (`ProductID="B351"`, also a Transversal one) and `MFD_COUGAR_Right_2024_Planes.xml` (`B352`, no Transversal one;
+  Left and Right have their own product IDs), `Primary="1"` like `T-Pendular-Rudder_2024_Planes.xml` (`B68F`), and
+  `DeviceConfig.xml` has the same kind of entry for all three (`ProductId` + `TextureFolder`, no flag). So the shipped
+  files cannot tell why the sim applies one and not the other. What the sim applies is in profile_00: per device and
+  aircraft the three preset slots (general, category with its category name, aircraft) each hold the file name of the
+  preset the sim applies, in lower case (`keyboard_2024_planes.xml`, `mouse_2024_transversal.xml`), or a 0 byte; a
+  flag beside it is 1 when a preset is set. On the test PC's Steam profile_00 the keyboard and mouse slots name their
+  presets in 52 airplane / 61 transversal records, the slots of the 13 joysticks (none with a shipped preset) are all
+  empty. Rule (`MsfsSimProfile.cs`, `MsfsSimDefaults.ForConnectedDevices`):
+  - the device has slots in profile_00: the shipped preset whose file name a slot holds is imported (the one most
+    slots name; also an alternative the user picked in the sim); slots that name none: no import, and when the device
+    has a shipped preset a step says so ("F16 MFD 1: the sim has a default preset 'MFD COUGAR Left 2024 Planes'
+    (Airplanes) but does not use it ...");
+  - no slots of the device (no profile_00 found, a format JoyPro cannot read): unknown, not imported, a step names the
+    preset and the opt-in: `--include-sim-defaults` (GUI: "Also import default presets the sim may not use" beside
+    "Also import devices that are not connected", import wizard and Other Games page, remembered in
+    `export-settings.json`), which takes the Primary preset of the product ID as before. The opt-in never overrides
+    slots that name no preset.
+  - profile_00 sources: `<Steam>\userdata\<id>\<app>\remote\profile_00` and every blob of the Store save folder whose
+    content (plain or zlib/gzip-compressed) is the same tree (a step says which were read). The Store blob was not
+    checked against a real Store install (none on a test PC): the tester's TPR keeps its preset by default only if his
+    Store profile_00 is found and names it; otherwise the opt-in brings it back.
+  Tests: `MsfsProfileImportTests.Steam2024_DevicesOnTheSimsDefaultPreset_AreImported` (rudder and throttle named,
+  MFD slots empty) and `..._WithoutTheSimsRecords_DefaultPresetsOnlyOnRequest_StoreRecordsAreRead` (profile_00 built
+  like the sim's, also as a compressed Store blob).
 - A tester's case as a test (`MsfsProfileImportTests.Steam2024_GeneralBindsAreImported_...`): VPC VMAX Prime Throttle
   with flaps / throttle 1 / throttle 2 axes (airplanes) and cockpit view zoom axis, reset / toggle cockpit view, toggle
   external view and active pause (General), plus an old MT-50CM3 stick that is not connected.

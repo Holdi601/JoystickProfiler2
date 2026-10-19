@@ -60,6 +60,8 @@ namespace JoyPro.Engine.Games
             bool nuke = PopSwitch(args, "--nuke-untouched-devices");
             bool includeDisconnectedGiven = args.Any(a => string.Equals(a, "--include-disconnected", StringComparison.OrdinalIgnoreCase));
             bool includeDisconnected = PopSwitch(args, "--include-disconnected");
+            bool includeSimDefaultsGiven = args.Any(a => string.Equals(a, "--include-sim-defaults", StringComparison.OrdinalIgnoreCase));
+            bool includeSimDefaults = PopSwitch(args, "--include-sim-defaults");
             // refresh-db: read the game's packed archives (War Thunder's *.vromfs.bin) unless --no-game-archives (or
             // --read-game-archives false) says otherwise.
             bool readArchivesGiven = args.Any(a => string.Equals(a, "--read-game-archives", StringComparison.OrdinalIgnoreCase));
@@ -107,6 +109,12 @@ namespace JoyPro.Engine.Games
                 disconnected.IncludeDisconnectedDevices = includeDisconnected;
             else if (includeDisconnectedGiven && includeDisconnected)
                 return Fail(game.DisplayName + " imports every device it has binds for; --include-disconnected is only for Microsoft Flight Simulator.");
+            // MSFS: default presets the sim ships are taken only where its records show it uses them, unless asked.
+            IGameSimDefaults simDefaults = game as IGameSimDefaults;
+            if (simDefaults != null)
+                simDefaults.IncludeUnknownSimDefaults = includeSimDefaults;
+            else if (includeSimDefaultsGiven && includeSimDefaults)
+                return Fail(game.DisplayName + " has no default presets of its own; --include-sim-defaults is only for Microsoft Flight Simulator.");
 
             switch (action)
             {

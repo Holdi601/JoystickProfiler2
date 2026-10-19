@@ -737,6 +737,9 @@
                                                 <CheckBox IsChecked="{Binding ImportIncludeDisconnected}" IsVisible="{Binding ImportWizardOffersDisconnected}"
                                                           Content="{l:T 'Also import devices that are not connected'}"
                                                           ToolTip.Tip="{l:T 'MSFS keeps the binds of every device it ever saw. Off: only the devices connected now.'}" />
+                                                <CheckBox IsChecked="{Binding ImportIncludeSimDefaults}" IsVisible="{Binding ImportWizardOffersDisconnected}"
+                                                          Content="{l:T 'Also import default presets the sim may not use'}"
+                                                          ToolTip.Tip="{l:T 'Devices you never changed in MSFS run on a preset the sim ships. JoyPro takes it when the sim records that it uses it. On: also when that is not known (this can add binds the sim does not have).'}" />
                                                 <StackPanel Spacing="6" IsVisible="{Binding ImportWizardIsDcs}">
                                                     <CheckBox Content="{l:T 'All my DCS aircraft'}" IsChecked="{Binding ImportAllDcsPlanes}" />
                                                     <Border Classes="sunken" Padding="6" IsVisible="{Binding ShowDcsPlaneSelection}">
@@ -923,6 +926,8 @@
                                         <CheckBox Content="{l:T 'Include keyboard binds (flight actions only)'}" IsChecked="{Binding RegistryGameIncludeKeyboard}" Margin="0,0,8,6" />
                                         <CheckBox Content="{l:T 'Also import devices that are not connected'}" IsChecked="{Binding ImportIncludeDisconnected}" IsVisible="{Binding SelectedRegistryGameKeepsDisconnectedDevices}"
                                                   ToolTip.Tip="{l:T 'MSFS keeps the binds of every device it ever saw. Off: only the devices connected now.'}" Margin="0,0,8,6" />
+                                        <CheckBox Content="{l:T 'Also import default presets the sim may not use'}" IsChecked="{Binding ImportIncludeSimDefaults}" IsVisible="{Binding SelectedRegistryGameKeepsDisconnectedDevices}"
+                                                  ToolTip.Tip="{l:T 'Devices you never changed in MSFS run on a preset the sim ships. JoyPro takes it when the sim records that it uses it. On: also when that is not known (this can add binds the sim does not have).'}" Margin="0,0,8,6" />
                                         <CheckBox Content="{l:T 'Nuke: remove all binds from devices JoyPro does not use'}" IsChecked="{Binding ExportNukeUntouchedDevices}" Margin="0,0,8,6" />
                                     </WrapPanel>
                                     <Grid ColumnDefinitions="Auto,*,Auto" ColumnSpacing="8" IsVisible="{Binding SelectedRegistryGameSupportsRefresh}">

@@ -42,6 +42,11 @@ public sealed partial class MainWindowViewModel
     [ObservableProperty]
     private bool importIncludeDisconnected;
 
+    // MSFS runs an untouched device on a default preset it ships; JoyPro takes it when the sim's device records show
+    // it is used. On: also when that is not known (engine --include-sim-defaults; remembered like the one above).
+    [ObservableProperty]
+    private bool importIncludeSimDefaults;
+
     internal static bool KeepsDisconnectedDevices(string? gameId) =>
         string.Equals(gameId, "MSFS2020", StringComparison.OrdinalIgnoreCase) || string.Equals(gameId, "MSFS2024", StringComparison.OrdinalIgnoreCase);
 
@@ -321,11 +326,14 @@ public sealed partial class MainWindowViewModel
         return Task.CompletedTask;
     }
 
-    // MSFS import and scan: the profiles of devices that are not connected only when the user ticked it.
+    // MSFS import and scan: the profiles of devices that are not connected only when the user ticked it, and the
+    // sim's default presets whose use the sim's records do not show likewise.
     internal void AddDisconnectedDevicesOption(List<string> args)
     {
         if (ImportIncludeDisconnected && SelectedRegistryGameKeepsDisconnectedDevices)
             args.Add("--include-disconnected");
+        if (ImportIncludeSimDefaults && SelectedRegistryGameKeepsDisconnectedDevices)
+            args.Add("--include-sim-defaults");
     }
 
     internal static bool EngineBuiltCommandList(string? output)

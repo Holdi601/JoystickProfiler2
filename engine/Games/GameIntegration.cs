@@ -270,6 +270,13 @@ namespace JoyPro.Engine.Games
         bool IncludeDisconnectedDevices { get; set; }
     }
 
+    // For games that run untouched devices on a default preset they ship (MSFS): import takes such a preset only when
+    // the game's own records say it is used, unless this is set (--include-sim-defaults).
+    internal interface IGameSimDefaults
+    {
+        bool IncludeUnknownSimDefaults { get; set; }
+    }
+
     // For games where one action holds a list of inputs: records which inputs JoyPro owns, so an
     // overwrite export can replace JoyPro's own inputs without touching inputs the user added in the game.
     internal interface IGameOwnershipTracking

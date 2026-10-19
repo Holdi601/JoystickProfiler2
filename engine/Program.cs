@@ -14217,7 +14217,8 @@ namespace JoyPro.Engine
                 Console.WriteLine("  engine " + gameArea + " paths");
                 Console.WriteLine("  engine " + gameArea + " catalog");
                 string profileOption = registryGame is Games.IGameProfileSelection ? " [--game-profile <name>]" : string.Empty;
-                string disconnectedOption = registryGame is Games.IGameDisconnectedDevices ? " [--include-disconnected]" : string.Empty;
+                string disconnectedOption = (registryGame is Games.IGameDisconnectedDevices ? " [--include-disconnected]" : string.Empty) +
+                                            (registryGame is Games.IGameSimDefaults ? " [--include-sim-defaults]" : string.Empty);
                 Console.WriteLine("  engine " + gameArea + " scan [<config-path>] [--path <config-path>]" + profileOption + disconnectedOption);
                 Console.WriteLine("  engine " + gameArea + " import [<config-path>] [--path <config-path>] [--replace] [--include-keyboard]" + profileOption + disconnectedOption +
                                   (registryGame is Games.IGameDisconnectedDevices ? "   (devices that are not connected only with --include-disconnected)" : string.Empty));

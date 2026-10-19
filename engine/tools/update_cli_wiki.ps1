@@ -344,6 +344,7 @@ function Get-ArgumentDocLine {
         "--luae" { return "Path to DCS's luae.exe for the load check (default: the install's bin\\luae.exe)." }
         "--no-load-check" { return "dcs strip-defaults: skip the check with DCS's own Lua loader after patching (tests only)." }
         "--include-disconnected" { return "dcs verify-clean: also check devices that only have files, through a fake stick of their type (true/false)." }
+        "--include-sim-defaults" { return "MSFS import/scan: also the sim's default presets of devices for which the sim's records (profile_00) do not show whether it uses them." }
         "--max-listed" { return "dcs verify-clean: how many remaining default binds are listed (counts are always complete)." }
         "--backup-path" { return "Override backup folder path for dcs defaults cut/restore. Default: <saved-games>\\BACKUP_JOYSTICK_DEFAULTS." }
         "--ocr" { return "Use OCR image matching click flow instead of fixed XML anchor click offsets (true/false)." }

@@ -23,6 +23,9 @@ public sealed class ExportSettings
     // MSFS import: also the devices that are not connected (off: MSFS keeps the binds of every device it ever saw).
     public bool ImportIncludeDisconnected { get; set; }
 
+    // MSFS import: also the sim's default presets whose use the sim's records do not show (off: only the ones they name).
+    public bool ImportIncludeSimDefaults { get; set; }
+
     // The check list's filters (Show Errors / Show Warnings).
     public bool ValidationShowErrors { get; set; } = true;
     public bool ValidationShowWarnings { get; set; }

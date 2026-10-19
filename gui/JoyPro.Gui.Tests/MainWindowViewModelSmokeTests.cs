@@ -792,19 +792,24 @@ public sealed class MainWindowViewModelSmokeTests
 
         await vm.ImportRegistryGameCommand.ExecuteAsync(null);
         Assert.DoesNotContain("--include-disconnected", Assert.Single(fake.Calls, c => ContainsSequence(c, "msfs2024", "import")));
+        Assert.DoesNotContain("--include-sim-defaults", Assert.Single(fake.Calls, c => ContainsSequence(c, "msfs2024", "import")));
 
         fake.Calls.Clear();
         vm.ImportIncludeDisconnected = true;
+        vm.ImportIncludeSimDefaults = true;
         await vm.ImportRegistryGameCommand.ExecuteAsync(null);
         Assert.Contains("--include-disconnected", Assert.Single(fake.Calls, c => ContainsSequence(c, "msfs2024", "import")));
+        Assert.Contains("--include-sim-defaults", Assert.Single(fake.Calls, c => ContainsSequence(c, "msfs2024", "import")));
         await vm.ScanRegistryGameCommand.ExecuteAsync(null);
         Assert.Contains("--include-disconnected", Assert.Single(fake.Calls, c => ContainsSequence(c, "msfs2024", "scan")));
+        Assert.Contains("--include-sim-defaults", Assert.Single(fake.Calls, c => ContainsSequence(c, "msfs2024", "scan")));
 
         fake.Calls.Clear();
         vm.SelectedRegistryGame = vm.RegistryGames.Single(g => g.GameId == "WarThunder");
         Assert.False(vm.SelectedRegistryGameKeepsDisconnectedDevices);
         await vm.ImportRegistryGameCommand.ExecuteAsync(null);
         Assert.DoesNotContain("--include-disconnected", Assert.Single(fake.Calls, c => ContainsSequence(c, "warthunder", "import")));
+        Assert.DoesNotContain("--include-sim-defaults", Assert.Single(fake.Calls, c => ContainsSequence(c, "warthunder", "import")));
     }
 
     [Fact]

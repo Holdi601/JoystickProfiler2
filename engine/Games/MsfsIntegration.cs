@@ -16,7 +16,7 @@ namespace JoyPro.Engine.Games
     // (flight and general ones; menus, world map and developer tools stay the sim's, see IsManagedContext);
     // JoyPro's ownership data and backups live under %LOCALAPPDATA%\JoyPro, never in the synced folder.
     // See docs/games/msfs.md.
-    internal sealed class MsfsIntegration : IGameIntegration, IGameImportReading, IGameDisconnectedDevices, IGameOwnershipTracking, IGameProfileSelection, IGameAircraftScope, IGameCatalogRefreshFiles
+    internal sealed class MsfsIntegration : IGameIntegration, IGameImportReading, IGameDisconnectedDevices, IGameSimDefaults, IGameOwnershipTracking, IGameProfileSelection, IGameAircraftScope, IGameCatalogRefreshFiles
     {
         private readonly int sim;
 
@@ -37,6 +37,10 @@ namespace JoyPro.Engine.Games
 
         // Import and scan: also the profiles of devices that are not connected (--include-disconnected).
         public bool IncludeDisconnectedDevices { get; set; }
+
+        // Import and scan: also the sim's default presets of devices whose use the sim's records do not show
+        // (--include-sim-defaults; GUI: "Also import default presets the sim may not use").
+        public bool IncludeUnknownSimDefaults { get; set; }
 
         // --aircraft: the relations limited to this aircraft are exported too (for every aircraft; see PerAircraftNote).
         public string ExportAircraft { get; set; }
@@ -317,7 +321,7 @@ namespace JoyPro.Engine.Games
                 profiles = WithoutDisconnectedDevices(profiles, devices, result);
             if (simDefaults)
             {
-                List<MsfsProfileFile> defaults = SimDefaultProfiles(profiles, devices, result);
+                List<MsfsProfileFile> defaults = SimDefaultProfiles(profiles, devices, configPath, result);
                 if (defaults.Count > 0 && profiles.Count == 0)
                 {
                     // Nothing saved yet: the defaults are the import, the "no profile found" reason only a log line.
@@ -418,17 +422,24 @@ namespace JoyPro.Engine.Games
         }
 
         // The sim's default preset of every connected device and category without an own profile (the user's profile
-        // first, then JoyPro's package preset, then the shipped default).
-        private List<MsfsProfileFile> SimDefaultProfiles(List<MsfsProfileFile> own, GameDeviceDirectory devices, GameScanResult result)
+        // first, then JoyPro's package preset, then the shipped default the sim's records show it uses).
+        private List<MsfsProfileFile> SimDefaultProfiles(List<MsfsProfileFile> own, GameDeviceDirectory devices, string configPath, GameScanResult result)
         {
             if (devices == null || !devices.Devices.Any(d => d.Connected))
                 return new List<MsfsProfileFile>();
             List<MsfsSimDefaults.Preset> presets = MsfsSimDefaults.ShippedPresets(sim, new List<string>());
             if (presets.Count == 0)
                 return new List<MsfsProfileFile>();
-            Dictionary<Guid, int> simIds = sim == 2024 ? MsfsCommunityPackage.SimProductIds() : new Dictionary<Guid, int>();
-            List<MsfsProfileFile> defaults = MsfsSimDefaults.ForConnectedDevices(sim, presets, own, devices.Devices, simIds, result.Steps).Select(a => a.Profile).ToList();
-            if (defaults.Count == 0 && own.Count == 0)
+            // The sim's device records (profile_00, Steam and Store) say which preset it applies to a device.
+            MsfsSimProfile simProfile = MsfsSimProfile.Load(sim, new[] { MsfsUserProfiles.WgsFolderOf(configPath) });
+            if (simProfile.Sources.Count > 0)
+                result.Steps.Add("The sim's device records (profile_00) were read from " +
+                                 string.Join(" and ", simProfile.Sources.Select(s => MsfsUserProfiles.IsStorePath(s) ? "the Microsoft Store save" : "Steam").Distinct()) +
+                                 ": they say which default preset the sim uses for a device.");
+            int withPresets;
+            List<MsfsProfileFile> defaults = MsfsSimDefaults.ForConnectedDevices(sim, presets, own, devices.Devices, simProfile, IncludeUnknownSimDefaults, result.Steps, out withPresets)
+                .Select(a => a.Profile).ToList();
+            if (defaults.Count == 0 && own.Count == 0 && withPresets == 0)
                 result.Steps.Add("None of the connected devices has a default preset of the sim (" + presets.Count.ToString(CultureInfo.InvariantCulture) +
                                  " shipped presets checked by product ID): the sim shows no binds for them until you bind something in Controls.");
             return defaults;
