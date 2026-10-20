@@ -250,13 +250,13 @@ engine profile save "C:\profiles\my_setup.pr0file"
   engine msfs2024 paths
   engine msfs2024 catalog
   engine msfs2024 scan [<config-path>] [--path <config-path>] [--game-profile <name>] [--include-disconnected] [--include-sim-defaults]
-  engine msfs2024 import [<config-path>] [--path <config-path>] [--replace] [--include-keyboard] [--game-profile <name>] [--include-disconnected] [--include-sim-defaults]   (devices that are not connected only with --include-disconnected)
+  engine msfs2024 import [<config-path>] [--path <config-path>] [--replace] [--include-keyboard] [--game-profile <name>] [--include-disconnected] [--include-sim-defaults] [--limit-to-profile-aircraft]   (devices that are not connected only with --include-disconnected)
   engine msfs2024 export [<config-path>] [--path <config-path>] [--mode clean|add|merge|merge-overwrite] [--dry-run] [--include-keyboard] [--nuke-untouched-devices] [--game-profile <name>] [--aircraft <aircraft-key>]   (flight only: clean takes over the devices it writes, nuke clears unused devices)
   engine msfs2024 refresh-db [<source-path>] [--dry-run]   (builds the catalog from the installed game, or adds its new actions; writes it only when it changes)
   engine msfs2020 paths
   engine msfs2020 catalog
   engine msfs2020 scan [<config-path>] [--path <config-path>] [--game-profile <name>] [--include-disconnected] [--include-sim-defaults]
-  engine msfs2020 import [<config-path>] [--path <config-path>] [--replace] [--include-keyboard] [--game-profile <name>] [--include-disconnected] [--include-sim-defaults]   (devices that are not connected only with --include-disconnected)
+  engine msfs2020 import [<config-path>] [--path <config-path>] [--replace] [--include-keyboard] [--game-profile <name>] [--include-disconnected] [--include-sim-defaults] [--limit-to-profile-aircraft]   (devices that are not connected only with --include-disconnected)
   engine msfs2020 export [<config-path>] [--path <config-path>] [--mode clean|add|merge|merge-overwrite] [--dry-run] [--include-keyboard] [--nuke-untouched-devices] [--game-profile <name>] [--aircraft <aircraft-key>]   (flight only: clean takes over the devices it writes, nuke clears unused devices)
   engine msfs2020 refresh-db [<source-path>] [--dry-run]   (builds the catalog from the installed game, or adds its new actions; writes it only when it changes)
   engine bms paths
@@ -444,7 +444,7 @@ engine profile save "C:\profiles\my_setup.pr0file"
   engine relations assistant "<message>" [--relation <name>] [--llm auto|on|off] [--max-steps N] [--show-prompt]
   engine relations rename <relation> <new name>
   engine relations aircraft <relation> [--node game:id]
-  engine relations aircraft set <relation> --node game:id [--on p1|p2] [--off p3|p4]
+  engine relations aircraft set <relation> --node game:id [--on p1|p2] [--off p3|p4] [--only p1|p2]
   engine relations check-aircraft [--relation <name>] [--apply] [--include-same-function]
   engine relations meanings [--game g] [--top N]
   engine relations action-info --coverage [--game g]
@@ -2833,7 +2833,7 @@ Examples:
 engine msfs2024 scan --text
 ```
 
-### `engine msfs2024 import [<config-path>] [--path <config-path>] [--replace] [--include-keyboard] [--game-profile <name>] [--include-disconnected] [--include-sim-defaults]   (devices that are not connected only with --include-disconnected)`
+### `engine msfs2024 import [<config-path>] [--path <config-path>] [--replace] [--include-keyboard] [--game-profile <name>] [--include-disconnected] [--include-sim-defaults] [--limit-to-profile-aircraft]   (devices that are not connected only with --include-disconnected)`
 What it does: Imports the game's joystick binds into the loaded profile (merged by default; --replace starts from an empty relation list).
 
 Arguments and example values:
@@ -2845,6 +2845,7 @@ Arguments and example values:
 - `<name>`: Name value for surrounding option. Example: A-10C_2 or LEFT VPC Throttle.
 - `--include-disconnected`: dcs verify-clean: also check devices that only have files, through a fake stick of their type (true/false).
 - `--include-sim-defaults`: MSFS import/scan: also the sim's default presets of devices for which the sim's records (profile_00) do not show whether it uses them.
+- `--limit-to-profile-aircraft`: Command argument. See examples for typical values.
 
 Examples:
 ```powershell
@@ -2921,7 +2922,7 @@ Examples:
 engine msfs2020 scan --text
 ```
 
-### `engine msfs2020 import [<config-path>] [--path <config-path>] [--replace] [--include-keyboard] [--game-profile <name>] [--include-disconnected] [--include-sim-defaults]   (devices that are not connected only with --include-disconnected)`
+### `engine msfs2020 import [<config-path>] [--path <config-path>] [--replace] [--include-keyboard] [--game-profile <name>] [--include-disconnected] [--include-sim-defaults] [--limit-to-profile-aircraft]   (devices that are not connected only with --include-disconnected)`
 What it does: Imports the game's joystick binds into the loaded profile (merged by default; --replace starts from an empty relation list).
 
 Arguments and example values:
@@ -2933,6 +2934,7 @@ Arguments and example values:
 - `<name>`: Name value for surrounding option. Example: A-10C_2 or LEFT VPC Throttle.
 - `--include-disconnected`: dcs verify-clean: also check devices that only have files, through a fake stick of their type (true/false).
 - `--include-sim-defaults`: MSFS import/scan: also the sim's default presets of devices for which the sim's records (profile_00) do not show whether it uses them.
+- `--limit-to-profile-aircraft`: Command argument. See examples for typical values.
 
 Examples:
 ```powershell
@@ -5573,7 +5575,7 @@ Examples:
 engine --help
 ```
 
-### `engine relations aircraft set <relation> --node game:id [--on p1|p2] [--off p3|p4]`
+### `engine relations aircraft set <relation> --node game:id [--on p1|p2] [--off p3|p4] [--only p1|p2]`
 What it does: Runs this command operation.
 
 Arguments and example values:
@@ -5581,6 +5583,7 @@ Arguments and example values:
 - `--node`: Node token format: game:id[:plane1|plane2]. Example: DCS:d3007pnilu3007cd16vd1vpnilvu0:F-16C_50|FA-18C_hornet.
 - `--on`: Command argument. See examples for typical values.
 - `--off`: Command argument. See examples for typical values.
+- `--only`: Command argument. See examples for typical values.
 
 Examples:
 ```powershell

@@ -51,9 +51,14 @@ namespace JoyPro.Engine.Games
                         result.BindingsSkipped++;
                         continue;
                     }
+                    List<string> perAircraft = null;
                     if (limitedTo != null)
                     {
-                        if (pickedAircraft == null || !limitedTo.Contains(pickedAircraft, StringComparer.OrdinalIgnoreCase))
+                        bool picked = pickedAircraft != null && limitedTo.Contains(pickedAircraft, StringComparer.OrdinalIgnoreCase);
+                        // MSFS 2024: the direct write puts it into the own profiles of exactly these aircraft.
+                        if (!picked && scope.WritesLimitedPerAircraft)
+                            perAircraft = limitedTo;
+                        else if (!picked)
                         {
                             result.BindingsSkipped++;
                             if (warnedRelations.Add(relation.NAME ?? entry.Key))
@@ -61,7 +66,8 @@ namespace JoyPro.Engine.Games
                                                     " and was not exported" + (pickedAircraft == null ? "" : " (picked aircraft: " + pickedAircraft + ")") + ". " + scope.PerAircraftNote);
                             continue;
                         }
-                        limitedExported++;
+                        else
+                            limitedExported++;
                     }
 
                     // Axis values as the game uses them: its own scope if the relation has one, else the base.
@@ -79,7 +85,8 @@ namespace JoyPro.Engine.Games
                         SaturationY = tuning.SaturationY,
                         Curvature = new List<double>(tuning.Curvature),
                         RelationName = relation.NAME,
-                        Tuning = relation.ISAXIS ? tuning : null
+                        Tuning = relation.ISAXIS ? tuning : null,
+                        Aircraft = perAircraft
                     });
                 }
             }
@@ -172,6 +179,7 @@ namespace JoyPro.Engine.Games
                     .Select(r => r.Key)
                     .ToList();
                 string unbound = null;
+                string alreadyIn = null;
                 bool alreadyThere = false;
                 foreach (string name in relationsWithNode)
                 {
@@ -186,11 +194,13 @@ namespace JoyPro.Engine.Games
                     else if (string.Equals(BuildSignature(existing.Joystick, relations[name].ISAXIS, existingInput, existing.AllReformers), bindingSignature, StringComparison.OrdinalIgnoreCase))
                     {
                         alreadyThere = true;
+                        alreadyIn = name;
                         break;
                     }
                 }
                 if (alreadyThere)
                 {
+                    ScopeNode(relations[alreadyIn], binding, action, game, result, meta != null);
                     applied.Add(binding);
                     continue;
                 }
@@ -198,6 +208,7 @@ namespace JoyPro.Engine.Games
                 {
                     Bind filled = CreateBind(relations[unbound], binding, action, game);
                     binds[unbound] = filled;
+                    ScopeNode(relations[unbound], binding, action, game, result, meta != null);
                     relationBySignature[bindingSignature] = unbound;
                     result.NodesAddedToExisting++;
                     applied.Add(binding);
@@ -212,6 +223,7 @@ namespace JoyPro.Engine.Games
                         bindingSignature, StringComparison.OrdinalIgnoreCase))
                 {
                     known.AddNode(binding.ActionId, game.GameId, isAxis, game.GameId, false);
+                    ScopeNode(known, binding, action, game, result, true);
                     result.NodesAddedToExisting++;
                     applied.Add(binding);
                     continue;
@@ -226,6 +238,7 @@ namespace JoyPro.Engine.Games
                     (!isAxis || !binds.ContainsKey(relationBySameInput) || binds[relationBySameInput] == null || binds[relationBySameInput].Inverted == binding.Inverted))
                 {
                     relations[relationBySameInput].AddNode(binding.ActionId, game.GameId, isAxis, game.GameId, false);
+                    ScopeNode(relations[relationBySameInput], binding, action, game, result, false);
                     result.NodesAddedToExisting++;
                     applied.Add(binding);
                     continue;
@@ -242,6 +255,7 @@ namespace JoyPro.Engine.Games
                     : new List<string> { "GENERATED", game.DisplayName };
                 relation.NODES = new List<RelationItem>();
                 relation.AddNode(binding.ActionId, game.GameId, isAxis, game.GameId, false);
+                ScopeNode(relation, binding, action, game, result, meta != null);
 
                 Bind bind = CreateBind(relation, binding, action, game);
                 if (meta != null)
@@ -275,6 +289,73 @@ namespace JoyPro.Engine.Games
             InternalDataManagement.ResyncBindsToMods();
             InternalDataManagement.ResyncRelations();
             return applied;
+        }
+
+        // MSFS 2024 per-aircraft import (GameInputBinding.Aircraft). Relations are for all aircraft unless the user splits
+        // them: a bind the sim has only in the profiles of some aircraft is imported for all aircraft and listed
+        // (GameIoResult.OnlyInAircraft, with the command that limits it). Limited to those aircraft right away only
+        // with --limit-to-profile-aircraft, for a node the user had limited already, or for a bind JoyPro exported
+        // (its metadata; a relation JoyPro exported for all aircraft is in every profile, so the sim's layout is the
+        // user's split).
+        // An action the catalog has only for some aircraft (an add-on aircraft's own action) is limited to them.
+        private static void ScopeNode(Relation relation, GameInputBinding binding, GameAction action, IGameIntegration game, GameIoResult result, bool exportedByJoyPro)
+        {
+            List<string> actionAircraft = action != null && action.Aircraft != null && action.Aircraft.Count > 0 && game is IGameAircraftScope && ((IGameAircraftScope)game).WritesLimitedPerAircraft ? action.Aircraft : null;
+            if ((binding.Aircraft == null && actionAircraft == null) || relation == null || relation.NODES == null)
+                return;
+            RelationItem node = relation.NODES.LastOrDefault(n => n != null && GameRegistry.GameMatches(game, n.Game) &&
+                                                                  string.Equals((n.ID ?? string.Empty).Trim(), binding.ActionId, StringComparison.OrdinalIgnoreCase));
+            if (node == null)
+                return;
+            List<string> found = (binding.Aircraft ?? new List<string>()).Where(a => !string.IsNullOrWhiteSpace(a)).Select(a => a.Trim()).Distinct(StringComparer.OrdinalIgnoreCase).ToList();
+            List<string> before = LimitedAircraft(node, game.GameId);
+            if (actionAircraft != null && found.Count == 0)
+                found = actionAircraft.ToList();
+            bool limit = found.Count > 0 && (actionAircraft != null || result.LimitToProfileAircraft || exportedByJoyPro || (before != null && before.Count > 0));
+            node.AIRCRAFT = new Dictionary<string, bool>(StringComparer.OrdinalIgnoreCase);
+            if (!limit)
+            {
+                node.AIRCRAFT[game.GameId] = true;
+                if (found.Count > 0)
+                    NoteOnlyInAircraft(relation, binding, game, result, found);
+                return;
+            }
+            foreach (string aircraft in found)
+                node.AIRCRAFT[aircraft] = true;
+        }
+
+        private static void NoteOnlyInAircraft(Relation relation, GameInputBinding binding, IGameIntegration game, GameIoResult result, List<string> aircraft)
+        {
+            string name = relation.NAME ?? string.Empty;
+            GameAircraftOnlyBind same = result.OnlyInAircraft.FirstOrDefault(o => string.Equals(o.Relation, name, StringComparison.OrdinalIgnoreCase) &&
+                                                                                 string.Equals(o.ActionId, binding.ActionId, StringComparison.OrdinalIgnoreCase));
+            if (same != null)
+            {
+                // The same action of a relation found again (another bind of it): one entry, the aircraft of both.
+                aircraft = same.Aircraft.Union(aircraft, StringComparer.OrdinalIgnoreCase).OrderBy(a => a, StringComparer.OrdinalIgnoreCase).ToList();
+                result.OnlyInAircraft.Remove(same);
+            }
+            Dictionary<string, string> titles = AircraftTitles(game);
+            result.OnlyInAircraft.Add(new GameAircraftOnlyBind
+            {
+                Relation = name,
+                Game = game.GameId,
+                ActionId = binding.ActionId,
+                Device = binding.Device ?? string.Empty,
+                Input = binding.Input ?? string.Empty,
+                Aircraft = aircraft,
+                AircraftText = string.Join(", ", aircraft.Select(a => titles.ContainsKey(a) && titles[a].Length > 0 ? titles[a] : a)),
+                LimitCommand = "relations aircraft set \"" + name + "\" --node " + game.GameId + ":" + binding.ActionId + " --only \"" + string.Join("|", aircraft) + "\""
+            });
+        }
+
+        private static Dictionary<string, string> AircraftTitles(IGameIntegration game)
+        {
+            Dictionary<string, string> titles = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
+            if (game is IGameAircraftScope)
+                foreach (MsfsAircraft aircraft in MsfsAircraftCatalog.Load(MsfsAircraftCatalog.FilePath(game.GameId)))
+                    titles[aircraft.Key] = aircraft.Title ?? string.Empty;
+            return titles;
         }
 
         // The game's axis values (dead zone, saturation, curvature, its own response settings) become the relation's

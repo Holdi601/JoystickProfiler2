@@ -15,6 +15,9 @@ namespace JoyPro.Engine.Games
         // Optional fifth column: the game's own id of the action where the file stores numbers instead of names
         // (Nuclear Option: the Rewired action id; pole rows carry the id of their axis action).
         public string NativeId { get; set; }
+        // Optional sixth column: the aircraft keys the action exists for ('|'-separated; empty = every aircraft). MSFS:
+        // actions of an add-on aircraft (its own presets, or found only in the profiles of some aircraft).
+        public List<string> Aircraft { get; set; }
 
         public GameAction()
         {
@@ -22,6 +25,7 @@ namespace JoyPro.Engine.Games
             Title = string.Empty;
             Category = string.Empty;
             NativeId = string.Empty;
+            Aircraft = new List<string>();
         }
     }
 
@@ -84,6 +88,10 @@ namespace JoyPro.Engine.Games
         // Import: keep Tuning as the game's tuning even when it holds no dead zone or curve (a one-sided throttle the
         // game reads from a game-wide range setting would otherwise be dropped as "neutral").
         public bool KeepTuning { get; set; }
+        // MSFS 2024 per-aircraft binds (the sim's own profiles per device and aircraft). Export: null = every aircraft,
+        // else the aircraft keys the relation is limited to. Import: null = not known per aircraft, empty = found in every
+        // profile of its device and category (all aircraft), else the aircraft of the profiles it was found in.
+        public List<string> Aircraft { get; set; }
 
         public GameInputBinding()
         {
@@ -154,10 +162,16 @@ namespace JoyPro.Engine.Games
         // Games that write into the user's own profiles (MSFS 2024): per device and category which profile was
         // updated, or why not.
         public List<GameProfileUpdate> ProfileUpdates { get; private set; }
+        // MSFS 2024 import: binds the sim has only in the profiles of some aircraft, imported for all aircraft (the
+        // user splits; docs/games/msfs.md "Per-aircraft binds"). LimitToProfileAircraft (--limit-to-profile-aircraft)
+        // limits them to those aircraft right away.
+        public List<GameAircraftOnlyBind> OnlyInAircraft { get; private set; }
+        public bool LimitToProfileAircraft { get; set; }
 
         public GameIoResult()
         {
             ProfileUpdates = new List<GameProfileUpdate>();
+            OnlyInAircraft = new List<GameAircraftOnlyBind>();
             Game = string.Empty;
             Action = string.Empty;
             ConfigPath = string.Empty;
@@ -181,12 +195,28 @@ namespace JoyPro.Engine.Games
         public int Binds { get; set; }
         // "<relation> (<action>) (<category>) - <reason>" of every bind that did not land.
         public List<string> NotWritten { get; set; }
+        // MSFS 2024: the aircraft the profile is used by, as the user knows them ("" when not known).
+        public string Aircraft { get; set; }
 
         public GameProfileUpdate()
         {
-            Device = Category = Profile = Status = Reason = string.Empty;
+            Device = Category = Profile = Status = Reason = Aircraft = string.Empty;
             NotWritten = new List<string>();
         }
+    }
+
+    // A bind found only in the sim's profiles of some aircraft (import result), with the command that limits it.
+    internal sealed class GameAircraftOnlyBind
+    {
+        public string Relation { get; set; }
+        public string Game { get; set; }
+        public string ActionId { get; set; }
+        public string Device { get; set; }
+        public string Input { get; set; }
+        public List<string> Aircraft { get; set; }
+        // The aircraft as the user knows them (catalog titles, the key otherwise).
+        public string AircraftText { get; set; }
+        public string LimitCommand { get; set; }
     }
 
     internal sealed class GameScanResult : GameIoResult
@@ -279,6 +309,9 @@ namespace JoyPro.Engine.Games
         IReadOnlyList<string> AircraftKeys();
         // Why limited relations cannot be exported per aircraft, for the export's warnings.
         string PerAircraftNote { get; }
+        // The export writes relations limited to aircraft per aircraft itself (GameInputBinding.Aircraft; MSFS 2024's
+        // direct write into the sim's own profiles), so they are not skipped before.
+        bool WritesLimitedPerAircraft { get; }
     }
 
     // For games with a generic process name (Cliffs of Dover's "Launcher" is also Falcon BMS's): a running process with

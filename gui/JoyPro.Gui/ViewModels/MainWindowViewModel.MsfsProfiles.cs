@@ -55,9 +55,9 @@ public sealed partial class MainWindowViewModel
         OnPropertyChanged(nameof(HasMsfsProfileUpdates));
     }
 
-    internal sealed record MsfsProfileUpdate(string Device, string Category, string Profile, string Status, string Reason, int Binds, IReadOnlyList<string> NotWritten);
+    internal sealed record MsfsProfileUpdate(string Device, string Category, string Profile, string Status, string Reason, int Binds, IReadOnlyList<string> NotWritten, string Aircraft = "");
 
-    private static readonly Regex ProfileTextLine = new(@"^\s*-\s*(?<device>.+?) \((?<category>General|Airplanes)\): (?<status>updated|unchanged|dry-run|import-file)(?: '(?<profile>.*)')?, (?<binds>\d+) bind\(s\)(?: - (?<reason>.*))?$", RegexOptions.CultureInvariant);
+    private static readonly Regex ProfileTextLine = new(@"^\s*-\s*(?<device>.+?) \((?<category>General|Airplanes)\): (?<status>updated|unchanged|dry-run|import-file)(?: '(?<profile>.*?)'(?: \((?<aircraft>.*)\))?)?, (?<binds>\d+) bind\(s\)(?: - (?<reason>.*))?$", RegexOptions.CultureInvariant);
 
     // The per-device results of an export (its JSON "ProfileUpdates" or the text "Profiles:" section).
     internal static List<MsfsProfileUpdate> ParseMsfsProfileUpdates(string? output)
@@ -78,7 +78,7 @@ public sealed partial class MainWindowViewModel
                         int binds = u.TryGetProperty("Binds", out JsonElement b) && b.ValueKind == JsonValueKind.Number ? b.GetInt32() : 0;
                         List<string> missing = u.TryGetProperty("NotWritten", out JsonElement n) && n.ValueKind == JsonValueKind.Array
                             ? n.EnumerateArray().Where(e => e.ValueKind == JsonValueKind.String).Select(e => e.GetString() ?? string.Empty).ToList() : [];
-                        updates.Add(new MsfsProfileUpdate(S("Device"), S("Category"), S("Profile"), S("Status"), S("Reason"), binds, missing));
+                        updates.Add(new MsfsProfileUpdate(S("Device"), S("Category"), S("Profile"), S("Status"), S("Reason"), binds, missing, S("Aircraft")));
                     }
                 }
                 return updates;
@@ -106,7 +106,7 @@ public sealed partial class MainWindowViewModel
                 continue;
             }
             updates.Add(new MsfsProfileUpdate(match.Groups["device"].Value, match.Groups["category"].Value, match.Groups["profile"].Value, match.Groups["status"].Value,
-                match.Groups["reason"].Value, int.Parse(match.Groups["binds"].Value, CultureInfo.InvariantCulture), []));
+                match.Groups["reason"].Value, int.Parse(match.Groups["binds"].Value, CultureInfo.InvariantCulture), [], match.Groups["aircraft"].Value));
         }
         // Binds that did not land: the text output's warnings.
         List<string> notWritten = Regex.Matches(text, @"MSFS 2024 '(?<device>[^']+)': not written: (?<what>[^\r\n]+?)\.?\r?$", RegexOptions.Multiline)
@@ -123,6 +123,19 @@ public sealed partial class MainWindowViewModel
         foreach (MsfsProfileUpdate u in ParseMsfsProfileUpdates(output))
         {
             string category = u.Category == "General" ? T("General") : T("Airplanes");
+            // MSFS 2024 keeps a profile per device and aircraft: the line names the aircraft that use it.
+            if (u.Aircraft.Length > 0 && u.Status is "updated" or "unchanged" or "dry-run")
+            {
+                lines.Add(u.Status switch
+                {
+                    "updated" => T("{0} ({1}): your profile '{2}' ({3}) updated: {4} bind(s)", u.Device, category, u.Profile, u.Aircraft, u.Binds),
+                    "unchanged" => T("{0} ({1}): your profile '{2}' ({3}) already has the {4} bind(s)", u.Device, category, u.Profile, u.Aircraft, u.Binds),
+                    _ => T("{0} ({1}): your profile '{2}' ({3}) would be updated (dry run)", u.Device, category, u.Profile, u.Aircraft)
+                });
+                foreach (string missing in u.NotWritten)
+                    lines.Add(T("Not written: {0}", missing));
+                continue;
+            }
             lines.Add(u.Status switch
             {
                 "updated" => T("{0} ({1}): your profile '{2}' (active) updated: {3} bind(s)", u.Device, category, u.Profile, u.Binds),

@@ -8,6 +8,13 @@ using CommunityToolkit.Mvvm.Input;
 
 namespace JoyPro.Gui.Models;
 
+// MSFS 2024 import: a bind the sim has only in the profiles of some aircraft, imported for all aircraft, with the engine
+// command that limits it to them (MainWindowViewModel.MsfsAircraftOnly.cs).
+public sealed record MsfsAircraftOnlyBind(string Relation, string ActionId, string Device, string Input, string AircraftText, IReadOnlyList<string> LimitArgs)
+{
+    public string Text => T("Only in the sim's profile(s) of {0}: {1} ({2} {3})", AircraftText, Relation, Device, Input);
+}
+
 // The relation editor (Relations page, MainWindowViewModel.RelationBuilder.cs): what fits the open relation, the actions
 // found by the search, the chat's proposed changes and the game filter chips.
 
@@ -422,6 +429,11 @@ public sealed partial class BuilderSearchResultItem : ObservableObject
 
     // "same id, different meaning in 14 aircraft (left out)" (relations search MeaningNote).
     public string MeaningNote { get; init; } = string.Empty;
+
+    // MSFS: "only for: PMDG 737-800", an add-on aircraft's own action (adding it ticks those aircraft alone).
+    public string OnlyForText { get; set; } = string.Empty;
+
+    public bool HasOnlyFor => OnlyForText.Length > 0;
 
     public bool HasMeaningNote => MeaningNote.Length > 0;
 

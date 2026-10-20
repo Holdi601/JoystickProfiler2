@@ -4345,11 +4345,13 @@ namespace JoyPro.Engine
             string nodeOption = PopOptionValue(args, "--node");
             List<string> on = ParsePlaneList(PopOptionValue(args, "--on"));
             List<string> off = ParsePlaneList(PopOptionValue(args, "--off"));
+            // --only p1|p2: exactly these aircraft ticked (MSFS: the import's "only in some aircraft" list).
+            List<string> only = ParsePlaneList(PopOptionValue(args, "--only"));
             string relationOption = PopOptionValue(args, "--relation");
             if (relationOption != null)
                 args.Insert(0, relationOption);
             if (args.Count == 0)
-                return Fail("relations aircraft [set] <relation> [--node game:id] [--on plane1|plane2] [--off plane3|plane4]");
+                return Fail("relations aircraft [set] <relation> [--node game:id] [--on plane1|plane2] [--off plane3|plane4] [--only plane1|plane2]");
             string query = string.Join(" ", args).Trim();
             List<string> candidates;
             string relationName;
@@ -4375,9 +4377,11 @@ namespace JoyPro.Engine
             {
                 if (id.Length == 0)
                     return Fail("relations aircraft set needs --node game:id.");
-                if (on.Count == 0 && off.Count == 0)
-                    return Fail("relations aircraft set needs --on and/or --off.");
-                result.Changed = EngineIdMeanings.SetSelection(relation, game, id, on, off, result.Errors);
+                if (on.Count == 0 && off.Count == 0 && only.Count == 0)
+                    return Fail("relations aircraft set needs --on, --off or --only.");
+                result.Changed = only.Count > 0
+                    ? EngineIdMeanings.SetOnly(relation, game, id, only, result.Errors)
+                    : EngineIdMeanings.SetSelection(relation, game, id, on, off, result.Errors);
                 if (result.Errors.Count > 0)
                     return Fail(string.Join(" ", result.Errors));
                 InternalDataManagement.ResyncRelations();
@@ -5128,6 +5132,7 @@ namespace JoyPro.Engine
                 single.Planes = ParsePlaneList(planesOption);
                 parsedNodes.Add(single);
             }
+            ApplyCatalogAircraft(parsedNodes);
 
             bool isAxis;
             if (explicitIsAxis.HasValue)
@@ -7135,6 +7140,8 @@ namespace JoyPro.Engine
                 targets.Add(single);
             }
 
+            if (operation == "add")
+                ApplyCatalogAircraft(targets);
             if ((operation == "add" || operation == "enable" || operation == "disable") && targets.Count == 0)
                 return Fail("relations item " + operation + " requires at least one target via --node or --id.");
             if (operation == "remove" && !clearAll && targets.Count == 0)
@@ -9181,6 +9188,32 @@ namespace JoyPro.Engine
                     .ToList();
             }
             return true;
+        }
+
+        // MSFS 2024: an action the catalog has only for some aircraft (an add-on aircraft's own, actions.tsv aircraft
+        // column) comes in ticked for them alone unless the node names aircraft: the one case JoyPro limits a relation
+        // on its own, since the action exists only there.
+        private static void ApplyCatalogAircraft(List<NodeSpec> specs)
+        {
+            Dictionary<string, Games.GameCatalog> catalogs = new Dictionary<string, Games.GameCatalog>(StringComparer.OrdinalIgnoreCase);
+            foreach (NodeSpec spec in specs)
+            {
+                Games.IGameIntegration game;
+                if (spec == null || !Games.GameRegistry.TryResolve(spec.Game, out game))
+                    continue;
+                Games.IGameAircraftScope scope = game as Games.IGameAircraftScope;
+                if (scope == null || !scope.WritesLimitedPerAircraft)
+                    continue;
+                List<string> planes = spec.Planes ?? new List<string>();
+                if (planes.Any(p => !string.Equals(p, game.GameId, StringComparison.OrdinalIgnoreCase) && !string.Equals(p, spec.Game, StringComparison.OrdinalIgnoreCase)))
+                    continue;
+                Games.GameCatalog catalog;
+                if (!catalogs.TryGetValue(game.GameId, out catalog))
+                    catalogs[game.GameId] = catalog = Games.GameCatalogStore.Load(game, null);
+                Games.GameAction action = catalog.Find(spec.Id);
+                if (action != null && action.Aircraft != null && action.Aircraft.Count > 0)
+                    spec.Planes = new List<string>(action.Aircraft);
+            }
         }
 
         private static string EnsureUniqueRelationName(string requested)
@@ -14261,6 +14294,7 @@ namespace JoyPro.Engine
                                             (registryGame is Games.IGameSimDefaults ? " [--include-sim-defaults]" : string.Empty);
                 Console.WriteLine("  engine " + gameArea + " scan [<config-path>] [--path <config-path>]" + profileOption + disconnectedOption);
                 Console.WriteLine("  engine " + gameArea + " import [<config-path>] [--path <config-path>] [--replace] [--include-keyboard]" + profileOption + disconnectedOption +
+                                  (registryGame is Games.IGameAircraftScope ? " [--limit-to-profile-aircraft]" : string.Empty) +
                                   (registryGame is Games.IGameDisconnectedDevices ? "   (devices that are not connected only with --include-disconnected)" : string.Empty));
                 string aircraftOption = registryGame is Games.IGameAircraftScope ? " [--aircraft <aircraft-key>]" : string.Empty;
                 Console.WriteLine("  engine " + gameArea + " export [<config-path>] [--path <config-path>] [--mode clean|add|merge|merge-overwrite] [--dry-run] [--include-keyboard] [--nuke-untouched-devices]" + profileOption + aircraftOption +
@@ -14355,7 +14389,7 @@ namespace JoyPro.Engine
             Console.WriteLine("  engine relations aircraft <relation> [--node game:id]");
             Console.WriteLine("      every action of the relation with every aircraft that has its id: on / off / not in it, each aircraft's own title");
             Console.WriteLine("      and category of the id and same / near / differs to the action's meaning (\"82 of 84 aircraft\").");
-            Console.WriteLine("  engine relations aircraft set <relation> --node game:id [--on p1|p2] [--off p3|p4]");
+            Console.WriteLine("  engine relations aircraft set <relation> --node game:id [--on p1|p2] [--off p3|p4] [--only p1|p2]");
             Console.WriteLine("      one action's aircraft selection in one step (one undo step); --on also adds aircraft to it.");
             Console.WriteLine("  engine relations check-aircraft [--relation <name>] [--apply] [--include-same-function]");
             Console.WriteLine("      actions with switched-on aircraft where the same id means something else than in the others (\"Pitch\" in jets,");

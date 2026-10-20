@@ -134,7 +134,7 @@ namespace JoyPro.Engine.Games
                 return 0;
             if (only != null && only.Count == 0)
                 return 0;
-            Dictionary<Guid, Dictionary<string, List<MsfsWanted>>> wantedByDevice = WantedByDevice(request);
+            Dictionary<Guid, Dictionary<string, List<MsfsWanted>>> wantedByDevice = WantedByDevice(request, false);
             if (wantedByDevice.Count == 0)
                 return 0;
 

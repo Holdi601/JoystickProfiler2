@@ -73,6 +73,9 @@ public sealed partial class MainWindowViewModel
 
     private sealed record RegistryAircraft(string Key, string Title, string Description);
 
+    // Per game: action id -> the aircraft it exists for (actions.tsv sixth column; add-on aircraft actions).
+    private readonly Dictionary<string, Dictionary<string, List<string>>> registryActionAircraft = new(StringComparer.OrdinalIgnoreCase);
+
     private IReadOnlyList<RegistryAircraft> RegistryAircraftOf(string game)
     {
         return registryAircraftLists.TryGetValue(NormalizeRelationGameToken(game), out List<RegistryAircraft>? list) ? list : [];
@@ -358,6 +361,8 @@ public sealed partial class MainWindowViewModel
         await AfterCommandListBuiltAsync(result);
         if (result?.ExitCode != 0)
             return;
+        // MSFS 2024: binds found only in some aircraft's profiles came in for all aircraft; the Relations page offers to limit them.
+        ShowMsfsAircraftOnlyBinds(SelectedRegistryGameIsMsfs2024 ? result.StandardOutput : null);
 
         bool previousSuppress = suppressStageAutoRefresh;
         suppressStageAutoRefresh = true;
@@ -463,6 +468,7 @@ public sealed partial class MainWindowViewModel
     private void LoadRegistryGameDbNodeCatalogs()
     {
         registryAircraftLists.Clear();
+        registryActionAircraft.Clear();
         string? engineDirectory = GetEngineDirectoryOrNull();
         if (engineDirectory == null)
             return;
@@ -477,6 +483,9 @@ public sealed partial class MainWindowViewModel
             List<RegistryAircraft> aircraft = ReadRegistryAircraft(Path.Combine(folder, "aircraft.tsv"));
             if (aircraft.Count > 0)
                 registryAircraftLists[NormalizeRelationGameToken(gameId)] = aircraft;
+            Dictionary<string, List<string>> actionAircraft = CatalogActionAircraft(catalogPath);
+            if (actionAircraft.Count > 0)
+                registryActionAircraft[NormalizeRelationGameToken(gameId)] = actionAircraft;
             List<DbNodeCatalogEntry> entries = [];
             string[] lines;
             try

@@ -35,6 +35,23 @@ namespace JoyPro.Engine.Games
             foreach (string install in GameInstalls.SteamFolders(new[] { sim == 2020 ? SteamApps[1] : SteamApps[0] }, warnings))
                 roots.Add(install);
             roots.AddRange(StoreContentFolders(sim));
+            foreach (string packages in InstalledPackagesPaths(sim))
+            {
+                try
+                {
+                    // Official\OneStore, Official2020\Steam, Official2024\Steam, ...
+                    foreach (string official in Directory.GetDirectories(packages, "Official*"))
+                        roots.AddRange(Directory.GetDirectories(official));
+                }
+                catch (IOException) { }
+                catch (UnauthorizedAccessException) { }
+            }
+            return roots.Where(Directory.Exists).Select(r => Path.GetFullPath(r).TrimEnd('\\')).Distinct(StringComparer.OrdinalIgnoreCase).ToList();
+        }
+
+        // The InstalledPackagesPath folders of the sim's UserCfg.opt (Steam and Microsoft Store).
+        private static List<string> InstalledPackagesPaths(int sim)
+        {
             string roaming = MsfsUserProfiles.RoamingAppData();
             string local = MsfsUserProfiles.LocalAppData();
             string[] cfgs = sim == 2020
@@ -48,6 +65,7 @@ namespace JoyPro.Engine.Games
                     Path.Combine(roaming, "Microsoft Flight Simulator 2024", "UserCfg.opt"),
                     Path.Combine(local, "Packages", "Microsoft.Limitless_8wekyb3d8bbwe", "LocalCache", "UserCfg.opt")
                 };
+            List<string> paths = new List<string>();
             foreach (string cfg in cfgs)
             {
                 try
@@ -55,16 +73,77 @@ namespace JoyPro.Engine.Games
                     if (!File.Exists(cfg))
                         continue;
                     Match m = InstalledPackagesPath.Match(File.ReadAllText(cfg));
-                    if (!m.Success || !Directory.Exists(m.Groups["path"].Value))
-                        continue;
-                    // Official\OneStore, Official2020\Steam, Official2024\Steam, ...
-                    foreach (string official in Directory.GetDirectories(m.Groups["path"].Value, "Official*"))
-                        roots.AddRange(Directory.GetDirectories(official));
+                    if (m.Success && Directory.Exists(m.Groups["path"].Value))
+                        paths.Add(m.Groups["path"].Value);
                 }
                 catch (IOException) { }
                 catch (UnauthorizedAccessException) { }
             }
-            return roots.Where(Directory.Exists).Select(r => Path.GetFullPath(r).TrimEnd('\\')).Distinct(StringComparer.OrdinalIgnoreCase).ToList();
+            return paths;
+        }
+
+        // An add-on package with its own input presets (docs/games/msfs.md "Add-on aircraft"): its InputProfiles\**\*.xml
+        // and, for an aircraft package (manifest content_type AIRCRAFT), the aircraft key its actions are for.
+        internal sealed class AddonPresets
+        {
+            public string Package = string.Empty;
+            public string AircraftKey = string.Empty;
+            public List<string> Files = new List<string>();
+        }
+
+        // Read only: the unpacked add-on packages of the Community folders (Community, Community2024) and of the
+        // Marketplace / OneStore package folders (Official*\<store>\*). Asobo's preset packages, fs-base and JoyPro's
+        // own package are read elsewhere. A package without InputProfiles folder whose files are encrypted archives
+        // (*.fsarchive, the 2024 Marketplace's streamed and protected content) cannot be read: it is counted in
+        // encrypted (package names).
+        public static List<AddonPresets> AddonPresetPackages(int sim, List<string> roots, List<string> encrypted)
+        {
+            List<string> containers = new List<string>();
+            foreach (string packages in InstalledPackagesPaths(sim))
+            {
+                containers.Add(Path.Combine(packages, "Community"));
+                if (sim == 2024)
+                    containers.Add(Path.Combine(packages, "Community2024"));
+            }
+            containers.AddRange(roots.Where(r => (Path.GetFileName(Path.GetDirectoryName(r) ?? string.Empty) ?? string.Empty).StartsWith("Official", StringComparison.OrdinalIgnoreCase)));
+            List<AddonPresets> found = new List<AddonPresets>();
+            HashSet<string> seen = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+            foreach (string container in containers.Where(Directory.Exists).Distinct(StringComparer.OrdinalIgnoreCase))
+            {
+                string[] packages;
+                try
+                {
+                    packages = Directory.GetDirectories(container);
+                }
+                catch (IOException) { continue; }
+                catch (UnauthorizedAccessException) { continue; }
+                foreach (string package in packages.OrderBy(p => p, StringComparer.OrdinalIgnoreCase))
+                {
+                    string name = Path.GetFileName(package);
+                    if (PresetPackages.Contains(name, StringComparer.OrdinalIgnoreCase) || name.StartsWith("fs-base", StringComparison.OrdinalIgnoreCase) ||
+                        string.Equals(name, MsfsCommunityPackage.PackageName, StringComparison.OrdinalIgnoreCase) || !seen.Add(name))
+                        continue;
+                    try
+                    {
+                        string input = Path.Combine(package, "InputProfiles");
+                        if (!Directory.Exists(input))
+                        {
+                            if (Directory.EnumerateFiles(package, "*.fsarchive", SearchOption.TopDirectoryOnly).Any())
+                                encrypted.Add(name);
+                            continue;
+                        }
+                        List<string> files = Directory.GetFiles(input, "*.xml", SearchOption.AllDirectories).OrderBy(f => f, StringComparer.OrdinalIgnoreCase).ToList();
+                        if (files.Count == 0)
+                            continue;
+                        string manifest = Path.Combine(package, "manifest.json");
+                        bool aircraft = File.Exists(manifest) && Regex.IsMatch(File.ReadAllText(manifest), "\"content_type\"\\s*:\\s*\"AIRCRAFT\"", RegexOptions.IgnoreCase);
+                        found.Add(new AddonPresets { Package = name, AircraftKey = aircraft ? MsfsAircraftCatalog.KeyOf(name) : string.Empty, Files = files });
+                    }
+                    catch (IOException) { }
+                    catch (UnauthorizedAccessException) { }
+                }
+            }
+            return found;
         }
 
         // The user's own profiles may join a catalog refresh without --path, unless install detection is off for a

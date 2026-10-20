@@ -176,11 +176,12 @@ reach aircraft the sim has not set up for a device yet).
 - **Which profile is active:** the sim's device records (profile_00: Steam `remote\profile_00`, Store container
   `profile_00`; read only) hold per device and aircraft a General slot and a category slot; an own profile there has
   flag 3 and the name `inputprofile_<n>`, which is the Steam file name and the Store container name. Per device and
-  category the profile most records name is the active one (Airplanes: the category slot of the records with category
-  AIRPLANE; General: the general slot). On the tester's save every VMAX record (4 aircraft) names
-  `inputprofile_0674863296` ("Iain's VMAX Prime General") and `inputprofile_1407711872` ("Iain's VMAX Prime Airplane").
-  Profiles other records name are left alone (a step says so); aircraft-specific slots are not written. No record or
-  none naming an own profile: no direct write, the import file has the binds (with the reason).
+  category every own profile the records name is written (Airplanes: the category slot of the records with category
+  AIRPLANE; General: the general slot), each for the aircraft of its records (see "Per-aircraft binds"). On the
+  tester's save every VMAX record (4 aircraft) names `inputprofile_0674863296` ("Iain's VMAX Prime General") and
+  `inputprofile_1407711872` ("Iain's VMAX Prime Airplane"). Aircraft-specific slots are not written, profile_00 never,
+  and JoyPro makes no new profile. No record or none naming an own profile: no direct write, the import file has the
+  binds (with the reason).
 - **Editing:** the line-based `MsfsProfileFile` editor with the ownership rules as for MSFS 2020: JoyPro adds its binds and
   replaces only binds it wrote or imported (merge-overwrite; ownership per profile, for the Store by save and container,
   since the blob gets a new name on every save), the user's other binds stay, `--nuke-untouched-devices` never clears a
@@ -221,9 +222,9 @@ reach aircraft the sim has not set up for a device yet).
   export edits that file in place (backup `.jpbak` and backup set first, read back, put back on failure). Steam Cloud
   uploads the changed file on the next sync. The test PC's Steam install has no own profile yet, so this is not checked
   with a real Steam profile (only the layout of the remote folder and the Store's names).
-- **Result:** per device and category a line ("MSFS 2024 'VPC VMAX Prime Throttle' (General): your profile 'Iain's VMAX
-  Prime General' (active in 4 of 4 aircraft record(s)): 6 bind(s) ..."), the JSON `ProfileUpdates` (device, category,
-  profile, status updated / unchanged / dry-run / import-file, reason, binds, not written), shown on the Start and
+- **Result:** per profile a line with its aircraft ("MSFS 2024 'VPC VMAX Prime Throttle' (General): your profile 'Iain's
+  VMAX Prime General' (C172, Bonanza G36): 6 bind(s) ..."), the JSON `ProfileUpdates` (device, category, profile, the
+  aircraft, status updated / unchanged / dry-run / import-file, reason, binds, not written), shown on the Start and
   Export pages ("Your MSFS 2024 profiles"). Logging: `MSFS` area (sources, the active profile per device and category,
   each container's old and new number and blob, the index time and flags, failures with the reason), `Backups`,
   `Diagnostics` (`NoteRead` of every profile read, `BeforeWrite` of every file).
@@ -231,7 +232,53 @@ reach aircraft the sim has not set up for a device yet).
   `..._SimRunningOrUnknownIndex_WritesNothing_ImportFilesInstead` (stand-in `gamelaunchhelper.exe` / `FlightSimulator2024.exe`),
   `..._FailureRollsBack_BackupRestoreRoundTrip` (`JOYPRO_TEST_FAULT_WGS=blob|container|index`), `..._MixedCategories_...`,
   `Store2024_BindDeletedInTheSim_IsRemoved_PackagePresetDoesNotBringItBack`, `Steam2024_Export_WritesTheActiveRemoteProfile`,
-  `Store2024_Export_UserProfilesOff_ImportFileNamedLikeTheActiveProfile`.
+  `Store2024_Export_UserProfilesOff_ImportFileNamedLikeTheActiveProfile`, `Steam2024_PerAircraft_EveryProfileGetsTheRelationsOfAllItsAircraft_ImportTicksThem`.
+- **Per-aircraft binds (since 2026-10-20):** MSFS 2024 keeps the profile choice per device and aircraft, so the relations
+  can be limited to aircraft like in DCS: the relation editor lists the aircraft of `DB\MSFS2024\aircraft.tsv` with
+  checkmarks for an MSFS action (`engine relations aircraft [set]`; every aircraft ticked = all aircraft, the node's
+  game key; some ticked = exactly those, as node AIRCRAFT keys). Export with the direct write
+  (`IGameAircraftScope.WritesLimitedPerAircraft`, the binding's `Aircraft`): a relation for all aircraft goes into every
+  profile the records name; a limited one only into the profiles whose aircraft are all ticked. Ticked for only some
+  aircraft of a shared profile: not written there, with a warning by name ("'X' is only for C172, but your profile
+  'Iain GA' is also used by Bonanza: not written there. Give the C172 its own profile in the sim (Controls, with the
+  C172 loaded: duplicate the profile), then export again"). Ticked aircraft without an own profile in the records: a
+  step names them. The sim's record aircraft are the catalog keys (`MsfsAircraftCatalog.KeyOf`); record aircraft the
+  catalog lacks are listed in a step (refresh the DB). Limited relations never go into JoyPro's preset package or the
+  import files (both apply to every aircraft); `--aircraft <key>` still writes the ones limited to that aircraft for all.
+  Import / scan: several own profiles of a device and category that the records name are all read. Relations are
+  general (all aircraft) unless the user splits them (decision 2026-10-20): a bind in only some of the profiles is
+  imported for all aircraft too and listed in the result (JSON `OnlyInAircraft`: relation, action, device, input, the
+  aircraft and `LimitCommand`; text "Only in the sim's profile(s) of C172, Bonanza: <relation> (<device> <input>),
+  imported for all aircraft. Limit: engine relations aircraft set "<relation>" --node MSFS2024:<id> --only "<a>|<b>""),
+  and the GUI shows a hint on the Relations page after the import with "Limit to these aircraft" per relation, "Limit
+  all" and "Keep for all aircraft". `relations aircraft set ... --only a|b` ticks exactly these aircraft.
+  Limited right away (`GameProfileBridge.ScopeNode`): with `msfs2024 import --limit-to-profile-aircraft`, for a node the
+  user had limited already (game state wins), for a bind JoyPro exported (its metadata: a relation JoyPro exported for
+  all aircraft is in every profile, so the sim's layout is the user's split; the export/import round trip keeps it),
+  and for an action the catalog has only for some aircraft ("Add-on aircraft" below). Tests:
+  `MsfsProfileImportTests.Steam2024_PerAircraft_...` (Steam save with a shared General profile and an Airplanes profile
+  each for C172 and Bonanza: general relation in both, C172 relation only in the C172's, the shared-profile warning,
+  the import round trip), `Steam2024_BindOnlyInSomeAircraftsProfiles_IsImportedForAllAircraft_AndListedToLimit`. Not
+  done: per-aircraft write into the aircraft slot (aircraft-specific presets of the aircraft's own package), MSFS 2020
+  (one profile per device).
+- **Add-on aircraft (since 2026-10-20):** aircraft of the Marketplace or the Community folder with controls of their own.
+  `actions.tsv` has an optional sixth column, the aircraft keys an action exists for (`id, title, kind, context,
+  native id, a|b`; empty = every aircraft). Filled by (a) import / scan: an action the user's profiles bind or list
+  that the list lacks joins it with its context (any `^[A-Z][A-Z0-9_]*$` id, also without `KEY_`, e.g.
+  `PMDG_737_EFIS_CPT_MODE`), and when only some of the own profiles of a device and category have it (one per
+  aircraft), with the aircraft of those; (b) `msfs2024|msfs2020 refresh-db` (without `--path`), read only:
+  `MsfsGameData.AddonPresetPackages` reads the unpacked packages in `Community` / `Community2024` of the
+  InstalledPackagesPath and in `Official*\<store>\*` (Marketplace / OneStore) with an `InputProfiles\**\*.xml` folder
+  (Asobo's preset packages, fs-base and JoyPro's package excluded); their actions the list lacks join it, for the
+  package's aircraft when its manifest says `content_type` AIRCRAFT (key as in `aircraft.tsv`), else for all. A
+  package without InputProfiles that holds encrypted `.fsarchive` archives is skipped and named in the step ("1
+  encrypted package(s) skipped (.fsarchive, not readable: ...)"). The sim's own actions stay general. Relation editor:
+  a search row of such an action says "only for: <aircraft>", and adding it (`relations add` / `relations item add`
+  with no aircraft in the node) ticks those aircraft alone: the only case JoyPro splits on its own, since the action
+  exists only there. The import limits a relation of such an action to those aircraft too, without listing it. Test:
+  `Steam2024_RefreshDb_ReadsAddonPackagePresets_ActionsTaggedWithTheirAircraft` (synthetic Community2024 aircraft
+  package with a preset, an encrypted package). Not checked against a real add-on (none installed on a test PC): the
+  ids and contexts real add-ons use in their presets are unverified; lowercase ids would be left out.
 - **Import, scan and the watcher's diff** read the user's own profile as the truth of its device and category: JoyPro's
   package preset of the same device and category is not read beside it, and a package preset of a device the sim has
   records of counts only where a record names it (tester: deleted ATC Panel Choice 0 in the sim, the diff showed 0

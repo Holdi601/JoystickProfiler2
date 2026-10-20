@@ -46,6 +46,7 @@ public sealed partial class MainWindowViewModel
             ExplanationSource = ReadJsonString(item, "ExplanationSource")
         };
         row.Aircraft = ParseAircraftVariants(item, row.Title);
+        row.OnlyForText = OnlyForText(row.Game, row.Id);
         return row;
     }
 
@@ -240,7 +241,10 @@ public sealed partial class MainWindowViewModel
                 if (!game.Equals("DCS", StringComparison.OrdinalIgnoreCase))
                 {
                     item.UseTitle(ReadJsonString(node, "Title"), ReadJsonString(node, "Explanation"));
-                    continue;
+                    // MSFS: the aircraft of JoyPro's aircraft list get checkmarks like DCS (every one ticked = all aircraft);
+                    // a game without such a list reports only itself.
+                    if (!HasOwnAircraftList(game, node))
+                        continue;
                 }
                 List<AircraftChoiceItem> choices = [];
                 if (node.TryGetProperty("Aircraft", out JsonElement aircraft) && aircraft.ValueKind == JsonValueKind.Array)
@@ -283,6 +287,11 @@ public sealed partial class MainWindowViewModel
         OnPropertyChanged(nameof(MixedRelationNodesText));
     }
 
+    // A game node whose aircraft report lists aircraft of the game's list (MSFS), not only the game itself.
+    internal static bool HasOwnAircraftList(string game, JsonElement node) =>
+        node.TryGetProperty("Aircraft", out JsonElement aircraft) && aircraft.ValueKind == JsonValueKind.Array &&
+        aircraft.EnumerateArray().Any(a => !IsAllAircraftScope(game, ReadJsonString(a, "Plane")));
+
     // The actions whose aircraft are open (relation|game|id): they stay open when the relation is loaded again.
     private readonly HashSet<string> expandedNodeAircraft = new(StringComparer.OrdinalIgnoreCase);
 
@@ -303,7 +312,7 @@ public sealed partial class MainWindowViewModel
                 node.Aircraft.IsExpanded = !node.Aircraft.IsExpanded;
             return;
         }
-        if (!node.Game.Equals("DCS", StringComparison.OrdinalIgnoreCase))
+        if (!node.Game.Equals("DCS", StringComparison.OrdinalIgnoreCase) && !node.Game.StartsWith("MSFS", StringComparison.OrdinalIgnoreCase))
             return;
         string key = NodeAircraftKey(node);
         if (!expandedNodeAircraft.Remove(key))

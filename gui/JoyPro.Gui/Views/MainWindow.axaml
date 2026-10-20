@@ -1557,6 +1557,31 @@
                                                     </Expander>
                                                 </StackPanel>
                                             </Border>
+                                            <!-- MSFS 2024 import: binds the sim has only in some aircraft's profiles came in for all aircraft -->
+                                            <Border Classes="callout" Padding="8,6" IsVisible="{Binding HasMsfsAircraftOnlyBinds}">
+                                                <StackPanel Spacing="4">
+                                                    <Grid ColumnDefinitions="*,Auto,Auto" ColumnSpacing="6">
+                                                        <TextBlock Text="{Binding MsfsAircraftOnlyTitle}" FontWeight="SemiBold" TextWrapping="Wrap" VerticalAlignment="Center" />
+                                                        <Button Grid.Column="1" Classes="small accent" Content="{l:T 'Limit all'}" Command="{Binding LimitAllMsfsAircraftOnlyBindsCommand}" VerticalAlignment="Center"
+                                                                ToolTip.Tip="{l:T 'Each of them only for the aircraft whose profiles in the sim had it. Ctrl+Z undoes one at a time.'}" />
+                                                        <Button Grid.Column="2" Classes="small ghost" Content="{l:T 'Keep for all aircraft'}" Command="{Binding DismissMsfsAircraftOnlyBindsCommand}" VerticalAlignment="Center"
+                                                                ToolTip.Tip="{l:T 'Hide this notice'}" />
+                                                    </Grid>
+                                                    <ScrollViewer MaxHeight="160" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
+                                                        <ItemsControl ItemsSource="{Binding MsfsAircraftOnlyBinds}">
+                                                            <ItemsControl.ItemTemplate>
+                                                                <DataTemplate x:DataType="models:MsfsAircraftOnlyBind">
+                                                                    <Grid ColumnDefinitions="*,Auto" ColumnSpacing="6" Margin="0,1">
+                                                                        <TextBlock Classes="caption" Text="{Binding Text}" TextWrapping="Wrap" VerticalAlignment="Center" />
+                                                                        <Button Grid.Column="1" Classes="small ghost" Content="{l:T 'Limit to these aircraft'}" VerticalAlignment="Center"
+                                                                                Command="{Binding #RootWindow.DataContext.LimitMsfsAircraftOnlyBindCommand}" CommandParameter="{Binding}" />
+                                                                    </Grid>
+                                                                </DataTemplate>
+                                                            </ItemsControl.ItemTemplate>
+                                                        </ItemsControl>
+                                                    </ScrollViewer>
+                                                </StackPanel>
+                                            </Border>
                                         </StackPanel>
                                         <Panel>
                                             <StackPanel IsVisible="{Binding HasRelationSelected}" Spacing="6">
@@ -1893,6 +1918,8 @@
                                                                         </Border>
                                                                     </WrapPanel>
                                                                     <TextBlock Classes="warnText" FontSize="11" Text="{Binding VariantText}" IsVisible="{Binding HasVariant}" TextWrapping="Wrap" />
+                                                                    <TextBlock Classes="caption" FontSize="11" Text="{Binding OnlyForText}" IsVisible="{Binding HasOnlyFor}" TextTrimming="CharacterEllipsis"
+                                                                               ToolTip.Tip="{l:T 'This action exists only for these aircraft (their own controls): adding it ticks them alone'}" />
                                                                     <TextBlock Classes="caption" FontSize="11" TextTrimming="CharacterEllipsis" Text="{Binding WhyText}" IsVisible="{Binding HasWhy}" Opacity="0.85" />
                                                                     <TextBlock Classes="caption" FontSize="11" Text="{Binding Explanation}" IsVisible="{Binding HasExplanation}" TextWrapping="Wrap" MaxLines="2"
                                                                                TextTrimming="CharacterEllipsis" ToolTip.Tip="{Binding ExplanationTip}" />

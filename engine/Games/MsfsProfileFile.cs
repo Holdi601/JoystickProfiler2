@@ -131,6 +131,10 @@ namespace JoyPro.Engine.Games
         // Microsoft Store: the save container (inputprofile_<n>) and the user folder of the save the file came from.
         public string StoreContainer { get; set; }
         public string StoreUserFolder { get; set; }
+        // MSFS 2024 import: the aircraft whose records name this profile when the sim uses several own profiles of the
+        // device and category (one per aircraft or group of aircraft); null otherwise. SlotProfiles: how many.
+        public List<string> RecordAircraft { get; set; }
+        public int SlotProfiles { get; set; }
 
         // A default preset the sim ships (read only) taken for a connected device that has no own profile: its binds
         // count for that device (the file's GUID is the one of Asobo's test machine).

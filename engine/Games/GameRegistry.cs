@@ -94,7 +94,8 @@ namespace JoyPro.Engine.Games
         }
     }
 
-    // DB\<Folder>\actions.tsv: "id<TAB>title<TAB>axis|button<TAB>category[<TAB>native id]", '#' starts a comment line.
+    // DB\<Folder>\actions.tsv: "id<TAB>title<TAB>axis|button<TAB>category[<TAB>native id[<TAB>aircraft1|aircraft2]]", '#'
+    // starts a comment line.
     internal static class GameCatalogStore
     {
         public const string FileName = "actions.tsv";
@@ -131,7 +132,10 @@ namespace JoyPro.Engine.Games
                     Title = parts[1].Trim(),
                     IsAxis = string.Equals(parts[2].Trim(), "axis", StringComparison.OrdinalIgnoreCase),
                     Category = parts.Length > 3 ? parts[3].Trim() : string.Empty,
-                    NativeId = parts.Length > 4 ? parts[4].Trim() : string.Empty
+                    NativeId = parts.Length > 4 ? parts[4].Trim() : string.Empty,
+                    Aircraft = parts.Length > 5
+                        ? parts[5].Split(new[] { '|' }, StringSplitOptions.RemoveEmptyEntries).Select(a => a.Trim()).Where(a => a.Length > 0).ToList()
+                        : new List<string>()
                 });
             }
 
@@ -153,8 +157,11 @@ namespace JoyPro.Engine.Games
                   .Append(action.Title).Append('\t')
                   .Append(action.IsAxis ? "axis" : "button").Append('\t')
                   .Append(action.Category);
-                if (!string.IsNullOrEmpty(action.NativeId))
-                    sb.Append('\t').Append(action.NativeId);
+                bool hasAircraft = action.Aircraft != null && action.Aircraft.Count > 0;
+                if (!string.IsNullOrEmpty(action.NativeId) || hasAircraft)
+                    sb.Append('\t').Append(action.NativeId ?? string.Empty);
+                if (hasAircraft)
+                    sb.Append('\t').Append(string.Join("|", action.Aircraft));
                 sb.Append("\r\n");
             }
             File.WriteAllText(path, sb.ToString(), new UTF8Encoding(false));

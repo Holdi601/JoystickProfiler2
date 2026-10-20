@@ -617,6 +617,9 @@ namespace JoyPro.Engine
             EngineNodeAircraft report = new EngineNodeAircraft { Relation = relation.NAME, Game = game, Id = node.ID ?? string.Empty };
             Dictionary<string, bool> aircraft = node.AIRCRAFT ?? new Dictionary<string, bool>(StringComparer.OrdinalIgnoreCase);
             List<EngineRelationSuggest.Command> all = Commands(game, node.ID);
+            List<Games.MsfsAircraft> fleet = game == "DCS" ? new List<Games.MsfsAircraft>() : Fleet(game);
+            if (fleet.Count > 0)
+                return FleetReport(report, node, all.FirstOrDefault(), fleet);
             if (game != "DCS")
             {
                 EngineRelationSuggest.Command only = all.FirstOrDefault();
@@ -672,6 +675,40 @@ namespace JoyPro.Engine
             report.Excluded = report.Aircraft.Count(a => a.State == "off" && a.Match == "differs");
             report.Mixed = report.Differs > 0;
             report.Badge = report.Active.ToString(CultureInfo.InvariantCulture) + " of " + report.Available.ToString(CultureInfo.InvariantCulture) + " aircraft";
+            return report;
+        }
+
+        // Games with an aircraft list of their own (MSFS 2020/2024, DB\<game>\aircraft.tsv): a node is for every aircraft
+        // (no entry, or the game's own key) or limited to the aircraft switched on (GameProfileBridge.LimitedAircraft).
+        internal static List<Games.MsfsAircraft> Fleet(string game)
+        {
+            if (!string.Equals(game, "MSFS2020", StringComparison.OrdinalIgnoreCase) && !string.Equals(game, "MSFS2024", StringComparison.OrdinalIgnoreCase))
+                return new List<Games.MsfsAircraft>();
+            return Games.MsfsAircraftCatalog.Load(Games.MsfsAircraftCatalog.FilePath(game.ToUpperInvariant()))
+                .OrderBy(a => a.Title.Length > 0 ? a.Title : a.Key, StringComparer.OrdinalIgnoreCase).ToList();
+        }
+
+        // The node's aircraft of a game with an aircraft list: every aircraft ticked when the node is for all of them.
+        private static EngineNodeAircraft FleetReport(EngineNodeAircraft report, RelationItem node, EngineRelationSuggest.Command only, List<Games.MsfsAircraft> fleet)
+        {
+            EngineActionInfo.Info info = EngineActionInfo.Describe(report.Game, report.Game, node.ID, only != null ? only.Title : node.ID, string.Empty, string.Empty, false);
+            report.Title = info.Readable;
+            report.Explanation = info.Explanation;
+            report.ExplanationSource = info.Source;
+            report.Category = only != null ? only.Category : string.Empty;
+            List<string> limited = Games.GameProfileBridge.LimitedAircraft(node, report.Game);
+            HashSet<string> listed = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+            foreach (Games.MsfsAircraft aircraft in fleet)
+            {
+                listed.Add(aircraft.Key);
+                bool on = limited == null || limited.Contains(aircraft.Key, StringComparer.OrdinalIgnoreCase);
+                report.Aircraft.Add(new EngineNodeAircraftEntry { Plane = aircraft.Key, Title = aircraft.Title, Category = aircraft.Category, State = on ? "on" : "off", Match = "same" });
+            }
+            foreach (string key in (limited ?? new List<string>()).Where(k => !listed.Contains(k)))
+                report.Aircraft.Add(new EngineNodeAircraftEntry { Plane = key, Title = string.Empty, State = "on", Match = "unknown", Note = "not in JoyPro's aircraft list" });
+            report.Available = report.Aircraft.Count;
+            report.Active = report.Aircraft.Count(a => a.State == "on");
+            report.Badge = limited == null ? "all aircraft" : report.Active.ToString(CultureInfo.InvariantCulture) + " of " + report.Available.ToString(CultureInfo.InvariantCulture) + " aircraft";
             return report;
         }
 
@@ -770,6 +807,9 @@ namespace JoyPro.Engine
             }
             if (node.AIRCRAFT == null)
                 node.AIRCRAFT = new Dictionary<string, bool>(StringComparer.OrdinalIgnoreCase);
+            List<Games.MsfsAircraft> fleet = g == "DCS" ? new List<Games.MsfsAircraft>() : Fleet(g);
+            if (fleet.Count > 0)
+                return SetFleetSelection(relation, node, g, fleet, on, off);
             int changed = 0;
             foreach (string plane in (on ?? new List<string>()).Where(p => !string.IsNullOrWhiteSpace(p)))
             {
@@ -789,6 +829,46 @@ namespace JoyPro.Engine
                     changed++;
                 }
             }
+            relation.RecalculateElementCount();
+            return changed;
+        }
+
+        // Exactly these aircraft ticked: the others of the game's aircraft list (and of the node) switched off.
+        internal static int SetOnly(Relation relation, string game, string id, ICollection<string> only, List<string> errors)
+        {
+            string g = EngineRelationSuggest.GameKey(game ?? string.Empty);
+            HashSet<string> keep = new HashSet<string>(only.Select(p => p.Trim()), StringComparer.OrdinalIgnoreCase);
+            List<string> off = (g == "DCS" ? new List<string>() : Fleet(g).Select(a => a.Key)).Where(k => !keep.Contains(k)).ToList();
+            RelationItem node = (relation.NODES ?? new List<RelationItem>()).FirstOrDefault(n => n != null && string.Equals(n.ID, id, StringComparison.OrdinalIgnoreCase) &&
+                                                                                           string.Equals(EngineRelationSuggest.GameKey(n.Game ?? string.Empty), g, StringComparison.OrdinalIgnoreCase));
+            if (node != null && node.AIRCRAFT != null)
+                off.AddRange(node.AIRCRAFT.Where(p => p.Value && !keep.Contains(p.Key) && !string.Equals(p.Key, g, StringComparison.OrdinalIgnoreCase)).Select(p => p.Key));
+            return SetSelection(relation, game, id, keep, off.Distinct(StringComparer.OrdinalIgnoreCase).ToList(), errors);
+        }
+
+        // A game with an aircraft list: every aircraft ticked = for all aircraft (the game's own key), else exactly the
+        // ticked ones (none = the action switched off).
+        private static int SetFleetSelection(Relation relation, RelationItem node, string game, List<Games.MsfsAircraft> fleet, ICollection<string> on, ICollection<string> off)
+        {
+            List<string> limited = Games.GameProfileBridge.LimitedAircraft(node, game);
+            HashSet<string> ticked = new HashSet<string>(limited ?? fleet.Select(a => a.Key), StringComparer.OrdinalIgnoreCase);
+            int changed = 0;
+            foreach (string plane in (on ?? new List<string>()).Where(p => !string.IsNullOrWhiteSpace(p)))
+                if (ticked.Add(plane.Trim()))
+                    changed++;
+            foreach (string plane in (off ?? new List<string>()).Where(p => !string.IsNullOrWhiteSpace(p)))
+                if (ticked.Remove(plane.Trim()))
+                    changed++;
+            if (changed == 0)
+                return 0;
+            node.AIRCRAFT = new Dictionary<string, bool>(StringComparer.OrdinalIgnoreCase);
+            if (fleet.All(a => ticked.Contains(a.Key)))
+                node.AIRCRAFT[game] = true;
+            else if (ticked.Count == 0)
+                node.AIRCRAFT[game] = false;
+            else
+                foreach (string plane in ticked.OrderBy(p => p, StringComparer.OrdinalIgnoreCase))
+                    node.AIRCRAFT[plane] = true;
             relation.RecalculateElementCount();
             return changed;
         }

@@ -245,9 +245,9 @@ public sealed partial class MsfsProfileImportTests
         (int code, string export) = Engine(home, "--profile", profile, "msfs2024", "export", community, "--text");
 
         Assert.True(code == 0, export);
-        Assert.Contains("MSFS 2024 'VPC VMAX Prime Throttle' (General): your profile 'VMAX General' (active in 2 of 2 aircraft record(s)): 3 bind(s)", export);
-        Assert.Contains("MSFS 2024 'VPC VMAX Prime Throttle' (Airplanes): your profile 'VMAX Planes' (active in 2 of 2 aircraft record(s)): 2 bind(s)", export);
-        Assert.Contains("VPC VMAX Prime Throttle (General): updated 'VMAX General', 3 bind(s)", export);
+        Assert.Contains("MSFS 2024 'VPC VMAX Prime Throttle' (General): your profile 'VMAX General' (Cessna 172 Skyhawk (G1000), Beechcraft Bonanza G36): 3 bind(s)", export);
+        Assert.Contains("MSFS 2024 'VPC VMAX Prime Throttle' (Airplanes): your profile 'VMAX Planes' (Cessna 172 Skyhawk (G1000), Beechcraft Bonanza G36): 2 bind(s)", export);
+        Assert.Contains("VPC VMAX Prime Throttle (General): updated 'VMAX General' (Cessna 172 Skyhawk (G1000), Beechcraft Bonanza G36), 3 bind(s)", export);
         Assert.Contains("Microsoft Store save written (2 profile(s)); backup of the whole save: set ", export);
         Assert.DoesNotContain("not written", export);
         // Covered by the direct write: no import file needed.
@@ -297,10 +297,10 @@ public sealed partial class MsfsProfileImportTests
         Dictionary<string, string> hashes = Hashes(user);
         (int againCode, string again) = Engine(home, "--profile", profile, "msfs2024", "export", community, "--text");
         Assert.True(againCode == 0, again);
-        Assert.Contains("VPC VMAX Prime Throttle (General): unchanged 'VMAX General', 3 bind(s)", again);
+        Assert.Contains("VPC VMAX Prime Throttle (General): unchanged 'VMAX General' (Cessna 172 Skyhawk (G1000), Beechcraft Bonanza G36), 3 bind(s)", again);
         Assert.Equal(hashes, Hashes(user));
         // The GUI's result lines, from the text and from the JSON output.
-        Assert.Contains("VPC VMAX Prime Throttle (General): your profile 'VMAX General' (active) already has the 3 bind(s)", MainWindowViewModel.MsfsProfileUpdateLines(again));
+        Assert.Contains("VPC VMAX Prime Throttle (General): your profile 'VMAX General' (Cessna 172 Skyhawk (G1000), Beechcraft Bonanza G36) already has the 3 bind(s)", MainWindowViewModel.MsfsProfileUpdateLines(again));
         (int jsonCode, string json) = Engine(home, "--profile", profile, "msfs2024", "export", community);
         Assert.True(jsonCode == 0, json);
         List<MainWindowViewModel.MsfsProfileUpdate> updates = MainWindowViewModel.ParseMsfsProfileUpdates(json);
@@ -552,7 +552,7 @@ public sealed partial class MsfsProfileImportTests
         (int code, string export) = Engine(home, "--profile", profile, "msfs2024", "export", community, "--text");
 
         Assert.True(code == 0, export);
-        Assert.Contains("your profile 'VMAX General' (active in 1 of 1 aircraft record(s)): 3 bind(s)", export);
+        Assert.Contains("your profile 'VMAX General' (Cessna 172 Skyhawk (G1000)): 3 bind(s)", export);
         Assert.Contains("(Steam, inputprofile_0000000102)", export);
         Assert.Matches("(?s)KEY_ATC_MENU_0\"[^>]*>\\s*<Primary>\\s*<KEY Information=\"Joystick Button 2\">1</KEY>", File.ReadAllText(Path.Combine(remote, "inputprofile_0000000102")));
         // profile_00 is never written; the old file is in the backups.

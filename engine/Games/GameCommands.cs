@@ -77,6 +77,11 @@ namespace JoyPro.Engine.Games
             // where it is, only for this refresh.
             ForeignOodleDll = PopValue(args, "--oodle-dll");
             PopFlag(args, "--merge");
+            // MSFS 2024 import: binds the sim has only in some aircraft's profiles are limited to those aircraft (default:
+            // for all aircraft, listed in the result).
+            bool limitToProfileAircraft = PopFlag(args, "--limit-to-profile-aircraft");
+            if (limitToProfileAircraft && (action != "import" || !(game is IGameAircraftScope)))
+                return Fail("--limit-to-profile-aircraft is only valid with an import of a game with an aircraft list (msfs2024 import).");
             string positionalPath = args.FirstOrDefault(a => !a.StartsWith("--", StringComparison.Ordinal));
             if (positionalPath != null)
                 args.Remove(positionalPath);
@@ -156,7 +161,7 @@ namespace JoyPro.Engine.Games
                 case "scan":
                     return RunScan(game, explicitPath, textOutput, out payload);
                 case "import":
-                    return RunImport(game, explicitPath, !replace, includeKeyboard, textOutput, out payload);
+                    return RunImport(game, explicitPath, !replace, includeKeyboard, limitToProfileAircraft, textOutput, out payload);
                 case "export":
                     return RunExport(game, explicitPath, modeRaw, dryRun, includeKeyboard, nuke, textOutput, out payload);
                 case "refresh-db":
@@ -227,7 +232,7 @@ namespace JoyPro.Engine.Games
             return result.Errors.Count == 0 ? 0 : 1;
         }
 
-        private static int RunImport(IGameIntegration game, string explicitPath, bool merge, bool includeKeyboard, bool textOutput, out string payload)
+        private static int RunImport(IGameIntegration game, string explicitPath, bool merge, bool includeKeyboard, bool limitToProfileAircraft, bool textOutput, out string payload)
         {
             GameScanResult result;
             if (!TryReadGameFile(game, explicitPath, "import", out result))
@@ -236,6 +241,7 @@ namespace JoyPro.Engine.Games
                 return 1;
             }
 
+            result.LimitToProfileAircraft = limitToProfileAircraft;
             GameCatalog catalog = GameCatalogStore.Load(game, new List<string>());
             List<GameInputBinding> toImport = WithoutKeyboard(result.Bindings, includeKeyboard, result, "imported");
             List<GameInputBinding> applied = GameProfileBridge.ApplyImport(game, catalog, toImport, merge, result);
@@ -645,7 +651,8 @@ namespace JoyPro.Engine.Games
                     result.Steps,
                     result.Warnings,
                     result.Errors,
-                    ProfileUpdates = result.ProfileUpdates.Select(u => new { u.Device, u.Category, u.Profile, u.Status, u.Reason, u.Binds, u.NotWritten }).ToList()
+                    ProfileUpdates = result.ProfileUpdates.Select(u => new { u.Device, u.Category, u.Profile, u.Status, u.Reason, u.Binds, u.NotWritten, u.Aircraft }).ToList(),
+                    OnlyInAircraft = result.OnlyInAircraft.Select(o => new { o.Relation, o.Game, o.ActionId, o.Device, o.Input, o.Aircraft, o.AircraftText, o.LimitCommand }).ToList()
                 });
             }
 
@@ -670,8 +677,11 @@ namespace JoyPro.Engine.Games
             AppendList(sb, "Files Written", result.FilesWritten);
             if (bindings != null && bindings.Count > 0)
                 AppendList(sb, "Bindings", bindings.Select(b => b.Describe()).ToList());
-            AppendList(sb, "Profiles", result.ProfileUpdates.Select(u => u.Device + " (" + u.Category + "): " + u.Status + (u.Profile.Length > 0 ? " '" + u.Profile + "'" : string.Empty) +
+            AppendList(sb, "Profiles", result.ProfileUpdates.Select(u => u.Device + " (" + u.Category + "): " + u.Status + (u.Profile.Length > 0 ? " '" + u.Profile + "'" + (u.Aircraft.Length > 0 ? " (" + u.Aircraft + ")" : string.Empty) : string.Empty) +
                                                                         ", " + u.Binds.ToString(CultureInfo.InvariantCulture) + " bind(s)" + (u.Reason.Length > 0 ? " - " + u.Reason : string.Empty)).ToList());
+            // Imported for all aircraft; "engine <command>" limits one (--limit-to-profile-aircraft: all at once).
+            AppendList(sb, "Only In Some Aircraft", result.OnlyInAircraft.Select(o => "Only in the sim's profile(s) of " + o.AircraftText + ": " + o.Relation + " (" + o.Device + " " + o.Input +
+                                                                                      "), imported for all aircraft. Limit: engine " + o.LimitCommand).ToList());
             AppendList(sb, "Steps", result.Steps);
             AppendList(sb, "Warnings", result.Warnings);
             AppendList(sb, "Errors", result.Errors);
