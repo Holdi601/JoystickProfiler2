@@ -98,8 +98,11 @@ try {
     Assert-NotMatch (Run-Engine @("--profile", $syncDcsProfile, "relations", "show", "Shared One", "--text")).Output "d3003pnilunilcd2vd1vpnilvunil" "the new bind must not go into the other candidate."
     $syncNew = Run-Engine @("--profile", $syncDcsProfile, "binds", "tuning", "show", "Sync Pitch Game", "--text")
     Assert-Match $syncNew.Output "base: inv=0;sl=0;dz=0\.15;sx=1;sy=1;cv=0\.2(\r|\n|$)" ("the new relation should have the game's tuning without float noise: " + $syncNew.Output)
-    $syncOld = Run-Engine @("--profile", $syncDcsProfile, "relations", "show", "Sync Pitch", "--text")
-    Assert-NotMatch $syncOld.Output "a2001cdnil" "the axis moved into the new relation must leave the old one."
+    # The old relation loses the axis; with no action left it goes away with its bind (2.2.10).
+    if ((Run-Engine @("--profile", $syncDcsProfile, "relations", "list", "--text")).Output -match "(?m)^Sync Pitch \|") {
+        $syncOld = Run-Engine @("--profile", $syncDcsProfile, "relations", "show", "Sync Pitch", "--text")
+        Assert-NotMatch $syncOld.Output "a2001cdnil" "the axis moved into the new relation must leave the old one."
+    }
     $syncOne = Run-Engine @("--profile", $syncDcsProfile, "relations", "show", "Shared One", "--text")
     Assert-Match $syncOne.Output "id=d3001pnilunilcd2vd1vpnilvunil, aircraft=F-16C_50" "an ignored removal must keep the relation as it was."
     $syncAfter = SyncJson (Run-Engine @("sync", "status", "--game", "DCS", "--path", $syncDcsRoot)).Output
@@ -185,7 +188,9 @@ try {
     Assert-Match (Run-Engine @("--profile", $syncWtProfile, "relations", "show", "WT Shared Brake", "--text")).Output "id=ID_ROCKETS" "the rockets bind should join WT Shared Brake."
     Assert-NotMatch (Run-Engine @("--profile", $syncWtProfile, "relations", "show", "WT Shared Bombs", "--text")).Output "id=ID_ROCKETS" "the rockets bind must not join the other candidate."
     Assert-Match (Run-Engine @("--profile", $syncWtProfile, "binds", "tuning", "show", "WT Elevator Game", "--game", "WarThunder", "--text")).Output "game:WarThunder: [^\r\n]*n\.innerDeadzone=0\.15" "the new relation should get the game's tuning as its War Thunder tuning."
-    Assert-NotMatch (Run-Engine @("--profile", $syncWtProfile, "relations", "show", "Pitch axis", "--text")).Output "id=elevator" "the elevator moved into the new relation must leave the old one."
+    if ((Run-Engine @("--profile", $syncWtProfile, "relations", "list", "--text")).Output -match "(?m)^Pitch axis \|") {
+        Assert-NotMatch (Run-Engine @("--profile", $syncWtProfile, "relations", "show", "Pitch axis", "--text")).Output "id=elevator" "the elevator moved into the new relation must leave the old one."
+    }
     Assert-Match (Run-Engine @("--profile", $syncWtProfile, "relations", "show", "Toggle Gear", "--text")).Output "id=ID_GEAR" "an ignored removal must keep the gear relation."
     Assert-True ((SyncJson (Run-Engine @("sync", "status", "--game", "WarThunder", "--path", $syncBlk)).Output).Games[0].State -eq "unchanged") "after sync apply machine.blk counts as known."
     Assert-True (@((SyncJson (Run-Engine @("--profile", $syncWtProfile, "sync", "diff", "--game", "WarThunder", "--path", $syncBlk)).Output).Changes).Count -eq 0) "after sync apply nothing is offered again."

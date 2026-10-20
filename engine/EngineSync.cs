@@ -1888,7 +1888,10 @@ namespace JoyPro.Engine
                 InternalDataManagement.AllRelations[relationName] = relation;
                 InternalDataManagement.AllBinds[relationName] = bind;
                 foreach (string old in change.Relations)
+                {
                     RemoveNode(game, old, change);
+                    RemoveIfEmpty(old, steps);
+                }
                 steps.Add("New relation '" + relationName + "': " + Describe(change));
                 return true;
             }
@@ -1909,6 +1912,7 @@ namespace JoyPro.Engine
                     return false;
                 }
                 steps.Add("Relation '" + name + "': " + Describe(change));
+                RemoveIfEmpty(name, steps);
                 return true;
             }
             if (existing.ISAXIS != change.IsAxis && existing.NODES != null && existing.NODES.Count > 0)
@@ -1942,7 +1946,10 @@ namespace JoyPro.Engine
             if (change.Kind != "added")
             {
                 foreach (string old in change.Relations.Where(r => !string.Equals(r, name, StringComparison.OrdinalIgnoreCase)))
+                {
                     RemoveNode(game, old, change);
+                    RemoveIfEmpty(old, steps);
+                }
             }
             if (change.IsAxis && change.NewTuning != null && change.Kind != "changed-modifiers")
                 SetTuning(game, existing, targetBind, change.Plane, change.NewTuning, false);
@@ -2005,6 +2012,20 @@ namespace JoyPro.Engine
         private static void AddNode(SyncGame game, Relation relation, SyncChange change)
         {
             relation.AddNode(change.ActionId, game.Id, change.IsAxis, change.Plane, false);
+        }
+
+        // A relation that holds no action any more after a take-over (its last action was removed or moved in the game)
+        // goes away with its bind, as an import would leave it out (tester report on 2.2.9).
+        private static void RemoveIfEmpty(string relationName, List<string> steps)
+        {
+            Relation relation;
+            if (string.IsNullOrWhiteSpace(relationName) || !InternalDataManagement.AllRelations.TryGetValue(relationName, out relation) || relation == null)
+                return;
+            if (relation.NODES != null && relation.NODES.Count > 0)
+                return;
+            InternalDataManagement.AllRelations.Remove(relationName);
+            InternalDataManagement.AllBinds.Remove(relationName);
+            steps.Add("Relation '" + relationName + "' removed with its bind: it holds no action any more.");
         }
 
         // Takes the action (in this plane) out of a relation; returns whether it held it.

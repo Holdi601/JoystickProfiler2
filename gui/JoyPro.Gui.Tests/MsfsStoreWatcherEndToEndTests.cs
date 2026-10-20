@@ -167,6 +167,7 @@ public sealed class MsfsStoreWatcherEndToEndTests : IDisposable
         Assert.Equal("import", status.GetProperty("Reason").GetString());
         Assert.Equal([name], status.GetProperty("ProcessNames").EnumerateArray().Select(n => n.GetString()));
         Assert.Contains("KEY_ATC_MENU_0", File.ReadAllText(profile));
+        Assert.Contains("ATC Menu 0 |", Engine("--profile", profile, "relations", "list", "--text").Output);
 
         (MainWindowViewModel vm, RecordingEngine client, List<string> notices) = await StartGuiAsync();
         try
@@ -187,6 +188,10 @@ public sealed class MsfsStoreWatcherEndToEndTests : IDisposable
             await vm.TakeOverGameChangesCommand.ExecuteAsync(null);
             Assert.False(vm.HasGameSyncChanges);
             Assert.DoesNotContain("KEY_ATC_MENU_0", File.ReadAllText(profile));
+            // Its relation held only that action: it goes away with its bind (tester report on 2.2.9), as an import
+            // would leave it out.
+            Assert.DoesNotContain("ATC Menu 0 |", Engine("--profile", profile, "relations", "list", "--text").Output);
+            Assert.DoesNotContain("ATC Menu 0 |", Engine("--profile", profile, "binds", "list", "--text").Output);
             (int diffCode, string diff) = Engine("--profile", profile, "sync", "diff", "--game", "MSFS2024");
             Assert.True(diffCode == 0, diff);
             Assert.Contains("\"Changes\":[]", diff);
