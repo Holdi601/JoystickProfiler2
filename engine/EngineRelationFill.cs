@@ -60,13 +60,38 @@ namespace JoyPro.Engine
 
         // The aircraft of one name: its designation (the first word with a digit) against the catalog ids.
         // Targets are "GAME|plane": a DCS aircraft ("DCS|F-15ESE") or a whole other game ("StarCitizen|StarCitizen").
+        // Product names that are no aircraft id: Flaming Cliffs (2024 / 3) is its set of aircraft; the MiG-29A module is
+        // MiG-29-Fulcrum (the FC MiG-29 is "mig-29").
+        private static readonly Dictionary<string, string[]> Products = new Dictionary<string, string[]>(StringComparer.Ordinal)
+        {
+            { "flamingcliffs2024", new[] { "a-10a", "F-15C", "J-11A", "mig-29", "mig-29c", "mig-29g", "su-25", "su-25T", "su-27", "su-33" } },
+            { "fc2024", new[] { "a-10a", "F-15C", "J-11A", "mig-29", "mig-29c", "mig-29g", "su-25", "su-25T", "su-27", "su-33" } },
+            { "flamingcliffs3", new[] { "a-10a", "F-15C", "J-11A", "mig-29", "mig-29c", "mig-29g", "su-25", "su-25T", "su-27", "su-33" } },
+            { "fc3", new[] { "a-10a", "F-15C", "J-11A", "mig-29", "mig-29c", "mig-29g", "su-25", "su-25T", "su-27", "su-33" } },
+            { "mig29a", new[] { "MiG-29-Fulcrum" } },
+            { "mig29afulcrum", new[] { "MiG-29-Fulcrum" } },
+            { "mig29fulcrum", new[] { "MiG-29-Fulcrum" } },
+        };
+
         public static List<string> Resolve(string name)
         {
             List<string> planes = DcsPlanes();
             string whole = Norm(name);
-            List<string> exact = planes.Where(p => Norm(p) == whole).Select(p => "DCS|" + p).ToList();
-            if (exact.Count > 0)
-                return exact;
+            if (Products.TryGetValue(whole, out string[] product))
+            {
+                List<string> set = product.SelectMany(id => planes.Where(p => string.Equals(p, id, StringComparison.OrdinalIgnoreCase))).Select(p => "DCS|" + p).ToList();
+                if (set.Count > 0)
+                    return set;
+            }
+            List<string> exactIds = planes.Where(p => Norm(p) == whole).ToList();
+            if (exactIds.Count > 0)
+            {
+                // With its other seats (C-130J -> C-130J_LoadMaster, C-130J_UI).
+                return planes.Where(p => exactIds.Any(id => string.Equals(p, id, StringComparison.OrdinalIgnoreCase) ||
+                                                            p.StartsWith(id + "_", StringComparison.OrdinalIgnoreCase) ||
+                                                            p.StartsWith(id + " ", StringComparison.OrdinalIgnoreCase)))
+                    .Select(p => "DCS|" + p).ToList();
+            }
             string game = Games().FirstOrDefault(g => whole.Length >= 3 && (Norm(g) == whole || Norm(EngineRelationAssistantGameNames.Label(g)) == whole));
             if (game != null)
                 return new List<string> { game + "|" + game };

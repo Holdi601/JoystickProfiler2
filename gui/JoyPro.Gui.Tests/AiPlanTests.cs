@@ -41,11 +41,12 @@ public sealed class AiPlanTests
         Environment.SetEnvironmentVariable("JOYPRO_DATA_DIR", Path.Combine(folder, "data"));
         string profile = Path.Combine(folder, "plan.pr0file");
         using (Process start = Process.Start(new ProcessStartInfo(engine, "--profile \"" + profile + "\" relations from-text \"speed brake in and out on all jets\"")
-               { UseShellExecute = false, CreateNoWindow = true, RedirectStandardOutput = true, RedirectStandardError = true })!)
+               { UseShellExecute = false, CreateNoWindow = true, RedirectStandardOutput = true, RedirectStandardError = true, WorkingDirectory = Path.GetDirectoryName(engine)! })!)
         {
-            await start.StandardOutput.ReadToEndAsync();
+            string output = await start.StandardOutput.ReadToEndAsync();
+            string errors = await start.StandardError.ReadToEndAsync();
             await start.WaitForExitAsync();
-            Assert.Equal(0, start.ExitCode);
+            Assert.True(start.ExitCode == 0, "relations from-text failed (" + start.ExitCode + "): " + errors + output);
         }
         // Every engine the view model starts, also a late background one after the test, uses this test's data folder
         // (an engine copies the game DBs into its data folder, which other tests read).
