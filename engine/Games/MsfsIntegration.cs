@@ -75,7 +75,7 @@ namespace JoyPro.Engine.Games
             {
                 return sim == 2020
                     ? "Experimental. Close MSFS 2020 first. JoyPro edits the device profiles in the Steam remote folder (inputprofile_*); Steam Cloud can restore older profiles. The Microsoft Store version's profiles are imported, not written. Presets apply to every aircraft: relations limited to MSFS aircraft are only exported for the aircraft picked with --aircraft."
-                    : "Experimental. Close MSFS 2024 first. JoyPro writes its presets as a package into the sim's Community2024 folder (joypro-input-profiles); the sim uses them for every aircraft it has not configured for that device yet. Aircraft configured before keep their settings, so each export also writes one file per device and category into Documents\\JoyPro\\MSFS 2024 import files: import it in the sim (Controls > device > category > cogwheel of the preset > Import). Import reads your own profiles (Steam and Microsoft Store) and JoyPro's presets. Presets apply to every aircraft: relations limited to MSFS aircraft are only exported for the aircraft picked with --aircraft.";
+                    : "Experimental. Close MSFS 2024 first. JoyPro writes your binds into the profile the sim uses for each device and category (Steam remote folder or Microsoft Store save, backed up before every write; --user-profiles false turns it off) and its presets as a package into the sim's Community2024 folder (joypro-input-profiles) for aircraft the sim has not set up for a device yet. Where your profile cannot be written, the export writes a file per device and category into Documents\\JoyPro2\\MSFS 2024 import files: import it in the sim (Controls > device > category > cogwheel of the profile > Import). Import reads your own profiles (Steam and Microsoft Store), and JoyPro's presets only for devices without an own profile. Profiles apply to every aircraft: relations limited to MSFS aircraft are only exported for the aircraft picked with --aircraft.";
             }
         }
         public IReadOnlyList<string> ProcessNames { get { return sim == 2020 ? new[] { "FlightSimulator" } : new[] { "FlightSimulator2024" }; } }
@@ -163,6 +163,45 @@ namespace JoyPro.Engine.Games
             List<MsfsProfileFile> profiles = LoadProfiles(configPath, errors, warnings, forImport, notes);
             if (keep != null)
                 profiles = keep(profiles);
+            // The user's own profile is the truth for its device and category: JoyPro's package preset of the same device
+            // and category is not read beside it (a bind the user removed in the sim must not come back from the preset;
+            // tester report "deleted ATC Panel Choice 0 in MSFS, JP did not see it"). The package stays for devices
+            // without an own profile.
+            MsfsSimProfile activeRecords = null;
+            if (forImport && sim == 2024)
+            {
+                HashSet<string> ownKeys = new HashSet<string>(profiles.Where(p => p.Source != MsfsProfileSourceKind.Package && p.Source != MsfsProfileSourceKind.SimDefault).Select(CategorySlotKey), StringComparer.Ordinal);
+                List<MsfsProfileFile> shadowed = profiles.Where(p => p.Source == MsfsProfileSourceKind.Package && ownKeys.Contains(CategorySlotKey(p))).ToList();
+                if (shadowed.Count > 0)
+                {
+                    profiles = profiles.Except(shadowed).ToList();
+                    JoyPro.Logging.JoyProLog.Info("MSFS", "Import: JoyPro's package presets left out where the user has an own profile of the device and category: " +
+                        string.Join("; ", shadowed.Select(p => p.DeviceName + " " + (p.CategoryKey.Length == 0 ? "General" : p.CategoryKey) + " " + p.FilePath)));
+                    notes?.Add(shadowed.Count.ToString(CultureInfo.InvariantCulture) + " JoyPro preset(s) of the Community2024 package not read: your own MSFS profile of that device and category is what the sim uses (" +
+                               string.Join(", ", shadowed.Select(p => p.DeviceName.Trim() + " " + (IsGeneralSlot(p) ? "General" : "Airplanes")).Distinct()) + ").");
+                }
+                activeRecords = MsfsSimProfile.Load(sim, new[] { MsfsUserProfiles.WgsFolderOf(configPath) });
+                // A package preset of a device the sim has records of counts only where a record names it (the sim
+                // applies it); tester: two JoyPro-made relations came back from the preset on an import into a clean
+                // profile although the sim shows them nowhere. No records of the device (never set up): the sim takes
+                // the preset the first time, so it counts.
+                List<MsfsProfileFile> unused = new List<MsfsProfileFile>();
+                foreach (MsfsProfileFile preset in profiles.Where(p => p.Source == MsfsProfileSourceKind.Package))
+                {
+                    List<MsfsSimProfile.Record> deviceRecords = activeRecords.RecordsOf(preset.DeviceGuid)
+                        .Where(r => IsGeneralSlot(preset) || string.IsNullOrEmpty(r.Category) || string.Equals(r.Category, "AIRPLANE", StringComparison.OrdinalIgnoreCase)).ToList();
+                    string file = Path.GetFileName(preset.FilePath).ToLowerInvariant();
+                    if (deviceRecords.Count > 0 && !deviceRecords.Any(r => string.Equals(IsGeneralSlot(preset) ? r.General : (r.AircraftPreset ?? r.CategoryPreset), file, StringComparison.OrdinalIgnoreCase)))
+                        unused.Add(preset);
+                }
+                if (unused.Count > 0)
+                {
+                    profiles = profiles.Except(unused).ToList();
+                    JoyPro.Logging.JoyProLog.Info("MSFS", "Import: JoyPro's package presets the sim's records do not use left out: " + string.Join("; ", unused.Select(p => p.DeviceName + " " + p.FilePath)));
+                    notes?.Add(unused.Count.ToString(CultureInfo.InvariantCulture) + " JoyPro preset(s) of the Community2024 package not read: the sim's records of the device do not use them (" +
+                               string.Join(", ", unused.Select(p => p.DeviceName.Trim() + " " + (IsGeneralSlot(p) ? "General" : "Airplanes")).Distinct()) + ").");
+                }
+            }
             if (!string.IsNullOrWhiteSpace(SelectedProfile))
             {
                 profiles = profiles.Where(p => string.Equals(p.FriendlyName, SelectedProfile, StringComparison.OrdinalIgnoreCase)).ToList();
@@ -184,6 +223,23 @@ namespace JoyPro.Engine.Games
                     string.Join("; ", group.OrderByDescending(p => SavedAt(p.FilePath)).Select(p => "'" + p.FriendlyName + "' saved " + SavedAt(p.FilePath).ToString("yyyy-MM-dd HH:mm:ss", CultureInfo.InvariantCulture) + "Z " + p.FilePath)) +
                     (forImport ? " -> the newest is imported" : " -> skipped for the export (several)"));
                 MsfsProfileFile first = group.First();
+                if (forImport && activeRecords != null && first.Source != MsfsProfileSourceKind.Package)
+                {
+                    // The profile the sim uses (its device records name it) wins over the newest.
+                    int naming, total;
+                    List<string> others;
+                    string active = ActiveOwnProfile(activeRecords, first.DeviceGuid, IsGeneralSlot(first), out naming, out total, out others);
+                    MsfsProfileFile used = active == null ? null : group.FirstOrDefault(p => string.Equals(SimProfileName(p), active, StringComparison.OrdinalIgnoreCase));
+                    if (used != null)
+                    {
+                        selected.Add(used);
+                        JoyPro.Logging.JoyProLog.Info("MSFS", "Import: " + used.DeviceName + " " + (IsGeneralSlot(used) ? "General" : "Airplanes") + ": the sim uses '" + used.FriendlyName + "' (" + active + ", " +
+                                                              naming.ToString(CultureInfo.InvariantCulture) + " of " + total.ToString(CultureInfo.InvariantCulture) + " records) " + used.FilePath);
+                        notes?.Add("Device '" + first.DeviceName.Trim() + "' has " + group.Count().ToString(CultureInfo.InvariantCulture) + " MSFS profiles" + (first.Category.Length > 0 ? " (" + first.Category + ")" : " (General)") +
+                                   "; imported the one the sim uses, '" + used.FriendlyName + "' (others: " + string.Join(", ", group.Where(p => p != used).Select(p => "'" + p.FriendlyName + "'")) + ").");
+                        continue;
+                    }
+                }
                 if (forImport)
                 {
                     List<MsfsProfileFile> newestFirst = group.OrderByDescending(p => SavedAt(p.FilePath)).ToList();
@@ -197,6 +253,17 @@ namespace JoyPro.Engine.Games
                              string.Join(", ", group.Select(p => "'" + p.FriendlyName + "'")) + "); skipped. Pick one with --game-profile <name> or pass its file with --path.");
             }
             return selected;
+        }
+
+        // MSFS 2024: the General (Transversal) slot of a device: a profile without category, or the Transversal preset.
+        private static bool IsGeneralSlot(MsfsProfileFile profile)
+        {
+            return profile.CategoryKey.Length == 0 || profile.IsGeneralCategory;
+        }
+
+        private static string CategorySlotKey(MsfsProfileFile profile)
+        {
+            return profile.DeviceGuid.ToString("N") + "|" + (IsGeneralSlot(profile) ? "G" : profile.CategoryKey == "AIRPLANE" ? "A" : profile.CategoryKey);
         }
 
         private static DateTime SavedAt(string path)
@@ -214,6 +281,8 @@ namespace JoyPro.Engine.Games
         private List<MsfsProfileFile> LoadProfiles(string configPath, List<string> errors, List<string> warnings, bool forImport = false, List<string> notes = null)
         {
             List<KeyValuePair<string, MsfsProfileSourceKind>> files = new List<KeyValuePair<string, MsfsProfileSourceKind>>();
+            // Store profiles: file -> (container, user folder of the save), for ownership and the sim's records.
+            Dictionary<string, KeyValuePair<string, string>> storeContainers = new Dictionary<string, KeyValuePair<string, string>>(StringComparer.OrdinalIgnoreCase);
             List<MsfsProfileSource> userSources = null;
             string package;
             string wgs = MsfsUserProfiles.WgsFolderOf(configPath);
@@ -226,7 +295,11 @@ namespace JoyPro.Engine.Games
                 {
                     userSources = MsfsUserProfiles.UserSources(sim, warnings);
                     foreach (MsfsProfileSource source in userSources)
+                    {
                         files.AddRange(source.Files.Select(f => new KeyValuePair<string, MsfsProfileSourceKind>(f, source.Kind)));
+                        foreach (KeyValuePair<string, KeyValuePair<string, string>> container in source.Containers)
+                            storeContainers[container.Key] = container.Value;
+                    }
                 }
                 if (files.Count == 0)
                 {
@@ -240,6 +313,8 @@ namespace JoyPro.Engine.Games
             {
                 MsfsProfileSource store = MsfsUserProfiles.StoreSource(wgs, warnings);
                 files.AddRange(store.Files.Select(f => new KeyValuePair<string, MsfsProfileSourceKind>(f, MsfsProfileSourceKind.Store)));
+                foreach (KeyValuePair<string, KeyValuePair<string, string>> container in store.Containers)
+                    storeContainers[container.Key] = container.Value;
                 if (files.Count == 0)
                 {
                     errors.Add("No " + DisplayName + " input profile in the Microsoft Store save folder " + wgs + " (" + store.OtherBlobs.ToString(CultureInfo.InvariantCulture) +
@@ -290,6 +365,12 @@ namespace JoyPro.Engine.Games
                         continue;
                 }
                 profile.Source = file.Value;
+                KeyValuePair<string, string> storeContainer;
+                if (storeContainers.TryGetValue(file.Key, out storeContainer))
+                {
+                    profile.StoreContainer = storeContainer.Key;
+                    profile.StoreUserFolder = storeContainer.Value;
+                }
                 EngineDiagnostics.NoteRead(file.Key, DisplayName + " " + file.Value + " profile '" + profile.FriendlyName + "': " + profile.DeviceName +
                     (profile.HasDeviceGuid ? " {" + profile.DeviceGuid.ToString().ToUpperInvariant() + "}" : " (keyboard/mouse/gamepad)") + ", " +
                     (profile.CategoryKey.Length == 0 ? "no category" : profile.CategoryKey) + (profile.IsPreset ? ", preset" : string.Empty) + ", " +
@@ -976,12 +1057,17 @@ namespace JoyPro.Engine.Games
                 // No preset in the package because none of the exported devices is connected (the sim matches a preset
                 // by the device's product ID): the import files still carry the binds (they start from the user's own
                 // profiles), so the export is no failure when they were written.
-                if (isPackage && !request.DryRun && profiles.Count == 0 && result.Errors.Count == 1 && result.Errors[0].Contains("has no presets yet"))
+                if (isPackage && profiles.Count == 0 && result.Errors.Count == 1 && result.Errors[0].Contains("has no presets yet"))
                 {
                     List<string> packageErrors = new List<string>(result.Errors);
                     result.Errors.Clear();
-                    if (WriteSimImportFiles(request, result) > 0)
-                        result.Warnings.Add("JoyPro's MSFS 2024 package got no presets: none of the exported devices is connected (the sim matches a preset by the device's product ID). The import files carry the binds.");
+                    HashSet<string> notWritten = WriteUserProfilesOf2024(request, result);
+                    if (request.DryRun)
+                        return result;
+                    bool direct = result.ProfileUpdates.Any(u => u.Status == "updated" || u.Status == "unchanged");
+                    if (WriteSimImportFiles(request, result, AlwaysWriteImportFiles ? null : notWritten) > 0 || direct)
+                        result.Warnings.Add("JoyPro's MSFS 2024 package got no presets: none of the exported devices is connected (the sim matches a preset by the device's product ID). " +
+                                            (direct ? "Your own MSFS profiles have the binds." : "The import files carry the binds."));
                     else
                         result.Errors.AddRange(packageErrors);
                 }
@@ -996,7 +1082,9 @@ namespace JoyPro.Engine.Games
                 MsfsWanted wanted = null;
                 string reason = action == null ? "not in the " + DisplayName + " catalog." : Encode(binding, action, out guid, out wanted);
                 if (reason.Length == 0 && !profiles.Any(p => p.DeviceGuid == guid))
-                    reason = "no MSFS profile of device '" + binding.Device + "' in " + request.ConfigPath + " (create one in the sim first).";
+                    reason = isPackage
+                        ? "JoyPro's MSFS 2024 package has no preset of device '" + binding.Device + "' (the device must be connected once for it); your own MSFS profile or the import file still gets the bind (see below)."
+                        : "no MSFS profile of device '" + binding.Device + "' in " + request.ConfigPath + " (create one in the sim first).";
                 if (reason.Length > 0)
                 {
                     result.BindingsSkipped++;
@@ -1023,6 +1111,17 @@ namespace JoyPro.Engine.Games
             }
 
             Dictionary<string, string> learnedContexts = LearnContexts(LoadProfiles(request.ConfigPath, new List<string>(), new List<string>()));
+            // MSFS 2024 presets: an action goes into the context the user's own profiles list it in (they list every
+            // action of their contexts; KEY_ACTIVE_PAUSE_TOGGLE is INGAME_UI there, a General bind, while the shared
+            // command list may have it in PLANE from MSFS 2020).
+            if (isPackage && sim == 2024)
+            {
+                foreach (KeyValuePair<string, SortedSet<string>> listed in ListedContexts(OwnProfiles2024()))
+                {
+                    if (!learnedContexts.ContainsKey(listed.Key))
+                        learnedContexts[listed.Key] = ListedContext(listed.Value);
+                }
+            }
             // "<device guid>|<action id>" of every wanted action a profile took (an action goes to one profile of its
             // device: MSFS 2024 keeps a profile per category).
             HashSet<string> placed = new HashSet<string>(StringComparer.Ordinal);
@@ -1102,10 +1201,15 @@ namespace JoyPro.Engine.Games
                     result.Errors.Add(SafeFileIo.Explain(ex, Path.Combine(package, "layout.json")).Message);
                 }
             }
-            // The package reaches only aircraft the sim has not set up for a device yet: the same binds also go into
-            // files in the sim's own format, to import in Controls (MsfsIntegration.ImportFiles.cs).
-            if (isPackage && !request.DryRun && result.Errors.Count == 0)
-                WriteSimImportFiles(request, result);
+            // The package reaches only aircraft the sim has not set up for a device yet: the binds go into the profile
+            // the sim uses for each device and category (MsfsIntegration.UserProfiles.cs), and where that cannot be
+            // done into files in the sim's own format, to import in Controls (MsfsIntegration.ImportFiles.cs).
+            if (isPackage && result.Errors.Count == 0)
+            {
+                HashSet<string> notWritten = WriteUserProfilesOf2024(request, result);
+                if (!request.DryRun)
+                    WriteSimImportFiles(request, result, AlwaysWriteImportFiles ? null : notWritten);
+            }
             return result;
         }
 
@@ -1153,13 +1257,19 @@ namespace JoyPro.Engine.Games
                 if (profile.IsPreset)
                 {
                     // MSFS 2024 package: general binds go into the device's Transversal preset, flight binds into its
-                    // airplane preset.
+                    // airplane preset; the context the user's own profiles list the action in wins.
+                    string listedContext;
+                    bool listed = learnedContexts.TryGetValue(entry.Key, out listedContext) && IsManagedContext(listedContext);
+                    if (listed)
+                        general = IsGeneralContext(listedContext);
                     if (general != profile.IsGeneralCategory)
                         continue;
                     string presetContext;
-                    if (general || FlightContexts.Contains(catalogedNew.Category ?? string.Empty))
+                    if (listed)
+                        presetContext = listedContext;
+                    else if (general || FlightContexts.Contains(catalogedNew.Category ?? string.Empty))
                         presetContext = catalogedNew.Category;
-                    else if (!learnedContexts.TryGetValue(entry.Key, out presetContext))
+                    else
                         presetContext = "PLANE";
                     MsfsAction addedPreset = profile.AddAction(presetContext, entry.Key, catalogedNew.IsAxis ? FlagAxis : FlagDigital);
                     addedPreset.Attributes += " ValueEvent=\"0\"";
@@ -1463,10 +1573,11 @@ namespace JoyPro.Engine.Games
         {
             List<MsfsProfileFile> profiles = LoadSelectedProfiles(configPath, result.Errors, new List<string>(), ImportReading);
             GameCatalog catalog = GameCatalogStore.Load(this, result.Warnings);
-            // Store profiles are never written, so JoyPro owns nothing there.
-            foreach (MsfsProfileFile profile in profiles.Where(p => p.Source != MsfsProfileSourceKind.Store))
+            // The imported binds are JoyPro's in that profile (an export may replace them later). Store profiles get a
+            // key by save and container: their blob gets a new file name on every save.
+            foreach (MsfsProfileFile profile in profiles.Where(p => p.Source != MsfsProfileSourceKind.Store || !string.IsNullOrEmpty(p.StoreContainer)))
             {
-                string ownershipKey = OwnershipKey(profile.FilePath);
+                string ownershipKey = OwnershipKey(StableProfilePath(profile));
                 Dictionary<string, HashSet<string>> owned = GameOwnershipStore.Load(ownershipKey, result.Warnings);
                 foreach (GameInputBinding binding in applied)
                 {

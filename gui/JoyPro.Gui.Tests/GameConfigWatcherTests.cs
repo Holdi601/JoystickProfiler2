@@ -234,6 +234,53 @@ public sealed class GameConfigWatcherTests : IDisposable
         Assert.Equal(1, Volatile.Read(ref raised));
     }
 
+    // MSFS from the Microsoft Store: the sim is any exe in its install folder (here a copy of ping called
+    // gamelaunchhelper.exe, no process name given), and the save folder waits the engine's settle time after the last
+    // write, also after the sim closed (the Xbox app rewrites containers.index for seconds after it).
+    [Fact]
+    public void GameFoundByItsInstallFolder_AndTheSettleTimeOfTheSpec_AreUsed()
+    {
+        string config = Path.Combine(temp, "config.blk");
+        File.WriteAllText(config, "start");
+        string content = Path.Combine(temp, "XboxGames", "Microsoft Flight Simulator 2024", "Content");
+        Directory.CreateDirectory(content);
+        string exe = Path.Combine(content, "gamelaunchhelper.exe");
+        File.Copy(Path.Combine(Environment.SystemDirectory, "PING.EXE"), exe);
+        int raised = 0;
+        using GameConfigWatcher watcher = new(TimeSpan.FromMilliseconds(100), TimeSpan.FromMilliseconds(100));
+        watcher.ConfigChanged += _ => Interlocked.Increment(ref raised);
+        watcher.Update([new GameWatchSpec("MSFS2024", [new GameWatchFolder(temp, ["config.blk"], false)], string.Empty, [], [content + "\\"], 2)]);
+
+        // Settle: two writes 1 s apart are one check, 2 s after the last one.
+        Stopwatch since = Stopwatch.StartNew();
+        File.WriteAllText(config, "first");
+        Thread.Sleep(1000);
+        File.WriteAllText(config, "second");
+        since.Restart();
+        Assert.True(WaitFor(() => Volatile.Read(ref raised) == 1, 6000), "the change should be reported.");
+        Assert.True(since.ElapsedMilliseconds >= 1800, "reported after " + since.ElapsedMilliseconds + " ms, before the settle time");
+        Thread.Sleep(500);
+        Assert.Equal(1, Volatile.Read(ref raised));
+
+        using Process game = Process.Start(new ProcessStartInfo(exe, "-n 60 127.0.0.1") { CreateNoWindow = true, UseShellExecute = false })!;
+        try
+        {
+            File.WriteAllText(config, "changed in the sim");
+            Thread.Sleep(3500);
+            Assert.Equal(1, Volatile.Read(ref raised));
+            game.Kill();
+            Assert.True(game.WaitForExit(10000));
+            since.Restart();
+            Assert.True(WaitFor(() => Volatile.Read(ref raised) == 2, 8000), "the change should be reported once the sim has closed.");
+            Assert.True(since.ElapsedMilliseconds >= 1800, "reported " + since.ElapsedMilliseconds + " ms after the exit, before the settle time");
+        }
+        finally
+        {
+            if (!game.HasExited)
+                game.Kill();
+        }
+    }
+
     [Fact]
     public void RegistryChanges_AreReported_AndTheWatchIsReArmed()
     {

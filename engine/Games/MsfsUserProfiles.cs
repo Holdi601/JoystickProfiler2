@@ -15,7 +15,8 @@ namespace JoyPro.Engine.Games
     //     Microsoft.FlightSimulator_8wekyb3d8bbwe, 2024: Microsoft.Limitless_8wekyb3d8bbwe), the Xbox "connected
     //     storage": containers.index lists the containers, each container folder holds container.<n> (its blob list)
     //     and the blobs, files named by GUID. The input profiles are blobs with the same XML as the Steam files.
-    //     The blobs get new names on every save, so JoyPro never writes there.
+    //     The blobs get new names on every save; JoyPro writes there only through WgsWriter (the profiles the sim uses,
+    //     MsfsIntegration.UserProfiles.cs).
     internal enum MsfsProfileSourceKind
     {
         // A file or folder the user named (--path), or JoyPro's own preset package (MSFS 2024 Community2024).
@@ -36,6 +37,8 @@ namespace JoyPro.Engine.Games
         public List<string> Files = new List<string>();
         // Store only: blobs that could not be read as a profile (to say what was found).
         public int OtherBlobs;
+        // Store only: file -> (container name, user folder of the save).
+        public Dictionary<string, KeyValuePair<string, string>> Containers = new Dictionary<string, KeyValuePair<string, string>>(StringComparer.OrdinalIgnoreCase);
     }
 
     internal sealed class WgsBlob
@@ -159,7 +162,10 @@ namespace JoyPro.Engine.Games
             {
                 string profile = ProfileFileOf(blob.FilePath);
                 if (profile != null)
+                {
                     source.Files.Add(profile);
+                    source.Containers[profile] = new KeyValuePair<string, string>(blob.Container, Path.GetDirectoryName(Path.GetDirectoryName(blob.FilePath)));
+                }
                 else
                     source.OtherBlobs++;
             }
@@ -398,9 +404,14 @@ namespace JoyPro.Engine.Games
                     int nul = name.IndexOf('\0');
                     if (nul >= 0)
                         name = name.Substring(0, nul);
-                    Guid file = new Guid(reader.ReadBytes(16));
-                    reader.ReadBytes(16);
-                    blobs.Add(new WgsBlob { Container = container, Name = name, FilePath = Path.Combine(folder, file.ToString("N").ToUpperInvariant()) });
+                    // The id the cloud knows, then the id of the file on disk (equal when settled; a local change not
+                    // uploaded yet has a new file): the file on disk, else the first one.
+                    Guid cloud = new Guid(reader.ReadBytes(16));
+                    Guid disk = new Guid(reader.ReadBytes(16));
+                    string path = Path.Combine(folder, disk.ToString("N").ToUpperInvariant());
+                    if (!File.Exists(path))
+                        path = Path.Combine(folder, cloud.ToString("N").ToUpperInvariant());
+                    blobs.Add(new WgsBlob { Container = container, Name = name, FilePath = path });
                 }
             }
             return blobs;

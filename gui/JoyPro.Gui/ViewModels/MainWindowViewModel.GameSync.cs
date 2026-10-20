@@ -60,6 +60,13 @@ public sealed partial class MainWindowViewModel
     }
 
     private bool gameSyncWatcherStarted;
+    private string lastUnwatchedGames = string.Empty;
+
+    // How the watcher's thread hands a change to the UI thread (tests: run it at once, there is no UI thread).
+    internal Action<Action> GameSyncPost { get; set; } = action => Dispatcher.UIThread.Post(action);
+
+    // Makes the watcher (tests: other quiet times).
+    internal Func<GameConfigWatcher> GameConfigWatcherFactory { get; set; } = () => new GameConfigWatcher();
 
     // Started once the window is open (RunStartupChecksAsync); also offers what games changed while JoyPro was closed.
     // Once per run. While the GUI runs it owns the watcher: the tray host (JoyPro.Tray) pauses until the GUI ends.
@@ -92,6 +99,14 @@ public sealed partial class MainWindowViewModel
         List<SyncStatusEntry>? entries = SyncOutput.ParseStatus(result.StandardOutput);
         if (entries == null)
             return;
+        // Diagnostics: why an installed game is not watched (untracked: neither exported nor imported yet).
+        string unwatched = string.Join("; ", SyncOutput.DescribeUnwatched(result.StandardOutput));
+        if (unwatched != lastUnwatchedGames)
+        {
+            lastUnwatchedGames = unwatched;
+            if (unwatched.Length > 0)
+                JoyPro.Logging.JoyProLog.Info("Watcher", "Installed games that are not watched: " + unwatched);
+        }
         syncStatusEntries = entries;
         // Changed while JoyPro was closed: checked once the game is not running (the watcher waits for it).
         ApplyGameWatchChoices(checkNow ? entries.Where(e => e.Changed).Select(e => e.WatchKey).ToList() : []);
@@ -120,7 +135,7 @@ public sealed partial class MainWindowViewModel
         pendingGameSyncChecks.RemoveAll(key => !watchedConfigs.ContainsKey(key));
         if (gameConfigWatcher == null)
         {
-            gameConfigWatcher = new GameConfigWatcher();
+            gameConfigWatcher = GameConfigWatcherFactory();
             gameConfigWatcher.ConfigChanged += OnGameConfigChanged;
         }
         gameConfigWatcher.Update(entries.Select(e => e.Spec));
@@ -153,11 +168,13 @@ public sealed partial class MainWindowViewModel
     // From the watcher's thread: the game changed its config and is closed.
     private void OnGameConfigChanged(string watchKey)
     {
-        Dispatcher.UIThread.Post(() =>
+        GameSyncPost(() =>
         {
             // A game unticked meanwhile: its late event is dropped.
             if (watchedConfigs.ContainsKey(watchKey))
                 QueueGameSyncCheck(watchKey);
+            else
+                JoyPro.Logging.JoyProLog.Info("Watcher", watchKey + ": change dropped (no longer watched: unticked or watching turned off)");
         });
     }
 
@@ -339,7 +356,7 @@ public sealed partial class MainWindowViewModel
         if (items.Count == 0)
         {
             // Only changes JoyPro does not manage (or only formatting): nothing to ask, the state is known now.
-            JoyPro.Logging.JoyProLog.Info("Watcher", gameId + ": the config changed, but nothing JoyPro manages; accepted without asking");
+            JoyPro.Logging.JoyProLog.Info("Watcher", gameId + ": the config changed, but nothing JoyPro manages; accepted without asking (" + SyncOutput.DiffCounts(diff.StandardOutput) + ")");
             await RunEngineAsync(["sync", "accept", .. SyncPathArgs(watchKey)], includeProfile: false, mutatesProfile: false,
                 busyLabel: "Marking the " + gameId + " config as known...", forceText: false, background: true);
             return;
@@ -426,12 +443,15 @@ public sealed partial class MainWindowViewModel
         gameSyncWatchKey = string.Empty;
     }
 
-    // After an export the game may be watched for the first time (its fingerprint was just recorded).
-    private void OnEngineCommandFinished(IReadOnlyList<string> commandArgs, int exitCode)
+    // After an export or an import the game may be watched for the first time (its fingerprint was just recorded: an
+    // import records a game that had no record yet). Up to 2.2.8 only an export refreshed the watch list, so a game only
+    // imported was watched from the next start of JoyPro on.
+    internal void OnEngineCommandFinished(IReadOnlyList<string> commandArgs, int exitCode)
     {
         if (exitCode != 0 || !gameSyncWatcherStarted || !WatchGameConfigs || commandArgs.Count < 2)
             return;
-        if (string.Equals(commandArgs[1], "export", StringComparison.OrdinalIgnoreCase) && !commandArgs.Contains("--dry-run", StringComparer.OrdinalIgnoreCase))
-            Dispatcher.UIThread.Post(() => _ = RefreshGameConfigWatcherAsync(checkNow: false));
+        if ((string.Equals(commandArgs[1], "export", StringComparison.OrdinalIgnoreCase) || string.Equals(commandArgs[1], "import", StringComparison.OrdinalIgnoreCase)) &&
+            !commandArgs.Contains("--dry-run", StringComparer.OrdinalIgnoreCase))
+            GameSyncPost(() => _ = RefreshGameConfigWatcherAsync(checkNow: false));
     }
 }

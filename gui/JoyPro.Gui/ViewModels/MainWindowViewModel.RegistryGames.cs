@@ -131,6 +131,7 @@ public sealed partial class MainWindowViewModel
     {
         OnPropertyChanged(nameof(SelectedRegistryGameNotes));
         OnPropertyChanged(nameof(SelectedRegistryGameKeepsDisconnectedDevices));
+        OnPropertyChanged(nameof(SelectedRegistryGameIsMsfs2024));
         OnPropertyChanged(nameof(SelectedRegistryGameSupportsProfiles));
         OnPropertyChanged(nameof(SelectedRegistryGameSupportsRefresh));
         OnPropertyChanged(nameof(SelectedRegistryGameSupportsAircraft));
@@ -390,11 +391,16 @@ public sealed partial class MainWindowViewModel
             args.Add("--nuke-untouched-devices");
         if (SelectedRegistryGame!.SupportsAircraft && !string.IsNullOrWhiteSpace(RegistryGameAircraft))
             args.AddRange(["--aircraft", RegistryGameAircraft.Trim()]);
+        AddMsfsUserProfileOptions(args);
         EngineCommandResult? result = await RunEngineAsync(args, includeProfile: true, mutatesProfile: false, busyLabel: (RegistryGameDryRun ? T("Checking export to ") : T("Exporting to ")) + SelectedRegistryGame!.DisplayName + "...");
         await AfterCommandListBuiltAsync(result);
         // (an export of the other games of the same run leaves the MSFS hint as it is)
-        if (result?.ExitCode == 0 && string.Equals(SelectedRegistryGame?.GameId, "MSFS2024", StringComparison.OrdinalIgnoreCase))
-            MsfsImportFilesFolder = MsfsImportFilesFolderOf(result.StandardOutput) ?? string.Empty;
+        if (result != null && string.Equals(SelectedRegistryGame?.GameId, "MSFS2024", StringComparison.OrdinalIgnoreCase))
+        {
+            if (result.ExitCode == 0)
+                MsfsImportFilesFolder = MsfsImportFilesFolderOf(result.StandardOutput) ?? string.Empty;
+            ShowMsfsProfileUpdates(result.StandardOutput);
+        }
         return result;
     }
 
@@ -405,7 +411,7 @@ public sealed partial class MainWindowViewModel
 
     public bool HasMsfsImportFiles => MsfsImportFilesFolder.Length > 0;
 
-    public string MsfsImportFilesHint => T("MSFS 2024 keeps its own settings for every device and aircraft it has already set up, and there JoyPro's preset is not used. JoyPro also wrote your binds as one file per device and category. In MSFS 2024 open Settings > Controls, pick the device and the category (Airplanes or General), click the cogwheel of the profile (not the preset's), choose Import and select the file of that device and category. Import a file again only when JoyPro's export says it changed.");
+    public string MsfsImportFilesHint => T("Where JoyPro could not write your own MSFS 2024 profile (see above), it wrote your binds as one file per device and category. In MSFS 2024 open Settings > Controls, pick the device and the category (Airplanes or General), click the cogwheel of the profile (not the preset's), choose Import and select the file of that device and category. A file named like your profile asks to overwrite it: confirm, and your profile has JoyPro's binds. Import a file again only when JoyPro's export says it changed.");
 
     partial void OnMsfsImportFilesFolderChanged(string value) => OnPropertyChanged(nameof(HasMsfsImportFiles));
 

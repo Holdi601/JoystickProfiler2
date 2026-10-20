@@ -36,6 +36,9 @@ namespace JoyPro.Engine
             public string Kind { get; set; }
             public IGameIntegration Registry { get; set; }
             public List<string> ProcessNames { get; set; }
+            // Image path prefixes whose processes count as the game too (MSFS Microsoft Store: the XboxGames and
+            // WindowsApps install folders, whatever the exe is called there, e.g. gamelaunchhelper.exe).
+            public List<string> ProcessFolders { get; set; }
         }
 
         internal sealed class SyncWatch
@@ -52,6 +55,10 @@ namespace JoyPro.Engine
             public string OwnedPrefix = string.Empty;
             public List<SyncWatch> Watch = new List<SyncWatch>();
             public bool Exists;
+            // Seconds without a write before the watcher checks (0: the watcher's default). The Microsoft Store's save
+            // folder is written several times within seconds of each other (the sim, then the Xbox app's sync after the
+            // sim closed), so it waits longer and checks once.
+            public int SettleSeconds;
         }
 
         // One file (or the registry key) of a game's config as JoyPro saw it.
@@ -250,8 +257,9 @@ namespace JoyPro.Engine
 
             foreach (StatusResult r in results)
             {
-                JoyPro.Logging.JoyProLog.Debug("Sync", "Status " + r.Game.Id + ": " + r.State + (string.IsNullOrEmpty(r.Location.ConfigPath) ? string.Empty : " | " + r.Location.ConfigPath) +
+                JoyPro.Logging.JoyProLog.Debug("Sync", "Status " + r.Game.Id + ": " + r.State + StateNote(r.State) + (string.IsNullOrEmpty(r.Location.ConfigPath) ? string.Empty : " | " + r.Location.ConfigPath) +
                                                        (r.ChangedFiles.Count > 0 ? " | changed: " + string.Join(", ", r.ChangedFiles) : string.Empty) +
+                                                       WatchNote(r) +
                                                        (r.Warnings.Count > 0 ? " | warnings: " + string.Join(" | ", r.Warnings) : string.Empty));
                 LogComparison(r);
             }
@@ -284,6 +292,32 @@ namespace JoyPro.Engine
             return 0;
         }
 
+        // Why a game is not watched (diagnostics: the support file shows where the chain stops).
+        private static string StateNote(string state)
+        {
+            switch (state)
+            {
+                case "untracked": return " (no export or import recorded yet: the watcher does not watch it)";
+                case "missing": return " (no config found: not watched)";
+                case "not-installed": return " (not installed: not watched)";
+                case "disabled": return " (\"I do not have this game\": not watched)";
+                default: return string.Empty;
+            }
+        }
+
+        // What the watcher gets for a tracked game (folders, filters, processes, wait), when it changed or at most every
+        // 10 minutes per game.
+        private static string WatchNote(StatusResult r)
+        {
+            if (r.Record == null || r.Location == null || !(r.State == "changed" || JoyPro.Logging.JoyProLog.ShouldLog("sync-watch-" + r.Game.Id + "|" + r.Location.ConfigPath, TimeSpan.FromMinutes(10))))
+                return string.Empty;
+            return " | watched: " + (r.Location.RegistryKey.Length > 0 ? r.Location.RegistryKey : string.Join("; ", r.Location.Watch.Select(w => w.Directory + "\\" + string.Join("|", w.Filters) + (w.IncludeSubdirectories ? " (with subfolders)" : string.Empty)))) +
+                   " | processes: " + string.Join(", ", r.Game.ProcessNames ?? new List<string>()) +
+                   ((r.Game.ProcessFolders ?? new List<string>()).Count > 0 ? " and any exe under " + string.Join(", ", r.Game.ProcessFolders) : string.Empty) +
+                   (r.Location.SettleSeconds > 0 ? " | settle " + r.Location.SettleSeconds.ToString(CultureInfo.InvariantCulture) + " s" : string.Empty) +
+                   " | recorded " + (r.Record.Reason ?? "-") + " " + (r.Record.RecordedUtc ?? "-");
+        }
+
         private static object StatusJson(StatusResult r)
         {
             return new
@@ -306,6 +340,8 @@ namespace JoyPro.Engine
                 Watch = r.Location.Watch.Select(w => new { w.Directory, w.Filters, w.IncludeSubdirectories }).ToList(),
                 RegistryKey = r.Location.RegistryKey,
                 ProcessNames = r.Game.ProcessNames,
+                ProcessFolders = r.Game.ProcessFolders ?? new List<string>(),
+                SettleSeconds = r.Location.SettleSeconds,
                 Warnings = r.Warnings
             };
         }
@@ -343,7 +379,8 @@ namespace JoyPro.Engine
             JoyPro.Logging.JoyProLog.Debug("Sync", "Diff " + game.Id + ": " + diff.Changes.Count.ToString(CultureInfo.InvariantCulture) + " change(s)" +
                                                    (diff.Changes.Count == 0 ? " (nothing JoyPro manages changed: only formatting, or binds JoyPro does not manage)" : ": " +
                                                     string.Join("; ", diff.Changes.Take(30).Select(c => c.Id + " " + c.Kind + ": " + Describe(c)))) +
-                                                   " | baseline: " + (diff.HasBaseline ? "yes" : "no") + (diff.Errors.Count > 0 ? " | errors: " + string.Join(" | ", diff.Errors) : string.Empty));
+                                                   " | baseline: " + (diff.HasBaseline ? "yes" : "no") + " | binds JoyPro manages: " + diff.FileBinds.ToString(CultureInfo.InvariantCulture) +
+                                                   " in the game, " + diff.ProfileBinds.ToString(CultureInfo.InvariantCulture) + " in the profile" + (diff.Errors.Count > 0 ? " | errors: " + string.Join(" | ", diff.Errors) : string.Empty));
             payload = textOutput ? DiffText(diff) : EngineSerialization.ToJson(DiffJson(diff));
             if (diff.Errors.Count > 0)
             {
@@ -674,7 +711,69 @@ namespace JoyPro.Engine
                     ProcessNames = integration.ProcessNames.Select(p => Path.GetFileNameWithoutExtension(p)).Where(p => !string.IsNullOrWhiteSpace(p)).Distinct(StringComparer.OrdinalIgnoreCase).ToList()
                 });
             }
+            Dictionary<string, List<string>> testNames = TestProcessNames();
+            foreach (SyncGame game in games)
+            {
+                Games.MsfsIntegration msfs = game.Registry as Games.MsfsIntegration;
+                game.ProcessFolders = msfs != null ? MsfsProcessFolders(msfs.Sim) : new List<string>();
+                List<string> names;
+                if (testNames.TryGetValue(game.Id, out names))
+                    game.ProcessNames = names;
+            }
             return games;
+        }
+
+        // Tests: the process names engine sync status reports for a game instead of the game's own
+        // ("MSFS2024=jpfake1,jpfake2;DCS=x"; "MSFS2024=" for none), so a stand-in process plays the game and a real game
+        // the developer plays meanwhile does not make a test wait (docs/sync-watcher.md, docs/testing.md).
+        public const string TestProcessNamesVariable = "JOYPRO_TEST_GAME_PROCESSES";
+
+        private static Dictionary<string, List<string>> TestProcessNames()
+        {
+            Dictionary<string, List<string>> names = new Dictionary<string, List<string>>(StringComparer.OrdinalIgnoreCase);
+            string value = Environment.GetEnvironmentVariable(TestProcessNamesVariable);
+            if (string.IsNullOrWhiteSpace(value))
+                return names;
+            foreach (string part in value.Split(';'))
+            {
+                int equals = part.IndexOf('=');
+                if (equals <= 0)
+                    continue;
+                names[part.Substring(0, equals).Trim()] = part.Substring(equals + 1).Split(',').Select(n => n.Trim()).Where(n => n.Length > 0).ToList();
+            }
+            return names;
+        }
+
+        // The Microsoft Store build runs from <drive>\XboxGames\<game>\Content (an older install from
+        // <drive>\[Program Files\]WindowsApps\<family>_<version>...): any process started from there counts as the sim,
+        // whatever its exe is called (FlightSimulator2024.exe, gamelaunchhelper.exe). Image path prefixes, compared by the
+        // watcher. Tests (JOYPRO_TEST_MSFS_HOME): <home>\XboxGames only.
+        private static List<string> MsfsProcessFolders(int sim)
+        {
+            List<string> folders = new List<string>();
+            string game = sim == 2020 ? "Microsoft Flight Simulator" : "Microsoft Flight Simulator 2024";
+            string family = Games.MsfsUserProfiles.StorePackageFamily(sim);
+            string familyPrefix = family.Substring(0, family.IndexOf('_') + 1);
+            string home = Environment.GetEnvironmentVariable(Games.MsfsUserProfiles.TestHomeVariable);
+            if (!string.IsNullOrWhiteSpace(home))
+            {
+                folders.Add(Path.Combine(home.Trim(), "XboxGames", game, "Content") + "\\");
+                return folders;
+            }
+            try
+            {
+                folders.AddRange(Games.MsfsGameData.StoreContentFolders(sim).Select(f => f.TrimEnd('\\') + "\\"));
+                foreach (DriveInfo drive in DriveInfo.GetDrives().Where(d => d.DriveType == DriveType.Fixed))
+                {
+                    folders.Add(Path.Combine(drive.Name, "Program Files", "WindowsApps", familyPrefix));
+                    folders.Add(Path.Combine(drive.Name, "WindowsApps", familyPrefix));
+                }
+            }
+            catch (Exception ex) when (ex is IOException || ex is UnauthorizedAccessException)
+            {
+                // A drive that is not ready: its folders are left out.
+            }
+            return folders.Distinct(StringComparer.OrdinalIgnoreCase).ToList();
         }
 
         public static bool TryResolveGame(string name, out SyncGame game)
@@ -777,6 +876,8 @@ namespace JoyPro.Engine
         // Steam: inputprofile_* of every remote folder of the sim (profile_00, which the sim rewrites on every start, is
         // left out); Microsoft Store: containers.index of the save folder, which changes with every save of a container
         // (a save that is no input profile gives an empty diff, accepted without asking). True when one exists.
+        private const int MsfsStoreSettleSeconds = 10;
+
         private static bool AddMsfsUserWatches(Games.MsfsIntegration msfs, SyncLocation location, string configPath, List<string> warnings)
         {
             bool any = false;
@@ -792,6 +893,10 @@ namespace JoyPro.Engine
             {
                 any = true;
                 location.Watch.Add(new SyncWatch { Directory = wgs, Filters = new List<string> { "containers.index" }, IncludeSubdirectories = true });
+                // A save replaces containers.index (deleted and created again) several times: the sim while it runs, the
+                // Xbox app's sync for up to ~15 s after it closed, 3 to 8 s apart (2.2.7 tester logs). One check after
+                // that, instead of one per write that reads the save in the middle of the sync.
+                location.SettleSeconds = MsfsStoreSettleSeconds;
             }
             return any;
         }

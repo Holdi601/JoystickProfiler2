@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -244,9 +244,13 @@ public sealed partial class UserJourneyTests
             string packages = Path.Combine(package, "LocalCache", "Packages");
             Directory.CreateDirectory(Path.Combine(packages, "Community2024"));
             File.WriteAllText(Path.Combine(package, "LocalCache", "UserCfg.opt"), "InstalledPackagesPath \"" + packages + "\"\r\n");
-            MsfsProfileImportTests.WgsWriter.Write(Path.Combine(package, "SystemAppData", "wgs"), "Microsoft.Limitless_8wekyb3d8bbwe",
-                new[] { "x56-stick-custom.xml", "crosswind-2024.xml", "keyboard-2024.xml" }
-                    .Select((f, i) => new MsfsProfileImportTests.WgsContainer("InputProfile_" + i, [new MsfsProfileImportTests.WgsBlobData("data", File.ReadAllBytes(Path.Combine(fixtures, f)), DateTime.Now.AddMinutes(-i))])).ToList());
+            // The sim's records (profile_00) name the X-56's profile as the one it uses; the Crosswind has no record (its
+            // binds go into an import file).
+            List<MsfsProfileImportTests.WgsContainer> containers = new[] { "x56-stick-custom.xml", "crosswind-2024.xml", "keyboard-2024.xml" }
+                .Select((f, i) => new MsfsProfileImportTests.WgsContainer("inputprofile_000000010" + i, [new MsfsProfileImportTests.WgsBlobData("data", File.ReadAllBytes(Path.Combine(fixtures, f)), DateTime.Now.AddMinutes(-i))])).ToList();
+            containers.Add(new("profile_00", [new MsfsProfileImportTests.WgsBlobData("data", MsfsProfileImportTests.SimProfile00.Build(new MsfsProfileImportTests.SimProfile00.Device(
+                new Guid("0000BBBB-0000-4000-8000-000000000201"), 2221, null, null, [new MsfsProfileImportTests.SimProfile00.Rec("asobo-aircraft-c172sp-as1000", null, "inputprofile_0000000100", 3)])), null)]));
+            MsfsProfileImportTests.WgsWriter.Write(Path.Combine(package, "SystemAppData", "wgs"), "Microsoft.Limitless_8wekyb3d8bbwe", containers);
             string? oldHome = Environment.GetEnvironmentVariable("JOYPRO_TEST_MSFS_HOME");
             string? oldDetection = Environment.GetEnvironmentVariable("JOYPRO_INSTALL_DETECTION");
             Environment.SetEnvironmentVariable("JOYPRO_TEST_MSFS_HOME", home);
@@ -291,8 +295,12 @@ public sealed partial class UserJourneyTests
                     await vm.RefreshExportGamesCommand.ExecuteAsync(null);
                 });
                 Note("MSFS 2024 import files: " + (vm.HasMsfsImportFiles ? vm.MsfsImportFilesFolder : "none"));
+                Note("MSFS 2024 profiles: " + string.Join(" | ", vm.MsfsProfileUpdates));
+                if (!vm.HasMsfsProfileUpdates || !vm.MsfsProfileUpdates.Any(l => l.Contains("X-56 Stick Custom", StringComparison.Ordinal)))
+                    Failures.Add("MSFS 2024 export: the Export page does not say which profile of the X-56 got the binds.");
                 if (!vm.HasMsfsImportFiles || Directory.GetFiles(vm.MsfsImportFilesFolder, "*.xml").Length == 0)
-                    Failures.Add("MSFS 2024 export wrote no import files (or the Export page does not show them).");
+                    Failures.Add("MSFS 2024 export wrote no import file for the Crosswind (no record of it in the sim), or the Export page does not show it.");
+                Step("start page: MSFS 2024 options and results", () => { vm!.CurrentStage = UiStage.Start; return Task.CompletedTask; }, extraRender: slug => RenderTall(slug, 3000));
 
                 // No profile anywhere: the error says where JoyPro looked.
                 string empty = Path.Combine(folder, "h0");

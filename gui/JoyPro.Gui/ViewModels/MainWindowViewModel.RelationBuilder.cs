@@ -571,7 +571,8 @@ public sealed partial class MainWindowViewModel
             card.Games = string.Join(", ", RelationNodes.Select(n => n.Game).Where(g => g.Length > 0).Distinct(StringComparer.OrdinalIgnoreCase));
             // The aircraft once each (as the list counts them), with their names for the chip's tooltip.
             card.PlaneIds = RelationNodes
-                .SelectMany(n => n.ActivePlanesText.Split(',', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries))
+                .SelectMany(n => n.ActivePlanesText.Split(',', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries)
+                    .Where(p => n.Game.Equals("DCS", StringComparison.OrdinalIgnoreCase) || !IsAllAircraftScope(n.Game, p)))
                 .Distinct(StringComparer.OrdinalIgnoreCase)
                 .ToList();
             card.Planes = card.PlaneIds.Count.ToString(CultureInfo.InvariantCulture);

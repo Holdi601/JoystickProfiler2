@@ -78,33 +78,9 @@ namespace JoyPro.Engine.Games
             return hashes;
         }
 
-        // The number of files written.
-        private int WriteSimImportFiles(GameExportRequest request, GameIoResult result)
+        // The user's own 2024 profiles (Steam remote folders, Microsoft Store save), read only.
+        private List<MsfsProfileFile> OwnProfiles2024()
         {
-            if (sim != 2024 || request.DryRun || request.Bindings == null)
-                return 0;
-            Dictionary<Guid, Dictionary<string, List<MsfsWanted>>> wantedByDevice = new Dictionary<Guid, Dictionary<string, List<MsfsWanted>>>();
-            foreach (GameInputBinding binding in request.Bindings)
-            {
-                GameAction action = request.Catalog.Find(binding.ActionId);
-                Guid guid;
-                MsfsWanted wanted;
-                if (action == null || Encode(binding, action, out guid, out wanted).Length > 0)
-                    continue;
-                Dictionary<string, List<MsfsWanted>> byAction;
-                if (!wantedByDevice.TryGetValue(guid, out byAction))
-                    wantedByDevice[guid] = byAction = new Dictionary<string, List<MsfsWanted>>(StringComparer.Ordinal);
-                List<MsfsWanted> list;
-                if (!byAction.TryGetValue(action.Id, out list))
-                    byAction[action.Id] = list = new List<MsfsWanted>();
-                if (!list.Any(w => w.Combo.Signature == wanted.Combo.Signature))
-                    list.Add(wanted);
-            }
-            if (wantedByDevice.Count == 0)
-                return 0;
-
-            // The user's own profiles (Steam remote folder, Microsoft Store save), read only; each import file starts from
-            // the newest one of its device and category, so the sim keeps the user's other binds.
             List<MsfsProfileFile> own = new List<MsfsProfileFile>();
             foreach (MsfsProfileSource source in MsfsUserProfiles.UserSources(sim, new List<string>()))
             {
@@ -114,10 +90,57 @@ namespace JoyPro.Engine.Games
                     if (MsfsProfileFile.TryLoad(file, new List<string>(), out profile) && profile.HasDeviceGuid && profile.Is2024 && !profile.IsPreset)
                     {
                         profile.Source = source.Kind;
+                        KeyValuePair<string, string> container;
+                        if (source.Containers.TryGetValue(file, out container))
+                        {
+                            profile.StoreContainer = container.Key;
+                            profile.StoreUserFolder = container.Value;
+                        }
                         own.Add(profile);
                     }
                 }
             }
+            return own;
+        }
+
+        // The sim's name of an own profile: the Steam file name or the Store container (inputprofile_<n>).
+        internal static string SimProfileName(MsfsProfileFile profile)
+        {
+            if (profile == null)
+                return string.Empty;
+            if (!string.IsNullOrEmpty(profile.StoreContainer))
+                return profile.StoreContainer;
+            return profile.Source == MsfsProfileSourceKind.Steam ? Path.GetFileName(profile.FilePath) : string.Empty;
+        }
+
+        // The own profile of a device and category the import file starts from: the one the sim's records name (the
+        // active one), else the newest. active: the records name it.
+        private static MsfsProfileFile ImportBasis(List<MsfsProfileFile> own, MsfsSimProfile records, Guid deviceGuid, bool general, out bool active)
+        {
+            List<MsfsProfileFile> candidates = own.Where(p => p.DeviceGuid == deviceGuid && (general ? p.CategoryKey.Length == 0 || p.IsGeneralCategory : p.CategoryKey == "AIRPLANE")).ToList();
+            int naming, total;
+            List<string> others;
+            string name = ActiveOwnProfile(records, deviceGuid, general, out naming, out total, out others);
+            MsfsProfileFile named = name == null ? null : candidates.FirstOrDefault(p => string.Equals(SimProfileName(p), name, StringComparison.OrdinalIgnoreCase));
+            active = named != null;
+            return named ?? candidates.OrderByDescending(p => SavedAt(p.FilePath)).FirstOrDefault();
+        }
+
+        // The number of files written. only: "<guid N>|G" / "<guid N>|A" of the devices and categories to write
+        // (null = all).
+        private int WriteSimImportFiles(GameExportRequest request, GameIoResult result, HashSet<string> only = null)
+        {
+            if (sim != 2024 || request.DryRun || request.Bindings == null)
+                return 0;
+            if (only != null && only.Count == 0)
+                return 0;
+            Dictionary<Guid, Dictionary<string, List<MsfsWanted>>> wantedByDevice = WantedByDevice(request);
+            if (wantedByDevice.Count == 0)
+                return 0;
+
+            // Each import file starts from the user's own profile of its device and category (the one the sim uses), so
+            // the sim keeps the user's other binds.
+            List<MsfsProfileFile> own = OwnProfiles2024();
             MsfsSimProfile records = MsfsSimProfile.Load(sim, null);
             string folder = ImportFilesFolder();
             MoveImportFilesOfJoyPro227(folder, result);
@@ -129,14 +152,20 @@ namespace JoyPro.Engine.Games
                 foreach (KeyValuePair<Guid, Dictionary<string, List<MsfsWanted>>> device in wantedByDevice)
                 {
                     GameDevice connected = request.Devices == null ? null : request.Devices.Devices.FirstOrDefault(d => d.InstanceGuid == device.Key);
+                    bool generalActive, airplaneActive;
+                    MsfsProfileFile generalBasis = ImportBasis(own, records, device.Key, true, out generalActive);
+                    MsfsProfileFile airplaneBasis = ImportBasis(own, records, device.Key, false, out airplaneActive);
                     foreach (bool general in new[] { false, true })
                     {
+                        if (only != null && !only.Contains(device.Key.ToString("N") + "|" + (general ? "G" : "A")))
+                            continue;
+                        // Every bind goes to the category the sim lists its action in (KEY_ACTIVE_PAUSE_TOGGLE: General).
                         Dictionary<string, List<MsfsWanted>> part = device.Value
-                            .Where(e => IsGeneralContext(request.Catalog.Find(e.Key).Category) == general)
+                            .Where(e => GoesToGeneral(e.Key, request.Catalog.Find(e.Key), generalBasis, airplaneBasis) == general)
                             .ToDictionary(e => e.Key, e => e.Value, StringComparer.Ordinal);
                         if (part.Count == 0)
                             continue;
-                        string path = WriteImportFile(request, device.Key, connected, general, part, own, records, folder, result);
+                        string path = WriteImportFile(request, device.Key, connected, general, part, general ? generalBasis : airplaneBasis, general ? generalActive : airplaneActive, records, folder, result);
                         if (path != null)
                             written.Add(path);
                     }
@@ -170,11 +199,9 @@ namespace JoyPro.Engine.Games
         }
 
         private string WriteImportFile(GameExportRequest request, Guid deviceGuid, GameDevice device, bool general, Dictionary<string, List<MsfsWanted>> wanted,
-                                       List<MsfsProfileFile> own, MsfsSimProfile records, string folder, GameIoResult result)
+                                       MsfsProfileFile basis, bool basisActive, MsfsSimProfile records, string folder, GameIoResult result)
         {
             string label = general ? "General" : "Airplanes";
-            MsfsProfileFile basis = own.Where(p => p.DeviceGuid == deviceGuid && (general ? p.CategoryKey.Length == 0 || p.IsGeneralCategory : p.CategoryKey == "AIRPLANE"))
-                                       .OrderByDescending(p => SavedAt(p.FilePath)).FirstOrDefault();
             string name = device != null && !string.IsNullOrWhiteSpace(device.InstanceName) ? device.InstanceName.Trim()
                         : basis != null && basis.DeviceName.Length > 0 ? basis.DeviceName.Trim() : "Device";
             string path = Path.Combine(folder, SafeName(name) + "_" + deviceGuid.ToString("N").Substring(0, 8) + "_" + label + ".xml");
@@ -199,14 +226,35 @@ namespace JoyPro.Engine.Games
                 result.Warnings.AddRange(errors);
                 return null;
             }
-            profile.SetFriendlyName("JoyPro " + name + " " + label);
-            // The package export already reported every bind; this pass only writes the copy.
+            // Named like the user's active profile: the sim's Import then asks "a profile with that name already exists,
+            // overwrite?" and Yes puts the binds into that profile (tester report, MSFS 2024 Store). Otherwise a new
+            // profile "JoyPro <device> <category>".
+            bool overwrites = basis != null && basisActive && basis.FriendlyName.Length > 0;
+            if (!overwrites)
+                profile.SetFriendlyName("JoyPro " + name + " " + label);
+            // The package export already reported every bind; this pass only writes the copy. Ownership: as the user's
+            // profile it overwrites (an earlier import of the file put JoyPro's binds there).
             GameIoResult scratch = new GameIoResult();
-            string ownershipKey = OwnershipKey(path);
+            string ownershipKey = OwnershipKey(overwrites ? StableProfilePath(basis) : path);
             Dictionary<string, HashSet<string>> owned = GameOwnershipStore.Load(ownershipKey, scratch.Warnings);
             ApplyToProfile(profile, request, wanted, owned, new Dictionary<string, string>(StringComparer.Ordinal), new HashSet<string>(StringComparer.Ordinal), scratch);
             profile.Save(path);
             GameOwnershipStore.Save(ownershipKey, GameId, owned);
+            // Completeness: every bind of this file is in it as written.
+            MsfsProfileFile written;
+            if (MsfsProfileFile.TryLoad(path, new List<string>(), out written))
+            {
+                foreach (KeyValuePair<string, List<MsfsWanted>> entry in wanted)
+                {
+                    MsfsAction action = written.Find(entry.Key);
+                    foreach (MsfsWanted item in entry.Value.Where(w => action == null || !action.Combos.Any(c => c.Signature == w.Combo.Signature)))
+                    {
+                        string reason = scratch.Warnings.FirstOrDefault(w => w.Contains("(" + entry.Key + ")")) ??
+                                        (action == null ? "the profile does not list " + entry.Key : "the profile kept another bind there");
+                        result.Warnings.Add("MSFS 2024 import file of '" + name + "': not written: " + BindName(item, request.Catalog.Find(entry.Key)) + " (" + label + ") - " + reason + ".");
+                    }
+                }
+            }
             JoyPro.Logging.JoyProLog.Debug("MSFS", "Import file written: " + path + " (" + name + " {" + deviceGuid.ToString().ToUpperInvariant() + "}, " + label + ", base: " +
                 (basis != null ? basis.Source + " profile '" + basis.FriendlyName + "' " + basis.FilePath : "new, product ID") + "): " +
                 profile.ChangedActions.ToString(CultureInfo.InvariantCulture) + " action(s) changed (" + string.Join(", ", profile.Actions.Where(a => a.Changed).Select(a => a.Name).Take(40)) + ")");
@@ -221,7 +269,8 @@ namespace JoyPro.Engine.Games
                   (aircraft.Count > 4 ? ", ..." : string.Empty) + (ownProfile > 0 ? "; your own profile in " + ownProfile.ToString(CultureInfo.InvariantCulture) + " record(s)" : string.Empty) +
                   ") and does not use JoyPro's preset there; import this file to use JoyPro's binds";
             result.Steps.Add("MSFS 2024 import file of '" + name + "' (" + label + ", " + (basis != null ? "your profile '" + basis.FriendlyName + "' with JoyPro's binds" : "JoyPro's binds") +
-                             "): " + path + " - " + state + ".");
+                             "): " + path + " - " + state + "." +
+                             (overwrites ? " Import it and confirm 'overwrite': your profile '" + basis.FriendlyName + "' then has JoyPro's binds." : string.Empty));
             return path;
         }
 

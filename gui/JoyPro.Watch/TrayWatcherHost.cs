@@ -94,6 +94,7 @@ public sealed class TrayWatcherHost : IDisposable
     private bool queueRunning;
     private bool disposed;
     private int refreshGeneration;
+    private string lastUnwatched = string.Empty;
 
     public TrayWatcherHost(
         IWatchEngine engine,
@@ -206,6 +207,13 @@ public sealed class TrayWatcherHost : IDisposable
         List<SyncStatusEntry>? parsed = SyncOutput.ParseStatus(run.StandardOutput);
         if (parsed == null)
             return;
+        string unwatched = string.Join("; ", SyncOutput.DescribeUnwatched(run.StandardOutput));
+        if (unwatched != lastUnwatched)
+        {
+            lastUnwatched = unwatched;
+            if (unwatched.Length > 0)
+                JoyPro.Logging.JoyProLog.Info("Watcher", "Installed games that are not watched: " + unwatched);
+        }
         // Only the games ticked on the Start page (settings reloaded at start and whenever the GUI closed).
         List<SyncStatusEntry> entries = settings.WatchChoices.Filter(parsed);
         if (watcher == null)
@@ -301,7 +309,7 @@ public sealed class TrayWatcherHost : IDisposable
         if (summary.Value.Changes == 0)
         {
             // Only changes JoyPro does not manage (or formatting): the state is known now, nothing to ask.
-            JoyPro.Logging.JoyProLog.Info("Watcher", watchKey + ": the config changed, but nothing JoyPro manages; accepted without asking");
+            JoyPro.Logging.JoyProLog.Info("Watcher", watchKey + ": the config changed, but nothing JoyPro manages; accepted without asking (" + SyncOutput.DiffCounts(diff.StandardOutput) + ")");
             await engine.RunAsync([.. SyncOutput.CommonArguments, "sync", "accept", .. gameArgs]);
             return;
         }

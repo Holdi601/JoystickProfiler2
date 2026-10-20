@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
@@ -1060,6 +1060,7 @@ public sealed partial class MainWindowViewModel : ViewModelBase
             RebuildLayoutEditorModifierOptions();
         };
         LayoutEditorTables.CollectionChanged += (_, _) => OnPropertyChanged(nameof(CanSaveLayoutEditorTemplate));
+        ExportGames.CollectionChanged += (_, _) => OnPropertyChanged(nameof(ExportsMsfs2024));
         LayoutEditorConnectors.CollectionChanged += (_, _) => OnPropertyChanged(nameof(CanSaveLayoutEditorTemplate));
         InitializeLayoutWorkspace();
         InitializeSettingsPage();
@@ -3648,7 +3649,10 @@ public sealed partial class MainWindowViewModel : ViewModelBase
                                 none = false;
                                 if (planeProp.Name.Length == 0 || !JsonElementTruthy(planeProp.Value))
                                     continue;
-                                planes.Add(planeProp.Name.Trim());
+                                // A game's own id (MSFS2024: "MSFS2024" = all aircraft) is no aircraft: an imported MSFS relation
+                                // showed "1 aircraft" although it applies to every aircraft.
+                                if (isDcsNode || !IsAllAircraftScope(game.Trim(), planeProp.Name.Trim()))
+                                    planes.Add(planeProp.Name.Trim());
                                 any = true;
                                 if (isDcsNode)
                                     activeGamePlanes.Add("DCS|" + planeProp.Name.Trim());
@@ -3665,7 +3669,8 @@ public sealed partial class MainWindowViewModel : ViewModelBase
                                 string plane = (planeEl.GetString() ?? string.Empty).Trim();
                                 if (plane.Length > 0)
                                 {
-                                    planes.Add(plane);
+                                    if (isDcsNode || !IsAllAircraftScope(game.Trim(), plane))
+                                        planes.Add(plane);
                                     activeGamePlanes.Add(isDcsNode ? "DCS|" + plane : game.Trim() + "|" + game.Trim());
                                 }
                             }

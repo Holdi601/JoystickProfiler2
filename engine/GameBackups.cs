@@ -221,7 +221,16 @@ namespace JoyPro.Engine
                         {
                             Directory.CreateDirectory(Path.GetDirectoryName(file.Original));
                             int? before = WarThunderCloudVersion.Read(file.Original);
+                            byte[] wgsIndexBefore = WgsWriter.IsStoreIndex(file.Original) && File.Exists(file.Original) ? File.ReadAllBytes(file.Original) : null;
                             SafeFileIo.CopyFile(Path.Combine(folder, "files", file.Stored), file.Original, true, ownTarget: false);
+                            // A Microsoft Store save: the restored containers count as changed here (newer time, "modified"),
+                            // or the Xbox cloud would put its newer copy back.
+                            if (WgsWriter.IsStoreIndex(file.Original))
+                            {
+                                string note = WgsWriter.MarkRestored(file.Original, wgsIndexBefore, DateTime.UtcNow);
+                                if (note.Length > 0)
+                                    result.Restored.Add(file.Original + " (" + note + ")");
+                            }
                             // War Thunder keeps the higher of the file's and the server's version: an older copy
                             // needs a version above the one it replaces, or the server's copy comes back at login.
                             if (WarThunderCloudVersion.RaiseAbove(file.Original, before))

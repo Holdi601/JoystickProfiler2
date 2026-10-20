@@ -31,7 +31,7 @@ path). The watcher's records (`<data>\Sync\MSFS.json`) are not carried over; the
 ## Files
 - **2020 Steam:** `<Steam>\userdata\<id3>\1250410\remote\inputprofile_<10 digits>` (XML, no extension). `profile_00` (binary) maps device instance GUIDs to the inputprofile files. Steam Cloud folder.
 - **2020 MS Store:** `%LOCALAPPDATA%\Packages\Microsoft.FlightSimulator_8wekyb3d8bbwe\SystemAppData\wgs\...` containers; blobs are renamed on every save. **Read only** (imported, see below).
-- **2024 Steam:** `<Steam>\userdata\<id3>\2537590\remote\inputprofile_*`. **2024 Store:** `Microsoft.Limitless_8wekyb3d8bbwe\SystemAppData\wgs\...`. Profiles are also held server-side.
+- **2024 Steam:** `<Steam>\userdata\<id3>\2537590\remote\inputprofile_*`. **2024 Store:** `Microsoft.Limitless_8wekyb3d8bbwe\SystemAppData\wgs\...`. Both are written by the export since 2026-10-20 (the profile the sim uses per device and category, see "Writing your own MSFS 2024 profiles").
 - **2024 supported route:** Settings → Controls → cogwheel → Export/Import (same controller and same category only). [SRC MS support]
 - **2024 JoyPro route: Community package** (`engine\Games\MsfsCommunityPackage.cs`). MSFS 2024 loads device presets
   from packages; Asobo ships the presets of known sticks that way (`<install>\Packages\asobo-input-profiles-pc`,
@@ -83,7 +83,7 @@ path). The watcher's records (`<data>\Sync\MSFS.json`) are not carried over; the
     EFS mark), the binds come from the copy, export once to write it again. Without a copy the warning says that its
     binds were not imported and to import with "Merge into profile" (not `--replace`), then export. The device is not
     taken as "no own profile" when the copy was read (no default preset over it). Test fault:
-    `JOYPRO_TEST_FAULT_ENCRYPTION=read:409:<file name>`; test `MsfsProfileImportTests.Store2024_PresetsTheSimsRecordsDisagreeOn_AreNotImported_UnreadableOwnPresetFromJoyProsCopy`.
+    `JOYPRO_TEST_FAULT_ENCRYPTION=read:409:<file name>` (simulated EFS refusal); test `MsfsProfileImportTests.Store2024_PresetsTheSimsRecordsDisagreeOn_AreNotImported_UnreadableOwnPresetFromJoyProsCopy`.
   - Product ID: the one the sim noted for the device in profile_00 (read only), else the USB PID. The sim sees vJoy
     as product ID 0 (not 0xBEAD); real sticks match their USB PID (WINWING 0xBE04, VKB 0x0125).
   - Axis settings go into each action as a per-action override (flag 4096 + `<Axis/>`): the sim ignores a preset's
@@ -107,7 +107,7 @@ path). The watcher's records (`<data>\Sync\MSFS.json`) are not carried over; the
   every connected device in every aircraft he flew: VMAX throttle, MOZA AB9, Total Controls MFBB and VPC Panel #2 with
   his own profiles (slot flag 3, `inputprofile_<n>`) or with no preset, the T-Pendular-Rudder on its shipped preset,
   the MFDs on theirs. So JoyPro's presets reached only aircraft he had never used with a device. The Store keeps his
-  own profiles in its save containers, which JoyPro never writes.
+  own profiles in its save containers, which JoyPro did not write before 2.2.9 (now it does: "Writing your own MSFS 2024 profiles").
   - **Import files** (`engine\Games\MsfsIntegration.ImportFiles.cs`): every export to the package (not a dry run) also
     writes, per device and category with binds, a profile in the sim's own format into
     `Documents\JoyPro2\MSFS 2024 import files` (`<JOYPRO_DATA_DIR>\MSFS 2024 import files` when set):
@@ -124,13 +124,16 @@ path). The watcher's records (`<data>\Sync\MSFS.json`) are not carried over; the
     importing again). The GUI (Other
     Games, Export) shows the folder with "Open folder" and these steps. Test:
     `MsfsProfileImportTests.Store2024_Export_WritesImportFilesPerDeviceAndCategory` (Store save unchanged, dry run writes none).
-  - **Not done: writing the user's own 2024 profiles.** Store: the save containers sync with the Xbox cloud and get new
-    file names on every save (read only, as before). Steam: where MSFS 2024 keeps a profile made in Controls is not
-    confirmed (no own profile on the test PC's Steam install; the 2024 exe has no literal `inputprofile_`), the sim
-    also holds profiles server-side, and Steam Cloud syncs the folder; an edit the sim does not pick up or reverts would
-    look like a working export. Unlike MSFS 2020 (in-sim verified) this cannot be checked without starting the sim, so
-    2024 Steam gets the import files too.
-  - Not verified in the sim: that its Import takes these files (format as its own profiles and exports; the menu path
+  - **Since 2026-10-20 the export writes the user's own profiles** (next section); the import files are written only
+    for a device and category JoyPro could not update there (`--import-files` / GUI "Also write MSFS import files for
+    every device": always). An import file of a device whose active profile JoyPro knows carries that profile's name
+    (`<FriendlyName>`): the sim's Import then asks "a profile with that name already exists, overwrite?" and Yes puts
+    the binds into the user's profile (tester finding, MSFS 2024 Store; Import creates a new "JoyPro ..." profile
+    otherwise). The step says so ("Import it and confirm 'overwrite': your profile 'X' then has JoyPro's binds").
+    Every bind goes into the category the sim lists its action in (the user's own profiles list every action of
+    their contexts: `KEY_ACTIVE_PAUSE_TOGGLE` is in `INGAME_UI`, a General bind, also when the shared command list has
+    it in `PLANE` from MSFS 2020; tester report "Active Pause not in the sim"), and the file is read back: a bind that
+    did not land is named ("not written: <relation> (<action>) (General) - <reason>").  - Not verified in the sim: that its Import takes these files (format as its own profiles and exports; the menu path
     from the MS support article and the in-game help); not checked on a real Store install.
   - Re-import of JoyPro's own relations: relations made before 2.2.6 ("Microsoft Flight Simulator 2024 <action>") are
     matched by node, not by name: an import into such a profile (tester's copy, 28 relations) added only the 2 new binds
@@ -164,6 +167,78 @@ path). The watcher's records (`<data>\Sync\MSFS.json`) are not carried over; the
 - Default device profiles: `<install>\Input\*.xml`.
 - Cloud (Steam, Xbox, 2024 server) can revert local edits. New `inputprofile_*` files are not picked up (profile_00 references specific files): only edit existing ones.
 
+## Writing your own MSFS 2024 profiles (since 2026-10-20)
+Tester (MSFS 2024 Microsoft Store): importing JoyPro's file in Controls worked but made a second profile "JoyPro <device>
+Airplanes"; his default profile should have the binds. The export (`engine\Games\MsfsIntegration.UserProfiles.cs`) now
+writes the profile the sim uses for every device and category of the export; `--user-profiles false` (GUI: "Write into
+my MSFS profiles", on by default, remembered in `export-settings.json`) turns it off. JoyPro's package presets stay (they
+reach aircraft the sim has not set up for a device yet).
+- **Which profile is active:** the sim's device records (profile_00: Steam `remote\profile_00`, Store container
+  `profile_00`; read only) hold per device and aircraft a General slot and a category slot; an own profile there has
+  flag 3 and the name `inputprofile_<n>`, which is the Steam file name and the Store container name. Per device and
+  category the profile most records name is the active one (Airplanes: the category slot of the records with category
+  AIRPLANE; General: the general slot). On the tester's save every VMAX record (4 aircraft) names
+  `inputprofile_0674863296` ("Iain's VMAX Prime General") and `inputprofile_1407711872` ("Iain's VMAX Prime Airplane").
+  Profiles other records name are left alone (a step says so); aircraft-specific slots are not written. No record or
+  none naming an own profile: no direct write, the import file has the binds (with the reason).
+- **Editing:** the line-based `MsfsProfileFile` editor with the ownership rules as for MSFS 2020: JoyPro adds its binds and
+  replaces only binds it wrote or imported (merge-overwrite; ownership per profile, for the Store by save and container,
+  since the blob gets a new name on every save), the user's other binds stay, `--nuke-untouched-devices` never clears a
+  user's profile. A profile only JoyPro's earlier binds are in (a relation deleted in JoyPro) is written too, so they go.
+- **Microsoft Store save, write side** (`engine\Games\WgsContainers.cs`; format of the read side above): checked first
+  (index version 14, no unresolved-conflict flag (16), the container listed once with state 1 synced, 2 modified or 5
+  created, the state fitting its cloud version tag, `container.<n>` with exactly one blob, blob ids equal unless the
+  state is modified, the blob there with the index's size, the index reading back byte for byte); anything else writes
+  nothing (import file instead, reason in the result). Then, per changed profile: a new blob file named by a new GUID,
+  `container.<n+1>` (255 wraps to 1) with the cloud's blob id kept and the new file as on-disk id, then
+  `containers.index` once (temp file + replace): entry number n+1, size, time (milliseconds), state 1 -> 2 (2 and 5
+  stay), the cloud version tag (ETag) unchanged; header time max(now, old + 1), flag "fully uploaded" (1) cleared (3 ->
+  2), count and the other bytes unchanged. Order blob, container file, index last, so an interruption leaves the
+  previous generation complete. Read back (index, container, blob as written; the profile parses with the same device,
+  category and action count), then the superseded `container.<n>` and blob are removed (the game keeps one of each per
+  folder). A failure after the first write deletes the new files and puts the index back. Other containers (profile_00,
+  logbooks, other profiles) and other titles are never touched. Write layout as libNOM.io (No Man's Sky save library,
+  `PlatformMicrosoft_Write.cs`: container number + 1, synced -> modified, index sync state "modified", the old cloud
+  blob id in the first slot) and GamePassStorage (`docs/wgs-format.md`: states, flags, write order, strictly growing
+  index time). Verified on a copy of the tester's real save (21 containers): JoyPro's write changed exactly the two
+  entries and the two profile blobs (a 5-line XML diff each, ATC Panel Choice 0 on button 2 into the General profile,
+  gear into the Airplanes profile), the index re-parses with every other byte equal, JoyPro's own reader and a second
+  write (state 2, ids differing) work.
+- **Safety:** the whole export is refused while `FlightSimulator2024` runs; the direct write also while the GDK launch
+  helper (`gamelaunchhelper.exe` with "Flight Simulator", "Limitless" or "MSFS" in its path, or a path that cannot be
+  read) runs. Before the write every file of the save's user folder goes into the run's backup set (index last; the
+  new files are recorded as new), so `engine backups restore <set>` / Export > Game config backups put the save back.
+  A restore marks the containers it changed as modified on this PC (newest cloud version tag kept, newer index time,
+  "fully uploaded" cleared), else the Xbox sync would see the old state as synced and download its newer copy.
+- **Xbox cloud sync (risk):** the Xbox app / Gaming Services upload a container in state "modified" the next time the
+  sim starts (or the app syncs). A version written in the cloud by another PC after the last sync on this one makes a
+  conflict: the sim or the Xbox app asks which save to keep; keep the one of this PC to keep JoyPro's binds (the other
+  one drops them; export again). JoyPro refuses to write while the conflict flag is set. Not verified with a live sync.
+- **Steam (app 2537590):** the Store container names are the file names of the sim's save layer (`profile_00`,
+  `inputprofile_<n>`, `sr_logbook`; the test PC's Steam remote folder holds `profile_00`, `localprofile`, `datausage`,
+  `sr_logbook` and lists them in `remotecache.vdf`), and a Store profile blob is the same plain XML as 2020's Steam
+  file. So a profile made in Controls is `remote\inputprofile_<n>`, named in profile_00 like in the Store save; the
+  export edits that file in place (backup `.jpbak` and backup set first, read back, put back on failure). Steam Cloud
+  uploads the changed file on the next sync. The test PC's Steam install has no own profile yet, so this is not checked
+  with a real Steam profile (only the layout of the remote folder and the Store's names).
+- **Result:** per device and category a line ("MSFS 2024 'VPC VMAX Prime Throttle' (General): your profile 'Iain's VMAX
+  Prime General' (active in 4 of 4 aircraft record(s)): 6 bind(s) ..."), the JSON `ProfileUpdates` (device, category,
+  profile, status updated / unchanged / dry-run / import-file, reason, binds, not written), shown on the Start and
+  Export pages ("Your MSFS 2024 profiles"). Logging: `MSFS` area (sources, the active profile per device and category,
+  each container's old and new number and blob, the index time and flags, failures with the reason), `Backups`,
+  `Diagnostics` (`NoteRead` of every profile read, `BeforeWrite` of every file).
+- Tests: `MsfsProfileImportTests.Store2024_Export_WritesTheActiveProfilesInTheSave`, `..._RelationDeletedInJoyPro_...`,
+  `..._SimRunningOrUnknownIndex_WritesNothing_ImportFilesInstead` (stand-in `gamelaunchhelper.exe` / `FlightSimulator2024.exe`),
+  `..._FailureRollsBack_BackupRestoreRoundTrip` (`JOYPRO_TEST_FAULT_WGS=blob|container|index`), `..._MixedCategories_...`,
+  `Store2024_BindDeletedInTheSim_IsRemoved_PackagePresetDoesNotBringItBack`, `Steam2024_Export_WritesTheActiveRemoteProfile`,
+  `Store2024_Export_UserProfilesOff_ImportFileNamedLikeTheActiveProfile`.
+- **Import, scan and the watcher's diff** read the user's own profile as the truth of its device and category: JoyPro's
+  package preset of the same device and category is not read beside it, and a package preset of a device the sim has
+  records of counts only where a record names it (tester: deleted ATC Panel Choice 0 in the sim, the diff showed 0
+  changes; an import into a clean profile brought back two JoyPro-made relations the sim shows nowhere). With several
+  own profiles of a device and category the one the records name wins over the newest. A Community2024 folder given as
+  the export path means the package (one watcher record; an export there and an import kept two, and the diff compared
+  with the older baseline).
 ## Import of your own profiles (since 2026-10-17)
 A user report (MSFS 2024, Microsoft Store) failed with "The JoyPro MSFS 2024 package has no presets yet": import read
 only JoyPro's own preset package, and a fresh install had no command list. Now import and scan (`engine msfs2024|msfs2020
@@ -292,7 +367,7 @@ import|scan`, GUI import wizard) read what the user set up in the sim (`engine\G
   number of saved files that were no input profile) and suggests Controls > cogwheel > Export + import of that file.
 - Export: 2024 writes JoyPro's package and the import files (see "Getting the binds into the sim"; the Store version loads the package from its own Community2024 folder,
   `InstalledPackagesPath` of `...\Microsoft.Limitless_8wekyb3d8bbwe\LocalCache\UserCfg.opt`), 2020 the Steam remote
-  folder; an export to a Store save folder is refused ("read only").
+  folder; an export with the Store save folder as its path is refused (the export to the package writes the Store profiles the sim uses, see "Writing your own MSFS 2024 profiles").
 - Config watcher (`engine sync`): besides the export target it watches `inputprofile_*` of the Steam remote folders and
   `containers.index` of the Store save folder (any container save changes it; an empty diff is accepted silently), and
   `sync diff` reads the game as import does.
@@ -304,8 +379,23 @@ import|scan`, GUI import wizard) read what the user set up in the sim (`engine\G
   a record records it. A Store save (new blob and container names, containers.index replaced in place or by rename)
   is reported once after the writes; a later write of the sim or the Xbox app after the game closed starts a new
   check. Tests: `MsfsProfileImportTests.Store2024_WatcherRecord_SurvivesUnreadableFiles_AndASimSaveIsDetected`,
-  `GameConfigWatcherTests.StoreSave_NewBlobNamesAndReplacedIndex_IsReportedOnce`. Not checked on a real Store install:
-  that the sim's save rewrites containers.index (the Store-save tools' format says so).
+  `GameConfigWatcherTests.StoreSave_NewBlobNamesAndReplacedIndex_IsReportedOnce`.
+  **2.2.7 / 2.2.8 report ("no prompt came up in JP at all"):** the tester's logs show the chain working up to the diff:
+  MSFS 2024 tracked and watched, containers.index deleted and created again on every save (also 3 to 8 s apart for
+  ~15 s after the sim closed: the Xbox app), `FlightSimulator2024` found and its exit awaited, `sync status` "changed";
+  added binds were offered, but a bind removed in the sim gave "Diff MSFS2024: 0 change(s)" and was accepted silently
+  (JoyPro's package preset for the same device and category still had it; the profile choice of the import reading is
+  fixed separately). The rest of the chain is hardened: the Store save folder waits 10 s after its last write (also
+  after the sim closed; `SettleSeconds` in `sync status`), so the Xbox app's rewrites give one check instead of one per
+  write; any exe in the Store install folders (`XboxGames\Microsoft Flight Simulator 2024\Content\`,
+  `WindowsApps\Microsoft.Limitless_*`) counts as the sim, whatever it is called (`ProcessFolders`); an import refreshes
+  the watch list at once (before, only an export did) and also records the game when the path box holds a discovered
+  path ("Detect"); the logs say why an installed game is not watched (untracked, no config), which watch folders,
+  processes and settle time it got, how the sim was found, and what an empty diff compared (binds in the game and the
+  profile, baseline). Test: `MsfsStoreWatcherEndToEndTests` (real engine and the GUI's watcher on a stand-in Store save
+  and a stand-in sim process; added bind after an export, removed bind after an import, both taken over). Only a Store
+  install shows: whether the sim's exe is always `FlightSimulator2024.exe` there (the folder rule covers other names),
+  and whether 10 s covers the Xbox app's sync on slow PCs.
 - Store installs of the sim itself: `<drive>\XboxGames\<Microsoft Flight Simulator[ 2024]>\Content` (also the folders
   of `<drive>\.GamingRoot`) count as install roots for the catalog refresh.
 - **Command list on demand:** a fresh install ships no game lists. A scan, import or export of a registry game without
@@ -394,7 +484,7 @@ and developer ones (`MsfsIntegration.IsManagedContext`):
 - KEY codes: buttons N-1, first hat up/right/down/left 256-259 (no diagonals), full axes X/Y/Z 1026/1042/1058, Rx/Ry/Rz 770/786/802, sliders 514/530. The last KEY of a combination is the main input, other buttons of the same device are modifiers; axes take no modifiers. Half axes are not read.
 - New actions: 2024 files already list all actions of their category (an action no profile of the device holds, e.g. a General bind of a device without a Transversal profile, is reported once and skipped); in 2020 files the action is added to the context it has in the other profiles of the folder, else (general actions) its catalog context, else PLANE (with a warning). JoyPro's 2024 presets: general actions into the Transversal preset, flight actions into the airplane preset.
 - Primary/Secondary: at most two input combinations per action; a third is reported and skipped.
-- Ownership (`merge-overwrite` replaces only JoyPro's combinations) and backups live in `%LOCALAPPDATA%\JoyPro\Ownership\MSFS` and `...\Backups\MSFS`, never in the Steam-synced folder. `clean` only changes profiles of devices that JoyPro binds in the export. The backups copy the bytes (`SafeFileIo`) into JoyPro's own folder: a Store-version export failed with "The specified file could not be encrypted." (2.1.0 report) when `File.Copy` tried to keep a preset's encryption. JoyPro's package keeps the encryption of its Community folder (2.1.1 to 2.2.1 removed it, which broke Store installs on another drive with error 409; see "Encryption" above and [backups](../backups.md)).
+- Ownership (`merge-overwrite` replaces only JoyPro's combinations) and backups live in `%LOCALAPPDATA%\JoyPro\Ownership\MSFS` and `...\Backups\MSFS`, never in the Steam-synced folder. `clean` only changes profiles of devices that JoyPro binds in the export. The backups copy the bytes (`SafeFileIo`) into JoyPro's own folder: a Store-version export failed with "The specified file could not be encrypted." (2.1.0 report) when `File.Copy` tried to keep a preset's EFS encryption. JoyPro's package keeps the EFS encryption of its Community folder (2.1.1 to 2.2.1 removed it, which broke Store installs on another drive with error 409; see "Encryption" above and [backups](../backups.md)).
 - Catalog: `DB\MSFS2020\actions.tsv` and `DB\MSFS2024\actions.tsv` (each started as the same list: flight-context actions of MSFS 2024 airplane + helicopter exports and MSFS 2020 profiles). Input actions belong to contexts (AIRCRAFT, HELICOPTER, GLIDER, ...), not to an aircraft: a 2024 export lists every action of its contexts whatever aircraft is loaded, so the catalog is not tied to the test aircraft (Cessna 185). Axis actions are recognized by name (`AXIS`, `*_SET` of throttle/mixture/prop/surfaces).
 - Refresh from the game: `engine msfs2020 refresh-db` / `engine msfs2024 refresh-db` (no path; GUI: Games > DB refresh without a source) reads the sims' own data, read only (`engine\Games\MsfsGameData.cs`): the device presets Asobo ships (MSFS 2024 `<install>\Packages\fs-input-profiles` and `asobo-input-profiles-pc`, `InputProfiles\**\*.xml`; MSFS 2020 `<install>\Input`; Store installs under the `InstalledPackagesPath` of UserCfg.opt, `Official*\*`) and adds every action of a managed context they bind, with its context (since 2026-10-19 also the general ones of the Transversal presets and the user's General profiles: cameras, views, pause, ...; an action the list has in a flight context that this sim binds in a general one moves to it; since 2026-10-19 also JoyPro's own package presets, and the context the user's 2024 profiles list an action in corrects one the list has from elsewhere; general events only the locPak names: see "General events only the locPak names" below); new actions get the Controls menu name from `fs-base\en-US.locPak` (`INPUT.KEY_...`), known ones keep their title (import names relations after it) unless it is the raw event name (below). `--path <folder>` reads exported profiles instead.
   **Readable titles (since 2026-10-12):** the locPak writes the menu names in capitals; the catalog takes them in title

@@ -62,6 +62,11 @@ namespace JoyPro.Engine.Games
             bool includeDisconnected = PopSwitch(args, "--include-disconnected");
             bool includeSimDefaultsGiven = args.Any(a => string.Equals(a, "--include-sim-defaults", StringComparison.OrdinalIgnoreCase));
             bool includeSimDefaults = PopSwitch(args, "--include-sim-defaults");
+            // MSFS 2024 export: into the user's own active profiles (default on) / import files for every device.
+            bool userProfilesGiven = args.Any(a => string.Equals(a, "--user-profiles", StringComparison.OrdinalIgnoreCase));
+            bool userProfiles = !userProfilesGiven || PopSwitch(args, "--user-profiles");
+            bool importFilesGiven = args.Any(a => string.Equals(a, "--import-files", StringComparison.OrdinalIgnoreCase));
+            bool importFiles = PopSwitch(args, "--import-files");
             // refresh-db: read the game's packed archives (War Thunder's *.vromfs.bin) unless --no-game-archives (or
             // --read-game-archives false) says otherwise.
             bool readArchivesGiven = args.Any(a => string.Equals(a, "--read-game-archives", StringComparison.OrdinalIgnoreCase));
@@ -115,6 +120,15 @@ namespace JoyPro.Engine.Games
                 simDefaults.IncludeUnknownSimDefaults = includeSimDefaults;
             else if (includeSimDefaultsGiven && includeSimDefaults)
                 return Fail(game.DisplayName + " has no default presets of its own; --include-sim-defaults is only for Microsoft Flight Simulator.");
+
+            IGameUserProfileWrite userProfileWrite = game as IGameUserProfileWrite;
+            if (userProfileWrite != null)
+            {
+                userProfileWrite.WriteUserProfiles = userProfiles;
+                userProfileWrite.AlwaysWriteImportFiles = importFiles;
+            }
+            else if ((userProfilesGiven && userProfiles) || (importFilesGiven && importFiles))
+                return Fail(game.DisplayName + ": --user-profiles and --import-files are only for Microsoft Flight Simulator 2024.");
 
             // The environment of the run (install, config folders, drives, attributes, devices): once, in the log.
             if (action == "scan" || action == "import" || action == "export" || action == "refresh-db")
@@ -233,10 +247,26 @@ namespace JoyPro.Engine.Games
             if (tracking != null)
                 tracking.RecordImport(result.ConfigPath, applied, GameDeviceDirectory.Discover(result.Warnings), result);
             // A game never exported (no watcher record yet) is watched from its import on (engine sync).
-            if (result.Errors.Count == 0 && string.IsNullOrWhiteSpace(explicitPath) && !string.IsNullOrWhiteSpace(result.ConfigPath))
+            // Also with --path when it names one of the game's own config locations (the GUI passes the path box, which
+            // its "Detect" button fills with the first discovered path): a file elsewhere is not watched.
+            if (result.Errors.Count == 0 && !string.IsNullOrWhiteSpace(result.ConfigPath) && (string.IsNullOrWhiteSpace(explicitPath) || IsDiscoveredConfigPath(game, explicitPath)))
                 EngineSync.RecordAfterImport(game.GameId, result.ConfigPath, result.Warnings);
             payload = Render(result, textOutput, result.Bindings);
             return result.Errors.Count == 0 ? 0 : 1;
+        }
+
+        private static bool IsDiscoveredConfigPath(IGameIntegration game, string path)
+        {
+            try
+            {
+                string given = Path.GetFullPath(Environment.ExpandEnvironmentVariables(path.Trim().Trim('"'))).TrimEnd('\\', '/');
+                return GameInstalls.WithConfigOverride(game.GameId, game.DiscoverConfigPaths(new List<string>()))
+                    .Any(p => !string.IsNullOrWhiteSpace(p) && string.Equals(Path.GetFullPath(p).TrimEnd('\\', '/'), given, StringComparison.OrdinalIgnoreCase));
+            }
+            catch (Exception ex) when (ex is ArgumentException || ex is NotSupportedException || ex is IOException || ex is UnauthorizedAccessException)
+            {
+                return false;
+            }
         }
 
         // The game-wide settings of the file become the profile's settings for the game (device "*"), so the GUI shows
@@ -554,6 +584,7 @@ namespace JoyPro.Engine.Games
             target.Steps.AddRange(source.Steps);
             target.Warnings.AddRange(source.Warnings);
             target.Errors.AddRange(source.Errors);
+            target.ProfileUpdates.AddRange(source.ProfileUpdates);
         }
 
         public static bool TryParseMode(string raw, out GameExportMode mode)
@@ -613,7 +644,8 @@ namespace JoyPro.Engine.Games
                     Bindings = (bindings ?? new List<GameInputBinding>()).Select(b => new { b.ActionId, b.Device, b.Input, b.IsAxis, b.Reformers, b.Inverted, b.RelationName }).ToList(),
                     result.Steps,
                     result.Warnings,
-                    result.Errors
+                    result.Errors,
+                    ProfileUpdates = result.ProfileUpdates.Select(u => new { u.Device, u.Category, u.Profile, u.Status, u.Reason, u.Binds, u.NotWritten }).ToList()
                 });
             }
 
@@ -638,6 +670,8 @@ namespace JoyPro.Engine.Games
             AppendList(sb, "Files Written", result.FilesWritten);
             if (bindings != null && bindings.Count > 0)
                 AppendList(sb, "Bindings", bindings.Select(b => b.Describe()).ToList());
+            AppendList(sb, "Profiles", result.ProfileUpdates.Select(u => u.Device + " (" + u.Category + "): " + u.Status + (u.Profile.Length > 0 ? " '" + u.Profile + "'" : string.Empty) +
+                                                                        ", " + u.Binds.ToString(CultureInfo.InvariantCulture) + " bind(s)" + (u.Reason.Length > 0 ? " - " + u.Reason : string.Empty)).ToList());
             AppendList(sb, "Steps", result.Steps);
             AppendList(sb, "Warnings", result.Warnings);
             AppendList(sb, "Errors", result.Errors);

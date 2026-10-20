@@ -67,6 +67,10 @@ profiles"): stand-in user folders (`JOYPRO_TEST_MSFS_HOME`) with Microsoft Store
 report's layout (Store, no package) runs in a release-like program folder with an empty data folder, so the command list
 is built on demand. `gui\JoyPro.Gui.Tests\MsfsProfileImportTests.cs` covers the same with the real engine, and the
 journey scenario `msfs-store-import` renders the import wizard (best with a release-like `JOYPRO_JOURNEY_ENGINE`).
+`MsfsStoreWatcherEndToEndTests` runs the config watcher end to end on such a Store save: import / export record the
+sim, the GUI's own watcher, a stand-in sim process (a copy of `PING.EXE` in `<home>\XboxGames\Microsoft Flight
+Simulator 2024\Content`, or named by `JOYPRO_TEST_GAME_PROCESSES`), the sim's save (new GUID blob, `container.<n+1>`,
+`containers.index` deleted and written again, old files deleted), the prompt and the take-over (added and removed binds).
 
 IL-2 1946 (`smoke\il21946.ps1`), Cliffs of Dover / Blitz (`smoke\il2cod.ps1`) and FSX / FSX-SE / Prepar3D
 (`smoke\fsx.ps1`) run refresh-db in a temporary data root (JoyPro's own DB folders only), then scan, import, a round

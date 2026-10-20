@@ -929,7 +929,23 @@
                                         <CheckBox Content="{l:T 'Also import default presets the sim may not use'}" IsChecked="{Binding ImportIncludeSimDefaults}" IsVisible="{Binding SelectedRegistryGameKeepsDisconnectedDevices}"
                                                   ToolTip.Tip="{l:T 'Devices you never changed in MSFS run on a preset the sim ships. JoyPro takes it when the sim records that it uses it. On: also when that is not known (this can add binds the sim does not have).'}" Margin="0,0,8,6" />
                                         <CheckBox Content="{l:T 'Nuke: remove all binds from devices JoyPro does not use'}" IsChecked="{Binding ExportNukeUntouchedDevices}" Margin="0,0,8,6" />
+                                        <CheckBox Content="{l:T 'Write into my MSFS profiles'}" IsChecked="{Binding MsfsWriteUserProfiles}" IsVisible="{Binding SelectedRegistryGameIsMsfs2024}"
+                                                  ToolTip.Tip="{l:T 'The export puts the binds into the profile MSFS 2024 uses for each device and category (Steam or Microsoft Store), backed up first. Off: only import files.'}" Margin="0,0,8,6" />
+                                        <CheckBox Content="{l:T 'Also write MSFS import files for every device'}" IsChecked="{Binding MsfsAlwaysImportFiles}" IsVisible="{Binding SelectedRegistryGameIsMsfs2024}"
+                                                  ToolTip.Tip="{l:T 'Off: import files only where JoyPro could not write your profile.'}" Margin="0,0,8,6" />
                                     </WrapPanel>
+                                    <Border IsVisible="{Binding HasMsfsProfileUpdates}" BorderBrush="{DynamicResource JP.AccentBrush}" BorderThickness="1" CornerRadius="4" Padding="10,8">
+                                        <StackPanel Spacing="4">
+                                            <TextBlock Text="{l:T 'Your MSFS 2024 profiles'}" FontWeight="SemiBold" />
+                                            <ItemsControl ItemsSource="{Binding MsfsProfileUpdates}">
+                                                <ItemsControl.ItemTemplate>
+                                                    <DataTemplate x:DataType="x:String">
+                                                        <TextBlock Text="{Binding}" TextWrapping="Wrap" />
+                                                    </DataTemplate>
+                                                </ItemsControl.ItemTemplate>
+                                            </ItemsControl>
+                                        </StackPanel>
+                                    </Border>
                                     <Border IsVisible="{Binding HasMsfsImportFiles}" BorderBrush="{DynamicResource JP.AccentBrush}" BorderThickness="1" CornerRadius="4" Padding="10,8">
                                         <StackPanel Spacing="6">
                                             <TextBlock Text="{Binding MsfsImportFilesHint}" TextWrapping="Wrap" />
@@ -4643,6 +4659,24 @@
                                     <TextBlock Classes="section" Text="{l:T 'Export to games'}" />
                                 </StackPanel>
                                 <TextBlock Text="{Binding ExportGamesStatus}" TextWrapping="Wrap" Opacity="0.8" />
+                                <WrapPanel IsVisible="{Binding ExportsMsfs2024}">
+                                    <CheckBox Content="{l:T 'MSFS 2024: write into my MSFS profiles'}" IsChecked="{Binding MsfsWriteUserProfiles}" Margin="0,0,10,0"
+                                              ToolTip.Tip="{l:T 'The export puts the binds into the profile MSFS 2024 uses for each device and category (Steam or Microsoft Store), backed up first. Off: only import files.'}" />
+                                    <CheckBox Content="{l:T 'MSFS 2024: import files for every device'}" IsChecked="{Binding MsfsAlwaysImportFiles}" Margin="0,0,10,0"
+                                              ToolTip.Tip="{l:T 'Off: import files only where JoyPro could not write your profile.'}" />
+                                </WrapPanel>
+                                <Border IsVisible="{Binding HasMsfsProfileUpdates}" BorderBrush="{DynamicResource JP.AccentBrush}" BorderThickness="1" CornerRadius="4" Padding="10,8">
+                                    <StackPanel Spacing="4">
+                                        <TextBlock Text="{l:T 'Your MSFS 2024 profiles'}" FontWeight="SemiBold" />
+                                        <ItemsControl ItemsSource="{Binding MsfsProfileUpdates}">
+                                            <ItemsControl.ItemTemplate>
+                                                <DataTemplate x:DataType="x:String">
+                                                    <TextBlock Text="{Binding}" TextWrapping="Wrap" />
+                                                </DataTemplate>
+                                            </ItemsControl.ItemTemplate>
+                                        </ItemsControl>
+                                    </StackPanel>
+                                </Border>
                                 <Border IsVisible="{Binding HasMsfsImportFiles}" BorderBrush="{DynamicResource JP.AccentBrush}" BorderThickness="1" CornerRadius="8" Padding="10,8">
                                     <Grid ColumnDefinitions="Auto,*" ColumnSpacing="10">
                                         <PathIcon Data="{StaticResource Icon.Info}" Width="18" Height="18" VerticalAlignment="Top" Margin="0,2,0,0" />

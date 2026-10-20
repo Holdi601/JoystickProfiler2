@@ -151,9 +151,13 @@ namespace JoyPro.Engine.Games
         public List<string> Steps { get; private set; }
         public List<string> Warnings { get; private set; }
         public List<string> Errors { get; private set; }
+        // Games that write into the user's own profiles (MSFS 2024): per device and category which profile was
+        // updated, or why not.
+        public List<GameProfileUpdate> ProfileUpdates { get; private set; }
 
         public GameIoResult()
         {
+            ProfileUpdates = new List<GameProfileUpdate>();
             Game = string.Empty;
             Action = string.Empty;
             ConfigPath = string.Empty;
@@ -162,6 +166,26 @@ namespace JoyPro.Engine.Games
             Steps = new List<string>();
             Warnings = new List<string>();
             Errors = new List<string>();
+        }
+    }
+
+    internal sealed class GameProfileUpdate
+    {
+        public string Device { get; set; }
+        public string Category { get; set; }
+        // The profile's name as the game shows it ("" when none was written).
+        public string Profile { get; set; }
+        // updated, unchanged, dry-run, import-file (not written into the profile; the import file has the binds).
+        public string Status { get; set; }
+        public string Reason { get; set; }
+        public int Binds { get; set; }
+        // "<relation> (<action>) (<category>) - <reason>" of every bind that did not land.
+        public List<string> NotWritten { get; set; }
+
+        public GameProfileUpdate()
+        {
+            Device = Category = Profile = Status = Reason = string.Empty;
+            NotWritten = new List<string>();
         }
     }
 
@@ -240,6 +264,14 @@ namespace JoyPro.Engine.Games
     // aircraft by JoyPro's export: a node can still be limited to some aircraft (AIRCRAFT keys other than the game id).
     // The export writes the nodes for all aircraft (no AIRCRAFT entry or the game id active) and, when the user picks
     // one with --aircraft, also the nodes limited to that aircraft; the other limited nodes are skipped with a warning.
+    // MSFS 2024 export: write into the user's own active profiles (--user-profiles, default on) and import files for
+    // every device (--import-files; else only where the direct write could not update).
+    internal interface IGameUserProfileWrite
+    {
+        bool WriteUserProfiles { get; set; }
+        bool AlwaysWriteImportFiles { get; set; }
+    }
+
     internal interface IGameAircraftScope
     {
         string ExportAircraft { get; set; }

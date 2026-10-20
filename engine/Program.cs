@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Globalization;
@@ -14277,6 +14277,8 @@ namespace JoyPro.Engine
                     Console.WriteLine("  engine " + gameArea + " oodle [--path <game folder>]   (the game's own Oodle library, or one another installed game ships; refresh-db --oodle-dll <path> uses that one only with the user's consent, from where it is, never copied; without it JoyPro's own list of the pad keys)");
                 if (registryGame is Games.VtolVrIntegration)
                     Console.WriteLine("  engine " + gameArea + " mod status|prepare [--accept-license]   (the BYOJoystick mod on this PC: Mod Loader, Workshop item, BYOJoystick.dll with SHA-256 and the targets JoyPro reads; prepare backs up the BYOJ_<seat>.xml files and returns the Steam pages to open (Mod Loader, Workshop item 3276352374); Steam downloads and installs the mod, JoyPro ships none of it; refresh-db then reads the targets from the installed mod)");
+                if (registryGame is Games.MsfsIntegration && ((Games.MsfsIntegration)registryGame).Sim == 2024)
+                    Console.WriteLine("      export also writes your own profiles the sim uses (Steam remote folder, Microsoft Store save; backup first, never while the sim runs) [--user-profiles true|false] [--import-files]   (--import-files: import files for every device and category, else only where your profile could not be written)");
                 if (registryGame is Games.IGameAircraftScope)
                     Console.WriteLine("      refresh-db also lists the installed aircraft in DB\\" + registryGame.DbFolder + "\\aircraft.tsv (engine db planes --game " + registryGame.GameId + "; --node " + registryGame.GameId + ":<action>:<aircraft key> limits a relation to one);" +
                                       " the game's presets apply to every aircraft, so export writes the relations for all aircraft plus, with --aircraft <aircraft-key>, those limited to that aircraft");

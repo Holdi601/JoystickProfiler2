@@ -61,7 +61,7 @@ public static class SyncOutput
                     foreach (JsonElement folder in watch.EnumerateArray())
                         folders.Add(new GameWatchFolder(String(folder, "Directory"), Strings(folder, "Filters"), Bool(folder, "IncludeSubdirectories")));
                 }
-                GameWatchSpec spec = new(key, folders, String(game, "RegistryKey"), Strings(game, "ProcessNames"));
+                GameWatchSpec spec = new(key, folders, String(game, "RegistryKey"), Strings(game, "ProcessNames"), Strings(game, "ProcessFolders"), Int(game, "SettleSeconds"));
                 string name = String(game, "DisplayName");
                 entries.Add(new SyncStatusEntry(key, gameId, name.Length > 0 ? name : gameId, configPath, spec, state == "changed"));
             }
@@ -71,6 +71,34 @@ public static class SyncOutput
         {
             return null;
         }
+    }
+
+    // The games of engine sync status that are not watched, with the reason (diagnostics: "MSFS2024: untracked (no export
+    // or import recorded yet)"). Games that are not installed or that the user does not have are left out (there are
+    // many). Empty when the output is no status JSON.
+    public static List<string> DescribeUnwatched(string output)
+    {
+        List<string> lines = [];
+        try
+        {
+            using JsonDocument doc = JsonDocument.Parse(ExtractJson(output));
+            if (!doc.RootElement.TryGetProperty("Games", out JsonElement games) || games.ValueKind != JsonValueKind.Array)
+                return lines;
+            foreach (JsonElement game in games.EnumerateArray())
+            {
+                string state = String(game, "State");
+                if (!Bool(game, "Installed") || Bool(game, "Disabled") || state is "not-installed" or "disabled")
+                    continue;
+                if (state == "missing")
+                    lines.Add(String(game, "Game") + ": no config found (" + String(game, "ConfigPath") + ")");
+                else if (!Bool(game, "Tracked"))
+                    lines.Add(String(game, "Game") + ": untracked (no export or import recorded yet; " + String(game, "ConfigPath") + ")");
+            }
+        }
+        catch (JsonException)
+        {
+        }
+        return lines;
     }
 
     // Whether status (usually for one --game) reports a changed config.
@@ -106,6 +134,23 @@ public static class SyncOutput
         }
     }
 
+    // What a diff compared, for the log line of a diff without changes ("12 binds JoyPro manages in the game, 12 in the
+    // profile, baseline: yes"); empty when the output is no diff JSON.
+    public static string DiffCounts(string output)
+    {
+        try
+        {
+            using JsonDocument doc = JsonDocument.Parse(ExtractJson(output));
+            JsonElement root = doc.RootElement;
+            int Number(string name) => root.TryGetProperty(name, out JsonElement value) && value.ValueKind == JsonValueKind.Number && value.TryGetInt32(out int n) ? n : 0;
+            return Number("FileBinds") + " bind(s) JoyPro manages in the game, " + Number("ProfileBinds") + " in the profile, baseline: " + (Bool(root, "Baseline") ? "yes" : "no");
+        }
+        catch (JsonException)
+        {
+            return string.Empty;
+        }
+    }
+
     // The JSON payload of engine output: from the first line that starts with '{' or '[' to the last closing bracket.
     public static string ExtractJson(string output)
     {
@@ -136,6 +181,11 @@ public static class SyncOutput
         element.ValueKind == JsonValueKind.Object && element.TryGetProperty(name, out JsonElement value) && value.ValueKind == JsonValueKind.String
             ? value.GetString() ?? string.Empty
             : string.Empty;
+
+    private static int Int(JsonElement element, string name) =>
+        element.ValueKind == JsonValueKind.Object && element.TryGetProperty(name, out JsonElement value) && value.ValueKind == JsonValueKind.Number && value.TryGetInt32(out int number)
+            ? number
+            : 0;
 
     private static bool Bool(JsonElement element, string name) =>
         element.ValueKind == JsonValueKind.Object && element.TryGetProperty(name, out JsonElement value) && value.ValueKind == JsonValueKind.True;

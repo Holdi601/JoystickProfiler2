@@ -128,6 +128,9 @@ namespace JoyPro.Engine.Games
         public List<MsfsAction> Actions { get; private set; }
         // Where the file came from (import reads JoyPro's package and the user's own profiles side by side).
         public MsfsProfileSourceKind Source { get; set; }
+        // Microsoft Store: the save container (inputprofile_<n>) and the user folder of the save the file came from.
+        public string StoreContainer { get; set; }
+        public string StoreUserFolder { get; set; }
 
         // A default preset the sim ships (read only) taken for a connected device that has no own profile: its binds
         // count for that device (the file's GUID is the one of Asobo's test machine).
@@ -642,13 +645,23 @@ namespace JoyPro.Engine.Games
 
         public void Save(string path)
         {
-            byte[] body = new UTF8Encoding(false).GetBytes(string.Join(newline, Render()));
+            byte[] bytes = ToBytes();
             using (FileStream stream = new FileStream(path, FileMode.Create, FileAccess.Write))
-            {
-                if (bom)
-                    stream.Write(new byte[] { 0xEF, 0xBB, 0xBF }, 0, 3);
-                stream.Write(body, 0, body.Length);
-            }
+                stream.Write(bytes, 0, bytes.Length);
+        }
+
+        // The file as Save writes it (UTF-8, the byte order mark only when the file had one).
+        public byte[] ToBytes()
+        {
+            byte[] body = new UTF8Encoding(false).GetBytes(string.Join(newline, Render()));
+            if (!bom)
+                return body;
+            byte[] bytes = new byte[body.Length + 3];
+            bytes[0] = 0xEF;
+            bytes[1] = 0xBB;
+            bytes[2] = 0xBF;
+            Buffer.BlockCopy(body, 0, bytes, 3, body.Length);
+            return bytes;
         }
     }
 }

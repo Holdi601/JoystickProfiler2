@@ -18,7 +18,7 @@ namespace JoyPro.Gui.Tests;
 // a fresh data folder (smoke\msfsuserprofiles.ps1 also builds the command list on demand in a release-like folder). The profiles are the fixtures of
 // engine\tests\fixtures\msfs\user-profiles (anonymised real MSFS 2020 files; MSFS 2024 files in the sim's format).
 [System.Runtime.Versioning.SupportedOSPlatform("windows")]
-public sealed class MsfsProfileImportTests : IDisposable
+public sealed partial class MsfsProfileImportTests : IDisposable
 {
     private readonly string root;
     private readonly string engine;
@@ -376,8 +376,9 @@ public sealed class MsfsProfileImportTests : IDisposable
         Assert.Contains("JoyPro's MSFS 2024 preset 'T-Pendular-Rudder (Planes)' cannot be read: the sim keeps its data encrypted (EFS) on this PC", read);
         Assert.Contains("Its binds were imported from JoyPro's copy of", read);
         Assert.DoesNotContain("Could not read the MSFS input profile", read);
-        // The copy is the rudder's own preset: no default needed.
-        Assert.DoesNotContain("T-Pendular-Rudder: no own MSFS profile", read);
+        // The sim's records name the shipped preset for the rudder, not JoyPro's: JoyPro's preset does not count (the
+        // sim does not use it), the rudder is on its default (tester 2026-10-20: relations came back from JoyPro's preset).
+        Assert.Contains("JoyPro preset(s) of the Community2024 package not read: the sim's records of the device do not use them (T-Pendular-Rudder Airplanes", read);
         Assert.Contains("KEY_AXIS_RUDDER_SET <- " + tpr + " JOY_Z", read);
 
         // Without a copy: the warning says what to do, and the device is on the sim's default again.
@@ -981,14 +982,16 @@ public sealed class MsfsProfileImportTests : IDisposable
             Directory.CreateDirectory(user);
             using MemoryStream index = new();
             using BinaryWriter w = new(index);
+            // As a tester's MSFS 2024 save has it: version 14, flags 3 (fully uploaded and downloaded), every container
+            // synced (state 1) with the cloud's version tag, its blob size, times in milliseconds.
             w.Write(14u);
             w.Write(containers.Count);
             w.Write(0u);
-            WriteString(w, family.Replace("_8wekyb3d8bbwe", "_1.0.0.0_x64__8wekyb3d8bbwe") + "!App");
+            WriteString(w, family + "!App");
             w.Write(133700000000000000UL);
-            w.Write(0u);
-            WriteString(w, Guid.Empty.ToString());
-            w.Write(0UL);
+            w.Write(3u);
+            WriteString(w, "63a0b2ab-e13c-4b95-b279-66b6566c660c");
+            w.Write(new byte[] { 0, 0, 0, 0x10, 0, 0, 0, 0 });
             foreach (WgsContainer container in containers)
             {
                 Guid folder = Guid.NewGuid();
@@ -996,10 +999,11 @@ public sealed class MsfsProfileImportTests : IDisposable
                 WriteString(w, container.Name);
                 WriteString(w, "\"0x8DCC4B5A1E2F3A4\"");
                 w.Write((byte)1);
-                w.Write(0u);
+                w.Write(1u);
                 w.Write(folder.ToByteArray());
                 w.Write(133700000000000000UL);
-                w.Write(new byte[16]);
+                w.Write(0UL);
+                w.Write((ulong)container.Blobs.Sum(b => (long)b.Bytes.Length));
                 string dir = Path.Combine(user, folder.ToString("N").ToUpperInvariant());
                 Directory.CreateDirectory(dir);
                 using MemoryStream list = new();

@@ -42,5 +42,6 @@ break after an export, restore the set from before that export.
   File.Encrypt simulated; `JOYPRO_TEST_REAL_EFS=1` runs one test with real EFS, which makes an EFS certificate for the
   Windows user if there is none; `JOYPRO_TEST_FAULT_ENCRYPTION=copy,replace,move,stream` (or `replace:409`, ...) does
   the same for an engine run).
+- MSFS 2024 Microsoft Store save (the export writes the profiles the sim uses, [msfs](games/msfs.md)): every file of the save's user folder goes into the set before the write (`containers.index` last, the new blob and container file recorded as new). A restore puts the old files back, removes JoyPro's new ones and marks the containers it changed as modified on this PC (newer index time), so the Xbox cloud sync uploads the restored state instead of downloading its newer copy.
 - The newest 30 sets per game are kept; older ones are deleted when a new set is made.
 - The single `<file>.jpbak` next to a changed file (copy of the state before the last export) stays as before.

@@ -18,7 +18,7 @@ public sealed partial class MainWindowViewModel
     {
         nameof(ExportMode), nameof(ExportNukeUntouchedDevices), nameof(ExportKeepKeyboardDefaults), nameof(ExportDcsCleanAllAircraft),
         nameof(ExportStarCitizenKeepKeyboardDefaults), nameof(ExportStarCitizenPreferLocalOrder), nameof(RegistryGameDryRun),
-        nameof(ImportIncludeDisconnected), nameof(ImportIncludeSimDefaults), nameof(ValidationShowErrors), nameof(ValidationShowWarnings), nameof(ExportDcsPath), nameof(ExportIl2Path), nameof(ExportStarCitizenPath), nameof(StarCitizenSourcePath), nameof(RegistryGamePath),
+        nameof(ImportIncludeDisconnected), nameof(ImportIncludeSimDefaults), nameof(MsfsWriteUserProfiles), nameof(MsfsAlwaysImportFiles), nameof(ValidationShowErrors), nameof(ValidationShowWarnings), nameof(ExportDcsPath), nameof(ExportIl2Path), nameof(ExportStarCitizenPath), nameof(StarCitizenSourcePath), nameof(RegistryGamePath),
     };
 
     private ExportSettings exportSettings = new();
@@ -54,6 +54,8 @@ public sealed partial class MainWindowViewModel
         RegistryGameDryRun = s.RegistryDryRun;
         ImportIncludeDisconnected = s.ImportIncludeDisconnected;
         ImportIncludeSimDefaults = s.ImportIncludeSimDefaults;
+        MsfsWriteUserProfiles = s.MsfsWriteUserProfiles;
+        MsfsAlwaysImportFiles = s.MsfsAlwaysImportFiles;
         ValidationShowErrors = s.ValidationShowErrors;
         ValidationShowWarnings = s.ValidationShowWarnings;
         if (RememberedFolder("dcs") is { } dcs)
@@ -97,6 +99,8 @@ public sealed partial class MainWindowViewModel
         s.RegistryDryRun = RegistryGameDryRun;
         s.ImportIncludeDisconnected = ImportIncludeDisconnected;
         s.ImportIncludeSimDefaults = ImportIncludeSimDefaults;
+        s.MsfsWriteUserProfiles = MsfsWriteUserProfiles;
+        s.MsfsAlwaysImportFiles = MsfsAlwaysImportFiles;
         s.ValidationShowErrors = ValidationShowErrors;
         s.ValidationShowWarnings = ValidationShowWarnings;
         void Path(string key, string value)

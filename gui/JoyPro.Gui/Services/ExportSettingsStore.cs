@@ -26,6 +26,11 @@ public sealed class ExportSettings
     // MSFS import: also the sim's default presets whose use the sim's records do not show (off: only the ones they name).
     public bool ImportIncludeSimDefaults { get; set; }
 
+    // MSFS 2024 export: write the binds into the user's own active profiles (on), and import files for every device
+    // and category (off: only where the user's profile could not be written).
+    public bool MsfsWriteUserProfiles { get; set; } = true;
+    public bool MsfsAlwaysImportFiles { get; set; }
+
     // The check list's filters (Show Errors / Show Warnings).
     public bool ValidationShowErrors { get; set; } = true;
     public bool ValidationShowWarnings { get; set; }

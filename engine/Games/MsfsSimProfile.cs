@@ -270,7 +270,7 @@ namespace JoyPro.Engine.Games
             return null;
         }
 
-        private static byte[] Inflate(byte[] data)
+        internal static byte[] Inflate(byte[] data)
         {
             if (data.Length < 16)
                 return null;

@@ -27,9 +27,12 @@ over (Settings > Run in the background): **Start with Windows (in the tray)** an
    ([Which games are watched](#which-games-are-watched)).
 2. **The GUI (or, while it is closed, the tray host) watches those files** (`gui\JoyPro.Watch\GameConfigWatcher.cs`): one `FileSystemWatcher` per config folder,
    filtered to the managed file names (LastWrite, Size, FileName), or a registry change notification for games that
-   keep their controls in the registry. A change starts a 2 s debounce.
-3. **After the game has closed.** When the debounce ends and one of the game's processes runs, the watcher waits for
-   its `Exited` event (no polling), then waits 3 s more (games write their config while closing).
+   keep their controls in the registry. A change starts a 2 s debounce (a game's `SettleSeconds` from `sync status`
+   when it needs longer: the MSFS Microsoft Store save folder 10 s).
+3. **After the game has closed.** When the debounce ends and one of the game's processes runs (by process name, or any
+   exe under the game's `ProcessFolders`: MSFS Store `XboxGames\<game>\Content\`, `WindowsApps\<family>_`), the watcher
+   waits for its `Exited` event (no polling; only when Windows refuses that wait it looks again every 10 s), then waits
+   3 s more (games write their config while closing; `SettleSeconds` when longer).
 4. **What changed?** `engine sync status --game <id>` compares the fingerprint (a file whose content is unchanged is no
    change, even with a new write time). If it changed, `engine sync diff --game <id>` reads the config into a scratch
    profile (the loaded profile is never touched) and compares it with the profile. No changes (only formatting, or only
@@ -204,6 +207,7 @@ next to `inputbindings.cfg` (settings of game `VTOLVR`, watched with `VTOLVRNati
 | Star Citizen | the profile's `actionmaps.xml` and `attributes.xml` | `StarCitizen` |
 | Registry games with a file (War Thunder `machine.blk`, X-Plane `.prf`, Elite `.binds`, X4 `inputmap.xml`, Arma profiles, Reforger `.conf`, WARDOGS ini and sav, IL-2 Korea) | that file, plus the files that hold its game-wide settings (`IGameSettingsSource`): X4 `config.xml`, Reforger's game settings in each `app*_user*\settings`, VTOL VR native `gameSettings.cfg` | the integration's `ProcessNames` (e.g. `aces`, `X-Plane`, `EliteDangerous64`, `X4`) |
 | Registry games with a folder | Falcon BMS `User\Config\Setup.v100.*.xml`, `Falcon BMS User.cfg`, `Feedback.ini`, `*.pop`, VTOL VR `SaveData\BYOJ_*.xml`, MSFS profile folders (all files) | as above |
+| MSFS 2020 / 2024 | JoyPro's package (2024) or the Steam remote folder, `inputprofile_*` of the Steam remote folders, the Store save folder's `containers.index` with subfolders (10 s settle) | `FlightSimulator2024` / `FlightSimulator`, or any exe in the Store install folders |
 | Nuclear Option | `HKCU\Software\Shockfront\NuclearOption` (registry notification); the fingerprint covers Player0's Rewired controller maps only | `NuclearOption` |
 
 JoyPro's own files next to the game's (`.jp`, `.joypro-meta.json`, `.joypro.json`, `.jpbak`) are never part of the
@@ -223,7 +227,11 @@ engine --profile <p> sync apply --game <id> --choices <file.json> [--path <confi
 - `status` JSON: `{ DataFolder, Games: [{ Game, DisplayName, Installed, ConfigPath, Kind (files|registry), State
   (unchanged|changed|untracked|missing|not-installed|disabled), Disabled, Tracked, Changed, RecordedUtc, Reason (export|accept|apply),
   Fingerprint, Files, ChangedFiles, ChangedPlanes (DCS), Watch: [{ Directory, Filters, IncludeSubdirectories }],
-  RegistryKey, ProcessNames, Warnings }] }`. Hashing only happens for files whose size or write time differ from the
+  RegistryKey, ProcessNames, ProcessFolders (image path prefixes that count as the game), SettleSeconds (0: the
+  watcher's default), Warnings }] }`. Tests: `JOYPRO_TEST_GAME_PROCESSES=MSFS2024=<name>[,<name>];<game>=...` replaces
+  the reported process names (`MSFS2024=` for none), so a stand-in process (a copy of `PING.EXE`) plays the game and a
+  game the developer plays meanwhile does not take part; with `JOYPRO_TEST_MSFS_HOME` the MSFS `ProcessFolders` are
+  `<home>\XboxGames\<game>\Content\` only. Hashing only happens for files whose size or write time differ from the
   record (about 150 ms for every game on a PC with 18 games installed).
 - `diff` JSON: `{ Game, DisplayName, ConfigPath, Tracked, Baseline, Planes, ProfileBinds, FileBinds, Changes: [{ Id,
   Kind, Game, Plane, ActionId, ActionTitle, IsAxis, Device, Input, Modifiers, ModifierStrings, OldModifiers, OldTuning,

@@ -14,13 +14,20 @@ namespace JoyPro.Watch;
 // A folder (and the file names in it) a game keeps its controls in, as engine sync status lists it.
 public sealed record GameWatchFolder(string Directory, IReadOnlyList<string> Filters, bool IncludeSubdirectories);
 
-// What to watch for one game: its config files or registry key, and the processes that write them on exit.
-public sealed record GameWatchSpec(string GameId, IReadOnlyList<GameWatchFolder> Folders, string RegistryKey, IReadOnlyList<string> ProcessNames);
+// What to watch for one game: its config files or registry key, and the processes that write them on exit (by name, or
+// any exe under one of ProcessFolders: image path prefixes). SettleSeconds: how long the config must be quiet before it
+// is checked (also after the game closed), when the game needs longer than the watcher's default (0).
+public sealed record GameWatchSpec(string GameId, IReadOnlyList<GameWatchFolder> Folders, string RegistryKey, IReadOnlyList<string> ProcessNames,
+                                   IReadOnlyList<string>? ProcessFolders = null, int SettleSeconds = 0)
+{
+    public IReadOnlyList<string> ProcessFolderList => ProcessFolders ?? [];
+}
 
 // Tells the GUI when a game changed its controls and has closed again ("after the game has closed").
 // Event driven only: a FileSystemWatcher per config folder (only the managed file names, LastWrite|Size|FileName) or a
 // registry change notification (RegNotifyChangeKeyValue on a thread-pool wait), a one-shot debounce timer per game that
-// only runs after a change, and Process.Exited while the game is still running. Nothing polls; when idle the watcher
+// only runs after a change, and Process.Exited while the game is still running (only a game whose exit Windows does not
+// let JoyPro await is looked for again every 10 s, after a change, until it closed). Nothing polls; when idle the watcher
 // costs no CPU. Every watcher, timer, wait and process object is disposed and every event unsubscribed on Update and
 // Dispose; the only collections are one entry per watched game.
 [SupportedOSPlatform("windows")]
@@ -88,7 +95,12 @@ public sealed class GameConfigWatcher : IGameWatcher
                 if (!games.ContainsKey(spec.GameId))
                 {
                     games[spec.GameId] = new GameWatch(this, spec);
-                    added.Add(spec.GameId + " (" + (!string.IsNullOrEmpty(spec.RegistryKey) ? spec.RegistryKey : string.Join("; ", spec.Folders.Select(f => f.Directory + "\\" + string.Join("|", f.Filters)))) + ")");
+                    added.Add(spec.GameId + " (" + (!string.IsNullOrEmpty(spec.RegistryKey) ? spec.RegistryKey : string.Join("; ", spec.Folders.Select(f => f.Directory + "\\" + string.Join("|", f.Filters) + (f.IncludeSubdirectories ? " with subfolders" : string.Empty) +
+                                                                                                                                                (Directory.Exists(f.Directory) ? string.Empty : " [folder missing: not watched]")))) +
+                              "; game processes: " + (spec.ProcessNames.Count == 0 ? "none" : string.Join(", ", spec.ProcessNames)) +
+                              (spec.ProcessFolderList.Count > 0 ? " or any exe under " + string.Join(", ", spec.ProcessFolderList) : string.Empty) +
+                              "; quiet " + games[spec.GameId].Settle.TotalSeconds.ToString("0.#", System.Globalization.CultureInfo.InvariantCulture) + " s before a check, " +
+                              games[spec.GameId].AfterExit.TotalSeconds.ToString("0.#", System.Globalization.CultureInfo.InvariantCulture) + " s after the game closed)");
                 }
             }
         }
@@ -145,6 +157,8 @@ public sealed class GameConfigWatcher : IGameWatcher
     {
         return string.Equals(a.RegistryKey, b.RegistryKey, StringComparison.OrdinalIgnoreCase) &&
                a.ProcessNames.SequenceEqual(b.ProcessNames, StringComparer.OrdinalIgnoreCase) &&
+               a.ProcessFolderList.SequenceEqual(b.ProcessFolderList, StringComparer.OrdinalIgnoreCase) &&
+               a.SettleSeconds == b.SettleSeconds &&
                a.Folders.Count == b.Folders.Count &&
                a.Folders.Zip(b.Folders).All(p => string.Equals(p.First.Directory, p.Second.Directory, StringComparison.OrdinalIgnoreCase) &&
                                                  p.First.IncludeSubdirectories == p.Second.IncludeSubdirectories &&
@@ -165,6 +179,9 @@ public sealed class GameConfigWatcher : IGameWatcher
         {
             this.owner = owner;
             Spec = spec;
+            TimeSpan settle = TimeSpan.FromSeconds(Math.Max(0, spec.SettleSeconds));
+            Settle = settle > owner.debounce ? settle : owner.debounce;
+            AfterExit = settle > owner.afterExit ? settle : owner.afterExit;
             timer = new Timer(OnTimer, null, Timeout.Infinite, Timeout.Infinite);
             foreach (GameWatchFolder folder in spec.Folders)
             {
@@ -186,10 +203,15 @@ public sealed class GameConfigWatcher : IGameWatcher
                 fileWatchers.Add(watcher);
             }
             if (!string.IsNullOrWhiteSpace(spec.RegistryKey))
-                registryWatch = RegistryChangeWatch.TryCreate(spec.RegistryKey, () => Schedule(owner.debounce));
+                registryWatch = RegistryChangeWatch.TryCreate(spec.RegistryKey, () => Schedule(Settle));
         }
 
         public GameWatchSpec Spec { get; }
+
+        // Quiet time after the last write before the check, and the wait after the game closed.
+        public TimeSpan Settle { get; }
+
+        public TimeSpan AfterExit { get; }
 
         public int HandleCount
         {
@@ -212,13 +234,13 @@ public sealed class GameConfigWatcher : IGameWatcher
         private void OnFileEvent(object sender, FileSystemEventArgs e)
         {
             LogEvent(e.ChangeType.ToString(), e.FullPath);
-            Schedule(owner.debounce);
+            Schedule(Settle);
         }
 
         private void OnFileRenamed(object sender, RenamedEventArgs e)
         {
             LogEvent("Renamed from " + e.OldName, e.FullPath);
-            Schedule(owner.debounce);
+            Schedule(Settle);
         }
 
         // Every file event (diagnostics: what the game wrote and when), at most one line per file and kind every 2 s
@@ -227,7 +249,7 @@ public sealed class GameConfigWatcher : IGameWatcher
         {
             if (JoyPro.Logging.JoyProLog.ShouldLog("watch-event-" + Spec.GameId + "|" + kind + "|" + path, TimeSpan.FromSeconds(2)))
                 JoyPro.Logging.JoyProLog.Debug("Watcher", Spec.GameId + ": " + kind + " " + path + " at " + DateTime.Now.ToString("HH:mm:ss.fff", System.Globalization.CultureInfo.InvariantCulture) +
-                                                           " (check after " + owner.debounce.TotalSeconds.ToString("0.#", System.Globalization.CultureInfo.InvariantCulture) + " s quiet)");
+                                                           " (check after " + Settle.TotalSeconds.ToString("0.#", System.Globalization.CultureInfo.InvariantCulture) + " s quiet)");
         }
 
         // A lost event (buffer overflow) may have been a change.
@@ -235,7 +257,7 @@ public sealed class GameConfigWatcher : IGameWatcher
         {
             if (JoyPro.Logging.JoyProLog.ShouldLog("watcher-error-" + Spec.GameId, TimeSpan.FromMinutes(1)))
                 JoyPro.Logging.JoyProLog.Warn("Watcher", Spec.GameId + ": file watcher error (events may be lost)", e.GetException());
-            Schedule(owner.debounce);
+            Schedule(Settle);
         }
 
         // The config is quiet for the debounce time: report it, or wait for the game to exit first.
@@ -245,14 +267,17 @@ public sealed class GameConfigWatcher : IGameWatcher
             {
                 if (disposed || running != null)
                     return;
-                Process? process = FindRunning(Spec.ProcessNames);
-                if (process != null)
+                RunningGame? game = GameProcesses.Find(Spec.ProcessNames, Spec.ProcessFolderList);
+                if (game != null)
                 {
+                    Process process = game.Process;
+                    bool exitEvent = false;
                     try
                     {
                         process.EnableRaisingEvents = true;
                         process.Exited += OnGameExited;
                         running = process;
+                        exitEvent = true;
                         if (!process.HasExited)
                         {
                             string started;
@@ -264,20 +289,48 @@ public sealed class GameConfigWatcher : IGameWatcher
                             {
                                 started = "unknown";
                             }
-                            JoyPro.Logging.JoyProLog.Debug("Watcher", Spec.GameId + ": config changed while the game runs (" + process.ProcessName + ", pid " + process.Id + ", started " + started + "); waiting for it to close");
+                            JoyPro.Logging.JoyProLog.Debug("Watcher", Spec.GameId + ": config changed while the game runs (" + process.ProcessName + ", pid " + process.Id + ", started " + started + ", found by " + game.How + "); waiting for it to close");
                             return;
                         }
                     }
-                    catch (Exception)
+                    catch (Exception ex)
                     {
-                        // Access denied (elevated game) or the process is gone: treat it as exited.
+                        // The process is gone, or Windows refuses to wait for it (another user's or a protected process).
+                        bool alive;
+                        try
+                        {
+                            alive = !exitEvent && !process.HasExited;
+                        }
+                        catch (Exception)
+                        {
+                            alive = !exitEvent;
+                        }
+                        if (alive)
+                        {
+                            // No exit event: look again later instead of checking while the game still runs.
+                            JoyPro.Logging.JoyProLog.Debug("Watcher", Spec.GameId + ": the game runs (" + process.ProcessName + ", pid " + process.Id + ", found by " + game.How +
+                                                                       ") but its exit cannot be awaited (" + ex.Message + "); looking again in " + RecheckWhileRunning.TotalSeconds.ToString("0", System.Globalization.CultureInfo.InvariantCulture) + " s");
+                            if (running == null)
+                                process.Dispose();
+                            else
+                                ReleaseProcess();
+                            timer.Change(RecheckWhileRunning, Timeout.InfiniteTimeSpan);
+                            return;
+                        }
                     }
+                    if (running == null)
+                        process.Dispose();
                     ReleaseProcess();
                 }
             }
-            JoyPro.Logging.JoyProLog.Debug("Watcher", Spec.GameId + ": quiet for the wait and no game process (" + string.Join(", ", Spec.ProcessNames) + ") runs: checking now");
+            JoyPro.Logging.JoyProLog.Debug("Watcher", Spec.GameId + ": quiet for " + Settle.TotalSeconds.ToString("0.#", System.Globalization.CultureInfo.InvariantCulture) + " s and no game process (" +
+                                                       (Spec.ProcessNames.Count == 0 ? "no names" : string.Join(", ", Spec.ProcessNames)) +
+                                                       (Spec.ProcessFolderList.Count > 0 ? "; no exe under " + string.Join(", ", Spec.ProcessFolderList) : string.Empty) + ") runs: checking now");
             owner.Raise(Spec.GameId);
         }
+
+        // A game whose exit cannot be awaited is looked for again this often (only after a change, until it closed).
+        private static readonly TimeSpan RecheckWhileRunning = TimeSpan.FromSeconds(10);
 
         private void OnGameExited(object? sender, EventArgs e)
         {
@@ -286,10 +339,10 @@ public sealed class GameConfigWatcher : IGameWatcher
                 if (disposed)
                     return;
                 JoyPro.Logging.JoyProLog.Debug("Watcher", Spec.GameId + ": the game closed at " + DateTime.Now.ToString("HH:mm:ss.fff", System.Globalization.CultureInfo.InvariantCulture) +
-                                                           "; checking in " + owner.afterExit.TotalSeconds.ToString("0.#", System.Globalization.CultureInfo.InvariantCulture) + " s (a later write starts the wait again)");
+                                                           "; checking in " + AfterExit.TotalSeconds.ToString("0.#", System.Globalization.CultureInfo.InvariantCulture) + " s (a later write starts the wait again)");
                 ReleaseProcess();
                 // Games write their config while closing; the last write starts a new debounce anyway.
-                timer.Change(owner.afterExit, Timeout.InfiniteTimeSpan);
+                timer.Change(AfterExit, Timeout.InfiniteTimeSpan);
             }
         }
 
@@ -300,32 +353,6 @@ public sealed class GameConfigWatcher : IGameWatcher
             running.Exited -= OnGameExited;
             running.Dispose();
             running = null;
-        }
-
-        // The first running process of the game, or null; every other Process object is disposed.
-        private static Process? FindRunning(IReadOnlyList<string> names)
-        {
-            Process? found = null;
-            foreach (string name in names)
-            {
-                Process[] processes;
-                try
-                {
-                    processes = Process.GetProcessesByName(name);
-                }
-                catch (Exception)
-                {
-                    continue;
-                }
-                foreach (Process process in processes)
-                {
-                    if (found == null)
-                        found = process;
-                    else
-                        process.Dispose();
-                }
-            }
-            return found;
         }
 
         public void Dispose()
