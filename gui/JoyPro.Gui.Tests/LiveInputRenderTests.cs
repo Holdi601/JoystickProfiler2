@@ -101,7 +101,11 @@ public sealed class LiveInputRenderTests
                         Application.Current!.RequestedThemeVariant = variant;
                         foreach ((int width, int height) in new[] { (2267, 1250), (1280, 800) })
                         {
-                            foreach (string page in new[] { "visualbind", "layout", "tables", "layoutfile", "follow", "iconpicker", "iconcards" })
+                            // JOYPRO_LIVE_PAGES=alias,aliasbinds: only these pages.
+                            string[] pages = Environment.GetEnvironmentVariable("JOYPRO_LIVE_PAGES") is { Length: > 0 } only
+                                ? only.Split(',', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries)
+                                : ["visualbind", "layout", "tables", "layoutfile", "follow", "iconpicker", "iconcards", "alias", "aliasbinds"];
+                            foreach (string page in pages)
                             {
                                 AvaloniaRenderThread.Wait(ShowAsync(vm, page));
                                 AvaloniaRenderThread.Pump();
@@ -113,6 +117,7 @@ public sealed class LiveInputRenderTests
                 finally
                 {
                     vm.StopGameConfigWatcher();
+                    DeviceAliases.Set(Stick, null);
                     Application.Current!.RequestedThemeVariant = ThemeVariant.Default;
                 }
             });
@@ -182,6 +187,17 @@ public sealed class LiveInputRenderTests
                 await OpenOnLayoutPageAsync(vm, Stick);
                 vm.LayoutShowsLayoutFile = false;
                 await vm.OpenDeviceIconPickerCommand.ExecuteAsync(null);
+                break;
+            case "alias":
+                // The device named on the Layout page (docs/devices.md "Device names").
+                await OpenOnLayoutPageAsync(vm, Stick);
+                vm.LayoutShowsLayoutFile = false;
+                await vm.SetDeviceAliasAsync(Stick, "Main stick");
+                break;
+            case "aliasbinds":
+                await vm.SetDeviceAliasAsync(Stick, "Main stick");
+                vm.CurrentStage = UiStage.Binds;
+                vm.SelectedBind = vm.Binds.FirstOrDefault(b => b.RelationName == "Pitch");
                 break;
             case "iconcards":
                 await OpenOnLayoutPageAsync(vm, Stick);

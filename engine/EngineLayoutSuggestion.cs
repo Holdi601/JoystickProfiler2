@@ -213,9 +213,8 @@ namespace JoyPro.Engine
                     !string.IsNullOrWhiteSpace(suggestion.LayoutPath) &&
                     suggestion.Score >= minScoreToApply)
                 {
+                    // The template's name is no alias (JoyPro 1 kept it there): device aliases are the user's (EngineDeviceAliases).
                     InternalDataManagement.JoystickFileImages[device] = suggestion.LayoutPath;
-                    if (!string.IsNullOrWhiteSpace(suggestion.TemplateName))
-                        InternalDataManagement.JoystickAliases[device] = suggestion.TemplateName;
                     applied++;
                 }
             }
@@ -470,6 +469,28 @@ namespace JoyPro.Engine
             }
 
             return candidate;
+        }
+
+        private static Dictionary<string, List<string>> catalogNamesByFile;
+
+        // The names the device layout catalog gives a layout file ("VPC_Panel2.layout"), for telling a layout template's
+        // name from a device alias (EngineDeviceAliases).
+        internal static List<string> CatalogNamesOfLayoutFile(string layoutFile)
+        {
+            if (catalogNamesByFile == null)
+            {
+                Dictionary<string, List<string>> map = new Dictionary<string, List<string>>(StringComparer.OrdinalIgnoreCase);
+                foreach (LayoutCatalogEntry entry in LoadCatalog(string.Empty, new List<string>()))
+                {
+                    string file = Path.GetFileName(entry.LayoutFile.Trim());
+                    if (!map.TryGetValue(file, out List<string> names))
+                        map[file] = names = new List<string>();
+                    if (!string.IsNullOrWhiteSpace(entry.Name))
+                        names.Add(entry.Name.Trim());
+                }
+                catalogNamesByFile = map;
+            }
+            return catalogNamesByFile.TryGetValue((layoutFile ?? string.Empty).Trim(), out List<string> found) ? found : new List<string>();
         }
 
         private static List<LayoutCatalogEntry> LoadCatalog(string catalogPath, List<string> warnings)

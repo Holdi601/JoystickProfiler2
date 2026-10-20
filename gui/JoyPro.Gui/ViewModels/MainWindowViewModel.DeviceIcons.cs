@@ -105,6 +105,7 @@ public sealed partial class MainWindowViewModel
         DeviceIconService.IconChoice? choice = device.Length > 0 ? DeviceIconService.ChoiceOf(device) : null;
         WorkspaceDeviceIcon = device.Length > 0 ? DeviceIconFor(device) : null;
         WorkspaceDeviceIconTitle = choice?.Title ?? T("Automatic");
+        RefreshWorkspaceDeviceAlias();
     }
 
     [RelayCommand]

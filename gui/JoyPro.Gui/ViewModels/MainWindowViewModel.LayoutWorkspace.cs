@@ -129,7 +129,7 @@ public sealed partial class MainWindowViewModel
     }
 
     // "Throttle - HOTAS Warthog {GUID}" -> "Throttle - HOTAS Warthog".
-    public static string DeviceDisplayName(string? device) => DeviceMarkerText.DeviceName(device);
+    public static string DeviceDisplayName(string? device) => DisplayText.ShortDevice(device ?? string.Empty);
 
     private void InitializeLayoutWorkspace()
     {

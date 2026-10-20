@@ -45,7 +45,16 @@ public sealed partial class LayoutSuggestionItem : ObservableObject
     public List<LayoutEditorTableItem> SuggestedTables { get; } = [];
 
     // The device without its GUID ("Throttle - HOTAS Warthog").
-    public string DisplayName => DeviceMarkerText.DeviceName(Device);
+    public string DisplayName => DisplayText.ShortDevice(Device);
+
+    // The full device name ("Left panel - alias of ...").
+    public string DeviceTip => DisplayText.DeviceTip(Device);
+
+    public void RefreshName()
+    {
+        OnPropertyChanged(nameof(DisplayName));
+        OnPropertyChanged(nameof(DeviceTip));
+    }
 
     public string ModelLine => !string.IsNullOrWhiteSpace(Model) ? Model : !string.IsNullOrWhiteSpace(TemplateName) ? TemplateName : T("Unknown model");
 

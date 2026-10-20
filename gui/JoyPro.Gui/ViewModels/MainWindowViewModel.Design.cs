@@ -74,7 +74,7 @@ public sealed partial class MainWindowViewModel
     public bool HasRelationMultiSelection => relationMassSelectedNames.Count > 1;
 
     // The whole-profile tools that take the place of the relation editor (Auto Assign lives on the Binds page).
-    public bool IsAnyRelationToolOpen => IsAutoGroupPanelOpen || IsDescribeGroupPanelOpen;
+    public bool IsAnyRelationToolOpen => IsAutoGroupPanelOpen || IsDescribeGroupPanelOpen || IsAiPlanPanelOpen;
 
     public bool IsNoRelationToolOpen => !IsAnyRelationToolOpen;
 
@@ -187,6 +187,7 @@ public sealed partial class MainWindowViewModel
         {
             case nameof(IsAutoGroupPanelOpen):
             case nameof(IsDescribeGroupPanelOpen):
+            case nameof(IsAiPlanPanelOpen):
             case nameof(IsAutoAssignPanelOpen):
                 OnPropertyChanged(nameof(IsAnyRelationToolOpen));
                 OnPropertyChanged(nameof(IsNoRelationToolOpen));
@@ -356,6 +357,7 @@ public sealed partial class MainWindowViewModel
     {
         IsAutoGroupPanelOpen = false;
         IsDescribeGroupPanelOpen = false;
+        IsAiPlanPanelOpen = false;
     }
 
     // The window focuses the name box of the new relation form.

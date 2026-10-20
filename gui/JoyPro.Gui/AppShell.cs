@@ -77,6 +77,7 @@ internal sealed class AppShell
     private void OnExit(object? sender, ControlledApplicationLifetimeExitEventArgs e)
     {
         desktop.Exit -= OnExit;
+        vm.StopLlmServerOnExit();
         if (vm.CloseToTray && !updating)
             vm.EnsureTrayHost();
     }

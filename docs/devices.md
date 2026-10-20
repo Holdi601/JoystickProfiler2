@@ -97,3 +97,22 @@ JoyPro 1's "replace entire joystick device". Code: `engine/EngineDeviceReplace.c
   method, relations, modifiers and the new device's relations on the same input.
 - Checked on the user's old-PC profile (copy): auto-remap moved the same five devices the user had relinked by hand,
   and the result (502 binds, reformers included) equals that hand-made profile.
+
+## Device names (aliases, `engine devices alias`)
+
+A device can get a name of the user's own ("Left panel"): on the Layout page next to the device's icon (type it, Enter
+or "Name it"; the x takes it back). It is kept in the profile (`JoystickAliases`, JoyPro 1's joystick aliases, keyed
+by the device name with its instance GUID) and shown wherever JoyPro shows a device name: device cards, the bind list
+and its chips, relation cards, the device filter, the Layout page, Visual Assign, the HUD, the bind picker and the
+follow-input note (all through `DisplayText.ShortDevice`). The tooltip keeps the real name ("Left panel - alias of VPC
+Panel #2 {GUID}"). Settings > Devices > "Device names: show the alias / show the device's real name" (kept in
+`ui-settings.json`, `showDeviceAliases`, default: the alias). Aliases are display only: exports always write the real
+device.
+
+    engine devices alias list
+    engine devices alias set <device> <alias>
+    engine devices alias clear <device>
+
+The alias moves with its device (`devices auto-remap`, `exchange`, `replace`); a device that only came back under a new
+instance GUID shows the alias of the same-named device while that older one is not connected. Older profiles kept the
+layout template's name there (`layout suggest --apply`, which no longer writes it); such names are not shown as aliases.

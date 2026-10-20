@@ -170,6 +170,15 @@ public sealed class RelationListItem : CommunityToolkit.Mvvm.ComponentModel.Obse
 
     public string BindDevice => IsBound ? DisplayText.ShortDevice(Bind[..Bind.LastIndexOf("::", StringComparison.Ordinal)]) : string.Empty;
 
+    // A device alias changed or Settings switched between aliases and real names.
+    public void RefreshDeviceName()
+    {
+        OnPropertyChanged(nameof(BindDevice));
+        OnPropertyChanged(nameof(BindLabel));
+        OnPropertyChanged(nameof(BindTooltip));
+        OnPropertyChanged(nameof(BindInputPart));
+    }
+
     public IReadOnlyList<string> GameList => DisplayText.List(Games).Select(DisplayText.Game).ToList();
 
     public IReadOnlyList<string> GroupList => DisplayText.List(Groups);

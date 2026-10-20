@@ -24,7 +24,7 @@ namespace JoyPro.Engine
     // answered: start, load, answer (grammar-constrained JSON), kill. A job object kills it with the engine, too.
     // Tests: JOYPRO_LLM_FAKE_RESPONSE makes the runner start "engine llm fake-server" instead (same process life
     // cycle, canned answer); JOYPRO_LLM_CATALOG points the downloader at a local test catalog.
-    internal static class EngineLlm
+    internal static partial class EngineLlm
     {
         public const string FakeResponseVariable = "JOYPRO_LLM_FAKE_RESPONSE";
         public const string FakeLogVariable = "JOYPRO_LLM_FAKE_LOG";
@@ -1771,8 +1771,11 @@ namespace JoyPro.Engine
             private readonly Queue<string> lastLines = new Queue<string>();
             private readonly object gate = new object();
             private string baseUrl = string.Empty;
+            private ServerState warm;
+            private bool reused;
 
             public ModelInfo Model { get; private set; }
+            public bool Reused { get { return reused; } }
             public string Error { get; private set; }
             public int ProcessId { get; private set; }
             public bool ProcessExited { get; private set; }
@@ -1792,7 +1795,9 @@ namespace JoyPro.Engine
                 Session session = new Session { Model = model, ContextSize = contextSize > 0 ? contextSize : model.ContextSize };
                 try
                 {
-                    session.Launch();
+                    session.warm = WarmSettings();
+                    if (session.warm == null || !session.Reuse())
+                        session.Launch();
                 }
                 catch (Exception ex)
                 {
@@ -1802,9 +1807,66 @@ namespace JoyPro.Engine
                 return session;
             }
 
+            // The warm server of an earlier request when it runs the same model with the same context.
+            private bool Reuse()
+            {
+                ServerState state = ReadServerState();
+                Process running = OpenServerProcess(state);
+                if (running == null)
+                    return false;
+                string url = "http://127.0.0.1:" + state.Port.ToString(CultureInfo.InvariantCulture);
+                if (state.Key != ServerKey(Model, ContextSize) || IsAlive(state.BusyPid) && state.BusyPid != Process.GetCurrentProcess().Id || !Healthy(url))
+                {
+                    running.Dispose();
+                    if (!IsAlive(state.BusyPid))
+                    {
+                        int ignored;
+                        StopServer(out ignored);
+                    }
+                    return false;
+                }
+                process = running;
+                reused = true;
+                ProcessId = state.Pid;
+                baseUrl = url;
+                state.BusyPid = Process.GetCurrentProcess().Id;
+                state.LastUsedUtc = UtcNow();
+                state.OwnerPid = warm.OwnerPid;
+                state.IdleMinutes = warm.IdleMinutes;
+                WriteServerState(state);
+                return true;
+            }
+
+            // After the request: the warm server waits for the next one (the app stops it when idle).
+            private void Release()
+            {
+                ServerState state = ReadServerState() ?? new ServerState();
+                state.BusyPid = 0;
+                state.LastUsedUtc = UtcNow();
+                WriteServerState(state);
+                if (process != null)
+                    process.Dispose();
+                process = null;
+                ProcessExited = false;
+            }
+
             private void Launch()
             {
                 ModelInfo model = Model;
+                // A warm server of another model or context goes first (one model in memory at a time).
+                if (warm != null)
+                {
+                    ServerState previous = ReadServerState();
+                    if (previous != null && IsAlive(previous.BusyPid) && previous.BusyPid != Process.GetCurrentProcess().Id)
+                    {
+                        warm = null; // another request uses it: this one runs its own server as before
+                    }
+                    else
+                    {
+                        int ignored;
+                        StopServer(out ignored);
+                    }
+                }
                 string fake = Environment.GetEnvironmentVariable(FakeResponseVariable);
                 int port = FreePort();
                 ProcessStartInfo start;
@@ -1865,11 +1927,15 @@ namespace JoyPro.Engine
                     start = new ProcessStartInfo(runtime.Exe, JoinArgs(args));
                     start.WorkingDirectory = Path.GetDirectoryName(runtime.Exe);
                 }
-                start.UseShellExecute = false;
+                // A warm server outlives this engine and must not inherit its handles (the app reads the engine's
+                // output to the end and would wait for the server): started by the shell, hidden, no output capture.
+                bool detached = warm != null;
+                start.UseShellExecute = detached;
                 start.CreateNoWindow = true;
-                start.RedirectStandardOutput = true;
-                start.RedirectStandardError = true;
-                start.RedirectStandardInput = true;
+                start.WindowStyle = ProcessWindowStyle.Hidden;
+                start.RedirectStandardOutput = !detached;
+                start.RedirectStandardError = !detached;
+                start.RedirectStandardInput = !detached;
 
                 DataReceivedEventHandler collect = (sender, e) =>
                 {
@@ -1883,14 +1949,21 @@ namespace JoyPro.Engine
                     }
                 };
                 process = new Process { StartInfo = start };
-                process.OutputDataReceived += collect;
-                process.ErrorDataReceived += collect;
+                if (!detached)
+                {
+                    process.OutputDataReceived += collect;
+                    process.ErrorDataReceived += collect;
+                }
                 process.Start();
                 ProcessId = process.Id;
-                job = KillOnCloseJob(process);
-                process.StandardInput.Close();
-                process.BeginOutputReadLine();
-                process.BeginErrorReadLine();
+                // A warm server is the app's then (its job, idle stop, Stop now).
+                if (!detached)
+                {
+                    job = KillOnCloseJob(process);
+                    process.StandardInput.Close();
+                    process.BeginOutputReadLine();
+                    process.BeginErrorReadLine();
+                }
 
                 baseUrl = "http://127.0.0.1:" + port.ToString(CultureInfo.InvariantCulture);
                 Stopwatch loading = Stopwatch.StartNew();
@@ -1905,6 +1978,21 @@ namespace JoyPro.Engine
                     Thread.Sleep(200);
                 }
                 LoadMs = loading.ElapsedMilliseconds;
+                if (warm != null)
+                {
+                    WriteServerState(new ServerState
+                    {
+                        Pid = process.Id,
+                        Port = port,
+                        Key = ServerKey(Model, ContextSize),
+                        Model = Model.Label.Length > 0 ? Model.Label : Model.Id,
+                        OwnerPid = warm.OwnerPid,
+                        StartedUtc = process.StartTime.ToUniversalTime().ToString("o", CultureInfo.InvariantCulture),
+                        LastUsedUtc = UtcNow(),
+                        BusyPid = Process.GetCurrentProcess().Id,
+                        IdleMinutes = warm.IdleMinutes
+                    });
+                }
             }
 
             // One answer. maxTokens 0: the model's own; cachePrompt reuses the previous request's prefix (the tool loop's
@@ -1999,7 +2087,10 @@ namespace JoyPro.Engine
 
             public void Dispose()
             {
-                Stop();
+                if (warm != null && Error.Length == 0 && process != null && !process.HasExited)
+                    Release();
+                else
+                    Stop();
             }
         }
 

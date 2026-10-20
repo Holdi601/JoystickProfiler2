@@ -1,6 +1,7 @@
 using Avalonia.Media.Imaging;
 using CommunityToolkit.Mvvm.ComponentModel;
 using JoyPro.DeviceReference;
+using JoyPro.Gui.Services;
 
 namespace JoyPro.Gui.Models;
 
@@ -33,7 +34,21 @@ public sealed partial class DeviceCardItem : ObservableObject
     public string DeviceName { get; }
 
     // The model from the device catalog ("Virpil VPC MongoosT-50CM2 Throttle"), else the device's name.
-    public string Title => ModelName.Length > 0 ? ModelName : DeviceName;
+    // The device's alias when it has one (Services/DeviceAliases) and Settings shows aliases.
+    public string Title => DeviceAliases.Shown(Device) is { Length: > 0 } alias ? alias : ModelName.Length > 0 ? ModelName : DeviceName;
+
+    // The alias shown as the title: the real name and model stay visible under it.
+    public bool ShowsAlias => DeviceAliases.Shown(Device).Length > 0;
+
+    // The alias changed or Settings switched between aliases and real names.
+    public void RefreshName()
+    {
+        OnPropertyChanged(nameof(Title));
+        OnPropertyChanged(nameof(ShowsAlias));
+        OnPropertyChanged(nameof(ShowsDeviceName));
+        OnPropertyChanged(nameof(HasModel));
+        OnPropertyChanged(nameof(Tooltip));
+    }
 
     // The engine's model name (hud devices).
     public string Model { get; }
@@ -81,7 +96,7 @@ public sealed partial class DeviceCardItem : ObservableObject
 
     public string ProfileText => InProfile ? T("Used in your profile") : T("Not in your profile yet");
 
-    public string Tooltip => Device + (ModelId.Length > 0 ? T("\nModel: {0} ({1})", ModelName, ModelId) : string.Empty) +
+    public string Tooltip => DisplayText.DeviceTip(Device) + (ModelId.Length > 0 ? T("\nModel: {0} ({1})", ModelName, ModelId) : string.Empty) +
                              (PictureSource.Length > 0 ? T("\nPicture: {0}", PictureSource) : string.Empty) +
                              (NeedsGrip ? T("\nWhich grip is on the base? Pick it on the Layout page.") : string.Empty);
 

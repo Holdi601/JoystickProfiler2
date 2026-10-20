@@ -4,6 +4,7 @@ using System.Linq;
 using System.Windows.Input;
 using Avalonia.Controls;
 using Avalonia.Media;
+using JoyPro.Gui.Services;
 
 namespace JoyPro.Gui.Models;
 
@@ -71,14 +72,30 @@ public sealed class ActivityItem
 // names, comma lists as chip lists).
 public static class DisplayText
 {
-    // "Joystick - HOTAS Warthog {0000...}" -> "Joystick - HOTAS Warthog".
+    // "Joystick - HOTAS Warthog {0000...}" -> "Joystick - HOTAS Warthog", or the device's alias ("Left panel") while
+    // Settings shows aliases (Services/DeviceAliases). Every view shows device names through this.
     public static string ShortDevice(string device)
+    {
+        string alias = DeviceAliases.Shown(device);
+        return alias.Length > 0 ? alias : RealShortDevice(device);
+    }
+
+    // The device's real name without the instance GUID (never the alias).
+    public static string RealShortDevice(string device)
     {
         string text = (device ?? string.Empty).Trim();
         if (text.Length == 0 || text.Equals("<unbound>", StringComparison.OrdinalIgnoreCase) || text.Equals("<unknown>", StringComparison.OrdinalIgnoreCase))
             return string.Empty;
         int guid = text.LastIndexOf(" {", StringComparison.Ordinal);
         return guid > 0 && text.EndsWith('}') ? text[..guid] : text;
+    }
+
+    // The tooltip of a shown device name: "Left panel - alias of VPC Panel #2 {GUID}", else the full device name.
+    public static string DeviceTip(string device)
+    {
+        string full = (device ?? string.Empty).Trim();
+        string alias = DeviceAliases.Shown(full);
+        return alias.Length > 0 ? T("{0} - alias of {1}", alias, full) : full;
     }
 
     // An input for a key cap ("JOY_BTN5"); empty for unbound.
@@ -113,7 +130,7 @@ public static class DisplayText
         if (key.Length == 0)
             return string.Empty;
         string mods = string.Join(" + ", (modifiers ?? []).Select(m => (m ?? string.Empty).Trim()).Where(m => m.Length > 0 && !m.StartsWith('<')));
-        string name = (device ?? string.Empty).Trim();
+        string name = DeviceTip(device);
         return T("Device: {0}", name.Length > 0 ? name : "?") + "\n" + T("Input: {0} ({1})", key, DeviceMarkerText.ShortLabel(key)) + "\n" +
                (mods.Length > 0 ? T("Modifiers: hold {0}", mods) : T("No modifier"));
     }

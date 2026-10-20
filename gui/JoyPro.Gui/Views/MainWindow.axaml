@@ -1113,19 +1113,25 @@
                     <Grid x:Name="RelationsPaneGrid" ColumnDefinitions="300,12,*">
                         <Border Classes="surface" Padding="12">
                             <Grid x:Name="RelationsLeftGrid" RowDefinitions="Auto,Auto,Auto,Auto,*,Auto" RowSpacing="10">
-                                <Grid ColumnDefinitions="Auto,*,Auto,Auto" ColumnSpacing="10">
+                                <Grid ColumnDefinitions="Auto,*,Auto,Auto,Auto" ColumnSpacing="4">
                                     <Border Classes="iconBadge"><PathIcon Data="{StaticResource Icon.Link}" /></Border>
                                     <StackPanel Grid.Column="1" VerticalAlignment="Center">
                                         <TextBlock Classes="h2" FontSize="18" FontWeight="Bold" Text="{l:T 'Relations'}" />
                                         <TextBlock Classes="caption" Text="{l:T '{}{0} in your profile', Arg0={Binding ProfileRelationCount}}" />
                                     </StackPanel>
                                     <!-- Follow input (the same switch as on the Binds page): pressing a button selects its relation here too. -->
-                                    <ToggleButton x:Name="RelationsFollowInputToggle" Grid.Column="2" Classes="filterChip" VerticalAlignment="Center"
+                                    <!-- Manage with AI: a request for the whole profile becomes a checked plan (docs/ai-plans.md) -->
+                                    <ToggleButton Grid.Column="2" Classes="filterChip" VerticalAlignment="Center" Padding="7,4" Command="{Binding ShowManageWithAiCommand}"
+                                                  IsChecked="{Binding IsAiPlanPanelOpen, Mode=OneWay}"
+                                                  ToolTip.Tip="{l:T 'Manage with AI: say what to do with your relations (rename, delete, create, groups, aircraft); you see every step before anything changes'}">
+                                        <PathIcon Data="{StaticResource Icon.Wand}" Width="13" Height="13" />
+                                    </ToggleButton>
+                                    <ToggleButton x:Name="RelationsFollowInputToggle" Grid.Column="3" Classes="filterChip" VerticalAlignment="Center"
                                                   IsChecked="{Binding FollowInputOnBinds}"
                                                   ToolTip.Tip="{l:T 'Follow input: press a button or move an axis a long way and the list jumps to its relation; press it again for the next relation on it (without modifiers first). Not while recording or typing. Settings > Binds switches it off for good.'}">
                                         <PathIcon Data="{StaticResource Icon.Cursor}" Width="13" Height="13" />
                                     </ToggleButton>
-                                    <Button Grid.Column="3" Classes="icon accent small" Tag="{StaticResource Icon.Plus}" Content="{l:T 'New'}" Command="{Binding StartNewRelationCommand}"
+                                    <Button Grid.Column="4" Classes="icon accent small" Tag="{StaticResource Icon.Plus}" Content="{l:T 'New'}" Command="{Binding StartNewRelationCommand}"
                                             ToolTip.Tip="{l:T 'New relation: give it a name, then tick its actions in the search over every game (Ctrl+N)'}" />
                                 </Grid>
                                 <TextBox x:Name="RelationSearchBox" Grid.Row="1" Classes="search" Text="{Binding RelationSearchText}" Watermark="{l:T 'Search relations (Ctrl+F)'}"
@@ -1342,9 +1348,24 @@
                                     <TextBlock Classes="caption" FontSize="11" Text="{l:T 'Name it, then tick its actions.'}" />
                                 </StackPanel>
                                 <StackPanel Grid.Column="1" Spacing="2">
+                                    <WrapPanel>
                                     <ToggleButton Classes="icon" Tag="{StaticResource Icon.Wand}" Command="{Binding ToggleOrganizeCommand}" IsChecked="{Binding IsOrganizeOpen, Mode=OneWay}"
-                                                  Content="{l:T 'Group all my actions automatically...'}" HorizontalAlignment="Left"
+                                                  Content="{l:T 'Group all my actions automatically...'}" HorizontalAlignment="Left" Margin="0,0,8,0"
                                                   ToolTip.Tip="{l:T 'For the whole profile at once: JoyPro puts the same function of every aircraft and game into one relation (throttle, gear, flares ...), or groups what you describe. You see the result before anything changes.'}" />
+                                    <!-- Edit with AI: the open relation only -->
+                                    <Button Classes="icon small" Tag="{StaticResource Icon.Wand}" Content="{l:T 'Edit with AI'}" Command="{Binding ShowEditWithAiCommand}" Margin="0,0,8,0"
+                                            IsVisible="{Binding SelectedRelation, Converter={x:Static ObjectConverters.IsNotNull}}" VerticalAlignment="Center"
+                                            ToolTip.Tip="{l:T 'Change the open relation by saying it: actions, aircraft ticks, name, groups, axis tuning; you see before and after first'}" />
+                                    <!-- The local AI model at a glance: a click stops it -->
+                                    <Button Classes="filterChip" Command="{Binding StopLlmServerCommand}" IsVisible="{Binding LlmServerRunning}" VerticalAlignment="Center"
+                                            ToolTip.Tip="{Binding LlmServerStatusText}">
+                                        <StackPanel Orientation="Horizontal" Spacing="6">
+                                            <Ellipse Width="8" Height="8" Fill="#16A34A" VerticalAlignment="Center" />
+                                            <TextBlock Text="{Binding LlmServerChipText}" VerticalAlignment="Center" FontSize="11" />
+                                            <TextBlock Text="{l:T 'Stop'}" VerticalAlignment="Center" FontSize="11" FontWeight="SemiBold" />
+                                        </StackPanel>
+                                    </Button>
+                                    </WrapPanel>
                                     <TextBlock Classes="caption" FontSize="11" TextTrimming="CharacterEllipsis"
                                                Text="{l:T 'Builds relations for the whole profile: the same function of every aircraft and game together.'}" />
                                 </StackPanel>
@@ -1372,6 +1393,105 @@
                             <!-- "Group all my actions automatically" takes the place of the editor while it is open -->
                             <ScrollViewer Grid.Row="1" IsVisible="{Binding IsAnyRelationToolOpen}" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
                                 <StackPanel Spacing="12" Margin="0,0,10,0">
+                                <!-- Manage with AI (whole profile) / Edit with AI (the open relation): a checked plan, one checkbox per step -->
+                                <Border IsVisible="{Binding IsAiPlanPanelOpen}" Classes="surface">
+                                    <StackPanel Spacing="6">
+                                        <Grid ColumnDefinitions="Auto,*,Auto" ColumnSpacing="10">
+                                            <Border Classes="iconBadge"><PathIcon Data="{StaticResource Icon.Wand}" /></Border>
+                                            <StackPanel Grid.Column="1" VerticalAlignment="Center">
+                                                <TextBlock Classes="h2" Text="{Binding AiPlanTitle}" />
+                                                <TextBlock Classes="caption" Text="{Binding AiPlanHint}" TextWrapping="Wrap" />
+                                            </StackPanel>
+                                            <Button Grid.Column="2" Classes="icon ghost small" Tag="{StaticResource Icon.Close}" Content="{l:T 'Close'}" Command="{Binding CloseAiPlanCommand}" ToolTip.Tip="{l:T 'Back to the relation editor'}" />
+                                        </Grid>
+                                        <Grid ColumnDefinitions="*,Auto" ColumnSpacing="8">
+                                            <TextBox Text="{Binding AiPlanText}" Watermark="{l:T 'What should change?'}" AcceptsReturn="False" />
+                                            <Button Grid.Column="1" Classes="accent" Command="{Binding AskAiPlanCommand}" Content="{l:T 'Make a plan'}"
+                                                    ToolTip.Tip="{l:T 'JoyPro (offline rules or your local AI model) makes a plan; nothing changes before you apply it'}" />
+                                        </Grid>
+                                        <TextBlock Classes="caption" Text="{Binding LlmServerStatusText}" IsVisible="{Binding LlmEnabled}" />
+                                        <TextBlock Classes="caption" Text="{l:T 'The local AI model is off: only the simple requests of the examples work. Switch it on under Group all my actions automatically > By description.'}"
+                                                   IsVisible="{Binding !LlmEnabled}" TextWrapping="Wrap" />
+                                        <TextBlock Text="{Binding AiPlanStatus}" TextWrapping="Wrap"
+                                                   IsVisible="{Binding AiPlanStatus, Converter={x:Static StringConverters.IsNotNullOrEmpty}}" />
+                                        <ItemsControl ItemsSource="{Binding AiPlanSteps}" IsVisible="{Binding HasAiPlanSteps}">
+                                            <ItemsControl.ItemTemplate>
+                                                <DataTemplate x:DataType="models:AiPlanStepItem">
+                                                    <Border Classes="callout" Margin="0,2" Padding="8,6">
+                                                        <Grid ColumnDefinitions="Auto,*" ColumnSpacing="8">
+                                                            <CheckBox IsChecked="{Binding IsSelected}" IsEnabled="{Binding IsValid}" VerticalAlignment="Top" />
+                                                            <StackPanel Grid.Column="1" Spacing="2">
+                                                                <TextBlock Text="{Binding Text}" FontWeight="SemiBold" TextWrapping="Wrap" />
+                                                                <Grid ColumnDefinitions="Auto,*" ColumnSpacing="6" IsVisible="{Binding HasChange}">
+                                                                    <TextBlock Text="{l:T 'Before'}" Opacity="0.7" FontSize="12" />
+                                                                    <TextBlock Grid.Column="1" Text="{Binding Before}" TextWrapping="Wrap" FontSize="12" />
+                                                                </Grid>
+                                                                <Grid ColumnDefinitions="Auto,*" ColumnSpacing="6" IsVisible="{Binding HasChange}">
+                                                                    <TextBlock Text="{l:T 'After'}" Opacity="0.7" FontSize="12" />
+                                                                    <TextBlock Grid.Column="1" Text="{Binding After}" TextWrapping="Wrap" FontSize="12" FontWeight="SemiBold" />
+                                                                </Grid>
+                                                                <TextBlock Text="{Binding Error}" IsVisible="{Binding HasError}" Foreground="#DC2626" TextWrapping="Wrap" FontSize="12" />
+                                                                <TextBlock Text="{Binding Warnings}" IsVisible="{Binding HasWarnings}" Foreground="#D97706" TextWrapping="Wrap" FontSize="12" />
+                                                                <Expander Header="{l:T 'Details'}" IsVisible="{Binding HasDetails}" HorizontalAlignment="Stretch" Padding="6,2">
+                                                                    <TextBlock Text="{Binding Details}" TextWrapping="Wrap" FontSize="12" Opacity="0.85" />
+                                                                </Expander>
+                                                            </StackPanel>
+                                                        </Grid>
+                                                    </Border>
+                                                </DataTemplate>
+                                            </ItemsControl.ItemTemplate>
+                                        </ItemsControl>
+                                        <!-- A fill step: summary, filters, relations with their proposed actions -->
+                                        <StackPanel Spacing="6" IsVisible="{Binding HasAiFill}">
+                                            <TextBlock Text="{Binding AiFillSummary}" FontWeight="SemiBold" TextWrapping="Wrap" />
+                                            <WrapPanel>
+                                                <TextBlock Text="{l:T 'Aircraft'}" VerticalAlignment="Center" Margin="0,0,6,0" />
+                                                <ComboBox ItemsSource="{Binding AiFillAircraftChoices}" SelectedItem="{Binding AiFillAircraftFilter}" MinWidth="180" Margin="0,0,12,0" />
+                                                <TextBlock Text="{l:T 'Confidence'}" VerticalAlignment="Center" Margin="0,0,6,0" />
+                                                <ComboBox ItemsSource="{Binding AiFillConfidenceChoices}" SelectedItem="{Binding AiFillConfidenceFilter}" MinWidth="130"
+                                                          ToolTip.Tip="{l:T 'high: rules and AI agree or the manual-checked catalog; medium: one path; ambiguous: the paths disagree (unticked)'}" />
+                                            </WrapPanel>
+                                            <ItemsControl ItemsSource="{Binding AiFillRelations}">
+                                                <ItemsControl.ItemTemplate>
+                                                    <DataTemplate x:DataType="models:AiFillRelationItem">
+                                                        <Expander IsVisible="{Binding IsVisible}" IsExpanded="{Binding IsExpanded}" HorizontalAlignment="Stretch" Margin="0,1">
+                                                            <Expander.Header>
+                                                                <StackPanel Orientation="Horizontal" Spacing="6">
+                                                                    <CheckBox IsChecked="{Binding IsSelected}" IsThreeState="True" />
+                                                                    <TextBlock Text="{Binding Header}" FontWeight="SemiBold" VerticalAlignment="Center" />
+                                                                    <TextBlock Text="{l:T 'ambiguous'}" Foreground="#D97706" VerticalAlignment="Center" IsVisible="{Binding HasAmbiguous}" />
+                                                                </StackPanel>
+                                                            </Expander.Header>
+                                                            <StackPanel Spacing="2">
+                                                                <ItemsControl ItemsSource="{Binding Actions}">
+                                                                    <ItemsControl.ItemTemplate>
+                                                                        <DataTemplate x:DataType="models:AiFillActionItem">
+                                                                            <Grid ColumnDefinitions="Auto,170,*,150" ColumnSpacing="8" Margin="0,1" IsVisible="{Binding IsVisible}">
+                                                                                <CheckBox IsChecked="{Binding IsSelected}" VerticalAlignment="Top" />
+                                                                                <TextBlock Grid.Column="1" Text="{Binding Where}" FontWeight="SemiBold" TextWrapping="Wrap" />
+                                                                                <StackPanel Grid.Column="2">
+                                                                                    <TextBlock Text="{Binding Line}" TextWrapping="Wrap" />
+                                                                                    <TextBlock Text="{Binding Why}" Opacity="0.7" FontSize="11" TextWrapping="Wrap" />
+                                                                                </StackPanel>
+                                                                                <TextBlock Grid.Column="3" Text="{Binding SourceText}" FontSize="11" TextWrapping="Wrap" />
+                                                                            </Grid>
+                                                                        </DataTemplate>
+                                                                    </ItemsControl.ItemTemplate>
+                                                                </ItemsControl>
+                                                                <TextBlock Text="{l:T 'No match for: {0}', Arg0={Binding NoMatch}}" IsVisible="{Binding HasNoMatch}" Opacity="0.7" FontSize="11" TextWrapping="Wrap" />
+                                                            </StackPanel>
+                                                        </Expander>
+                                                    </DataTemplate>
+                                                </ItemsControl.ItemTemplate>
+                                            </ItemsControl>
+                                        </StackPanel>
+                                        <WrapPanel IsVisible="{Binding HasAiPlanSteps}">
+                                            <Button Classes="accent" Command="{Binding ApplyAiPlanCommand}" Content="{l:T 'Apply selected'}" Margin="0,0,8,0"
+                                                    ToolTip.Tip="{l:T 'Runs the ticked steps as one change (Ctrl+Z undoes all of them)'}" />
+                                            <Button Command="{Binding DiscardAiPlanCommand}" Content="{l:T 'Discard'}" ToolTip.Tip="{l:T 'Forget this plan; nothing changes'}" />
+                                        </WrapPanel>
+                                    </StackPanel>
+                                </Border>
                                 <Border IsVisible="{Binding IsAutoGroupPanelOpen}" Classes="surface">
                                     <StackPanel Spacing="6">
                                         <Grid ColumnDefinitions="Auto,*,Auto,Auto" ColumnSpacing="10">
@@ -1469,7 +1589,7 @@
                                         <Expander Header="{l:T 'Local AI model (optional)'}" HorizontalAlignment="Stretch" IsExpanded="{Binding IsLlmSectionExpanded}">
                                             <StackPanel Spacing="6">
                                                 <TextBlock Classes="caption"
-                                                           Text="{l:T 'The offline rules always work. A free open-source language model can help with unusual descriptions: it only picks from the functions and aircraft the rules found, and JoyPro checks every answer. It runs on this PC only while a request is processed and is not part of JoyPro: it is downloaded only when you click Download, or you use a llama.cpp and model you already have.'}" />
+                                                           Text="{l:T 'The offline rules always work. A free open-source language model can help with unusual descriptions: it only picks from the functions and aircraft the rules found, and JoyPro checks every answer. It runs on this PC only while you use it (it stops after the idle minutes below) and is not part of JoyPro: it is downloaded only when you click Download, or you use a llama.cpp and model you already have.'}" />
                                                 <CheckBox IsChecked="{Binding LlmEnabled}" Content="{l:T 'Use local AI model'}" />
                                                 <TextBlock Text="{Binding LlmStatusText}" FontWeight="SemiBold" TextWrapping="Wrap" />
                                                 <TextBlock Text="{Binding LlmHardwareText}" TextWrapping="Wrap" />
@@ -1490,12 +1610,27 @@
                                                     <Button Command="{Binding CancelLlmDownloadCommand}" Content="{l:T 'Cancel download'}" Margin="0,0,8,0" IsVisible="{Binding IsLlmDownloading}" />
                                                     <Button Command="{Binding RemoveLlmModelCommand}" Content="{l:T 'Remove model'}" />
                                                 </WrapPanel>
+                                                <!-- Running or stopped, the model and its memory, Stop now, the idle stop -->
+                                                <Border Classes="surface" Padding="8,6">
+                                                    <WrapPanel>
+                                                        <Ellipse Width="10" Height="10" Margin="0,0,8,0" VerticalAlignment="Center" Fill="#16A34A" IsVisible="{Binding LlmServerRunning}" />
+                                                        <Ellipse Width="10" Height="10" Margin="0,0,8,0" VerticalAlignment="Center" Fill="#9CA3AF"
+                                                                 IsVisible="{Binding !LlmServerRunning}" />
+                                                        <TextBlock Text="{Binding LlmServerStatusText}" VerticalAlignment="Center" TextWrapping="Wrap" MaxWidth="560" Margin="0,0,12,0" />
+                                                        <Button Command="{Binding StopLlmServerCommand}" Content="{l:T 'Stop now'}" IsEnabled="{Binding LlmServerRunning}" Margin="0,0,12,0"
+                                                                ToolTip.Tip="{l:T 'Ends the local AI model at once and frees its memory (the next request loads it again)'}" />
+                                                        <TextBlock Text="{l:T 'Stop after'}" VerticalAlignment="Center" Margin="0,0,6,0" />
+                                                        <NumericUpDown Value="{Binding LlmIdleMinutes}" Minimum="0.5" Maximum="120" Increment="1" FormatString="0.#" Width="110"
+                                                                       ToolTip.Tip="{l:T 'The model stays loaded this long after a request, so the next one answers faster'}" />
+                                                        <TextBlock Text="{l:T 'idle minutes'}" VerticalAlignment="Center" Margin="6,0,0,0" />
+                                                    </WrapPanel>
+                                                </Border>
                                                 <ProgressBar Minimum="0" Maximum="100" Value="{Binding LlmDownloadPercent}" Height="10" IsVisible="{Binding IsLlmDownloading}" />
                                                 <TextBlock Text="{Binding LlmDownloadText}" TextWrapping="Wrap"
                                                            IsVisible="{Binding LlmDownloadText, Converter={x:Static StringConverters.IsNotNullOrEmpty}}" />
                                                 <TextBlock Text="{l:T 'Already have llama.cpp and a GGUF model?'}" FontWeight="SemiBold" Margin="0,6,0,0" />
                                                 <TextBlock Classes="caption"
-                                                           Text="{l:T 'Use your own llama-server.exe and .gguf file instead of a download. JoyPro starts it on this PC only for a request and stops it afterwards.'}" />
+                                                           Text="{l:T 'Use your own llama-server.exe and .gguf file instead of a download. JoyPro starts it on this PC for a request and stops it after the idle minutes above.'}" />
                                                 <WrapPanel>
                                                     <TextBlock Text="llama-server.exe" VerticalAlignment="Center" Width="110" />
                                                     <TextBox Text="{Binding LlmLocalServerPath}" Watermark="C:\llama.cpp\llama-server.exe" MinWidth="420" Margin="0,0,8,0" />
@@ -3379,7 +3514,7 @@
                                         <ListBox Classes="cards" ItemsSource="{Binding LayoutSuggestions}" SelectedItem="{Binding SelectedLayoutSuggestion}">
                                             <ListBox.ItemTemplate>
                                                 <DataTemplate x:DataType="models:LayoutSuggestionItem">
-                                                    <StackPanel Spacing="3" ToolTip.Tip="{Binding Device}">
+                                                    <StackPanel Spacing="3" ToolTip.Tip="{Binding DeviceTip}">
                                                         <TextBlock Text="{Binding DisplayName}" FontWeight="SemiBold" TextTrimming="CharacterEllipsis" />
                                                         <TextBlock Classes="caption" Text="{Binding ModelLine}" TextWrapping="NoWrap" TextTrimming="CharacterEllipsis" />
                                                         <StackPanel Orientation="Horizontal" Spacing="4">
@@ -3719,6 +3854,24 @@
                                                         </StackPanel>
                                                     </Button>
                                                 </StackPanel>
+                                                <!-- The device's alias (a name of the user's own) everywhere a device name is shown; display only -->
+                                                <StackPanel x:Name="DeviceAliasRow" Orientation="Horizontal" Spacing="6">
+                                                    <TextBox x:Name="DeviceAliasBox" Text="{Binding WorkspaceDeviceAlias}" Width="170" FontSize="11.5" MaxLength="60"
+                                                             Watermark="{l:T 'Your name for this device'}"
+                                                             ToolTip.Tip="{l:T 'A name of your own for this device (Left panel, Main throttle): JoyPro shows it everywhere instead of the device\'s name. The games keep getting the real device.'}">
+                                                        <TextBox.KeyBindings>
+                                                            <KeyBinding Gesture="Enter" Command="{Binding SaveDeviceAliasCommand}" />
+                                                        </TextBox.KeyBindings>
+                                                    </TextBox>
+                                                    <Button Classes="small" Command="{Binding SaveDeviceAliasCommand}" Content="{l:T 'Name it'}" IsEnabled="{Binding CanRun}"
+                                                            ToolTip.Tip="{l:T 'Keep the name in the profile'}" />
+                                                    <Button Classes="icon small ghost iconOnly" Tag="{StaticResource Icon.Close}" Command="{Binding ClearDeviceAliasCommand}" IsVisible="{Binding HasWorkspaceDeviceAlias}"
+                                                            IsEnabled="{Binding CanRun}" ToolTip.Tip="{l:T 'Take the name back: the device\'s real name is shown again'}" />
+                                                    <TextBlock Classes="caption" VerticalAlignment="Center" MaxWidth="220" TextTrimming="CharacterEllipsis" IsVisible="{Binding HasWorkspaceDeviceAlias}"
+                                                               Text="{l:T 'alias of {0}', Arg0={Binding WorkspaceDeviceRealName}}" ToolTip.Tip="{Binding WorkspaceDeviceRealName}" />
+                                                </StackPanel>
+                                                <TextBlock Classes="caption" Text="{Binding DeviceAliasStatus}" TextWrapping="Wrap" MaxWidth="470"
+                                                           IsVisible="{Binding DeviceAliasStatus, Converter={x:Static StringConverters.IsNotNullOrEmpty}}" />
                                                 <!-- The icon picker: one tile per picture (line drawings as lines, cel-shaded and two-colour) -->
                                                 <Border x:Name="DeviceIconPicker" Classes="sunken" Padding="8" IsVisible="{Binding IsDeviceIconPickerOpen}" MaxWidth="470">
                                                     <StackPanel Spacing="6">
@@ -5815,6 +5968,14 @@
                                             ToolTip.Tip="{l:T 'Your connected sticks, throttles and pedals, and the devices your profile uses'}" />
                                 </controls:SettingsSection.HeaderContent>
                                 <StackPanel Spacing="6">
+                                    <!-- Device names: the aliases given on the Layout page or the devices' real names -->
+                                    <StackPanel x:Name="DeviceNamesSetting" Orientation="Horizontal" Spacing="12">
+                                        <TextBlock Text="{l:T 'Device names:'}" VerticalAlignment="Center" FontWeight="SemiBold" />
+                                        <RadioButton Content="{l:T 'show the alias'}" IsChecked="{Binding ShowDeviceAliases}"
+                                                     ToolTip.Tip="{l:T 'Devices you named on the Layout page are shown by that name (the real name is in the tooltip)'}" />
+                                        <RadioButton Content="{l:T 'show the device\'s real name'}" IsChecked="{Binding ShowDeviceRealNames}"
+                                                     ToolTip.Tip="{l:T 'Every device is shown by the name Windows gives it'}" />
+                                    </StackPanel>
                                     <TextBlock Classes="hint" Text="{l:T 'Bought a new device, or Windows gave a device a new name? Move its binds to the new device. A device you sold: remove it from the profile. JoyPro asks first and keeps a copy of your profile.'}" />
                                     <TextBlock Classes="hint" Text="{l:T 'Press Look again to see your devices.'}" IsVisible="{Binding !HasDeviceCards}" />
                                     <ItemsControl ItemsSource="{Binding DeviceCards}">

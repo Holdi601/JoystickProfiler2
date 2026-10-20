@@ -92,9 +92,13 @@ have.
   alone. The commands still come from the catalog.
 - `--llm auto` (the default once the model is on) asks it only when the offline rules found no function, used
   catalog words, or left words they did not understand; `--llm on` always asks; `--llm off` never.
-- It runs **only while a request is processed**: JoyPro starts `llama-server` on 127.0.0.1 on a free port with one
-  slot (`-np 1`), waits until the model is loaded, sends one request and kills the process. A Windows job object
-  kills it with the engine, too. Nothing stays in memory or on the graphics card.
+- It runs **only while you use it**: JoyPro starts `llama-server` on 127.0.0.1 on a free port with one slot
+  (`-np 1`) and waits until the model is loaded. From the command line the process is killed after the request (a
+  Windows job object kills it with the engine, too). From the app (`JOYPRO_LLM_OWNER_PID`) the model stays loaded for
+  the next request and the app stops it after the idle minutes (default 2, Local AI model panel), with **Stop now**,
+  and when JoyPro ends (the app's kill-on-close job, also on a crash). `<data>\Llm\server.json` describes the running
+  server; the panel and a chip next to the AI buttons show it with its video memory (`nvidia-smi`, else the working
+  set). `engine llm server` shows it, `engine llm stop` ends it.
 - **Privacy**: everything runs on your PC. The request never leaves it. The only network access is the download you
   start (Hugging Face for the model, GitHub for llama.cpp).
 

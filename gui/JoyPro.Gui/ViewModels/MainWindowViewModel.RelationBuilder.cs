@@ -1542,6 +1542,7 @@ public sealed partial class MainWindowViewModel
     [RelayCommand]
     private void ShowOrganizeByFunction()
     {
+        IsAiPlanPanelOpen = false;
         IsDescribeGroupPanelOpen = false;
         IsAutoGroupPanelOpen = true;
         SelectedAutoGroupPreset ??= AutoGroupPresets[0];
@@ -1550,6 +1551,7 @@ public sealed partial class MainWindowViewModel
     [RelayCommand]
     private void ShowOrganizeByDescription()
     {
+        IsAiPlanPanelOpen = false;
         IsAutoGroupPanelOpen = false;
         IsDescribeGroupPanelOpen = true;
     }

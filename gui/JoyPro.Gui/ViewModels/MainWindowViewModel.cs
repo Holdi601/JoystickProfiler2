@@ -1070,7 +1070,9 @@ public sealed partial class MainWindowViewModel : ViewModelBase
             // The language before any page is made (empty: the Windows display language), docs/localization.md.
             ApplyLanguageChoice(languageChoice);
             InitializeSessionLog();
+            StartLlmServerWatch();
         }
+        ApplyLlmServerSnapshot(LlmServerSnapshot.Stopped);
         EnginePath = TryResolveEnginePath();
         PrefillLayoutAutomationPaths();
         DcsSavedGamesPath = GuessSavedGamesDcsPath();
@@ -2341,6 +2343,8 @@ public sealed partial class MainWindowViewModel : ViewModelBase
                 // Devices that came back with a new ID (new PC, Windows reinstall) get their binds, with a notice.
                 HasDeviceRemapNotice = false;
                 await RunDeviceAutoRemapAsync();
+                // The device names of the profile (after the remap: an alias moves with its device).
+                await LoadDeviceAliasesAsync();
             }
             finally
             {
@@ -2360,6 +2364,7 @@ public sealed partial class MainWindowViewModel : ViewModelBase
         allRelations.Clear();
         allBinds.Clear();
         allValidationIssues.Clear();
+        DeviceAliases.Replace(new Dictionary<string, string>());
         editingRelationNode = null;
 
         SelectedRelation = null;
@@ -11728,12 +11733,15 @@ public sealed partial class MainWindowViewModel : ViewModelBase
             OverlaySeconds = (decimal)Math.Clamp(state.OverlaySeconds, 1, 30);
             OverlayFontSize = (decimal)Math.Clamp(state.OverlayFontSize, 10, 60);
             OverlayShowDevice = state.OverlayShowDevice;
+            ShowDeviceAliases = state.ShowDeviceAliases;
             OverlayShowHeader = state.OverlayShowHeader;
             OverlayClickThrough = state.OverlayClickThrough;
             OverlayOnlyInGame = state.OverlayOnlyInGame;
             CheckUpdatesOnStartup = state.CheckUpdatesOnStartup ?? true;
             UpdateRepository = state.UpdateRepository ?? string.Empty;
             SkippedUpdateVersion = state.SkippedUpdateVersion ?? string.Empty;
+            if (state.LlmIdleMinutes is double idleMinutes && idleMinutes > 0)
+                LlmIdleMinutes = Math.Clamp((decimal)idleMinutes, 0.5m, 120m);
             ApplySettingsLayout(state.SettingsSectionOrder, state.SettingsSectionsOpen);
             if (!string.IsNullOrWhiteSpace(state.OverlayPlaneChoice))
             {
@@ -11786,6 +11794,7 @@ public sealed partial class MainWindowViewModel : ViewModelBase
                 OverlaySeconds = (double)OverlaySeconds,
                 OverlayFontSize = (double)OverlayFontSize,
                 OverlayShowDevice = OverlayShowDevice,
+                ShowDeviceAliases = ShowDeviceAliases,
                 OverlayShowHeader = OverlayShowHeader,
                 OverlayClickThrough = OverlayClickThrough,
                 OverlayOnlyInGame = OverlayOnlyInGame,
@@ -11793,6 +11802,7 @@ public sealed partial class MainWindowViewModel : ViewModelBase
                 CheckUpdatesOnStartup = CheckUpdatesOnStartup,
                 UpdateRepository = UpdateRepository,
                 SkippedUpdateVersion = SkippedUpdateVersion,
+                LlmIdleMinutes = (double)LlmIdleMinutes,
                 SettingsSectionOrder = SettingsSectionOrderForSave(),
                 SettingsSectionsOpen = OpenSettingsSectionsForSave()
             };
@@ -11999,6 +12009,9 @@ public sealed partial class MainWindowViewModel : ViewModelBase
 
         public bool OverlayShowDevice { get; set; }
 
+        // Settings > Devices > Device names: the alias (default) or the device's real name.
+        public bool ShowDeviceAliases { get; set; } = true;
+
         public bool OverlayShowHeader { get; set; } = true;
 
         public bool OverlayClickThrough { get; set; } = true;
@@ -12014,6 +12027,9 @@ public sealed partial class MainWindowViewModel : ViewModelBase
         public string? UpdateRepository { get; set; }
 
         public string? SkippedUpdateVersion { get; set; }
+
+        // The local AI model stops after this many minutes without a request (null: 2).
+        public double? LlmIdleMinutes { get; set; }
 
         // The Settings page: the sections in the user's order and the open ones (null: JoyPro's order, Games open).
         public List<string>? SettingsSectionOrder { get; set; }

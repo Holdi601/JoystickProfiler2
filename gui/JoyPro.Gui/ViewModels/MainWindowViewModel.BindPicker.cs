@@ -6,6 +6,7 @@ using System.Linq;
 using CommunityToolkit.Mvvm.ComponentModel;
 using JoyPro.DeviceReference;
 using JoyPro.Gui.Models;
+using JoyPro.Gui.Services;
 
 namespace JoyPro.Gui.ViewModels;
 
@@ -226,7 +227,7 @@ public sealed partial class MainWindowViewModel
 
         string BaseLabel(BindDeviceInputs d)
         {
-            string name = d.Name.Length > 0 ? DeviceProbe.RemoveGuid(d.Name) : DeviceProbe.RemoveGuid(d.Device);
+            string name = DeviceAliases.Shown(d.Device) is { Length: > 0 } alias ? alias : d.Name.Length > 0 ? DeviceProbe.RemoveGuid(d.Name) : DeviceProbe.RemoveGuid(d.Device);
             // The name Windows shows (the user may have named it, "L-VPC Stick WarBRD"); a nameless device by its model.
             if (name.Length == 0)
                 name = d.Model.Length > 0 ? d.Model : d.Device;
@@ -311,6 +312,8 @@ public sealed partial class MainWindowViewModel
         if (choice != null)
             return choice.Label;
         DeviceCardItem? card = DeviceCards.FirstOrDefault(c => string.Equals(c.Device, text, StringComparison.OrdinalIgnoreCase));
+        if (DeviceAliases.Shown(text) is { Length: > 0 } shown)
+            return shown;
         return card != null ? card.DeviceName : DeviceProbe.RemoveGuid(text);
     }
 

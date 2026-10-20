@@ -6,6 +6,7 @@ using System.Text.RegularExpressions;
 using Avalonia.Media;
 using Avalonia.Media.Imaging;
 using CommunityToolkit.Mvvm.ComponentModel;
+using JoyPro.Gui.Services;
 
 namespace JoyPro.Gui.Models;
 
@@ -314,7 +315,13 @@ public sealed partial class HudDevice : ObservableObject
 
     public List<HudChoice> GripChoices { get; }
 
-    public string Title => Model.Length > 0 ? Model : Name;
+    public string Title => DeviceAliases.Shown(Device) is { Length: > 0 } alias ? alias : Model.Length > 0 ? Model : Name;
+
+    public void RefreshName()
+    {
+        OnPropertyChanged(nameof(Title));
+        OnPropertyChanged(nameof(ShortTitle));
+    }
 
     public string Subtitle => DeviceKind + (Model.Length > 0 && Model != Name ? " · " + Name : string.Empty);
 

@@ -2613,14 +2613,7 @@ namespace JoyPro
             for (int i = 0; i < activityRemove.Count; i++)
                 JoystickActivity.Remove(activityRemove[i]);
 
-            List<string> aliasRemove = new List<string>();
-            foreach (KeyValuePair<string, string> entry in JoystickAliases)
-            {
-                if (!active.Contains(entry.Key, StringComparer.OrdinalIgnoreCase))
-                    aliasRemove.Add(entry.Key);
-            }
-            for (int i = 0; i < aliasRemove.Count; i++)
-                JoystickAliases.Remove(aliasRemove[i]);
+            // Device aliases stay (a device without binds yet keeps the name the user gave it).
 
             List<string> imageRemove = new List<string>();
             foreach (KeyValuePair<string, string> entry in JoystickFileImages)

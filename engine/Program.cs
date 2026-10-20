@@ -500,6 +500,8 @@ namespace JoyPro.Engine
                     return ChatRelation(command, outPath, textOutput);
                 case "assistant":
                     return AssistantRelations(command, outPath, textOutput);
+                case "plan":
+                    return RelationPlanCommand(command, outPath, textOutput);
                 case "rename":
                     return RenameRelationCommand(command, outPath, textOutput);
                 case "aircraft":
@@ -4967,6 +4969,27 @@ namespace JoyPro.Engine
                         EmitPayload(textOutput ? LlmResultText(result) : EngineSerialization.ToJson(result), outPath);
                         return result.Errors.Count == 0 ? 0 : Fail(string.Join(Environment.NewLine, result.Errors));
                     }
+                case "stop":
+                    {
+                        if (args.Count > 0)
+                            return Fail("Unknown llm stop argument(s): " + string.Join(" ", args));
+                        int pid;
+                        bool stopped = EngineLlm.StopServer(out pid);
+                        EmitPayload(textOutput
+                            ? (stopped ? "Stopped the local AI model (process " + pid.ToString(CultureInfo.InvariantCulture) + ")." : "The local AI model is not running.")
+                            : EngineSerialization.ToJson(new Dictionary<string, object> { { "Stopped", stopped }, { "Pid", pid } }), outPath);
+                        return 0;
+                    }
+                case "server":
+                    {
+                        if (args.Count > 0)
+                            return Fail("Unknown llm server argument(s): " + string.Join(" ", args));
+                        Dictionary<string, object> server = EngineLlm.ServerStatus();
+                        EmitPayload(textOutput
+                            ? ((bool)server["Running"] ? "Running: " + server["Model"] + " (process " + server["Pid"] + ")" : "Not running.")
+                            : EngineSerialization.ToJson(server), outPath);
+                        return 0;
+                    }
                 case "cancel":
                     Directory.CreateDirectory(EngineLlm.DataRoot());
                     File.WriteAllText(EngineLlm.CancelFile(), "cancel", new UTF8Encoding(false));
@@ -4990,7 +5013,7 @@ namespace JoyPro.Engine
                         return EngineLlm.RunFakeServer(portValue, portFile, response, serve, log, lifetimeValue);
                     }
                 default:
-                    return Fail("Unknown llm action: " + action + " (use status, recommend, download, remove, enable, disable, cancel, find-local, use-local).");
+                    return Fail("Unknown llm action: " + action + " (use status, recommend, download, remove, enable, disable, cancel, find-local, use-local, server, stop).");
             }
         }
 
@@ -10380,6 +10403,9 @@ namespace JoyPro.Engine
                 case "reference":
                 case "ref":
                     return RunDevicesReference(command.Skip(1).ToList(), outPath, textOutput);
+                case "alias":
+                case "aliases":
+                    return RunDevicesAlias(command.Skip(1).ToList(), outPath, textOutput);
                 default:
                     return Fail("Unknown devices action: " + action);
             }
@@ -13979,6 +14005,8 @@ namespace JoyPro.Engine
                         return command.Any(a => string.Equals(a, "--apply", StringComparison.OrdinalIgnoreCase));
                     if (action == "assistant")
                         return !command.Any(a => string.Equals(a, "--show-prompt", StringComparison.OrdinalIgnoreCase));
+                    if (action == "plan")
+                        return command.Count > 1 && string.Equals(command[1], "apply", StringComparison.OrdinalIgnoreCase) && !command.Any(a => string.Equals(a, "--dry-run", StringComparison.OrdinalIgnoreCase));
                     if (action == "aircraft")
                         return command.Count > 1 && string.Equals(command[1], "set", StringComparison.OrdinalIgnoreCase);
                     if (action == "check-aircraft")
@@ -14051,7 +14079,9 @@ namespace JoyPro.Engine
                            action == "swap" ||
                            action == "remove" ||
                            action == "purge" ||
-                           action == "clear";
+                           action == "clear" ||
+                           (action == "alias" || action == "aliases") && command.Count > 1 &&
+                           !string.Equals((command[1] ?? string.Empty).Trim(), "list", StringComparison.OrdinalIgnoreCase);
                 case "profile":
                     if (string.IsNullOrWhiteSpace(action))
                         action = "summary";
@@ -14330,6 +14360,7 @@ namespace JoyPro.Engine
             Console.WriteLine("  engine devices replace <old-device> <new-device> [--mode auto|same|layout] [--map OLD=NEW]... [--merge add|keep|replace] [--grip <device>=<grip id>]... [--dry-run]   (moves binds and modifiers input by input: same ids, or by layout from the device catalog; --dry-run previews)");
             Console.WriteLine("  engine devices auto-remap [--dry-run]   (alias: remap; a profile device that is not connected gets the connected device of the same product with a new GUID)");
             Console.WriteLine("  engine devices remove <device-name> [--device <name>] [--confirm true|false]   (aliases: purge, clear)");
+            Console.WriteLine("  engine devices alias list | set <device> <alias> | clear <device>   (a name of your own for a device; display only, exports use the real device)");
             Console.WriteLine("  engine relations list [filter]");
             Console.WriteLine("  engine relations show <relation-name>");
             Console.WriteLine("  engine relations add <name> [--axis|--button|--type axis|button] [--node game:id[:plane1|plane2]] [--from relation] [--group g] [--device d --input i --modifier m]");

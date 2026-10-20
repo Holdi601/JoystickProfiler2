@@ -412,6 +412,7 @@ engine profile save "C:\profiles\my_setup.pr0file"
   engine devices replace <old-device> <new-device> [--mode auto|same|layout] [--map OLD=NEW]... [--merge add|keep|replace] [--grip <device>=<grip id>]... [--dry-run]   (moves binds and modifiers input by input: same ids, or by layout from the device catalog; --dry-run previews)
   engine devices auto-remap [--dry-run]   (alias: remap; a profile device that is not connected gets the connected device of the same product with a new GUID)
   engine devices remove <device-name> [--device <name>] [--confirm true|false]   (aliases: purge, clear)
+  engine devices alias list | set <device> <alias> | clear <device>   (a name of your own for a device; display only, exports use the real device)
   engine relations list [filter]
   engine relations show <relation-name>
   engine relations add <name> [--axis|--button|--type axis|button] [--node game:id[:plane1|plane2]] [--from relation] [--group g] [--device d --input i --modifier m]
@@ -5035,6 +5036,18 @@ How arguments interact:
 Examples:
 ```powershell
 engine --profile 'C:\JoyPro\profiles\pilot_main.pr0file' devices remove 'LEFT VPC Throttle' --confirm false --text
+```
+
+### `engine devices alias list | set <device> <alias> | clear <device>   (a name of your own for a device; display only, exports use the real device)`
+What it does: Runs this command operation.
+
+Arguments and example values:
+- `<device>`: Command argument. See examples for typical values.
+- `<alias>`: Command argument. See examples for typical values.
+
+Examples:
+```powershell
+engine --help
 ```
 
 ### `engine relations list [filter]`

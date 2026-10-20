@@ -183,11 +183,7 @@ public sealed partial class MainWindowViewModel
             OverlayLines.Remove(OverlayCorner.StartsWith("Bottom", StringComparison.OrdinalIgnoreCase) ? OverlayLines[0] : OverlayLines[^1]);
     }
 
-    private static string ShortDeviceName(string device)
-    {
-        int brace = device.IndexOf('{');
-        return (brace > 0 ? device[..brace] : device).Trim();
-    }
+    private static string ShortDeviceName(string device) => DisplayText.ShortDevice(device);
 
     // Fades and removes old lines; checks every 2 s which game runs.
     private async Task OverlayLoopAsync(CancellationToken token)
