@@ -1757,7 +1757,7 @@ namespace JoyPro.Engine.Games
             if (packages.Count > 0 || encrypted.Count > 0)
                 result.Steps.Add("Add-on input presets (Community and Marketplace packages): " + packages.Count.ToString(CultureInfo.InvariantCulture) + " package(s) read, " +
                                  added.ToString(CultureInfo.InvariantCulture) + " new action(s)" + (withActions.Count > 0 ? " (" + string.Join(", ", withActions.Take(6)) + (withActions.Count > 6 ? ", ..." : string.Empty) + ")" : string.Empty) +
-                                 (encrypted.Count > 0 ? "; " + encrypted.Count.ToString(CultureInfo.InvariantCulture) + " encrypted package(s) skipped (.fsarchive, not readable: " +
+                                 (encrypted.Count > 0 ? "; " + encrypted.Count.ToString(CultureInfo.InvariantCulture) + " packed package(s) skipped (.fsarchive, not readable: " +
                                                         string.Join(", ", encrypted.Take(6)) + (encrypted.Count > 6 ? ", ..." : string.Empty) + ")" : string.Empty) + ".");
         }
 

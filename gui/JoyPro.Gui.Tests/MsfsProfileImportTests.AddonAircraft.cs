@@ -93,7 +93,7 @@ public sealed partial class MsfsProfileImportTests
 
         (int code, string refresh) = Engine(home, "msfs2024", "refresh-db", "--text");
         Assert.True(code == 0, refresh);
-        Assert.Contains("Add-on input presets (Community and Marketplace packages): 1 package(s) read, 1 new action(s) (" + Pmdg + "); 1 encrypted package(s) skipped (.fsarchive, not readable: vendor-aircraft-locked).", refresh);
+        Assert.Contains("Add-on input presets (Community and Marketplace packages): 1 package(s) read, 1 new action(s) (" + Pmdg + "); 1 packed package(s) skipped (.fsarchive, not readable: vendor-aircraft-locked).", refresh);
         string catalog = File.ReadAllText(Path.Combine(root, "data", "GameData", "DB", "MSFS2024", "actions.tsv"));
         Assert.Matches("(?m)^" + AddonAction + "\t[^\t]*\tbutton\tAIRCRAFT\t\t" + Pmdg + "\r?$", catalog);
         // The sim's own action stays for every aircraft.

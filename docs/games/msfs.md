@@ -271,13 +271,13 @@ reach aircraft the sim has not set up for a device yet).
   InstalledPackagesPath and in `Official*\<store>\*` (Marketplace / OneStore) with an `InputProfiles\**\*.xml` folder
   (Asobo's preset packages, fs-base and JoyPro's package excluded); their actions the list lacks join it, for the
   package's aircraft when its manifest says `content_type` AIRCRAFT (key as in `aircraft.tsv`), else for all. A
-  package without InputProfiles that holds encrypted `.fsarchive` archives is skipped and named in the step ("1
-  encrypted package(s) skipped (.fsarchive, not readable: ...)"). The sim's own actions stay general. Relation editor:
+  package without InputProfiles that holds only packed `.fsarchive` archives (JoyPro does not read them) is skipped and named in the step ("1
+  packed package(s) skipped (.fsarchive, not readable: ...)"). The sim's own actions stay general. Relation editor:
   a search row of such an action says "only for: <aircraft>", and adding it (`relations add` / `relations item add`
   with no aircraft in the node) ticks those aircraft alone: the only case JoyPro splits on its own, since the action
   exists only there. The import limits a relation of such an action to those aircraft too, without listing it. Test:
   `Steam2024_RefreshDb_ReadsAddonPackagePresets_ActionsTaggedWithTheirAircraft` (synthetic Community2024 aircraft
-  package with a preset, an encrypted package). Not checked against a real add-on (none installed on a test PC): the
+  package with a preset, a packed .fsarchive package). Not checked against a real add-on (none installed on a test PC): the
   ids and contexts real add-ons use in their presets are unverified; lowercase ids would be left out.
 - **Import, scan and the watcher's diff** read the user's own profile as the truth of its device and category: JoyPro's
   package preset of the same device and category is not read beside it, and a package preset of a device the sim has
