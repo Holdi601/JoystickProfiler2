@@ -14,20 +14,68 @@ namespace JoyPro.Engine.Games
     // sim's own settings there, and the Store version keeps the user's profiles in its save containers, which JoyPro does
     // not write. So every export to the package also writes, per device and category, a profile in the sim's own format
     // (the user's profile of that device and category with JoyPro's binds, else one listing the command list's actions)
-    // into a folder of JoyPro, and says how to import it in the sim (Controls > device > category > preset cogwheel >
-    // Import: the sim imports a file only for the same device and category).
+    // into a folder of JoyPro, and says how to import it in the sim (Controls > device > category > the profile's cogwheel
+    // > Import: the sim imports a file only for the same device and category).
     internal sealed partial class MsfsIntegration
     {
         public const string ImportFilesFolderName = "MSFS 2024 import files";
 
-        // Documents\JoyPro\MSFS 2024 import files (a folder the sim's file picker reaches); with JOYPRO_DATA_DIR
-        // (tests, portable setups) inside that folder.
+        // Documents\JoyPro2\MSFS 2024 import files, beside the JoyPro 2 profiles (a folder the sim's file picker reaches);
+        // with JOYPRO_DATA_DIR (tests, portable setups) inside that folder.
         public static string ImportFilesFolder()
         {
             string root = Environment.GetEnvironmentVariable("JOYPRO_DATA_DIR");
             if (string.IsNullOrWhiteSpace(root))
-                root = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), "JoyPro");
+                root = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), "JoyPro2");
             return Path.Combine(root, ImportFilesFolderName);
+        }
+
+        // 2.2.7 wrote the files to Documents\JoyPro (JoyPro 1's folder): they move to the JoyPro 2 folder once.
+        private static void MoveImportFilesOfJoyPro227(string folder, GameIoResult result)
+        {
+            if (!string.IsNullOrWhiteSpace(Environment.GetEnvironmentVariable("JOYPRO_DATA_DIR")))
+                return;
+            string old = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), "JoyPro", ImportFilesFolderName);
+            try
+            {
+                if (!Directory.Exists(old))
+                    return;
+                Directory.CreateDirectory(folder);
+                foreach (string file in Directory.GetFiles(old, "*.xml"))
+                {
+                    string target = Path.Combine(folder, Path.GetFileName(file));
+                    if (!File.Exists(target))
+                        File.Move(file, target);
+                    else
+                        File.Delete(file);
+                }
+                if (Directory.GetFileSystemEntries(old).Length == 0)
+                    Directory.Delete(old);
+                result.Steps.Add("The MSFS 2024 import files moved from " + old + " to " + folder + ".");
+            }
+            catch (Exception ex) when (ex is IOException || ex is UnauthorizedAccessException)
+            {
+                JoyPro.Logging.JoyProLog.Debug("MSFS", "Could not move the import files of 2.2.7 from " + old + ": " + ex.Message);
+            }
+        }
+
+        private static Dictionary<string, string> FileHashes(string folder)
+        {
+            Dictionary<string, string> hashes = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
+            try
+            {
+                if (!Directory.Exists(folder))
+                    return hashes;
+                using (System.Security.Cryptography.SHA256 sha = System.Security.Cryptography.SHA256.Create())
+                {
+                    foreach (string file in Directory.GetFiles(folder, "*.xml"))
+                        hashes[Path.GetFullPath(file)] = Convert.ToBase64String(sha.ComputeHash(File.ReadAllBytes(file)));
+                }
+            }
+            catch (Exception ex) when (ex is IOException || ex is UnauthorizedAccessException)
+            {
+            }
+            return hashes;
         }
 
         // The number of files written.
@@ -72,6 +120,8 @@ namespace JoyPro.Engine.Games
             }
             MsfsSimProfile records = MsfsSimProfile.Load(sim, null);
             string folder = ImportFilesFolder();
+            MoveImportFilesOfJoyPro227(folder, result);
+            Dictionary<string, string> before = FileHashes(folder);
             List<string> written = new List<string>();
             try
             {
@@ -99,8 +149,21 @@ namespace JoyPro.Engine.Games
             if (written.Count == 0)
                 return 0;
             result.Steps.Add("MSFS 2024 import files written (" + written.Count.ToString(CultureInfo.InvariantCulture) + ", one per device and category): " + folder);
+            // Only a file that changed has to be imported again in the sim.
+            Dictionary<string, string> after = FileHashes(folder);
+            List<string> changed = written.Where(p =>
+            {
+                string full = Path.GetFullPath(p);
+                string old;
+                string now;
+                return !before.TryGetValue(full, out old) || !after.TryGetValue(full, out now) || old != now;
+            }).Select(Path.GetFileName).ToList();
+            result.Steps.Add(changed.Count == 0
+                ? "No import file changed since the last export: nothing to import again in the sim."
+                : "Import these again in the sim (new or changed since the last export): " + string.Join(", ", changed) +
+                  (written.Count > changed.Count ? " (" + (written.Count - changed.Count).ToString(CultureInfo.InvariantCulture) + " unchanged)" : string.Empty) + ".");
             result.Steps.Add("To use JoyPro's binds where the sim already has settings for a device: in MSFS 2024 open Settings > Controls, pick the device and the category " +
-                             "(Airplanes or General), open the preset menu (cogwheel next to the preset name), choose Import and select the file JoyPro wrote for that device and category. " +
+                             "(Airplanes or General), click the cogwheel of the profile (not the preset's), choose Import and select the file JoyPro wrote for that device and category. " +
                              "The sim imports a file only for the same device and category. JoyPro's preset package reaches only aircraft the sim has not set up for a device yet; " +
                              "Controls > Reset to Defaults would apply it everywhere, but resets every device and aircraft.");
             return written.Count;

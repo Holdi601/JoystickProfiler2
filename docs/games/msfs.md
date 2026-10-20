@@ -7,7 +7,7 @@ JoyPro handles the two sims as two games side by side (both can be installed; a 
 |---|---|---|
 | CLI | `engine msfs2020` (`fs2020`) | `engine msfs2024` (`fs2024`; old name `msfs`) |
 | Install | Steam app 1250410 (`FlightSimulator.exe`), Store `Microsoft.FlightSimulator_8wekyb3d8bbwe`, `%APPDATA%\Microsoft Flight Simulator` | Steam app 2537590 (`FlightSimulator2024.exe`), Store `Microsoft.Limitless_8wekyb3d8bbwe`, `%APPDATA%\Microsoft Flight Simulator 2024` |
-| Export target (`paths`) | the Steam `remote` folders of app 1250410 (`inputprofile_*`) | JoyPro's preset package `Community2024\joypro-input-profiles`, then the Steam `remote` folders of app 2537590; each export also writes import files (`Documents\JoyPro\MSFS 2024 import files`, see "Getting the binds into the sim") |
+| Export target (`paths`) | the Steam `remote` folders of app 1250410 (`inputprofile_*`) | JoyPro's preset package `Community2024\joypro-input-profiles`, then the Steam `remote` folders of app 2537590; each export also writes import files (`Documents\JoyPro2\MSFS 2024 import files (2.2.7: Documents\JoyPro, moved at the next export)`, see "Getting the binds into the sim") |
 | Process (export refused while it runs) | `FlightSimulator` | `FlightSimulator2024` |
 | Catalog | `DB\MSFS2020\actions.tsv` | `DB\MSFS2024\actions.tsv` |
 | Aircraft list | `DB\MSFS2020\aircraft.tsv` (44 aircraft on a test PC) | `DB\MSFS2024\aircraft.tsv` (81) |
@@ -110,7 +110,7 @@ path). The watcher's records (`<data>\Sync\MSFS.json`) are not carried over; the
   own profiles in its save containers, which JoyPro never writes.
   - **Import files** (`engine\Games\MsfsIntegration.ImportFiles.cs`): every export to the package (not a dry run) also
     writes, per device and category with binds, a profile in the sim's own format into
-    `Documents\JoyPro\MSFS 2024 import files` (`<JOYPRO_DATA_DIR>\MSFS 2024 import files` when set):
+    `Documents\JoyPro2\MSFS 2024 import files` (`<JOYPRO_DATA_DIR>\MSFS 2024 import files` when set):
     `<device>_<guid8>_Airplanes.xml` / `_General.xml`. Base: the user's newest own profile of that device and category
     (Steam remote folder or Store save, read only), so his other binds and the listing stay; JoyPro's binds go in by
     the export mode and ownership (kept per import file). Without an own profile: a new profile (`<Version Num="-1"/>`,
@@ -118,8 +118,10 @@ path). The watcher's records (`<data>\Sync\MSFS.json`) are not carried over; the
     `<AircraftInfo CategoryName="AIRPLANE"/>` for airplanes) listing every action of the command list for the category.
     The name is "JoyPro <device> Airplanes|General". A step per file says what the sim does with the device now (from
     its records: "the sim keeps its own settings of this device for N aircraft ... import this file"), and the export
-    ends with the steps: Settings > Controls, pick the device and the category (Airplanes or General), cogwheel next to
-    the preset name > Import, pick the file (the sim imports only a file of the same device and category). The GUI (Other
+    ends with the steps: Settings > Controls, pick the device and the category (Airplanes or General), the cogwheel of
+    the profile (not the preset's; tester report on 2.2.7) > Import, pick the file (the sim imports only a file of the
+    same device and category). A step lists the files that are new or changed since the last export (only those need
+    importing again). The GUI (Other
     Games, Export) shows the folder with "Open folder" and these steps. Test:
     `MsfsProfileImportTests.Store2024_Export_WritesImportFilesPerDeviceAndCategory` (Store save unchanged, dry run writes none).
   - **Not done: writing the user's own 2024 profiles.** Store: the save containers sync with the Xbox cloud and get new
@@ -385,7 +387,7 @@ and developer ones (`MsfsIntegration.IsManagedContext`):
 
 ## JoyPro implementation (`engine msfs2020 ...`, `engine msfs2024 ...`)
 - Config path: one profile file or a folder (Steam `remote` folder of 2020/2024, or a folder of 2024 exports). `engine msfs2020 paths` lists the 2020 Steam folders, `engine msfs2024 paths` the 2024 package and Steam folders; both also list the Microsoft Store save folder (`...\SystemAppData\wgs`) when there is one. Store profiles are imported, never written (see "Import of your own profiles").
-- 2024 workflow: run `engine msfs2024 export <Community folder>` (GUI: the discovered package path), then start the sim; for devices and aircraft the sim has already set up, import the files of `Documents\JoyPro\MSFS 2024 import files` in Controls (see "Getting the binds into the sim"). The old route still works for an exported file: Controls > cogwheel > Export, `engine msfs2024 export <file>`, then Import in the sim. 2020 Steam: edit the `remote` folder with the sim closed.
+- 2024 workflow: run `engine msfs2024 export <Community folder>` (GUI: the discovered package path), then start the sim; for devices and aircraft the sim has already set up, import the files of `Documents\JoyPro2\MSFS 2024 import files` in Controls (see "Getting the binds into the sim"). The old route still works for an exported file: Controls > cogwheel > Export, `engine msfs2024 export <file>`, then Import in the sim. 2020 Steam: edit the `remote` folder with the sim closed.
 - Device = the `GUID` attribute (DirectInput instance GUID), so no connected device is needed; keyboard/mouse profiles (`GUID="{0}"`) are skipped.
 - One profile per device (and 2024 category) is used: the one picked with `--game-profile <FriendlyName>`, or the only one. Devices with several profiles are skipped with a warning listing their names.
 - Written: only actions in managed contexts (flight and general, see above) and in the catalog; only changed `<Action>` elements are re-rendered. Axis binds set flag 4 and 128 (invert) and the axis settings below; a released 2024 action becomes an empty element again, a released 2020 action is removed.

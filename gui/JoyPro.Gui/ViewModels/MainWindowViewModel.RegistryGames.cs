@@ -405,7 +405,7 @@ public sealed partial class MainWindowViewModel
 
     public bool HasMsfsImportFiles => MsfsImportFilesFolder.Length > 0;
 
-    public string MsfsImportFilesHint => T("MSFS 2024 keeps its own settings for every device and aircraft it has already set up, and there JoyPro's preset is not used. JoyPro also wrote your binds as one file per device and category. In MSFS 2024 open Settings > Controls, pick the device and the category (Airplanes or General), click the cogwheel next to the preset name, choose Import and select the file of that device and category.");
+    public string MsfsImportFilesHint => T("MSFS 2024 keeps its own settings for every device and aircraft it has already set up, and there JoyPro's preset is not used. JoyPro also wrote your binds as one file per device and category. In MSFS 2024 open Settings > Controls, pick the device and the category (Airplanes or General), click the cogwheel of the profile (not the preset's), choose Import and select the file of that device and category. Import a file again only when JoyPro's export says it changed.");
 
     partial void OnMsfsImportFilesFolderChanged(string value) => OnPropertyChanged(nameof(HasMsfsImportFiles));
 

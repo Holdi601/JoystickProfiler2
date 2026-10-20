@@ -626,7 +626,13 @@ public sealed class MsfsProfileImportTests : IDisposable
         string folder = Path.Combine(root, "data", "MSFS 2024 import files");
         Assert.Contains("MSFS 2024 import files written (3, one per device and category): " + folder, export);
         Assert.Contains("choose Import and select the file JoyPro wrote for that device and category", export);
+        Assert.Contains("click the cogwheel of the profile (not the preset's)", export);
+        Assert.Contains("Import these again in the sim (new or changed since the last export): ", export);
         Assert.Equal(folder, MainWindowViewModel.MsfsImportFilesFolderOf(export));
+        // The same export again: no file changed, nothing to import again.
+        (int againCode, string again) = Engine(home, "--profile", profile, "msfs2024", "export", community, "--text");
+        Assert.True(againCode == 0, again);
+        Assert.Contains("No import file changed since the last export: nothing to import again in the sim.", again);
         string planes = File.ReadAllText(Assert.Single(Directory.GetFiles(folder, "VPC_VMAX_Prime_Throttle_0000cccc_Airplanes.xml")));
         Assert.Contains("<FriendlyName PlatformAvailability=\"1\" Locked=\"false\">JoyPro VPC VMAX Prime Throttle Airplanes</FriendlyName>", planes);
         Assert.Contains("GUID=\"{0000CCCC-0000-4000-8000-000000000301}\" ProductID=\"413\"", planes);
