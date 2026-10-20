@@ -30,6 +30,25 @@ public sealed class UpdateFeedTests : IDisposable
 
     private UpdateService Service(string feed) => new(feed, Current, updatesFolder: Path.Combine(temp, "Updates"));
 
+    // Several versions behind: the notes of every app release since the installed one, newest first; picture packs,
+    // drafts, pre-releases and older versions are left out.
+    [Fact]
+    public void NotesSince_JoinsEveryAppReleaseAfterTheInstalledOne()
+    {
+        Assert.Equal("https://api.github.com/repos/o/r/releases?per_page=50", UpdateService.ReleaseListUrl("https://api.github.com/repos/o/r/releases/latest"));
+        Assert.Equal(string.Empty, UpdateService.ReleaseListUrl("file:///C:/feed.json"));
+        string list = "[{\"tag_name\":\"v2.0.3\",\"body\":\"# JoyPro 2.0.3\\r\\nC\",\"draft\":false,\"prerelease\":false}," +
+                      "{\"tag_name\":\"cockpit-pictures-v1\",\"body\":\"pictures\"}," +
+                      "{\"tag_name\":\"v2.0.2\",\"body\":\"# JoyPro 2.0.2\\r\\nB\"}," +
+                      "{\"tag_name\":\"v2.0.4-beta.1\",\"body\":\"beta\",\"prerelease\":true}," +
+                      "{\"tag_name\":\"v2.0.1\",\"body\":\"# JoyPro 2.0.1\\nA\"}," +
+                      "{\"tag_name\":\"v2.0.0\",\"body\":\"# JoyPro 2.0.0\\nold\"}]";
+        ReleaseInfo latest = new() { Tag = "v2.0.3", Version = new SemVersion(2, 0, 3, string.Empty), Notes = "# JoyPro 2.0.3\nC" };
+        Assert.Equal("# JoyPro 2.0.3\nC\n\n# JoyPro 2.0.2\nB\n\n# JoyPro 2.0.1\nA", UpdateService.NotesSince(list, Current, latest));
+        // One version behind: the latest release's own notes stay (empty = nothing to join).
+        Assert.Equal(string.Empty, UpdateService.NotesSince(list, new SemVersion(2, 0, 2, string.Empty), latest));
+    }
+
     [Theory]
     [InlineData("v2.1.0", 2, 1, 0, "")]
     [InlineData("2.0.3-beta.1", 2, 0, 3, "beta.1")]

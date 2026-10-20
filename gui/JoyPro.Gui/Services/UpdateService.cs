@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.Globalization;
 using System.IO;
@@ -276,11 +277,73 @@ public sealed class UpdateService
 
         if (release.Version <= CurrentVersion)
             return new UpdateCheckResult(UpdateCheckOutcome.UpToDate, release, T("JoyPro2 {0} is up to date (latest release: {1}).", CurrentVersion, release.Version));
+        // Several versions behind: the notes of every version since this one, newest first (one more request; when it
+        // fails, the latest release's notes alone).
+        release = await WithNotesSinceAsync(release, cancellationToken);
         if (!release.HasPackage)
             return new UpdateCheckResult(UpdateCheckOutcome.NewerWithoutPackage, release,
                 T("Version {0} is available, but its package or checksum is missing; download it from the release page.", release.Version));
         return new UpdateCheckResult(UpdateCheckOutcome.NewerAvailable, release, T("Version {0} is available (you have {1}).", release.Version, CurrentVersion));
     }
+
+    // The release list next to the feed (GitHub: .../releases?per_page=50) gives the notes of the app versions between
+    // this one and the latest (tags v<version>; picture and 3D packs, drafts and pre-releases are left out).
+    private async Task<ReleaseInfo> WithNotesSinceAsync(ReleaseInfo latest, CancellationToken cancellationToken)
+    {
+        string listUrl = ReleaseListUrl(FeedUrl);
+        if (listUrl.Length == 0)
+            return latest;
+        try
+        {
+            (HttpStatusCode status, string body) = await transport.GetStringAsync(listUrl, cancellationToken);
+            if ((int)status < 200 || (int)status > 299)
+                return latest;
+            string notes = NotesSince(body, CurrentVersion, latest);
+            return notes.Length == 0 ? latest : new ReleaseInfo
+            {
+                Tag = latest.Tag, Version = latest.Version, Notes = notes, PageUrl = latest.PageUrl, PackageUrl = latest.PackageUrl,
+                PackageName = latest.PackageName, PackageSize = latest.PackageSize, ChecksumUrl = latest.ChecksumUrl, Published = latest.Published
+            };
+        }
+        catch (Exception ex) when (ex is HttpRequestException or TaskCanceledException or IOException or UnauthorizedAccessException or JsonException)
+        {
+            return latest;
+        }
+    }
+
+    internal static string ReleaseListUrl(string feedUrl)
+    {
+        const string suffix = "/releases/latest";
+        return feedUrl.StartsWith("https://api.github.com/", StringComparison.OrdinalIgnoreCase) && feedUrl.EndsWith(suffix, StringComparison.OrdinalIgnoreCase)
+            ? feedUrl[..^suffix.Length] + "/releases?per_page=50"
+            : string.Empty;
+    }
+
+    // The notes of the app releases after `current` up to the latest, newest first; empty when there is only one.
+    internal static string NotesSince(string releasesJson, SemVersion current, ReleaseInfo latest)
+    {
+        using JsonDocument doc = JsonDocument.Parse(releasesJson);
+        if (doc.RootElement.ValueKind != JsonValueKind.Array)
+            return string.Empty;
+        List<(SemVersion Version, string Notes)> found = [];
+        foreach (JsonElement item in doc.RootElement.EnumerateArray())
+        {
+            if (item.ValueKind != JsonValueKind.Object || Bool(item, "draft") || Bool(item, "prerelease"))
+                continue;
+            string tag = Str(item, "tag_name");
+            if (!tag.StartsWith("v", StringComparison.OrdinalIgnoreCase) || SemVersion.Parse(tag) is not { } version)
+                continue;
+            if (version <= current || version > latest.Version || found.Any(f => f.Version.CompareTo(version) == 0))
+                continue;
+            found.Add((version, Str(item, "body").Replace("\r\n", "\n").Trim()));
+        }
+        if (found.Count < 2)
+            return string.Empty;
+        return string.Join("\n\n", found.OrderByDescending(f => f.Version).Select(f => f.Notes.Length > 0 ? f.Notes : "# JoyPro " + f.Version));
+    }
+
+    private static bool Bool(JsonElement element, string name) =>
+        element.TryGetProperty(name, out JsonElement value) && value.ValueKind == JsonValueKind.True;
 
     // GitHub's release JSON (releases/latest): tag, notes, page, and the package and checksum assets. A draft or a
     // pre-release is no update for a released JoyPro.
