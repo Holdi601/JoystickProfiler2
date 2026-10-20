@@ -17,6 +17,11 @@ public sealed partial class MainWindowViewModel
 
     public ListFilterViewModel BindFilter { get; } = new("binds");
 
+    // The tiered sort of each list (ViewModels/ListSortViewModel.cs), remembered with the filters.
+    public ListSortViewModel RelationSort { get; } = new("relations");
+
+    public ListSortViewModel BindSort { get; } = new("binds");
+
     private ListPreferences? listPreferences;
     private bool listFiltersInitialized;
     private readonly Dictionary<string, FilterSubject> relationSubjects = new(StringComparer.OrdinalIgnoreCase);
@@ -63,6 +68,20 @@ public sealed partial class MainWindowViewModel
             ApplyBindFilter();
             RememberFilter(BindFilter);
         };
+        if (ListPrefs.Sorts.TryGetValue(RelationSort.Page, out List<string>? relationSort))
+            RelationSort.LoadState(relationSort);
+        if (ListPrefs.Sorts.TryGetValue(BindSort.Page, out List<string>? bindSort))
+            BindSort.LoadState(bindSort);
+        RelationSort.Changed += (_, _) =>
+        {
+            ApplyRelationFilter();
+            RememberSort(RelationSort);
+        };
+        BindSort.Changed += (_, _) =>
+        {
+            ApplyBindFilter();
+            RememberSort(BindSort);
+        };
         RelationFilter.ClearSearchRequested += (_, _) => RelationSearchText = string.Empty;
         BindFilter.ClearSearchRequested += (_, _) => BindSearchText = string.Empty;
     }
@@ -72,6 +91,23 @@ public sealed partial class MainWindowViewModel
         ListPrefs.Filters[filter.Page] = filter.ToState();
         SaveListPreferences();
     }
+
+    private void RememberSort(ListSortViewModel sort)
+    {
+        ListPrefs.Sorts[sort.Page] = sort.ToState();
+        SaveListPreferences();
+    }
+
+    // What a row is sorted by: the device as shown (its alias while Settings shows aliases), the input as it is.
+    internal static ListSortRow SortRowOf(RelationListItem relation) =>
+        new(relation.Name, relation.IsBound ? DisplayText.ShortDevice(relation.BindDeviceFull) : string.Empty, relation.BindInputRaw, relation.IsAxis,
+            string.Join(", ", relation.GameList), int.TryParse(relation.Planes, out int planes) ? planes : 0, relation.Groups, relation.IsBound,
+            string.Join(", ", relation.ModifierChips));
+
+    internal static ListSortRow SortRowOf(BindListItem bind, RelationListItem? relation) =>
+        new(bind.RelationName, bind.HasBind ? DisplayText.ShortDevice(bind.Device) : string.Empty, bind.HasBind ? bind.Input : string.Empty, bind.IsAxis,
+            relation != null ? string.Join(", ", relation.GameList) : string.Empty, relation != null && int.TryParse(relation.Planes, out int planes) ? planes : 0,
+            relation?.Groups ?? string.Empty, bind.HasBind, bind.HasBind ? string.Join(", ", bind.ModifierList) : string.Empty);
 
     // The search box's text goes into the filter (which shows the list again).
     private void SetRelationSearch(string value)
@@ -128,9 +164,9 @@ public sealed partial class MainWindowViewModel
     private void ApplyRelationFilter()
     {
         Stopwatch watch = Stopwatch.StartNew();
-        List<RelationListItem> shown = allRelations
+        List<RelationListItem> shown = RelationSort.Sort(allRelations
             .Where(r => RelationFilter.Matches(relationSubjects.GetValueOrDefault(r.Name)))
-            .OrderBy(v => v.Name, StringComparer.OrdinalIgnoreCase)
+            .OrderBy(v => v.Name, StringComparer.OrdinalIgnoreCase), SortRowOf)
             .ToList();
         FillRelationList(shown);
         watch.Stop();

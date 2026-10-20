@@ -9,7 +9,7 @@ Games with a function catalog: DCS (all modules and input layers), Falcon BMS, I
 WARDOGS. `--planes` also takes a game id (`StarCitizen`, `X4`, `EliteDangerous`, `IL2Game`, `IL2Korea`, `FalconBMS`, `MSFS2020`,
 `MSFS2024`, `XPlane11`, `XPlane12`, `WarThunder`, `Arma3`, `ArmaReforger`, `Wardogs`).
 
-- GUI: Relations → **Group all my actions automatically...** → **By function (Auto Group)** (Preview first, then Apply).
+- GUI: Relations → **Auto-build relations from all my actions...** → **By function (Auto Group)** (Preview first, then Apply).
 - To group only some functions or aircraft, describe them in a sentence: [Group by description](natural-language-grouping.md).
 - To build one relation step by step (one action, then what fits with one click), use the
   [relation editor](relation-builder.md); its suggestions use the same catalog and your learned style.

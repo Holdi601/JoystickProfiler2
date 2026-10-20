@@ -10,7 +10,7 @@ relations:
 - "CMS forward for all DCS jets except the A-10"
 - "lower the gear and raise the flaps on the F-16 and the Hornet"
 
-- GUI: Relations → **Group all my actions automatically...** → **By description** → type the description → **Preview** → untick what
+- GUI: Relations → **Auto-build relations from all my actions...** → **By description** → type the description → **Preview** → untick what
   you do not want → **Create**.
 - For one open relation, its chat box does the same per relation (`engine relations chat`, see
   [Relation editor](relation-builder.md#say-it-in-words-local-ai-model)).
@@ -184,7 +184,7 @@ plus the CUDA runtime DLLs of the same CUDA version (about 600 MB). `engine llm 
 
 ### Download (one click)
 
-- GUI: Relations → Group all my actions automatically → By description → **Local AI model** (or **Set up...** in the relation
+- GUI: Relations → Auto-build relations from all my actions → By description → **Local AI model** (or **Set up...** in the relation
   editor's chat line): the recommended model is preselected; read size and
   licenses (model and runtime), tick **I accept**, click **Download and switch on**. That one click downloads
   llama.cpp (the runtime chosen in **Runtime**: auto, vulkan, cuda or cpu) and the model with a progress bar, checks

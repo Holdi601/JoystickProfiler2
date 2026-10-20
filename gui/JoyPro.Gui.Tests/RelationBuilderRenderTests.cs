@@ -98,6 +98,7 @@ public sealed class RelationBuilderRenderTests
             await RelationBuilderTests.OpenAsync(vm, "Flare");
             await RelationBuilderTests.WaitForAsync(() => vm.RelationNodes.Any(n => n.HasAircraft));
             await vm.RefreshAircraftCheckAsync();
+            vm.RelationCheckExpanded = true;
             RelationNodeItem node = vm.RelationNodes.First(n => n.HasAircraft);
             node.Aircraft!.IsExpanded = true;
             node.Aircraft.Items.Single(i => i.Plane == "F-14").IsChecked = true;

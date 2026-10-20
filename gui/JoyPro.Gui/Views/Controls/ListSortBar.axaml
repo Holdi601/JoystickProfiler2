@@ -1,0 +1,51 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:l="using:JoyPro.Gui.Localization"
+             xmlns:vm="using:JoyPro.Gui.ViewModels"
+             x:Name="SortRoot"
+             x:Class="JoyPro.Gui.Views.Controls.ListSortBar"
+             x:DataType="vm:ListSortViewModel">
+    <!-- The tiered sort of the Relations and Binds lists (ViewModels/ListSortViewModel.cs): a button with the levels in
+         a flyout, each level a key, a direction, up / down and remove; "Add level" and "Name only" (the list's own order). -->
+    <Button x:Name="SortButton" Classes="small icon" Classes.accent="{Binding HasLevels}" Tag="{StaticResource Icon.Sort}" VerticalAlignment="Top" Content="{Binding Label}"
+            ToolTip.Tip="{l:T 'Sort the list: by several keys in order, e.g. device, then input, then name'}">
+        <Button.Flyout>
+            <Flyout Placement="BottomEdgeAlignedRight">
+                <StackPanel Width="380" Spacing="6">
+                    <Grid ColumnDefinitions="*,Auto">
+                        <TextBlock Classes="h3" Text="{l:T 'Sort by'}" VerticalAlignment="Center" />
+                        <Button Grid.Column="1" Classes="small ghost" Content="{l:T 'Name only'}" Command="{Binding ResetCommand}" IsVisible="{Binding HasLevels}"
+                                ToolTip.Tip="{l:T 'Back to the list\'s own order (by name)'}" />
+                    </Grid>
+                    <TextBlock Classes="caption" TextWrapping="Wrap" IsVisible="{Binding !HasLevels}"
+                               Text="{l:T 'Sorted by name. Add a level to sort by something else first; equal rows go by name.'}" />
+                    <ItemsControl ItemsSource="{Binding Levels}">
+                        <ItemsControl.ItemTemplate>
+                            <DataTemplate x:DataType="vm:SortLevelItem">
+                                <Grid ColumnDefinitions="22,*,Auto,Auto,Auto,Auto" ColumnSpacing="4" Margin="0,2">
+                                    <TextBlock Text="{Binding Number}" VerticalAlignment="Center" FontWeight="SemiBold" />
+                                    <ComboBox Grid.Column="1" ItemsSource="{Binding Options}" SelectedItem="{Binding Key}" HorizontalAlignment="Stretch"
+                                              ToolTip.Tip="{l:T 'What this level sorts by'}">
+                                        <ComboBox.ItemTemplate>
+                                            <DataTemplate x:DataType="vm:SortKeyOption">
+                                                <TextBlock Text="{Binding Label}" />
+                                            </DataTemplate>
+                                        </ComboBox.ItemTemplate>
+                                    </ComboBox>
+                                    <Button Grid.Column="2" Classes="small" MinWidth="86" Content="{Binding DirectionLabel}" Command="{Binding ToggleDirectionCommand}"
+                                            ToolTip.Tip="{l:T 'Turn this level around'}" />
+                                    <Button Grid.Column="3" Classes="small ghost" Content="↑" Command="{Binding MoveUpCommand}" ToolTip.Tip="{l:T 'Move this level up'}" />
+                                    <Button Grid.Column="4" Classes="small ghost" Content="↓" Command="{Binding MoveDownCommand}" ToolTip.Tip="{l:T 'Move this level down'}" />
+                                    <Button Grid.Column="5" Classes="icon small ghost iconOnly" Tag="{StaticResource Icon.Close}" Command="{Binding RemoveCommand}"
+                                            ToolTip.Tip="{l:T 'Remove this level'}" />
+                                </Grid>
+                            </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                    </ItemsControl>
+                    <Button Classes="small icon" Tag="{StaticResource Icon.Plus}" Content="{l:T 'Add level'}" Command="{Binding AddLevelCommand}" IsEnabled="{Binding CanAddLevel}"
+                            HorizontalAlignment="Left" ToolTip.Tip="{l:T 'Another sort key, used where the ones above are equal'}" />
+                </StackPanel>
+            </Flyout>
+        </Button.Flyout>
+    </Button>
+</UserControl>

@@ -352,6 +352,16 @@ public sealed partial class MainWindowViewModel
     [RelayCommand]
     private void CloseNewRelationForm() => ShowNewRelationForm = false;
 
+    // Leaving the Relations page: its top tools (the auto-build wizard, the AI panels, the new relation form) close, so
+    // the page opens in its normal state (the open relation's view) next time.
+    private void ResetRelationsPageTools()
+    {
+        if (IsAnyRelationToolOpen)
+            CloseRelationTools();
+        if (ShowNewRelationForm)
+            ShowNewRelationForm = false;
+    }
+
     [RelayCommand]
     private void CloseRelationTools()
     {

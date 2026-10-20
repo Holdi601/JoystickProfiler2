@@ -1,6 +1,7 @@
 <!--
     The look of a Settings section (Views/Controls/SettingsSection.cs): a card with a header row
       drag handle | open/closed arrow, icon and title (one button: click opens or closes) | the section's own buttons | menu
+    A click anywhere on the header row (the arrow, the title, the empty space) opens or closes it, except on its buttons.
     and the settings below it while the section is open. :dragging dims it while it is moved.
 -->
 <ResourceDictionary xmlns="https://github.com/avaloniaui"
@@ -15,7 +16,7 @@
                 <Border x:Name="PART_Card" Background="{DynamicResource JP.SurfaceBrush}" BorderBrush="{DynamicResource JP.BorderBrush}"
                         BorderThickness="1" CornerRadius="10" Padding="6,4,8,4">
                     <StackPanel Spacing="0">
-                        <Grid ColumnDefinitions="Auto,*,Auto,Auto" ColumnSpacing="4" MinHeight="40">
+                        <Grid x:Name="PART_Header" ColumnDefinitions="Auto,*,Auto,Auto" ColumnSpacing="4" MinHeight="40" Background="Transparent" Cursor="Hand">
                             <Border x:Name="PART_Grip" Background="Transparent" Width="22" VerticalAlignment="Stretch" Cursor="SizeAll"
                                     ToolTip.Tip="{l:T 'Drag to move this section'}">
                                 <PathIcon Data="{StaticResource Icon.Grip}" Width="14" Height="14" Opacity="0.55" VerticalAlignment="Center" />
@@ -23,7 +24,7 @@
                             <Button x:Name="PART_Toggle" Grid.Column="1" Background="Transparent" BorderThickness="0" Padding="4,6"
                                     HorizontalAlignment="Stretch" HorizontalContentAlignment="Left" VerticalAlignment="Center" CornerRadius="8">
                                 <StackPanel Orientation="Horizontal" Spacing="8">
-                                    <Panel Width="16" Height="16" VerticalAlignment="Center">
+                                    <Panel Width="16" Height="16" VerticalAlignment="Center" IsHitTestVisible="False">
                                         <PathIcon x:Name="PART_Closed" Data="{StaticResource Icon.ChevronRight}" Width="16" Height="16" />
                                         <PathIcon x:Name="PART_Opened" Data="{StaticResource Icon.ChevronDown}" Width="16" Height="16" IsVisible="False" />
                                     </Panel>

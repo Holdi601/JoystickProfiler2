@@ -459,8 +459,8 @@ public sealed partial class UserJourneyTests
                 Note("relations now: " + string.Join(", ", vm.Relations.Select(r => r.Name)) + "; open: " + vm.SelectedRelation?.Name + " with " + vm.RelationNodes.Count + " nodes");
             });
 
-            // Group all my actions automatically.
-            Step("relations: open 'Group all my actions automatically'", () =>
+            // Auto-build relations from all my actions.
+            Step("relations: open 'Auto-build relations from all my actions'", () =>
             {
                 vm!.ToggleOrganizeCommand.Execute(null);
                 return Task.CompletedTask;

@@ -13,7 +13,7 @@ Binding the relation to a button or axis happens on the Binds page.
 - **Left:** the relations (search, the [filter bar](#filters-relations-and-binds-pages), Ctrl/Shift for several,
   `Bulk changes`, `Groups`). Each card shows its bind as device, input and modifiers: `WarBRD · BTN 8 · Shift A` (the
   tooltip has the full device name); `not bound` when it has none.
-- **Top right:** `New relation` ("Name it, then tick its actions.") and `Group all my actions automatically...`
+- **Top right:** `New relation` ("Name it, then tick its actions.") and `Auto-build relations from all my actions...`
   ("Builds relations for the whole profile: the same function of every aircraft and game together"), `More` (refresh,
   import/export, next relation with suggestions, save).
 - **The open relation:** its name in a text box (edit in place: Enter or leaving the box renames, Esc cancels;
@@ -26,6 +26,14 @@ Binding the relation to a button or axis happens on the Binds page.
   leaves the list (deleted, filtered out) its actions leave the editor with it.
 - **Right, four panels:** `Add actions` (with `Open catalog` next to the search), `Suggested for this relation (n)`,
   `Catalog`, `JoyPro assistant`; `More` > `Suggest missing for every relation...` shows the review list there.
+
+## Binds page: what the relation does
+
+Under the selected row's header the Binds page shows a read-only peek at its relation (`MainWindowViewModel.BindPeek.cs`,
+`relations show`): `What it does: n actions in m games`, the actions grouped by game, each with its title, its
+aircraft count (a click shows the names) and axis / button, and `Open in Relations` (the relation editor with this
+relation). `Hide` / `Show` folds it; the state is remembered (`list-preferences.json` `BindPeekOpen`), folded it
+reads nothing.
 
 ## Filters (Relations and Binds pages)
 
@@ -40,6 +48,13 @@ ticks, remembered in `<settings>\list-preferences.json` (the typed search is not
   Star Citizen ...) have no aircraft.
 - **Devices**: the devices of the binds (two of the same model keep a part of their id).
 - **Bound / Not bound** and **Axes / Buttons**: switches (a second click switches back to all).
+- **Sort** (the button right of the filters, `ListSortViewModel`, `Views/Controls/ListSortBar.axaml`): sort levels in
+  order, each a key and a direction (`A to Z` / `Z to A`), with up / down / remove, `Add level` and `Name only`. Keys:
+  name, device (as shown, alias-aware), input (natural: axes X, Y, Z, RX, RY, RZ, sliders, then `BTN 2` before
+  `BTN 10`, then hats, then keys), axis / button, games, aircraft count, group, bound / not bound, modifiers (relations
+  have no change date, so there is no "last changed"). Unbound rows go after the bound ones; equal rows go by name. No
+  level = by name (the old order). Each list remembers its levels (`list-preferences.json` `Sorts`); it works on top of
+  the filters and the search, Follow input and the selection stay.
 
 The filters combine (all must fit). Every tick shows how many relations it would show with the other filters as they
 are; ticks that would show nothing are dimmed. Under the bar the active filters are chips with x, `n of 524 shown` and
@@ -157,15 +172,16 @@ Everything that builds relations keeps to it:
 - **Export**: a node exports its bind only for its switched-on aircraft (`RelationItem.AIRCRAFT`, as in JoyPro 1).
 
 **In the GUI** every DCS row of `Add actions` and every DCS action of the open relation has an aircraft selector:
-`a-10a, A-10C +69 more` / `82 of 84 aircraft · 14 differ`; a click on the action itself (or on that line) opens it.
+`a-10a, A-10C +69 more` / `82 of 84 aircraft · 14 aircraft use this command for something else (show)` (and
+`· n aircraft have another name for it` for another title of the same function); a click on the action itself, its chevron (v / ^) or that line opens it; closed, the card shows its one-line summary (game, aircraft). Every collapsible header of the app (Expanders, Settings sections) opens and closes from anywhere on its row, the chevron included (`Styles/DesignStyles.axaml`, `Styles/SettingsSection.axaml`).
 It lists every aircraft with that id in groups by what the id means there: `Same meaning: 'Pitch' (60)`, `Nearly the
-same (9)`, `Other title, same function (14)` (a helicopter's `Flight Control Cyclic Pitch`: the function map reads it
-as pitch, no mixed meaning), `Not in its list (2)`, `Other meaning here (own title shown)`, each aircraft with its own
+same (9)`, `Another name, does the same (14)` (a helicopter's `Flight Control Cyclic Pitch`: the function map reads it
+as pitch, no mixed meaning), `Not in its list (2)`, `Does something else here (its own name shown)`, each aircraft with its own
 title and category and a tick; `All`, `None`, `Only same meaning` (same and near), `Only same function` (also the
 other titles of the function), `Only same title`, `Invert` (on the shown aircraft), a filter box; Space toggles, Shift+click ticks a range. A search row starts with its same and near aircraft
 ticked and the other meanings unticked and adds only its ticked aircraft; an action's `Apply` saves its ticks in one
 step (`relations aircraft set`, one undo step) and the list stays open. Actions whose ticked aircraft mix meanings are
-flagged `Mixed meanings` inside their card (only another function counts, not another title of the same function).
+flagged inside their card (`In 1 ticked aircraft this command is not '...' but something else`; only another function counts, not another title of the same function).
 Other games' actions show their title in the game (`Pitch axis`, `AXIS ELEVATOR SET`), not their id. Opening a
 relation puts its name into the `Add actions` search; a game's header counts like its chip (`12 of 44 actions`).
 Games with one list per game have no selector.
@@ -174,8 +190,17 @@ Games with one list per game have no selector.
 
 **Repair**: `relations check-aircraft` finds actions with switched-on aircraft whose meaning differs from the action's;
 those the function map reads as the same function (`Cyclic Pitch` in a `Pitch` action) are listed but kept. The
-Relations page shows a notice with `Show them`, `Switch them off` (`--apply`: one undo step; they stay in the action
-switched off) and `Not now`. On the user's HoldiFeb23 profile (443 relations, 2 760 actions): 220 actions with differing
+open relation shows a neutral question (blue, info icon; orange is kept for real problems) that counts only this
+relation, with a real example: `In some aircraft this command does something else. The 'Rudder' command of the AH-64D
+has another meaning in 35 aircraft (e.g. F-16C_50: 'Nosewheel steering'). Should this relation also apply there?`.
+`Show what this command does in the other 35 aircraft` opens the list: per aircraft its name, what the command is
+called there and a `use here` tick. `Only where it is 'Rudder'` switches the others off (`relations aircraft set
+--off`, one undo step per action; they stay listed), `Keep for all` keeps them, `Ask me later` hides the question
+until the next start. Kept aircraft (`Keep for all`, `use here`) are remembered in `list-preferences.json`
+(`KeptAircraft`: relation|game|id|plane) and not asked about again. The profile-wide number is the small link
+`Check all relations (n actions)` above the editor: it runs the check again and lists every flagged action (a click
+opens its relation) with `Switch them all off` (`--apply`, one undo step; one run per action when the user keeps
+aircraft). On the user's HoldiFeb23 profile (443 relations, 2 760 actions): 220 actions with differing
 aircraft, 165 actions in 129 relations to repair, 360 aircraft to switch off, 398 kept as the same function.
 
 ## Suggested for this relation (no AI)
@@ -333,9 +358,13 @@ nothing changes):
 offline brain when it is not or does not start (the answer says why); `--llm on` fails without a usable model; `--llm
 off` never starts it.
 
-## Group all my actions automatically (whole profile)
+## Auto-build relations from all my actions (whole profile)
 
-`Group all my actions automatically...` has [Auto Group](auto-group.md) (by function, with presets) and
+The button's subtitle says what happens: a wizard opens in place of the open relation's view (it comes back with
+`Close and back to my relation` at the wizard's top). Leaving the Relations page closes the wizard, the AI panels
+and the new relation form, so the page always opens in its normal state.
+
+`Auto-build relations from all my actions...` has [Auto Group](auto-group.md) (by function, with presets) and
 [Group by description](natural-language-grouping.md) (several relations from one sentence). Auto Assign ("Put
 relations on my buttons automatically") is on the Binds page.
 

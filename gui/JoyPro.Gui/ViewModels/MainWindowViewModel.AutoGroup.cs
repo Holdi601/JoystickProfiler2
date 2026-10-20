@@ -99,7 +99,7 @@ public sealed partial class MainWindowViewModel
                 StatusText = T("Auto Group: nothing to add.");
                 return;
             }
-            if (!await ConfirmAsync(T("Group all my actions automatically?"), plan.Question(), T("Apply")))
+            if (!await ConfirmAsync(T("Auto-build relations from all my actions?"), plan.Question(), T("Apply")))
                 return;
         }
         EngineCommandResult? result = await RunEngineAsync(

@@ -10,6 +10,7 @@ using Avalonia.Input;
 using Avalonia.Interactivity;
 using Avalonia.LogicalTree;
 using Avalonia.Media;
+using Avalonia.VisualTree;
 using JoyPro.Gui.Models;
 
 namespace JoyPro.Gui.Views.Controls;
@@ -43,6 +44,7 @@ public class SettingsSection : ContentControl
     private bool isDragging;
     private Control? grip;
     private Button? toggle;
+    private Control? header;
     private Button? menu;
 
     public string SectionId
@@ -130,6 +132,11 @@ public class SettingsSection : ContentControl
         }
         if (toggle != null)
             toggle.Click -= OnToggleClick;
+        if (header != null)
+            header.Tapped -= OnHeaderTapped;
+        header = e.NameScope.Find<Control>("PART_Header");
+        if (header != null)
+            header.Tapped += OnHeaderTapped;
         grip = e.NameScope.Find<Control>("PART_Grip");
         toggle = e.NameScope.Find<Button>("PART_Toggle");
         menu = e.NameScope.Find<Button>("PART_Menu");
@@ -145,6 +152,23 @@ public class SettingsSection : ContentControl
         if (menu != null)
             menu.Flyout = BuildMenu();
         Refresh();
+    }
+
+    // The header row outside its buttons and the drag handle (the empty space right of the title) toggles too.
+    private void OnHeaderTapped(object? sender, TappedEventArgs e)
+    {
+        if (e.Source is Visual source && HeaderTapToggles(source, header))
+            Toggle();
+    }
+
+    internal static bool HeaderTapToggles(Visual source, Control? header) =>
+        header != null && !source.GetSelfAndVisualAncestors().TakeWhile(v => !ReferenceEquals(v, header))
+            .Any(v => v is Button || v is Avalonia.Controls.Primitives.ToggleButton || (v is Control c && c.Name == "PART_Grip") || v is InputElement { Focusable: true });
+
+    internal void Toggle()
+    {
+        if (item != null)
+            item.IsExpanded = !item.IsExpanded;
     }
 
     private void OnToggleClick(object? sender, RoutedEventArgs e)

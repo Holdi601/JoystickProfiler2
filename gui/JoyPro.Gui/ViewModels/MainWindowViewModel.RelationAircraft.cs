@@ -285,6 +285,8 @@ public sealed partial class MainWindowViewModel
         }
         OnPropertyChanged(nameof(HasMixedRelationNodes));
         OnPropertyChanged(nameof(MixedRelationNodesText));
+        // The banner's example aircraft comes from the aircraft just read.
+        UpdateRelationCheck();
     }
 
     // A game node whose aircraft report lists aircraft of the game's list (MSFS), not only the game itself.
@@ -356,27 +358,115 @@ public sealed partial class MainWindowViewModel
     private void ResetNodeAircraft(RelationNodeItem? node) => node?.Aircraft?.Reset();
 
     // ---------------------------------------------------------------------------------------------------------
-    // The profile check: actions with aircraft whose meaning of the id differs (engine relations check-aircraft)
+    // The profile check: actions with ticked aircraft where the command does something else (engine relations
+    // check-aircraft). The open relation's part is a neutral question above its actions ("In some aircraft this command
+    // does something else ... Should this relation also apply there?"); the rest of the profile is the small link
+    // "Check all relations (n actions)". Aircraft the user keeps ("Keep for all", "use here") are remembered
+    // (list-preferences.json "KeptAircraft": relation|game|id|plane) and not asked about again.
     // ---------------------------------------------------------------------------------------------------------
 
+    // Every flagged action of the profile, without the aircraft the user keeps.
     public ObservableCollection<AircraftCheckItem> AircraftCheckItems { get; } = [];
 
+    // The open relation's flagged actions (the banner).
+    public ObservableCollection<AircraftCheckItem> RelationCheckItems { get; } = [];
+
+    // Aircraft to decide on in the whole profile.
     [ObservableProperty]
-    [NotifyPropertyChangedFor(nameof(HasAircraftCheckNotice))]
     private int aircraftCheckDrop;
 
+    // Hides the banner for every relation (the journey's screenshots).
     [ObservableProperty]
     [NotifyPropertyChangedFor(nameof(HasAircraftCheckNotice))]
     private bool aircraftCheckDismissed;
 
+    // The profile-wide summary in the "Check all relations" panel.
     [ObservableProperty]
     private string aircraftCheckText = string.Empty;
 
-    // "Same id, different meaning: 360 aircraft in 165 actions"
     [ObservableProperty]
-    private string aircraftCheckShort = string.Empty;
+    [NotifyPropertyChangedFor(nameof(RelationCheckToggleText))]
+    private bool relationCheckExpanded;
 
-    public bool HasAircraftCheckNotice => AircraftCheckDrop > 0 && !AircraftCheckDismissed;
+    [ObservableProperty]
+    private bool profileCheckExpanded;
+
+    // "Ask me later": the relations whose banner is hidden until the next start.
+    private readonly HashSet<string> askLaterRelations = new(StringComparer.OrdinalIgnoreCase);
+
+    public bool HasAircraftCheckNotice => RelationCheckItems.Count > 0 && !AircraftCheckDismissed && !askLaterRelations.Contains(SelectedRelation?.Name ?? string.Empty);
+
+    public bool HasProfileCheckLink => AircraftCheckItems.Count > 0;
+
+    public string ProfileCheckLinkText => AircraftCheckItems.Count == 1 ? T("Check all relations (1 action)") : T("Check all relations ({0} actions)", AircraftCheckItems.Count);
+
+    public bool HasSeveralRelationCheckItems => RelationCheckItems.Count > 1;
+
+    private int RelationCheckPlaneCount => RelationCheckItems.Sum(i => i.Planes.Count);
+
+    public string RelationCheckHeadline => T("In some aircraft this command does something else.");
+
+    // "The 'Rudder' command of the AH-64D has another meaning in 35 aircraft (e.g. F-16C_50: 'Nosewheel steering').
+    // Should this relation also apply there?"
+    public string RelationCheckText
+    {
+        get
+        {
+            AircraftCheckItem? first = RelationCheckItems.FirstOrDefault();
+            if (first == null || first.Planes.Count == 0)
+                return string.Empty;
+            AircraftCheckPlane example = first.Planes[0];
+            string own = OwnPlaneOf(first);
+            string text = own.Length > 0
+                ? T("The '{0}' command of the {1} has another meaning in {2} aircraft (e.g. {3}: '{4}').", first.Title, own, first.Planes.Count, example.Plane, example.Title)
+                : T("The '{0}' command has another meaning in {1} aircraft (e.g. {2}: '{3}').", first.Title, first.Planes.Count, example.Plane, example.Title);
+            int more = RelationCheckItems.Count - 1;
+            if (more == 1)
+                text += " " + T("One more action of this relation, too.");
+            else if (more > 1)
+                text += " " + T("{0} more actions of this relation, too.", more);
+            return text + " " + T("Should this relation also apply there?");
+        }
+    }
+
+    public string RelationCheckToggleText => RelationCheckExpanded ? T("Hide the list")
+        : RelationCheckItems.Count > 1 ? T("Show what these commands do in the other {0} aircraft", RelationCheckPlaneCount)
+        : T("Show what this command does in the other {0} aircraft", RelationCheckPlaneCount);
+
+    // "Only where it is 'Rudder'"
+    public string RelationCheckOnlyLabel => RelationCheckItems.Count == 1 ? T("Only where it is '{0}'", RelationCheckItems[0].Title) : T("Only where the meaning is the same");
+
+    // An aircraft of the open relation's action where the command is the action's own meaning ("of the AH-64D").
+    private string OwnPlaneOf(AircraftCheckItem item)
+    {
+        RelationNodeItem? node = RelationNodes.FirstOrDefault(n => string.Equals(n.Id, item.Id, StringComparison.OrdinalIgnoreCase) && string.Equals(n.Game, item.Game, StringComparison.OrdinalIgnoreCase));
+        AircraftChoiceItem? own = node?.Aircraft?.Items.FirstOrDefault(i => i.IsChecked && i.IsSame) ?? node?.Aircraft?.Items.FirstOrDefault(i => i.IsChecked && !i.IsDiffers);
+        return own?.Plane ?? string.Empty;
+    }
+
+    [RelayCommand]
+    private void ToggleRelationCheckExpanded() => RelationCheckExpanded = !RelationCheckExpanded;
+
+    // The open relation's part of the check (after the check, a new relation, its aircraft read).
+    internal void UpdateRelationCheck()
+    {
+        string relation = SelectedRelation?.Name ?? string.Empty;
+        List<AircraftCheckItem> mine = AircraftCheckItems.Where(i => string.Equals(i.Relation, relation, StringComparison.OrdinalIgnoreCase)).ToList();
+        if (!mine.SequenceEqual(RelationCheckItems))
+        {
+            RelationCheckItems.Clear();
+            foreach (AircraftCheckItem item in mine)
+                RelationCheckItems.Add(item);
+            RelationCheckExpanded = false;
+        }
+        OnPropertyChanged(nameof(HasAircraftCheckNotice));
+        OnPropertyChanged(nameof(HasSeveralRelationCheckItems));
+        OnPropertyChanged(nameof(RelationCheckText));
+        OnPropertyChanged(nameof(RelationCheckToggleText));
+        OnPropertyChanged(nameof(RelationCheckOnlyLabel));
+        OnPropertyChanged(nameof(HasProfileCheckLink));
+        OnPropertyChanged(nameof(ProfileCheckLinkText));
+    }
 
     private int aircraftCheckVersion;
 
@@ -392,76 +482,179 @@ public sealed partial class MainWindowViewModel
         ApplyAircraftCheck(result.StandardOutput);
     }
 
+    private static string KeptKey(string relation, string game, string id, string plane) => relation + "|" + game + "|" + id + "|" + plane;
+
+    private HashSet<string> KeptAircraft => new(ListPrefs.KeptAircraft, StringComparer.OrdinalIgnoreCase);
+
     internal void ApplyAircraftCheck(string output)
     {
         AircraftCheckItems.Clear();
-        int drop = 0;
-        int relations = 0;
-        int nodes = 0;
+        HashSet<string> kept = KeptAircraft;
         try
         {
             using JsonDocument doc = JsonDocument.Parse(ExtractJsonPayload(output));
             JsonElement root = doc.RootElement;
-            drop = ReadJsonInt(root, "AircraftToDrop");
-            relations = ReadJsonInt(root, "AffectedRelations");
-            nodes = ReadJsonInt(root, "AffectedNodes");
             if (root.TryGetProperty("Found", out JsonElement found) && found.ValueKind == JsonValueKind.Array)
             {
                 foreach (JsonElement f in found.EnumerateArray())
                 {
-                    List<string> planes = ReadStringArray(f, "Drop");
+                    string relation = ReadJsonString(f, "Relation");
+                    string game = ReadJsonString(f, "Game");
+                    string id = ReadJsonString(f, "Id");
+                    List<string> planes = ReadStringArray(f, "Drop").Where(p => !kept.Contains(KeptKey(relation, game, id, p))).ToList();
                     if (planes.Count == 0)
                         continue;
-                    List<string> meanings = [];
+                    // What the command is called in each of them.
+                    Dictionary<string, string> titles = new(StringComparer.OrdinalIgnoreCase);
                     if (f.TryGetProperty("Meanings", out JsonElement m) && m.ValueKind == JsonValueKind.Array)
                     {
                         foreach (JsonElement v in m.EnumerateArray())
                         {
-                            List<string> where = ReadStringArray(v, "Planes").Where(p => planes.Contains(p, StringComparer.OrdinalIgnoreCase)).ToList();
-                            if (where.Count > 0)
-                                meanings.Add(T("'{0}' in {1}", ReadJsonString(v, "Title"), BuilderText.Where("DCS", where)));
+                            foreach (string plane in ReadStringArray(v, "Planes"))
+                                titles.TryAdd(plane, ReadJsonString(v, "Title"));
                         }
                     }
-                    AircraftCheckItems.Add(new AircraftCheckItem(ReadJsonString(f, "Relation"), ReadJsonString(f, "Game"), ReadJsonString(f, "Id"), ReadJsonString(f, "Title"), planes, string.Join("; ", meanings)));
+                    AircraftCheckItems.Add(new AircraftCheckItem(relation, game, id, ReadJsonString(f, "Title"),
+                        planes.Select(p => new AircraftCheckPlane(p, titles.TryGetValue(p, out string? t) ? t : string.Empty)).ToList()));
                 }
             }
         }
         catch (JsonException)
         {
         }
-        AircraftCheckText = drop == 0 ? string.Empty
-            : T("{0}{1} in {2}{3} include {4} aircraft where the same id means something else (e.g. 'Pitch' in a jet, 'Collective' in a helicopter). Switch them off? They stay listed, one tick brings one back.", nodes, (nodes == 1 ? " action" : " actions"), relations, (relations == 1 ? " relation" : " relations"), drop);
-        AircraftCheckShort = drop == 0 ? string.Empty
-            : T("Same id, different meaning: {0} aircraft in {1}{2}", drop, nodes, (nodes == 1 ? " action" : " actions"));
-        AircraftCheckDrop = drop;
+        UpdateAircraftCheckTotals();
     }
 
-    // Switch every flagged aircraft off (one engine run: one undo step).
+    private void UpdateAircraftCheckTotals()
+    {
+        int nodes = AircraftCheckItems.Count;
+        int relations = AircraftCheckItems.Select(i => i.Relation).Distinct(StringComparer.OrdinalIgnoreCase).Count();
+        AircraftCheckDrop = AircraftCheckItems.Sum(i => i.Planes.Count);
+        AircraftCheckText = nodes == 0 ? string.Empty
+            : T("{0} actions in {1} relations are also ticked for aircraft where their command does something else ({2} aircraft). Open one to decide, or switch them all off.", nodes, relations, AircraftCheckDrop);
+        if (nodes == 0)
+            ProfileCheckExpanded = false;
+        UpdateRelationCheck();
+    }
+
+    // Remembers aircraft the user keeps in a relation's action: the check does not ask about them again.
+    private void KeepAircraft(AircraftCheckItem item, IEnumerable<string> planes)
+    {
+        HashSet<string> kept = KeptAircraft;
+        foreach (string plane in planes)
+        {
+            if (kept.Add(KeptKey(item.Relation, item.Game, item.Id, plane)))
+                ListPrefs.KeptAircraft.Add(KeptKey(item.Relation, item.Game, item.Id, plane));
+        }
+    }
+
+    // One action's aircraft switched off (one engine run, one undo step).
+    private async Task<bool> SwitchOffAircraftAsync(AircraftCheckItem item, IReadOnlyCollection<string> planes)
+    {
+        if (planes.Count == 0)
+            return true;
+        EngineCommandResult? result = await RunEngineAsync(["relations", "aircraft", "set", item.Relation, "--node", item.Game + ":" + item.Id, "--off", string.Join("|", planes)],
+            includeProfile: true, mutatesProfile: true, busyLabel: N("Switching off aircraft where the command does something else..."), forceText: false);
+        return result != null && result.ExitCode == 0;
+    }
+
+    // "Only where it is 'Rudder'": the open relation's flagged aircraft off, except those ticked "use here" (kept).
+    [RelayCommand]
+    internal async Task OnlyWhereSameMeaningAsync()
+    {
+        string relation = SelectedRelation?.Name ?? string.Empty;
+        List<AircraftCheckItem> items = RelationCheckItems.ToList();
+        if (relation.Length == 0 || items.Count == 0)
+            return;
+        int off = 0;
+        foreach (AircraftCheckItem item in items)
+        {
+            List<string> drop = item.Planes.Where(p => !p.UseHere).Select(p => p.Plane).ToList();
+            if (!await SwitchOffAircraftAsync(item, drop))
+                break;
+            off += drop.Count;
+            KeepAircraft(item, item.Planes.Where(p => p.UseHere).Select(p => p.Plane));
+            AircraftCheckItems.Remove(item);
+        }
+        SaveListPreferences();
+        UpdateAircraftCheckTotals();
+        await ReloadBuilderRelationAsync(relation);
+        StatusText = T("'{0}': switched off in {1} aircraft where the command does something else. Ctrl+Z undoes it.", relation, off);
+    }
+
+    // "Keep for all": the relation stays for these aircraft; not asked again.
+    [RelayCommand]
+    internal void KeepRelationCheckForAll()
+    {
+        string relation = SelectedRelation?.Name ?? string.Empty;
+        foreach (AircraftCheckItem item in RelationCheckItems.ToList())
+        {
+            KeepAircraft(item, item.Planes.Select(p => p.Plane));
+            AircraftCheckItems.Remove(item);
+        }
+        SaveListPreferences();
+        UpdateAircraftCheckTotals();
+        StatusText = T("'{0}' stays for all its aircraft.", relation);
+    }
+
+    // "Ask me later": hides the open relation's banner until the next start.
+    [RelayCommand]
+    private void DismissAircraftCheck()
+    {
+        askLaterRelations.Add(SelectedRelation?.Name ?? string.Empty);
+        OnPropertyChanged(nameof(HasAircraftCheckNotice));
+    }
+
+    // "Check all relations (n actions)": the profile-wide check again, its list open (or closed).
+    [RelayCommand]
+    internal async Task ToggleProfileCheckAsync()
+    {
+        if (ProfileCheckExpanded)
+        {
+            ProfileCheckExpanded = false;
+            return;
+        }
+        await RefreshAircraftCheckAsync();
+        ProfileCheckExpanded = AircraftCheckItems.Count > 0;
+    }
+
+    // Switch every flagged aircraft of the profile off: one engine run (one undo step) unless the user keeps some, then
+    // one per action.
     [RelayCommand]
     internal async Task RepairAircraftAsync()
     {
-        EngineCommandResult? result = await RunEngineAsync(["relations", "check-aircraft", "--apply"], includeProfile: true, mutatesProfile: true,
-            busyLabel: N("Switching off aircraft where the id means something else..."), forceText: false);
-        if (result == null || result.ExitCode != 0)
-            return;
         int dropped = 0;
-        try
+        if (ListPrefs.KeptAircraft.Count == 0)
         {
-            using JsonDocument doc = JsonDocument.Parse(ExtractJsonPayload(result.StandardOutput));
-            dropped = ReadJsonInt(doc.RootElement, "Dropped");
+            EngineCommandResult? result = await RunEngineAsync(["relations", "check-aircraft", "--apply"], includeProfile: true, mutatesProfile: true,
+                busyLabel: N("Switching off aircraft where the command does something else..."), forceText: false);
+            if (result == null || result.ExitCode != 0)
+                return;
+            try
+            {
+                using JsonDocument doc = JsonDocument.Parse(ExtractJsonPayload(result.StandardOutput));
+                dropped = ReadJsonInt(doc.RootElement, "Dropped");
+            }
+            catch (JsonException)
+            {
+            }
+            AircraftCheckItems.Clear();
         }
-        catch (JsonException)
+        else
         {
+            foreach (AircraftCheckItem item in AircraftCheckItems.ToList())
+            {
+                if (!await SwitchOffAircraftAsync(item, item.Planes.Select(p => p.Plane).ToList()))
+                    break;
+                dropped += item.Planes.Count;
+                AircraftCheckItems.Remove(item);
+            }
         }
-        AircraftCheckDrop = 0;
-        AircraftCheckItems.Clear();
+        UpdateAircraftCheckTotals();
         if (SelectedRelation != null)
             await ReloadBuilderRelationAsync(SelectedRelation.Name);
-        StatusText = T("{0} aircraft switched off where the id means something else. Ctrl+Z undoes it.", dropped);
+        StatusText = T("{0} aircraft switched off where the command does something else. Ctrl+Z undoes it.", dropped);
     }
-
-    [RelayCommand]
-    private void DismissAircraftCheck() => AircraftCheckDismissed = true;
 
     // Opens a relation of the check.
     [RelayCommand]

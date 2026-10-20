@@ -138,9 +138,9 @@ public sealed partial class MainWindowViewModel
             }
             lines.Add(u.Status switch
             {
-                "updated" => T("{0} ({1}): your profile '{2}' (active) updated: {3} bind(s)", u.Device, category, u.Profile, u.Binds),
-                "unchanged" => T("{0} ({1}): your profile '{2}' (active) already has the {3} bind(s)", u.Device, category, u.Profile, u.Binds),
-                "dry-run" => T("{0} ({1}): your profile '{2}' (active) would be updated (dry run)", u.Device, category, u.Profile),
+                "updated" => T("{0} ({1}): your profile '{2}' (all your aircraft) updated: {3} bind(s)", u.Device, category, u.Profile, u.Binds),
+                "unchanged" => T("{0} ({1}): your profile '{2}' (all your aircraft) already has the {3} bind(s)", u.Device, category, u.Profile, u.Binds),
+                "dry-run" => T("{0} ({1}): your profile '{2}' (all your aircraft) would be updated (dry run)", u.Device, category, u.Profile),
                 _ => T("{0} ({1}): not written into your profile, the import file has the binds: {2}", u.Device, category, Translate(u.Reason))
             });
             foreach (string missing in u.NotWritten)

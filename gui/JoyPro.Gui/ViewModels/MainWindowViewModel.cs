@@ -93,10 +93,6 @@ public sealed partial class MainWindowViewModel : ViewModelBase
     private readonly SemaphoreSlim engineCallGate = new(1, 1);
     private int pendingEngineCalls;
     private readonly HashSet<string> relationMassSelectedNames = new(StringComparer.OrdinalIgnoreCase);
-    private readonly List<BindSortSpec> bindSortSpecs =
-    [
-        new BindSortSpec("RelationName", ListSortDirection.Ascending)
-    ];
     private bool dcsDbFilesIndexed;
     private bool il2TitleCacheLoaded;
     private bool dbNodeCatalogLoaded;
@@ -1120,6 +1116,8 @@ public sealed partial class MainWindowViewModel : ViewModelBase
         OnPropertyChanged(nameof(IsRelationsStage));
         if (value == UiStage.Relations)
             BuilderOnScreen();
+        else
+            ResetRelationsPageTools();
         OnPropertyChanged(nameof(IsBindsStage));
         OnPropertyChanged(nameof(IsModifiersStage));
         OnPropertyChanged(nameof(IsLayoutStage));
@@ -1862,6 +1860,7 @@ public sealed partial class MainWindowViewModel : ViewModelBase
         }
         UpdateRecordTargetContext();
         BuilderFollowSelection(value);
+        UpdateRelationCheck();
     }
 
     private void RefreshRelationValidationState()
@@ -2061,6 +2060,8 @@ public sealed partial class MainWindowViewModel : ViewModelBase
             return;
         }
 
+        // The peek at the relation's actions (MainWindowViewModel.BindPeek.cs).
+        _ = LoadBindPeekAsync(value?.RelationName ?? string.Empty);
         if (value != null)
         {
             if (value.HasBind)
@@ -2187,30 +2188,23 @@ public sealed partial class MainWindowViewModel : ViewModelBase
     [RelayCommand]
     private void GoModifiers() => CurrentStage = UiStage.Modifiers;
 
+    // The old "Sort by" keys of the Binds page: that key becomes the Binds sort's first level (again: turned around).
     [RelayCommand]
     private void SortBindsByColumn(string? columnKey)
     {
-        string key = (columnKey ?? string.Empty).Trim();
+        string key = (columnKey ?? string.Empty).Trim() switch
+        {
+            "RelationName" => "name",
+            "Device" => "device",
+            "Input" => "input",
+            "BindState" => "bound",
+            "TypeDisplay" => "kind",
+            var other => other.ToLowerInvariant()
+        };
         if (key.Length == 0)
             return;
-
-        int existingIndex = bindSortSpecs.FindIndex(v => string.Equals(v.Key, key, StringComparison.OrdinalIgnoreCase));
-        ListSortDirection direction = ListSortDirection.Ascending;
-        if (existingIndex == 0)
-        {
-            direction = bindSortSpecs[0].Direction == ListSortDirection.Ascending
-                ? ListSortDirection.Descending
-                : ListSortDirection.Ascending;
-            bindSortSpecs.RemoveAt(0);
-        }
-        else if (existingIndex > 0)
-        {
-            direction = bindSortSpecs[existingIndex].Direction;
-            bindSortSpecs.RemoveAt(existingIndex);
-        }
-
-        bindSortSpecs.Insert(0, new BindSortSpec(key, direction));
-        RebuildVisibleBinds();
+        EnsureListFilters();
+        BindSort.SetPrimary(key);
     }
 
     [RelayCommand]
@@ -10476,45 +10470,10 @@ public sealed partial class MainWindowViewModel : ViewModelBase
 
     private IEnumerable<BindListItem> ApplyBindSorting(IEnumerable<BindListItem> source)
     {
-        List<BindSortSpec> effective = bindSortSpecs.Count == 0
-            ? [new BindSortSpec("RelationName", ListSortDirection.Ascending)]
-            : bindSortSpecs.ToList();
-
-        IOrderedEnumerable<BindListItem>? ordered = null;
-        foreach (BindSortSpec spec in effective)
-        {
-            Func<BindListItem, string> keySelector = item => GetBindSortValue(item, spec.Key);
-            if (ordered == null)
-            {
-                ordered = spec.Direction == ListSortDirection.Ascending
-                    ? source.OrderBy(keySelector, StringComparer.OrdinalIgnoreCase)
-                    : source.OrderByDescending(keySelector, StringComparer.OrdinalIgnoreCase);
-            }
-            else
-            {
-                ordered = spec.Direction == ListSortDirection.Ascending
-                    ? ordered.ThenBy(keySelector, StringComparer.OrdinalIgnoreCase)
-                    : ordered.ThenByDescending(keySelector, StringComparer.OrdinalIgnoreCase);
-            }
-        }
-
-        return ordered ?? source.OrderBy(v => v.RelationName, StringComparer.OrdinalIgnoreCase);
-    }
-
-    private static string GetBindSortValue(BindListItem item, string key)
-    {
-        if (item == null)
-            return string.Empty;
-
-        return key.Trim() switch
-        {
-            "BindState" => item.BindState ?? string.Empty,
-            "TypeDisplay" => item.TypeDisplay ?? string.Empty,
-            "RelationName" => item.RelationName ?? string.Empty,
-            "Device" => item.Device ?? string.Empty,
-            "Input" => item.Input ?? string.Empty,
-            _ => item.RelationName ?? string.Empty
-        };
+        Dictionary<string, RelationListItem> byName = new(StringComparer.OrdinalIgnoreCase);
+        foreach (RelationListItem relation in allRelations)
+            byName.TryAdd(relation.Name, relation);
+        return BindSort.Sort(source, bind => SortRowOf(bind, byName.GetValueOrDefault(bind.RelationName)));
     }
 
     private void RebuildQuickBindOptions()
@@ -12212,18 +12171,5 @@ public sealed partial class MainWindowViewModel : ViewModelBase
                 StringComparer.OrdinalIgnoreCase.GetHashCode(obj.Title ?? string.Empty),
                 StringComparer.OrdinalIgnoreCase.GetHashCode(obj.Description ?? string.Empty));
         }
-    }
-
-    private sealed class BindSortSpec
-    {
-        public BindSortSpec(string key, ListSortDirection direction)
-        {
-            Key = key ?? string.Empty;
-            Direction = direction;
-        }
-
-        public string Key { get; }
-
-        public ListSortDirection Direction { get; }
     }
 }

@@ -711,7 +711,7 @@ public sealed partial class AircraftChoiceItem : ObservableObject
     public string MeaningText => Title.Length == 0 ? Note : Category.Length > 0 ? Title + " · " + Category : Title;
 
     public string Tooltip => Plane + ": " + (Title.Length > 0 ? "'" + Title + "'" + (Category.Length > 0 ? " [" + Category + "]" : string.Empty) : T("the id is not in its list")) +
-                             (IsOtherFunction ? T(" - the same id means something else here") : IsDiffers ? T(" - another title, the same function") : IsNear ? T(" - close to the row's meaning ({0})", Note) : string.Empty);
+                             (IsOtherFunction ? T(" - this command does something else here") : IsDiffers ? T(" - another name here, but it does the same") : IsNear ? T(" - close to the row's meaning ({0})", Note) : string.Empty);
 }
 
 // The aircraft of one id with a tick each (the search rows of Add actions and the actions of the open relation):
@@ -791,10 +791,14 @@ public sealed partial class AircraftSelector : ObservableObject
     }
 
     public string DiffersText => DiffersCount == 0 ? string.Empty
-        : T("{0}{1} where the same id means something else{2}", DiffersCount, (DiffersCount == 1 ? " aircraft" : " aircraft"), (HasMixed ? T(" ({0} ticked)", CheckedDiffersCount) : string.Empty));
+        : (DiffersCount == 1 ? T("1 aircraft uses this command for something else{0}", (HasMixed ? T(" ({0} ticked)", CheckedDiffersCount) : string.Empty))
+            : T("{0} aircraft use this command for something else{1}", DiffersCount, (HasMixed ? T(" ({0} ticked)", CheckedDiffersCount) : string.Empty)));
 
-    public string ExpandLabel => IsExpanded ? T("Hide aircraft") : Badge + (HasDiffers ? T(" · {0} differ", DiffersCount) : string.Empty) +
-                                 (SameFunctionCount > 0 ? T(" · {0} other title", SameFunctionCount) : string.Empty);
+    // "4 of 37 aircraft · 35 aircraft use this command for something else (show)"
+    public string ExpandLabel => IsExpanded ? T("Hide aircraft") : Badge +
+                                 (DiffersCount == 1 ? T(" · 1 aircraft uses this command for something else") : HasDiffers ? T(" · {0} aircraft use this command for something else", DiffersCount) : string.Empty) +
+                                 (SameFunctionCount == 1 ? T(" · 1 aircraft has another name for it") : SameFunctionCount > 0 ? T(" · {0} aircraft have another name for it", SameFunctionCount) : string.Empty) +
+                                 (HasDiffers || SameFunctionCount > 0 ? T(" (show)") : string.Empty);
 
     partial void OnIsExpandedChanged(bool value) => OnPropertyChanged(nameof(ExpandLabel));
 
@@ -875,7 +879,7 @@ public sealed partial class AircraftSelector : ObservableObject
             group.First().GroupHeader = GroupTitle(group.Key, group.Count());
     }
 
-    // "Same meaning: 'Pitch' (60)", "Nearly the same (9)", "Not in its list (2)", "Other meaning here (own title shown) (14)".
+    // "Same meaning: 'Pitch' (60)", "Nearly the same (9)", "Not in its list (2)", "Does something else here (its own name shown) (14)".
     private string GroupTitle(int group, int count)
     {
         string n = " (" + count.ToString(System.Globalization.CultureInfo.InvariantCulture) + ")";
@@ -883,9 +887,9 @@ public sealed partial class AircraftSelector : ObservableObject
         {
             0 => "Same meaning" + (rowTitle.Length > 0 ? ": '" + rowTitle + "'" : string.Empty) + n,
             1 => "Nearly the same" + n,
-            2 => "Other title, same function" + n,
+            2 => T("Another name, does the same{0}", n),
             3 => "Not in its list" + n,
-            _ => T("Other meaning here (own title shown){0}", n)
+            _ => T("Does something else here (its own name shown){0}", n)
         };
     }
 
@@ -922,18 +926,17 @@ public sealed partial class AircraftSelector : ObservableObject
     }
 }
 
-// One action of the profile check (engine relations check-aircraft): a relation's action with aircraft where the id
-// means something else, and those aircraft.
+// One action of the profile check (engine relations check-aircraft): a relation's action that is ticked for aircraft
+// where its command does something else, and those aircraft.
 public sealed class AircraftCheckItem
 {
-    public AircraftCheckItem(string relation, string game, string id, string title, IReadOnlyList<string> drop, string meanings)
+    public AircraftCheckItem(string relation, string game, string id, string title, IReadOnlyList<AircraftCheckPlane> planes)
     {
         Relation = relation;
         Game = game;
         Id = id;
         Title = title;
-        Drop = drop;
-        Meanings = meanings;
+        Planes = planes;
     }
 
     public string Relation { get; }
@@ -944,12 +947,34 @@ public sealed class AircraftCheckItem
 
     public string Title { get; }
 
-    public IReadOnlyList<string> Drop { get; }
+    public IReadOnlyList<AircraftCheckPlane> Planes { get; }
 
-    public string Meanings { get; }
+    public IReadOnlyList<string> Drop => Planes.Select(p => p.Plane).ToList();
 
-    // "Pitch: 'Pitch' - but 'Collective' in UH-1H"
-    public string Text => Relation + ": '" + Title + "'" + (Meanings.Length > 0 ? " - but " + Meanings : string.Empty);
+    // "Pitch: 'Pitch' does something else in UH-1H"
+    public string Text => T("{0}: '{1}' does something else in {2}", Relation, Title, BuilderText.Where(Game, Drop));
+
+    // "'Rudder' (35 aircraft)": the heading of an action in the banner's list when the relation has several.
+    public string Header => T("'{0}' ({1} aircraft)", Title, Planes.Count);
+}
+
+// One aircraft of a flagged action: what the command is called there, and "use here" (keep it ticked).
+public sealed partial class AircraftCheckPlane : ObservableObject
+{
+    public AircraftCheckPlane(string plane, string title)
+    {
+        Plane = plane;
+        Title = title;
+    }
+
+    public string Plane { get; }
+
+    public string Title { get; }
+
+    public string TitleText => Title.Length > 0 ? Title : T("not in its list");
+
+    [ObservableProperty]
+    private bool useHere;
 }
 
 internal static class BuilderText

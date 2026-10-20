@@ -17,6 +17,16 @@
 <Styles xmlns="https://github.com/avaloniaui"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
 
+    <!-- Collapsible headers (every Expander of the app): the whole header row is the toggle, the chevron too. The chevron
+         takes no clicks of its own (they reach the header's toggle), the row shows the hand. -->
+    <Style Selector="Expander /template/ ToggleButton#ExpanderHeader">
+        <Setter Property="Cursor" Value="Hand" />
+        <Setter Property="HorizontalAlignment" Value="Stretch" />
+    </Style>
+    <Style Selector="Expander /template/ ToggleButton#ExpanderHeader /template/ Border#ExpandCollapseChevronBorder">
+        <Setter Property="IsHitTestVisible" Value="False" />
+    </Style>
+
     <!-- Surfaces -->
     <Style Selector="Border.surface">
         <Setter Property="Background" Value="{DynamicResource JP.SurfaceBrush}" />

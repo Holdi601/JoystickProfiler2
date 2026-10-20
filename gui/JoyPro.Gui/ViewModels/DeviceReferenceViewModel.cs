@@ -69,7 +69,10 @@ public sealed partial class DeviceReferenceViewModel : ObservableObject
             VendorPhotosEnabled = allowed;
             updating = false;
         }
-        ApplyPhotoConsent(allowed);
+        // A click on "Download the reference photo" waits for this answer: that photo, not the first one.
+        bool pending = pendingReferencePhoto != null;
+        ApplyPhotoConsent(allowed, select: !pending);
+        AnswerPendingReferencePhoto(allowed);
     }
 
     // The shown model's consent state into the switch and the question (no download here).
@@ -299,6 +302,7 @@ public sealed partial class DeviceReferenceViewModel : ObservableObject
             ClassSchematic = DeviceClasses.Drawing(DeviceClass, copy.Hand, null);
             Status = string.Empty;
             HasUnsavedChanges = false;
+            ResetReferencePhoto();
             LoadPhotoConsent();
             BuildPictureOptions();
         }
@@ -409,6 +413,7 @@ public sealed partial class DeviceReferenceViewModel : ObservableObject
 
     partial void OnSelectedPictureChanged(ReferencePictureOption? value)
     {
+        OnPropertyChanged(nameof(CanDownloadReferencePhoto));
         if (value != null && !updating && !ReferenceEquals(value, loadedPicture))
             _ = SelectPictureAsync(value);
     }
@@ -431,10 +436,12 @@ public sealed partial class DeviceReferenceViewModel : ObservableObject
             return;
         DevicePhotoConsent.Answer(Model.Id, value ? "yes" : "no");
         AsksPhotoConsent = false;
-        ApplyPhotoConsent(value);
+        bool pending = pendingReferencePhoto != null;
+        ApplyPhotoConsent(value, select: !pending);
+        AnswerPendingReferencePhoto(value);
     }
 
-    private void ApplyPhotoConsent(bool value)
+    private void ApplyPhotoConsent(bool value, bool select = true)
     {
         if (Model == null)
             return;
@@ -448,7 +455,7 @@ public sealed partial class DeviceReferenceViewModel : ObservableObject
             updating = false;
         }
         ReferencePictureOption? next = value ? Pictures.FirstOrDefault(p => p.Kind == "vendor") : PictureKind == "vendor" ? Pictures.First(p => !p.IsPhoto) : null;
-        if (next != null)
+        if (next != null && select)
             _ = SelectPictureAsync(next);
     }
 

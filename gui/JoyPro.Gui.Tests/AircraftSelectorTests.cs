@@ -201,7 +201,7 @@ public sealed class AircraftSelectorTests : IAsyncLifetime
         RelationNodeItem node = vm.RelationNodes.Single(n => n.Id == "d3014pnil");
         Assert.Equal("2 of 3 aircraft", node.BadgeText);
         Assert.True(node.IsMixed);
-        Assert.Contains("this id is not 'Countermeasures Management Switch - Fwd'", node.MixedText);
+        Assert.Equal("In 1 ticked aircraft this command is not 'Countermeasures Management Switch - Fwd' but something else", node.MixedText);
         Assert.True(vm.HasMixedRelationNodes);
 
         // Untick the aircraft where the id means something else, tick another: one engine run.
@@ -216,28 +216,82 @@ public sealed class AircraftSelectorTests : IAsyncLifetime
         Assert.True(AxisTuningTests.Seq(set, "set", "Flare", "--node", "DCS:d3014pnil", "--on", "F-14", "--off", "F-15E"));
     }
 
+    // The open relation's part of the check is a plain question with a real example; the rest of the profile is a link.
     [Fact]
-    public async Task ProfileCheck_ShowsTheNoticeAndRepairsInOneStep()
+    public async Task ProfileCheck_AsksAboutTheOpenRelationInPlainWords()
     {
         PerAircraftFakeEngine fake = new();
         MainWindowViewModel vm = await RelationBuilderTests.CreateVmAsync(fake);
+        await RelationBuilderTests.OpenAsync(vm, "Flare");
+        await RelationBuilderTests.WaitForAsync(() => vm.RelationNodes.Any(n => n.HasAircraft));
         await vm.RefreshAircraftCheckAsync();
         Assert.True(vm.HasAircraftCheckNotice);
-        Assert.Contains("1 action in 1 relation include 1 aircraft", vm.AircraftCheckText);
-        AircraftCheckItem item = Assert.Single(vm.AircraftCheckItems);
-        Assert.Equal("Pitch: 'Pitch' - but 'Collective' in UH-1H", item.Text);
+        Assert.Equal("In some aircraft this command does something else.", vm.RelationCheckHeadline);
+        Assert.Equal("The 'Countermeasures Management Switch - Fwd' command of the F-16C_50 has another meaning in 1 aircraft (e.g. F-15E: 'Canopy Open'). " +
+                     "Should this relation also apply there?", vm.RelationCheckText);
+        Assert.Equal("Show what this command does in the other 1 aircraft", vm.RelationCheckToggleText);
+        Assert.Equal("Only where it is 'Countermeasures Management Switch - Fwd'", vm.RelationCheckOnlyLabel);
+        AircraftCheckItem mine = Assert.Single(vm.RelationCheckItems);
+        AircraftCheckPlane plane = Assert.Single(mine.Planes);
+        Assert.Equal(("F-15E", "Canopy Open", false), (plane.Plane, plane.Title, plane.UseHere));
+        // The profile-wide number is the link, not the banner.
+        Assert.Equal("Check all relations (2 actions)", vm.ProfileCheckLinkText);
+        await vm.ToggleProfileCheckCommand.ExecuteAsync(null);
+        Assert.True(vm.ProfileCheckExpanded);
+        Assert.Contains("2 actions in 2 relations", vm.AircraftCheckText);
+        Assert.Contains(vm.AircraftCheckItems, i => i.Text == "Pitch: 'Pitch' does something else in UH-1H");
 
+        // "Only where it is ...": one engine run for the action, the banner goes.
         fake.Calls.Clear();
-        await vm.RepairAircraftCommand.ExecuteAsync(null);
-        Assert.Single(fake.Calls, c => AxisTuningTests.Seq(c, "relations", "check-aircraft", "--apply"));
+        await vm.OnlyWhereSameMeaningCommand.ExecuteAsync(null);
+        IReadOnlyList<string> set = Assert.Single(fake.Calls, c => AxisTuningTests.Seq(c, "relations", "aircraft", "set"));
+        Assert.True(AxisTuningTests.Seq(set, "set", "Flare", "--node", "DCS:d3014pnil", "--off", "F-15E"));
+        await RelationBuilderTests.WaitForAsync(() => !vm.IsBusy);
+        await vm.RefreshAircraftCheckAsync();
         Assert.False(vm.HasAircraftCheckNotice);
-        Assert.Contains("1 aircraft switched off", vm.StatusText);
+        Assert.Equal("Check all relations (1 action)", vm.ProfileCheckLinkText);
+        Assert.Contains("switched off in 1 aircraft", vm.StatusText);
+    }
 
-        // "Not now" hides it.
+    [Fact]
+    public async Task ProfileCheck_KeepForAllIsRememberedAskLaterOnlyHides()
+    {
+        PerAircraftFakeEngine fake = new();
+        MainWindowViewModel vm = await RelationBuilderTests.CreateVmAsync(fake);
+        await RelationBuilderTests.OpenAsync(vm, "Flare");
         await vm.RefreshAircraftCheckAsync();
         Assert.True(vm.HasAircraftCheckNotice);
+
+        // "Ask me later" only hides it; the link still counts both.
         vm.DismissAircraftCheckCommand.Execute(null);
         Assert.False(vm.HasAircraftCheckNotice);
+        Assert.Equal("Check all relations (2 actions)", vm.ProfileCheckLinkText);
+
+        // "Keep for all": remembered, the check does not ask about it again.
+        vm.KeepRelationCheckForAllCommand.Execute(null);
+        Assert.Contains("Flare|DCS|d3014pnil|F-15E", vm.ListPrefs.KeptAircraft);
+        await vm.RefreshAircraftCheckAsync();
+        Assert.Empty(vm.RelationCheckItems);
+        Assert.Equal("Check all relations (1 action)", vm.ProfileCheckLinkText);
+
+        // "Switch them all off" leaves the kept aircraft alone (one run per action instead of --apply).
+        fake.Calls.Clear();
+        await vm.RepairAircraftCommand.ExecuteAsync(null);
+        Assert.DoesNotContain(fake.Calls, c => AxisTuningTests.Seq(c, "relations", "check-aircraft", "--apply"));
+        IReadOnlyList<string> set = Assert.Single(fake.Calls, c => AxisTuningTests.Seq(c, "relations", "aircraft", "set"));
+        Assert.True(AxisTuningTests.Seq(set, "set", "Pitch", "--node", "DCS:a2001cdnil", "--off", "UH-1H"));
+
+        // "Use here" ticked + "Only where ...": that aircraft stays ticked and is remembered, no engine run.
+        PerAircraftFakeEngine other = new();
+        MainWindowViewModel second = await RelationBuilderTests.CreateVmAsync(other);
+        await RelationBuilderTests.OpenAsync(second, "Flare");
+        await second.RefreshAircraftCheckAsync();
+        second.RelationCheckItems[0].Planes[0].UseHere = true;
+        other.Calls.Clear();
+        await second.OnlyWhereSameMeaningCommand.ExecuteAsync(null);
+        Assert.DoesNotContain(other.Calls, c => AxisTuningTests.Seq(c, "relations", "aircraft", "set"));
+        Assert.Contains("Flare|DCS|d3014pnil|F-15E", second.ListPrefs.KeptAircraft);
+        Assert.False(second.HasAircraftCheckNotice);
     }
 
     // The aircraft are listed by what the id means in each: a heading over each group of the shown ones; "Only same
@@ -247,7 +301,7 @@ public sealed class AircraftSelectorTests : IAsyncLifetime
     {
         AircraftSelector s = PitchSelector();
         Assert.Equal(["F-15C", "F-16C_50", "FA-18C_hornet", "MiG-29", "UH-1H"], s.Visible.Select(i => i.Plane).ToArray());
-        Assert.Equal(["Same meaning: 'Pitch' (2)", "Nearly the same (2)", "Other meaning here (own title shown) (1)"],
+        Assert.Equal(["Same meaning: 'Pitch' (2)", "Nearly the same (2)", "Does something else here (its own name shown) (1)"],
             s.Visible.Where(i => i.HasGroupHeader).Select(i => i.GroupHeader).ToArray());
         Assert.Equal("F-15C", s.Visible.First(i => i.HasGroupHeader).Plane);
         Assert.Equal("Collective · Flight Control", s.Visible.Single(i => i.IsDiffers).MeaningText);
@@ -277,7 +331,7 @@ public sealed class AircraftSelectorTests : IAsyncLifetime
             new AircraftChoiceItem("F-14", "Flare", "Stick", "same", "", false),
         ]);
         Assert.Equal(["F-16C_50", "F-14", "AV8BNA", "F-15E"], s.Items.Select(i => i.Plane).ToArray());
-        Assert.Equal(["Same meaning: 'Flare' (2)", "Not in its list (1)", "Other meaning here (own title shown) (1)"],
+        Assert.Equal(["Same meaning: 'Flare' (2)", "Not in its list (1)", "Does something else here (its own name shown) (1)"],
             s.Visible.Where(i => i.HasGroupHeader).Select(i => i.GroupHeader).ToArray());
     }
 
@@ -292,11 +346,11 @@ public sealed class AircraftSelectorTests : IAsyncLifetime
             new AircraftChoiceItem("UH-1H", "Flight Control Cyclic Pitch", "", "differs", "", true, sameFunction: true),
             new AircraftChoiceItem("La-7", "Bomb control handle", "", "differs", "", false),
         ]);
-        Assert.Equal(["Same meaning: 'Pitch' (1)", "Other title, same function (1)", "Other meaning here (own title shown) (1)"],
+        Assert.Equal(["Same meaning: 'Pitch' (1)", "Another name, does the same (1)", "Does something else here (its own name shown) (1)"],
             s.Visible.Where(i => i.HasGroupHeader).Select(i => i.GroupHeader).ToArray());
         Assert.False(s.HasMixed);
         Assert.Equal("same function", s.Items.Single(i => i.Plane == "UH-1H").MarkerText);
-        Assert.Equal("2 of 3 aircraft · 1 differ · 1 other title", s.ExpandLabel);
+        Assert.Equal("2 of 3 aircraft · 1 aircraft uses this command for something else · 1 aircraft has another name for it (show)", s.ExpandLabel);
         s.SelectAll();
         Assert.True(s.HasMixed);
         Assert.Equal(1, s.CheckedDiffersCount);
@@ -320,7 +374,7 @@ public sealed class AircraftSelectorTests : IAsyncLifetime
         vm.ToggleNodeAircraftCommand.Execute(node);
         Assert.True(node.Aircraft.IsExpanded);
         Assert.Same(node, vm.SelectedRelationNode);
-        Assert.Equal(["Same meaning: 'Countermeasures Management Switch - Fwd' (2)", "Other meaning here (own title shown) (1)"],
+        Assert.Equal(["Same meaning: 'Countermeasures Management Switch - Fwd' (2)", "Does something else here (its own name shown) (1)"],
             node.Aircraft.Visible.Where(i => i.HasGroupHeader).Select(i => i.GroupHeader).ToArray());
 
         // Apply loads the relation again: the action's aircraft stay open.
@@ -408,6 +462,9 @@ internal sealed class PerAircraftFakeEngine : IEngineCliClient
     // The pitch row comes as the main control with a display title (relations search "Primary", "Display").
     public bool PitchPrimary { get; set; }
 
+    // Aircraft switched off by relations aircraft set --off or check-aircraft --apply: the check no longer finds them.
+    public HashSet<string> SwitchedOff { get; } = new(StringComparer.OrdinalIgnoreCase);
+
     public Task<EngineCommandResult> RunAsync(string engineExePath, IReadOnlyList<string> arguments, CancellationToken cancellationToken = default)
     {
         lock (Calls)
@@ -454,12 +511,39 @@ internal sealed class PerAircraftFakeEngine : IEngineCliClient
                    "{\"Plane\":\"F-14\",\"Title\":\"Countermeasures Management Switch - Fwd\",\"Category\":\"Stick\",\"State\":\"absent\",\"Match\":\"same\",\"Note\":\"\"}," +
                    "{\"Plane\":\"F-15E\",\"Title\":\"Canopy Open\",\"Category\":\"Cockpit\",\"State\":\"on\",\"Match\":\"differs\",\"Note\":\"\"}]}]}";
         }
+        if (AxisTuningTests.Seq(args, "relations", "aircraft", "set"))
+        {
+            int at = args.ToList().IndexOf("--off");
+            if (at > 0)
+            {
+                foreach (string plane in args[at + 1].Split('|'))
+                    SwitchedOff.Add(plane);
+            }
+            return null;
+        }
         if (AxisTuningTests.Seq(args, "relations", "check-aircraft"))
         {
             bool apply = args.Contains("--apply");
-            return "{\"Relations\":1,\"Nodes\":1,\"AffectedNodes\":1,\"AffectedRelations\":1,\"AircraftToDrop\":1,\"AircraftSameFunction\":0,\"Applied\":" + (apply ? "true" : "false") +
-                   ",\"Dropped\":" + (apply ? 1 : 0) + ",\"Found\":[{\"Relation\":\"Pitch\",\"Game\":\"DCS\",\"Id\":\"a2001cdnil\",\"Title\":\"Pitch\",\"Category\":\"\",\"Active\":4,\"Available\":4," +
-                   "\"Meanings\":[{\"Title\":\"Collective\",\"Category\":\"Flight Control\",\"Match\":\"differs\",\"Note\":\"\",\"Included\":true,\"Planes\":[\"UH-1H\"]}],\"Drop\":[\"UH-1H\"],\"SameFunction\":[]}]}";
+            // Pitch: 'Collective' in the UH-1H; Flare: 'Canopy Open' in the F-15E (both ticked).
+            List<string> found = [];
+            if (!SwitchedOff.Contains("UH-1H"))
+            {
+                found.Add("{\"Relation\":\"Pitch\",\"Game\":\"DCS\",\"Id\":\"a2001cdnil\",\"Title\":\"Pitch\",\"Category\":\"\",\"Active\":4,\"Available\":4," +
+                          "\"Meanings\":[{\"Title\":\"Collective\",\"Category\":\"Flight Control\",\"Match\":\"differs\",\"Note\":\"\",\"Included\":true,\"Planes\":[\"UH-1H\"]}],\"Drop\":[\"UH-1H\"],\"SameFunction\":[]}");
+            }
+            if (!SwitchedOff.Contains("F-15E"))
+            {
+                found.Add("{\"Relation\":\"Flare\",\"Game\":\"DCS\",\"Id\":\"d3014pnil\",\"Title\":\"Countermeasures Management Switch - Fwd\",\"Category\":\"Stick\",\"Active\":2,\"Available\":3," +
+                          "\"Meanings\":[{\"Title\":\"Canopy Open\",\"Category\":\"Cockpit\",\"Match\":\"differs\",\"Note\":\"\",\"Included\":true,\"Planes\":[\"F-15E\"]}],\"Drop\":[\"F-15E\"],\"SameFunction\":[]}");
+            }
+            int dropped = found.Count;
+            if (apply)
+            {
+                SwitchedOff.Add("UH-1H");
+                SwitchedOff.Add("F-15E");
+            }
+            return "{\"Relations\":2,\"Nodes\":2,\"AffectedNodes\":" + found.Count + ",\"AffectedRelations\":" + found.Count + ",\"AircraftToDrop\":" + dropped +
+                   ",\"AircraftSameFunction\":0,\"Applied\":" + (apply ? "true" : "false") + ",\"Dropped\":" + (apply ? dropped : 0) + ",\"Found\":[" + string.Join(",", found) + "]}";
         }
         return null;
     }

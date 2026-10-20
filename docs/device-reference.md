@@ -111,6 +111,13 @@ panels as vector paths, plus (optionally) flat colour regions for the cel-shaded
   its shipped callout sheet apply 1:1.
 - Cockpit grips: `DB/Cockpits/line-drawings`, with `aircraft` and `device` instead of `model` and an optional `parts`
   object (part id → [x, y], 0..1) for the Cockpits page's tables.
+- **Download the reference photo** (Layout page, under the picture chips): shown while a line drawing is selected that
+  was made from one of the maker's photos (found by the drawing's key = the photo's hash, else the same view). The click
+  downloads that photo into the device picture cache (`%LOCALAPPDATA%\JoyPro2\DeviceImages`) with a progress bar; the
+  device's photo consent is asked first when it is not given yet (the download follows the yes). The photo is then a
+  picture of its own (e.g. "Photo 2 · VKB"); JoyPro's positions come along when the file is the one JoyPro drew from
+  (same hash), otherwise it is shown as a reference without markers. Errors are said in plain words (offline, removed
+  from the site, busy, not a picture); "Show in folder" opens the saved file.
 
 ### How the drawings are made
 

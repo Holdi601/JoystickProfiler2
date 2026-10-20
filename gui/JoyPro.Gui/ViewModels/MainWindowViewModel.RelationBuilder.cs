@@ -1536,7 +1536,7 @@ public sealed partial class MainWindowViewModel
     }
 
     // ---------------------------------------------------------------------------------------------------------
-    // The whole profile: "Group all my actions automatically" (Auto Group or a description)
+    // The whole profile: "Auto-build relations from all my actions" (Auto Group or a description)
     // ---------------------------------------------------------------------------------------------------------
 
     [RelayCommand]

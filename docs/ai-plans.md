@@ -11,7 +11,7 @@ as before, and a few simple requests still work through offline rules.
 - **Manage with AI**: the wand button in the Relations list header (between the title and New). The whole profile:
   "append _sc to every relation that contains Star Citizen", "delete all relations that have no bind",
   "new relation with pitch of all games but no helicopters".
-- **Edit with AI**: next to "Group all my actions automatically..." for the open relation only: its actions, aircraft
+- **Edit with AI**: next to "Auto-build relations from all my actions..." for the open relation only: its actions, aircraft
   ticks, name, groups and axis tuning. Every step shows before and after; a step that would touch another relation is
   rejected.
 

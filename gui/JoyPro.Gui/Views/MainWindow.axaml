@@ -1108,7 +1108,7 @@
                      the left (search, group chips, multi-select with bulk actions); on the right the open relation (name edited
                      in place, its actions) and one of three panels: Add actions (one search over every game, tick rows, Add
                      selected), Suggested for this relation, and the JoyPro assistant. Binding stays on the Binds page. The
-                     whole-profile tool (Group all my actions automatically) takes the editor's place while it is open. -->
+                     whole-profile tool (Auto-build relations from all my actions) takes the editor's place while it is open. -->
                 <Border IsVisible="{Binding IsRelationsStage}" Padding="0,4,0,0">
                     <Grid x:Name="RelationsPaneGrid" ColumnDefinitions="300,12,*">
                         <Border Classes="surface" Padding="12">
@@ -1137,7 +1137,11 @@
                                 <TextBox x:Name="RelationSearchBox" Grid.Row="1" Classes="search" Text="{Binding RelationSearchText}" Watermark="{l:T 'Search relations (Ctrl+F)'}"
                                          ToolTip.Tip="{l:T 'Shows only the relations whose name, game, aircraft, group, device, input or modifier has these words'}" />
                                 <!-- Filters: groups, games and their aircraft, devices, bound, axis / button (ListFilterViewModel) -->
-                                <controls:ListFilterBar x:Name="RelationFilterBar" Grid.Row="2" DataContext="{Binding RelationFilter}" />
+                                <!-- The pane is narrow: the sort button goes under the filters -->
+                                <StackPanel Grid.Row="2" Spacing="4">
+                                    <controls:ListFilterBar x:Name="RelationFilterBar" DataContext="{Binding RelationFilter}" />
+                                    <controls:ListSortBar x:Name="RelationSortBar" HorizontalAlignment="Left" DataContext="{Binding RelationSort}" />
+                                </StackPanel>
 
                                 <!-- Several relations ticked (Ctrl/Shift+click): what to do with all of them -->
                                 <Border Grid.Row="3" Classes="callout" IsVisible="{Binding HasRelationMultiSelection}">
@@ -1350,7 +1354,7 @@
                                 <StackPanel Grid.Column="1" Spacing="2">
                                     <WrapPanel>
                                     <ToggleButton Classes="icon" Tag="{StaticResource Icon.Wand}" Command="{Binding ToggleOrganizeCommand}" IsChecked="{Binding IsOrganizeOpen, Mode=OneWay}"
-                                                  Content="{l:T 'Group all my actions automatically...'}" HorizontalAlignment="Left" Margin="0,0,8,0"
+                                                  Content="{l:T 'Auto-build relations from all my actions...'}" HorizontalAlignment="Left" Margin="0,0,8,0"
                                                   ToolTip.Tip="{l:T 'For the whole profile at once: JoyPro puts the same function of every aircraft and game into one relation (throttle, gear, flares ...), or groups what you describe. You see the result before anything changes.'}" />
                                     <!-- Edit with AI: the open relation only -->
                                     <Button Classes="icon small" Tag="{StaticResource Icon.Wand}" Content="{l:T 'Edit with AI'}" Command="{Binding ShowEditWithAiCommand}" Margin="0,0,8,0"
@@ -1366,8 +1370,8 @@
                                         </StackPanel>
                                     </Button>
                                     </WrapPanel>
-                                    <TextBlock Classes="caption" FontSize="11" TextTrimming="CharacterEllipsis"
-                                               Text="{l:T 'Builds relations for the whole profile: the same function of every aircraft and game together.'}" />
+                                    <TextBlock Classes="caption" FontSize="11" TextWrapping="Wrap" MaxWidth="760" HorizontalAlignment="Left"
+                                               Text="{l:T 'Opens a wizard here (your relation\'s view comes back when you close it). Puts the same function of every game and aircraft into one relation; preview first, nothing changes until you apply.'}" />
                                 </StackPanel>
                                 <Button Grid.Column="2" Classes="icon" Tag="{StaticResource Icon.More}" Content="{l:T 'More'}" VerticalAlignment="Top" ToolTip.Tip="{l:T 'Refresh, import and export relations, save'}">
                                     <Button.Flyout>
@@ -1390,7 +1394,7 @@
                                 </Button>
                             </Grid>
 
-                            <!-- "Group all my actions automatically" takes the place of the editor while it is open -->
+                            <!-- "Auto-build relations from all my actions" takes the place of the editor while it is open -->
                             <ScrollViewer Grid.Row="1" IsVisible="{Binding IsAnyRelationToolOpen}" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
                                 <StackPanel Spacing="12" Margin="0,0,10,0">
                                 <!-- Manage with AI (whole profile) / Edit with AI (the open relation): a checked plan, one checkbox per step -->
@@ -1410,7 +1414,7 @@
                                                     ToolTip.Tip="{l:T 'JoyPro (offline rules or your local AI model) makes a plan; nothing changes before you apply it'}" />
                                         </Grid>
                                         <TextBlock Classes="caption" Text="{Binding LlmServerStatusText}" IsVisible="{Binding LlmEnabled}" />
-                                        <TextBlock Classes="caption" Text="{l:T 'The local AI model is off: only the simple requests of the examples work. Switch it on under Group all my actions automatically > By description.'}"
+                                        <TextBlock Classes="caption" Text="{l:T 'The local AI model is off: only the simple requests of the examples work. Switch it on under Auto-build relations from all my actions > By description.'}"
                                                    IsVisible="{Binding !LlmEnabled}" TextWrapping="Wrap" />
                                         <TextBlock Text="{Binding AiPlanStatus}" TextWrapping="Wrap"
                                                    IsVisible="{Binding AiPlanStatus, Converter={x:Static StringConverters.IsNotNullOrEmpty}}" />
@@ -1497,14 +1501,14 @@
                                         <Grid ColumnDefinitions="Auto,*,Auto,Auto" ColumnSpacing="10">
                                             <Border Classes="iconBadge"><PathIcon Data="{StaticResource Icon.Wand}" /></Border>
                                             <StackPanel Grid.Column="1" VerticalAlignment="Center">
-                                                <TextBlock Classes="h2" Text="{l:T 'Group all my actions automatically'}" />
-                                                <TextBlock Classes="caption" Text="{l:T 'The whole profile at once. For one relation, close this and use the relation editor.'}" TextWrapping="Wrap" />
+                                                <TextBlock Classes="h2" Text="{l:T 'Auto-build relations from all my actions'}" />
+                                                <TextBlock Classes="caption" Text="{l:T 'A wizard for the whole profile, shown here in place of your relation. Close it to get back to your relation.'}" TextWrapping="Wrap" />
                                             </StackPanel>
                                             <StackPanel Grid.Column="2" Orientation="Horizontal" Spacing="4" VerticalAlignment="Center">
                                                 <ToggleButton Classes="filterChip" Content="{l:T 'By function (Auto Group)'}" IsChecked="{Binding IsAutoGroupPanelOpen, Mode=OneWay}" Command="{Binding ShowOrganizeByFunctionCommand}" />
                                                 <ToggleButton Classes="filterChip" Content="{l:T 'By description'}" IsChecked="{Binding IsDescribeGroupPanelOpen, Mode=OneWay}" Command="{Binding ShowOrganizeByDescriptionCommand}" />
                                             </StackPanel>
-                                            <Button Grid.Column="3" Classes="icon ghost small" Tag="{StaticResource Icon.Close}" Content="{l:T 'Close'}" Command="{Binding CloseRelationToolsCommand}" ToolTip.Tip="{l:T 'Back to the relation editor'}" />
+                                            <Button Grid.Column="3" Classes="icon small" Tag="{StaticResource Icon.Close}" Content="{l:T 'Close and back to my relation'}" Command="{Binding CloseRelationToolsCommand}" ToolTip.Tip="{l:T 'Closes the wizard; your relation\'s view comes back'}" />
                                         </Grid>
                                         <TextBlock Classes="caption"
                                                    Text="{l:T 'Puts the same function of every DCS aircraft and every other game into one relation (verified against the manuals and game docs). Your existing relations keep their binds and only get the missing aircraft; commands you already use elsewhere stay where they are. Free slots are filled the way you do it in your profile.'}" />
@@ -1530,14 +1534,14 @@
                                         <Grid ColumnDefinitions="Auto,*,Auto,Auto" ColumnSpacing="10">
                                             <Border Classes="iconBadge"><PathIcon Data="{StaticResource Icon.Wand}" /></Border>
                                             <StackPanel Grid.Column="1" VerticalAlignment="Center">
-                                                <TextBlock Classes="h2" Text="{l:T 'Group all my actions automatically'}" />
-                                                <TextBlock Classes="caption" Text="{l:T 'By description: several relations from one sentence. For one relation, use the JoyPro assistant (Expand with AI).'}" />
+                                                <TextBlock Classes="h2" Text="{l:T 'Auto-build relations from all my actions'}" />
+                                                <TextBlock Classes="caption" Text="{l:T 'By description: several relations from one sentence, shown here in place of your relation. Close it to get back to your relation.'}" TextWrapping="Wrap" />
                                             </StackPanel>
                                             <StackPanel Grid.Column="2" Orientation="Horizontal" Spacing="4" VerticalAlignment="Center">
                                                 <ToggleButton Classes="filterChip" Content="{l:T 'By function (Auto Group)'}" IsChecked="{Binding IsAutoGroupPanelOpen, Mode=OneWay}" Command="{Binding ShowOrganizeByFunctionCommand}" />
                                                 <ToggleButton Classes="filterChip" Content="{l:T 'By description'}" IsChecked="{Binding IsDescribeGroupPanelOpen, Mode=OneWay}" Command="{Binding ShowOrganizeByDescriptionCommand}" />
                                             </StackPanel>
-                                            <Button Grid.Column="3" Classes="icon ghost small" Tag="{StaticResource Icon.Close}" Content="{l:T 'Close'}" Command="{Binding CloseRelationToolsCommand}" ToolTip.Tip="{l:T 'Back to the relation editor'}" />
+                                            <Button Grid.Column="3" Classes="icon small" Tag="{StaticResource Icon.Close}" Content="{l:T 'Close and back to my relation'}" Command="{Binding CloseRelationToolsCommand}" ToolTip.Tip="{l:T 'Closes the wizard; your relation\'s view comes back'}" />
                                         </Grid>
                                         <TextBlock Classes="caption"
                                                    Text="{l:T 'Describe what to group, the way you would say it: \'speed brake in and out on all jets\', \'gear up/down of every DCS warbird\', \'all trim hat up actions for helicopters\', \'flaps for all MSFS airliners and IL-2 bombers\'. JoyPro finds the functions and aircraft in its manual-checked catalog and shows every command with the reason. Commands you already use in another relation stay there.'}" />
@@ -1660,36 +1664,76 @@
                                 <Grid ColumnDefinitions="5*,14,7*" MinHeight="0">
                                     <!-- Left: the open relation (name in place, its actions), a new relation's name, or how to start -->
                                     <Grid RowDefinitions="Auto,Auto,*,Auto" RowSpacing="8" MinHeight="0">
-                                        <!-- The profile check: actions with aircraft where the same id means something else (relations check-aircraft) -->
+                                        <!-- The profile check (relations check-aircraft): the open relation's question, and a link for all relations -->
                                         <StackPanel Grid.Row="1" Spacing="6">
-                                            <Border Classes="callout warn" Padding="8,6" IsVisible="{Binding HasAircraftCheckNotice}">
+                                            <Border x:Name="RelationCheckBanner" Classes="callout" Padding="8,6" IsVisible="{Binding HasAircraftCheckNotice}">
                                                 <StackPanel Spacing="4">
-                                                    <Grid ColumnDefinitions="*,Auto,Auto" ColumnSpacing="6">
-                                                        <TextBlock Text="{Binding AircraftCheckShort}" FontWeight="SemiBold" TextWrapping="Wrap" VerticalAlignment="Center"
-                                                                   ToolTip.Tip="{Binding AircraftCheckText}" />
-                                                        <Button Grid.Column="1" Classes="small accent" Content="{l:T 'Switch them off'}" Command="{Binding RepairAircraftCommand}" VerticalAlignment="Center"
-                                                                ToolTip.Tip="{l:T 'Switches those aircraft off in these actions: they stay listed with \'differs\', one tick brings one back. One Ctrl+Z undoes it all.'}" />
-                                                        <Button Grid.Column="2" Classes="small ghost" Content="{l:T 'Not now'}" Command="{Binding DismissAircraftCheckCommand}" VerticalAlignment="Center"
-                                                                ToolTip.Tip="{l:T 'Hide this notice'}" />
-                                                    </Grid>
-                                                    <Expander Header="{l:T 'Show them'}" HorizontalAlignment="Stretch" Padding="4">
-                                                        <StackPanel Spacing="4">
-                                                            <TextBlock Classes="caption" TextWrapping="Wrap" Text="{Binding AircraftCheckText}" />
-                                                            <ScrollViewer MaxHeight="160" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
-                                                                <ItemsControl ItemsSource="{Binding AircraftCheckItems}">
-                                                                    <ItemsControl.ItemTemplate>
-                                                                        <DataTemplate x:DataType="models:AircraftCheckItem">
-                                                                            <Button Classes="ghost small" HorizontalAlignment="Stretch" HorizontalContentAlignment="Left"
-                                                                                    Command="{Binding #RootWindow.DataContext.OpenAircraftCheckRelationCommand}" CommandParameter="{Binding}"
-                                                                                    ToolTip.Tip="{l:T 'Open this relation'}">
-                                                                                <TextBlock Text="{Binding Text}" TextTrimming="CharacterEllipsis" />
-                                                                            </Button>
-                                                                        </DataTemplate>
-                                                                    </ItemsControl.ItemTemplate>
-                                                                </ItemsControl>
-                                                            </ScrollViewer>
+                                                    <Grid ColumnDefinitions="Auto,*" ColumnSpacing="8">
+                                                        <PathIcon Data="{StaticResource Icon.Info}" Width="16" Height="16" VerticalAlignment="Top" Margin="0,1,0,0" Foreground="{DynamicResource StatusInfoBrush}" />
+                                                        <StackPanel Grid.Column="1" Spacing="2">
+                                                            <TextBlock Text="{Binding RelationCheckHeadline}" FontWeight="SemiBold" TextWrapping="Wrap" />
+                                                            <TextBlock Text="{Binding RelationCheckText}" TextWrapping="Wrap" />
                                                         </StackPanel>
-                                                    </Expander>
+                                                    </Grid>
+                                                    <WrapPanel ItemSpacing="6" LineSpacing="4" Margin="24,0,0,0">
+                                                        <Button Classes="small accent" Command="{Binding OnlyWhereSameMeaningCommand}"
+                                                                ToolTip.Tip="{l:T 'Switches this relation off in those aircraft, except the ones ticked use here in the list. They stay listed, one tick brings one back; Ctrl+Z undoes it.'}" >
+                                                            <TextBlock Text="{Binding RelationCheckOnlyLabel}" TextTrimming="CharacterEllipsis" />
+                                                        </Button>
+                                                        <Button Classes="small" Content="{l:T 'Keep for all'}" Command="{Binding KeepRelationCheckForAllCommand}"
+                                                                ToolTip.Tip="{l:T 'The relation stays for all these aircraft; JoyPro does not ask about them again'}" />
+                                                        <Button Classes="small ghost" Content="{l:T 'Ask me later'}" Command="{Binding DismissAircraftCheckCommand}"
+                                                                ToolTip.Tip="{l:T 'Hide this question for now'}" />
+                                                    </WrapPanel>
+                                                    <Button Classes="small ghost" Margin="24,0,0,0" Padding="4,0" Content="{Binding RelationCheckToggleText}" Command="{Binding ToggleRelationCheckExpandedCommand}" />
+                                                    <ScrollViewer Margin="24,0,0,0" MaxHeight="200" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled" IsVisible="{Binding RelationCheckExpanded}">
+                                                        <ItemsControl ItemsSource="{Binding RelationCheckItems}">
+                                                            <ItemsControl.ItemTemplate>
+                                                                <DataTemplate x:DataType="models:AircraftCheckItem">
+                                                                    <StackPanel Spacing="2">
+                                                                        <TextBlock Classes="caption" FontWeight="SemiBold" Text="{Binding Header}" IsVisible="{Binding #RootWindow.DataContext.HasSeveralRelationCheckItems}" />
+                                                                        <ItemsControl ItemsSource="{Binding Planes}">
+                                                                            <ItemsControl.ItemTemplate>
+                                                                                <DataTemplate x:DataType="models:AircraftCheckPlane">
+                                                                                    <Grid ColumnDefinitions="140,*,Auto" ColumnSpacing="8" Margin="0,1">
+                                                                                        <TextBlock Text="{Binding Plane}" FontWeight="SemiBold" TextTrimming="CharacterEllipsis" VerticalAlignment="Center" ToolTip.Tip="{Binding Plane}" />
+                                                                                        <TextBlock Grid.Column="1" Text="{Binding TitleText}" TextTrimming="CharacterEllipsis" VerticalAlignment="Center" ToolTip.Tip="{Binding TitleText}" />
+                                                                                        <CheckBox Grid.Column="2" Content="{l:T 'use here'}" IsChecked="{Binding UseHere}" VerticalAlignment="Center"
+                                                                                                  ToolTip.Tip="{l:T 'Keep this relation in this aircraft too'}" />
+                                                                                    </Grid>
+                                                                                </DataTemplate>
+                                                                            </ItemsControl.ItemTemplate>
+                                                                        </ItemsControl>
+                                                                    </StackPanel>
+                                                                </DataTemplate>
+                                                            </ItemsControl.ItemTemplate>
+                                                        </ItemsControl>
+                                                    </ScrollViewer>
+                                                </StackPanel>
+                                            </Border>
+                                            <Button Classes="small ghost" HorizontalAlignment="Left" Padding="4,0" IsVisible="{Binding HasProfileCheckLink}" Content="{Binding ProfileCheckLinkText}"
+                                                    Command="{Binding ToggleProfileCheckCommand}"
+                                                    ToolTip.Tip="{l:T 'Every relation with aircraft where its command does something else'}" />
+                                            <Border Classes="sunken" Padding="8,6" IsVisible="{Binding ProfileCheckExpanded}">
+                                                <StackPanel Spacing="4">
+                                                    <Grid ColumnDefinitions="*,Auto" ColumnSpacing="6">
+                                                        <TextBlock Classes="caption" TextWrapping="Wrap" Text="{Binding AircraftCheckText}" VerticalAlignment="Center" />
+                                                        <Button Grid.Column="1" Classes="small" Content="{l:T 'Switch them all off'}" Command="{Binding RepairAircraftCommand}" VerticalAlignment="Center"
+                                                                ToolTip.Tip="{l:T 'Switches those aircraft off in every one of these actions: they stay listed, one tick brings one back; Ctrl+Z undoes it.'}" />
+                                                    </Grid>
+                                                    <ScrollViewer MaxHeight="160" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
+                                                        <ItemsControl ItemsSource="{Binding AircraftCheckItems}">
+                                                            <ItemsControl.ItemTemplate>
+                                                                <DataTemplate x:DataType="models:AircraftCheckItem">
+                                                                    <Button Classes="ghost small" HorizontalAlignment="Stretch" HorizontalContentAlignment="Left"
+                                                                            Command="{Binding #RootWindow.DataContext.OpenAircraftCheckRelationCommand}" CommandParameter="{Binding}"
+                                                                            ToolTip.Tip="{l:T 'Open this relation'}">
+                                                                        <TextBlock Text="{Binding Text}" TextTrimming="CharacterEllipsis" />
+                                                                    </Button>
+                                                                </DataTemplate>
+                                                            </ItemsControl.ItemTemplate>
+                                                        </ItemsControl>
+                                                    </ScrollViewer>
                                                 </StackPanel>
                                             </Border>
                                             <!-- MSFS 2024 import: binds the sim has only in some aircraft's profiles came in for all aircraft -->
@@ -1791,7 +1835,7 @@
                                                     <DataTemplate x:DataType="models:RelationNodeItem">
                                                       <StackPanel Spacing="4">
                                                         <!-- A click on the action opens (or closes) its aircraft: what the id means in each, a tick each -->
-                                                        <Grid ColumnDefinitions="Auto,*,Auto" ColumnSpacing="8" Background="Transparent" Tapped="RelationNodeHeaderTapped">
+                                                        <Grid ColumnDefinitions="Auto,*,Auto,Auto" ColumnSpacing="8" Background="Transparent" Tapped="RelationNodeHeaderTapped">
                                                             <Panel VerticalAlignment="Center" Width="34" Height="34">
                                                                 <controls:GameBadge GameId="{Binding Game}" Title="{Binding GameLabel}" />
                                                                 <Image Source="{Binding GameCover}" Stretch="UniformToFill" IsVisible="{Binding GameCover, Converter={x:Static ObjectConverters.IsNotNull}}" />
@@ -1800,13 +1844,22 @@
                                                                 <TextBlock Text="{Binding TitlesSummary}" FontWeight="SemiBold" TextTrimming="CharacterEllipsis" ToolTip.Tip="{Binding TitlesDisplay}" />
                                                                 <TextBlock Classes="caption" Text="{Binding DetailsText}" TextTrimming="CharacterEllipsis" ToolTip.Tip="{Binding PlanesDisplay}" />
                                                             </StackPanel>
-                                                            <Button Grid.Column="2" Classes="icon small ghost iconOnly" Tag="{StaticResource Icon.Close}"
+                                                            <!-- The chevron: the action's aircraft open or close (the whole header row does the same) -->
+                                                            <Button x:Name="RelationNodeChevron" Grid.Column="2" Classes="small ghost" Padding="4" VerticalAlignment="Center" IsVisible="{Binding HasAircraft}"
+                                                                    Command="{Binding #RootWindow.DataContext.ToggleNodeAircraftCommand}" CommandParameter="{Binding}"
+                                                                    ToolTip.Tip="{l:T 'Show or hide the aircraft of this action'}">
+                                                                <Panel Width="14" Height="14">
+                                                                    <PathIcon Data="{StaticResource Icon.ChevronDown}" Width="14" Height="14" IsVisible="{Binding !Aircraft.IsExpanded, FallbackValue=True}" />
+                                                                    <PathIcon Data="{StaticResource Icon.ChevronUp}" Width="14" Height="14" IsVisible="{Binding Aircraft.IsExpanded, FallbackValue=False}" />
+                                                                </Panel>
+                                                            </Button>
+                                                            <Button Grid.Column="3" Classes="icon small ghost iconOnly" Tag="{StaticResource Icon.Close}"
                                                                     Command="{Binding #RootWindow.DataContext.RemoveNodeCommand}" CommandParameter="{Binding}" VerticalAlignment="Center"
                                                                     ToolTip.Tip="{l:T 'Remove this action from the relation (Ctrl+Z undoes it)'}" />
                                                         </Grid>
                                                         <!-- Its aircraft: "82 of 84 aircraft", mixed meanings flagged, editable at any time -->
                                                         <StackPanel Margin="42,0,0,0" Spacing="4" IsVisible="{Binding HasAircraft}">
-                                                            <Border Classes="callout warn" Padding="8,4" IsVisible="{Binding IsMixed}">
+                                                            <Border Classes="callout" Padding="8,4" IsVisible="{Binding IsMixed}">
                                                                 <TextBlock Text="{Binding MixedText}" TextWrapping="Wrap" FontWeight="SemiBold" FontSize="12" />
                                                             </Border>
                                                             <WrapPanel ItemSpacing="6" LineSpacing="4">
@@ -2378,15 +2431,10 @@
                                 <TextBox x:Name="BindSearchBox" Grid.Row="1" Classes="search" Text="{Binding BindSearchText}" Watermark="{l:T 'Search binds (Ctrl+F)'}"
                                          ToolTip.Tip="{l:T 'Shows only the relations whose name, game, aircraft, group, device, input or modifier has these words'}" />
                                 <!-- The same filters as on the Relations page, with their own ticks -->
-                                <controls:ListFilterBar x:Name="BindFilterBar" Grid.Row="2" DataContext="{Binding BindFilter}" />
-                                <StackPanel Grid.Row="3" Orientation="Horizontal" Spacing="4">
-                                    <TextBlock Classes="label" Text="{l:T 'Sort by'}" Margin="0,0,4,0" />
-                                    <Button Classes="ghost small" Command="{Binding SortBindsByColumnCommand}" CommandParameter="RelationName" Content="{l:T 'Relation'}" />
-                                    <Button Classes="ghost small" Command="{Binding SortBindsByColumnCommand}" CommandParameter="Device" Content="{l:T 'Device'}" />
-                                    <Button Classes="ghost small" Command="{Binding SortBindsByColumnCommand}" CommandParameter="Input" Content="{l:T 'Input'}" />
-                                    <Button Classes="ghost small" Command="{Binding SortBindsByColumnCommand}" CommandParameter="BindState" Content="{l:T 'State'}" />
-                                    <Button Classes="ghost small" Command="{Binding SortBindsByColumnCommand}" CommandParameter="TypeDisplay" Content="{l:T 'Type'}" />
-                                </StackPanel>
+                                <Grid Grid.Row="2" ColumnDefinitions="*,Auto" ColumnSpacing="4">
+                                    <controls:ListFilterBar x:Name="BindFilterBar" DataContext="{Binding BindFilter}" />
+                                    <controls:ListSortBar x:Name="BindSortBar" Grid.Column="1" DataContext="{Binding BindSort}" />
+                                </Grid>
                                 <Panel Grid.Row="4">
                                     <ListBox x:Name="BindsListBox"
                                              Classes="cards"
@@ -2870,6 +2918,49 @@
                                                 </WrapPanel>
                                             </StackPanel>
                                         </Grid>
+                                    </Border>
+
+                                    <!-- The peek at the relation's actions: per game, title, aircraft, axis / button (read-only) -->
+                                    <Border x:Name="BindPeekPanel" Classes="surface" Padding="12,8" IsVisible="{Binding HasBindSelected}">
+                                        <StackPanel Spacing="6">
+                                            <Grid ColumnDefinitions="*,Auto,Auto" ColumnSpacing="6">
+                                                <TextBlock Classes="h3" Text="{Binding BindPeekTitle}" VerticalAlignment="Center" TextTrimming="CharacterEllipsis" />
+                                                <Button Grid.Column="1" Classes="small ghost" Content="{l:T 'Open in Relations'}" Command="{Binding OpenBindPeekInRelationsCommand}"
+                                                        ToolTip.Tip="{l:T 'Opens this relation in the relation editor to change its actions'}" />
+                                                <Button Grid.Column="2" Classes="small ghost" Content="{Binding BindPeekToggleText}" Command="{Binding ToggleBindPeekCommand}"
+                                                        ToolTip.Tip="{l:T 'Show or hide the actions of this relation'}" />
+                                            </Grid>
+                                            <ScrollViewer MaxHeight="220" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled" IsVisible="{Binding IsBindPeekOpen}">
+                                                <ItemsControl ItemsSource="{Binding BindPeekGroups}">
+                                                    <ItemsControl.ItemTemplate>
+                                                        <DataTemplate x:DataType="vm:BindPeekGroup">
+                                                            <StackPanel Spacing="2" Margin="0,0,0,4">
+                                                                <StackPanel Orientation="Horizontal" Spacing="6">
+                                                                    <controls:GameBadge GameId="{Binding Game}" Title="{Binding Header}" Width="20" Height="20" />
+                                                                    <TextBlock Text="{Binding Header}" FontWeight="SemiBold" VerticalAlignment="Center" />
+                                                                </StackPanel>
+                                                                <ItemsControl ItemsSource="{Binding Actions}" Margin="26,0,0,0" MaxWidth="720" HorizontalAlignment="Left">
+                                                                    <ItemsControl.ItemTemplate>
+                                                                        <DataTemplate x:DataType="vm:BindPeekAction">
+                                                                            <StackPanel Spacing="1" Margin="0,1">
+                                                                                <Grid ColumnDefinitions="*,Auto,Auto" ColumnSpacing="6">
+                                                                                    <TextBlock Text="{Binding Title}" TextTrimming="CharacterEllipsis" VerticalAlignment="Center" ToolTip.Tip="{Binding Title}" />
+                                                                                    <Button Grid.Column="1" Classes="small ghost" Padding="4,0" Content="{Binding PlanesText}" IsVisible="{Binding HasPlanes}"
+                                                                                            Command="{Binding ToggleExpandedCommand}" ToolTip.Tip="{l:T 'Show the aircraft'}" />
+                                                                                    <Border Grid.Column="2" Classes="chip" VerticalAlignment="Center"><TextBlock Text="{Binding KindText}" /></Border>
+                                                                                </Grid>
+                                                                                <TextBlock Classes="caption" Text="{Binding PlaneNames}" TextWrapping="Wrap" IsVisible="{Binding IsExpanded}" />
+                                                                            </StackPanel>
+                                                                        </DataTemplate>
+                                                                    </ItemsControl.ItemTemplate>
+                                                                </ItemsControl>
+                                                            </StackPanel>
+                                                        </DataTemplate>
+                                                    </ItemsControl.ItemTemplate>
+                                                </ItemsControl>
+                                            </ScrollViewer>
+                                            <TextBlock Classes="caption" Text="{l:T 'No actions in this relation yet: add them in Relations.'}" IsVisible="{Binding ShowBindPeekEmpty}" />
+                                        </StackPanel>
                                     </Border>
 
                                     <!-- Record the input from the device -->
@@ -3833,6 +3924,30 @@
                                                         </DataTemplate>
                                                     </ItemsControl.ItemTemplate>
                                                 </ItemsControl>
+                                                <!-- The maker's photo a line drawing was made from: downloaded only by this click (and the device's photo consent) -->
+                                                <Button x:Name="DownloadReferencePhotoButton" Classes="icon small" Tag="{StaticResource Icon.Import}" FontSize="11.5" HorizontalAlignment="Left"
+                                                        Content="{l:T 'Download the reference photo'}" Command="{Binding DeviceReference.DownloadReferencePhotoCommand}"
+                                                        IsVisible="{Binding DeviceReference.CanDownloadReferencePhoto, FallbackValue=False}"
+                                                        ToolTip.Tip="{l:T 'Download the maker\'s product photo this drawing was made from (stored on this PC only, never shipped)'}" />
+                                                <StackPanel Spacing="4" MaxWidth="460">
+                                                    <ProgressBar Height="4" Minimum="0" Maximum="1" Value="{Binding DeviceReference.ReferencePhotoProgress, FallbackValue=0}"
+                                                                 IsIndeterminate="{Binding !DeviceReference.ReferencePhotoProgressKnown, FallbackValue=False}"
+                                                                 IsVisible="{Binding DeviceReference.IsDownloadingReferencePhoto, FallbackValue=False}" />
+                                                    <Border Classes="sunken" Padding="6" IsVisible="{Binding DeviceReference.AwaitsReferencePhotoConsent, FallbackValue=False}">
+                                                        <StackPanel Spacing="4">
+                                                            <TextBlock Text="{Binding DeviceReference.PhotoConsentText}" TextWrapping="Wrap" FontSize="11.5" />
+                                                            <WrapPanel ItemSpacing="4" LineSpacing="4">
+                                                                <Button Content="{l:T 'Yes'}" Classes="small accent" Command="{Binding DeviceReference.AnswerPhotoConsentCommand}" CommandParameter="yes" />
+                                                                <Button Content="{l:T 'No'}" Classes="small" Command="{Binding DeviceReference.AnswerPhotoConsentCommand}" CommandParameter="no" />
+                                                            </WrapPanel>
+                                                        </StackPanel>
+                                                    </Border>
+                                                    <TextBlock Text="{Binding DeviceReference.ReferencePhotoStatus}" TextWrapping="Wrap" FontSize="11.5" Classes="muted"
+                                                               IsVisible="{Binding DeviceReference.ReferencePhotoStatus, Converter={x:Static StringConverters.IsNotNullOrEmpty}, FallbackValue=False}" />
+                                                    <Button Classes="icon small" Tag="{StaticResource Icon.FolderOpen}" Content="{l:T 'Show in folder'}" HorizontalAlignment="Left"
+                                                            Command="{Binding DeviceReference.ShowReferencePhotoInFolderCommand}" IsVisible="{Binding DeviceReference.HasReferencePhotoFile, FallbackValue=False}"
+                                                            ToolTip.Tip="{l:T 'Open the folder with the saved photo'}" />
+                                                </StackPanel>
                                                 <StackPanel Orientation="Horizontal" Spacing="6">
                                                     <ComboBox ItemsSource="{Binding DeviceReference.GripChoices}" SelectedItem="{Binding DeviceReference.SelectedGrip}" MinWidth="170" FontSize="12"
                                                               IsVisible="{Binding HasReferenceGripChoices}" PlaceholderText="{l:T 'Grip on this base'}"

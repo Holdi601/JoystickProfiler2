@@ -23,7 +23,7 @@
             <TextBox Text="{Binding FilterText}" Watermark="{l:T 'Filter: aircraft or title'}" MinWidth="150" MaxWidth="220"
                      ToolTip.Tip="{l:T 'Shows only the aircraft whose name, title or category has these letters (\'differs\' shows the ones with another meaning)'}" />
         </WrapPanel>
-        <TextBlock Classes="warnText" FontSize="11.5" TextWrapping="Wrap" Text="{Binding DiffersText}" IsVisible="{Binding HasDiffers}" />
+        <TextBlock Classes="caption" FontSize="11.5" TextWrapping="Wrap" Text="{Binding DiffersText}" IsVisible="{Binding HasDiffers}" />
         <ScrollViewer MaxHeight="300" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
             <ItemsControl x:Name="AircraftList" ItemsSource="{Binding Visible}">
                 <ItemsControl.ItemTemplate>

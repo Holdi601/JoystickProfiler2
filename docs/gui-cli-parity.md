@@ -114,10 +114,10 @@ Force Feedback, Settings, Advanced), the profile bar at the top, and the confirm
 | `relations suggest` (`--game`) / `suggest apply` (`--add/--never/--remove/--move/--take`) / `suggest --all` | Relations: Suggested for this relation / Suggest missing (sections, Add ticked, Add, Add all, dismiss, Restore, Move here, Looks wrong; More > Next relation with suggestions) | FULL | |
 | `relations suggest --all --missing [--per-relation N]` | Relations: More > Suggest missing for every relation... (review, tick, Add ticked, Open) | FULL | |
 | `relations browse` (`catalog`) `[--game g --plane p] [--axis/--button]` | Relations: Open catalog / Catalog tab (game, aircraft, categories, used and bound marks, Add selected) | FULL | |
-| `relations auto-group` | Relations: Group all my actions automatically > By function (presets in words, preview, apply) | FULL | |
+| `relations auto-group` | Relations: Auto-build relations from all my actions > By function (presets in words, preview, apply) | FULL | |
 | `relations auto-assign` | Binds: Put relations on my buttons automatically (devices, grips, keep my layout, explain) | FULL | |
 | `setup devices/aircraft/plan/render/apply` | Start: Set up my devices automatically... / Binds: Set up my devices automatically... (Setup wizard: roles, priorities, modifiers, realism, review, apply) | FULL | The GUI runs the same commands; `--seed`, `--replace-existing`, `--force` are CLI-only. |
-| `relations from-text`, `from-text --check` | Relations: Group all my actions automatically > By description | FULL | `--check` is CLI-only. |
+| `relations from-text`, `from-text --check` | Relations: Auto-build relations from all my actions > By description | FULL | `--check` is CLI-only. |
 | `llm status/recommend/download/remove/enable/disable/cancel` | Relations: Local AI model (optional) | FULL | Same: parallel work, not changed here. |
 | `binds list/show/set/clear` | Binds page (record a button, quick bind, clear) | FULL | "Pick the input by hand" lists only real game controllers (the device cards: no driver entries, no vJoy, one entry per device, names without GUID unless two are alike) and the picked device's inputs that fit the relation (axis: its axes; button: its buttons and hat directions); the keyboard only for a button relation. After every bind change the bound counts (Bind Studio, Start page, next steps, device cards) follow and the status line names the bind. |
 | `binds modifier list/add/remove/rename` | Binds: Bind Modifiers; Modifiers page | FULL | |

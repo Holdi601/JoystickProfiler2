@@ -255,13 +255,13 @@ name in the answer to open it.
 ### Group management
 - `Groups` (under the list): add groups via CSV (`Startup,Combat`), remove selected groups, rename groups globally.
 
-### Group all my actions automatically (whole profile)
-`Group all my actions automatically...` builds relations for the whole profile at once:
+### Auto-build relations from all my actions (whole profile)
+`Auto-build relations from all my actions...` builds relations for the whole profile at once:
 - `By function (Auto Group)`: the same function of every aircraft and game into relations ([docs/auto-group.md](../../docs/auto-group.md)).
 - `By description`: several relations from one sentence (below).
 
 ### Group by description
-`Group all my actions automatically...` → `By description` builds relations from a sentence (`engine relations from-text`,
+`Auto-build relations from all my actions...` → `By description` builds relations from a sentence (`engine relations from-text`,
 [docs/natural-language-grouping.md](../../docs/natural-language-grouping.md)):
 1. Type what belongs together, e.g. `speed brake in and out on all jets`, `gear up/down of every DCS warbird`,
    `all trim hat up actions for helicopters`, `flaps for all MSFS airliners and IL-2 bombers`.
@@ -729,7 +729,7 @@ automatically. `Open Log Folder` opens `%LOCALAPPDATA%\JoyPro2\Logs`. Details: [
 - `Updates of JoyPro`: version, `Check for Updates`, `Install Update`.
 - `Components` > `Needed by JoyPro`: .NET Framework 4.8 and the engine files; what is missing, `Install Missing`.
 - `Components` > `Optional`: one card each for vJoy, HidHide and ViGEmBus (see below), and the local AI model
-  (`Set up` opens its own download on the Relations page, Group all my actions automatically > By description). Force feedback needs nothing extra.
+  (`Set up` opens its own download on the Relations page, Auto-build relations from all my actions > By description). Force feedback needs nothing extra.
 
 ### Components: install vJoy, HidHide, ViGEmBus with one click
 These free drivers are not part of JoyPro; you only need them for the Virtual Joystick page. Each card (in Settings >
@@ -773,7 +773,7 @@ Every engine feature a user needs has a place in the GUI. These options are left
 ## Good Beginner Workflow (Recommended)
 
 1. `Start`: `Import` on the card of a game you already set up (the wizard makes a profile for you).
-2. `Relations`: check the relations, add actions from the search over every game (tick, Add selected), take what is suggested, or ask the JoyPro assistant; `Group all my actions automatically` does the whole profile. On the Binds page `Put relations on my buttons automatically` binds them.
+2. `Relations`: check the relations, add actions from the search over every game (tick, Add selected), take what is suggested, or ask the JoyPro assistant; `Auto-build relations from all my actions` does the whole profile. On the Binds page `Put relations on my buttons automatically` binds them.
 3. `Modifiers`: create shift buttons if you want them.
 4. `Binds`: assign or record buttons and axes; curves in `Axis Tuning`.
 5. `Export`: `Check now`, keep "Update, keep the game's binds", tick the games, `Export ticked games`.

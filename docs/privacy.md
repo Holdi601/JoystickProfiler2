@@ -23,7 +23,7 @@ site it contacts (as any browser visit does). The site's own privacy policy appl
 | Game covers | once per game, when Steam has no cover of it on this PC (a game not in your Steam library, or not on Steam) and "Game covers from the internet" is ticked (Settings > Privacy, its own setting, on by default; unticked = no download, and no downloaded cover is shown) | Steam's store image server (`shared.akamai.steamstatic.com`) for Steam games and FSX; for games not on Steam the publisher's site: Roberts Space Industries (`robertsspaceindustries.com`, `cdn.robertsspaceindustries.com`) for Star Citizen, `www.falcon-bms.com` for Falcon BMS, Lockheed Martin's `www.prepar3d.com` for Prepar3D. The full list: `engine media sources` | IP address, user agent `JoyPro2`; pictures are kept in `%LOCALAPPDATA%\JoyPro\Media\Covers` and loaded only once (a failed one is tried again a day later) |
 | BYOJoystick mod for VTOL VR (optional) | only after you tick the consent and press Install BYOJoystick on the VTOL VR card | JoyPro connects to nothing itself: it opens the Steam client on the Workshop page (and the VTOL VR Mod Loader's page when it is missing); Steam downloads the mod after you subscribe | what Steam sends for any download (Steam's privacy policy) |
 | Layout picture from a web address | only when you enter a picture address in the Layout editor | the address you entered | IP address |
-| Local AI model (optional) | only after you tick "I accept" and press Download (Relations > Group all my actions automatically > By description) | GitHub (llama.cpp), Hugging Face (model file) | IP address |
+| Local AI model (optional) | only after you tick "I accept" and press Download (Relations > Auto-build relations from all my actions > By description) | GitHub (llama.cpp), Hugging Face (model file) | IP address |
 | Optional drivers (vJoy, HidHide, ViGEmBus) | only after you tick "I have read ..." and press Install on a Components card (Settings > Components, Virtual Joystick page; docs/components.md) | GitHub release downloads (`github.com`: jshafer817/vJoy, nefarius/HidHide, nefarius/ViGEmBus) | IP address, user agent `JoyPro2/<version>` |
 | .NET Framework 4.8 installer | only when it is missing and you press Install | Microsoft (`go.microsoft.com`) | IP address |
 | Report a problem | only when you press "Open GitHub Issue Page" | GitHub, in your browser | what you type there |
@@ -38,6 +38,8 @@ Layout page and on the device's card on the Start page:
 > this PC.)  **Yes** · **No** · **Always for all my devices** · **Never**
 
 - Until you say yes, nothing is downloaded and JoyPro shows its own drawing of the device or the outline of its kind.
+- "Download the reference photo" on the Layout page (the maker's photo a JoyPro line drawing was made from) downloads
+  only on the click and, without a yes for that device, asks this question first.
 - The answer is kept per device model (`%LOCALAPPDATA%\JoyPro\DeviceReference\settings.json`). The "Maker's photo of
   this device" switch on the Layout page changes it for the shown device.
 - Settings > Privacy > "Makers' product photos": **Ask for each device** (default), **Always download** or **Never**, and

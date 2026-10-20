@@ -133,7 +133,46 @@ public static class DeviceImageCache
 
     private static HttpClient? testClient;
 
-    public static async Task<byte[]?> DownloadAsync(Uri uri)
+    public static async Task<byte[]?> DownloadAsync(Uri uri) => (await FetchAsync(uri, null).ConfigureAwait(false)).Data;
+
+    // The result of a download the user asked for: the saved file, or why there is none (in plain words).
+    public sealed record DownloadResult(string? File, string Error);
+
+    // A maker's photo the user asked for by a click (the Layout page's "Download the reference photo"): into the download
+    // cache like every other device picture (only with the consent for its device, MayLoad), with the progress (0..1;
+    // -1 = size unknown) and a reason in plain words when it fails.
+    public static async Task<DownloadResult> DownloadToCacheAsync(string source, IProgress<double>? progress)
+    {
+        if (!Uri.TryCreate(source ?? string.Empty, UriKind.Absolute, out Uri? uri) || uri.Scheme != Uri.UriSchemeHttps)
+            return new DownloadResult(null, T("This is not a secure (https) address, so JoyPro does not download it."));
+        if (!InternetPicturesEnabled || InternetPicturesBlocked)
+            return new DownloadResult(null, T("Pictures from the internet are switched off (Settings > Privacy)."));
+        if (!MayLoad(source!))
+            return new DownloadResult(null, T("Not downloaded: you have not said yes to the maker's photos of this device."));
+        Downloads?.Invoke(source!);
+        string file = Path.Combine(CacheFolder(), Hash(source!) + ".img");
+        if (File.Exists(file))
+        {
+            progress?.Report(1);
+            return new DownloadResult(file, string.Empty);
+        }
+        (byte[]? data, string error) = await FetchAsync(uri, progress).ConfigureAwait(false);
+        if (data == null || data.Length == 0)
+            return new DownloadResult(null, error.Length > 0 ? error : T("The maker's site sent nothing."));
+        try
+        {
+            Directory.CreateDirectory(CacheFolder());
+            await File.WriteAllBytesAsync(file, data).ConfigureAwait(false);
+        }
+        catch (Exception ex) when (ex is IOException or UnauthorizedAccessException)
+        {
+            return new DownloadResult(null, T("The photo could not be saved: {0}", ex.Message));
+        }
+        progress?.Report(1);
+        return new DownloadResult(file, string.Empty);
+    }
+
+    private static async Task<(byte[]? Data, string Error)> FetchAsync(Uri uri, IProgress<double>? progress)
     {
         HttpClient http = testClient ?? Http;
         SemaphoreSlim gate = Sites.GetOrAdd(uri.Host, _ => new SemaphoreSlim(1, 1));
@@ -160,22 +199,44 @@ public static class DeviceImageCache
                     delay += delay;
                     continue;
                 }
-                if (!response.IsSuccessStatusCode || (response.Content.Headers.ContentLength ?? 0) > MaxBytes)
-                    return null;
+                if (code == 429 || code == 503)
+                    return (null, T("The maker's site is busy right now. Try again in a few minutes."));
+                if (code == 404 || code == 410)
+                    return (null, T("The maker has removed this photo from the site."));
+                if (!response.IsSuccessStatusCode)
+                    return (null, T("The maker's site refused the download (error {0}).", code));
+                long? length = response.Content.Headers.ContentLength;
+                if (length > MaxBytes)
+                    return (null, T("The photo is too big (more than {0} MB).", MaxBytes / (1024 * 1024)));
                 string? type = response.Content.Headers.ContentType?.MediaType;
                 if (type != null && !type.StartsWith("image/", StringComparison.OrdinalIgnoreCase) && type != "application/octet-stream")
-                    return null;
-                return await response.Content.ReadAsByteArrayAsync().ConfigureAwait(false);
+                    return (null, T("The maker's site sent a page instead of a picture (the photo has probably moved)."));
+                if (progress == null)
+                    return (await response.Content.ReadAsByteArrayAsync().ConfigureAwait(false), string.Empty);
+                await using Stream stream = await response.Content.ReadAsStreamAsync().ConfigureAwait(false);
+                using MemoryStream buffer = new();
+                byte[] chunk = new byte[64 * 1024];
+                progress.Report(length > 0 ? 0 : -1);
+                int read;
+                while ((read = await stream.ReadAsync(chunk).ConfigureAwait(false)) > 0)
+                {
+                    buffer.Write(chunk, 0, read);
+                    if (buffer.Length > MaxBytes)
+                        return (null, T("The photo is too big (more than {0} MB).", MaxBytes / (1024 * 1024)));
+                    if (length > 0)
+                        progress.Report(Math.Min(1, buffer.Length / (double)length.Value));
+                }
+                return (buffer.ToArray(), string.Empty);
             }
-            return null;
+            return (null, T("The maker's site is busy right now. Try again in a few minutes."));
         }
         catch (HttpRequestException)
         {
-            return null;
+            return (null, T("No connection to the maker's site (offline?)."));
         }
         catch (TaskCanceledException)
         {
-            return null;
+            return (null, T("The maker's site did not answer in time."));
         }
         finally
         {

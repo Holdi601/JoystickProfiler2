@@ -16,6 +16,16 @@ public sealed class ListPreferences
     // Question key -> false: do not ask (the answer is yes).
     public Dictionary<string, bool> Confirmations { get; set; } = new(StringComparer.OrdinalIgnoreCase);
 
+    // The Binds page's peek at the selected relation's actions is open.
+    public bool BindPeekOpen { get; set; } = true;
+
+    // List -> its sort levels ("device:asc", "input:asc", "name:desc"); none = by name.
+    public Dictionary<string, List<string>> Sorts { get; set; } = new(StringComparer.OrdinalIgnoreCase);
+
+    // Aircraft kept in a relation's action although its command does something else there ("Keep for all", "use here"):
+    // relation|game|id|plane; the "same id, different meaning" check does not ask about them again.
+    public List<string> KeptAircraft { get; set; } = [];
+
     private static readonly JsonSerializerOptions Options = new() { WriteIndented = true, PropertyNameCaseInsensitive = true };
 
     public static string DefaultPath => Path.Combine(AppInfo.SettingsFolder, "list-preferences.json");
@@ -31,6 +41,8 @@ public sealed class ListPreferences
                 {
                     loaded.Filters = new Dictionary<string, ListFilterState>(loaded.Filters ?? [], StringComparer.OrdinalIgnoreCase);
                     loaded.Confirmations = new Dictionary<string, bool>(loaded.Confirmations ?? [], StringComparer.OrdinalIgnoreCase);
+                    loaded.KeptAircraft ??= [];
+                    loaded.Sorts = new Dictionary<string, List<string>>(loaded.Sorts ?? [], StringComparer.OrdinalIgnoreCase);
                     return loaded;
                 }
             }

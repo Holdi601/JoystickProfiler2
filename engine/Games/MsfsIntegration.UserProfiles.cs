@@ -309,6 +309,10 @@ namespace JoyPro.Engine.Games
                             });
                             EngineDiagnostics.NoteRead(file, DisplayName + " " + Label(general) + " profile '" + profile.FriendlyName + "' (" + active + ") of " + profile.DeviceName);
                         }
+                        // One profile for every recorded aircraft: it serves all of them (and any aircraft that gets it later), so
+                        // the result names no aircraft list.
+                        if (found.Count == 1)
+                            found[0].AircraftText = string.Empty;
                         if (found.Count == 0)
                         {
                             if (problems.Count > 0)
@@ -688,7 +692,7 @@ namespace JoyPro.Engine.Games
         {
             string device = target.DeviceName.Length > 0 ? target.DeviceName : DeviceLabel(request, target.Device);
             int binds = target.Wanted.Values.Sum(v => v.Count) - target.NotWritten.Count;
-            string active = target.AircraftText.Length > 0 ? target.AircraftText : "active";
+            string active = target.AircraftText.Length > 0 ? target.AircraftText : "all your aircraft";
             string where = (target.Kind == MsfsProfileSourceKind.Store ? "Microsoft Store save" : "Steam") + ", " + target.ProfileName;
             string text;
             switch (target.Status)

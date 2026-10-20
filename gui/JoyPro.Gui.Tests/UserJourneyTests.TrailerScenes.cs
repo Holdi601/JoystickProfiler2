@@ -559,7 +559,7 @@ public sealed partial class UserJourneyTests
                 await vm!.NewProfileAutoCommand.ExecuteAsync(null);
                 vm.CurrentStage = UiStage.Relations;
             });
-            Shot("auto-empty", "Group all my actions automatically...");
+            Shot("auto-empty", "Auto-build relations from all my actions...");
             Act("auto group: open", () => { vm!.StartAutoGroupCommand.Execute(null); return Task.CompletedTask; });
             Shot("auto-group-open", "Preview");
             Act("auto group: preview", async () =>

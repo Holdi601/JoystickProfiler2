@@ -67,7 +67,7 @@ public sealed partial class RelationNodeItem : ObservableObject
     public bool IsMixed => Aircraft != null ? Aircraft.HasMixed : Differs > 0;
 
     public string MixedText => !IsMixed ? string.Empty
-        : T("Mixed meanings: in {0} ticked aircraft this id is not '{1}'", (Aircraft?.CheckedDiffersCount ?? Differs), MeaningTitle);
+        : T("In {0} ticked aircraft this command is not '{1}' but something else", (Aircraft?.CheckedDiffersCount ?? Differs), MeaningTitle);
 
     public string ExcludedText => Excluded > 0 ? T("{0} left out (meaning differs): tick to re-include", Excluded) : string.Empty;
 
