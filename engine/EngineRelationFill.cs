@@ -191,10 +191,17 @@ namespace JoyPro.Engine
             // on the profile in memory and taken back at once: what it would add to the existing relations.
             EngineProgress.Step(0, 2, "Matching your relations", "function catalog");
             Dictionary<string, List<string>> added = AutoGroupAdds(planes, names, result);
+            // A button position (each aircraft uses the relation for its own function) or a relation set to "None" has
+            // no function to fill from: no rule and no AI pick for it, never a majority's function (EngineRelationPurpose).
+            EngineRelationPurpose.Index purposes = EngineRelationPurpose.Load(result.Warnings);
+            HashSet<string> positions = new HashSet<string>(names.Where(n => EngineRelationPurpose.Judge(InternalDataManagement.AllRelations[n], purposes).NoFunction), StringComparer.OrdinalIgnoreCase);
+            result.ButtonPositions = positions.OrderBy(n => n, StringComparer.OrdinalIgnoreCase).ToList();
             Dictionary<string, Pair> pairByKey = new Dictionary<string, Pair>(StringComparer.OrdinalIgnoreCase);
             List<Pair> pairs = new List<Pair>();
             foreach (string name in names)
             {
+                if (positions.Contains(name))
+                    continue;
                 Relation relation = InternalDataManagement.AllRelations[name];
                 HashSet<string> ticked = Ticked(relation);
                 int evidence = ticked.Count(t => t.StartsWith("DCS|", StringComparison.Ordinal));
@@ -300,6 +307,7 @@ namespace JoyPro.Engine
             result.Summary = result.RelationsWithActions.ToString(CultureInfo.InvariantCulture) + " relations get " + result.ActionCount.ToString(CultureInfo.InvariantCulture) +
                              " actions for " + planes.Count.ToString(CultureInfo.InvariantCulture) + " aircraft; " + result.AmbiguousRelations.ToString(CultureInfo.InvariantCulture) +
                              " relations ambiguous; " + result.NoMatchCount.ToString(CultureInfo.InvariantCulture) + " functions found no match" +
+                             (result.ButtonPositions.Count > 0 ? "; " + result.ButtonPositions.Count.ToString(CultureInfo.InvariantCulture) + " button-position relations (different functions per aircraft) left to you" : string.Empty) +
                              (result.Unresolved.Count > 0 ? "; not found: " + string.Join(", ", result.Unresolved) : string.Empty) + ".";
             return result;
         }
@@ -779,6 +787,8 @@ namespace JoyPro.Engine
         public long RulesMs { get; set; }
         public long ModelMs { get; set; }
         public string Note { get; set; }
+        // Relations without a function to fill from (button positions, or set to "None"): left out.
+        public List<string> ButtonPositions { get; set; }
         public List<EngineFillRelation> Relations { get; set; }
         public List<string> Warnings { get; set; }
 
@@ -790,6 +800,7 @@ namespace JoyPro.Engine
             Aircraft = new List<string>();
             Unresolved = new List<string>();
             Relations = new List<EngineFillRelation>();
+            ButtonPositions = new List<string>();
             Warnings = new List<string>();
         }
     }

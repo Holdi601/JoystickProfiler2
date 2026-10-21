@@ -495,6 +495,9 @@ namespace JoyPro.Engine
                 if (relation == null || relation.NODES == null ||
                     (relation.Groups != null && relation.Groups.Contains(GroupTag, StringComparer.OrdinalIgnoreCase)))
                     continue;
+                // The user said the relation has no function (a button position): nothing to learn from it.
+                if (string.Equals(relation.Function, EngineRelationPurpose.NoneValue, StringComparison.OrdinalIgnoreCase))
+                    continue;
 
                 List<StyleEntry> entries = new List<StyleEntry>();
                 foreach (RelationItem node in relation.NODES)
@@ -518,6 +521,9 @@ namespace JoyPro.Engine
                         votes[function] = (votes.ContainsKey(function) ? votes[function] : 0) + 1;
                 }
                 KeyValuePair<string, int> dominant = votes.OrderByDescending(v => v.Value).ThenBy(v => v.Key, StringComparer.Ordinal).First();
+                // The function the user picked for it wins over what most of its commands are.
+                if (!string.IsNullOrWhiteSpace(relation.Function) && slots.ContainsKey(relation.Function.Trim()))
+                    dominant = new KeyValuePair<string, int>(relation.Function.Trim(), Math.Max(2, entries.Count));
                 Slot slot;
                 if (dominant.Value < 2 || dominant.Value * 2 < entries.Count || !slots.TryGetValue(dominant.Key, out slot) || slot.Axis != relation.ISAXIS)
                     continue;

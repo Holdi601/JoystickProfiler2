@@ -1337,6 +1337,24 @@ public sealed class MainWindowViewModelSmokeTests
         Assert.Equal(createdProfilePath, vm.ProfilePath);
     }
 
+    // The editor's Duplicate button copies exactly the open relation with one engine call (one undo step).
+    [Fact]
+    public async Task DuplicateSelectedRelation_RunsOneMassDuplicateForTheOpenRelation()
+    {
+        FakeEngineCliClient fake = new() { UseMultiSortScenario = true };
+        MainWindowViewModel vm = CreateVm(fake);
+        await vm.RefreshRelationsCommand.ExecuteAsync(null);
+        vm.SelectedRelation = vm.Relations.First();
+        string name = vm.SelectedRelation.Name;
+        fake.Calls.Clear();
+
+        await vm.DuplicateSelectedRelationCommand.ExecuteAsync(null);
+
+        IReadOnlyList<string> call = Assert.Single(fake.Calls, c => ContainsSequence(c, "relations", "mass", "duplicate"));
+        Assert.True(ContainsSequence(call, "--relation", name));
+        Assert.DoesNotContain("--all", call);
+    }
+
     [Fact]
     public async Task OpenLastProfileCommand_LoadsStoredLastProfilePath()
     {

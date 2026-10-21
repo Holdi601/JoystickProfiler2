@@ -242,6 +242,8 @@ public sealed partial class MainWindowViewModel
             ? T("This relation has no actions yet. Add the first ones under Add actions; then JoyPro suggests the same function in your other games and aircraft.")
             : allBuilderSuggestions.Count > 0
                 ? T("Nothing fits with these filters. Tick another game or show the weak matches.")
+                : IsBuilderFunctionMixed
+                    ? T("This relation is a button position: each aircraft uses it for its own function, so JoyPro cannot suggest one for the others. Add them by hand under Add actions, or give the relation one function with the chip under its name.")
                 : BuilderFunctionText.Length > 0
                     ? T("Everything JoyPro knows for this function is in the relation. Add more by hand under Add actions.")
                     : T("JoyPro does not know this function yet. Add the same action of another game under Add actions, then it can suggest more.");
@@ -252,6 +254,7 @@ public sealed partial class MainWindowViewModel
     {
         OnPropertyChanged(nameof(HasBuilderFunction));
         OnPropertyChanged(nameof(BuilderSuggestEmptyText));
+        OnBuilderFunctionChipChanged();
     }
 
     partial void OnBuilderShowWeakMatchesChanged(bool value) => ApplyBuilderSuggestionFilter();
@@ -285,6 +288,7 @@ public sealed partial class MainWindowViewModel
         BuilderDismissed.Clear();
         RelationMisfits.Clear();
         BuilderFunctionText = string.Empty;
+        BuilderFunctionState = string.Empty;
         BuilderSuggestStatus = string.Empty;
         OnPropertyChanged(nameof(HasRelationMisfits));
         OnBuilderSuggestionsChanged();
@@ -304,12 +308,15 @@ public sealed partial class MainWindowViewModel
                 busyLabel: "Finding suggestions for '" + relation + "'...", forceText: false, background: true);
             if (version != builderSuggestVersion)
                 return;
+            // No run (the engine was busy with another command): what is shown for this relation stays (the journey
+            // found the function chip and the suggestions gone after a refused second run).
+            if (result == null)
+                return;
             allBuilderSuggestions.Clear();
             BuilderDismissed.Clear();
             RelationMisfits.Clear();
             BuilderFunctionText = string.Empty;
-            if (result == null)
-                return;
+            BuilderFunctionState = string.Empty;
             if (result.ExitCode != 0)
             {
                 BuilderSuggestStatus = result.StandardError.Trim();
@@ -337,20 +344,8 @@ public sealed partial class MainWindowViewModel
         {
             using JsonDocument doc = JsonDocument.Parse(ExtractJsonPayload(output));
             JsonElement root = doc.RootElement;
-            List<string> functions = [];
-            if (root.TryGetProperty("Functions", out JsonElement list) && list.ValueKind == JsonValueKind.Array)
-            {
-                foreach (JsonElement function in list.EnumerateArray())
-                {
-                    double weight = function.TryGetProperty("Weight", out JsonElement w) && w.ValueKind == JsonValueKind.Number ? w.GetDouble() : 1;
-                    string name = ReadJsonString(function, "Name");
-                    if (name.Length > 0)
-                        functions.Add(weight >= 0.99 ? name : name + " (" + Math.Round(weight * 100).ToString(CultureInfo.InvariantCulture) + "%)");
-                }
-            }
-            if (functions.Count == 0 && ReadJsonString(root, "SlotName") is { Length: > 0 } slot)
-                functions.Add(slot);
-            BuilderFunctionText = string.Join(" · ", functions);
+            // One function, only when it really covers the relation (never a majority guess with a percentage).
+            ReadBuilderFunction(root);
             if (root.TryGetProperty("Suggestions", out JsonElement suggestions) && suggestions.ValueKind == JsonValueKind.Array)
             {
                 foreach (JsonElement item in suggestions.EnumerateArray())

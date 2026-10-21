@@ -44,6 +44,58 @@ the device reports. It checks them against the catalog (`DB/Devices`, 340 models
 
    The answer is kept per device in `<data>\DeviceReference\grips.json`. It is either a model id or
    `class:<class>`. The device cards, the HUD and the engine (`hud devices --grip`) use it from then on.
+6. **Asked again at any time**: `Model...` on a device of the Layout page's list (also after an answer, a wrong pick
+   or a weak match such as "Placeholder ... (match 30%)"):
+   - `Choose another model...`: the question again with the device's candidates (its identification, the shown model
+     and its base's grips, the models of its USB id and of the same maker and kind), "Find your device" one click away;
+   - `This is not my device`: asked like an unknown device; until the user picks, the device is kept as its kind;
+   - `Undo the last model choice`: the earlier answer (or JoyPro's own identification) comes back.
+
+### Reset to default
+
+`Reset to JoyPro's default...` (a device's `Model...` menu on the Layout page, and `Reset to default...` in the Edit
+panel "Picture and markers") puts the shown model's picture back to JoyPro's default after a confirmation: the user's
+marker positions (`Layouts\<model>.*`, `Markers\<model>.*`), tables and lines (`Callouts\<model>.*` and the cheat
+sheet pointer in `Callouts\devices.json`, i.e. the picture variant last shown), renamed parts (`Legend\<model>.json`),
+the user's photo (`Photos\<model>.*`), the user's definition of the model (`Devices\<model>.json`) and the layout file
+the profile uses for the device (`engine layout image <device> --clear`; the file itself stays). Nothing is deleted:
+the files move to `<data>\DeviceReference\ResetBackups\<time>\` and `Undo the reset of <device>` puts everything back
+(also the profile's layout file, `layout image --set`). Settings > Drawings > `Reset all my layout changes...` does
+the same for every model and device (`GUI: Services/DeviceLayoutReset.cs`, `MainWindowViewModel.LayoutReset.cs`).
+
+### Several views on one page
+
+JoyPro 1 layouts often combined several pictures of one device (front and side) so every button is covered. On the
+Layout page, `Several views` (next to the drawing style; `Page with n views` once there is a page) opens the device's
+page instead of its one picture:
+- it starts with the picture shown; `Add view` lists JoyPro's other pictures of the model (line drawings, photos,
+  the schematic): each view is one picture with its own markers, tables and lines (its callout sheet,
+  `Callouts\<model>.<picture>.json`); `Your image...` adds an image of the user's own (no markers);
+- a click selects a view; drag moves it; the corner handle or the mouse wheel scales it (arrow keys nudge); the view's
+  tables and lines move and scale with it; `Arrange` places the views side by side as big as the page allows;
+- the page format: A4 or Letter, portrait or landscape (300 dpi) for printing, 16:9, 21:9, 32:9 for a screen;
+- `Edit this view` shows the view's picture in the normal editor (markers, tables, lines); `Back to one picture`
+  keeps the page; `Remove page` deletes it (the device shows its one picture again, the views keep their sheets).
+
+Saved per model as `DeviceReference\MultiView\<model>.json` (format `joypro-multiview`: `page`, `views` with `sheet`
+or `image`, `x`, `y`, `scale`, `width`, `height`; `MultiViewLayout`, shared by the engine and the GUI). A device
+without a page keeps its one picture as before. The cheat sheets (`layout render`, the profile's layout export) print
+the page when it has two or more views: each view drawn like a sheet of its own with the device's binds, placed and
+scaled, then the GAME / PLANE / DEVICE band (`EngineMultiView`). CLI: `layout multiview <file> [--views <folder>]
+[--png <file>] [--device <name>] [--game <g> --plane <p>]`. Reset to default moves the page with the model's other
+files.
+
+### Unmapped and bound inputs
+
+Nothing bound disappears from the picture:
+- Every hat has its **press** row. When the catalog does not say which button presses a hat, the row is there, empty:
+  "not mapped: click to map it". A click opens the mapping in the side panel: press the hat on the device, or pick one
+  of the bound inputs without a place. The mapping is saved as the user's definition of the device and goes into a
+  correction (Send correction) like any other change. Example: the WinWing ViperAce (EX) grip's trim hat press is
+  button 19 (WinWing's manual drawing), now in the catalog.
+- An input the profile binds that the model has no part for (a driver's extra button) is a stand-in part
+  (`other.bound.*`) without a spot: it is listed under "Other controls" with its bind. Stand-ins and unmapped presses
+  are screen-only and never part of a saved definition.
 
 The kinds of device (`DeviceClasses`) are: stick, throttle, HOTAS, pedals, panel, button box, keyboard, gamepad, wheel,
 yoke, collective, quadrant, MFD, base and virtual.

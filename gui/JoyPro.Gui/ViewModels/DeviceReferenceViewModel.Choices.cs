@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Threading.Tasks;
@@ -204,6 +205,50 @@ public sealed partial class DeviceReferenceViewModel
         ChoiceCandidate? best = QuestionCandidates.FirstOrDefault();
         if (best != null)
             await ChooseCandidateAsync(best);
+    }
+
+    // "Choose another model..." on the device's card: the question again at any time, also after an answer, a wrong pick
+    // or a weak match. The candidates: what the device's identification offers (the grips of its base, the models of its
+    // USB id), the shown model and its base's grips, the models of its USB id and of the same maker and kind, ranked by
+    // what the device reports. notMine ("This is not my device"): the shown model is wrong; the device is asked like an
+    // unknown one (find it in the catalog, or pick its kind).
+    public void AskAgain(bool notMine)
+    {
+        DeviceCatalog catalog = DeviceReferenceService.Catalog;
+        DeviceProbe? probe = lastProbe;
+        RefDevice? shown = Model == null || IsGeneric ? null : catalog.Find(Model.Id);
+        if (notMine)
+        {
+            SetQuestion(new DeviceQuestion { Kind = "unknown", GuessedClass = probe != null ? DeviceClasses.Guess(probe) : DeviceClass });
+            IsFinding = true;
+            return;
+        }
+        List<RefDevice> models = [];
+        DeviceMatch? match = probe != null ? DeviceReferenceService.Identify(probe) : null;
+        if (match != null)
+        {
+            if (match.Model != null)
+                models.Add(match.Model);
+            models.AddRange(match.Choices);
+        }
+        RefDevice? basis = BaseModel ?? (shown != null ? catalog.BaseOf(shown) : null);
+        if (shown != null)
+            models.Add(shown);
+        if (basis != null)
+            models.AddRange(catalog.GripsOf(basis.Id));
+        string vidPid = probe != null ? DeviceCatalog.NormalizeVidPid(probe.VidPid) : string.Empty;
+        if (vidPid.Length > 0)
+            models.AddRange(catalog.Devices.Where(d => d.Kind != "base" && d.VidPids.Contains(vidPid)));
+        if (shown != null && shown.Vendor.Length > 0)
+            models.AddRange(catalog.Devices.Where(d => d.Kind == shown.Kind && d.Kind != "base" && string.Equals(d.Vendor, shown.Vendor, StringComparison.OrdinalIgnoreCase)));
+        List<RankedCandidate> ranked = DeviceChoices.Rank(models.Where(m => m.Kind != "base"), probe, catalog, shown);
+        if (ranked.Count == 0)
+        {
+            SetQuestion(new DeviceQuestion { Kind = "unknown", GuessedClass = probe != null ? DeviceClasses.Guess(probe) : DeviceClass });
+            IsFinding = true;
+            return;
+        }
+        SetQuestion(new DeviceQuestion { Kind = basis != null ? "grip" : "model", Base = basis, Candidates = ranked });
     }
 
     [RelayCommand]

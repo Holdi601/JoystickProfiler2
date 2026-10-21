@@ -79,6 +79,81 @@ public sealed class LayoutWorkspaceTests
         Assert.True(vm.IsDevicePicturesSection);
     }
 
+    // "Model..." on a device of the list: "Choose another model..." asks "Which one is it?" again (also after an
+    // answer), "This is not my device" asks it like an unknown device (kept: shown as its kind), and "Undo the last
+    // model choice" puts the earlier answer back.
+    [Fact]
+    public async Task ModelMenu_AsksAgain_NotMine_AndUndo()
+    {
+        (MainWindowViewModel vm, _, _) = await CreateLoadedAsync(layoutFile: false);
+        LayoutSuggestionItem item = vm.SelectedLayoutSuggestion!;
+        string? before = DeviceReferenceService.ChoiceOf(Stick);
+
+        await vm.ChooseAnotherModelCommand.ExecuteAsync(item);
+        Assert.True(vm.DeviceReference.HasQuestion);
+        Assert.True(vm.ShowReferenceQuestion);
+        Assert.NotEmpty(vm.DeviceReference.QuestionCandidates);
+        Assert.True(vm.CanUndoModelChoice);
+
+        await vm.NotMyDeviceCommand.ExecuteAsync(item);
+        Assert.True(vm.DeviceReference.IsUnknownQuestion);
+        Assert.True(vm.DeviceReference.ShowsFind);
+        Assert.StartsWith(DeviceReferenceService.ClassChoicePrefix, DeviceReferenceService.ChoiceOf(Stick));
+
+        await vm.UndoModelChoiceCommand.ExecuteAsync(item);
+        Assert.Equal(before, DeviceReferenceService.ChoiceOf(Stick));
+        Assert.False(vm.CanUndoModelChoice);
+        Assert.False(vm.DeviceReference.IsUnknownQuestion);
+    }
+
+    // "Reset to default": asks first, moves the user's files of the shown model (positions, sheets, legend texts, photo,
+    // definition) into a backup and forgets the cheat sheet pointer; "Undo reset" puts them back. Other models' files
+    // stay. "Reset all my layout changes" takes every model's files.
+    [Fact]
+    public async Task ResetToDefault_MovesTheModelsFilesAway_UndoPutsThemBack()
+    {
+        (MainWindowViewModel vm, _, _) = await CreateLoadedAsync(layoutFile: false);
+        string model = vm.DeviceReference.Model!.Id;
+        string data = DeviceReferenceService.DataFolder();
+        string slug = JoyPro.DeviceReference.DeviceVocabulary.Slug(model);
+        List<string> mine =
+        [
+            Path.Combine(data, "Layouts", slug + ".abcdef0123456789.json"),
+            Path.Combine(data, "Callouts", slug + ".abcdef0123456789.json"),
+            Path.Combine(data, "Legend", slug + ".json"),
+            Path.Combine(data, "Markers", slug + ".schematic.json")
+        ];
+        string other = Path.Combine(data, "Layouts", "some-other-model.abcdef0123456789.json");
+        foreach (string file in mine.Append(other))
+        {
+            Directory.CreateDirectory(Path.GetDirectoryName(file)!);
+            File.WriteAllText(file, "{}");
+        }
+        DeviceReferenceService.SetCalloutFileOf(Stick, mine[1]);
+        vm.AskedConfirmations.Clear();
+
+        await vm.ResetDeviceLayoutCommand.ExecuteAsync(vm.SelectedLayoutSuggestion);
+        Assert.Contains(vm.AskedConfirmations, c => c.Title.StartsWith("Reset ", StringComparison.Ordinal) && c.IsDanger);
+        Assert.All(mine, f => Assert.False(File.Exists(f), f));
+        Assert.True(File.Exists(other));
+        // The cheat sheets use JoyPro's sheet of the picture shown now, not the user's.
+        Assert.NotEqual(mine[1], DeviceReferenceService.CalloutFileOf(Stick));
+        Assert.True(vm.CanUndoLayoutReset);
+        Assert.Contains("Undo the reset of", vm.UndoLayoutResetLabel);
+
+        await vm.UndoLayoutResetCommand.ExecuteAsync(null);
+        Assert.All(mine, f => Assert.True(File.Exists(f), f));
+        Assert.False(vm.CanUndoLayoutReset);
+
+        await vm.ResetAllLayoutChangesCommand.ExecuteAsync(null);
+        Assert.False(File.Exists(other));
+        Assert.All(mine, f => Assert.False(File.Exists(f), f));
+        await vm.UndoLayoutResetCommand.ExecuteAsync(null);
+        Assert.True(File.Exists(other));
+        foreach (string file in mine.Append(other))
+            File.Delete(file);
+    }
+
     [Fact]
     public async Task Markers_ShowWhatTheInputDoes_AndTheLegendFilters()
     {

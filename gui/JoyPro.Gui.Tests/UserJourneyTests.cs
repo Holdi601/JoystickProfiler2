@@ -481,6 +481,18 @@ public sealed partial class UserJourneyTests
                 vm.SelectedRelation = vm.Relations.FirstOrDefault(r => r.Name == "Pitch") ?? vm.Relations.FirstOrDefault();
                 await WaitForAsync(() => vm.RelationNodes.Count > 0, 5000);
             });
+            // The function chip: a covering function, or "Different functions per aircraft"; the picker sets one.
+            Step("relations: the function chip of Pitch", async () =>
+            {
+                await WaitForAsync(() => !vm!.IsBuilderSuggestLoading && vm.BuilderFunctionState.Length > 0, 60000);
+                Note("Pitch function chip: '" + vm!.BuilderFunctionChipText + "' (" + vm.BuilderFunctionState + ")");
+            });
+            Step("relations: function picker list", async () =>
+            {
+                await vm!.OpenBuilderFunctionPickerCommand.ExecuteAsync(null);
+                vm.BuilderFunctionQuery = "pitch";
+                Note("function choices for 'pitch': " + string.Join(", ", vm.BuilderFunctionChoices.Take(6).Select(c => c.Name)));
+            });
 
             // Binds.
             Step("binds page", () => { vm!.CurrentStage = UiStage.Binds; return Task.CompletedTask; });
@@ -494,6 +506,31 @@ public sealed partial class UserJourneyTests
             Note("layout suggestions: " + string.Join(" | ", vm.LayoutSuggestions.Select(l => l.DisplayName)));
             foreach (LayoutSuggestionItem item in vm.LayoutSuggestions.Skip(1).Take(2).ToList())
                 Step("layout: show " + item.DisplayName, async () => await vm!.ShowWorkspaceDeviceAsync(item.Device));
+            // Several views on one page (the shown device), Model... asked again, Reset to default and its undo.
+            if (vm!.LayoutSuggestions.Count > 0 && vm.CanShowLayoutCallouts)
+            {
+                Step("layout: several views (page)", async () =>
+                {
+                    await vm.OpenMultiViewCommand.ExecuteAsync(null);
+                    if (vm.MultiViewAddChoices.Count > 0)
+                        await vm.AddMultiViewCommand.ExecuteAsync(vm.MultiViewAddChoices[0]);
+                    await WaitForAsync(() => vm.MultiViewItems.All(i => i.Image != null), 60000);
+                    Note("page: " + vm.MultiViewItems.Count + " views (" + string.Join(", ", vm.MultiViewItems.Select(i => i.Title)) + ")");
+                });
+                Step("layout: back to one picture, page removed", async () =>
+                {
+                    vm.AskedConfirmations.Clear();
+                    await vm.DeleteMultiViewPageCommand.ExecuteAsync(null);
+                });
+                Step("layout: choose another model", async () => await vm.ChooseAnotherModelCommand.ExecuteAsync(vm.SelectedLayoutSuggestion));
+                Step("layout: model choice undone, reset to default", async () =>
+                {
+                    await vm.UndoModelChoiceCommand.ExecuteAsync(vm.SelectedLayoutSuggestion);
+                    await vm.ResetDeviceLayoutCommand.ExecuteAsync(vm.SelectedLayoutSuggestion);
+                    Note("reset: " + vm.LayoutResetStatus);
+                });
+                Step("layout: reset undone", async () => await vm.UndoLayoutResetCommand.ExecuteAsync(null));
+            }
             // The 3D views are packs of JoyPro's releases: from the local release folder (tools\build_device_3d_packs.ps1),
             // offered for the connected devices plus a Warthog stick, downloaded, shown as the default view.
             string feed3d = Path.Combine(Environment.GetEnvironmentVariable("JOYPRO_RELEASE_DIR") ?? string.Empty, "device-3d");

@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
@@ -1388,7 +1388,10 @@ public sealed partial class MainWindowViewModel : ViewModelBase
     {
         if (value == null)
             return;
-        LayoutSuggestStatus = string.IsNullOrWhiteSpace(value.TemplateName) ? string.Empty : T("Picture: {0} (match {1}%)", value.TemplateName, value.Score.ToString(CultureInfo.InvariantCulture));
+        // A weak match says where to pick the right model.
+        LayoutSuggestStatus = string.IsNullOrWhiteSpace(value.TemplateName) ? string.Empty
+            : value.Score < 60 ? T("Picture: {0} (match {1}%). Not your device? Model... > Choose another model", value.TemplateName, value.Score.ToString(CultureInfo.InvariantCulture))
+            : T("Picture: {0} (match {1}%)", value.TemplateName, value.Score.ToString(CultureInfo.InvariantCulture));
         bool otherDevice = !string.Equals(layoutEditorContextDevice, (value.Device ?? string.Empty).Trim(), StringComparison.OrdinalIgnoreCase);
         layoutEditorContextDevice = (value.Device ?? string.Empty).Trim();
         // The device reference (docs/device-reference.md) of the picked device at once: your photo, else the maker's
@@ -1400,6 +1403,9 @@ public sealed partial class MainWindowViewModel : ViewModelBase
         {
             ClearLayoutUndo();
             LayoutShowsLayoutFile = PrefersLayoutFile(value);
+            // The page with several views belongs to the last device.
+            if (IsMultiViewOpen)
+                CloseMultiView();
         }
         RememberLayoutDeviceMapping(layoutEditorContextDevice, value.LayoutPath);
         string candidate = TryFindFirstExistingFile(
@@ -2889,6 +2895,37 @@ public sealed partial class MainWindowViewModel : ViewModelBase
             await RefreshRelationsAsync();
             SelectRelationByName(createdRelationName);
             await RefreshBindsAsync();
+        }
+    }
+
+    // Duplicates the open relation ("<name> (copy)") with its actions, aircraft, groups, tuning and bind, and opens the copy.
+    // One engine call, so one undo step.
+    [RelayCommand]
+    private async Task DuplicateSelectedRelationAsync()
+    {
+        if (SelectedRelation == null)
+        {
+            StatusText = T("Select a relation first.");
+            return;
+        }
+
+        HashSet<string> before = new(allRelations.Select(r => r.Name), StringComparer.OrdinalIgnoreCase);
+        EngineCommandResult? result = await RunEngineAsync(
+            ["relations", "mass", "duplicate", "--relation", SelectedRelation.Name],
+            includeProfile: true,
+            mutatesProfile: true,
+            busyLabel: N("Duplicating relation..."));
+
+        if (result?.ExitCode == 0)
+        {
+            await RefreshRelationsAsync();
+            await RefreshBindsAsync();
+            string? created = allRelations.Select(r => r.Name).FirstOrDefault(name => !before.Contains(name));
+            if (created != null)
+            {
+                SelectRelationByName(created);
+                StatusText = T("Duplicated as \"{0}\". Ctrl+Z undoes it.", created);
+            }
         }
     }
 
@@ -9430,12 +9467,15 @@ public sealed partial class MainWindowViewModel : ViewModelBase
             return;
         }
 
+        // Every term matches the id, title, description or aircraft ("flaps spitfire"). The aircraft ticks filter before
+        // the result cap: with the cap first, "flaps" (600+ rows over all aircraft) cut off the late aircraft (Spitfire).
+        HashSet<string> tickedPlanes = SelectedRelationNodeSearchResult == null && editingRelationNode == null
+            ? RelationNodePlaneOptions.Where(v => v.IsSelected && !string.IsNullOrWhiteSpace(v.Value)).Select(v => v.Value.Trim()).ToHashSet(StringComparer.OrdinalIgnoreCase)
+            : [];
         IEnumerable<DbNodeCatalogEntry> filtered = source.Where(entry =>
             (category.Length == 0 || entry.Category.Equals(category, StringComparison.OrdinalIgnoreCase)) &&
-            terms.All(term =>
-                entry.NodeId.Contains(term, StringComparison.OrdinalIgnoreCase) ||
-                entry.Title.Contains(term, StringComparison.OrdinalIgnoreCase) ||
-                entry.Description.Contains(term, StringComparison.OrdinalIgnoreCase)));
+            (tickedPlanes.Count == 0 || tickedPlanes.Contains((entry.Plane ?? string.Empty).Trim())) &&
+            terms.All(term => NodeEntryMatches(entry, term)));
 
         List<DbNodeCatalogEntry> ranked = filtered
             .Select(entry => new { Entry = entry, Score = ComputeNodeSearchScore(entry, terms) })
@@ -9443,7 +9483,7 @@ public sealed partial class MainWindowViewModel : ViewModelBase
             .ThenBy(v => v.Entry.Plane, StringComparer.OrdinalIgnoreCase)
             .ThenBy(v => v.Entry.Title, StringComparer.OrdinalIgnoreCase)
             .ThenBy(v => v.Entry.NodeId, StringComparer.OrdinalIgnoreCase)
-            .Take(500)
+            .Take(2000)
             .Select(v => v.Entry)
             .ToList();
 
@@ -9468,6 +9508,15 @@ public sealed partial class MainWindowViewModel : ViewModelBase
             ? T("No node matches for {0} in {1}.", what, game)
             : T("{0} match(es) in {1}. Select one and click Add to relation.", RelationNodeSearchResults.Count, game);
     }
+
+    private static bool NodeEntryMatches(DbNodeCatalogEntry entry, string term) =>
+        NodeTextMatches(entry.NodeId, entry.Title, entry.Description, entry.Plane, term);
+
+    internal static bool NodeTextMatches(string? id, string? title, string? description, string? plane, string term) =>
+        (id ?? string.Empty).Contains(term, StringComparison.OrdinalIgnoreCase) ||
+        (title ?? string.Empty).Contains(term, StringComparison.OrdinalIgnoreCase) ||
+        (description ?? string.Empty).Contains(term, StringComparison.OrdinalIgnoreCase) ||
+        (plane ?? string.Empty).Contains(term, StringComparison.OrdinalIgnoreCase);
 
     private static int ComputeNodeSearchScore(DbNodeCatalogEntry entry, IReadOnlyList<string> terms)
     {
@@ -9618,6 +9667,9 @@ public sealed partial class MainWindowViewModel : ViewModelBase
                 continue;
             }
 
+            // Titles stored as the raw lua key resolve like in the relation editor (sibling file, else "Flaps 1"); the key
+            // stays findable in the description.
+            Dictionary<string, string>? resolved = null;
             foreach (Match match in DcsDbSearchRowLine.Matches(html))
             {
                 string nodeId = CleanHtmlCell(match.Groups["hash"].Value);
@@ -9626,6 +9678,14 @@ public sealed partial class MainWindowViewModel : ViewModelBase
 
                 string title = CleanHtmlCell(match.Groups["command"].Value);
                 string description = CleanHtmlCell(match.Groups["description"].Value);
+                if (IsRawDcsTitle(title, nodeId) && !string.IsNullOrWhiteSpace(title) && !title.Trim().Equals(nodeId, StringComparison.OrdinalIgnoreCase))
+                {
+                    resolved ??= LoadDcsTitleFile(file);
+                    string rawKey = title.Trim();
+                    if (resolved.TryGetValue(nodeId, out string? better) && !string.IsNullOrWhiteSpace(better))
+                        title = better;
+                    description = string.IsNullOrWhiteSpace(description) ? rawKey : description + " · " + rawKey;
+                }
 
                 entries.Add(new DbNodeCatalogEntry(
                     "DCS",
@@ -9917,6 +9977,8 @@ public sealed partial class MainWindowViewModel : ViewModelBase
             string title = TryGetDcsNodeTitle(plane, nodeId);
             if (!string.IsNullOrWhiteSpace(title))
                 return title;
+            // The id is not in this aircraft's command list (any more): say so instead of showing only the raw id.
+            return T("{0} (not in this aircraft's current command list)", ReadableDcsKey(nodeId.Trim()));
         }
         else if (game.StartsWith("IL2", StringComparison.OrdinalIgnoreCase))
         {
@@ -9928,27 +9990,75 @@ public sealed partial class MainWindowViewModel : ViewModelBase
         return nodeId;
     }
 
+    // When a title lookup misses, the DB folder is looked at again (at most every few seconds per aircraft): a DB refresh
+    // or a module installed after the first lookup otherwise left the editor on raw ids until a restart.
+    private readonly Dictionary<string, DateTime> dcsTitleRecheckByPlane = new(StringComparer.OrdinalIgnoreCase);
+
     private string TryGetDcsNodeTitle(string plane, string nodeId)
     {
-        string normalizedPlane = string.IsNullOrWhiteSpace(plane) ? T("Default") : plane.Trim();
+        // "Default" is the DB file name, never a translated word.
+        string normalizedPlane = string.IsNullOrWhiteSpace(plane) ? "Default" : plane.Trim();
         string planeKey = NormalizeDbKey(normalizedPlane);
+        string id = nodeId.Trim();
         if (!dcsTitleCacheByPlane.TryGetValue(planeKey, out Dictionary<string, string>? titleMap))
         {
             titleMap = LoadDcsTitleMap(normalizedPlane);
             dcsTitleCacheByPlane[planeKey] = titleMap;
+            dcsTitleRecheckByPlane[planeKey] = DateTime.UtcNow;
+        }
+        else if (!titleMap.ContainsKey(id) &&
+                 (!dcsTitleRecheckByPlane.TryGetValue(planeKey, out DateTime last) || DateTime.UtcNow - last > TimeSpan.FromSeconds(5)))
+        {
+            dcsTitleRecheckByPlane[planeKey] = DateTime.UtcNow;
+            dcsDbFilesIndexed = false;
+            titleMap = LoadDcsTitleMap(normalizedPlane);
+            dcsTitleCacheByPlane[planeKey] = titleMap;
         }
 
-        return titleMap.TryGetValue(nodeId.Trim(), out string? title)
+        return titleMap.TryGetValue(id, out string? title)
             ? title
             : string.Empty;
     }
 
-    private Dictionary<string, string> LoadDcsTitleMap(string plane)
+    // "Input.SpitfireLFMkIX.flaps_1": some modules name their commands by a localization key, and the DB then holds the key.
+    private static readonly Regex DcsRawLuaKey = new(@"^Input\.[^.\s]+\.\S+$", RegexOptions.Compiled | RegexOptions.CultureInvariant);
+
+    internal static bool IsRawDcsTitle(string title, string id) =>
+        string.IsNullOrWhiteSpace(title) || string.Equals(title.Trim(), id, StringComparison.OrdinalIgnoreCase) || DcsRawLuaKey.IsMatch(title.Trim());
+
+    // "Input.SpitfireLFMkIX.flaps_1" -> "Flaps 1"; any other text stays as it is.
+    internal static string ReadableDcsKey(string value)
+    {
+        string text = (value ?? string.Empty).Trim();
+        if (!DcsRawLuaKey.IsMatch(text))
+            return text;
+        string last = text[(text.LastIndexOf('.') + 1)..].Replace('_', ' ').Trim();
+        return last.Length == 0 ? text : char.ToUpperInvariant(last[0]) + last[1..];
+    }
+
+    // Titles of one DCS DB file; a title stored as the raw key takes the title of the same id from the aircraft's
+    // sibling files (SpitfireLFMkIX_easy, SpitfireLFMkIXCW, ...), else a readable form of the key ("Flaps 1").
+    internal static Dictionary<string, string> LoadDcsTitleFile(string filePath)
     {
         Dictionary<string, string> map = new(StringComparer.OrdinalIgnoreCase);
-        if (!TryResolveDcsPlaneFile(plane, out string filePath))
+        ReadDcsTitleFile(filePath, map, skipRaw: false);
+        List<string> raw = map.Where(p => IsRawDcsTitle(p.Value, p.Key)).Select(p => p.Key).ToList();
+        if (raw.Count == 0)
             return map;
 
+        Dictionary<string, string> sibling = new(StringComparer.OrdinalIgnoreCase);
+        foreach (string file in DcsSiblingFiles(filePath))
+            ReadDcsTitleFile(file, sibling, skipRaw: true);
+        foreach (string id in raw)
+            map[id] = sibling.TryGetValue(id, out string? better) ? better : ReadableDcsKey(map[id]);
+        return map;
+    }
+
+    private Dictionary<string, string> LoadDcsTitleMap(string plane) =>
+        TryResolveDcsPlaneFile(plane, out string filePath) ? LoadDcsTitleFile(filePath) : new(StringComparer.OrdinalIgnoreCase);
+
+    private static void ReadDcsTitleFile(string filePath, Dictionary<string, string> map, bool skipRaw)
+    {
         string html;
         try
         {
@@ -9956,7 +10066,7 @@ public sealed partial class MainWindowViewModel : ViewModelBase
         }
         catch
         {
-            return map;
+            return;
         }
 
         foreach (Match match in DcsDbRowLine.Matches(html))
@@ -9966,10 +10076,25 @@ public sealed partial class MainWindowViewModel : ViewModelBase
                 continue;
 
             string command = CleanHtmlCell(match.Groups["command"].Value);
+            if (skipRaw && IsRawDcsTitle(command, hash))
+                continue;
             map[hash] = string.IsNullOrWhiteSpace(command) ? hash : command;
         }
+    }
 
-        return map;
+    // The aircraft's other DB files: "<name>_easy", "<name>CW", "<name>CW_easy" (same base name, another variant).
+    internal static List<string> DcsSiblingFiles(string filePath)
+    {
+        string? folder = Path.GetDirectoryName(filePath);
+        if (string.IsNullOrWhiteSpace(folder) || !Directory.Exists(folder))
+            return [];
+        string name = Path.GetFileNameWithoutExtension(filePath);
+        string stem = name.EndsWith("_easy", StringComparison.OrdinalIgnoreCase) ? name[..^5] : name;
+        return Directory.GetFiles(folder, "*.html")
+            .Where(f => !string.Equals(f, filePath, StringComparison.OrdinalIgnoreCase) &&
+                        Path.GetFileNameWithoutExtension(f).StartsWith(stem, StringComparison.OrdinalIgnoreCase))
+            .OrderBy(f => f.Length)
+            .ToList();
     }
 
     private bool TryResolveDcsPlaneFile(string plane, out string filePath)

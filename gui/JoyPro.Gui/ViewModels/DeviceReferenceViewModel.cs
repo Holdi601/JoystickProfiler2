@@ -288,6 +288,8 @@ public sealed partial class DeviceReferenceViewModel : ObservableObject
                 if (everything)
                     copy.Controls.AddRange(reported.Controls.Where(c => !known.Contains(c.Input)));
             }
+            // Every hat has its press (unmapped when the catalog does not say which button it is).
+            AddHatPresses(copy);
             Model = copy;
             BaseModel = shownBase;
             DeviceName = device ?? string.Empty;
@@ -736,6 +738,9 @@ public sealed partial class DeviceReferenceViewModel : ObservableObject
         bindings.Clear();
         foreach (KeyValuePair<string, string> pair in commandsByInput)
             bindings[pair.Key] = pair.Value;
+        // A bound input the model has no part for still shows (under "Other controls").
+        if (AddBoundStandIns())
+            RedrawKeepingPlaced();
         updating = true;
         try
         {
@@ -1008,6 +1013,7 @@ public sealed partial class DeviceReferenceViewModel : ObservableObject
         if (Model == null)
             return null;
         RefDevice definition = Model.Clone();
+        StripScreenOnly(definition);
         if (IsGeneric || definition.Id.StartsWith("generic", StringComparison.OrdinalIgnoreCase))
             definition.Id = "user-" + DeviceVocabulary.Slug(definition.Name);
         definition.Origin = "user";

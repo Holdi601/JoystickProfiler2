@@ -151,6 +151,13 @@ namespace JoyPro.Engine
             result.Slot = context.LastSlot == null ? string.Empty : context.LastSlot.Id;
             result.SlotName = context.LastSlot == null ? string.Empty : context.LastSlot.Name;
             result.IsAxis = relation.ISAXIS;
+            if (context.LastVerdict != null)
+            {
+                result.FunctionState = context.LastVerdict.State;
+                result.FunctionShare = context.LastVerdict.Share;
+                result.FunctionLabel = context.LastSlot == null ? string.Empty : EngineAutoGroup.ReadableName(context.LastSlot.Name);
+                result.FunctionSetByUser = context.LastVerdict.Kind == EngineRelationPurpose.Kind.Set || context.LastVerdict.Kind == EngineRelationPurpose.Kind.Cleared;
+            }
             result.Functions.AddRange(context.LastMeanings.Select(m => new EngineRelationFunction { Slot = m.Slot.Id, Name = m.Slot.Name, Weight = Math.Round(m.Weight, 2), Reference = m.Reference }));
             result.MapFunctions.AddRange(context.LastMapMeanings.Select(m => new EngineRelationMapFunction { Id = m.Function.Id, Name = m.Function.Name, Dir = m.Dir, Weight = Math.Round(m.Weight, 2), Reference = m.Reference }));
             result.Misfits.AddRange(Misfits(relation, context, context.LastSlot));
@@ -718,14 +725,19 @@ namespace JoyPro.Engine
                     present.Add(game + "|" + NodeId(game, node.ID) + "|" + game);
             }
 
-            EngineAutoGroup.Slot slot = context.SlotOf(relation);
+            // The relation's function (EngineRelationPurpose): only one that (nearly) all of its actions are, the
+            // user's own choice or its name. A relation whose aircraft each use it for another function (a button
+            // position) has none: no catalog, style, function map or title suggestion comes from a majority there.
+            EngineRelationPurpose.Verdict verdict = context.VerdictOf(relation);
+            context.LastVerdict = verdict;
+            EngineAutoGroup.Slot slot = verdict.Slot;
             context.LastSlot = slot;
             // Outliers (a button in an axis relation, a lone action of another function) say nothing about what the
             // relation is: they seed no suggestion and show under "Looks wrong" instead (Misfits).
             HashSet<Command> outliers = Outliers(relation, context, slot, mine);
             if (outliers.Count > 0 && outliers.Count < mine.Count)
                 mine = mine.Where(c => !outliers.Contains(c)).ToList();
-            List<Meaning> meanings = context.MeaningsOf(relation, slot, mine);
+            List<Meaning> meanings = context.MeaningsOf(relation, verdict, mine);
             context.LastMeanings = meanings;
             Func<string, string, bool> allowed = context.PlaneFilter(relation, slot, mine);
 
@@ -827,7 +839,7 @@ namespace JoyPro.Engine
 
             // 4. The function map: what the relation's actions are (catalog or the map's synonym rules) in every other
             // game and aircraft, also the ones the catalog does not know; same direction, same kind (axis / button).
-            List<MapMeaning> mapMeanings = context.MapMeaningsOf(relation, mine);
+            List<MapMeaning> mapMeanings = verdict.NoFunction ? new List<MapMeaning>() : context.MapMeaningsOf(relation, mine);
             context.LastMapMeanings = mapMeanings;
             foreach (MapMeaning meaning in mapMeanings)
             {
@@ -861,8 +873,9 @@ namespace JoyPro.Engine
                 }
             }
 
-            // 5. Title similarity (any game).
-            if (withTitles)
+            // 5. Title similarity (any game); never for a button position (a title of one aircraft's function is no lead
+            // for the others).
+            if (withTitles && !verdict.NoFunction)
             {
                 List<string> references = mine.Select(m => m.Title).Concat(new[] { Regex.Replace(relation.NAME ?? string.Empty, @"\s*\[[^\]]*\]$", string.Empty) })
                     .Where(t => Tokens(t).Count > 0).Distinct(StringComparer.OrdinalIgnoreCase).ToList();
@@ -1022,6 +1035,8 @@ namespace JoyPro.Engine
             public Dictionary<string, EngineAutoGroup.Slot> Slots = new Dictionary<string, EngineAutoGroup.Slot>(StringComparer.OrdinalIgnoreCase);
             public Dictionary<string, EngineAutoGroup.Aircraft> Aircraft = new Dictionary<string, EngineAutoGroup.Aircraft>(StringComparer.OrdinalIgnoreCase);
             public EngineAutoGroup.Slot LastSlot;
+            public EngineRelationPurpose.Verdict LastVerdict;
+            public EngineRelationPurpose.Index Functions = new EngineRelationPurpose.Index(null, null);
             public List<Meaning> LastMeanings = new List<Meaning>();
             public EngineFunctionMap.Map Map;
             public List<MapMeaning> LastMapMeanings = new List<MapMeaning>();
@@ -1058,6 +1073,7 @@ namespace JoyPro.Engine
                     context.Slots = slots;
                     context.Aircraft = aircraft;
                     context.Rows = rows.Where(r => !string.Equals(r.Status, "rejected", StringComparison.OrdinalIgnoreCase)).ToList();
+                    context.Functions = new EngineRelationPurpose.Index(slots, context.Rows);
                     foreach (EngineAutoGroup.Slot slot in slots.Values.Where(s => !context.slotByName.ContainsKey(s.Name)))
                         context.slotByName[slot.Name] = slot.Id;
                     foreach (EngineAutoGroup.Row row in context.Rows.Where(r => !string.Equals(r.Status, "substitute", StringComparison.OrdinalIgnoreCase)))
@@ -1184,37 +1200,16 @@ namespace JoyPro.Engine
                 return others.Distinct(StringComparer.OrdinalIgnoreCase).OrderBy(r => r, StringComparer.OrdinalIgnoreCase).ToList();
             }
 
-            // The relation's function: its name (Auto Group names relations after the function, with an optional split
-            // suffix), else the function most of its commands belong to.
+            // The relation's function (EngineRelationPurpose): the user's choice, its name, or the function (nearly) all
+            // of its actions are; null for a button position (mixed) and when the catalog knows too little.
             public EngineAutoGroup.Slot SlotOf(Relation relation)
             {
-                string name = Regex.Replace(relation.NAME ?? string.Empty, @"\s*\[[^\]]*\]$", string.Empty);
-                string slotId;
-                if (slotByName.TryGetValue(name, out slotId))
-                    return Slots[slotId];
-                Dictionary<string, int> votes = new Dictionary<string, int>(StringComparer.OrdinalIgnoreCase);
-                int nodes = 0;
-                foreach (RelationItem node in relation.NODES ?? new List<RelationItem>())
-                {
-                    if (node == null)
-                        continue;
-                    string game = GameKey(node.Game);
-                    IEnumerable<string> planes = game == "DCS" ? (node.AIRCRAFT ?? new Dictionary<string, bool>()).Where(p => p.Value).Select(p => p.Key) : new[] { game };
-                    foreach (string plane in planes)
-                    {
-                        nodes++;
-                        List<string> list;
-                        if (!slotsByCommand.TryGetValue(game + "|" + NodeId(game, node.ID) + "|" + plane, out list))
-                            continue;
-                        foreach (string slot in list.Distinct())
-                            votes[slot] = (votes.ContainsKey(slot) ? votes[slot] : 0) + 1;
-                    }
-                }
-                if (votes.Count == 0)
-                    return null;
-                KeyValuePair<string, int> top = votes.OrderByDescending(v => v.Value).ThenBy(v => v.Key, StringComparer.Ordinal).First();
-                // Most of the relation's commands must agree, else the relation is no single function.
-                return top.Value * 2 >= nodes && Slots.ContainsKey(top.Key) ? Slots[top.Key] : null;
+                return VerdictOf(relation).Slot;
+            }
+
+            public EngineRelationPurpose.Verdict VerdictOf(Relation relation)
+            {
+                return EngineRelationPurpose.Judge(relation, Functions);
             }
 
             // The user's substitution habits (Auto Group's learned style), built once.
@@ -1227,45 +1222,52 @@ namespace JoyPro.Engine
                 return habits;
             }
 
-            // Every function the relation's switched-on commands are, weighted: share of the commands that are it,
-            // doubled and capped at 1 (half of them agreeing = full weight). The function of the relation's name (or the
-            // single function SlotOf found) counts fully. Functions only a few commands share (below 20 %) are noise.
-            public List<Meaning> MeaningsOf(Relation relation, EngineAutoGroup.Slot named, List<Command> mine)
+            // The functions the relation stands for: its function (EngineRelationPurpose) and any other function that
+            // (nearly) all of its switched-on commands are too, at full weight. A button position (mixed) or a relation
+            // the user set to "None" has none. When the catalog knows too few of its commands to judge, a single
+            // function they all agree on counts with the share of the commands that are it (doubled, capped at 1).
+            public List<Meaning> MeaningsOf(Relation relation, EngineRelationPurpose.Verdict verdict, List<Command> mine)
             {
                 Dictionary<string, Meaning> meanings = new Dictionary<string, Meaning>(StringComparer.OrdinalIgnoreCase);
+                if (verdict != null && verdict.NoFunction)
+                    return new List<Meaning>();
                 Dictionary<string, int> votes = new Dictionary<string, int>(StringComparer.OrdinalIgnoreCase);
                 Dictionary<string, string> references = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
+                int known = 0;
                 foreach (Command command in mine)
                 {
-                    foreach (string slot in SlotsOfCommand(command.Game, command.Id, command.Plane))
+                    List<string> slots = SlotsOfCommand(command.Game, command.Id, command.Plane)
+                        .Where(s => Slots.ContainsKey(s) && Slots[s].Axis == relation.ISAXIS).ToList();
+                    if (slots.Count > 0)
+                        known++;
+                    foreach (string slot in slots)
                     {
                         votes[slot] = (votes.ContainsKey(slot) ? votes[slot] : 0) + 1;
                         if (!references.ContainsKey(slot))
                             references[slot] = Display(command.Game, command.Plane) + " '" + command.Title + "'";
                     }
                 }
-                int total = Math.Max(1, mine.Count);
-                foreach (KeyValuePair<string, int> vote in votes)
-                {
-                    EngineAutoGroup.Slot slot;
-                    double share = (double)vote.Value / total;
-                    if (!Slots.TryGetValue(vote.Key, out slot) || slot.Axis != relation.ISAXIS || share < 0.2)
-                        continue;
-                    meanings[slot.Id] = new Meaning { Slot = slot, Weight = Math.Min(1.0, share * 2), Reference = references[vote.Key] };
-                }
+                EngineAutoGroup.Slot named = verdict != null ? verdict.Slot : null;
                 if (named != null)
                 {
-                    Meaning meaning;
-                    if (!meanings.TryGetValue(named.Id, out meaning))
-                        meanings[named.Id] = meaning = new Meaning { Slot = named, Reference = references.ContainsKey(named.Id) ? references[named.Id] : string.Empty };
-                    meaning.Weight = 1.0;
+                    meanings[named.Id] = new Meaning { Slot = named, Weight = 1.0, Reference = references.ContainsKey(named.Id) ? references[named.Id] : string.Empty };
+                    foreach (KeyValuePair<string, int> vote in votes.Where(v => known >= 2 && v.Value >= EngineRelationPurpose.CoverShare * known && !meanings.ContainsKey(v.Key)))
+                        meanings[vote.Key] = new Meaning { Slot = Slots[vote.Key], Weight = 1.0, Reference = references[vote.Key] };
+                }
+                else if (votes.Count == 1)
+                {
+                    KeyValuePair<string, int> only = votes.First();
+                    double share = (double)only.Value / Math.Max(1, mine.Count);
+                    if (share >= 0.2)
+                        meanings[only.Key] = new Meaning { Slot = Slots[only.Key], Weight = Math.Min(1.0, share * 2), Reference = references[only.Key] };
                 }
                 return meanings.Values.OrderByDescending(m => m.Weight).ThenBy(m => m.Slot.Id, StringComparer.Ordinal).ToList();
             }
 
-            // What the relation is in the function map: every function its switched-on actions are (catalog or the map's
-            // rules), weighted like MeaningsOf (half of the actions agreeing = full weight, below 20 % ignored), with the
-            // direction; the relation's name counts fully when it is a function's own words ("Throttle", "Gear up").
+            // What the relation is in the function map: every function (with its direction) that (nearly) all of its
+            // switched-on actions the map knows are (EngineRelationPurpose.CoverShare, catalog or the map's rules), at
+            // full weight; a function only some of them are is no meaning of the relation (a button position). The
+            // relation's name counts fully when it is a function's own words ("Throttle", "Gear up").
             public List<MapMeaning> MapMeaningsOf(Relation relation, List<Command> mine)
             {
                 Dictionary<string, MapMeaning> meanings = new Dictionary<string, MapMeaning>(StringComparer.OrdinalIgnoreCase);
@@ -1274,12 +1276,19 @@ namespace JoyPro.Engine
                 Dictionary<string, double> votes = new Dictionary<string, double>(StringComparer.OrdinalIgnoreCase);
                 Dictionary<string, KeyValuePair<EngineFunctionMap.Function, string>> keys = new Dictionary<string, KeyValuePair<EngineFunctionMap.Function, string>>(StringComparer.OrdinalIgnoreCase);
                 Dictionary<string, string> references = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
+                Dictionary<string, int> counts = new Dictionary<string, int>(StringComparer.OrdinalIgnoreCase);
+                int known = 0;
                 foreach (Command command in mine)
                 {
                     EngineFunctionMap.Entry entry;
                     if (!Map.ByKey.TryGetValue(command.Game + "|" + command.Id + "|" + command.Plane, out entry))
                         continue;
-                    foreach (EngineFunctionMap.Assignment a in entry.Functions.Where(f => f.Weight >= 0.5))
+                    List<EngineFunctionMap.Assignment> strong = entry.Functions.Where(f => f.Weight >= 0.5).ToList();
+                    if (strong.Count > 0)
+                        known++;
+                    foreach (string key in strong.Select(a => a.Function.Id + "|" + a.Dir).Distinct(StringComparer.OrdinalIgnoreCase))
+                        counts[key] = (counts.ContainsKey(key) ? counts[key] : 0) + 1;
+                    foreach (EngineFunctionMap.Assignment a in strong)
                     {
                         string key = a.Function.Id + "|" + a.Dir;
                         votes[key] = (votes.ContainsKey(key) ? votes[key] : 0) + a.Weight;
@@ -1288,14 +1297,14 @@ namespace JoyPro.Engine
                             references[key] = Display(command.Game, command.Plane) + " '" + command.Title + "'";
                     }
                 }
-                int total = Math.Max(1, mine.Count);
                 foreach (KeyValuePair<string, double> vote in votes)
                 {
-                    double share = vote.Value / total;
                     EngineFunctionMap.Function f = keys[vote.Key].Key;
-                    if (share < 0.2 || (f.Only == "axis" && !relation.ISAXIS) || (f.Only == "button" && relation.ISAXIS))
+                    bool covers = (known >= 2 || mine.Count == 1) && counts[vote.Key] >= EngineRelationPurpose.CoverShare * known;
+                    if (!covers || (f.Only == "axis" && !relation.ISAXIS) || (f.Only == "button" && relation.ISAXIS))
                         continue;
-                    meanings[vote.Key] = new MapMeaning { Function = f, Dir = keys[vote.Key].Value, Weight = Math.Min(1.0, share * 2), Reference = references[vote.Key] };
+                    // The share of the map's own certainty (a side reading weighs less than a title that names it).
+                    meanings[vote.Key] = new MapMeaning { Function = f, Dir = keys[vote.Key].Value, Weight = Math.Min(1.0, vote.Value / counts[vote.Key]), Reference = references[vote.Key] };
                 }
                 string name = Regex.Replace(relation.NAME ?? string.Empty, @"\s*\[[^\]]*\]$", string.Empty);
                 string[] nameWords = EngineFunctionMap.Tokenize(name).Where(t => !Map.Stopwords.Contains(t)).ToArray();
@@ -1667,6 +1676,13 @@ namespace JoyPro.Engine
         public string Relation { get; set; }
         public string Slot { get; set; }
         public string SlotName { get; set; }
+        // How sure the function is (EngineRelationPurpose): set, cleared, named, covered, mixed, unknown; the share of
+        // its known actions that are it; picked by the user (set or cleared).
+        public string FunctionState { get; set; }
+        public double FunctionShare { get; set; }
+        public bool FunctionSetByUser { get; set; }
+        // The function's readable name for the chip ("Flaps Down").
+        public string FunctionLabel { get; set; }
         public bool IsAxis { get; set; }
         public List<EngineRelationFunction> Functions { get; set; }
         // What the relation is in the function map (EngineFunctionMap): function id, direction, weight.
@@ -1681,6 +1697,8 @@ namespace JoyPro.Engine
         public EngineRelationSuggestResult()
         {
             Relation = Slot = SlotName = string.Empty;
+            FunctionState = "unknown";
+            FunctionLabel = string.Empty;
             Functions = new List<EngineRelationFunction>();
             MapFunctions = new List<EngineRelationMapFunction>();
             Suggestions = new List<EngineRelationSuggestion>();

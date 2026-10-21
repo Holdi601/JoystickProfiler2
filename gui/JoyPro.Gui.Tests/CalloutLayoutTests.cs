@@ -5,6 +5,7 @@ using System.Linq;
 using System.Runtime.Versioning;
 using System.Threading.Tasks;
 using JoyPro.DeviceReference;
+using JoyPro.Gui.Models;
 using JoyPro.Gui.Services;
 using JoyPro.Gui.ViewModels;
 using Xunit;
@@ -41,6 +42,65 @@ public sealed class CalloutLayoutTests
         }
     }
 
+    // ------------------------------------------------------------------ hats and bound inputs
+
+    // The ViperAce EX grip's trim hat: its press is button 19 (WinWing's manual), the row of the "Trim hat" table.
+    // A hat whose press the catalog does not know keeps an empty press row (to map it).
+    [Fact]
+    public void HatTables_AlwaysHaveAPressRow_ViperAceTrimPressIsButton19()
+    {
+        DeviceCatalog catalog = Catalog;
+        RefDevice grip = catalog.Find("winwing-viperace-ex-joystick-grip")!;
+        (DeviceSchematic schematic, Dictionary<string, double[]> known) = Drawing(catalog, grip);
+        CalloutTable trim = CalloutLayouter.BuildTables(schematic, known).Single(t => t.Parts.Contains("stick.hat.trim"));
+        Assert.Equal("JOY_BTN19", trim.Rows[0].Input);
+        Assert.Equal("Press", trim.Rows[0].Label);
+
+        RefDevice noPress = grip.Clone();
+        noPress.Controls.RemoveAll(c => c.Control == "stick.hat.trim.press");
+        (DeviceSchematic without, Dictionary<string, double[]> knownWithout) = Drawing(catalog, noPress);
+        CalloutTable empty = CalloutLayouter.BuildTables(without, knownWithout).Single(t => t.Parts.Contains("stick.hat.trim"));
+        Assert.Equal(string.Empty, empty.Rows[0].Input);
+        Assert.Equal("Press", empty.Rows[0].Label);
+        Assert.Equal("stick.hat.trim", empty.Rows[0].Part);
+        Assert.Equal(9, empty.Rows.Count);
+    }
+
+    // A bound input the model has no part for shows under "Other controls" (never gone from the layout); a hat's
+    // unmapped press is mapped to it: the stand-in goes, the press row holds it, saved as the user's definition.
+    [Fact]
+    public void BoundInputWithoutPart_IsListed_AndCanBeTheHatsPress()
+    {
+        AvaloniaRenderThread.Run(() =>
+        {
+            DeviceReferenceViewModel vm = new() { VendorPhotosEnabled = false };
+            RefDevice grip = Catalog.Find("winwing-viperace-ex-joystick-grip")!.Clone();
+            grip.Controls.RemoveAll(c => c.Control == "stick.hat.trim.press");
+            AvaloniaRenderThread.Wait(vm.ShowAsync(grip, null, "Test Grip {00000000-0000-0000-0000-00000000000b}", "test", generic: false));
+            Assert.True(vm.HasUnmappedPress("stick.hat.trim"));
+            vm.SetBindings(new Dictionary<string, string> { ["JOY_BTN19"] = "STICK - TRIM - DEPRESS", ["JOY_BTN4"] = "Gun" });
+            ReferenceLegendRow bound = vm.Legend.Single(r => r.Input == "JOY_BTN19");
+            Assert.Equal("STICK - TRIM - DEPRESS", bound.Command);
+            Assert.Contains("JOY_BTN19", vm.BoundStandIns);
+            CalloutTable other = CalloutLayouter.BuildTables(vm.Schematic!, new Dictionary<string, double[]>()).Single(t => t.Rows.Any(r => r.Input == "JOY_BTN19"));
+            Assert.False(other.Known);
+
+            Assert.True(vm.MapPress("stick.hat.trim", "JOY_BTN19"));
+            Assert.False(vm.HasUnmappedPress("stick.hat.trim"));
+            Assert.DoesNotContain("JOY_BTN19", vm.BoundStandIns);
+            Assert.Equal("stick.hat.trim.press", vm.Model!.Controls.Single(c => c.Input == "JOY_BTN19").Control);
+            Assert.Equal("STICK - TRIM - DEPRESS", vm.Legend.Single(r => r.Input == "JOY_BTN19").Command);
+            RefDevice saved = DeviceReferenceService.Catalog.Find(grip.Id)!;
+            Assert.Equal("user", saved.Origin);
+            Assert.Contains(saved.Controls, c => c.Control == "stick.hat.trim.press" && c.Input == "JOY_BTN19");
+            Assert.DoesNotContain(saved.Controls, c => c.Control.StartsWith(DeviceReferenceViewModel.BoundPrefix, StringComparison.Ordinal));
+            // The user's definition is the test's own: gone again.
+            foreach (string file in Directory.GetFiles(JoyPro.DeviceReference.DeviceCatalog.UserFolder(), "*.json"))
+                File.Delete(file);
+            DeviceReferenceService.Reload();
+        });
+    }
+
     // ------------------------------------------------------------------ the automatic layout
 
     // JoyPro's drawings of sticks, throttles, panels, pedals, a HOTAS, an MFD, a yoke and a generic button box.
@@ -48,7 +108,8 @@ public sealed class CalloutLayoutTests
     [InlineData("thrustmaster-warthog-stick", 1)]
     [InlineData("thrustmaster-hotas-warthog-throttle", 12)]
     [InlineData("winwing-f18-takeoff-panel", 10)]
-    [InlineData("logitech-x52-pro", 12)]
+    // (13 since every hat table keeps its press row, also an unmapped one)
+    [InlineData("logitech-x52-pro", 14)]
     public void Drawings_GetTablesWithoutOverlap_OrthogonalLines_FewCrossings(string modelId, int maxCrossings)
     {
         DeviceCatalog catalog = Catalog;

@@ -78,6 +78,37 @@ try {
     Assert-True ($coNoModel.ExitCode -ne 0) "layout callouts accepted an unknown model."
     $coHalf = Run-Engine @("layout", "callouts", "--model", "thrustmaster-warthog-stick", "--game", "DCS")
     Assert-True ($coHalf.ExitCode -ne 0) "layout callouts accepted --game without --plane."
+
+    # The layout file a profile uses for a device (Reset to default clears it, its undo sets it back); the device
+    # matches with another GUID.
+    $coProfile = Join-Path $coDir "images.pr0file"
+    Run-Engine @("--profile", $coProfile, "relations", "add", "Images", "--button", "--node", "DCS:d1:F-16C_50", "--text") | Out-Null
+    $coSet = Run-Engine @("--profile", $coProfile, "layout", "image", $coDevice, "--set", "C:\layouts\warthog.layout")
+    Assert-True ($coSet.ExitCode -eq 0 -and $coSet.Output -match '"Current":"C:\\\\layouts\\\\warthog.layout"') "layout image --set failed: $($coSet.Output)"
+    $coOther = Run-Engine @("--profile", $coProfile, "layout", "image", "Joystick - HOTAS Warthog {BBBBBBBB-0000-0000-0000-000000000002}", "--clear")
+    Assert-True ($coOther.ExitCode -eq 0 -and $coOther.Output -match '"Previous":"C:\\\\layouts\\\\warthog.layout"' -and $coOther.Output -match '"Current":""') "layout image --clear (other GUID) failed: $($coOther.Output)"
+    $coNone = Run-Engine @("--profile", $coProfile, "layout", "image", $coDevice)
+    Assert-True ($coNone.Output -match '"Current":""') "layout image --clear was not saved: $($coNone.Output)"
+
+    # A page with several views (MultiViewLayout): each view drawn on its own, the page, and layout render with it.
+    $coSheetA = Join-Path $coDir "view-a.json"
+    $coSheetB = Join-Path $coDir "view-b.json"
+    Run-Engine @("layout", "callouts", "--model", "thrustmaster-warthog-stick", "--save", $coSheetA, "--text") | Out-Null
+    Run-Engine @("layout", "callouts", "--model", "winwing-viperace-ex-joystick-grip", "--save", $coSheetB, "--text") | Out-Null
+    $coPage = Join-Path $coDir "page.json"
+    $coPageJson = '{"format":"joypro-multiview","version":1,"model":"thrustmaster-warthog-stick","page":"a4-landscape","views":[' +
+        '{"sheet":' + (ConvertTo-Json $coSheetA) + ',"x":50,"y":50,"scale":0.4},{"sheet":' + (ConvertTo-Json $coSheetB) + ',"x":1700,"y":50,"scale":0.35}]}'
+    [IO.File]::WriteAllText($coPage, $coPageJson)
+    $coViews = Join-Path $coDir "views"
+    $coPagePng = Join-Path $coDir "page.png"
+    $coMulti = Run-Engine @("layout", "multiview", $coPage, "--views", $coViews, "--png", $coPagePng, "--print-width", "1200")
+    Assert-True ($coMulti.ExitCode -eq 0 -and (Test-Path (Join-Path $coViews "view-1.png")) -and (Test-Path $coPagePng)) "layout multiview did not draw the views and the page: $($coMulti.Output)"
+    Add-Type -AssemblyName System.Drawing
+    $coImage = [System.Drawing.Image]::FromFile($coPagePng)
+    try { Assert-True ($coImage.Width -eq 1200) "the page was not drawn at the print width." } finally { $coImage.Dispose() }
+    $coOut3 = Join-Path $coDir "render-page"
+    $coRenderPage = Run-Engine @("layout", "render", "--path", $coOut3, "--layout-map", ($coDevice + "=" + $coPage), "--devices", $coDevice, "--include-planes", "false", "--print-width", "800", "--text")
+    Assert-True ($coRenderPage.ExitCode -eq 0 -and @(Get-ChildItem $coOut3 -Filter *.png).Count -eq 1) "layout render did not print the page with several views: $($coRenderPage.Output)"
 }
 finally {
     $env:JOYPRO_DATA_DIR = $coPreviousData

@@ -135,6 +135,9 @@ public sealed class DeviceReferenceTests : IDisposable
     [InlineData("068E:00F3", "CH FIGHTERSTICK USB", "ch-fighterstick", "exact")]
     // The product name alone (no USB id known, e.g. a model picked by name).
     [InlineData("", "HOTAS Warthog Joystick", "thrustmaster-warthog-stick", "name")]
+    // The WinWing MFD center unit reports another product id; its name says MFD1. The Razer keypad by its name.
+    [InlineData("4098:BEE7", "WINCTRL CarrierAce MFD C", "winwing-mfd1", "name")]
+    [InlineData("1532:0000", "Razer Tartarus V2", "razer-tartarus-v2", "name")]
     // The USB id alone (a renamed device).
     [InlineData("044F:0402", "My renamed stick", "thrustmaster-warthog-stick", "vidpid")]
     // Two VKB grips share 231D:0125; the product name tells them apart.
@@ -517,6 +520,24 @@ public sealed class DeviceReferenceTests : IDisposable
             AvaloniaRenderThread.Wait(Done(third.RemoveUserPhotoCommand.ExecuteAsync(null)));
             // Without the user's photo: JoyPro's drawing of the model with its positions.
             Assert.Equal("lineart", third.PictureKind);
+        });
+    }
+
+    // The WinWing MFD center unit (another product id, named "WINCTRL CarrierAce MFD C") and the Razer Tartarus V2
+    // ("Joystick (Razer Tartarus V2)", 34 inputs) get JoyPro's drawing of their model, not the placeholder.
+    [Theory]
+    [InlineData("4098:BEE7", "WINCTRL CarrierAce MFD C", 50, "winwing-mfd1")]
+    [InlineData("1532:022B", "Razer Tartarus V2", 32, "razer-tartarus-v2")]
+    public void ViewModel_MfdCenterAndTartarus_ShowTheirDrawing(string vidPid, string name, int buttons, string model)
+    {
+        AvaloniaRenderThread.Run(() =>
+        {
+            DeviceReferenceViewModel vm = new() { VendorPhotosEnabled = false };
+            DeviceProbe probe = new() { VidPid = vidPid, ProductName = name, InstanceName = name, Buttons = buttons, Hats = 0, Axes = ["JOY_X", "JOY_Y"] };
+            AvaloniaRenderThread.Wait(Done(vm.ShowDeviceAsync(probe, name + " {00000000-0000-0000-0000-000000000009}")));
+            Assert.Equal(model, vm.Model?.Id);
+            Assert.False(vm.IsGeneric);
+            Assert.Equal("lineart", vm.PictureKind);
         });
     }
 

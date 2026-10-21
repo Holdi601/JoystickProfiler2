@@ -152,9 +152,12 @@ public sealed partial class CalloutSheetViewModel : ObservableObject
 
     private bool SameTables(CalloutSheet saved)
     {
-        HashSet<string> wanted = new(CalloutLayouter.BuildTables(schematic, known, saved.PictureWidth, saved.PictureHeight, saved.Ungrouped).Select(t => t.Id),
+        // The same tables with the same rows: a table that got a row since (a hat's press now known or kept unmapped, a
+        // bound input) is arranged again, its settings kept.
+        static string Rows(CalloutTable t) => t.Id + "|" + string.Join(",", t.Rows.Where(r => r.Icon != "zone").Select(r => r.Input.ToUpperInvariant()).OrderBy(i => i, StringComparer.Ordinal));
+        HashSet<string> wanted = new(CalloutLayouter.BuildTables(schematic, known, saved.PictureWidth, saved.PictureHeight, saved.Ungrouped).Select(Rows),
             StringComparer.OrdinalIgnoreCase);
-        return wanted.SetEquals(saved.Tables.Select(t => t.Id));
+        return wanted.SetEquals(saved.Tables.Select(Rows));
     }
 
     // The known positions changed (a part dragged, placed by the assistant): spots follow, a part that got its first

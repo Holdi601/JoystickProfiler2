@@ -70,6 +70,12 @@ namespace JoyPro.Engine
             return FontFamily.GenericSansSerif;
         }
 
+        // The background of a sheet (a page with several views uses it between the views).
+        public static Color PageColor(bool dark)
+        {
+            return PaletteOf(dark).Page;
+        }
+
         public static double HeaderHeight(CalloutSheet sheet)
         {
             return Math.Round(sheet.RowHeight * 1.6);

@@ -103,8 +103,9 @@ public sealed partial class MainWindowViewModel
         // The sheet on screen is what the user expects to print (as the layout editor, it is saved before the export).
         if (layoutCallouts?.HasSheet == true && deviceReference != null && SameDeviceName(deviceReference.DeviceName, device))
             SaveLayoutCalloutsFile(markSaved: true);
+        // A page with several views of the device's model (each with its tables and lines) wins over its one picture.
         if (DeviceReferenceService.CalloutFileOf(device) is { } callouts)
-            return callouts;
+            return MultiViewStore.PageForSheet(callouts) ?? callouts;
         if (hasRemembered)
             return remembered;
         EngineCommandResult? result = await RunEngineAsync(["layout", "suggest", "--device", device, "--apply", "false"], includeProfile: false, mutatesProfile: false,

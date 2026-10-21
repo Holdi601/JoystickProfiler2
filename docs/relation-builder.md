@@ -17,8 +17,8 @@ Binding the relation to a button or axis happens on the Binds page.
   ("Builds relations for the whole profile: the same function of every aircraft and game together"), `More` (refresh,
   import/export, next relation with suggestions, save).
 - **The open relation:** its name in a text box (edit in place: Enter or leaving the box renames, Esc cancels;
-  `engine relations rename`), its kind (Axis / Button), its input (or `Not bound yet: Binds page`), the function JoyPro
-  reads from it, `Suggest missing (n)`, `Expand with AI`, delete; below, **Its actions**: one row per game action with
+  `engine relations rename`), its kind (Axis / Button), its input (or `Not bound yet: Binds page`), the function chip
+  (see [The function chip](#the-function-chip)), `Suggest missing (n)`, `Expand with AI`, delete; below, **Its actions**: one row per game action with
   the game badge, the aircraft, the title and the kind, `x` removes it after "Remove this action?" (with `Do not ask
   again`; Settings > Confirmations asks again). A click on a DCS action opens its aircraft (below).
 - **No relation open:** "Pick a relation or make one" and the four steps; they show only then (never over a relation's
@@ -26,6 +26,31 @@ Binding the relation to a button or axis happens on the Binds page.
   leaves the list (deleted, filtered out) its actions leave the editor with it.
 - **Right, four panels:** `Add actions` (with `Open catalog` next to the search), `Suggested for this relation (n)`,
   `Catalog`, `JoyPro assistant`; `More` > `Suggest missing for every relation...` shows the review list there.
+
+## The function chip
+
+What the relation stands for in every aircraft and game, from the function catalog (`engine/EngineRelationPurpose.cs`,
+one rule for the chip, Suggest missing, AI fill and Auto Assign). A majority is not enough: many users keep relations
+per **physical button position**, like the real cockpit ("Throttle - Boat - Aft": Magic in the M-2000C, the RWR
+lights in the Viggen, flaps in the F-5E, the drag chute in the F-4E), and one function over all of that is wrong.
+
+| Chip | When (`relations suggest` `FunctionState`) |
+| --- | --- |
+| `Function: <name>` (green) | `set` (picked by the user), `named` (the relation is named after the function, Auto Group does so) or `covered`: at least 80 % of the switched-on actions the catalog knows are that function (a catalog substitute for it counts), and at least two of them (or its only action) |
+| `Different functions per aircraft` | `mixed`: the catalog knows its actions as different functions and none reaches 80 %. Tooltip: "This relation is a button position: each aircraft uses it for its own function" |
+| `Function: none` | `cleared`: the user picked "None" |
+| `Set function` | `unknown`: the catalog knows too little of it |
+
+A click opens a small picker: a catalog function of the relation's kind (with a search box), `None: each aircraft uses
+it for its own function`, and `Automatic` (only after a choice). Saved in the profile (`Relation.Function`: slot id,
+`none`, or empty = automatic; Ctrl+Z undoes it). CLI: `relations function <relation> [--set <function>|--none|--auto]`,
+`relations function --list [--axis|--button] [--query text]`.
+
+A `mixed` or `cleared` relation gets no function-based suggestion: no catalog, style, function map or title
+suggestions (only the same DCS id in aircraft where it means the same, i.e. its variants); AI fill leaves it out
+(`ButtonPositions` in its result, "left to you"); Auto Assign places it without a function slot (the user's own layout
+first). The function map's meanings follow the same 80 % rule. Auto Group's learned style respects the user's choice
+(a set function claims the relation, `none` teaches nothing).
 
 ## Binds page: what the relation does
 
@@ -209,7 +234,7 @@ aircraft, 165 actions in 129 relations to repair, 360 aircraft to switch off, 39
 
 | Source | Score | Example reason |
 |---|---|---|
-| The function catalog (`DB/Functions`, checked against the manuals): every function the relation's actions are | 95 when the function counts fully, down to 60 when few of the actions agree (substitutes: 70 to 45) | "Same function as F-16C_50 'Countermeasures Management Switch - Fwd'" |
+| The function catalog (`DB/Functions`, checked against the manuals): the relation's function ([The function chip](#the-function-chip); none for a button position) | 95 when the function covers the relation, lower when the catalog knows only a few of its actions (substitutes: 70 to 45) | "Same function as F-16C_50 'Countermeasures Management Switch - Fwd'" |
 | Your style: what you put on this function in aircraft that lack it (Auto Group's learned habits, at least two separate decisions in your own relations) | 80 | "Your style: 'TMS Up' where 'CMS FWD' is missing" |
 | The same DCS command id in more aircraft, only where it means the same there | 90 with the same title, 75 when near; never when it means something else | "Same command id as in F-16C_50, same title" |
 | Similar titles in any game (never the opposite direction) | 70 / 55 / 40 | "Title match: 'Countermeasures Dispense' (87%)" |

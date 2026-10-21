@@ -410,6 +410,8 @@ public sealed class CalloutSheetCanvas : Control
             Rect textRect = new(cell.X + rh * 1.08, cell.Y, cell.Width - rh * 1.2, rh);
             if (main.Length > 0)
                 DrawText(context, main, regular, sheet.RowHeight * 0.5, text, textRect);
+            else if (row.Input.Length == 0 && row.Icon != "zone")
+                DrawText(context, T("not mapped: click to map it"), regular, sheet.RowHeight * 0.38, faint, textRect);
             else if (row.Icon == "zone" || Mode != DeviceCanvasMode.View)
                 DrawText(context, row.Icon == "zone" ? row.Label : row.Label + (row.Input.Length > 0 ? " · " + DeviceMarkerText.ShortLabel(row.Input) : string.Empty),
                     regular, sheet.RowHeight * 0.42, faint, textRect);
@@ -646,7 +648,8 @@ public sealed class CalloutSheetCanvas : Control
         {
             vm.SelectRow(hit, hitRow, hitColumn);
             CalloutRow? row = vm.RowOf(hit, hitRow);
-            if (row != null && row.Input.Length > 0)
+            // A row without an input (a hat's press that is not mapped) is clicked too: the host maps it.
+            if (row != null && (row.Input.Length > 0 || row.Part.Length > 0))
                 RowClicked?.Invoke(this, (row.Input, hitColumn > 0));
             e.Handled = true;
             return;

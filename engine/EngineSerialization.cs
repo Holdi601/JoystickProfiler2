@@ -160,6 +160,7 @@ namespace JoyPro.Engine
                 relationDto.Name = relation.NAME;
                 relationDto.IsAxis = relation.ISAXIS;
                 relationDto.Groups = relation.Groups == null ? new List<string>() : new List<string>(relation.Groups);
+                relationDto.Function = string.IsNullOrWhiteSpace(relation.Function) ? null : relation.Function;
                 relationDto.Nodes = new List<EngineRelationItemDto>();
                 if (relation.NODES != null)
                 {
@@ -226,6 +227,7 @@ namespace JoyPro.Engine
                 relation.Groups = relationDto.Groups == null
                     ? new List<string>()
                     : relationDto.Groups.Where(g => !string.IsNullOrWhiteSpace(g)).Distinct().ToList();
+                relation.Function = string.IsNullOrWhiteSpace(relationDto.Function) ? null : relationDto.Function.Trim();
                 relation.NODES = new List<RelationItem>();
 
                 if (relationDto.Nodes != null)

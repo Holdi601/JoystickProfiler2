@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Globalization;
@@ -504,6 +504,8 @@ namespace JoyPro.Engine
                     return RelationPlanCommand(command, outPath, textOutput);
                 case "rename":
                     return RenameRelationCommand(command, outPath, textOutput);
+                case "function":
+                    return RelationFunctionCommand(command, outPath, textOutput);
                 case "aircraft":
                     return RelationNodeAircraft(command, outPath, textOutput);
                 case "check-aircraft":
@@ -3380,11 +3382,17 @@ namespace JoyPro.Engine
                 action != "identify" &&
                 action != "callouts" &&
                 action != "titles" &&
+                action != "image" &&
+                action != "multiview" &&
                 action != "template-inspect" &&
                 action != "template-save")
                 return Fail("Unknown layout action: " + action);
 
             List<string> args = command.Skip(1).ToList();
+            if (action == "image")
+                return RunLayoutImage(args, outPath, textOutput);
+            if (action == "multiview")
+                return RunLayoutMultiView(args, outPath, textOutput);
             if (action == "callouts")
                 return RunLayoutCallouts(args, outPath, textOutput);
             if (action == "titles")
@@ -7937,9 +7945,11 @@ namespace JoyPro.Engine
 
         private static string BuildDuplicateRelationName(string sourceName)
         {
-            string candidate = string.IsNullOrWhiteSpace(sourceName) ? "Relation" : sourceName;
-            while (InternalDataManagement.AllRelations.ContainsKey(candidate))
-                candidate = candidate + "1";
+            // "<name> (copy)", then "<name> (copy 2)", ... - readable and never an existing name.
+            string baseName = string.IsNullOrWhiteSpace(sourceName) ? "Relation" : sourceName.Trim();
+            string candidate = baseName + " (copy)";
+            for (int n = 2; InternalDataManagement.AllRelations.ContainsKey(candidate); n++)
+                candidate = baseName + " (copy " + n + ")";
             return candidate;
         }
 
@@ -14044,6 +14054,9 @@ namespace JoyPro.Engine
                         return command.Count > 1 && string.Equals(command[1], "set", StringComparison.OrdinalIgnoreCase);
                     if (action == "check-aircraft")
                         return command.Any(a => string.Equals(a, "--apply", StringComparison.OrdinalIgnoreCase));
+                    if (action == "function")
+                        return command.Any(a => string.Equals(a, "--set", StringComparison.OrdinalIgnoreCase) || string.Equals(a, "--none", StringComparison.OrdinalIgnoreCase) ||
+                                                string.Equals(a, "--auto", StringComparison.OrdinalIgnoreCase));
                     return action == "add" ||
                            action == "rename" ||
                            action == "item" ||
@@ -14122,6 +14135,8 @@ namespace JoyPro.Engine
                 case "layout":
                     if (string.IsNullOrWhiteSpace(action))
                         action = "render";
+                    if (action == "image")
+                        return command.Any(a => string.Equals(a, "--set", StringComparison.OrdinalIgnoreCase) || string.Equals(a, "--clear", StringComparison.OrdinalIgnoreCase));
                     if (action != "suggest")
                         return false;
                     if (command == null)
@@ -14383,6 +14398,8 @@ namespace JoyPro.Engine
             Console.WriteLine("  engine layout render [--path <export-folder>] [--device <name>] [--devices <csv>] [--layout-map <joystick>=<path.layout>] [--game <name>] [--games <csv>] [--plane <name>] [--planes <csv>] [--include-overview true|false] [--include-planes true|false] [--skip-missing-layouts true|false] [--draw-markers true|false] [--draw-legend-table true|false] [--marker-size <n>] [--legend-width <n>] [--legend-max-rows <n>] [--legend-font-size <n>] [--modifier-colors <modifier=#RRGGBB,...>] [--button-symbol circle|square|triangle|diamond|bar] [--axis-symbol circle|square|triangle|diamond|bar] [--pov-symbol circle|square|triangle|diamond|bar] [--slider-symbol circle|square|triangle|diamond|bar] [--font <family>] [--font-size <n>] [--text-color <#RRGGBB|#AARRGGBB>] [--outline-color <color|none>] [--label-background <color|none>] [--style dark|light] [--print-width <px>] [--combine true|false] [--drawing-style lines|cel] [--drawing-preset joypro|manual|blueprint|print|custom] [--drawing-ink <#RRGGBB>] [--drawing-paper <#RRGGBB>] [--drawing-accent <#RRGGBB>]   (a --layout-map to a device layout .json with tables and lines draws JoyPro 1 style sheets; the --drawing-* options paint JoyPro's own drawings, default: the GUI's settings)");
             Console.WriteLine("  engine layout callouts (--model <catalog id> | --layout <device-layout.json>) [--picture <file>] [--schematic] [--drawing-style lines|cel] [--drawing-preset <p>] [--drawing-ink|--drawing-paper|--drawing-accent <#RRGGBB>] [--arrange] [--device <name>] [--game <name> --plane <name>] [--sample] [--png <file>] [--light] [--print-width <px>] [--save <file.json>]   (tables around the device picture with orthogonal lines; --check-all [query] checks every model)");
             Console.WriteLine("  engine layout titles --device <name>   (the game's own menu titles of the device's binds, per game and aircraft)");
+            Console.WriteLine("  engine layout image <device> [--set <layout file>|--clear]   (the layout file the profile uses for a device; --clear: JoyPro's picture again, --set puts one back)");
+            Console.WriteLine("  engine layout multiview <file.json> [--views <folder>] [--png <file>] [--device <name>] [--game <g> --plane <p>] [--light] [--print-width <px>]   (a page with several views of a device: each view as view-<n>.png, the page as one picture; layout render draws it when --layout-map points to it)");
             Console.WriteLine("  engine layout suggest [--device <name>] [--devices <csv>] [--connected] [--profile-devices] [--legacy-layout-dir <path>] [--legacy-output-dir <path>] [--catalog <path.json>] [--apply true|false] [--apply-min-score <n>] [--backdrop <picture-file-or-image-url>]");
             Console.WriteLine("  engine layout identify [--device <name>] [--devices <csv>] [--connected]   (vendor/model from VID:PID and HID name, picture search link)");
             Console.WriteLine("  engine layout template-inspect --source <path.layout-or-image> [--max-markers <n>]");
@@ -14450,6 +14467,11 @@ namespace JoyPro.Engine
             Console.WriteLine("      without it simple commands work: \"Throttle ALL: all throttle axes\", \"add the collectives to Throttle\",");
             Console.WriteLine("      \"remove War Thunder from Throttle\", \"rename Throttle to Throttle ALL\". --show-prompt prints the prompt and grammar only.");
             Console.WriteLine("  engine relations rename <relation> <new name>");
+            Console.WriteLine("  engine relations function <relation> [--set <function>|--none|--auto]");
+            Console.WriteLine("      the function the relation stands for: set (picked), named, covered (at least 80% of its known actions), mixed");
+            Console.WriteLine("      (a button position: each aircraft its own function, no function-based suggestions) or unknown. --set picks a");
+            Console.WriteLine("      catalog function (id or name), --none says it has none, --auto goes back to automatic.");
+            Console.WriteLine("  engine relations function --list [--axis|--button] [--query text]   the catalog functions to pick from");
             Console.WriteLine("  engine relations aircraft <relation> [--node game:id]");
             Console.WriteLine("      every action of the relation with every aircraft that has its id: on / off / not in it, each aircraft's own title");
             Console.WriteLine("      and category of the id and same / near / differs to the action's meaning (\"82 of 84 aircraft\").");

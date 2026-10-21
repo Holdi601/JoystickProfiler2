@@ -832,11 +832,26 @@ namespace JoyPro.DeviceReference
             return tables;
         }
 
+        // A part's rows: its inputs in JoyPro 1's order. A hat always has its press row: when no input is known for the
+        // press (the catalog does not say which button it is), the row stays, empty, so the user can map it.
         private static IEnumerable<SchematicInput> OrderedInputs(SchematicMarker m)
         {
-            return m.Inputs.Where(i => i.Input.Length > 0)
-                .GroupBy(i => i.Input, StringComparer.OrdinalIgnoreCase).Select(g => g.First())
-                .OrderBy(i => DirectionOrder(i)).ThenBy(i => DeviceVocabulary.NaturalKey(i.Input), StringComparer.Ordinal);
+            List<SchematicInput> rows = m.Inputs.Where(i => i.Input.Length > 0)
+                .GroupBy(i => i.Input, StringComparer.OrdinalIgnoreCase).Select(g => g.First()).ToList();
+            if (IsHat(m) && rows.Count > 0 && !rows.Any(IsPress))
+                rows.Add(m.Inputs.FirstOrDefault(i => i.Input.Length == 0 && IsPress(i)) ?? new SchematicInput { Input = string.Empty, Control = m.Id + ".press", Direction = "press" });
+            return rows.OrderBy(i => DirectionOrder(i)).ThenBy(i => DeviceVocabulary.NaturalKey(i.Input), StringComparer.Ordinal);
+        }
+
+        internal static bool IsHat(SchematicMarker m)
+        {
+            return DeviceVocabulary.ElementType(m.Id) == "hat";
+        }
+
+        private static bool IsPress(SchematicInput input)
+        {
+            string d = DirectionOf(input);
+            return (d == "press" || d == "push" || d.Length == 0) && DeviceVocabulary.InputKind(input.Input) != "axis";
         }
 
         // Parts whose spots are within 1.5 % of the picture's diagonal of each other (at most 4 parts), in the drawing's

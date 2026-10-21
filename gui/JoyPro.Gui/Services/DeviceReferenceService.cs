@@ -254,6 +254,20 @@ public static class DeviceReferenceService
 
     public static void SetChoice(string device, string choice) => SetGrip(device, choice);
 
+    // Forgets what the user said a device is (also under its name without the GUID): JoyPro identifies it again.
+    public static void ClearChoice(string device)
+    {
+        if (string.IsNullOrWhiteSpace(device))
+            return;
+        Dictionary<string, string>? grips = ReadJson<Dictionary<string, string>>(GripFile());
+        if (grips == null)
+            return;
+        string name = DeviceProbe.RemoveGuid(device.Trim());
+        Dictionary<string, string> clean = new(grips.Where(g => !string.Equals(g.Key, device.Trim(), StringComparison.OrdinalIgnoreCase) &&
+                                                                 !string.Equals(DeviceProbe.RemoveGuid(g.Key), name, StringComparison.OrdinalIgnoreCase)), StringComparer.OrdinalIgnoreCase);
+        WriteJson(GripFile(), clean);
+    }
+
     public const string ClassChoicePrefix = "class:";
 
     // ------------------------------------------------------------------ marker positions per photo (exact or none)
@@ -458,6 +472,20 @@ public static class DeviceReferenceService
                 return;
             map[key] = file;
             WriteJson(CalloutDevicesFile(), map);
+        }
+    }
+
+    // Forgets which sheet a device's cheat sheets use (Reset to default): the next picture shown sets it again.
+    public static void ClearCalloutFileOf(string device)
+    {
+        string key = DeviceProbe.RemoveGuid(device ?? string.Empty).Trim();
+        if (key.Length == 0)
+            return;
+        lock (Gate)
+        {
+            Dictionary<string, string> map = new(ReadJson<Dictionary<string, string>>(CalloutDevicesFile()) ?? new Dictionary<string, string>(), StringComparer.OrdinalIgnoreCase);
+            if (map.Remove(key))
+                WriteJson(CalloutDevicesFile(), map);
         }
     }
 

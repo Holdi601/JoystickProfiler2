@@ -1051,53 +1051,19 @@ namespace JoyPro.Engine
                    (parsed == null ? string.Empty : MapDevice(parsed.device, devices) + "/" + parsed.key);
         }
 
-        // relation -> function slot: the relation is named after the slot (Auto Group, optionally with a preset
-        // suffix "[...]"), or most of its commands belong to that slot in the catalog.
+        // relation -> function slot (EngineRelationPurpose): the user's choice, the relation's name (Auto Group, optionally
+        // with a preset suffix "[...]"), or the function (nearly) all of its actions are. A button position (each
+        // aircraft uses it for its own function) and a relation set to "None" have no slot: they are placed like any
+        // other relation of their kind, by the user's own layout first.
         private static Dictionary<string, string> RelationSlots(Dictionary<string, EngineAutoGroup.Slot> slots, List<EngineAutoGroup.Row> rows)
         {
             Dictionary<string, string> map = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
-            Dictionary<string, string> byName = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
-            foreach (EngineAutoGroup.Slot slot in slots.Values)
-            {
-                if (!byName.ContainsKey(slot.Name))
-                    byName[slot.Name] = slot.Id;
-            }
-            Dictionary<string, List<string>> functions = new Dictionary<string, List<string>>(StringComparer.OrdinalIgnoreCase);
-            foreach (EngineAutoGroup.Row row in rows.Where(r => !string.Equals(r.Status, "substitute", StringComparison.OrdinalIgnoreCase)))
-            {
-                string key = (EngineAutoGroup.IsDcs(row.Game) ? "DCS" : row.Game) + "|" + row.Action + "|" + row.Plane;
-                List<string> list;
-                if (!functions.TryGetValue(key, out list))
-                    functions[key] = list = new List<string>();
-                list.Add(row.Slot);
-            }
-
+            EngineRelationPurpose.Index index = new EngineRelationPurpose.Index(slots, rows);
             foreach (Relation relation in InternalDataManagement.AllRelations.Values.Where(r => r != null))
             {
-                string name = Regex.Replace(relation.NAME ?? string.Empty, @"\s*\[[^\]]*\]$", string.Empty);
-                string slotId;
-                if (byName.TryGetValue(name, out slotId))
-                {
-                    map[relation.NAME] = slotId;
-                    continue;
-                }
-                Dictionary<string, int> votes = new Dictionary<string, int>(StringComparer.OrdinalIgnoreCase);
-                foreach (RelationItem node in relation.NODES ?? new List<RelationItem>())
-                {
-                    if (node == null || node.AIRCRAFT == null)
-                        continue;
-                    foreach (KeyValuePair<string, bool> plane in node.AIRCRAFT.Where(p => p.Value))
-                    {
-                        List<string> list;
-                        if (functions.TryGetValue((EngineAutoGroup.IsDcs(node.Game) ? "DCS" : node.Game) + "|" + node.ID + "|" + plane.Key, out list))
-                        {
-                            foreach (string s in list)
-                                votes[s] = (votes.ContainsKey(s) ? votes[s] : 0) + 1;
-                        }
-                    }
-                }
-                if (votes.Count > 0)
-                    map[relation.NAME] = votes.OrderByDescending(v => v.Value).ThenBy(v => v.Key, StringComparer.Ordinal).First().Key;
+                EngineRelationPurpose.Verdict verdict = EngineRelationPurpose.Judge(relation, index);
+                if (verdict.Slot != null)
+                    map[relation.NAME] = verdict.Slot.Id;
             }
             return map;
         }

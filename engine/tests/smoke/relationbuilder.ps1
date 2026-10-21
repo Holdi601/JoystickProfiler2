@@ -64,6 +64,30 @@ try {
     $rbRestored = Invoke-RbJson $rbProfile @("relations", "suggest", "Flare")
     Assert-True (@($rbRestored.Json.Suggestions | Where-Object { $_.Id -eq "ID_FLARES" }).Count -eq 1) "a restored command did not come back as a suggestion."
 
+    # The function of a relation (EngineRelationPurpose): only one that (nearly) all of its actions are. A button
+    # position (CMS in the F-16, airbrake in the Viggen, flaps in the F-5, airbrake retract in the Hornet) has none:
+    # no majority function, no function-based suggestion; the user can set one, set "None" or go back to automatic.
+    $rbBoat = Run-Engine @("--profile", $rbProfile, "relations", "add", "Boat Aft", "--button", "--node", "DCS:d3014pnilu3014cd16vd1vpnilvu0:F-16C_50",
+        "--node", "DCS:d3601pnilu3602cd22vd1vpnilvu1:AJS37", "--node", "DCS:d3005pnilunilcd2vd-1vpnilvunil:F-5E-3", "--node", "DCS:d3035pnilunilcd13vd1vpnilvunil:FA-18C_hornet", "--text")
+    Assert-True ($rbBoat.ExitCode -eq 0) ("relations add for the button position failed: " + $rbBoat.Output)
+    $rbBoatFunction = Invoke-RbJson $rbProfile @("relations", "function", "Boat Aft")
+    Assert-True ($rbBoatFunction.ExitCode -eq 0 -and $rbBoatFunction.Json.State -eq "mixed" -and $rbBoatFunction.Json.Slot -eq "") ("a button position was given a function: " + $rbBoatFunction.Output)
+    $rbBoatSuggest = Invoke-RbJson $rbProfile @("relations", "suggest", "Boat Aft", "--min", "low")
+    Assert-True ($rbBoatSuggest.Json.FunctionState -eq "mixed" -and $rbBoatSuggest.Json.Slot -eq "" -and @($rbBoatSuggest.Json.Functions).Count -eq 0) "suggest read a majority function into a button position."
+    Assert-True (@($rbBoatSuggest.Json.Suggestions | Where-Object { $_.Source -eq "catalog" -or $_.Source -eq "function map" -or $_.Source -eq "title" -or $_.Source -eq "your style" }).Count -eq 0) "a button position got function-based suggestions."
+    $rbBoatSet = Invoke-RbJson $rbProfile @("relations", "function", "Boat Aft", "--set", "Flaps Down")
+    Assert-True ($rbBoatSet.ExitCode -eq 0 -and $rbBoatSet.Json.State -eq "set" -and $rbBoatSet.Json.Slot -eq "flapsdown" -and $rbBoatSet.Json.SetByUser) ("relations function --set failed: " + $rbBoatSet.Output)
+    $rbBoatSetSuggest = Invoke-RbJson $rbProfile @("relations", "suggest", "Boat Aft", "--min", "low")
+    Assert-True ($rbBoatSetSuggest.Json.Slot -eq "flapsdown" -and $rbBoatSetSuggest.Json.FunctionSetByUser) "the function the user set is not the relation's function (not saved?)."
+    $rbBoatNone = Invoke-RbJson $rbProfile @("relations", "function", "Boat Aft", "--none")
+    Assert-True ($rbBoatNone.Json.State -eq "cleared") "relations function --none did not clear the function."
+    $rbBoatAuto = Invoke-RbJson $rbProfile @("relations", "function", "Boat Aft", "--auto")
+    Assert-True ($rbBoatAuto.Json.State -eq "mixed") "relations function --auto did not go back to automatic."
+    $rbWrongKind = Run-Engine @("--profile", $rbProfile, "relations", "function", "Boat Aft", "--set", "pitch", "--text")
+    Assert-True ($rbWrongKind.ExitCode -ne 0) "an axis function was set on a button relation."
+    $rbChoices = Invoke-RbJson $rbProfile @("relations", "function", "--list", "--button", "--query", "flaps")
+    Assert-True (@($rbChoices.Json | Where-Object { $_.Id -eq "flapsdown" }).Count -eq 1 -and @($rbChoices.Json | Where-Object { $_.IsAxis }).Count -eq 0) "relations function --list --button did not list the flap functions."
+
     # Find actions: fuzzy, across games, with the function words, filters and the relations that use a hit.
     $rbSearch = Invoke-RbJson $rbProfile @("relations", "search", "flare", "--limit", "400")
     Assert-True ($rbSearch.ExitCode -eq 0) ("relations search failed: " + $rbSearch.Output)

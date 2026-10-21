@@ -550,6 +550,15 @@ public sealed partial class MainWindowViewModel
     {
         if (deviceReference == null)
             return;
+        // A row without an input: a hat's press that is not mapped yet.
+        if (string.IsNullOrWhiteSpace(input))
+        {
+            if (LayoutCallouts.SelectedTable is { } table && LayoutCallouts.RowOf(table, LayoutCallouts.SelectedRow) is { Input.Length: 0 } empty)
+                OpenPressMapping(empty.Part);
+            return;
+        }
+        if (HasPendingPress)
+            CancelPendingPress();
         ReferenceLegendRow? row = deviceReference.Legend.FirstOrDefault(r => string.Equals(r.Input, input, StringComparison.OrdinalIgnoreCase));
         if (row != null)
             deviceReference.SelectedLegendRow = row;

@@ -402,6 +402,8 @@ engine profile save "C:\profiles\my_setup.pr0file"
   engine layout render [--path <export-folder>] [--device <name>] [--devices <csv>] [--layout-map <joystick>=<path.layout>] [--game <name>] [--games <csv>] [--plane <name>] [--planes <csv>] [--include-overview true|false] [--include-planes true|false] [--skip-missing-layouts true|false] [--draw-markers true|false] [--draw-legend-table true|false] [--marker-size <n>] [--legend-width <n>] [--legend-max-rows <n>] [--legend-font-size <n>] [--modifier-colors <modifier=#RRGGBB,...>] [--button-symbol circle|square|triangle|diamond|bar] [--axis-symbol circle|square|triangle|diamond|bar] [--pov-symbol circle|square|triangle|diamond|bar] [--slider-symbol circle|square|triangle|diamond|bar] [--font <family>] [--font-size <n>] [--text-color <#RRGGBB|#AARRGGBB>] [--outline-color <color|none>] [--label-background <color|none>] [--style dark|light] [--print-width <px>] [--combine true|false] [--drawing-style lines|cel] [--drawing-preset joypro|manual|blueprint|print|custom] [--drawing-ink <#RRGGBB>] [--drawing-paper <#RRGGBB>] [--drawing-accent <#RRGGBB>]   (a --layout-map to a device layout .json with tables and lines draws JoyPro 1 style sheets; the --drawing-* options paint JoyPro's own drawings, default: the GUI's settings)
   engine layout callouts (--model <catalog id> | --layout <device-layout.json>) [--picture <file>] [--schematic] [--drawing-style lines|cel] [--drawing-preset <p>] [--drawing-ink|--drawing-paper|--drawing-accent <#RRGGBB>] [--arrange] [--device <name>] [--game <name> --plane <name>] [--sample] [--png <file>] [--light] [--print-width <px>] [--save <file.json>]   (tables around the device picture with orthogonal lines; --check-all [query] checks every model)
   engine layout titles --device <name>   (the game's own menu titles of the device's binds, per game and aircraft)
+  engine layout image <device> [--set <layout file>|--clear]   (the layout file the profile uses for a device; --clear: JoyPro's picture again, --set puts one back)
+  engine layout multiview <file.json> [--views <folder>] [--png <file>] [--device <name>] [--game <g> --plane <p>] [--light] [--print-width <px>]   (a page with several views of a device: each view as view-<n>.png, the page as one picture; layout render draws it when --layout-map points to it)
   engine layout suggest [--device <name>] [--devices <csv>] [--connected] [--profile-devices] [--legacy-layout-dir <path>] [--legacy-output-dir <path>] [--catalog <path.json>] [--apply true|false] [--apply-min-score <n>] [--backdrop <picture-file-or-image-url>]
   engine layout identify [--device <name>] [--devices <csv>] [--connected]   (vendor/model from VID:PID and HID name, picture search link)
   engine layout template-inspect --source <path.layout-or-image> [--max-markers <n>]
@@ -444,6 +446,8 @@ engine profile save "C:\profiles\my_setup.pr0file"
   engine relations chat <relation>|--relation <relation> "<message>" [--llm off|auto|on] [--show-prompt] [--apply]
   engine relations assistant "<message>" [--relation <name>] [--llm auto|on|off] [--max-steps N] [--show-prompt]
   engine relations rename <relation> <new name>
+  engine relations function <relation> [--set <function>|--none|--auto]
+  engine relations function --list [--axis|--button] [--query text]   the catalog functions to pick from
   engine relations aircraft <relation> [--node game:id]
   engine relations aircraft set <relation> --node game:id [--on p1|p2] [--off p3|p4] [--only p1|p2]
   engine relations check-aircraft [--relation <name>] [--apply] [--include-same-function]
@@ -4859,6 +4863,46 @@ Examples:
 engine --help
 ```
 
+### `engine layout image <device> [--set <layout file>|--clear]   (the layout file the profile uses for a device; --clear: JoyPro's picture again, --set puts one back)`
+What it does: Runs this command operation.
+
+Arguments and example values:
+- `<device>`: Command argument. See examples for typical values.
+- `--set`: Command argument. See examples for typical values.
+- `<layout file>`: Command argument. See examples for typical values.
+- `--clear`: Command argument. See examples for typical values.
+
+Examples:
+```powershell
+engine --help
+```
+
+### `engine layout multiview <file.json> [--views <folder>] [--png <file>] [--device <name>] [--game <g> --plane <p>] [--light] [--print-width <px>]   (a page with several views of a device: each view as view-<n>.png, the page as one picture; layout render draws it when --layout-map points to it)`
+What it does: Runs this command operation.
+
+Arguments and example values:
+- `<file.json>`: Path to a JSON file. Example: C:\JoyPro\sync-choices.json.
+- `--views`: Command argument. See examples for typical values.
+- `<folder>`: Command argument. See examples for typical values.
+- `--png`: Command argument. See examples for typical values.
+- `<file>`: Command argument. See examples for typical values.
+- `--device`: Include one device per flag. Example: --device LEFT VPC Throttle.
+- `<name>`: Name value for surrounding option. Example: A-10C_2 or LEFT VPC Throttle.
+- `--game`: Game filter value. Example: DCS or IL2Game.
+- `<g>`: Command argument. See examples for typical values.
+- `--plane`: Include one plane/module per flag. Example: --plane A-10C_2.
+- `<p>`: Command argument. See examples for typical values.
+- `--light`: Command argument. See examples for typical values.
+- `--print-width`: Command argument. See examples for typical values.
+- `<px>`: Command argument. See examples for typical values.
+- `<n>`: Integer numeric value. Example: 45.
+- `--layout-map`: Map joystick name to layout/image file path. Example: --layout-map 'VKB Gladiator NXT=C:\\JoyPro\\LayoutImages\\VKB.layout'.
+
+Examples:
+```powershell
+engine --help
+```
+
 ### `engine layout suggest [--device <name>] [--devices <csv>] [--connected] [--profile-devices] [--legacy-layout-dir <path>] [--legacy-output-dir <path>] [--catalog <path.json>] [--apply true|false] [--apply-min-score <n>] [--backdrop <picture-file-or-image-url>]`
 What it does: Runs this command operation.
 
@@ -5572,6 +5616,35 @@ What it does: Runs this command operation.
 Arguments and example values:
 - `<relation>`: Command argument. See examples for typical values.
 - `<new name>`: Command argument. See examples for typical values.
+
+Examples:
+```powershell
+engine --help
+```
+
+### `engine relations function <relation> [--set <function>|--none|--auto]`
+What it does: Runs this command operation.
+
+Arguments and example values:
+- `<relation>`: Command argument. See examples for typical values.
+- `--set`: Command argument. See examples for typical values.
+- `<function>`: Command argument. See examples for typical values.
+- `--none`: Command argument. See examples for typical values.
+- `--auto`: Command argument. See examples for typical values.
+
+Examples:
+```powershell
+engine --help
+```
+
+### `engine relations function --list [--axis|--button] [--query text]   the catalog functions to pick from`
+What it does: Runs this command operation.
+
+Arguments and example values:
+- `--list`: For support bundle: only print what the zip would hold; nothing is written.
+- `--axis`: Set relation type to axis (explicit override).
+- `--button`: Set relation type to button (explicit override).
+- `--query`: Select relations by substring query for mass operations. Example: --query Startup.
 
 Examples:
 ```powershell

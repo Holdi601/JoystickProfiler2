@@ -200,6 +200,13 @@ namespace JoyPro.Engine
                     continue;
                 }
 
+                // A page with several views of the device (each with its tables and lines).
+                if (EngineMultiView.IsMultiViewFile(layoutPath))
+                {
+                    RenderMultiViewLayout(result, joystick, layoutPath, planeTargets, includePlaneExports, includeOverview, visualOptions);
+                    continue;
+                }
+
                 // A device layout with tables and lines (the Layout page's callout sheet): drawn like JoyPro 1's sheets.
                 if (EngineCalloutRenderer.IsCalloutLayout(layoutPath))
                 {
@@ -539,6 +546,52 @@ namespace JoyPro.Engine
                     result.OverviewImagesWritten++;
                     result.WrittenFiles.Add(file);
                 }
+            }
+        }
+
+        // A page with several views (MultiViewLayout): one picture per game and aircraft and the overview, like a sheet.
+        private static void RenderMultiViewLayout(
+            LayoutRenderResult result,
+            string joystick,
+            string layoutPath,
+            List<KeyValuePair<string, string>> planeTargets,
+            bool includePlaneExports,
+            bool includeOverview,
+            LayoutVisualOptions options)
+        {
+            JoyPro.DeviceReference.MultiViewLayout layout;
+            try
+            {
+                layout = EngineMultiView.Load(layoutPath);
+            }
+            catch (Exception ex)
+            {
+                result.Errors.Add("Could not load layout '" + layoutPath + "' for joystick '" + joystick + "': " + ex.Message);
+                return;
+            }
+            string alias = ResolveJoystickAlias(joystick);
+            result.RenderedJoysticks.Add(joystick);
+            result.JoystickLayouts[joystick] = NormalizePath(layoutPath);
+            if (includePlaneExports)
+            {
+                foreach (KeyValuePair<string, string> target in planeTargets)
+                {
+                    string planeDir = Path.Combine(result.ExportPath, target.Key, target.Value);
+                    Directory.CreateDirectory(planeDir);
+                    string file = Path.Combine(planeDir, BuildSafeFileName(alias) + ".png");
+                    using (Bitmap rendered = EngineMultiView.RenderPage(layout, joystick, target.Key, target.Value, CalloutOptions(options, target.Key, target.Value, alias), result.Warnings))
+                        rendered.Save(file, ImageFormat.Png);
+                    result.PlaneImagesWritten++;
+                    result.WrittenFiles.Add(file);
+                }
+            }
+            if (includeOverview)
+            {
+                string file = Path.Combine(result.ExportPath, BuildSafeFileName(alias) + ".png");
+                using (Bitmap rendered = EngineMultiView.RenderPage(layout, joystick, null, null, CalloutOptions(options, "All games", "Relation names", alias), result.Warnings))
+                    rendered.Save(file, ImageFormat.Png);
+                result.OverviewImagesWritten++;
+                result.WrittenFiles.Add(file);
             }
         }
 

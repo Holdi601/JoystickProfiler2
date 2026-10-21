@@ -545,6 +545,7 @@ public partial class MainWindow : Window
             observedViewModel.AssistantMessages.CollectionChanged -= OnAssistantMessagesChanged;
             observedViewModel.FollowInputActivity -= OnFollowInputActivity;
             observedViewModel.FollowInputJumped -= OnFollowInputActivity;
+            observedViewModel.MultiViewRedraw -= OnMultiViewRedraw;
             observedViewModel.TextInputFocusProbe = null;
             observedViewModel.ConfirmHandler = null;
         }
@@ -553,6 +554,7 @@ public partial class MainWindow : Window
         if (observedViewModel != null)
         {
             observedViewModel.PropertyChanged += OnViewModelPropertyChanged;
+            observedViewModel.MultiViewRedraw += OnMultiViewRedraw;
             observedViewModel.WarningRequested += OnWarningRequested;
             observedViewModel.GameChangesOffered += OnGameChangesOffered;
             observedViewModel.ShutdownRequested += OnShutdownRequested;
@@ -850,6 +852,9 @@ public partial class MainWindow : Window
         await vm.AskAssistantCommand.ExecuteAsync(null);
     }
 
+    // A pick in the function picker closes it (the command does the change).
+    private void RelationFunctionPicked(object? sender, RoutedEventArgs e) => this.FindControl<Button>("RelationFunctionChip")?.Flyout?.Hide();
+
     // The open relation's name, edited in place: Enter renames, Esc puts the old name back, leaving the box renames.
     private async void RelationNameEditKeyDown(object? sender, KeyEventArgs e)
     {
@@ -1043,6 +1048,30 @@ public partial class MainWindow : Window
         if (path != null)
             await vm.DropWorkspacePhotoCommand.ExecuteAsync(path);
     }
+
+    // Several views on one page: an own image as a view, a view moved or scaled, the views drawn again.
+    private async void MultiViewImageClicked(object? sender, RoutedEventArgs e)
+    {
+        if (DataContext is not MainWindowViewModel vm)
+            return;
+        IReadOnlyList<IStorageFile> files = await StorageProvider.OpenFilePickerAsync(new FilePickerOpenOptions
+        {
+            Title = T("An image of your own for the page"),
+            AllowMultiple = false,
+            FileTypeFilter = [ReferencePictures]
+        });
+        string? path = files.FirstOrDefault()?.TryGetLocalPath();
+        if (path != null)
+            await vm.AddMultiViewImageAsync(path);
+    }
+
+    private void MultiViewItemChanged(object? sender, MultiViewItemModel item)
+    {
+        if (DataContext is MainWindowViewModel vm)
+            vm.MultiViewItemChanged(item);
+    }
+
+    private void OnMultiViewRedraw(object? sender, EventArgs e) => this.FindControl<Controls.MultiViewCanvas>("MultiViewCanvas")?.InvalidateVisual();
 
     // A picture file of the user's own as the shown device's icon.
     private async void DeviceIconFileClicked(object? sender, RoutedEventArgs e)

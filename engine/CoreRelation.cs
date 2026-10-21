@@ -101,6 +101,11 @@ namespace JoyPro
         public Bind bind;
         public List<string> Groups;
         public int? elCount = 0;
+        // The function the user picked for the relation in the relation editor: a function catalog slot id, "none"
+        // (no function: a button position whose aircraft each use it for their own function), or null = automatic
+        // (EngineRelationPurpose).
+        [OptionalField]
+        public string Function;
 
         public int ElementCount
         {
@@ -125,6 +130,7 @@ namespace JoyPro
             relation.NAME = NAME;
             relation.ISAXIS = ISAXIS;
             relation.Groups = Groups == null ? new List<string>() : new List<string>(Groups);
+            relation.Function = Function;
             relation.NODES = NODES == null
                 ? new List<RelationItem>()
                 : NODES.Where(n => n != null).Select(n => n.Copy()).ToList();

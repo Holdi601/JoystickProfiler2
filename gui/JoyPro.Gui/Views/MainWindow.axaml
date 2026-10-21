@@ -1,4 +1,4 @@
-
+﻿
 <Window xmlns="https://github.com/avaloniaui"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:vm="using:JoyPro.Gui.ViewModels"
@@ -1734,13 +1734,48 @@
                                                     </ItemsControl>
                                                     <Button Classes="small ghost" IsVisible="{Binding SelectedRelation.IsUnbound}" Content="{l:T 'Not bound yet: Binds page'}" Command="{Binding BindSelectedRelationCommand}"
                                                             ToolTip.Tip="{l:T 'Binding happens on the Binds page: this opens it with this relation selected'}" />
-                                                    <Border Classes="chip ok" IsVisible="{Binding HasBuilderFunction}" ToolTip.Tip="{l:T 'The function JoyPro reads from its actions: {0}', Arg0={Binding BuilderFunctionText}}">
-                                                        <TextBlock Text="{Binding BuilderFunctionText}" MaxWidth="240" TextTrimming="CharacterEllipsis" />
-                                                    </Border>
+                                                    <!-- The relation's function (only when it covers the relation), "Different functions per aircraft" for a
+                                                         button position, or "Set function"; a click picks one, None or Automatic -->
+                                                    <Button x:Name="RelationFunctionChip" Classes="chipButton" IsVisible="{Binding ShowBuilderFunctionChip}" ToolTip.Tip="{Binding BuilderFunctionChipTooltip}"
+                                                            Command="{Binding OpenBuilderFunctionPickerCommand}">
+                                                        <Border Classes="chip" Classes.ok="{Binding HasBuilderFunction}" Classes.neutral="{Binding !HasBuilderFunction}">
+                                                            <StackPanel Orientation="Horizontal" Spacing="4">
+                                                                <TextBlock Text="{Binding BuilderFunctionChipText}" MaxWidth="280" TextTrimming="CharacterEllipsis" />
+                                                                <PathIcon Data="{StaticResource Icon.ChevronDown}" Width="9" Height="9" />
+                                                            </StackPanel>
+                                                        </Border>
+                                                        <Button.Flyout>
+                                                            <Flyout Placement="BottomEdgeAlignedLeft">
+                                                                <StackPanel Spacing="6" Width="320">
+                                                                    <TextBlock Classes="caption" TextWrapping="Wrap"
+                                                                               Text="{l:T 'The function this relation stands for in every aircraft and game. Suggestions, AI fill and Auto Assign use it.'}" />
+                                                                    <Button Classes="small ghost" HorizontalAlignment="Stretch" HorizontalContentAlignment="Left" Command="{Binding ClearBuilderFunctionCommand}" Click="RelationFunctionPicked"
+                                                                            Content="{l:T 'None: each aircraft uses it for its own function'}"
+                                                                            ToolTip.Tip="{l:T 'A button position (like the real cockpit): no single function, nothing is suggested by function'}" />
+                                                                    <Button Classes="small ghost" HorizontalAlignment="Stretch" HorizontalContentAlignment="Left" Command="{Binding AutoBuilderFunctionCommand}" Click="RelationFunctionPicked"
+                                                                            Content="{l:T 'Automatic: from its name and its actions'}" IsVisible="{Binding IsBuilderFunctionSetByUser}"
+                                                                            ToolTip.Tip="{l:T 'JoyPro decides again: a function only when (nearly) all of the relation\'s actions are it'}" />
+                                                                    <TextBox Text="{Binding BuilderFunctionQuery}" Watermark="{l:T 'Find a function, e.g. flaps'}" />
+                                                                    <ScrollViewer MaxHeight="260" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
+                                                                        <ItemsControl ItemsSource="{Binding BuilderFunctionChoices}">
+                                                                            <ItemsControl.ItemTemplate>
+                                                                                <DataTemplate x:DataType="vm:RelationFunctionChoice">
+                                                                                    <Button Classes="ghost small" HorizontalAlignment="Stretch" HorizontalContentAlignment="Left" Content="{Binding Name}"
+                                                                                            Command="{Binding #RootWindow.DataContext.SetBuilderFunctionCommand}" CommandParameter="{Binding}" Click="RelationFunctionPicked" />
+                                                                                </DataTemplate>
+                                                                            </ItemsControl.ItemTemplate>
+                                                                        </ItemsControl>
+                                                                    </ScrollViewer>
+                                                                </StackPanel>
+                                                            </Flyout>
+                                                        </Button.Flyout>
+                                                    </Button>
                                                 </WrapPanel>
-                                                <Grid ColumnDefinitions="*,Auto,Auto,Auto" ColumnSpacing="6">
+                                                <Grid ColumnDefinitions="*,Auto,Auto,Auto,Auto" ColumnSpacing="6">
                                                     <TextBlock Classes="h3" VerticalAlignment="Center" TextTrimming="CharacterEllipsis" Text="{l:T 'Its actions ({0})', Arg0={Binding RelationNodes.Count}}" />
-                                                    <Button Grid.Column="3" Classes="icon small danger iconOnly" Tag="{StaticResource Icon.Delete}" Command="{Binding DeleteSelectedRelationCommand}"
+                                                    <Button Grid.Column="3" Classes="icon small" Tag="{StaticResource Icon.Copy}" Content="{l:T 'Duplicate'}" Command="{Binding DuplicateSelectedRelationCommand}"
+                                                            ToolTip.Tip="{l:T 'Copy this relation with its actions, aircraft, groups, tuning and bind as a new relation named (copy) and open it (Ctrl+Z undoes it)'}" />
+                                                    <Button Grid.Column="4" Classes="icon small danger iconOnly" Tag="{StaticResource Icon.Delete}" Command="{Binding DeleteSelectedRelationCommand}"
                                                             ToolTip.Tip="{l:T 'Delete this relation (asks first; Ctrl+Z undoes it)'}" />
                                                     <Button Grid.Column="1" Classes="icon small accent" Tag="{StaticResource Icon.Lightbulb}" Content="{Binding SuggestMissingLabel}" Command="{Binding SuggestMissingCommand}"
                                                             ToolTip.Tip="{l:T 'Expand this relation: the same function in the games and aircraft it does not have yet, without the actions other relations use (no AI). Tick, add.'}" />
@@ -3549,18 +3584,37 @@
                                                     <StackPanel Spacing="3" ToolTip.Tip="{Binding DeviceTip}">
                                                         <TextBlock Text="{Binding DisplayName}" FontWeight="SemiBold" TextTrimming="CharacterEllipsis" />
                                                         <TextBlock Classes="caption" Text="{Binding ModelLine}" TextWrapping="NoWrap" TextTrimming="CharacterEllipsis" />
-                                                        <StackPanel Orientation="Horizontal" Spacing="4">
-                                                            <Border Classes="chip ok" IsVisible="{Binding IsOwnLayout}" ToolTip.Tip="{l:T 'Your own layout file of this device (markers, tables and lines of the cheat sheets)'}">
-                                                                <StackPanel Orientation="Horizontal" Spacing="4">
-                                                                    <PathIcon Data="{StaticResource Icon.MapMarker}" />
-                                                                    <TextBlock Text="{Binding MarkerSummary}" />
-                                                                </StackPanel>
-                                                            </Border>
-                                                            <Border Classes="chip device" IsVisible="{Binding !IsOwnLayout}"><TextBlock Text="{l:T 'Reference picture'}" /></Border>
-                                                            <Button Classes="icon small ghost iconOnly" Tag="{StaticResource Icon.Swap}" Padding="4,1"
+                                                        <!-- The picture's chip on the left; the device's menus apart on the right (users hit the swap button for the chip) -->
+                                                        <Grid ColumnDefinitions="*,Auto,Auto" ColumnSpacing="6" Margin="0,2,0,0">
+                                                            <StackPanel Orientation="Horizontal" Spacing="4" VerticalAlignment="Center">
+                                                                <Border Classes="chip ok" IsVisible="{Binding IsOwnLayout}" ToolTip.Tip="{l:T 'Your own layout file of this device (markers, tables and lines of the cheat sheets)'}">
+                                                                    <StackPanel Orientation="Horizontal" Spacing="4">
+                                                                        <PathIcon Data="{StaticResource Icon.MapMarker}" />
+                                                                        <TextBlock Text="{Binding MarkerSummary}" />
+                                                                    </StackPanel>
+                                                                </Border>
+                                                                <Border Classes="chip device" IsVisible="{Binding !IsOwnLayout}"
+                                                                        ToolTip.Tip="{l:T 'JoyPro\'s picture of this model (a drawing or the maker\'s photo)'}"><TextBlock Text="{l:T 'Reference picture'}" /></Border>
+                                                            </StackPanel>
+                                                            <Button Grid.Column="1" Classes="small ghost" Padding="6,2" MinHeight="26" Content="{l:T 'Model...'}"
+                                                                    ToolTip.Tip="{l:T 'Which model this device is (choose another one, say it is not your device, undo the last choice) and Reset to JoyPro\'s default'}">
+                                                                <Button.Flyout>
+                                                                    <MenuFlyout Placement="BottomEdgeAlignedRight">
+                                                                        <MenuItem Header="{l:T 'Choose another model...'}" Command="{Binding #RootWindow.DataContext.ChooseAnotherModelCommand}" CommandParameter="{Binding}" />
+                                                                        <MenuItem Header="{l:T 'This is not my device'}" Command="{Binding #RootWindow.DataContext.NotMyDeviceCommand}" CommandParameter="{Binding}" />
+                                                                        <MenuItem Header="{l:T 'Undo the last model choice'}" Command="{Binding #RootWindow.DataContext.UndoModelChoiceCommand}" CommandParameter="{Binding}"
+                                                                                  IsEnabled="{Binding #RootWindow.DataContext.CanUndoModelChoice}" />
+                                                                        <Separator />
+                                                                        <MenuItem Header="{l:T 'Reset to JoyPro\'s default...'}" Command="{Binding #RootWindow.DataContext.ResetDeviceLayoutCommand}" CommandParameter="{Binding}" />
+                                                                        <MenuItem Header="{Binding #RootWindow.DataContext.UndoLayoutResetLabel}" Command="{Binding #RootWindow.DataContext.UndoLayoutResetCommand}"
+                                                                                  IsEnabled="{Binding #RootWindow.DataContext.CanUndoLayoutReset}" />
+                                                                    </MenuFlyout>
+                                                                </Button.Flyout>
+                                                            </Button>
+                                                            <Button Grid.Column="2" Classes="icon small ghost iconOnly" Tag="{StaticResource Icon.Swap}" Padding="6,3" MinWidth="30" MinHeight="26" Margin="6,0,0,0"
                                                                     Command="{Binding #RootWindow.DataContext.OpenReplaceDeviceCommand}" CommandParameter="{Binding Device}"
                                                                     ToolTip.Tip="{l:T 'Replace this device: move its binds to another device, input by input'}" />
-                                                        </StackPanel>
+                                                        </Grid>
                                                     </StackPanel>
                                                 </DataTemplate>
                                             </ListBox.ItemTemplate>
@@ -3678,6 +3732,10 @@
                                                 <ToggleButton Classes="icon small iconOnly" Tag="{StaticResource Icon.Grid}" IsChecked="{Binding LayoutCalloutsEnabled}"
                                                               IsVisible="{Binding CanShowLayoutCallouts}"
                                                               ToolTip.Tip="{l:T 'Tables: tables around the picture with lines to the parts (JoyPro 1\'s cheat sheets); off: labels at the markers'}" />
+                                                <!-- Several pictures of the device on one page (front + side ...), each with its tables -->
+                                                <Button Classes="icon small" Tag="{StaticResource Icon.Image}" Content="{Binding MultiViewButtonLabel}" Command="{Binding OpenMultiViewCommand}"
+                                                        IsVisible="{Binding CanShowLayoutCallouts}"
+                                                        ToolTip.Tip="{l:T 'Several pictures of this device on one page (e.g. front and side, so every button is covered), each with its tables and lines; for printing or a screen. The cheat sheets print the page.'}" />
                                                 <!-- Drawing style of JoyPro's drawings: Lines | Cel-shaded (Settings > Drawings has the colours) -->
                                                 <ToggleButton Classes="small" Content="{l:T '3D view'}" IsChecked="{Binding WorkspaceShows3D}" IsVisible="{Binding HasWorkspaceTurntable}"
                                                               ToolTip.Tip="{l:T 'Turn the device around (drag; wheel zooms; double click resets): JoyPro\'s render of a 3D model of the device. Off: the flat drawing, which is what the cheat sheets print and what Edit mode works on.'}" />
@@ -3697,6 +3755,54 @@
                                     </Border>
 
                                     <Panel Grid.Row="1">
+                                        <!-- Several views on one page (MainWindowViewModel.MultiView.cs, MultiViewCanvas): over everything else -->
+                                        <Border Classes="canvasHost" IsVisible="{Binding IsMultiViewOpen}" ZIndex="10" Background="{DynamicResource JP.SurfaceBrush}">
+                                            <Grid RowDefinitions="Auto,*,Auto">
+                                                <WrapPanel Margin="10,8" ItemSpacing="6" LineSpacing="6">
+                                                    <ComboBox ItemsSource="{Binding MultiViewPages}" SelectedItem="{Binding SelectedMultiViewPage}" MinWidth="150"
+                                                              ToolTip.Tip="{l:T 'The page: A4 or Letter (portrait, landscape) for printing, 16:9 / 21:9 / 32:9 for a screen'}">
+                                                        <ComboBox.ItemTemplate>
+                                                            <DataTemplate x:DataType="vm:MultiViewPageChoice">
+                                                                <TextBlock Text="{Binding Title, Converter={x:Static l:TConverter.Instance}}" />
+                                                            </DataTemplate>
+                                                        </ComboBox.ItemTemplate>
+                                                    </ComboBox>
+                                                    <Button Classes="icon small accent" Tag="{StaticResource Icon.Plus}" Content="{l:T 'Add view'}"
+                                                            ToolTip.Tip="{l:T 'Another picture of the device on the page: JoyPro\'s drawings and photos of it, or your own image'}">
+                                                        <Button.Flyout>
+                                                            <MenuFlyout Placement="BottomEdgeAlignedLeft" ItemsSource="{Binding MultiViewAddChoices}">
+                                                                <MenuFlyout.ItemContainerTheme>
+                                                                    <ControlTheme TargetType="MenuItem" BasedOn="{StaticResource {x:Type MenuItem}}" x:DataType="vm:MultiViewAddChoice">
+                                                                        <Setter Property="Header" Value="{Binding Title}" />
+                                                                        <Setter Property="Command" Value="{Binding #RootWindow.DataContext.AddMultiViewCommand}" />
+                                                                        <Setter Property="CommandParameter" Value="{Binding}" />
+                                                                    </ControlTheme>
+                                                                </MenuFlyout.ItemContainerTheme>
+                                                            </MenuFlyout>
+                                                        </Button.Flyout>
+                                                    </Button>
+                                                    <Button Classes="icon small" Tag="{StaticResource Icon.FolderOpen}" Content="{l:T 'Your image...'}" Click="MultiViewImageClicked"
+                                                            ToolTip.Tip="{l:T 'An image of your own as a view (a photo of the side, a label; it has no markers)'}" />
+                                                    <Button Classes="icon small" Tag="{StaticResource Icon.Wand}" Content="{l:T 'Arrange'}" Command="{Binding ArrangeMultiViewCommand}"
+                                                            ToolTip.Tip="{l:T 'The views side by side, as big as the page allows'}" />
+                                                    <Button Classes="icon small" Tag="{StaticResource Icon.Pencil}" Content="{l:T 'Edit this view'}" Command="{Binding EditMultiViewCommand}"
+                                                            IsEnabled="{Binding CanEditSelectedMultiViewItem}" ToolTip.Tip="{l:T 'Its markers, tables and lines in the normal editor (the page shows them after)'}" />
+                                                    <Button Classes="small danger" Content="{l:T 'Remove view'}" Command="{Binding RemoveMultiViewCommand}" IsEnabled="{Binding HasSelectedMultiViewItem}" />
+                                                    <Button Classes="small ghost" Content="{l:T 'Remove page'}" Command="{Binding DeleteMultiViewPageCommand}"
+                                                            ToolTip.Tip="{l:T 'The device shows its one picture again'}" />
+                                                    <Button Classes="icon small" Tag="{StaticResource Icon.Close}" Content="{l:T 'Back to one picture'}" Command="{Binding CloseMultiViewCommand}"
+                                                            ToolTip.Tip="{l:T 'The page stays (the cheat sheets print it); this shows the one picture again'}" />
+                                                </WrapPanel>
+                                                <controls:MultiViewCanvas x:Name="MultiViewCanvas" Grid.Row="1" Margin="8"
+                                                                          Items="{Binding MultiViewItems}"
+                                                                          PageWidth="{Binding MultiViewPageWidth}"
+                                                                          PageHeight="{Binding MultiViewPageHeight}"
+                                                                          SelectedItem="{Binding SelectedMultiViewItem}"
+                                                                          DarkPage="{Binding LayoutPageDark}"
+                                                                          ItemChanged="MultiViewItemChanged" />
+                                                <TextBlock Grid.Row="2" Classes="caption" Margin="10,0,10,8" TextWrapping="Wrap" Text="{Binding MultiViewStatus}" />
+                                            </Grid>
+                                        </Border>
                                         <!-- Tables and lines (JoyPro 1's cheat sheet look) on a reference picture with known positions:
                                              MainWindowViewModel.LayoutCallouts.cs, CalloutSheetCanvas. -->
                                         <Border Classes="canvasHost" IsVisible="{Binding LayoutShowsCallouts}">
@@ -4194,6 +4300,26 @@
                                                         IsVisible="{Binding IsLayoutFileEditMode}" ToolTip.Tip="{l:T 'A new marker in the middle of the picture (or switch on \'Place marker\' and click the spot)'}" />
                                             </Grid>
                                             <TextBlock Classes="caption" IsVisible="{Binding HasNoWorkspaceInput}" Text="{l:T 'Click a marker on the picture or a row of the legend.'}" />
+                                            <!-- A hat's press that is not mapped: press it now, or pick the bound input it sends -->
+                                            <Border Classes="callout" IsVisible="{Binding HasPendingPress}">
+                                                <StackPanel Spacing="6">
+                                                    <TextBlock Text="{Binding PendingPressPrompt}" TextWrapping="Wrap" />
+                                                    <ItemsControl ItemsSource="{Binding PendingPressCandidates}" IsVisible="{Binding HasPendingPressCandidates}">
+                                                        <ItemsControl.ItemsPanel>
+                                                            <ItemsPanelTemplate>
+                                                                <WrapPanel ItemSpacing="4" LineSpacing="4" />
+                                                            </ItemsPanelTemplate>
+                                                        </ItemsControl.ItemsPanel>
+                                                        <ItemsControl.ItemTemplate>
+                                                            <DataTemplate x:DataType="x:String">
+                                                                <Button Classes="small" Content="{Binding}" Command="{Binding #RootWindow.DataContext.MapPendingPressCommand}" CommandParameter="{Binding}"
+                                                                        ToolTip.Tip="{l:T 'This bound input is the press (saved as your definition of the device)'}" />
+                                                            </DataTemplate>
+                                                        </ItemsControl.ItemTemplate>
+                                                    </ItemsControl>
+                                                    <Button Classes="small ghost" HorizontalAlignment="Right" Content="{l:T 'Cancel'}" Command="{Binding CancelPendingPressCommand}" />
+                                                </StackPanel>
+                                            </Border>
                                             <StackPanel Spacing="10" IsVisible="{Binding HasWorkspaceInput}">
                                                 <Grid ColumnDefinitions="Auto,*" ColumnSpacing="12">
                                                     <Border Classes="keycap large"><TextBlock Text="{Binding WorkspaceInputTitle}" /></Border>
@@ -4393,6 +4519,9 @@
                                                 <Button Classes="small" Content="{l:T 'Remove photo'}" Command="{Binding DeviceReference.RemoveUserPhotoCommand}" IsVisible="{Binding DeviceReference.HasUserPhoto}" />
                                                 <Button Classes="icon small" Tag="{StaticResource Icon.Refresh}" Content="{l:T 'Reset markers'}" Command="{Binding ResetReferenceMarkersCommand}"
                                                         ToolTip.Tip="{l:T 'Put the markers back where JoyPro puts them'}" />
+                                                <Button Classes="small danger" Content="{l:T 'Reset to default...'}" Command="{Binding ResetDeviceLayoutCommand}"
+                                                        ToolTip.Tip="{l:T 'Everything you changed of this device\'s picture goes: marker positions, tables and lines, renamed parts, your photo, your definition and the layout file the profile uses. Asks first; Undo reset puts it back.'}" />
+                                                <Button Classes="small" Content="{Binding UndoLayoutResetLabel}" Command="{Binding UndoLayoutResetCommand}" IsVisible="{Binding CanUndoLayoutReset}" />
                                             </WrapPanel>
                                             <Border Classes="sunken" Padding="8" IsVisible="{Binding DeviceReference.AsksPhotoConsent}">
                                                 <StackPanel Spacing="6">
@@ -5940,6 +6069,15 @@
                                     <controls:DrawingStyleEditor DataContext="{Binding ScreenDrawing}" />
                                     <TextBlock Text="{l:T 'Cheat sheets and exports'}" FontWeight="SemiBold" Margin="0,6,0,0" />
                                     <controls:DrawingStyleEditor DataContext="{Binding ExportDrawing}" />
+                                    <TextBlock Text="{l:T 'Your layout changes'}" FontWeight="SemiBold" Margin="0,6,0,0" />
+                                    <TextBlock TextWrapping="Wrap" Opacity="0.8"
+                                               Text="{l:T 'Every device\'s picture back to JoyPro\'s default: your marker positions, tables and lines, renamed parts, photos, own device definitions and the layout files the profile uses (the files themselves stay). One device: Layout page, its Model... menu.'}" />
+                                    <WrapPanel ItemSpacing="6" LineSpacing="6">
+                                        <Button Classes="icon small danger" Tag="{StaticResource Icon.Refresh}" Content="{l:T 'Reset all my layout changes...'}" Command="{Binding ResetAllLayoutChangesCommand}" />
+                                        <Button Classes="small" Content="{Binding UndoLayoutResetLabel}" Command="{Binding UndoLayoutResetCommand}" IsVisible="{Binding CanUndoLayoutReset}" />
+                                    </WrapPanel>
+                                    <TextBlock Classes="caption" TextWrapping="Wrap" Text="{Binding LayoutResetStatus}"
+                                               IsVisible="{Binding LayoutResetStatus, Converter={x:Static StringConverters.IsNotNullOrEmpty}}" />
                                 </StackPanel>
                             </controls:SettingsSection>
 

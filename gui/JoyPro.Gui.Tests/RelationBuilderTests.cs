@@ -72,6 +72,14 @@ public sealed class RelationBuilderTests : IAsyncLifetime
         // Selected again without loading it again.
         Assert.DoesNotContain(fake.Calls, c => AxisTuningTests.Seq(c, "relations", "show"));
 
+        // The function chip and the suggestions stay too.
+        await WaitForAsync(() => !vm.IsBuilderSuggestLoading && !vm.IsBusy);
+        Assert.Equal("covered", vm.BuilderFunctionState);
+        Assert.NotEmpty(vm.BuilderSuggestions);
+        await vm.RefreshAircraftCheckAsync();
+        await WaitForAsync(() => !vm.IsBuilderSuggestLoading && !vm.IsBusy);
+        Assert.Equal("covered", vm.BuilderFunctionState);
+
         vm.RelationSearchText = "Chaff";
         Assert.Null(vm.SelectedRelation);
         Assert.Empty(vm.RelationNodes);
@@ -255,6 +263,49 @@ public sealed class RelationBuilderTests : IAsyncLifetime
         Assert.True(alternate.IsShown && landing.IsShown);
         Assert.Equal("Hide the other actions", raw.AlternativesLabel);
         Assert.Equal(3, vm.BuilderTickedCount);
+    }
+
+    // The function chip: "Function: <name>" only when the function covers the relation, never a majority with a
+    // percentage; a button position (different functions per aircraft) gets the neutral chip; the picker sets a
+    // function, "None" or goes back to automatic (engine relations function), then the suggestions are asked again.
+    [Fact]
+    public async Task FunctionChip_ShowsOnlyACoveringFunction_AndThePickerSetsOrClearsIt()
+    {
+        BuilderFakeEngine fake = new();
+        fake.AddBoatRelation();
+        MainWindowViewModel vm = await CreateVmAsync(fake);
+        await OpenAsync(vm, "Flare");
+        Assert.True(vm.HasBuilderFunction && vm.ShowBuilderFunctionChip);
+        Assert.Equal("Function: CMS FWD (Start Program or just Flare)", vm.BuilderFunctionChipText);
+        Assert.DoesNotContain("%", vm.BuilderFunctionChipText);
+        Assert.Contains("suggest the same function", vm.BuilderFunctionChipTooltip);
+
+        await OpenAsync(vm, "Boat Aft");
+        await WaitForAsync(() => vm.BuilderFunctionState == "mixed");
+        Assert.False(vm.HasBuilderFunction);
+        Assert.True(vm.IsBuilderFunctionMixed && vm.ShowBuilderFunctionChip);
+        Assert.Equal("Different functions per aircraft", vm.BuilderFunctionChipText);
+        Assert.Contains("This relation is a button position: each aircraft uses it for its own function", vm.BuilderFunctionChipTooltip);
+        Assert.Contains("button position", vm.BuilderSuggestEmptyText);
+
+        await vm.OpenBuilderFunctionPickerCommand.ExecuteAsync(null);
+        Assert.Equal(3, vm.BuilderFunctionChoices.Count);
+        vm.BuilderFunctionQuery = "flaps";
+        RelationFunctionChoice flaps = Assert.Single(vm.BuilderFunctionChoices);
+        fake.Calls.Clear();
+        await vm.SetBuilderFunctionCommand.ExecuteAsync(flaps);
+        Assert.Contains(fake.Calls, c => AxisTuningTests.Seq(c, "relations", "function", "Boat Aft", "--set", "flapsdown"));
+        Assert.Contains(fake.Calls, c => AxisTuningTests.Seq(c, "relations", "suggest", "Boat Aft"));
+        Assert.Equal("Function: Flaps Down", vm.BuilderFunctionChipText);
+        Assert.True(vm.IsBuilderFunctionSetByUser);
+        Assert.Contains("picked by you", vm.BuilderFunctionChipTooltip);
+
+        await vm.ClearBuilderFunctionCommand.ExecuteAsync(null);
+        Assert.Contains(fake.Calls, c => AxisTuningTests.Seq(c, "relations", "function", "Boat Aft", "--none"));
+        Assert.Equal("Function: none", vm.BuilderFunctionChipText);
+        await vm.AutoBuilderFunctionCommand.ExecuteAsync(null);
+        Assert.Contains(fake.Calls, c => AxisTuningTests.Seq(c, "relations", "function", "Boat Aft", "--auto"));
+        Assert.Equal("Different functions per aircraft", vm.BuilderFunctionChipText);
     }
 
     // A relation opened while a tool covers the panel (Auto Group): nothing of the last relation stays in the panel.
@@ -665,6 +716,11 @@ internal sealed class BuilderFakeEngine : IEngineCliClient
         ("Empty one", false, string.Empty, []),
     ];
 
+    // "Boat Aft" (AddBoatRelation): a button position, different functions per aircraft, until the user picks one.
+    public (string State, string Label) BoatFunction { get; set; } = ("mixed", string.Empty);
+
+    public void AddBoatRelation() => relations.Add(("Boat Aft", false, string.Empty, [("DCS", "d3014pnil", "F-16C_50"), ("DCS", "d3601", "AJS37"), ("DCS", "d3005", "F-5E-3")]));
+
     // "relations suggest <GateRelation>" waits for this (an engine run that takes a while).
     public string GateRelation { get; set; } = string.Empty;
 
@@ -747,6 +803,13 @@ internal sealed class BuilderFakeEngine : IEngineCliClient
             string name = After(args, "suggest");
             if (name == "Pitch")
                 return PitchSuggestions();
+            if (name == "Boat Aft")
+            {
+                (string state, string label) = BoatFunction;
+                return "{\"Relation\":\"Boat Aft\",\"Slot\":\"" + (label.Length > 0 ? "flapsdown" : string.Empty) + "\",\"SlotName\":\"" + label + "\",\"FunctionState\":\"" + state + "\"," +
+                       "\"FunctionLabel\":\"" + label + "\",\"FunctionShare\":0.25,\"FunctionSetByUser\":" + (state is "set" or "cleared" ? "true" : "false") +
+                       ",\"Functions\":[],\"Suggestions\":[],\"Misfits\":[],\"Dismissed\":[],\"Relations\":[],\"Warnings\":[],\"Errors\":[]}";
+            }
             if (name != "Flare" && name != "Flares")
                 return "{\"Relation\":\"" + name + "\",\"Slot\":\"\",\"SlotName\":\"\",\"Functions\":[],\"Suggestions\":[],\"Misfits\":[],\"Dismissed\":[],\"Relations\":[],\"Warnings\":[],\"Errors\":[]}";
             List<string> rows =
@@ -825,6 +888,15 @@ internal sealed class BuilderFakeEngine : IEngineCliClient
         }
         if (AxisTuningTests.Seq(args, "relations", "assistant"))
             return Assistant(args);
+        if (AxisTuningTests.Seq(args, "relations", "function", "--list"))
+            return "[{\"Id\":\"flapsdown\",\"Name\":\"Flaps Down\",\"IsAxis\":false,\"Kind\":\"\"},{\"Id\":\"airbrake_toggle\",\"Name\":\"Airbrake toggle\",\"IsAxis\":false,\"Kind\":\"\"}," +
+                   "{\"Id\":\"cms_fwd\",\"Name\":\"CMS FWD (Start Program or just Flare)\",\"IsAxis\":false,\"Kind\":\"\"}]";
+        if (AxisTuningTests.Seq(args, "relations", "function", "Boat Aft"))
+        {
+            BoatFunction = args.Contains("--set") ? ("set", After(args, "--set") == "flapsdown" ? "Flaps Down" : After(args, "--set"))
+                : args.Contains("--none") ? ("cleared", string.Empty) : ("mixed", string.Empty);
+            return "{\"Relation\":\"Boat Aft\",\"State\":\"" + BoatFunction.State + "\"}";
+        }
         if (AxisTuningTests.Seq(args, "llm", "status"))
             return "{\"Enabled\":" + (LlmEnabled ? "true" : "false") + ",\"Ready\":" + (LlmEnabled ? "true" : "false") + ",\"SelectedModel\":\"qwen3-8b-q4_k_m\",\"Models\":[" +
                    "{\"Id\":\"qwen3-8b-q4_k_m\",\"Label\":\"Qwen3 8B\",\"Tier\":\"large\",\"Size\":\"4.68 GB\",\"License\":\"Apache-2.0\",\"LicenseUrl\":\"\",\"Source\":\"\",\"Installed\":true,\"Recommended\":true}]}";

@@ -153,6 +153,25 @@
     </Style>
 
     <!-- Chips -->
+    <!-- A chip that opens something (the relation's function picker): the chip itself is the button -->
+    <Style Selector="Button.chipButton">
+        <Setter Property="Padding" Value="0" />
+        <Setter Property="MinHeight" Value="0" />
+        <Setter Property="MinWidth" Value="0" />
+        <Setter Property="Background" Value="Transparent" />
+        <Setter Property="BorderThickness" Value="0" />
+        <Setter Property="Cursor" Value="Hand" />
+        <Setter Property="VerticalAlignment" Value="Center" />
+    </Style>
+    <Style Selector="Button.chipButton:pointerover /template/ ContentPresenter#PART_ContentPresenter">
+        <Setter Property="Background" Value="Transparent" />
+    </Style>
+    <Style Selector="Button.chipButton:pressed /template/ ContentPresenter#PART_ContentPresenter">
+        <Setter Property="Background" Value="Transparent" />
+    </Style>
+    <Style Selector="Button.chipButton:pointerover Border.chip">
+        <Setter Property="Opacity" Value="0.85" />
+    </Style>
     <Style Selector="Border.chip">
         <Setter Property="CornerRadius" Value="10" />
         <Setter Property="Padding" Value="8,2" />

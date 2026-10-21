@@ -83,6 +83,42 @@ public sealed class RelationBuilderRenderTests
         }
     }
 
+    // The function chip: a covering function ("Function: CMS FWD ...") and a button position ("Different functions per
+    // aircraft"). Files: relation-function-<state>-<width>-dark.png.
+    [Fact]
+    public async System.Threading.Tasks.Task RelationsPage_FunctionChipFits()
+    {
+        string? outDir = Environment.GetEnvironmentVariable("JOYPRO_UI_DESIGN_OUT");
+        if (!string.IsNullOrWhiteSpace(outDir))
+            Directory.CreateDirectory(outDir);
+        try
+        {
+            BuilderFakeEngine fake = new();
+            fake.AddBoatRelation();
+            MainWindowViewModel vm = await RelationBuilderTests.CreateVmAsync(fake, "relation-function.pr0file");
+            foreach ((string relation, string state) in new[] { ("Flare", "covered"), ("Boat Aft", "mixed") })
+            {
+                vm.SelectedRelation = vm.Relations.Single(r => r.Name == relation);
+                // Under the load of the whole test run the selection's own suggestion run can take a while.
+                for (int i = 0; i < 2000 && (vm.BuilderRelationName != relation || vm.IsBuilderSuggestLoading); i++)
+                    await System.Threading.Tasks.Task.Delay(10);
+                await vm.LoadBuilderSuggestionsAsync(relation);
+                Assert.Equal(state, vm.BuilderFunctionState);
+                AvaloniaRenderThread.Run(() =>
+                {
+                    Application.Current!.RequestedThemeVariant = ThemeVariant.Dark;
+                    foreach ((int width, int height) in new[] { (1280, 800), (2267, 1250) })
+                        Check(vm, width, height, outDir, "relation-function-" + state + "-" + width + "-dark.png");
+                });
+            }
+        }
+        finally
+        {
+            await RelationBuilderTests.SettleAllAsync();
+            AvaloniaRenderThread.Run(() => Application.Current!.RequestedThemeVariant = ThemeVariant.Default);
+        }
+    }
+
     // Same id, different meaning: the open relation's action with its aircraft open (badge, mixed flag, differs marker,
     // Apply), a search row with its aircraft open, and the profile check notice. File: relation-builder-aircraft-<width>-dark.png.
     [Fact]

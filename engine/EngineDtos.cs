@@ -36,6 +36,8 @@ namespace JoyPro.Engine
         public string Name { get; set; }
         public bool IsAxis { get; set; }
         public List<string> Groups { get; set; }
+        // The function the user picked (catalog slot id or "none"); null = automatic (EngineRelationPurpose).
+        public string Function { get; set; }
         public List<EngineRelationItemDto> Nodes { get; set; }
         public EngineBindDto Bind { get; set; }
 

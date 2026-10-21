@@ -26,7 +26,7 @@ public sealed partial class MainWindowViewModel
         ("about", N("About JoyPro and updates"), "version build commit date update check release github download install skip license about", N("About and updates")),
         ("privacy", N("Privacy"), "photos covers internet download consent telemetry", N("Privacy")),
         ("telemetry-recording", N("Telemetry recording"), "telemetry record recording tacview acmi csv flight session replay track export flight data", N("Telemetry recording")),
-        ("drawings", N("Drawings"), "line art cel shaded colours colors style drawing", N("Drawings")),
+        ("drawings", N("Drawings"), "line art cel shaded colours colors style drawing reset layout markers default picture", N("Drawings")),
         ("report", N("Report a problem"), "bug crash log logs issue github support report", N("Report a problem")),
         (LocalAiSectionId, N("Local AI"), "ai artificial intelligence local model llm llama llama.cpp qwen gguf download start stop memory idle manage edit with ai assistant describe", N("Local AI")),
         ("components", N("Components"), "install optional vjoy hidhide driver download requirements net framework ai model llama", N("Components")),
