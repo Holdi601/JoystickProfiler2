@@ -28,6 +28,7 @@ public sealed partial class MainWindowViewModel
         ("telemetry-recording", N("Telemetry recording"), "telemetry record recording tacview acmi csv flight session replay track export flight data", N("Telemetry recording")),
         ("drawings", N("Drawings"), "line art cel shaded colours colors style drawing", N("Drawings")),
         ("report", N("Report a problem"), "bug crash log logs issue github support report", N("Report a problem")),
+        (LocalAiSectionId, N("Local AI"), "ai artificial intelligence local model llm llama llama.cpp qwen gguf download start stop memory idle manage edit with ai assistant describe", N("Local AI")),
         ("components", N("Components"), "install optional vjoy hidhide driver download requirements net framework ai model llama", N("Components")),
         ("devices", N("Devices"), "device new stick sold move binds remove rename", N("Devices")),
         ("db-expert", N("Command lists (DB) and game paths: information for experts"), "db summary check list games planes fingerprint paths", N("DB and game paths")),
@@ -247,6 +248,28 @@ public sealed partial class MainWindowViewModel
         ApplySettingsLayout(SettingsSectionDefaults.Select(d => d.Id).ToList(), SettingsSectionsOpenByDefault);
         SaveUiSettings();
         StatusText = T("Settings: JoyPro's order of the sections again.");
+    }
+
+    // A tab at the top: a click opens or closes its section (opening scrolls to it).
+    public void ToggleSettingsSectionFromTab(SettingsSectionItem item)
+    {
+        if (!item.MatchesSearch)
+            SettingsSearchText = string.Empty;
+        bool open = !item.IsContentVisible;
+        if (!open && item.OpenedBySearch)
+            SettingsSearchText = string.Empty;
+        item.IsExpanded = open;
+        if (open)
+            SettingsSectionFocusRequested?.Invoke(item.Id);
+    }
+
+    // A double click on a tab: only this section open, and the page jumps to it.
+    public void ShowOnlySettingsSection(SettingsSectionItem item)
+    {
+        SettingsSearchText = string.Empty;
+        foreach (SettingsSectionItem other in SettingsSections)
+            other.IsExpanded = ReferenceEquals(other, item);
+        SettingsSectionFocusRequested?.Invoke(item.Id);
     }
 
     // Raised to scroll the page to a section (MainWindow).

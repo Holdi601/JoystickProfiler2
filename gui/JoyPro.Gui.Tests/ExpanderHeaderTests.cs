@@ -56,8 +56,12 @@ public sealed class ExpanderHeaderTests
             Assert.True(SettingsSection.HeaderTapToggles(header, header));
             Assert.False(SettingsSection.HeaderTapToggles(own, header));
             Assert.False(SettingsSection.HeaderTapToggles(grip, header));
-            Panel arrow = section.GetVisualDescendants().OfType<PathIcon>().First(p => p.Name == "PART_Closed").GetVisualParent<Panel>()!;
-            Assert.False(arrow.IsHitTestVisible);
+            // The chevron, the icon and the title are the toggle (one pointer handler on the row, HeaderPointerTests clicks them).
+            PathIcon arrow = section.GetVisualDescendants().OfType<PathIcon>().First(p => p.Name == "PART_Closed");
+            Assert.True(SettingsSection.HeaderTapToggles(arrow, header));
+            Control toggle = section.GetVisualDescendants().OfType<Control>().Single(c => c.Name == "PART_Toggle");
+            Assert.True(SettingsSection.HeaderTapToggles(toggle, header));
+            Assert.False(SettingsSection.HeaderTapToggles(section.GetVisualDescendants().OfType<Button>().Single(b => b.Name == "PART_Menu"), header));
             window.Content = null;
         });
     }

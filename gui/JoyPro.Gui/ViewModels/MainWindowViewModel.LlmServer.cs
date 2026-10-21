@@ -101,23 +101,24 @@ public sealed partial class MainWindowViewModel
         }
     }
 
+    // The same words as the status chip (MainWindowViewModel.LocalAi.cs): the chip near "Edit with AI" while loaded.
     private void ApplyLlmServerSnapshot(LlmServerSnapshot snapshot)
     {
+        llmSnapshot = snapshot;
         LlmServerRunning = snapshot.Running;
+        LlmServerStatusText = AiStatusText;
         if (!snapshot.Running)
         {
-            LlmServerStatusText = T("AI model: stopped (no memory in use).");
-            LlmServerChipText = T("AI stopped");
-            return;
+            LlmServerChipText = T("AI: not loaded");
         }
-        string memory = FormatLlmBytes(snapshot.MemoryBytes);
-        string memoryText = snapshot.MemoryIsVram ? T("{0} video memory", memory) : T("{0} memory", memory);
-        TimeSpan left = TimeSpan.FromSeconds(Math.Ceiling(snapshot.IdleSecondsLeft));
-        string leftText = left.ToString(left.TotalHours >= 1 ? @"h\:mm\:ss" : @"m\:ss", CultureInfo.InvariantCulture);
-        LlmServerStatusText = snapshot.Busy
-            ? T("AI model: running {0} ({1}), answering a request.", snapshot.Model, memoryText)
-            : T("AI model: running {0} ({1}), stops in {2} without a request.", snapshot.Model, memoryText, leftText);
-        LlmServerChipText = snapshot.Busy ? T("AI running · {0}", memory) : T("AI running · {0} · stops in {1}", memory, leftText);
+        else
+        {
+            string memory = FormatLlmBytes(snapshot.MemoryBytes);
+            TimeSpan left = TimeSpan.FromSeconds(Math.Ceiling(snapshot.IdleSecondsLeft));
+            string leftText = left.ToString(left.TotalHours >= 1 ? @"h\:mm\:ss" : @"m\:ss", CultureInfo.InvariantCulture);
+            LlmServerChipText = snapshot.Busy ? T("AI: loaded · {0} · answering", memory) : T("AI: loaded · {0} · stops in {1}", memory, leftText);
+        }
+        OnLocalAiStatusChanged();
     }
 
     internal static string FormatLlmBytes(long bytes)

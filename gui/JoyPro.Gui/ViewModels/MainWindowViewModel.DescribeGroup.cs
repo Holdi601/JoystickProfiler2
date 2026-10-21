@@ -36,9 +36,6 @@ public sealed partial class MainWindowViewModel
     private string describeGroupStatus = string.Empty;
 
     [ObservableProperty]
-    private bool isLlmSectionExpanded;
-
-    [ObservableProperty]
     private bool llmEnabled;
 
     [ObservableProperty]
@@ -139,6 +136,7 @@ public sealed partial class MainWindowViewModel
 
     partial void OnLlmEnabledChanged(bool value)
     {
+        OnLocalAiStatusChanged();
         if (loadingLlmStatus)
             return;
         _ = SetLlmEnabledAsync(value);
@@ -148,8 +146,8 @@ public sealed partial class MainWindowViewModel
     private async Task ToggleDescribeGroupPanelAsync()
     {
         IsDescribeGroupPanelOpen = !IsDescribeGroupPanelOpen;
-        if (IsDescribeGroupPanelOpen && LlmModels.Count == 0)
-            await RefreshLlmStatusAsync();
+        if (IsDescribeGroupPanelOpen)
+            await EnsureLlmStatusAsync();
     }
 
     [RelayCommand]
@@ -160,6 +158,7 @@ public sealed partial class MainWindowViewModel
             DescribeGroupStatus = T("Describe what to group, e.g. \"speed brake in and out on all jets\".");
             return;
         }
+        await EnsureLlmStatusAsync();
         List<string> args = ["relations", "from-text", DescribeGroupText.Trim(), "--dry-run", "--llm", LlmEnabled ? "auto" : "off"];
         EngineCommandResult? result = await RunEngineAsync(args, includeProfile: true, mutatesProfile: false, busyLabel: N("Reading your description..."), forceText: false);
         DescribeGroupProposals.Clear();
@@ -394,13 +393,17 @@ public sealed partial class MainWindowViewModel
             if (localModel.Length > 0)
                 LlmLocalModelPath = localModel;
             bool ready = ReadJsonBool(root, "Ready");
+            llmActiveModelId = selected;
+            llmLocalReady = ReadJsonBool(root, "LocalReady");
+            llmAnyModelInstalled = LlmModels.Any(m => m.Installed) && llmRuntimeInstalled;
+            llmStatusLoaded = true;
             LlmReady = ready;
             LlmStatusText = IsLlmUsingLocal
                 ? ready
-                    ? T("Ready: your own model {0} through your llama.cpp helps with descriptions the offline rules do not fully understand.", Path.GetFileName(localModel))
+                    ? T("Ready: your own model {0} through your llama.cpp.", Path.GetFileName(localModel))
                     : LlmEnabled ? T("On, but your llama-server.exe or GGUF file is missing.") : T("Off: the offline rules do the work (your own model is set up).")
                 : ready
-                    ? T("Ready: the local model helps with descriptions the offline rules do not fully understand.")
+                    ? T("Ready: the downloaded model and llama.cpp are in place.")
                     : LlmEnabled
                         ? T("On, but the model is not downloaded yet.")
                         : T("Off: the offline rules do the work.");
@@ -412,13 +415,21 @@ public sealed partial class MainWindowViewModel
         {
             loadingLlmStatus = false;
         }
+        OnLocalAiStatusChanged();
+    }
+
+    // Switching on keeps the user's own llama.cpp files when they are in use; else the model chosen in the list.
+    internal List<string> BuildLlmEnableArguments(bool enabled)
+    {
+        List<string> args = ["llm", enabled ? "enable" : "disable"];
+        if (enabled && !IsLlmUsingLocal && SelectedLlmModel != null)
+            args.Add(SelectedLlmModel.Id);
+        return args;
     }
 
     private async Task SetLlmEnabledAsync(bool enabled)
     {
-        List<string> args = ["llm", enabled ? "enable" : "disable"];
-        if (enabled && SelectedLlmModel != null)
-            args.Add(SelectedLlmModel.Id);
+        List<string> args = BuildLlmEnableArguments(enabled);
         EngineCommandResult? result = await RunEngineAsync(args, includeProfile: false, mutatesProfile: false, busyLabel: enabled ? "Switching the local AI model on..." : "Switching the local AI model off...", forceText: true);
         if (result != null && result.ExitCode == 0)
             await RefreshLlmStatusAsync();

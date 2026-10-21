@@ -743,6 +743,23 @@ public sealed partial class UserJourneyTests
                 Note("DCS default binds: " + vm.DcsDefaultsStatus + " | preview: " + vm.DcsDefaultsPreviewTitle + " (" + vm.DcsDefaultsPreviewFiles.Count + " files)" +
                      (vm.HasDcsDefaultsAttention ? " | attention: " + vm.DcsDefaultsAttention : string.Empty));
             }, extraRender: slug => RenderTall(slug, 5200));
+            // Settings > Local AI: the one place of the AI setup, its status read from the engine (on/off, loaded or
+            // not), and the same line in the Manage with AI panel.
+            Step("settings: Local AI", async () =>
+            {
+                vm!.CurrentStage = UiStage.Settings;
+                foreach (var section in vm.SettingsSections)
+                    section.IsExpanded = false;
+                await vm.OpenLocalAiSettingsCommand.ExecuteAsync(null);
+                Note("local AI: " + vm.AiStatusText + " | " + vm.AiModelInUseText + " | components card: " + vm.LocalAiComponentText);
+            }, extraRender: slug => RenderTall(slug, 2600));
+            Step("relations: Manage with AI with the AI status line", async () =>
+            {
+                vm!.CurrentStage = UiStage.Relations;
+                vm.ShowManageWithAiCommand.Execute(null);
+                await vm.EnsureLlmStatusAsync();
+                Note("manage with AI: " + vm.AiStatusText);
+            });
         }
 
         // A profile made earlier whose relations have no bind, opened at the next start (last profile).

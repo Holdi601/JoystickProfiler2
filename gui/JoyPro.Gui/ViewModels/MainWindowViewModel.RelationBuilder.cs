@@ -188,7 +188,6 @@ public sealed partial class MainWindowViewModel
     // The suggestion panel's actions act on the relation they were made for, and only while it is the open one.
     internal bool BuilderSuggestionsMatchOpenRelation =>
         SelectedRelation != null && string.Equals(builderSuggestionsRelation, SelectedRelation.Name, StringComparison.Ordinal);
-    private bool builderLlmStatusRequested;
 
     public ObservableCollection<BuilderSuggestionItem> BuilderSuggestions { get; } = [];
 
@@ -618,16 +617,7 @@ public sealed partial class MainWindowViewModel
         SelectRelationByName(next);
     }
 
-    private async Task EnsureBuilderLlmStatusAsync()
-    {
-        if (builderLlmStatusRequested || LlmModels.Count > 0)
-            return;
-        builderLlmStatusRequested = true;
-        EngineCommandResult? result = await RunEngineAsync(["llm", "status"], includeProfile: false, mutatesProfile: false, busyLabel: N("Checking the local AI model..."),
-            forceText: false, background: true);
-        if (result != null && result.ExitCode == 0)
-            ApplyLlmStatus(result.StandardOutput);
-    }
+    private Task EnsureBuilderLlmStatusAsync() => LlmModels.Count > 0 ? Task.CompletedTask : EnsureLlmStatusAsync();
 
     // ---------------------------------------------------------------------------------------------------------
     // Add actions: one search over every game, tick rows, "Add selected"
@@ -1358,6 +1348,8 @@ public sealed partial class MainWindowViewModel
         AssistantMessages.Add(new AssistantMessageItem(true, context.Length > 0 ? T("{0}  (in '{1}')", message, context) : message));
         OnPropertyChanged(nameof(HasAssistantMessages));
         AssistantInput = string.Empty;
+        // The setting as the engine has it (never a stale "off" from before the status was read).
+        await EnsureLlmStatusAsync();
         List<string> args = ["relations", "assistant", message, "--llm", LlmEnabled ? "auto" : "off"];
         if (context.Length > 0)
             args.AddRange(["--relation", context]);

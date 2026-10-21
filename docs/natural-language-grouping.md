@@ -95,10 +95,18 @@ have.
 - It runs **only while you use it**: JoyPro starts `llama-server` on 127.0.0.1 on a free port with one slot
   (`-np 1`) and waits until the model is loaded. From the command line the process is killed after the request (a
   Windows job object kills it with the engine, too). From the app (`JOYPRO_LLM_OWNER_PID`) the model stays loaded for
-  the next request and the app stops it after the idle minutes (default 2, Local AI model panel), with **Stop now**,
+  the next request and the app stops it after the idle minutes (default 2, Settings > Local AI), with **Stop now**,
   and when JoyPro ends (the app's kill-on-close job, also on a crash). `<data>\Llm\server.json` describes the running
   server; the panel and a chip next to the AI buttons show it with its video memory (`nvidia-smi`, else the working
-  set). `engine llm server` shows it, `engine llm stop` ends it.
+  set). `engine llm server` shows it, `engine llm stop` ends it, `engine llm start` loads it now (Settings > Local AI >
+  **Start now**; from the app it stays loaded until the idle stop).
+- **One place, one status line**: the whole setup (on/off, model, runtime, download, own files, Start now / Stop now,
+  idle minutes) is **Settings > Local AI**. Every AI action (Manage with AI, Edit with AI, Expand with AI, the JoyPro
+  assistant, Group by description, AI fill) shows the same line, e.g. "AI: on (Qwen3 8B) - not loaded right now, starts
+  with your next request" / "AI: on (Qwen3 8B) - loaded, 5.3 GB, stops in 1:47" / "AI: off", with **Turn on the local AI**
+  (a model is set up) or **Set up the local AI** and a **Settings** link. The app reads the setting (`engine llm status`)
+  when an AI panel opens and before every AI request. Settings > Components shows the same state (green check when set
+  up and on).
 - **Privacy**: everything runs on your PC. The request never leaves it. The only network access is the download you
   start (Hugging Face for the model, GitHub for llama.cpp).
 
@@ -184,8 +192,8 @@ plus the CUDA runtime DLLs of the same CUDA version (about 600 MB). `engine llm 
 
 ### Download (one click)
 
-- GUI: Relations → Auto-build relations from all my actions → By description → **Local AI model** (or **Set up...** in the relation
-  editor's chat line): the recommended model is preselected; read size and
+- GUI: **Settings > Local AI** (also from the **Settings** link of every AI status line and Settings > Components >
+  **Set up**): the recommended model is preselected; read size and
   licenses (model and runtime), tick **I accept**, click **Download and switch on**. That one click downloads
   llama.cpp (the runtime chosen in **Runtime**: auto, vulkan, cuda or cpu) and the model with a progress bar, checks
   both SHA-256 checksums and switches the model on. **Cancel download** stops it, the next click resumes it.
@@ -204,7 +212,8 @@ plus the CUDA runtime DLLs of the same CUDA version (about 600 MB). `engine llm 
 If you already have llama.cpp and a GGUF model, nothing needs to be downloaded:
 
 - GUI: **Already have llama.cpp and a GGUF model?** → **Find on this PC** fills in the `llama-server.exe` and the
-  model that suit the hardware (or **Browse...**), **Use these files** switches the model on. **Stop using them**
+  model that suit the hardware (or **Browse...**), **Use these files** switches the model on (until then the section
+  says the files are not in use yet, and "In use: ..." names the model the next request starts). **Stop using them**
   forgets them.
 - CLI: `engine llm find-local [--root <folder>]...` lists what it finds; `engine llm use-local [--server
   <llama-server.exe>] [--model <file.gguf>] [--gpu-layers auto|all|N] [--context N] [--template server|chatml]`

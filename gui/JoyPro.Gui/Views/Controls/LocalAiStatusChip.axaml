@@ -1,0 +1,29 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:l="using:JoyPro.Gui.Localization"
+             xmlns:vm="using:JoyPro.Gui.ViewModels"
+             x:Class="JoyPro.Gui.Views.Controls.LocalAiStatusChip"
+             x:DataType="vm:MainWindowViewModel">
+    <!-- The local AI at a glance, the same at every AI action (MainWindowViewModel.LocalAi.cs): a dot (green loaded, blue
+         on and ready, amber on but not ready, gray off), one line "AI: on (Qwen3 8B) - not loaded right now, starts with
+         your next request", the offer when it is off (Turn on / Set up) and the link to Settings > Local AI. -->
+    <Border Classes="sunken" Padding="8,4" CornerRadius="8" HorizontalAlignment="Left">
+        <WrapPanel ItemSpacing="8" LineSpacing="4">
+            <Panel Width="10" Height="10" VerticalAlignment="Center">
+                <Ellipse Width="10" Height="10" Fill="#16A34A" IsVisible="{Binding IsAiDotLoaded}" />
+                <Ellipse Width="10" Height="10" Fill="{DynamicResource JP.AccentBrush}" IsVisible="{Binding IsAiDotReady}" />
+                <Ellipse Width="10" Height="10" Fill="#D97706" IsVisible="{Binding IsAiDotProblem}" />
+                <Ellipse Width="10" Height="10" Fill="#9CA3AF" IsVisible="{Binding IsAiDotOff}" />
+            </Panel>
+            <TextBlock x:Name="AiStatusLine" Text="{Binding AiStatusText}" VerticalAlignment="Center" FontSize="12" TextWrapping="Wrap" MaxWidth="620" />
+            <Button Classes="small accent" Content="{l:T 'Turn on the local AI'}" Command="{Binding TurnOnLocalAiCommand}" IsVisible="{Binding ShowAiTurnOn}" VerticalAlignment="Center"
+                    ToolTip.Tip="{l:T 'Switches the local AI on with the model that is set up; it loads with the next request'}" />
+            <Button Classes="small accent" Content="{l:T 'Set up the local AI'}" Command="{Binding OpenLocalAiSettingsCommand}" IsVisible="{Binding ShowAiSetUp}" VerticalAlignment="Center"
+                    ToolTip.Tip="{l:T 'Opens Settings > Local AI: download a model (size and license first) or use your own llama.cpp'}" />
+            <Button Classes="small" Content="{l:T 'Stop now'}" Command="{Binding StopLlmServerCommand}" IsVisible="{Binding LlmServerRunning}" VerticalAlignment="Center"
+                    ToolTip.Tip="{l:T 'Ends the local AI model at once and frees its memory (the next request loads it again)'}" />
+            <Button Classes="small ghost" Content="{l:T 'Settings'}" Command="{Binding OpenLocalAiSettingsCommand}" VerticalAlignment="Center"
+                    ToolTip.Tip="{l:T 'Settings > Local AI: switch it on or off, choose the model, start or stop it'}" />
+        </WrapPanel>
+    </Border>
+</UserControl>

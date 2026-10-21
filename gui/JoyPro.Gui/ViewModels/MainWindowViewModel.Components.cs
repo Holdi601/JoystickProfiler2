@@ -11,7 +11,7 @@ namespace JoyPro.Gui.ViewModels;
 // Optional third-party components (docs/components.md): vJoy, HidHide and ViGEmBus, each installable with one click
 // (consent tick -> pinned download -> SHA-256 + signature -> official installer, one UAC prompt -> detect again).
 // Shown on the Settings "Components" card and inline on the Virtual Joystick page (the same items). The local AI model
-// has its own consent and download flow on the Relations page (Group by description); the card links there.
+// has its own consent and download flow in Settings > Local AI; its card here says whether it is ready and links there.
 // Detection is read-only and runs when Settings or the Virtual Joystick page opens, or on "Check again".
 public sealed partial class MainWindowViewModel
 {
@@ -45,6 +45,9 @@ public sealed partial class MainWindowViewModel
     {
         if ((stage == UiStage.Settings || stage == UiStage.VirtualJoystick) && !componentsChecked)
             RefreshComponents();
+        // The Local AI section and the Components card say whether the AI is set up and on.
+        if (stage == UiStage.Settings)
+            _ = EnsureLlmStatusAsync();
     }
 
     [RelayCommand]
@@ -65,16 +68,7 @@ public sealed partial class MainWindowViewModel
             _ = RefreshVirtualJoystickAsync();
     }
 
-    // The local AI model's own download (license, size, SHA-256) on the Relations page.
+    // The local AI model's own setup (license, size, SHA-256, own llama.cpp) is Settings > Local AI.
     [RelayCommand]
-    private async Task OpenLlmSetupAsync()
-    {
-        CurrentStage = UiStage.Relations;
-        IsAutoGroupPanelOpen = false;
-        IsAutoAssignPanelOpen = false;
-        IsDescribeGroupPanelOpen = true;
-        IsLlmSectionExpanded = true;
-        if (LlmModels.Count == 0)
-            await RefreshLlmStatusAsync();
-    }
+    private Task OpenLlmSetupAsync() => OpenLocalAiSettingsAsync();
 }

@@ -43,7 +43,7 @@ public class SettingsSection : ContentControl
     private bool isOpen;
     private bool isDragging;
     private Control? grip;
-    private Button? toggle;
+    private Control? toggle;
     private Control? header;
     private Button? menu;
 
@@ -131,14 +131,21 @@ public class SettingsSection : ContentControl
             grip.PointerCaptureLost -= OnGripCaptureLost;
         }
         if (toggle != null)
-            toggle.Click -= OnToggleClick;
+            toggle.KeyDown -= OnToggleKeyDown;
         if (header != null)
-            header.Tapped -= OnHeaderTapped;
+        {
+            header.RemoveHandler(PointerPressedEvent, OnHeaderPressed);
+            header.RemoveHandler(PointerReleasedEvent, OnHeaderReleased);
+        }
         header = e.NameScope.Find<Control>("PART_Header");
+        // handledEventsToo: nothing inside the row (a PathIcon, a style, a control's own handler) can swallow the click.
         if (header != null)
-            header.Tapped += OnHeaderTapped;
+        {
+            header.AddHandler(PointerPressedEvent, OnHeaderPressed, RoutingStrategies.Bubble, handledEventsToo: true);
+            header.AddHandler(PointerReleasedEvent, OnHeaderReleased, RoutingStrategies.Bubble, handledEventsToo: true);
+        }
         grip = e.NameScope.Find<Control>("PART_Grip");
-        toggle = e.NameScope.Find<Button>("PART_Toggle");
+        toggle = e.NameScope.Find<Control>("PART_Toggle");
         menu = e.NameScope.Find<Button>("PART_Menu");
         if (grip != null)
         {
@@ -148,34 +155,57 @@ public class SettingsSection : ContentControl
             grip.PointerCaptureLost += OnGripCaptureLost;
         }
         if (toggle != null)
-            toggle.Click += OnToggleClick;
+            toggle.KeyDown += OnToggleKeyDown;
         if (menu != null)
             menu.Flyout = BuildMenu();
         Refresh();
     }
 
-    // The header row outside its buttons and the drag handle (the empty space right of the title) toggles too.
-    private void OnHeaderTapped(object? sender, TappedEventArgs e)
+    private Point? headerPress;
+
+    // A press and a release on the row (the chevron, the icon, the title, the empty space; not its buttons, not the drag
+    // handle, which toggles on its own release) open or close the section.
+    private void OnHeaderPressed(object? sender, PointerPressedEventArgs e)
     {
-        if (e.Source is Visual source && HeaderTapToggles(source, header))
-            Toggle();
+        headerPress = null;
+        if (header == null || !e.GetCurrentPoint(header).Properties.IsLeftButtonPressed || e.Source is not Visual source || !HeaderTapToggles(source, header))
+            return;
+        headerPress = e.GetPosition(header);
     }
 
+    private void OnHeaderReleased(object? sender, PointerReleasedEventArgs e)
+    {
+        Point? press = headerPress;
+        headerPress = null;
+        if (press == null || header == null || e.InitialPressMouseButton != MouseButton.Left || e.Source is not Visual source || !HeaderTapToggles(source, header))
+            return;
+        Point at = e.GetPosition(header);
+        if (!new Rect(header.Bounds.Size).Contains(at) || Math.Abs(at.X - press.Value.X) + Math.Abs(at.Y - press.Value.Y) > 12)
+            return;
+        Toggle();
+        toggle?.Focus(NavigationMethod.Pointer);
+        e.Handled = true;
+    }
+
+    private void OnToggleKeyDown(object? sender, KeyEventArgs e)
+    {
+        if (e.Key is Key.Enter or Key.Space)
+        {
+            Toggle();
+            e.Handled = true;
+        }
+    }
+
+    // Inside the header: not on its own buttons, its menu or the drag handle.
     internal static bool HeaderTapToggles(Visual source, Control? header) =>
         header != null && !source.GetSelfAndVisualAncestors().TakeWhile(v => !ReferenceEquals(v, header))
-            .Any(v => v is Button || v is Avalonia.Controls.Primitives.ToggleButton || (v is Control c && c.Name == "PART_Grip") || v is InputElement { Focusable: true });
+            .Any(v => v is Button || v is Avalonia.Controls.Primitives.ToggleButton || (v is Control c && c.Name is "PART_Grip" or "PART_HeaderContent" or "PART_Menu") ||
+                      v is InputElement { Focusable: true } and not Control { Name: "PART_Toggle" });
 
     internal void Toggle()
     {
         if (item != null)
             item.IsExpanded = !item.IsExpanded;
-    }
-
-    private void OnToggleClick(object? sender, RoutedEventArgs e)
-    {
-        if (item != null)
-            item.IsExpanded = !item.IsExpanded;
-        e.Handled = true;
     }
 
     // The section's menu: move it (the same as dragging it), open or close all.
@@ -204,9 +234,12 @@ public class SettingsSection : ContentControl
         if (!e.GetCurrentPoint(this).Properties.IsLeftButtonPressed || Host is not { } host)
             return;
         e.Pointer.Capture(grip);
-        host.BeginDrag(this, e.GetPosition(host));
+        gripPress = e.GetPosition(host);
+        host.BeginDrag(this, gripPress.Value);
         e.Handled = true;
     }
+
+    private Point? gripPress;
 
     private void OnGripMoved(object? sender, PointerEventArgs e)
     {
@@ -218,9 +251,15 @@ public class SettingsSection : ContentControl
     {
         if (!IsDragging || Host is not { } host)
             return;
-        host.EndDrag(commit: true);
+        // A click on the handle without moving: open or close, like the rest of the row.
+        Point at = e.GetPosition(host);
+        bool click = gripPress is { } press && Math.Abs(at.X - press.X) + Math.Abs(at.Y - press.Y) < 4;
+        gripPress = null;
+        host.EndDrag(commit: !click);
         e.Pointer.Capture(null);
         e.Handled = true;
+        if (click)
+            Toggle();
     }
 
     private void OnGripCaptureLost(object? sender, PointerCaptureLostEventArgs e)

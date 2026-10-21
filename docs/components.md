@@ -9,7 +9,7 @@ runs it. Nothing is downloaded or installed at startup, in the background or wit
 | vJoy | virtual joystick driver | Virtual Joystick page: games set to "vJoy" | everything else |
 | HidHide | hides chosen game controllers from chosen programs (Nefarius) | Virtual Joystick page: "Hide the real devices" | everything else |
 | ViGEmBus | virtual Xbox 360 controller driver (Nefarius) | Virtual Joystick page: games set to "Xbox pad" | everything else |
-| Local AI model (llama.cpp + GGUF) | optional language model for "Group by description" | unusual wording in Group by description | the offline rules (always work) |
+| Local AI model (llama.cpp + GGUF) | optional language model (Settings > Local AI) | free sentences in Manage/Edit with AI, the JoyPro assistant, Group by description | the offline rules (always work) |
 | .NET Framework 4.8 | Windows component | the engine (needed by JoyPro) | - |
 | BYOJoystick (VTOL VR mod, with the free VTOL VR Mod Loader) | HOTAS support inside VTOL VR | VTOL VR beyond rudder and toe brakes | every other game |
 
@@ -26,8 +26,9 @@ by JoyPro.
 ## Where it is offered
 
 - **Settings > Components**: "Needed by JoyPro" (.NET Framework 4.8 and the engine files, `Install Missing` as
-  before) and "Optional": one card per component, plus a card for the local AI model whose `Set up` button opens its own
-  section (Relations page > Group by description > Local AI model). Its download keeps its own consent flow
+  before) and "Optional": one card per component, plus a card for the local AI model: a green check and "Set up and
+  on: Qwen3 8B." when it is set up and on (like the components), a warning when it is on but not ready, a neutral
+  icon when it is off or not set up; its `Set up` button opens Settings > Local AI. Its download keeps its own consent flow
   (`engine llm download ... --accept-license`, pinned revision + SHA-256, docs/natural-language-grouping.md).
 - **Virtual Joystick page**, Overview tab: "What this page needs" shows the same vJoy, HidHide and ViGEmBus cards (the
   same objects, so a running install shows on both pages).

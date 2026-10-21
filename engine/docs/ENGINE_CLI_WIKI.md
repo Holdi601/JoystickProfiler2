@@ -460,6 +460,8 @@ engine profile save "C:\profiles\my_setup.pr0file"
   engine llm cancel   (stops a running download; the next download resumes it)
   engine llm find-local [--root <folder>]...
   engine llm use-local [--server <llama-server.exe>] [--model <file.gguf>] [--gpu-layers auto|all|N] [--context N] [--template server|chatml] | --clear
+  engine llm start   (loads the chosen model now; started from JoyPro it stays loaded until the idle stop)
+  engine llm server | engine llm stop   (what runs now / end it and free its memory)
   engine llm fake-server [--port N] [--port-file <path>] [--response <file>] [--serve <folder>] [--log <file>] [--lifetime <s>]
   engine setup devices [--grip <device>=<grip id>]... [--role <device|VID:PID>=<role>]... [--add-device <catalog id>]...
   engine setup aircraft --games <g1,g2>   (the aircraft / games for the priority list)
@@ -5793,6 +5795,28 @@ Arguments and example values:
 - `--context`: Command argument. See examples for typical values.
 - `--template`: Command argument. See examples for typical values.
 - `--clear`: Command argument. See examples for typical values.
+
+Examples:
+```powershell
+engine --help
+```
+
+### `engine llm start   (loads the chosen model now; started from JoyPro it stays loaded until the idle stop)`
+What it does: Runs this command operation.
+
+Arguments and example values:
+- No command-specific arguments.
+
+Examples:
+```powershell
+engine --help
+```
+
+### `engine llm server | engine llm stop   (what runs now / end it and free its memory)`
+What it does: Runs this command operation.
+
+Arguments and example values:
+- No command-specific arguments.
 
 Examples:
 ```powershell

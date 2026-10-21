@@ -128,6 +128,7 @@ namespace JoyPro.Gui.ViewModels
                 DiscardAiPlan();
             AiPlanScope = scope;
             IsAiPlanPanelOpen = true;
+            _ = EnsureLlmStatusAsync();
         }
 
         [RelayCommand]
@@ -139,13 +140,25 @@ namespace JoyPro.Gui.ViewModels
                 AiPlanStatus = T("Say what to do first.");
                 return;
             }
-            List<string> args = ["relations", "plan", "ask", request, "--llm", LlmEnabled ? "auto" : "off"];
-            if (IsAiPlanScoped)
+            // The setting as the engine has it: a request right after the start must not go out with "off" because the
+            // status was not read yet (2.2.15: "no offline rule ... switch on the local AI model" with the model on).
+            await EnsureLlmStatusAsync();
+            List<string> args = BuildAiPlanAskArguments(request);
+            bool withModel = LlmEnabled && LlmReady;
+            // The model loads first when it is not loaded: the busy area and the chip say so.
+            IsLlmStarting = withModel && !LlmServerRunning;
+            string busy = !withModel ? N("Making a plan...")
+                : LlmServerRunning ? T("Making a plan with the local AI model ({0})...", AiModelName)
+                : T("Starting the AI model ({0}) and making a plan...", AiModelName);
+            EngineCommandResult? result;
+            try
             {
-                args.Add("--relation");
-                args.Add(AiPlanScope);
+                result = await RunEngineAsync(args, includeProfile: true, mutatesProfile: false, busyLabel: busy, forceText: false);
             }
-            EngineCommandResult? result = await RunEngineAsync(args, includeProfile: true, mutatesProfile: false, busyLabel: N("Making a plan..."), forceText: false);
+            finally
+            {
+                IsLlmStarting = false;
+            }
             AiPlanSteps.Clear();
             ClearFill();
             aiPlanOps = "[]";
@@ -154,6 +167,17 @@ namespace JoyPro.Gui.ViewModels
                 return;
             _ = PollLlmServerAsync();
             ParseAiPlan(result);
+        }
+
+        internal List<string> BuildAiPlanAskArguments(string request)
+        {
+            List<string> args = ["relations", "plan", "ask", request, "--llm", LlmEnabled ? "auto" : "off"];
+            if (IsAiPlanScoped)
+            {
+                args.Add("--relation");
+                args.Add(AiPlanScope);
+            }
+            return args;
         }
 
         private void ParseAiPlan(EngineCommandResult result)
@@ -180,8 +204,9 @@ namespace JoyPro.Gui.ViewModels
                 if (method.Length > 0)
                     lines.Add(T("How: {0}", method));
                 string reply = ReadJsonString(root, "Reply");
+                bool modelUsed = root.TryGetProperty("Llm", out JsonElement llm) && llm.ValueKind == JsonValueKind.Object && ReadJsonBool(llm, "Used");
                 if (reply.Length > 0)
-                    lines.Add(reply);
+                    lines.Add(modelUsed ? T("The local AI model says: {0}", reply) : reply);
                 int valid = AiPlanSteps.Count(s => s.IsValid);
                 if (AiPlanSteps.Count > 0)
                     lines.Add(T("{0} of {1} steps can run; rejected steps are unticked. Tick what you want, then Apply.", valid.ToString(CultureInfo.InvariantCulture), AiPlanSteps.Count.ToString(CultureInfo.InvariantCulture)));

@@ -83,11 +83,23 @@ public sealed class AiAssistRenderTests
                 UiDesignRenderTests.RenderWindow(vm, 2267, 1250, Path.Combine(outDir, "edit-with-ai-2267.png"));
 
                 vm.ShowOrganizeByDescriptionCommand.Execute(null);
-                vm.IsLlmSectionExpanded = true;
                 AvaloniaRenderThread.Wait(vm.PollLlmServerAsync());
                 AvaloniaRenderThread.Pump();
                 foreach ((int w, int h) in new[] { (2267, 1250), (1280, 800) })
-                    UiDesignRenderTests.RenderWindow(vm, w, h, Path.Combine(outDir, "local-ai-status-" + w + ".png"));
+                    UiDesignRenderTests.RenderWindow(vm, w, h, Path.Combine(outDir, "describe-ai-chip-" + w + ".png"));
+
+                // Settings > Local AI (the whole setup) and Settings > Components (its card says the same).
+                vm.CollapseAllSettingsCommand.Execute(null);
+                AvaloniaRenderThread.Wait(vm.OpenLocalAiSettingsCommand.ExecuteAsync(null));
+                AvaloniaRenderThread.Wait(vm.PollLlmServerAsync());
+                AvaloniaRenderThread.Pump();
+                foreach ((int w, int h) in new[] { (2267, 1250), (1280, 800) })
+                    UiDesignRenderTests.RenderWindow(vm, w, h, Path.Combine(outDir, "settings-local-ai-" + w + ".png"));
+                vm.CollapseAllSettingsCommand.Execute(null);
+                vm.OpenSettingsSectionCommand.Execute("components");
+                AvaloniaRenderThread.Pump();
+                foreach ((int w, int h) in new[] { (2267, 1250), (1280, 800) })
+                    UiDesignRenderTests.RenderWindow(vm, w, h, Path.Combine(outDir, "settings-components-" + w + ".png"));
                 vm.LlmEnabled = false;
             });
         }

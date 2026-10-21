@@ -4835,7 +4835,7 @@ namespace JoyPro.Engine
             return 0;
         }
 
-        // engine llm status|recommend|download|remove|enable|disable|cancel|find-local|use-local|fake-server: the optional local model
+        // engine llm status|recommend|download|remove|enable|disable|cancel|find-local|use-local|start|server|stop|fake-server: the optional local model
         // for relations from-text (EngineLlm). Nothing is downloaded without --accept-license.
         private static int RunLlm(List<string> command, string outPath, bool textOutput)
         {
@@ -4980,6 +4980,39 @@ namespace JoyPro.Engine
                             : EngineSerialization.ToJson(new Dictionary<string, object> { { "Stopped", stopped }, { "Pid", pid } }), outPath);
                         return 0;
                     }
+                case "start":
+                    {
+                        // Loads the chosen model now (Settings > Local AI > Start now): started from the app it stays
+                        // loaded for the next request until the app's idle stop; from a command line it ends again.
+                        if (args.Count > 0)
+                            return Fail("Unknown llm start argument(s): " + string.Join(" ", args));
+                        EngineLlm.ModelInfo model;
+                        string problem;
+                        if (!EngineLlm.TryGetUsableModel(out model, out problem))
+                            return Fail("The local AI model cannot start: " + problem);
+                        bool warm = EngineLlm.WarmSettings() != null;
+                        string name = EngineRelationPlan.ModelName(model);
+                        EngineProgress.Step(0, 1, "Starting the local AI model", name);
+                        EngineLlm.Session session = EngineLlm.Session.Start(model, EngineRelationPlan.PlanContextSize(model));
+                        try
+                        {
+                            if (session.Error.Length > 0)
+                                return Fail("The local AI model (" + name + ") did not start: " + session.Error);
+                            Dictionary<string, object> started = new Dictionary<string, object>
+                            {
+                                { "Started", true }, { "Model", name }, { "ModelId", model.Id }, { "Pid", session.ProcessId }, { "LoadMs", session.LoadMs }, { "StaysLoaded", warm }
+                            };
+                            EmitPayload(textOutput
+                                ? "Started the local AI model " + name + " (process " + session.ProcessId.ToString(CultureInfo.InvariantCulture) + ", " +
+                                  (session.LoadMs / 1000.0).ToString("0.0", CultureInfo.InvariantCulture) + " s)" + (warm ? "; it stays loaded until the app's idle stop." : "; no app keeps it, so it ends again.")
+                                : EngineSerialization.ToJson(started), outPath);
+                            return 0;
+                        }
+                        finally
+                        {
+                            session.Dispose();
+                        }
+                    }
                 case "server":
                     {
                         if (args.Count > 0)
@@ -5013,7 +5046,7 @@ namespace JoyPro.Engine
                         return EngineLlm.RunFakeServer(portValue, portFile, response, serve, log, lifetimeValue);
                     }
                 default:
-                    return Fail("Unknown llm action: " + action + " (use status, recommend, download, remove, enable, disable, cancel, find-local, use-local, server, stop).");
+                    return Fail("Unknown llm action: " + action + " (use status, recommend, download, remove, enable, disable, cancel, find-local, use-local, start, server, stop).");
             }
         }
 
@@ -14460,6 +14493,8 @@ namespace JoyPro.Engine
             Console.WriteLine("  engine llm use-local [--server <llama-server.exe>] [--model <file.gguf>] [--gpu-layers auto|all|N] [--context N] [--template server|chatml] | --clear");
             Console.WriteLine("      uses your own llama.cpp and GGUF instead of a download (without paths: what find-local recommends) and switches");
             Console.WriteLine("      the model on; the server applies the GGUF's chat template. --clear forgets them.");
+            Console.WriteLine("  engine llm start   (loads the chosen model now; started from JoyPro it stays loaded until the idle stop)");
+            Console.WriteLine("  engine llm server | engine llm stop   (what runs now / end it and free its memory)");
             Console.WriteLine("  engine llm fake-server [--port N] [--port-file <path>] [--response <file>] [--serve <folder>] [--log <file>] [--lifetime <s>]");
             Console.WriteLine("      test stub that answers like llama-server and serves files with HTTP Range (no model involved).");
             Console.WriteLine("  engine setup devices [--grip <device>=<grip id>]... [--role <device|VID:PID>=<role>]... [--add-device <catalog id>]...");

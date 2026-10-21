@@ -8,6 +8,12 @@ as before, and a few simple requests still work through offline rules.
 
 ## Where
 
+Every AI action shows the same status line of the local AI (its whole setup is Settings > Local AI): whether it is
+switched on and whether the model is loaded right now, e.g. "AI: on (Qwen3 8B) - not loaded right now, starts with
+your next request", with **Turn on the local AI** / **Set up the local AI** when it is off and a **Settings** link.
+**Make a plan** reads the setting first (2.2.15 sent the first request after a start with the AI off) and shows
+"Starting the AI model ..." while the model loads.
+
 - **Manage with AI**: the wand button in the Relations list header (between the title and New). The whole profile:
   "append _sc to every relation that contains Star Citizen", "delete all relations that have no bind",
   "new relation with pitch of all games but no helicopters".
@@ -26,9 +32,24 @@ as before, and a few simple requests still work through offline rules.
 | aircraft | relation, planes, on | the aircraft are in the relation |
 | groups | relation, add, remove | something changes |
 | tuning | relation, curvature, deadzone, saturation, invert | an axis relation with a bind; values clamped |
+| fill | planes (names, or "all DCS aircraft"), relations | a preview, see below |
+| check | relations (none: all) | every action against all its ticked aircraft (relations check-aircraft): where the id does something else there, that aircraft is unticked; nothing found: a preview line |
 
 Offline rules (no model): append / prepend a part to every relation that contains a game (its actions) or a word
-(its name), delete relations without a bind, rename A to B ("rename it to ..." in Edit with AI).
+(its name), delete relations without a bind, rename A to B ("rename it to ..." in Edit with AI), and fill / check: a
+request about the relations with check words (check, verify, go through, review, make sure, fulfil, works properly)
+becomes a `check` step; one with fill words (fill, add, expand, extend, update, include, bring) that names aircraft
+("... the new modules: Mirage F1EE, F-15E Strike Eagle, C-130J": after a colon, in a list, with "and") becomes a
+`fill` step of those aircraft; "all modules / aircraft in DCS" without names fills every DCS aircraft.
+
+The model and the rules (`--llm auto`, what the app sends while the local AI is on): the exact rules (rename,
+prefix/append, delete without binds) run without the model. Everything else goes to the model, with JoyPro's own
+reading of fill/check as a hint; the plan keeps the check and fill steps the rules read even when the model leaves
+them out. When the model does not start or answer, or answers with no steps for a request that names aircraft, JoyPro
+makes the plan from its own reading and says why (with the model's reply). A model that does not start says why in
+plain words (not enough memory, a llama.cpp too old for the model, a damaged GGUF file, ...; a model kept loaded for
+the app is started once more with its output read to get that reason). `--llm off` (the local AI switched off) uses
+the rules only; without a rule the answer says to switch the AI on in Settings > Local AI.
 
 ## Fill aircraft into the relations (mass edit)
 

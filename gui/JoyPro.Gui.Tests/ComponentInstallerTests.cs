@@ -571,11 +571,13 @@ public sealed class ComponentInstallerTests : IDisposable
         Assert.Contains("ViGEmBus", vm.ComponentsSummary);
         Assert.DoesNotContain("vJoy", vm.ComponentsSummary);
 
+        // "Set up" opens Settings > Local AI in place (no wizard on the Relations page).
+        vm.CurrentStage = UiStage.Start;
         await vm.OpenLlmSetupCommand.ExecuteAsync(null);
 
-        Assert.Equal(UiStage.Relations, vm.CurrentStage);
-        Assert.True(vm.IsDescribeGroupPanelOpen);
-        Assert.True(vm.IsLlmSectionExpanded);
+        Assert.Equal(UiStage.Settings, vm.CurrentStage);
+        Assert.False(vm.IsDescribeGroupPanelOpen);
+        Assert.True(vm.FindSettingsSection(MainWindowViewModel.LocalAiSectionId)!.IsExpanded);
         Assert.Contains(engine.Calls, c => AxisTuningTests.Seq(c, "llm", "status"));
         Assert.DoesNotContain(engine.Calls, c => AxisTuningTests.Seq(c, "llm", "download"));
     }

@@ -1413,9 +1413,10 @@
                                             <Button Grid.Column="1" Classes="accent" Command="{Binding AskAiPlanCommand}" Content="{l:T 'Make a plan'}"
                                                     ToolTip.Tip="{l:T 'JoyPro (offline rules or your local AI model) makes a plan; nothing changes before you apply it'}" />
                                         </Grid>
-                                        <TextBlock Classes="caption" Text="{Binding LlmServerStatusText}" IsVisible="{Binding LlmEnabled}" />
-                                        <TextBlock Classes="caption" Text="{l:T 'The local AI model is off: only the simple requests of the examples work. Switch it on under Auto-build relations from all my actions > By description.'}"
-                                                   IsVisible="{Binding !LlmEnabled}" TextWrapping="Wrap" />
+                                        <!-- The local AI: on/off and loaded or not, the same line as everywhere (Settings > Local AI) -->
+                                        <controls:LocalAiStatusChip x:Name="AiPlanAiChip" />
+                                        <TextBlock Classes="caption" Text="{l:T 'The local AI is off: only the simple requests of the examples work (fill or check named aircraft, rename, delete without binds).'}"
+                                                   IsVisible="{Binding IsAiKnownOff}" TextWrapping="Wrap" />
                                         <TextBlock Text="{Binding AiPlanStatus}" TextWrapping="Wrap"
                                                    IsVisible="{Binding AiPlanStatus, Converter={x:Static StringConverters.IsNotNullOrEmpty}}" />
                                         <ItemsControl ItemsSource="{Binding AiPlanSteps}" IsVisible="{Binding HasAiPlanSteps}">
@@ -1590,70 +1591,8 @@
                                                 </ItemsControl.ItemTemplate>
                                             </ItemsControl>
                                         </ScrollViewer>
-                                        <Expander Header="{l:T 'Local AI model (optional)'}" HorizontalAlignment="Stretch" IsExpanded="{Binding IsLlmSectionExpanded}">
-                                            <StackPanel Spacing="6">
-                                                <TextBlock Classes="caption"
-                                                           Text="{l:T 'The offline rules always work. A free open-source language model can help with unusual descriptions: it only picks from the functions and aircraft the rules found, and JoyPro checks every answer. It runs on this PC only while you use it (it stops after the idle minutes below) and is not part of JoyPro: it is downloaded only when you click Download, or you use a llama.cpp and model you already have.'}" />
-                                                <CheckBox IsChecked="{Binding LlmEnabled}" Content="{l:T 'Use local AI model'}" />
-                                                <TextBlock Text="{Binding LlmStatusText}" FontWeight="SemiBold" TextWrapping="Wrap" />
-                                                <TextBlock Text="{Binding LlmHardwareText}" TextWrapping="Wrap" />
-                                                <TextBlock Text="{Binding LlmRecommendationText}" TextWrapping="Wrap" />
-                                                <WrapPanel>
-                                                    <TextBlock Text="{l:T 'Model'}" VerticalAlignment="Center" Margin="0,0,8,0" />
-                                                    <ComboBox ItemsSource="{Binding LlmModels}" SelectedItem="{Binding SelectedLlmModel}" MinWidth="420" Margin="0,0,12,0" />
-                                                    <TextBlock Text="{l:T 'Runtime'}" VerticalAlignment="Center" Margin="0,0,8,0" />
-                                                    <ComboBox ItemsSource="{Binding LlmRuntimeChoices}" SelectedItem="{Binding SelectedLlmRuntime}" MinWidth="110" Margin="0,0,12,0"
-                                                              ToolTip.Tip="{l:T 'auto = Vulkan build with a graphics card (small download), else CPU; cuda = NVIDIA build with the CUDA runtime (about 600 MB)'}" />
-                                                    <Button Command="{Binding RefreshLlmStatusCommand}" Content="{l:T 'Refresh'}" />
-                                                </WrapPanel>
-                                                <TextBlock Text="{Binding LlmLicenseText}" TextWrapping="Wrap" Opacity="0.85" />
-                                                <WrapPanel>
-                                                    <CheckBox IsChecked="{Binding LlmLicenseAccepted}" Content="{l:T 'I accept the size and the licenses above'}" Margin="0,0,12,0" />
-                                                    <Button Command="{Binding DownloadLlmModelCommand}" Content="{l:T 'Download and switch on'}" Margin="0,0,8,0" IsEnabled="{Binding LlmLicenseAccepted}"
-                                                            ToolTip.Tip="{l:T 'Downloads llama.cpp and the model, checks the SHA-256 checksums and switches the local AI model on'}" />
-                                                    <Button Command="{Binding CancelLlmDownloadCommand}" Content="{l:T 'Cancel download'}" Margin="0,0,8,0" IsVisible="{Binding IsLlmDownloading}" />
-                                                    <Button Command="{Binding RemoveLlmModelCommand}" Content="{l:T 'Remove model'}" />
-                                                </WrapPanel>
-                                                <!-- Running or stopped, the model and its memory, Stop now, the idle stop -->
-                                                <Border Classes="surface" Padding="8,6">
-                                                    <WrapPanel>
-                                                        <Ellipse Width="10" Height="10" Margin="0,0,8,0" VerticalAlignment="Center" Fill="#16A34A" IsVisible="{Binding LlmServerRunning}" />
-                                                        <Ellipse Width="10" Height="10" Margin="0,0,8,0" VerticalAlignment="Center" Fill="#9CA3AF"
-                                                                 IsVisible="{Binding !LlmServerRunning}" />
-                                                        <TextBlock Text="{Binding LlmServerStatusText}" VerticalAlignment="Center" TextWrapping="Wrap" MaxWidth="560" Margin="0,0,12,0" />
-                                                        <Button Command="{Binding StopLlmServerCommand}" Content="{l:T 'Stop now'}" IsEnabled="{Binding LlmServerRunning}" Margin="0,0,12,0"
-                                                                ToolTip.Tip="{l:T 'Ends the local AI model at once and frees its memory (the next request loads it again)'}" />
-                                                        <TextBlock Text="{l:T 'Stop after'}" VerticalAlignment="Center" Margin="0,0,6,0" />
-                                                        <NumericUpDown Value="{Binding LlmIdleMinutes}" Minimum="0.5" Maximum="120" Increment="1" FormatString="0.#" Width="110"
-                                                                       ToolTip.Tip="{l:T 'The model stays loaded this long after a request, so the next one answers faster'}" />
-                                                        <TextBlock Text="{l:T 'idle minutes'}" VerticalAlignment="Center" Margin="6,0,0,0" />
-                                                    </WrapPanel>
-                                                </Border>
-                                                <ProgressBar Minimum="0" Maximum="100" Value="{Binding LlmDownloadPercent}" Height="10" IsVisible="{Binding IsLlmDownloading}" />
-                                                <TextBlock Text="{Binding LlmDownloadText}" TextWrapping="Wrap"
-                                                           IsVisible="{Binding LlmDownloadText, Converter={x:Static StringConverters.IsNotNullOrEmpty}}" />
-                                                <TextBlock Text="{l:T 'Already have llama.cpp and a GGUF model?'}" FontWeight="SemiBold" Margin="0,6,0,0" />
-                                                <TextBlock Classes="caption"
-                                                           Text="{l:T 'Use your own llama-server.exe and .gguf file instead of a download. JoyPro starts it on this PC for a request and stops it after the idle minutes above.'}" />
-                                                <WrapPanel>
-                                                    <TextBlock Text="llama-server.exe" VerticalAlignment="Center" Width="110" />
-                                                    <TextBox Text="{Binding LlmLocalServerPath}" Watermark="C:\llama.cpp\llama-server.exe" MinWidth="420" Margin="0,0,8,0" />
-                                                    <Button Content="{l:T 'Browse...'}" Click="BrowseLlmServerClicked" />
-                                                </WrapPanel>
-                                                <WrapPanel>
-                                                    <TextBlock Text="{l:T 'GGUF model'}" VerticalAlignment="Center" Width="110" />
-                                                    <TextBox Text="{Binding LlmLocalModelPath}" Watermark="model.gguf" MinWidth="420" Margin="0,0,8,0" />
-                                                    <Button Content="{l:T 'Browse...'}" Click="BrowseLlmModelClicked" />
-                                                </WrapPanel>
-                                                <WrapPanel>
-                                                    <Button Command="{Binding FindLocalLlmCommand}" Content="{l:T 'Find on this PC'}" Margin="0,0,8,0" ToolTip.Tip="{l:T 'Looks for llama-server.exe and GGUF models in the usual folders (read-only) and picks the pair that suits this PC'}" />
-                                                    <Button Command="{Binding UseLocalLlmCommand}" Content="{l:T 'Use these files'}" Margin="0,0,8,0" />
-                                                    <Button Command="{Binding ClearLocalLlmCommand}" Content="{l:T 'Stop using them'}" IsVisible="{Binding IsLlmUsingLocal}" />
-                                                </WrapPanel>
-                                                <TextBlock Text="{Binding LlmLocalText}" TextWrapping="Wrap"
-                                                           IsVisible="{Binding LlmLocalText, Converter={x:Static StringConverters.IsNotNullOrEmpty}}" />
-                                            </StackPanel>
-                                        </Expander>
+                                        <!-- The local AI: one status line, its setup is Settings > Local AI -->
+                                        <controls:LocalAiStatusChip x:Name="DescribeGroupAiChip" />
                                     </StackPanel>
                                 </Border>
                                 </StackPanel>
@@ -2306,12 +2245,14 @@
                                         <!-- The JoyPro assistant (engine relations assistant) -->
                                         <Grid Grid.Row="2" IsVisible="{Binding IsBuilderAssistantPanel}" RowDefinitions="Auto,Auto,*,Auto" RowSpacing="6" MinHeight="0">
                                             <Border Classes="sunken" Padding="8">
-                                                <Grid ColumnDefinitions="Auto,*,Auto" ColumnSpacing="8">
-                                                    <PathIcon Data="{StaticResource Icon.Lightbulb}" Width="16" Height="16" VerticalAlignment="Top" Foreground="{DynamicResource JP.AccentTextBrush}" />
-                                                    <TextBlock Grid.Column="1" Classes="caption" TextWrapping="Wrap" Text="{Binding AssistantModeText}" />
-                                                    <Button Grid.Column="2" Classes="small ghost" Content="{l:T 'AI model...'}" VerticalAlignment="Top" Command="{Binding OpenLlmSetupCommand}"
-                                                            ToolTip.Tip="{l:T 'Set up the optional local AI model (download with size and license, or your own llama.cpp). Without it the offline brain does simple commands.'}" />
-                                                </Grid>
+                                                <StackPanel Spacing="6">
+                                                    <Grid ColumnDefinitions="Auto,*" ColumnSpacing="8">
+                                                        <PathIcon Data="{StaticResource Icon.Lightbulb}" Width="16" Height="16" VerticalAlignment="Top" Foreground="{DynamicResource JP.AccentTextBrush}" />
+                                                        <TextBlock Grid.Column="1" Classes="caption" TextWrapping="Wrap" Text="{Binding AssistantModeText}" />
+                                                    </Grid>
+                                                    <!-- The same local AI line as at every AI action (Settings > Local AI) -->
+                                                    <controls:LocalAiStatusChip x:Name="AssistantAiChip" />
+                                                </StackPanel>
                                             </Border>
                                             <Border Grid.Row="1" Classes="callout ok" IsVisible="{Binding HasAssistantContext}" Padding="8,4">
                                                 <Grid ColumnDefinitions="*,Auto" ColumnSpacing="6">
@@ -6028,6 +5969,101 @@
                                 </StackPanel>
                             </controls:SettingsSection>
 
+                            <!-- Settings > Local AI (MainWindowViewModel.LocalAi.cs, docs/natural-language-grouping.md): the one place of the
+                                 local AI setup. Every AI action of the app shows the same status line and links here. -->
+                            <controls:SettingsSection SectionId="local-ai" Title="{l:T 'Local AI'}" Icon="{StaticResource Icon.Wand}">
+                                <StackPanel x:Name="LocalAiSettingsPanel" Spacing="8">
+                                    <TextBlock Classes="caption" TextWrapping="Wrap"
+                                               Text="{l:T 'Optional. JoyPro\'s offline rules always work. A free open-source language model can read free sentences in Manage with AI, Edit with AI, the JoyPro assistant and Group by description; JoyPro checks every answer. It runs on this PC only while you use it (it stops after the idle minutes below) and is not part of JoyPro: it is downloaded only when you click Download, or you use a llama.cpp and model you already have.'}" />
+                                    <!-- On/off (the setting) and loaded or not (right now): the same line as at every AI action -->
+                                    <Border Classes="card">
+                                        <StackPanel Spacing="6">
+                                            <CheckBox x:Name="LocalAiEnabledBox" IsChecked="{Binding LlmEnabled}" Content="{l:T 'Use the local AI model'}" FontWeight="SemiBold" />
+                                            <WrapPanel ItemSpacing="8" LineSpacing="6">
+                                                <Panel Width="12" Height="12" VerticalAlignment="Center">
+                                                    <Ellipse Width="12" Height="12" Fill="#16A34A" IsVisible="{Binding IsAiDotLoaded}" />
+                                                    <Ellipse Width="12" Height="12" Fill="{DynamicResource JP.AccentBrush}" IsVisible="{Binding IsAiDotReady}" />
+                                                    <Ellipse Width="12" Height="12" Fill="#D97706" IsVisible="{Binding IsAiDotProblem}" />
+                                                    <Ellipse Width="12" Height="12" Fill="#9CA3AF" IsVisible="{Binding IsAiDotOff}" />
+                                                </Panel>
+                                                <TextBlock x:Name="LocalAiStatusLine" Text="{Binding AiStatusText}" VerticalAlignment="Center" TextWrapping="Wrap" MaxWidth="640" FontWeight="SemiBold" />
+                                            </WrapPanel>
+                                            <TextBlock Text="{Binding AiModelInUseText}" TextWrapping="Wrap" Opacity="0.85"
+                                                       IsVisible="{Binding AiModelInUseText, Converter={x:Static StringConverters.IsNotNullOrEmpty}}" />
+                                            <WrapPanel ItemSpacing="8" LineSpacing="6">
+                                                <Button Classes="icon accent" Tag="{StaticResource Icon.Play}" Content="{l:T 'Start now'}" Command="{Binding StartLlmServerCommand}" IsEnabled="{Binding CanStartLlmNow}"
+                                                        ToolTip.Tip="{l:T 'Loads the model now, so your next AI request answers at once (it stops after the idle minutes)'}" />
+                                                <Button Classes="icon" Tag="{StaticResource Icon.Close}" Content="{l:T 'Stop now'}" Command="{Binding StopLlmServerCommand}" IsEnabled="{Binding LlmServerRunning}"
+                                                        ToolTip.Tip="{l:T 'Ends the local AI model at once and frees its memory (the next request loads it again)'}" />
+                                                <TextBlock Text="{l:T 'Stop after'}" VerticalAlignment="Center" />
+                                                <NumericUpDown Value="{Binding LlmIdleMinutes}" Minimum="0.5" Maximum="120" Increment="1" FormatString="0.#" Width="110"
+                                                               ToolTip.Tip="{l:T 'The model stays loaded this long after a request, so the next one answers faster'}" />
+                                                <TextBlock Text="{l:T 'idle minutes'}" VerticalAlignment="Center" />
+                                                <Button Command="{Binding RefreshLlmStatusCommand}" Content="{l:T 'Refresh'}" Classes="icon ghost" Tag="{StaticResource Icon.Refresh}" />
+                                            </WrapPanel>
+                                            <TextBlock Text="{Binding LlmStartText}" TextWrapping="Wrap"
+                                                       IsVisible="{Binding LlmStartText, Converter={x:Static StringConverters.IsNotNullOrEmpty}}" />
+                                        </StackPanel>
+                                    </Border>
+                                    <!-- A model JoyPro downloads (size, license, SHA-256) -->
+                                    <Border Classes="card">
+                                        <StackPanel Spacing="6">
+                                            <TextBlock Text="{l:T 'Download a model'}" FontWeight="SemiBold" />
+                                            <TextBlock Text="{Binding LlmStatusText}" TextWrapping="Wrap" />
+                                            <TextBlock Text="{Binding LlmHardwareText}" TextWrapping="Wrap" Opacity="0.85" />
+                                            <TextBlock Text="{Binding LlmRecommendationText}" TextWrapping="Wrap" Opacity="0.85" />
+                                            <WrapPanel ItemSpacing="8" LineSpacing="6">
+                                                <TextBlock Text="{l:T 'Model'}" VerticalAlignment="Center" />
+                                                <ComboBox ItemsSource="{Binding LlmModels}" SelectedItem="{Binding SelectedLlmModel}" MinWidth="380" />
+                                                <TextBlock Text="{l:T 'Runtime'}" VerticalAlignment="Center" />
+                                                <ComboBox ItemsSource="{Binding LlmRuntimeChoices}" SelectedItem="{Binding SelectedLlmRuntime}" MinWidth="110"
+                                                          ToolTip.Tip="{l:T 'auto = Vulkan build with a graphics card (small download), else CPU; cuda = NVIDIA build with the CUDA runtime (about 600 MB)'}" />
+                                            </WrapPanel>
+                                            <TextBlock Text="{Binding LlmLicenseText}" TextWrapping="Wrap" Opacity="0.85" />
+                                            <WrapPanel ItemSpacing="8" LineSpacing="6">
+                                                <CheckBox IsChecked="{Binding LlmLicenseAccepted}" Content="{l:T 'I accept the size and the licenses above'}" />
+                                                <Button Command="{Binding DownloadLlmModelCommand}" Content="{l:T 'Download and switch on'}" Classes="accent" IsEnabled="{Binding LlmLicenseAccepted}"
+                                                        ToolTip.Tip="{l:T 'Downloads llama.cpp and the model, checks the SHA-256 checksums and switches the local AI model on'}" />
+                                                <Button Command="{Binding CancelLlmDownloadCommand}" Content="{l:T 'Cancel download'}" IsVisible="{Binding IsLlmDownloading}" />
+                                                <Button Command="{Binding RemoveLlmModelCommand}" Content="{l:T 'Remove model'}" />
+                                            </WrapPanel>
+                                            <ProgressBar Minimum="0" Maximum="100" Value="{Binding LlmDownloadPercent}" Height="10" IsVisible="{Binding IsLlmDownloading}" />
+                                            <TextBlock Text="{Binding LlmDownloadText}" TextWrapping="Wrap"
+                                                       IsVisible="{Binding LlmDownloadText, Converter={x:Static StringConverters.IsNotNullOrEmpty}}" />
+                                        </StackPanel>
+                                    </Border>
+                                    <!-- The user's own llama.cpp and GGUF -->
+                                    <Border Classes="card">
+                                        <StackPanel Spacing="6">
+                                            <TextBlock Text="{l:T 'Already have llama.cpp and a GGUF model?'}" FontWeight="SemiBold" />
+                                            <TextBlock Classes="caption" TextWrapping="Wrap"
+                                                       Text="{l:T 'Use your own llama-server.exe and .gguf file instead of a download. JoyPro starts it on this PC for a request and stops it after the idle minutes above.'}" />
+                                            <WrapPanel ItemSpacing="8" LineSpacing="6">
+                                                <TextBlock Text="llama-server.exe" VerticalAlignment="Center" Width="110" />
+                                                <TextBox Text="{Binding LlmLocalServerPath}" Watermark="C:\llama.cpp\llama-server.exe" MinWidth="420" />
+                                                <Button Content="{l:T 'Browse...'}" Click="BrowseLlmServerClicked" />
+                                            </WrapPanel>
+                                            <WrapPanel ItemSpacing="8" LineSpacing="6">
+                                                <TextBlock Text="{l:T 'GGUF model'}" VerticalAlignment="Center" Width="110" />
+                                                <TextBox Text="{Binding LlmLocalModelPath}" Watermark="model.gguf" MinWidth="420" />
+                                                <Button Content="{l:T 'Browse...'}" Click="BrowseLlmModelClicked" />
+                                            </WrapPanel>
+                                            <WrapPanel ItemSpacing="8" LineSpacing="6">
+                                                <Button Command="{Binding FindLocalLlmCommand}" Content="{l:T 'Find on this PC'}" ToolTip.Tip="{l:T 'Looks for llama-server.exe and GGUF models in the usual folders (read-only) and picks the pair that suits this PC'}" />
+                                                <Button Command="{Binding UseLocalLlmCommand}" Content="{l:T 'Use these files'}" Classes="accent"
+                                                        ToolTip.Tip="{l:T 'From now on the local AI runs your llama-server.exe with this GGUF file (nothing is downloaded)'}" />
+                                                <Button Command="{Binding ClearLocalLlmCommand}" Content="{l:T 'Stop using them'}" IsVisible="{Binding IsLlmUsingLocal}" />
+                                            </WrapPanel>
+                                            <Border Classes="callout warn" IsVisible="{Binding HasUnusedLocalFiles}" Padding="8,4">
+                                                <TextBlock TextWrapping="Wrap" Text="{l:T 'These files are not in use yet: click Use these files to run them instead of the model above.'}" />
+                                            </Border>
+                                            <TextBlock Text="{Binding LlmLocalText}" TextWrapping="Wrap"
+                                                       IsVisible="{Binding LlmLocalText, Converter={x:Static StringConverters.IsNotNullOrEmpty}}" />
+                                        </StackPanel>
+                                    </Border>
+                                </StackPanel>
+                            </controls:SettingsSection>
+
                             <controls:SettingsSection SectionId="components" Title="{l:T 'Components'}" Icon="{StaticResource Icon.Shield}">
                                 <StackPanel Spacing="6">
                                     <TextBlock Text="{l:T 'Needed by JoyPro'}" FontWeight="SemiBold" />
@@ -6059,17 +6095,23 @@
                                             </DataTemplate>
                                         </ItemsControl.ItemTemplate>
                                     </ItemsControl>
-                                    <Border Classes="card">
-                                        <Grid ColumnDefinitions="*,Auto" ColumnSpacing="8">
-                                            <StackPanel Spacing="2">
+                                    <!-- The local AI's card, like the components' cards: a green check and its status when it is set up and on -->
+                                    <Border x:Name="LocalAiComponentCard" Classes="card">
+                                        <Grid ColumnDefinitions="Auto,*,Auto" ColumnSpacing="8">
+                                            <Panel VerticalAlignment="Top" Margin="0,2,0,0">
+                                                <PathIcon Data="{StaticResource Icon.Ok}" Width="18" Height="18" Classes="ok" IsVisible="{Binding LocalAiComponentReady}" />
+                                                <PathIcon Data="{StaticResource Icon.Warning}" Width="18" Height="18" Classes="warn" IsVisible="{Binding IsAiDotProblem}" />
+                                                <PathIcon Data="{StaticResource Icon.Info}" Width="18" Height="18" Opacity="0.6" IsVisible="{Binding IsAiDotOff}" />
+                                            </Panel>
+                                            <StackPanel Grid.Column="1" Spacing="2">
                                                 <TextBlock Text="{l:T 'Local AI model (llama.cpp + a language model)'}" FontSize="15" FontWeight="SemiBold" />
+                                                <TextBlock x:Name="LocalAiComponentStatus" Text="{Binding LocalAiComponentText}" TextWrapping="Wrap" FontSize="12" />
+                                                <TextBlock Text="{Binding AiStatusText}" TextWrapping="Wrap" FontSize="12" Opacity="0.75" IsVisible="{Binding LlmEnabled}" />
                                                 <TextBlock TextWrapping="Wrap" Opacity="0.85"
-                                                           Text="{l:T 'Optional help for &quot;Group by description&quot; with unusual wording. It has its own download with size, license and checksum on the Relations page; JoyPro works fully without it.'}" />
-                                                <TextBlock Text="{Binding LlmStatusText}" TextWrapping="Wrap" FontSize="12" Opacity="0.7"
-                                                           IsVisible="{Binding LlmStatusText, Converter={x:Static StringConverters.IsNotNullOrEmpty}}" />
+                                                           Text="{l:T 'Optional help for Manage with AI, Edit with AI, the JoyPro assistant and Group by description with free sentences. It has its own download with size, license and checksum in Settings > Local AI; JoyPro works fully without it.'}" />
                                             </StackPanel>
-                                            <Button Grid.Column="1" Command="{Binding OpenLlmSetupCommand}" Content="{l:T 'Set up'}" Classes="icon" Tag="{StaticResource Icon.ArrowRight}" VerticalAlignment="Center"
-                                                    ToolTip.Tip="{l:T 'Opens the local AI model section (Relations page, Group by description)'}" />
+                                            <Button Grid.Column="2" Command="{Binding OpenLlmSetupCommand}" Content="{l:T 'Set up'}" Classes="icon" Tag="{StaticResource Icon.ArrowRight}" VerticalAlignment="Top"
+                                                    ToolTip.Tip="{l:T 'Opens Settings > Local AI'}" />
                                         </Grid>
                                     </Border>
                                     <TextBlock Classes="hint" TextWrapping="Wrap"

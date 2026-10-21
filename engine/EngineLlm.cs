@@ -808,37 +808,37 @@ namespace JoyPro.Engine
             }
             if (!settings.Enabled)
             {
-                problem = "The local AI model is off (Relations > Group by description > Use local AI model, or engine llm enable).";
+                problem = "The local AI model is off (switch it on in Settings > Local AI; engine llm enable).";
                 return false;
             }
             model = SelectedModel(catalog, settings, recommendation);
             if (model == null)
             {
-                problem = "No local model chosen (engine llm recommend, then engine llm download <model> --accept-license).";
+                problem = "No model is chosen yet (Settings > Local AI: download one or use your own llama.cpp and GGUF file; engine llm download <model> --accept-license).";
                 return false;
             }
             if (model.Local)
             {
                 if (!File.Exists(model.ServerPath))
                 {
-                    problem = "Your llama-server.exe was not found: " + model.ServerPath + " (engine llm use-local --server <path> --model <gguf>).";
+                    problem = "Your llama-server.exe was not found: " + model.ServerPath + " (Settings > Local AI > Use these files; engine llm use-local --server <path> --model <gguf>).";
                     return false;
                 }
                 if (!File.Exists(model.LocalModelPath))
                 {
-                    problem = "Your GGUF model was not found: " + model.LocalModelPath + " (engine llm use-local --server <path> --model <gguf>).";
+                    problem = "Your GGUF model file was not found: " + model.LocalModelPath + " (Settings > Local AI > Use these files; engine llm use-local --server <path> --model <gguf>).";
                     return false;
                 }
                 return true;
             }
             if (!IsModelInstalled(model))
             {
-                problem = "The local model " + model.Id + " is not downloaded (engine llm download " + model.Id + " --accept-license).";
+                problem = "The model " + model.Label + " is not downloaded yet (Settings > Local AI > Download; engine llm download " + model.Id + " --accept-license).";
                 return false;
             }
             if (InstalledRuntime(RuntimeFlavor(settings, recommendation)) == null)
             {
-                problem = "The llama.cpp runtime is not downloaded (engine llm download " + model.Id + " --accept-license).";
+                problem = "The llama.cpp program that runs the model is not downloaded yet (Settings > Local AI > Download; engine llm download " + model.Id + " --accept-license).";
                 return false;
             }
             return true;
@@ -1801,10 +1801,49 @@ namespace JoyPro.Engine
                 }
                 catch (Exception ex)
                 {
-                    session.Error = ex.Message;
                     session.Stop();
+                    // A server kept warm for the app runs without its output: when it fails to load, the same start
+                    // once more with the output read, so the reason (out of memory, unknown model, ...) can be told.
+                    if (session.warm != null && !(ex is FileNotFoundException) && !(ex is TimeoutException))
+                    {
+                        session.warm = null;
+                        session.lastLines.Clear();
+                        try
+                        {
+                            session.Launch();
+                            return session;
+                        }
+                        catch (Exception again)
+                        {
+                            ex = again;
+                            session.Stop();
+                        }
+                    }
+                    session.Error = PlainReason(ex.Message);
                 }
                 return session;
+            }
+
+            // llama.cpp's own words for the usual start failures, said plainly (its last lines stay in brackets).
+            internal static string PlainReason(string message)
+            {
+                string text = message ?? string.Empty;
+                string lower = text.ToLowerInvariant();
+                string plain =
+                    lower.Contains("out of memory") || lower.Contains("failed to allocate") || lower.Contains("cudamalloc failed") || lower.Contains("unable to allocate") || lower.Contains("vk::outofdevicememory")
+                        ? "not enough free memory on the graphics card or in the PC for this model (close other programs or games, or choose a smaller model)"
+                        : lower.Contains("unknown model architecture") || lower.Contains("unknown architecture")
+                            ? "this llama.cpp is too old for the model (update your llama.cpp or use JoyPro's download)"
+                            : lower.Contains("failed to load model") || lower.Contains("error loading model") || lower.Contains("invalid magic") || lower.Contains("gguf_init")
+                                ? "llama.cpp could not load the model file (it may be damaged, incomplete or of a kind this llama.cpp cannot read)"
+                                : lower.Contains("bind") && lower.Contains("address") || lower.Contains("couldn't bind")
+                                    ? "llama.cpp could not open its local port (another program may block it)"
+                                    : lower.Contains("is missing") || lower.Contains("not found") || lower.Contains("cannot find")
+                                        ? string.Empty
+                                        : lower.Contains("did not load within")
+                                            ? "the model took too long to load (the PC may be busy, or the model is too large for it)"
+                                            : string.Empty;
+                return plain.Length == 0 ? text : plain + " (" + text + ")";
             }
 
             // The warm server of an earlier request when it runs the same model with the same context.

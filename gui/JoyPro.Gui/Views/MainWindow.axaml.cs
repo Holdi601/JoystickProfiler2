@@ -678,7 +678,8 @@ public partial class MainWindow : Window
         return await new ConfirmWindow(request).ShowDialog<bool>(this);
     }
 
-    // A tab of the Settings page or the version in the corner: scroll to the section once the page is laid out.
+    // A tab of the Settings page, a link to Settings > Local AI or the version in the corner: once the page is laid out,
+    // the section's header goes to the top of the page (its settings below it in view).
     private void OnSettingsSectionFocusRequested(string id)
     {
         Dispatcher.UIThread.Post(() =>
@@ -687,7 +688,15 @@ public partial class MainWindow : Window
                 return;
             Views.Controls.SettingsSection? section = host.Children.OfType<Views.Controls.SettingsSection>()
                 .FirstOrDefault(s => string.Equals(s.SectionId, id, StringComparison.OrdinalIgnoreCase));
-            section?.BringIntoView(new Rect(0, 0, section.Bounds.Width, Math.Min(section.Bounds.Height, 200)));
+            if (section == null)
+                return;
+            if (this.FindControl<ScrollViewer>("SettingsScrollViewer") is { } scroller && section.TranslatePoint(new Point(0, 0), host) is { } top)
+            {
+                double max = Math.Max(0, scroller.Extent.Height - scroller.Viewport.Height);
+                scroller.Offset = new Vector(scroller.Offset.X, Math.Clamp(top.Y, 0, max));
+                return;
+            }
+            section.BringIntoView(new Rect(0, 0, section.Bounds.Width, Math.Min(section.Bounds.Height, 200)));
         }, DispatcherPriority.Background);
     }
 

@@ -73,9 +73,27 @@ namespace JoyPro.Engine
             { "mig29fulcrum", new[] { "MiG-29-Fulcrum" } },
         };
 
+        // "all modules in DCS", "every DCS aircraft" somewhere in a request.
+        internal static bool MentionsAllDcs(string text)
+        {
+            return Regex.IsMatch(text ?? string.Empty,
+                @"\b(?:all|every|each)\s+(?:of\s+)?(?:my\s+|the\s+|your\s+)?(?:(?:dcs(?:\s+world)?\s+)?(?:modules?|aircraft|airplanes?|planes?)\s+(?:in|of|for|from)\s+dcs(?:\s+world)?|dcs(?:\s+world)?\s+(?:modules?|aircraft|airplanes?|planes?))\b",
+                RegexOptions.IgnoreCase);
+        }
+
+        // A name that means every DCS aircraft ("all DCS aircraft", "DCS", "all modules in DCS").
+        internal static bool IsAllDcs(string name)
+        {
+            return Regex.IsMatch((name ?? string.Empty).Trim(),
+                @"^(?:(?:all|every|each)\s+(?:of\s+)?)?(?:my\s+|the\s+|your\s+)?(?:dcs(?:\s+world)?(?:\s+(?:modules?|aircraft|airplanes?|planes?))?|(?:modules?|aircraft|airplanes?|planes?)\s+(?:in|of|for|from)\s+dcs(?:\s+world)?)$",
+                RegexOptions.IgnoreCase);
+        }
+
         public static List<string> Resolve(string name)
         {
             List<string> planes = DcsPlanes();
+            if (IsAllDcs(name))
+                return planes.Select(p => "DCS|" + p).ToList();
             string whole = Norm(name);
             if (Products.TryGetValue(whole, out string[] product))
             {
@@ -103,7 +121,13 @@ namespace JoyPro.Engine
                 // Every seat and variant of it (F-15E, F-15ESE, F-15E_WSO).
                 List<string> hits = planes.Where(p => Norm(p).StartsWith(designation, StringComparison.Ordinal)).ToList();
                 if (hits.Count == 0)
-                    hits = planes.Where(p => Norm(p).Length >= 4 && designation.StartsWith(Norm(p), StringComparison.Ordinal)).ToList();
+                    hits = planes.Where(p => designation.StartsWith(Norm(p), StringComparison.Ordinal) && (Norm(p).Length >= 4 || designation.Length - Norm(p).Length == 1)).ToList();
+                // A variant letter the catalog id leaves out ("F-14B" of F-14, its seats too).
+                if (hits.Count > 0 && hits.All(p => Norm(p).Length < designation.Length))
+                    hits = planes.Where(p => hits.Any(h => string.Equals(p, h, StringComparison.OrdinalIgnoreCase) || p.StartsWith(h + "_", StringComparison.OrdinalIgnoreCase))).ToList();
+                // A designation inside the id ("F1EE" of Mirage-F1EE).
+                if (hits.Count == 0)
+                    hits = planes.Where(p => Regex.Split(p, @"[-_\s]+").Any(part => Norm(part).StartsWith(designation, StringComparison.Ordinal))).ToList();
                 if (hits.Count > 0)
                     return hits.Select(p => "DCS|" + p).ToList();
             }
@@ -115,7 +139,8 @@ namespace JoyPro.Engine
         public static List<string> FromText(string text, List<string> unresolved)
         {
             List<string> found = new List<string>();
-            foreach (string raw in Regex.Split(text ?? string.Empty, @",|;|\band\b|\bi\.e\.|\be\.g\.", RegexOptions.IgnoreCase))
+            // Also at a colon ("the new modules: Mirage F1EE, ...") and at the end of a sentence.
+            foreach (string raw in Regex.Split(text ?? string.Empty, @",|;|:|\band\b|\bi\.e\.|\be\.g\.|\.\s+|\.$", RegexOptions.IgnoreCase))
             {
                 string part = raw.Trim();
                 if (part.Length == 0)

@@ -258,21 +258,30 @@ public sealed class DescribeGroupTests
             AvaloniaRenderThread.Wait(GuiParityRenderTests.Done(vm.ToggleDescribeGroupPanelCommand.ExecuteAsync(null)));
             vm.DescribeGroupText = "speed brake in and out on all jets";
             AvaloniaRenderThread.Wait(GuiParityRenderTests.Done(vm.PreviewDescribeGroupCommand.ExecuteAsync(null)));
-            GuiParityRenderTests.Render(vm, Path.Combine(outDir, "relations-describe-group.png"), "Group by description", 1300, page =>
+            // The setup lives in Settings > Local AI; the tab shows the one status line with its link.
+            GuiParityRenderTests.Render(vm, Path.Combine(outDir, "relations-describe-group.png"), "Auto-build relations from all my actions", 1300, page =>
             {
-                List<Avalonia.Controls.Expander> expanders = page.GetVisualDescendantsOfType<Avalonia.Controls.Expander>().Where(e => e.IsEffectivelyVisible).ToList();
-                Assert.Contains(expanders, e => (e.Header as string) == "Local AI model (optional)");
+                List<string> texts = page.GetVisualDescendantsOfType<Avalonia.Controls.TextBlock>().Where(t => t.IsEffectivelyVisible).Select(t => t.Text ?? string.Empty).ToList();
+                Assert.Contains("AI: off", texts);
+                Assert.DoesNotContain(page.GetVisualDescendantsOfType<Avalonia.Controls.Expander>(), e => e.IsEffectivelyVisible && (e.Header as string) == "Local AI model (optional)");
+                Assert.Contains(page.GetVisualDescendantsOfType<Avalonia.Controls.Button>(), b => b.IsEffectivelyVisible && (b.Content as string) == "Settings");
             });
-            // Open the first relation and the model section.
+            // Open the first relation.
             vm.DescribeGroupProposals[0].IsExpanded = true;
-            vm.IsLlmSectionExpanded = true;
-            GuiParityRenderTests.Render(vm, Path.Combine(outDir, "relations-describe-group-open.png"), "Group by description", 1900, page =>
+            GuiParityRenderTests.Render(vm, Path.Combine(outDir, "relations-describe-group-open.png"), "Auto-build relations from all my actions", 1900, page =>
             {
                 List<string> texts = page.GetVisualDescendantsOfType<Avalonia.Controls.TextBlock>().Where(t => t.IsEffectivelyVisible).Select(t => t.Text ?? string.Empty).ToList();
                 Assert.Contains(texts, t => t.Contains("speed brake switch aft"));
-                Assert.Contains(page.GetVisualDescendantsOfType<Avalonia.Controls.CheckBox>(), c => (c.Content as string) == "Use local AI model");
-                Assert.Contains(page.GetVisualDescendantsOfType<Avalonia.Controls.Button>(), b => (b.Content as string) == "Download and switch on");
-                Assert.Contains(page.GetVisualDescendantsOfType<Avalonia.Controls.Button>(), b => (b.Content as string) == "Find on this PC");
+            });
+            // Settings > Local AI: everything of the setup in one place.
+            AvaloniaRenderThread.Wait(GuiParityRenderTests.Done(vm.OpenLocalAiSettingsCommand.ExecuteAsync(null)));
+            GuiParityRenderTests.Render(vm, Path.Combine(outDir, "settings-local-ai.png"), "Local AI", 1500, page =>
+            {
+                Assert.Contains(page.GetVisualDescendantsOfType<Avalonia.Controls.CheckBox>(), c => c.IsEffectivelyVisible && (c.Content as string) == "Use the local AI model");
+                Assert.Contains(page.GetVisualDescendantsOfType<Avalonia.Controls.Button>(), b => b.IsEffectivelyVisible && (b.Content as string) == "Download and switch on");
+                Assert.Contains(page.GetVisualDescendantsOfType<Avalonia.Controls.Button>(), b => b.IsEffectivelyVisible && (b.Content as string) == "Find on this PC");
+                Assert.Contains(page.GetVisualDescendantsOfType<Avalonia.Controls.Button>(), b => b.IsEffectivelyVisible && (b.Content as string) == "Start now");
+                Assert.Contains(page.GetVisualDescendantsOfType<Avalonia.Controls.Button>(), b => b.IsEffectivelyVisible && (b.Content as string) == "Stop now");
             });
         });
     }

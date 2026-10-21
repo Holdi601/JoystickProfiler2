@@ -13,9 +13,10 @@ using JoyPro.Gui.ViewModels;
 
 namespace JoyPro.Gui.Views.Controls;
 
-// The tabs at the top of the Settings page, one per section, in the sections' order: a click opens the section and
-// scrolls to it; dragging a tab onto another moves the section there (the same list as the section handles). An open
-// section's tab is highlighted, a section the search hides is dimmed.
+// The tabs at the top of the Settings page, one per section, in the sections' order: a click opens or closes the
+// section (opening scrolls to it), a double click shows only that section; dragging a tab onto another moves the
+// section there (the same list as the section handles). An open section's tab is highlighted, a section the search
+// hides is dimmed.
 public sealed class SettingsTabStrip : WrapPanel
 {
     public static readonly StyledProperty<ObservableCollection<SettingsSectionItem>?> SectionsProperty =
@@ -24,6 +25,7 @@ public sealed class SettingsTabStrip : WrapPanel
     private ObservableCollection<SettingsSectionItem>? observed;
     private Border? pressed;
     private Point pressPoint;
+    private int pressClicks;
     private bool dragging;
     private Border? dropTarget;
     private bool dropAfter;
@@ -116,7 +118,7 @@ public sealed class SettingsTabStrip : WrapPanel
                 Cursor = new Cursor(StandardCursorType.Hand),
                 Child = new TextBlock { Text = T(item.TabTitle), FontSize = 12, VerticalAlignment = VerticalAlignment.Center, MaxWidth = 260, TextTrimming = TextTrimming.CharacterEllipsis },
             };
-            ToolTip.SetTip(tab, T("{0}: click to open it; drag the tab to move the section", T(item.Title)));
+            ToolTip.SetTip(tab, T("{0} - Click: open/close - Double-click: show only this section - Drag: move it", T(item.Title)));
             tab.PointerPressed += OnTabPressed;
             tab.PointerMoved += OnTabMoved;
             tab.PointerReleased += OnTabReleased;
@@ -147,6 +149,7 @@ public sealed class SettingsTabStrip : WrapPanel
             return;
         pressed = tab;
         pressPoint = e.GetPosition(this);
+        pressClicks = e.ClickCount;
         dragging = false;
         e.Pointer.Capture(tab);
         e.Handled = true;
@@ -181,6 +184,7 @@ public sealed class SettingsTabStrip : WrapPanel
     {
         Border? tab = pressed;
         bool wasDrag = dragging;
+        int clicks = pressClicks;
         Border? target = dropTarget;
         bool after = dropAfter;
         CancelDrag();
@@ -190,7 +194,11 @@ public sealed class SettingsTabStrip : WrapPanel
         e.Handled = true;
         if (!wasDrag)
         {
-            vm.OpenSettingsSectionCommand.Execute(item);
+            // The first click of a double click opened or closed it; the second leaves only this section open.
+            if (clicks >= 2)
+                vm.ShowOnlySettingsSection(item);
+            else
+                vm.ToggleSettingsSectionFromTab(item);
             return;
         }
         if (target?.Tag is not SettingsSectionItem onto || ReferenceEquals(onto, item))
